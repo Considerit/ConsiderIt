@@ -1,81 +1,87 @@
 #////////////////////////////////////////////////////////////
-# Exploratory reimplemenntation of considerit client in React
+# Exploratory reimplementation of considerit client in React
 #////////////////////////////////////////////////////////////
 
 # Ugliness in this prototype: 
-#   - Keeping javascript and CSS variables synchronized
-#   - Haven't declared prop types for the components
-#   - I don't like setting data as key in props, would rather 
-#     have the specific props be added explicitly
-#   - NewPoint CSS/HTML is still bulky, waiting on redesign
+#   - Provision of @data() as a function via reactiveREST, rather than a straight up object. I couldn't
+#     figure out a way to do it more cleanly. 
+#   - Children needing to know the parent Proposal's key, and using active_proposal_key() to get it
+#   - Programmer needing to know multiple ActiveREST cache keys to save new points to
+#   - UI state and persisted data stored in same place (when saving, what to send to server?)
+#   - Figuring out if the route was changed. Or more generally, knowing what the diff in state was
+#     in the lifecycle methods now that we're not using @props or @state. Right now using a hack
+#     (see use of _route_changed ActiveREST cache key)
+#   - All UI state _must_ be declared in the @getDefaultData method for the component at which
+#     that state will be stored. Otherwise, getters and setters won't be operative!
+#   - Computed state not yet stored in ActiveREST
+#   - Easy for programmer to accidently mess up ActiveREST cache
 #   - Managing top_level_component in Router
-#   - Possibility of bugs being introduced by having (1) nested components
-#     fetching data from cache and (2) immutability of @props. For (2), 
-#     could we use object.freeze()? 
-#     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
+#   - NewPoint CSS/HTML is still bulky, waiting on redesign
 
+# ##
 # React aliases
 R = React.DOM
 
-React.ARComponent = (obj) ->
-  to_wrap = 'render componentWillMount componentDidMount componentWillUpdate componentDidUpdate getInitialState getDefaultProps'.split(' ')
-
-  wrap = (name) ->
-    old_method = obj[name];
-
-    obj[name] = () ->
-      console.log("#{name} #{obj.displayName}")
-      if old_method
-        (old_method.bind(this))()
-      else 
-        {}
-
-  wrap name for name in to_wrap
-
-  React.createClass obj
-
-
-
-# Constants
+# ##
+# Constants, especially used for layout styling
 TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
-
-
-# Horizontal spacing units in Golden Ratio and $grid_major = $grid_minor + $grid_gutter
-#    |          GRID_MAJOR                 |   
-#    | GRID_GUTTER |      GRID_MINOR      |
-GRID_MAJOR = 48
+GRID_MAJOR = 48  #GRID_MAJOR = GRID_MINOR + GRID_GUTTER
 GRID_MINOR = 30
 GRID_GUTTER = 18
-
 PAGE_WIDTH = 24 * GRID_MAJOR
 CONTENT_WIDTH = PAGE_WIDTH - 4 * GRID_MAJOR
 BODY_WIDTH = CONTENT_WIDTH - 8 * GRID_MAJOR - 2 * GRID_GUTTER
-
 POINT_WIDTH = BODY_WIDTH / 2 - 20
 POINT_CONTENT_WIDTH = POINT_WIDTH - 35 - GRID_GUTTER
-
 HISTOGRAM_WIDTH = BODY_WIDTH    # Width of the slider / histogram base 
 DECISION_BOARD_WIDTH = BODY_WIDTH + 4 # the four is for the border
 REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 4 * GRID_GUTTER + 4
-
 MAX_HISTOGRAM_HEIGHT = 200
 
 
-# utility methods...come on Javascript!
+##
+# Helpers that should probably go elsewhere
+
 capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
 
+# Returns the top level Proposal component key. Components use this to grab data
+# from its Proposal. This is a hack. Shadowing parent state would solve the problem.
+active_proposal_key = -> 
+  "proposal/#{ActiveREST.fetch('application').route.split('/')[1]}"
+
+getStanceSegment = (value) ->
+  for i in [0..5]
+    if value < stanceSegmentBoundaries[i + 1]
+      return i
+  return 6
+
+stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
+
+stance_names = 
+  6 : 'Entrenched Supporter'
+  0 : 'Entrenched Opposer'
+  5 : 'Firmly Support'
+  1 : 'Firmly Oppose'
+  4 : 'Lean Support'
+  2 : 'Lean Oppose'
+  3 : 'Neutral'
 
 ##
 # StyleAnimator mixin
 # Helper for components that implement animations.
+# Applies styles defined in the component that change
+# depending on state. Right now this mixin assumes that
+# animations will be applied only on route changes. 
+#
+# A component that implements this mixin should define a method:
+#     applyStyles : (animate = true)
+# which puts the styles on the desired elements. 
 StyleAnimator = 
   componentDidMount : -> @applyStyles false
 
-  componentDidUpdate : (prev_props, prev_page) -> @applyStyles prev_props.page != @props.page  
-
-  # Define this method in any Component implementing StyleAnimator
-  #applyStyles : (animate = true) -> 
+  componentDidUpdate : (prev_props, prev_page) -> 
+    @applyStyles ActiveREST.fetch('_route_changed')
 
   applyStylesToElements : (styles, duration) ->
     $el = $(@getDOMNode())
@@ -96,40 +102,14 @@ StyleAnimator =
       if _.size(styles_to_apply) > 0
         $target.velocity styles_to_apply, {duration}
 
-##
-# Helper methods that should probably go elsewhere
-getStanceSegment = (value) ->
-  if value < stanceSegmentBoundaries[1]
-    return 0
-  else if value < stanceSegmentBoundaries[2]
-    return 1
-  else if value < stanceSegmentBoundaries[3] 
-    return 2
-  else if value < stanceSegmentBoundaries[4]
-    return 3
-  else if value < stanceSegmentBoundaries[5]
-    return 4
-  else if value < stanceSegmentBoundaries[6]
-    return 5
-  else
-    return 6
-
-stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
-
-stance_names = 
-  6 : 'Entrenched Supporter'
-  0 : 'Entrenched Opposer'
-  5 : 'Firmly Support'
-  1 : 'Firmly Oppose'
-  4 : 'Lean Support'
-  2 : 'Lean Oppose'
-  3 : 'Neutral'
-
 
 ## ##################
 # React Components
 #
 # These are the components and their relationships:
+#
+#                     Application 
+#                          |
 #                       Proposal
 #                   /      |           \            \
 #    CommunityPoints   DecisionBoard   Histogram    Slider
@@ -137,83 +117,61 @@ stance_names =
 #               |      YourPoints
 #               |    /            \
 #              Point             NewPoint
+#
+#   (also, Proposal, Histogram, and Point employ Avatar)
 
 
 ##
 # Proposal
-# The mega component for a proposal.
 # Has proposal description, feelings area (slider + histogram), and reasons area
-Proposal = React.ARComponent
+Proposal = ReactiveComponent
   mixins: [StyleAnimator]
   displayName: 'Proposal'
 
   ##
   # Component defaults
 
-  getDefaultProps : ->
-    page : 'crafting'
-
-  getInitialState : ->
-    users_to_highlight_in_histogram : null
-    selected_segment_in_histogram : [null, null]
-
-  # TODO: add prop types here
-
+  getDefaultData : ->
+    proposal : {}
+    points : {}
+    users : {}
+    included_points : []
+    initial_stance : 0.0
+    opinions : []
+    # UI STATE
+    highlighted_users : null
+    sticky_mode : false
 
   ##
   # Lifecycle methods
 
-  componentDidMount : ->
-    @setPointMouseover()
-
-  componentDidUpdate : (prev_props, prev_state) ->
+  componentDidMount : (prev_props, prev_state) ->
     @setStickyHeader()
 
-  ####
-  # On hovering over a point, highlight the people who included this point in the Histogram.
-  #
-  # This requires cross-component communication. By handling it here in the parent: 
-  #    + we eliminate confusing intercomponent communication and callback passing
-  #    - it might be unintuitive to find this handler here and not in Point or CommunityPoints
-  setPointMouseover : ->
-    $el = $(@getDOMNode())
-
-    $el.on 'mouseenter mouseleave', '.points_by_community .includers', (ev) => 
-      if @props.page == 'results'
-        point_id = $(ev.currentTarget).parent().data('id')
-        point = fetch { url: "points/#{point_id}?no_comments" }
-
-        if ev.type == 'mouseenter'
-          # get includers of the point
-          # TODO: need to add this user if they've included this point (might be already taken care of depending on how saving opinions works)
-          @setState { users_to_highlight_in_histogram : point.includers }
-
-        else if ev.type == 'mouseleave'
-          _.delay =>
-            if @state.users_to_highlight_in_histogram == point.includers
-              @setState({ users_to_highlight_in_histogram : null }) 
-          , 200
-
   setStickyHeader : ->
-    # Sticky decision board. It is here because the calculation of offset top would 
-    # be off if we did it in DidMount before all the data has been fetched from server
+    # Sticky decision board. 
     _.delay => 
       $sticky_head_el = $(@getDOMNode()).find('.slider_base .the_handle')
       $(@getDOMNode()).headroom
         offset: $sticky_head_el.offset().top - 5
-        onNotTop : => @setState { sticky_mode: true } 
-        onTop : => @setState { sticky_mode: false } 
-    , 1000  # delay initialization to let the rest of the dom load so that the offset is calculated properly
+        onNotTop : => 
+          @data().sticky_mode = true
+        onTop : => @data().sticky_mode = false
+    , 2000  # delay initialization to let the rest of the dom load 
+            # so that the offset is calculated properly
 
   ##
   # State-dependent styling
   applyStyles : (animate = true) ->  
     $el = $(@getDOMNode())
     duration = if animate then TRANSITION_SPEED else 0
+    page = @data('application').page
 
-    # Note: Velocity requires properties to be pulled out (e.g. paddingLeft, translateX, rather than using padding or transform)
-    # Note: Use velocity even for 0 duration applications to maintain parity of style definition
-    switch @props.page
+    # • Velocity requires properties to be pulled out (e.g. paddingLeft, 
+    #   translateX, rather than using padding or transform)
+    # • We use velocity even for 0 duration style applications to maintain 
+    #   parity of style definition
+    switch page
       when 'crafting'
         styles = 
           '.histogram_bar':        { opacity: '.2' }
@@ -226,7 +184,8 @@ Proposal = React.ARComponent
 
         $el.find('.give_opinion_button').css 'visibility', 'hidden'
         _.delay => 
-          if @props.page == 'crafting' #check in case of quick switch between pages        
+          #delay & check in case of quick switch between pages
+          if @data('application').page == 'crafting'         
             $el.find('.your_points, .save_opinion_button').css 'display', ''
         , duration
 
@@ -255,101 +214,73 @@ Proposal = React.ARComponent
 
         $el.find('.your_points, .save_opinion_button').css 'display', 'none'
         _.delay => 
-          if @props.page == 'results' #check in case of quick switch between pages
+          #check in case of quick switch between pages
+          if @data('application').page == 'results' 
             $el.find('.give_opinion_button').css 'visibility', ''
-        , duration
-
-  ##
-  # State needs to be updated
-
-  togglePage : (ev) ->
-    route = if @props.page == 'results' then Routes.new_opinion_proposal_path(@props.data.proposal.long_id) else Routes.proposal_path(@props.data.proposal.long_id)
-    app_router.navigate route, {trigger : true}
-  
-  onSelectSegment : ( segment, click_select ) ->
-    @setState
-      selected_segment_in_histogram : [segment, click_select]
-
+        , duration  
 
   ##
   # Make this thing!
   render : ->
-    R.div className:'proposal', key:@props.long_id, 'data-page':@props.page,
+    page = @data('application').page
+    my_data = @data()    
+
+    R.div className:'proposal', key:@props.long_id, 'data-page':page,
       
       #description
       R.div className:'description_region', style : { width: 1.25 * BODY_WIDTH }, 
-        Avatar className: 'proposal_proposer', user: @props.data.proposal.user_id, tag: R.img, img_style: 'large'
-        R.div className: 'proposal_category', "#{@props.data.proposal.category} #{@props.data.proposal.designator}"
-        R.h1 className:'proposal_heading', @props.data.proposal.name
-        R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: @props.data.proposal.description}
+        Avatar className: 'proposal_proposer', user: my_data.proposal.user_id, tag: R.img, img_style: 'large'
+        R.div className: 'proposal_category', "#{my_data.proposal.category} #{my_data.proposal.designator}"
+        R.h1 className:'proposal_heading', my_data.proposal.name
+        R.div className:'proposal_details', dangerouslySetInnerHTML:{__html: my_data.proposal.description}
     
       #feelings
       R.div className:'feelings_region', style : { width: BODY_WIDTH },
-        Histogram
-          page: @props.page
-          opinions: @props.data.opinions
-          users_to_highlight_in_histogram: @state.users_to_highlight_in_histogram
-          onSelectSegment: @onSelectSegment
-          selected_segment_in_histogram: @state.selected_segment_in_histogram
-          togglePage: @togglePage
+        Histogram()
 
-        Slider
-          initial_stance: @props.data.initial_stance
-          page: @props.page
-          togglePage: @togglePage
-          sticky_mode : @state.sticky_mode
+        Slider()
 
       #reasons
-      R.div className:'reasons_region', style : { width: REASONS_REGION_WIDTH, left: -(REASONS_REGION_WIDTH - CONTENT_WIDTH) / 2 },
-        #community pros
-        CommunityPoints 
-          key: 'pros'
-          page: @props.page
-          valence: 'pro'
-          included_points : @props.data.included_points
-          points: fetch { url: 'all_points' }
-          opinions: @props.data.opinions          
-          selected_segment_in_histogram: @state.selected_segment_in_histogram
-          
-        #your reasons
-        DecisionBoard
-          page: @props.page
-          included_points : @props.data.included_points
-          togglePage: @togglePage
-          points: fetch { url: 'all_points' }
-          sticky_mode : @state.sticky_mode
+      R.div 
+        className:'reasons_region'
+        style : { width: REASONS_REGION_WIDTH, left: -(REASONS_REGION_WIDTH - CONTENT_WIDTH) / 2 },
+          #community pros
+          CommunityPoints { key: 'pros' }
+            
+          #your reasons
+          DecisionBoard()
 
-        #community cons
-        CommunityPoints 
-          key: 'cons'
-          page: @props.page
-          valence: 'con'
-          included_points : @props.data.included_points
-          points: fetch { url: 'all_points' }
-          opinions: @props.data.opinions
-          selected_segment_in_histogram: @state.selected_segment_in_histogram
+          #community cons
+          CommunityPoints { key: 'cons' }
 
 ##
 # Histogram
-Histogram = React.ARComponent
+Histogram = ReactiveComponent
+  displayName : 'Histogram'
+
+  getDefaultData : ->
+    # UI STATE
+    selected_segment : [null, null]
 
   getDefaultProps : ->
     opinions: []
-    selected_segment_in_histogram: null
 
   ##
   # buildHistogram
   # Split up opinions into segments. For now we'll keep three hashes: 
   #   - all opinions
-  #   - high level segments (the seven original segments, strong supporter, neutral, etc)
-  #   - small segments that represent individual columns in the histogram, now that 
-  #     we do not have wide bars per se
+  #   - high level segments (the seven segments, strong supporter, neutral, etc)
+  #   - small segments that represent individual columns in the histogram,
+  #     now that we do not have wide bars per se
   buildHistogram : ->
     ##
     # Size the avatars. Size of avatar shrinks proportional to 1/sqrt(num_opinions)
-    avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, Math.floor(BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (@props.opinions.length + 1) / 10 )  )
+    opinions = @data(active_proposal_key()).opinions
 
-    # Calculate (approximately) how many columns of opinions to put on the histogram. 
+    avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, 
+      Math.floor(BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (opinions.length + 1) / 10 )  )
+
+    # Calculate about how many columns of opinions to put on the histogram. 
     columns_in_histogram = Math.floor(HISTOGRAM_WIDTH / avatar_size)
 
     max_slider_variance = 2.0 # Slider stances vary from -1.0 to 1.0. 
@@ -361,19 +292,21 @@ Histogram = React.ARComponent
       segment = getStanceSegment(max_slider_variance * col / columns_in_histogram - 1)
       segments[segment].push []
 
-    segments[3].push([]) while segments[3].length < 3   # ensure neutral segment has 3 columns
+    # ensure neutral segment has 3 columns
+    segments[3].push([]) while segments[3].length < 3   
 
     # Assign each Opinion to a column
     # This gets complicated because we treat the extremes and Neutral differently. 
-    #  - The number of columns in the extremes is variable, with the max number of opinions per columns capped. 
-    #    Here we'll dynamically grow the number of cols in each extreme, subdividing the cols whenever they
-    #    hit their max number. 
-    #  - There are three columns for Neutral. We distributed the opinions evenly across these three. 
-    #  - Opinions belonging to other places along the spectrum are mapped directly to the column associated 
-    #    with that stance.     
+    #  - The number of columns in the extremes is variable, with the max number
+    #    of opinions per columns capped. Here we'll dynamically grow the number of 
+    #    cols in each extreme, subdividing the cols whenever they hit their max number. 
+    #  - There are three columns for Neutral. We distributed the opinions evenly 
+    #    across these three. 
+    #  - Opinions belonging to other places along the spectrum are mapped directly 
+    #    to the column associated with that stance.     
     opinions_in_segment = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
     max_opinions_in_column = Math.floor MAX_HISTOGRAM_HEIGHT / avatar_size
-    for opinion in @props.opinions
+    for opinion in opinions
       segment = getStanceSegment opinion.stance
 
       # If this is a Neutral opinion, fill up all three neutral cols equally
@@ -382,22 +315,27 @@ Histogram = React.ARComponent
 
       # If this is an extreme opinion...
       else if segment in [0,6]
-        if segments[segment][segments[segment].length - 1].length == max_opinions_in_column - 1
+        last_col_in_segment = segments[segment].length - 1
+        if segments[segment][last_col_in_segment].length == max_opinions_in_column - 1
           segments[segment].push []
 
-        segments[segment][segments[segment].length - 1].push opinion
+        segments[segment][last_col_in_segment].push opinion
 
       # If this opinion is somewhere else on the spectrum...
       else
         adjusted_stance = Math.abs(opinion.stance - stanceSegmentBoundaries[segment])
-        col_width = Math.abs(stanceSegmentBoundaries[segment + 1] - stanceSegmentBoundaries[segment])/segments[segment].length
+        col_width = Math.abs( stanceSegmentBoundaries[segment + 1] - 
+          stanceSegmentBoundaries[segment])/segments[segment].length
         segments[segment][Math.floor(adjusted_stance / col_width)].push opinion
 
       opinions_in_segment[segment] += 1
 
-    # make sure that the extreme segment with fewest opinions has as many columns as the other extreme
+    # make sure that the extreme segment with fewest opinions has as 
+    # many columns as the other extreme
     if segments[0].length != segments[6].length
-      if segments[0].length > segments[6].length then [bigger, smaller] = [segments[0], segments[6]] else [bigger, smaller] = [segments[6], segments[0]]
+      if segments[0].length > 
+         segments[6].length then [bigger, smaller] = [segments[0], segments[6]] else 
+                                 [bigger, smaller] = [segments[6], segments[0]]
       
       all_opinions_in_smaller = _.flatten(smaller)
 
@@ -413,63 +351,95 @@ Histogram = React.ARComponent
 
     [num_columns, segments, avatar_size]
 
-  onClickHistogram : (ev) -> @props.togglePage() if @props.page == 'crafting'
+  onClickHistogram : (ev) ->
+    page = @data('application').page
+    if page == 'crafting'
+      @data('application').page = 'results'
 
   onSelectSegment : (ev) ->
-    if @props.page == 'results'
+    if @data('application').page == 'results'
       segment = $(ev.currentTarget).data('segment')
 
+      selected_segment = @data().selected_segment
+
       # If clicking on already hard-selected segment, then we'll deselect. 
-      segment = if @props.selected_segment_in_histogram[0] == segment && @props.selected_segment_in_histogram[1] then null else segment
+      segment = if selected_segment[0] == segment && 
+                   selected_segment[1] then null else segment
       click_select = ev.type == 'click' 
 
       #ignore mouseEnter and mouseLeave events if selection was via click
-      return if @props.selected_segment_in_histogram && @props.selected_segment_in_histogram[1] && !click_select 
+      return if selected_segment && selected_segment[1] && !click_select 
 
-      @props.onSelectSegment(segment, click_select && segment)
+      @data().selected_segment = [segment, click_select && segment]
       ev.stopPropagation()
 
   render : ->
+    selected_segment = @data().selected_segment
+    users_to_highlight = @data(active_proposal_key()).highlighted_users    
     [num_columns, segments, avatar_size] = @buildHistogram() #todo: memoize
+
     effective_histogram_width = num_columns * avatar_size
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH)/2
-    margin_adjustment -= - (segments[0].length - segments[6].length) / 2 * avatar_size #make sure that the neutral segment is centered
+    #make sure that the neutral segment is centered
+    margin_adjustment += (segments[0].length - segments[6].length) / 2 * avatar_size
 
-    R.table className: 'histogram', onClick:@onClickHistogram, onMouseLeave: @onSelectSegment, style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
-      R.tr null, 
-        for bars, idx in segments.reverse()
-          segment = 6 - idx
-          is_selected = @props.selected_segment_in_histogram[0] == segment
-          R.td className:"histogram_segment #{if is_selected then 'is_selected' else 'not_selected'}", key:segment, onMouseEnter: @onSelectSegment, 'data-segment':segment, style : { opacity: (if is_selected && !@props.selected_segment_in_histogram[0]? then '1' else '1') },
-            R.table null,
-              R.tr null,
-                for bar in bars
-                  R.td className:"histogram_bar", style: {width: avatar_size},
-                    for opinion in bar
-                      Avatar tag: R.span, key:"#{opinion.user_id}", user: opinion.user_id, 'data-segment':segment, style:{height: avatar_size, width: avatar_size, opacity: if @props.users_to_highlight_in_histogram && !_.contains(@props.users_to_highlight_in_histogram, opinion.user_id) then '.15' else '1.0'}
-            #R.div className:"histogram_segment_label", if segment == 3 then '|' else if stance_names[segment].indexOf('Entrenched') > -1 then 'entrenched' else stance_names[segment]
-            if segment == 6
-              R.div className:"histogram_segment_pole", 'Supporters'
-            else if segment == 0
-              R.div className:"histogram_segment_pole", 'Opposers'
+    R.table 
+      className: 'histogram'
+      onClick:@onClickHistogram
+      onMouseLeave: @onSelectSegment
+      style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
+        R.tr null, 
+          for bars, idx in segments.reverse()
+            segment = 6 - idx
+            is_selected = selected_segment[0] == segment
+            R.td 
+              className:"histogram_segment 
+                #{if is_selected then 'is_selected' else 'not_selected'}"
+              key:segment
+              onMouseEnter: @onSelectSegment
+              'data-segment':segment
+              style : { opacity: (if is_selected && !selected_segment[0]? then '1' else '1') }
+            ,
+              R.table null,
+                R.tr null,
+                  for bar in bars
+                    R.td className:"histogram_bar", style: {width: avatar_size},
+                      for opinion in bar
+                        Avatar 
+                          tag: R.span, 
+                          key:"#{opinion.user_id}" 
+                          user: opinion.user_id
+                          'data-segment':segment
+                          style:
+                            height: avatar_size
+                            width: avatar_size
+                            opacity: if users_to_highlight && 
+                              !_.contains(users_to_highlight, opinion.user_id) then '.15' else '1.0'
+              if segment == 6
+                R.div className:"histogram_segment_pole", 'Supporters'
+              else if segment == 0
+                R.div className:"histogram_segment_pole", 'Opposers'
 
 ##
 # Slider
 # Manages the slider and the UI elements attached to it. 
-Slider = React.ARComponent
+Slider = ReactiveComponent
   displayName: 'Slider'
   mixins: [StyleAnimator]
 
-  getInitialState : ->
-    stance_segment : getStanceSegment(@props.initial_stance)
-    stance : @props.initial_stance
-    has_moved : false
+  getDefaultData : ->
+    initial_stance = @data(active_proposal_key()).initial_stance
+    return {
+      has_moved : false
+      stance : initial_stance
+      stance_segment : getStanceSegment initial_stance
+    }
 
   componentDidMount : -> 
     @setSlidability()
 
-  componentDidUpdate : (prev_props, prev_state) ->
-    @setSlidability()    
+  componentWillUpdate : (prev_props, prev_state) ->
+    @setSlidability()
 
   # We have a separate applyStyle here from Proposal because the Slider component
   # gets rerendered more frequently than the Proposal component (i.e. when the 
@@ -478,11 +448,12 @@ Slider = React.ARComponent
   applyStyles : (animate = false) ->
     duration = if animate then TRANSITION_SPEED else 0
     $el = $(@getDOMNode())
+    my_data = @data()
 
-    mouth_scaler = if @state.stance_segment > 3 then -1 else 1
-    mouth_x = if @state.stance_segment == 3 then 0 else -7.5
+    mouth_scaler = if my_data.stance_segment > 3 then -1 else 1
+    mouth_x = if my_data.stance_segment == 3 then 0 else -7.5
 
-    switch @props.page
+    switch @data('application').page
       when 'crafting'
         styles = 
           '.bubblemouth': { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 5.5, translateX: mouth_x * 1.5  }
@@ -499,70 +470,100 @@ Slider = React.ARComponent
   # setSlidability
   # Inits jQuery UI slider and enables/disables it between pages
   setSlidability : ->
+    page = @data('application').page
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
-      $slider_base.slider(if @props.page == 'results' then 'disable' else 'enable') 
+      $slider_base.slider(if page == 'results' then 'disable' else 'enable') 
     else
       $slider_base.slider
-        disabled: @props.page == 'results'
+        disabled: @data('application').page == 'results'
         min: -1
         max: 1
         step: .01
-        value: -@props.initial_stance
+        value: -@data(active_proposal_key()).initial_stance
         slide: (ev, ui) => 
-          # update the stance segment if it has changed. This facilitates the feedback atop
-          # the slider changing from e.g. 'strong supporter' to 'neutral'
-          segment = getStanceSegment -ui.value
-          #if @state.stance_segment != segment
-          @setState
-            stance_segment : segment
-            stance : -ui.value
-            has_moved : true
+          # Update the stance segment if it has changed. This facilitates 
+          # the feedback atop the slider changing from e.g. 'strong 
+          # supporter' to 'neutral'
+          my_data = @data()
+          my_data.stance_segment = getStanceSegment -ui.value
+          my_data.stance = -ui.value
+          if !my_data.has_moved
+            my_data.has_moved = true
+
+  togglePage : (ev) ->
+    @data('application').page = if @data('application').page == 'results' then 'crafting' else 'results'
+    ev.stopPropagation()
 
   render : ->
-    props_for_slider_handle = { className:'ui-slider-handle' } #jquery UI slider will pick an el with this class name up
-    if @props.page == 'results'    
+    my_data = @data()
+    stance = my_data.stance
+    segment = my_data.stance_segment
+    page = @data('application').page
+    sticky_mode = @data(active_proposal_key()).sticky_mode
+
+    #jquery UI slider will pick an el with this class name up
+    props_for_slider_handle = { className:'ui-slider-handle' } 
+    if page == 'results'    
       _.extend props_for_slider_handle, 
-        onClick: @props.togglePage
+        onClick: => @togglePage
         style: { cursor : 'pointer' } 
 
-    # can't be dynamically set b/c of integration with asset fingerprinting...
-    if @state.stance_segment == 3
-      if @props.page == 'crafting'
+    # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
+    # also why this file is ERB
+    if segment == 3
+      if page == 'crafting'
         bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
       else
         bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-results.png' %>"
     else
-      if @props.page == 'crafting'
+      if page == 'crafting'
         bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
       else
         bubblemouth_src = "<%= asset_path 'bubblemouth-results.png' %>"
 
-    slider_feedback_percent = if @state.stance_segment == 3 then "Neutral" else "#{Math.floor(Math.abs(@state.stance) * 100)}% #{if @state.stance_segment > 3 then 'Support' else 'Oppose'}"
-    slider_feedback_bucket = stance_names[@state.stance_segment]
-    slider_style = {}
-    if @props.sticky_mode && @props.page == 'crafting'
-      slider_style = { position: 'fixed', top: 40, backgroundColor: 'white', zIndex: 100 }
+    slider_feedback_percent = 
+      if segment == 3 
+      then "Neutral" 
+      else "#{Math.floor(Math.abs(stance) * 100)}% #{if segment > 3 then 'Support' else 'Oppose'}"
 
+    slider_feedback_bucket = stance_names[segment]
+    slider_style = 
+      if !sticky_mode || page == 'results' 
+      then {}
+      else { position: 'fixed', top: 40, backgroundColor: 'white', zIndex: 100 }
+
+    
     face_left_eye_style = 
-      transform: if @state.stance_segment in [0, 6] then 'scale(.9, .8)' else "scale(#{.8 + .2 * Math.abs(@state.stance)}, #{.8 + .2 * Math.abs(@state.stance)})"
+      transform: 
+        if segment in [0, 6] 
+        then 'scale(.9, .8)' 
+        else "scale(#{.8 + .2 * Math.abs(stance)}, #{.8 + .2 * Math.abs(stance)})"
 
     face_right_eye_style = 
-      transform: if @state.stance_segment in [0, 6] then 'scale(1.1, 1.2)' else "scale(#{.8 + .2 * Math.abs(@state.stance)}, #{.8 + .2 * Math.abs(@state.stance)})"
+      transform: 
+        if segment in [0, 6] 
+        then 'scale(1.1, 1.2)' 
+        else "scale(#{.8 + .2 * Math.abs(stance)}, #{.8 + .2 * Math.abs(stance)})"
 
     face_mouth_style = 
-      transform: "scale(#{.4 + .3 * Math.abs(@state.stance) }, #{.08 + .4 * @state.stance}) translate(0, #{-2 - 5 * Math.abs(@state.stance)}px) rotate(45deg) skew(#{if @state.stance_segment in [0,6] then '10deg' else '0deg'})"
+      transform: 
+        "scale(#{.4 + .3 * Math.abs(stance) }, #{.08 + .4 * stance}) 
+         translate(0, #{-2 - 5 * Math.abs(stance)}px) 
+         rotate(45deg) 
+         skew(#{if segment in [0,6] then '10deg' else '0deg'})"
 
     # safari only respects -webkit-transform
-    webkit_transform_property = (props) -> props['-webkit-transform'] = props.transform
+    webkitTransformProperty = (props) -> props['-webkit-transform'] = props.transform
 
-    webkit_transform_property face_left_eye_style
-    webkit_transform_property face_right_eye_style
-    webkit_transform_property face_mouth_style
-
+    webkitTransformProperty sty for sty in [
+      face_left_eye_style, face_right_eye_style, face_mouth_style]
 
     # ugly access here...this is a hack that hides a dependency between slider and histogram 
-    triangle_width = if @props.sticky_mode then 0 else $('.histogram_segment[data-segment="0"]').width() + 5
+    triangle_width = 
+      if sticky_mode 
+      then 0 
+      else $('.histogram_segment[data-segment="0"]').width() + 5
     # /ugly
 
     slider_base_triangle_style = 
@@ -575,18 +576,31 @@ Slider = React.ARComponent
 
     R.div className: 'slider', style: slider_style, 
       R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
-        R.div className: 'slider_base_triangle_left', style: _.extend({}, slider_base_triangle_style, {left: -triangle_width})
-        R.div className: 'slider_base_triangle_right', style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
+        R.div 
+          className: 'slider_base_triangle_left'
+          style: _.extend({}, slider_base_triangle_style, {left: -triangle_width})
+        R.div 
+          className: 'slider_base_triangle_right'
+          style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
         R.div props_for_slider_handle, 
-          R.div className: 'the_handle', onClick: @props.togglePage, 
+          R.div className: 'the_handle', onClick: @togglePage,
             R.div className: 'face_mouth face_part', style: face_mouth_style
             R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
             R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
           R.img className:'bubblemouth', src: bubblemouth_src
-          R.div className:'slider_feedback', 'data-stance-segment': @state.stance_segment, 
-            R.div className:'slider_feedback_instructions', style : { visibility: if !@state.has_moved then 'hidden' else 'visible' }, "Your overall opinion:"
-            R.div className:'slider_feedback_result', if !@state.has_moved then 'Drag Your Overall Opinion' else slider_feedback_bucket
-            # R.div className:'slider_feedback_label', if !@state.has_moved then ' ' else stance_explanations[@state.stance_segment]
+          R.div className:'slider_feedback', 'data-stance-segment': segment, 
+            R.div 
+              className:'slider_feedback_instructions'
+              style : 
+                visibility: 
+                  if !@data().has_moved 
+                  then 'hidden' 
+                  else 'visible'
+              , "Your overall opinion:"
+            R.div className:'slider_feedback_result', 
+              if !my_data.has_moved 
+              then 'Drag Your Overall Opinion' 
+              else slider_feedback_bucket
 
       R.div className:'slider_labels', 
         R.h1 className:"histogram_label histogram_label_support", 'Supporters'
@@ -596,7 +610,7 @@ Slider = React.ARComponent
 ##
 # DecisionBoard
 # Handles the user's list of important points in crafting page. 
-DecisionBoard = React.ARComponent
+DecisionBoard = ReactiveComponent
   displayName: 'DecisionBoard'
 
   componentDidMount : ->
@@ -606,14 +620,22 @@ DecisionBoard = React.ARComponent
       accept: ".point_content"
       drop : (ev, ui) =>
         if ui.draggable.parent().is('.community_point')
-          ui.draggable.parent().velocity 'fadeOut', 200, => 
-            save { type: 'point_inclusion', data: ui.draggable.parent().data('id') }
+          proposal_data = @data(active_proposal_key())
+          ui.draggable.parent().velocity 'fadeOut', 200, -> 
+            included_points = proposal_data.included_points.splice(0)
+            included_points.push ui.draggable.parent().data('id')
+            proposal_data.included_points = included_points
           $el.removeClass "user_is_hovering_on_a_drop_target"
-      out : (ev, ui) => $el.removeClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
-      over : (ev, ui) => $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
+      out : (ev, ui) => 
+        $el.removeClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
+      over : (ev, ui) => 
+        $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
   render : ->
-    sticky_header = @props.sticky_mode && @props.page == 'crafting'
+    sticky_mode = @data(active_proposal_key()).sticky_mode
+    page = @data('application').page
+
+    sticky_header = sticky_mode && page == 'crafting'
     opinion_region_style = 
       position: if sticky_header then 'fixed' else ''
       top: if sticky_header then 85 else ''
@@ -621,28 +643,27 @@ DecisionBoard = React.ARComponent
       width: DECISION_BOARD_WIDTH
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
-
     R.div className:'opinion_region', style: opinion_region_style,
       R.div className:'decision_board_body',
 
         # only shown during crafting, but needs to be present always for animation
         R.div className: 'your_points',
           # your pros
-          YourPoints
-            page: @props.page
-            included_points: @props.included_points
-            valence: 'pro'
+          YourPoints { key: 'pros' }
 
           # your cons
-          YourPoints
-            page: @props.page
-            included_points: @props.included_points
-            valence: 'con'
+          YourPoints { key: 'cons' }
 
         # only shown during results, but needs to be present always for animation
-        R.a className:'give_opinion_button', onClick: @props.togglePage, 'Give your Opinion'
+        R.a 
+          className:'give_opinion_button'
+          onClick: (=> @data('application').page = 'crafting')
+        , 'Give your Opinion'
 
-      R.div className:'save_opinion_button', onClick: @props.togglePage, 'Save and Explore the Results'
+      R.div 
+        className:'save_opinion_button'
+        onClick: (=> @data('application').page = 'results')
+      , 'Save and Explore the Results'
 
 
 ##
@@ -650,113 +671,148 @@ DecisionBoard = React.ARComponent
 # List of important points for the active user. 
 # Two instances used for Pro and Con columns. Shown as part of DecisionBoard. 
 # Creates NewPoint instances.
-YourPoints = React.ARComponent
+YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   render : ->
-    left_or_right = if @props.valence == 'pro' then 'left' else 'right'
+    included_points = @data(active_proposal_key()).included_points
+    left_or_right = if @props.key == 'pros' then 'left' else 'right'
 
-    R.div className:"points_on_decision_board #{@props.valence}s_on_decision_board", style: { width: POINT_WIDTH },
+    R.div 
+      className:"points_on_decision_board #{@props.key}_on_decision_board"
+      style: { width: POINT_WIDTH }
+    ,
       R.div className:'points_heading_label',
-        "List Your #{capitalize(@props.valence)}s"
+        "List Your #{capitalize(@props.key)}"
 
       R.ul null,
-        for point_id in @props.included_points
-          point = fetch { url: "points/#{point_id}?no_comments" }
-          if point.is_pro == (@props.valence == 'pro')
-            Point 
-              key: point.id
-              id: point.id
-              valence: @props.valence
-              page: @props.page
-              location_class: 'decision_board_point'
+        for point_id in included_points
+          is_pro = @data("point/#{point_id}").is_pro
+          if is_pro == (@props.key == 'pros')
+            Point { key: point_id, location_class: 'decision_board_point' }
 
         R.div className:'add_point_drop_target',
           R.div className: "drop_target_circle_#{left_or_right}"
           R.img className:'drop_target', src: "<%= asset_path 'drop_target.png' %>"
           R.span className:'drop_prompt',
             #"Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
-            "Drag a #{capitalize(@props.valence)} from the #{left_or_right}"
+            "Drag a #{capitalize(if @props.key=='pros' then 'pro' else 'con')} from the #{left_or_right}"
 
-        NewPoint 
-          valence: @props.valence
+        NewPoint { key: @props.key }
 
 ##
 # CommunityPoints
 # List of points contributed by others. 
 # Shown in wing during crafting, in middle on results. 
-CommunityPoints = React.ARComponent
+CommunityPoints = ReactiveComponent
   displayName: 'CommunityPoints'
+
+  componentDidMount : ->
+    @setPointMouseover()
+
+  ## ##
+  # On hovering over a point, highlight the people who included this 
+  # point in the Histogram.
+  setPointMouseover : ->
+    $el = $(@getDOMNode())
+
+    $el.on 'mouseenter mouseleave', '.includers', (ev) => 
+
+      if @data('application').page == 'results'
+        point_id = $(ev.currentTarget).parent().data('id')
+        includers = @data("point/#{point_id}").includers
+        proposal_data = @data(active_proposal_key())
+
+        if ev.type == 'mouseenter'          
+          proposal_data.highlighted_users = includers
+        else if ev.type == 'mouseleave'
+          _.delay =>
+            if proposal_data.highlighted_users == includers
+              proposal_data.highlighted_users = null
+          , 200
 
   buildNewPointThreshold : ->
     # Grab the 10th percentile
-    points = fetch({ url: 'all_points' })
-    newpoint_threshold = (_.sortBy points, (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
-    (newpoint_threshold and Date.parse(newpoint_threshold.created_at)) or new Date()
+    points = @data(active_proposal_key()).points
+    newpoint_threshold = 
+      (_.sortBy points, (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
+
+    (newpoint_threshold and Date.parse(newpoint_threshold.created_at)) or 
+      new Date()
 
   buildPointsList : ->
-    points = fetch({ url: 'all_points' })
+    page = @data('application').page
+    selected_segment = @data('histogram').selected_segment
+    proposal_data = @data(active_proposal_key())
+    included_points = proposal_data.included_points
+    points = proposal_data.points
+    opinions = proposal_data.opinions
 
-    points = _.filter points, (pnt) =>
-      is_correct_valence = pnt.is_pro == (@props.valence == 'pro')
-      has_not_been_included = @props.page == 'results' || !_.contains(@props.included_points, pnt.id)
-      is_correct_valence && has_not_been_included
-
-    if @props.selected_segment_in_histogram[0]?
+    points = 
+      _.filter points, (pnt) =>
+        is_correct_valence = pnt.is_pro == (@props.key == 'pros')
+        has_not_been_included = page == 'results' || !_.contains(included_points, pnt.id)
+        is_correct_valence && has_not_been_included
+    
+    if selected_segment[0]?
       # If there is a histogram segment selected, we'll have to filter down 
       # to the points that users in this segment think are important, and 
       # order them by resonance to those users. I'm doing this quite inefficiently.
       point_inclusions_per_point_for_segment = {} # map of points to including users
-      _.each @props.opinions, (opinion) =>
-        if opinion.stance_segment == 6 - @props.selected_segment_in_histogram[0] && opinion.point_inclusions
+      _.each opinions, (opinion) =>
+        if opinion.stance_segment == selected_segment[0] && opinion.point_inclusions
           for point_id in opinion.point_inclusions
-            if !_.has(point_inclusions_per_point_for_segment, point_id)
+            if !(point_id of point_inclusions_per_point_for_segment)
               point_inclusions_per_point_for_segment[point_id] = 1
             else
               point_inclusions_per_point_for_segment[point_id] += 1
 
-      points = _.filter points, (pnt) -> _.has point_inclusions_per_point_for_segment, pnt.id
-      points = _.sortBy points, (pnt) -> -point_inclusions_per_point_for_segment[pnt.id]
+      points = 
+        _.filter points, (pnt) -> pnt.id of point_inclusions_per_point_for_segment
+      points = 
+        _.sortBy points, (pnt) -> -point_inclusions_per_point_for_segment[pnt.id]
     else
       # Default sort order
-      points = _.sortBy points, (pnt) => - if @props.page == 'results' then pnt.score else pnt.persuasiveness
+      points = 
+        _.sortBy points, (pnt) => - if page == 'results' then pnt.score else pnt.persuasiveness
 
     points
 
   render : ->
+    selected_segment = @data('histogram').selected_segment
+    page = @data('application').page
 
     #filter to pros or cons & down to points that haven't been included
     points = @buildPointsList() #todo: memoize
     newpoint_threshold = @buildNewPointThreshold() #todo: memoize
+    label = capitalize @props.key
 
-    label = capitalize @props.valence
-
-    R.div className:"points_by_community #{@props.valence}s_by_community", style: { width: POINT_CONTENT_WIDTH, minHeight: jQuery(window).height() }, 
+    R.div 
+      className:"points_by_community #{@props.key}_by_community"
+      style: { width: POINT_CONTENT_WIDTH, minHeight: jQuery(window).height() }
+    , 
       R.div className:'points_heading_label', 
-        if @props.page == 'results' then "Top #{label}s" else "Others' #{label}s"
-        R.p className:'points_segment_label', if !@props.selected_segment_in_histogram[0]? then '-' else "for #{stance_names[@props.selected_segment_in_histogram[0]]}s"          
+        if page == 'results' then "Top #{label}" else "Others' #{label}"
+        R.p { className:'points_segment_label' }, 
+          if !selected_segment[0]? then '-' else "for #{stance_names[selected_segment[0]]}s"          
 
       R.ul null, 
         if points.length > 0
           for point in points
             Point 
-              key: point.id
-              id: point.id
-              valence: @props.valence
+              key: point.id, 
               is_new: Date.parse(point.created_at) > newpoint_threshold
-              page: @props.page
               location_class : 'community_point'
-              selected_segment_in_histogram : @props.selected_segment_in_histogram[0]
         else
-          R.li className: 'empty_point', "No #{label}s listed"
+          R.li className: 'empty_point', "No #{label} listed"
 
 ##
 # Point
 # A single point in a list. 
-Point = React.ARComponent
+Point = ReactiveComponent
   displayName: 'Point'
 
-  getInitialState : ->
+  getDefaultData : ->
     show_details : false
 
   componentDidMount : ->
@@ -771,12 +827,17 @@ Point = React.ARComponent
     # or drag remove for point on decision board
     # also: disable for results page
 
-    disable = @props.page == 'results'
+    disable = @data('application').page == 'results'
     $point_content = $(@getDOMNode()).find('.point_content')
-    revert = if @props.location_class == 'community_point' then 'invalid' else (valid) =>
-      if !valid
-        save { type: 'point_removal', data: @props.id }
-      valid
+    revert = 
+      if @props.location_class == 'community_point' 
+      then 'invalid' 
+      else (valid) =>
+        if !valid
+          included_points = 
+            _.without @data(active_proposal_key()).included_points, @props.key
+          @data(active_proposal_key()).included_points = included_points
+        valid
 
     if $point_content.hasClass "ui-draggable"
       $point_content.draggable(if disable then 'disable' else 'enable') 
@@ -786,26 +847,28 @@ Point = React.ARComponent
         disabled: disable
 
   setShowDetails : ->
-    $(@getDOMNode()).click (ev) => 
-      @setState { show_details : !@state.show_details }
+    $(@getDOMNode()).click (ev) => @data().show_details = !@data().show_details
 
-  buildIncluders : (point) -> 
-    to_remove = [point.author]
+  buildIncluders : -> 
+    my_data = @data()
+    to_remove = [my_data.user_id]
 
     # only show includers from this stance segment if a segment is selected
-    if @props.selected_segment_in_histogram?
-      for includer in point.includers
-        opinion = fetch({url: "opinion/#{includer}"})
-        to_remove.push(includer) if !opinion || 6 - opinion.stance_segment != @props.selected_segment_in_histogram
+    selected_segment = @data('histogram').selected_segment
+    if selected_segment[0]?
+      for includer in my_data.includers
+        stance_segment = @data("opinion/#{includer}").stance_segment
+        if !stance_segment || stance_segment != selected_segment[0]
+          to_remove.push(includer)
 
-    _.difference point.includers, to_remove
+    _.difference my_data.includers, to_remove
 
         
-  renderIncluders : (point) ->
+  renderIncluders : ->
 
-    if point.includers
+    if @data().includers
 
-      includers = @buildIncluders(point)
+      includers = @buildIncluders()
 
       s = #includers_style
         rows: 8
@@ -822,103 +885,130 @@ Point = React.ARComponent
         curr_column = Math.floor(i / s.rows)
         side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
         top_offset = (i % s.rows) * s.dy + 16
-        left_right = if @props.valence == 'pro' then 'left' else 'right'
+        left_right = if @data().is_pro then 'left' else 'right'
         style = { top: top_offset }
         style[left_right] = -side_offset
 
         # Finally draw the guy
-        Avatar tag: R.span, user: includer, className: "point_includer_avatar", style: style
+        Avatar 
+          tag: R.span
+          user: includer
+          className: "point_includer_avatar"
+          style: style
 
-  renderNewIndicator : (point) ->
-    if point.includers
+  renderNewIndicator : ->
+    if @data().includers
       side_offset = 51
-      left_right = if @props.valence == 'pro' then 'left' else 'right'
-      style = {position: 'absolute', color: 'rgb(255,22,3)', fontSize: '11px', top:'41px', backgroundColor: 'white', zIndex: 5}
+      left_right = if @data().is_pro then 'left' else 'right'
+      style = 
+        position: 'absolute'
+        color: 'rgb(255,22,3)'
+        fontSize: '11px'
+        top:'41px'
+        backgroundColor: 'white', zIndex: 5
       style[left_right] = "#{-side_offset}"
       R.span {style: style}, '*New*'
 
   render : -> 
-    point = fetch { url: "points/#{@props.key}?no_comments" }
-
-    R.li className: "point closed_point #{@props.location_class} #{@props.valence}", 'data-id':@props.id,
+    my_data = @data()
+    R.li 
+      className: "point closed_point #{@props.location_class} 
+        #{if my_data.is_pro then 'pro' else 'con'}"
+      'data-id':@props.key
+    ,
   
       if @props.location_class == 'community_point' && @props.is_new
-        @renderNewIndicator(point)
+        @renderNewIndicator()
 
       R.div className:'includers', 
-
         if @props.location_class == 'community_point'
-          @renderIncluders(point)
+          @renderIncluders()
 
-        Avatar tag: R.span, user: point.author, className:"point_author_avatar"
+        Avatar tag: R.span, user: my_data.user_id, className:"point_author_avatar"
 
       R.div className:'point_content', style : { width: POINT_CONTENT_WIDTH },
         if @props.location_class == 'community_point'
-          R.img className: 'community_point_mouth', src: "<%= asset_path 'community_point_mouth.png' %>"
+          R.img 
+            className: 'community_point_mouth'
+            src: "<%= asset_path 'community_point_mouth.png' %>"
 
         R.div className:'point_nutshell',
-          point.nutshell
-          if point.text
-            if @state.show_details || (point.nutshell.length + point.text.length) < 210
-              R.div className: 'point_details', dangerouslySetInnerHTML:{__html: point.text}
+          my_data.nutshell
+          if my_data.text
+            if my_data.show_details or 
+              (my_data.nutshell.length + my_data.text.length) < 210
+                R.div className: 'point_details', dangerouslySetInnerHTML:{__html: my_data.text}
             else
-              R.span className: 'point_details_tease', $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + " >>"
+              R.span className: 'point_details_tease', 
+                $("<span>#{my_data.text[0..210-my_data.nutshell.length]}</span>").text() + " >>"
 
         # R.a className:'open_point_link',
         #   "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"
 
 ##
 # NewPoint
-# Handles adding a new point into the system. Only rendered when proposal is in Crafting state. 
-# Manages whether the user has clicked "add a new point". If they have, show new point form. 
-NewPoint = React.ARComponent
+# Handles adding a new point into the system. Only rendered when proposal is
+# in Crafting state. Manages whether the user has clicked "add a new point". 
+# If they have, show new point form. 
+NewPoint = ReactiveComponent
   displayName: 'NewPoint'
 
-  getInitialState : ->
-    editMode : false
+  getDefaultData : ->
+    # UI STATE
+    edit_mode : false
 
-  handleAddPointBegin : (ev) ->
-    @setState { editMode : true }
-
-  handleAddPointCancel : (ev) ->
-    @setState { editMode : false }
+  handleAddPointBegin : (ev) -> @data().edit_mode = true
+  handleAddPointCancel : (ev) -> @data().edit_mode = false
 
   handleSubmitNewPoint : (ev) ->
     $form = $(@getDOMNode())
 
+    current_user_id = -2 #anon user
     point =
+      id : ActiveREST.getUniqueID 'point'
       nutshell : $form.find('#nutshell').val()
       text : $form.find('#text').val()
-      is_pro : @props.valence == 'pro'
-      user_id : -2 #anon user
+      is_pro : @props.key == 'pros'
+      user_id : current_user_id
       comment_count : 0 
- 
-    save { type: 'point', data: point }
+      includers : [current_user_id]
 
-    @setState { editMode : false }
+    proposal_data = @data active_proposal_key()
+    points = proposal_data.points.splice(0)
+    points.push point
+    proposal_data.points = points
+
+    # how to not push to multiple places...
+    ActiveREST.save "point/#{point.id}", point
+ 
+    included_points = proposal_data.included_points.splice(0)
+    included_points.push point.id
+    proposal_data.included_points = included_points
+
+    @data().edit_mode = false
 
   render : ->
     #TODO: refactor HTML/CSS for new point after we get better sense of new point redesign
 
     R.div className:'newpoint',
-      if !@state.editMode
+      if !@data().edit_mode
         R.div className:'newpoint_prompt',
           R.span className:'qualifier', 
             'or '
           R.span className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
           R.a className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
-            "Write a new #{capitalize(@props.valence)}"
+            "Write a new #{capitalize(if @props.key == 'pros' then 'pro' else 'con')}"
       else
         R.div className:'newpoint_form',
-          R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pro'}"
+          R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.key == 'pros'}"
           R.div className:'newpoint_nutshell_wrap',
             R.textarea id:'nutshell', className:'newpoint_nutshell is_counted', cols:'28', maxLength:"140", name:'nutshell', pattern:'^.{3,}', placeholder:'Summarize your point (required)', required:'required'
             R.span className: 'count', 140
           R.div className:'newpoint_description_wrap',
             R.textarea id:'text', className:'newpoint_description', cols:'28', name:'text', placeholder:'Write a longer description (optional)', required:'required'
           R.div className:'newpoint_hide_name',
-            R.input className:'newpoint-anonymous', type:'checkbox', id:"hide_name-#{@props.valence}", name:"hide_name-#{@props.valence}"
-            R.label for:"hide_name-#{@props.valence}", title:'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.', 
+            R.input className:'newpoint-anonymous', type:'checkbox', id:"hide_name-#{@props.key}", name:"hide_name-#{@props.key}"
+            R.label for:"hide_name-#{@props.key}", title:'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.', 
               'Conceal your name'
           R.div className:'newpoint-submit',
             R.a className:'newpoint-cancel', onClick: @handleAddPointCancel,
@@ -929,22 +1019,23 @@ NewPoint = React.ARComponent
 # Avatar
 # Displays a user's avatar
 # Supports straight up img src, or using the CSS-embedded b64 for each user
-Avatar = React.ARComponent
+Avatar = ReactiveComponent
   displayName: 'Avatar'
 
   getDefaultProps : ->
     user: -1 # defaults to anonymous user
     tag: R.img
-    img_style: null #null will default to using the css-based b64 embedded images
+    img_style: null #null defaults to the css-based b64 embedded images
 
   render : ->
     className = "#{@props.className} avatar"
     id = "avatar-#{@props.user}"
 
-    if @props.img_style
-      user = fetch {url: "users/#{@props.user}?partial"}
-      if user && user.avatar_file_name
-        filename = "/system/avatars/#{user.id}/#{@props.img_style}/#{user.avatar_file_name}"
+    if @props.img_style && @props.user != -1
+      avatar_file_name = @data("user/#{@props.user}").avatar_file_name
+
+      if avatar_file_name
+        filename = "/system/avatars/#{@props.user}/#{@props.img_style}/#{avatar_file_name}"
 
     attrs = { className: className, id: id, 'data-id': @props.user } 
     attrs.src = filename if filename
@@ -953,108 +1044,51 @@ Avatar = React.ARComponent
 
 
 
-App = React.ARComponent
+Application = ReactiveComponent
   displayName: 'Application'
 
-  getDefaultProps : -> 
-    page: 'crafting'
-    all_data :
-      proposal : {}
-      points : {}
-      users : {}
-      included_points : []
-      initial_stance : 0.0
-      opinions : []
+  getDefaultData : ->
+    page : @props.initial_page
+    route : "/#{@props.long_id}#{if @props.initial_page == 'results' then '/results' else ''}"
 
   render : -> 
     R.div null,
       R.div className: 'l_header'
       R.div id: 'body', style : { width: PAGE_WIDTH }, 
         R.div id: 'inner_body', style : { width: CONTENT_WIDTH },
-          Proposal 
-            data: @props.all_data
-            page: @props.page      
+          Proposal { key: @props.long_id }
       R.div className: 'l_footer'
 
-##
-# Mocks for activeREST
-all_users = {} 
-all_points = {}
-all_opinions = {}
 
-fetch = (options, callback, error_callback) ->
-  if options.url[0..3] == 'user'
-    return all_users[options.url]
-  if options.url[0..4] == 'point'
-    return all_points[options.url]
-  if options.url[0..9] == 'all_points'
-    return _.values all_points
+# Initialize ActiveREST with some knowledge of server endpoints
+# and what to do with the data. 
+ActiveREST = new ActiveRESTCache 
+  routes : 
+    'proposal/\\w{10}' : 
+      get : 
+        success : (key, proposal_data) =>
+          data_to_save = []
 
-  if options.url[0..6] == 'opinion'
-    return all_opinions[options.url]
+          proposal_data.users = $.parseJSON proposal_data.users
+          for user in proposal_data.users
+            data_to_save.push ["user/#{user.id}", user]
 
-  error_callback ||= (xhr, status, err) -> console.error 'Could not fetch data', status, err.toString()
+          for point in proposal_data.points
+            point.includers = $.parseJSON point.includers
+            data_to_save.push ["point/#{point.id}", point]
 
-  $.ajax
-    url: options.url
-    dataType: 'json'
-    success: (data) =>
-      if options.type == 'proposal' || true #assume fetching proposal
-        # Build hash of user information
-        data.users = $.parseJSON data.users
-        for user in data.users
-          all_users["users/#{user.id}?partial"] = user
+          for opinion in proposal_data.opinions
+            opinion.point_inclusions = $.parseJSON opinion.point_inclusions
+            data_to_save.push ["opinion/#{opinion.user_id}", opinion]
 
-        #TODO: return from server as a hash already?
-        for point in data.points
-          point.includers = $.parseJSON point.includers
-          all_points["points/#{point.id}?no_comments"] = point
+          #I don't like passing key outside ActiveREST...
+          data_to_save.push [key, proposal_data] 
 
-        for opinion in data.opinions
-          opinion.point_inclusions = $.parseJSON opinion.point_inclusions
-          all_opinions["opinion/#{opinion.user_id}"] = opinion
+          data_to_save
 
+      save : {}
 
-      console.log data
-      callback data
-
-    error: error_callback
-
-#save assumes that data is a proposal page
-save = (action) -> 
-  proposal_data = $.extend true, {}, top_level_component.props.all_data #deep clone so that shouldcomponentupdate will note changes to data    
-
-  switch action.type
-    when 'point'
-
-      get_unique_id = ->
-        id = -1
-        while _.has all_points, "points/#{id}?no_comments"
-          id = -(Math.floor(Math.random() * 999999) + 1)
-        id
-
-      # proposal_data = $.extend true, {}, top_level_component.props, {data: action._proposal_data} #deep clone so that shouldcomponentupdate will note changes to data    
-      id = get_unique_id()
-      action.data.id = id
-
-      action.data.includers = [current_user_id=-2]
-      all_points["points/#{id}?no_comments"] = action.data
-      included_points = _.clone proposal_data.included_points
-      included_points.push action.data.id
-
-      proposal_data.included_points = included_points
-
-    when 'point_inclusion'
-      proposal_data.included_points.push action.data
-
-    when 'point_removal'
-      proposal_data.included_points = _.without proposal_data.included_points, action.data
-
-    when 'proposal'
-      proposal_data = action.data
-
-  top_level_component.setProps {all_data : proposal_data}
-
+window.ActiveREST = ActiveREST
 
 ## ########################
 ## Application area
@@ -1070,22 +1104,23 @@ top_level_component = null
 Router = Backbone.Router.extend
 
   routes :
-    #"(/)" : "root"
     ":proposal(/)": "proposal"
     ":proposal/results(/)": "results"
-    #":proposal/points/:point(/)" : "openPoint"
 
   proposal : (long_id, page = 'crafting') ->
 
     if !top_level_component
-      top_level_component = React.renderComponent App({page : page}), document.getElementById('content')
-      fetch { url: Routes.proposal_path long_id }, (data) => save { type: 'proposal', data: data }
+      top_level_component = 
+        React.renderComponent Application({long_id : long_id, initial_page : page}), document.getElementById('content')
     else
-      top_level_component.setProps
+      app_data = ActiveREST.fetch 'application'
+      _.extend app_data, 
+        route : "/#{long_id}#{if page == 'results' then '/results' else ''}"
         page : page
+      ActiveREST.save 'application', app_data, ['route', 'page']
 
   results : (long_id) -> @proposal long_id, 'results'
 
-app_router = new Router()
+window.app_router = new Router()
 
 $(document).ready -> Backbone.history.start {pushState: true}

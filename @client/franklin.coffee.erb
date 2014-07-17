@@ -270,8 +270,6 @@ Proposal = ReactiveComponent
             key: my_data.proposal.user_id
             tag: R.img
             img_style: 'large'
-            style: 
-              visibility: if my_data.sticky_opinion then 'hidden' else 'visible'
           
           R.span className: 'proposal_author_tic'
           
@@ -528,13 +526,14 @@ Slider = ReactiveComponent
   # setSlidability
   # Inits jQuery UI slider and enables/disables it between pages
   setSlidability : ->
-    page = @data('application').page
+    app_data = @data('application')
+    page = app_data.page
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
-      $slider_base.slider(if page == 'results' then 'enable' else 'enable') 
+      $slider_base.slider(if app_data.in_auth then 'disable' else 'enable') 
     else
       $slider_base.slider
-        disabled: false #@data('application').page == 'results'
+        disabled: app_data.in_auth #@data('application').page == 'results'
         min: -1
         max: 1
         step: .01
@@ -563,7 +562,8 @@ Slider = ReactiveComponent
     my_data = @data()
     stance = my_data.stance
     segment = my_data.stance_segment
-    page = @data('application').page
+    app_data = @data('application')
+    page = app_data.page
     sticky_opinion = @data(active_proposal_key()).sticky_opinion
 
     #jquery UI slider will pick an el with this class name up
@@ -640,12 +640,8 @@ Slider = ReactiveComponent
     # /ugly
 
     slider_base_triangle_style = 
-      position: 'absolute'
-      width: 0
-      height: 0
       borderLeft: "#{triangle_width}px solid transparent"
       borderRight: "#{triangle_width}px solid transparent"
-      borderBottom: "6px solid #787878"
 
     R.div className: 'slider', style: slider_style, 
       R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
@@ -664,18 +660,20 @@ Slider = ReactiveComponent
           R.div 
             className:'slider_feedback'
             'data-stance-segment': segment
-            style: {visibility: if sticky_opinion then 'hidden' else 'visible'}
+            style: {visibility: if sticky_opinion then 'visible' else 'visible'}
           ,
             R.div 
               className:'slider_feedback_instructions'
               style : 
                 visibility: 
-                  if !@data().has_moved 
+                  if !@data().has_moved  || app_data.in_auth
                   then 'hidden' 
                   else 'visible'
               , "Your overall opinion:"
             R.div className:'slider_feedback_result', 
-              if !my_data.has_moved 
+              if app_data.in_auth
+              then 'Introduce Yourself'
+              else if !my_data.has_moved 
               then 'Drag Your Overall Opinion' 
               else slider_feedback_bucket
 
@@ -732,11 +730,47 @@ DecisionBoard = ReactiveComponent
       over : (ev, ui) => 
         $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
+
+  clickSave : -> 
+    if @data('/current_user').id
+      togglePage('results')
+    else
+      @data('application').in_auth = true
+
+  submitLogin : (ev) -> 
+    ev.preventDefault()
+    $el = $(@getDOMNode())
+    email = $el.find('#user_email').val()
+    password = $el.find('#user_password').val()
+
+    #proper ActiveREST:
+    # current_user = @data('/current_user')
+    # current_user.email = email
+    # current_user.password = password #this is weird, no reason client should use password
+
+    #scratch: 
+    $.ajax 
+      type: 'POST'
+      url: Routes.user_session_path()
+      data: 
+        user: 
+          email: email
+          password: password
+      success : (data, status, xhr) => 
+        app_data = @data('application')
+        current_user = @data('/current_user')
+        current_user.id = data.user.id
+        current_user.csrf = data.new_csrf
+        app_data.page = 'results'
+        app_data.in_auth = false
+
+      error : (xhr, status, error) -> 
+        console.error 'Error logging in: ', error
+
+
   render : ->
     sticky_opinion = @data(active_proposal_key()).sticky_opinion
     page = @data('application').page
-
-
 
     sticky_header = sticky_opinion && page == 'crafting'
 
@@ -752,36 +786,65 @@ DecisionBoard = ReactiveComponent
       width: DECISION_BOARD_WIDTH
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
-    R.div className:'opinion_region', style: opinion_region_style,
-      R.div 
-        className:'decision_board_body'
-        onClick: => if @data('application').page == 'results' then togglePage('crafting')
-      ,
+    if !@data('application').in_auth
+      R.div className:'opinion_region', style: opinion_region_style,
 
-        # only shown during crafting, but needs to be present always for animation
-        R.div className: 'your_points',
-          # your pros
-          YourPoints { key: 'pros' }
+        R.div 
+          className:'decision_board_body'
+          onClick: => if @data('application').page == 'results' then togglePage('crafting')
+        ,
 
-          # your cons
-          YourPoints { key: 'cons' }
+          # only shown during crafting, but needs to be present always for animation
+          R.div className: 'your_points',
+            # your pros
+            YourPoints { key: 'pros' }
 
-        # only shown during results, but needs to be present always for animation
+            # your cons
+            YourPoints { key: 'cons' }
+
+          # only shown during results, but needs to be present always for animation
+          R.a 
+            className:'give_opinion_button'
+          , 'Give your Opinion'
+
+        R.div 
+          className:'save_opinion_button'
+          onClick: @clickSave
+        , 'Save your opinion and see results'
+
         R.a 
-          className:'give_opinion_button'
-        , 'Give your Opinion'
+          className:'cancel_opinion_button'
+          onClick: (=> togglePage('results'))
+        , 'discard your opinion'
+      
+    else
+      R.div className:'opinion_region', style: opinion_region_style,    
+        R.div className:'decision_board_body',
+          R.div className: 'auth', 
 
-      R.div 
-        className:'save_opinion_button'
-        onClick: (=> togglePage('results'))
-      , 'Save your opinion and see results'
+            R.p className: 'auth_section_label', 'By email address:'
 
-      R.a 
-        className:'cancel_opinion_button'
-        onClick: (=> togglePage('results'))
-      , 'discard your opinion'
+            R.table className: 'auth_fields', 
+              R.tr null, 
+                R.td null,
+                  R.label for: 'user_email', 'email:'
+                R.td className: 'field_cell', 
+                  R.input id: "user_email", name: "user[email]", placeholder: "Email address", required: "required", type: "email"
+              R.tr null, 
+                R.td null, 
+                  R.label for: 'user_password', 'password:'
+                R.td className: 'field_cell', 
+                  R.input id: "user_password", name: "user[password", placeholder: "password", required: "required", type: "password"
 
+        R.div 
+          className:'save_opinion_button'
+          onClick: @submitLogin
+        , 'Login and save your opinion'
 
+        R.a 
+          className:'cancel_opinion_button'
+          onClick: (=> @data('application').in_auth = false)
+        , 'cancel log in'
 
 ##
 # YourPoints
@@ -1199,16 +1262,45 @@ Avatar = ReactiveComponent
     @transferPropsTo @props.tag attrs
 
 
+UserBar = ReactiveComponent
+  displayName: 'UserBar'
+
+  logout : -> 
+    $.ajax Routes.destroy_user_session_path(),
+      type : 'delete'
+      success : (data) =>
+        #TODO: update CSRF
+        #TODO: clear current user
+        current_user = @data('/current_user')
+        current_user.id = current_user.email = current_user.password = null
+        current_user.csrf = data.new_csrf      
+        @data('application').in_auth = false
+
+      error : (xhr, status, error) -> 
+        console.error 'Error logging out: ', error
+
+  render: ->
+    app_data = @data('application') 
+    current_user = @data('/current_user')
+    R.div className: 'userbar', 
+      if current_user.id
+        R.button onClick: @logout, 'Logout'
+
+
+
+
 Application = ReactiveComponent
   displayName: 'Application'
 
   getDefaultData : ->
     page : @props.initial_page
     route : "/#{@props.long_id}#{if @props.initial_page == 'results' then '/results' else ''}"
+    in_auth : false
 
   render : -> 
-    R.div null,
-      R.div className: 'l_header'
+    R.div 'data-authmode': @data().in_auth,
+      R.div className: 'l_header', 
+        UserBar()      
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
         R.div id: 'inner_body', #style : { width: CONTENT_WIDTH },
           Proposal { key: @props.long_id }
@@ -1244,6 +1336,18 @@ ActiveREST = new ActiveRESTCache
       save : {}
 
 window.ActiveREST = ActiveREST
+
+
+ActiveREST.save '/current_user',
+  id: null
+  email: null
+  password: null
+  csrf_token: $("meta[name='csrf-token']").attr('content')
+
+$.get Routes.current_user_path(), (data) -> 
+  current_user = ActiveREST.fetch('/current_user')
+  ActiveREST.save '/current_user', {id: data.id}, ['id']
+
 
 ## ########################
 ## Application area

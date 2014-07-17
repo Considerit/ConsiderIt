@@ -225,6 +225,13 @@ $segment_color: #db004d
   height: 6px
   background-color: desaturate($decision_board_text_color, 100%)
 
+
+.slider_base_triangle_left, .slider_base_triangle_right
+  position: absolute
+  width: 0
+  height: 0
+  border-bottom: 6px solid #787878
+
 $slider_handle_size: 22px
 .ui-slider-handle  // dashes in name b/c jquery UI
   margin-left: -$slider_handle_size / 2
@@ -698,3 +705,49 @@ $point-includer-width: 22px
   .newpoint_hide_name
     label, input
       +font-size(-1)
+
+
+
+
+
+// Auth shit
+.userbar
+  position: absolute
+  z-index: 99999
+  right: 50px
+
+[data-authmode="true"]
+  .points_by_community, .histogram, .description_region, .face_part
+    visibility: hidden
+
+  .slider_base
+    background-color: transparent
+  .slider_base_triangle_left, .slider_base_triangle_right
+    border-color: transparent
+
+.auth
+  padding: 2 * $vertical_baseline $grid_gutter 
+  +font-size(3)
+
+  .auth_section_label
+    +font-size(5)
+    padding-bottom: $vertical_baseline/2
+    color: $decision_board_border_color
+
+  label 
+    color: lighten($base_text_color, 35%)
+
+  input
+    border-color: lighten($base_text_color, 50%)
+    padding: 5px 10px
+    width: 100%
+    +font-size(3)
+
+  table
+    border-collapse: separate  
+    border-spacing: $vertical_baseline/4
+
+  .field_cell
+    width: 85%
+    padding-left: $grid_gutter
+

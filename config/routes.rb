@@ -87,6 +87,7 @@ ConsiderIt::Application.routes.draw do
 
   get "/content_for_user" => "home#content_for_user", :as => :content_for_user
   match "/users/set_tag" => "home#set_tag", :via => :post, :as => :set_tag
+  get "/current_user" => "home#get_current_user", :as => :current_user
 
   resource :account, :only => [:show, :update]
   

@@ -16,6 +16,19 @@ class HomeController < ApplicationController
     end
   end
 
+  def get_current_user
+    respond_to do |format|
+      format.json {
+        render :json => {
+          id: current_user ? current_user.id : nil,
+          email: current_user ? current_user.email : nil,
+          password: nil
+        }
+      }
+    end
+
+  end
+
   def content_for_user
     # proposals that are written by this user; private proposals this user has access to
     proposals = Proposal.content_for_user(current_user) || []

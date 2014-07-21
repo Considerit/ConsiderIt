@@ -15,10 +15,9 @@ class User < ActiveRecord::Base
 
   acts_as_tenant(:account)
 
-  #devise :omniauthable, :omniauth_providers => [:facebook, :twitter, :google_oauth2]
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable, :confirmable, :recoverable, :rememberable, :trackable
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable
   devise :omniauthable, :omniauth_providers => [:facebook, :twitter, :google_oauth2]
 
   validates :name, :presence => true
@@ -154,7 +153,7 @@ class User < ActiveRecord::Base
 
   end
 
-  def self.create_from_third_party_token(access_token)
+  def self.params_from_third_party_token(access_token)
     params = {
       'name' => access_token.info.name,
       'password' => Devise.friendly_token[0,20]
@@ -179,7 +178,7 @@ class User < ActiveRecord::Base
           'twitter_uid' => access_token.uid,
           'bio' => access_token.info.description,
           'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
-          'twitter_handle' => access_token.info.nickname,
+          # 'twitter_handle' => access_token.info.nickname,
           'avatar_url' => access_token.info.image.gsub('_normal', '') #'_reasonably_small'),
         }
 

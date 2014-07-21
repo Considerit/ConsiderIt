@@ -2,7 +2,7 @@
 !!! Strict
 %html{html_attrs}
   %head{ profile: "http://gmpg.org/xfn/1" }
-    = csrf_meta_tags
+    //= csrf_meta_tags
 
     - cache ['indexable data', current_tenant, @page] do 
       %title
@@ -14,7 +14,7 @@
 
     %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }
 
-    %link{ :href => "#{image_path 'favicon.ico'}", :rel => "icon", :type => "image/vnd.microsoft.icon" }
+    // %link{ :href => "#{image_path 'favicon.ico'}", :rel => "icon", :type => "image/vnd.microsoft.icon" }
 
     = stylesheet_link_tag 'stylesheets/application', debug: false
 
@@ -37,7 +37,6 @@
 
       #content.content{ customer: current_tenant.identifier, theme: current_tenant.theme }
 
-
       - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
         :javascript
           var _gaq = _gaq || [];
@@ -52,6 +51,8 @@
           _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
           _gaq_account.push(['_trackPageview']);
 
+    :javascript
+      window.activeREST_data = #{@activeREST_data.to_json};
 
     :javascript
       var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;
@@ -61,3 +62,4 @@
       e.setAttribute("type", "text/javascript"); 
       e.setAttribute("src", "/browser-update.js"); 
       document.body.appendChild(e); 
+

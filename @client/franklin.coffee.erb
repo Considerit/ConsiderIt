@@ -173,20 +173,7 @@ Proposal = ReactiveComponent
         onNotTop : => @data().sticky_opinion = true
         onTop : => @data().sticky_opinion = false
     , 2000  # delay initialization to let the rest of the dom load 
-            # so that the offset is calculated properly
-
-    # # Sticky proposal title
-    # _.delay => 
-    #   $sticky_head_el = $(@getDOMNode()).find('.proposal_heading')
-    #   $(@getDOMNode()).find('.description_region').headroom
-    #     offset: $sticky_head_el.offset().top + 25
-    #     onNotTop : => 
-    #       @data().sticky_proposal_title = true
-    #     onTop : => @data().sticky_proposal_title = false
-    # , 2000  # delay initialization to let the rest of the dom load 
-    #         # so that the offset is calculated properly
-
-    
+            # so that the offset is calculated properly    
 
   ##
   # State-dependent styling
@@ -265,15 +252,15 @@ Proposal = ReactiveComponent
           R.span null,"#{my_data.proposal.category} #{my_data.proposal.designator}: #{my_data.proposal.name}"
 
         R.div className: 'context',
-          Avatar 
-            className: 'proposer_avatar'
-            key: my_data.proposal.user_id
-            tag: R.img
-            img_style: 'large'
+          # Avatar 
+          #   className: 'proposer_avatar'
+          #   key: my_data.proposal.user_id
+          #   tag: R.img
+          #   img_style: 'large'
           
-          R.span className: 'proposal_author_tic'
+          # R.span className: 'proposal_author_tic'
           
-          R.div className: 'proposer_name', "by #{if proposer then proposer.name else ''}, EFF Outreach Director" 
+          R.div className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}, EFF Outreach Director" 
 
         R.div className: 'proposal_details', dangerouslySetInnerHTML:{__html: my_data.proposal.description}
 
@@ -530,10 +517,10 @@ Slider = ReactiveComponent
     page = app_data.page
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
-      $slider_base.slider(if app_data.in_auth then 'disable' else 'enable') 
+      $slider_base.slider(if app_data.auth_mode then 'disable' else 'enable') 
     else
       $slider_base.slider
-        disabled: app_data.in_auth #@data('application').page == 'results'
+        disabled: app_data.auth_mode #@data('application').page == 'results'
         min: -1
         max: 1
         step: .01
@@ -554,8 +541,10 @@ Slider = ReactiveComponent
             togglePage('crafting')
 
   togglePage : (ev) ->
-    page = if @data('application').page == 'results' then 'crafting' else 'results'
-    togglePage(page)
+    app_data = @data('application')
+    if !app_data.auth_mode
+      page = if app_data.page == 'results' then 'crafting' else 'results'
+      togglePage(page)
     ev.stopPropagation()
 
   render : ->
@@ -666,14 +655,15 @@ Slider = ReactiveComponent
               className:'slider_feedback_instructions'
               style : 
                 visibility: 
-                  if !@data().has_moved  || app_data.in_auth
+                  if !@data().has_moved  || app_data.auth_mode
                   then 'hidden' 
                   else 'visible'
               , "Your overall opinion:"
-            R.div className:'slider_feedback_result', 
-              if app_data.in_auth
+
+            R.div className:'slider_feedback_result',
+              if app_data.auth_mode
               then 'Introduce Yourself'
-              else if !my_data.has_moved 
+              else if !my_data.has_moved
               then 'Drag Your Overall Opinion' 
               else slider_feedback_bucket
 
@@ -730,47 +720,17 @@ DecisionBoard = ReactiveComponent
       over : (ev, ui) => 
         $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
-
   clickSave : -> 
     if @data('/current_user').id
       togglePage('results')
     else
-      @data('application').in_auth = true
-
-  submitLogin : (ev) -> 
-    ev.preventDefault()
-    $el = $(@getDOMNode())
-    email = $el.find('#user_email').val()
-    password = $el.find('#user_password').val()
-
-    #proper ActiveREST:
-    # current_user = @data('/current_user')
-    # current_user.email = email
-    # current_user.password = password #this is weird, no reason client should use password
-
-    #scratch: 
-    $.ajax 
-      type: 'POST'
-      url: Routes.user_session_path()
-      data: 
-        user: 
-          email: email
-          password: password
-      success : (data, status, xhr) => 
-        app_data = @data('application')
-        current_user = @data('/current_user')
-        current_user.id = data.user.id
-        current_user.csrf = data.new_csrf
-        app_data.page = 'results'
-        app_data.in_auth = false
-
-      error : (xhr, status, error) -> 
-        console.error 'Error logging in: ', error
-
+      @data('application').auth_mode = 'register'
 
   render : ->
     sticky_opinion = @data(active_proposal_key()).sticky_opinion
-    page = @data('application').page
+    app_data = @data('application')
+    page = app_data.page
+    current_user = @data('/current_user')
 
     sticky_header = sticky_opinion && page == 'crafting'
 
@@ -786,7 +746,9 @@ DecisionBoard = ReactiveComponent
       width: DECISION_BOARD_WIDTH
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
-    if !@data('application').in_auth
+
+    if !@data('application').auth_mode
+
       R.div className:'opinion_region', style: opinion_region_style,
 
         R.div 
@@ -794,18 +756,19 @@ DecisionBoard = ReactiveComponent
           onClick: => if @data('application').page == 'results' then togglePage('crafting')
         ,
 
-          # only shown during crafting, but needs to be present always for animation
-          R.div className: 'your_points',
-            # your pros
-            YourPoints { key: 'pros' }
+          R.div null, 
+            # only shown during crafting, but needs to be present always for animation
+            R.div className: 'your_points',
+              # your pros
+              YourPoints { key: 'pros' }
 
-            # your cons
-            YourPoints { key: 'cons' }
+              # your cons
+              YourPoints { key: 'cons' }
 
-          # only shown during results, but needs to be present always for animation
-          R.a 
-            className:'give_opinion_button'
-          , 'Give your Opinion'
+            # only shown during results, but needs to be present always for animation
+            R.a 
+              className:'give_opinion_button'
+            , 'Give your Opinion'
 
         R.div 
           className:'save_opinion_button'
@@ -815,36 +778,11 @@ DecisionBoard = ReactiveComponent
         R.a 
           className:'cancel_opinion_button'
           onClick: (=> togglePage('results'))
-        , 'discard your opinion'
-      
-    else
-      R.div className:'opinion_region', style: opinion_region_style,    
-        R.div className:'decision_board_body',
-          R.div className: 'auth', 
+        , 'discard your opinion'  
 
-            R.p className: 'auth_section_label', 'By email address:'
+    else 
+      Auth()
 
-            R.table className: 'auth_fields', 
-              R.tr null, 
-                R.td null,
-                  R.label for: 'user_email', 'email:'
-                R.td className: 'field_cell', 
-                  R.input id: "user_email", name: "user[email]", placeholder: "Email address", required: "required", type: "email"
-              R.tr null, 
-                R.td null, 
-                  R.label for: 'user_password', 'password:'
-                R.td className: 'field_cell', 
-                  R.input id: "user_password", name: "user[password", placeholder: "password", required: "required", type: "password"
-
-        R.div 
-          className:'save_opinion_button'
-          onClick: @submitLogin
-        , 'Login and save your opinion'
-
-        R.a 
-          className:'cancel_opinion_button'
-          onClick: (=> @data('application').in_auth = false)
-        , 'cancel log in'
 
 ##
 # YourPoints
@@ -1266,15 +1204,15 @@ UserBar = ReactiveComponent
   displayName: 'UserBar'
 
   logout : -> 
-    $.ajax Routes.destroy_user_session_path(),
+    $.ajax Routes.current_user_path(),
       type : 'delete'
       success : (data) =>
         #TODO: update CSRF
         #TODO: clear current user
         current_user = @data('/current_user')
         current_user.id = current_user.email = current_user.password = null
-        current_user.csrf = data.new_csrf      
-        @data('application').in_auth = false
+        current_user.csrf = data.csrf      
+        @data('application').auth_mode = null
 
       error : (xhr, status, error) -> 
         console.error 'Error logging out: ', error
@@ -1286,6 +1224,243 @@ UserBar = ReactiveComponent
       if current_user.id
         R.button onClick: @logout, 'Logout'
 
+Auth = ReactiveComponent
+  displayName: 'Auth'
+
+  startThirdPartyAuth : (provider) -> 
+    new ThirdPartyAuthHandler
+      provider : provider
+      callback : (user_data) => 
+        if 'key' of user_data
+          # user already existed and now we've logged in via third party        
+          current_user = @data('/current_user')
+          app_data = @data('application')
+          current_user.id = user_data.id
+          current_user.name = user_data.name          
+          current_user.csrf = user_data.csrf
+          app_data.page = 'results'
+          app_data.auth_mode = null
+        else 
+          # we're prepped to create an account...
+          #TODO: show user the pledge
+          @authenticateWithServer user_data
+
+
+  submitAuth : (ev) -> 
+    ev.preventDefault()
+    $el = $(@getDOMNode())
+
+    email = $el.find('#user_email').val()
+    password = $el.find('#user_password').val()
+    name = $el.find('#user_name').val()
+
+    #proper ActiveREST:
+    # current_user.email = email
+    # current_user.password = password
+    # ...
+
+    #scratch: 
+
+    user_data = 
+      email: email
+      password: password
+      name: name
+
+    if $el.find('#user_verification_code').length > 0
+      user_data.reset_password_token = $el.find('#user_verification_code').val()
+
+    @authenticateWithServer user_data, true
+
+  authenticateWithServer : (user_params, submit_avatar_form = false) -> 
+    current_user = @data('/current_user')
+    params = 
+      authenticity_token: current_user.csrf
+      user: user_params
+
+    $.ajax 
+      type: 'POST'
+      url: Routes.current_user_path()
+      beforeSend: (xhr) -> xhr.setRequestHeader('X-CSRF-Token', current_user.csrf)
+      data: params
+      success : (data, status, xhr) => 
+        app_data = @data('application')
+        current_user = @data('/current_user')
+        current_user.id = data.id
+        current_user.errors = if data.errors then data.errors else []
+        current_user.csrf = data.csrf
+        current_user.name = data.name
+
+        # hack for submitting file data in ActiveREST for now
+        # we'll just submit the file form after user is signed in
+        if submit_avatar_form
+          $('#user_avatar_form').ajaxSubmit
+            type: 'PUT'
+            data: 
+              authenticity_token: current_user.csrf
+            success: (data, status, xhr) -> 
+              current_user.id = data.id
+              current_user.errors = if data.errors then data.errors else []
+              current_user.csrf = data.csrf
+              current_user.name = data.name
+
+        if !current_user.errors || current_user.errors.length == 0
+          app_data.page = 'results'
+          app_data.auth_mode = null
+
+      error : (xhr, status, error) -> 
+        console.error 'Error logging in: ', error
+
+  sendPasswordReminder : -> 
+    email = $('#user_email').val()
+    $.post Routes.send_password_reset_token_path(), {user : {email: email}}, (data) =>
+      if data.errors && data.errors.length > 0
+        current_user = @data('/current_user')
+        current_user.errors = data.errors
+      else 
+        app_data = @data('application')
+        app_data.auth_mode = 'password_reminder'
+
+  render: -> 
+    current_user = @data('/current_user')
+    app_data = @data('application')
+
+    sticky_opinion = @data(active_proposal_key()).sticky_opinion
+    sticky_header = sticky_opinion && app_data.page == 'crafting'
+
+    # nasty, reference to other sticky components' height...
+    if sticky_header
+      sticky_top = $('.fixed_proposal_heading').outerHeight() + 101
+    ## 
+
+    opinion_region_style = 
+      position: if sticky_header then 'fixed' else ''
+      top: if sticky_header then sticky_top else ''
+      left: '50%'
+      width: DECISION_BOARD_WIDTH
+      marginLeft: -DECISION_BOARD_WIDTH / 2
+
+    R.div className:'opinion_region', style: opinion_region_style,
+
+      R.div 
+        className:'decision_board_body'
+        onClick: => if app_data.page == 'results' then togglePage('crafting')
+      ,
+
+        R.div className: 'auth', 
+
+          if app_data.auth_mode in ['login', 'register']
+            R.div className: 'third_party_auth',
+              R.label className: 'third_party_call', 'Instantly:'
+              R.button className: 'third_party_option facebook', onClick: (=> @startThirdPartyAuth('facebook')),
+                R.i className: 'fa fa-facebook'
+                R.span null, 'facebook'
+              R.button className: 'third_party_option google',  onClick: (=> @startThirdPartyAuth('google')),
+                R.i className: 'fa fa-google'
+                R.span null, 'google'
+              if app_data.auth_mode in ['login', 'password_reminder']
+                R.button className: 'third_party_option twitter',  onClick: (=> @startThirdPartyAuth('twitter')),
+                  R.i className: 'fa fa-twitter'
+                  R.span null, 'twitter'
+
+              R.div className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
+
+          if app_data.auth_mode in ['login', 'password_reminder']
+            # logging in
+
+            R.div null, 
+              R.label className: 'auth_section_label', if app_data.auth_mode == 'login' then 'By email address:' else 'Change your password to login'
+
+              R.table className: 'auth_fields login', 
+                R.tr null, 
+                  R.td className: 'label_cell',
+                    if app_data.auth_mode == 'login'  
+                      R.label for: 'user_email', 'email:'
+                  R.td className: 'field_cell', 
+                    R.input id: "user_email", name: "user[email]", placeholder: "email@address", required: "required", type: if app_data.auth_mode == 'login' then "email" else "hidden"
+
+                R.tr null, 
+                  R.td className: 'label_cell', 
+                    switch app_data.auth_mode
+                      when 'login'
+                        R.label for: 'user_password', 'password:'
+                      when 'password_reminder'
+                        R.label for: 'user_password', 'new password:'
+
+                  R.td className: 'field_cell', 
+                    R.input id: "user_password", name: "user[password]", placeholder: (if app_data.auth_mode == 'login' then "password" else "new password"), required: "required", type: "password"
+
+                    if app_data.auth_mode == 'login'
+                      R.a className: 'forgot_password', onClick: @sendPasswordReminder, 'I forgot! Email me password instructions.'
+
+                if app_data.auth_mode == 'password_reminder'
+                  R.tr null, 
+                    R.td className: 'label_cell', 
+                      R.label for: 'user_verification_code', 'verification code:'
+
+                    R.td className: 'field_cell', 
+                      R.input id: "user_verification_code", name: "user[password_code]", placeholder: "verification code", required: "required", type: "text"
+                      R.div className: 'password_verification_explanation', "Find code in an email just sent to you."
+
+          else 
+            # creating new account
+            R.table className: 'auth_fields register', 
+              R.tr null, 
+                R.td className: 'label_cell',
+                  R.label for: 'user_name', 'Hi, my name is:'
+                R.td className: 'field_cell', 
+                  R.input id: "user_name", name: "user[name]", placeholder: "first and last name", required: "required", type: "text"
+
+              R.tr null, 
+                R.td className: 'label_cell',
+                  R.label for: 'user_email', 'I login as:'
+                R.td className: 'field_cell', 
+                  R.input id: "user_email", name: "user[email]", placeholder: "email@address", required: "required", type: "email"
+                  R.input id: "user_password", name: "user[password]", placeholder: "password", required: "required", type: "password", pattern=".{5,}"
+
+
+              R.tr null, 
+                R.td className: 'label_cell', 
+                  R.label for: 'user_avatar', 'I look like this:'
+                R.td className: 'field_cell',
+                  R.div className: 'avatar_preview_enclosure',
+                    R.img id: 'avatar_preview'
+                  
+                  # hack for submitting file data in ActiveREST for now
+                  # we'll just submit the file form after user is signed in
+                  R.form id: 'user_avatar_form',action: Routes.current_user_path(), 
+                    R.input id: 'user_avatar', name: "user[avatar]", type: "file", onChange: (ev) -> 
+                      input = $('#user_avatar')[0]
+                      if input.files && input.files[0]
+                        reader = new FileReader()
+                        reader.onload = (e) ->
+                          $("#avatar_preview").attr 'src', e.target.result
+                        reader.readAsDataURL input.files[0]
+                      else
+                        $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
+
+
+          if current_user.errors && current_user.errors.length > 0
+            R.div className: "auth_errors", 
+              R.i className: 'fa fa-exclamation-circle'
+              R.span null, "#{current_user.errors.join(', ')}"
+
+
+          R.div className: 'switch_auth_mode', 
+            R.span null, 'Or'
+            R.button onClick: (=> app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'), if app_data.auth_mode == 'register' then 'Log In' else 'Create a New Account'
+            R.span null, if app_data.auth_mode == 'register' then 'if you already have an account' else 'if you don\'t have one'
+
+
+      R.div null, 
+        R.div 
+          className:'save_opinion_button'
+          onClick: @submitAuth
+        , if app_data.auth_mode == 'register' then 'Create account and save your opinion' else 'Login and save your opinion'
+
+        R.a 
+          className:'cancel_opinion_button'
+          onClick: (=> app_data.auth_mode = null)
+        , 'cancel log in'
 
 
 
@@ -1295,10 +1470,10 @@ Application = ReactiveComponent
   getDefaultData : ->
     page : @props.initial_page
     route : "/#{@props.long_id}#{if @props.initial_page == 'results' then '/results' else ''}"
-    in_auth : false
+    auth_mode : null
 
   render : -> 
-    R.div 'data-authmode': @data().in_auth,
+    R.div 'data-authmode': @data().auth_mode,
       R.div className: 'l_header', 
         UserBar()      
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
@@ -1342,11 +1517,19 @@ ActiveREST.save '/current_user',
   id: null
   email: null
   password: null
-  csrf_token: $("meta[name='csrf-token']").attr('content')
+  csrf: null
+  errors: []
+  follows: null
+  avatar_url: null
+  url: null
+  bio: null
+  twitter_uid: null
+  facebook_uid: null
+  google_uid: null
+  name: null
 
 $.get Routes.current_user_path(), (data) -> 
-  current_user = ActiveREST.fetch('/current_user')
-  ActiveREST.save '/current_user', {id: data.id}, ['id']
+  ActiveREST.save '/current_user', data, ['id', 'csrf', 'email', 'follows', 'password']
 
 
 ## ########################

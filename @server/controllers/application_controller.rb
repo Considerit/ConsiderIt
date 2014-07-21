@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   prepend_before_filter :get_current_tenant
   before_filter :theme_resolver
   after_filter  :pageview
-  include CacheableCSRFTokenRails
+  #include CacheableCSRFTokenRails
 
   def render(*args)
     if Rails.cache.read("avatar-digest-#{current_tenant.id}").nil?
@@ -38,7 +38,6 @@ class ApplicationController < ActionController::Base
       @limited_user_email = @limited_user.email
     end
 
-
     #TODO: what does this do?
     if args && args.first.respond_to?('has_key?')
       args.first[:layout] = false if request.xhr? and args.first[:layout].nil?
@@ -52,17 +51,10 @@ class ApplicationController < ActionController::Base
       current_tenant.save
     end
 
-    # Destroy the current user if a request is made to the server when the user has yet
-    # to complete their registration. There are no legit reasons for a refresh to occur, 
-    # and many illegimate ones. 
-    if !request.env.has_key?("omniauth.auth") && !request.xhr? && current_user && !current_user.registration_complete
-      user = current_user
-      Devise.sign_out_all_scopes ? sign_out : sign_out('user')
-      user.destroy
-    end
-
     #TODO: now that we have a global redirect to home#index for non-ajax requests, can we move this to home controller?
     if !request.xhr?
+      @activeREST_data = []
+
       response.headers["Strict Transport Security"] = 'max-age=0'
       
       @page = request.path
@@ -98,9 +90,11 @@ class ApplicationController < ActionController::Base
       ######
 
 
-      if params.has_key? :reset_password_token
-        @reset_password_token = params[:reset_password_token]
-      end
+      # if params.has_key? :reset_password_token
+      #   @activeREST_data.append { key: 'reset_password_token', token: params[:reset_password_token] }
+      # end
+
+
 
       # @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_opinions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
 
@@ -230,10 +224,6 @@ private
 
   def store_location(path)
     session[:return_to] = path
-  end
-
-  def current_admin_user
-    current_user
   end
 
   def pageview

@@ -51,6 +51,7 @@ class ProposalsController < ApplicationController
         render "layouts/application", :layout => false
       end
     else
+      pp 'reseting user activities'
       ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
 
       if request.xhr?

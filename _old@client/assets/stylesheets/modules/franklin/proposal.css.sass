@@ -1,0 +1,83 @@
+@import "variables"
+@import "compass/css3/box-shadow"
+@import "compass/css3/transform"
+@import "compass/css3/transition"
+@import "library"
+
+.proposal_layout
+  padding: $vertical_baseline 0 2 * $vertical_baseline 0
+  position: relative
+  min-height: $proposer_img_size
+
+  // inactive proposal
+  &[status="proposal-inactive"]
+    .submit_opinion_button, .submit_opinion_footer
+      display: none
+
+    &[state="summary"]
+      .opinion_region
+        visibility: hidden
+
+    &[activity="proposal-no-activity"]
+      .proposal_histogram_region, .proposal_reasons_region
+        display: none
+
+
+  &[activity="proposal-no-activity"]
+
+    &[state="summary"]
+      .proposal_histogram_region
+        display: none 
+
+    &[state="crafting"]
+
+      .toggle_proposal_state_view
+        display: none
+
+      .cancel_submitting_an_opinion
+        display: none
+
+      .no_community_points_view, .add_point_drop_target
+        display: none
+
+// unpublished proposal
+[visibility="unpublished"]
+  .proposal_reasons_region, .proposal_histogram_region, .toggle_proposal_state_region
+    display: none
+
+  &[state="summary"]
+    padding-bottom: 4 * $vertical_baseline
+
+    .proposal_reasons_region, .proposal_histogram_region, .proposals_pagination_region
+      display: none
+
+
+// participants block
+
+[state="results"][coming-from-state="summary"], [state="summary"]
+  .participating_users_region
+    visibility: visible
+
+.participating_users_region
+  visibility: hidden
+  z-index: 25 // has to be able to fly on top of histogram
+  right: 0 //1.5 * $grid_gutter
+
+  .participating_users_view
+    line-height: 0
+    font-size: 0  
+    text-align: center
+    height: 100%
+    +rotate(180deg)
+    margin-left: 2 * $grid_gutter
+    width: $body_gutter - $grid_gutter * 2  
+    
+    // for the explode transition
+    .avatar 
+      +transition(transform .75s linear)
+      opacity: .75
+      +rotate(180deg)
+
+
+
+

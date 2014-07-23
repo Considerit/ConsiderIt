@@ -1,4 +1,6 @@
 @import "variables"
+@import "compass/css3/box-shadow"
+@import "library"
 
 //////////////////////////////////////////
 // USER MODULES
@@ -47,7 +49,7 @@
     list-style: none outside none
     margin-left: 0
     display: inline-block
-    box-shadow: 0 5px 2px 10px
+    +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
     border-radius: 5px
     padding: $vertical_baseline / 4 0
 
@@ -96,7 +98,7 @@
 
 $avatar_preview_height: 120px
 $membership_card_width: 450px
-$membership_card_height: 2718px
+$membership_card_height: 278px
 
 
 .user-accounts-email-auth-region, .user-accounts-auth-options-region
@@ -284,18 +286,3 @@ $membership_card_height: 2718px
 
 
 
-.user-options .user-options-menu
-  border: 1px solid emphasize($base_background_color, 20%)
-
-
-.user-accounts-complete-paperwork-form 
-  input[type="text"], input[type="email"], input[type="password"], textarea
-    &.ui-state-valid
-      color: $primary_accent_text_color
-
-  .user-accounts-form-fields-wrap
-    background-color: $primary_accent_background_color
-    border: 1px solid emphasize($primary_accent_background_color, 5%)
-    border-top-color: deemphasize($primary_accent_background_color, 10%)
-    border-bottom-color: emphasize($primary_accent_background_color, 10%)
-    color: $primary_accent_text_color

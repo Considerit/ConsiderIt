@@ -1,0 +1,70 @@
+$histogram_bar_width: 50px
+$blue: #2B6FAE
+$green: #418A00
+$red: #A72C26
+
+
+p.intro
+  font-size: 16px
+
+#histogram 
+  max-width: $histogram_bar_width * 7 + 100
+  margin: 20px auto
+  table
+    padding: 0px
+    color: #272727
+
+    td.bar_cell
+      width: $histogram_bar_width
+
+      .bar.full 
+        border: 1px solid #222  
+        border-bottom: none
+        background-color: #7a7a7a
+
+    tr.histogram_arrow 
+
+      .spanner
+        border-top: 5px solid #aaa
+
+      .support, .oppose 
+        color: #888
+        font-size: 12px
+
+      .support
+        padding-right: 8px
+        color: #666
+      .oppose
+        padding-left: 8px
+        color: #666
+
+.text_supporters
+  font-size: 9px
+  padding-top: 10px
+  th
+    color: #666
+    text-align: right
+    font-weight: normal
+    padding: 0 10px
+
+.notable_points
+  tr
+    padding-bottom: 10px
+    td.notable_point
+      &.supporter
+        text-align: left
+        max-width: 45%
+        min-width: 45%
+        width: 45%
+        margin-right: 15px
+      &.opposer
+        text-align: right
+        max-width: 45%
+        min-width: 45%
+        width: 45%
+
+      &.common
+        text-align: center
+
+        .notable_header
+          padding-top: 25px

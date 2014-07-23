@@ -1,0 +1,32 @@
+@import "variables"
+
+.analytics-tabs
+  margin-bottom: $vertical_baseline
+  border-bottom: 1px solid rgba(black, .7)
+  .analytics-view
+    list-style: none
+    display: inline-block
+    margin-right: $grid_gutter / 4
+    font-weight: bold
+    background-color: rgba(black, .05)
+    padding: $vertical_baseline / 4 $grid_gutter/2
+
+    &:hover
+      cursor: pointer
+      background-color: rgba(black, .1)
+    &.active
+      background-color: rgba(black, .7)
+      color: white
+
+
+.analytics-region
+  table
+    margin-top: $vertical_baseline
+
+  th
+    font-weight: bold
+    +font-size(-1)
+
+  td, th
+    padding: 0 $grid_gutter/2 $vertical_baseline/2 0
+    text-align: right

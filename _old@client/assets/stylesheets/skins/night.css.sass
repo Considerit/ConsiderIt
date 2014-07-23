@@ -1,0 +1,33 @@
+@import "library"
+
+
+//////////////////////////////////////////////////////////
+////////////////////// FONT //////////////////////////////
+$main_font-family: "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif !default
+//////////////////////////////////////////////////////////
+
+
+///////////////////////
+// COLOR PALETTE
+// Define your color palette. Add and apply your own or override these
+// in your own skin file if you wish. 
+
+// the default color scheme
+$plain_background_color: #313131 !default
+$plain_text_color: #aaa !default
+
+// some colors to spice up key elements
+$primary_accent_background_color: hsl(26, 80%, 25%) !default
+$primary_accent_text_color: hsl( 0, 0%, 84%) !default
+
+// complementary color should have strong contrast with background color
+$complementary_background_color: emphasize($primary_accent_background_color, 25%) !default
+$complementary_text_color: black !default
+
+
+// BASE PAGE BACKGROUND LAYOUT GROUP
+// Applied to the highest level content area
+$base_text_color: $plain_text_color !default
+$base_background_color: #222 !default
+$base_background_declaration: asset-data-url('images/backgrounds/cartographer.png') repeat $base_background_color !default
+

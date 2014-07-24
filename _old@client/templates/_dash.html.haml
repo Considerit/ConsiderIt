@@ -69,16 +69,10 @@
         Analytics
     (( } ))
 
-    (( if(  is_manager ) { ))
+    (( if(  is_manager && false ) { ))
     %li
       %a.sidebar_link{:href => "{{Routes.import_data_path()}}", :'action' => 'import_data'}
         Import data
-    (( } ))
-
-    (( if(is_admin) { ))
-    %li
-      %a.sidebar_link{:href => "/dashboard/database", :target => "_blank"}
-        Database
     (( } ))
 
     (( if(is_developer) { ))
@@ -307,7 +301,7 @@
 
   .dashboard-edit-user
 
-  = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'dashboard-edit-user' }) do |f|
+  = form_for(:user, :url => "{{ Routes.current_user_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'dashboard-edit-user' }) do |f|
   
     .field
       = f.label :name, "Name"
@@ -335,7 +329,7 @@
     .dashboard-subheading
       Modify your authentication options.
 
-  = form_for(:user, :url => "{{ Routes.user_registration_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'dashboard-edit-user' }) do |f|
+  = form_for(:user, :url => "{{ Routes.current_user_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'dashboard-edit-user' }) do |f|
 
     .field
       = f.label :email, "Email address"
@@ -407,7 +401,7 @@
           (( if( obj.follow ){ ))
           (( is_following = true; ))
 
-          (( var root_object = followable_objects[obj.followable_type][obj.followable_id][followable_type.model.toLowerCase()]; ))
+          (( var root_object = followable_objects[obj.followable_type][obj.followable_id]; ))
 
           %tr.follow_row
 

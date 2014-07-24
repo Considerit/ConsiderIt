@@ -1,301 +1,301 @@
-@import "variables"
+// @import "variables"
 
-//////////////////////////////////////////
-// USER MODULES
-//////////////////////////////////////////
+// //////////////////////////////////////////
+// // USER MODULES
+// //////////////////////////////////////////
 
-// user nav
+// // user nav
 
-#user_nav
-  position: relative
-  text-align: right
-  z-index: 444
-  padding: $vertical_baseline/4 $grid_gutter/2
-  right: 0
-  float: right
+// #user_nav
+//   position: relative
+//   text-align: right
+//   z-index: 444
+//   padding: $vertical_baseline/4 $grid_gutter/2
+//   right: 0
+//   float: right
 
-.login, .user-options
-  display: inline-block
+// .login, .user-options
+//   display: inline-block
 
-.login a, .user-options-display a
-  +font-size(-1)
-  font-weight: bold
+// .login a, .user-options-display a
+//   +font-size(-1)
+//   font-weight: bold
 
-.user-options
-  cursor: pointer
-  position: relative
+// .user-options
+//   cursor: pointer
+//   position: relative
 
-  .user-options-display
-    a, a:hover
-      color: inherit
+//   .user-options-display
+//     a, a:hover
+//       color: inherit
 
-    img
-      vertical-align: middle 
-      margin: 2px 0 0px 15px
-      width: $vertical_baseline * 1.5
-      height: $vertical_baseline * 1.5
-      display: inline-block
+//     img
+//       vertical-align: middle 
+//       margin: 2px 0 0px 15px
+//       width: $vertical_baseline * 1.5
+//       height: $vertical_baseline * 1.5
+//       display: inline-block
   
 
-  .user-options-menu-wrap
-    display: none
-    position: absolute
-    right: -$grid_minor
+//   .user-options-menu-wrap
+//     display: none
+//     position: absolute
+//     right: -$grid_minor
 
-  .user-options-menu
-    min-width: 140px
-    list-style: none outside none
-    margin-left: 0
-    display: inline-block
-    box-shadow: 0 5px 2px 10px
-    border-radius: 5px
-    padding: $vertical_baseline / 4 0
+//   .user-options-menu
+//     min-width: 140px
+//     list-style: none outside none
+//     margin-left: 0
+//     display: inline-block
+//     box-shadow: 0 5px 2px 10px
+//     border-radius: 5px
+//     padding: $vertical_baseline / 4 0
 
-    a
-      width: 100%
-      padding: 2px $grid_minor
-      display: block
-      cursor: pointer
-      +font-size(-3)
-      font-weight: bold
-
-
-// signin / registration overlay
+//     a
+//       width: 100%
+//       padding: 2px $grid_minor
+//       display: block
+//       cursor: pointer
+//       +font-size(-3)
+//       font-weight: bold
 
 
-.auth_overlay
-  width: 670px
-
-.user-accounts-auth-options-region
-  margin-top: $vertical_baseline
-
-  .user-accounts-auth-options-header
-    +font-size(-1)
-    margin-bottom: $vertical_baseline/2
-
-  .user-accounts-auth-options
-    list-style: none outside none
-    padding-bottom: $vertical_baseline
-
-    .user-accounts-login-option
-      margin-bottom: $vertical_baseline/4
-      //display: inline
-      margin-right: $grid_gutter
-      position: relative
-      +font-size(-1)
-      .zocial
-        width: 125px
-
-      &.hide
-        display: none
-
-  .user-accounts-switch-method-wrapper
-    a span
-      text-decoration: underline  
+// // signin / registration overlay
 
 
-$avatar_preview_height: 120px
-$membership_card_width: 450px
-$membership_card_height: 2718px
+// .auth_overlay
+//   width: 670px
+
+// .user-accounts-auth-options-region
+//   margin-top: $vertical_baseline
+
+//   .user-accounts-auth-options-header
+//     +font-size(-1)
+//     margin-bottom: $vertical_baseline/2
+
+//   .user-accounts-auth-options
+//     list-style: none outside none
+//     padding-bottom: $vertical_baseline
+
+//     .user-accounts-login-option
+//       margin-bottom: $vertical_baseline/4
+//       //display: inline
+//       margin-right: $grid_gutter
+//       position: relative
+//       +font-size(-1)
+//       .zocial
+//         width: 125px
+
+//       &.hide
+//         display: none
+
+//   .user-accounts-switch-method-wrapper
+//     a span
+//       text-decoration: underline  
 
 
-.user-accounts-email-auth-region, .user-accounts-auth-options-region
-  display: inline-block
-  vertical-align: top
-
-.user_accounts_layout_not_fixed
-
-  .user-accounts-email-auth-region
-    width: 66%
-    padding-right: $grid_gutter
-    border-right: 1px solid #eaeaea
-
-  .user-accounts-auth-options-region
-    width: 31%
-    padding-left: $grid_gutter
+// $avatar_preview_height: 120px
+// $membership_card_width: 450px
+// $membership_card_height: 2718px
 
 
-.user-accounts-email-auth-region, .user-accounts-complete-paperwork-form, .user-accounts-password-reset-form
+// .user-accounts-email-auth-region, .user-accounts-auth-options-region
+//   display: inline-block
+//   vertical-align: top
 
-  .email_field input, .password_field input
-    +font-size(0)
+// .user_accounts_layout_not_fixed
 
-  input[type="submit"], .user-accounts-register-next
-    margin: $vertical_baseline 0
-    +font-size(0)
+//   .user-accounts-email-auth-region
+//     width: 66%
+//     padding-right: $grid_gutter
+//     border-right: 1px solid #eaeaea
 
-  .email_field.fixed
-    text-align: left
-    padding-left: 3px
-
-    input
-      display: none  
-
-.user-accounts-email-auth-region
-  .user-account-auth-question
-    font-weight: bold
-    margin: $vertical_baseline / 2 0
-
-  .user-accounts-no-account, .user-accounts-has-account
-    margin: $vertical_baseline/2 0 $vertical_baseline $grid_minor
-
-  .user-account-password
-    margin: $vertical_baseline/4 0 0 $grid_gutter
-
-  .email_field input, .password_field input
-    +font-size(1)
-    padding: 1px 2px
-
-  .email_field, .password_field
-    position: relative
-    margin-bottom: $vertical_baseline/2
-
-    label
-      // width: 70px
-      // text-align: right
-      display: inline-block
-
-    input.error
-      border-color: red
-
-  .forget_password_prompt
-    +font-size(-3)
-    display: block
-    margin-left: 18px
-    &:hover
-      text-decoration: underline
+//   .user-accounts-auth-options-region
+//     width: 31%
+//     padding-left: $grid_gutter
 
 
-.l-dialog-detachable 
-  .user-accounts-complete-paperwork-form
-    input[type="text"], input[type="email"], input[type="password"], textarea
-      width: 100%
-      &.ui-state-valid
-        border-color: transparent
-        background-color: transparent
+// .user-accounts-email-auth-region, .user-accounts-complete-paperwork-form, .user-accounts-password-reset-form
 
-.user-accounts-complete-paperwork-form
-  .user-accounts-form
-    margin: auto
+//   .email_field input, .password_field input
+//     +font-size(0)
 
-  .user-accounts-form-fields-wrap
-    width: $membership_card_width
+//   input[type="submit"], .user-accounts-register-next
+//     margin: $vertical_baseline 0
+//     +font-size(0)
+
+//   .email_field.fixed
+//     text-align: left
+//     padding-left: 3px
+
+//     input
+//       display: none  
+
+// .user-accounts-email-auth-region
+//   .user-account-auth-question
+//     font-weight: bold
+//     margin: $vertical_baseline / 2 0
+
+//   .user-accounts-no-account, .user-accounts-has-account
+//     margin: $vertical_baseline/2 0 $vertical_baseline $grid_minor
+
+//   .user-account-password
+//     margin: $vertical_baseline/4 0 0 $grid_gutter
+
+//   .email_field input, .password_field input
+//     +font-size(1)
+//     padding: 1px 2px
+
+//   .email_field, .password_field
+//     position: relative
+//     margin-bottom: $vertical_baseline/2
+
+//     label
+//       // width: 70px
+//       // text-align: right
+//       display: inline-block
+
+//     input.error
+//       border-color: red
+
+//   .forget_password_prompt
+//     +font-size(-3)
+//     display: block
+//     margin-left: 18px
+//     &:hover
+//       text-decoration: underline
+
+
+// .l-dialog-detachable 
+//   .user-accounts-complete-paperwork-form
+//     input[type="text"], input[type="email"], input[type="password"], textarea
+//       width: 100%
+//       &.ui-state-valid
+//         border-color: transparent
+//         background-color: transparent
+
+// .user-accounts-complete-paperwork-form
+//   .user-accounts-form
+//     margin: auto
+
+//   .user-accounts-form-fields-wrap
+//     width: $membership_card_width
     
-    box-shadow: 0 1px 2px rgba(black, .35), inset 0 0 8px 2px rgba(white, .5)
+//     box-shadow: 0 1px 2px rgba(black, .35), inset 0 0 8px 2px rgba(white, .5)
 
-    border-radius: 5px
-    padding: $vertical_baseline $grid_gutter
-    margin: $vertical_baseline auto 0 auto
+//     border-radius: 5px
+//     padding: $vertical_baseline $grid_gutter
+//     margin: $vertical_baseline auto 0 auto
 
-    .user-accounts-form-fields-text
-      width: $membership_card_width - $avatar_preview_height - $grid_gutter * 3
-      float: right
-      min-height: 200px
+//     .user-accounts-form-fields-text
+//       width: $membership_card_width - $avatar_preview_height - $grid_gutter * 3
+//       float: right
+//       min-height: 200px
 
-    label
-      +font-size(-2)
-      text-align: left
-      float: left
+//     label
+//       +font-size(-2)
+//       text-align: left
+//       float: left
 
-    .email_field input, .password_field input
-      +font-size(0)
-
-
-
-    .name_field input
-      +font-size(4)
-      font-weight: bold
-
-
-    .user-accounts-authorized-feedback
-      a, button
-        +font-size(-3)
-      vertical-align: top
-      text-align: left
-      margin-top: $vertical_baseline / 2
-
-    .user-accounts-pledge-taken
-      display: none
-      text-align: left
-
-    // this is overriding some CSS from the jquery.fileinput plugin
-    .avatar_field
-      float: left
-      width: $avatar_preview_height + 2
-      .customfile
-        background: transparent
-        width: $avatar_preview_height + 2
-        border: none
-
-      .customfile-preview-wrap
-        width: $avatar_preview_height
-        height: $avatar_preview_height
-        overflow: hidden
-        border: 1px solid #333
-        border-radius: 5px
-        background-color: rgba(black, .25)      
-        img.customfile-preview
-          height: $avatar_preview_height
-
-      .customfile-button
-        float: none
-        +font-size(-2)
-        text-decoration: underline
-
-      .customfile-feedback
-        display: none
-
-      .import_from_third_party
-        display: none
-        span, a
-          +font-size(-4)          
-
-  .user-accounts-complete-paperwork-footer, .user-accounts-complete-paperwork-pledge
-    margin: $vertical_baseline auto      
-
-  .user-accounts-complete-paperwork-footer
-    text-align: center
-
-  .user-accounts-complete-paperwork-pledge
-    margin-bottom: $vertical_baseline
-    width: $membership_card_width
-
-    ol
-      text-align: left
-      list-style: none
-
-      li
-        padding: 0 $grid_gutter
-
-        &:hover
-          background-color: rgba(white, .25)
-
-        label, input
-          cursor: pointer
-          padding: $vertical_baseline / 2 0
-
-
-  .user-accounts-tos
-    span, p, a, li
-      +font-size(-2)
-
-    .user-terms-show
-      text-decoration: underline
+//     .email_field input, .password_field input
+//       +font-size(0)
 
 
 
-.user-options .user-options-menu
-  border: 1px solid emphasize($base_background_color, 20%)
+//     .name_field input
+//       +font-size(4)
+//       font-weight: bold
 
 
-.user-accounts-complete-paperwork-form 
-  input[type="text"], input[type="email"], input[type="password"], textarea
-    &.ui-state-valid
-      color: $primary_accent_text_color
+//     .user-accounts-authorized-feedback
+//       a, button
+//         +font-size(-3)
+//       vertical-align: top
+//       text-align: left
+//       margin-top: $vertical_baseline / 2
 
-  .user-accounts-form-fields-wrap
-    background-color: $primary_accent_background_color
-    border: 1px solid emphasize($primary_accent_background_color, 5%)
-    border-top-color: deemphasize($primary_accent_background_color, 10%)
-    border-bottom-color: emphasize($primary_accent_background_color, 10%)
-    color: $primary_accent_text_color
+//     .user-accounts-pledge-taken
+//       display: none
+//       text-align: left
+
+//     // this is overriding some CSS from the jquery.fileinput plugin
+//     .avatar_field
+//       float: left
+//       width: $avatar_preview_height + 2
+//       .customfile
+//         background: transparent
+//         width: $avatar_preview_height + 2
+//         border: none
+
+//       .customfile-preview-wrap
+//         width: $avatar_preview_height
+//         height: $avatar_preview_height
+//         overflow: hidden
+//         border: 1px solid #333
+//         border-radius: 5px
+//         background-color: rgba(black, .25)      
+//         img.customfile-preview
+//           height: $avatar_preview_height
+
+//       .customfile-button
+//         float: none
+//         +font-size(-2)
+//         text-decoration: underline
+
+//       .customfile-feedback
+//         display: none
+
+//       .import_from_third_party
+//         display: none
+//         span, a
+//           +font-size(-4)          
+
+//   .user-accounts-complete-paperwork-footer, .user-accounts-complete-paperwork-pledge
+//     margin: $vertical_baseline auto      
+
+//   .user-accounts-complete-paperwork-footer
+//     text-align: center
+
+//   .user-accounts-complete-paperwork-pledge
+//     margin-bottom: $vertical_baseline
+//     width: $membership_card_width
+
+//     ol
+//       text-align: left
+//       list-style: none
+
+//       li
+//         padding: 0 $grid_gutter
+
+//         &:hover
+//           background-color: rgba(white, .25)
+
+//         label, input
+//           cursor: pointer
+//           padding: $vertical_baseline / 2 0
+
+
+//   .user-accounts-tos
+//     span, p, a, li
+//       +font-size(-2)
+
+//     .user-terms-show
+//       text-decoration: underline
+
+
+
+// .user-options .user-options-menu
+//   border: 1px solid emphasize($base_background_color, 20%)
+
+
+// .user-accounts-complete-paperwork-form 
+//   input[type="text"], input[type="email"], input[type="password"], textarea
+//     &.ui-state-valid
+//       color: $primary_accent_text_color
+
+//   .user-accounts-form-fields-wrap
+//     background-color: $primary_accent_background_color
+//     border: 1px solid emphasize($primary_accent_background_color, 5%)
+//     border-top-color: deemphasize($primary_accent_background_color, 10%)
+//     border-bottom-color: emphasize($primary_accent_background_color, 10%)
+//     color: $primary_accent_text_color

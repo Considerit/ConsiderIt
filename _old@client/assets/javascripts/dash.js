@@ -1,3 +1,0 @@
-// ...
-//= require ./application
-//= require_tree ./vendor/admin

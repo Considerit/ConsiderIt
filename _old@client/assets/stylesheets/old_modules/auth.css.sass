@@ -1,6 +1,5 @@
-@import "variables"
-@import "compass/css3/box-shadow"
-@import "library"
+@import "old_variables"
+@import "old_library"
 
 //////////////////////////////////////////
 // USER MODULES
@@ -49,7 +48,7 @@
     list-style: none outside none
     margin-left: 0
     display: inline-block
-    +single-box-shadow($hoff: 0, $voff: 5px, $blur: 10px)
+    box-shadow: 0 5px 10px rgba(black, .25)
     border-radius: 5px
     padding: $vertical_baseline / 4 0
 

@@ -3,8 +3,8 @@
 //= require jquery_ujs
 //= require jquery.remotipart
 
-//= require vendor/underscore
-//= require vendor/backbone
+//= require ./vendor/underscore
+//= require ./vendor/backbone
 
 //= require js-routes
 

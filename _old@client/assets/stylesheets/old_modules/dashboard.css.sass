@@ -1,0 +1,234 @@
+@import "old_variables"
+
+// TODO: refactor!
+$dashboard_sidebar_width: $grid_major * 2 + $grid_minor * 2 + $grid_gutter
+$dashboard_content_width: $content_width - $dashboard_sidebar_width - 2 * $grid_gutter - 5
+
+html body #dashboard
+  margin-bottom: $vertical_baseline
+  padding: 3 * $vertical_baseline $grid_gutter
+
+  .dashboard-close
+    position: absolute
+    top: 5px
+    right: 5px
+
+  .dashboard-sidebar-region
+    float: left
+    z-index: 10
+    width: $dashboard_sidebar_width
+
+  .dashboard-main-region
+    padding-left: $grid_minor
+    float: left
+    width: $dashboard_content_width
+    height: 100%
+
+  .dashboard-heading
+    margin-bottom: $vertical_baseline / 2
+
+    h2
+      +font-size(5)
+
+  .field
+    margin-bottom: $vertical_baseline
+    
+    label
+      +font-size(0)
+      //font-weight: bold
+
+    input[type="text"], input[type="email"], textarea
+      display: block
+      +font-size(1)
+      padding: 2px
+      width: $dashboard_content_width * .75
+
+    .sublabel
+      margin-top: 2px      
+      +font-size(-1)
+  
+  fieldset
+    table
+      width: 100%
+      table-layout: fixed
+
+      .field
+        input[type="text"], input[type="email"], textarea 
+          width: 150px
+
+
+  .save_block
+    margin-top: $vertical_baseline
+
+  .avatar
+    width: 120px
+    height: 120px
+    overflow: hidden
+    img
+      width: 120px
+
+  /////////////////
+  // PAGE SPECIFIC 
+  /////////////////
+
+  .dashboard-profile
+    .l-group-container
+      text-align: left
+      line-height: 0
+      font-size: 0
+
+    .dashboard-profile-edit_profile
+      +font-size(-2)
+      text-decoration: underline
+      position: relative
+
+    .dashboard-profile-influenced
+      width: $body_width
+      vertical-align: top
+      margin-bottom: $vertical_baseline / 2
+
+    .dashboard-profile-influence-summary
+      +font-size(-1)
+      margin-bottom: $vertical_baseline/2
+
+    .dashboard-profile-influenced .avatar
+      opacity: .80
+    
+
+    .dashboard-profile-activity-summaries
+      margin-top: $vertical_baseline
+      list-style: none
+      li
+        display: inline-block
+        margin-right: $grid_gutter / 2
+
+
+    .dashboard-profile-activity-summary
+      display: inline-block
+      padding: $vertical_baseline / 2 0
+      width: 120px
+
+    .dashboard-profile-activity-summary
+      &:hover, &.selected
+        cursor: pointer
+
+    .activity-summary-count
+      +font-size(2)
+      font-weight: bold
+
+    .activity-summary-label
+      +font-size(-1)
+
+    .activity-summary-count, .activity-summary-label
+      text-align: center
+      display: inline-block
+      width: 100%
+
+
+
+    .dashboard-profile-bio
+      font-style: italic
+
+    .dashboard-profile-activity-block
+      margin-top: $vertical_baseline
+      display: none
+      h3
+        margin-bottom: $vertical_baseline/2
+      table
+        width: 100%
+      .dashboard-profile-activity-action
+        text-align: right
+      .dashboard-profile-activity-substance
+        +font-size(3)
+        font-weight: bold
+        margin-bottom: $vertical_baseline/2
+      .dashboard-profile-activity-substance-context
+        +font-size(1)
+
+      .dashboard-profile-activity-influence
+        margin-top: $vertical_baseline/2
+
+      .dashboard-profile-activity-substance-wrap
+        width: 500px
+    
+    .dashboard-profile-activity-empty
+      +font-size(-1)
+      font-style: italic
+
+
+  .user_roles-edit_form
+    //display: none
+
+  .dashboard-database
+    height: 100%
+    iframe
+      width: 100%
+      height: 100%
+
+  .dashboard-notifications-followable_group
+    margin-bottom: 2 * $vertical_baseline
+
+
+
+
+html body #dashboard
+
+  .table, .fht-table
+    font-size: 75%
+    //width: 100%
+    table-layout: fixed
+
+    a 
+      text-decoration: underline
+      img
+        height: 23px      
+
+    td
+      //max-width: 200px
+      overflow: hidden
+      line-height: 20px
+      padding: 8px
+      text-align: left
+      vertical-align: top
+
+      
+    th
+      //max-width: 200px    
+      text-transform: capitalize
+      font-size: 125%
+      font-weight: bold
+      padding: 8px 8px 1px 8px
+
+  .table-condensed 
+    td
+      padding: $vertical_baseline / 2 5px
+
+
+  .fht-table-wrapper .fht-fixed-body .fht-tbody, .fht-table-wrapper .fht-tbody
+    overflow-x: hidden
+
+
+
+.sidebar
+  hr
+    margin: $vertical_baseline/2 0
+
+  li
+    list-style-type: none
+
+  .sidebar-image img
+    display: inline-block
+    width: 100%
+
+  .sidebar_link
+    //+background-image(linear-gradient(#eee, #ccc))
+    +font-size(-1)
+    // color: #555
+    width: 100%      
+    //width: $dashboard_sidebar_width - 2 * $grid_gutter
+    padding: 5px $grid_gutter
+    display: inline-block
+    text-align: right
+
+    &.current
+      font-weight: bold

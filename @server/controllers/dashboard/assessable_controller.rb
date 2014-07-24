@@ -18,13 +18,20 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     root_objects_ids = assessable_objects.map{ |assessed| assessed.proposal_id }.compact
     root_objects = Proposal.where("id in (?)", root_objects_ids).public_fields.to_a
 
-    render :json => { 
+    result = { 
       :verdicts => Assessable::Verdict.all,
       :assessments => assessments,
       :assessable_objects => assessable_objects,
       :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,
       :root_objects => root_objects
     }
+
+    if request.xhr?
+      render :json => result 
+    else
+      render "layouts/dash", :layout => false 
+    end
+
   end
 
   def edit
@@ -32,8 +39,8 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
     assessment = Assessable::Assessment.find(params[:id])
     root_object = assessment.proposal 
-
-    render :json => {
+    
+    result = {
       :verdicts => Assessable::Verdict.all,
       :assessment => assessment,
       :requests => assessment.requests,
@@ -43,6 +50,13 @@ class Dashboard::AssessableController < Dashboard::DashboardController
       :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,      
       :root_object => root_object
     }
+
+    if request.xhr?
+      render :json => result 
+    else
+      render "layouts/dash", :layout => false 
+    end
+
   end
 
   def create_claim

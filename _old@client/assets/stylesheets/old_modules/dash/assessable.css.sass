@@ -1,0 +1,127 @@
+@import "old_variables"
+
+#assess
+
+  .assessment_block
+    border-radius: 8px
+    padding: 0 16px
+
+    &.hide_completed
+      .assessment_row.completed
+        display: none
+
+    .assessment_row
+      &.complete
+        opacity: .7
+
+      .submit_col
+        padding-right: 20px
+        min-width: 150px
+
+
+#edit_assessment
+  .assessment-gutter, .assessment-context
+    display: inline-block
+
+  .assessment-context
+    width: 80%
+
+  .assessment-gutter
+    width: 40px
+    margin-right: $grid_gutter
+    vertical-align: top
+
+    .avatar
+      width: 40px
+      height: 40px
+
+  .assessment-footer-link
+    font-weight: bold
+    padding-right: $grid_gutter / 2
+
+  a
+    text-decoration: underline
+
+  .assessment_published_at
+    font-weight: bold
+    padding: $grid_gutter / 2 $vertical_baseline / 2
+    display: inline-block
+
+  #main
+    margin: $vertical_baseline
+
+
+  #context-region, #requests-region, #claims-region
+    margin-bottom: $vertical_baseline
+
+    .assessment-header
+      font-weight: bold
+      +font-size(-1)
+
+    .assessment-context-content
+      padding: $vertical_baseline / 2 0
+
+    .assessment-nutshell
+      //font-weight: bold
+
+    .assessment-body
+      +font-size(-1)
+
+    .assessment-footer
+      +font-size(-2)
+
+  #claims-region
+    margin-top: $vertical_baseline
+
+    .claim
+      display: block
+      margin-bottom: $vertical_baseline
+
+    .assessment-claim
+      font-weight: bold
+
+    .assessment-result
+      font-style: italic
+      .verdict
+        width: 30px
+        vertical-align: middle
+
+    .assessment-status
+      +font-size(-3)
+
+
+  #assessment-footer-region
+    #assessment_notes
+      width: 500px
+      min-height: 50px
+
+    .assessment_save_notes
+      display: block
+
+
+.l-dialog-detachable .claim_form
+  text-align: left
+  margin-bottom: $vertical_baseline
+
+  blockquote
+    +font-size(-2)
+    width: 500px
+    display: block
+
+  textarea, select
+    display: block
+    width: 500px
+
+  #other_claims
+    margin-top: $vertical_baseline
+    #claim_copy_id
+      +font-size(-2)
+
+  .button
+    +font-size(-2)
+
+
+// #assess, #edit_assessment
+//   button, input[type="submit"]
+//     font-size: 1em
+

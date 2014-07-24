@@ -1,0 +1,29 @@
+@import "old_variables"
+@import "old_library"
+
+.footer-shortdesc, .footer-history, .footer-contact
+  margin-bottom: $vertical_baseline/2
+  +font-size(-1)
+
+  a
+    text-decoration: underline
+
+.footer-shortdesc
+  font-weight: bold
+
+  .homepage_link
+    text-decoration: none
+
+.footer-shortdesc-logo
+  text-transform: uppercase
+
+input.mc-subscribe.button
+  +font-size(-2)
+  position: relative
+  top: -2px
+  &:hover
+    +font-size(-2)
+
+#mce-EMAIL
+  +font-size(0)
+  width: 350px

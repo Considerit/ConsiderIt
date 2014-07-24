@@ -111,7 +111,7 @@
       else
         toastr.error 'Failed to save'
 
-      @trigger 'moderation:updated', response.moderation.moderation
+      @trigger 'moderation:updated', response.moderation
 
     emailRequest : ->
       @trigger 'mod:emailRequest'

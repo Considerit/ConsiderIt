@@ -1,4 +1,4 @@
-class AccountsController < Dashboard::DashboardController
+class Dashboard::AccountsController < Dashboard::DashboardController
   respond_to :json
 
   def show
@@ -6,7 +6,15 @@ class AccountsController < Dashboard::DashboardController
 
     rendered_admin_template = params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil
 
-    render :json => {:account => current_tenant, :admin_template => rendered_admin_template}
+    @dash_data = {:account => current_tenant, :admin_template => rendered_admin_template}
+
+    if request.xhr?
+      render :json => @dash_data 
+    else
+      render "layouts/dash", :layout => false 
+    end
+
+
   end
 
   def update

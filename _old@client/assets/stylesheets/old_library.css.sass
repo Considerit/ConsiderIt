@@ -1,8 +1,5 @@
 // These mixins and extenders can be used across all the sass files
 
-@import "sassy-buttons"
-@import "compass/css3/box-shadow"
-
 
 // Functions that allow for better definitions with dark vs light themes
 // The reference parameter determines which color is used to determine 
@@ -72,11 +69,11 @@
   border: 1px solid
   border-radius: 5px
   border-color: white #ccc #ccc white
-  +single-box-shadow
+  box-shadow: 0 1px 2px rgba(black, .25)
 
   &.selected
     border-color: #ccc white white #ccc
-    +single-box-shadow($inset: true, $blur: 4px, $color: rgba(0, 0, 0, .2))
+    box-shadow: 0 1px 4px rgba(black, .2)
 
 =grab_cursor
   cursor: move

@@ -40,6 +40,7 @@
           prior.setModeratedFields field_vals
           prior.setModeratedObject new App.Entities[cls] moderated_obj
 
+      console.log @moderations
       @moderations = moderations
       data
 

@@ -34,10 +34,6 @@ class Account < ActiveRecord::Base
     super(options)
   end
 
-  def num_proposals_per_page 
-    5
-  end
-
   def host_without_subdomain
     host_with_port.split('.')[-2, 2].join('.')
   end

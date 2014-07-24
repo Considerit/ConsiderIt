@@ -31,7 +31,7 @@
     parse : (response) ->
       if 'opinions' of response
         @parseAssociated response
-        proposal_attrs = response.proposal.proposal
+        proposal_attrs = response.proposal
       else if 'proposal' of response
         proposal_attrs = response.proposal
       else
@@ -191,8 +191,8 @@
         proposals = [response] 
       else if !(response instanceof Array)
         if 'points' of response
-          App.vent.trigger 'points:fetched', (p.point for p in response.points)
-        proposals = ((p.proposal for p in response.proposals))
+          App.vent.trigger 'points:fetched', response.points
+        proposals = response.proposals
       else
         proposals = response
 
@@ -213,7 +213,6 @@
       @listenTo App.vent, 'user:signout', => 
         @purge_inaccessible()
 
-      @state.pageSize = App.request('tenant').get('num_proposals_per_page')
 
   API =
     all_proposals : new Entities.Proposals()

@@ -5,29 +5,11 @@
 @import "skins/airy"
 
 // These must be included in all theme files in this order
-@import "variables"
+@import "old_variables"
 @import "variables_skin"
-@import "skinables" 
+@import "old_skinables"
 /////////
 
 
 .l_header .t-logo
   margin: $vertical_baseline/2 $grid_gutter/2 $vertical_baseline/2 $grid_gutter + $body_gutter - $proposer_img_size
-
-.homepage_heading_view 
-  left: -$dialog_stutter
-  position: relative
-
-  .homepage_main .homepage_account_message
-    min-height: 100px
-    width: $body_width
-    padding: $vertical_baseline / 2 $grid_gutter
-    +bubble($peer_background_color, darken($peer_background_color, 10%), left, $text_color: $peer_text_color)
-    @extend %on_peer_area
-
-  .account_holder
-    text-align: right
-    img
-      max-height: 100px
-      max-width: $body_gutter
-

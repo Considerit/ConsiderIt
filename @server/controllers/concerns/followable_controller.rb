@@ -14,7 +14,6 @@ class FollowableController < ApplicationController
   end
 
   def follow
-    pp current_user
     if current_user
       followable_type = params[:follows][:followable_type]
       followable_id = params[:follows][:followable_id]

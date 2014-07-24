@@ -6,13 +6,13 @@
       Routes.edit_assessment_path @options.model_id
 
     process_data_from_server : (data) ->
-      App.request 'verdicts:add', (v.verdict for v in data.verdicts)      
+      App.request 'verdicts:add', data.verdicts    
       App.request 'assessments:add', [data.assessment]
-      App.vent.trigger 'points:fetched', [data.assessable_obj.point]
-      App.vent.trigger 'proposals:fetched', [data.root_object.proposal]
-      App.request 'claims:add', (c.claim for c in data.claims)
-      App.request 'claims:add', (c.claim for c in data.all_claims), data.root_object.proposal.long_id
-      App.request 'assessment:requests:add', (r.request for r in data.requests)
+      App.vent.trigger 'points:fetched', [data.assessable_obj]
+      App.vent.trigger 'proposals:fetched', [data.root_object]
+      App.request 'claims:add', data.claims
+      App.request 'claims:add', data.all_claims, data.root_object.long_id
+      App.request 'assessment:requests:add', data.requests
 
     setupLayout : ->
       assessment = App.request 'assessment:get', @options.model_id

@@ -8,7 +8,14 @@ class Dashboard::ClientErrorsController < Dashboard::DashboardController
 
     errors = ClientError.all.order(:created_at).reverse_order.limit(500)
 
-    render :json => {:account => current_tenant, :admin_template => rendered_admin_template, :errors => errors}
+    result = {:account => current_tenant, :admin_template => rendered_admin_template, :errors => errors}
+
+    if request.xhr?
+      render :json => result 
+    else
+      render "layouts/dash", :layout => false 
+    end
+
   end
 
   def create

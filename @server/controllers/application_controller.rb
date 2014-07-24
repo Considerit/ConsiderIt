@@ -40,7 +40,9 @@ class ApplicationController < ActionController::Base
 
     #TODO: what does this do?
     if args && args.first.respond_to?('has_key?')
-      args.first[:layout] = false if request.xhr? and args.first[:layout].nil?
+      args.first[:layout] = false if request.xhr? && args.first[:layout].nil?
+    elsif args && args.last.respond_to?('has_key?')
+      args.last[:layout] = false if request.xhr? && args.last[:layout].nil?
     else
       args.append({:layout => false}) if request.xhr?
     end
@@ -89,16 +91,7 @@ class ApplicationController < ActionController::Base
       @description = description.strip
       ######
 
-
-      # if params.has_key? :reset_password_token
-      #   @activeREST_data.append { key: 'reset_password_token', token: params[:reset_password_token] }
-      # end
-
-
-
       # @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_opinions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
-
-      # num_proposals_per_page = current_tenant.num_proposals_per_page
       
       # active_proposals = Proposal.open_to_public.active.browsable
       # inactive_proposals = Proposal.open_to_public.inactive.browsable
@@ -108,8 +101,6 @@ class ApplicationController < ActionController::Base
 
 
       # proposals = current_tenant.enable_hibernation ? inactive_proposals : active_proposals
-
-      # proposals = proposals.public_fields.order('activity DESC').limit(num_proposals_per_page)
 
 
       # top = []

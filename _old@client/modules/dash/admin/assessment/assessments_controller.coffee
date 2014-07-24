@@ -31,10 +31,10 @@
       Routes.assessment_index_path()
 
     process_data_from_server : (data) ->
-      App.vent.trigger 'points:fetched', (p.point for p in data.assessable_objects)
-      App.vent.trigger 'proposals:fetched', (p.proposal for p in data.root_objects)
-      App.request 'verdicts:add', (v.verdict for v in data.verdicts)
-      App.request 'assessments:add', (a.assessment for a in data.assessments)
+      App.vent.trigger 'points:fetched', data.assessable_objects
+      App.vent.trigger 'proposals:fetched', data.root_objects
+      App.request 'verdicts:add', data.verdicts
+      App.request 'assessments:add', data.assessments
       data
 
     getLayout : ->

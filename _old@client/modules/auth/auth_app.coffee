@@ -5,9 +5,9 @@
     password_reset_token : null
 
     show : ->
-      region = App.request 'userNavRegion'
-      new Auth.Show.AuthShowController
-        region: region
+      # region = App.request 'userNavRegion'
+      # new Auth.Show.AuthShowController
+      #   region: region
 
     begin_signin : ->
       if App.request('user:fixed:exists') && !App.request('user:fixed').id
@@ -48,7 +48,7 @@
         success : (data) =>
           App.vent.trigger 'csrf:new', data.new_csrf
           App.request "user:current:clear"
-          API.show()
+          # API.show()
           App.vent.trigger 'user:signout'
 
     set_redirect_path_post_signin : (path) ->
@@ -58,7 +58,7 @@
       $("meta[name='csrf-token']").attr 'content', token_val
 
     _handle_signin : ->
-      API.show()
+      # API.show()
       App.request 'user:fixed:clear'
 
       current_user = App.request 'user:current'
@@ -114,7 +114,7 @@
     API.updateCSRF token_val
 
   Auth.on "start", ->
-    API.show()
+    # API.show()
 
     API.set_password_token ConsiderIt.password_reset_token
     ConsiderIt.password_reset_token = null

@@ -55,11 +55,20 @@ class Dashboard::ModeratableController < Dashboard::DashboardController
       end
 
       @existing_moderations[class_name] = @existing_moderations[class_name].values
+
     end
 
     rendered_admin_template = params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil
 
-    render :json => {:objs_to_moderate => objs_to_moderate, :classes_to_moderate => moderatable_classes, :existing_moderations => @existing_moderations, :admin_template => rendered_admin_template}
+    @dash_data = {:objs_to_moderate => objs_to_moderate, :classes_to_moderate => moderatable_classes, :existing_moderations => @existing_moderations, :admin_template => rendered_admin_template}
+    
+    if request.xhr?
+      render :json => @dash_data 
+    else
+      render "layouts/dash", :layout => false 
+    end
+
+
   end
 
   # create a new moderation

@@ -62,6 +62,7 @@
           if load_admin_template
             $('head').append(data.admin_template)
 
+          console.log data
           if 'unauthorized' of data && data['unauthorized']
             App.vent.trigger 'authorization:page_not_allowed'
           else

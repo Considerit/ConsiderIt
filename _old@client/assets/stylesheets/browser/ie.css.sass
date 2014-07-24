@@ -1,0 +1,100 @@
+//@import 'ie_common'
+@import "old_variables"
+
+
+.avatar
+  visibility: hidden
+
+.open_point .avatar
+  visibility: visible
+
+//IE8 doesn't support transform: translate ...
+.no-csstransforms
+  .reasons_layout
+    &[state="crafting"]
+
+      .community_pros_region, .community_cons_region
+        left: 0
+
+    &[state="results"], &[state="summary"]
+
+      .community_pros_region
+        left: $point-width - ($point-width - $decision_board_width/2) + 4
+
+      .community_cons_region
+        left: -$point-width + ($point-width - $decision_board_width/2) - 4
+
+
+
+  .reasons_layout  
+    &[state="crafting"], &[state="summary"]
+      top: -$histogram_height
+
+    &[state="crafting"][coming-from-state="results"]
+      top: 0
+
+    &[state="crafting"][coming-from-state="results"]
+      .opinion_region
+        top: - 2 * $vertical_baseline
+
+      .community_pros_region, .community_cons_region
+        top: $vertical_baseline
+
+    &[state="crafting"][coming-from-state="summary"], &[state="crafting"]
+      .opinion_region
+        top: 3 * $vertical_baseline
+
+      .community_pros_region, .community_cons_region
+        top: 6 * $vertical_baseline
+
+
+    &[state="summary"]
+      .opinion_region
+        top: $histogram_height + $vertical_baseline
+
+
+  [activity="proposal-no-activity"]
+    .reasons_layout[state="summary"] 
+      top: 0
+
+      .opinion_region
+        top: 0
+
+  [state="summary"]
+    .proposal_description_region
+      left: -$dialog_stutter
+
+  [state="summary"].transitioning
+    .proposal_description_region
+      left: 0
+
+
+  [state="crafting"]
+    margin-bottom: 4 * $vertical_baseline
+
+
+
+.histogram[state="crafting"][coming-from-state="results"] 
+  visibility: hidden
+  .histogram_bar, .histogram_base
+    visibility: hidden
+
+
+
+
+.mouth_bubble
+  display: none
+  content: none
+
+.t-logo-separator
+  display: none
+// .avatar
+//   -ms-behavior: url(polyfills/backgroundsize.min.htc)
+
+input[type="password"], .user-accounts-form-fields-text .email_field input
+  font-family: arial
+
+// for LVG...
+#homepage-people 
+  .row
+    visibility: hidden

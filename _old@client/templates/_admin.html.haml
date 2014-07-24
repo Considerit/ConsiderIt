@@ -1,0 +1,366 @@
+
+
+- cache ['admin_dashboard', current_tenant] do 
+
+
+
+  %script{ :type => "text/template", :id => "tpl_dashboard_app_settings"}
+
+    .dashboard-heading
+      %h2
+        Application Settings
+
+      .dashboard-subheading
+        System-wide configuration changes
+
+    = form_for :account, :url => account_path, :remote => true, :method => :put, :html => { :class => 'dashboard-edit-account'} do |f|
+
+
+      .field
+        = f.label :app_title, 'Application Title'
+        = f.text_field :app_title, :value => "{{app_title}}"
+        .sublabel
+          A short title that is displayed in emails and in the browser window. 
+
+      .field
+        = f.label :header_text, 'Homepage Header'
+        = f.text_area :header_text, :value => "{{header_text}}", :rows => "3"
+        .sublabel
+          The bolded statement at the top of the homepage.
+
+      .field
+        = f.label :header_details_text, 'Homepage Header Details'
+        = f.text_area :header_details_text, :value => "{{header_details_text}}", :rows => "6"
+        .sublabel
+          The description shown in the header of the homepage that states the purpose of the forum. 
+
+      .field
+        = f.label :project_url, 'Project URL'
+        = f.text_field :project_url, :value => "{{project_url}}"
+        .sublabel
+          If there is a different homepage for this project, set it here.
+
+      // .field
+      //   = f.label :contact_email, 'Contact Email'
+      //   = f.text_field :contact_email, :value => "{{contact_email}}"
+      //   .sublabel
+      //     The email from which notification emails are set. 
+
+
+      .field
+        = f.check_box :requires_civility_pledge_on_registration
+        = f.label :requires_civility_pledge_on_registration, 'Enable Civility Pledge'
+        .sublabel
+          Whether you want every new user to take a pledge that they won't attack other participants and that they will only register a single account.
+          
+      .field  
+        = f.check_box :enable_user_conversations
+        = f.label :enable_user_conversations, 'Enable User Created Conversations'
+        .sublabel
+          Whether you wish to allow any registered user to start new conversations on the homepage.
+
+      .field
+        = f.check_box :enable_sharing
+        = f.label :enable_sharing, 'Enable Social Media Sharing'
+        .sublabel
+          Whether to include Facebook Share and Twitter Tweet buttons for active public discussions. 
+
+
+      %fieldset
+        %legend
+          Hibernation options
+        .field.l-expandable-option
+          = f.check_box :enable_hibernation
+          = f.label :enable_hibernation, 'Enter Hibernation Mode'
+          .sublabel
+            Sometimes you might not have any active discussions. Enter hibernation mode in order to (1) show a message on the homepage regarding the status of the site and (2) prevent further contributions to existing discussions.
+
+        .l-expandable-area
+          .field
+            = f.label :hibernation_message, 'Hibernation message'
+            = f.text_field :hibernation_message, :value => "{{hibernation_message}}"
+            .sublabel
+              This message will appear on the homepage as long as the site is in hibernation.
+
+
+      // .field  
+      //   = f.check_box :assessment_enabled
+      //   = f.label :assessment_enabled, 'Enable Assessments [experimental, not recommended yet]'
+      //   .sublabel
+      //     Whether you wish to fact check the pros and cons users contribute. 
+
+      // .field
+      //   = f.check_box :enable_position_statement
+
+      //   = f.label :enable_position_statement, 'Enable Position Statement [experimental, not recommended]'
+      //   .sublabel
+      //     Allow users to write a summary of their position, in addition to their pro/con list and stance. 
+
+
+      %fieldset
+        %legend
+          Wording
+
+        %table
+          %tr
+            %td
+              .field
+                = f.label :pro_label, 'Supporting point label'
+                = f.text_field :pro_label, :value => "{{pro_label}}"
+                .sublabel
+                  Default is "pro"              
+            %td
+              .field
+                = f.label :con_label, 'Opposing point label'
+                = f.text_field :con_label, :value => "{{con_label}}"
+                .sublabel
+                  Default is "con"
+          %tr
+            %td
+              .field
+                = f.label :slider_left, 'Supporting slider label'
+                = f.text_field :slider_left, :value => "{{slider_left}}"
+                .sublabel
+                  Default is "support"
+            %td
+              .field
+                = f.label :slider_right, 'Opposing slider label'
+                = f.text_field :slider_right, :value => "{{slider_right}}"
+                .sublabel
+                  Default is "oppose"
+
+        / .field
+        /   = f.label :considerations_prompt, 'Header for pro/con list'
+        /   = f.text_field :considerations_prompt, :value => "{{considerations_prompt}}", :size => 50
+        /   .sublabel
+        /     Default is "What are your most important pros and cons?"
+        .field
+          = f.label :slider_prompt, 'Header for stance slider'
+          = f.text_field :slider_prompt, :value => "{{slider_prompt}}", :size => 50
+          .sublabel
+            Default is  "What is your opinion given these Pros and Cons?"
+
+      .save_block
+        = f.submit 'Save', :class => 'button'
+
+  %script{ :type => "text/template", :id => "tpl_dashboard_manage_proposals"}
+    
+    .dashboard-heading
+      %h2
+        Manage proposals
+
+      .dashboard-subheading
+        Access and edit all proposals, active and inactive  
+
+    .active
+      %h3
+        Active proposals
+
+      (( if( active_proposals.length > 0 ){ )) 
+      %table.table.table-condensed.table-striped
+        %tbody
+          (( _.each( active_proposals, function(proposal) { ))
+          %tr.opinion
+            %td.proposal
+              {{ proposal.get('name') ? proposal.get('name').slice(0, 50) : 'Untitled' }}
+            %td.action
+              %a{ :href => "{{ Routes.new_opinion_proposal_path(proposal.id) }}", :target => '_blank' }
+                Edit
+
+          (( }); ))
+      (( } else { ))
+      There are no active proposals.
+      (( } ))
+
+    .inactive
+      %h3
+        Inactive proposals
+
+      (( if( inactive_proposals.length > 0 ){ )) 
+      %table.table.table-condensed.table-striped
+        %tbody
+          (( _.each( inactive_proposals, function(proposal) { ))
+          %tr.opinion
+            %td.proposal
+              {{ proposal.get('name') ? proposal.get('name').slice(0, 50) : 'Untitled' }}
+            %td.action
+              %a{ :href => "{{ Routes.new_opinion_proposal_path(proposal.id) }}", :target => '_blank' }
+                Edit
+          (( }); ))
+
+      (( } else { ))
+      There are no inactive proposals.
+      (( } ))
+
+
+
+
+  %script{ :type => "text/template", :id => "tpl_dashboard_user_roles"}
+    .dashboard-heading
+      %h2
+        Manage user roles
+
+      .dashboard-subheading
+        Change the system privileges for any user
+
+    %table.table.table-condensed.table-striped
+      %tbody
+        (( users_by_roles_mask.each( function(user){ ))  
+
+        %tr
+          %td.user
+            {{ user.get('name') }}
+          %td.email
+            (( if( user.get('email') && user.get('email').length > 0 ) { ))
+            {{ user.get('email').length > 50 ? user.get('email').slice(0,50) + '...' : user.get('email') }}
+            (( } ))
+
+          %td.action
+            .role_settings.l-dialog-prompt
+              %a.user_roles-invoke_role_change{ :'data-id' => "{{ user.id }}"}
+                Roles:
+                %span.user-roles-list
+                  {{ user.roleList() }}
+                %span.user_roles-roles_triangle
+                  &#x25BE;
+
+        (( }) ))  
+
+  %script{ :type => "text/template", :id => "tpl_dashboard_user_roles_edit"}
+    = form_for :user, :url => "{{Routes.update_role_path(id)}}", :remote => true, :method => :post, :html => { :class => 'user_roles-edit_form' } do |f|
+
+      .radio_block
+        .option
+          = f.radio_button :role, 'admin'
+          = f.label :role, 'Admin', :value => 'admin'
+          .sublabel
+            Grants all permissions to this user.
+        .option.specific
+          = f.radio_button :role, 'specific'
+          = f.label :role, 'Specific roles', :value => 'specific'
+          .sublabel
+            Choose amongst the available roles.
+
+            .suboption
+              = f.check_box 'manager'
+              = f.label 'manager', 'Manager'
+              .sublabel
+                Can create and edit all proposals.
+
+            (( if( enable_moderation ) { ))
+            .suboption
+              = f.check_box 'moderator'
+              = f.label 'moderator', 'Moderator'
+              .sublabel
+                Can approve/disapprove user contributed content.
+            (( } ))
+
+            (( if( enable_assessment ) { ))
+            .suboption
+              = f.check_box 'evaluator'
+              = f.label 'evaluator', 'Evaluator'
+              .sublabel
+                Create official responses (like fact checks) to pro/con points.
+            (( } ))
+
+            .suboption
+              = f.check_box 'analyst'
+              = f.label 'analyst', 'Analyst'
+            .sublabel
+              Can explore data trends.
+
+
+        .option
+          = f.radio_button :role, 'user'
+          = f.label :role, 'User', :value => 'user'
+          .sublabel
+            Has no special permissions.
+
+      .save_block
+        = f.submit 'Save', :class => 'button'
+        %a.cancel{ :'action' => "dialog-close" }
+          cancel  
+
+  %script{ :type => "text/template", :id => "tpl_dashboard_import_data"}
+    .dashboard-heading
+      %h2
+        Import data via CSV spreadsheet [experimental]
+
+      .dashboard-subheading
+        Currently only Proposals can be imported. Note that all imported proposals will be publicly accessible. You probably shouldn't do this unless you've gotten instructions from 
+        %a{ :href => "mailto:kevin@consider.it"}
+          Kevin at Consider.it
+
+
+    = form_for :account, :url => import_data_create_path, :remote => true, :method => :put, :html => { :class => 'dashboard-import-data'} do |f|
+
+      .field
+        = f.label :user_id, 'Proposing user'
+        = f.text_field :user_id, :value => "{{current_user.id}}"
+        .sublabel
+          The user id to be treated as the "Proposer" for the imported proposals. [Defaults to you.]
+
+      .field
+        = f.check_box :published, :checked => true
+        = f.label :published, 'Publish proposals immediately, catch bad ones afterwards'
+        .sublabel
+          The user id to be treated as the "Proposer" for the imported proposals.
+
+      .field
+        = f.label :csv, 'Your CSV file'
+        = f.file_field :csv
+        .sublabel
+          A .csv file containing the proposals you wish to import. Make sure that you have a ten character "long_id" specified for each proposal.
+
+      (( if(tenant.theme=='lvg'){ ))
+      .field
+        = f.label :csv_local, 'Jurisdictions file for WA localities (optional)'
+        = f.file_field :csv_local
+        .sublabel
+          A .csv file containing jurisdiction for each zip.
+      (( } ))
+
+      .save_block
+        = f.submit 'Import proposals', :class => 'button'
+
+  // %script{ :type => "text/template", :id => "tpl_dashboard_database"}
+  //   %iframe{ :src => rails_admin_path }
+
+  %script{ :type => "text/template", :id => "tpl_dashboard_client_errors"}
+    .dashboard-heading
+      %h2
+        Javascript and Ajax errors
+
+      .dashboard-subheading
+        Client-side errors captured and reported here. Hover for stack trace.  
+
+    %table.table.table-condensed.table-striped
+      %tbody
+        (( errors.each( function(err){ )) 
+        (( var js = err.get('error_type') == 'js'; )) 
+        %tr.client_error{ :title => "{{ err.escape('trace') }}" }
+          %td.ce_error_type
+            {{ err.get('error_type') }}
+
+          %td.ce_message
+            {{ err.get('message') }}
+          %td.ce_location
+            (( if(!js){ ))
+            {{ err.get('line') }}: 
+            (( } ))
+            {{ err.get('location') }}
+          %td.ce_browser
+            {{ err.get('browser') }}, {{ err.get('version') }}, {{ err.get('platform') }}
+          %td.ce_created_at
+            {{ new Date(err.get('created_at')).toDateString() }}
+          %td.ce_user
+            {{ err.get('user_id') }}
+          %td.ce_session
+            {{ err.get('session_id') }}
+        (( }); ))
+
+
+
+  = render :partial => "./analytics"
+  = render :partial => "./moderation"
+  = render :partial => "./assessment/assessment_admin"

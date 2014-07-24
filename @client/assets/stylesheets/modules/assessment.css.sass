@@ -1,172 +1,172 @@
-@import "variables"
+// @import "variables"
 
-.assessment_request_form_dialog .login
-  color: $base_text_color
+// .assessment_request_form_dialog .login
+//   color: $base_text_color
 
-.point-assessment-verdict-tooltip
-  width: 280px
-  padding: $vertical_baseline/2 $grid_gutter/2
+// .point-assessment-verdict-tooltip
+//   width: 280px
+//   padding: $vertical_baseline/2 $grid_gutter/2
 
-  .verdict-tooltip-title
-    +font-size(-2)
-    font-weight: bold
-  .verdict-tooltip-content
-    +font-size(-3)
-  .verdict-tooltip-readmore
-    +font-size(-4)
+//   .verdict-tooltip-title
+//     +font-size(-2)
+//     font-weight: bold
+//   .verdict-tooltip-content
+//     +font-size(-3)
+//   .verdict-tooltip-readmore
+//     +font-size(-4)
 
-// verdict on point in margin
-.community_point, .decision_board_point:hover
+// // verdict on point in margin
+// .community_point, .decision_board_point:hover
   
 
-  &.community_point
-    .verdict_summary .assessment
-      color: #CBBE31
-      right: 10px
-      bottom: 20px
+//   &.community_point
+//     .verdict_summary .assessment
+//       color: #CBBE31
+//       right: 10px
+//       bottom: 20px
 
-  &.decision_board_point
-    .verdict_summary .assessment
-      right: 0px
-      bottom: 0px
-
-
-  .verdict_summary 
-    display: block
-    .assessment
-      text-align: right
-      position: absolute
-      z-index: 10
-
-      .assessment_details
-        position: absolute
-        +font-size(-3)
-        width: 200px
-        padding: $vertical_baseline/2 $grid_gutter
-        text-align: left
-
-        .claim
-          padding-bottom: $vertical_baseline
-
-          .verdict
-            padding-right: $grid_gutter
-
-          .summary
-            .claim_desc
-              font-style: italic
-
-            .claim_verdict
-              font-weight: bold
-              font-variant: small-caps
-              text-transform: lowercase
-
-      .wrap
-        padding: 2px 10px
-
-      &:hover
-        cursor: pointer
-        color: black
+//   &.decision_board_point
+//     .verdict_summary .assessment
+//       right: 0px
+//       bottom: 0px
 
 
+//   .verdict_summary 
+//     display: block
+//     .assessment
+//       text-align: right
+//       position: absolute
+//       z-index: 10
 
-        .assessment_details
-          display: inline-block
-          right: -30px
+//       .assessment_details
+//         position: absolute
+//         +font-size(-3)
+//         width: 200px
+//         padding: $vertical_baseline/2 $grid_gutter
+//         text-align: left
 
-          strong
-            display: block
-            padding-top: $vertical_baseline
+//         .claim
+//           padding-bottom: $vertical_baseline
 
-#expanded .verdict_summary
-  display: none
+//           .verdict
+//             padding-right: $grid_gutter
 
+//           .summary
+//             .claim_desc
+//               font-style: italic
 
-// fact check request form
-.assessment_request_form_dialog
-  .assessment_request_prompt
+//             .claim_verdict
+//               font-weight: bold
+//               font-variant: small-caps
+//               text-transform: lowercase
 
-  #request_suggestion
-    width: 100%
-    min-height: $vertical_baseline * 2
+//       .wrap
+//         padding: 2px 10px
 
-  .guidelines
-    margin-top: $vertical_baseline / 4
-    +font-size(-1)
-    a
-      text-decoration: underline
-
-  .login
-
-    a
-      text-decoration: underline    
-
-// fact check summary shown in header of expanded point
-.claim_summary 
-  margin: $vertical_baseline/2
-
-  .claim_summary_restatement, .claim_summary_evaluation, .claim_summary_link
-    display: inline-block
-
-  .claim_summary_restatement
-    +font-size(-2)
-    font-weight: bold
-  .claim_summary_evaluation
-    +font-size(-2)
-
-  .claim_summary_link
-    +font-size(-3)
-    text-decoration: underline
+//       &:hover
+//         cursor: pointer
+//         color: black
 
 
-// fact check result, integrated into comment stream
-.claim_comment
-  .comment_claim_restatement
-    font-weight: bold
-    +font-size(2)
 
-  .comment_claim_evaluation
-    font-style: italic
-    +font-size(1)
+//         .assessment_details
+//           display: inline-block
+//           right: -30px
 
-  .comment_claim_report  
-    +font-size(0)
-    margin: $vertical_baseline 0
+//           strong
+//             display: block
+//             padding-top: $vertical_baseline
 
-  .comment_claim_process  
-    a 
-      text-decoration: underline 
+// #expanded .verdict_summary
+//   display: none
 
 
-.decision_board_point.closed_point
-  &:hover .point_assessment_indicator_region
-    display: block
+// // fact check request form
+// .assessment_request_form_dialog
+//   .assessment_request_prompt
 
-  .point_assessment_indicator_region
-    display: none
+//   #request_suggestion
+//     width: 100%
+//     min-height: $vertical_baseline * 2
 
-.point_assessment_indicator_region
-  display: none
+//   .guidelines
+//     margin-top: $vertical_baseline / 4
+//     +font-size(-1)
+//     a
+//       text-decoration: underline
+
+//   .login
+
+//     a
+//       text-decoration: underline    
+
+// // fact check summary shown in header of expanded point
+// .claim_summary 
+//   margin: $vertical_baseline/2
+
+//   .claim_summary_restatement, .claim_summary_evaluation, .claim_summary_link
+//     display: inline-block
+
+//   .claim_summary_restatement
+//     +font-size(-2)
+//     font-weight: bold
+//   .claim_summary_evaluation
+//     +font-size(-2)
+
+//   .claim_summary_link
+//     +font-size(-3)
+//     text-decoration: underline
 
 
-.points_on_decision_board
-  .closed_point
-    .point_assessment_indicator_region
-      top: auto
-      opacity: 1
-      left: -$grid_gutter - 4
+// // fact check result, integrated into comment stream
+// .claim_comment
+//   .comment_claim_restatement
+//     font-weight: bold
+//     +font-size(2)
+
+//   .comment_claim_evaluation
+//     font-style: italic
+//     +font-size(1)
+
+//   .comment_claim_report  
+//     +font-size(0)
+//     margin: $vertical_baseline 0
+
+//   .comment_claim_process  
+//     a 
+//       text-decoration: underline 
+
+
+// .decision_board_point.closed_point
+//   &:hover .point_assessment_indicator_region
+//     display: block
+
+//   .point_assessment_indicator_region
+//     display: none
+
+// .point_assessment_indicator_region
+//   display: none
+
+
+// .points_on_decision_board
+//   .closed_point
+//     .point_assessment_indicator_region
+//       top: auto
+//       opacity: 1
+//       left: -$grid_gutter - 4
       
-.closed_point
-  .point_assessment_indicator_region
-    display: block
-    position: absolute
-    top: 28px
-    left: 2px
-    opacity: .75
-    z-index: 1
+// .closed_point
+//   .point_assessment_indicator_region
+//     display: block
+//     position: absolute
+//     top: 28px
+//     left: 2px
+//     opacity: .75
+//     z-index: 1
 
-    img
-      width: 18px
-      height: 18px
+//     img
+//       width: 18px
+//       height: 18px
 
-    &:hover
-      opacity: 1
+//     &:hover
+//       opacity: 1

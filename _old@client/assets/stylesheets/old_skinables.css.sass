@@ -1,29 +1,13 @@
 ////////////////////////////////////////////////////////
 // THEME: Processes all styles requiring skin variables.
 ////////////////////////////////////////////////////////
-@import "variables"
-@import "compass/css3/box-shadow"
-@import "compass/typography/vertical_rhythm"
-@import "sassy-buttons"
+@import "old_variables"
 
 // libraries of mixins
-@import "library"
-@import "skins/css_snippets/bubble"
+@import "old_library"
+// @import "skins/css_snippets/bubble"
 
 
-// Sassy button defaults
-// TODO: use skin variables as part of default
-$sb-base-color:      #0bc265      // Base color of your button
-$sb-second-color:    false        // Optional second color of button gradient
-$sb-border-radius:   10px         // Button border radius
-$sb-border-width:    1px          // Button border width
-$sb-padding:         $vertical_baseline/2 $grid_gutter  // Button padding
-$sb-font-size:       false         // Button font-size
-$sb-line-height:     false        // Button line-height
-$sb-text-color:      white        // Button text color
-$sb-text-style:      "none"      // Button text shadow style
-$sb-gradient-style:  "simple"      // Button gradient style
-$sb-auto-states:     true         // Automatically create pseudo styles 
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -31,17 +15,17 @@ $sb-auto-states:     true         // Automatically create pseudo styles
 /////////////////////////////////////////////////////////////////////////////
 
 %superbutton
-  +sassy-button("glass", $border-radius: 5px, $first-color: emphasize($complementary_background_color, 16%), $second-color: emphasize($complementary_background_color, 24%))
+  // +sassy-button("glass", $border-radius: 5px, $first-color: emphasize($complementary_background_color, 16%), $second-color: emphasize($complementary_background_color, 24%))
   +link_style($complementary_text_color, $complementary_background_color, 25%)
 
   &:hover
-    +sassy-button("glass", $border-radius: 5px, $first-color: emphasize($complementary_background_color, 25%), $second-color: emphasize($complementary_background_color, 36%))
+    // +sassy-button("glass", $border-radius: 5px, $first-color: emphasize($complementary_background_color, 25%), $second-color: emphasize($complementary_background_color, 36%))
 
 %button
-  +sassy-button($border-radius: 5px, $first-color: emphasize(desaturate($base_background_color, 100%), 5%), $second-color: emphasize(desaturate($base_background_color, 100%), 10%), $text_color: deemphasize($base_text_color, 5%))
+  // +sassy-button($border-radius: 5px, $first-color: emphasize(desaturate($base_background_color, 100%), 5%), $second-color: emphasize(desaturate($base_background_color, 100%), 10%), $text_color: deemphasize($base_text_color, 5%))
   
   &:hover
-    +sassy-button($border-radius: 5px, $first-color: emphasize(desaturate($complementary_background_color, 10%), 10%), $text_color: $complementary_text_color)
+    // +sassy-button($border-radius: 5px, $first-color: emphasize(desaturate($complementary_background_color, 10%), 10%), $text_color: $complementary_text_color)
 
 
 ////////////////// COLOR GROUPS //////////////////////////
@@ -53,7 +37,7 @@ $sb-auto-states:     true         // Automatically create pseudo styles
 
 %on_background
   color: $base_text_color
-  background: $base_background_declaration
+  // background: $base_background_declaration
   a
     +link_style(emphasize($base_text_color, 10%, $reference: $base_background_color), $base_background_color, 25%)
 
@@ -148,9 +132,9 @@ $sb-auto-states:     true         // Automatically create pseudo styles
   font-family: $main_font-family
 
 // compass vertical rhythm stuff...has to go after $base-font-size declared
-+establish-baseline
-html
-  +adjust-leading-to(3)
+// +establish-baseline
+// html
+//   +adjust-leading-to(3)
 
 #t_bg-top
   background: $bg_top_declaration
@@ -193,189 +177,6 @@ a
 ///////// Themable Colors
 ////////////////////////////////////////
 
-
-// franklin/proposals
-
-
-#past_proposals_region hr
-  border-top: 1px dashed $base_text_color
-
-.proposals_list-pagination .selected
-  padding: $vertical_baseline / 4 $grid_gutter/2 //override for superbutton dec
-
-.active_proposals_hibernation_message
-  background-color: $complementary_background_color
-  color: $complementary_text_color
-
-// franklin/proposal
-
-[visibility="published"]
-  .proposal_admin_strip > i
-    color: emphasize($base_background_color, 25%)
-
-  .proposal_admin_strip:hover .proposal_admin_options_menu
-    +on_menu
-    border: 1px solid emphasize($base_background_color, 20%)
-
-
-[visibility="unpublished"]
-  .proposal_admin_strip
-    color: $base_text_color
-
-    .delete_proposal
-      +link_style(emphasize($base_background_color, 25%), $base_background_color, 25%)
-
-// franklin/proposal/histogram
-.histogram_layout .histogram_bar
-  background-color: $histogram_bar_color
-  +bubble($peer_background_color, darken($peer_background_color, 10%), up, $include_bg: false, $text_color: $peer_text_color)    
-  
-  +single-box-shadow($hoff: 1px, $voff: 6px, $blur: 5px, $spread: -5px, $color: emphasize($histogram_bar_color, 25%), $inset: true)
-
-  border: 1px solid emphasize($histogram_bar_color, 10%)
-  border-bottom: none
-  &.bar_is_soft_selected, &.bar_is_hard_selected
-    background-color: emphasize($histogram_bar_color, 8%)
-    border-color: emphasize($histogram_bar_color, 16%)
-  &:nth-child(1)
-    border-left-width: 2px
-  &:nth-child(7)
-    border-right-width: 2px
-
-.histogram_base
-  background-color: $histogram_base_color
-  +single-box-shadow($hoff: 0px, $voff: 2px, $blur: 4px, $color: emphasize($histogram_base_color, 10%), $inset: true)
-
-// franklin/proposal/crafting
-.decision_board_layout
-  &[state="crafting"], &[state="results"]
-    .decision_board_body
-      @extend %on_decision_board
-
-  .decision_board_body
-    border: 1px dashed $decision_board_border_color
-  
-
-.decision_board_footer_view
-
-  .submit_opinion_footer .cancel_submitting_an_opinion
-    +link_style(deemphasize($base_text_color, 20%, $reference: $base_background_color), $base_background_color, 25%)
-
-// franklin/proposal/reasons
-
-.decision_board_heading_view a
-  +link_style($decision_board_text_color, $decision_board_background_color, 10%)
-
-.decision_board_slider
-  .slider_container .noUiSlider
-    background-color: $slider_background_color 
-
-[state="summary"] .reasons_footer_region
-  @extend %on_peer_area
-
-// franklin/proposal/description
-
-.proposal_heading
-  +bubble($proposal_title_background_color, darken($proposal_title_background_color, 12%), left, $text_color: $proposal_title_text_color)
-  @extend %on_proposal_title
-
-.proposal_details
-  +bubble($proposal_detail_background_color, darken($proposal_detail_background_color, 12%), left, $text_color: $proposal_detail_text_color)
-  @extend %on_proposal_details
-  border-top: none
-  border-radius: 0px 0px 16px 16px 
-
-.proposal_links
-  background-color: emphasize($proposal_detail_background_color, 15%)
-
-.social_media_prompt
-  color: deemphasize($base_text_color, 20%, $base_background_color)
-
-
-// franklin/proposal/toggle
-.toggle_proposal_state_view
-  &[state="crafting"], &[state="results"]
-
-    .proposal_state_primary
-      color: $decision_board_text_color
-
-    .proposal_state_secondary
-      +link_style(deemphasize($base_text_color, 20%, $reference: $base_background_color), $base_background_color, 25%)
-
-// franklin/assessment
-.assessment_request_form_dialog .login
-  color: $base_text_color
-
-// franklin/comments
-.new_comment .login
-  color: $base_text_color
-
-// franklin/point
-.closed_point
-  &.decision_board_point .point_remove
-    +link_style($decision_board_text_color, $decision_board_background_color, 25%)
-
-  &.community_point 
-    .point_operations a
-      +link_style(deemphasize($base_text_color, 15%, $reference: $base_background_color), $base_background_color, 25%)
-
-    &:hover .point_operations a
-      color: deemphasize($base_text_color, 15%, $reference: $base_background_color)   
-
-.point.open_point .point_action button 
-  +font-size(-3)
-  &:hover
-    +font-size(-3)
-
-.points_by_community[state="crafting"] .community_point.closed_point, .point.open_point
-  .point_content
-    @extend %on_peer_area
-
-.points_by_community[state="crafting"], .points_by_community[state="results"]
-  .closed_point.community_point .point_content:hover
-    background-color: deemphasize($peer_background_color, 15%)
-
-.points_by_community[state="crafting"] .community_point.closed_point
-  .point_content
-    +single-box-shadow($color: rgba(black, .1), $voff: 1px)
-
-.open_point, .points_by_community[state="crafting"] .community_point.closed_point
-  .point_content
-    border: 1px solid
-    border-color: emphasize($peer_background_color, 5%) emphasize($peer_background_color, 10%) emphasize($peer_background_color, 5%) emphasize($peer_background_color, 15%)
-
-
-
-// franklin/points
-.points_by_community[state="summary"] .imply_more_points i
-  color: emphasize($base_background_color, 25%)
-
-.points_by_community
-
-  &[state="crafting"] .points_heading_view
-    color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
-
-  &[state="crafting"], &[state="results"]
-    .sort_points:hover .sort_points_menu
-      +on_menu
-
-  &[state="summary"], &[state="results"]
-    +bubble($peer_background_color, darken($peer_background_color, 10%), left, $text_color: $peer_text_color)
-
-.points_on_decision_board .points_heading_view
-  border-bottom-color: $decision_board_text_color
-
-.points_by_community[state="results"], .points_by_community[state="crafting"] 
-  .unexpand_points_icon, .expand_points_icon
-    color: deemphasize($base_text_color, 50%, $reference: $base_background_color)
-
-.user_is_hovering_on_a_drop_target_pro .pros_on_decision_board, .user_is_hovering_on_a_drop_target_con .cons_on_decision_board
-  .add_point_drop_target
-    color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
-    border-color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
-
-.add_point_drop_target, .newpoint
-  border: 1px dashed $decision_board_border_color
 
 
 // helpers
@@ -480,7 +281,8 @@ a
 // dialog
 .l-dialog-detachable
   border: 1px solid emphasize($complementary_background_color, 10%)
-
+  background-color: white
+  
   .option .sublabel
     color: deemphasize($base_text_color, 15%, $reference: $base_background_color)
 

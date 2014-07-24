@@ -18,8 +18,8 @@
         data.proposals = data.proposals.concat(_.values(data.referenced_proposals))
         App.vent.trigger 'proposals:fetched', data.proposals
         App.vent.trigger 'opinions:fetched', data.opinions
-        App.vent.trigger 'points:fetched', (p.point for p in data.points.concat(_.values(data.referenced_points)))        
-        App.vent.trigger 'comments:fetched', (c.comment for c in data.comments)
+        App.vent.trigger 'points:fetched', data.points.concat(_.values(data.referenced_points))       
+        App.vent.trigger 'comments:fetched', data.comments
         @setInfluencedUsers data.influenced_users, data.influenced_users_by_point
         @fetched = true
         #TODO: umm, shouldn't this return something?        
@@ -131,7 +131,6 @@
 
     ##### Follows #####
     setFollows : (follows) ->
-      follows = ( f.follow for f in follows )
       @follows = {}
 
       for f in follows

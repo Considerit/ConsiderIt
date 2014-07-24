@@ -93,8 +93,8 @@
 
     unfollow : (ev, response, status) ->
       data = $.parseJSON(response.responseText)
-      follow = data.follow.follow
-      @trigger 'unfollow', data.follow.follow
+      follow = data.follow
+      @trigger 'unfollow', data.follow
 
 
 

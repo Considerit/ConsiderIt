@@ -127,9 +127,9 @@
         # happens when new proposal is created, called by backbone.set
         opinions = [models] 
       else if !(models instanceof Array)
-        opinions = ((o.opinion for o in models.opinions))
+        opinions = models.opinions
       else
-        opinions = ((o.opinion for o in models))
+        opinions = models
 
       opinions
 

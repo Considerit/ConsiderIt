@@ -9,7 +9,6 @@ ConsiderIt::Application.routes.draw do
   root :to => "home#index"
 
   # mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
-  # mount Assessable::Engine => '/dashboard/assessable', :as => 'assessable'
 
   devise_for :users, skip: [:registrations, :sessions, :passwords], controllers: {:omniauth_callbacks => 'current_user'}
   devise_scope :user do  
@@ -42,8 +41,6 @@ ConsiderIt::Application.routes.draw do
     resources :points, :only => [:create, :update, :destroy, :show]
   end
 
-  # route all non-ajax requests to home controller, with a few exceptions
-  get '(*url)' => 'home#index', :constraints => XHRConstraint.new 
 
   ######
   ## concerns routes
@@ -82,21 +79,16 @@ ConsiderIt::Application.routes.draw do
   concerns :thankable
   #################
 
-  resource :account, :only => [:show, :update]
-  
-  get "/feed" => "trackable#feed"
 
-  #match "/theme" => "theme#set", :via => :post
-  get '/home/avatars' => "home#avatars", :as => :get_avatars
-  match "/home/domain" => "home#set_domain", :via => :post
-  match "/home/theme" => "home#set_dev_options", :via => :post, :as => :set_dev_options
 
-  match '/dashboard/message' => 'message#create', :as => 'message', :via => :post
-
-  #match '/home/study/:category' => "home#study", :via => :post  
   scope :module => "dashboard" do
     match "/report_client_error" => "client_errors#create", :via => :post, :as => :report_client_error
     get "/dashboard/client_errors" => "client_errors#index", :as => :client_error
+
+    resource :account, :only => [:show, :update]
+
+    get '/dashboard/application' => "accounts#show"
+    post '/dashboard/application' => "accounts#update"
 
     get '/dashboard/admin_template' => "admin#admin_template", :as => :admin_template
     #match '/dashboard/application' => "admin#application", :via => :get, :as => :application_settings
@@ -113,6 +105,24 @@ ConsiderIt::Application.routes.draw do
     get '/dashboard/users/:id/profile/edit/notifications' => "users#edit_notifications", :as => :edit_notifications
 
   end
+
+
+
+  # route all non-ajax requests to home controller, with a few exceptions
+  get '(*url)' => 'home#index', :constraints => XHRConstraint.new 
+
+
+  
+  get "/feed" => "trackable#feed"
+
+  #match "/theme" => "theme#set", :via => :post
+  get '/home/avatars' => "home#avatars", :as => :get_avatars
+  match "/home/domain" => "home#set_domain", :via => :post
+  match "/home/theme" => "home#set_dev_options", :via => :post, :as => :set_dev_options
+
+  match '/dashboard/message' => 'message#create', :as => 'message', :via => :post
+
+  #match '/home/study/:category' => "home#study", :via => :post  
 
   #get '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/
 

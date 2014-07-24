@@ -1,5 +1,4 @@
 @ConsiderIt = do (Backbone, Marionette) ->
-  
   App = new Marionette.Application
 
   App.on "initialize:before", (options) ->
@@ -95,6 +94,8 @@
     nav_app = App.module 'NavApp'
 
     header_app = App.module "Header"
+
+    dash_app = App.module "Dash"
 
     @listenTo header_app, 'start', => 
       App.module("Auth").start()

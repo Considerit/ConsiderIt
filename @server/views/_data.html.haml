@@ -13,17 +13,15 @@
 
     ConsiderIt.inaccessible_proposal = #{ @inaccessible_proposal ? @inaccessible_proposal.to_json : 'null' };
 
+    ConsiderIt.current_tenant_data = #{current_tenant.to_json};
+
     //var users = { User.select("id, name, avatar_file_name").to_json };
     ConsiderIt.users = #{@users};
-
-    ConsiderIt.current_tenant_data = #{current_tenant.to_json}.account;
-
-    ConsiderIt.current_tenant_data.num_proposals_per_page = #{ current_tenant.num_proposals_per_page() };
 
     // CURRENT USER
     ConsiderIt.current_user = #{current_user ? current_user.id : 'null'};
 
-    #{current_user ? "ConsiderIt.current_user_data = { user: #{current_user.to_json(:methods => :third_party_authenticated)}.user, follows: #{current_user.follows.load.to_json} }" : ''}
+    #{current_user ? "ConsiderIt.current_user_data = { user: #{current_user.to_json(:methods => :third_party_authenticated)}, follows: #{current_user.follows.load.to_json} }" : ''}
     
     // LIMITED USER
 
@@ -41,6 +39,9 @@
       js_tag : "#{j(javascript_include_tag("admin"))}",
       style_tag : "#{j(stylesheet_link_tag("admin/admin"))}"
     };
+
+
+    ConsiderIt.dash_data = #{@dash_data.to_json};
 
   });
 

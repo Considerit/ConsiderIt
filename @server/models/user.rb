@@ -329,7 +329,6 @@ class User < ActiveRecord::Base
       cls.where("user_id in (?)", missing_users.uniq).delete_all
     end
 
-    pp missing_users.uniq
   end
       
 end

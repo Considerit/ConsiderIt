@@ -1,0 +1,62 @@
+:javascript
+  thirdPartyAuth = function(provider) { 
+    console.log('HI');
+
+    new ThirdPartyAuthHandler({
+      provider : provider, 
+      callback : function(user_data){ 
+        window.location.reload();
+      }});
+  }
+
+.auth
+
+  %h1.instructions{style: "font-size: 24px; margin-bottom: 1em"}
+    Please login with appropriate credentials to access this page
+  .third_party_auth
+    %label.third_party_call
+      Instantly:
+    %button.third_party_option.facebook{:onclick => "thirdPartyAuth('facebook')" } 
+      %i.fa.fa-facebook
+      %span
+        facebook
+    %button.third_party_option.google{:onclick => "thirdPartyAuth('google')" } 
+      %i.fa.fa-google
+      %span
+        google
+
+  .email_auth
+    %label.auth_section_label
+      By email address:
+
+    = form_for :user, :url => current_user_path do |f|
+      %table.auth_fields.login
+        %tr 
+          %td.label_cell
+            %label{ :for => 'user_email'}
+              email:
+          %td.field_cell
+            %input{ :id => "user_email", :name => "user[email]", :placeholder => "email@address", :required => "required", :type => 'email'}
+
+        %tr
+          %td.label_cell
+            %label{ :for => 'user_password'}
+              password
+
+          %td.field_cell
+            %input{ :id => "user_password", :name => "user[password]", :placeholder => 'password', :required => 'required', :type => 'password'}
+
+      - if @errors && @errors.length > 0
+        .auth_errors{style: "width: 400px"}
+          %i.fa.fa-exclamation-circle
+          %span
+            = @errors.join(', ')
+
+
+      .submit
+        %input.button{:type => 'submit', :value => 'Log me in'}
+
+  .notes{style: "font-size: 12px; color: #{888}; margin-top: 1em"}
+    If you forgot your password or are having some other problem, send us an
+    %a{:href => 'mailto:tkriplean@gmail.com', style: "text-decoration: underline"} 
+      email

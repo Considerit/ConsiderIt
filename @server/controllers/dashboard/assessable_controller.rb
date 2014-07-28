@@ -1,13 +1,5 @@
 class Dashboard::AssessableController < Dashboard::DashboardController
 
-  rescue_from CanCan::AccessDenied do |exception|
-    result = {
-      :result => 'failed',
-      :reason => current_user.nil? ? 'not logged in' : 'not authorized'
-    }
-    render :json => result
-  end
-
   # list all the objects to be moderated; allow seeing the existing moderations
   def index
     authorize! :index, Assessable::Assessment

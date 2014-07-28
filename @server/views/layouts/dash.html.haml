@@ -6,7 +6,7 @@
 
     %meta{:content => "NONE,NOARCHIVE", :name => "robots"}
 
-    - cache ['main_layout', current_tenant] do 
+    - cache ['dash', current_tenant] do 
       %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }
 
       = stylesheet_link_tag 'dash', debug: false
@@ -31,7 +31,7 @@
 
   %body
 
-    - cache ['main_body', current_tenant] do
+    - cache ['dash_body', current_tenant] do
 
       #t_bg.content_style
         #t_bg-top
@@ -53,6 +53,7 @@
                     #l_content_main_wrap
 
                     = image_tag "ajax-loader.gif", :id => 'l_preloader'
+                    = yield
 
             #l_sticky_footer_region
 
@@ -76,9 +77,14 @@
 
     :javascript
       $(function() {
-        ConsiderIt.start({
-          environment: "#{Rails.env}"
-        });
+        if(#{!@not_logged_in.nil? && @not_logged_in}){
+          $('#l_preloader').remove();
+
+        } else {
+          ConsiderIt.start({
+            environment: "#{Rails.env}"
+          });
+        }
 
         var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;
         $buoop.ol = window.onload; 

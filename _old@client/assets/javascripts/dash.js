@@ -19,3 +19,4 @@
 //= require_tree ../../modules
 
 //= require_tree ./vendor/admin
+//= require third_party_auth

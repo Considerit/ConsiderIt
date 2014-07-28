@@ -1,4 +1,26 @@
 class Dashboard::DashboardController < ApplicationController
+
+  rescue_from CanCan::AccessDenied do |exception|
+    result = {
+      :result => 'failed',
+      :reason => current_user.nil? ? 'not logged in' : 'not authorized'
+    }
+
+    if request.xhr?
+      render :json => result 
+    else
+      if current_user
+        render :json => result
+      else
+        session[:redirect_after_login] = request.path
+        @not_logged_in = true
+        render :template => "old/login", :layout => 'dash' 
+      end
+    end
+
+  end
+
+
   def render(*args)
     @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_opinions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
     @current_tenant = current_tenant

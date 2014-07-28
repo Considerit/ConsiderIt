@@ -74,7 +74,27 @@ class CurrentUserController < DeviseController
     #   user.addTags session[:tags]
     # end
 
-    render :json => response
+    if request.xhr?
+      render :json => response 
+    else
+      # non-ajax method is used for legacy support for dash
+      if errors.length == 0
+        # redirect here
+        if session.has_key? :redirect_after_login
+          path = session[:redirect_after_login]
+          session.delete :redirect_after_login
+          redirect_to path
+          return
+        else 
+          render :json => response
+        end
+      else
+        @errors = errors
+        @not_logged_in = true        
+        render :template => "old/login", :layout => 'dash' 
+      end
+    end
+
   end
 
 

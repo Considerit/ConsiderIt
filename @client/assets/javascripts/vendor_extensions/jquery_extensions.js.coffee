@@ -1,5 +1,78 @@
 do ($) ->
 
+  $.fn.stickyTopBottom = (options = {}) ->
+
+
+    ## ##############
+    #initialization
+    _.defaults options, 
+      container: $('body')
+      top_offset: 0
+      bottom_offset: 0
+
+    $el = $(this)
+
+    container_top = options.container.offset().top 
+    element_top = $el.offset().top
+
+    current_translate = 0
+
+    viewport_height = $(window).height()
+    $(window).on 'resize', -> 
+      viewport_height = $(window).height()
+
+    last_viewport_top = document.documentElement.scrollTop || document.body.scrollTop
+
+    setTop = (translation) -> 
+      #this will overwrite existing transform...
+      $el.css 'transform', "translate(0, #{current_translate}px)" 
+
+    ## #################
+    # The meat: scroll handler
+    #
+    # When moving up or element is shorter than viewport:
+    #    if scrolled above top of element, position top of element to top of viewport
+    #      (stick to top)
+    # When moving down: 
+    #    if scrolled past bottom of element, position bottom of element at bottom of viewport
+    #      (stick to bottom)
+
+    $(window).scroll (event) ->
+      viewport_top = document.documentElement.scrollTop || document.body.scrollTop
+      viewport_bottom = viewport_top + viewport_height
+      effective_viewport_top = viewport_top + options.top_offset
+      effective_viewport_bottom = viewport_bottom - options.bottom_offset
+
+      # warning: checking height causes bad performance
+      element_height = $el.height()
+
+      scrolling_up = viewport_top < last_viewport_top
+      taller_than_viewport = element_height > viewport_height
+
+      if scrolling_up
+        if effective_viewport_top < container_top # if we're scrolled past container top
+          current_translate = 0
+          setTop current_translate
+        else if effective_viewport_top < element_top + current_translate
+          current_translate = effective_viewport_top - element_top
+          setTop current_translate
+
+      else if !taller_than_viewport
+        console.log !taller_than_viewport, effective_viewport_top, element_top, current_translate, effective_viewport_top > element_top + current_translate
+        if effective_viewport_top > element_top + current_translate
+          current_translate = effective_viewport_top - element_top
+          setTop current_translate
+      else # scrolling down
+        container_bottom = container_top + options.container.height() #warning: checking height causes bad performance
+        if effective_viewport_bottom > container_bottom #scrolled past container bottom
+          current_translate = container_bottom - (element_top + element_height)
+          setTop current_translate
+        else if effective_viewport_bottom > element_top + element_height + current_translate
+          current_translate = effective_viewport_bottom - (element_top + element_height)
+          setTop current_translate
+
+      last_viewport_top = viewport_top
+
   $.fn.ensureInView = (options = {}) ->
 
     _.defaults options,

@@ -28,7 +28,7 @@
     /[if lte IE 8]
       = stylesheet_link_tag 'browser/ie'
 
-    = javascript_include_tag 'javascripts/application', debug: false
+    = javascript_include_tag 'javascripts/application', debug: Rails.env.development?
 
 
   %body

@@ -220,6 +220,10 @@ $segment_color: #db004d
 
 // slider
 
+.slider
+  position: absolute
+  top: -48px
+
 .slider_base
   margin: auto
   height: 6px
@@ -337,7 +341,7 @@ $slider_handle_size: 22px
 
 .reasons_region  
   position: relative
-  margin: 2.5 * $vertical_baseline auto 4 * $vertical_baseline auto
+  margin: 48px auto 4 * $vertical_baseline auto
 
 .opinion_region
   position: absolute
@@ -513,13 +517,13 @@ $slider_handle_size: 22px
   margin-top: 20px
   box-shadow: 0px 1px 0px darken($decision_board_text_color, 10%)
 
-.save_opinion_button, .cancel_opinion_button, .give_opinion_button2
+.save_opinion_button, .cancel_opinion_button
   border-radius: 16px
   text-align: center
   padding: 3px
   cursor: pointer
 
-.save_opinion_button, .give_opinion_button2
+.save_opinion_button
   +blue_button
 
 a.cancel_opinion_button

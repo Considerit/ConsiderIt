@@ -167,11 +167,21 @@ Proposal = ReactiveComponent
     # Sticky decision board. 
     _.delay => 
       $el = $(@getDOMNode())
-      $sticky_head_el = $el.find('.slider_base')
-      $(@getDOMNode()).headroom
-        offset: $sticky_head_el.offset().top - $el.find('.fixed_proposal_heading').outerHeight() - 55 #+ $sticky_head_el.width() / 2 - 60
-        onNotTop : => @data().sticky_opinion = true
-        onTop : => @data().sticky_opinion = false
+      # $sticky_head_el = $el.find('.slider_base')
+
+      # $sticky_head_el.stickyTopBottom
+      #   container: $el.find('.reasons_region')
+      #   top_offset: $el.find('.fixed_proposal_heading').outerHeight()
+
+      $el.find('.opinion_region').stickyTopBottom
+        container: $el.find('.reasons_region')
+        top_offset: $el.find('.fixed_proposal_heading').outerHeight() + 101
+        bottom_offset: 20
+
+      # $(@getDOMNode()).headroom
+      #   offset: $sticky_head_el.offset().top - $el.find('.fixed_proposal_heading').outerHeight() - 55 #+ $sticky_head_el.width() / 2 - 60
+      #   onNotTop : => @data().sticky_opinion = true
+      #   onTop : => @data().sticky_opinion = false
     , 2000  # delay initialization to let the rest of the dom load 
             # so that the offset is calculated properly    
 
@@ -190,8 +200,7 @@ Proposal = ReactiveComponent
       when 'crafting'
         styles = 
           '.histogram_bar':        { opacity: '.2' }
-          '.opinion_region':       { translateX: 0, translateY: 0 }
-          '.decision_board_body':  { width: "#{DECISION_BOARD_WIDTH}px", minHeight: "375px"}
+          '.decision_board_body':  { translateX: 0, translateY: 0, width: "#{DECISION_BOARD_WIDTH}px", minHeight: "275px"}
           '.pros_by_community':    { translateX: 0 }
           '.cons_by_community':    { translateX: "#{DECISION_BOARD_WIDTH}px" }
         
@@ -205,23 +214,18 @@ Proposal = ReactiveComponent
         , duration
 
       when 'results'
-        slider_stance = $el.find('.ui-slider').slider('value')
-        segment = getStanceSegment(-1 * slider_stance)
+        slider_data = @data('slider')
+        slider_stance = -slider_data.stance
+        segment = slider_data.stance_segment
 
-        opinion_region_x = DECISION_BOARD_WIDTH * (slider_stance+1) / 2.0
         give_opinion_button_width = 186
-        if segment == 3
-          opinion_region_x -= give_opinion_button_width / 2
-        else if segment < 3
-          opinion_region_x -= give_opinion_button_width * .95 
-        else 
-          opinion_region_x -= give_opinion_button_width * .05 
+        gutter = .1 * give_opinion_button_width
 
+        opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * (slider_stance+1) / 2.0
 
         styles = 
           '.histogram_bar':         { opacity: '1' }
-          '.opinion_region':        { translateX: opinion_region_x, translateY: -18 }
-          '.decision_board_body':   { width: "#{give_opinion_button_width}px", minHeight: "32px"}
+          '.decision_board_body':   { translateX: opinion_region_x, translateY: -18, width: "#{give_opinion_button_width}px", minHeight: "32px"}
           '.pros_by_community':     { translateX:  DECISION_BOARD_WIDTH / 2 }
           '.cons_by_community':     { translateX:  DECISION_BOARD_WIDTH / 2 }
         
@@ -237,7 +241,8 @@ Proposal = ReactiveComponent
   ##
   # Make this thing!
   render : ->
-    page = @data('application').page
+    app_data = @data('application')
+    page = app_data.page
     my_data = @data()
 
     description_region_style = 
@@ -271,30 +276,20 @@ Proposal = ReactiveComponent
 
         Histogram()
 
-        Slider()
-
-
-      #reasons
-      R.div 
-        className:'reasons_region'
-        style : { width: REASONS_REGION_WIDTH }, #, left: -(REASONS_REGION_WIDTH - CONTENT_WIDTH) / 2 },
-          #community pros
-          CommunityPoints { key: 'pros' }
-            
-          #your reasons
-          DecisionBoard()
-
-          #community cons
-          CommunityPoints { key: 'cons' }
-
-      if @data('application').page == 'results'
+      if app_data.auth_mode
+        Auth()
+      else
+        #reasons
         R.div 
-          className:'give_opinion_button2'
-          onClick: (=> togglePage('crafting'))
-          style: 
-            width: BODY_WIDTH
-            margin: 'auto'
-        , 'Give your Opinion'
+          className:'reasons_region'
+          style : { width: REASONS_REGION_WIDTH }, #, left: -(REASONS_REGION_WIDTH - CONTENT_WIDTH) / 2 },
+            #community pros
+            CommunityPoints { key: 'pros' }
+
+            DecisionBoard()
+
+            #community cons
+            CommunityPoints { key: 'cons' }
 
 
 ##
@@ -471,7 +466,7 @@ Slider = ReactiveComponent
   mixins: [StyleAnimator]
 
   getDefaultData : ->
-    initial_stance = @data(active_proposal_key()).initial_stance
+    initial_stance = -@data(active_proposal_key()).initial_stance
     return {
       has_moved : false
       stance : initial_stance
@@ -499,7 +494,7 @@ Slider = ReactiveComponent
     switch @data('application').page
       when 'crafting'
         styles = 
-          '.bubblemouth': { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 5.5, translateX: mouth_x * 1.5  }
+          '.bubblemouth': { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 7, translateX: mouth_x * 1.5  }
           '.the_handle':  { scale: 2.5, translateY: -8 }
 
       when 'results'
@@ -524,7 +519,7 @@ Slider = ReactiveComponent
         min: -1
         max: 1
         step: .01
-        value: -@data(active_proposal_key()).initial_stance
+        value: -@data().stance
         slide: (ev, ui) => 
           # Update the stance segment if it has changed. This facilitates 
           # the feedback atop the slider changing from e.g. 'strong 
@@ -553,7 +548,7 @@ Slider = ReactiveComponent
     segment = my_data.stance_segment
     app_data = @data('application')
     page = app_data.page
-    sticky_opinion = @data(active_proposal_key()).sticky_opinion
+    # sticky_opinion = @data(active_proposal_key()).sticky_opinion
 
     #jquery UI slider will pick an el with this class name up
     props_for_slider_handle = { className:'ui-slider-handle' } 
@@ -582,15 +577,15 @@ Slider = ReactiveComponent
 
     slider_feedback_bucket = stance_names[segment]
     
-    # nasty, reference to other sticky components' height...
-    if sticky_opinion
-      sticky_top = $('.fixed_proposal_heading').outerHeight() + 55
-    ## 
+    # # nasty, reference to other sticky components' height...
+    # if sticky_opinion
+    #   sticky_top = $('.fixed_proposal_heading').outerHeight() + 55
+    # ## 
 
-    slider_style = 
-      if !sticky_opinion || page == 'results' 
-      then {}
-      else { position: 'fixed', top: sticky_top, backgroundColor: 'white', zIndex: 100 }
+    # slider_style = 
+    #   if !sticky_opinion || page == 'results' 
+    #   then {}
+    #   else { position: 'fixed', top: sticky_top, backgroundColor: 'white', zIndex: 100 }
 
     
     face_left_eye_style = 
@@ -622,17 +617,19 @@ Slider = ReactiveComponent
       face_left_eye_style, face_right_eye_style, face_mouth_style]
 
     # ugly access here...this is a hack that hides a dependency between slider and histogram 
-    triangle_width = 
-      if sticky_opinion 
-      then 0 
-      else $('.histogram_segment[data-segment="0"]').width() + 5
+    # triangle_width = 
+    #   if sticky_opinion 
+    #   then 0 
+    #   else $('.histogram_segment[data-segment="0"]').width() + 5
     # /ugly
+
+    triangle_width = $('.histogram_segment[data-segment="0"]').width() + 5
 
     slider_base_triangle_style = 
       borderLeft: "#{triangle_width}px solid transparent"
       borderRight: "#{triangle_width}px solid transparent"
 
-    R.div className: 'slider', style: slider_style, 
+    R.div className: 'slider', 
       R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
         R.div 
           className: 'slider_base_triangle_left'
@@ -649,7 +646,7 @@ Slider = ReactiveComponent
           R.div 
             className:'slider_feedback'
             'data-stance-segment': segment
-            style: {visibility: if sticky_opinion then 'visible' else 'visible'}
+            # style: {visibility: if sticky_opinion then 'visible' else 'visible'}
           ,
             R.div 
               className:'slider_feedback_instructions'
@@ -727,61 +724,47 @@ DecisionBoard = ReactiveComponent
       @data('application').auth_mode = 'register'
 
   render : ->
-    sticky_opinion = @data(active_proposal_key()).sticky_opinion
+    # sticky_opinion = @data(active_proposal_key()).sticky_opinion
     app_data = @data('application')
     page = app_data.page
     current_user = @data('/current_user')
 
-    sticky_header = sticky_opinion && page == 'crafting'
-
-    # nasty, reference to other sticky components' height...
-    if sticky_header
-      sticky_top = $('.fixed_proposal_heading').outerHeight() + 101
-    ## 
-
     opinion_region_style = 
-      position: if sticky_header then 'fixed' else ''
-      top: if sticky_header then sticky_top else ''
       left: '50%'
       width: DECISION_BOARD_WIDTH
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
+    R.div className:'opinion_region', style: opinion_region_style,
+      Slider()
 
-    if !@data('application').auth_mode
+      R.div 
+        className:'decision_board_body'
+        onClick: => if @data('application').page == 'results' then togglePage('crafting')
+      ,
 
-      R.div className:'opinion_region', style: opinion_region_style,
+        R.div null, 
+          # only shown during crafting, but needs to be present always for animation
+          R.div className: 'your_points',
+            # your pros
+            YourPoints { key: 'pros' }
 
-        R.div 
-          className:'decision_board_body'
-          onClick: => if @data('application').page == 'results' then togglePage('crafting')
-        ,
+            # your cons
+            YourPoints { key: 'cons' }
 
-          R.div null, 
-            # only shown during crafting, but needs to be present always for animation
-            R.div className: 'your_points',
-              # your pros
-              YourPoints { key: 'pros' }
+          # only shown during results, but needs to be present always for animation
+          R.a 
+            className:'give_opinion_button'
+          , 'Give your Opinion'
 
-              # your cons
-              YourPoints { key: 'cons' }
+      R.div 
+        className:'save_opinion_button'
+        onClick: @clickSave
+      , 'Save your opinion and see results'
 
-            # only shown during results, but needs to be present always for animation
-            R.a 
-              className:'give_opinion_button'
-            , 'Give your Opinion'
-
-        R.div 
-          className:'save_opinion_button'
-          onClick: @clickSave
-        , 'Save your opinion and see results'
-
-        R.a 
-          className:'cancel_opinion_button'
-          onClick: (=> togglePage('results'))
-        , 'discard your opinion'  
-
-    else 
-      Auth()
+      R.a 
+        className:'cancel_opinion_button'
+        onClick: (=> togglePage('results'))
+      , 'discard your opinion'  
 
 
 ##
@@ -1324,27 +1307,15 @@ Auth = ReactiveComponent
     current_user = @data('/current_user')
     app_data = @data('application')
 
-    sticky_opinion = @data(active_proposal_key()).sticky_opinion
-    sticky_header = sticky_opinion && app_data.page == 'crafting'
-
-    # nasty, reference to other sticky components' height...
-    if sticky_header
-      sticky_top = $('.fixed_proposal_heading').outerHeight() + 101
-    ## 
-
     opinion_region_style = 
-      position: if sticky_header then 'fixed' else ''
-      top: if sticky_header then sticky_top else ''
       left: '50%'
       width: DECISION_BOARD_WIDTH
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
     R.div className:'opinion_region', style: opinion_region_style,
+      Slider()
 
-      R.div 
-        className:'decision_board_body'
-        onClick: => if app_data.page == 'results' then togglePage('crafting')
-      ,
+      R.div className:'decision_board_body',
 
         R.div className: 'auth', 
 
@@ -1415,7 +1386,7 @@ Auth = ReactiveComponent
                   R.label for: 'user_email', 'I login as:'
                 R.td className: 'field_cell', 
                   R.input id: "user_email", name: "user[email]", placeholder: "email@address", required: "required", type: "email"
-                  R.input id: "user_password", name: "user[password]", placeholder: "password", required: "required", type: "password", pattern=".{5,}"
+                  R.input id: "user_password", name: "user[password]", placeholder: "password", required: "required", type: "password", pattern: ".{5,}"
 
 
               R.tr null, 

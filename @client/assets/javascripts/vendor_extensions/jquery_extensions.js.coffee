@@ -9,21 +9,15 @@ do ($) ->
       container: $('body') #reference element for starting and stopping the sticking (doesn't actually have to contain the element)
       top_offset: 0 #distance from top of viewport to stick top of element
       bottom_offset: 0 #distance from bottom of viewport to stick bottom of element
+      docks : null #callback when this element comes back to its base position
+      undocks : null #callback when this element leaves its base position
     , options
 
     $el = $(this)
 
-    #Get the top of the reference element. If the container moves, would need to move this into scroll handler. 
-    #If the container is translated Y, then this method will fail I believe.
-    container_top = options.container.offset().top 
-    element_top = $el.offset().top
-
     viewport_height = $(window).height()
     $(window).on 'resize', -> 
       viewport_height = $(window).height()
-
-    # element_height = $el.height()
-    # container_height = options.container.height()
 
     ## #################
     # The meat: scroll handler
@@ -40,7 +34,16 @@ do ($) ->
     viewport_top = last_viewport_top
     frame_requested = false
 
-    $(window).scroll (ev) ->
+    $(window).scroll (ev) -> update()
+
+    update = -> 
+      #Get the top of the reference element. If the container moves, would need to move this into scroll handler. 
+      #If the container is translated Y, then this method will fail I believe.
+      container_top = options.container.offset().top 
+      element_top = $el.offset().top - current_translate
+
+      console.log 'tops', container_top, element_top
+
       # Need to reset element's height each scroll event because it may have change height 
       # since initialization.
       # Warning: checking height is performance no-no
@@ -52,29 +55,42 @@ do ($) ->
       effective_viewport_bottom = viewport_bottom - options.bottom_offset
 
       is_scrolling_up = viewport_top < last_viewport_top
-      element_fits_in_viewport = element_height < viewport_height
+      element_fits_in_viewport = element_height < (viewport_height - options.top_offset)
 
-      new_translation = null
+      console.log 'ct:', current_translate, element_fits_in_viewport
+      #console.log 'top', viewport_top, viewport_bottom, element_top, current_translate, container_top, options.container.height()
+
+
+      new_translate = null
       if is_scrolling_up
         if effective_viewport_top < container_top # if we're scrolled past container top
-          new_translation = 0
+          new_translate = 0
+          # console.log 1, new_translate
+
         else if effective_viewport_top < element_top + current_translate
-          new_translation = effective_viewport_top - element_top
+          new_translate = effective_viewport_top - element_top
+          # console.log 2, new_translate
 
       else if element_fits_in_viewport
         if effective_viewport_top > element_top + current_translate
-          new_translation = effective_viewport_top - element_top
+          new_translate = effective_viewport_top - element_top
+          # console.log 3, new_translate
 
       else # scrolling down
         container_height = options.container.height()
         container_bottom = container_top + container_height #warning: checking height is performance no-no
         if effective_viewport_bottom > container_bottom #scrolled past container bottom
-          new_translation = container_bottom - (element_top + element_height)
+          new_translate = container_bottom - (element_top + element_height)
+          # console.log 4, new_translate
         else if effective_viewport_bottom > element_top + element_height + current_translate
-          new_translation = effective_viewport_bottom - (element_top + element_height)
+          new_translate = effective_viewport_bottom - (element_top + element_height)
+          # console.log 5, new_translate
 
-      if new_translation != null
-        current_translate = new_translation
+      if new_translate != null
+        is_undocking = current_translate == 0 && new_translate != 0
+        is_docking = current_translate != 0 && new_translate == 0
+
+        current_translate = new_translate
 
         $el[0].style["-webkit-backface-visibility"] = "hidden"
         $el[0].style.transform = "translate(0, #{current_translate}px)"        
@@ -82,8 +98,13 @@ do ($) ->
         $el[0].style['-ms-transform'] = "translate(0, #{current_translate}px)"
         $el[0].style['-moz-transform'] = "translate(0, #{current_translate}px)"
 
+        options.docks() if options.docks && is_docking
+        options.undocks() if options.undocks && is_undocking
+
 
       last_viewport_top = viewport_top
+
+    update()
 
 
   $.fn.ensureInView = (options = {}) ->

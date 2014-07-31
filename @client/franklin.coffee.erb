@@ -147,43 +147,14 @@ Proposal = ReactiveComponent
     opinions : []
     # UI STATE
     highlighted_users : null
-    sticky_opinion : false
-    sticky_proposal_title: false
 
   ##
   # Lifecycle methods
 
-  componentDidMount : (prev_props, prev_state) ->
-
   componentDidUpdate : ->
-    @setStickyHeader()
-
     $el = $(@getDOMNode())
     $el.find('.description_region').css
       top: $el.find('.fixed_proposal_heading').height() + 24
-
-
-  setStickyHeader : ->
-    # Sticky decision board. 
-    _.delay => 
-      $el = $(@getDOMNode())
-      # $sticky_head_el = $el.find('.slider_base')
-
-      # $sticky_head_el.stickyTopBottom
-      #   container: $el.find('.reasons_region')
-      #   top_offset: $el.find('.fixed_proposal_heading').outerHeight()
-
-      $el.find('.opinion_region').stickyTopBottom
-        container: $el.find('.reasons_region')
-        top_offset: $el.find('.fixed_proposal_heading').outerHeight() + 101
-        bottom_offset: 20
-
-      # $(@getDOMNode()).headroom
-      #   offset: $sticky_head_el.offset().top - $el.find('.fixed_proposal_heading').outerHeight() - 55 #+ $sticky_head_el.width() / 2 - 60
-      #   onNotTop : => @data().sticky_opinion = true
-      #   onTop : => @data().sticky_opinion = false
-    , 2000  # delay initialization to let the rest of the dom load 
-            # so that the offset is calculated properly    
 
   ##
   # State-dependent styling
@@ -548,7 +519,7 @@ Slider = ReactiveComponent
     segment = my_data.stance_segment
     app_data = @data('application')
     page = app_data.page
-    # sticky_opinion = @data(active_proposal_key()).sticky_opinion
+    sticky = @data('decisionboard').sticky
 
     #jquery UI slider will pick an el with this class name up
     props_for_slider_handle = { className:'ui-slider-handle' } 
@@ -576,17 +547,6 @@ Slider = ReactiveComponent
       else "#{Math.floor(Math.abs(stance) * 100)}% #{if segment > 3 then 'Support' else 'Oppose'}"
 
     slider_feedback_bucket = stance_names[segment]
-    
-    # # nasty, reference to other sticky components' height...
-    # if sticky_opinion
-    #   sticky_top = $('.fixed_proposal_heading').outerHeight() + 55
-    # ## 
-
-    # slider_style = 
-    #   if !sticky_opinion || page == 'results' 
-    #   then {}
-    #   else { position: 'fixed', top: sticky_top, backgroundColor: 'white', zIndex: 100 }
-
     
     face_left_eye_style = 
       transform: 
@@ -617,13 +577,10 @@ Slider = ReactiveComponent
       face_left_eye_style, face_right_eye_style, face_mouth_style]
 
     # ugly access here...this is a hack that hides a dependency between slider and histogram 
-    # triangle_width = 
-    #   if sticky_opinion 
-    #   then 0 
-    #   else $('.histogram_segment[data-segment="0"]').width() + 5
-    # /ugly
-
-    triangle_width = $('.histogram_segment[data-segment="0"]').width() + 5
+    triangle_width = 
+      if sticky
+      then 0 
+      else $('.histogram_segment[data-segment="0"]').width() + 5
 
     slider_base_triangle_style = 
       borderLeft: "#{triangle_width}px solid transparent"
@@ -646,7 +603,7 @@ Slider = ReactiveComponent
           R.div 
             className:'slider_feedback'
             'data-stance-segment': segment
-            # style: {visibility: if sticky_opinion then 'visible' else 'visible'}
+            style: {visibility: if sticky then 'hidden' else 'visible'}
           ,
             R.div 
               className:'slider_feedback_instructions'
@@ -699,6 +656,9 @@ OpinionFilter = ReactiveComponent
 DecisionBoard = ReactiveComponent
   displayName: 'DecisionBoard'
 
+  getDefaultData : -> 
+    sticky: false
+
   componentDidMount : ->
     # make this a drop target
     $el = $(@getDOMNode())
@@ -717,6 +677,20 @@ DecisionBoard = ReactiveComponent
       over : (ev, ui) => 
         $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
+  componentDidUpdate : ->
+    @setStickyHeader()
+
+
+  setStickyHeader : ->
+    $el = $(@getDOMNode())
+
+    $el.stickyTopBottom
+      container: $el.parents('.reasons_region')
+      top_offset: $('.fixed_proposal_heading').outerHeight() + 101 #ugly access
+      bottom_offset: 20
+      docks: => @data().sticky = false
+      undocks: => @data().sticky = true
+
   clickSave : -> 
     if @data('/current_user').id
       togglePage('results')
@@ -724,7 +698,6 @@ DecisionBoard = ReactiveComponent
       @data('application').auth_mode = 'register'
 
   render : ->
-    # sticky_opinion = @data(active_proposal_key()).sticky_opinion
     app_data = @data('application')
     page = app_data.page
     current_user = @data('/current_user')
@@ -734,11 +707,11 @@ DecisionBoard = ReactiveComponent
       width: DECISION_BOARD_WIDTH
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
-    R.div className:'opinion_region', style: opinion_region_style,
+    R.div className:'opinion_region focal_wrapper', style: opinion_region_style,
       Slider()
 
       R.div 
-        className:'decision_board_body'
+        className:'decision_board_body focal_area'
         onClick: => if @data('application').page == 'results' then togglePage('crafting')
       ,
 
@@ -757,12 +730,12 @@ DecisionBoard = ReactiveComponent
           , 'Give your Opinion'
 
       R.div 
-        className:'save_opinion_button'
+        className:'save_opinion_button primary_button'
         onClick: @clickSave
       , 'Save your opinion and see results'
 
       R.a 
-        className:'cancel_opinion_button'
+        className:'cancel_opinion_button primary_cancel_button'
         onClick: (=> togglePage('results'))
       , 'discard your opinion'  
 
@@ -1307,129 +1280,127 @@ Auth = ReactiveComponent
     current_user = @data('/current_user')
     app_data = @data('application')
 
-    opinion_region_style = 
+    focal_wrapper_style = 
       left: '50%'
       width: DECISION_BOARD_WIDTH
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
-    R.div className:'opinion_region', style: opinion_region_style,
+    R.div className:'auth_region focal_wrapper', style: focal_wrapper_style,
       Slider()
 
-      R.div className:'decision_board_body',
+      R.div className:'auth focal_area',
 
-        R.div className: 'auth', 
+        if app_data.auth_mode in ['login', 'register']
+          R.div className: 'third_party_auth',
+            R.label className: 'third_party_call', 'Instantly:'
+            R.button className: 'third_party_option facebook', onClick: (=> @startThirdPartyAuth('facebook')),
+              R.i className: 'fa fa-facebook'
+              R.span null, 'facebook'
+            R.button className: 'third_party_option google',  onClick: (=> @startThirdPartyAuth('google')),
+              R.i className: 'fa fa-google'
+              R.span null, 'google'
+            if app_data.auth_mode in ['login', 'password_reminder']
+              R.button className: 'third_party_option twitter',  onClick: (=> @startThirdPartyAuth('twitter')),
+                R.i className: 'fa fa-twitter'
+                R.span null, 'twitter'
 
-          if app_data.auth_mode in ['login', 'register']
-            R.div className: 'third_party_auth',
-              R.label className: 'third_party_call', 'Instantly:'
-              R.button className: 'third_party_option facebook', onClick: (=> @startThirdPartyAuth('facebook')),
-                R.i className: 'fa fa-facebook'
-                R.span null, 'facebook'
-              R.button className: 'third_party_option google',  onClick: (=> @startThirdPartyAuth('google')),
-                R.i className: 'fa fa-google'
-                R.span null, 'google'
-              if app_data.auth_mode in ['login', 'password_reminder']
-                R.button className: 'third_party_option twitter',  onClick: (=> @startThirdPartyAuth('twitter')),
-                  R.i className: 'fa fa-twitter'
-                  R.span null, 'twitter'
+            R.div className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 
-              R.div className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
+        if app_data.auth_mode in ['login', 'password_reminder']
+          # logging in
 
-          if app_data.auth_mode in ['login', 'password_reminder']
-            # logging in
+          R.div null, 
+            R.label className: 'auth_section_label', if app_data.auth_mode == 'login' then 'By email address:' else 'Change your password to login'
 
-            R.div null, 
-              R.label className: 'auth_section_label', if app_data.auth_mode == 'login' then 'By email address:' else 'Change your password to login'
-
-              R.table className: 'auth_fields login', 
-                R.tr null, 
-                  R.td className: 'label_cell',
-                    if app_data.auth_mode == 'login'  
-                      R.label for: 'user_email', 'email:'
-                  R.td className: 'field_cell', 
-                    R.input id: "user_email", name: "user[email]", placeholder: "email@address", required: "required", type: if app_data.auth_mode == 'login' then "email" else "hidden"
-
-                R.tr null, 
-                  R.td className: 'label_cell', 
-                    switch app_data.auth_mode
-                      when 'login'
-                        R.label for: 'user_password', 'password:'
-                      when 'password_reminder'
-                        R.label for: 'user_password', 'new password:'
-
-                  R.td className: 'field_cell', 
-                    R.input id: "user_password", name: "user[password]", placeholder: (if app_data.auth_mode == 'login' then "password" else "new password"), required: "required", type: "password"
-
-                    if app_data.auth_mode == 'login'
-                      R.a className: 'forgot_password', onClick: @sendPasswordReminder, 'I forgot! Email me password instructions.'
-
-                if app_data.auth_mode == 'password_reminder'
-                  R.tr null, 
-                    R.td className: 'label_cell', 
-                      R.label for: 'user_verification_code', 'verification code:'
-
-                    R.td className: 'field_cell', 
-                      R.input id: "user_verification_code", name: "user[password_code]", placeholder: "verification code", required: "required", type: "text"
-                      R.div className: 'password_verification_explanation', "Find code in an email just sent to you."
-
-          else 
-            # creating new account
-            R.table className: 'auth_fields register', 
+            R.table className: 'auth_fields login', 
               R.tr null, 
                 R.td className: 'label_cell',
-                  R.label for: 'user_name', 'Hi, my name is:'
+                  if app_data.auth_mode == 'login'  
+                    R.label for: 'user_email', 'email:'
                 R.td className: 'field_cell', 
-                  R.input id: "user_name", name: "user[name]", placeholder: "first and last name", required: "required", type: "text"
-
-              R.tr null, 
-                R.td className: 'label_cell',
-                  R.label for: 'user_email', 'I login as:'
-                R.td className: 'field_cell', 
-                  R.input id: "user_email", name: "user[email]", placeholder: "email@address", required: "required", type: "email"
-                  R.input id: "user_password", name: "user[password]", placeholder: "password", required: "required", type: "password", pattern: ".{5,}"
-
+                  R.input id: "user_email", name: "user[email]", placeholder: "email@address", required: "required", type: if app_data.auth_mode == 'login' then "email" else "hidden"
 
               R.tr null, 
                 R.td className: 'label_cell', 
-                  R.label for: 'user_avatar', 'I look like this:'
-                R.td className: 'field_cell',
-                  R.div className: 'avatar_preview_enclosure',
-                    R.img id: 'avatar_preview'
-                  
-                  # hack for submitting file data in ActiveREST for now
-                  # we'll just submit the file form after user is signed in
-                  R.form id: 'user_avatar_form',action: Routes.current_user_path(), 
-                    R.input id: 'user_avatar', name: "user[avatar]", type: "file", onChange: (ev) -> 
-                      input = $('#user_avatar')[0]
-                      if input.files && input.files[0]
-                        reader = new FileReader()
-                        reader.onload = (e) ->
-                          $("#avatar_preview").attr 'src', e.target.result
-                        reader.readAsDataURL input.files[0]
-                      else
-                        $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
+                  switch app_data.auth_mode
+                    when 'login'
+                      R.label for: 'user_password', 'password:'
+                    when 'password_reminder'
+                      R.label for: 'user_password', 'new password:'
+
+                R.td className: 'field_cell', 
+                  R.input id: "user_password", name: "user[password]", placeholder: (if app_data.auth_mode == 'login' then "password" else "new password"), required: "required", type: "password"
+
+                  if app_data.auth_mode == 'login'
+                    R.a className: 'forgot_password', onClick: @sendPasswordReminder, 'I forgot! Email me password instructions.'
+
+              if app_data.auth_mode == 'password_reminder'
+                R.tr null, 
+                  R.td className: 'label_cell', 
+                    R.label for: 'user_verification_code', 'verification code:'
+
+                  R.td className: 'field_cell', 
+                    R.input id: "user_verification_code", name: "user[password_code]", placeholder: "verification code", required: "required", type: "text"
+                    R.div className: 'password_verification_explanation', "Find code in an email just sent to you."
+
+        else 
+          # creating new account
+          R.table className: 'auth_fields register', 
+            R.tr null, 
+              R.td className: 'label_cell',
+                R.label for: 'user_name', 'Hi, my name is:'
+              R.td className: 'field_cell', 
+                R.input id: "user_name", name: "user[name]", placeholder: "first and last name", required: "required", type: "text"
+
+            R.tr null, 
+              R.td className: 'label_cell',
+                R.label for: 'user_email', 'I login as:'
+              R.td className: 'field_cell', 
+                R.input id: "user_email", name: "user[email]", placeholder: "email@address", required: "required", type: "email"
+                R.input id: "user_password", name: "user[password]", placeholder: "password", required: "required", type: "password", pattern: ".{5,}"
 
 
-          if current_user.errors && current_user.errors.length > 0
-            R.div className: "auth_errors", 
-              R.i className: 'fa fa-exclamation-circle'
-              R.span null, "#{current_user.errors.join(', ')}"
+            R.tr null, 
+              R.td className: 'label_cell', 
+                R.label for: 'user_avatar', 'I look like this:'
+              R.td className: 'field_cell',
+                R.div className: 'avatar_preview_enclosure',
+                  R.img id: 'avatar_preview'
+                
+                # hack for submitting file data in ActiveREST for now
+                # we'll just submit the file form after user is signed in
+                R.form id: 'user_avatar_form',action: Routes.current_user_path(), 
+                  R.input id: 'user_avatar', name: "user[avatar]", type: "file", onChange: (ev) -> 
+                    input = $('#user_avatar')[0]
+                    if input.files && input.files[0]
+                      reader = new FileReader()
+                      reader.onload = (e) ->
+                        $("#avatar_preview").attr 'src', e.target.result
+                      reader.readAsDataURL input.files[0]
+                    else
+                      $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
 
 
-          R.div className: 'switch_auth_mode', 
-            R.span null, 'Or'
-            R.button onClick: (=> app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'), if app_data.auth_mode == 'register' then 'Log In' else 'Create a New Account'
-            R.span null, if app_data.auth_mode == 'register' then 'if you already have an account' else 'if you don\'t have one'
+        if current_user.errors && current_user.errors.length > 0
+          R.div className: "auth_errors", 
+            R.i className: 'fa fa-exclamation-circle'
+            R.span null, "#{current_user.errors.join(', ')}"
+
+
+        R.div className: 'switch_auth_mode', 
+          R.span null, 'Or'
+          R.button onClick: (=> app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'), if app_data.auth_mode == 'register' then 'Log In' else 'Create a New Account'
+          R.span null, if app_data.auth_mode == 'register' then 'if you already have an account' else 'if you don\'t have one'
 
 
       R.div null, 
         R.div 
-          className:'save_opinion_button'
+          className:'auth_button primary_button'
           onClick: @submitAuth
         , if app_data.auth_mode == 'register' then 'Create account and save your opinion' else 'Login and save your opinion'
 
         R.a 
-          className:'cancel_opinion_button'
+          className:'cancel_auth_button primary_cancel_button'
           onClick: (=> app_data.auth_mode = null)
         , 'cancel log in'
 

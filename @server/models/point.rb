@@ -14,8 +14,8 @@ class Point < ActiveRecord::Base
 
 
   before_validation do 
-    self.nutshell = Sanitize.clean(self.nutshell)
-    self.text = Sanitize.clean(self.text, Sanitize::Config::RELAXED)
+    self.nutshell = self.nutshell.sanitize
+    self.text = self.text.sanitize
 
     if self.nutshell.length > 140 
       text << self.nutshell[139..-1]

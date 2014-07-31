@@ -679,7 +679,6 @@ DecisionBoard = ReactiveComponent
       over : (ev, ui) => 
         $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
-
   setStickyHeader : ->
     $el = $(@getDOMNode())
 
@@ -689,6 +688,7 @@ DecisionBoard = ReactiveComponent
       bottom_offset: 20
       docks: => @data().sticky = false
       undocks: => @data().sticky = true
+      conditional: => @data('application').page == 'crafting'
 
   clickSave : -> 
     if @data('/current_user').id

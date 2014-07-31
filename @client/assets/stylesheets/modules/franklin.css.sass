@@ -37,13 +37,15 @@
   position: relative
   margin: auto
   +font-size(1)
-  margin-bottom: 5 * $vertical_baseline
+  // margin-bottom: 5 * $vertical_baseline
 
 // Proposal proposer is the avatar of the user who submitted the proposal
 $proposer_img_size: 50px
 .context
   position: relative
-  margin-top: -$vertical_baseline
+  // margin-top: -$vertical_baseline
+  margin-top: $vertical_baseline
+
 .proposer_name //, .proposal_category
   color: lighten($base_text_color, 35%)
   +font-size(0)
@@ -63,7 +65,7 @@ $proposer_img_size: 50px
 .proposer_avatar
   left: 50%
   margin-left: -$proposer_img_size / 2
-  top: -$proposer_img_size / 4
+  // top: -$proposer_img_size / 4
   position: relative
   width: $proposer_img_size // - 30
   vertical-align: bottom 
@@ -86,7 +88,7 @@ $proposal_header_color: invert($decision_board_border_color)
   +font-size(8)
 
 .fixed_proposal_heading
-  position: fixed
+  // position: fixed
   width: 100%
   // border: solid darken($base_background_color, 15%)
   // border-width: 0px 0px 1px 0px
@@ -98,9 +100,10 @@ $proposal_header_color: invert($decision_board_border_color)
   +font-size(6)
   // font-weight: 600
   padding: $vertical_baseline/8 $grid_gutter / 2
-  top: 0
-  left: 0
+  // top: 0
+  // left: 0
   z-index: 999
+  position: relative
   text-align: center
   // box-shadow: 0px 1px 1px rgba(black, .2) 
   span
@@ -516,6 +519,8 @@ $slider_handle_size: 22px
   font-size: 29px
   margin-top: 20px
   box-shadow: 0px 1px 0px darken($decision_board_text_color, 10%)
+  border: none
+  padding: 6px $grid_gutter
 
 .primary_button, .primary_cancel_button
   border-radius: 16px
@@ -526,10 +531,17 @@ $slider_handle_size: 22px
 .primary_button
   +blue_button
 
-a.cancel_opinion_button, a.cancel_auth_button
-  float: right
+a.primary_cancel_button
   color: #aaa
   margin-top: $vertical_baseline / 2
+
+a.cancel_opinion_button, a.cancel_auth_button
+  float: right
+  margin-top: $vertical_baseline / 2
+
+button.primary_button, input[type="submit"]
+  display: inline-block
+
 
 
 /////////////////////
@@ -655,7 +667,6 @@ $point-includer-width: 22px
 .newpoint_prompt
   padding: $vertical_baseline/4 0
   margin-top: $vertical_baseline
-  cursor: pointer
   +font-size(0)
 
   .newpoint_link
@@ -674,7 +685,9 @@ $point-includer-width: 22px
 .newpoint
 
   .newpoint_form
+    margin: $vertical_baseline $grid_gutter
     padding-top: $vertical_baseline / 2
+
     position: relative
     margin-left: $grid_gutter
     input, textarea
@@ -686,25 +699,32 @@ $point-includer-width: 22px
       left: -11px    
       +font-size(-4)
 
+  label
+    +font-size(-1)
+
   .newpoint_description
-    width: 96%
-    min-height: 55px
+    width: 100%
+    min-height: 100px
 
-  .newpoint_nutshell_wrap
-    .newpoint_nutshell
-      width: 96%
-      min-height: 55px
+  .newpoint_nutshell
+    width: 100%
+    height: 100px
 
-    .count
-      +font-size(-3)
-      vertical-align: middle
-      position: absolute
-      right: 20px
-      top: -16px
+  .count
+    +font-size(-3)
+    position: absolute
+    right: 20px
+    top: -16px
 
   .newpoint-submit
     text-align: right
     margin-top: 3px
+    margin-bottom: $vertical_baseline / 2
+
+    .primary_button
+      margin-top: $vertical_baseline / 2
+      width: 100%
+      +font-size(2)
 
   .newpoint_hide_name
     label, input
@@ -716,12 +736,16 @@ $point-includer-width: 22px
 
 // Auth styling
 .userbar
-  position: absolute
-  z-index: 99999
-  right: 50px
+  text-align: right
+  padding: 4px 15px
+
+  a
+    padding-left: 3px
 
 [data-authmode]
   visibility: hidden
+  .slider_base
+    visibility: hidden
   .the_handle
     visibility: visible
     .face_part

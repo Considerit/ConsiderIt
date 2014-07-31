@@ -63,7 +63,7 @@ gem 'premailer-rails'
 gem 'yamler'
 
 # https://github.com/rgrove/sanitize/
-gem 'sanitize'
+# gem 'sanitize'
 
 # https://github.com/indirect/jquery-rails
 gem 'jquery-rails'
@@ -102,12 +102,12 @@ gem 'actionpack-action_caching'
 gem 'sprockets'
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 
-gem 'aws-sdk'
+# gem 'aws-sdk'
 gem 'coffee-rails' #, "~> 3.2.2"
 gem 'uglifier'
 gem "asset_sync"
 
-gem 'sass-rails'
+gem 'sass-rails', "~> 4.0.3"
 
 gem 'bourbon'
 

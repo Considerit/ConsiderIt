@@ -660,6 +660,8 @@ DecisionBoard = ReactiveComponent
     sticky: false
 
   componentDidMount : ->
+    @setStickyHeader()
+
     # make this a drop target
     $el = $(@getDOMNode())
     $el.droppable
@@ -677,15 +679,12 @@ DecisionBoard = ReactiveComponent
       over : (ev, ui) => 
         $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
-  componentDidUpdate : ->
-    @setStickyHeader()
-
 
   setStickyHeader : ->
     $el = $(@getDOMNode())
 
     $el.stickyTopBottom
-      container: $el.parents('.reasons_region')
+      container: $('.reasons_region')
       top_offset: $('.fixed_proposal_heading').outerHeight() + 101 #ugly access
       bottom_offset: 20
       docks: => @data().sticky = false

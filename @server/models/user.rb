@@ -31,8 +31,8 @@ class User < ActiveRecord::Base
   before_save do 
     self.email.downcase! if self.email
 
-    self.name = Sanitize.clean(self.name) if self.name   
-    self.bio = Sanitize.clean(self.bio, Sanitize::Config::RELAXED) if self.bio
+    self.name = self.name.sanitize if self.name   
+    self.bio = self.bio.sanitize if self.bio
     if self.avatar_file_name_changed?
       img_data = self.avatar.queued_for_write[:small].read
       self.avatar.queued_for_write[:small].rewind

@@ -11,6 +11,7 @@ do ($) ->
       bottom_offset: 0 #distance from bottom of viewport to stick bottom of element
       docks : null #callback when this element comes back to its base position
       undocks : null #callback when this element leaves its base position
+      conditional : null #callback to check whether to continue sticking
     , options
 
     $el = $(this)
@@ -37,6 +38,14 @@ do ($) ->
     $(window).scroll (ev) -> update()
 
     update = -> 
+      if options.conditional && !options.conditional()
+        current_translate = 0
+        $el[0].style.transform = ""        
+        $el[0].style['-webkit-transform'] = ""
+        $el[0].style['-ms-transform'] = ""
+        $el[0].style['-moz-transform'] = ""        
+        return
+
       #Get the top of the reference element. If the container moves, would need to move this into scroll handler. 
       #If the container is translated Y, then this method will fail I believe.
       container_top = options.container.offset().top 
@@ -56,10 +65,6 @@ do ($) ->
 
       is_scrolling_up = viewport_top < last_viewport_top
       element_fits_in_viewport = element_height < (viewport_height - options.top_offset)
-
-      console.log 'ct:', current_translate, element_fits_in_viewport
-      #console.log 'top', viewport_top, viewport_bottom, element_top, current_translate, container_top, options.container.height()
-
 
       new_translate = null
       if is_scrolling_up

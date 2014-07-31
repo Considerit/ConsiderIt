@@ -83,7 +83,7 @@ gem 'rinku' # needed anymore?
 gem 'sitemap_generator'
 
 # https://github.com/cmer/cacheable-csrf-token-rails
-gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csrf-token-rails'
+# gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csrf-token-rails'
 
 # https://github.com/josh/useragent
 gem 'useragent'

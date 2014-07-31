@@ -343,13 +343,13 @@ $slider_handle_size: 22px
   position: relative
   margin: 48px auto 4 * $vertical_baseline auto
 
-.opinion_region
+.focal_wrapper
   position: absolute
   z-index: 0 //so that points being dragged are above opinion region
 
 
 // keep the four cols side by side
-.points_by_community, .points_on_decision_board, .opinion_region
+.points_by_community, .points_on_decision_board, .focal_wrapper
   display: inline-block
   vertical-align: top
 
@@ -440,7 +440,7 @@ $slider_handle_size: 22px
 .user_is_hovering_on_a_drop_target .decision_board_body
   border-style: solid  
 
-.decision_board_body
+.focal_area
   border-radius: 16px
   border: 3px dashed $decision_board_border_color
 
@@ -517,16 +517,16 @@ $slider_handle_size: 22px
   margin-top: 20px
   box-shadow: 0px 1px 0px darken($decision_board_text_color, 10%)
 
-.save_opinion_button, .cancel_opinion_button
+.primary_button, .primary_cancel_button
   border-radius: 16px
   text-align: center
   padding: 3px
   cursor: pointer
 
-.save_opinion_button
+.primary_button
   +blue_button
 
-a.cancel_opinion_button
+a.cancel_opinion_button, a.cancel_auth_button
   float: right
   color: #aaa
   margin-top: $vertical_baseline / 2
@@ -726,7 +726,7 @@ $point-includer-width: 22px
     visibility: visible
     .face_part
       visibility: hidden
-  .opinion_region, .bubblemouth
+  .auth_region, .bubblemouth
     visibility: visible
 
 .auth

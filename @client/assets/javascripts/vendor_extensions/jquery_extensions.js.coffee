@@ -46,12 +46,11 @@ do ($) ->
         $el[0].style['-moz-transform'] = ""        
         return
 
-      #Get the top of the reference element. If the container moves, would need to move this into scroll handler. 
+      #Get the top of the reference element.
       #If the container is translated Y, then this method will fail I believe.
       container_top = options.container.offset().top 
       element_top = $el.offset().top - current_translate
 
-      console.log 'tops', container_top, element_top
 
       # Need to reset element's height each scroll event because it may have change height 
       # since initialization.
@@ -70,26 +69,18 @@ do ($) ->
       if is_scrolling_up
         if effective_viewport_top < container_top # if we're scrolled past container top
           new_translate = 0
-          # console.log 1, new_translate
-
         else if effective_viewport_top < element_top + current_translate
           new_translate = effective_viewport_top - element_top
-          # console.log 2, new_translate
-
       else if element_fits_in_viewport
         if effective_viewport_top > element_top + current_translate
           new_translate = effective_viewport_top - element_top
-          # console.log 3, new_translate
-
       else # scrolling down
         container_height = options.container.height()
         container_bottom = container_top + container_height #warning: checking height is performance no-no
         if effective_viewport_bottom > container_bottom #scrolled past container bottom
           new_translate = container_bottom - (element_top + element_height)
-          # console.log 4, new_translate
         else if effective_viewport_bottom > element_top + element_height + current_translate
           new_translate = effective_viewport_bottom - (element_top + element_height)
-          # console.log 5, new_translate
 
       if new_translate != null
         is_undocking = current_translate == 0 && new_translate != 0
@@ -110,7 +101,6 @@ do ($) ->
       last_viewport_top = viewport_top
 
     update()
-
 
   $.fn.ensureInView = (options = {}) ->
 

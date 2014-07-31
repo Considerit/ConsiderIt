@@ -150,11 +150,15 @@ Proposal = ReactiveComponent
 
   ##
   # Lifecycle methods
+  componentDidMount : -> 
+    $el = $(@getDOMNode())
+
+    $el.find('.fixed_proposal_heading').stickyTopBottom()
 
   componentDidUpdate : ->
     $el = $(@getDOMNode())
-    $el.find('.description_region').css
-      top: $el.find('.fixed_proposal_heading').height() + 24
+    # $el.find('.description_region').css
+    #   top: $el.find('.fixed_proposal_heading').height() + 24
 
   ##
   # State-dependent styling
@@ -222,10 +226,12 @@ Proposal = ReactiveComponent
     proposer = if my_data.proposal.user_id then @data("user/#{my_data.proposal.user_id}") else null
 
     R.div className:'proposal', key:@props.long_id, 'data-page':page,
+      R.div className: 'fixed_proposal_heading', 
+        R.span null,"#{my_data.proposal.category} #{my_data.proposal.designator}: #{my_data.proposal.name}"
+
       #description
+
       R.div className:'description_region', style : description_region_style, 
-        R.div className: 'fixed_proposal_heading', 
-          R.span null,"#{my_data.proposal.category} #{my_data.proposal.designator}: #{my_data.proposal.name}"
 
         R.div className: 'context',
           # Avatar 
@@ -603,7 +609,7 @@ Slider = ReactiveComponent
           R.div 
             className:'slider_feedback'
             'data-stance-segment': segment
-            style: {visibility: if sticky then 'hidden' else 'visible'}
+            style: {visibility: if sticky && !app_data.auth_mode then 'hidden' else 'visible'}
           ,
             R.div 
               className:'slider_feedback_instructions'
@@ -1034,6 +1040,11 @@ NewPoint = ReactiveComponent
   getDefaultData : ->
     # UI STATE
     edit_mode : false
+    sign_name : true
+
+  componentDidUpdate : ->
+    if @data().edit_mode
+      $(@getDOMNode()).find('#nutshell').focus()
 
   handleAddPointBegin : (ev) -> @data().edit_mode = true
   handleAddPointCancel : (ev) -> @data().edit_mode = false
@@ -1079,19 +1090,22 @@ NewPoint = ReactiveComponent
       else
         R.div className:'newpoint_form',
           R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.key == 'pros'}"
-          R.div className:'newpoint_nutshell_wrap',
-            R.textarea id:'nutshell', className:'newpoint_nutshell is_counted', cols:'28', maxLength:"140", name:'nutshell', pattern:'^.{3,}', placeholder:'Summarize your point (required)', required:'required'
-            R.span className: 'count', 140
-          R.div className:'newpoint_description_wrap',
-            R.textarea id:'text', className:'newpoint_description', cols:'28', name:'text', placeholder:'Write a longer description (optional)', required:'required'
+          R.label htmlFor:'nutshell', 'Your point'
+          CharacterCountTextInput id:'nutshell', className:'newpoint_nutshell', maxLength:140, name:'nutshell', pattern:'^.{3,}', placeholder:'In 140 characters or less. Make this summary succinct. If you have multiple points to make, list them separately.', required:'required'
+          
+          R.label htmlFor:'text', 'Expand on your point (optional)'
+          AutoGrowTextArea id:'text', className:'newpoint_description', name:'text', placeholder:'Provide background, tell a story, and/or back your point up with evidence.', required:'required', min_height: 100
+          
+
           R.div className:'newpoint_hide_name',
-            R.input className:'newpoint-anonymous', type:'checkbox', id:"hide_name-#{@props.key}", name:"hide_name-#{@props.key}"
-            R.label for:"hide_name-#{@props.key}", title:'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.', 
-              'Conceal your name'
+            R.input className:'newpoint-anonymous', type:'checkbox', id:"sign_name-#{@props.key}", name:"sign_name-#{@props.key}", checked: @data().sign_name, onChange: (=> @data().sign_name = !@data().sign_name)
+            R.label htmlFor: "sign_name-#{@props.key}", title:'Signing your point with your name lends it more weight with other participants.', 'Sign your name'
+          
           R.div className:'newpoint-submit',
-            R.a className:'newpoint-cancel', onClick: @handleAddPointCancel,
+            R.input className:'button primary_button', action:'submit-point', type:'submit', value:'Done', onClick: @handleSubmitNewPoint
+
+            R.a className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
               'cancel'
-            R.input className:'button', action:'submit-point', type:'submit', value:'Done', onClick: @handleSubmitNewPoint
 
 ##
 # Avatar
@@ -1173,11 +1187,41 @@ UserBar = ReactiveComponent
         console.error 'Error logging out: ', error
 
   render: ->
-    app_data = @data('application') 
     current_user = @data('/current_user')
-    R.div className: 'userbar', 
-      if current_user.id
-        R.button onClick: @logout, 'Logout'
+    if current_user.id
+      R.div className: 'userbar', 
+        Avatar key: current_user.id, tag: R.span, className: 'userbar_avatar', style: {height: 20, width: 20}
+        R.a onClick: @logout, 'logout'
+    else 
+      R.div null
+
+AutoGrowTextArea = ReactiveComponent
+  displayName: 'AutoGrowTextArea'  
+
+  getDefaultData : -> 
+    height: @props.min_height
+
+  autoGrow : -> 
+    scroll_height = @getDOMNode().scrollHeight
+    if scroll_height > @getDOMNode().clientHeight
+      @data().height = scroll_height + 5
+
+  render : -> 
+    @transferPropsTo R.textarea onKeyUp: @autoGrow, style: {height: @data().height} 
+
+
+CharacterCountTextInput = ReactiveComponent
+  displayName: 'CharacterCountTextInput'
+
+  getDefaultData : -> 
+    count : 0
+
+  render : -> 
+    class_name = "is_counted"
+    R.div style: {position: 'relative'}, 
+      @transferPropsTo R.textarea className: class_name, onChange: (=> @data().count = $(@getDOMNode()).find('textarea').val().length  )
+      R.span className: 'count', @props.maxLength - @data().count
+
 
 Auth = ReactiveComponent
   displayName: 'Auth'
@@ -1315,7 +1359,7 @@ Auth = ReactiveComponent
               R.tr null, 
                 R.td className: 'label_cell',
                   if app_data.auth_mode == 'login'  
-                    R.label for: 'user_email', 'email:'
+                    R.label htmlFor: 'user_email', 'email:'
                 R.td className: 'field_cell', 
                   R.input id: "user_email", name: "user[email]", placeholder: "email@address", required: "required", type: if app_data.auth_mode == 'login' then "email" else "hidden"
 
@@ -1323,9 +1367,9 @@ Auth = ReactiveComponent
                 R.td className: 'label_cell', 
                   switch app_data.auth_mode
                     when 'login'
-                      R.label for: 'user_password', 'password:'
+                      R.label htmlFor: 'user_password', 'password:'
                     when 'password_reminder'
-                      R.label for: 'user_password', 'new password:'
+                      R.label htmlFor: 'user_password', 'new password:'
 
                 R.td className: 'field_cell', 
                   R.input id: "user_password", name: "user[password]", placeholder: (if app_data.auth_mode == 'login' then "password" else "new password"), required: "required", type: "password"
@@ -1336,7 +1380,7 @@ Auth = ReactiveComponent
               if app_data.auth_mode == 'password_reminder'
                 R.tr null, 
                   R.td className: 'label_cell', 
-                    R.label for: 'user_verification_code', 'verification code:'
+                    R.label htmlFor: 'user_verification_code', 'verification code:'
 
                   R.td className: 'field_cell', 
                     R.input id: "user_verification_code", name: "user[password_code]", placeholder: "verification code", required: "required", type: "text"
@@ -1347,13 +1391,13 @@ Auth = ReactiveComponent
           R.table className: 'auth_fields register', 
             R.tr null, 
               R.td className: 'label_cell',
-                R.label for: 'user_name', 'Hi, my name is:'
+                R.label htmlFor: 'user_name', 'Hi, my name is:'
               R.td className: 'field_cell', 
                 R.input id: "user_name", name: "user[name]", placeholder: "first and last name", required: "required", type: "text"
 
             R.tr null, 
               R.td className: 'label_cell',
-                R.label for: 'user_email', 'I login as:'
+                R.label htmlFor: 'user_email', 'I login as:'
               R.td className: 'field_cell', 
                 R.input id: "user_email", name: "user[email]", placeholder: "email@address", required: "required", type: "email"
                 R.input id: "user_password", name: "user[password]", placeholder: "password", required: "required", type: "password", pattern: ".{5,}"
@@ -1361,7 +1405,7 @@ Auth = ReactiveComponent
 
             R.tr null, 
               R.td className: 'label_cell', 
-                R.label for: 'user_avatar', 'I look like this:'
+                R.label htmlFor: 'user_avatar', 'I look like this:'
               R.td className: 'field_cell',
                 R.div className: 'avatar_preview_enclosure',
                   R.img id: 'avatar_preview'

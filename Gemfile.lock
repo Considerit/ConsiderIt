@@ -64,6 +64,9 @@ GEM
     asset_sync (1.0.0)
       activemodel
       fog (>= 1.8.0)
+    aws-sdk (1.49.0)
+      json (~> 1.4)
+      nokogiri (>= 1.4.4)
     backup (3.4.0)
       open4 (~> 1.3.0)
       thor (>= 0.15.4, < 2)
@@ -352,6 +355,7 @@ DEPENDENCIES
   actionpack-action_caching
   acts_as_tenant
   asset_sync
+  aws-sdk
   aws-ses (~> 0.5.0)!
   backup
   bourbon

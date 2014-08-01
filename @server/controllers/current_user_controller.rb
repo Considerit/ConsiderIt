@@ -41,6 +41,9 @@ class CurrentUserController < DeviseController
       errors.append 'wrong password'
 
     # user does not exist, try to create account
+    elsif !by_third_party && !params.has_key?(:password_confirmation)
+      errors.append 'Error. Have you created an account yet? If not, click below.'
+    
     else
 
       user_params =  params[:user] #by_third_party ? User.params_from_third_party_token(session[:access_token]).update(params[:user]) : params[:user]

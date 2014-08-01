@@ -187,7 +187,7 @@ class User < ActiveRecord::Base
           'facebook_uid' => access_token.uid,
           'email' => access_token.info.email,
           'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter, #TODO: fix this for facebook
-          'avatar_url' => 'http://graph.facebook.com/' + access_token.uid + '/picture?type=large'
+          'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large'
         }
 
       else

@@ -152,11 +152,12 @@ Proposal = ReactiveComponent
   # Lifecycle methods
   componentDidMount : -> 
     $el = $(@getDOMNode())
-
     $el.find('.fixed_proposal_heading').stickyTopBottom()
 
   componentDidUpdate : ->
     $el = $(@getDOMNode())
+    $el.find('.fixed_proposal_heading').stickyTopBottom('update')
+    
     # $el.find('.description_region').css
     #   top: $el.find('.fixed_proposal_heading').height() + 24
 
@@ -685,6 +686,10 @@ DecisionBoard = ReactiveComponent
       over : (ev, ui) => 
         $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
+  componentDidUpdate : -> 
+    $el = $(@getDOMNode())    
+    $el.stickyTopBottom('fix_initial_position')
+
   setStickyHeader : ->
     $el = $(@getDOMNode())
 
@@ -1005,7 +1010,6 @@ Point = ReactiveComponent
       R.div className:'includers', 
         if @props.location_class == 'community_point'
           @renderIncluders()
-
 
         if !selected_segment[0] || ( author_opinion && author_opinion.stance_segment == selected_segment[0] )
           Avatar tag: R.span, key: my_data.user_id, className:"point_author_avatar"

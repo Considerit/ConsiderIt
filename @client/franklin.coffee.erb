@@ -228,7 +228,7 @@ Proposal = ReactiveComponent
 
     R.div className:'proposal', key:@props.long_id, 'data-page':page,
       R.div className: 'fixed_proposal_heading', 
-        R.span null,"#{my_data.proposal.category} #{my_data.proposal.designator}: #{my_data.proposal.name}"
+        R.span null,"#{if my_data.proposal.category && my_data.proposal.designator then my_data.proposal.category + ' ' + my_data.proposal.designator + ':' else ''}#{my_data.proposal.name}"
 
       #description
 
@@ -243,7 +243,7 @@ Proposal = ReactiveComponent
           
           # R.span className: 'proposal_author_tic'
           
-          R.div className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}, EFF Outreach Director" 
+          R.div className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}, Director of Business Development, Facebook" 
 
         R.div className: 'proposal_details', dangerouslySetInnerHTML:{__html: my_data.proposal.description}
 
@@ -623,7 +623,7 @@ Slider = ReactiveComponent
 
             R.div className:'slider_feedback_result',
               if app_data.auth_mode
-              then 'Introduce Yourself'
+              then 'Please Introduce Yourself'
               else if !my_data.has_moved
               then 'Drag Your Overall Opinion' 
               else slider_feedback_bucket
@@ -1185,6 +1185,10 @@ UserBar = ReactiveComponent
         current_user.id = current_user.email = current_user.password = null
         current_user.csrf = data.csrf      
         @data('application').auth_mode = null
+        @data('auth').provider = null
+        @data('auth').email = null
+        @data('auth').name = null
+        @data('auth').image_url = null
 
       error : (xhr, status, error) -> 
         console.error 'Error logging out: ', error
@@ -1229,8 +1233,14 @@ CharacterCountTextInput = ReactiveComponent
 Auth = ReactiveComponent
   displayName: 'Auth'
 
+  componentDidMount : -> 
+    $(document).scrollTop $(@getDOMNode()).find('.slider_feedback').offset().top - 10
+
   getDefaultData : -> 
-    inputted_email : null
+    email : null
+    name : null
+    image_url : null
+    provider : null
 
   startThirdPartyAuth : (provider) -> 
     new ThirdPartyAuthHandler
@@ -1248,8 +1258,11 @@ Auth = ReactiveComponent
         else 
           # we're prepped to create an account...
           #TODO: show user the pledge
-          @authenticateWithServer user_data
-
+          # @authenticateWithServer user_data
+          @data().provider = provider
+          @data().name = user_data.name
+          @data().image_url = user_data.avatar_url
+          @data().email = user_data.email
 
   submitAuth : (ev) -> 
     ev.preventDefault()
@@ -1331,7 +1344,7 @@ Auth = ReactiveComponent
     current_user = @data('/current_user')
     email = $(@getDOMNode()).find('#user_email').val()
 
-    @data().inputted_email = email if email && email.length > 0
+    @data().email = email if email && email.length > 0
     app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'    
     current_user.errors = []
 
@@ -1351,6 +1364,12 @@ Auth = ReactiveComponent
       R.div className:'auth focal_area',
 
         if app_data.auth_mode in ['login', 'register']
+          R.div className: 'switch_auth_mode', 
+            R.span null, if app_data.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
+            R.a className: 'toggle_auth', onClick: @toggleAuthMode, if app_data.auth_mode == 'register' then 'Log In' else 'Create an Account'
+
+        if app_data.auth_mode in ['login', 'register'] && !@data().provider
+
           R.div className: 'third_party_auth',
             R.label className: 'third_party_call', 'Instantly:'
             R.button className: 'third_party_option facebook', onClick: (=> @startThirdPartyAuth('facebook')),
@@ -1378,7 +1397,7 @@ Auth = ReactiveComponent
                   if app_data.auth_mode == 'login'  
                     R.label htmlFor: 'user_email', 'email:'
                 R.td className: 'field_cell', 
-                  R.input id: "user_email", defaultValue: @data().inputted_email, name: "user[email]", placeholder: "email@address", required: "required", type: if app_data.auth_mode == 'login' then "email" else "hidden"
+                  R.input id: "user_email", defaultValue: @data().email, name: "user[email]", placeholder: "email@address", required: "required", type: if app_data.auth_mode == 'login' then "email" else "hidden"
 
               R.tr null, 
                 R.td className: 'label_cell', 
@@ -1410,26 +1429,50 @@ Auth = ReactiveComponent
               R.td className: 'label_cell',
                 R.label htmlFor: 'user_name', 'Hi, my name is:'
               R.td className: 'field_cell', 
-                R.input id: "user_name", name: "user[name]", placeholder: "first and last name", required: "required", type: "text"
+                R.input id: "user_name", value: @data().name, onChange: (=> @data().name = $('#user_name').val()), name: "user[name]", placeholder: "first and last name", required: "required", type: "text"
 
-            R.tr null, 
-              R.td className: 'label_cell',
-                R.label htmlFor: 'user_email', 'I login as:'
-              R.td className: 'field_cell', 
-                R.input id: "user_email", defaultValue: @data().inputted_email, name: "user[email]", placeholder: "email@address", required: "required", type: "email"
-                R.input id: "user_password", name: "user[password]", placeholder: "password", required: "required", type: "password", pattern: ".{5,}"
+            if @data().provider
+              R.tr null, 
+
+                R.td className: 'label_cell',
+                  R.label htmlFor: 'user_provider', 'I login via:'
+                R.td className: 'field_cell', 
+                  switch @data().provider
+                    when 'facebook'
+                      R.button className: 'third_party_option facebook', style: {cursor: 'default'},
+                        R.i className: 'fa fa-facebook'
+                        R.span null, 'facebook'
+                    when 'google'
+                      R.button className: 'third_party_option google', style: {cursor: 'default'},
+                        R.i className: 'fa fa-google'
+                        R.span null, 'google'
+                    when 'twitter'
+                      R.button className: 'third_party_option twitter', style: {cursor: 'default'},
+                        R.i className: 'fa fa-twitter'
+                        R.span null, 'twitter'
+
+            else
+
+              R.tr null, 
+
+                R.td className: 'label_cell',
+                  R.label htmlFor: 'user_email', 'I login as:'
+                R.td className: 'field_cell', 
+                  R.input id: "user_email", defaultValue: @data().email, name: "user[email]", placeholder: "email@address", required: "required", type: "email"
+                  R.input id: "user_password", name: "user[password]", placeholder: "password", required: "required", type: "password", pattern: ".{5,}"
 
 
             R.tr null, 
               R.td className: 'label_cell', 
                 R.label htmlFor: 'user_avatar', 'I look like this:'
               R.td className: 'field_cell',
-                R.div className: 'avatar_preview_enclosure',
-                  R.img id: 'avatar_preview'
-                
                 # hack for submitting file data in ActiveREST for now
                 # we'll just submit the file form after user is signed in
                 R.form id: 'user_avatar_form',action: Routes.current_user_path(), 
+
+                  R.div className: 'avatar_preview_enclosure',
+                    R.img id: 'avatar_preview', src: if @data().image_url then @data().image_url else null #todo: make sure that if user overrides image_url, that the new image is used
+                
                   R.input id: 'user_avatar', name: "user[avatar]", type: "file", onChange: (ev) -> 
                     input = $('#user_avatar')[0]
                     if input.files && input.files[0]
@@ -1440,17 +1483,27 @@ Auth = ReactiveComponent
                     else
                       $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
 
+            R.tr null,
+              R.td className: 'label_cell', 
+                R.label null, 'Community pledge:'
+              R.td className: 'field_cell',
+                R.ul className: 'pledges',
+                  R.li className: 'pledge', 
+                    R.input className:'pledge-1', type:'checkbox', id:"pledge-1", name:"pledge-1"
+                    R.label htmlFor: "pledge-1", 'I will not attack or mock others.'
+                  R.li className: 'pledge', 
+                    R.input className:'pledge-2', type:'checkbox', id:"pledge-2", name:"pledge-2"
+                    R.label htmlFor: "pledge-2", 'I will speak only on behalf of myself.'
+                  R.li className: 'pledge', 
+                    R.input className:'pledge-3', type:'checkbox', id:"pledge-3", name:"pledge-3"
+                    R.label htmlFor: "pledge-3", 'I will use only one account to participate.'
+
+
 
         if current_user.errors && current_user.errors.length > 0
           R.div className: "auth_errors", 
             R.i className: 'fa fa-exclamation-circle'
             R.span null, "#{current_user.errors.join(', ')}"
-
-
-        R.div className: 'switch_auth_mode', 
-          R.span null, 'Or'
-          R.button onClick: @toggleAuthMode, if app_data.auth_mode == 'register' then 'Log In' else 'Create a New Account'
-          R.span null, if app_data.auth_mode == 'register' then 'if you already have an account' else 'if you don\'t have one'
 
 
       R.div null, 

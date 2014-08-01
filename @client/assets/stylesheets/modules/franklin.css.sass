@@ -755,8 +755,15 @@ $point-includer-width: 22px
   .auth_region, .bubblemouth
     visibility: visible
 
+[data-authmode="login"], [data-authmode="register"]
+
+  .slider_feedback_result
+    margin-top: -25px
+
+.auth_region
+  margin-bottom: 10 * $vertical_baseline
 .auth
-  padding: 1.5 * $vertical_baseline $grid_gutter 
+  padding: 1.5 * $vertical_baseline $grid_gutter .5 * $vertical_baseline $grid_gutter
   +font-size(3)
 
   .third_party_call
@@ -790,11 +797,11 @@ $point-includer-width: 22px
       width: 1px
 
     &.google
-      background-color: #4e6cf7
+      background-color: $decision_board_border_color //#4e6cf7
     &.facebook
-      background-color: #4863ae
+      background-color: $decision_board_border_color //#4863ae
     &.twitter
-      background-color: #46c0fb
+      background-color: $decision_board_border_color //#46c0fb
 
     i
       margin-right: $grid_gutter
@@ -856,6 +863,18 @@ $point-includer-width: 22px
   .login label 
     color: lighten($base_text_color, 35%)
 
+  .pledge
+    list-style: none
+
+    label
+      +font-size(0)
+      color: lighten($base_text_color, 15%)
+      padding-left: 6px
+      font-weight: normal
+    input
+      +font-size(3)
+
+
 
 .auth .forgot_password
   +font-size(-3)
@@ -876,9 +895,15 @@ $avatar_preview_size: 60px
   border-radius: 50%
   background-color: lighten($default_avatar_in_histogram_color, 30%)
   overflow: hidden
+  display: inline-block
+  margin-right: $grid_gutter
 
   #avatar_preview
     width: $avatar_preview_size
+
+#user_avatar_form input 
+  position: relative
+  top: -24px
 
 .auth_errors
   text-align: center
@@ -890,16 +915,21 @@ $avatar_preview_size: 60px
     padding-right: $grid_gutter/2
 
 .switch_auth_mode
-  margin: 1.5 * $vertical_baseline 0
   color: lighten($base_text_color, 25%)
-  button
+  +font-size(0)
+  position: absolute
+  top: -110px
+  left: 0
+  width: 100%
+  text-align: center
+  a.toggle_auth
     display: inline-block
-    border-radius: 16px
+    // border-radius: 16px
     color: $decision_board_border_color
     text-decoration: underline
-    background-color: darken($base_background_color, 5%)
+    background-color: transparent //darken($base_background_color, 5%)
     border: none
-    padding: 5px 8px 
-    margin: 0 5px
-    +font-size(2)
-    font-weight: 600
+    //padding: 5px 8px 
+    //margin: 0 5px
+    // +font-size(2)
+    //font-weight: 600

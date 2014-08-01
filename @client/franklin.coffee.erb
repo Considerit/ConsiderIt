@@ -1225,6 +1225,9 @@ CharacterCountTextInput = ReactiveComponent
 Auth = ReactiveComponent
   displayName: 'Auth'
 
+  getDefaultData : -> 
+    inputted_email : null
+
   startThirdPartyAuth : (provider) -> 
     new ThirdPartyAuthHandler
       provider : provider
@@ -1321,8 +1324,11 @@ Auth = ReactiveComponent
 
   toggleAuthMode : -> 
     app_data = @data('application')
-    app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'
     current_user = @data('/current_user')
+    email = $(@getDOMNode()).find('#user_email').val()
+
+    @data().inputted_email = email if email && email.length > 0
+    app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'    
     current_user.errors = []
 
 
@@ -1368,7 +1374,7 @@ Auth = ReactiveComponent
                   if app_data.auth_mode == 'login'  
                     R.label htmlFor: 'user_email', 'email:'
                 R.td className: 'field_cell', 
-                  R.input id: "user_email", name: "user[email]", placeholder: "email@address", required: "required", type: if app_data.auth_mode == 'login' then "email" else "hidden"
+                  R.input id: "user_email", defaultValue: @data().inputted_email, name: "user[email]", placeholder: "email@address", required: "required", type: if app_data.auth_mode == 'login' then "email" else "hidden"
 
               R.tr null, 
                 R.td className: 'label_cell', 
@@ -1406,7 +1412,7 @@ Auth = ReactiveComponent
               R.td className: 'label_cell',
                 R.label htmlFor: 'user_email', 'I login as:'
               R.td className: 'field_cell', 
-                R.input id: "user_email", name: "user[email]", placeholder: "email@address", required: "required", type: "email"
+                R.input id: "user_email", defaultValue: @data().inputted_email, name: "user[email]", placeholder: "email@address", required: "required", type: "email"
                 R.input id: "user_password", name: "user[password]", placeholder: "password", required: "required", type: "password", pattern: ".{5,}"
 
 

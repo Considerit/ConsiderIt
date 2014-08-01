@@ -96,13 +96,11 @@ gem 'font-awesome-rails'
 gem 'actionpack-action_caching'
 #######
 
-
 ##
 # These used to be the Assets group
 gem 'sprockets'
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 
-# gem 'aws-sdk'
 gem 'coffee-rails' #, "~> 3.2.2"
 gem 'uglifier'
 gem "asset_sync"
@@ -128,5 +126,6 @@ end
 group :production do
   gem 'exception_notification'
   gem "aws-ses", "~> 0.5.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
+  gem 'aws-sdk'
 end
 

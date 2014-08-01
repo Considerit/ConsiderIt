@@ -1,11 +1,15 @@
 do ($, window, document) ->
 
-  # only works in browsers that support CSS3 transforms (i.e. IE9+)
-  #TODO: 
-  #  - destroy event handler if element is destroyed
-  #  - allow programmer to request an update explicitly
 
   class StickyTopBottom
+    # only works in browsers that support CSS3 transforms (i.e. IE9+)
+    #TODO: 
+    #  - destroy event handler if element is destroyed
+    #  - track all the sticky elements and give them vertical preference
+    #    so that the calculation as to where they offset with each other
+    #    is automatically taken care of
+
+
     constructor : (el, options) -> 
       defaults = 
         container: $('body') #reference element for starting and stopping the sticking (doesn't actually have to contain the element)

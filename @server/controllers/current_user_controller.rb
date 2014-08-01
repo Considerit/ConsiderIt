@@ -24,7 +24,7 @@ class CurrentUserController < DeviseController
     by_password_reset_token = params[:user].has_key? :reset_password_token
 
     if by_password_reset_token
-      params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
+      params[:user][:password_confirmation] = params[:user][:password] if !params[:user].has_key? :password_confirmation
       user = User.reset_password_by_token params[:user]
     elsif by_third_party
       user = User.find_by_third_party_token(session[:access_token])
@@ -41,14 +41,20 @@ class CurrentUserController < DeviseController
       errors.append 'wrong password'
 
     # user does not exist, try to create account
-    elsif !by_third_party && !params.has_key?(:password_confirmation)
+    elsif !by_third_party && !params[:user].has_key?(:password)
       errors.append 'Error. Have you created an account yet? If not, click below.'
     
     else
 
-      user_params =  params[:user] #by_third_party ? User.params_from_third_party_token(session[:access_token]).update(params[:user]) : params[:user]
 
-      is_dirty = by_third_party ? user.avatar_url_provided? : params[:user].has_key?(:avatar)
+      if by_third_party
+        user_params =  User.params_from_third_party_token(session[:access_token]).update(params[:user])
+        is_dirty = session[:access_token].has_key?(:avatar_url) || params[:user].has_key?(:avatar) 
+
+      else       
+        user_params =  params[:user]
+        is_dirty = params[:user].has_key?(:avatar)
+      end
 
       user = User.new ActionController::Parameters.new(user_params).permit!
       user.referer = user.page_views.first.referer if user.page_views.count > 0
@@ -269,7 +275,7 @@ class CurrentUserController < DeviseController
       twitter_uid: nil,
       facebook_uid: nil,
       google_uid: nil,
-      name: nil
+      name: current_user ? current_user.name : nil
     }
   end
 

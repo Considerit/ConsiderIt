@@ -1091,10 +1091,10 @@ NewPoint = ReactiveComponent
         R.div className:'newpoint_form',
           R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.key == 'pros'}"
           R.label htmlFor:'nutshell', 'Your point'
-          CharacterCountTextInput id:'nutshell', className:'newpoint_nutshell', maxLength:140, name:'nutshell', pattern:'^.{3,}', placeholder:'In 140 characters or less. Make this summary succinct. If you have multiple points to make, list them separately.', required:'required'
+          CharacterCountTextInput id:'nutshell', className:'newpoint_nutshell', maxLength:140, name:'nutshell', pattern:'^.{3,}', placeholder:'Make this summary succinct.', required:'required'
           
           R.label htmlFor:'text', 'Expand on your point (optional)'
-          AutoGrowTextArea id:'text', className:'newpoint_description', name:'text', placeholder:'Provide background, tell a story, and/or back your point up with evidence.', required:'required', min_height: 100
+          AutoGrowTextArea id:'text', className:'newpoint_description', name:'text', placeholder:'Provide background and/or back your point up with evidence.', required:'required', min_height: 100
           
 
           R.div className:'newpoint_hide_name',
@@ -1165,7 +1165,6 @@ Avatar = ReactiveComponent
 
     attrs.src = filename if filename
     
-
     @transferPropsTo @props.tag attrs
 
 
@@ -1305,6 +1304,7 @@ Auth = ReactiveComponent
         if !current_user.errors || current_user.errors.length == 0
           app_data.page = 'results'
           app_data.auth_mode = null
+          current_user.errors = []
 
       error : (xhr, status, error) -> 
         console.error 'Error logging in: ', error
@@ -1318,6 +1318,13 @@ Auth = ReactiveComponent
       else 
         app_data = @data('application')
         app_data.auth_mode = 'password_reminder'
+
+  toggleAuthMode : -> 
+    app_data = @data('application')
+    app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'
+    current_user = @data('/current_user')
+    current_user.errors = []
+
 
   render: -> 
     current_user = @data('/current_user')
@@ -1432,7 +1439,7 @@ Auth = ReactiveComponent
 
         R.div className: 'switch_auth_mode', 
           R.span null, 'Or'
-          R.button onClick: (=> app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'), if app_data.auth_mode == 'register' then 'Log In' else 'Create a New Account'
+          R.button onClick: @toggleAuthMode, if app_data.auth_mode == 'register' then 'Log In' else 'Create a New Account'
           R.span null, if app_data.auth_mode == 'register' then 'if you already have an account' else 'if you don\'t have one'
 
 

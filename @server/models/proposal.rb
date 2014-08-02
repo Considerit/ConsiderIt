@@ -32,22 +32,43 @@ class Proposal < ActiveRecord::Base
   scope :published_web, -> {where( :published => true)}
   scope :browsable, -> {where( :targettable => false)}
 
-
   def full_data(current_tenant, current_user, prop_data, show_private = false)
+    # Compute the users
+    users = ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id}")
+    users = users.as_json
+    users = jsonify_objects(users, 'user')
+
+    # Compute points
+    pointies = points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
+    pp(pointies.public_fields)
+    pointies = pointies.public_fields.map do |p|
+      p.mask_anonymous(current_user)
+      p.as_json
+    end
+
+    # Compute opinions
+    opinionies = opinions.published.public_fields.map {|p| p.as_json}
+
+    # Compute Included points
+    includeds = Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).pluck('points.id')\
+                + Point.included_by_unstored(prop_data[:included_points].keys, self).pluck('points.id')
+
+
+    # Put them together
     response = {
-      :proposal => self,
-      :points => Point.mask_anonymous_users(points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})").public_fields, current_user),
-      :included_points => Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).pluck('points.id') + Point.included_by_unstored(prop_data[:included_points].keys, self).pluck('points.id'),
-      :opinions => opinions.published.public_fields,
+      :proposal => self.as_json,
+      :points => pointies,
+      :included_points => includeds,
+      :opinions => opinionies,
       :result => 'success',
-      :users => ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id}"))
+      :users => users
     }
 
     if current_tenant.assessment_enabled
       response.update({
         :assessments => assessments.completed.public_fields,
         :claims => assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
-        :verdicts => Assessable::Verdict.all        
+        :verdicts => jsonify_objects(Assessable::Verdict.all, 'vertict')
       })
     end
 
@@ -66,7 +87,15 @@ class Proposal < ActiveRecord::Base
 
   def as_json(options={})
     options[:only] ||= Proposal.my_public_fields
-    super(options)
+    result = super(options)
+
+    stubify_field(result, 'user')
+    pp(result["participants"])
+    result["participants"] = JSON.parse(result["participants"] || '[]')
+    result["participants"].map! {|p| "/user/#{p}"}
+    result["top_con"] = "/point/#{result['top_con']}"
+    result["top_pro"] = "/point/#{result['top_pro']}"
+    result
   end
 
   def public?

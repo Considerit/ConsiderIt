@@ -45,7 +45,7 @@ class Point < ActiveRecord::Base
   }
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:long_id, :comment_count, :created_at, :id, :includers, :is_pro, :moderation_status, :nutshell, :persuasiveness, :opinion_id, :proposal_id, :published, :score, :text, :user_id, :hide_name]
+  self.my_public_fields = [:comment_count, :created_at, :id, :includers, :is_pro, :moderation_status, :nutshell, :persuasiveness, :opinion_id, :proposal_id, :published, :score, :text, :user_id, :hide_name]
 
   scope :public_fields, -> {select(self.my_public_fields)}
   scope :metrics_fields, -> {select([:id, :appeal, :attention, :comment_count, :divisiveness, :includers, :is_pro, :num_inclusions, :persuasiveness, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :unique_listings])}
@@ -58,15 +58,10 @@ class Point < ActiveRecord::Base
   scope :pros, -> {where( :is_pro => true )}
   scope :cons, -> {where( :is_pro => false )}
   scope :ranked_overall, -> { published.order( "points.score DESC" ) }
-
   scope :ranked_popularity, -> { published.order( "points.attention DESC" ) }
-
   scope :ranked_unify, -> { published.order( "points.appeal DESC" ) } 
-
   scope :ranked_divisive, -> { published.order( "points.divisiveness DESC" ) } 
-  
   scope :ranked_persuasiveness, -> { published.order( "points.persuasiveness DESC" ) }
-    
   scope :ranked_for_stance_segment, proc {|stance_segment|
       published.
       where("points.score_stance_group_#{stance_segment} > 0").
@@ -88,7 +83,15 @@ class Point < ActiveRecord::Base
 
   def as_json(options={})
     options[:only] ||= Point.my_public_fields
-    super(options)
+    result = super(options)
+    result['includers'] = JSON.parse (result['includers'] || '[]')
+    result['includers'].map! {|p| "/point/#{p}"}
+    make_key(result, 'point')
+    stubify_field(result, 'proposal')
+    #result.delete('opinion')
+    stubify_field(result, 'opinion')
+    stubify_field(result, 'user')
+    result
   end
 
   def only_public_fields

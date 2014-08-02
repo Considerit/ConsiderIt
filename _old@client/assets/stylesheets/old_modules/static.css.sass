@@ -1,0 +1,44 @@
+@import "old_variables"
+
+$static_sidebar_width : 180px
+
+#static-main-region, #static-sidebar-region
+  display: inline-block
+  vertical-align: top
+
+#static-sidebar-region
+  width: $static_sidebar_width
+
+  li
+    list-style: none
+
+  .sidebar-image
+    text-align: right
+    img
+      width: $static_sidebar_width
+      max-height: $static_sidebar_width
+
+  .sidebar_link
+
+
+#static-main-region
+  width: $content-width - $static_sidebar_width - 2 * $grid_gutter
+  padding-left: $grid_gutter
+
+  h1, h3
+    margin: $vertical_baseline 0
+
+  h1
+    +font-size(2)
+
+  h3
+    +font-size(1)
+
+  p 
+    margin-bottom: $vertical_baseline
+
+
+#static-header
+  margin: $vertical_baseline 0
+  h1
+    +font-size(3)

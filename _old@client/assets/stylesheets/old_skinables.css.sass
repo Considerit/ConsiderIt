@@ -1,0 +1,367 @@
+////////////////////////////////////////////////////////
+// THEME: Processes all styles requiring skin variables.
+////////////////////////////////////////////////////////
+@import "old_variables"
+
+// libraries of mixins
+@import "old_library"
+// @import "skins/css_snippets/bubble"
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+/// Skins library: Reusable extends and mixins sensitive to skin variables
+/////////////////////////////////////////////////////////////////////////////
+
+%superbutton
+  // +sassy-button("glass", $border-radius: 5px, $first-color: emphasize($complementary_background_color, 16%), $second-color: emphasize($complementary_background_color, 24%))
+  +link_style($complementary_text_color, $complementary_background_color, 25%)
+
+  &:hover
+    // +sassy-button("glass", $border-radius: 5px, $first-color: emphasize($complementary_background_color, 25%), $second-color: emphasize($complementary_background_color, 36%))
+
+%button
+  // +sassy-button($border-radius: 5px, $first-color: emphasize(desaturate($base_background_color, 100%), 5%), $second-color: emphasize(desaturate($base_background_color, 100%), 10%), $text_color: deemphasize($base_text_color, 5%))
+  
+  &:hover
+    // +sassy-button($border-radius: 5px, $first-color: emphasize(desaturate($complementary_background_color, 10%), 10%), $text_color: $complementary_text_color)
+
+
+////////////////// COLOR GROUPS //////////////////////////
+// A color group defines a text color and background styles. 
+// Color groups are applied to root HTML elements that start
+// a new background. For example, the pro/con decision board 
+// has a new background regime imposed on it and its children.
+///////////////////////////////////////////////////////////
+
+%on_background
+  color: $base_text_color
+  // background: $base_background_declaration
+  a
+    +link_style(emphasize($base_text_color, 10%, $reference: $base_background_color), $base_background_color, 25%)
+
+%on_header
+  color: $header_text_color
+  background: $header_background_declaration
+  a
+    +link_style(emphasize($header_text_color, 10%, $reference: $header_background_color), $header_background_color, 25%)
+
+%on_footer
+  color: $footer_text_color
+  background: $footer_background_declaration
+  a
+    +link_style(emphasize($footer_text_color, 10%, $reference: $footer_background_color), $footer_background_color, 25%)
+
+
+
+%on_decision_board
+  color: $decision_board_text_color
+  background: $decision_board_background_declaration
+
+  a
+    +link_style( emphasize($decision_board_text_color, 10%, $reference: $decision_board_background_color), $decision_board_background_color, 25%)
+  
+  h1, h2, h3
+    color: $decision_board_text_color
+
+  textarea, input[type="text"], input[type="email"], input[type="password"]
+    background-color: transparent
+    border: 1px solid
+    +inset-border($decision_board_text_color)
+    display: inline-block
+    color: $decision_board_text_color
+
+    &.error 
+      border-color: #883333
+      &:focus
+        +inset-border($decision_board_text_color)
+
+
+=on_menu($include_background: true)
+  @if $include_background
+    background-color: $menu_background_color
+  color: $menu_text_color
+  a
+    color: $menu_text_color
+    &:hover
+      color: $complementary_text_color
+      background-color: emphasize($complementary_background_color, 10%)
+
+    &.selected
+      color: $complementary_text_color
+      background-color: $complementary_background_color
+
+
+%on_dialog
+  background-color: $dialog_background_color
+  color: $dialog_text_color
+
+  textarea, input[type="text"], input[type="email"], input[type="password"]
+    color: emphasize($dialog_text_color, 15%, $reference: $dialog_background_color)
+    background-color: deemphasize($dialog_background_color, 20%)
+    border: 1px solid emphasize($dialog_background_color, 20%)
+    padding: 6px 12px
+
+%on_proposal_title
+  background-color: $proposal_title_background_color
+  color: $proposal_title_text_color
+  h1, h2, h3
+    color: emphasize($proposal_title_text_color, 10%, $reference: $proposal_title_background_color)
+  a
+    +link_style($proposal_title_text_color, $proposal_title_background_color, 20%)
+
+
+%on_proposal_details
+  background-color: $proposal_detail_background_color
+  color: $proposal_detail_text_color
+  h1, h2, h3
+    color: emphasize($proposal_detail_text_color, 10%, $reference: $proposal_detail_background_color)
+  a
+    +link_style($proposal_detail_text_color, $proposal_detail_background_color, 20%)
+
+%on_peer_area  
+  background-color: $peer_background_color
+  color: $peer_text_color
+  
+
+
+
+// has to go after variable def; can go in library
+%main_font-family
+  font-family: $main_font-family
+
+// compass vertical rhythm stuff...has to go after $base-font-size declared
+// +establish-baseline
+// html
+//   +adjust-leading-to(3)
+
+#t_bg-top
+  background: $bg_top_declaration
+
+#t_bg-content
+  background: $bg_content_declaration
+
+#t_bg_content_top
+  background: $bg_content_top_declaration
+
+.content_style
+  @extend %on_background
+
+
+body, h1, h2, h3, h4, h5, h6 //, input, button
+  color: $base_text_color
+
+
+// do we need to put input and button here...?
+body, input, button, textarea
+  @extend %main_font-family
+
+a  
+  +link_style($base_text_color, $base_background_color, 25%)
+
+  /* SHARED STYLES */
+[tooltip="user_profile"]
+  cursor: pointer
+
+
+.content_style
+  .button, a.button, input.button, button.button
+    @extend %button
+
+  .superbutton, a.superbutton, input.superbutton, button.superbutton
+    @extend %superbutton
+
+
+////////////////////////////////////////
+///////// Themable Colors
+////////////////////////////////////////
+
+
+
+// helpers
+
+.l_tooltip-user .user_tooltip_opinion_link
+  +link_style($base_text_color, $base_background_color, 20%)
+
+.l_tooltip-user-influence
+  color: deemphasize($base_text_color, 25%, $base_background_color)
+
+
+// auth
+.user-options .user-options-menu
+  +on_menu
+  border: 1px solid emphasize($base_background_color, 20%)
+
+
+.user-accounts-complete-paperwork-form 
+  input[type="text"], input[type="email"], input[type="password"], textarea
+    &.ui-state-valid
+      color: $primary_accent_text_color
+
+  .user-accounts-form-fields-wrap
+    background-color: $primary_accent_background_color
+    border: 1px solid emphasize($primary_accent_background_color, 5%)
+    border-top-color: deemphasize($primary_accent_background_color, 10%)
+    border-bottom-color: emphasize($primary_accent_background_color, 10%)
+    color: $primary_accent_text_color
+
+.l_header
+  @extend %on_header
+
+.l_footer
+  @extend %on_footer
+
+// dashboard
+#dashboard 
+
+  .dashboard-profile-activity-summary
+    background-color: $complementary_background_color
+    color: $complementary_text_color
+
+    &:hover, &.selected
+      color: $complementary_text_color
+      background-color: emphasize($complementary_background_color, 10%)
+
+    .dashboard-profile-influence-summary
+      color: deemphasize($base_text_color, 10%, $base_background_color)
+
+
+.table-striped tbody tr:nth-child(2n+1) td
+  background-color: emphasize($base_background_color, 5%)
+
+.sidebar 
+  +on_menu(false)
+
+  hr
+    border-top: 1px solid #aaa
+
+#dashboard
+  .table, .fht-table
+    td
+      border-top: 1px solid emphasize($base_background_color, 5%)
+      
+    th
+      border-bottom: 1px solid emphasize($base_background_color, 5%)
+
+  .field .sublabel
+    color: $base_text_color
+
+  .dashboard-subheading
+    color: deemphasize($base_text_color, 5%, $reference: $base_background_color)
+
+//////// These should be moved out to admin...
+
+// assessable
+.assessment_published_at
+  background-color: $complementary_background_color
+  color: $complementary_text_color
+
+#assess
+
+  .assessment_block
+    border: 1px solid emphasize($base_background_color, 5%)
+
+    .assessment_row
+
+      &.reviewable
+        background-color: #efe
+        td
+          background-color: #efe
+
+
+      &.incomplete
+        background-color: mix(#ff1, $base_background_color)
+        background-color: rgba(mix(#ff1, $base_background_color), .7)
+        td
+          background-color: mix(#ff1, $base_background_color)
+          background-color: rgba(mix(#ff1, $base_background_color), .7)
+
+
+// dialog
+.l-dialog-detachable
+  border: 1px solid emphasize($complementary_background_color, 10%)
+  background-color: white
+  
+  .option .sublabel
+    color: deemphasize($base_text_color, 15%, $reference: $base_background_color)
+
+  .l-dialog-title 
+    color: $complementary_text_color
+    background-color: $complementary_background_color
+
+    a.l-dialog-close
+      +link_style(emphasize($complementary_background_color, 20%), $complementary_background_color, 25%)
+
+  .l-dialog-body
+    @extend %on_dialog
+
+// reset
+
+#lightbox
+  background-color: deemphasize($base_background_color, 100%)
+  background-color: rgba(deemphasize($base_background_color, 100%), .75)
+
+
+
+@import "vendor/overrides"
+
+//////////////////////////////////////////
+// UNINCORPORATED
+//////////////////////////////////////////
+
+
+// styles pillaged from fontawesome examples; these should be boiled down and refactored
+.input-group
+  position: relative
+  display: table
+  border-collapse: separate
+  &.col
+    float: none
+    padding-left: 0
+    padding-right: 0
+
+  .form-control
+    width: 100%
+    margin-bottom: 0
+    margin-top: 0
+
+.input-group-addon, .input-group-btn, .input-group .form-control
+  display: table-cell
+.input-group-addon:not(:first-child):not(:last-child),.input-group-btn:not(:first-child):not(:last-child),.input-group .form-control:not(:first-child):not(:last-child)
+  border-radius: 0
+.input-group-addon,.input-group-btn
+  width: 1%
+  white-space: nowrap
+  vertical-align: middle
+
+.input-group-addon
+  padding: 6px 12px
+  font-size: 14px
+  font-weight: normal
+  line-height: 1
+  text-align: center
+  background-color: #eee
+  border: 1px solid #ccc
+  border-radius: 4px
+.input-group-addon input[type="radio"],.input-group-addon input[type="checkbox"]
+  margin-top: 0
+.input-group .form-control:first-child,.input-group-addon:first-child,.input-group-btn:first-child>.btn,.input-group-btn:first-child>.dropdown-toggle,.input-group-btn:last-child>.btn:not(:last-child):not(.dropdown-toggle)
+  border-bottom-right-radius: 0
+  border-top-right-radius: 0
+.input-group-addon:first-child
+  border-right: 0
+.input-group .form-control:last-child,.input-group-addon:last-child,.input-group-btn:last-child>.btn,.input-group-btn:last-child>.dropdown-toggle,.input-group-btn:first-child>.btn:not(:first-child)
+  border-bottom-left-radius: 0
+  border-top-left-radius: 0
+.input-group-addon:last-child
+  border-left: 0
+.input-group-btn
+  position: relative
+  white-space: nowrap
+.input-group-btn>.btn
+  position:relative
+.input-group-btn>.btn+.btn
+  margin-left: -4px
+.input-group-btn>.btn:hover,.input-group-btn>.btn:active
+  z-index: 2

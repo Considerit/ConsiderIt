@@ -1,0 +1,274 @@
+@import "old_variables"
+@import "old_library"
+
+//////////////////////////////////////////
+// LAYOUT
+//////////////////////////////////////////
+
+#t_bg
+  min-height: 100%
+
+#t_bg_content_top, #l_content_main_wrap
+  min-height: 500px
+
+
+/* CONTAINERS */
+
+#l_wrap
+  position: relative
+  font-size: $base-font-size
+
+.l_header, #l_content, .l_footer
+  position: relative
+
+.l_heading_wrap, .l_footer_wrap
+  position: relative
+
+.l_header
+  margin: 0 auto $vertical_baseline auto
+  min-height: 32px
+
+  //border-bottom: 1px solid white
+
+.l_heading_wrap
+  width: $content_width
+  left: 50%
+  margin-left: -$content_width/2
+  position: relative
+  padding: 0
+  height: 2 * $vertical_baseline
+
+#l_content
+  z-index: 2
+  width: $page_width
+  margin: auto
+
+#l_content_main
+  position: relative  
+  margin: 0 auto
+
+#l_content_main_wrap
+  width: $content_width
+  margin: auto
+
+.l_footer
+  padding: $vertical_baseline 0 2 * $vertical_baseline 0
+
+
+
+#l_sticky_footer_region
+  position: fixed
+  bottom: 0
+  width: 100%
+  z-index: 999
+
+.l_footer_wrap
+  width: $body_width
+  position: relative
+  margin: 0 auto
+
+.l_tooltip
+  display: none
+
+.tooltipster-content .l_tooltip
+  display: block
+
+// .l_tooltip_title
+//   padding-top: $vertical_baseline/2
+
+
+@font-face
+  font-family: 'zocial'
+  src: font-url('zocialregular.eot')
+  src: font-url('zocialregular.eot?#iefix') format('eot')
+  font-weight: normal
+  font-style: normal
+
+
+@font-face
+  font-family: 'zocial'
+  src: asset-data-url('zocialregular.woff') format('woff'), font-url('zocialregular.ttf') format('truetype'), font-url('zocialregular.svg#zocialregular') format('svg')
+  font-weight: normal
+  font-style: normal
+
+
+
+/* RESET
+ * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
+ * http://cssreset.com
+ */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video
+  margin: 0
+  padding: 0
+  border: 0
+  font-size: 100%
+  font: inherit
+  vertical-align: baseline
+
+hr
+  display: block
+  height: 1px
+  border: 0
+  border-top: 1px solid #ccc
+  margin: 0
+  padding: 0
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section
+  display: block
+
+body 
+  line-height: 1.3
+  min-height: 100%
+
+ol, ul 
+  list-style: none
+  list-style-position: inside
+
+blockquote, q
+  quotes: none
+
+blockquote:before, blockquote:after,
+q:before, q:after
+  content: ''
+  content: none
+
+table
+  border-collapse: collapse
+  border-spacing: 0
+
+// do we need to put input and button here...?
+html
+
+  h1, h2, h3, h4, h5, h6, strong
+    font-weight: bold
+
+
+  em, i 
+    font-style: italic
+
+
+
+
+
+/* ELEMENT DEFAULTS */
+
+//http://paulirish.com/2012/box-sizing-border-box-ftw/
+*
+  +box_sizing(border-box)
+
+a
+  color: inherit
+  outline: none
+  cursor: pointer  
+  text-decoration: none
+  img
+    border: none  
+
+input, button
+  //+transition(opacity .15s linear, color .15s linear, background-color .15s linear)
+
+
+table
+  border-collapse: separate  
+
+ul
+  margin: 0
+  list-style-type: disc
+
+ol
+  margin: 0
+  list-style-type: decimal
+
+
+blockquote
+  quotes: "\201C" "\201D"
+  &:before
+    content: open-quote
+    font-weight: bold
+  &:after
+    content: close-quote
+    font-weight: bold
+
+/* HELPERS */
+
+.clear
+  clear: both
+
+.fl
+  float: left
+
+.fr
+  float: right
+
+.it
+  font-style: italic
+  
+.hide
+  display: none
+
+#lightbox
+  position: fixed
+  top: -20000px
+  left: -2000px
+  width: 4000px
+  height: 40000px
+  z-index: 450
+
+.button
+  +font-size(1)
+
+.superbutton
+  +font-size(2)
+
+.button, button, input[type="submit"]
+  outline: none
+  cursor: pointer
+  text-align: center
+
+
+.avatar
+  vertical-align: top
+  background-color: transparent
+  border: none
+  display: inline-block
+  margin: 0
+  padding: 0
+  +background-size(cover)
+  background-image: url('/system/default_avatar/small_default-profile-pic.png')
+
+  &.avatar_anonymous
+    cursor: default
+
+
+$preloadersize_width: 32px
+$preloadersize_height: 10.5px
+#l_preloader
+  width: $preloadersize_width
+  height: $preloadersize_height
+  left: 50%
+  margin-left: -$preloadersize_width/2
+  top: 50%
+  margin-top: -$preloadersize_height/2
+  position: absolute
+
+.loading_container
+  position: fixed
+  top: 50%
+  left: 50%
+  margin-left: -15px
+  z-index: 9999
+

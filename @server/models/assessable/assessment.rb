@@ -18,9 +18,6 @@ class Assessable::Assessment < ActiveRecord::Base
 
   scope :public_fields, -> {select('assessments.id, assessments.verdict_id, assessments.created_at, assessments.updated_at, assessments.published_at, assessments.assessable_id, assessments.assessable_type, assessments.complete, assessments.notes')}
 
-  #TODO: sanitize before_validation
-  #self.text = Sanitize.clean(self.text, Sanitize::Config::RELAXED)
-
   def self.build_from(obj, user_id, status)
     c = self.new
     c.assessable_id = obj.id 

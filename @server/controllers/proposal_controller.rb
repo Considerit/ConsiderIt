@@ -1,4 +1,4 @@
-class ProposalsController < ApplicationController
+class ProposalController < ApplicationController
 
   protect_from_forgery
 
@@ -33,33 +33,15 @@ class ProposalsController < ApplicationController
   end
 
   def show
-    if params.has_key?(:id)
-      proposal = Proposal.find(params[:id])
-    elsif params.has_key?(:long_id)
-      proposal = Proposal.find_by_long_id(params[:long_id])
-    else
-      return
-    end
-
+    proposal = Proposal.find(params[:id])
     return if !proposal 
 
     if cannot?(:read, proposal)
-      if request.xhr?
-        render :json => {:result => 'failure', :reason => 'Access denied'}
-      else
-        @inaccessible_proposal = {:id => proposal.id, :long_id => proposal.long_id }
-        render "layouts/application", :layout => false
-      end
+      render :json => {:result => 'failure', :reason => 'Access denied'}
     else
       ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-
-      if request.xhr?
-        data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
-        render :json => data
-      else
-        render "layouts/application", :layout => false
-      end
-
+      data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
+      render :json => data
     end
 
 

@@ -1,4 +1,4 @@
-class PointsController < ApplicationController
+class PointDiscussionController < ApplicationController
   protect_from_forgery
 
   def show
@@ -30,20 +30,6 @@ class PointsController < ApplicationController
 
     respond_to do |format|
       format.json {render :json => response}
-      format.html { 
-        # this handles the case where the user directly opens a point
-        proposal_data = point.proposal.full_data current_tenant, current_user, session[point.proposal_id], can?(:manage, point.proposal)
-        proposal_data[:opinion] = ProposalsController.get_opinion_for_user(point.proposal, current_user, session)
-        @current_proposal = proposal_data.to_json
-        
-        point = point.mask_anonymous current_user
-        @current_point = {
-          :associated => response,
-          :point => point
-        }.to_json
-
-        render "layouts/application", :layout => false
-      }
     end
   end
 

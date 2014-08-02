@@ -1,41 +1,34 @@
-class OpinionsController < ApplicationController
+class OpinionController < ApplicationController
 
   protect_from_forgery
 
   respond_to :json
 
   def show
+    opinion = Opinion.find(params[:id])
+    pp opinion
+    #proposal = Proposal.find_by_long_id(params[:long_id])
+    #opinion = proposal.opinions.published.where(:user_id => params[:user_id]).first
 
-    if request.xhr?
-      proposal = Proposal.find_by_long_id(params[:long_id])
-      opinion = proposal.opinions.published.where(:user_id => params[:user_id]).first
+    authorize! :read, opinion
 
-      authorize! :read, opinion
+    user = opinion.user
 
-      user = opinion.user
+    result = { :key => "/opinion/#{opinion.id}" }
 
-      if opinion.nil?
-        render :json => {
-          :result => 'failed', 
-          :reason => 'That opinion does not exist.'
-        }
-      elsif cannot?(:read, opinion)
-        render :json => {
-          :result => 'failed', 
-          :reason => 'You do not have permission to view that opinion.'
-        }
-      else    
-        render :json => {
-          :result => 'successful',
-          :included_pros => Point.included_by_stored(user, proposal, nil).where(:is_pro => true).map {|pnt| pnt.id},
-          :included_cons => Point.included_by_stored(user, proposal, nil).where(:is_pro => false).map {|pnt| pnt.id},
-          :stance => opinion.stance_segment
-        }
-      end
+    if opinion.nil?
+      result[:error] = 'That opinion does not exist.'
+    elsif cannot?(:read, opinion)
+      result[:error] = 'You do not have permission to view that opinion.'
     else
-      render "layouts/application", :layout => false
-    end
+      result[:included_pros] = Point.included_by_stored(user, opinion.proposal, nil)\
+                               .where(:is_pro => true).map {|pnt| pnt.id},
+      result[:included_cons] = Point.included_by_stored(user, opinion.proposal, nil)\
+                               .where(:is_pro => false).map {|pnt| pnt.id},
+      result[:stance] = opinion.stance_segment
 
+    end
+    render :json => result
   end
 
   def create
@@ -124,6 +117,10 @@ class OpinionsController < ApplicationController
     end
 
     alert_new_published_opinion(proposal, opinion) unless already_published
+
+    opinion[:key] = "/opinion/#{opinion.id}"
+    # Enable this next line if I make sure it's properly prepared and won't clobber cache
+    #proposal[:key] = "/proposal/#{proposal.id}"
 
     results = {
       :opinion => opinion,

@@ -20,6 +20,17 @@ class Opinion < ActiveRecord::Base
     self.stance_segment = Opinion.get_segment(self.stance)
   end 
 
+  def as_json(options={})
+    result = super(options)
+    make_key(result, 'opinion')
+    stubify_field(result, 'user')
+    stubify_field(result, 'proposal')
+    result['point_inclusions'] = JSON.parse (result['point_inclusions'])
+    result['point_inclusions'].map! {|p| "/point/#{p}"}
+    result.delete('long_id')
+    result
+  end
+
   def subsume( subsumed_opinion )
     subsumed_opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
     subsumed_opinion.points.update_all({:user_id => user_id, :opinion_id => id})

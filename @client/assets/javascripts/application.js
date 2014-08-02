@@ -14,3 +14,4 @@
 //= require_tree ./vendor_extensions
 //= require ../../activerest
 //= require ../../franklin
+//= require ../../nonactiverest

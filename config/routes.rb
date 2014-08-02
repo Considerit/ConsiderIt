@@ -1,16 +1,20 @@
-class XHRConstraint
+class NotJSON
+  # This match function returns true iff the request is not json
   def matches?(request)
-    request.format == 'text/html' && !(request.xhr? || request.url =~ /\/users\/auth/)
+    json_header = request.format.to_s.include?('application/json')
+    json_query_param = (request.query_parameters.has_key?('json') \
+                        or request.query_parameters.has_key?('JSON'))
+    not (json_query_param or json_header)
   end
 end
 
 ConsiderIt::Application.routes.draw do
 
-  root :to => "home#index"
+  # All user-visible URLs go to the "home" controller, which serves an
+  # html page, and then the required data will be fetched afterward in JSON
+  get '(*url)' => 'home#index', :constraints => NotJSON.new
 
-  # mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
-  # mount Assessable::Engine => '/dashboard/assessable', :as => 'assessable'
-
+  # MIKE SAYS: not sure where to put this.  Is it JSON or what?
   devise_for :users, :controllers => { 
     :omniauth_callbacks => "users/omniauth_callbacks", 
     :sessions => "users/sessions", 
@@ -18,31 +22,19 @@ ConsiderIt::Application.routes.draw do
     :passwords => "users/passwords",
     :confirmations => "users/confirmations"
   }
-
-  resources :inclusions, :path => 'inclusions/:point_id', :only => [:create] 
-  match 'inclusions/:point_id' => 'inclusions#destroy', :via => :delete 
-
-
-  resources :proposals, :only => [:index, :create]
+  # mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
+  # mount Assessable::Engine => '/dashboard/assessable', :as => 'assessable'
 
 
-  resource :proposal, :path => '/:long_id/results', :long_id => /[a-zA-Z\d_]{10}/, :only => [:show, :update, :destroy] 
+  # Here's the entire JSON API:
+  resources :proposal
+  resources :point, :only => [:create, :update, :destroy, :show]
+  resources :point_discussion, :only => [:create, :update, :destroy, :show]
+  resources :opinion, :only => [:update, :create, :show]
+  resources :inclusion, :path => 'inclusion/:point_id', :only => [:create]
+  match 'inclusion/:point_id' => 'inclusion#destroy', :via => :delete
 
-  resource :proposal, :path => '/proposal/:long_id', :long_id => /[a-zA-Z\d_]{10}/, :only => [:show, :update, :destroy] #should only be used for json
-
-
-  resource :proposal, :path => '/:long_id', :long_id => /[a-zA-Z\d_]{10}/, :only => [] do
-    get '/' => "proposals#show" , :as => :new_opinion
-
-    resources :opinions, :path => '', :only => [:update, :create], :path_names => {:new => ''} 
-
-    get '/opinions/:user_id' => "opinions#show", :as => :user_opinion
-
-    resources :points, :only => [:create, :update, :destroy, :show]
-  end
-
-  # route all non-ajax requests to home controller, with a few exceptions
-  get '(*url)' => 'home#index', :constraints => XHRConstraint.new 
+  ##### Mike doesn't know what to do with the rest of this yet #####
 
   ######
   ## concerns routes

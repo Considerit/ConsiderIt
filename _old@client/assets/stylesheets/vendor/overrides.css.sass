@@ -1,0 +1,146 @@
+//////////////////////////////////////////
+// VENDOR
+//////////////////////////////////////////
+
+@import "old_library"
+
+
+/**
+/* for jquery.inline_labels.js
+/**
+
+// .inlined
+//   position: relative
+
+// label.inline
+//   color: inherit
+//   &.focus
+//     color: #777
+
+//   text-align: left
+//   position: absolute !important
+//   cursor: text !important
+//   visibility: hidden !important
+//   overflow: hidden !important
+//   padding: 0 !important
+//   margin: 0 !important
+//   border: 0 !important
+
+//   &.empty
+//     visibility: visible !important
+
+/**
+/* for tooltipster
+/**/
+
+
+.tooltipster-default 
+  @extend %on_background
+  background: $base_background_color //emphasize($base_background_color, 5%)
+  border: none //1px solid emphasize($base_background_color, 25%)
+  border-radius: 0
+
+  .tooltipster-content
+    +font-size(0)
+    font-size: 16px
+    padding: 0
+
+
+/**
+/* for jquery.toastr.js
+/**/
+
+#toast-container.toast-top-full-width 
+  left: 50%
+  width: $content_width
+  margin-left: -$content_width / 2
+
+  > div
+    text-align: center
+    opacity: 1
+
+/**
+/* for jquery.fileinput.js
+/**
+
+/**
+/* for jquery.editable.js
+/**/
+
+
+.editable-pencil
+  position: absolute
+  left: -15px
+  top: $vertical_baseline/2
+  font-size: 12px
+  opacity: .7
+
+.editable-container.editable-inline
+  border-color: emphasize($base_background_color, 5%) emphasize($base_background_color, 10%) emphasize($base_background_color, 5%) emphasize($base_background_color, 15%)
+  background-color: deemphasize($base_background_color, 100%)
+  color: $base_text_color
+
+.editable.editable-click, a.editable.editable-click, .editable-container.editable-inline
+  border: 1px solid transparent
+  padding: 4px 3px
+
+  &:hover
+    cursor: pointer
+    border-color: emphasize($base_background_color, 5%) emphasize($base_background_color, 10%) emphasize($base_background_color, 5%) emphasize($base_background_color, 15%)
+    background-color: deemphasize($base_background_color, 100%)
+    color: $base_text_color
+
+  &:not(.editable-disabled)
+    width: 98%
+    display: inline-block
+    position: relative
+    //margin-left: 25px
+
+    // &:before
+    //   position: absolute
+    //   left: -15px
+    //   top: $vertical_baseline/2
+    //   font-size: 13px
+    //   opacity: .7
+
+    &:hover
+      position: relative
+      opacity: 1
+
+.editable-container
+  position: relative
+
+.editableform 
+  .control-group
+    position: relative
+
+.editable-input
+  width: 100%
+  textarea
+    background-color: transparent
+    width: 100%
+    padding: 0
+
+.editable-buttons
+
+  .editable-cancel
+    background: none
+    border: none
+    margin-left: 0
+    color: #555
+    display: block
+    margin: auto
+
+    &:hover
+      color: black
+
+  .editable-submit
+    @extend %button
+    +font-size(3)
+
+.editable-empty, .editable-empty:hover, .editable-empty:focus
+  font-style: normal
+
+//zocial
+.zocial:before
+  width: $grid_gutter

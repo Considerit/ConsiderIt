@@ -1,121 +1,121 @@
-@import "variables"
+// @import "variables"
 
-// PROPOSAL ADMIN SETTINgs
+// // PROPOSAL ADMIN SETTINgs
 
-// Proposal admin strip
-[data-visibility="published"]
-  .proposal_admin_strip
-    position: absolute
-    right: -$grid_gutter
-    bottom: $vertical_baseline / 4
-    z-index: 10
+// // Proposal admin strip
+// [data-visibility="published"]
+//   .proposal_admin_strip
+//     position: absolute
+//     right: -$grid_gutter
+//     bottom: $vertical_baseline / 4
+//     z-index: 10
 
-    i
-    .proposal_admin_options_menu
-      display: none
+//     i
+//     .proposal_admin_options_menu
+//       display: none
 
-    &:hover
-      .proposal_admin_options_menu_wrap
-        position: absolute
-        right: -$grid_minor
-        top: 20px
+//     &:hover
+//       .proposal_admin_options_menu_wrap
+//         position: absolute
+//         right: -$grid_minor
+//         top: 20px
 
-      .proposal_admin_options_menu
-        min-width: 200px
-        list-style: none outside none
-        margin-left: 0
-        display: inline-block
-        box-shadow: 0 5px 2px 10px
-        border-radius: 5px
-        padding: $vertical_baseline / 4 0
+//       .proposal_admin_options_menu
+//         min-width: 200px
+//         list-style: none outside none
+//         margin-left: 0
+//         display: inline-block
+//         box-shadow: 0 5px 2px 10px
+//         border-radius: 5px
+//         padding: $vertical_baseline / 4 0
 
-        a
+//         a
 
-          width: 100%
-          padding: $vertical_baseline / 4 $grid_gutter
-          display: block
-          cursor: pointer
-          +font-size(-2)
-          span
-            display: block
+//           width: 100%
+//           padding: $vertical_baseline / 4 $grid_gutter
+//           display: block
+//           cursor: pointer
+//           +font-size(-2)
+//           span
+//             display: block
 
-          i
-            padding-right: $grid_gutter / 2
-            display: inline-block
-
-
-// unpublished proposal
-[data-visibility="unpublished"]
-  .proposal_admin_region
-    top: $vertical_baseline / 2 
-    height: 0
-    position: relative
-
-  .proposal_admin_strip
-    position: relative
-
-    i.fa-cog
-      display: none
-
-    .proposal_admin_options_menu_wrap
-      display: inline-block
-
-    .proposal_admin_options_menu
-      list-style: none outside none
-      li
-        display: inline-block
-
-      a
-        &:hover
+//           i
+//             padding-right: $grid_gutter / 2
+//             display: inline-block
 
 
-    .proposal_admin_operations_status
-      display: none
+// // unpublished proposal
+// [data-visibility="unpublished"]
+//   .proposal_admin_region
+//     top: $vertical_baseline / 2 
+//     height: 0
+//     position: relative
 
-    .proposal_admin_publicity
-      position: absolute
-      +font-size(-1)
-      top: $vertical_baseline / 2
-      left: 15 * $grid_gutter
+//   .proposal_admin_strip
+//     position: relative
 
-    .delete_proposal
-      right: 4px
-      position: absolute
-      top: 4 * $vertical_baseline
-      +font-size(-2)
+//     i.fa-cog
+//       display: none
 
-  .proposal_admin_publish
-    position: absolute
-    right: 0
-    z-index: 2
-    padding-bottom: 4 * $vertical_baseline
+//     .proposal_admin_options_menu_wrap
+//       display: inline-block
 
-    .proposal_publish
-      +font-size(0)
-      &:hover
-        +font-size(0)
+//     .proposal_admin_options_menu
+//       list-style: none outside none
+//       li
+//         display: inline-block
+
+//       a
+//         &:hover
 
 
+//     .proposal_admin_operations_status
+//       display: none
+
+//     .proposal_admin_publicity
+//       position: absolute
+//       +font-size(-1)
+//       top: $vertical_baseline / 2
+//       left: 15 * $grid_gutter
+
+//     .delete_proposal
+//       right: 4px
+//       position: absolute
+//       top: 4 * $vertical_baseline
+//       +font-size(-2)
+
+//   .proposal_admin_publish
+//     position: absolute
+//     right: 0
+//     z-index: 2
+//     padding-bottom: 4 * $vertical_baseline
+
+//     .proposal_publish
+//       +font-size(0)
+//       &:hover
+//         +font-size(0)
 
 
-// admin form
-.proposal_admin_operations_settings_form .access_list textarea
-  width: 100%
-  min-height: 3 * $vertical_baseline
-  +font-size(1)
-  padding: $vertical_baseline/4 $grid_gutter/4
-
-[data-visibility="published"]
-  .proposal_admin_strip > i
-    color: emphasize($base_background_color, 25%)
-
-  .proposal_admin_strip:hover .proposal_admin_options_menu
-    border: 1px solid emphasize($base_background_color, 20%)
 
 
-[data-visibility="unpublished"]
-  .proposal_admin_strip
-    color: $base_text_color
+// // admin form
+// .proposal_admin_operations_settings_form .access_list textarea
+//   width: 100%
+//   min-height: 3 * $vertical_baseline
+//   +font-size(1)
+//   padding: $vertical_baseline/4 $grid_gutter/4
 
-    .delete_proposal
-      +link_style(emphasize($base_background_color, 25%), $base_background_color, 25%)
+// [data-visibility="published"]
+//   .proposal_admin_strip > i
+//     color: emphasize($base_background_color, 25%)
+
+//   .proposal_admin_strip:hover .proposal_admin_options_menu
+//     border: 1px solid emphasize($base_background_color, 20%)
+
+
+// [data-visibility="unpublished"]
+//   .proposal_admin_strip
+//     color: $base_text_color
+
+//     .delete_proposal
+//       +link_style(emphasize($base_background_color, 25%), $base_background_color, 25%)

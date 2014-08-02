@@ -16,7 +16,7 @@ class Opinion < ActiveRecord::Base
   scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_segment, :user_id, :explanation, :published])}
 
   before_save do 
-    self.explanation = Sanitize.clean(self.explanation, Sanitize::Config::RELAXED)
+    self.explanation = self.explanation.sanitize if self.explanation
     self.stance_segment = Opinion.get_segment(self.stance)
   end 
 

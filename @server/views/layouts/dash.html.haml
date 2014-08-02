@@ -1,0 +1,97 @@
+
+!!! Strict
+%html{html_attrs}
+  %head{ :profile => "http://gmpg.org/xfn/1" }
+    = csrf_meta_tags
+
+    %meta{:content => "NONE,NOARCHIVE", :name => "robots"}
+
+    - cache ['dash', current_tenant] do 
+      %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }
+
+      = stylesheet_link_tag 'dash', debug: false
+
+      /[if IE 9]
+        = stylesheet_link_tag 'browser/ie9'
+      
+      /[if lte IE 8]
+        = stylesheet_link_tag 'browser/ie'
+
+      %link{ :href => "//fast.fonts.net/cssapi/cd97b194-90f2-4567-be7e-3a72011995f3.css",  :rel => 'stylesheet', :type => 'text/css' }
+
+      :javascript
+        //http://blog.colin-gourlay.com/blog/2012/02/safely-using-ready-before-including-jquery/
+        (function(w,d,u){w.readyQ=[];w.bindReadyQ=[];function p(x,y){if(x=="ready"){w.bindReadyQ.push(y);}else{w.readyQ.push(x);}};var a={ready:p,bind:p};w.$=w.jQuery=function(f){if(f===d||f===u){return a}else{p(f)}}})(window,document)
+
+      = render :partial => './templates'
+      = render :partial => './admin'
+
+      = javascript_include_tag 'dash', :async => true, debug: false
+
+
+  %body
+
+    - cache ['dash_body', current_tenant] do
+
+      #t_bg.content_style
+        #t_bg-top
+          %svg{ :xmlns => "http://www.w3.org/2000/svg", :height => 0, :style => "position: absolute", :version => "1.1", :baseProfile => "full" }
+            %defs
+              %filter{ :id => "bubble_gradient"}
+                %feImage{ :x => "10", :y => "0", :'xlink:href' => "#{image_path('bubble_gradient.png')}", :result => "overlay" }
+                %feOffset{ :dy => ".2", :dx => "0" }  
+                %feComposite{ :in2 => "SourceGraphic", :operator => "over" }
+
+          #l_wrap
+            #l-loading-indicator
+            .l_header
+            #l_content
+
+              #l_content_main
+                #t_bg-content
+                  #t_bg_content_top
+                    #l_content_main_wrap
+
+                    = image_tag "ajax-loader.gif", :id => 'l_preloader'
+                    = yield
+
+            #l_sticky_footer_region
+
+            .l_footer
+
+            - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
+              :javascript
+                var _gaq = _gaq || [];
+                _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
+                _gaq.push(['_setDomainName', ".#{get_root_domain}"]);
+                _gaq.push(['_trackPageview']);
+
+
+            - if current_tenant.analytics_google && current_tenant.analytics_google != ''
+              :javascript
+                var _gaq_account = _gaq_account || [];
+                _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
+                _gaq_account.push(['_trackPageview']);
+
+    = render :partial => './data'        
+
+    :javascript
+      $(function() {
+        if(#{!@not_logged_in.nil? && @not_logged_in}){
+          $('#l_preloader').remove();
+
+        } else {
+          ConsiderIt.start({
+            environment: "#{Rails.env}"
+          });
+        }
+
+        var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;
+        $buoop.ol = window.onload; 
+        try {if ($buoop.ol) $buoop.ol();}catch (e) {} 
+        var e = document.createElement("script"); 
+        e.setAttribute("type", "text/javascript"); 
+        e.setAttribute("src", "/browser-update.js"); 
+        document.body.appendChild(e); 
+
+      });

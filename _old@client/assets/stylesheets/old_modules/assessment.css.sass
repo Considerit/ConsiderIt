@@ -1,0 +1,78 @@
+@import "old_variables"
+
+.point-assessment-verdict-tooltip
+  width: 280px
+  padding: $vertical_baseline/2 $grid_gutter/2
+
+  .verdict-tooltip-title
+    +font-size(-2)
+    font-weight: bold
+  .verdict-tooltip-content
+    +font-size(-3)
+  .verdict-tooltip-readmore
+    +font-size(-4)
+
+// verdict on point in margin
+.community_point, .decision_board_point:hover
+  
+
+  &.community_point
+    .verdict_summary .assessment
+      color: #CBBE31
+      right: 10px
+      bottom: 20px
+
+  &.decision_board_point
+    .verdict_summary .assessment
+      right: 0px
+      bottom: 0px
+
+
+  .verdict_summary 
+    display: block
+    .assessment
+      text-align: right
+      position: absolute
+      z-index: 10
+
+      .assessment_details
+        position: absolute
+        +font-size(-3)
+        width: 200px
+        padding: $vertical_baseline/2 $grid_gutter
+        text-align: left
+
+        .claim
+          padding-bottom: $vertical_baseline
+
+          .verdict
+            padding-right: $grid_gutter
+
+          .summary
+            .claim_desc
+              font-style: italic
+
+            .claim_verdict
+              font-weight: bold
+              font-variant: small-caps
+              text-transform: lowercase
+
+      .wrap
+        padding: 2px 10px
+
+      &:hover
+        cursor: pointer
+        color: black
+
+
+
+        .assessment_details
+          display: inline-block
+          right: -30px
+
+          strong
+            display: block
+            padding-top: $vertical_baseline
+
+#expanded .verdict_summary
+  display: none

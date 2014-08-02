@@ -39,6 +39,7 @@ class ProposalController < ApplicationController
     if cannot?(:read, proposal)
       render :json => {:result => 'failure', :reason => 'Access denied'}
     else
+      pp 'reseting user activities'
       ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
       data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
       render :json => data

@@ -16,7 +16,7 @@ class Comment < ActiveRecord::Base
   acts_as_tenant :account
 
   before_save do 
-    self.body = Sanitize.clean(self.body, Sanitize::Config::RELAXED)
+    self.body = self.body.sanitize
   end
 
   self.moderatable_fields = [:body]

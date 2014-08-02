@@ -147,46 +147,19 @@ Proposal = ReactiveComponent
     opinions : []
     # UI STATE
     highlighted_users : null
-    sticky_opinion : false
-    sticky_proposal_title: false
 
   ##
   # Lifecycle methods
-
-  componentDidMount : (prev_props, prev_state) ->
+  componentDidMount : -> 
+    $el = $(@getDOMNode())
+    $el.find('.fixed_proposal_heading').stickyTopBottom()
 
   componentDidUpdate : ->
-    @setStickyHeader()
-
     $el = $(@getDOMNode())
-    $el.find('.description_region').css
-      top: $el.find('.fixed_proposal_heading').height() + 24
-
-
-  setStickyHeader : ->
-    # Sticky decision board. 
-    _.delay => 
-      $el = $(@getDOMNode())
-      $sticky_head_el = $el.find('.slider_base')
-      $(@getDOMNode()).headroom
-        offset: $sticky_head_el.offset().top - $el.find('.fixed_proposal_heading').outerHeight() - 55 #+ $sticky_head_el.width() / 2 - 60
-        onNotTop : => @data().sticky_opinion = true
-        onTop : => @data().sticky_opinion = false
-    , 2000  # delay initialization to let the rest of the dom load 
-            # so that the offset is calculated properly
-
-    # # Sticky proposal title
-    # _.delay => 
-    #   $sticky_head_el = $(@getDOMNode()).find('.proposal_heading')
-    #   $(@getDOMNode()).find('.description_region').headroom
-    #     offset: $sticky_head_el.offset().top + 25
-    #     onNotTop : => 
-    #       @data().sticky_proposal_title = true
-    #     onTop : => @data().sticky_proposal_title = false
-    # , 2000  # delay initialization to let the rest of the dom load 
-    #         # so that the offset is calculated properly
-
+    $el.find('.fixed_proposal_heading').stickyTopBottom('update')
     
+    # $el.find('.description_region').css
+    #   top: $el.find('.fixed_proposal_heading').height() + 24
 
   ##
   # State-dependent styling
@@ -203,8 +176,7 @@ Proposal = ReactiveComponent
       when 'crafting'
         styles = 
           '.histogram_bar':        { opacity: '.2' }
-          '.opinion_region':       { translateX: 0, translateY: 0 }
-          '.decision_board_body':  { width: "#{DECISION_BOARD_WIDTH}px", minHeight: "375px"}
+          '.decision_board_body':  { translateX: 0, translateY: 0, width: "#{DECISION_BOARD_WIDTH}px", minHeight: "275px"}
           '.pros_by_community':    { translateX: 0 }
           '.cons_by_community':    { translateX: "#{DECISION_BOARD_WIDTH}px" }
         
@@ -218,23 +190,18 @@ Proposal = ReactiveComponent
         , duration
 
       when 'results'
-        slider_stance = $el.find('.ui-slider').slider('value')
-        segment = getStanceSegment(-1 * slider_stance)
+        slider_data = @data('slider')
+        slider_stance = -slider_data.stance
+        segment = slider_data.stance_segment
 
-        opinion_region_x = DECISION_BOARD_WIDTH * (slider_stance+1) / 2.0
         give_opinion_button_width = 186
-        if segment == 3
-          opinion_region_x -= give_opinion_button_width / 2
-        else if segment < 3
-          opinion_region_x -= give_opinion_button_width * .95 
-        else 
-          opinion_region_x -= give_opinion_button_width * .05 
+        gutter = .1 * give_opinion_button_width
 
+        opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * (slider_stance+1) / 2.0
 
         styles = 
           '.histogram_bar':         { opacity: '1' }
-          '.opinion_region':        { translateX: opinion_region_x, translateY: -18 }
-          '.decision_board_body':   { width: "#{give_opinion_button_width}px", minHeight: "32px"}
+          '.decision_board_body':   { translateX: opinion_region_x, translateY: -18, width: "#{give_opinion_button_width}px", minHeight: "32px"}
           '.pros_by_community':     { translateX:  DECISION_BOARD_WIDTH / 2 }
           '.cons_by_community':     { translateX:  DECISION_BOARD_WIDTH / 2 }
         
@@ -250,7 +217,8 @@ Proposal = ReactiveComponent
   ##
   # Make this thing!
   render : ->
-    page = @data('application').page
+    app_data = @data('application')
+    page = app_data.page
     my_data = @data()
 
     description_region_style = 
@@ -259,23 +227,23 @@ Proposal = ReactiveComponent
     proposer = if my_data.proposal.user_id then @data("user/#{my_data.proposal.user_id}") else null
 
     R.div className:'proposal', key:@props.long_id, 'data-page':page,
+      R.div className: 'fixed_proposal_heading', 
+        R.span null,"#{if my_data.proposal.category && my_data.proposal.designator then my_data.proposal.category + ' ' + my_data.proposal.designator + ':' else ''}#{my_data.proposal.name}"
+
       #description
+
       R.div className:'description_region', style : description_region_style, 
-        R.div className: 'fixed_proposal_heading', 
-          R.span null,"#{my_data.proposal.category} #{my_data.proposal.designator}: #{my_data.proposal.name}"
 
         R.div className: 'context',
-          Avatar 
-            className: 'proposer_avatar'
-            key: my_data.proposal.user_id
-            tag: R.img
-            img_style: 'large'
-            style: 
-              visibility: if my_data.sticky_opinion then 'hidden' else 'visible'
+          # Avatar 
+          #   className: 'proposer_avatar'
+          #   key: my_data.proposal.user_id
+          #   tag: R.img
+          #   img_style: 'large'
           
-          R.span className: 'proposal_author_tic'
+          # R.span className: 'proposal_author_tic'
           
-          R.div className: 'proposer_name', "by #{if proposer then proposer.name else ''}, EFF Outreach Director" 
+          R.div className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}, Director of Business Development, Facebook" 
 
         R.div className: 'proposal_details', dangerouslySetInnerHTML:{__html: my_data.proposal.description}
 
@@ -286,30 +254,20 @@ Proposal = ReactiveComponent
 
         Histogram()
 
-        Slider()
-
-
-      #reasons
-      R.div 
-        className:'reasons_region'
-        style : { width: REASONS_REGION_WIDTH }, #, left: -(REASONS_REGION_WIDTH - CONTENT_WIDTH) / 2 },
-          #community pros
-          CommunityPoints { key: 'pros' }
-            
-          #your reasons
-          DecisionBoard()
-
-          #community cons
-          CommunityPoints { key: 'cons' }
-
-      if @data('application').page == 'results'
+      if app_data.auth_mode
+        Auth()
+      else
+        #reasons
         R.div 
-          className:'give_opinion_button2'
-          onClick: (=> togglePage('crafting'))
-          style: 
-            width: BODY_WIDTH
-            margin: 'auto'
-        , 'Give your Opinion'
+          className:'reasons_region'
+          style : { width: REASONS_REGION_WIDTH }, #, left: -(REASONS_REGION_WIDTH - CONTENT_WIDTH) / 2 },
+            #community pros
+            CommunityPoints { key: 'pros' }
+
+            DecisionBoard()
+
+            #community cons
+            CommunityPoints { key: 'cons' }
 
 
 ##
@@ -486,7 +444,7 @@ Slider = ReactiveComponent
   mixins: [StyleAnimator]
 
   getDefaultData : ->
-    initial_stance = @data(active_proposal_key()).initial_stance
+    initial_stance = -@data(active_proposal_key()).initial_stance
     return {
       has_moved : false
       stance : initial_stance
@@ -514,7 +472,7 @@ Slider = ReactiveComponent
     switch @data('application').page
       when 'crafting'
         styles = 
-          '.bubblemouth': { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 5.5, translateX: mouth_x * 1.5  }
+          '.bubblemouth': { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 7, translateX: mouth_x * 1.5  }
           '.the_handle':  { scale: 2.5, translateY: -8 }
 
       when 'results'
@@ -528,17 +486,18 @@ Slider = ReactiveComponent
   # setSlidability
   # Inits jQuery UI slider and enables/disables it between pages
   setSlidability : ->
-    page = @data('application').page
+    app_data = @data('application')
+    page = app_data.page
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
-      $slider_base.slider(if page == 'results' then 'enable' else 'enable') 
+      $slider_base.slider(if app_data.auth_mode then 'disable' else 'enable') 
     else
       $slider_base.slider
-        disabled: false #@data('application').page == 'results'
+        disabled: app_data.auth_mode #@data('application').page == 'results'
         min: -1
         max: 1
         step: .01
-        value: -@data(active_proposal_key()).initial_stance
+        value: -@data().stance
         slide: (ev, ui) => 
           # Update the stance segment if it has changed. This facilitates 
           # the feedback atop the slider changing from e.g. 'strong 
@@ -555,16 +514,19 @@ Slider = ReactiveComponent
             togglePage('crafting')
 
   togglePage : (ev) ->
-    page = if @data('application').page == 'results' then 'crafting' else 'results'
-    togglePage(page)
+    app_data = @data('application')
+    if !app_data.auth_mode
+      page = if app_data.page == 'results' then 'crafting' else 'results'
+      togglePage(page)
     ev.stopPropagation()
 
   render : ->
     my_data = @data()
     stance = my_data.stance
     segment = my_data.stance_segment
-    page = @data('application').page
-    sticky_opinion = @data(active_proposal_key()).sticky_opinion
+    app_data = @data('application')
+    page = app_data.page
+    sticky = @data('decisionboard').sticky
 
     #jquery UI slider will pick an el with this class name up
     props_for_slider_handle = { className:'ui-slider-handle' } 
@@ -592,17 +554,6 @@ Slider = ReactiveComponent
       else "#{Math.floor(Math.abs(stance) * 100)}% #{if segment > 3 then 'Support' else 'Oppose'}"
 
     slider_feedback_bucket = stance_names[segment]
-    
-    # nasty, reference to other sticky components' height...
-    if sticky_opinion
-      sticky_top = $('.fixed_proposal_heading').outerHeight() + 55
-    ## 
-
-    slider_style = 
-      if !sticky_opinion || page == 'results' 
-      then {}
-      else { position: 'fixed', top: sticky_top, backgroundColor: 'white', zIndex: 100 }
-
     
     face_left_eye_style = 
       transform: 
@@ -634,20 +585,15 @@ Slider = ReactiveComponent
 
     # ugly access here...this is a hack that hides a dependency between slider and histogram 
     triangle_width = 
-      if sticky_opinion 
+      if sticky
       then 0 
       else $('.histogram_segment[data-segment="0"]').width() + 5
-    # /ugly
 
     slider_base_triangle_style = 
-      position: 'absolute'
-      width: 0
-      height: 0
       borderLeft: "#{triangle_width}px solid transparent"
       borderRight: "#{triangle_width}px solid transparent"
-      borderBottom: "6px solid #787878"
 
-    R.div className: 'slider', style: slider_style, 
+    R.div className: 'slider', 
       R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
         R.div 
           className: 'slider_base_triangle_left'
@@ -664,18 +610,21 @@ Slider = ReactiveComponent
           R.div 
             className:'slider_feedback'
             'data-stance-segment': segment
-            style: {visibility: if sticky_opinion then 'hidden' else 'visible'}
+            style: {visibility: if sticky && !app_data.auth_mode then 'hidden' else 'visible'}
           ,
             R.div 
               className:'slider_feedback_instructions'
               style : 
                 visibility: 
-                  if !@data().has_moved 
+                  if !@data().has_moved  || app_data.auth_mode
                   then 'hidden' 
                   else 'visible'
               , "Your overall opinion:"
-            R.div className:'slider_feedback_result', 
-              if !my_data.has_moved 
+
+            R.div className:'slider_feedback_result',
+              if app_data.auth_mode
+              then 'Please Introduce Yourself'
+              else if !my_data.has_moved
               then 'Drag Your Overall Opinion' 
               else slider_feedback_bucket
 
@@ -714,7 +663,12 @@ OpinionFilter = ReactiveComponent
 DecisionBoard = ReactiveComponent
   displayName: 'DecisionBoard'
 
+  getDefaultData : -> 
+    sticky: false
+
   componentDidMount : ->
+    @setStickyHeader()
+
     # make this a drop target
     $el = $(@getDOMNode())
     $el.droppable
@@ -732,55 +686,68 @@ DecisionBoard = ReactiveComponent
       over : (ev, ui) => 
         $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
 
+  componentDidUpdate : -> 
+    $el = $(@getDOMNode())    
+    $el.stickyTopBottom('fix_initial_position')
+
+  setStickyHeader : ->
+    $el = $(@getDOMNode())
+
+    $el.stickyTopBottom
+      container: $('.reasons_region')
+      top_offset: $('.fixed_proposal_heading').outerHeight() + 101 #ugly access
+      bottom_offset: 20
+      docks: => @data().sticky = false
+      undocks: => @data().sticky = true
+      conditional: => @data('application').page == 'crafting'
+
+  clickSave : -> 
+    if @data('/current_user').id
+      togglePage('results')
+    else
+      @data('application').auth_mode = 'register'
+
   render : ->
-    sticky_opinion = @data(active_proposal_key()).sticky_opinion
-    page = @data('application').page
-
-
-
-    sticky_header = sticky_opinion && page == 'crafting'
-
-    # nasty, reference to other sticky components' height...
-    if sticky_header
-      sticky_top = $('.fixed_proposal_heading').outerHeight() + 101
-    ## 
+    app_data = @data('application')
+    page = app_data.page
+    current_user = @data('/current_user')
 
     opinion_region_style = 
-      position: if sticky_header then 'fixed' else ''
-      top: if sticky_header then sticky_top else ''
       left: '50%'
       width: DECISION_BOARD_WIDTH
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
-    R.div className:'opinion_region', style: opinion_region_style,
+    R.div className:'opinion_region focal_wrapper', style: opinion_region_style,
+      Slider()
+
       R.div 
-        className:'decision_board_body'
+        className:'decision_board_body focal_area'
         onClick: => if @data('application').page == 'results' then togglePage('crafting')
       ,
 
-        # only shown during crafting, but needs to be present always for animation
-        R.div className: 'your_points',
-          # your pros
-          YourPoints { key: 'pros' }
+        R.div null, 
+          # only shown during crafting, but needs to be present always for animation
+          R.div className: 'your_points',
+            # your pros
+            YourPoints { key: 'pros' }
 
-          # your cons
-          YourPoints { key: 'cons' }
+            # your cons
+            YourPoints { key: 'cons' }
 
-        # only shown during results, but needs to be present always for animation
-        R.a 
-          className:'give_opinion_button'
-        , 'Give your Opinion'
+          # only shown during results, but needs to be present always for animation
+          R.a 
+            className:'give_opinion_button'
+          , 'Give your Opinion'
 
       R.div 
-        className:'save_opinion_button'
-        onClick: (=> togglePage('results'))
+        className:'save_opinion_button primary_button'
+        onClick: @clickSave
       , 'Save your opinion and see results'
 
       R.a 
-        className:'cancel_opinion_button'
+        className:'cancel_opinion_button primary_cancel_button'
         onClick: (=> togglePage('results'))
-      , 'discard your opinion'
-
+      , 'discard your opinion'  
 
 
 ##
@@ -1044,7 +1011,6 @@ Point = ReactiveComponent
         if @props.location_class == 'community_point'
           @renderIncluders()
 
-
         if !selected_segment[0] || ( author_opinion && author_opinion.stance_segment == selected_segment[0] )
           Avatar tag: R.span, key: my_data.user_id, className:"point_author_avatar"
 
@@ -1078,6 +1044,11 @@ NewPoint = ReactiveComponent
   getDefaultData : ->
     # UI STATE
     edit_mode : false
+    sign_name : true
+
+  componentDidUpdate : ->
+    if @data().edit_mode
+      $(@getDOMNode()).find('#nutshell').focus()
 
   handleAddPointBegin : (ev) -> @data().edit_mode = true
   handleAddPointCancel : (ev) -> @data().edit_mode = false
@@ -1123,19 +1094,22 @@ NewPoint = ReactiveComponent
       else
         R.div className:'newpoint_form',
           R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.key == 'pros'}"
-          R.div className:'newpoint_nutshell_wrap',
-            R.textarea id:'nutshell', className:'newpoint_nutshell is_counted', cols:'28', maxLength:"140", name:'nutshell', pattern:'^.{3,}', placeholder:'Summarize your point (required)', required:'required'
-            R.span className: 'count', 140
-          R.div className:'newpoint_description_wrap',
-            R.textarea id:'text', className:'newpoint_description', cols:'28', name:'text', placeholder:'Write a longer description (optional)', required:'required'
+          R.label htmlFor:'nutshell', 'Your point'
+          CharacterCountTextInput id:'nutshell', className:'newpoint_nutshell', maxLength:140, name:'nutshell', pattern:'^.{3,}', placeholder:'Make this summary succinct.', required:'required'
+          
+          R.label htmlFor:'text', 'Expand on your point (optional)'
+          AutoGrowTextArea id:'text', className:'newpoint_description', name:'text', placeholder:'Provide background and/or back your point up with evidence.', required:'required', min_height: 100
+          
+
           R.div className:'newpoint_hide_name',
-            R.input className:'newpoint-anonymous', type:'checkbox', id:"hide_name-#{@props.key}", name:"hide_name-#{@props.key}"
-            R.label for:"hide_name-#{@props.key}", title:'We encourage you not to hide your name from other users. Signing your point with your name lends it more weight to other participants.', 
-              'Conceal your name'
+            R.input className:'newpoint-anonymous', type:'checkbox', id:"sign_name-#{@props.key}", name:"sign_name-#{@props.key}", checked: @data().sign_name, onChange: (=> @data().sign_name = !@data().sign_name)
+            R.label htmlFor: "sign_name-#{@props.key}", title:'Signing your point with your name lends it more weight with other participants.', 'Sign your name'
+          
           R.div className:'newpoint-submit',
-            R.a className:'newpoint-cancel', onClick: @handleAddPointCancel,
+            R.input className:'button primary_button', action:'submit-point', type:'submit', value:'Done', onClick: @handleSubmitNewPoint
+
+            R.a className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
               'cancel'
-            R.input className:'button', action:'submit-point', type:'submit', value:'Done', onClick: @handleSubmitNewPoint
 
 ##
 # Avatar
@@ -1195,8 +1169,354 @@ Avatar = ReactiveComponent
 
     attrs.src = filename if filename
     
-
     @transferPropsTo @props.tag attrs
+
+
+UserBar = ReactiveComponent
+  displayName: 'UserBar'
+
+  logout : -> 
+    $.ajax Routes.current_user_path(),
+      type : 'delete'
+      success : (data) =>
+        #TODO: update CSRF
+        #TODO: clear current user
+        current_user = @data('/current_user')
+        current_user.id = current_user.email = current_user.password = null
+        current_user.csrf = data.csrf      
+        @data('application').auth_mode = null
+        @data('auth').provider = null
+        @data('auth').email = null
+        @data('auth').name = null
+        @data('auth').image_url = null
+
+      error : (xhr, status, error) -> 
+        console.error 'Error logging out: ', error
+
+  render: ->
+    current_user = @data('/current_user')
+    if current_user.id
+      R.div className: 'userbar', 
+        Avatar key: current_user.id, tag: R.span, className: 'userbar_avatar', style: {height: 20, width: 20}
+        R.a onClick: @logout, 'logout'
+    else 
+      R.div null
+
+AutoGrowTextArea = ReactiveComponent
+  displayName: 'AutoGrowTextArea'  
+
+  getDefaultData : -> 
+    height: @props.min_height
+
+  autoGrow : -> 
+    scroll_height = @getDOMNode().scrollHeight
+    if scroll_height > @getDOMNode().clientHeight
+      @data().height = scroll_height + 5
+
+  render : -> 
+    @transferPropsTo R.textarea onKeyUp: @autoGrow, style: {height: @data().height} 
+
+
+CharacterCountTextInput = ReactiveComponent
+  displayName: 'CharacterCountTextInput'
+
+  getDefaultData : -> 
+    count : 0
+
+  render : -> 
+    class_name = "is_counted"
+    R.div style: {position: 'relative'}, 
+      @transferPropsTo R.textarea className: class_name, onChange: (=> @data().count = $(@getDOMNode()).find('textarea').val().length  )
+      R.span className: 'count', @props.maxLength - @data().count
+
+
+Auth = ReactiveComponent
+  displayName: 'Auth'
+
+  componentDidMount : -> 
+    $(document).scrollTop $(@getDOMNode()).find('.slider_feedback').offset().top - 10
+
+  getDefaultData : -> 
+    email : null
+    name : null
+    image_url : null
+    provider : null
+
+  startThirdPartyAuth : (provider) -> 
+    new ThirdPartyAuthHandler
+      provider : provider
+      callback : (user_data) => 
+        if 'key' of user_data
+          # user already existed and now we've logged in via third party        
+          current_user = @data('/current_user')
+          app_data = @data('application')
+          current_user.id = user_data.id
+          current_user.name = user_data.name          
+          current_user.csrf = user_data.csrf
+          app_data.page = 'results'
+          app_data.auth_mode = null
+        else 
+          # we're prepped to create an account...
+          #TODO: show user the pledge
+          # @authenticateWithServer user_data
+          @data().provider = provider
+          @data().name = user_data.name
+          @data().image_url = user_data.avatar_url
+          @data().email = user_data.email
+
+  submitAuth : (ev) -> 
+    ev.preventDefault()
+    $el = $(@getDOMNode())
+
+    email = $el.find('#user_email').val()
+    password = $el.find('#user_password').val()
+    name = $el.find('#user_name').val()
+
+    #proper ActiveREST:
+    # current_user.email = email
+    # current_user.password = password
+    # ...
+
+    #scratch: 
+
+    user_data = 
+      email: email
+      password: password
+      name: name
+
+    if $el.find('#user_verification_code').length > 0
+      user_data.reset_password_token = $el.find('#user_verification_code').val()
+
+    @authenticateWithServer user_data, true
+
+  authenticateWithServer : (user_params, submit_avatar_form = false) -> 
+    current_user = @data('/current_user')
+    params = 
+      authenticity_token: current_user.csrf
+      user: user_params
+
+    $.ajax 
+      type: 'POST'
+      url: Routes.current_user_path()
+      beforeSend: (xhr) -> xhr.setRequestHeader('X-CSRF-Token', current_user.csrf)
+      data: params
+      success : (data, status, xhr) => 
+        app_data = @data('application')
+        current_user = @data('/current_user')
+        current_user.id = data.id
+        current_user.errors = if data.errors then data.errors else []
+        current_user.csrf = data.csrf
+        current_user.name = data.name
+
+        # hack for submitting file data in ActiveREST for now
+        # we'll just submit the file form after user is signed in
+        if submit_avatar_form
+          $('#user_avatar_form').ajaxSubmit
+            type: 'PUT'
+            data: 
+              authenticity_token: current_user.csrf
+            success: (data, status, xhr) -> 
+              current_user.id = data.id
+              current_user.errors = if data.errors then data.errors else []
+              current_user.csrf = data.csrf
+              current_user.name = data.name
+
+        if !current_user.errors || current_user.errors.length == 0
+          app_data.page = 'results'
+          app_data.auth_mode = null
+          current_user.errors = []
+
+      error : (xhr, status, error) -> 
+        console.error 'Error logging in: ', error
+
+  sendPasswordReminder : -> 
+    email = $('#user_email').val()
+    $.post Routes.send_password_reset_token_path(), {user : {email: email}}, (data) =>
+      if data.errors && data.errors.length > 0
+        current_user = @data('/current_user')
+        current_user.errors = data.errors
+      else 
+        app_data = @data('application')
+        app_data.auth_mode = 'password_reminder'
+
+  toggleAuthMode : -> 
+    app_data = @data('application')
+    current_user = @data('/current_user')
+    email = $(@getDOMNode()).find('#user_email').val()
+
+    @data().email = email if email && email.length > 0
+    app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'    
+    current_user.errors = []
+
+
+  render: -> 
+    current_user = @data('/current_user')
+    app_data = @data('application')
+
+    focal_wrapper_style = 
+      left: '50%'
+      width: DECISION_BOARD_WIDTH
+      marginLeft: -DECISION_BOARD_WIDTH / 2
+
+    R.div className:'auth_region focal_wrapper', style: focal_wrapper_style,
+      Slider()
+
+      R.div className:'auth focal_area',
+
+        if app_data.auth_mode in ['login', 'register']
+          R.div className: 'switch_auth_mode', 
+            R.span null, if app_data.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
+            R.a className: 'toggle_auth', onClick: @toggleAuthMode, if app_data.auth_mode == 'register' then 'Log In' else 'Create an Account'
+
+        if app_data.auth_mode in ['login', 'register'] && !@data().provider
+
+          R.div className: 'third_party_auth',
+            R.label className: 'third_party_call', 'Instantly:'
+            R.button className: 'third_party_option facebook', onClick: (=> @startThirdPartyAuth('facebook')),
+              R.i className: 'fa fa-facebook'
+              R.span null, 'facebook'
+            R.button className: 'third_party_option google',  onClick: (=> @startThirdPartyAuth('google')),
+              R.i className: 'fa fa-google'
+              R.span null, 'google'
+            if app_data.auth_mode in ['login', 'password_reminder']
+              R.button className: 'third_party_option twitter',  onClick: (=> @startThirdPartyAuth('twitter')),
+                R.i className: 'fa fa-twitter'
+                R.span null, 'twitter'
+
+            R.div className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
+
+        if app_data.auth_mode in ['login', 'password_reminder']
+          # logging in
+
+          R.div null, 
+            R.label className: 'auth_section_label', if app_data.auth_mode == 'login' then 'By email address:' else 'Change your password to login'
+
+            R.table className: 'auth_fields login', 
+              R.tr null, 
+                R.td className: 'label_cell',
+                  if app_data.auth_mode == 'login'  
+                    R.label htmlFor: 'user_email', 'email:'
+                R.td className: 'field_cell', 
+                  R.input id: "user_email", defaultValue: @data().email, name: "user[email]", placeholder: "email@address", required: "required", type: if app_data.auth_mode == 'login' then "email" else "hidden"
+
+              R.tr null, 
+                R.td className: 'label_cell', 
+                  switch app_data.auth_mode
+                    when 'login'
+                      R.label htmlFor: 'user_password', 'password:'
+                    when 'password_reminder'
+                      R.label htmlFor: 'user_password', 'new password:'
+
+                R.td className: 'field_cell', 
+                  R.input id: "user_password", name: "user[password]", placeholder: (if app_data.auth_mode == 'login' then "password" else "new password"), required: "required", type: "password"
+
+                  if app_data.auth_mode == 'login'
+                    R.a className: 'forgot_password', onClick: @sendPasswordReminder, 'I forgot! Email me password instructions.'
+
+              if app_data.auth_mode == 'password_reminder'
+                R.tr null, 
+                  R.td className: 'label_cell', 
+                    R.label htmlFor: 'user_verification_code', 'verification code:'
+
+                  R.td className: 'field_cell', 
+                    R.input id: "user_verification_code", name: "user[password_code]", placeholder: "verification code", required: "required", type: "text"
+                    R.div className: 'password_verification_explanation', "Find code in an email just sent to you."
+
+        else 
+          # creating new account
+          R.table className: 'auth_fields register', 
+            R.tr null, 
+              R.td className: 'label_cell',
+                R.label htmlFor: 'user_name', 'Hi, my name is:'
+              R.td className: 'field_cell', 
+                R.input id: "user_name", value: @data().name, onChange: (=> @data().name = $('#user_name').val()), name: "user[name]", placeholder: "first and last name", required: "required", type: "text"
+
+            if @data().provider
+              R.tr null, 
+
+                R.td className: 'label_cell',
+                  R.label htmlFor: 'user_provider', 'I login via:'
+                R.td className: 'field_cell', 
+                  switch @data().provider
+                    when 'facebook'
+                      R.button className: 'third_party_option facebook', style: {cursor: 'default'},
+                        R.i className: 'fa fa-facebook'
+                        R.span null, 'facebook'
+                    when 'google'
+                      R.button className: 'third_party_option google', style: {cursor: 'default'},
+                        R.i className: 'fa fa-google'
+                        R.span null, 'google'
+                    when 'twitter'
+                      R.button className: 'third_party_option twitter', style: {cursor: 'default'},
+                        R.i className: 'fa fa-twitter'
+                        R.span null, 'twitter'
+
+            else
+
+              R.tr null, 
+
+                R.td className: 'label_cell',
+                  R.label htmlFor: 'user_email', 'I login as:'
+                R.td className: 'field_cell', 
+                  R.input id: "user_email", defaultValue: @data().email, name: "user[email]", placeholder: "email@address", required: "required", type: "email"
+                  R.input id: "user_password", name: "user[password]", placeholder: "password", required: "required", type: "password", pattern: ".{5,}"
+
+
+            R.tr null, 
+              R.td className: 'label_cell', 
+                R.label htmlFor: 'user_avatar', 'I look like this:'
+              R.td className: 'field_cell',
+                # hack for submitting file data in ActiveREST for now
+                # we'll just submit the file form after user is signed in
+                R.form id: 'user_avatar_form',action: Routes.current_user_path(), 
+
+                  R.div className: 'avatar_preview_enclosure',
+                    R.img id: 'avatar_preview', src: if @data().image_url then @data().image_url else null #todo: make sure that if user overrides image_url, that the new image is used
+                
+                  R.input id: 'user_avatar', name: "user[avatar]", type: "file", onChange: (ev) -> 
+                    input = $('#user_avatar')[0]
+                    if input.files && input.files[0]
+                      reader = new FileReader()
+                      reader.onload = (e) ->
+                        $("#avatar_preview").attr 'src', e.target.result
+                      reader.readAsDataURL input.files[0]
+                    else
+                      $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
+
+            R.tr null,
+              R.td className: 'label_cell', 
+                R.label null, 'Community pledge:'
+              R.td className: 'field_cell',
+                R.ul className: 'pledges',
+                  R.li className: 'pledge', 
+                    R.input className:'pledge-1', type:'checkbox', id:"pledge-1", name:"pledge-1"
+                    R.label htmlFor: "pledge-1", 'I will not attack or mock others.'
+                  R.li className: 'pledge', 
+                    R.input className:'pledge-2', type:'checkbox', id:"pledge-2", name:"pledge-2"
+                    R.label htmlFor: "pledge-2", 'I will speak only on behalf of myself.'
+                  R.li className: 'pledge', 
+                    R.input className:'pledge-3', type:'checkbox', id:"pledge-3", name:"pledge-3"
+                    R.label htmlFor: "pledge-3", 'I will use only one account to participate.'
+
+
+
+        if current_user.errors && current_user.errors.length > 0
+          R.div className: "auth_errors", 
+            R.i className: 'fa fa-exclamation-circle'
+            R.span null, "#{current_user.errors.join(', ')}"
+
+
+      R.div null, 
+        R.div 
+          className:'auth_button primary_button'
+          onClick: @submitAuth
+        , if app_data.auth_mode == 'register' then 'Create account and save your opinion' else 'Login and save your opinion'
+
+        R.a 
+          className:'cancel_auth_button primary_cancel_button'
+          onClick: (=> app_data.auth_mode = null)
+        , 'cancel log in'
+
 
 
 Application = ReactiveComponent
@@ -1205,10 +1525,12 @@ Application = ReactiveComponent
   getDefaultData : ->
     page : @props.initial_page
     route : "/#{@props.long_id}#{if @props.initial_page == 'results' then '/results' else ''}"
+    auth_mode : null
 
   render : -> 
-    R.div null,
-      R.div className: 'l_header'
+    R.div 'data-authmode': @data().auth_mode,
+      R.div className: 'l_header', 
+        UserBar()      
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
         R.div id: 'inner_body', #style : { width: CONTENT_WIDTH },
           Proposal { key: @props.long_id }
@@ -1244,6 +1566,26 @@ ActiveREST = new ActiveRESTCache
       save : {}
 
 window.ActiveREST = ActiveREST
+
+
+ActiveREST.save '/current_user',
+  id: null
+  email: null
+  password: null
+  csrf: null
+  errors: []
+  follows: null
+  avatar_url: null
+  url: null
+  bio: null
+  twitter_uid: null
+  facebook_uid: null
+  google_uid: null
+  name: null
+
+$.get Routes.current_user_path(), (data) -> 
+  ActiveREST.save '/current_user', data, ['id', 'csrf', 'email', 'follows', 'password']
+
 
 ## ########################
 ## Application area

@@ -6,7 +6,7 @@ class Assessable::Request < ActiveRecord::Base
   acts_as_tenant :account
 
   before_save do
-    self.suggestion = Sanitize.clean(self.suggestion)
+    self.suggestion = self.suggestion.sanitize if self.suggestion
   end
 
 

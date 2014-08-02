@@ -37,13 +37,15 @@
   position: relative
   margin: auto
   +font-size(1)
-  margin-bottom: 5 * $vertical_baseline
+  // margin-bottom: 5 * $vertical_baseline
 
 // Proposal proposer is the avatar of the user who submitted the proposal
 $proposer_img_size: 50px
 .context
   position: relative
-  margin-top: $vertical_baseline/2
+  // margin-top: -$vertical_baseline
+  margin-top: $vertical_baseline
+
 .proposer_name //, .proposal_category
   color: lighten($base_text_color, 35%)
   +font-size(0)
@@ -63,7 +65,7 @@ $proposer_img_size: 50px
 .proposer_avatar
   left: 50%
   margin-left: -$proposer_img_size / 2
-  top: -$proposer_img_size / 4
+  // top: -$proposer_img_size / 4
   position: relative
   width: $proposer_img_size // - 30
   vertical-align: bottom 
@@ -86,7 +88,7 @@ $proposal_header_color: invert($decision_board_border_color)
   +font-size(8)
 
 .fixed_proposal_heading
-  position: fixed
+  // position: fixed
   width: 100%
   // border: solid darken($base_background_color, 15%)
   // border-width: 0px 0px 1px 0px
@@ -98,9 +100,10 @@ $proposal_header_color: invert($decision_board_border_color)
   +font-size(6)
   // font-weight: 600
   padding: $vertical_baseline/8 $grid_gutter / 2
-  top: 0
-  left: 0
+  // top: 0
+  // left: 0
   z-index: 999
+  position: relative
   text-align: center
   // box-shadow: 0px 1px 1px rgba(black, .2) 
   span
@@ -220,10 +223,21 @@ $segment_color: #db004d
 
 // slider
 
+.slider
+  position: absolute
+  top: -48px
+
 .slider_base
   margin: auto
   height: 6px
   background-color: desaturate($decision_board_text_color, 100%)
+
+
+.slider_base_triangle_left, .slider_base_triangle_right
+  position: absolute
+  width: 0
+  height: 0
+  border-bottom: 6px solid #787878
 
 $slider_handle_size: 22px
 .ui-slider-handle  // dashes in name b/c jquery UI
@@ -330,15 +344,15 @@ $slider_handle_size: 22px
 
 .reasons_region  
   position: relative
-  margin: 2.5 * $vertical_baseline auto 4 * $vertical_baseline auto
+  margin: 48px auto 4 * $vertical_baseline auto
 
-.opinion_region
+.focal_wrapper
   position: absolute
   z-index: 0 //so that points being dragged are above opinion region
 
 
 // keep the four cols side by side
-.points_by_community, .points_on_decision_board, .opinion_region
+.points_by_community, .points_on_decision_board, .focal_wrapper
   display: inline-block
   vertical-align: top
 
@@ -429,7 +443,7 @@ $slider_handle_size: 22px
 .user_is_hovering_on_a_drop_target .decision_board_body
   border-style: solid  
 
-.decision_board_body
+.focal_area
   border-radius: 16px
   border: 3px dashed $decision_board_border_color
 
@@ -439,17 +453,17 @@ $slider_handle_size: 22px
   // h1, h2, h3
   //   color: $decision_board_text_color
 
-  textarea, input[type="text"], input[type="email"], input[type="password"]
-    background-color: transparent
-    border: 1px solid
-    +inset-border($base_text_color)
-    display: inline-block
-    color: $base_text_color
+  // textarea, input[type="text"], input[type="email"], input[type="password"]
+  //   background-color: transparent
+  //   border: 1px solid
+  //   +inset-border($base_text_color)
+  //   display: inline-block
+  //   color: $base_text_color
 
-    &.error 
-      border-color: #883333
-      &:focus
-        +inset-border($decision_board_text_color)
+  //   &.error 
+  //     border-color: #883333
+  //     &:focus
+  //       +inset-border($decision_board_text_color)
 
 [data-page="results"]
   .decision_board_body
@@ -505,20 +519,29 @@ $slider_handle_size: 22px
   font-size: 29px
   margin-top: 20px
   box-shadow: 0px 1px 0px darken($decision_board_text_color, 10%)
+  border: none
+  padding: 6px $grid_gutter
 
-.save_opinion_button, .cancel_opinion_button, .give_opinion_button2
+.primary_button, .primary_cancel_button
   border-radius: 16px
   text-align: center
   padding: 3px
   cursor: pointer
 
-.save_opinion_button, .give_opinion_button2
+.primary_button
   +blue_button
 
-a.cancel_opinion_button
-  float: right
+a.primary_cancel_button
   color: #aaa
   margin-top: $vertical_baseline / 2
+
+a.cancel_opinion_button, a.cancel_auth_button
+  float: right
+  margin-top: $vertical_baseline / 2
+
+button.primary_button, input[type="submit"]
+  display: inline-block
+
 
 
 /////////////////////
@@ -644,7 +667,6 @@ $point-includer-width: 22px
 .newpoint_prompt
   padding: $vertical_baseline/4 0
   margin-top: $vertical_baseline
-  cursor: pointer
   +font-size(0)
 
   .newpoint_link
@@ -663,7 +685,9 @@ $point-includer-width: 22px
 .newpoint
 
   .newpoint_form
+    margin: $vertical_baseline $grid_gutter
     padding-top: $vertical_baseline / 2
+
     position: relative
     margin-left: $grid_gutter
     input, textarea
@@ -675,26 +699,237 @@ $point-includer-width: 22px
       left: -11px    
       +font-size(-4)
 
+  label
+    +font-size(0)
+
   .newpoint_description
-    width: 96%
-    min-height: 55px
+    width: 100%
+    min-height: 100px
+    overflow: hidden
 
-  .newpoint_nutshell_wrap
-    .newpoint_nutshell
-      width: 96%
-      min-height: 55px
+  .newpoint_nutshell
+    width: 100%
+    height: 100px
+    overflow: hidden
 
-    .count
-      +font-size(-3)
-      vertical-align: middle
-      position: absolute
-      right: 20px
-      top: -16px
+  .count
+    +font-size(0)
+    position: absolute
+    right: 20px
+    top: -19px
 
   .newpoint-submit
     text-align: right
     margin-top: 3px
+    margin-bottom: $vertical_baseline / 2
+
+    .primary_button
+      margin-top: $vertical_baseline / 2
+      width: 100%
+      +font-size(2)
 
   .newpoint_hide_name
     label, input
       +font-size(-1)
+
+
+
+
+
+// Auth styling
+.userbar
+  text-align: right
+  padding: 4px 15px
+
+  a
+    padding-left: 3px
+
+[data-authmode]
+  visibility: hidden
+  .slider_base
+    visibility: hidden
+  .the_handle
+    visibility: visible
+    .face_part
+      visibility: hidden
+  .auth_region, .bubblemouth
+    visibility: visible
+
+[data-authmode="login"], [data-authmode="register"]
+
+  .slider_feedback_result
+    margin-top: -25px
+
+.auth_region
+  margin-bottom: 10 * $vertical_baseline
+.auth
+  padding: 1.5 * $vertical_baseline $grid_gutter .5 * $vertical_baseline $grid_gutter
+  +font-size(3)
+
+  .third_party_call
+    margin-right: $grid_gutter * 2
+
+  .third_party_option
+    border: 1px solid #777
+    border-color: rgba(black, 0.2)
+    border-bottom-color: rgba(black, 0.4)
+    color: #fff
+    box-shadow: inset 0 0.1em 0 rgba(white, 0.4), inset 0 0 0.1em rgba(white, 0.9)
+    display: inline-block
+    padding: 3px $grid_gutter / 2 3px $grid_gutter / 2 + 25
+    margin: 0 $grid_gutter / 4
+    text-align: center
+    text-shadow: 0 1px 0 rgba(black, 0.5)
+    border-radius: .3em
+    position: relative
+    +background-image(linear-gradient(rgba(white, 0.1), rgba(white, 0.05) 49%, rgba(black, 0.05) 51%, rgba(black, 0.1)))
+    &:hover
+      +background-image(linear-gradient(rgba(white, 0.2), rgba(white, 0.1) 49%, rgba(black, 0.1) 51%, rgba(black, 0.2)))
+
+    &:before
+      border-right: 0.075em solid rgba(black, 0.1)
+      box-shadow: 0.075em 0 0 rgba(white, 0.25)
+      content: ''
+      position: absolute
+      top: 0
+      left: 25px
+      height: 100%
+      width: 1px
+
+    &.google
+      background-color: $decision_board_border_color //#4e6cf7
+    &.facebook
+      background-color: $decision_board_border_color //#4863ae
+    &.twitter
+      background-color: $decision_board_border_color //#46c0fb
+
+    i
+      margin-right: $grid_gutter
+      display: inline-block
+      +font-size(1)
+      position: absolute
+      left: 9px
+
+    span
+      font-weight: 600
+      +font-size(-2)
+
+
+  .separator
+    color: rgba($decision_board_border_color, .1)
+    font-weight: bold
+    padding-top: $vertical_baseline
+
+    label
+      padding: 0 $grid_gutter
+
+
+  .auth_section_label
+    padding: $vertical_baseline 0
+    display: block
+
+  input[type="text"], input[type="email"], input[type="password"]
+    border: 1px solid #aaa
+    padding: 5px 10px
+    width: 100%
+    +font-size(2)
+    color: lighten($base_text_color, 15%)
+
+  table
+    border-collapse: separate  
+
+    &.login
+      border-spacing: 0 $vertical_baseline/4
+
+    &.register
+      border-spacing: 0 $vertical_baseline
+      #user_password
+        margin-top: $vertical_baseline/2
+
+  td
+    vertical-align: top
+
+    &.label_cell
+      width: 35%
+
+    &.field_cell
+      width: 100%
+      padding-left: $grid_gutter
+
+  label 
+    color: $decision_board_border_color
+    font-weight: 600
+
+  .login label 
+    color: lighten($base_text_color, 35%)
+
+  .pledge
+    list-style: none
+
+    label
+      +font-size(0)
+      color: lighten($base_text_color, 15%)
+      padding-left: 6px
+      font-weight: normal
+    input
+      +font-size(3)
+
+
+
+.auth .forgot_password
+  +font-size(-3)
+  border-bottom: 1px solid lighten($base_text_color, 70%)
+  color: lighten($base_text_color, 40%)
+  margin-left: 12px
+  position: relative
+  top: -4px
+
+.password_verification_explanation
+  +font-size(-2)
+
+$avatar_preview_size: 60px
+.avatar_preview_enclosure
+  height: $avatar_preview_size
+  width: $avatar_preview_size
+  margin-top: -10px
+  border-radius: 50%
+  background-color: lighten($default_avatar_in_histogram_color, 30%)
+  overflow: hidden
+  display: inline-block
+  margin-right: $grid_gutter
+
+  #avatar_preview
+    width: $avatar_preview_size
+
+#user_avatar_form input 
+  position: relative
+  top: -24px
+
+.auth_errors
+  text-align: center
+  +font-size(0)
+  color: white
+  background-color: desaturate(red, 50%)
+  border-radius: 16px
+  i
+    padding-right: $grid_gutter/2
+
+.switch_auth_mode
+  color: lighten($base_text_color, 25%)
+  +font-size(0)
+  position: absolute
+  top: -110px
+  left: 0
+  width: 100%
+  text-align: center
+  a.toggle_auth
+    display: inline-block
+    // border-radius: 16px
+    color: $decision_board_border_color
+    text-decoration: underline
+    background-color: transparent //darken($base_background_color, 5%)
+    border: none
+    //padding: 5px 8px 
+    //margin: 0 5px
+    // +font-size(2)
+    //font-weight: 600

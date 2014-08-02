@@ -1,7 +1,7 @@
 require 'date'
 
 class Dashboard::AdminController < Dashboard::DashboardController
-  respond_to :json
+  #respond_to :json
   
   def admin_template
     render :json => { 
@@ -28,8 +28,11 @@ class Dashboard::AdminController < Dashboard::DashboardController
         :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil}
     end
 
-
-    render :json => result
+    if request.xhr?
+      render :json => result 
+    else
+      render "layouts/dash", :layout => false 
+    end
   end
 
   def update_role
@@ -80,6 +83,8 @@ class Dashboard::AdminController < Dashboard::DashboardController
         :visitation_data => visitation_data,
         :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil}
     end
+
+
     render :json => result
 
   end
@@ -94,7 +99,12 @@ class Dashboard::AdminController < Dashboard::DashboardController
       result = { 
         :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil}
     end
-    render :json => result
+
+    if request.xhr?
+      render :json => result 
+    else
+      render "layouts/dash", :layout => false 
+    end    
 
   end
 

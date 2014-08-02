@@ -63,7 +63,7 @@ gem 'premailer-rails'
 gem 'yamler'
 
 # https://github.com/rgrove/sanitize/
-gem 'sanitize'
+# gem 'sanitize'
 
 # https://github.com/indirect/jquery-rails
 gem 'jquery-rails'
@@ -83,7 +83,7 @@ gem 'rinku' # needed anymore?
 gem 'sitemap_generator'
 
 # https://github.com/cmer/cacheable-csrf-token-rails
-gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csrf-token-rails'
+# gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csrf-token-rails'
 
 # https://github.com/josh/useragent
 gem 'useragent'
@@ -96,18 +96,16 @@ gem 'font-awesome-rails'
 gem 'actionpack-action_caching'
 #######
 
-
 ##
 # These used to be the Assets group
 gem 'sprockets'
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 
-gem 'aws-sdk'
 gem 'coffee-rails' #, "~> 3.2.2"
 gem 'uglifier'
 gem "asset_sync"
 
-gem 'sass-rails'
+gem 'sass-rails', "~> 4.0.3"
 
 gem 'bourbon'
 
@@ -128,5 +126,6 @@ end
 group :production do
   gem 'exception_notification'
   gem "aws-ses", "~> 0.5.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
+  gem 'aws-sdk'
 end
 

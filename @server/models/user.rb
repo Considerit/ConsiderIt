@@ -15,10 +15,9 @@ class User < ActiveRecord::Base
 
   acts_as_tenant(:account)
 
-  #devise :omniauthable, :omniauth_providers => [:facebook, :twitter, :google_oauth2]
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable, :confirmable, :recoverable, :rememberable, :trackable
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable
   devise :omniauthable, :omniauth_providers => [:facebook, :twitter, :google_oauth2]
 
   validates :name, :presence => true
@@ -32,8 +31,8 @@ class User < ActiveRecord::Base
   before_save do 
     self.email.downcase! if self.email
 
-    self.name = Sanitize.clean(self.name) if self.name   
-    self.bio = Sanitize.clean(self.bio, Sanitize::Config::RELAXED) if self.bio
+    self.name = self.name.sanitize if self.name   
+    self.bio = self.bio.sanitize if self.bio
     if self.avatar_file_name_changed?
       img_data = self.avatar.queued_for_write[:small].read
       self.avatar.queued_for_write[:small].rewind
@@ -154,7 +153,7 @@ class User < ActiveRecord::Base
 
   end
 
-  def self.create_from_third_party_token(access_token)
+  def self.params_from_third_party_token(access_token)
     params = {
       'name' => access_token.info.name,
       'password' => Devise.friendly_token[0,20]
@@ -179,7 +178,7 @@ class User < ActiveRecord::Base
           'twitter_uid' => access_token.uid,
           'bio' => access_token.info.description,
           'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
-          'twitter_handle' => access_token.info.nickname,
+          # 'twitter_handle' => access_token.info.nickname,
           'avatar_url' => access_token.info.image.gsub('_normal', '') #'_reasonably_small'),
         }
 
@@ -188,7 +187,7 @@ class User < ActiveRecord::Base
           'facebook_uid' => access_token.uid,
           'email' => access_token.info.email,
           'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter, #TODO: fix this for facebook
-          'avatar_url' => 'http://graph.facebook.com/' + access_token.uid + '/picture?type=large'
+          'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large'
         }
 
       else
@@ -330,7 +329,6 @@ class User < ActiveRecord::Base
       cls.where("user_id in (?)", missing_users.uniq).delete_all
     end
 
-    pp missing_users.uniq
   end
       
 end

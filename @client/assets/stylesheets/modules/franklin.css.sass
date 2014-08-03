@@ -88,6 +88,7 @@ $proposal_header_color: invert($decision_board_border_color)
   +font-size(8)
 
 .fixed_proposal_heading
+  //visibility: hidden
   // position: fixed
   width: 100%
   // border: solid darken($base_background_color, 15%)
@@ -177,14 +178,12 @@ $segment_color: #db004d
       opacity: .05
 
 [data-segment="6"] 
-  left: -5px
 
   .histogram_segment_pole
     color: $extreme_supporter_color
     left: -160px
 
 [data-segment="0"] 
-  right: -5px
   .histogram_segment_pole
     color: $extreme_opposer_color  
     right: -145px
@@ -242,13 +241,14 @@ $segment_color: #db004d
 $slider_handle_size: 22px
 .ui-slider-handle  // dashes in name b/c jquery UI
   margin-left: -$slider_handle_size / 2
+
   .the_handle
     border-radius: 50%
     width: $slider_handle_size
     height: $slider_handle_size
-    box-shadow: 0px 1px 0px darken($decision_board_text_color, 15%)
     background-color: $decision_board_text_color
     position: relative
+    box-shadow: 0px 1px 0px darken($decision_board_text_color, 15%), inset 0 1px 2px rgba(white, .4), 0px 0px 0px 1px darken($decision_board_text_color, 0%)
 
     .face_part
       position: absolute
@@ -274,6 +274,17 @@ $slider_handle_size: 22px
       border-radius: 50%
       box-shadow: 3px 3px 0 0 white
 
+    .drag_arrow
+      position: absolute
+      top: 2px
+      color: rgba($decision_board_border_color, .6)
+      +font-size(-2)
+
+      &.left
+        left: -15px
+      &.right
+        right: -15px
+
 
   // the mouth leading into the "give opinion button" or the decision board, depending on state
   .bubblemouth
@@ -289,7 +300,7 @@ $slider_handle_size: 22px
 // The area on top of the slider that shows in crafting to let user know what their stance is
 .slider_feedback
   position: absolute
-  top: -96px
+  top: -80px
   width: 450px
   left: 50%
   margin-left: -225px
@@ -297,23 +308,10 @@ $slider_handle_size: 22px
   background-color: rgba($base_background_color, .2)
   pointer-events: none // clicking on this interferes with slider and toggle state
 
-  .slider_feedback_result, .slider_feedback_instructions
-    text-align: center
-
-  .slider_feedback_result
-    +font-size(6)
-    font-weight: bold
-    color: $decision_board_text_color
-
-  .slider_feedback_instructions
-    +font-size(0)
-    font-weight: 400
-
-  // &[data-stance-segment="0"] .slider_feedback_result
-  //   color: $extreme_opposer_color
-
-  // &[data-stance-segment="6"] .slider_feedback_result
-  //   color: $extreme_supporter_color
+  +font-size(6)
+  font-weight: bold
+  color: $decision_board_text_color
+  text-align: center
 
 
 [data-page="results"] .slider_feedback
@@ -475,9 +473,11 @@ $slider_handle_size: 22px
 
     a.give_opinion_button
       display: block
-      font-weight: 500
       color: white
       padding: $vertical_baseline / 4 $grid_gutter
+      margin: 0
+      +font-size(1)
+      box-shadow: none
       &:hover
         color: white
 
@@ -530,6 +530,7 @@ $slider_handle_size: 22px
 
 .primary_button
   +blue_button
+  font-weight: 600
 
 a.primary_cancel_button
   color: #aaa
@@ -576,9 +577,9 @@ $community_point_mouth_width: 17px
     z-index: 1
 
   &.pro .community_point_mouth
-    left: -$community_point_mouth_width + 1
+    left: -$community_point_mouth_width
   &.con .community_point_mouth
-    right: -$community_point_mouth_width + 1
+    right: -$community_point_mouth_width
     +transform(scaleX(-1))
 
   .point_content
@@ -594,13 +595,13 @@ $community_point_mouth_width: 17px
 .point_nutshell
   word-wrap: break-word
   +font-size(-1)
-  color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
+  // color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
 .point_details_tease, .point_details 
   //padding-left: 10px
   font-weight: 200
   display: block
-  color: deemphasize($base_text_color, 40%, $reference: $base_background_color)
+  // color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
 .point_details_tease:hover
   text-decoration: underline
@@ -685,8 +686,7 @@ $point-includer-width: 22px
 .newpoint
 
   .newpoint_form
-    margin: $vertical_baseline $grid_gutter
-    padding-top: $vertical_baseline / 2
+    margin: 0 $grid_gutter
 
     position: relative
     margin-left: $grid_gutter
@@ -757,7 +757,7 @@ $point-includer-width: 22px
 
 [data-authmode="login"], [data-authmode="register"]
 
-  .slider_feedback_result
+  .slider_feedback
     margin-top: -25px
 
 .auth_region

@@ -54,8 +54,6 @@
                 else if (key.substring(0,4) === 'new/')
                     key = object.key = 'new' + new_index++ + key.substring(3)
 
-                console.log('Caching it at key', key)
-
                 var cached = cache[key]
                 if (!cached)
                     // This object is new.  Let's cache it.

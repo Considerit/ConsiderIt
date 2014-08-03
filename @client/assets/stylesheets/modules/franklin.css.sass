@@ -708,6 +708,13 @@ $point-includer-width: 22px
     right: 20px
     top: -19px
 
+  .add_details
+    +font-size(0)
+    span
+      padding-left: 6px
+    &:hover
+      text-decoration: underline
+
   .newpoint-submit
     text-align: right
     margin-top: 3px
@@ -719,8 +726,12 @@ $point-includer-width: 22px
       +font-size(2)
 
   .newpoint_hide_name
+    position: absolute
+    bottom: 0px
     label, input
       +font-size(-1)
+
+
 
 
 

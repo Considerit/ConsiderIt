@@ -1043,13 +1043,21 @@ NewPoint = ReactiveComponent
     # UI STATE
     edit_mode : false
     sign_name : true
+    add_details : false
 
   componentDidUpdate : ->
     if @data().edit_mode
       $(@getDOMNode()).find('#nutshell').focus()
 
-  handleAddPointBegin : (ev) -> @data().edit_mode = true
-  handleAddPointCancel : (ev) -> @data().edit_mode = false
+  handleAddPointBegin : (ev) -> 
+    @data().edit_mode = true
+    @data().add_details = false
+
+  handleAddPointCancel : (ev) -> 
+    @data().edit_mode = false
+
+  handleAddDetails : (ev) -> 
+    @data().add_details = true
 
   handleSubmitNewPoint : (ev) ->
     $form = $(@getDOMNode())
@@ -1095,9 +1103,14 @@ NewPoint = ReactiveComponent
           R.label htmlFor:'nutshell', 'Your point'
           CharacterCountTextInput id:'nutshell', className:'newpoint_nutshell', maxLength:140, name:'nutshell', pattern:'^.{3,}', placeholder:'Make this summary succinct.', required:'required'
           
-          R.label htmlFor:'text', 'Expand on your point (optional)'
-          AutoGrowTextArea id:'text', className:'newpoint_description', name:'text', placeholder:'Provide background and/or back your point up with evidence.', required:'required', min_height: 100
-          
+          if @data().add_details
+            R.div null, 
+              R.label htmlFor:'text', 'Expand on your point'
+              AutoGrowTextArea id:'text', className:'newpoint_description', name:'text', placeholder:'Provide background and/or back your point up with evidence.', required:'required', min_height: 100
+          else
+            R.a className: 'add_details', onClick: @handleAddDetails, title: 'Provide background and/or back your point up with evidence.',
+              R.i className: 'fa-caret-right fa'
+              R.span null, 'Expand on your point'
 
           R.div className:'newpoint_hide_name',
             R.input className:'newpoint-anonymous', type:'checkbox', id:"sign_name-#{@props.key}", name:"sign_name-#{@props.key}", checked: @data().sign_name, onChange: (=> @data().sign_name = !@data().sign_name)
@@ -1231,8 +1244,8 @@ CharacterCountTextInput = ReactiveComponent
 
 
 ##
-# Slider
-# Manages the slider and the UI elements attached to it. 
+# AuthHeader
+# Should be refactored into Auth. Shares styles with Slider.
 AuthHeader = ReactiveComponent
   displayName: 'AuthHeader'
 

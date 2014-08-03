@@ -47,7 +47,7 @@ class Proposal < ActiveRecord::Base
     end
 
     # Compute opinions
-    opinionies = opinions.published.public_fields.map {|p| p.as_json}
+    ops = opinions.published.public_fields.map {|p| p.as_json}
 
     # Compute Included points
     includeds = Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).pluck('points.id')\
@@ -59,7 +59,7 @@ class Proposal < ActiveRecord::Base
       :proposal => self.as_json,
       :points => pointies,
       :included_points => includeds,
-      :opinions => opinionies,
+      :opinions => ops,
       :result => 'success',
       :users => users
     }
@@ -89,6 +89,7 @@ class Proposal < ActiveRecord::Base
     options[:only] ||= Proposal.my_public_fields
     result = super(options)
 
+    make_key(result, 'proposal')
     stubify_field(result, 'user')
     pp(result["participants"])
     result["participants"] = JSON.parse(result["participants"] || '[]')

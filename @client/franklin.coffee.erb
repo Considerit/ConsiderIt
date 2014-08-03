@@ -66,13 +66,13 @@ togglePage = (page) ->
 stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
 
 stance_names = 
-  6 : 'Entrenched Supporter'
-  0 : 'Entrenched Opposer'
+  6 : 'Rigidly Support'
+  0 : 'Rigidly Oppose'
   5 : 'Firmly Support'
   1 : 'Firmly Oppose'
   4 : 'Lean Support'
   2 : 'Lean Oppose'
-  3 : 'Neutral'
+  3 : 'Are Neutral'
 
 ##
 # StyleAnimator mixin
@@ -477,7 +477,7 @@ Slider = ReactiveComponent
 
       when 'results'
         styles = 
-          '.bubblemouth': { scaleX: mouth_scaler, scaleY: 1, translateY: -6, translateX: mouth_x  }
+          '.bubblemouth': { scaleX: mouth_scaler, scaleY: 1, translateY: -4.5, translateX: mouth_x  }
           '.the_handle':  { scale: 1, translateY: -9 }
 
     @applyStylesToElements styles, duration
@@ -593,6 +593,12 @@ Slider = ReactiveComponent
       borderLeft: "#{triangle_width}px solid transparent"
       borderRight: "#{triangle_width}px solid transparent"
 
+    if !my_data.has_moved 
+      slider_feedback = 'Slide Your Overall Opinion' 
+    else 
+      slider_feedback = "You #{slider_feedback_bucket}"
+
+
     R.div className: 'slider', 
       R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
         R.div 
@@ -606,27 +612,15 @@ Slider = ReactiveComponent
             R.div className: 'face_mouth face_part', style: face_mouth_style
             R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
             R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
+            R.div className: 'drag_arrow right', '>' if page == 'crafting' && !my_data.has_moved && !app_data.auth_mode
+            R.div className: 'drag_arrow left', '<' if page == 'crafting' && !my_data.has_moved && !app_data.auth_mode
+
           R.img className:'bubblemouth', src: bubblemouth_src
           R.div 
             className:'slider_feedback'
             'data-stance-segment': segment
-            style: {visibility: if sticky && !app_data.auth_mode then 'hidden' else 'visible'}
-          ,
-            R.div 
-              className:'slider_feedback_instructions'
-              style : 
-                visibility: 
-                  if !@data().has_moved  || app_data.auth_mode
-                  then 'hidden' 
-                  else 'visible'
-              , "Your overall opinion:"
-
-            R.div className:'slider_feedback_result',
-              if app_data.auth_mode
-              then 'Please Introduce Yourself'
-              else if !my_data.has_moved
-              then 'Drag Your Overall Opinion' 
-              else slider_feedback_bucket
+            style: {visibility: if sticky && !app_data.auth_mode then 'visible' else 'visible'}
+          , slider_feedback
 
 ##
 # OpinionFilter
@@ -647,13 +641,13 @@ OpinionFilter = ReactiveComponent
   render : ->
     R.div className: 'opinion_filter_region',
       R.a className: "filter_option #{if @data().selected_segment[0]==null then 'selected' else ''}", onClick: (=> @onSelectSegment(null)), 'show all opinions'        
-      R.a className: "filter_option #{if @data().selected_segment[0]==0 then 'selected' else ''}", onClick: (=> @onSelectSegment(0)), 'only entrenched opposers'
+      R.a className: "filter_option #{if @data().selected_segment[0]==0 then 'selected' else ''}", onClick: (=> @onSelectSegment(0)), 'only rigid opposers'
       R.a className: "filter_option #{if @data().selected_segment[0]==1 then 'selected' else ''}", onClick: (=> @onSelectSegment(1)), 'only firm opposers'
-      R.a className: "filter_option #{if @data().selected_segment[0]==2 then 'selected' else ''}", onClick: (=> @onSelectSegment(2)), 'only leaning oppose'
+      R.a className: "filter_option #{if @data().selected_segment[0]==2 then 'selected' else ''}", onClick: (=> @onSelectSegment(2)), 'only lean opposers'
       R.a className: "filter_option #{if @data().selected_segment[0]==3 then 'selected' else ''}", onClick: (=> @onSelectSegment(3)), 'only neutrals'
-      R.a className: "filter_option #{if @data().selected_segment[0]==4 then 'selected' else ''}", onClick: (=> @onSelectSegment(4)), 'only leaning support'
+      R.a className: "filter_option #{if @data().selected_segment[0]==4 then 'selected' else ''}", onClick: (=> @onSelectSegment(4)), 'only lean supporters'
       R.a className: "filter_option #{if @data().selected_segment[0]==5 then 'selected' else ''}", onClick: (=> @onSelectSegment(5)), 'only firm supporters'
-      R.a className: "filter_option #{if @data().selected_segment[0]==6 then 'selected' else ''}", onClick: (=> @onSelectSegment(6)), 'only entrenched supporters'
+      R.a className: "filter_option #{if @data().selected_segment[0]==6 then 'selected' else ''}", onClick: (=> @onSelectSegment(6)), 'only rigid supporters'
 
 
 
@@ -688,14 +682,18 @@ DecisionBoard = ReactiveComponent
 
   componentDidUpdate : -> 
     $el = $(@getDOMNode())    
-    $el.stickyTopBottom('fix_initial_position')
+    if !@initial_position_fixed
+      $el.stickyTopBottom('fix_initial_position')
+      @initial_position_fixed = true
 
   setStickyHeader : ->
     $el = $(@getDOMNode())
 
+    slider_region_height =  135 #$el.find('.slider .the_handle').outerHeight() + $el.find('.slider .slider_feedback').outerHeight() + 15 + 20 #15 is bubblemouth
+
     $el.stickyTopBottom
       container: $('.reasons_region')
-      top_offset: $('.fixed_proposal_heading').outerHeight() + 101 #ugly access
+      top_offset: $('.fixed_proposal_heading').outerHeight() + slider_region_height
       bottom_offset: 20
       docks: => @data().sticky = false
       undocks: => @data().sticky = true
@@ -736,7 +734,7 @@ DecisionBoard = ReactiveComponent
 
           # only shown during results, but needs to be present always for animation
           R.a 
-            className:'give_opinion_button'
+            className:'give_opinion_button primary_button'
           , 'Give your Opinion'
 
       R.div 
@@ -767,7 +765,7 @@ YourPoints = ReactiveComponent
       style: { width: POINT_WIDTH }
     ,
       R.div className:'points_heading_label',
-        "List Your #{capitalize(@props.key)}"
+        "State Your #{capitalize(@props.key)}"
 
       R.ul null,
         for point_id in included_points
@@ -1045,13 +1043,21 @@ NewPoint = ReactiveComponent
     # UI STATE
     edit_mode : false
     sign_name : true
+    add_details : false
 
   componentDidUpdate : ->
     if @data().edit_mode
       $(@getDOMNode()).find('#nutshell').focus()
 
-  handleAddPointBegin : (ev) -> @data().edit_mode = true
-  handleAddPointCancel : (ev) -> @data().edit_mode = false
+  handleAddPointBegin : (ev) -> 
+    @data().edit_mode = true
+    @data().add_details = false
+
+  handleAddPointCancel : (ev) -> 
+    @data().edit_mode = false
+
+  handleAddDetails : (ev) -> 
+    @data().add_details = true
 
   handleSubmitNewPoint : (ev) ->
     $form = $(@getDOMNode())
@@ -1097,9 +1103,14 @@ NewPoint = ReactiveComponent
           R.label htmlFor:'nutshell', 'Your point'
           CharacterCountTextInput id:'nutshell', className:'newpoint_nutshell', maxLength:140, name:'nutshell', pattern:'^.{3,}', placeholder:'Make this summary succinct.', required:'required'
           
-          R.label htmlFor:'text', 'Expand on your point (optional)'
-          AutoGrowTextArea id:'text', className:'newpoint_description', name:'text', placeholder:'Provide background and/or back your point up with evidence.', required:'required', min_height: 100
-          
+          if @data().add_details
+            R.div null, 
+              R.label htmlFor:'text', 'Expand on your point'
+              AutoGrowTextArea id:'text', className:'newpoint_description', name:'text', placeholder:'Provide background and/or back your point up with evidence.', required:'required', min_height: 100
+          else
+            R.a className: 'add_details', onClick: @handleAddDetails, title: 'Provide background and/or back your point up with evidence.',
+              R.i className: 'fa-caret-right fa'
+              R.span null, 'Expand on your point'
 
           R.div className:'newpoint_hide_name',
             R.input className:'newpoint-anonymous', type:'checkbox', id:"sign_name-#{@props.key}", name:"sign_name-#{@props.key}", checked: @data().sign_name, onChange: (=> @data().sign_name = !@data().sign_name)
@@ -1230,6 +1241,80 @@ CharacterCountTextInput = ReactiveComponent
       R.span className: 'count', @props.maxLength - @data().count
 
 
+
+
+##
+# AuthHeader
+# Should be refactored into Auth. Shares styles with Slider.
+AuthHeader = ReactiveComponent
+  displayName: 'AuthHeader'
+
+  componentDidMount : -> 
+    $slider_base = $(@getDOMNode()).find('.slider_base')
+    if !$slider_base.hasClass "ui-slider"
+      $slider_base.slider
+        disabled: true
+        min: -1
+        max: 1
+        step: .01
+        value: -@data('slider').stance
+
+  toggleAuthMode : -> 
+    app_data = @data('application')
+    current_user = @data('/current_user')
+    email = $(@getDOMNode()).find('#user_email').val()
+
+    @data('auth').email = email if email && email.length > 0
+    app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'    
+    current_user.errors = []
+
+  render : ->
+    my_data = @data('slider')
+    segment = my_data.stance_segment
+    app_data = @data('application')
+
+    # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
+    # also why this file is ERB
+    if segment == 3
+      bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
+    else
+      bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
+
+    slider_feedback = 'Please Introduce Yourself' 
+
+    mouth_scaler = if my_data.stance_segment > 3 then -1 else 1
+    mouth_x = if my_data.stance_segment == 3 then 0 else -7.5
+
+
+    bubble_mouth_props = 
+      transform: "scale(#{mouth_scaler * 1.5}, 1.5) translate(#{mouth_x * 1.5}px, 7px)"
+    handle_props = 
+      transform: "scale(2.5) translateY(-8px)"
+
+    crossbrowserTransformProperty = (props) -> _.extend props,
+      '-webkit-transform' : props.transform
+      '-ms-transform' : props.transform
+      '-moz-transform' : props.transform
+
+    crossbrowserTransformProperty bubble_mouth_props
+    crossbrowserTransformProperty handle_props
+
+    R.div className: 'slider', 
+      R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
+        R.div className: 'ui-slider-handle', 
+          R.div className: 'the_handle', onClick: @togglePage, style: handle_props
+          R.img className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
+          R.div className:'slider_feedback', 
+            slider_feedback
+
+            if app_data.auth_mode in ['login', 'register']
+              R.div className: 'switch_auth_mode', 
+                R.span null, if app_data.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
+                R.a className: 'toggle_auth', onClick: @toggleAuthMode, if app_data.auth_mode == 'register' then 'Log In' else 'Create an Account'
+
+
+
+
 Auth = ReactiveComponent
   displayName: 'Auth'
 
@@ -1339,14 +1424,6 @@ Auth = ReactiveComponent
         app_data = @data('application')
         app_data.auth_mode = 'password_reminder'
 
-  toggleAuthMode : -> 
-    app_data = @data('application')
-    current_user = @data('/current_user')
-    email = $(@getDOMNode()).find('#user_email').val()
-
-    @data().email = email if email && email.length > 0
-    app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'    
-    current_user.errors = []
 
 
   render: -> 
@@ -1359,14 +1436,9 @@ Auth = ReactiveComponent
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
     R.div className:'auth_region focal_wrapper', style: focal_wrapper_style,
-      Slider()
+      AuthHeader()
 
       R.div className:'auth focal_area',
-
-        if app_data.auth_mode in ['login', 'register']
-          R.div className: 'switch_auth_mode', 
-            R.span null, if app_data.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
-            R.a className: 'toggle_auth', onClick: @toggleAuthMode, if app_data.auth_mode == 'register' then 'Log In' else 'Create an Account'
 
         if app_data.auth_mode in ['login', 'register'] && !@data().provider
 

@@ -66,13 +66,13 @@ togglePage = (page) ->
 stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
 
 stance_names = 
-  6 : 'Entrenched Supporter'
-  0 : 'Entrenched Opposer'
+  6 : 'Rigidly Support'
+  0 : 'Rigidly Oppose'
   5 : 'Firmly Support'
   1 : 'Firmly Oppose'
   4 : 'Lean Support'
   2 : 'Lean Oppose'
-  3 : 'Neutral'
+  3 : 'Are Neutral'
 
 ##
 # StyleAnimator mixin
@@ -477,7 +477,7 @@ Slider = ReactiveComponent
 
       when 'results'
         styles = 
-          '.bubblemouth': { scaleX: mouth_scaler, scaleY: 1, translateY: -6, translateX: mouth_x  }
+          '.bubblemouth': { scaleX: mouth_scaler, scaleY: 1, translateY: -4.5, translateX: mouth_x  }
           '.the_handle':  { scale: 1, translateY: -9 }
 
     @applyStylesToElements styles, duration
@@ -593,6 +593,14 @@ Slider = ReactiveComponent
       borderLeft: "#{triangle_width}px solid transparent"
       borderRight: "#{triangle_width}px solid transparent"
 
+    if app_data.auth_mode 
+      slider_feedback = 'Please Introduce Yourself' 
+    else if !my_data.has_moved 
+      slider_feedback = 'Slide Your Overall Opinion' 
+    else 
+      slider_feedback = "You #{slider_feedback_bucket}"
+
+
     R.div className: 'slider', 
       R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
         R.div 
@@ -603,30 +611,20 @@ Slider = ReactiveComponent
           style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
         R.div props_for_slider_handle, 
           R.div className: 'the_handle', onClick: @togglePage,
+            R.div className: 'the_handle_outer_border' if page == 'crafting'        
+
             R.div className: 'face_mouth face_part', style: face_mouth_style
             R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
             R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
+            R.div className: 'drag_arrow right', '>' if page == 'crafting' && !my_data.has_moved
+            R.div className: 'drag_arrow left', '<' if page == 'crafting' && !my_data.has_moved
+
           R.img className:'bubblemouth', src: bubblemouth_src
           R.div 
             className:'slider_feedback'
             'data-stance-segment': segment
-            style: {visibility: if sticky && !app_data.auth_mode then 'hidden' else 'visible'}
-          ,
-            R.div 
-              className:'slider_feedback_instructions'
-              style : 
-                visibility: 
-                  if !@data().has_moved  || app_data.auth_mode
-                  then 'hidden' 
-                  else 'visible'
-              , "Your overall opinion:"
-
-            R.div className:'slider_feedback_result',
-              if app_data.auth_mode
-              then 'Please Introduce Yourself'
-              else if !my_data.has_moved
-              then 'Drag Your Overall Opinion' 
-              else slider_feedback_bucket
+            style: {visibility: if sticky && !app_data.auth_mode then 'visible' else 'visible'}
+          , slider_feedback
 
 ##
 # OpinionFilter
@@ -688,14 +686,18 @@ DecisionBoard = ReactiveComponent
 
   componentDidUpdate : -> 
     $el = $(@getDOMNode())    
-    $el.stickyTopBottom('fix_initial_position')
+    if !@initial_position_fixed
+      $el.stickyTopBottom('fix_initial_position')
+      @initial_position_fixed = true
 
   setStickyHeader : ->
     $el = $(@getDOMNode())
 
+    slider_region_height =  125 #$el.find('.slider .the_handle').outerHeight() + $el.find('.slider .slider_feedback').outerHeight() + 15 + 20 #15 is bubblemouth
+
     $el.stickyTopBottom
       container: $('.reasons_region')
-      top_offset: $('.fixed_proposal_heading').outerHeight() + 101 #ugly access
+      top_offset: $('.fixed_proposal_heading').outerHeight() + slider_region_height
       bottom_offset: 20
       docks: => @data().sticky = false
       undocks: => @data().sticky = true
@@ -736,7 +738,7 @@ DecisionBoard = ReactiveComponent
 
           # only shown during results, but needs to be present always for animation
           R.a 
-            className:'give_opinion_button'
+            className:'give_opinion_button primary_button'
           , 'Give your Opinion'
 
       R.div 
@@ -767,7 +769,7 @@ YourPoints = ReactiveComponent
       style: { width: POINT_WIDTH }
     ,
       R.div className:'points_heading_label',
-        "List Your #{capitalize(@props.key)}"
+        "State Your #{capitalize(@props.key)}"
 
       R.ul null,
         for point_id in included_points

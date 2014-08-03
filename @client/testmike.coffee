@@ -24,8 +24,8 @@ Bottom = NonReactiveComponent
       R.div null, 'My nutshell is:',
       R.div null, "Am I anonymous to ya? ",
         R.span style : {'font-weight':'bold' },
-          "#{point.hide_name}"
-       R.div style: {'margin': '10px', 'font-style':'italic'},
+           "#{point.hide_name}"
+      R.div style: {'margin': '10px', 'font-style':'italic'},
         point.nutshell)
 $(document).ready ->
   React.renderComponent Top({'moo', 'bar'}), document.getElementById('content')

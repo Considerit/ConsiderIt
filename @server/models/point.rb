@@ -85,7 +85,7 @@ class Point < ActiveRecord::Base
     options[:only] ||= Point.my_public_fields
     result = super(options)
     result['includers'] = JSON.parse (result['includers'] || '[]')
-    result['includers'].map! {|p| "/point/#{p}"}
+    result['includers'].map! {|p| "/user/#{p}"}
     make_key(result, 'point')
     stubify_field(result, 'proposal')
     #result.delete('opinion')

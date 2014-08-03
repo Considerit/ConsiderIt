@@ -39,36 +39,6 @@ Fart = (function () {
         }
     }
 
-    /* Use this inside render() so you know when to show a loading
-     * indicator.  Like:
-     *
-     *     render: function () {
-     *               if (is_loaded(object)) {
-     *                   ... render normally ...
-     *               } else {
-     *                   ... render loading indicator ...
-     *               }
-     */
-    function isLoaded(obj, subset) {
-        var cached = cache[obj.key]
-        if (cached) {
-            var cached_subsets = querystringVals(cached.key, 'subset')
-            // Check if fully loaded
-            if (cached_subsets == null)
-                return true
-
-            // Check if it's loaded for an unlabeled '?subset'
-            if (subset === 'subset')
-                return cached_subsets.length == 0
-
-            // Check if a labeled subset is present
-            if (subset)
-                return cached_subsets.indexOf(subset) != -1
-        }
-        return false
-    }
-
-
     // ================================
     // == Internal funcs
 
@@ -84,26 +54,10 @@ Fart = (function () {
                 if (!cached)
                     // This object is new.  Let's cache it.
                     cache[key] = object
-                else if (object !== cached) {
+                else if (object !== cached)
                     // Else, mutate cache to equal the object.
-
-                    // First let's merge the subset keys
-                    var old_subsets = querystringVals(cached.key, 'subset')
-                    var new_subsets = querystringVals(object.key, 'subset')
-                    var merged_subsets = arrayUnion(old_subsets || [],
-                                                    new_subsets || [])
-
-                    // We want to mutate it in place so that we don't break
-                    // pointers to this cache object.
-                    for (var k in object)
-                        cache[key][k] = object[k]
-
-                    if (merged_subsets.length > 0)
-                        // I'll have to generalize this later if we want
-                        // it to support params in urls beyond 'subset'
-                        // ... right now it wipes out all other params.
-                        cache[key].key = key + '?subset=' + merged_subsets.join(',')
-                }
+                    for (var k in object)          // Mutating in place preserves
+                        cache[key][k] = object[k]  // pointers to this object
 
                 // Remember this key for re-rendering
                 affected_keys.push(key)
@@ -136,7 +90,7 @@ Fart = (function () {
             if (request.status === 200) {
                 var result = JSON.parse(request.responseText)
                 // Warn if the server returns data for a different url than we asked it for
-                console.assert(result.key && result.key.split('?')[0] === key.split('?')[0],
+                console.assert(result.key && result.key === key,
                                'Server returned data with unexpected key', result, 'for key', key)
                 //console.log(result)
                 callback && callback(result)
@@ -266,35 +220,6 @@ Fart = (function () {
 
     // ******************
     // Internal helpers/utility funcs
-    function querystringVals(query, find_name) {
-        // Isolate params
-        var params = query.split('?')[1]
-        if (!params) return null
-        params = params.split('&')
-
-        // Each param's now a key-value pair; now grab param_name's
-        for (var i=0; i<params.length; i++) {
-            var param = params[i].split('=')
-            if (param.length < 2) continue
-            var param_key = param[0]
-            var param_value = param[1]
-            if (param_key.toLowerCase() === find_name.toLowerCase())
-                return param_value.split(',')
-        }
-        return null
-    }
-
-    function arrayUnion(array1, array2) {
-        var hash = {}
-
-        for (var i=0; i<array1.length; i++)
-            hash[array1[i]] = true
-        for (var i=0; i<array2.length; i++)
-            hash[array2[i]] = true
-
-        return Object.keys(hash)
-    }
-
     function clone(obj) {
         if (obj == null) return obj
         var copy = obj.constructor()

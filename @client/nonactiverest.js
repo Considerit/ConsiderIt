@@ -1,8 +1,6 @@
 Fart = (function () {
     /*   To do:
           - Make fetch() work for root objects lacking cache key
-          - Try connecting to a real React component
-          - Implement server_save()
      */
 
     // ****************
@@ -15,9 +13,9 @@ Fart = (function () {
         if (result)
             return result
 
-        // Else, start a server_fetch in the background and return stub.
+        // Else, start a serverFetch in the background and return stub.
         if (url[0] === '/')
-            server_fetch(url, update_cache)
+            serverFetch(url, updateCache)
 
         // This stub is not in the cache, but if you save() it, it
         // will end up there.
@@ -30,14 +28,14 @@ Fart = (function () {
      *  - Saves to server
      *
      *  It supports multiple arguments to allow batching multiple
-     *  server_save() calls together in future optimizations.
+     *  serverSave() calls together in future optimizations.
      */
     function save() {
         for (var i=0; i < arguments.length; i++) {
             var object = arguments[i]
-            update_cache(object)
+            updateCache(object)
             if (object.key && object.key[0] == '/')
-                server_save(object, update_cache)
+                serverSave(object, updateCache)
         }
     }
 
@@ -51,10 +49,10 @@ Fart = (function () {
      *                   ... render loading indicator ...
      *               }
      */
-    function is_loaded(obj, subset) {
+    function isLoaded(obj, subset) {
         var cached = cache[obj.key]
         if (cached) {
-            var cached_subsets = querystring_vals(cached.key, 'subset')
+            var cached_subsets = querystringVals(cached.key, 'subset')
             // Check if fully loaded
             if (cached_subsets == null)
                 return true
@@ -74,9 +72,9 @@ Fart = (function () {
     // ================================
     // == Internal funcs
 
-    function update_cache(object) {
+    function updateCache(object) {
         var affected_keys = []
-        function update_cache_internal(object) {
+        function updateCacheInternal(object) {
             // Recurses through object and folds it into the cache.
 
             // If this object has a key, update the cache for it
@@ -90,10 +88,10 @@ Fart = (function () {
                     // Else, mutate cache to equal the object.
 
                     // First let's merge the subset keys
-                    var old_subsets = querystring_vals(cached.key, 'subset')
-                    var new_subsets = querystring_vals(object.key, 'subset')
-                    var merged_subsets = array_union(old_subsets || [],
-                                                     new_subsets || [])
+                    var old_subsets = querystringVals(cached.key, 'subset')
+                    var new_subsets = querystringVals(object.key, 'subset')
+                    var merged_subsets = arrayUnion(old_subsets || [],
+                                                    new_subsets || [])
 
                     // We want to mutate it in place so that we don't break
                     // pointers to this cache object.
@@ -116,23 +114,23 @@ Fart = (function () {
             //  - And each property on objects
             if (Array.isArray(object))
                 for (var i=0; i < object.length; i++)
-                    object[i] = update_cache_internal(object[i])
+                    object[i] = updateCacheInternal(object[i])
             else if (typeof(object) === 'object' && object !== null)
                 for (var k in object)
-                    object[k] = update_cache_internal(object[k])
+                    object[k] = updateCacheInternal(object[k])
 
             // Return the new cached representation of this object
             return cache[key] || object
         }
 
-        update_cache_internal(object)
+        updateCacheInternal(object)
         var re_render = (window.re_render || function () {
             console.log('You need to implement re_render()') })
         for (var i=0; i<affected_keys.length; i++)
             re_render(affected_keys[i])
     }
 
-    function server_fetch(key, callback) {
+    function serverFetch(key, callback) {
         var request = new XMLHttpRequest()
         request.onload = function () {
             if (request.status === 200) {
@@ -150,7 +148,7 @@ Fart = (function () {
         request.send(null);
     }
 
-    function server_save(object, callback) {
+    function serverSave(object, callback) {
         var request = new XMLHttpRequest()
         request.onload = function () {
             if (request.status === 200) {
@@ -178,7 +176,8 @@ Fart = (function () {
         } 
         return "";
     }
-    function server_create(object, callback) {
+    function serverNew(object, callback) {
+        object = clone(object)
         object.csrf = csrf()
         var request = new XMLHttpRequest()
         request.onload = function () {
@@ -195,32 +194,51 @@ Fart = (function () {
         request.send(JSON.stringify(object));
     }
 
+
+    // ****************
+    // Utility for React Components
+    function hashset() {
+        var vals = this.vals = {}
+        this.get = function (k) { return vals[k] || [] }
+        this.add = function (k, v) {
+            if (vals[k] === undefined)
+                vals[k] = []
+            vals[k].push(v)
+        }
+        this.del = function (k, v) {
+            var i = vals[k].indexOf(v)
+            vals[k].splice(i, 1)
+        }
+    }
+
+
     // ****************
     // Wrapper for React Components
-    var component_keys = new hashset() // What keys does this component depend on?
-    var key_components = new hashset() // What components depend on these keys?
-    var components = {}
+    var components = {}                  // Indexed by 'component/0', 'component/1', etc.
+    var keys_4_component = new hashset() // Maps component to its dependence keys
+    var components_4_key = new hashset() // Maps key to its depndent components
     function ReactiveComponent(obj) {
-        var mounted_key = null;        // You can pass a key: '/thing' into component
+        var mounted_key = null;          // You can pass a key: '/thing' into component
 
-        obj.get = function (what) {
-            if (!what)    what = mounted_key
-            if (what.key) what = what.key
-            component_keys.add(this.local_key, what)
-            key_components.add(what, this.local_key)
-            return fetch(what)
+        obj.get = function (key) {
+            if (!key)    key = mounted_key
+            if (key.key) key = key.key   // You user passes key as object
+            keys_4_component.add(this.local_key, key)   // Track dependencies
+            components_4_key.add(key, this.local_key)  // both ways
+
+            return fetch(key)            // Call into main activerest
         }
-        obj.save = save
+        obj.save = save                  // Call into main activerest
         
-        // Render will need to also clear the component's old
-        // dependencies before running
+        // Render will need to clear the component's old dependencies
+        // before rendering and finding new ones
         wrap(obj, 'render',
              function () {
                  // Clear this component's dependencies
-                 var keys = component_keys.get(this.local_key)
+                 var keys = keys_4_component.get(this.local_key)
                  for (var i=0; i<keys.length; i++)
-                     key_components.del(keys[i], this.local_key)
-                 component_keys.vals[this.local_key] = []
+                     components_4_key.del(keys[i], this.local_key)
+                 keys_4_component.vals[this.local_key] = []
              })
 
         // We will register this component when creating it
@@ -229,12 +247,13 @@ Fart = (function () {
                  this.local_key = 'component/' + Object.keys(components).length
                  components[this.local_key] = this
 
-                 // XXX Putting this here probably won't capture getInitialState!!!
+                 // XXX Putting this into WillMount probably won't let
+                 // you use the mounted_key inside getInitialState!
                  mounted_key = this.props.key
              })
         
         window.re_render = function (key) {
-            var comps = key_components.get(key)
+            var comps = components_4_key.get(key)
             for (var i=0; i<comps.length; i++)
                 components[comps[i]].forceUpdate()
         }
@@ -245,22 +264,25 @@ Fart = (function () {
 
     // ******************
     // Internal helpers/utility funcs
-    function querystring_vals(query, variable) {
+    function querystringVals(query, find_name) {
+        // Isolate params
         var params = query.split('?')[1]
         if (!params) return null
         params = params.split('&')
+
+        // Each param's now a key-value pair; now grab param_name's
         for (var i=0; i<params.length; i++) {
             var param = params[i].split('=')
             if (param.length < 2) continue
-            var param_variable = param[0]
+            var param_key = param[0]
             var param_value = param[1]
-            if (param_variable.toLowerCase() === variable.toLowerCase())
+            if (param_key.toLowerCase() === find_name.toLowerCase())
                 return param_value.split(',')
         }
         return null
     }
 
-    function array_union(array1, array2) {
+    function arrayUnion(array1, array2) {
         var hash = {}
 
         for (var i=0; i<array1.length; i++)
@@ -279,21 +301,6 @@ Fart = (function () {
         return copy
     }
 
-
-    function hashset() {
-        var vals = this.vals = {}
-        this.get = function (k) { return vals[k] || [] }
-        this.add = function (k, v) {
-            if (vals[k] === undefined)
-                vals[k] = []
-            vals[k].push(v)
-        }
-        this.del = function (k, v) {
-            var i = vals[k].indexOf(v)
-            vals[k].splice(i, 1)
-        }
-    }
-
     function wrap(obj, method, before, after) {
         var original_method = obj[method]
         obj[method] = function() {
@@ -307,15 +314,15 @@ Fart = (function () {
     // Export the public API
     window.fetch = fetch
     window.save = save
-    window.server_fetch = server_fetch
-    window.server_create = server_create
-    window.server_save = server_save
-    window.is_loaded = is_loaded
-    window.isLoaded = is_loaded // We support CamelCase too
+    window.serverFetch = serverFetch
+    window.serverNew = serverNew
+    window.serverSave = serverSave
+    window.is_loaded = isLoaded
+    window.isLoaded = isLoaded // We support CamelCase too
     window.cache = cache
     window.csrf = csrf
     window.NonReactiveComponent = ReactiveComponent
-    window.component_keys = component_keys
-    window.key_components = key_components
+    window.keys_4_component = keys_4_component
+    window.components_4_key = components_4_key
     window.components = components
 })()

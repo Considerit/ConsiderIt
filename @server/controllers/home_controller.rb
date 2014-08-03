@@ -8,6 +8,10 @@ class HomeController < ApplicationController
     render "layouts/application", :layout => false
   end
 
+  def activemike
+    render "layouts/activemike", :layout => false
+  end
+
   def avatars
     #result = render_to_string :partial => './avatars'
     respond_to do |format|

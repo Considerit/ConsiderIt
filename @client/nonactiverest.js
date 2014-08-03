@@ -121,10 +121,11 @@
             if (request.status === 200) {
                 var result = JSON.parse(request.responseText)
                 //console.log(result)
-                if (new_part) {                            // Let's map the old and new together
-                    thing_part = url_pieces(result.key)[2] // It's got a fresh id
-                    cache[thing_part] = cache[new_part]    // Make them point at the same thing
-                    result.key = thing_part                // And it's no longer new
+                if (new_part) {                             // Let's map the old and new together
+                    var existing_key = new_part + url
+                    thing_part = url_pieces(result.key)[2]  // It's got a fresh id
+                    cache[thing_part] = cache[existing_key] // Make them point at the same thing
+                    result.key = thing_part                 // And it's no longer new
                 }
                 updateCache(result)
             }

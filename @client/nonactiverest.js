@@ -8,14 +8,11 @@
     var cache = {}
     function fetch(url) {
         // Return the cached version if it exists
-        var cache_key = url.split('?')[0]
-        var result = cache[cache_key]
-        if (result)
-            return result
+        if (cache[url]) return cache[url]
 
         // Else, start a serverFetch in the background and return stub.
         if (url[0] === '/')
-            serverFetch(url, updateCache)
+            serverFetch(url)
 
         // This stub is not in the cache, but if you save() it, it
         // will end up there.
@@ -35,21 +32,30 @@
             var object = arguments[i]
             updateCache(object)
             if (object.key && object.key[0] == '/')
-                serverSave(object, updateCache)
+                serverSave(object)
         }
     }
 
     // ================================
     // == Internal funcs
 
+    var new_index = 0
     function updateCache(object) {
         var affected_keys = []
         function updateCacheInternal(object) {
             // Recurses through object and folds it into the cache.
 
             // If this object has a key, update the cache for it
-            var key = object && object.key && object.key.split('?')[0]
+            var key = object && object.key
             if (key) {
+                // Change /new/thing to /new/45/thing
+                if (key.substring(0,5) === '/new/')
+                    key = object.key = '/new/' + (new_index++) + key.substring(4)
+                else if (key.substring(0,4) === 'new/')
+                    key = object.key = 'new' + new_index++ + key.substring(3)
+
+                console.log('Caching it at key', key)
+
                 var cached = cache[key]
                 if (!cached)
                     // This object is new.  Let's cache it.
@@ -84,7 +90,7 @@
             re_render(affected_keys[i])
     }
 
-    function serverFetch(key, callback) {
+    function serverFetch(key) {
         var request = new XMLHttpRequest()
         request.onload = function () {
             if (request.status === 200) {
@@ -93,7 +99,7 @@
                 console.assert(result.key && result.key === key,
                                'Server returned data with unexpected key', result, 'for key', key)
                 //console.log(result)
-                callback && callback(result)
+                updateCache(result)
             }
         }
 
@@ -102,20 +108,36 @@
         request.send(null);
     }
 
-    function serverSave(object, callback) {
+    function serverSave(object) {
+        // Figure out how we'll send it
+        var url = object.key
+
+        // Split the URL's pieces, if it's /new
+        function url_pieces(url) { return url.match(/(\/new\/\d*)?(.*)/) }
+        var new_part = url_pieces(url)[1], thing_part = url_pieces(url)[2]
+        url = thing_part
+
+        // Let's go
         var request = new XMLHttpRequest()
         request.onload = function () {
             if (request.status === 200) {
                 var result = JSON.parse(request.responseText)
                 //console.log(result)
-                callback && callback(result)
+                if (new_part) {                            // Let's map the old and new together
+                    thing_part = url_pieces(result.key)[2] // It's got a fresh id
+                    cache[thing_part] = cache[new_part]    // Make them point at the same thing
+                    result.key = thing_part                // And it's no longer new
+                }
+                updateCache(result)
             }
         }
 
         object = clone(object)
         object['authenticity_token'] = csrf()
 
-        request.open('PUT', object.key, true)
+        var POST_or_PUT = new_part ? 'POST' : 'PUT'
+        request.open(POST_or_PUT, url, true)
+        request.setRequestHeader('Accept','application/json')
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         request.setRequestHeader('X-CSRF-Token', csrf())
         request.send(JSON.stringify(object));
@@ -129,23 +151,6 @@
             } 
         } 
         return "";
-    }
-    function serverNew(object, callback) {
-        object = clone(object)
-        object.csrf = csrf()
-        var request = new XMLHttpRequest()
-        request.onload = function () {
-            if (request.status === 200) {
-                var result = JSON.parse(request.responseText)
-
-                // TODO: We still need to update the old /new/data url.
-                //console.log(result)
-                callback && callback(result)
-            }
-        }
-
-        request.open('POST', object.key, true)
-        request.send(JSON.stringify(object));
     }
 
 
@@ -240,6 +245,8 @@
 
     // Export the public API
     window.NonReactiveComponent = ReactiveComponent
+    window.fetch = fetch
+    window.save = save
 
     // Make the private methods accessible under "window.nona"
     vars = 'cache fetch save serverFetch serverSave updateCache csrf keys_4_component components_4_key components hashset clone wrap'.split(' ')

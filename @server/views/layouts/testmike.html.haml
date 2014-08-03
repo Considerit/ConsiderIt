@@ -18,7 +18,6 @@
 
 
     = stylesheet_link_tag 'stylesheets/application', debug: false
-    = javascript_include_tag 'javascripts/testmikeloader', debug: Rails.env.development?
 
     // - ['Source+Sans+Pro'].each do |font|
     //   %link{ :href => "//fonts.googleapis.com/css?family=#{font}:400,700,400italic",  :rel => 'stylesheet', :type => 'text/css' }
@@ -30,8 +29,7 @@
     /[if lte IE 8]
       = stylesheet_link_tag 'browser/ie'
 
-    .foo
-
+    = javascript_include_tag 'javascripts/testmikeloader', debug: Rails.env.development?
 
   %body
 

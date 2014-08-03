@@ -33,7 +33,7 @@ class ProposalController < ApplicationController
   end
 
   def show
-    proposal = Proposal.find(params[:id])
+    proposal = Proposal.find_by_id(params[:id]) || Proposal.find_by_long_id(params[:id])
     return if !proposal 
 
     if cannot?(:read, proposal)

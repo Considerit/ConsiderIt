@@ -16,7 +16,8 @@ Fart = (function () {
             return result
 
         // Else, start a server_fetch in the background and return stub.
-        server_fetch(url, update_cache)
+        if (url[0] === '/')
+            server_fetch(url, update_cache)
 
         // This stub is not in the cache, but if you save() it, it
         // will end up there.
@@ -74,6 +75,7 @@ Fart = (function () {
     // == Internal funcs
 
     function update_cache(object) {
+        var affected_keys = []
         function update_cache_internal(object) {
             // Recurses through object and folds it into the cache.
 
@@ -104,6 +106,9 @@ Fart = (function () {
                         // ... right now it wipes out all other params.
                         cache[key].key = key + '?subset=' + merged_subsets.join(',')
                 }
+
+                // Remember this key for re-rendering
+                affected_keys.push(key)
             }
 
             // Now recurse into this object.
@@ -123,11 +128,11 @@ Fart = (function () {
         update_cache_internal(object)
         var re_render = (window.re_render || function () {
             console.log('You need to implement re_render()') })
-        re_render()
+        for (var i=0; i<affected_keys.length; i++)
+            re_render(affected_keys[i])
     }
 
     function server_fetch(key, callback) {
-        // This needs to take a callback and become async
         var request = new XMLHttpRequest()
         request.onload = function () {
             if (request.status === 200) {
@@ -135,7 +140,7 @@ Fart = (function () {
                 // Warn if the server returns data for a different url than we asked it for
                 console.assert(result.key && result.key.split('?')[0] === key.split('?')[0],
                                'Server returned data with unexpected key', result, 'for key', key)
-                console.log(result)
+                //console.log(result)
                 callback && callback(result)
             }
         }
@@ -150,7 +155,7 @@ Fart = (function () {
         request.onload = function () {
             if (request.status === 200) {
                 var result = JSON.parse(request.responseText)
-                console.log(result)
+                //console.log(result)
                 callback && callback(result)
             }
         }
@@ -181,7 +186,7 @@ Fart = (function () {
                 var result = JSON.parse(request.responseText)
 
                 // TODO: We still need to update the old /new/data url.
-                console.log(result)
+                //console.log(result)
                 callback && callback(result)
             }
         }
@@ -190,8 +195,56 @@ Fart = (function () {
         request.send(JSON.stringify(object));
     }
 
+    // ****************
+    // Wrapper for React Components
+    var component_keys = new hashset() // What keys does this component depend on?
+    var key_components = new hashset() // What components depend on these keys?
+    var components = {}
+    function ReactiveComponent(obj) {
+        var mounted_key = null;        // You can pass a key: '/thing' into component
+
+        obj.get = function (what) {
+            if (!what)    what = mounted_key
+            if (what.key) what = what.key
+            component_keys.add(this.local_key, what)
+            key_components.add(what, this.local_key)
+            return fetch(what)
+        }
+        obj.save = save
+        
+        // Render will need to also clear the component's old
+        // dependencies before running
+        wrap(obj, 'render',
+             function () {
+                 // Clear this component's dependencies
+                 var keys = component_keys.get(this.local_key)
+                 for (var i=0; i<keys.length; i++)
+                     key_components.del(keys[i], this.local_key)
+                 component_keys.vals[this.local_key] = []
+             })
+
+        // We will register this component when creating it
+        wrap(obj, 'componentWillMount',
+             function () { 
+                 this.local_key = 'component/' + Object.keys(components).length
+                 components[this.local_key] = this
+
+                 // XXX Putting this here probably won't capture getInitialState!!!
+                 mounted_key = this.props.key
+             })
+        
+        window.re_render = function (key) {
+            var comps = key_components.get(key)
+            for (var i=0; i<comps.length; i++)
+                components[comps[i]].forceUpdate()
+        }
+
+        return React.createClass(obj)
+    }
+
+
     // ******************
-    // Internal key helpers
+    // Internal helpers/utility funcs
     function querystring_vals(query, variable) {
         var params = query.split('?')[1]
         if (!params) return null
@@ -226,6 +279,31 @@ Fart = (function () {
         return copy
     }
 
+
+    function hashset() {
+        var vals = this.vals = {}
+        this.get = function (k) { return vals[k] || [] }
+        this.add = function (k, v) {
+            if (vals[k] === undefined)
+                vals[k] = []
+            vals[k].push(v)
+        }
+        this.del = function (k, v) {
+            var i = vals[k].indexOf(v)
+            vals[k].splice(i, 1)
+        }
+    }
+
+    function wrap(obj, method, before, after) {
+        var original_method = obj[method]
+        obj[method] = function() {
+            before && before.apply(this, arguments)
+            var result = original_method && original_method.apply(this, arguments)
+            after && after.apply(this, arguments)
+            return result
+        }
+    }
+
     // Export the public API
     window.fetch = fetch
     window.save = save
@@ -236,4 +314,8 @@ Fart = (function () {
     window.isLoaded = is_loaded // We support CamelCase too
     window.cache = cache
     window.csrf = csrf
+    window.NonReactiveComponent = ReactiveComponent
+    window.component_keys = component_keys
+    window.key_components = key_components
+    window.components = components
 })()

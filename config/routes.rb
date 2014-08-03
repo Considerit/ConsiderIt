@@ -10,6 +10,50 @@ end
 
 ConsiderIt::Application.routes.draw do
 
+  ## This stuff at the top is all special cases until we make
+  ## EVERYTHING client-side via the home controller's index!
+  scope :module => "dashboard" do
+    match "/report_client_error" => "client_errors#create", :via => :post, :as => :report_client_error
+    get "/dashboard/client_errors" => "client_errors#index", :as => :client_error
+
+    resource :account, :only => [:show, :update]
+
+    get '/dashboard/application' => "accounts#show"
+    post '/dashboard/application' => "accounts#update"
+
+    get '/dashboard/admin_template' => "admin#admin_template", :as => :admin_template
+    #match '/dashboard/application' => "admin#application", :via => :get, :as => :application_settings
+    get '/dashboard/analytics' => "admin#analytics", :as => :analytics
+    get '/dashboard/import_data' => "admin#import_data", :as => :import_data
+    match '/dashboard/import_data' => "admin#import_data_create", :via => :put, :as => :import_data_create
+
+    #match '/dashboard/proposals' => "admin#proposals", :via => :get, :as => :manage_proposals
+    get '/dashboard/roles' => "admin#roles", :as => :manage_roles
+    match '/dashboard/roles/users/:user_id' => "admin#update_role", :via => :post, :as => :update_role
+    get '/dashboard/users/:id/profile' => "users#show", :as => :profile
+    get '/dashboard/users/:id/profile/edit' => "users#edit", :as => :edit_profile
+    get '/dashboard/users/:id/profile/edit/account' => "users#edit_account", :as => :edit_account
+    get '/dashboard/users/:id/profile/edit/notifications' => "users#edit_notifications", :as => :edit_notifications
+
+  end
+
+  get "/feed" => "trackable#feed"
+
+  #match "/theme" => "theme#set", :via => :post
+  get '/home/avatars' => "home#avatars", :as => :get_avatars
+  match "/home/domain" => "home#set_domain", :via => :post
+  match "/home/theme" => "home#set_dev_options", :via => :post, :as => :set_dev_options
+
+  match '/dashboard/message' => 'message#create', :as => 'message', :via => :post
+
+  #match '/home/study/:category' => "home#study", :via => :post  
+
+  #get '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/
+
+
+  ## This is my test controller for nonactiverest
+  get '/testmike' => 'home#testmike'
+
   # All user-visible URLs go to the "home" controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
   get '(*url)' => 'home#index', :constraints => NotJSON.new
@@ -73,53 +117,6 @@ ConsiderIt::Application.routes.draw do
   concerns :followable
   concerns :thankable
   #################
-
-
-
-  scope :module => "dashboard" do
-    match "/report_client_error" => "client_errors#create", :via => :post, :as => :report_client_error
-    get "/dashboard/client_errors" => "client_errors#index", :as => :client_error
-
-    resource :account, :only => [:show, :update]
-
-    get '/dashboard/application' => "accounts#show"
-    post '/dashboard/application' => "accounts#update"
-
-    get '/dashboard/admin_template' => "admin#admin_template", :as => :admin_template
-    #match '/dashboard/application' => "admin#application", :via => :get, :as => :application_settings
-    get '/dashboard/analytics' => "admin#analytics", :as => :analytics
-    get '/dashboard/import_data' => "admin#import_data", :as => :import_data
-    match '/dashboard/import_data' => "admin#import_data_create", :via => :put, :as => :import_data_create
-
-    #match '/dashboard/proposals' => "admin#proposals", :via => :get, :as => :manage_proposals
-    get '/dashboard/roles' => "admin#roles", :as => :manage_roles
-    match '/dashboard/roles/users/:user_id' => "admin#update_role", :via => :post, :as => :update_role
-    get '/dashboard/users/:id/profile' => "users#show", :as => :profile
-    get '/dashboard/users/:id/profile/edit' => "users#edit", :as => :edit_profile
-    get '/dashboard/users/:id/profile/edit/account' => "users#edit_account", :as => :edit_account
-    get '/dashboard/users/:id/profile/edit/notifications' => "users#edit_notifications", :as => :edit_notifications
-
-  end
-
-
-
-  # route all non-ajax requests to home controller, with a few exceptions
-  get '(*url)' => 'home#index', :constraints => XHRConstraint.new 
-
-
-  
-  get "/feed" => "trackable#feed"
-
-  #match "/theme" => "theme#set", :via => :post
-  get '/home/avatars' => "home#avatars", :as => :get_avatars
-  match "/home/domain" => "home#set_domain", :via => :post
-  match "/home/theme" => "home#set_dev_options", :via => :post, :as => :set_dev_options
-
-  match '/dashboard/message' => 'message#create', :as => 'message', :via => :post
-
-  #match '/home/study/:category' => "home#study", :via => :post  
-
-  #get '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/
 
 
 end

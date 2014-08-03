@@ -198,17 +198,18 @@ Fart = (function () {
     // ****************
     // Utility for React Components
     function hashset() {
-        var vals = this.vals = {}
-        this.get = function (k) { return vals[k] || [] }
+        var hash = this.hash = {}
+        this.get = function (k) { return hash[k] || [] }
         this.add = function (k, v) {
-            if (vals[k] === undefined)
-                vals[k] = []
-            vals[k].push(v)
+            if (hash[k] === undefined)
+                hash[k] = []
+            hash[k].push(v)
         }
         this.del = function (k, v) {
-            var i = vals[k].indexOf(v)
-            vals[k].splice(i, 1)
+            var i = hash[k].indexOf(v)
+            hash[k].splice(i, 1)
         }
+        this.delAll = function (k) { hash[k] = [] }
     }
 
 
@@ -235,10 +236,11 @@ Fart = (function () {
         wrap(obj, 'render',
              function () {
                  // Clear this component's dependencies
-                 var keys = keys_4_component.get(this.local_key)
-                 for (var i=0; i<keys.length; i++)
-                     components_4_key.del(keys[i], this.local_key)
-                 keys_4_component.vals[this.local_key] = []
+                 var component = this.local_key
+                 var depends_on_keys = keys_4_component.get(component)
+                 for (var i=0; i<depends_on_keys.length; i++)
+                     components_4_key.del(depends_on_keys[i], component)
+                 keys_4_component.delAll(component)
              })
 
         // We will register this component when creating it

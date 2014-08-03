@@ -1,4 +1,4 @@
-Fart = (function () {
+(function () {
     /*   To do:
           - Make fetch() work for root objects lacking cache key
      */
@@ -239,15 +239,12 @@ Fart = (function () {
     }
 
     // Export the public API
-    window.fetch = fetch
-    window.save = save
-    window.serverFetch = serverFetch
-    window.serverNew = serverNew
-    window.serverSave = serverSave
-    window.cache = cache
-    window.csrf = csrf
     window.NonReactiveComponent = ReactiveComponent
-    window.keys_4_component = keys_4_component
-    window.components_4_key = components_4_key
-    window.components = components
+
+    // Make the private methods accessible under "window.nona"
+    vars = 'cache fetch save serverFetch serverSave updateCache csrf keys_4_component components_4_key components hashset clone wrap'.split(' ')
+    window.nona = {}
+    for (var i=0; i<vars.length; i++)
+        window.nona[vars[i]] = eval(vars[i])
+
 })()

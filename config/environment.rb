@@ -26,6 +26,10 @@ def jsonify_objects(objects, name, reference_names=[], delete_names=[], parse_na
   }
 end
 
+def key_id(key)
+  key.split('/')[-1]
+end
+
 # Initialize the rails application
 ConsiderIt::Application.initialize! do |config|
   config.serve_static_assets = true    

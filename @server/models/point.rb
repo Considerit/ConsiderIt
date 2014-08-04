@@ -14,8 +14,8 @@ class Point < ActiveRecord::Base
 
 
   before_validation do 
-    self.nutshell = self.nutshell.sanitize
-    self.text = self.text.sanitize
+    #self.nutshell = self.nutshell.sanitize
+    #self.text = self.text.sanitize
 
     if self.nutshell.length > 140 
       text << self.nutshell[139..-1]
@@ -85,10 +85,11 @@ class Point < ActiveRecord::Base
     options[:only] ||= Point.my_public_fields
     result = super(options)
     result['includers'] = JSON.parse (result['includers'] || '[]')
-    result['includers'].map! {|p| "/point/#{p}"}
+    result['includers'].map! {|p| "/user/#{p}"}
     make_key(result, 'point')
+    result['included_by'] = result['includers']
     stubify_field(result, 'proposal')
-    #result.delete('opinion')
+    result.delete('includers')
     stubify_field(result, 'opinion')
     stubify_field(result, 'user')
     result

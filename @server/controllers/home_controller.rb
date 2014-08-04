@@ -9,7 +9,7 @@ class HomeController < ApplicationController
   end
 
   def activemike
-    render "layouts/activemike", :layout => false
+    render "layouts/testmike", :layout => false
   end
 
   def avatars

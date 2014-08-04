@@ -14,16 +14,19 @@ class PointController < ApplicationController
   def create
     # Validate by filtering out unwanted fields
     # todo: validate data types too
-    fields = [:nutshell, :text, :is_pro, :hide_name, :proposal]
-    point = params[:point].select{|k,v| fields.include? k}
+    fields = ['nutshell', 'text', 'is_pro', 'hide_name', 'proposal', 'key']
+    point = params.select{|k,v| fields.include? k}
+
+    old_key = point['key']
+    point.delete('key')
 
     # Set private values
-    proposal = Proposal.find(point.proposal)
+    point[:proposal] = proposal = Proposal.find(key_id(point['proposal']))
     point[:comment_count] = 0
-    point[:long_id] = proposal.long_id
-    point[:user_id] = current_user ? current_user.id : nil,
+    point[:long_id] = point['proposal'].long_id
     point[:published] = false
-    
+    point[:user_id] = current_user && current_user.id || nil
+
     point = Point.new ActionController::Parameters.new(point).permit!
 
     #TODO: look into cancan to figure out how we can move this earlier in the method
@@ -37,7 +40,10 @@ class PointController < ApplicationController
     session[proposal.id][:included_points][point.id] = 1    
     session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
     
-    render :json => point
+    result = point.as_json
+    result['key'] = "#{old_key}/#{point.id}"
+    pp(result)
+    render :json => result
   end
 
   def update

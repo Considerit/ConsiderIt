@@ -10,6 +10,9 @@ end
 
 ConsiderIt::Application.routes.draw do
 
+  ## This is my test controller for nonactiverest
+  get '/activemike' => 'home#activemike'
+
   ## This stuff at the top is all special cases until we make
   ## EVERYTHING client-side via the home controller's index!
   scope :module => "dashboard" do
@@ -50,9 +53,6 @@ ConsiderIt::Application.routes.draw do
 
   #get '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/
 
-
-  ## This is my test controller for nonactiverest
-  get '/testmike' => 'home#testmike'
 
   # All user-visible URLs go to the "home" controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON

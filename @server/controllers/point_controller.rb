@@ -21,11 +21,11 @@ class PointController < ApplicationController
     point.delete('key')
 
     # Set private values
-    point[:proposal] = proposal = Proposal.find(key_id(point['proposal']))
-    point[:comment_count] = 0
-    point[:long_id] = point['proposal'].long_id
-    point[:published] = false
-    point[:user_id] = current_user && current_user.id || nil
+    point['proposal'] = proposal = Proposal.find(key_id(point['proposal']))
+    point['comment_count'] = 0
+    point['long_id'] = point['proposal'].long_id
+    point['published'] = false
+    point['user_id'] = current_user && current_user.id || nil
 
     point = Point.new ActionController::Parameters.new(point).permit!
 

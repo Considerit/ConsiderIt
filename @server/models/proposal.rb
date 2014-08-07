@@ -38,10 +38,34 @@ class Proposal < ActiveRecord::Base
     users = users.as_json
     users = jsonify_objects(users, 'user')
 
+    p = proposal_data(current_tenant, current_user, prop_data, show_private)
+    response = {
+      :proposal => p,
+      :users => users
+    }
+
+    if current_tenant.assessment_enabled
+      response.update({
+        :assessments => assessments.completed.public_fields,
+        :claims => assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
+        :verdicts => jsonify_objects(Assessable::Verdict.all, 'verdict')
+      })
+    end
+
+    if show_private && self.publicity < 2
+      response.update({
+        :access_list => self.access_list
+      })
+    end
+
+    response
+  end
+
+  def proposal_data(current_tenant, current_user, prop_data, show_private = false)
     # Compute points
-    pointies = points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
-    pp(pointies.public_fields)
-    pointies = pointies.public_fields.map do |p|
+    pointz = points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
+    pp(pointz.public_fields)
+    pointz = pointz.public_fields.map do |p|
       p.mask_anonymous(current_user)
       p.as_json
     end
@@ -53,30 +77,13 @@ class Proposal < ActiveRecord::Base
     includeds = Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).pluck('points.id')\
                 + Point.included_by_unstored(prop_data[:included_points].keys, self).pluck('points.id')
 
-
     # Put them together
-    response = {
-      :proposal => self.as_json,
-      :points => pointies,
+    response = self.as_json
+    response.update({
+      :points => pointz,
       :included_points => includeds,
-      :opinions => ops,
-      :result => 'success',
-      :users => users
-    }
-
-    if current_tenant.assessment_enabled
-      response.update({
-        :assessments => assessments.completed.public_fields,
-        :claims => assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
-        :verdicts => jsonify_objects(Assessable::Verdict.all, 'vertict')
-      })
-    end
-
-    if show_private && self.publicity < 2
-      response.update({
-        :access_list => self.access_list
-      })
-    end
+      :opinions => ops
+    })
 
     response
   end

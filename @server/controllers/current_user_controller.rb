@@ -16,65 +16,90 @@ class CurrentUserController < DeviseController
     end
   end  
 
-  # handles login, new accounts, and login via reset password token
+  # handles auth (login, new accounts, and login via reset password token) and updating user info
   def update
     errors = []
 
-    by_third_party = session.has_key? :access_token
-    by_password_reset_token = params.has_key? :reset_password_token
+    if current_user
+      # we're updating an existing user
 
-    if by_password_reset_token
-      params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
-      user = User.reset_password_by_token params
-    elsif by_third_party
-      user = User.find_by_third_party_token(session[:access_token])
-    else 
-      user = User.find_by_lower_email(params[:email])
-    end
+      if current_user.update_attributes(params.permit!)
 
-    # if user already exists
-    if user && (by_third_party || user.valid_password?(params[:password]) ) #&& user.registration_complete 
-      sign_in :user, user
+        results = to_json_current_user
 
-    # user exists, but authentication failed
-    elsif user
-      errors.append 'wrong password'
+        if params.has_key? :avatar
+          dirty_avatar_cache   
+        end
 
-    # user does not exist, try to create account
-    elsif !by_third_party && !params.has_key?(:password)
-      errors.append 'Error. Have you created an account yet? If not, click below.'
-    
-    else
-
-
-      if by_third_party
-        user_params =  User.params_from_third_party_token(session[:access_token]).update(params)
-        is_dirty = session[:access_token].has_key?(:avatar_url) || params.has_key?(:avatar) 
-
-      else       
-        user_params =  params
-        is_dirty = params.has_key?(:avatar)
+      elsif User.find_by_email(params[:email])
+        # if user is trying to change their email address
+        errors.append 'That email is not available.'
+      else
+        # some kind error happened
+        errors.append 'Could not save your changes.'
       end
 
-      user = User.new ActionController::Parameters.new(user_params).permit!
-      user.referer = user.page_views.first.referer if user.page_views.count > 0
+    else
+      # we're trying to authenticate
 
-      # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
+      by_third_party = session.has_key? :access_token
+      by_password_reset_token = params.has_key? :reset_password_token
 
-      if user.save
+      if by_password_reset_token
+        params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
+        user = User.reset_password_by_token params
+      elsif by_third_party
+        user = User.find_by_third_party_token(session[:access_token])
+      else 
+        user = User.find_by_lower_email(params[:email])
+      end
+
+      # if user already exists
+      if user && (by_third_party || user.valid_password?(params[:password]) ) #&& user.registration_complete 
         sign_in :user, user
 
-        # current_user.track!
+      # user exists, but authentication failed
+      elsif user
+        errors.append 'wrong password'
 
-        session.delete(:access_token) if by_third_party
-        if is_dirty
-          dirty_avatar_cache
-        end
+      # user does not exist, try to create account
+      elsif !by_third_party && !params.has_key?(:password)
+        errors.append 'Error. Have you created an account yet? If not, click below.'
+      
       else
-        errors.append 'Registration failed.'
-      end
 
+
+        if by_third_party
+          user_params =  User.params_from_third_party_token(session[:access_token]).update(params)
+          is_dirty = session[:access_token].has_key?(:avatar_url) || params.has_key?(:avatar) 
+
+        else       
+          user_params =  params
+          is_dirty = params.has_key?(:avatar)
+        end
+
+        user = User.new ActionController::Parameters.new(user_params).permit!
+        user.referer = user.page_views.first.referer if user.page_views.count > 0
+
+        # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
+
+        if user.save
+          sign_in :user, user
+
+          # current_user.track!
+
+          session.delete(:access_token) if by_third_party
+          if is_dirty
+            dirty_avatar_cache
+          end
+        else
+          errors.append 'Registration failed.'
+        end
+
+      end
     end
+
+
     response = to_json_current_user
     response['errors'] = errors if errors.length > 0
 
@@ -106,31 +131,6 @@ class CurrentUserController < DeviseController
 
   end
 
-
-  # TODO: figure out if this logic (updating user's account info/bio etc should be merged with logic above that handles auth)
-  def update2
-    # TODO: explicitly grab params
-    errors = []
-
-    if current_user && current_user.update_attributes(params[:user].permit!)
-
-      results = to_json_current_user
-
-      if params[:user].has_key? :avatar
-        dirty_avatar_cache   
-      end
-
-    elsif User.find_by_email(params[:user][:email])
-      errors.append 'That email is not available.'
-    else
-      errors.append 'Could not save your changes.'
-    end
-
-    results = to_json_current_user
-    results[:errors] = errors
-
-    render :json => results 
-  end
 
   def destroy
     signed_out = (Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name))

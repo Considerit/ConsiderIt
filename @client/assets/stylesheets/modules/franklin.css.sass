@@ -88,26 +88,15 @@ $proposal_header_color: invert($decision_board_border_color)
   +font-size(8)
 
 .fixed_proposal_heading
-  // position: fixed
+  border-bottom: 1px solid darken($proposal_header_color, 15%)
   width: 100%
-  // border: solid darken($base_background_color, 15%)
-  // border-width: 0px 0px 1px 0px
-  // border-bottom: 1px solid darken(invert($decision_board_border_color), 15%)
-  // color: darken($base_background_color, 40%)
-  // background-color: white
   background-color: $proposal_header_color
   color: white
-  +font-size(6)
-  // font-weight: 600
+  +font-size(5)
   padding: $vertical_baseline/8 $grid_gutter / 2
-  // top: 0
-  // left: 0
   z-index: 999
   position: relative
   text-align: center
-  // box-shadow: 0px 1px 1px rgba(black, .2) 
-  span
-    // border-bottom: 3px solid darken($base_background_color, 40%)
 
 
 // The proposal details revealed 
@@ -177,14 +166,12 @@ $segment_color: #db004d
       opacity: .05
 
 [data-segment="6"] 
-  left: -5px
 
   .histogram_segment_pole
     color: $extreme_supporter_color
     left: -160px
 
 [data-segment="0"] 
-  right: -5px
   .histogram_segment_pole
     color: $extreme_opposer_color  
     right: -145px
@@ -242,13 +229,14 @@ $segment_color: #db004d
 $slider_handle_size: 22px
 .ui-slider-handle  // dashes in name b/c jquery UI
   margin-left: -$slider_handle_size / 2
+
   .the_handle
     border-radius: 50%
     width: $slider_handle_size
     height: $slider_handle_size
-    box-shadow: 0px 1px 0px darken($decision_board_text_color, 15%)
     background-color: $decision_board_text_color
     position: relative
+    box-shadow: 0px 1px 0px darken($decision_board_text_color, 15%), inset 0 1px 2px rgba(white, .4), 0px 0px 0px 1px darken($decision_board_text_color, 0%)
 
     .face_part
       position: absolute
@@ -274,6 +262,17 @@ $slider_handle_size: 22px
       border-radius: 50%
       box-shadow: 3px 3px 0 0 white
 
+    .drag_arrow
+      position: absolute
+      top: 2px
+      color: rgba($decision_board_border_color, .6)
+      +font-size(-2)
+
+      &.left
+        left: -15px
+      &.right
+        right: -15px
+
 
   // the mouth leading into the "give opinion button" or the decision board, depending on state
   .bubblemouth
@@ -289,31 +288,20 @@ $slider_handle_size: 22px
 // The area on top of the slider that shows in crafting to let user know what their stance is
 .slider_feedback
   position: absolute
-  top: -96px
+  top: -80px
   width: 450px
   left: 50%
   margin-left: -225px
   border-radius: 10px
   background-color: rgba($base_background_color, .2)
+
+  +font-size(6)
+  font-weight: bold
+  color: $decision_board_text_color
+  text-align: center
+
+.opinion_region .slider_feedback
   pointer-events: none // clicking on this interferes with slider and toggle state
-
-  .slider_feedback_result, .slider_feedback_instructions
-    text-align: center
-
-  .slider_feedback_result
-    +font-size(6)
-    font-weight: bold
-    color: $decision_board_text_color
-
-  .slider_feedback_instructions
-    +font-size(0)
-    font-weight: 400
-
-  // &[data-stance-segment="0"] .slider_feedback_result
-  //   color: $extreme_opposer_color
-
-  // &[data-stance-segment="6"] .slider_feedback_result
-  //   color: $extreme_supporter_color
 
 
 [data-page="results"] .slider_feedback
@@ -475,9 +463,11 @@ $slider_handle_size: 22px
 
     a.give_opinion_button
       display: block
-      font-weight: 500
       color: white
       padding: $vertical_baseline / 4 $grid_gutter
+      margin: 0
+      +font-size(1)
+      box-shadow: none
       &:hover
         color: white
 
@@ -530,6 +520,7 @@ $slider_handle_size: 22px
 
 .primary_button
   +blue_button
+  font-weight: 600
 
 a.primary_cancel_button
   color: #aaa
@@ -576,9 +567,9 @@ $community_point_mouth_width: 17px
     z-index: 1
 
   &.pro .community_point_mouth
-    left: -$community_point_mouth_width + 1
+    left: -$community_point_mouth_width
   &.con .community_point_mouth
-    right: -$community_point_mouth_width + 1
+    right: -$community_point_mouth_width
     +transform(scaleX(-1))
 
   .point_content
@@ -594,13 +585,13 @@ $community_point_mouth_width: 17px
 .point_nutshell
   word-wrap: break-word
   +font-size(-1)
-  color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
+  // color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
 .point_details_tease, .point_details 
   //padding-left: 10px
   font-weight: 200
   display: block
-  color: deemphasize($base_text_color, 40%, $reference: $base_background_color)
+  // color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
 .point_details_tease:hover
   text-decoration: underline
@@ -685,8 +676,7 @@ $point-includer-width: 22px
 .newpoint
 
   .newpoint_form
-    margin: $vertical_baseline $grid_gutter
-    padding-top: $vertical_baseline / 2
+    margin: 0 $grid_gutter
 
     position: relative
     margin-left: $grid_gutter
@@ -718,6 +708,13 @@ $point-includer-width: 22px
     right: 20px
     top: -19px
 
+  .add_details
+    +font-size(0)
+    span
+      padding-left: 6px
+    &:hover
+      text-decoration: underline
+
   .newpoint-submit
     text-align: right
     margin-top: 3px
@@ -729,8 +726,12 @@ $point-includer-width: 22px
       +font-size(2)
 
   .newpoint_hide_name
+    position: absolute
+    bottom: 0px
     label, input
       +font-size(-1)
+
+
 
 
 
@@ -747,21 +748,21 @@ $point-includer-width: 22px
 [data-authmode]
   visibility: hidden
   .slider_base
-    visibility: hidden
-  .the_handle
     visibility: visible
-    .face_part
-      visibility: hidden
-  .auth_region, .bubblemouth
+  .auth_region
     visibility: visible
 
 [data-authmode="login"], [data-authmode="register"]
 
-  .slider_feedback_result
+  .slider_feedback
     margin-top: -25px
 
 .auth_region
   margin-bottom: 10 * $vertical_baseline
+
+  .slider_base
+    background-color: transparent
+
 .auth
   padding: 1.5 * $vertical_baseline $grid_gutter .5 * $vertical_baseline $grid_gutter
   +font-size(3)
@@ -917,11 +918,12 @@ $avatar_preview_size: 60px
 .switch_auth_mode
   color: lighten($base_text_color, 25%)
   +font-size(0)
-  position: absolute
-  top: -110px
   left: 0
-  width: 100%
   text-align: center
+  position: relative
+  top: -6px
+  font-weight: normal
+
   a.toggle_auth
     display: inline-block
     // border-radius: 16px

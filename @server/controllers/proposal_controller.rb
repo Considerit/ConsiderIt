@@ -34,17 +34,16 @@ class ProposalController < ApplicationController
 
   def show
     proposal = Proposal.find_by_id(params[:id]) || Proposal.find_by_long_id(params[:id])
-    return if !proposal 
+    return if (!proposal || cannot?(:read, proposal))
 
-    if cannot?(:read, proposal)
-      render :json => {:result => 'failure', :reason => 'Access denied'}
-    else
-      pp 'reseting user activities'
-      ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-      data = proposal.full_data current_tenant, current_user, session[proposal.id], can?(:manage, proposal)
-      render :json => data
-    end
+    pp 'reseting user activities'
+    ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
+    result = proposal.proposal_data(current_tenant,
+                                    current_user,
+                                    session[proposal.id],
+                                    can?(:manage, proposal))
 
+    render :json => result
 
   end
 

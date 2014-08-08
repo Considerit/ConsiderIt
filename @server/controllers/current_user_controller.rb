@@ -23,8 +23,11 @@ class CurrentUserController < DeviseController
     if current_user
       # we're updating an existing user
 
-      if current_user.update_attributes(params.permit!)
+      fields = ['avatar', 'bio', 'name', 'hide_name', 'email', 'password']
+      user_attrs = params.select{|k,v| fields.include? k}
+      user_attrs = ActionController::Parameters.new(user_attrs).permit!
 
+      if current_user.update_attributes(user_attrs)
         results = to_json_current_user
 
         if params.has_key? :avatar

@@ -15,9 +15,9 @@
   class Entities.Errors extends App.Entities.Collection
     model: Entities.Error
 
-    parse : (attrs) ->
-      errors = (attr.client_error for attr in attrs)
-      errors
+    parse : (attrs) -> attrs
+      # errors = (attr.client_error for attr in attrs)
+      # errors
 
   API = 
     all_errors : new Entities.Errors()

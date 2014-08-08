@@ -316,14 +316,14 @@
       !!@fixed_user
 
     update_current_user : (user_data) ->
-      user_id = user_data.user.id
+      user_id = user_data.id
 
       if @current_user.id != user_id
         current_user = AUTH_API.set_current_user user_id 
       else 
         current_user = @current_user
         
-      current_user.set user_data.user
+      current_user.set user_data
 
       current_user.setFollows user_data.follows if 'follows' of user_data
 

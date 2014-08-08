@@ -12,9 +12,9 @@
 
     url : () ->
       if @id
-        Routes.proposal_point_path @get('long_id'), @id
+        Routes.point_path @id
       else
-        Routes.proposal_points_path @get('long_id') 
+        Routes.points_path()
 
     parse : (response) ->
       if 'comments' of response
@@ -76,7 +76,7 @@
 
     getProposal : ->
       if !@proposal
-        @proposal = App.request 'proposal:get', @get('long_id') 
+        @proposal = App.request 'proposal:get', @get('id') 
       @proposal
 
     getComments : ->

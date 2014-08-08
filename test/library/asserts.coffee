@@ -2,7 +2,7 @@ _ = require('../../node_modules/underscore')
 
 _.extend casper.test, 
   assertLoggedIn : ->
-    @assertExists '.user-options-display', 'User is logged in'
+    @assertExists '[data-action="logout"]', 'User is logged in'
 
   assertLoggedOut : ->
     @assertExists '[action="login"]', 'User has successfully logged out'

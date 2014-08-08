@@ -1209,7 +1209,7 @@ UserBar = ReactiveComponent
     if current_user.id
       R.div className: 'userbar', 
         Avatar key: current_user.id, tag: R.span, className: 'userbar_avatar', style: {height: 20, width: 20}
-        R.a onClick: @logout, 'logout'
+        R.a 'data-action': 'logout', onClick: @logout, 'logout'
     else 
       R.div null
 

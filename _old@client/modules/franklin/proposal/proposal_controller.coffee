@@ -26,7 +26,7 @@
       @listenTo App.vent, 'user:signout', =>
         if !@model.openToPublic()
           @close()
-          App.navigate Routes.root_path(), {trigger : true}
+          App.navigate '', {trigger : true}
         else if @state != Proposal.State.Summary
           # This will clear out existing user opinions and create a new Opinion for the now anonymous user.
           # For some reason, if we do this in summary state, all proposals disappear so for now, just don't do it in that state.

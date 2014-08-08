@@ -17,16 +17,16 @@
       if !@attributes.participants || @attributes.participants == ""
         @participant_list = []
       else            
-        @participant_list = $.parseJSON(@attributes.participants)
+        @participant_list = @attributes.participants
 
     urlRoot : ''
 
     url : () ->
       if @id
         Routes.proposal_path @id
-      else
-        # for create
-        Routes.proposals_path()
+    #   # else
+    #   #   # for create
+    #   #   Routes.proposals_path()
 
     parse : (response) ->
       if 'opinions' of response
@@ -182,8 +182,8 @@
       @listenTo App.vent, 'user:signout', => 
         @purge_inaccessible()
 
-    url : ->
-      Routes.proposals_path( )
+    # url : ->
+    #   Routes.proposals_path( )
 
     parse : (response) ->
       if response instanceof Entities.Proposal

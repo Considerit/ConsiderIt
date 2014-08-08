@@ -124,9 +124,9 @@ class Proposal < ActiveRecord::Base
   end
 
   #returns the slug :long_id instead of :id when @proposal passed to e.g. proposal_path
-  def to_param
-    long_id
-  end
+  # def to_param
+  #   long_id
+  # end
 
   def title(max_len = 140)
     if name && name.length > 0

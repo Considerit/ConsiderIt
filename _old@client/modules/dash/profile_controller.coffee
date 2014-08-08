@@ -26,7 +26,7 @@
     setupLayout : ->
       layout = @getLayout()
       @listenTo layout, 'user:update:requested', (data) =>
-        App.request "user:update_current_user", data.user
+        App.request "user:update_current_user", data
         layout.render()
       layout
 
@@ -41,7 +41,7 @@
       layout = @getLayout()
       @listenTo layout, 'user:update:requested', (data) =>
         if data.result == 'successful'
-          App.request "user:update_current_user", data.user
+          App.request "user:update_current_user", data
           layout.render()
           toastr.success 'Settings updated'
 

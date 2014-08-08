@@ -27,14 +27,14 @@
     %label.auth_section_label
       By email address:
 
-    = form_for :user, :url => current_user_path do |f|
+    = form_tag current_user_path, :method => :put do |f|
       %table.auth_fields.login
         %tr 
           %td.label_cell
             %label{ :for => 'user_email'}
               email:
           %td.field_cell
-            %input{ :id => "user_email", :name => "user[email]", :placeholder => "email@address", :required => "required", :type => 'email'}
+            %input{ :id => "user_email", :name => "email", :placeholder => "email@address", :required => "required", :type => 'email'}
 
         %tr
           %td.label_cell
@@ -42,7 +42,7 @@
               password
 
           %td.field_cell
-            %input{ :id => "user_password", :name => "user[password]", :placeholder => 'password', :required => 'required', :type => 'password'}
+            %input{ :id => "user_password", :name => "password", :placeholder => 'password', :required => 'required', :type => 'password'}
 
       - if @errors && @errors.length > 0
         .auth_errors{style: "width: 400px"}

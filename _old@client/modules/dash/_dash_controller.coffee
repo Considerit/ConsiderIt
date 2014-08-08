@@ -14,7 +14,7 @@
 
       App.vent.on 'user:signout', =>
         @layout.close()
-        App.navigate Routes.root_path(), {trigger : true}
+        App.navigate '', {trigger : true}
         @close()
 
     renderSidebar : (model, dash_name) ->
@@ -50,19 +50,18 @@
 
 
     preload : ->
-      load_admin_template = @admin_template_needed && !App.request("admin_templates_loaded?")
+      # load_admin_template = @admin_template_needed && !App.request("admin_templates_loaded?")
       
       path = _.result @, 'data_uri'
-      if !path && load_admin_template
-        path = Routes.admin_template_path() 
+      # if !path && load_admin_template
+      #   path = Routes.admin_template_path() 
 
       if path
-        request_params = _.extend @request_params, {admin_template_needed : load_admin_template}
+        request_params = _.extend @request_params, {admin_template_needed : false}
         xhr = $.get path, request_params, (data, status, xhr) =>
-          if load_admin_template
-            $('head').append(data.admin_template)
+          # if load_admin_template
+          #   $('head').append(data.admin_template)
 
-          console.log data
           if 'unauthorized' of data && data['unauthorized']
             App.vent.trigger 'authorization:page_not_allowed'
           else

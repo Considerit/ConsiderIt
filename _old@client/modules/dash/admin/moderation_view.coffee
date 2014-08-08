@@ -62,21 +62,21 @@
 
     serializeData : ->
       obj = @model.getRootObject()
-      switch @model.get 'moderatable_type'
-        when 'Point'
-          url = Routes.proposal_point_path obj.get('long_id'), obj.id
-          anchor = 'View this Point'
-        when 'Comment'
-          url = Routes.proposal_point_path obj.get('proposal_id'), obj.get('root_id')
-          anchor = 'View this Comment'
-        when 'Proposal'
-          url = Routes.proposal_path obj.id
-          anchor = 'View this Proposal'
+      # switch @model.get 'moderatable_type'
+      #   when 'Point'
+      #     url = Routes.proposal_point_path obj.get('long_id'), obj.id
+      #     anchor = 'View this Point'
+      #   when 'Comment'
+      #     url = Routes.proposal_point_path obj.get('proposal_id'), obj.get('root_id')
+      #     anchor = 'View this Comment'
+      #   when 'Proposal'
+      #     url = Routes.proposal_path obj.id
+      #     anchor = 'View this Proposal'
 
       _.extend {}, @model.attributes,
         user : if @model.user_id then App.request('user', @model.user_id) else null
-        anchor : anchor
-        url : url
+        # anchor : anchor
+        # url : url
         prior_moderation : @model.get 'status'
         evaluation_options : [
           {label: 'Fail', val: 0},

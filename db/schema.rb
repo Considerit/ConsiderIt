@@ -222,9 +222,9 @@ ActiveRecord::Schema.define(version: 20140212194651) do
     t.integer  "user_id"
     t.integer  "session_id"
     t.text     "explanation"
-    t.float    "stance"
+    t.float    "stance",                                 limit: 24
     t.integer  "stance_segment"
-    t.boolean  "published",                              default: false
+    t.boolean  "published",                                         default: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "account_id"
@@ -280,27 +280,27 @@ ActiveRecord::Schema.define(version: 20140212194651) do
     t.datetime "updated_at"
     t.integer  "num_inclusions"
     t.integer  "unique_listings"
-    t.float    "score"
-    t.float    "attention"
-    t.float    "persuasiveness"
-    t.float    "appeal"
-    t.float    "score_stance_group_0"
-    t.float    "score_stance_group_1"
-    t.float    "score_stance_group_2"
-    t.float    "score_stance_group_3"
-    t.float    "score_stance_group_4"
-    t.float    "score_stance_group_5"
-    t.float    "score_stance_group_6"
-    t.boolean  "published",                              default: true
-    t.boolean  "hide_name",                              default: false
-    t.boolean  "share",                                  default: true
+    t.float    "score",                                  limit: 24
+    t.float    "attention",                              limit: 24
+    t.float    "persuasiveness",                         limit: 24
+    t.float    "appeal",                                 limit: 24
+    t.float    "score_stance_group_0",                   limit: 24
+    t.float    "score_stance_group_1",                   limit: 24
+    t.float    "score_stance_group_2",                   limit: 24
+    t.float    "score_stance_group_3",                   limit: 24
+    t.float    "score_stance_group_4",                   limit: 24
+    t.float    "score_stance_group_5",                   limit: 24
+    t.float    "score_stance_group_6",                   limit: 24
+    t.boolean  "published",                                         default: true
+    t.boolean  "hide_name",                                         default: false
+    t.boolean  "share",                                             default: true
     t.integer  "account_id"
     t.integer  "followable_last_notification_milestone"
     t.datetime "followable_last_notification"
-    t.integer  "comment_count",                          default: 0
-    t.integer  "point_link_count",                       default: 0
+    t.integer  "comment_count",                                     default: 0
+    t.integer  "point_link_count",                                  default: 0
     t.text     "includers"
-    t.float    "divisiveness"
+    t.float    "divisiveness",                           limit: 24
     t.integer  "moderation_status"
     t.string   "long_id"
   end
@@ -343,10 +343,10 @@ ActiveRecord::Schema.define(version: 20140212194651) do
     t.integer  "user_id"
     t.string   "slider_right"
     t.string   "slider_left"
-    t.float    "trending"
-    t.float    "activity"
-    t.float    "provocative"
-    t.float    "contested"
+    t.float    "trending",                               limit: 24
+    t.float    "activity",                               limit: 24
+    t.float    "provocative",                            limit: 24
+    t.float    "contested",                              limit: 24
     t.integer  "num_points"
     t.integer  "num_pros"
     t.integer  "num_cons"

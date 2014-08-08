@@ -21,8 +21,10 @@
     // CURRENT USER
     ConsiderIt.current_user = #{current_user ? current_user.id : 'null'};
 
-    #{current_user ? "ConsiderIt.current_user_data = { user: #{current_user.to_json(:methods => :third_party_authenticated)}, follows: #{current_user.follows.load.to_json} }" : ''}
-    
+    #{!current_user ? '' : "ConsiderIt.current_user_data = #{current_user.to_json(:methods => :third_party_authenticated, :include => :follows)}"}
+
+    //.update( {follows: current_user.follows.load.to_json})}"}
+
     // LIMITED USER
 
     var limited_user_data = #{@limited_user_email ? "{email: '#{@limited_user_email}'}" : 'null'};

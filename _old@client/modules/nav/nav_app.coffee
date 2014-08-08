@@ -30,7 +30,7 @@
     backByHistory : ->
       @nav_history.pop()
       if @nav_history.length < 2
-        App.navigate(Routes.root_path(), {trigger: true})
+        App.navigate('', {trigger: true})
       else
         route = @nav_history.pop()[1]
         App.navigate route, {trigger: true}

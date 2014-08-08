@@ -42,7 +42,7 @@
 
       @listenTo layout, 'proposal:deleted', (model) =>
         App.vent.trigger 'proposal:deleted', model
-        App.navigate Routes.root_path(), {trigger : true}
+        App.navigate '', {trigger : true}
 
     getLayout : (model) ->
       new Proposal.ProposalSettingsView

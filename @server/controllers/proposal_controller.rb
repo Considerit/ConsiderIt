@@ -2,7 +2,7 @@ class ProposalController < ApplicationController
 
   protect_from_forgery
 
-  respond_to :json, :html
+  respond_to :json
 
   def index
     proposals = []
@@ -34,15 +34,16 @@ class ProposalController < ApplicationController
 
   def show
     proposal = Proposal.find_by_id(params[:id]) || Proposal.find_by_long_id(params[:id])
-    return if (!proposal || cannot?(:read, proposal))
-
-    pp 'reseting user activities'
-    ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-    result = proposal.proposal_data(current_tenant,
-                                    current_user,
-                                    session[proposal.id],
-                                    can?(:manage, proposal))
-
+    if (!proposal || cannot?(:read, proposal))
+      result = { errors: ["not found"] }
+    else
+      pp 'reseting user activities'
+      ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
+      result = proposal.proposal_data(current_tenant,
+                                      current_user,
+                                      session[proposal.id],
+                                      can?(:manage, proposal))
+    end
     render :json => result
 
   end

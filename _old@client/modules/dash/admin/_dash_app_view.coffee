@@ -32,7 +32,7 @@
 
     accountUpdated : (ev, response, options) ->
       data = $.parseJSON(response.responseText)
-      @trigger 'account:updated', data.account
+      @trigger 'account:updated', data
 
       toastr.success 'Account updated'
 

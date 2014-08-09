@@ -653,7 +653,6 @@ OpinionFilter = ReactiveComponent
         R.a className: c, onClick: (=> @onSelectSegment(d)), phrase
 
 
-
 ##
 # DecisionBoard
 # Handles the user's list of important points in crafting page. 
@@ -672,7 +671,7 @@ DecisionBoard = ReactiveComponent
           proposal = current_proposal(@)
           ui.draggable.parent().velocity 'fadeOut', 200, -> 
             proposal.your_opinion.point_inclusions.push(
-              '/point/' + ui.draggable.parent().data('id'))
+              ui.draggable.parent().data('id'))
             save(proposal.your_opinion)
           $el.removeClass "user_is_hovering_on_a_drop_target"
       out : (ev, ui) => 
@@ -765,7 +764,7 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   render : ->
-    included_points = current_proposal().your_opinion.point_inclusions
+    included_points = @data(current_proposal().your_opinion).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
     R.div 
@@ -928,10 +927,8 @@ Point = ReactiveComponent
       then 'invalid' 
       else (valid) =>
         if !valid
-          console.log('includeds =', current_proposal(@).your_opinion.point_inclusions)
           op = current_proposal(@).your_opinion
           op.point_inclusions = _.without op.point_inclusions, @props.key
-          console.log('includeds -', current_proposal(@).your_opinion.point_inclusions)
           save(op)
         valid
 

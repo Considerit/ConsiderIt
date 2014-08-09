@@ -201,6 +201,10 @@ class User < ActiveRecord::Base
     twitter_uid.nil?
   end
 
+  def key
+    "/user/#{self.id}"
+  end
+
   def username
     name ? 
       name

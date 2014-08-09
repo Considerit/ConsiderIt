@@ -264,7 +264,7 @@ class CurrentUserController < DeviseController
   def to_json_current_user
     {
       key: '/current_user',
-      id: current_user ? current_user.id : nil,
+      user: current_user ? "/user/#{current_user.id}" : nil,
       email: current_user ? current_user.email : nil,
       password: nil,
       csrf: form_authenticity_token,

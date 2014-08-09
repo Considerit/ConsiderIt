@@ -41,9 +41,17 @@ class PointController < ApplicationController
     session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
     
     result = point.as_json
-    result['key'] = "#{old_key}/#{point.id}"
+    old_id = old_key.split('/')[-1]
+    result['key'] = "/point/#{point.id}?original_id=#{old_id}"
     pp(result)
-    render :json => result
+
+    # Now let's return the proposal's changes too
+    proposal_json = proposal.proposal_data(current_tenant,
+                                           current_user,
+                                           session[proposal.id],
+                                           can?(:manage, proposal))
+
+    render :json => [result, proposal_json]
   end
 
   def update

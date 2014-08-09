@@ -6,7 +6,9 @@
     // ****************
     // Public API
     var cache = {}
-    function fetch(url) {
+    function fetch(url, defaults) {
+        record_dependence(url)
+
         // Return the cached version if it exists
         if (cache[url]) return cache[url]
 
@@ -14,9 +16,7 @@
         if (url[0] === '/')
             serverFetch(url)
 
-        // This stub is not in the cache, but if you save() it, it
-        // will end up there.
-        return {key: url}
+        return cache[url] = extend({key: url}, defaults)
     }
 
     /*
@@ -48,11 +48,10 @@
             // If this object has a key, update the cache for it
             var key = object && object.key
             if (key) {
-                // Change /new/thing to /new/45/thing
-                if (key.substring(0,5) === '/new/')
-                    key = object.key = '/new/' + (new_index++) + key.substring(4)
-                else if (key.substring(0,4) === 'new/')
-                    key = object.key = 'new' + new_index++ + key.substring(3)
+                // Change /new/thing to /new/thing/45
+                if (key.match(new RegExp('^/new/'))     // Starts with /new/
+                    && !key.match(new RegExp('/\\d+$'))) // Doesn't end in a /number
+                    key = object.key = key + '/' + new_index++
 
                 var cached = cache[key]
                 if (!cached)
@@ -84,49 +83,58 @@
         updateCacheInternal(object)
         var re_render = (window.re_render || function () {
             console.log('You need to implement re_render()') })
-        for (var i=0; i<affected_keys.length; i++)
-            re_render(affected_keys[i])
+        setTimeout(function () { re_render(affected_keys)}, 10)
     }
 
+    var outstanding_requests = {}
     function serverFetch(key) {
+        // Error check
+        if (outstanding_requests[key]) throw Error('Duplicate request for '+key)
+
+        // Build request
         var request = new XMLHttpRequest()
         request.onload = function () {
+            delete outstanding_requests[key]
             if (request.status === 200) {
+                console.log('Fetch returned for', key)
                 var result = JSON.parse(request.responseText)
                 // Warn if the server returns data for a different url than we asked it for
                 console.assert(result.key && result.key === key,
                                'Server returned data with unexpected key', result, 'for key', key)
-                //console.log(result)
                 updateCache(result)
             }
         }
 
+        // Open request
+        outstanding_requests[key] = request
         request.open('GET', key, true)
         request.setRequestHeader('Accept','application/json')
         request.send(null);
     }
 
     function serverSave(object) {
-        // Figure out how we'll send it
-        var url = object.key
+        var original_key = object.key
+        
+        // Special case for /new.  Grab the pieces of the URL.
+        var pattern = new RegExp("/new/([^/]+)/(\\d+)")
+        var match = original_key.match(pattern)
+        var url = (match && '/' + match[1]) || original_key
 
-        // Split the URL's pieces, if it's /new
-        function url_pieces(url) { return url.match(/(\/new\/\d*)?(.*)/) }
-        var new_part = url_pieces(url)[1], thing_part = url_pieces(url)[2]
-        url = thing_part
-
-        // Let's go
+        // Build request
         var request = new XMLHttpRequest()
         request.onload = function () {
             if (request.status === 200) {
                 var result = JSON.parse(request.responseText)
-                //console.log(result)
-                if (new_part) {                             // Let's map the old and new together
-                    var existing_key = new_part + url
-                    thing_part = url_pieces(result.key)[2]  // It's got a fresh id
-                    cache[thing_part] = cache[existing_key] // Make them point at the same thing
-                    result.key = thing_part                 // And it's no longer new
-                }
+                // Handle /new/stuff
+                map_objects(result, function (obj) {
+                    match = obj.key && obj.key.match(/(.*)\?original_id=(\d+)$/)
+                    if (match && match[2]) {
+                        // Let's map the old and new together
+                        var new_key = match[1]                 // It's got a fresh key
+                        cache[new_key] = cache[original_key]   // Point them at the same thing
+                        result.key = new_key                   // And it's no longer new
+                    }
+                })
                 updateCache(result)
             }
         }
@@ -134,7 +142,8 @@
         object = clone(object)
         object['authenticity_token'] = csrf()
 
-        var POST_or_PUT = new_part ? 'POST' : 'PUT'
+        // Open request
+        var POST_or_PUT = match ? 'POST' : 'PUT'
         request.open(POST_or_PUT, url, true)
         request.setRequestHeader('Accept','application/json')
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -152,6 +161,11 @@
         return "";
     }
 
+    loading_indicator = React.DOM.div({style: {height: '100%', width: '100%'},
+                                       className: 'loading'}, 'Loading')
+    function error_indicator(message) {
+        return React.DOM.div(null, 'Error! ' + message)
+    }
 
     // ****************
     // Utility for React Components
@@ -159,6 +173,7 @@
         var hash = this.hash = {}
         this.get = function (k) { return hash[k] || [] }
         this.add = function (k, v) {
+            // if (k == 'component/946') {console.log('Adding component/946');console.trace()}
             if (hash[k] === undefined)
                 hash[k] = []
             hash[k].push(v)
@@ -174,51 +189,117 @@
     // ****************
     // Wrapper for React Components
     var components = {}                  // Indexed by 'component/0', 'component/1', etc.
+    var components_next_id = 0
     var keys_4_component = new hashset() // Maps component to its dependence keys
-    var components_4_key = new hashset() // Maps key to its depndent components
+    var components_4_key = new hashset() // Maps key to its dependent components
+    var dirty_components = {}
     function ReactiveComponent(obj) {
-        var mounted_key = null;          // You can pass a key: '/thing' into component
-
-        obj.get = function (key) {
-            if (!key)    key = mounted_key
-            if (key.key) key = key.key   // You user passes key as object
-            keys_4_component.add(this.local_key, key)   // Track dependencies
-            components_4_key.add(key, this.local_key)  // both ways
-
-            return fetch(key)            // Call into main activerest
+        obj.data = obj.get = function (key, defaults) {
+            if (!this._lifeCycleState || this._lifeCycleState == 'UNMOUNTED')
+                throw Error('Component is tryin to get data() after it died')
+            if (key === undefined)    key = this.mounted_key
+            if (!key)                 return null
+            // if (!key)    throw TypeError('Component mounted onto a null key. '
+            //                              + this.name + ' ' + this.local_key)
+            if (key.key) key = key.key   // If user passes key as object
+            return fetch(key, defaults)  // Call into main activerest
         }
         obj.save = save                  // Call into main activerest
         
         // Render will need to clear the component's old dependencies
         // before rendering and finding new ones
-        wrap(obj, 'render',
-             function () {
-                 // Clear this component's dependencies
-                 var component = this.local_key
-                 var depends_on_keys = keys_4_component.get(component)
-                 for (var i=0; i<depends_on_keys.length; i++)
-                     components_4_key.del(depends_on_keys[i], component)
-                 keys_4_component.delAll(component)
-             })
+        wrap(obj, 'render', function () {
+            clearComponentDeps(this.local_key)
+            delete dirty_components[this.local_key]
+        })
 
         // We will register this component when creating it
         wrap(obj, 'componentWillMount',
              function () { 
-                 this.local_key = 'component/' + Object.keys(components).length
+                 this.local_key = 'component/' + components_next_id++
+                 this.name = obj.displayName
+                 //console.log('Setting component', this.local_key)
                  components[this.local_key] = this
 
                  // XXX Putting this into WillMount probably won't let
                  // you use the mounted_key inside getInitialState!
-                 mounted_key = this.props.key
+                 this.mounted_key = this.props.key
              })
+        wrap(obj, 'componentDidMount')
+        wrap(obj, 'getDefaultProps')
+        //wrap(obj, 'componentWillReceiveProps')
+        wrap(obj, 'componentWillUnmount', function () {
+            // if (this.local_key === 'component/946')
+            //     console.log('Unmounting component/946')
+            clearComponentDeps(this.local_key)
+            delete cache[this.local_key]
+            delete components[this.local_key]
+            delete dirty_components[this.local_key]
+            //sanity(this.local_key)
+        })
+        obj.shouldComponentUpdate = function () {
+            return dirty_components[this.local_key] !== undefined
+        }
         
-        window.re_render = function (key) {
-            var comps = components_4_key.get(key)
-            for (var i=0; i<comps.length; i++)
-                components[comps[i]].forceUpdate()
+        obj.is_waiting = function () {
+            // Does this component depend on any keys that are being
+            // requested?
+            var dependent_keys = keys_4_component.get(this.local_key)
+            for (var i=0; i<dependent_keys.length; i++)
+                if (outstanding_requests[dependent_keys[i]])
+                    return true
+            return false
+        }
+
+        window.re_render = function (keys) {
+            for (var i=0; i<keys.length; i++) {
+                affected_components = components_4_key.get(keys[i])
+                for (var j=0; j<affected_components.length; j++)
+                    dirty_components[affected_components[j]] = true
+            }
+
+            for (var comp_key in dirty_components)
+                if (dirty_components[comp_key]) { // Cause they will clear from underneath us
+                    // console.log(comp_key, components[comp_key], dirty_components[comp_key])
+                    // console.log(components)
+                    components[comp_key].forceUpdate()
+                }
         }
 
         return React.createClass(obj)
+    }
+
+    var current_execution_context = null
+    function record_dependence(key) {
+        if (current_execution_context) {
+            keys_4_component.add(current_execution_context, key)  // Track dependencies
+            components_4_key.add(key, current_execution_context)  // both ways
+        }
+    }
+
+    function sanity(compkey) {
+        for (var attr in components)
+            if (components[attr]._lifeCycleState != 'MOUNTED')
+                console.error('Component ' + attr + ' isn\'t mounted')
+
+        for (var attr in components_4_key.hash) {
+            var list = components_4_key.hash[attr]
+            for (var i=0; i < list.length; i++) {
+                if (list[i] === compkey
+                    && (!components[compkey]
+                        || components[compkey]._lifeCycleState != 'MOUNTED'))
+                    console.error('Did not clean this well!', compkey, attr, list, i)
+            }
+        }
+    }
+
+    function clearComponentDeps (component) {
+        // if (component === 'component/0')
+        //     console.log('Clearing component/0')
+        var depends_on_keys = keys_4_component.get(component)
+        for (var i=0; i<depends_on_keys.length; i++)
+            components_4_key.del(depends_on_keys[i], component)
+        keys_4_component.delAll(component)
     }
 
 
@@ -231,24 +312,56 @@
             if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr]
         return copy
     }
-
+    function extend(obj, with_obj) {
+        if (with_obj === undefined) return obj
+        for (var attr in with_obj)
+            if (!obj.hasOwnProperty(attr)) obj[attr] = with_obj[attr]
+        return obj
+    }
     function wrap(obj, method, before, after) {
         var original_method = obj[method]
         obj[method] = function() {
+            // if (this.local_key === 'component/946')
+            //     console.log(method + 'ing component/946')
             before && before.apply(this, arguments)
-            var result = original_method && original_method.apply(this, arguments)
+            current_execution_context = this.local_key
+            try {
+                var result = original_method && original_method.apply(this, arguments)
+            } catch (e) {
+                current_execution_context = null
+                if (e instanceof TypeError) {
+                    if (this.is_waiting()
+                        /*|| e.message.substring(0,12) === 'Component mo'*/) return loading_indicator
+                    else { console.error(e.stack); return error_indicator(e.message) }
+                }
+                else throw e
+            }
+            current_execution_context = null
             after && after.apply(this, arguments)
+            // if (this.local_key === 'component/0')
+            //     console.log(method + 'ed component/0')
+
             return result
+        }
+    }
+    function map_objects(object, func) {
+        if (Array.isArray(object))
+            for (var i=0; i < object.length; i++)
+                map_objects(object[i], func)
+        else if (typeof(object) === 'object' && object !== null) {
+            func(object)
+            for (var k in object)
+                map_objects(object[k], func)
         }
     }
 
     // Export the public API
-    window.NonReactiveComponent = ReactiveComponent
+    window.ReactiveComponent = ReactiveComponent
     window.fetch = fetch
     window.save = save
 
     // Make the private methods accessible under "window.nona"
-    vars = 'cache fetch save serverFetch serverSave updateCache csrf keys_4_component components_4_key components hashset clone wrap'.split(' ')
+    vars = 'cache fetch save serverFetch serverSave updateCache csrf keys_4_component components_4_key components hashset clone wrap sanity clearComponentDeps dirty_components'.split(' ')
     window.nona = {}
     for (var i=0; i<vars.length; i++)
         window.nona[vars[i]] = eval(vars[i])

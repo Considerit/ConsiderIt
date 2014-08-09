@@ -56,8 +56,9 @@ getStanceSegment = (value) ->
       return i
   return 6
 
+user_opinions = {}
 userOpinion = (user_key) ->
-  "/user/#{@props.key.split('/')[2]}"
+  user_opinions[user_key]
 togglePage = (page) -> 
   $('.histogram_segment_pole').ensureInView
     offset_buffer: 150
@@ -212,12 +213,16 @@ Proposal = ReactiveComponent
     page = @data('page')
     points = page.points
     users = page.users
-    included_points = page.included_points
-    initial_stance = page.initial_stance
-    opinions = page.opinions
+    included_points = proposal.your_opinion.point_inclusions
+    initial_stance = proposal.your_opinion.stance
     highlighted_users = @data('histogram').highlighted_users
 
     description_region_style = {width: 1.25 * BODY_WIDTH}
+
+    # Update the user_opinions hash
+    window.user_opinions = {}
+    for opinion in proposal.opinions
+      window.user_opinions[opinion.user] = opinion
 
     proposer = @data(proposal.user)
 
@@ -666,10 +671,9 @@ DecisionBoard = ReactiveComponent
         if ui.draggable.parent().is('.community_point')
           proposal = current_proposal(@)
           ui.draggable.parent().velocity 'fadeOut', 200, -> 
-            included_points = proposal.included_points.splice(0)
-            included_points.push '/point/' + ui.draggable.parent().data('id')
-            proposal.included_points = included_points
-            save(proposal)
+            proposal.your_opinion.point_inclusions.push(
+              '/point/' + ui.draggable.parent().data('id'))
+            save(proposal.your_opinion)
           $el.removeClass "user_is_hovering_on_a_drop_target"
       out : (ev, ui) => 
         $el.removeClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
@@ -761,7 +765,7 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   render : ->
-    included_points = current_proposal().included_points
+    included_points = current_proposal().your_opinion.point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
     R.div 
@@ -831,10 +835,10 @@ CommunityPoints = ReactiveComponent
   buildPointsList : ->
     is_results = @data('page').name == 'results'
     selected_segment = @data('histogram').selected_segment
-    proposal_data = current_proposal()
-    included_points = proposal_data.included_points
-    points = proposal_data.points
-    opinions = proposal_data.opinions
+    proposal = current_proposal()
+    included_points = proposal.your_opinion.point_inclusions
+    points = proposal.points
+    opinions = proposal.opinions
 
     points =
       _.filter points, (pnt) =>
@@ -924,9 +928,11 @@ Point = ReactiveComponent
       then 'invalid' 
       else (valid) =>
         if !valid
-          included_points = 
-            _.without current_proposal(@).included_points, @props.key
-          current_proposal(@).included_points = included_points
+          console.log('includeds =', current_proposal(@).your_opinion.point_inclusions)
+          op = current_proposal(@).your_opinion
+          op.point_inclusions = _.without op.point_inclusions, @props.key
+          console.log('includeds -', current_proposal(@).your_opinion.point_inclusions)
+          save(op)
         valid
 
     if $point_content.hasClass "ui-draggable"
@@ -945,11 +951,11 @@ Point = ReactiveComponent
 
     # only show includers from this stance segment if a segment is selected
     selected_segment = @data('histogram').selected_segment
-    # if selected_segment[0]?
-    #   for includer in point.includers
-    #     stance_segment = @data(userOpinion(includer)).stance_segment
-    #     if stance_segment && stance_segment != selected_segment[0]
-    #       to_remove.push(includer)
+    if selected_segment[0]?
+      for includer in point.includers
+        stance_segment = @data(userOpinion(includer)).stance_segment
+        if stance_segment && stance_segment != selected_segment[0]
+          to_remove.push(includer)
 
     _.difference point.includers, to_remove
 
@@ -1003,7 +1009,7 @@ Point = ReactiveComponent
     point = @data()
 
     selected_segment = @data('histogram').selected_segment
-    author_opinion = null#@data(userOpinion(point.user))
+    author_opinion = @data(userOpinion(point.user))
 
     R.li 
       className: "point closed_point #{@props.location_class} 
@@ -1611,6 +1617,7 @@ Auth = ReactiveComponent
 Page = ReactiveComponent
   displayName: 'Page'
 
+  updateUserOpinions: =>
   render : -> 
     default_state =
       name : @props.initial_page,

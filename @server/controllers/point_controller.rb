@@ -15,9 +15,7 @@ class PointController < ApplicationController
     fields = ['nutshell', 'text', 'is_pro', 'hide_name', 'proposal']
     point = params.select{|k,v| fields.include? k}
 
-
     # Set private values
-    point['id'] = key_id(params[:key])
     point['proposal'] = proposal = Proposal.find(key_id(point['proposal']))
     point['comment_count'] = 0
     point['long_id'] = point['proposal'].long_id
@@ -38,8 +36,8 @@ class PointController < ApplicationController
     session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
     
     result = point.as_json
-    old_id = old_key.split('/')[-1]
-    result['key'] = "/point/#{point.id}?original_id=#{old_id}"
+    original_id = key_id(params[:key])
+    result['key'] = "/point/#{point.id}?original_id=#{original_id}"
     pp(result)
 
     # Now let's return the proposal's changes too

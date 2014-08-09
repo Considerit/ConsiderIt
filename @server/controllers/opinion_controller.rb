@@ -6,7 +6,6 @@ class OpinionController < ApplicationController
 
   def show
     opinion = Opinion.find(params[:id])
-    pp opinion
     #proposal = Proposal.find_by_long_id(params[:long_id])
     #opinion = proposal.opinions.published.where(:user_id => params[:user_id]).first
 

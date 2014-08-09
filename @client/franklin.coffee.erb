@@ -47,9 +47,9 @@ L = loading_indicator = R.div null, 'Loading...'
 
 # Returns the top level Proposal component key. Components use this to grab data
 # from its Proposal. This is a hack. Shadowing parent state would solve the problem.
-window.current_proposal = () ->
-        long_id = fetch('page')?.url.split('/')[1]
-        fetch('/page/' + long_id).proposal
+# window.current_proposal = () ->
+#         long_id = fetch('page')?.url.split('/')[1]
+#         fetch('/page/' + long_id).proposal
 getStanceSegment = (value) ->
   for i in [0..5]
     if value < stanceSegmentBoundaries[i + 1]
@@ -182,14 +182,14 @@ Proposal = ReactiveComponent
         , duration
 
       when 'results'
-        slider_data = @data('slider')
-        slider_stance = -slider_data.stance
-        segment = slider_data.stance_segment
+        your = @data(your_opinion_key)
+        stance = your.stance
+        segment = your.stance_segment
 
         give_opinion_button_width = 186
         gutter = .1 * give_opinion_button_width
 
-        opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * (slider_stance+1) / 2.0
+        opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * (stance+1) / 2.0
 
         styles = 
           '.histogram_bar':         { opacity: '1' }
@@ -219,11 +219,17 @@ Proposal = ReactiveComponent
 
     description_region_style = {width: 1.25 * BODY_WIDTH}
 
-    # Update the user_opinions hash
+    # Update global references:
+    #  - The current_proposal for this page
+    #  - The user_opinions hash (maps users to their opinions in this proposal)
+    #  - The current user's opinion: your_opinion
     window.user_opinions = {}
     for opinion in proposal.opinions
       window.user_opinions[opinion.user] = opinion
+    window.current_proposal = proposal.key
+    window.your_opinion_key = proposal.your_opinion.key
 
+    console.log(proposal.key, proposal.user)
     proposer = @data(proposal.user)
 
     R.div className:'proposal', key:@props.long_id, 'data-page':page.name,
@@ -288,7 +294,7 @@ Histogram = ReactiveComponent
   buildHistogram : ->
     ##
     # Size the avatars. Size of avatar shrinks proportional to 1/sqrt(num_opinions)
-    opinions = current_proposal(@)?.opinions || []
+    opinions = @data(current_proposal).opinions || []
 
     avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, 
       Math.floor(BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (opinions.length + 1) / 10 )  )
@@ -456,10 +462,10 @@ Slider = ReactiveComponent
   applyStyles : (animate = false) ->
     duration = if animate then TRANSITION_SPEED else 0
     $el = $(@getDOMNode())
-    slider = @data('slider')
+    your_opinion = @data(your_opinion_key)
 
-    mouth_scaler = if slider.stance_segment > 3 then -1 else 1
-    mouth_x = if slider.stance_segment == 3 then 0 else -7.5
+    mouth_scaler = if your_opinion.stance_segment >  3 then -1 else 1
+    mouth_x      = if your_opinion.stance_segment == 3 then  0 else -7.5
 
     switch @data('page').name
       when 'crafting'
@@ -482,25 +488,30 @@ Slider = ReactiveComponent
     page = page.name
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
-      $slider_base.slider(if page.auth_mode then 'disable' else 'enable') 
+      $slider_base.slider(if page.auth_mode then 'disable' else 'enable')
     else
       $slider_base.slider
         disabled: page.auth_mode #@data('page').name == 'results'
         min: -1
         max: 1
         step: .01
-        value: -@data('slider').stance
+        value: -@data(your_opinion_key).stance
         slide: (ev, ui) => 
           # Update the stance segment if it has changed. This facilitates 
           # the feedback atop the slider changing from e.g. 'strong 
           # supporter' to 'neutral'
           return false if ev.originalEvent.type != 'mousemove'
 
-          my_data = @data('slider')
-          my_data.stance_segment = getStanceSegment -ui.value
-          my_data.stance = -ui.value
-          if !my_data.has_moved
-            my_data.has_moved = true
+          your_opinion = @data(your_opinion_key)
+          your_opinion.stance_segment = getStanceSegment -ui.value
+          your_opinion.stance = -ui.value
+          slider = @data('slider')
+          slider.stance_segment = getStanceSegment -ui.value
+          slider.stance = -ui.value
+          if !slider.has_moved
+            slider.has_moved = true
+          save(slider)
+          save(your_opinion)
         stop : (ev, ui) =>
           if @data('page').name == 'results'
             togglePage('crafting')
@@ -513,9 +524,9 @@ Slider = ReactiveComponent
     ev.stopPropagation()
 
   render : ->
-    my_data = @data('slider')
-    stance = my_data.stance
-    segment = my_data.stance_segment
+    slider = @data('slider')
+    stance = slider.stance
+    segment = slider.stance_segment
     page = @data('page')
     page = page.name
     sticky = @data('decisionboard').sticky
@@ -585,7 +596,7 @@ Slider = ReactiveComponent
       borderLeft: "#{triangle_width}px solid transparent"
       borderRight: "#{triangle_width}px solid transparent"
 
-    if !my_data.has_moved 
+    if !slider.has_moved 
       slider_feedback = 'Slide Your Overall Opinion' 
     else 
       slider_feedback = "You #{slider_feedback_bucket}"
@@ -604,8 +615,8 @@ Slider = ReactiveComponent
             R.div className: 'face_mouth face_part', style: face_mouth_style
             R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
             R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
-            R.div className: 'drag_arrow right', '>' if page == 'crafting' && !my_data.has_moved && !page.auth_mode
-            R.div className: 'drag_arrow left', '<' if page == 'crafting' && !my_data.has_moved && !page.auth_mode
+            R.div className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved && !page.auth_mode
+            R.div className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved && !page.auth_mode
 
           R.img className:'bubblemouth', src: bubblemouth_src
           R.div 
@@ -651,7 +662,6 @@ OpinionFilter = ReactiveComponent
         c = "filter_option"
         if @hist.selected_segment[0] == i
           c = c + ' selected'
-        console.log(i, c, phrase)
         R.a className: c, onClick: (=> @onSelectSegment(i)), phrase
 
 
@@ -670,11 +680,11 @@ DecisionBoard = ReactiveComponent
       accept: ".point_content"
       drop : (ev, ui) =>
         if ui.draggable.parent().is('.community_point')
-          proposal = current_proposal(@)
+          your_opinion = @data(your_opinion_key)
           ui.draggable.parent().velocity 'fadeOut', 200, -> 
-            proposal.your_opinion.point_inclusions.push(
+            your_opinion.point_inclusions.push(
               ui.draggable.parent().data('id'))
-            save(proposal.your_opinion)
+            save(your_opinion)
           $el.removeClass "user_is_hovering_on_a_drop_target"
       out : (ev, ui) => 
         $el.removeClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
@@ -766,7 +776,7 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   render : ->
-    included_points = @data(current_proposal().your_opinion).point_inclusions
+    included_points = @data(your_opinion_key).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
     R.div 
@@ -774,7 +784,7 @@ YourPoints = ReactiveComponent
       style: { width: POINT_WIDTH }
     ,
       R.div className:'points_heading_label',
-        "State Your #{capitalize(@props.valence)}"
+        "Speak Your #{capitalize(@props.valence)}"
 
       R.ul null,
         for point in included_points
@@ -811,7 +821,7 @@ CommunityPoints = ReactiveComponent
       if @data('page').name == 'results'
         point = $(ev.currentTarget).parent().data('id')
         includers = @data(point).includers
-        proposal_data = current_proposal(@)
+        proposal_data = @data(current_proposal)
 
         hist = @data('histogram')
         if ev.type == 'mouseenter'          
@@ -826,7 +836,7 @@ CommunityPoints = ReactiveComponent
 
   buildNewPointThreshold : ->
     # Grab the 10th percentile
-    points = current_proposal(@).points || []
+    points = @data(current_proposal).points || []
     newpoint_threshold = 
       (_.sortBy points, (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
 
@@ -836,8 +846,8 @@ CommunityPoints = ReactiveComponent
   buildPointsList : ->
     is_results = @data('page').name == 'results'
     selected_segment = @data('histogram').selected_segment
-    proposal = current_proposal()
-    included_points = proposal.your_opinion.point_inclusions
+    proposal = @data(current_proposal)
+    included_points = @data(your_opinion_key).point_inclusions
     points = proposal.points
     opinions = proposal.opinions
 
@@ -924,9 +934,10 @@ Point = ReactiveComponent
       then 'invalid' 
       else (valid) =>
         if !valid
-          op = current_proposal(@).your_opinion
-          op.point_inclusions = _.without op.point_inclusions, @props.key
-          save(op)
+          your_opinion = @data(your_opinion_key)
+          your_opinion.point_inclusions = _.without your_opinion.point_inclusions, @props.key
+          save(your_opinion)
+          console.log('Saved it.', your_opinion)
         valid
 
     if $point_content.hasClass "ui-draggable"
@@ -1077,11 +1088,11 @@ NewPoint = ReactiveComponent
       user : current_user
       comment_count : 0 
       includers : [current_user]
-      proposal : current_proposal().key
+      proposal : @data(current_proposal).key
       hide_name : $form.find("sign_name-#{@props.valence}").val()
     save(point)
 
-    # proposal = current_proposal(@)
+    # proposal = @data(current_proposal)
     # points = proposal.points.splice(0)
     # points.push point
     # proposal.points = points
@@ -1275,6 +1286,7 @@ AuthHeader = ReactiveComponent
   displayName: 'AuthHeader'
 
   componentDidMount : -> 
+    stance = (window.your_opinion_key and @data(your_opinion_key).stance) or 0
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if !$slider_base.hasClass "ui-slider"
       $slider_base.slider
@@ -1282,7 +1294,7 @@ AuthHeader = ReactiveComponent
         min: -1
         max: 1
         step: .01
-        value: -@data('slider').stance
+        value: -stance
 
   toggleAuthMode : -> 
     page = @data('page')
@@ -1294,8 +1306,8 @@ AuthHeader = ReactiveComponent
     current_user.errors = []
 
   render : ->
-    my_data = @data('slider')
-    segment = my_data.stance_segment
+    stance =  @data(your_opinion_key).stance
+    segment = @data(your_opinion_key).stance_segment
     page = @data('page')
 
     # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
@@ -1307,8 +1319,8 @@ AuthHeader = ReactiveComponent
 
     slider_feedback = 'Please Introduce Yourself' 
 
-    mouth_scaler = if my_data.stance_segment > 3 then -1 else 1
-    mouth_x = if my_data.stance_segment == 3 then 0 else -7.5
+    mouth_scaler = if segment > 3 then -1 else 1
+    mouth_x =      if segment == 3 then 0 else -7.5
 
 
     bubble_mouth_props = 
@@ -1645,8 +1657,6 @@ fetch 'histogram',
 
 fetch 'slider',
   has_moved : false
-  stance : 0
-  stance_segment : getStanceSegment 0
 
 fetch 'decisionboard',
   sticky : false

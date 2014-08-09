@@ -2,7 +2,7 @@
 !!! Strict
 %html{html_attrs}
   %head{ profile: "http://gmpg.org/xfn/1" }
-    //= csrf_meta_tags
+    = csrf_meta_tags
 
     - cache ['indexable data', current_tenant, @page] do 
       %title
@@ -28,7 +28,7 @@
     /[if lte IE 8]
       = stylesheet_link_tag 'browser/ie'
 
-    = javascript_include_tag 'javascripts/application', debug: Rails.env.development?
+    = javascript_include_tag 'javascripts/load_everything', debug: Rails.env.development?
 
 
   %body

@@ -64,7 +64,6 @@ class Proposal < ActiveRecord::Base
   def proposal_data(current_tenant, current_user, prop_data, show_private = false)
     # Compute points
     pointz = points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
-    pp(pointz.public_fields)
     pointz = pointz.public_fields.map do |p|
       p.mask_anonymous(current_user)
       p.as_json
@@ -76,6 +75,7 @@ class Proposal < ActiveRecord::Base
     # Compute Included points
     includeds = Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).pluck('points.id')\
                 + Point.included_by_unstored(prop_data[:included_points].keys, self).pluck('points.id')
+    includeds.map! {|p| "/point/#{p}"}
 
     # Put them together
     response = self.as_json

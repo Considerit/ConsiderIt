@@ -1,6 +1,6 @@
 R = React.DOM
 
-Top = NonReactiveComponent
+Top = ReactiveComponent
   displayName: 'Top component'
 
   getDefaultData : ->
@@ -12,7 +12,7 @@ Top = NonReactiveComponent
       'hello'
       Bottom (key: '/point/1')
 
-Bottom = NonReactiveComponent
+Bottom = ReactiveComponent
   displayName: 'BOttom'
   render: ->
     @get('oh yeah dude')

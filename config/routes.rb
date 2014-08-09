@@ -106,6 +106,9 @@ ConsiderIt::Application.routes.draw do
   resources :inclusion, :path => 'inclusion/:point_id', :only => [:create]
   match 'inclusion/:point_id' => 'inclusion#destroy', :via => :delete
 
+  # This is for the special /opinion/current_user/234:
+  match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]
+
   ##### Mike doesn't know what to do with the rest of this yet #####
 
   ######

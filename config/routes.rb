@@ -38,6 +38,24 @@ ConsiderIt::Application.routes.draw do
     get '/dashboard/users/:id/profile/edit/account' => "users#edit_account", :as => :edit_account
     get '/dashboard/users/:id/profile/edit/notifications' => "users#edit_notifications", :as => :edit_notifications
 
+    match '/dashboard/message' => 'message#create', :as => 'message', :via => :post
+
+    concern :moderatable do 
+      match "/dashboard/moderate/create" => 'moderatable#create', :via => :post
+      get "/dashboard/moderate" => 'moderatable#index'
+    end
+
+    concern :assessable do 
+      resources :assessment, :path => "dashboard/assessment", :controller => "assessable", :only => [:index, :create, :edit, :update] do 
+        match "/dashboard/claims" => 'assessable#create_claim', :via => :post, :as => 'create_claim'
+        match "/dashboard/claim/:id" => 'assessable#update_claim', :via => :put, :as => 'update_claim'
+        match "/dashboard/claim/:id" => 'assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'
+      end
+    end
+
+    concerns :moderatable
+    concerns :assessable
+
   end
 
   get "/feed" => "trackable#feed"
@@ -47,11 +65,18 @@ ConsiderIt::Application.routes.draw do
   match "/home/domain" => "home#set_domain", :via => :post
   match "/home/theme" => "home#set_dev_options", :via => :post, :as => :set_dev_options
 
-  match '/dashboard/message' => 'message#create', :as => 'message', :via => :post
 
   #match '/home/study/:category' => "home#study", :via => :post  
 
   #get '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/
+
+  concern :followable do 
+    get "followable_index" => 'followable#index', :as => 'followable_index'
+    match "follow" => 'followable#follow', :via => :post
+    #match "unfollow" => 'followable#unfollow'
+    match "unfollow" => 'followable#unfollow', :via => :post
+  end
+  concerns :followable
 
 
   # All user-visible URLs go to the "home" controller, which serves an
@@ -85,38 +110,16 @@ ConsiderIt::Application.routes.draw do
 
   ######
   ## concerns routes
-  concern :moderatable do 
-    match "/dashboard/moderate/create" => 'dashboard/moderatable#create', :via => :post
-    get "/dashboard/moderate" => 'dashboard/moderatable#index'
-  end
-
-  concern :assessable do 
-    resources :assessment, :path => "dashboard/assessment", :controller => "dashboard/assessable", :only => [:index, :create, :edit, :update] do 
-      match "claims" => 'dashboard/assessable#create_claim', :via => :post, :as => 'create_claim'
-      match "claim/:id" => 'dashboard/assessable#update_claim', :via => :put, :as => 'update_claim'
-      match "claim/:id" => 'dashboard/assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'
-    end
-  end
-
   concern :commentable do 
     resources :commentable, :only => [:create, :update]
   end
 
-  concern :followable do 
-    get "followable_index" => 'followable#index', :as => 'followable_index'
-    match "follow" => 'followable#follow', :via => :post
-    #match "unfollow" => 'followable#unfollow'
-    match "unfollow" => 'followable#unfollow', :via => :post
-  end
 
   concern :thankable do 
     resources :thankable, :only => [:create, :destroy]
   end
 
-  concerns :moderatable
-  concerns :assessable
   concerns :commentable
-  concerns :followable
   concerns :thankable
   #################
 

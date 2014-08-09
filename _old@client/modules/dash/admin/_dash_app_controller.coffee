@@ -6,7 +6,7 @@
 
     initialize : (options = {} ) ->
       if !@hasPermission()
-        App.navigate Routes.root_path(), {trigger : true}
+        App.navigate "", {trigger : true}
         toastr.error 'Sorry, you need to sign in first to access that page'
         @redirected = true
 
@@ -30,7 +30,7 @@
         Routes.account_path()
 
     process_data_from_server : (data) ->
-      App.request("tenant").add_full_data(data.account.account)
+      App.request("tenant").add_full_data(data.account)
       data
 
     setupLayout : ->

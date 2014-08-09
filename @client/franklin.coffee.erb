@@ -519,7 +519,9 @@ Slider = ReactiveComponent
       togglePage(new_page)
     ev.stopPropagation()
 
-  foo : (ev) ->
+  saveSlider : (ev) ->
+    # We save the slider's position to the server only on mouse-up.
+    # This way you can drag it with good performance.
     your_opinion = @data(your_opinion_key)
     slider = @data('slider')
     your_opinion.stance         = slider.stance
@@ -614,7 +616,7 @@ Slider = ReactiveComponent
           className: 'slider_base_triangle_right'
           style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
         R.div props_for_slider_handle, 
-          R.div className: 'the_handle', onClick: @togglePage, onMouseUp: @foo,
+          R.div className: 'the_handle', onClick: @togglePage, onMouseUp: @saveSlider,
             R.div className: 'face_mouth face_part', style: face_mouth_style
             R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
             R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style

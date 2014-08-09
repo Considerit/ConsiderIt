@@ -12,24 +12,82 @@ class Opinion < ActiveRecord::Base
 
   acts_as_tenant(:account)
 
+  _public_fields = 
+
   scope :published, -> {where( :published => true )}
-  scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_segment, :user_id, :explanation, :published])}
+  scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_segment, :user_id, :explanation, :published] )}
 
   before_save do 
     self.explanation = self.explanation.sanitize if self.explanation
     self.stance_segment = Opinion.get_segment(self.stance)
   end 
 
+  # def self.current_opinion(proposal, current_user, session)
+  #   prop_data = session[proposal.id]
+  #   includeds = Point.included_by_stored(current_user,
+  #                                        proposal,
+  #                                        prop_data[:deleted_points].keys).pluck('points.id')\
+  #               + Point.included_by_unstored(prop_data[:included_points].keys,
+  #                                            proposal).pluck('points.id')
+  #   includeds.map! {|p| "/point/#{p}"}
+
+  #   your_opinion = {
+  #     :created_at => '',
+  #     :updated_at => '',
+  #     :explanation => '',
+  #     :key => "/opinion/current_user/#{proposal.id}",
+  #     :point_inclusions => includeds,
+  #     :published => false,
+  #     :stance => 0,
+  #     :stance_segment => 3,
+  #     :proposal => "/proposal/#{proposal.id}",
+  #     :user => current_user.key
+  #   }
+  #   your_opinion
+  # end
+
   def as_json(options={})
+    pubs = ['long_id', 'created_at', 'updated_at', 'id', 'point_inclusions',
+            'proposal_id', 'stance', 'stance_segment', 'user_id', 'explanation',
+            'published']
+
     result = super(options)
+    result = result.select{|k,v| pubs.include? k}
+
     make_key(result, 'opinion')
     stubify_field(result, 'user')
     stubify_field(result, 'proposal')
-    result['point_inclusions'] = JSON.parse (result['point_inclusions'])
+    result['point_inclusions'] = JSON.parse (result['point_inclusions'] || '[]')
     result['point_inclusions'].map! {|p| "/point/#{p}"}
     result.delete('long_id')
     result
   end
+
+  def self.get_or_make(proposal, user, tenant)
+    your_opinion = Opinion.where(:proposal_id => proposal.id, 
+                                 :user_id => user,
+                                 :published => true).first
+    if not your_opinion
+      # Because there seem to be unpublished opinions sometimes... we
+      # should remove these though
+      your_opinion = Opinion.where(:proposal_id => proposal.id, 
+                                   :user_id => user,
+                                   :published => false).first
+    end
+    if not your_opinion
+      your_opinion = Opinion.create(:proposal_id => proposal.id,
+                                    :user_id => user.id,
+                                    :long_id => proposal.long_id,
+                                    :account_id => tenant.id,
+                                    :published => false,
+                                    :stance => 0,
+                                    :point_inclusions => '[]',
+                                    :explanation => ''
+                                   )
+    end
+    your_opinion
+  end
+    
 
   def subsume( subsumed_opinion )
     subsumed_opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})

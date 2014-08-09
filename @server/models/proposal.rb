@@ -69,6 +69,9 @@ class Proposal < ActiveRecord::Base
       p.as_json
     end
 
+    # Find an existing opinion for this user
+    your_opinion = Opinion.get_or_make(self, current_user, current_tenant)
+
     # Compute opinions
     ops = opinions.published.public_fields.map {|p| p.as_json}
 
@@ -82,7 +85,8 @@ class Proposal < ActiveRecord::Base
     response.update({
       :points => pointz,
       :included_points => includeds,
-      :opinions => ops
+      :opinions => ops,
+      :your_opinion => your_opinion.as_json
     })
 
     response

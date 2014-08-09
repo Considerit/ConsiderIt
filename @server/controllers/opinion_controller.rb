@@ -8,7 +8,7 @@ class OpinionController < ApplicationController
     opinion = Opinion.find(params[:id])
 
     authorize! :read, opinion
-    render :json => self.as_json
+    render :json => opinion.as_json
   end
 
   def create
@@ -36,11 +36,14 @@ class OpinionController < ApplicationController
     updates.delete('proposal')
 
     # Convert point_inclusions to ids
-    incs = updates['point_inclusions'].map! {|p| key_id(p).to_i}
+    incs = updates['point_inclusions']
+    if incs == nil
+      # Damn rails http://guides.rubyonrails.org/security.html#unsafe-query-generation
+      incs = []
+    end
+    incs = incs.map! {|p| key_id(p).to_i}
     include_points(opinion, incs)
-    pp(incs)
     updates['point_inclusions'] = JSON.dump(incs)
-    pp(updates['point_inclusions'])
 
     # Grab the proposal
     proposal = Proposal.find(updates['proposal_id'])

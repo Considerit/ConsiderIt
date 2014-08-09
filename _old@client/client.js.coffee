@@ -10,7 +10,7 @@
     footerRegion: ".l_footer"
     stickyFooterRegion : '#l_sticky_footer_region'
   
-  App.rootRoute = Routes.root_path()
+  App.rootRoute = ''
   
   App.reqres.setHandler "default:region", ->
     App.mainRegion

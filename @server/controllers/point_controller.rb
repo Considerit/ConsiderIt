@@ -5,8 +5,6 @@ class PointController < ApplicationController
     point = Point.find params[:id]
     authorize! :read, point
 
-    ApplicationController.reset_user_activities(session, point.proposal) if !session.has_key?(point.proposal.id)
-
     render :json => point.as_json
   end
 
@@ -14,13 +12,12 @@ class PointController < ApplicationController
   def create
     # Validate by filtering out unwanted fields
     # todo: validate data types too
-    fields = ['nutshell', 'text', 'is_pro', 'hide_name', 'proposal', 'key']
+    fields = ['nutshell', 'text', 'is_pro', 'hide_name', 'proposal']
     point = params.select{|k,v| fields.include? k}
 
-    old_key = point['key']
-    point.delete('key')
 
     # Set private values
+    point['id'] = key_id(params[:key])
     point['proposal'] = proposal = Proposal.find(key_id(point['proposal']))
     point['comment_count'] = 0
     point['long_id'] = point['proposal'].long_id

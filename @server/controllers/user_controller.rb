@@ -1,7 +1,6 @@
 class UserController < ApplicationController
   respond_to :json
   def show
-    pp(params[:id])
     if params[:id] == '-1'
       render :json => {
                'key' => '/user/-1',
@@ -11,7 +10,6 @@ class UserController < ApplicationController
       return
     end
     
-    pp("nah")
     user = User.find params[:id]
     render :json => {
              'key' => "/user/#{user.id}",

@@ -83,7 +83,7 @@
         updateCacheInternal(object)
         var re_render = (window.re_render || function () {
             console.log('You need to implement re_render()') })
-        setTimeout(function () { re_render(affected_keys)}, 10)
+        re_render(affected_keys)
     }
 
     var outstanding_requests = {}
@@ -252,20 +252,25 @@
         }
 
         window.re_render = function (keys) {
-            for (var i=0; i<keys.length; i++) {
-                affected_components = components_4_key.get(keys[i])
-                for (var j=0; j<affected_components.length; j++)
-                    dirty_components[affected_components[j]] = true
-            }
-
-            for (var comp_key in dirty_components)
-                if (dirty_components[comp_key]) { // Cause they will clear from underneath us
-                    // console.log(comp_key, components[comp_key], dirty_components[comp_key])
-                    // console.log(components)
-                    components[comp_key].forceUpdate()
+            var c = current_execution_context
+            setTimeout(function () {
+                for (var i=0; i<keys.length; i++) {
+                    affected_components = components_4_key.get(keys[i])
+                    for (var j=0; j<affected_components.length; j++)
+                        dirty_components[affected_components[j]] = true
                 }
-        }
 
+                // But we don't need to re-render the component that spawned this whole save()
+                delete dirty_components[c]  
+
+                for (var comp_key in dirty_components)
+                    if (dirty_components[comp_key]) { // Cause they will clear from underneath us
+                        // console.log(comp_key, components[comp_key], dirty_components[comp_key])
+                        // console.log(components)
+                        components[comp_key].forceUpdate()
+                    }
+            })
+        }
         return React.createClass(obj)
     }
 

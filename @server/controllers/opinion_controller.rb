@@ -6,28 +6,9 @@ class OpinionController < ApplicationController
 
   def show
     opinion = Opinion.find(params[:id])
-    #proposal = Proposal.find_by_long_id(params[:long_id])
-    #opinion = proposal.opinions.published.where(:user_id => params[:user_id]).first
 
     authorize! :read, opinion
-
-    user = opinion.user
-
-    result = { :key => "/opinion/#{opinion.id}" }
-
-    if opinion.nil?
-      result[:error] = 'That opinion does not exist.'
-    elsif cannot?(:read, opinion)
-      result[:error] = 'You do not have permission to view that opinion.'
-    else
-      result[:included_pros] = Point.included_by_stored(user, opinion.proposal, nil)\
-                               .where(:is_pro => true).map {|pnt| pnt.id},
-      result[:included_cons] = Point.included_by_stored(user, opinion.proposal, nil)\
-                               .where(:is_pro => false).map {|pnt| pnt.id},
-      result[:stance] = opinion.stance_segment
-
-    end
-    render :json => result
+    render :json => self.as_json
   end
 
   def create
@@ -36,57 +17,63 @@ class OpinionController < ApplicationController
 
     opinion[:user_id] = current_user ? current_user.id : nil
     opinion[:account_id] = current_tenant.id
-    update_or_create opinion
+    update_or_create opinion, params
   end
   
   def update
-    opinion = Opinion.find params[:id]
+    opinion = Opinion.find key_id(params[:key])
     authorize! :update, opinion
 
-    update_or_create opinion
+    update_or_create opinion, params
   end
 
-  def update_or_create(opinion)
+  def update_or_create(opinion, params)
+    fields = ['proposal', 'explanation', 'stance', 'published', 'point_inclusions']
+    updates = params.select{|k,v| fields.include? k}
 
-    proposal = opinion.proposal
-    ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
+    # Convert proposal key to id
+    updates['proposal_id'] = key_id(updates['proposal'])
+    updates.delete('proposal')
 
+    # Convert point_inclusions to ids
+    incs = updates['point_inclusions'].map! {|p| key_id(p).to_i}
+    include_points(opinion, incs)
+    pp(incs)
+    updates['point_inclusions'] = JSON.dump(incs)
+    pp(updates['point_inclusions'])
+
+    # Grab the proposal
+    proposal = Proposal.find(updates['proposal_id'])
+    updates['long_id'] = proposal.long_id  # Remove this soon
+    
+    # Record things for later
     already_published = opinion.published
+    stance_changed = already_published && updates['stance'] != opinion.stance
+    existing_opinion = proposal.opinions.published.where("id != #{opinion.id}")\
+                       .find_by_user_id current_user.id
 
-    stance_changed = already_published && params[:opinion].has_key?(:stance) && opinion.stance != params[:opinion][:stance] 
+    pp(updates)
+    pp(opinion)
+    # Update this opinion
+    opinion.update_attributes ActionController::Parameters.new(updates).permit!
+    pp(opinion)
 
-    update_attrs = {
-      :user_id => current_user.id,
-      :proposal => proposal, 
-      :long_id => proposal.long_id,
-      :published => true
-    }
-
-    if params[:opinion].has_key? :explanation
-      update_attrs[:explanation] = params[:opinion][:explanation]
-    end
-    if params[:opinion].has_key? :stance
-      update_attrs[:stance] = params[:opinion][:stance]
-    end
-
-    #if a published opinion exists for this user, handle it
-    existing_opinion = proposal.opinions.published.where("id != #{opinion.id}").find_by_user_id current_user.id
-    opinion.update_attributes ActionController::Parameters.new(update_attrs).permit!
     if existing_opinion
+      pp('Existing_opinion')
       opinion.subsume existing_opinion
     end
 
-    params[:included_points] ||= []
-    params[:included_points].each do |pnt|
-      session[opinion.proposal_id][:included_points][pnt] = true
-    end
+    opinion.save
 
-    params[:viewed_points] ||= []
-    params[:viewed_points].each do |pnt|
-      session[opinion.proposal_id][:viewed_points].push([pnt,-1])
-    end
+    # Need to add back in this tracking of viewed points
+    # params[:viewed_points] ||= []
+    # params[:viewed_points].each do |pnt|
+    #   session[opinion.proposal_id][:viewed_points].push([pnt,-1])
+    # end
 
-    updated_points = save_actions(opinion)
+    # Add this back in when I know how to make it work
+    #updated_points = save_actions(opinion)
+    updated_points = []
     
     if stance_changed
       # if the user has updated their stance, we need to update the scores of all the points that 
@@ -105,35 +92,55 @@ class OpinionController < ApplicationController
 
     opinion.track!
 
-    #opinion.follow!(current_user, :follow => true, :explicit => false)
-    proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
+    # Need to add following in somewhere else
+    #proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
-    # update proposal metrics right away if a new point could become a top point; otherwise schedule an update to be processed offline
+    # update proposal metrics right away if a new point could become a
+    # top point; otherwise schedule an update to be processed offline
     if updated_points.count > 0 && (proposal.top_pro.nil? || proposal.top_pro.nil?)
       proposal.update_metrics()
     else
       proposal.delay.update_metrics()
     end
 
-    alert_new_published_opinion(proposal, opinion) unless already_published
+    # This isn't working... undefined method confirmed? ... need to fix
+    #alert_new_published_opinion(proposal, opinion) unless already_published
 
-    opinion[:key] = "/opinion/#{opinion.id}"
     # Enable this next line if I make sure it's properly prepared and won't clobber cache
     #proposal[:key] = "/proposal/#{proposal.id}"
 
-    results = {
-      :opinion => opinion,
-      :updated_points => updated_points.metrics_fields,
-      :proposal => proposal,
-      :subsumed_opinion => existing_opinion
-    }
-        
-    render :json => results
+    render :json => opinion.as_json
 
   end
 
 
 protected
+
+  def include_points (opinion, points)
+    # Delete goners
+    Inclusion.where(:opinion => opinion.id).each do |i|
+      if not points.include? i.point_id
+        i.delete()
+      end
+    end
+    
+    # Add newbies
+    Inclusion.transaction do
+      points.each do |point_id, value|
+        if Inclusion.where( :point_id => point_id, :user_id => opinion.user_id ).count == 0
+          inc_attrs = { 
+            :point_id => point_id,
+            :user_id => opinion.user_id,
+            :opinion_id => opinion.id,
+            :proposal_id => opinion.proposal_id,
+            :account_id => current_tenant.id
+          }
+          
+          inc = Inclusion.create! ActionController::Parameters.new(inc_attrs).permit!
+        end
+      end
+    end
+  end
 
   def save_actions ( opinion )
     actions = session[opinion.proposal_id]

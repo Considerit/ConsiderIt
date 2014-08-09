@@ -903,12 +903,7 @@ CommunityPoints = ReactiveComponent
 Point = ReactiveComponent
   displayName: 'Point'
 
-  getDefaultData : ->
-    show_details : false
-
   componentDidMount : ->
-    if @local_key == 'component/946'
-      console.log('In frank, this is', @local_key)
     @setShowDetails()
     @setDraggability()
 
@@ -940,7 +935,10 @@ Point = ReactiveComponent
         disabled: disable
 
   setShowDetails : ->
-    $(@getDOMNode()).click (ev) => @data().show_details = !@data().show_details
+    $(@getDOMNode()).click (ev) =>
+      local = @data(@local_key)
+      local.show_details = !local.show_details
+      save(local)
 
   buildIncluders : -> 
     point = @data()
@@ -1033,7 +1031,7 @@ Point = ReactiveComponent
         R.div className:'point_nutshell',
           point.nutshell
           if point.text
-            if point.show_details or 
+            if @data(@local_key).show_details or 
               (point.nutshell.length + point.text.length) < 210
                 R.div className: 'point_details', dangerouslySetInnerHTML:{__html: point.text}
             else
@@ -1144,9 +1142,6 @@ Avatar = ReactiveComponent
   has_multiple_instances_with_same_key: true
   displayName: 'Avatar'
   
-  getDefaultData: -> 
-    show_details : false
-
   getDefaultProps : ->
     key: '/user/-1' # defaults to anonymous user
     tag: R.img
@@ -1168,11 +1163,15 @@ Avatar = ReactiveComponent
       top: pos.top - $name.height()
 
   showDetails : (ev) -> 
-    @data(@local_key).show_details = true
+    local = @data(@local_key)
+    local.show_details = true
+    save(local)
 
   hideDetails : (ev) -> 
     $('.hover_avatar_name').remove()
-    @data(@local_key).show_details = false
+    local = @data(@local_key)
+    local.show_details = false
+    save(local)
 
   render : ->
     if Number.isInteger (@props.key)
@@ -1184,7 +1183,7 @@ Avatar = ReactiveComponent
     if !@props.key
       @props.key = "/user/-1"
     user = @data(@props.key)
-    show_details = @data(@local_key).show_details
+    @data(@local_key) # just to register a dependence
     className = "#{@props.className} avatar"
     id = "avatar-#{user.key.split('/')[2]}"
 

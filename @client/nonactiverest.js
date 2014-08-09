@@ -221,6 +221,9 @@
                  //console.log('Setting component', this.local_key)
                  components[this.local_key] = this
 
+                 if (this.props.key && this.props.key.key)
+                     this.props.key = this.props.key.key
+
                  // XXX Putting this into WillMount probably won't let
                  // you use the mounted_key inside getInitialState!
                  this.mounted_key = this.props.key

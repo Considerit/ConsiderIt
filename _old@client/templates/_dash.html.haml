@@ -57,7 +57,7 @@
         Moderate content
     (( } ))
 
-    (( if( (is_evaluator ) && tenant.get('assessment_enabled') ) { ))
+    (( if( false && (is_evaluator ) && tenant.get('assessment_enabled') ) { ))
     %li
       %a.sidebar_link{:href => "{{Routes.assessment_index_path()}}", :'action' => 'assess'}
         Assess claims
@@ -236,7 +236,7 @@
         %tbody
           (( points.each(function(point){ ))
           (( var proposal = point.getProposal(); ))  
-          (( var route = Routes.proposal_point_path(proposal.id, point.id); ))          
+          (( var route = Routes.point_path(point.id); ))          
           %tr
             %td.dashboard-profile-activity-substance-wrap
               .dashboard-profile-activity-substance
@@ -271,7 +271,7 @@
           (( comments.each(function(comment){ ))
           (( var point = comment.getRoot(); ))
           (( var proposal = point.getProposal(); ))
-          (( var route = Routes.proposal_point_path(proposal.id, point.id); ))
+          (( var route = Routes.point_path(point.id); ))
           %tr
             %td.dashboard-profile-activity-substance-wrap
               .dashboard-profile-activity-substance
@@ -301,23 +301,22 @@
 
   .dashboard-edit-user
 
-  = form_for(:user, :url => "{{ Routes.current_user_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'dashboard-edit-user' }) do |f|
+  = form_tag("{{Routes.current_user_path()}}", :method => :put, :remote => true, :multipart => true, :class => 'dashboard-edit-user' ) do |f|
   
     .field
-      = f.label :name, "Name"
-      = f.text_field :name, :pattern => "^.{1,}", :value => "{{ name }}"
-
+      = label_tag :name, "Name"
+      = text_field_tag :name, "{{ name }}", :pattern => "^.{1,}"
     .field
-      = f.label :bio, "About you"
-      = f.text_area :bio, :rows => 5, :value => "{{ bio }}"
+      = label_tag :bio, "About you"
+      = text_area_tag :bio, "{{ bio }}", :rows => 5
   
     .field
-      = f.label :avatar, "Your picture" 
+      = label_tag :avatar, "Your picture" 
       %br
-      = f.file_field :avatar, :title => 'Upload a profile picture'
+      = file_field_tag :avatar, :title => 'Upload a profile picture'
 
     .save_block
-      = f.submit "Save changes", :class => 'button'
+      = submit_tag "Save changes", :class => 'button'
 
 
 %script{ :type => "text/template", :id => "tpl_dashboard_account_settings"}
@@ -329,11 +328,11 @@
     .dashboard-subheading
       Modify your authentication options.
 
-  = form_for(:user, :url => "{{ Routes.current_user_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'dashboard-edit-user' }) do |f|
+  = form_tag("{{ Routes.current_user_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'dashboard-edit-user' }) do |f|
 
     .field
-      = f.label :email, "Email address"
-      = f.email_field :email, :value => "{{ email }}"
+      = label_tag :email, "Email address"
+      = email_field_tag :email, "{{ email }}"
       .sublabel
         Your email will never be shared with other users or third parties
 
@@ -342,15 +341,15 @@
       Authorized via {{auth_method}}
     (( } else { ))
     .field
-      = f.label :password, "New password"
-      = f.password_field :password
+      = label_tag :password, "New password"
+      = password_field_tag :password
     .field
-      = f.label :password_confirmation, "Confirm new password" 
-      = f.password_field :password_confirmation
+      = label_tag :password_confirmation, "Confirm new password" 
+      = password_field_tag :password_confirmation
     (( } ))
 
     .save_block
-      = f.submit "Save changes", :class => 'button'
+      = submit_tag "Save changes", :class => 'button'
 
 %script{ :type => "text/template", :id => "tpl_dashboard_email_notifications"}
 

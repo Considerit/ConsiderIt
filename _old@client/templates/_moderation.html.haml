@@ -67,8 +67,6 @@
       (( }); ))
 
     .meta
-      %a.moderate-context_link{ :href => "{{ url }}"}
-        {{ anchor }}
 
       (( if (user) { ))
       |
@@ -92,7 +90,7 @@
         (( }); ))
 
 
-      = f.submit 'done', :class => 'hide'
+      = f.submit 'done', :style => 'display:none'
 
     (( if( updated_since_last_evaluation ) { ))
     .moderate-updated

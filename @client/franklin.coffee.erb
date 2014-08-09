@@ -502,16 +502,12 @@ Slider = ReactiveComponent
           # supporter' to 'neutral'
           return false if ev.originalEvent.type != 'mousemove'
 
-          your_opinion = @data(your_opinion_key)
-          your_opinion.stance_segment = getStanceSegment -ui.value
-          your_opinion.stance = -ui.value
           slider = @data('slider')
           slider.stance_segment = getStanceSegment -ui.value
           slider.stance = -ui.value
           if !slider.has_moved
             slider.has_moved = true
           save(slider)
-          save(your_opinion)
         stop : (ev, ui) =>
           if @data('page').name == 'results'
             togglePage('crafting')
@@ -522,6 +518,13 @@ Slider = ReactiveComponent
       new_page = if page.name == 'results' then 'crafting' else 'results'
       togglePage(new_page)
     ev.stopPropagation()
+
+  foo : (ev) ->
+    your_opinion = @data(your_opinion_key)
+    slider = @data('slider')
+    your_opinion.stance         = slider.stance
+    your_opinion.stance_segment = slider.stance_segment
+    save(your_opinion)
 
   render : ->
     slider = @data('slider')
@@ -611,7 +614,7 @@ Slider = ReactiveComponent
           className: 'slider_base_triangle_right'
           style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
         R.div props_for_slider_handle, 
-          R.div className: 'the_handle', onClick: @togglePage,
+          R.div className: 'the_handle', onClick: @togglePage, onMouseUp: @foo,
             R.div className: 'face_mouth face_part', style: face_mouth_style
             R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
             R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
@@ -1657,6 +1660,8 @@ fetch 'histogram',
 
 fetch 'slider',
   has_moved : false
+  stance : 0
+  stance_segment : getStanceSegment 0
 
 fetch 'decisionboard',
   sticky : false

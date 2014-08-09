@@ -621,10 +621,11 @@ OpinionFilter = ReactiveComponent
   displayName: 'OpinionFilter'
 
   onSelectSegment : (segment) ->
+    console.log('Selected', segment)
     if @data('page').name == 'results'
-      current_segment = @data('histogram').selected_segment
-      @data('histogram').selected_segment = if current_segment == segment then [null, null] else [segment, segment != null]
-
+      hist = @data('histogram')
+      hist.selected_segment = if hist.selected_segment == segment then [null, null] else [segment, segment != null]
+      save(hist)
 
   render : ->
     @hist = @data('histogram')
@@ -643,14 +644,15 @@ OpinionFilter = ReactiveComponent
       for phrase, i in filter_options
 
         # Shift i by 1, and start with null
-        if i == 0
-          i = null
         i = i-1
+        if i == -1
+          i = null
 
         c = "filter_option"
         if @hist.selected_segment[0] == i
           c = c + ' selected'
-        R.a className: c, onClick: (=> @onSelectSegment(d)), phrase
+        console.log(i, c, phrase)
+        R.a className: c, onClick: (=> @onSelectSegment(i)), phrase
 
 
 ##

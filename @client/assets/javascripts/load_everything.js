@@ -13,6 +13,5 @@
 
 //= require_tree ./vendor_extensions
 //= require ../../third_party_auth
-//= require ../../activerest
-//= require ../../franklin
 //= require ../../nonactiverest
+//= require ../../franklin

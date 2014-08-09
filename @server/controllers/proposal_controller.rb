@@ -94,23 +94,25 @@ class ProposalController < ApplicationController
 
   def update
     # ASSUMPTION: a proposal cannot become unpublished after it has been published
-
     proposal = Proposal.find_by_long_id(params[:long_id])
     authorize! :update, proposal
 
-    private_discussion = (params[:proposal].has_key?(:publicity) && params[:proposal][:publicity] == '0') || proposal.publicity == 0
+    private_discussion = (params.has_key?(:publicity) && params[:publicity] == '0') || proposal.publicity == 0
 
-    published_now = params[:proposal].has_key?(:published) && params[:proposal][:published] == 'true' && !proposal.published
+    published_now = params.has_key?(:published) && params[:published] == 'true' && !proposal.published
 
     notify_private_accessors = private_discussion && (published_now || proposal.published)
 
-    # we don't want to send emails to people who have already been invited via email. This only applies to proposals that
-    # have already been published, because email invitations aren't sent out until publishing. We can avoid double sending
-    # invitations by grabbing the access list of the proposal as set *before* this current update. 
+    # we don't want to send emails to people who have already been
+    # invited via email. This only applies to proposals that have
+    # already been published, because email invitations aren't sent
+    # out until publishing. We can avoid double sending invitations by
+    # grabbing the access list of the proposal as set *before* this
+    # current update.
     existing_access_list = notify_private_accessors && !published_now ? proposal.attributes['access_list'] : nil
 
     # TODO: explicitly grab params
-    proposal.update_attributes! params[:proposal].permit!
+    proposal.update_attributes! params.permit!
 
     if notify_private_accessors
       users = []

@@ -72,6 +72,8 @@ ConsiderIt::Application.routes.draw do
 
 
   # Here's the entire JSON API:
+  resources :page, :only => [:show]
+  resources :user, :only => [:show]
   resources :proposal
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :point_discussion, :only => [:create, :update, :destroy, :show]

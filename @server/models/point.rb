@@ -87,9 +87,9 @@ class Point < ActiveRecord::Base
     result['includers'] = JSON.parse (result['includers'] || '[]')
     result['includers'].map! {|p| "/user/#{p}"}
     make_key(result, 'point')
-    result['included_by'] = result['includers']
+    #result['included_by'] = result['includers']
+    #result.delete('includers')
     stubify_field(result, 'proposal')
-    result.delete('includers')
     stubify_field(result, 'opinion')
     stubify_field(result, 'user')
     result

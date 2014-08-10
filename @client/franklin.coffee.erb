@@ -215,7 +215,6 @@ Proposal = ReactiveComponent
     users = page.users
     included_points = proposal.your_opinion.point_inclusions
     initial_stance = proposal.your_opinion.stance
-    highlighted_users = @data('histogram').highlighted_users
 
     description_region_style = {width: 1.25 * BODY_WIDTH}
 
@@ -437,6 +436,7 @@ Histogram = ReactiveComponent
                               else if selected_segment[0] == null || is_selected 
                               then '1.0'
                               else '.15'
+
               if segment == 6
                 R.div className:"histogram_segment_pole", 'Supporters'
               else if segment == 0
@@ -829,7 +829,7 @@ CommunityPoints = ReactiveComponent
       if @data('page').name == 'results'
         point = $(ev.currentTarget).parent().data('id')
         includers = @data(point).includers
-        proposal_data = @data(current_proposal)
+        proposal = @data(current_proposal)
 
         hist = @data('histogram')
         if ev.type == 'mouseenter'          
@@ -837,9 +837,9 @@ CommunityPoints = ReactiveComponent
           save(hist)
         else if ev.type == 'mouseleave'
           _.delay =>
-            if proposal_data.highlighted_users == includers
-              proposal_data.highlighted_users = null
-              save(hist)
+            if proposal.highlighted_users == includers
+              proposal.highlighted_users = null
+              save(proposal)
           , 200
 
   buildNewPointThreshold : ->

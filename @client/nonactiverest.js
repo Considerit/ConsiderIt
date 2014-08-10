@@ -255,16 +255,12 @@
         }
 
         window.re_render = function (keys) {
-            var c = execution_context[execution_context.length-1]
             setTimeout(function () {
                 for (var i=0; i<keys.length; i++) {
                     affected_components = components_4_key.get(keys[i])
                     for (var j=0; j<affected_components.length; j++)
                         dirty_components[affected_components[j]] = true
                 }
-
-                // But we don't need to re-render the component that spawned this whole save()
-                delete dirty_components[c]  
 
                 for (var comp_key in dirty_components)
                     // Cause they will clear from underneath us

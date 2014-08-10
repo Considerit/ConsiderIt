@@ -241,8 +241,8 @@
             delete dirty_components[this.local_key]
             //sanity(this.local_key)
         })
-        obj.shouldComponentUpdate = function () {
-            return dirty_components[this.local_key] !== undefined
+        obj.shouldComponentUpdate = function (next_props, next_state) {
+            return dirty_components[this.local_key] !== undefined || JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this.props])
         }
         
         obj.is_waiting = function () {

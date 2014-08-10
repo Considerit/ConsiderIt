@@ -264,7 +264,7 @@
 
                 for (var comp_key in dirty_components)
                     // Cause they will clear from underneath us
-                    if (dirty_components[comp_key])
+                    if (dirty_components[comp_key] && components[comp_key])
                         components[comp_key].forceUpdate()
             })
         }

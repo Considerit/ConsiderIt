@@ -631,9 +631,11 @@ Slider = ReactiveComponent
           style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
         R.div props_for_slider_handle, 
           R.div className: 'the_handle', onClick: @togglePage, onMouseUp: @saveSlider,
-            R.div className: 'face_mouth face_part', style: face_mouth_style
-            R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
-            R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
+            if page == 'crafting'
+              R.div className: 'face',            
+                R.div className: 'face_mouth face_part', style: face_mouth_style
+                R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
+                R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
             R.div className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved && !page.auth_mode
             R.div className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved && !page.auth_mode
 
@@ -805,7 +807,7 @@ YourPoints = ReactiveComponent
       style: { width: POINT_WIDTH }
     ,
       R.div className:'points_heading_label',
-        "Speak Your #{capitalize(@props.valence)}"
+        "State Your #{capitalize(@props.valence)}"
 
       R.ul null,
         for point in included_points
@@ -1082,6 +1084,7 @@ Point = ReactiveComponent
 # If they have, show new point form. 
 NewPoint = ReactiveComponent
   displayName: 'NewPoint'
+
   componentDidUpdate : ->
     if @local.edit_mode
       $(@getDOMNode()).find('#nutshell').focus()
@@ -1094,9 +1097,11 @@ NewPoint = ReactiveComponent
   handleAddPointCancel : (ev) -> 
     @local.edit_mode = false
     save(@local)
-  handleAddDetails : (ev) -> 
-    @local.add_details = true
+
+  handleToggleDetails : (ev) -> 
+    @local.add_details = !@local.add_details
     save(@local)
+
   handleSubmitNewPoint : (ev) ->
     $form = $(@getDOMNode())
 
@@ -1123,9 +1128,9 @@ NewPoint = ReactiveComponent
   render : ->
     #TODO: refactor HTML/CSS for new point after we get better sense of new point redesign
     @local = @data @local_key,
-        edit_mode : false
-        sign_name : true
-        add_details : false
+      edit_mode : false
+      sign_name : true
+      add_details : false
 
     R.div className:'newpoint',
       if !@local.edit_mode
@@ -1134,21 +1139,21 @@ NewPoint = ReactiveComponent
             'or '
           R.span className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
           R.a className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
-            "Write a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
+          "Express a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
       else
         R.div className:'newpoint_form',
           R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pros'}"
           R.label htmlFor:'nutshell', 'Your point'
           CharacterCountTextInput id:'nutshell', className:'newpoint_nutshell', maxLength:140, name:'nutshell', pattern:'^.{3,}', placeholder:'Make this summary succinct.', required:'required'
           
-          if @local.add_details
-            R.div null, 
-              R.label htmlFor:'text', 'Expand on your point'
-              AutoGrowTextArea id:'text', className:'newpoint_description', name:'text', placeholder:'Provide background and/or back your point up with evidence.', required:'required', min_height: 100
-          else
-            R.a className: 'add_details', onClick: @handleAddDetails, title: 'Provide background and/or back your point up with evidence.',
-              R.i className: 'fa-caret-right fa'
+          R.div null,
+            R.a className: 'add_details', onClick: @handleToggleDetails, title: 'Provide background and/or back your point up with evidence.',
+              R.i className: if @local.add_details then 'fa-caret-down fa' else 'fa-caret-right fa'
               R.span null, 'Expand on your point'
+
+            if @local.add_details
+              R.div null, 
+                AutoGrowTextArea id:'text', className:'newpoint_description', name:'text', placeholder:'Provide background and/or back your point up with evidence.', required:'required', min_height: 100
 
           R.div className:'newpoint_hide_name',
             R.input className:'newpoint-anonymous', type:'checkbox', id:"sign_name-#{@props.valence}", name:"sign_name-#{@props.valence}", checked: @local.sign_name, onChange: (=>
@@ -1260,7 +1265,7 @@ UserBar = ReactiveComponent
     if current_user.id
       R.div className: 'userbar', 
         Avatar key: current_user.id, tag: R.span, className: 'userbar_avatar', style: {height: 20, width: 20}
-        R.a onClick: @logout, 'logout'
+        R.a 'data-action': 'logout', onClick: @logout, 'logout'
     else 
       R.div null
 
@@ -1363,6 +1368,80 @@ AuthHeader = ReactiveComponent
               R.div className: 'switch_auth_mode', 
                 R.span null, if page.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
                 R.a className: 'toggle_auth', onClick: @toggleAuthMode, if page.auth_mode == 'register' then 'Log In' else 'Create an Account'
+
+
+
+
+
+
+##
+# AuthHeader
+# Should be refactored into Auth. Shares styles with Slider.
+AuthHeader = ReactiveComponent
+  displayName: 'AuthHeader'
+
+  componentDidMount : -> 
+    $slider_base = $(@getDOMNode()).find('.slider_base')
+    if !$slider_base.hasClass "ui-slider"
+      $slider_base.slider
+        disabled: true
+        min: -1
+        max: 1
+        step: .01
+        value: -@data('slider').stance
+
+  toggleAuthMode : -> 
+    app_data = @data('application')
+    current_user = @data('/current_user')
+    email = $(@getDOMNode()).find('#user_email').val()
+
+    @data('auth').email = email if email && email.length > 0
+    app_data.auth_mode = if app_data.auth_mode == 'register' then 'login' else 'register'    
+    current_user.errors = []
+
+  render : ->
+    my_data = @data('slider')
+    segment = my_data.stance_segment
+    app_data = @data('application')
+
+    # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
+    # also why this file is ERB
+    if segment == 3
+      bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
+    else
+      bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
+
+    slider_feedback = 'Please Introduce Yourself' 
+
+    mouth_scaler = if my_data.stance_segment > 3 then -1 else 1
+    mouth_x = if my_data.stance_segment == 3 then 0 else -7.5
+
+
+    bubble_mouth_props = 
+      transform: "scale(#{mouth_scaler * 1.5}, 1.5) translate(#{mouth_x * 1.5}px, 7px)"
+    handle_props = 
+      transform: "scale(2.5) translateY(-8px)"
+
+    crossbrowserTransformProperty = (props) -> _.extend props,
+      '-webkit-transform' : props.transform
+      '-ms-transform' : props.transform
+      '-moz-transform' : props.transform
+
+    crossbrowserTransformProperty bubble_mouth_props
+    crossbrowserTransformProperty handle_props
+
+    R.div className: 'slider', 
+      R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
+        R.div className: 'ui-slider-handle', 
+          R.div className: 'the_handle', onClick: @togglePage, style: handle_props
+          R.img className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
+          R.div className:'slider_feedback', 
+            slider_feedback
+
+            if app_data.auth_mode in ['login', 'register']
+              R.div className: 'switch_auth_mode', 
+                R.span null, if app_data.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
+                R.a className: 'toggle_auth', onClick: @toggleAuthMode, if app_data.auth_mode == 'register' then 'Log In' else 'Create an Account'
 
 
 

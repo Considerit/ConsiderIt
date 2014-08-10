@@ -167,7 +167,7 @@ Proposal = ReactiveComponent
   componentDidUpdate : ->
     $el = $(@getDOMNode())
     $el.find('.fixed_proposal_heading').stickyTopBottom('update')
-    
+
     # $el.find('.description_region').css
     #   top: $el.find('.fixed_proposal_heading').height() + 24
 
@@ -200,9 +200,9 @@ Proposal = ReactiveComponent
         , duration
 
       when 'results'
-        your = @data(your_opinion_key)
-        stance = your.stance
-        segment = your.stance_segment
+        slider = @data('slider')
+        stance = slider.stance
+        segment = slider.stance_segment
 
         give_opinion_button_width = 186
         gutter = .1 * give_opinion_button_width
@@ -233,6 +233,10 @@ Proposal = ReactiveComponent
     users = page.users
     included_points = proposal.your_opinion.point_inclusions
     initial_stance = proposal.your_opinion.stance
+
+    # Register a dependency on slider data here because activerest doesn't pick up the dependency from applyStyles. 
+    # Everything works without this registration except the give opinion button doesn't follow the slider when dragging on the results page. 
+    slider = @data('slider')
 
     description_region_style = {width: 1.25 * BODY_WIDTH}
 

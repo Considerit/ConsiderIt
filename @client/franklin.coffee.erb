@@ -68,11 +68,7 @@ togglePage = (page_name) ->
     callback : -> 
       root = fetch('root')
       root.page_name = page_name
-      long_id = root.url.split('/')[1]
-      root.url = "/#{long_id}#{if root.page_name == 'results' then '/results' else ''}"
       save(root)
-
-      window.app_router.navigate root.url, {trigger : true}
 
       # Kludge for tracking when the page changes
       _route_changed = true
@@ -1741,14 +1737,17 @@ Root = ReactiveComponent
 
   render : -> 
     root = @data('root')
-    root.page_name = root.page_name || @props.initial_page
-    root.url = root.url || "/#{@props.long_id}#{if @props.initial_page == 'results' then '/results' else ''}"
-    root.auth_mode = root.auth_mode || null
+
+    # Update the location bar if it's different
+    url = "/#{@props.long_id}#{if root.page_name == 'results' then '/results' else ''}"
+    if (window.location.pathname != url)
+      window.app_router.navigate url, {trigger : true}
+
+    # Pull in this page's data from the server
     window.current_page = "/page/#{@props.long_id}"
-    save(root)
-    
     page = @data(current_page)
 
+    # Now let's render
     R.div 'data-authmode': root.auth_mode,
       R.div className: 'l_header', 
         UserBar()      
@@ -1783,8 +1782,8 @@ fetch 'auth',
   provider : null
 
 fetch 'root',
-  url : window.location.pathname
-  name : ''
+  page_name : 'crafting'
+  auth_mode : null
 
 fetch('/current_user')
 
@@ -1806,10 +1805,13 @@ Router = Backbone.Router.extend
     ":proposal/results(/)": "results"
 
   proposal : (long_id, page = 'crafting') ->
+    root = fetch('root')
+    root.page_name = page
+    save(root)
+
     if !top_level_component
       top_level_component = React.renderComponent Root(
                                          long_id : long_id
-                                         initial_page : page
                                          ), document.getElementById('content')
 
       

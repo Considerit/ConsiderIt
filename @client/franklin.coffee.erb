@@ -829,33 +829,6 @@ YourPoints = ReactiveComponent
 CommunityPoints = ReactiveComponent
   displayName: 'CommunityPoints'
 
-  componentDidMount : ->
-    @setPointMouseover()
-
-  ## ##
-  # On hovering over a point, highlight the people who included this 
-  # point in the Histogram.
-  setPointMouseover : ->
-    $el = $(@getDOMNode())
-
-    $el.on 'mouseenter mouseleave', '.includers', (ev) => 
-
-      if @data('page').name == 'results'
-        point = $(ev.currentTarget).parent().data('id')
-        includers = @data(point).includers
-        proposal = @data(current_proposal)
-
-        hist = @data('histogram')
-        if ev.type == 'mouseenter'          
-          hist.highlighted_users = includers
-          save(hist)
-        else if ev.type == 'mouseleave'
-          _.delay =>
-            if proposal.highlighted_users == includers
-              proposal.highlighted_users = null
-              save(proposal)
-          , 200
-
   buildNewPointThreshold : ->
     # Grab the 10th percentile
     points = @data(current_proposal).points || []
@@ -938,7 +911,6 @@ Point = ReactiveComponent
   displayName: 'Point'
 
   componentDidMount : ->
-    @setShowDetails()
     @setDraggability()
 
   componentDidUpdate : -> 
@@ -969,11 +941,35 @@ Point = ReactiveComponent
         revert: revert
         disabled: disable
 
-  setShowDetails : ->
-    $(@getDOMNode()).click (ev) =>
-      local = @data(@local_key)
-      local.show_details = !local.show_details
-      save(local)
+
+  showDetails : -> 
+    local = @data(@local_key)
+    local.show_details = !local.show_details
+    save(local)
+
+  ## ##
+  # On hovering over a point, highlight the people who included this 
+  # point in the Histogram.
+  highlightIncluders : -> 
+    if @data('page').name == 'results'
+      includers = @data().includers
+      hist = @data('histogram')
+      if hist.highlighted_users != includers
+        hist.highlighted_users = includers
+        save(hist)
+
+  unHighlightIncluders : -> 
+    if @data('page').name == 'results'
+      includers = @data().includers
+
+      _.delay =>
+        hist = @data('histogram')
+
+        if hist.highlighted_users == includers
+          hist.highlighted_users = null
+          save(hist)
+      , 200
+
 
   buildIncluders : -> 
     point = @data()
@@ -1046,12 +1042,13 @@ Point = ReactiveComponent
       className: "point closed_point #{@props.location_class} 
         #{if point.is_pro then 'pro' else 'con'}"
       'data-id':@props.key
+      onClick: @showDetails
     ,
   
       if @props.location_class == 'community_point' && @props.is_new
         @renderNewIndicator()
 
-      R.div className:'includers', 
+      R.div className:'includers', onMouseEnter: @highlightIncluders, onMouseLeave: @unHighlightIncluders, 
         if @props.location_class == 'community_point'
           @renderIncluders()
 

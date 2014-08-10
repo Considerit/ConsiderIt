@@ -196,8 +196,10 @@
     var dirty_components = {}
     function ReactiveComponent(obj) {
         obj.data = obj.get = function (key, defaults) {
-            if (!this._lifeCycleState || this._lifeCycleState == 'UNMOUNTED')
-                throw Error('Component is tryin to get data() after it died')
+            if (!this._lifeCycleState || this._lifeCycleState == 'UNMOUNTED') {
+                console.error('Component is tryin to get data() after it died. Component = ', obj, ' key = ', key)
+                throw Error('Component is tryin to get data() after it died.')
+            }
             if (key === undefined)    key = this.mounted_key
             if (!key)                 return null
             // if (!key)    throw TypeError('Component mounted onto a null key. '
@@ -254,16 +256,12 @@
 
         window.re_render = function (keys) {
             // console.log('Re-rendering keys', keys)
-            var c = execution_context[execution_context.length-1]
             setTimeout(function () {
                 for (var i=0; i<keys.length; i++) {
                     affected_components = components_4_key.get(keys[i])
                     for (var j=0; j<affected_components.length; j++)
                         dirty_components[affected_components[j]] = true
                 }
-
-                // But we don't need to re-render the component that spawned this whole save()
-                delete dirty_components[c]  
 
                 for (var comp_key in dirty_components)
                     // Cause they will clear from underneath us

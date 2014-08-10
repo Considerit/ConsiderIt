@@ -1097,18 +1097,6 @@ NewPoint = ReactiveComponent
       hide_name : $form.find("sign_name-#{@props.valence}").val()
     save(point)
 
-    # proposal = @data(current_proposal)
-    # points = proposal.points.splice(0)
-    # points.push point
-    # proposal.points = points
-
-    # # how to not push to multiple places...
-    # save(point)
- 
-    #included_points = proposal_data.included_points.splice(0)
-    #included_points.push point
-    #proposal_data.included_points = included_points
-
     @local.edit_mode = false
     save(@local)
 

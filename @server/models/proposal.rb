@@ -102,7 +102,6 @@ class Proposal < ActiveRecord::Base
 
     make_key(result, 'proposal')
     stubify_field(result, 'user')
-    pp(result["participants"])
     result["participants"] = JSON.parse(result["participants"] || '[]')
     result["participants"].map! {|p| "/user/#{p}"}
     result["top_con"] = "/point/#{result['top_con']}"

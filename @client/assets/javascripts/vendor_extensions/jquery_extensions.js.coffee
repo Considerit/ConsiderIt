@@ -9,6 +9,7 @@ do ($, window, document) ->
     #    so that the calculation as to where they offset with each other
     #    is automatically taken care of
 
+    @current_id: 0 #track a unique id for each element with stickytopbottom
 
     constructor : (el, options) -> 
       defaults = 
@@ -21,17 +22,24 @@ do ($, window, document) ->
 
       @options = $.extend {}, defaults, options
 
-      @$el = $(el)
-      @viewport_height = $(window).height()
-      $(window).on 'resize', -> 
-        @viewport_height = $(window).height()
+      @my_id = @constructor.current_id
+      @constructor.current_id += 1
 
+      @$el = $(el)        
       @current_translate = 0
       @last_viewport_top = document.documentElement.scrollTop || document.body.scrollTop
 
-      $(window).scroll (ev) => @update()
+      $(window).on "resize.plugin_stickytopbottom-#{@my_id}", => @resize()
+      $(window).on "scroll.plugin_stickytopbottom-#{@my_id}", => @update()
+
+      @$el.on 'destroyed', $.proxy(@destroy, @) 
+
+      @resize()
       @update()
 
+
+
+    resize : -> @viewport_height = $(window).height()
 
     # Update 
     # Updates the position of the element with respect to the viewport. 
@@ -101,8 +109,13 @@ do ($, window, document) ->
         @options.docks() if @options.docks && is_docking
         @options.undocks() if @options.undocks && is_undocking
 
-
       @last_viewport_top = viewport_top
+
+    destroy : -> 
+      $(window).off ".plugin_stickytopbottom-#{@my_id}"
+      $.removeData @$el[0], "plugin_stickytopbottom"
+      @$el = null
+
 
   $.fn.stickyTopBottom = (options = {}) ->
     @each ->
@@ -110,12 +123,18 @@ do ($, window, document) ->
         #init
         unless $.data @, "plugin_stickytopbottom"  
           $.data @, "plugin_stickytopbottom", new StickyTopBottom @, options
-      else if options == 'update'
-        $.data(@, "plugin_stickytopbottom").update()
-      else if options == 'fix_initial_position'
-        # hack to get around a problem where the browser's remembered scroll position messes
-        # up the sticky location after initialization
-        $(document).scrollTop (document.documentElement.scrollTop || document.body.scrollTop) - 1
+      else 
+        switch options
+          when 'update'
+            $.data(@, "plugin_stickytopbottom").update()
+          when 'destroy'
+            plugin_obj = $.data @, "plugin_stickytopbottom"
+            $(@).unbind "destroyed", plugin_obj.destroy
+            plugin_obj.destroy()
+          when 'fix_initial_position'
+            # hack to get around a problem where the browser's remembered scroll position messes
+            # up the sticky location after initialization
+            $(document).scrollTop (document.documentElement.scrollTop || document.body.scrollTop) - 1
 
 
 do ($, window, document) ->

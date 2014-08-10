@@ -76,15 +76,15 @@ class Proposal < ActiveRecord::Base
     ops = opinions.published.public_fields.map {|p| p.as_json}
 
     # Compute Included points
-    includeds = Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).pluck('points.id')\
-                + Point.included_by_unstored(prop_data[:included_points].keys, self).pluck('points.id')
-    includeds.map! {|p| "/point/#{p}"}
+    #includeds = Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).pluck('points.id')
+                
+    #includeds.map! {|p| "/point/#{p}"}
 
     # Put them together
     response = self.as_json
     response.update({
       :points => pointz,
-      :included_points => includeds,
+      #:included_points => includeds,
       :opinions => ops,
       :your_opinion => your_opinion.as_json
     })

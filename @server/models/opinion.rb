@@ -22,30 +22,6 @@ class Opinion < ActiveRecord::Base
     self.stance_segment = Opinion.get_segment(self.stance)
   end 
 
-  # def self.current_opinion(proposal, current_user, session)
-  #   prop_data = session[proposal.id]
-  #   includeds = Point.included_by_stored(current_user,
-  #                                        proposal,
-  #                                        prop_data[:deleted_points].keys).pluck('points.id')\
-  #               + Point.included_by_unstored(prop_data[:included_points].keys,
-  #                                            proposal).pluck('points.id')
-  #   includeds.map! {|p| "/point/#{p}"}
-
-  #   your_opinion = {
-  #     :created_at => '',
-  #     :updated_at => '',
-  #     :explanation => '',
-  #     :key => "/opinion/current_user/#{proposal.id}",
-  #     :point_inclusions => includeds,
-  #     :published => false,
-  #     :stance => 0,
-  #     :stance_segment => 3,
-  #     :proposal => "/proposal/#{proposal.id}",
-  #     :user => current_user.key
-  #   }
-  #   your_opinion
-  # end
-
   def as_json(options={})
     pubs = ['long_id', 'created_at', 'updated_at', 'id', 'point_inclusions',
             'proposal_id', 'stance', 'stance_segment', 'user_id', 'explanation',
@@ -88,7 +64,25 @@ class Opinion < ActiveRecord::Base
     your_opinion
   end
     
+  def include(point, tenant)
+    point_id = (point.is_a?(Point) && point.id) || point
 
+    if Inclusion.where( :point_id => point_id, :user_id => self.user_id ).count !=0
+      raise 'Including a point twice!'
+    end
+    
+    attrs = { 
+      :point_id => point_id,
+      :user_id => self.user_id,
+      :opinion_id => self.id,
+      :proposal_id => self.proposal_id,
+      :account_id => tenant.id
+    }
+          
+    pp(attrs)
+    Inclusion.create! ActionController::Parameters.new(attrs).permit!
+    self.update_inclusions()
+  end    
   def subsume( subsumed_opinion )
     subsumed_opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
     subsumed_opinion.points.update_all({:user_id => user_id, :opinion_id => id})

@@ -79,7 +79,6 @@ class Opinion < ActiveRecord::Base
       :account_id => tenant.id
     }
           
-    pp(attrs)
     Inclusion.create! ActionController::Parameters.new(attrs).permit!
     self.update_inclusions()
   end    

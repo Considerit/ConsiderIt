@@ -37,7 +37,6 @@ class ProposalController < ApplicationController
     if (!proposal || cannot?(:read, proposal))
       result = { errors: ["not found"] }
     else
-      pp 'reseting user activities'
       ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
       result = proposal.proposal_data(current_tenant,
                                       current_user,

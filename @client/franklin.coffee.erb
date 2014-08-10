@@ -59,13 +59,28 @@ getStanceSegment = (value) ->
 user_opinions = {}
 userOpinion = (user_key) ->
   user_opinions[user_key]
+
+
+rc = fetch('_route_changed')
+rc.changed = false
+save(rc)
+
 togglePage = (page) -> 
   $('.histogram_segment_pole').ensureInView
     offset_buffer: 150
     callback : -> 
       p = fetch('page')
       p.name = page
+
       save(p)
+      # Kludge for tracking when the page changes
+      rc = fetch('_route_changed')
+      rc.changed = true
+      save(rc)
+      _.delay -> 
+        rc.changed = false
+        save(rc)
+
 
 
 stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
@@ -93,7 +108,7 @@ StyleAnimator =
   componentDidMount : -> @applyStyles false
 
   componentDidUpdate : (prev_props, prev_page) -> 
-    @applyStyles fetch('_route_changed')
+    @applyStyles fetch('_route_changed').changed
 
   applyStylesToElements : (styles, duration) ->
     $el = $(@getDOMNode())
@@ -189,7 +204,7 @@ Proposal = ReactiveComponent
         give_opinion_button_width = 186
         gutter = .1 * give_opinion_button_width
 
-        opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * (stance+1) / 2.0
+        opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * -(stance-1) / 2.0
 
         styles = 
           '.histogram_bar':         { opacity: '1' }
@@ -228,7 +243,6 @@ Proposal = ReactiveComponent
     window.current_proposal = proposal.key
     window.your_opinion_key = proposal.your_opinion.key
 
-    console.log(proposal.key, proposal.user)
     proposer = @data(proposal.user)
 
     R.div className:'proposal', key:@props.long_id, 'data-page':page.name,
@@ -462,10 +476,10 @@ Slider = ReactiveComponent
   applyStyles : (animate = false) ->
     duration = if animate then TRANSITION_SPEED else 0
     $el = $(@getDOMNode())
-    your_opinion = @data(your_opinion_key)
+    slider = @data('slider')
 
-    mouth_scaler = if your_opinion.stance_segment >  3 then -1 else 1
-    mouth_x      = if your_opinion.stance_segment == 3 then  0 else -7.5
+    mouth_scaler = if slider.stance_segment >  3 then -1 else 1
+    mouth_x      = if slider.stance_segment == 3 then  0 else -7.5
 
     switch @data('page').name
       when 'crafting'
@@ -504,6 +518,7 @@ Slider = ReactiveComponent
 
           slider = @data('slider')
           slider.stance_segment = getStanceSegment -ui.value
+
           slider.stance = -ui.value
           if !slider.has_moved
             slider.has_moved = true
@@ -532,8 +547,7 @@ Slider = ReactiveComponent
     slider = @data('slider')
     stance = slider.stance
     segment = slider.stance_segment
-    page = @data('page')
-    page = page.name
+    page = @data('page').name
     sticky = @data('decisionboard').sticky
 
     #jquery UI slider will pick an el with this class name up
@@ -637,7 +651,6 @@ OpinionFilter = ReactiveComponent
   displayName: 'OpinionFilter'
 
   onSelectSegment : (segment) ->
-    console.log('Selected', segment)
     if @data('page').name == 'results'
       hist = @data('histogram')
       hist.selected_segment = if hist.selected_segment == segment then [null, null] else [segment, segment != null]

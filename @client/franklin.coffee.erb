@@ -667,8 +667,10 @@ OpinionFilter = ReactiveComponent
         c = "filter_option"
         if @hist.selected_segment[0] == i
           c = c + ' selected'
-        select = (index) => (=> @onSelectSegment(index))
-        R.a className: c, onClick: select(i), phrase
+
+        # I had to make this wrapper to make a new context for i
+        wrapper = (i) => (=> @onSelectSegment(i))
+        R.a className: c, onClick: wrapper(i), phrase
 
 
 ##

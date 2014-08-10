@@ -56,9 +56,8 @@ getStanceSegment = (value) ->
       return i
   return 6
 
-user_opinions = {}
 userOpinion = (user_key) ->
-  user_opinions[user_key]
+  window.user_opinions[user_key]
 
 
 rc = fetch('_route_changed')
@@ -985,6 +984,7 @@ Point = ReactiveComponent
     if selected_segment[0]?
       for includer in point.includers
         stance_segment = @data(userOpinion(includer)).stance_segment
+
         if stance_segment && stance_segment != selected_segment[0]
           to_remove.push(includer)
 

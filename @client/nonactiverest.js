@@ -196,8 +196,10 @@
     var dirty_components = {}
     function ReactiveComponent(obj) {
         obj.data = obj.get = function (key, defaults) {
-            if (!this._lifeCycleState || this._lifeCycleState == 'UNMOUNTED')
-                throw Error('Component is tryin to get data() after it died')
+            if (!this._lifeCycleState || this._lifeCycleState == 'UNMOUNTED') {
+                console.error('Component is tryin to get data() after it died. Component = ', obj, ' key = ', key)
+                throw Error('Component is tryin to get data() after it died.')
+            }
             if (key === undefined)    key = this.mounted_key
             if (!key)                 return null
             // if (!key)    throw TypeError('Component mounted onto a null key. '

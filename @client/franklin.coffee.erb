@@ -68,10 +68,14 @@ togglePage = (page) ->
   $('.histogram_segment_pole').ensureInView
     offset_buffer: 150
     callback : -> 
-      p = fetch('page')
-      p.name = page
+      app = fetch('page')
+      long_id = app.url.split('/')[1]
+      app.url = "/#{long_id}#{if page == 'results' then '/results' else ''}"
+      app.name = page
+      save(app)
 
-      save(p)
+      window.app_router.navigate app.url, {trigger : true}
+
       # Kludge for tracking when the page changes
       rc = fetch('_route_changed')
       rc.changed = true
@@ -1786,15 +1790,17 @@ Router = Backbone.Router.extend
 
   proposal : (long_id, page = 'crafting') ->
     if !top_level_component
+      app = fetch('page')
+      app.url = "/#{long_id}#{if page == 'results' then '/results' else ''}"
+      app.name = page    
+      save(app)
+
       top_level_component = React.renderComponent Page(
                                          long_id : long_id
                                          initial_page : page
                                          ), document.getElementById('content')
 
-    app = fetch('page')
-    app.url = "/#{long_id}#{if page == 'results' then '/results' else ''}"
-    app.name = page
-    save(app)
+      
 
 
   results : (long_id) -> @proposal long_id, 'results'

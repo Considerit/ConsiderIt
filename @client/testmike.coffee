@@ -9,7 +9,7 @@ Top = ReactiveComponent
   render : -> 
     @get('Damn!')
     R.div style: { margin: '100px', 'padding': '20px', 'background-color': '#fefdfd' }, 
-      'hello'
+      "hello I am #{@local_key}"
       Bottom (key: '/point/1')
 
 Bottom = ReactiveComponent
@@ -17,8 +17,8 @@ Bottom = ReactiveComponent
   render: ->
     @get('oh yeah dude')
     point = @get()
-    R.div(style: {margin: '50px', 'background-color': '#e5e5e5', padding: '20px'},
-      "Yeah man!  I'm a component, mounted at key ",
+    R.div style: {margin: '50px', 'background-color': '#e5e5e5', padding: '20px'},
+      "Yeah man!  I'm a component #{@local_key}, mounted at key ",
       R.span style : {'font-weight':'bold' }, "#{@props.key}"
       '.'
       R.div null, 'My nutshell is:',
@@ -26,6 +26,11 @@ Bottom = ReactiveComponent
         R.span style : {'font-weight':'bold' },
            "#{point.hide_name}"
       R.div style: {'margin': '10px', 'font-style':'italic'},
-        point.nutshell)
+        point.nutshell
+      if @props.key == '/point/1'
+        'once more?'
+        Bottom (key: '/point/2')
+
+
 $(document).ready ->
   React.renderComponent Top({'moo', 'bar'}), document.getElementById('content')

@@ -219,7 +219,6 @@
              function () { 
                  this.local_key = 'component/' + components_next_id++
                  this.name = obj.displayName
-                 //console.log('Setting component', this.local_key)
                  components[this.local_key] = this
 
                  if (this.props.key && this.props.key.key)
@@ -233,8 +232,6 @@
         wrap(obj, 'getDefaultProps')
         //wrap(obj, 'componentWillReceiveProps')
         wrap(obj, 'componentWillUnmount', function () {
-            // if (this.local_key === 'component/946')
-            //     console.log('Unmounting component/946')
             clearComponentDeps(this.local_key)
             delete cache[this.local_key]
             delete components[this.local_key]
@@ -256,7 +253,7 @@
         }
 
         window.re_render = function (keys) {
-            var c = current_execution_context
+            var c = execution_context[execution_context.length-1]
             setTimeout(function () {
                 for (var i=0; i<keys.length; i++) {
                     affected_components = components_4_key.get(keys[i])
@@ -268,21 +265,26 @@
                 delete dirty_components[c]  
 
                 for (var comp_key in dirty_components)
-                    if (dirty_components[comp_key]) { // Cause they will clear from underneath us
-                        // console.log(comp_key, components[comp_key], dirty_components[comp_key])
-                        // console.log(components)
+                    // Cause they will clear from underneath us
+                    if (dirty_components[comp_key])
                         components[comp_key].forceUpdate()
-                    }
             })
         }
-        return React.createClass(obj)
+
+        var react_class = React.createClass(obj)
+        return function (props, children) {
+            props = props || {}
+            props.parents = execution_context.slice()
+            return react_class(props, children)
+        }
     }
 
-    var current_execution_context = null
+    var execution_context = []
     function record_dependence(key) {
-        if (current_execution_context) {
-            keys_4_component.add(current_execution_context, key)  // Track dependencies
-            components_4_key.add(key, current_execution_context)  // both ways
+        if (execution_context.length > 0) {
+            var component = execution_context[execution_context.length-1]
+            keys_4_component.add(component, key)  // Track dependencies
+            components_4_key.add(key, component)  // both ways
         }
     }
 
@@ -329,26 +331,29 @@
     }
     function wrap(obj, method, before, after) {
         var original_method = obj[method]
+        if (!(original_method || before || after)) return
         obj[method] = function() {
-            // if (this.local_key === 'component/946')
-            //     console.log(method + 'ing component/946')
             before && before.apply(this, arguments)
-            current_execution_context = this.local_key
+            if (this.local_key !== undefined)
+                // We only want to set the execution context on
+                // wrapped methods that are called on live instance.
+                // getDefaultProps(), for instance, is called when
+                // defining a component class, but not on actual
+                // instances.  You can't render new components from
+                // within there, so we don't need to track the
+                // execution context.
+                execution_context = this.props.parents.concat([this.local_key])
+
             try {
                 var result = original_method && original_method.apply(this, arguments)
             } catch (e) {
-                current_execution_context = null
-                if (e instanceof TypeError) {
+                if (e instanceof TypeError)
                     if (this.is_waiting()
                         /*|| e.message.substring(0,12) === 'Component mo'*/) return loading_indicator
                     else { console.error(e.stack); return error_indicator(e.message) }
-                }
                 else throw e
             }
-            current_execution_context = null
             after && after.apply(this, arguments)
-            // if (this.local_key === 'component/0')
-            //     console.log(method + 'ed component/0')
 
             return result
         }
@@ -370,7 +375,7 @@
     window.save = save
 
     // Make the private methods accessible under "window.nona"
-    vars = 'cache fetch save serverFetch serverSave updateCache csrf keys_4_component components_4_key components hashset clone wrap sanity clearComponentDeps dirty_components'.split(' ')
+    vars = 'cache fetch save serverFetch serverSave updateCache csrf keys_4_component components_4_key components execution_context hashset clone wrap sanity clearComponentDeps dirty_components'.split(' ')
     window.nona = {}
     for (var i=0; i<vars.length; i++)
         window.nona[vars[i]] = eval(vars[i])

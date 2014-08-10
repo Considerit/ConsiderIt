@@ -59,7 +59,6 @@ class OpinionController < ApplicationController
     opinion.update_attributes ActionController::Parameters.new(updates).permit!
 
     if existing_opinion
-      pp('Existing_opinion')
       opinion.subsume existing_opinion
     end
 
@@ -117,14 +116,12 @@ class OpinionController < ApplicationController
 protected
 
   def include_points (opinion, points)
-    pp(opinion)
     curr_inclusions = Inclusion.where(:opinion => opinion.id)
 
     to_delete = curr_inclusions.select {|i| not points.include? i.point_id}
     to_add = points.select {|p| curr_inclusions.where(:point_id => p).count == 0}
 
     to_delete_ids = to_delete.map{|i| i.point_id}
-    pp("SLKDFJSLDFJKSLDFJ")
     pp("Deleting #{to_delete}, adding #{to_add}")
 
     Inclusion.transaction do

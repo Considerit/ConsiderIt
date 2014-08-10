@@ -99,24 +99,24 @@ class Point < ActiveRecord::Base
     self.to_json :only => Point.my_public_fields
   end  
   
-  def self.included_by_stored(user, proposal, deleted_points)
-    if user
-      additional = (deleted_points && deleted_points.length > 0) ? " AND points.id NOT IN (?)" : ""
-      Point.published.
-        joins(:inclusions, "AND inclusions.user_id = #{user.id} AND points.proposal_id = #{proposal.id}").
-        where("inclusions.user_id IS NOT NULL" + additional, deleted_points)
-    else
-      proposal.points.where(:id => -1) #null set
-    end
-  end
+  # def self.included_by_stored(user, proposal, deleted_points)
+  #   if user
+  #     additional = (deleted_points && deleted_points.length > 0) ? " AND points.id NOT IN (?)" : ""
+  #     Point.published.
+  #       joins(:inclusions, "AND inclusions.user_id = #{user.id} AND points.proposal_id = #{proposal.id}").
+  #       where("inclusions.user_id IS NOT NULL" + additional, deleted_points)
+  #   else
+  #     proposal.points.where(:id => -1) #null set
+  #   end
+  # end
 
-  def self.included_by_unstored(included_points, proposal)
-    if included_points.length > 0
-      proposal.points.where("points.id IN (?)", included_points)
-    else
-      proposal.points.published.where(:id => -1) #null set
-    end
-  end
+  # def self.included_by_unstored(included_points, proposal)
+  #   if included_points.length > 0
+  #     proposal.points.where("points.id IN (?)", included_points)
+  #   else
+  #     proposal.points.published.where(:id => -1) #null set
+  #   end
+  # end
 
   def seen_by(user)
     # unimplemented. It was:

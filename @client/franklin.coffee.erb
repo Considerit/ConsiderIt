@@ -60,9 +60,7 @@ userOpinion = (user_key) ->
   window.user_opinions[user_key]
 
 
-rc = fetch('_route_changed')
-rc.changed = false
-save(rc)
+_route_changed = false
 
 togglePage = (page_name) -> 
   $('.histogram_segment_pole').ensureInView
@@ -77,12 +75,10 @@ togglePage = (page_name) ->
       window.app_router.navigate root.url, {trigger : true}
 
       # Kludge for tracking when the page changes
-      rc = fetch('_route_changed')
-      rc.changed = true
-      save(rc)
+      _route_changed = true
       _.delay -> 
-        rc.changed = false
-        save(rc)
+        _route_changed = false
+      , 1
 
 
 
@@ -111,7 +107,7 @@ StyleAnimator =
   componentDidMount : -> @applyStyles false
 
   componentDidUpdate : (prev_props, prev_page) -> 
-    @applyStyles fetch('_route_changed').changed
+    @applyStyles _route_changed
 
   applyStylesToElements : (styles, duration) ->
     $el = $(@getDOMNode())
@@ -171,6 +167,10 @@ Proposal = ReactiveComponent
     # $el.find('.description_region').css
     #   top: $el.find('.fixed_proposal_heading').height() + 24
 
+  componentWillUnmount : -> 
+    $el = $(@getDOMNode())
+    $el.find('.fixed_proposal_heading').stickyTopBottom('destroy')
+    
   ##
   # State-dependent styling
   applyStyles : (animate = true) ->  
@@ -722,6 +722,10 @@ DecisionBoard = ReactiveComponent
         $el.removeClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
       over : (ev, ui) => 
         $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
+
+  componentWillUnmount : -> 
+    $el = $(@getDOMNode())
+    $el.stickyTopBottom('destroy')
 
   componentDidUpdate : -> 
     $el = $(@getDOMNode())    

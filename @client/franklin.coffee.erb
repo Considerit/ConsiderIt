@@ -609,9 +609,11 @@ Slider = ReactiveComponent
           style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
         R.div props_for_slider_handle, 
           R.div className: 'the_handle', onClick: @togglePage,
-            R.div className: 'face_mouth face_part', style: face_mouth_style
-            R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
-            R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
+            if page == 'crafting'
+              R.div className: 'face',
+                R.div className: 'face_mouth face_part', style: face_mouth_style
+                R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
+                R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
             R.div className: 'drag_arrow right', '>' if page == 'crafting' && !my_data.has_moved && !app_data.auth_mode
             R.div className: 'drag_arrow left', '<' if page == 'crafting' && !my_data.has_moved && !app_data.auth_mode
 

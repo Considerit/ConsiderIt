@@ -171,6 +171,10 @@ Proposal = ReactiveComponent
     # $el.find('.description_region').css
     #   top: $el.find('.fixed_proposal_heading').height() + 24
 
+  componentWillUnmount : -> 
+    $el = $(@getDOMNode())
+    $el.find('.fixed_proposal_heading').stickyTopBottom('destroy')
+    
   ##
   # State-dependent styling
   applyStyles : (animate = true) ->  
@@ -720,6 +724,10 @@ DecisionBoard = ReactiveComponent
         $el.removeClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
       over : (ev, ui) => 
         $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
+
+  componentWillUnmount : -> 
+    $el = $(@getDOMNode())
+    $el.stickyTopBottom('destroy')
 
   componentDidUpdate : -> 
     $el = $(@getDOMNode())    

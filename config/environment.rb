@@ -27,7 +27,7 @@ def jsonify_objects(objects, name, reference_names=[], delete_names=[], parse_na
 end
 
 def key_id(key)
-  key.split('/')[-1]
+  key.split('/')[-1].to_i
 end
 
 # Initialize the rails application

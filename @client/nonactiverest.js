@@ -125,14 +125,15 @@
         request.onload = function () {
             if (request.status === 200) {
                 var result = JSON.parse(request.responseText)
+                console.log('New save result', result)
                 // Handle /new/stuff
                 map_objects(result, function (obj) {
                     match = obj.key && obj.key.match(/(.*)\?original_id=(\d+)$/)
                     if (match && match[2]) {
                         // Let's map the old and new together
-                        var new_key = match[1]                 // It's got a fresh key
-                        cache[new_key] = cache[original_key]   // Point them at the same thing
-                        result.key = new_key                   // And it's no longer new
+                        var new_key = match[1]                // It's got a fresh key
+                        cache[new_key] = cache[original_key]  // Point them at the same thing
+                        obj.key = new_key                     // And it's no longer new
                     }
                 })
                 updateCache(result)

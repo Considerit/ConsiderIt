@@ -41,7 +41,7 @@ class OpinionController < ApplicationController
       # Damn rails http://guides.rubyonrails.org/security.html#unsafe-query-generation
       incs = []
     end
-    incs = incs.map! {|p| key_id(p).to_i}
+    incs = incs.map! {|p| key_id(p)}
     include_points(opinion, incs)
     updates['point_inclusions'] = JSON.dump(incs)
 
@@ -55,11 +55,8 @@ class OpinionController < ApplicationController
     existing_opinion = proposal.opinions.published.where("id != #{opinion.id}")\
                        .find_by_user_id current_user.id
 
-    pp(updates)
-    pp(opinion)
     # Update this opinion
     opinion.update_attributes ActionController::Parameters.new(updates).permit!
-    pp(opinion)
 
     if existing_opinion
       pp('Existing_opinion')
@@ -120,28 +117,22 @@ class OpinionController < ApplicationController
 protected
 
   def include_points (opinion, points)
-    # Delete goners
-    Inclusion.where(:opinion => opinion.id).each do |i|
-      if not points.include? i.point_id
-        i.delete()
-      end
-    end
-    
-    # Add newbies
+    pp(opinion)
+    curr_inclusions = Inclusion.where(:opinion => opinion.id)
+
+    to_delete = curr_inclusions.select {|i| not points.include? i.point_id}
+    to_add = points.select {|p| curr_inclusions.where(:point_id => p).count == 0}
+
+    to_delete_ids = to_delete.map{|i| i.point_id}
+    pp("SLKDFJSLDFJKSLDFJ")
+    pp("Deleting #{to_delete}, adding #{to_add}")
+
     Inclusion.transaction do
-      points.each do |point_id, value|
-        if Inclusion.where( :point_id => point_id, :user_id => opinion.user_id ).count == 0
-          inc_attrs = { 
-            :point_id => point_id,
-            :user_id => opinion.user_id,
-            :opinion_id => opinion.id,
-            :proposal_id => opinion.proposal_id,
-            :account_id => current_tenant.id
-          }
-          
-          inc = Inclusion.create! ActionController::Parameters.new(inc_attrs).permit!
-        end
-      end
+      # Delete goners
+      to_delete.each {|i| i.delete()}
+    
+      # Add newbies
+      to_add.each {|point_id| opinion.include(point_id, current_tenant)}
     end
   end
 

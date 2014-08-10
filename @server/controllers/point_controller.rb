@@ -29,14 +29,15 @@ class PointController < ApplicationController
 
     point.save
 
-    ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
+    #ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
 
-    session[proposal.id][:written_points].push(point.id)
-    session[proposal.id][:included_points][point.id] = 1    
-    session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
-    
-    result = point.as_json
+    # Include into the user's opinion
+    Opinion.where(:user_id => current_user.id,
+                  :proposal => proposal).first.include(point, current_tenant)
+    point.seen_by(current_user)
+
     original_id = key_id(params[:key])
+    result = point.as_json
     result['key'] = "/point/#{point.id}?original_id=#{original_id}"
     pp(result)
 
@@ -76,11 +77,11 @@ class PointController < ApplicationController
     
     authorize! :destroy, @point
 
-    ApplicationController.reset_user_activities(session, @point.proposal) if !session.has_key?(@point.proposal.id)
+    # ApplicationController.reset_user_activities(session, @point.proposal) if !session.has_key?(@point.proposal.id)
     
-    session[@point.proposal_id][:written_points].delete(@point.id)
-    session[@point.proposal_id][:included_points].delete(@point.id)  
-    session[@point.proposal_id][:viewed_points].delete(@point.id)
+    # session[@point.proposal_id][:written_points].delete(@point.id)
+    # session[@point.proposal_id][:included_points].delete(@point.id)  
+    # session[@point.proposal_id][:viewed_points].delete(@point.id)
 
     # if this point is a top pro or con, need to trigger proposal update
     proposal = @point.proposal

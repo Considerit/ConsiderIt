@@ -48,7 +48,7 @@ L = loading_indicator = R.div null, 'Loading...'
 # Returns the top level Proposal component key. Components use this to grab data
 # from its Proposal. This is a hack. Shadowing parent state would solve the problem.
 # window.current_proposal = () ->
-#         long_id = fetch('page')?.url.split('/')[1]
+#         long_id = fetch('root')?.url.split('/')[1]
 #         fetch('/page/' + long_id).proposal
 getStanceSegment = (value) ->
   for i in [0..5]
@@ -64,17 +64,17 @@ rc = fetch('_route_changed')
 rc.changed = false
 save(rc)
 
-togglePage = (page) -> 
+togglePage = (page_name) -> 
   $('.histogram_segment_pole').ensureInView
     offset_buffer: 150
     callback : -> 
-      app = fetch('page')
-      long_id = app.url.split('/')[1]
-      app.url = "/#{long_id}#{if page == 'results' then '/results' else ''}"
-      app.name = page
-      save(app)
+      root = fetch('root')
+      root.page_name = page_name
+      long_id = root.url.split('/')[1]
+      root.url = "/#{long_id}#{if root.page_name == 'results' then '/results' else ''}"
+      save(root)
 
-      window.app_router.navigate app.url, {trigger : true}
+      window.app_router.navigate root.url, {trigger : true}
 
       # Kludge for tracking when the page changes
       rc = fetch('_route_changed')
@@ -176,13 +176,13 @@ Proposal = ReactiveComponent
   applyStyles : (animate = true) ->  
     $el = $(@getDOMNode())
     duration = if animate then TRANSITION_SPEED else 0
-    page = @data('page')
+    root = @data('root')
 
     # • Velocity requires properties to be pulled out (e.g. paddingLeft, 
     #   translateX, rather than using padding or transform)
     # • We use velocity even for 0 duration style applications to maintain 
     #   parity of style definition
-    switch page.name
+    switch root.page_name
       when 'crafting'
         styles = 
           '.histogram_bar':        { opacity: '.2' }
@@ -195,7 +195,7 @@ Proposal = ReactiveComponent
         $el.find('.give_opinion_button').css 'visibility', 'hidden'
         _.delay => 
           #delay & check in case of quick switch between pages
-          if page.name == 'crafting'         
+          if root.page_name == 'crafting'
             $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', ''
         , duration
 
@@ -220,7 +220,7 @@ Proposal = ReactiveComponent
         $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', 'none'
         _.delay => 
           #check in case of quick switch between pages
-          if page.name == 'results' 
+          if root.page_name == 'results'
             $el.find('.give_opinion_button').css 'visibility', ''
         , duration  
 
@@ -228,9 +228,10 @@ Proposal = ReactiveComponent
   # Make this thing!
   render : ->
     proposal = @data()
-    page = @data('page')
-    points = page.points
-    users = page.users
+    root = @data('root')
+    server_page = @data(current_page)
+    points = server_page.points
+    users = server_page.users
     included_points = proposal.your_opinion.point_inclusions
     initial_stance = proposal.your_opinion.stance
 
@@ -252,7 +253,7 @@ Proposal = ReactiveComponent
 
     proposer = @data(proposal.user)
 
-    R.div className:'proposal', key:@props.long_id, 'data-page':page.name,
+    R.div className:'proposal', key:@props.long_id, 'data-page':root.page_name,
       R.div className: 'fixed_proposal_heading', 
         R.span null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
 
@@ -280,7 +281,7 @@ Proposal = ReactiveComponent
 
         Histogram()
 
-      if page.auth_mode
+      if root.auth_mode
         Auth()
       else
         #reasons
@@ -391,12 +392,12 @@ Histogram = ReactiveComponent
     [num_columns, segments, avatar_size]
 
   onClickHistogram : (ev) ->
-    page = @data('page').name
-    if page == 'crafting'
+    root = @data('root').page_name
+    if root == 'crafting'
       togglePage('results')
 
   onSelectSegment : (ev) ->
-    if @data('page').name == 'results'
+    if @data('root').page_name == 'results'
       segment = $(ev.currentTarget).data('segment')
 
       selected_segment = @data('histogram').selected_segment
@@ -488,14 +489,14 @@ Slider = ReactiveComponent
     mouth_scaler = if slider.stance_segment >  3 then -1 else 1
     mouth_x      = if slider.stance_segment == 3 then  0 else -7.5
 
-    switch @data('page').name
+    switch @data('root').page_name
       when 'crafting'
-        styles = 
+        styles =
           '.bubblemouth': { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 7, translateX: mouth_x * 1.5  }
           '.the_handle':  { scale: 2.5, translateY: -8 }
 
       when 'results'
-        styles = 
+        styles =
           '.bubblemouth': { scaleX: mouth_scaler, scaleY: 1, translateY: -4.5, translateX: mouth_x  }
           '.the_handle':  { scale: 1, translateY: -9 }
 
@@ -505,14 +506,14 @@ Slider = ReactiveComponent
   # setSlidability
   # Inits jQuery UI slider and enables/disables it between pages
   setSlidability : ->
-    page = @data('page')
-    page = page.name
+    root = @data('root')
+    root = root.page_name
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
-      $slider_base.slider(if page.auth_mode then 'disable' else 'enable')
+      $slider_base.slider(if root.auth_mode then 'disable' else 'enable')
     else
       $slider_base.slider
-        disabled: page.auth_mode #@data('page').name == 'results'
+        disabled: root.auth_mode #@data('root').page_name == 'results'
         min: -1
         max: 1
         step: .01
@@ -531,13 +532,13 @@ Slider = ReactiveComponent
             slider.has_moved = true
           save(slider)
         stop : (ev, ui) =>
-          if @data('page').name == 'results'
+          if @data('root').page_name == 'results'
             togglePage('crafting')
 
   togglePage : (ev) ->
-    page = @data('page')
-    if !page.auth_mode
-      new_page = if page.name == 'results' then 'crafting' else 'results'
+    root = @data('root')
+    if !root.auth_mode
+      new_page = if root.page_name == 'results' then 'crafting' else 'results'
       togglePage(new_page)
     ev.stopPropagation()
 
@@ -554,7 +555,8 @@ Slider = ReactiveComponent
     slider = @data('slider')
     stance = slider.stance
     segment = slider.stance_segment
-    page = @data('page').name
+    page = @data('root').page_name
+    is_auth_mode = @data('root').auth_mode
     sticky = @data('decisionboard').sticky
 
     #jquery UI slider will pick an el with this class name up
@@ -643,14 +645,14 @@ Slider = ReactiveComponent
                 R.div className: 'face_mouth face_part', style: face_mouth_style
                 R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
                 R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
-            R.div className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved && !page.auth_mode
-            R.div className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved && !page.auth_mode
+            R.div className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved && !is_auth_mode
+            R.div className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved && !is_auth_mode
 
           R.img className:'bubblemouth', src: bubblemouth_src
           R.div 
             className:'slider_feedback'
             'data-stance-segment': segment
-            style: {visibility: if sticky && !page.auth_mode then 'visible' else 'visible'}
+            style: {visibility: if sticky && !is_auth_mode then 'visible' else 'visible'}
           , slider_feedback
 
 ##
@@ -660,7 +662,7 @@ OpinionFilter = ReactiveComponent
   displayName: 'OpinionFilter'
 
   onSelectSegment : (segment) ->
-    if @data('page').name == 'results'
+    if @data('root').page_name == 'results'
       hist = @data('histogram')
       hist.selected_segment = if hist.selected_segment == segment then [null, null] else [segment, segment != null]
       save(hist)
@@ -744,19 +746,19 @@ DecisionBoard = ReactiveComponent
               d = @data('decisionboard')
               d.sticky = true
               save(d)
-      conditional: => @data('page').name == 'crafting'
+      conditional: => @data('root').page_name == 'crafting'
 
   clickSave : -> 
     if @data('/current_user').id
       togglePage('results')
     else
-      page = @data('page')
-      page.auth_mode = 'register'
-      save(page)
+      root = @data('root')
+      root.auth_mode = 'register'
+      save(root)
 
   render : ->
-    page = @data('page')
-    page = page.name
+    root = @data('root')
+    root = root.page_name
     current_user = @data('/current_user')
 
     opinion_region_style = 
@@ -769,7 +771,7 @@ DecisionBoard = ReactiveComponent
 
       R.div 
         className:'decision_board_body focal_area'
-        onClick: => if @data('page').name == 'results' then togglePage('crafting')
+        onClick: => if @data('root').page_name == 'results' then togglePage('crafting')
       ,
 
         R.div null, 
@@ -847,7 +849,7 @@ CommunityPoints = ReactiveComponent
       new Date()
 
   buildPointsList : ->
-    is_results = @data('page').name == 'results'
+    is_results = @data('root').page_name == 'results'
     selected_segment = @data('histogram').selected_segment
     proposal = @data(current_proposal)
     included_points = @data(your_opinion_key).point_inclusions
@@ -897,7 +899,7 @@ CommunityPoints = ReactiveComponent
       style: { width: POINT_CONTENT_WIDTH, minHeight: jQuery(window).height() }
     , 
       R.div className:'points_heading_label', 
-        if @data('page').name == 'results' then "Top #{label}" else "Others' #{label}"
+        if @data('root').page_name == 'results' then "Top #{label}" else "Others' #{label}"
         R.p className:'points_segment_label', style: {visibility: if selected_segment[0] == null then 'hidden' else 'visible'},
           if selected_segment[0] == null then '-' else "for #{stance_names[selected_segment[0]]}s"          
 
@@ -929,7 +931,7 @@ Point = ReactiveComponent
     # or drag remove for point on decision board
     # also: disable for results page
 
-    disable = @data('page').name == 'results'
+    disable = @data('root').page_name == 'results'
     $point_content = $(@getDOMNode()).find('.point_content')
     revert = 
       if @props.location_class == 'community_point' 
@@ -959,7 +961,7 @@ Point = ReactiveComponent
   # On hovering over a point, highlight the people who included this 
   # point in the Histogram.
   highlightIncluders : -> 
-    if @data('page').name == 'results'
+    if @data('root').page_name == 'results'
       includers = @data().includers
       hist = @data('histogram')
       if hist.highlighted_users != includers
@@ -967,7 +969,7 @@ Point = ReactiveComponent
         save(hist)
 
   unHighlightIncluders : -> 
-    if @data('page').name == 'results'
+    if @data('root').page_name == 'results'
       includers = @data().includers
 
       _.delay =>
@@ -1180,6 +1182,30 @@ Avatar = ReactiveComponent
   has_multiple_instances_with_same_key: true
   displayName: 'Avatar'
   
+  render : ->
+    user = @data()
+    @data(@local_key) # just to register a dependence
+    className = "#{@props.className} avatar"
+    id = "avatar-#{user.key.split('/')[2]}"
+
+    if @props.img_style && user.key != -1
+      avatar_file_name = user.avatar_file_name
+
+      console.log("Mike hasn't made this avatar's image work yet!  Fix the file line below:")
+      if avatar_file_name
+        filename = "/system/avatars/#{@props.key}/#{@props.img_style}/#{avatar_file_name}"
+
+    attrs =
+      className: className
+      id: id
+      'data-id': @props.key
+      onMouseEnter: @showDetails
+      onMouseLeave: @hideDetails
+
+    attrs.src = filename if filename
+    
+    @transferPropsTo @props.tag attrs
+
   getDefaultProps : ->
     key: '/user/-1' # defaults to anonymous user
     tag: R.img
@@ -1211,42 +1237,20 @@ Avatar = ReactiveComponent
     local.show_details = false
     save(local)
 
-  render : ->
-    if Number.isInteger (@props.key)
-      console.error('Not a good key', @props.key)
-      console.trace()
-      window.foo = "/user/#{@props.key}"
-      console.log(nona.cache["/user/#{@props.key}"])
-      @props.key = "/user/#{@props.key}"
-    if !@props.key
-      @props.key = "/user/-1"
-    user = @data(@props.key)
-    @data(@local_key) # just to register a dependence
-    className = "#{@props.className} avatar"
-    id = "avatar-#{user.key.split('/')[2]}"
-
-    if @props.img_style && user.key != -1
-      avatar_file_name = user.avatar_file_name
-
-      console.log("Mike hasn't made this avatar's image work yet!  Fix the file line below:")
-      if avatar_file_name
-        filename = "/system/avatars/#{@props.key}/#{@props.img_style}/#{avatar_file_name}"
-
-    attrs = 
-      className: className
-      id: id
-      'data-id': @props.key
-      onMouseEnter: @showDetails
-      onMouseLeave: @hideDetails
-
-    attrs.src = filename if filename
-    
-    @transferPropsTo @props.tag attrs
-
 
 UserBar = ReactiveComponent
   displayName: 'UserBar'
 
+  render: ->
+    current_user = @data('/current_user')
+    console.log 'Rendering userbar with', current_user.user
+    if current_user.user
+      console.log 'going deeper'
+      R.div className: 'userbar', 
+        Avatar key: current_user.user, tag: R.span, className: 'userbar_avatar', style: {height: 20, width: 20}
+        R.a 'data-action': 'logout', onClick: @logout, 'logout'
+    else 
+      R.div null
   logout : -> 
     $.ajax Routes.current_user_path(),
       type : 'delete'
@@ -1254,25 +1258,21 @@ UserBar = ReactiveComponent
         #TODO: update CSRF
         #TODO: clear current user
         current_user = @data('/current_user')
-        current_user.id = current_user.email = current_user.password = null
-        current_user.csrf = data.csrf      
-        @data('page').auth_mode = null
-        @data('auth').provider = null
-        @data('auth').email = null
-        @data('auth').name = null
-        @data('auth').image_url = null
+        root = @data('root')
+        auth = @data('auth')
 
+        current_user.user = current_user.email = current_user.password = null
+        current_user.csrf = data.csrf      
+        root.auth_mode = null
+        auth.provider = null
+        auth.email = null
+        auth.name = null
+        auth.image_url = null
+
+        save(current_user, root, auth)
       error : (xhr, status, error) -> 
         console.error 'Error logging out: ', error
 
-  render: ->
-    current_user = @data('/current_user')
-    if current_user.id
-      R.div className: 'userbar', 
-        Avatar key: current_user.id, tag: R.span, className: 'userbar_avatar', style: {height: 20, width: 20}
-        R.a 'data-action': 'logout', onClick: @logout, 'logout'
-    else 
-      R.div null
 
 AutoGrowTextArea = ReactiveComponent
   displayName: 'AutoGrowTextArea'  
@@ -1322,18 +1322,20 @@ AuthHeader = ReactiveComponent
         value: -stance
 
   toggleAuthMode : -> 
-    page = @data('page')
+    root = @data('root')
+    auth = @data('auth')
     current_user = @data('/current_user')
     email = $(@getDOMNode()).find('#user_email').val()
 
-    @data('auth').email = email if email && email.length > 0
-    page.auth_mode = if page.auth_mode == 'register' then 'login' else 'register'    
+    auth.email = email if email && email.length > 0
+    root.auth_mode = if root.auth_mode == 'register' then 'login' else 'register'
     current_user.errors = []
 
+    save(root, auth, current_user)
   render : ->
     stance =  @data(your_opinion_key).stance
     segment = @data(your_opinion_key).stance_segment
-    page = @data('page')
+    root = @data('root')
 
     # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
     # also why this file is ERB
@@ -1369,10 +1371,10 @@ AuthHeader = ReactiveComponent
           R.div className:'slider_feedback', 
             slider_feedback
 
-            if page.auth_mode in ['login', 'register']
+            if root.auth_mode in ['login', 'register']
               R.div className: 'switch_auth_mode', 
-                R.span null, if page.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
-                R.a className: 'toggle_auth', onClick: @toggleAuthMode, if page.auth_mode == 'register' then 'Log In' else 'Create an Account'
+                R.span null, if root.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
+                R.a className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
 
 
 
@@ -1464,12 +1466,13 @@ Auth = ReactiveComponent
         if 'key' of user_data
           # user already existed and now we've logged in via third party        
           current_user = @data('/current_user')
-          page = @data('page')
-          current_user.id = user_data.id
+          root = @data('root')
+          current_user.user = '/key/' + user_data.id
           current_user.name = user_data.name          
           current_user.csrf = user_data.csrf
-          page.name = 'results'
-          page.auth_mode = null
+          root.page_name = 'results'
+          root.auth_mode = null
+          save(root, current_user)
         else 
           # we're prepped to create an account...
           #TODO: show user the pledge
@@ -1479,7 +1482,7 @@ Auth = ReactiveComponent
           @auth.name = user_data.name
           @auth.image_url = user_data.avatar_url
           @auth.email = user_data.email
-
+          save(@auth)
   submitAuth : (ev) -> 
     ev.preventDefault()
     $el = $(@getDOMNode())
@@ -1517,9 +1520,9 @@ Auth = ReactiveComponent
       beforeSend: (xhr) -> xhr.setRequestHeader('X-CSRF-Token', current_user.csrf)
       data: params
       success : (data, status, xhr) => 
-        page = @data('page')
+        root = @data('root')
         current_user = @data('/current_user')
-        current_user.id = data.id
+        current_user.user = data.key
         current_user.errors = if data.errors then data.errors else []
         current_user.csrf = data.csrf
         current_user.name = data.name
@@ -1532,15 +1535,18 @@ Auth = ReactiveComponent
             data: 
               authenticity_token: current_user.csrf
             success: (data, status, xhr) -> 
-              current_user.id = data.id
+              current_user.user = data.key
               current_user.errors = if data.errors then data.errors else []
               current_user.csrf = data.csrf
               current_user.name = data.name
+              save(current_user)
 
         if !current_user.errors || current_user.errors.length == 0
-          page.name = 'results'
-          page.auth_mode = null
+          root.page_name = 'results'
+          root.auth_mode = null
           current_user.errors = []
+
+        save(root, current_user)
 
       error : (xhr, status, error) -> 
         console.error 'Error logging in: ', error
@@ -1551,15 +1557,16 @@ Auth = ReactiveComponent
       if data.errors && data.errors.length > 0
         current_user = @data('/current_user')
         current_user.errors = data.errors
+        save(current_user)
       else 
-        page = @data('page')
-        page.auth_mode = 'password_reminder'
-
+        root = @data('root')
+        root.auth_mode = 'password_reminder'
+        save(root)
 
 
   render: -> 
     current_user = @data('/current_user')
-    page = @data('page')
+    root = @data('root')
     auth = @data('auth')
 
     focal_wrapper_style = 
@@ -1572,7 +1579,7 @@ Auth = ReactiveComponent
 
       R.div className:'auth focal_area',
 
-        if page.auth_mode in ['login', 'register'] && !auth.provider
+        if root.auth_mode in ['login', 'register'] && !auth.provider
 
           R.div className: 'third_party_auth',
             R.label className: 'third_party_call', 'Instantly:'
@@ -1582,42 +1589,42 @@ Auth = ReactiveComponent
             R.button className: 'third_party_option google',  onClick: (=> @startThirdPartyAuth('google')),
               R.i className: 'fa fa-google'
               R.span null, 'google'
-            if page.auth_mode in ['login', 'password_reminder']
+            if root.auth_mode in ['login', 'password_reminder']
               R.button className: 'third_party_option twitter',  onClick: (=> @startThirdPartyAuth('twitter')),
                 R.i className: 'fa fa-twitter'
                 R.span null, 'twitter'
 
             R.div className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 
-        if page.auth_mode in ['login', 'password_reminder']
+        if root.auth_mode in ['login', 'password_reminder']
           # logging in
 
           R.div null, 
-            R.label className: 'auth_section_label', if page.auth_mode == 'login' then 'By email address:' else 'Change your password to login'
+            R.label className: 'auth_section_label', if root.auth_mode == 'login' then 'By email address:' else 'Change your password to login'
 
             R.table className: 'auth_fields login', 
               R.tr null, 
                 R.td className: 'label_cell',
-                  if page.auth_mode == 'login'  
+                  if root.auth_mode == 'login'  
                     R.label htmlFor: 'user_email', 'email:'
                 R.td className: 'field_cell', 
-                  R.input id: "user_email", defaultValue: auth.email, name: "user[email]", placeholder: "email@address", required: "required", type: if page.auth_mode == 'login' then "email" else "hidden"
+                  R.input id: "user_email", defaultValue: auth.email, name: "user[email]", placeholder: "email@address", required: "required", type: if root.auth_mode == 'login' then "email" else "hidden"
 
               R.tr null, 
                 R.td className: 'label_cell', 
-                  switch page.auth_mode
+                  switch root.auth_mode
                     when 'login'
                       R.label htmlFor: 'user_password', 'password:'
                     when 'password_reminder'
                       R.label htmlFor: 'user_password', 'new password:'
 
                 R.td className: 'field_cell', 
-                  R.input id: "user_password", name: "user[password]", placeholder: (if page.auth_mode == 'login' then "password" else "new password"), required: "required", type: "password"
+                  R.input id: "user_password", name: "user[password]", placeholder: (if root.auth_mode == 'login' then "password" else "new password"), required: "required", type: "password"
 
-                  if page.auth_mode == 'login'
+                  if root.auth_mode == 'login'
                     R.a className: 'forgot_password', onClick: @sendPasswordReminder, 'I forgot! Email me password instructions.'
 
-              if page.auth_mode == 'password_reminder'
+              if root.auth_mode == 'password_reminder'
                 R.tr null, 
                   R.td className: 'label_cell', 
                     R.label htmlFor: 'user_verification_code', 'verification code:'
@@ -1714,28 +1721,31 @@ Auth = ReactiveComponent
         R.div 
           className:'auth_button primary_button'
           onClick: @submitAuth
-        , if page.auth_mode == 'register' then 'Create account and save your opinion' else 'Login and save your opinion'
+        , if root.auth_mode == 'register' then 'Create account and save your opinion' else 'Login and save your opinion'
 
         R.a 
           className:'cancel_auth_button primary_cancel_button'
-          onClick: (=> page.auth_mode = null)
+          onClick: (=>
+            root.auth_mode = null
+            save(root))
         , 'cancel log in'
 
 
 
-Page = ReactiveComponent
-  displayName: 'Page'
+Root = ReactiveComponent
+  displayName: 'Root'
 
-  updateUserOpinions: =>
   render : -> 
-    default_state =
-      name : @props.initial_page,
-      url : "/#{@props.long_id}#{if @props.initial_page == 'results' then '/results' else ''}",
-      auth_mode : null
+    root = @data('root')
+    root.page_name = root.page_name || @props.initial_page
+    root.url = root.url || "/#{@props.long_id}#{if @props.initial_page == 'results' then '/results' else ''}"
+    root.auth_mode = root.auth_mode || null
+    window.current_page = "/page/#{@props.long_id}"
+    save(root)
+    
+    page = @data(current_page)
 
-    page = @data("/page/#{@props.long_id}", default_state)
-
-    R.div 'data-authmode': page.auth_mode,
+    R.div 'data-authmode': root.auth_mode,
       R.div className: 'l_header', 
         UserBar()      
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
@@ -1762,16 +1772,15 @@ fetch 'slider',
 fetch 'decisionboard',
   sticky : false
 
-fetch 'page',
-  url : window.location.pathname
-  name : ''
-
 fetch 'auth',
   email : null
   name : null
   image_url : null
   provider : null
 
+fetch 'root',
+  url : window.location.pathname
+  name : ''
 
 fetch('/current_user')
 
@@ -1794,12 +1803,7 @@ Router = Backbone.Router.extend
 
   proposal : (long_id, page = 'crafting') ->
     if !top_level_component
-      app = fetch('page')
-      app.url = "/#{long_id}#{if page == 'results' then '/results' else ''}"
-      app.name = page    
-      save(app)
-
-      top_level_component = React.renderComponent Page(
+      top_level_component = React.renderComponent Root(
                                          long_id : long_id
                                          initial_page : page
                                          ), document.getElementById('content')

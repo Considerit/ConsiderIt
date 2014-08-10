@@ -253,6 +253,7 @@
         }
 
         window.re_render = function (keys) {
+            // console.log('Re-rendering keys', keys)
             var c = execution_context[execution_context.length-1]
             setTimeout(function () {
                 for (var i=0; i<keys.length; i++) {
@@ -266,8 +267,10 @@
 
                 for (var comp_key in dirty_components)
                     // Cause they will clear from underneath us
-                    if (dirty_components[comp_key])
+                    if (dirty_components[comp_key]) {
+                        // console.log('force updating component', components[comp_key].name)
                         components[comp_key].forceUpdate()
+                    }
             })
         }
 
@@ -275,6 +278,8 @@
         return function (props, children) {
             props = props || {}
             props.parents = execution_context.slice()
+            // if (props.key === '/user/14733')
+            //     console.log('Found /user/14733 at', props)
             return react_class(props, children)
         }
     }
@@ -347,12 +352,16 @@
             try {
                 var result = original_method && original_method.apply(this, arguments)
             } catch (e) {
-                if (e instanceof TypeError)
+                execution_context = []
+                if (e instanceof TypeError) {
+                    console.log('Got error', e.message)
                     if (this.is_waiting()
                         /*|| e.message.substring(0,12) === 'Component mo'*/) return loading_indicator
                     else { console.error(e.stack); return error_indicator(e.message) }
+                }
                 else throw e
             }
+            execution_context = []
             after && after.apply(this, arguments)
 
             return result

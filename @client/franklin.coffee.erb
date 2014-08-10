@@ -1084,7 +1084,7 @@ NewPoint = ReactiveComponent
   handleSubmitNewPoint : (ev) ->
     $form = $(@getDOMNode())
 
-    current_user = '/user/-2' #anon user
+    current_user = @data('/current_user').user
     point =
       key : '/new/point'
       nutshell : $form.find('#nutshell').val()
@@ -1100,6 +1100,10 @@ NewPoint = ReactiveComponent
     @local.edit_mode = false
     save(@local)
 
+    # This is a kludge cause activerest sucks for pre-rendering
+    # changes before the server returns them
+    @data(your_opinion_key).point_inclusions.push(point.key)
+    re_render([your_opinion_key])
   render : ->
     #TODO: refactor HTML/CSS for new point after we get better sense of new point redesign
     @local = @data @local_key,
@@ -1131,7 +1135,9 @@ NewPoint = ReactiveComponent
               R.span null, 'Expand on your point'
 
           R.div className:'newpoint_hide_name',
-            R.input className:'newpoint-anonymous', type:'checkbox', id:"sign_name-#{@props.valence}", name:"sign_name-#{@props.valence}", checked: @local.sign_name, onChange: (=> @local.sign_name = !@local.sign_name)
+            R.input className:'newpoint-anonymous', type:'checkbox', id:"sign_name-#{@props.valence}", name:"sign_name-#{@props.valence}", checked: @local.sign_name, onChange: (=>
+               @local.sign_name = !@local.sign_name
+               save(@local))
             R.label htmlFor: "sign_name-#{@props.valence}", title:'Signing your point with your name lends it more weight with other participants.', 'Sign your name'
           
           R.div className:'newpoint-submit',
@@ -1259,15 +1265,15 @@ AutoGrowTextArea = ReactiveComponent
 
 CharacterCountTextInput = ReactiveComponent
   displayName: 'CharacterCountTextInput'
-
-  getDefaultData : -> 
-    count : 0
-
+  componentWillMount : -> @data(@local_key).count = 0
   render : -> 
+    local = @data(@local_key)
     class_name = "is_counted"
     R.div style: {position: 'relative'}, 
-      @transferPropsTo R.textarea className: class_name, onChange: (=> @data(@local_key).count = $(@getDOMNode()).find('textarea').val().length  )
-      R.span className: 'count', @props.maxLength - @data(@local_key).count
+      @transferPropsTo R.textarea className: class_name, onChange: (=>
+         local.count = $(@getDOMNode()).find('textarea').val().length
+         save(local))
+      R.span className: 'count', @props.maxLength - local.count
 
 
 

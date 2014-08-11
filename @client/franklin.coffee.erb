@@ -176,7 +176,7 @@ Proposal = ReactiveComponent
 
     # • Velocity requires properties to be pulled out (e.g. paddingLeft, 
     #   translateX, rather than using padding or transform)
-    # • We use velocity even for 0 duration style applications to maintain 
+    # • We use velocity even for 0 duration style applications to maintain 
     #   parity of style definition
     switch root.page_name
       when 'crafting'
@@ -273,8 +273,7 @@ Proposal = ReactiveComponent
     
       #feelings
       R.div className:'feelings_region', style : { width: BODY_WIDTH },
-        OpinionFilter() #error in current activerest implementation makes you have to put components that other components depend on earlier
-
+        OpinionFilter()
         Histogram()
 
       if root.auth_mode
@@ -388,8 +387,7 @@ Histogram = ReactiveComponent
     [num_columns, segments, avatar_size]
 
   onClickHistogram : (ev) ->
-    root = @data('root').page_name
-    if root == 'crafting'
+    if @data('root').page_name == 'crafting'
       togglePage('results')
 
   onSelectSegment : (ev) ->
@@ -503,7 +501,7 @@ Slider = ReactiveComponent
   # Inits jQuery UI slider and enables/disables it between pages
   setSlidability : ->
     root = @data('root')
-    root = root.page_name
+    slider = @data('slider')
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
       $slider_base.slider(if root.auth_mode then 'disable' else 'enable')
@@ -520,7 +518,6 @@ Slider = ReactiveComponent
           # supporter' to 'neutral'
           return false if ev.originalEvent.type != 'mousemove'
 
-          slider = @data('slider')
           slider.stance_segment = getStanceSegment -ui.value
 
           slider.stance = -ui.value
@@ -528,7 +525,7 @@ Slider = ReactiveComponent
             slider.has_moved = true
           save(slider)
         stop : (ev, ui) =>
-          if @data('root').page_name == 'results'
+          if root.page_name == 'results'
             togglePage('crafting')
 
   togglePage : (ev) ->
@@ -665,8 +662,6 @@ OpinionFilter = ReactiveComponent
 
   render : ->
     @hist = @data('histogram')
-    if not @hist.selected_segment
-      return L
     filter_options = ['show all opinions',
         'only rigid opposers',
         'only firm opposers',

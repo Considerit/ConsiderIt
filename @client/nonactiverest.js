@@ -200,7 +200,7 @@
                 throw Error('Component ' + this.name + ' (' + this.local_key 
                             + ') is tryin to get data(' + key + ') after it died.')
 
-            if (key === undefined)    key = this.mounted_key
+            if (key === undefined)    key = this.mounted_key || this.name
             if (!key)                 return null
             // if (!key)    throw TypeError('Component mounted onto a null key. '
             //                              + this.name + ' ' + this.local_key)
@@ -220,7 +220,7 @@
         wrap(obj, 'componentWillMount',
              function () { 
                  this.local_key = 'component/' + components_next_id++
-                 this.name = obj.displayName
+                 this.name = obj.displayName.toLowerCase()
                  components[this.local_key] = this
 
                  if (this.props.key && this.props.key.key)
@@ -229,6 +229,23 @@
                  // XXX Putting this into WillMount probably won't let
                  // you use the mounted_key inside getInitialState!
                  this.mounted_key = this.props.key
+                 window.tmp = this
+
+                 // Create shortcuts e.g. `this.foo' for all parents
+                 // up the tree, and this component's local key
+                 Object.defineProperty(this, 'local', {
+                     get: function () { return this.get(this.local_key) },
+                     configurable: true })
+
+                 var parents = this.props.parents.concat([this.local_key])
+                 for (var i=0; i<parents.length; i++) {
+                     var name = components[parents[i]].name.toLowerCase()
+                     delete this[name]
+                     Object.defineProperty(this,
+                                           name,
+                                           { get: function () { return this.get() },
+                                             configurable: true })
+                 }
              })
         wrap(obj, 'componentDidMount')
         wrap(obj, 'getDefaultProps')

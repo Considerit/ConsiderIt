@@ -225,7 +225,7 @@ Proposal = ReactiveComponent
   render : ->
     proposal = @data()
     root = @data('root')
-    server_page = @data(current_page)
+    server_page = @page
     points = server_page.points
     users = server_page.users
     included_points = proposal.your_opinion.point_inclusions
@@ -953,9 +953,8 @@ Point = ReactiveComponent
 
 
   showDetails : -> 
-    local = @data(@local_key)
-    local.show_details = !local.show_details
-    save(local)
+    @local.show_details = !@local.show_details
+    save(@local)
 
   ## ##
   # On hovering over a point, highlight the people who included this 
@@ -1479,7 +1478,6 @@ Auth = ReactiveComponent
 
   render: -> 
     current_user = @data('/current_user')
-    root = @data('root')
     auth = @data('auth')
 
     # Once the user logs in, we will stop trying to log in
@@ -1640,12 +1638,12 @@ Auth = ReactiveComponent
         R.div 
           className:'auth_button primary_button'
           onClick: @submitAuth
-        , if root.auth_mode == 'register' then 'Create account and save your opinion' else 'Login and save your opinion'
+        , if @root.auth_mode == 'register' then 'Create account and save your opinion' else 'Login and save your opinion'
 
         R.a 
           className:'cancel_auth_button primary_cancel_button'
           onClick: (=>
-            root.auth_mode = null
+            @root.auth_mode = null
             save(root))
         , 'cancel log in'
 
@@ -1655,27 +1653,26 @@ Root = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
-    root = @data('root')
-
     # Update the location bar if it's different
-    url = "/#{@props.long_id}#{if root.page_name == 'results' then '/results' else ''}"
+    url = "/#{@props.long_id}#{if @root.page_name == 'results' then '/results' else ''}"
     if (window.location.pathname != url)
       window.app_router.navigate url, {trigger : true}
 
     # Pull in this page's data from the server
     window.current_page = "/page/#{@props.long_id}"
-    page = @data(current_page)
 
     # Now let's render
-    R.div 'data-authmode': root.auth_mode,
+    Page key: window.current_page
+
+Page = ReactiveComponent
+  displayName: 'Page'
+  render: ->
+    R.div 'data-authmode': @root.auth_mode,
       R.div className: 'l_header', 
         UserBar()      
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
         R.div id: 'inner_body', #style : { width: CONTENT_WIDTH },
-          if page.proposal
-            Proposal key: page.proposal.key
-          else
-            loading_indicator
+          Proposal key: @page.proposal.key
       R.div className: 'l_footer'
 
 
@@ -1710,7 +1707,6 @@ fetch('/current_user')
 ##
 # load users' pictures
 $.get Routes.get_avatars_path(), (data) -> $('head').append data
-
 
 
 ##

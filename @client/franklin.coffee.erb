@@ -1673,7 +1673,7 @@ Root = ReactiveComponent
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
         R.div id: 'inner_body', #style : { width: CONTENT_WIDTH },
           if page.proposal
-            Proposal key: page.proposal
+            Proposal key: page.proposal.key
           else
             loading_indicator
       R.div className: 'l_footer'

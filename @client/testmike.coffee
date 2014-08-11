@@ -16,7 +16,7 @@ Bottom = ReactiveComponent
   displayName: 'BOttom'
   render: ->
     @get('oh yeah dude')
-    point = @get()
+    
     R.div style: {margin: '50px', 'background-color': '#e5e5e5', padding: '20px'},
       "Yeah man!  I'm a component #{@local_key}, mounted at key ",
       R.span style : {'font-weight':'bold' }, "#{@props.key}"
@@ -24,9 +24,9 @@ Bottom = ReactiveComponent
       R.div null, 'My nutshell is:',
       R.div null, "Am I anonymous to ya? ",
         R.span style : {'font-weight':'bold' },
-           "#{point.hide_name}"
+           "#{@bottom.hide_name}"
       R.div style: {'margin': '10px', 'font-style':'italic'},
-        point.nutshell
+        @bottom.nutshell
       if @props.key == '/point/1'
         'once more?'
         Bottom (key: '/point/2')

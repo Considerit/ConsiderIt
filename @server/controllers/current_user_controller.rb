@@ -9,11 +9,7 @@ class CurrentUserController < DeviseController
 
   # Gets the current user data
   def show
-    respond_to do |format|
-      format.json {
-        render :json => to_json_current_user
-      }
-    end
+    render :json => to_json_current_user
   end  
 
   # handles auth (login, new accounts, and login via reset password token) and updating user info
@@ -71,11 +67,13 @@ class CurrentUserController < DeviseController
       
       else
 
-
+        params[:id] = key_id(params[:user])
+        params.delete(:key)
+        params.delete(:user)
+        
         if by_third_party
           user_params =  User.params_from_third_party_token(session[:access_token]).update(params)
           is_dirty = session[:access_token].has_key?(:avatar_url) || params.has_key?(:avatar) 
-
         else       
           user_params =  params
           is_dirty = params.has_key?(:avatar)
@@ -268,6 +266,7 @@ class CurrentUserController < DeviseController
     {
       key: '/current_user',
       user: current_user ? "/user/#{current_user.id}" : nil,
+      login_state: current_user ? 'logged in' : 'logged out',
       email: current_user ? current_user.email : nil,
       password: nil,
       csrf: form_authenticity_token,

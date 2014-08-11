@@ -369,12 +369,9 @@
             } catch (e) {
                 execution_context = []
                 if (e instanceof TypeError) {
-                    console.log('Got error', e.message)
-                    if (this.is_waiting()
-                        /*|| e.message.substring(0,12) === 'Component mo'*/) return loading_indicator
-                    else { console.error(e.stack); return error_indicator(e.message) }
-                }
-                else throw e
+                    if (this.is_waiting()) return loading_indicator
+                    else { console.error(this.name, e.stack); return error_indicator(e.message) }
+                } else { console.error('Error in', this.name); throw e }
             }
             execution_context = []
             after && after.apply(this, arguments)

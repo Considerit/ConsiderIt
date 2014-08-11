@@ -749,7 +749,7 @@ DecisionBoard = ReactiveComponent
       conditional: => @data('root').page_name == 'crafting'
 
   clickSave : -> 
-    if @data('/current_user').id
+    if @data('/current_user').login_state != 'logged out'
       togglePage('results')
     else
       root = @data('root')
@@ -1329,7 +1329,7 @@ AuthHeader = ReactiveComponent
     root.auth_mode = if root.auth_mode == 'register' then 'login' else 'register'
     current_user.errors = []
 
-    save(root, auth, current_user)
+    save(root, auth)
   render : ->
     stance =  @data(your_opinion_key).stance
     segment = @data(your_opinion_key).stance_segment
@@ -1409,26 +1409,16 @@ Auth = ReactiveComponent
     ev.preventDefault()
     $el = $(@getDOMNode())
 
-    email = $el.find('#user_email').val()
-    password = $el.find('#user_password').val()
-    name = $el.find('#user_name').val()
 
-    #proper ActiveREST:
-    # current_user.email = email
-    # current_user.password = password
-    # ...
-
-    #scratch: 
-
-    user_data = 
-      email: email
-      password: password
-      name: name
+    current_user = @data('/current_user')
+    current_user.email    = $el.find('#user_email').val()
+    current_user.password = $el.find('#user_password').val()
+    current_user.name     = $el.find('#user_name').val()
 
     if $el.find('#user_verification_code').length > 0
-      user_data.reset_password_token = $el.find('#user_verification_code').val()
+      current_user.reset_password_token = $el.find('#user_verification_code').val()
 
-    @authenticateWithServer user_data, true
+    save(current_user)
 
   authenticateWithServer : (user_params, submit_avatar_form = false) -> 
     current_user = @data('/current_user')
@@ -1490,6 +1480,12 @@ Auth = ReactiveComponent
     current_user = @data('/current_user')
     root = @data('root')
     auth = @data('auth')
+
+    # Once the user logs in, we will stop trying to log in
+    if current_user.login_state == 'logged in'
+      root.auth_mode = null
+      save(root)
+      return loading_indicator
 
     focal_wrapper_style = 
       left: '50%'

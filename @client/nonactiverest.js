@@ -370,8 +370,8 @@
                 execution_context = []
                 if (e instanceof TypeError) {
                     if (this.is_waiting()) return loading_indicator
-                    else { console.error(this.name, e.stack); return error_indicator(e.message) }
-                } else { console.error('Error in', this.name); throw e }
+                    else { console.error("In", this.name + ':', e.stack); return error_indicator(e.message) }
+                } else { console.error('In', this.name + ':', e.stack); throw e }
             }
             execution_context = []
             after && after.apply(this, arguments)

@@ -438,10 +438,11 @@ Histogram = ReactiveComponent
                   for bar in bars
                     R.td className:"histogram_bar", style: {width: avatar_size},
                       for opinion in bar
+                        user = if @root.page == 'results' then opinion.user else null
                         Avatar 
                           tag: R.span, 
-                          key: opinion.user
-                          user: opinion.user
+                          key: user
+                          user: user
                           'data-segment':segment
                           style:
                             height: avatar_size
@@ -618,7 +619,7 @@ Slider = ReactiveComponent
       borderRight: "#{triangle_width}px solid transparent"
 
     if !slider.has_moved 
-      slider_feedback = 'Slide Your Overall Opinion' 
+      slider_feedback = 'Set Your Overall Opinion' 
     else 
       slider_feedback = "You #{slider_feedback_bucket}"
 
@@ -1199,6 +1200,10 @@ Avatar = ReactiveComponent
 
     attrs.src = filename if filename
     
+    R.span style: {position: 'absolute'},
+      if @local.show_details
+        R.span style: {position: 'absolute', bottom: -10},
+          @local.name
     @transferPropsTo @props.tag attrs
 
   getDefaultProps : ->
@@ -1207,7 +1212,7 @@ Avatar = ReactiveComponent
     img_style: null #null defaults to the css-based b64 embedded images
 
   componentWillUpdate : -> 
-    if @data(@local_key).show_details
+    if @local.show_details
       @insertUserName()
 
   insertUserName : ->
@@ -1222,15 +1227,13 @@ Avatar = ReactiveComponent
       top: pos.top - $name.height()
 
   showDetails : (ev) -> 
-    local = @data(@local_key)
-    local.show_details = true
-    save(local)
+    @local.show_details = true
+    save(@local)
 
   hideDetails : (ev) -> 
     $('.hover_avatar_name').remove()
-    local = @data(@local_key)
-    local.show_details = false
-    save(local)
+    @local.show_details = false
+    save(@local)
 
 
 UserBar = ReactiveComponent
@@ -1276,23 +1279,23 @@ AutoGrowTextArea = ReactiveComponent
   autoGrow : -> 
     scroll_height = @getDOMNode().scrollHeight
     if scroll_height > @getDOMNode().clientHeight
-      @data(@local_key).height = scroll_height + 5
+      @local.height = scroll_height + 5
+      save(@local)
 
   render : -> 
-    @transferPropsTo R.textarea onKeyUp: @autoGrow, style: {height: @data(@local_key).height} 
+    @transferPropsTo R.textarea onKeyUp: @autoGrow, style: {height: @local.height} 
 
 
 CharacterCountTextInput = ReactiveComponent
   displayName: 'CharacterCountTextInput'
   componentWillMount : -> @data(@local_key).count = 0
   render : -> 
-    local = @data(@local_key)
     class_name = "is_counted"
     R.div style: {position: 'relative'}, 
       @transferPropsTo R.textarea className: class_name, onChange: (=>
-         local.count = $(@getDOMNode()).find('textarea').val().length
-         save(local))
-      R.span className: 'count', @props.maxLength - local.count
+         @local.count = $(@getDOMNode()).find('textarea').val().length
+         save(@local))
+      R.span className: 'count', @props.maxLength - @local.count
 
 
 

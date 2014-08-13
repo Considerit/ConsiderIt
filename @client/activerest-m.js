@@ -240,10 +240,13 @@
                  var parents = this.props.parents.concat([this.local_key])
                  for (var i=0; i<parents.length; i++) {
                      var name = components[parents[i]].name.toLowerCase()
+                     var key = components[parents[i]].props.key
+                     if (!key && cache[name] !== undefined)
+                         key = name
                      delete this[name]
                      Object.defineProperty(this,
                                            name,
-                                           { get: function () { return this.get() },
+                                           { get: function () { return this.get(key) },
                                              configurable: true })
                  }
              })

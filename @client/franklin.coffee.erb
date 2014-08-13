@@ -1185,6 +1185,7 @@ Avatar = ReactiveComponent
     user = @data()
     @data(@local_key) # just to register a dependence
     className = "#{@props.className} avatar"
+
     id = "avatar-#{user.key.split('/')[2]}"
 
     if @props.img_style && user.key != -1

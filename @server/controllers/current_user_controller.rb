@@ -1,3 +1,4 @@
+# coding: utf-8
 
 class CurrentUserController < DeviseController
   protect_from_forgery
@@ -16,13 +17,17 @@ class CurrentUserController < DeviseController
   def update
     errors = []
 
+    # A currently logged-in user can:
+    #  • Update their name, bio, photo...
+    #  • Update their email (if it doesn't already exist)
+    #  • Log out
     if current_user
-      # we're updating an existing user
 
       fields = ['avatar', 'bio', 'name', 'hide_name', 'email', 'password']
       user_attrs = params.select{|k,v| fields.include? k}
       user_attrs = ActionController::Parameters.new(user_attrs).permit!
 
+      # Update regular parms
       if current_user.update_attributes(user_attrs)
         results = to_json_current_user
 
@@ -38,8 +43,16 @@ class CurrentUserController < DeviseController
         errors.append 'Could not save your changes.'
       end
 
+      # Handle Log Out
+      if params[:login_state] == 'logged out'
+        signed_out = (Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name))
+      end
+
     else
-      # we're trying to authenticate
+
+      # Then the user is either trying to:
+      #  • Make an account
+      #  • Or log into an existing account
 
       by_third_party = session.has_key? :access_token
       by_password_reset_token = params.has_key? :reset_password_token
@@ -66,7 +79,6 @@ class CurrentUserController < DeviseController
         errors.append 'Error. Have you created an account yet? If not, click below.'
       
       else
-
         params[:id] = key_id(params[:user])
         params.delete(:key)
         params.delete(:user)

@@ -52,7 +52,7 @@ class Opinion < ActiveRecord::Base
     end
     if not your_opinion
       your_opinion = Opinion.create(:proposal_id => proposal.id,
-                                    :user_id => user.id,
+                                    :user_id => user ? user : nil,
                                     :long_id => proposal.long_id,
                                     :account_id => tenant.id,
                                     :published => false,

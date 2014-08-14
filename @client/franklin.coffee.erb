@@ -497,8 +497,6 @@ Slider = ReactiveComponent
 
           slider.stance_segment = getStanceSegment -ui.value
           slider.stance = -ui.value
-          if !slider.has_moved
-            slider.has_moved = true
 
           save(slider)
         stop : (ev, ui) =>
@@ -525,6 +523,12 @@ Slider = ReactiveComponent
     slider = @data('slider')
     stance = slider.stance
     segment = slider.stance_segment
+
+    # We want to know if the user understands that they can slide the slider. Has_moved tracks whether
+    # they have manipulated it in the past. They might have manipulated it this session, or a previous 
+    # session. 
+    if !slider.has_moved && slider.stance != 0.0
+      slider.has_moved = true
 
     page = @data('root').page_name
     is_auth_mode = @data('root').auth_mode

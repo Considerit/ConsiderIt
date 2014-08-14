@@ -1245,33 +1245,20 @@ UserBar = ReactiveComponent
 
   render: ->
     current_user = @data('/current_user')
-    if current_user.user
+    if current_user.user # or we could do if current_user.logged_in
       R.div className: 'userbar', 
         Avatar key: current_user.user, tag: R.span, className: 'userbar_avatar', style: {height: 20, width: 20}
         R.a 'data-action': 'logout', onClick: @logout, 'logout'
     else 
       R.div null
   logout : -> 
-    $.ajax Routes.current_user_path(),
-      type : 'delete'
-      success : (data) =>
-        #TODO: update CSRF
-        #TODO: clear current user
-        current_user = @data('/current_user')
-        root = @data('root')
-        auth = @data('auth')
+    current_user = @data('/current_user')
+    current_user.logged_in = false
 
-        current_user.user = current_user.email = current_user.password = null
-        current_user.csrf = data.csrf      
-        root.auth_mode = null
-        auth.provider = null
-        auth.email = null
-        auth.name = null
-        auth.image_url = null
+    root = @data('root')
+    root.auth_mode = null
 
-        save(current_user, root, auth)
-      error : (xhr, status, error) -> 
-        console.error 'Error logging out: ', error
+    save(current_user, root)
 
 
 AutoGrowTextArea = ReactiveComponent
@@ -1323,15 +1310,11 @@ AuthHeader = ReactiveComponent
 
   toggleAuthMode : -> 
     root = @data('root')
-    auth = @data('auth')
     current_user = @data('/current_user')
-    email = $(@getDOMNode()).find('#user_email').val()
-
-    auth.email = email if email && email.length > 0
     root.auth_mode = if root.auth_mode == 'register' then 'login' else 'register'
-    current_user.errors = []
+    current_user.errors = {}
 
-    save(root, auth)
+    save(root)
   render : ->
     stance =  @data(your_opinion_key).stance
     segment = @data(your_opinion_key).stance_segment
@@ -1384,89 +1367,50 @@ Auth = ReactiveComponent
     $(document).scrollTop $(@getDOMNode()).find('.slider_feedback').offset().top - 10
 
   startThirdPartyAuth : (provider) -> 
+    root = @data('root')
     new ThirdPartyAuthHandler
       provider : provider
-      callback : (user_data) => 
-        if 'key' of user_data
-          # user already existed and now we've logged in via third party        
-          current_user = @data('/current_user')
-          root = @data('root')
-          current_user.user = '/key/' + user_data.id
-          current_user.name = user_data.name          
-          current_user.csrf = user_data.csrf
+      callback : (new_current_user) => 
+        # Yay we got a new current_user object!  But this hasn't gone
+        # through the normal arest channel, so we gotta save it in
+        # sneakily with updateCache()
+        arest.updateCache(new_current_user)
+
+        # We know that the user has authenticated, but we don't know
+        # whether they've completed OUR registration process including
+        # the pledge.  The server tells us this via the existence of a
+        # `user' object in current_user.
+        if new_current_user.user
+          # We are logged in!  The user has completed registration.
+          # Let's transition to results.
           root.page_name = 'results'
           root.auth_mode = null
-          save(root, current_user)
+          save(root)
         else 
-          # we're prepped to create an account...
-          #TODO: show user the pledge
-          # @authenticateWithServer user_data
-          @auth = @data('auth')
-          @auth.provider = provider
-          @auth.name = user_data.name
-          @auth.image_url = user_data.avatar_url
-          @auth.email = user_data.email
-          save(@auth)
+          # We still need to show the pledge!
+          root.auth_mode = 'register'
+          save(root)
+
   submitAuth : (ev) -> 
     ev.preventDefault()
-    $el = $(@getDOMNode())
+    save(@get('/current_user'))
 
-
-    current_user = @data('/current_user')
-    current_user.email    = $el.find('#user_email').val()
-    current_user.password = $el.find('#user_password').val()
-    current_user.name     = $el.find('#user_name').val()
-
-    if $el.find('#user_verification_code').length > 0
-      current_user.reset_password_token = $el.find('#user_verification_code').val()
-
-    save(current_user)
-
-  authenticateWithServer : (user_params, submit_avatar_form = false) -> 
-    current_user = @data('/current_user')
-    params = 
-      authenticity_token: current_user.csrf
-      user: user_params
-
-    $.ajax 
-      type: 'POST'
-      url: Routes.current_user_path()
-      beforeSend: (xhr) -> xhr.setRequestHeader('X-CSRF-Token', current_user.csrf)
-      data: params
-      success : (data, status, xhr) => 
-        root = @data('root')
-        current_user = @data('/current_user')
-        current_user.user = data.key
-        current_user.errors = if data.errors then data.errors else []
-        current_user.csrf = data.csrf
-        current_user.name = data.name
-
-        # hack for submitting file data in ActiveREST for now
-        # we'll just submit the file form after user is signed in
-        if submit_avatar_form
-          $('#user_avatar_form').ajaxSubmit
-            type: 'PUT'
-            data: 
-              authenticity_token: current_user.csrf
-            success: (data, status, xhr) -> 
-              current_user.user = data.key
-              current_user.errors = if data.errors then data.errors else []
-              current_user.csrf = data.csrf
-              current_user.name = data.name
-              save(current_user)
-
-        if !current_user.errors || current_user.errors.length == 0
-          root.page_name = 'results'
-          root.auth_mode = null
-          current_user.errors = []
-
-        save(root, current_user)
-
-      error : (xhr, status, error) -> 
-        console.error 'Error logging in: ', error
+        # # hack for submitting file data in ActiveREST for now
+        # # we'll just submit the file form after user is signed in
+        # if submit_avatar_form
+        #   $('#user_avatar_form').ajaxSubmit
+        #     type: 'PUT'
+        #     data: 
+        #       authenticity_token: current_user.csrf
+        #     success: (data, status, xhr) -> 
+        #       current_user.user = data.key
+        #       current_user.errors = if data.errors then data.errors else []
+        #       current_user.csrf = data.csrf
+        #       current_user.name = data.name
+        #       save(current_user)
 
   sendPasswordReminder : -> 
-    email = $('#user_email').val()
+    email = @data('/current_user').email
     $.post Routes.send_password_reset_token_path(), {user : {email: email}}, (data) =>
       if data.errors && data.errors.length > 0
         current_user = @data('/current_user')
@@ -1480,13 +1424,13 @@ Auth = ReactiveComponent
 
   render: -> 
     current_user = @data('/current_user')
-    auth = @data('auth')
     root = @data('root')
 
     # Once the user logs in, we will stop trying to log in
-    if current_user.login_state == 'logged in'
+    if current_user.logged_in
       root.auth_mode = null
       save(root)
+      togglePage('results')
       return loading_indicator
 
     focal_wrapper_style = 
@@ -1494,25 +1438,61 @@ Auth = ReactiveComponent
       width: DECISION_BOARD_WIDTH
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
+    # Let's set up some useful helpers
+    email_input_field =
+      R.input
+        id: "user_email"
+        defaultValue: current_user.email
+        name: "user[email]"
+        placeholder: "email@address"
+        required: "required"
+        type: if root.auth_mode == 'login' then "email" else "hidden"
+        onChange: ((event) => current_user.email = event.target.value)
+    password_input_field =
+      R.input
+        id: "user_password"
+        name: "user[password]"
+        placeholder: (if root.auth_mode == 'login' then "password" else "new password")
+        required: "required"
+        type: "password"
+        pattern: (if root.auth_mode == 'register' then ".{5,}" else '')
+        onChange: ((event) => current_user.password = event.target.value)
+    password_reset_token_field =
+      R.input
+        id: "user_verification_code"
+        name: "user[password_code]"
+        placeholder: "verification code"
+        required: "required"
+        type: "text"
+        onChange: (event) => current_user.password_reset = {
+            token: event.target.value,
+            generate_new_token: false
+          }
+    name_input_field =
+      R.input
+        id: "user_name"
+        value: current_user.name
+        onChange: ((event) => current_user.name = event.target.value)
+        name: "user[name]"
+        placeholder: "first and last name"
+        required: "required"
+        type: "text"
+
+    providers = ['facebook', 'google']
+    if root.auth_mode in ['login', 'password_reminder']
+      providers.push('twitter')
+
     R.div className:'auth_region focal_wrapper', style: focal_wrapper_style,
       AuthHeader()
 
       R.div className:'auth focal_area',
-
-        if root.auth_mode in ['login', 'register'] && !auth.provider
-
+        if root.auth_mode in ['login', 'register'] && !current_user.provider
           R.div className: 'third_party_auth',
             R.label className: 'third_party_call', 'Instantly:'
-            R.button className: 'third_party_option facebook', onClick: (=> @startThirdPartyAuth('facebook')),
-              R.i className: 'fa fa-facebook'
-              R.span null, 'facebook'
-            R.button className: 'third_party_option google',  onClick: (=> @startThirdPartyAuth('google')),
-              R.i className: 'fa fa-google'
-              R.span null, 'google'
-            if root.auth_mode in ['login', 'password_reminder']
-              R.button className: 'third_party_option twitter',  onClick: (=> @startThirdPartyAuth('twitter')),
-                R.i className: 'fa fa-twitter'
-                R.span null, 'twitter'
+            for provider in providers
+              R.button className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
+                R.i className: "fa fa-#{provider}"
+                R.span null, provider
 
             R.div className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 
@@ -1527,8 +1507,8 @@ Auth = ReactiveComponent
                 R.td className: 'label_cell',
                   if root.auth_mode == 'login'  
                     R.label htmlFor: 'user_email', 'email:'
-                R.td className: 'field_cell', 
-                  R.input id: "user_email", defaultValue: auth.email, name: "user[email]", placeholder: "email@address", required: "required", type: if root.auth_mode == 'login' then "email" else "hidden"
+                R.td className: 'field_cell',
+                  email_input_field
 
               R.tr null, 
                 R.td className: 'label_cell', 
@@ -1539,8 +1519,7 @@ Auth = ReactiveComponent
                       R.label htmlFor: 'user_password', 'new password:'
 
                 R.td className: 'field_cell', 
-                  R.input id: "user_password", name: "user[password]", placeholder: (if root.auth_mode == 'login' then "password" else "new password"), required: "required", type: "password"
-
+                  password_input_field,
                   if root.auth_mode == 'login'
                     R.a className: 'forgot_password', onClick: @sendPasswordReminder, 'I forgot! Email me password instructions.'
 
@@ -1550,7 +1529,7 @@ Auth = ReactiveComponent
                     R.label htmlFor: 'user_verification_code', 'verification code:'
 
                   R.td className: 'field_cell', 
-                    R.input id: "user_verification_code", name: "user[password_code]", placeholder: "verification code", required: "required", type: "text"
+                    password_reset_token_field,
                     R.div className: 'password_verification_explanation', "Find code in an email just sent to you."
 
         else 
@@ -1560,27 +1539,17 @@ Auth = ReactiveComponent
               R.td className: 'label_cell',
                 R.label htmlFor: 'user_name', 'Hi, my name is:'
               R.td className: 'field_cell', 
-                R.input id: "user_name", value: auth.name, onChange: (=> auth.name = $('#user_name').val()), name: "user[name]", placeholder: "first and last name", required: "required", type: "text"
-
-            if auth.provider
+                name_input_field
+            if current_user.provider
+              p = current_user.provider # will be 'facebook', 'google', or 'twitter'
               R.tr null, 
 
                 R.td className: 'label_cell',
                   R.label htmlFor: 'user_provider', 'I login via:'
                 R.td className: 'field_cell', 
-                  switch auth.provider
-                    when 'facebook'
-                      R.button className: 'third_party_option facebook', style: {cursor: 'default'},
-                        R.i className: 'fa fa-facebook'
-                        R.span null, 'facebook'
-                    when 'google'
-                      R.button className: 'third_party_option google', style: {cursor: 'default'},
-                        R.i className: 'fa fa-google'
-                        R.span null, 'google'
-                    when 'twitter'
-                      R.button className: 'third_party_option twitter', style: {cursor: 'default'},
-                        R.i className: 'fa fa-twitter'
-                        R.span null, 'twitter'
+                  R.button className: "third_party_option #{p}", style: {cursor: 'default'},
+                    R.i className: "fa fa-#{p}"
+                    R.span null, p
 
             else
 
@@ -1589,9 +1558,8 @@ Auth = ReactiveComponent
                 R.td className: 'label_cell',
                   R.label htmlFor: 'user_email', 'I login as:'
                 R.td className: 'field_cell', 
-                  R.input id: "user_email", defaultValue: auth.email, name: "user[email]", placeholder: "email@address", required: "required", type: "email"
-                  R.input id: "user_password", name: "user[password]", placeholder: "password", required: "required", type: "password", pattern: ".{5,}"
-
+                  email_input_field,
+                  password_input_field
 
             R.tr null, 
               R.td className: 'label_cell', 
@@ -1602,7 +1570,7 @@ Auth = ReactiveComponent
                 R.form id: 'user_avatar_form',action: Routes.current_user_path(), 
 
                   R.div className: 'avatar_preview_enclosure',
-                    R.img id: 'avatar_preview', src: if auth.image_url then auth.image_url else null #todo: make sure that if user overrides image_url, that the new image is used
+                    R.img id: 'avatar_preview', src: if current_user.image_url then current_user.image_url else null #todo: make sure that if user overrides image_url, that the new image is used
                 
                   R.input id: 'user_avatar', name: "user[avatar]", type: "file", onChange: (ev) -> 
                     input = $('#user_avatar')[0]
@@ -1611,8 +1579,10 @@ Auth = ReactiveComponent
                       reader.onload = (e) ->
                         $("#avatar_preview").attr 'src', e.target.result
                       reader.readAsDataURL input.files[0]
+                      current_user.avatar_file_name = input.files[0]
                     else
                       $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
+                      
 
             R.tr null,
               R.td className: 'label_cell', 
@@ -1693,12 +1663,6 @@ fetch 'slider',
 
 fetch 'decisionboard',
   sticky : false
-
-fetch 'auth',
-  email : null
-  name : null
-  image_url : null
-  provider : null
 
 fetch 'root',
   page_name : 'crafting'

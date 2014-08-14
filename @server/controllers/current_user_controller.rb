@@ -10,7 +10,6 @@ class CurrentUserController < DeviseController
 
   # Gets the current user data
   def show
-    pp(env['omniauth.auth'])
     render :json => to_json_current_user
   end  
 
@@ -18,17 +17,17 @@ class CurrentUserController < DeviseController
   def update
     errors = []
 
-    # A currently logged-in user can:
-    #  • Update their name, bio, photo...
-    #  • Update their email (if it doesn't already exist)
-    #  • Log out
     if current_user
+      # A currently logged-in user can:
+      #  • Update their name, bio, photo...
+      #  • Update their email (if it doesn't already exist)
+      #  • Log out
 
       fields = ['avatar', 'bio', 'name', 'hide_name', 'email', 'password']
       user_attrs = params.select{|k,v| fields.include? k}
       user_attrs = ActionController::Parameters.new(user_attrs).permit!
 
-      # Update regular parms
+      # Update their name, bio, photo...
       if current_user.update_attributes(user_attrs)
         results = to_json_current_user
 
@@ -36,26 +35,27 @@ class CurrentUserController < DeviseController
           dirty_avatar_cache   
         end
 
+      # Update their email address... if it's available
       elsif User.find_by_email(params[:email])
-        # if user is trying to change their email address
         errors.append 'That email is not available.'
       else
-        # some kind error happened
+        # Some kinda error happened
         errors.append 'Could not save your changes.'
       end
 
-      # Handle Log Out
+      # Logging Out
       if params[:logged_in] == false
         signed_out = (Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name))
       end
 
+
+    # Otherwise, the user is either trying to:
+    #  • Make an account
+    #  • Or log into an existing account
     else
 
-      # Then the user is either trying to:
-      #  • Make an account
-      #  • Or log into an existing account
-
-
+      # 1. Get the user's account
+      #
       # This account might have come from:
       #  • A third-party acocunt, like facebook or google or twitter
       #  • A password reset token
@@ -63,7 +63,6 @@ class CurrentUserController < DeviseController
       by_third_party = session.has_key? :access_token
       by_password_reset_token = params.has_key? :reset_password_token
 
-      # 1. Get the user's account
       if by_password_reset_token
         params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
         user = User.reset_password_by_token params
@@ -79,8 +78,7 @@ class CurrentUserController < DeviseController
       # completed the pledge, and then we'll need another way to check
       # if they've completed the pledge.
       
-      # 2. If found their account, then we just need to see if they
-      #    can log into it!
+      # 2. If found their account, then see if they can log into it!
       if user
 
         # If they have valid credentials, then log them in
@@ -93,12 +91,8 @@ class CurrentUserController < DeviseController
 
       else
         # 3. They have no account!  They must be trying to make one.
-
         # Create a new account
-        params[:id] = key_id(params[:user])
-        params.delete(:key)
-        params.delete(:user)
-        
+
         if by_third_party
           # Third-party auth can give us some custom user attributes,
           # like "google_uid" and "facebook_uid".  Now we will merge
@@ -106,10 +100,15 @@ class CurrentUserController < DeviseController
           user_params =  User.params_from_third_party_token(session[:access_token]).update(params)
           avatar_dirty = session[:access_token].has_key?(:avatar_url) || params.has_key?(:avatar) 
         else       
-          user_params =  params
+          # Then this new user will be configured from the params[]
+          # passed in.  Let's clean them out.
+          fields = ['avatar', 'bio', 'name', 'hide_name', 'email', 'password']
+          user_params = params.select{|k,v| fields.include? k}
+          user_params = ActionController::Parameters.new(user_params).permit!
           avatar_dirty = params.has_key?(:avatar)
         end
 
+        # Make a new user!
         user = User.new ActionController::Parameters.new(user_params).permit!
 
         # Cool!  We just got a new user to join our community!  Let's
@@ -135,7 +134,6 @@ class CurrentUserController < DeviseController
 
       end
     end
-
 
     response = to_json_current_user
     response['errors'] = errors if errors.length > 0

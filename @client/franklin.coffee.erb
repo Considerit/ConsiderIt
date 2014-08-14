@@ -90,8 +90,8 @@ stance_names =
   3 : 'Are Neutral'
 
 ##
-# StyleAnimator mixin
-# Helper for components that implement animations.
+# PageTransition mixin
+# Helper for components that implement a page transition animation.
 # Applies styles defined in the component that change
 # depending on state. Right now this mixin assumes that
 # animations will be applied only on route changes. 
@@ -99,30 +99,88 @@ stance_names =
 # A component that implements this mixin should define a method:
 #     applyStyles : (animate = true)
 # which puts the styles on the desired elements. 
-StyleAnimator = 
+PageTransition = 
+
   componentDidMount : -> @applyStyles false
 
   componentDidUpdate : (prev_props, prev_page) -> 
     @applyStyles _route_changed
 
-  applyStylesToElements : (styles, duration) ->
+  applyStyles : (animate = true) -> 
+    duration = if animate then TRANSITION_SPEED else 0
+    root = @data('root')        
     $el = $(@getDOMNode())
-    _.each _.keys(styles), (selector) -> 
-      # Only apply styles if there are differences, for performance. 
-      # This check doesn't work for transform properties because for Velocity we 
-      # specify them as e.g. TranslateX: 4 rather than transform: translateX(4)
-      styles_for_selector = styles[selector]
-      styles_to_apply = {}
-      $target = $el.find(selector)
 
-      prop_map = $target.css(_.keys(styles_for_selector))
-      if prop_map
-        for property in _.keys(styles_for_selector)
-          if prop_map[property] != styles_for_selector[property]
-            styles_to_apply[property] = styles_for_selector[property]
+    switch @name
 
-      if _.size(styles_to_apply) > 0
-        $target.velocity styles_to_apply, {duration}
+      # The histogram will get transparent when moving to crafting page
+      when 'histogram'
+        opacity = if root.page_name == 'crafting' then '0.2' else '1.0'
+        $el.find('.histogram_bar').velocity {opacity: opacity}, {duration}
+
+      # The position of the CommunityPoints will move to the wings on crafting, and 
+      # be close together in results
+      when 'communitypoints'
+
+        if root.page_name == 'crafting'
+          offset_x = if @props.key == 'pros' then 0 else DECISION_BOARD_WIDTH
+        else if root.page_name == 'results'
+          offset_x = DECISION_BOARD_WIDTH / 2
+
+        $el.velocity { translateX: offset_x }, {duration}
+
+      # The slider handle and mouth will change size and location when moving between crafting and results
+      when 'slider'
+        slider = @data('slider')
+
+        mouth_scaler = if slider.stance_segment >  3 then -1 else 1
+        mouth_x      = if slider.stance_segment == 3 then  0 else -7.5
+
+        if root.page_name == 'crafting'
+          bubblemouth_style = { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 7, translateX: mouth_x * 1.5  }
+          handle_style = { scale: 2.5, translateY: -8 }
+        else 
+          bubblemouth_style = { scaleX: mouth_scaler, scaleY: 1, translateY: -4.5, translateX: mouth_x  }
+          handle_style = { scale: 1, translateY: -9 }
+
+        $el.find('.bubblemouth').velocity bubblemouth_style, {duration}
+        $el.find('.the_handle').velocity handle_style, {duration}
+
+      # The decision board will have to expand for crafting and collapse into to the Give Opinion button in results
+      when 'decisionboard'
+        if root.page_name == 'crafting'
+          decision_board_style =  { translateX: 0, translateY: 0, width: "#{DECISION_BOARD_WIDTH}px", minHeight: "275px"}
+
+          $el.find('.decision_board_body').velocity decision_board_style, {duration}
+
+          $el.find('.give_opinion_button').css 'visibility', 'hidden'
+          _.delay => 
+            #delay & check in case of quick switch between pages
+            if root.page_name == 'crafting'
+              $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', ''
+          , duration
+
+        else 
+          slider = @data('slider')
+          stance = slider.stance
+
+          give_opinion_button_width = 186
+          gutter = .1 * give_opinion_button_width
+
+          opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * -(stance-1) / 2.0
+
+          decision_board_style =  { translateX: opinion_region_x, translateY: -18, width: "#{give_opinion_button_width}px", minHeight: "32px"}
+
+          $el.find('.decision_board_body').velocity decision_board_style, {duration}
+
+          $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', 'none'
+          _.delay => 
+            #check in case of quick switch between pages
+            if root.page_name == 'results'
+              $el.find('.give_opinion_button').css 'visibility', ''
+          , duration  
+      else
+        throw "The #{@name} component does not define any styles to animate"
 
 
 ## ##################
@@ -147,7 +205,6 @@ StyleAnimator =
 # Proposal
 # Has proposal description, feelings area (slider + histogram), and reasons area
 Proposal = ReactiveComponent
-  mixins: [StyleAnimator]
   displayName: 'Proposal'
 
   ##
@@ -166,59 +223,6 @@ Proposal = ReactiveComponent
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
     $el.find('.fixed_proposal_heading').stickyTopBottom('destroy')
-    
-  ##
-  # State-dependent styling
-  applyStyles : (animate = true) ->  
-    $el = $(@getDOMNode())
-    duration = if animate then TRANSITION_SPEED else 0
-    root = @data('root')
-
-    # • Velocity requires properties to be pulled out (e.g. paddingLeft, 
-    #   translateX, rather than using padding or transform)
-    # • We use velocity even for 0 duration style applications to maintain 
-    #   parity of style definition
-    switch root.page_name
-      when 'crafting'
-        styles = 
-          '.histogram_bar':        { opacity: '.2' }
-          '.decision_board_body':  { translateX: 0, translateY: 0, width: "#{DECISION_BOARD_WIDTH}px", minHeight: "275px"}
-          '.pros_by_community':    { translateX: 0 }
-          '.cons_by_community':    { translateX: "#{DECISION_BOARD_WIDTH}px" }
-        
-        @applyStylesToElements styles, duration
-
-        $el.find('.give_opinion_button').css 'visibility', 'hidden'
-        _.delay => 
-          #delay & check in case of quick switch between pages
-          if root.page_name == 'crafting'
-            $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', ''
-        , duration
-
-      when 'results'
-        slider = @data('slider')
-        stance = slider.stance
-        segment = slider.stance_segment
-
-        give_opinion_button_width = 186
-        gutter = .1 * give_opinion_button_width
-
-        opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * -(stance-1) / 2.0
-
-        styles = 
-          '.histogram_bar':         { opacity: '1' }
-          '.decision_board_body':   { translateX: opinion_region_x, translateY: -18, width: "#{give_opinion_button_width}px", minHeight: "32px"}
-          '.pros_by_community':     { translateX:  DECISION_BOARD_WIDTH / 2 }
-          '.cons_by_community':     { translateX:  DECISION_BOARD_WIDTH / 2 }
-        
-        @applyStylesToElements styles, duration
-
-        $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', 'none'
-        _.delay => 
-          #check in case of quick switch between pages
-          if root.page_name == 'results'
-            $el.find('.give_opinion_button').css 'visibility', ''
-        , duration  
 
   ##
   # Make this thing!
@@ -226,14 +230,9 @@ Proposal = ReactiveComponent
     proposal = @data()
     root = @data('root')
     server_page = @page
-    points = server_page.points
-    users = server_page.users
     included_points = proposal.your_opinion.point_inclusions
-    initial_stance = proposal.your_opinion.stance
+    your_opinion = proposal.your_opinion
 
-    # Register a dependency on slider data here because activerest doesn't pick up the dependency from applyStyles. 
-    # Everything works without this registration except the give opinion button doesn't follow the slider when dragging on the results page. 
-    slider = @data('slider')
 
     description_region_style = {width: 1.25 * BODY_WIDTH}
 
@@ -296,6 +295,7 @@ Proposal = ReactiveComponent
 # Histogram
 Histogram = ReactiveComponent
   displayName : 'Histogram'
+  mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   getDefaultProps : ->
     opinions: []
@@ -464,38 +464,13 @@ Histogram = ReactiveComponent
 # Manages the slider and the UI elements attached to it. 
 Slider = ReactiveComponent
   displayName: 'Slider'
-  mixins: [StyleAnimator]
+  mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   componentDidMount : -> 
     @setSlidability()
 
   componentWillUpdate : (prev_props, prev_state) ->
     @setSlidability()
-
-  # We have a separate applyStyle here from Proposal because the Slider component
-  # gets rerendered more frequently than the Proposal component (i.e. when the 
-  # slider is being slid...forcing the entire Propoosal component to rerender
-  # causes terrible performance).
-  applyStyles : (animate = false) ->
-    duration = if animate then TRANSITION_SPEED else 0
-    $el = $(@getDOMNode())
-    slider = @data('slider')
-
-    mouth_scaler = if slider.stance_segment >  3 then -1 else 1
-    mouth_x      = if slider.stance_segment == 3 then  0 else -7.5
-
-    switch @data('root').page_name
-      when 'crafting'
-        styles =
-          '.bubblemouth': { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 7, translateX: mouth_x * 1.5  }
-          '.the_handle':  { scale: 2.5, translateY: -8 }
-
-      when 'results'
-        styles =
-          '.bubblemouth': { scaleX: mouth_scaler, scaleY: 1, translateY: -4.5, translateX: mouth_x  }
-          '.the_handle':  { scale: 1, translateY: -9 }
-
-    @applyStylesToElements styles, duration
 
   ##
   # setSlidability
@@ -520,10 +495,10 @@ Slider = ReactiveComponent
           return false if ev.originalEvent.type != 'mousemove'
 
           slider.stance_segment = getStanceSegment -ui.value
-
           slider.stance = -ui.value
           if !slider.has_moved
             slider.has_moved = true
+
           save(slider)
         stop : (ev, ui) =>
           if root.page_name == 'results'
@@ -549,6 +524,7 @@ Slider = ReactiveComponent
     slider = @data('slider')
     stance = slider.stance
     segment = slider.stance_segment
+
     page = @data('root').page_name
     is_auth_mode = @data('root').auth_mode
     sticky = @data('decisionboard').sticky
@@ -694,6 +670,7 @@ OpinionFilter = ReactiveComponent
 # Handles the user's list of important points in crafting page. 
 DecisionBoard = ReactiveComponent
   displayName: 'DecisionBoard'
+  mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   componentDidMount : ->
     @setStickyHeader()
@@ -834,6 +811,7 @@ YourPoints = ReactiveComponent
 # Shown in wing during crafting, in middle on results. 
 CommunityPoints = ReactiveComponent
   displayName: 'CommunityPoints'
+  mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   buildNewPointThreshold : ->
     # Grab the 10th percentile
@@ -926,6 +904,7 @@ Point = ReactiveComponent
     # Ability to drag include this point if a community point, 
     # or drag remove for point on decision board
     # also: disable for results page
+
 
     disable = @data('root').page_name == 'results'
     $point_content = $(@getDOMNode()).find('.point_content')

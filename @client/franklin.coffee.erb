@@ -524,11 +524,20 @@ Slider = ReactiveComponent
     stance = slider.stance
     segment = slider.stance_segment
 
+    # On initial page load, initialize slider value based on your_opinion
+    your_opinion = @data(your_opinion_key)
+    if !slider.has_moved && slider.stance != your_opinion.stance
+      slider.stance = your_opinion.stance
+      slider.stance_segment = your_opinion.stance_segment
+      save(slider)
+
+
     # We want to know if the user understands that they can slide the slider. Has_moved tracks whether
     # they have manipulated it in the past. They might have manipulated it this session, or a previous 
     # session. 
     if !slider.has_moved && slider.stance != 0.0
       slider.has_moved = true
+
 
     page = @data('root').page_name
     is_auth_mode = @data('root').auth_mode

@@ -152,7 +152,10 @@
         request.send(JSON.stringify(object));
     }
 
-    function csrf() {
+    var csrf_token = null
+    function csrf(new_token) {
+        if (new_token) csrf_token = new_token
+        if (csrf_token) return csrf_token
         var metas = document.getElementsByTagName('meta'); 
         for (i=0; i<metas.length; i++) { 
             if (metas[i].getAttribute("name") == "csrf-token") { 

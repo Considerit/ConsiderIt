@@ -1161,10 +1161,15 @@ NewPoint = ReactiveComponent
                   required:'required', min_height: 100
 
           R.div className:'newpoint_hide_name',
-            R.input className:'newpoint-anonymous', type:'checkbox', id:"sign_name-#{@props.valence}",
-              name:"sign_name-#{@props.valence}", checked: @local.sign_name, onChange: (=>
+            R.input
+              className: 'newpoint-anonymous'
+              type:      'checkbox'
+              id:        "sign_name-#{@props.valence}"
+              name:      "sign_name-#{@props.valence}"
+              checked:   @local.sign_name
+              onChange: =>
                 @local.sign_name = !@local.sign_name
-                save(@local))
+                save(@local)
             R.label htmlFor: "sign_name-#{@props.valence}", title:'Signing your point with your name lends it more weight with other participants.', 'Sign your name'
           
           R.div className:'newpoint-submit',
@@ -1626,7 +1631,7 @@ Root = ReactiveComponent
 
   render : -> 
     # Update the location bar if it's different
-    url = "/#{@props.long_id}#{if @root.page_name == 'results' then '/results' else ''}"
+    url = "/#{@props.long_id}#{if @data('root').page_name == 'results' then '/results' else ''}"
     if (window.location.pathname != url)
       window.app_router.navigate url, {trigger : true}
 
@@ -1639,7 +1644,8 @@ Root = ReactiveComponent
 Page = ReactiveComponent
   displayName: 'Page'
   render: ->
-    R.div 'data-authmode': @root.auth_mode,
+    root = @data('root')
+    R.div 'data-authmode': root.auth_mode,
       R.div className: 'l_header', 
         UserBar(),
         Computer() # Doesn't actually render anything

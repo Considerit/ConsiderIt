@@ -1161,9 +1161,13 @@ NewPoint = ReactiveComponent
 
             if @local.add_details
               R.div null, 
-                AutoGrowTextArea id:'text', className:'newpoint_description', name:'text',
-                  placeholder:'Provide background and/or back your point up with evidence.',
-                  required:'required', min_height: 100
+                AutoGrowTextArea 
+                  id:'text'
+                  className:'newpoint_description'
+                  name:'text'
+                  placeholder:'Provide background and/or back your point up with evidence.'
+                  required:'required'
+                  min_height: 170
 
           R.div className:'newpoint_hide_name',
             R.input
@@ -1275,9 +1279,6 @@ UserBar = ReactiveComponent
 AutoGrowTextArea = ReactiveComponent
   displayName: 'AutoGrowTextArea'  
 
-  getDefaultData : -> 
-    height: @props.min_height
-
   autoGrow : -> 
     scroll_height = @getDOMNode().scrollHeight
     if scroll_height > @getDOMNode().clientHeight
@@ -1285,6 +1286,9 @@ AutoGrowTextArea = ReactiveComponent
       save(@local)
 
   render : -> 
+    if !@local.height
+      @local.height = @props.min_height
+
     @transferPropsTo R.textarea onKeyUp: @autoGrow, style: {height: @local.height} 
 
 

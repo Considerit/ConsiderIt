@@ -223,6 +223,8 @@
         wrap(obj, 'componentWillMount',
              function () { 
                  this.local_key = 'component/' + components_next_id++
+                 // console.log('mounting', this.props.key)
+
                  this.name = obj.displayName.toLowerCase()
                  components[this.local_key] = this
 

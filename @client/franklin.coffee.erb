@@ -419,7 +419,7 @@ Histogram = ReactiveComponent
 
     R.table 
       className: 'histogram'
-      onClick:@onClickHistogram
+      onClick: @onClickHistogram
       # onMouseLeave: @onSelectSegment
       style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
         R.tr null, 
@@ -484,7 +484,7 @@ Slider = ReactiveComponent
       $slider_base.slider(if root.auth_mode then 'disable' else 'enable')
     else
       $slider_base.slider
-        disabled: root.auth_mode #@data('root').page_name == 'results'
+        disabled: root.auth_mode
         min: -1
         max: 1
         step: .01
@@ -533,12 +533,13 @@ Slider = ReactiveComponent
       save(slider)
 
 
-    # We want to know if the user understands that they can slide the slider. Has_moved tracks whether
-    # they have manipulated it in the past. They might have manipulated it this session, or a previous 
-    # session. 
+    # We want to know if the user understands that they can slide the slider. If they don't
+    # we'll want to display different instructions/feedback. 
+    # Has_moved tracks whether they have manipulated it in the past. 
+    # The following code will properly set the value based on whether the stance has been non-zero before,
+    # either from a previous session or from a slider manipulation this session.
     if !slider.has_moved && slider.stance != 0.0
       slider.has_moved = true
-
 
     page = @data('root').page_name
     is_auth_mode = @data('root').auth_mode
@@ -748,6 +749,10 @@ DecisionBoard = ReactiveComponent
     root = @data('root')
     root = root.page_name
     current_user = @data('/current_user')
+
+    # Need to register this dependency because ActiveREST doesn't pick it up. 
+    # In results state, decision board position depends on the slider position.
+    slider = @data('slider')
 
     opinion_region_style = 
       left: '50%'

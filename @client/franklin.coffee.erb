@@ -1430,7 +1430,7 @@ Auth = ReactiveComponent
     if current_user.logged_in
       root.auth_mode = null
       save(root)
-      togglePage('results')
+      setTimeout((() -> togglePage('results')), 700)
       return loading_indicator
 
     focal_wrapper_style = 
@@ -1447,16 +1447,16 @@ Auth = ReactiveComponent
         placeholder: "email@address"
         required: "required"
         type: 'email' #if root.auth_mode == 'login' then "email" else "hidden"
-        onChange: ((event) => current_user.email = event.target.value)
+        onChange: (event) => current_user.email = event.target.value
     password_input_field =
       R.input
         id: "user_password"
         name: "user[password]"
-        placeholder: (if root.auth_mode == 'login' then "password" else "new password")
+        placeholder: if root.auth_mode == 'login' then "password" else "new password"
         required: "required"
         type: "password"
-        pattern: (if root.auth_mode == 'register' then ".{5,}" else '')
-        onChange: ((event) => current_user.password = event.target.value)
+        pattern: if root.auth_mode == 'register' then ".{5,}" else ''
+        onChange: (event) => current_user.password = event.target.value
     password_reset_token_field =
       R.input
         id: "user_verification_code"
@@ -1472,7 +1472,7 @@ Auth = ReactiveComponent
       R.input
         id: "user_name"
         value: current_user.name
-        onChange: ((event) => current_user.name = event.target.value)
+        onChange: (event) => current_user.name = event.target.value
         name: "user[name]"
         placeholder: "first and last name"
         required: "required"
@@ -1621,7 +1621,6 @@ Auth = ReactiveComponent
         , 'cancel log in'
 
 
-
 Root = ReactiveComponent
   displayName: 'Root'
 
@@ -1642,11 +1641,22 @@ Page = ReactiveComponent
   render: ->
     R.div 'data-authmode': @root.auth_mode,
       R.div className: 'l_header', 
-        UserBar()      
+        UserBar(),
+        Computer() # Doesn't actually render anything
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
         R.div id: 'inner_body', #style : { width: CONTENT_WIDTH },
           Proposal key: @page.proposal.key
       R.div className: 'l_footer'
+
+Computer = ReactiveComponent
+  # This doesn't actually render anything.  It just processes state
+  # changes to CSRF.
+  displayName: 'Computer'
+  render : ->
+    current_user = @data('/current_user')
+    if current_user.csrf
+      arest.csrf(current_user.csrf)
+    return R.span null, ''
 
 
 ## ########################

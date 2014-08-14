@@ -515,9 +515,10 @@ Slider = ReactiveComponent
     # This way you can drag it with good performance.
     your_opinion = @data(your_opinion_key)
     slider = @data('slider')
-    your_opinion.stance         = slider.stance
-    your_opinion.stance_segment = slider.stance_segment
-    save(your_opinion)
+    if your_opinion.stance != slider.stance
+      your_opinion.stance         = slider.stance
+      your_opinion.stance_segment = slider.stance_segment
+      save(your_opinion)
 
   render : ->
     slider = @data('slider')

@@ -398,10 +398,10 @@
     window.fetch = fetch
     window.save = save
 
-    // Make the private methods accessible under "window.nona"
+    // Make the private methods accessible under "window.arest"
     vars = 'cache fetch save serverFetch serverSave updateCache csrf keys_4_component components_4_key components execution_context hashset clone wrap sanity clearComponentDeps dirty_components'.split(' ')
-    window.nona = {}
+    window.arest = {}
     for (var i=0; i<vars.length; i++)
-        window.nona[vars[i]] = eval(vars[i])
+        window.arest[vars[i]] = eval(vars[i])
 
 })()

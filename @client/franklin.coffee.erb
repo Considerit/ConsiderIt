@@ -927,6 +927,7 @@ Point = ReactiveComponent
 
 
     disable = @data('root').page_name == 'results'
+
     $point_content = $(@getDOMNode()).find('.point_content')
     revert = 
       if @props.location_class == 'community_point' 
@@ -1039,6 +1040,11 @@ Point = ReactiveComponent
 
   render : -> 
     point = @data()
+
+    # Registering this data dependency because ActiveREST doesn't pick it up.
+    # Without this everything works, except that some Points aren't updated in page transitions
+    # which makes them not become draggable. 
+    root = @data('root')
 
     selected_segment = @data('histogram').selected_segment
     author_opinion = @data(userOpinion(point.user))

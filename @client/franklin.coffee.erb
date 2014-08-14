@@ -438,11 +438,12 @@ Histogram = ReactiveComponent
                   for bar in bars
                     R.td className:"histogram_bar", style: {width: avatar_size},
                       for opinion in bar
-                        user = if @data('root').page_name == 'results' then opinion.user else null
+                        user = opinion.user
                         Avatar 
                           tag: R.span, 
                           key: user
                           user: user
+                          hide_face: @data('root').page_name == 'crafting'                             
                           'data-segment':segment
                           style:
                             height: avatar_size
@@ -1170,7 +1171,7 @@ Avatar = ReactiveComponent
     @data(@local_key) # just to register a dependence
     className = "#{@props.className} avatar"
 
-    id = "avatar-#{user.key.split('/')[2]}"
+    id = if @props.hide_face then "avatar-hidden" else "avatar-#{user.key.split('/')[2]}"
 
     if @props.img_style && user.key != -1
       avatar_file_name = user.avatar_file_name
@@ -1198,6 +1199,7 @@ Avatar = ReactiveComponent
     key: '/user/-1' # defaults to anonymous user
     tag: R.img
     img_style: null #null defaults to the css-based b64 embedded images
+    hide_face: false
 
   componentWillUpdate : -> 
     if @local.show_details
@@ -1206,8 +1208,8 @@ Avatar = ReactiveComponent
   insertUserName : ->
     $el = $(@getDOMNode())
     pos = $el.offset()
-
-    $name = $("<span class='hover_avatar_name'>#{@data().name}</span>")
+    display_name = if @props.hide_face then 'Anonymous' else @data().name
+    $name = $("<span class='hover_avatar_name'>#{display_name}</span>")
     $('body').append $name   # ugly!
 
     $name.css 

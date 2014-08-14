@@ -896,7 +896,7 @@ CommunityPoints = ReactiveComponent
           for point in points
             R.div null,
               Point 
-                key: point, 
+                key: point.key, 
                 is_new: Date.parse(point.created_at) > newpoint_threshold
                 location_class : 'community_point'
         else

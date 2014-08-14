@@ -958,6 +958,14 @@ Point = ReactiveComponent
   highlightIncluders : -> 
     if @data('root').page_name == 'results'
       includers = @data().includers
+      point = @data()
+
+      # For point authors who chose not to sign their points, remove them from 
+      # the users to highlight. This is particularly important if the author 
+      # is the only one who "included" the point. Then it is very eash for 
+      # anyone to discover who wrote this point. 
+      if point.hide_name
+        includers = _.without includers, point.user
       hist = @data('histogram')
       if hist.highlighted_users != includers
         hist.highlighted_users = includers
@@ -965,16 +973,9 @@ Point = ReactiveComponent
 
   unHighlightIncluders : -> 
     if @data('root').page_name == 'results'
-      includers = @data().includers
-
-      _.delay =>
-        if @isMounted()
-          hist = @data('histogram')
-
-          if hist.highlighted_users == includers
-            hist.highlighted_users = null
-            save(hist)
-      , 200
+      hist = @data('histogram')
+      hist.highlighted_users = null
+      save(hist)
 
 
   buildIncluders : -> 
@@ -1064,7 +1065,7 @@ Point = ReactiveComponent
           @renderIncluders()
 
         if !selected_segment[0] || ( author_opinion && author_opinion.stance_segment == selected_segment[0] )
-          Avatar tag: R.span, key: point.user, className:"point_author_avatar"
+          Avatar tag: R.span, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
 
       R.div className:'point_content', style : { width: POINT_CONTENT_WIDTH },
         if @props.location_class == 'community_point'

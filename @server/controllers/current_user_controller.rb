@@ -143,7 +143,8 @@ class CurrentUserController < DeviseController
     #   user.addTags session[:tags]
     # end
 
-    if request.xhr?
+    pp('Is this a XHR request?', request.xhr?)
+    if true || request.xhr?
       render :json => response 
     else
       # non-ajax method is used for legacy support for dash

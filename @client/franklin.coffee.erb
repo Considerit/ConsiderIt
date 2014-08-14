@@ -1446,7 +1446,7 @@ Auth = ReactiveComponent
         name: "user[email]"
         placeholder: "email@address"
         required: "required"
-        type: if root.auth_mode == 'login' then "email" else "hidden"
+        type: 'email' #if root.auth_mode == 'login' then "email" else "hidden"
         onChange: ((event) => current_user.email = event.target.value)
     password_input_field =
       R.input

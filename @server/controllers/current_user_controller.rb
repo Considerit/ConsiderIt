@@ -10,6 +10,7 @@ class CurrentUserController < DeviseController
 
   # Gets the current user data
   def show
+    pp(env['omniauth.auth'])
     render :json => to_json_current_user
   end  
 
@@ -44,7 +45,7 @@ class CurrentUserController < DeviseController
       end
 
       # Handle Log Out
-      if params[:login_state] == 'logged out'
+      if params[:logged_in] == false
         signed_out = (Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name))
       end
 
@@ -54,9 +55,15 @@ class CurrentUserController < DeviseController
       #  • Make an account
       #  • Or log into an existing account
 
+
+      # This account might have come from:
+      #  • A third-party acocunt, like facebook or google or twitter
+      #  • A password reset token
+      #  • Or the email address that has been passed into this method
       by_third_party = session.has_key? :access_token
       by_password_reset_token = params.has_key? :reset_password_token
 
+      # 1. Get the user's account
       if by_password_reset_token
         params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
         user = User.reset_password_by_token params
@@ -66,32 +73,49 @@ class CurrentUserController < DeviseController
         user = User.find_by_lower_email(params[:email])
       end
 
-      # if user already exists
-      if user && (by_third_party || user.valid_password?(params[:password]) ) #&& user.registration_complete 
-        sign_in :user, user
-
-      # user exists, but authentication failed
-      elsif user
-        errors.append 'wrong password'
-
-      # user does not exist, try to create account
-      elsif !by_third_party && !params.has_key?(:password)
-        errors.append 'Error. Have you created an account yet? If not, click below.'
+      # Right now we assume that users have completed registration
+      # (including the pledge) if they have an account.  In the
+      # future, we might start making accounts even before people have
+      # completed the pledge, and then we'll need another way to check
+      # if they've completed the pledge.
       
+      # 2. If found their account, then we just need to see if they
+      #    can log into it!
+      if user
+
+        # If they have valid credentials, then log them in
+        if by_third_party || user.valid_password?(params[:password])
+          sign_in :user, user
+        else
+          # Well then!  Their password must suck
+          errors.append 'wrong password'
+        end
+
       else
+        # 3. They have no account!  They must be trying to make one.
+
+        # Create a new account
         params[:id] = key_id(params[:user])
         params.delete(:key)
         params.delete(:user)
         
         if by_third_party
+          # Third-party auth can give us some custom user attributes,
+          # like "google_uid" and "facebook_uid".  Now we will merge
+          # those into our database for this user.
           user_params =  User.params_from_third_party_token(session[:access_token]).update(params)
-          is_dirty = session[:access_token].has_key?(:avatar_url) || params.has_key?(:avatar) 
+          avatar_dirty = session[:access_token].has_key?(:avatar_url) || params.has_key?(:avatar) 
         else       
           user_params =  params
-          is_dirty = params.has_key?(:avatar)
+          avatar_dirty = params.has_key?(:avatar)
         end
 
         user = User.new ActionController::Parameters.new(user_params).permit!
+
+        # Cool!  We just got a new user to join our community!  Let's
+        # remember what happened now so we can analyze it later.
+        # Specifically, we'll track where this user initially came
+        # from:
         user.referer = user.page_views.first.referer if user.page_views.count > 0
 
         # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
@@ -102,7 +126,7 @@ class CurrentUserController < DeviseController
           # current_user.track!
 
           session.delete(:access_token) if by_third_party
-          if is_dirty
+          if avatar_dirty
             dirty_avatar_cache
           end
         else
@@ -195,17 +219,24 @@ class CurrentUserController < DeviseController
     access_token = env["omniauth.auth"]
     user = User.find_by_third_party_token access_token
 
-    if user #&& user.registration_complete
+    # We currently assume that if a user object has been created, then
+    # the registration is complete -- the user has finished the pledge
+    # and everything.
+    if user
+      # Then the user registration is complete.
       sign_in user, :event => :authentication
-      params = to_json_current_user
+      current_user = to_json_current_user
     else
+      # Then the user still needs to complete the pledge.  Let's just
+      # get some of the user's current data (we have them temporarily
+      # referenced via the access_token)
       session[:access_token] = access_token
-      params = User.params_from_third_party_token(access_token)
+      current_user = User.params_from_third_party_token(access_token)
     end
 
     render :inline =>
       "<script type=\"text/javascript\">" +
-      "  window.open_id_params = #{params.to_json};  " + 
+      "  window.open_id_params = #{current_user.to_json};  " +
       "</script>"
   end
 
@@ -278,7 +309,7 @@ class CurrentUserController < DeviseController
     {
       key: '/current_user',
       user: current_user ? "/user/#{current_user.id}" : nil,
-      login_state: current_user ? 'logged in' : 'logged out',
+      logged_in: current_user ? true : false,
       email: current_user ? current_user.email : nil,
       password: nil,
       csrf: form_authenticity_token,

@@ -256,6 +256,7 @@
                  }
              })
         wrap(obj, 'componentDidMount')
+        wrap(obj, 'componentDidUpdate')
         wrap(obj, 'getDefaultProps')
         //wrap(obj, 'componentWillReceiveProps')
         wrap(obj, 'componentWillUnmount', function () {

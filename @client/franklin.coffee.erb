@@ -93,12 +93,11 @@ stance_names =
 # PageTransition mixin
 # Helper for components that implement a page transition animation.
 # Applies styles defined in the component that change
-# depending on state. Right now this mixin assumes that
-# animations will be applied only on route changes. 
+# depending on the route. 
 #
-# A component that implements this mixin should define a method:
-#     applyStyles : (animate = true)
-# which puts the styles on the desired elements. 
+# The styles will be added on every update and on component mount. 
+# However, it will *animate* the styles only if the page has changed (_route_changed). 
+# Otherwise it just directly applies the styles
 PageTransition = 
 
   componentDidMount : -> @applyStyles false
@@ -106,11 +105,16 @@ PageTransition =
   componentDidUpdate : (prev_props, prev_page) -> 
     @applyStyles _route_changed
 
-  applyStyles : (animate = true) -> 
+  applyStyles : (animate) -> 
     duration = if animate then TRANSITION_SPEED else 0
     root = @data('root')        
     $el = $(@getDOMNode())
 
+
+    # Each Component that implements this mixin can get triggered multiple times after a route change. 
+    # So we're going to ensure that we apply styles only once for a given route change. 
+    return if @transitioning == root.page_name
+    @transitioning = root.page_name
 
     switch @name
 
@@ -182,6 +186,10 @@ PageTransition =
           , duration  
       else
         throw "The #{@name} component does not define any styles to animate"
+
+    _.delay => 
+      @transitioning = null
+    , duration
 
 
 ## ##################
@@ -436,8 +444,8 @@ Histogram = ReactiveComponent
             ,
               R.table null,
                 R.tr null,
-                  for bar in bars
-                    R.td className:"histogram_bar", style: {width: avatar_size},
+                  for bar, idx in bars
+                    R.td key: idx , className:"histogram_bar", style: {width: avatar_size},
                       for opinion in bar
                         user = opinion.user
                         Avatar 
@@ -675,7 +683,7 @@ OpinionFilter = ReactiveComponent
 
         # I had to make this wrapper to make a new context for i
         wrapper = (i) => (=> @onSelectSegment(i))
-        R.a className: c, onClick: wrapper(i), phrase
+        R.a key: "segment-#{i}", className: c, onClick: wrapper(i), phrase
 
 
 ##
@@ -908,11 +916,10 @@ CommunityPoints = ReactiveComponent
       R.ul null, 
         if points.length > 0
           for point in points
-            R.div null,
-              Point 
-                key: point.key, 
-                is_new: Date.parse(point.created_at) > newpoint_threshold
-                location_class : 'community_point'
+            Point 
+              key: point.key, 
+              is_new: Date.parse(point.created_at) > newpoint_threshold
+              location_class : 'community_point'
         else
           R.li className: 'empty_point', "No #{label} listed"
 

@@ -165,6 +165,28 @@ class Opinion < ActiveRecord::Base
     end
   end
 
+  # This is a maintenance function.  You shouldn't need to run it
+  # anymore, because the database shouldn't contain duplicate opinions
+  # anymore.
+  def self.remove_duplicate_opinions
+    User.find_each do |u|
+      proposals = u.opinions.map {|p| p.proposal_id}.uniq
+      proposals.each do |prop|
+        ops = u.opinions.where(:proposal_id => prop)
+        # Let's find the most recent
+        ops = ops.sort {|a,b| a.updated_at <=> b.updated_at}
+        # And purge all but the last
+        pp("We found #{ops.length} duplicates for user #{u.id}")
+        ops.each do |op|
+          if op.id != ops.last.id
+            pp("We are deleting opinion #{op.id}, cause it is not the most recent: #{ops.last.id}.")
+            op.delete
+          end
+        end
+      end
+    end
+  end
+
   def self.purge
     Opinion.where('user_id IS NULL').destroy_all
     

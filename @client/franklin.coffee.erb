@@ -1339,8 +1339,8 @@ AuthHeader = ReactiveComponent
     current_user = @data('/current_user')
     root.auth_mode = if root.auth_mode == 'register' then 'login' else 'register'
     current_user.errors = {}
-
     save(root)
+
   render : ->
     stance =  @data(your_opinion_key).stance
     segment = @data(your_opinion_key).stance_segment
@@ -1392,7 +1392,8 @@ Auth = ReactiveComponent
   componentDidMount : -> 
     $(document).scrollTop $(@getDOMNode()).find('.slider_feedback').offset().top - 10
 
-  startThirdPartyAuth : (provider) -> 
+  startThirdPartyAuth : (ev) -> 
+    provider = $(ev.currentTarget).data('provider')
     root = @data('root')
     new ThirdPartyAuthHandler
       provider : provider
@@ -1521,7 +1522,7 @@ Auth = ReactiveComponent
           R.div className: 'third_party_auth',
             R.label className: 'third_party_call', 'Instantly:'
             for provider in providers
-              R.button className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
+              R.button 'data-provider': provider, className: "third_party_option #{provider}", onClick: @startThirdPartyAuth,
                 R.i className: "fa fa-#{provider}"
                 R.span null, provider
 

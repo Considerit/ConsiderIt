@@ -93,12 +93,11 @@ stance_names =
 # PageTransition mixin
 # Helper for components that implement a page transition animation.
 # Applies styles defined in the component that change
-# depending on state. Right now this mixin assumes that
-# animations will be applied only on route changes. 
+# depending on the route. 
 #
-# A component that implements this mixin should define a method:
-#     applyStyles : (animate = true)
-# which puts the styles on the desired elements. 
+# The styles will be added on every update and on component mount. 
+# However, it will *animate* the styles only if the page has changed (_route_changed). 
+# Otherwise it just directly applies the styles
 PageTransition = 
 
   componentDidMount : -> @applyStyles false
@@ -106,11 +105,16 @@ PageTransition =
   componentDidUpdate : (prev_props, prev_page) -> 
     @applyStyles _route_changed
 
-  applyStyles : (animate = true) -> 
+  applyStyles : (animate) -> 
     duration = if animate then TRANSITION_SPEED else 0
     root = @data('root')        
     $el = $(@getDOMNode())
 
+
+    # Each Component that implements this mixin can get triggered multiple times after a route change. 
+    # So we're going to ensure that we apply styles only once for a given route change. 
+    return if @transitioning == root.page_name
+    @transitioning = root.page_name
 
     switch @name
 
@@ -182,6 +186,10 @@ PageTransition =
           , duration  
       else
         throw "The #{@name} component does not define any styles to animate"
+
+    _.delay => 
+      @transitioning = null
+    , duration
 
 
 ## ##################

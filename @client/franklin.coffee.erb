@@ -111,6 +111,7 @@ PageTransition =
     root = @data('root')        
     $el = $(@getDOMNode())
 
+
     switch @name
 
       # The histogram will get transparent when moving to crafting page
@@ -728,27 +729,38 @@ DecisionBoard = ReactiveComponent
       top_offset: $('.fixed_proposal_heading').outerHeight() + slider_region_height
       bottom_offset: 20
       docks: =>
-              d = @data('decisionboard')
-              d.sticky = false
-              save(d)
+        d = @data('decisionboard')
+        d.sticky = false
+        save(d)
       undocks: =>
-              d = @data('decisionboard')
-              d.sticky = true
-              save(d)
+        d = @data('decisionboard')
+        d.sticky = true
+        save(d)
       conditional: => @data('root').page_name == 'crafting'
 
   clickSave : -> 
-    if @data('/current_user').login_state == 'logged in'
+    your_opinion = @data your_opinion_key
+    if @data('/current_user').logged_in
+      your_opinion.published = true
+      save your_opinion
       togglePage('results')
     else
       root = @data('root')
       root.auth_mode = 'register'
+
+      #we'll need to publish this opinion after auth is completed
+      your_opinion = @data your_opinion_key
+      your_opinion.publish_pending_authorization = true
+      save your_opinion
+
       save(root)
+
 
   render : ->
     root = @data('root')
     root = root.page_name
     current_user = @data('/current_user')
+    your_opinion = @data(your_opinion_key)
 
     # Need to register this dependency because ActiveREST doesn't pick it up. 
     # In results state, decision board position depends on the slider position.
@@ -779,7 +791,7 @@ DecisionBoard = ReactiveComponent
           # only shown during results, but needs to be present always for animation
           R.a 
             className:'give_opinion_button primary_button'
-          , 'Give your Opinion'
+          , if your_opinion.published then 'Update your Opinion' else 'Give your Opinion'
 
       R.div 
         className:'save_opinion_button primary_button'
@@ -1401,6 +1413,7 @@ Auth = ReactiveComponent
           # Let's transition to results.
           root.page_name = 'results'
           root.auth_mode = null
+          @publishOpinionsAfterAuth()
           save(root)
         else 
           # We still need to show the pledge!
@@ -1437,6 +1450,13 @@ Auth = ReactiveComponent
         root.auth_mode = 'password_reminder'
         save(root)
 
+  publishOpinionsAfterAuth: -> 
+    # publish any opinions that were awaiting authorization
+    your_opinion = @data your_opinion_key
+    if your_opinion.publish_pending_authorization
+      your_opinion.publish_pending_authorization = false
+      your_opinion.published = true
+      save your_opinion
 
   render: -> 
     current_user = @data('/current_user')
@@ -1445,6 +1465,8 @@ Auth = ReactiveComponent
     # Once the user logs in, we will stop trying to log in
     if current_user.logged_in
       root.auth_mode = null
+      @publishOpinionsAfterAuth()
+
       save(root)
       setTimeout((() -> togglePage('results')), 700)
       return loading_indicator

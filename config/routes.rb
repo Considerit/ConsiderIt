@@ -82,7 +82,7 @@ ConsiderIt::Application.routes.draw do
   # MIKE SAYS: not sure where to put this.  Is it JSON or what?
   # TRAVIS SAYS: The only routes generated here regard third party oauth. It is important
   #              to put this before the home controller non-AJAX catch all because 
-  #              OAUTH stipulates that the that the third party submit a non-ajax
+  #              OAUTH stipulates that the third party submit a non-ajax
   #              GET back to the server with the user data. This must be handled by
   #              CurrentUserController#third_party_callback.
   devise_for :users, skip: [:registrations, :sessions, :passwords], controllers: {:omniauth_callbacks => 'current_user'}

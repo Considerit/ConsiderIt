@@ -28,6 +28,7 @@ class OpinionController < ApplicationController
   end
 
   def update_or_create(opinion, params)
+
     fields = ['proposal', 'explanation', 'stance', 'published', 'point_inclusions']
     updates = params.select{|k,v| fields.include? k}
 
@@ -52,14 +53,31 @@ class OpinionController < ApplicationController
     # Record things for later
     already_published = opinion.published
     stance_changed = already_published && updates['stance'] != opinion.stance
-    existing_opinion = proposal.opinions.published.where("id != #{opinion.id}")\
-                       .find_by_user_id current_user.id
+    
+    if current_user
+      existing_opinion = proposal.opinions.published.where("id != #{opinion.id}").find_by_user_id(current_user.id)
+    else 
+      existing_opinion = nil
+    end
 
     # Update this opinion
     opinion.update_attributes ActionController::Parameters.new(updates).permit!
 
     if existing_opinion
       opinion.subsume existing_opinion
+    end
+
+    # Mike, you might want to check if this is a good place for this. 
+    # Basically we need a way of updating this Opinion's owner after
+    # they've logged in and seek to publish the opinion. It is possible
+    # that we might actually want to set the user_id of all the user's opinions,
+    # points, etc in the current_user methods upon authorization. 
+    if opinion.published && !opinion.user_id
+      opinion.user_id = current_user.id
+      opinion.inclusions.each do |inc|
+        inc.user_id = current_user.id
+        inc.save
+      end
     end
 
     opinion.save
@@ -87,7 +105,11 @@ class OpinionController < ApplicationController
       pnt.update_absolute_score
     end
 
+    pp 1, opinion.as_json
+
     opinion.update_inclusions
+
+    pp 2, opinion.as_json
 
     opinion.track!
 

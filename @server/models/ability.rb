@@ -94,7 +94,7 @@ class Ability
 
       can [:create, :update], Opinion do |opinion|
         proposal = opinion.proposal
-        user_is_prepped = !user.id.nil? && user.registration_complete
+        user_is_prepped = !user.id.nil? #&& user.registration_complete
         user_has_access_to_proposal = proposal.publicity != 0 || (!user.id.nil? && proposal.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
         (user_is_prepped || opinion.user_id.nil?) && user_has_access_to_proposal
 

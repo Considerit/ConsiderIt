@@ -760,7 +760,7 @@ DecisionBoard = ReactiveComponent
 
     # Need to register this dependency because ActiveREST doesn't pick it up. 
     # In results state, decision board position depends on the slider position.
-    slider = @data('slider')
+    @data('slider')
 
     opinion_region_style = 
       left: '50%'
@@ -1049,11 +1049,6 @@ Point = ReactiveComponent
 
   render : -> 
     point = @data()
-
-    # Registering this data dependency because ActiveREST doesn't pick it up.
-    # Without this everything works, except that some Points aren't updated in page transitions
-    # which makes them not become draggable. 
-    root = @data('root')
 
     selected_segment = @data('histogram').selected_segment
     author_opinion = @data(userOpinion(point.user))

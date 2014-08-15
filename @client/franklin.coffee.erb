@@ -496,6 +496,9 @@ Slider = ReactiveComponent
           # supporter' to 'neutral'
           return false if ev.originalEvent.type != 'mousemove'
 
+          if !slider.has_moved
+            slider.has_moved = true
+
           slider.stance_segment = getStanceSegment -ui.value
           slider.stance = -ui.value
 
@@ -531,16 +534,9 @@ Slider = ReactiveComponent
     if !slider.has_moved && slider.stance != your_opinion.stance
       slider.stance = your_opinion.stance
       slider.stance_segment = your_opinion.stance_segment
+      slider.has_moved = true
       save(slider)
 
-
-    # We want to know if the user understands that they can slide the slider. If they don't
-    # we'll want to display different instructions/feedback. 
-    # Has_moved tracks whether they have manipulated it in the past. 
-    # The following code will properly set the value based on whether the stance has been non-zero before,
-    # either from a previous session or from a slider manipulation this session.
-    if !slider.has_moved && slider.stance != 0.0
-      slider.has_moved = true
 
     page = @data('root').page_name
     is_auth_mode = @data('root').auth_mode

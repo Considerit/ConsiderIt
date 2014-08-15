@@ -79,14 +79,21 @@ ConsiderIt::Application.routes.draw do
   concerns :followable
 
 
+  # MIKE SAYS: not sure where to put this.  Is it JSON or what?
+  # TRAVIS SAYS: The only routes generated here regard third party oauth. It is important
+  #              to put this before the home controller non-AJAX catch all because 
+  #              OAUTH stipulates that the that the third party submit a non-ajax
+  #              GET back to the server with the user data. This must be handled by
+  #              CurrentUserController#third_party_callback.
+  devise_for :users, skip: [:registrations, :sessions, :passwords], controllers: {:omniauth_callbacks => 'current_user'}
+
   # All user-visible URLs go to the "home" controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
   get '(*url)' => 'home#index', :constraints => NotJSON.new
 
-  # mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
 
   # MIKE SAYS: not sure where to put this.  Is it JSON or what?
-  devise_for :users, skip: [:registrations, :sessions, :passwords], controllers: {:omniauth_callbacks => 'current_user'}
+  # TRAVIS SAYS: yes this is all JSON in here
   devise_scope :user do  
     get "/content_for_user" => "current_user#content_for_user", :as => :content_for_user
     get "users/check_login_info" => "current_user#check_login_info"
@@ -94,6 +101,10 @@ ConsiderIt::Application.routes.draw do
     post "/send_password_reset_token" => "current_user#send_password_reset_token"
     resource :current_user, controller: 'current_user', only: [:show, :create, :update, :destroy]
   end
+
+
+  # mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
+
 
 
   # Here's the entire JSON API:

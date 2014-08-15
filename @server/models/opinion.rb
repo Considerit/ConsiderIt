@@ -43,7 +43,8 @@ class Opinion < ActiveRecord::Base
     your_opinion = Opinion.where(:proposal_id => proposal.id, 
                                  :user_id => user,
                                  :published => true).first
-    if not your_opinion
+
+    if user && !your_opinion
       # Because there seem to be unpublished opinions sometimes... we
       # should remove these though
       your_opinion = Opinion.where(:proposal_id => proposal.id, 

@@ -1444,24 +1444,28 @@ Auth = ReactiveComponent
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
     # Let's set up some useful helpers
-    email_input_field =
+    input_box = (name, placeholder, type, onChange, pattern) ->
+      type = type || 'text'
+      onChange = onChange || (event) => current_user[name] = event.target.value
       R.input
-        id: "user_email"
-        defaultValue: current_user.email
-        name: "user[email]"
-        placeholder: "email@address"
+        id: 'user_' + name
+        defaultValue: current_user[name]
+        name: "user[#{name}]"
+        placeholder: placeholder
         required: "required"
-        type: 'email' #if root.auth_mode == 'login' then "email" else "hidden"
-        onChange: (event) => current_user.email = event.target.value
+        type: type
+        onChange: onChange
+        pattern: pattern
+
+    name_input_field     = input_box('name', 'first and last name')
+    email_input_field    = input_box('email', 'email@address', 'email')
     password_input_field =
-      R.input
-        id: "user_password"
-        name: "user[password]"
-        placeholder: if root.auth_mode == 'login' then "password" else "new password"
-        required: "required"
-        type: "password"
-        pattern: if root.auth_mode == 'register' then ".{5,}" else ''
-        onChange: (event) => current_user.password = event.target.value
+      input_box('password',
+                 if root.auth_mode == 'login' then "password" else "new password",
+                 'password',
+                 null,
+                 if root.auth_mode == 'register' then ".{5,}" else '')
+
     password_reset_token_field =
       R.input
         id: "user_verification_code"
@@ -1473,15 +1477,6 @@ Auth = ReactiveComponent
             token: event.target.value,
             generate_new_token: false
           }
-    name_input_field =
-      R.input
-        id: "user_name"
-        value: current_user.name
-        onChange: (event) => current_user.name = event.target.value
-        name: "user[name]"
-        placeholder: "first and last name"
-        required: "required"
-        type: "text"
 
     providers = ['facebook', 'google']
     if root.auth_mode in ['login', 'password_reminder']

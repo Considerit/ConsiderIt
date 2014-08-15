@@ -40,19 +40,30 @@ class Opinion < ActiveRecord::Base
   end
 
   def self.get_or_make(proposal, user, tenant)
+    # Each (user,proposal) should have only one opinion.  But I've
+    # noticed that the database currently has multiple opinions at
+    # times for a (user,proposal), where only one is published.
+    #
+    # We should remove these duplicate opinions.  But for now, I'm
+    # just going to return a published opinion first, and then look at
+    # unpublished opinions.
+
+    # First try to find a published opinion
     your_opinion = Opinion.where(:proposal_id => proposal.id, 
-                                 :user_id => user,
+                                 :user => user,
                                  :published => true).first
+
+    # If not, find an unpublished one
     if not your_opinion
-      # Because there seem to be unpublished opinions sometimes... we
-      # should remove these though
       your_opinion = Opinion.where(:proposal_id => proposal.id, 
-                                   :user_id => user,
+                                   :user => user,
                                    :published => false).first
     end
+
+    # Otherwise create one
     if not your_opinion
       your_opinion = Opinion.create(:proposal_id => proposal.id,
-                                    :user_id => user ? user : nil,
+                                    :user => user ? user : nil,
                                     :long_id => proposal.long_id,
                                     :account_id => tenant.id,
                                     :published => false,

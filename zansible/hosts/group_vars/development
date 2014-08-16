@@ -67,7 +67,7 @@ config:
       google:
         consumer_key: '92551314397.apps.googleusercontent.com'
         consumer_secret: 'Esu1z4DxqYzAnSF2KyYiiTx6'
-    0.1:
+    "0.1":
       facebook:
         consumer_key: '154394447927854'
         consumer_secret: 'c1e6437b4bd76b2fb0bf8adc08665b88'

@@ -239,6 +239,12 @@ class CurrentUserController < DeviseController
       "</script>"
   end
 
+  # when something goes wrong in an oauth transation, this method gets called
+  def failure
+    # TODO: handle this gracefully for the user
+    raise "Something went wrong in authenticating your account"
+  end
+
   # /end oauth
 
   # def content_for_user

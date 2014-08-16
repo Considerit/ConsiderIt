@@ -65,15 +65,14 @@ class Proposal < ActiveRecord::Base
     # Compute points
     pointz = points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
     pointz = pointz.public_fields.map do |p|
-      p.mask_anonymous(current_user)
-      p.as_json
+      p.as_json({}, current_user)
     end
 
     # Find an existing opinion for this user
     your_opinion = Opinion.get_or_make(self, current_user, current_tenant)
 
     # Compute opinions
-    ops = opinions.published.public_fields.map {|p| p.as_json}
+    ops = opinions.published.public_fields.map {|x| x.as_json}
 
     # Compute Included points
     #includeds = Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).pluck('points.id')

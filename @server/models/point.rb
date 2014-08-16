@@ -81,9 +81,15 @@ class Point < ActiveRecord::Base
     chain
   }
 
-  def as_json(options={})
+  def as_json(options={}, current_user=nil)
     options[:only] ||= Point.my_public_fields
     result = super(options)
+
+    # If anonymous, hide user id
+    if (result['hide_name'] && (current_user.nil? || current_user.id != result['user_id']))
+      result['user_id'] = -1
+    end
+
     result['includers'] = JSON.parse (result['includers'] || '[]')
     result['includers'].map! {|p| "/user/#{p}"}
     make_key(result, 'point')
@@ -121,21 +127,6 @@ class Point < ActiveRecord::Base
   def seen_by(user)
     # unimplemented. It was:
     # session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
-  end
-
-  #WARNING: do not save these points after doing this
-  def self.mask_anonymous_users(points, current_user)
-    points.map do |pnt|
-      pnt.mask_anonymous current_user
-    end
-    points
-  end
-
-  def mask_anonymous(current_user)
-    if hide_name && (current_user.nil? || current_user.id != user_id)
-      user_id = -1
-    end
-    self
   end
 
   def short_desc(max_len = 140)

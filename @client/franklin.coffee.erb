@@ -1398,8 +1398,7 @@ Auth = ReactiveComponent
   componentDidMount : -> 
     $(document).scrollTop $(@getDOMNode()).find('.slider_feedback').offset().top - 10
 
-  startThirdPartyAuth : (ev) -> 
-    provider = $(ev.currentTarget).data('provider')
+  startThirdPartyAuth : (provider) -> 
     root = @data('root')
     new ThirdPartyAuthHandler
       provider : provider
@@ -1528,9 +1527,10 @@ Auth = ReactiveComponent
           R.div className: 'third_party_auth',
             R.label className: 'third_party_call', 'Instantly:'
             for provider in providers
-              R.button 'data-provider': provider, className: "third_party_option #{provider}", onClick: @startThirdPartyAuth,
-                R.i className: "fa fa-#{provider}"
-                R.span null, provider
+              do (provider) =>
+                R.button className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
+                  R.i className: "fa fa-#{provider}"
+                  R.span null, provider
 
             R.div className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 

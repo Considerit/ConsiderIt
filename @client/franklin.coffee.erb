@@ -169,7 +169,7 @@ PageTransition =
           slider = @data('slider')
           stance = slider.stance
 
-          give_opinion_button_width = 198
+          give_opinion_button_width = 200
           gutter = .1 * give_opinion_button_width
 
           opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * -(stance-1) / 2.0
@@ -220,18 +220,20 @@ Proposal = ReactiveComponent
   # Lifecycle methods
   componentDidMount : -> 
     $el = $(@getDOMNode())
-    $el.find('.fixed_proposal_heading').stickyTopBottom()
+    $el.find('.proposal_heading.stickable').stickyTopBottom
+      placeholder: $el.find('.proposal_heading.placeholder')[0]
+
 
   componentDidUpdate : ->
     $el = $(@getDOMNode())
-    $el.find('.fixed_proposal_heading').stickyTopBottom('update')
+    $el.find('.proposal_heading.stickable').stickyTopBottom('update')
 
     # $el.find('.description_region').css
-    #   top: $el.find('.fixed_proposal_heading').height() + 24
+    #   top: $el.find('.proposal_heading').height() + 24
 
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
-    $el.find('.fixed_proposal_heading').stickyTopBottom('destroy')
+    $el.find('.proposal_heading.stickable').stickyTopBottom('destroy')
 
   ##
   # Make this thing!
@@ -258,8 +260,12 @@ Proposal = ReactiveComponent
     proposer = @data(proposal.user)
 
     R.div className:'proposal', key:@props.long_id, 'data-page':root.page_name,
-      R.div className: 'fixed_proposal_heading', 
+      R.div className: 'proposal_heading stickable', 
         R.span null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
+
+      R.div className: 'proposal_heading placeholder', 
+        R.span null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
+
 
       #description
 
@@ -730,13 +736,13 @@ DecisionBoard = ReactiveComponent
 
     $el.stickyTopBottom
       container: $('.reasons_region')
-      top_offset: $('.fixed_proposal_heading').outerHeight() + slider_region_height
+      top_offset: $('.proposal_heading').outerHeight() + slider_region_height
       bottom_offset: 20
-      docks: =>
+      unsticks: =>
         d = @data('decisionboard')
         d.sticky = false
         save(d)
-      undocks: =>
+      sticks: =>
         d = @data('decisionboard')
         d.sticky = true
         save(d)

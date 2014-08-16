@@ -3,6 +3,9 @@ class ThirdPartyAuthHandler
     provider = options.provider
     callback = options.callback
 
+    if provider == 'google'
+      provider = 'google_oauth2'
+
     if provider == 'twitter'
       url = Routes.user_omniauth_authorize_path provider,
         x_auth_access_type : 'read'

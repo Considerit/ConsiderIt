@@ -245,6 +245,12 @@ Devise.setup do |config|
     end
     host = host.join('.')
 
+    if !conf['domain'].has_key?(host)
+      raise "#{host} is not a configured host for third party authentication."
+    elsif !conf['domain'][host].has_key?(provider)
+      raise "#{provider} is not configured for host #{host}."
+    end
+    
     settings = conf['domain'][host][provider]
     env['omniauth.strategy'].options[key] = settings['consumer_key']
     env['omniauth.strategy'].options[secret] = settings['consumer_secret']

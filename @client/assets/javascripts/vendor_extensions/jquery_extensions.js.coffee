@@ -16,8 +16,8 @@ do ($, window, document) ->
         container: $('body') #reference element for starting and stopping the sticking (doesn't actually have to contain the element)
         top_offset: 0 #distance from top of viewport to stick top of element
         bottom_offset: 0 #distance from bottom of viewport to stick bottom of element
-        docks : null #callback when this element comes back to its base position
-        undocks : null #callback when this element leaves its base position
+        sticks : null #callback when this element comes back to its base position
+        unsticks : null #callback when this element leaves its base position
         conditional : null #callback to check whether to continue sticking
 
       @options = $.extend {}, defaults, options
@@ -27,12 +27,16 @@ do ($, window, document) ->
 
       @$el = $(el)        
       @current_translate = 0
+      @is_stuck = false
       @last_viewport_top = document.documentElement.scrollTop || document.body.scrollTop
 
       $(window).on "resize.plugin_stickytopbottom-#{@my_id}", => @resize()
       $(window).on "scroll.plugin_stickytopbottom-#{@my_id}", => @update()
 
       @$el.on 'destroyed', $.proxy(@destroy, @) 
+
+      if @options.placeholder
+        @options.placeholder.style['visibility'] = 'hidden'
 
       @resize()
       @update()
@@ -61,7 +65,7 @@ do ($, window, document) ->
       #Get the top of the reference element.
       #If the container is translated Y, then this method will fail I believe.
       container_top = @options.container.offset().top 
-      element_top = @$el.offset().top - @current_translate
+      element_top = @$el.offset().top # - @current_translate
 
 
       # Need to reset element's height each scroll event because it may have change height 
@@ -74,40 +78,65 @@ do ($, window, document) ->
       effective_viewport_top = viewport_top + @options.top_offset
       effective_viewport_bottom = viewport_bottom - @options.bottom_offset
 
+
       is_scrolling_up = viewport_top < @last_viewport_top
       element_fits_in_viewport = element_height < (@viewport_height - @options.top_offset)
 
-      new_translate = null
-      if is_scrolling_up
-        if effective_viewport_top < container_top # if we're scrolled past container top
-          new_translate = 0
-        else if effective_viewport_top < element_top + @current_translate
-          new_translate = effective_viewport_top - element_top
-      else if element_fits_in_viewport
-        if effective_viewport_top > element_top + @current_translate
-          new_translate = effective_viewport_top - element_top
-      else # scrolling down
-        container_height = @options.container.height()
-        container_bottom = container_top + container_height #warning: checking height is performance no-no
-        if effective_viewport_bottom > container_bottom #scrolled past container bottom
-          new_translate = container_bottom - (element_top + element_height)
-        else if effective_viewport_bottom > element_top + element_height + @current_translate
-          new_translate = effective_viewport_bottom - (element_top + element_height)
+      now_stuck = effective_viewport_top >= container_top
+      start_sticking = now_stuck && !@is_stuck
+      start_unsticking = !now_stuck && @is_stuck
+      @is_stuck = now_stuck
 
-      if new_translate != null
-        is_undocking = @current_translate == 0 && new_translate != 0
-        is_docking = @current_translate != 0 && new_translate == 0
+      element_bottom = @$el.offset().top + element_height #container_top + element_height
+      
+      if @is_stuck && !element_fits_in_viewport
+        if is_scrolling_up
+          if effective_viewport_top <= element_top
+            new_translate = @current_translate + (effective_viewport_top - element_top) #adjustment is for scroll flicks
+          else
+            new_translate = @current_translate + (@last_viewport_top - viewport_top)
 
-        @current_translate = new_translate
+        # When scrolling down, we want to simulate sticking to the bottom of the screen. 
+        else           
+          # if scrolled past the element bottom, we want to stick here
+          if effective_viewport_bottom >= element_bottom            
+            new_translate = @current_translate + (effective_viewport_bottom - element_bottom) #adjustment is for scroll flicks
 
-        @$el[0].style["-webkit-backface-visibility"] = "hidden"
-        @$el[0].style.transform = "translate(0, #{@current_translate}px)"        
-        @$el[0].style['-webkit-transform'] = "translate(0, #{@current_translate}px)"
-        @$el[0].style['-ms-transform'] = "translate(0, #{@current_translate}px)"
-        @$el[0].style['-moz-transform'] = "translate(0, #{@current_translate}px)"
+          # otherwise, we'll simulate scrolling down through this element with negative Y translation
+          else 
+            new_translate = @current_translate + (@last_viewport_top - viewport_top) #- (effective_viewport_top - container_top)
 
-        @options.docks() if @options.docks && is_docking
-        @options.undocks() if @options.undocks && is_undocking
+        # make sure that inertial scroll didn't force us to scroll past the bottom of the screen
+        if element_bottom + (new_translate - @current_translate) + @options.bottom_offset > $(document).height()
+          new_translate = $(document).height() - element_bottom + @current_translate - @options.bottom_offset
+
+        if new_translate != @current_translate
+          @current_translate = new_translate
+          @$el[0].style["-webkit-backface-visibility"] = "hidden"
+          @$el[0].style.transform = "translate(0, #{@current_translate}px)"        
+          @$el[0].style['-webkit-transform'] = "translate(0, #{@current_translate}px)"
+          @$el[0].style['-ms-transform'] = "translate(0, #{@current_translate}px)"
+          @$el[0].style['-moz-transform'] = "translate(0, #{@current_translate}px)"
+
+      if start_sticking
+        @$el[0].style['position'] = 'fixed'
+        @$el[0].style['top'] = "#{@options.top_offset}px"          
+        @options.sticks() if @options.sticks
+        if @options.placeholder
+          @options.placeholder.style['visibility'] = 'hidden'
+          @options.placeholder.style['display'] = ''
+
+      if start_unsticking
+        @$el[0].style['position'] = ''
+        @$el[0].style['top'] = ''
+        @$el[0].style.transform = ""        
+        @$el[0].style['-webkit-transform'] = ""
+        @$el[0].style['-ms-transform'] = ""
+        @$el[0].style['-moz-transform'] = ""        
+
+        @options.unsticks() if @options.unsticks
+        if @options.placeholder
+          @options.placeholder.style['display'] = 'none'
 
       @last_viewport_top = viewport_top
 

@@ -103,6 +103,9 @@
                                'Server returned data with unexpected key', result, 'for key', key)
                 updateCache(result)
             }
+            else if (request.status === 500)
+                window.ajax_error && window.ajax_error()
+
         }
 
         // Open request
@@ -138,6 +141,8 @@
                 })
                 updateCache(result)
             }
+            else if (request.status === 500)
+                window.ajax_error && window.ajax_error()
         }
 
         object = clone(object)

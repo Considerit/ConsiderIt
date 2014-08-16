@@ -748,7 +748,8 @@ DecisionBoard = ReactiveComponent
         save(d)
       conditional: => @data('root').page_name == 'crafting'
 
-  clickSave : -> 
+  # When user clicks the big bold button at the bottom of the crafting page
+  saveYourOpinion : -> 
     your_opinion = @data your_opinion_key
     if @data('/current_user').logged_in
       your_opinion.published = true
@@ -805,7 +806,7 @@ DecisionBoard = ReactiveComponent
 
       R.div 
         className:'save_opinion_button primary_button'
-        onClick: @clickSave
+        onClick: @saveYourOpinion
       , 'Save your opinion and see results'
 
       R.a 
@@ -1458,7 +1459,7 @@ Auth = ReactiveComponent
     # publish any opinions that were awaiting authorization
     your_opinion = @data your_opinion_key
     if your_opinion.publish_pending_authorization
-      your_opinion.publish_pending_authorization = false
+      delete your_opinion['publish_pending_authorization']
       your_opinion.published = true
       save your_opinion
 
@@ -1466,7 +1467,7 @@ Auth = ReactiveComponent
     current_user = @data('/current_user')
     root = @data('root')
 
-    # Once the user logs in, we will stop trying to log in
+    # Once the user logs in, we will stop showing the log-in screen
     if current_user.logged_in
       root.auth_mode = null
       @publishOpinionsAfterAuth()
@@ -1678,8 +1679,14 @@ Page = ReactiveComponent
   displayName: 'Page'
   render: ->
     root = @data('root')
-    R.div 'data-authmode': root.auth_mode,
+    R.div null,
       R.div className: 'l_header', 
+        R.div style: {
+            'background-color': '#eee',
+            'color': '#f00',
+            'display' : if root.error then 'block'  else 'hidden'
+          },
+          'Warning: there was a server error!'
         UserBar(),
         Computer() # Doesn't actually render anything
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
@@ -1751,5 +1758,7 @@ Router = Backbone.Router.extend
   results : (long_id) -> @proposal long_id, 'results'
 
 window.app_router = new Router()
-
+window.ajax_error = () ->
+  (root = fetch('root')).server_error = true
+  save(root)
 $(document).ready -> Backbone.history.start {pushState: true}

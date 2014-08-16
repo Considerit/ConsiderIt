@@ -5,7 +5,7 @@ class PointController < ApplicationController
     point = Point.find params[:id]
     authorize! :read, point
 
-    render :json => point.as_json
+    render :json => point.as_json({}, current_user)
   end
 
 
@@ -37,7 +37,7 @@ class PointController < ApplicationController
     point.seen_by(current_user)
 
     original_id = key_id(params[:key])
-    result = point.as_json
+    result = point.as_json({}, current_user)
     result['key'] = "/point/#{point.id}?original_id=#{original_id}"
     pp(result)
 
@@ -67,7 +67,7 @@ class PointController < ApplicationController
       )
     end
 
-    render :json => point.as_json
+    render :json => point.as_json({}, current_user)
   end
 
   def destroy

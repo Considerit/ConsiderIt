@@ -1399,7 +1399,8 @@ Auth = ReactiveComponent
   componentDidMount : -> 
     $(document).scrollTop $(@getDOMNode()).find('.slider_feedback').offset().top - 10
 
-  startThirdPartyAuth : (provider) -> 
+  startThirdPartyAuth : (provider) ->
+
     root = @data('root')
     new ThirdPartyAuthHandler
       provider : provider
@@ -1418,6 +1419,9 @@ Auth = ReactiveComponent
           # Let's transition to results.
           root.page_name = 'results'
           root.auth_mode = null
+          if new_current_user.csrf
+            arest.csrf(new_current_user.csrf)
+
           @publishOpinionsAfterAuth()
           save(root)
         else 

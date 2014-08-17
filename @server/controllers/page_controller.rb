@@ -12,6 +12,9 @@ class PageController < ApplicationController
                                 current_user,
                                 session[proposal.id],
                                 can?(:manage, proposal))
+
+    result['customer'] = current_tenant
+
     result['key'] = "/page/#{params[:id]}"
     render :json => result
   end

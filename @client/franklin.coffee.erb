@@ -240,7 +240,7 @@ Proposal = ReactiveComponent
   render : ->
     proposal = @data()
     root = @data('root')
-    server_page = @page
+    @page # Is this needed?  (Does it even work?)
     included_points = proposal.your_opinion.point_inclusions
     your_opinion = proposal.your_opinion
 
@@ -543,7 +543,7 @@ Slider = ReactiveComponent
     stance = slider.stance
     segment = slider.stance_segment
 
-    # On initial page load, initialize slider value based on your_opinion
+    # On initial page load, initialize slider value based on your_opinion
     your_opinion = @data(your_opinion_key)
     if !slider.has_moved && slider.stance != your_opinion.stance
       slider.stance = your_opinion.stance
@@ -622,7 +622,7 @@ Slider = ReactiveComponent
       borderRight: "#{triangle_width}px solid transparent"
 
     if !slider.has_moved 
-      slider_feedback = 'Set Your Overall Opinion' 
+      slider_feedback = 'Give Your Overall Opinion' 
     else 
       slider_feedback = "You #{slider_feedback_bucket}"
 
@@ -832,7 +832,7 @@ YourPoints = ReactiveComponent
       style: { width: POINT_WIDTH }
     ,
       R.div className:'points_heading_label',
-        "State Your #{capitalize(@props.valence)}"
+        "Give Your #{capitalize(@props.valence)}"
 
       R.ul null,
         for point in included_points
@@ -1110,7 +1110,6 @@ Point = ReactiveComponent
 # If they have, show new point form. 
 NewPoint = ReactiveComponent
   displayName: 'NewPoint'
-
   componentDidUpdate : ->
     if @local.edit_mode
       $(@getDOMNode()).find('#nutshell').focus()
@@ -1331,6 +1330,12 @@ AuthHeader = ReactiveComponent
   displayName: 'AuthHeader'
 
   componentDidMount : -> 
+    # Mike note: Wondering why we are setting up the slider here, and
+    # why we need to compute the default for your_opinion.stance here.
+    #
+    # I'd imagine that ideally, this component would assume that there
+    # is a your_opinion_key, and that there is a stance, and that the
+    # default was already set.
     stance = (window.your_opinion_key and @data(your_opinion_key).stance) or 0
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if !$slider_base.hasClass "ui-slider"

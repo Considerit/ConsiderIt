@@ -1693,7 +1693,7 @@ Page = ReactiveComponent
   displayName: 'Page'
   render: ->
     root = @data('root')
-    R.div null,
+    R.div 'data-authmode': root.auth_mode, #authmode controls styling during authentication process
       Header()
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
         R.div id: 'inner_body', #style : { width: CONTENT_WIDTH },

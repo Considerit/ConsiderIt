@@ -37,7 +37,7 @@
   position: relative
   margin: auto
   +font-size(1)
-  // margin-bottom: 5 * $vertical_baseline
+  margin-bottom: 2 * $vertical_baseline
 
 // Proposal proposer is the avatar of the user who submitted the proposal
 $proposer_img_size: 50px
@@ -95,9 +95,10 @@ $proposal_header_color: #E37765
 
 // The proposal details revealed 
 .proposal_details
-  padding: $vertical_baseline / 2 0
+  padding-top: $vertical_baseline / 2 0
   +font-size(2)
 
+.proposal_details, .description_field
   // some default styles for html written by users rendered here
   br
     padding-bottom: $vertical_baseline/2
@@ -105,7 +106,31 @@ $proposal_header_color: #E37765
     margin-bottom: $vertical_baseline / 2
   td
     padding: 0 3px
-    
+  li
+    list-style: outside
+  ul
+    padding-left: 20px
+  a
+    text-decoration: underline
+
+
+.description_field
+  padding: $vertical_baseline / 4 0
+  color: #414141
+
+  .field_heading
+    cursor: pointer
+
+  .field_name
+    font-weight: 600
+
+  .expand_arrow
+    padding-right: 6px
+    +font-size(2)
+
+  .field_body
+    padding: 6px 24px
+
 
 /////////////////////
 // FEELINGS REGION

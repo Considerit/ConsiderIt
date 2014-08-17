@@ -259,6 +259,28 @@ Proposal = ReactiveComponent
 
     proposer = @data(proposal.user)
 
+    # Temporary approach to Proposal description fields. 
+    # Description fields are the expandable details that help people drill
+    # into the proposal. They are very specific to the type of proposal (e.g. for
+    # an LVG ballot measure, one of the fields might be "fiscal impact statement").  
+    # For Tigard, I'm storing all these fields in proposal.additional_description1
+    # as a serialized JSON object of the following structure:
+    #       [ {"label": "field one", "html": "<p>some details</p>"}, ... ] 
+    # If we choose to use this more flexible approach, we can migrate all the old 
+    # data to this format, rename the column, and get rid of a bunch of columns on 
+    # Proposal that will be made obsolete. 
+    if !@local.description_fields
+      # Deserialize the description fields. 
+      # It would be nice if ActiveREST recognized that a field is a serialized data object!
+      # This will fail for proposals that are not using the serialized JSON format; 
+      # For now, we'll just catch the error and carry on 
+      try 
+        @local.description_fields = $.parseJSON(@data().additional_description1)
+        @local.expanded_field = null
+      catch
+        @local.description_fields = null
+
+
     R.div className:'proposal', key:@props.long_id, 'data-page':root.page_name,
       R.div className: 'proposal_heading stickable', 
         R.span null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
@@ -266,23 +288,26 @@ Proposal = ReactiveComponent
       R.div className: 'proposal_heading placeholder', 
         R.span null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
 
-
       #description
 
       R.div className:'description_region', style: description_region_style, 
 
-        R.div className: 'context',
-          # Avatar 
-          #   className: 'proposer_avatar'
-          #   key: proposal.user
-          #   tag: R.img
-          #   img_style: 'large'
+        # R.div className: 'context',
           
-          # R.span className: 'proposal_author_tic'
-          
-          R.div className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}, Director of Business Development, Facebook" 
+        #   R.div className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}" 
 
         R.div className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
+
+        if @local.description_fields
+          R.div className: 'description_fields',
+            for field in @local.description_fields
+              do (field) => 
+                R.div className: 'description_field', key: field.label,
+                  R.div className: 'field_heading', onClick: (=> field.expanded = !field.expanded; save(@local);),
+                    R.span className: 'expand_arrow', dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9654;'}
+                    R.span className: 'field_name', field.label
+                  if field.expanded
+                    R.div className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
 
     
       #feelings

@@ -230,6 +230,8 @@
                  this.local_key = 'component/' + components_next_id++
                  // console.log('mounting', this.props.key)
 
+                 if (obj.displayName === undefined) throw 'Component has not defined a displayName'
+
                  this.name = obj.displayName.toLowerCase()
                  components[this.local_key] = this
 

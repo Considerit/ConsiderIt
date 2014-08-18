@@ -1702,7 +1702,7 @@ Page = ReactiveComponent
 
 Computer = ReactiveComponent
   # This doesn't actually render anything.  It just processes state
-  # changes to current_usr for CSRF and logging in and out.
+  # changes to current_user for CSRF and logging in and out.
   displayName: 'Computer'
   render : ->
     current_user = @data('/current_user')

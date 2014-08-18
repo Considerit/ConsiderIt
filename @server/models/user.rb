@@ -62,7 +62,7 @@ class User < ActiveRecord::Base
 
   def logged_in?
     # Logged-in now means that the current user account is registered
-    self.registered
+    self.registration_complete
   end
 
   def unsubscribe!
@@ -341,25 +341,7 @@ class User < ActiveRecord::Base
     #  4. Delete the old user
 
     # 1. Merge opinions
-    # puts("Merging opinions")
-    # user_props = Proposal.where(:user_id => user.id).to_a
-    # self_props = Proposal.where(:user_id => self.id).to_a
-    # dupes = user_props & self_props
-    # dupe_ids = dupes.map{|p| p.id}
-    # puts("Duplicate proposals are #{dupe_ids}")
-    # for p in dupes
-    #   # Now merge the inclusions on these proposals
-    #   puts("Merging opinions on #{p.id}")
-    #   old_o = Opinion.where(:user_id => user.id, :proposal_id => p.id).first
-    #   new_o = Opinion.where(:user_id => self.id, :proposal_id => p.id).first
-    #   for i in old_o.inclusions
-    #     puts("Copying point #{i.point.id} into new opinion #{new_o.id}")
-    #     new_o.include(i.point, current_tenant)
-    #   end
-    #   puts("Deleting the old opinion #{old_o.id}")
-    #   old_o.delete()
-    # end
-    
+    puts("Merging opinions")
     old_u_ops = Opinion.where(:user_id => user.id).map{|o| o.id}
     new_u_ops = Opinion.where(:user_id => self.id).map{|o| o.id}
 

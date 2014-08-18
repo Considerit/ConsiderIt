@@ -215,7 +215,7 @@ class CurrentUserController < DeviseController
     end
 
     # Register the account
-    if not current_user.registered
+    if not current_user.registration_complete
       has_name = current_user.name and current_user.name.length > 0
       can_login = ((current_user.email and current_user.email.length > 0)\
                    or (current_user.twitter_uid or current_user.facebook_uid\
@@ -226,7 +226,7 @@ class CurrentUserController < DeviseController
       puts('XXX Need to check the pledge')
 
       if has_name and can_login
-        current_user.registered = true
+        current_user.registration_complete = true
         if !current_user.save
           raise "Error registering this uesr"
         end
@@ -444,7 +444,7 @@ class CurrentUserController < DeviseController
     {
       key: '/current_user',
       user: current_user ? "/user/#{current_user.id}" : nil,
-      logged_in: current_user.registered,
+      logged_in: current_user.registration_complete,
       email: current_user.email,
       password: nil,
       csrf: form_authenticity_token,
@@ -456,7 +456,6 @@ class CurrentUserController < DeviseController
       facebook_uid: nil,
       google_uid: nil,
       name: current_user.name
-      #registered: current_user.registered
     }
   end
 

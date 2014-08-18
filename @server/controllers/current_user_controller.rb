@@ -72,14 +72,19 @@ class CurrentUserController < DeviseController
     password_reset_token = params[:reset_password_token]
     session.delete(:access_token)
 
-    # 0. Log in or out
-    
+    # 0. Try logging out
     puts("Current user is #{current_user} and logged in? #{current_user and current_user.logged_in?}")
     if current_user and current_user.logged_in? and params[:logged_in] == false
       puts("Logging out... what is this resource_name thing? #{resource_name}")
       puts("And the all scopes thing? #{Devise.sign_out_all_scopes}")
       Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
+
+      puts("Making a stub user.")
+      make_stub_user()
+      puts("Now current_user is #{current_user}")
+
     else
+      # Otherwise, we'll try logging in and/or updating this user
 
       # 1. Try logging in
       # 
@@ -126,92 +131,93 @@ class CurrentUserController < DeviseController
 
         puts("Done trying singing in.  Current user is #{current_user}")
       end
-    end
 
-    # 2. If they still need an account, make a stub
-    if not current_user
-      puts("Making a stub user.")
-      make_stub_user()
-      puts("Now current_user is #{current_user}")
-    end      
 
-    # 3. Now the user has an account.  Let them manipulate themself:
-    #   • Update their name, bio, photo...
-    #   • Update their email (if it doesn't already exist)
-    #   • Get registered if they filled everything out
+      # 2. If they still need an account, make a stub
+      if not current_user
+        puts("Making a stub user.")
+        make_stub_user()
+        puts("Now current_user is #{current_user}")
+      end      
 
-    puts("Current user is #{current_user.id}")
-    puts("and the user of that is #{User.find(current_user.id)}")
+      # 3. Now the user has an account.  Let them manipulate themself:
+      #   • Update their name, bio, photo...
+      #   • Update their email (if it doesn't already exist)
+      #   • Get registered if they filled everything out
 
-    # Update their name, bio, photo, and anonymity.
-    permitted = ActionController::Parameters.new(new_params).permit!
-    puts("Params is #{new_params}")
-    user = User.find(current_user.id)
-    if user.update_attributes(permitted) # Why is this bullshit so complicated?
-      puts("Updated those damn params.  Now name is #{current_user.name}")
-      if user.save
-        puts("Saved that shit.")
+      puts("Current user is #{current_user.id}")
+      puts("and the user of that is #{User.find(current_user.id)}")
+
+      # Update their name, bio, photo, and anonymity.
+      permitted = ActionController::Parameters.new(new_params).permit!
+      puts("Params is #{new_params}")
+      user = User.find(current_user.id)
+      if user.update_attributes(permitted) # Why is this bullshit so complicated?
+        puts("Updated those damn params.  Now name is #{current_user.name}")
+        if user.save
+          puts("Saved that shit.")
+        else
+          puts("Save goddam failed")
+        end
+        if params.has_key? :avatar
+          dirty_avatar_cache   
+        end
       else
-        puts("Save goddam failed")
+        puts("No updating of bio and shit happened #{current_user.bio}")
+        raise 'Had trouble manipulating this user!'
       end
-      if params.has_key? :avatar
-        dirty_avatar_cache   
-      end
-    else
-      puts("No updating of bio and shit happened #{current_user.bio}")
-      raise 'Had trouble manipulating this user!'
-    end
 
-    # Update their email address.  First, check if they gave us a new address
-    if params[:email] and params[:email] != current_user.email
-      puts("Updating email from #{current_user.email} to #{params[:email]}")
-      # And if it's not taken
-      if User.find_by_email(params[:email])
-        errors[:register].append 'That email is not available.'
-      # And that it's valid
-      elsif false # I don't know how to check an email address in rails, so fuck it!
-        errors[:register].append 'Bad email address'
-      else
-        puts('XXX Need to figure out how to validate email address in here')
-        # Okay, here comes a new email address!
-        current_user.update_attributes({:email => params[:email]})
-        if !current_user.save
-          raise "Error saving this user's email"
+      # Update their email address.  First, check if they gave us a new address
+      if params[:email] and params[:email] != current_user.email
+        puts("Updating email from #{current_user.email} to #{params[:email]}")
+        # And if it's not taken
+        if User.find_by_email(params[:email])
+          errors[:register].append 'That email is not available.'
+        # And that it's valid
+        elsif false # I don't know how to check an email address in rails, so fuck it!
+          errors[:register].append 'Bad email address'
+        else
+          puts('XXX Need to figure out how to validate email address in here')
+          # Okay, here comes a new email address!
+          current_user.update_attributes({:email => params[:email]})
+          if !current_user.save
+            raise "Error saving this user's email"
+          end
         end
       end
-    end
 
-    # Update their password
-    if (params[:password] and params[:password].length > 0)
-      puts("There's a password. #{params[:password]}")
-      if params[:password].length < 4
-        puts("But it's too short")
-        errors[:register].append 'Password is too short'
-      else
-        puts("Ok let's change the password.")
-        user = current_user
-        current_user.password = params[:password]
-        if !current_user.save
-          raise "Error saving this user's password"
+      # Update their password
+      if (params[:password] and params[:password].length > 0)
+        puts("There's a password. #{params[:password]}")
+        if params[:password].length < 4
+          puts("But it's too short")
+          errors[:register].append 'Password is too short'
+        else
+          puts("Ok let's change the password.")
+          user = current_user
+          current_user.password = params[:password]
+          if !current_user.save
+            raise "Error saving this user's password"
+          end
+          puts("Current user is now #{current_user.id}")
+          puts("Ok, logging back in... fucking asshole!")
+          sign_in :user, user, :bypass => true
+          puts("Current user is now #{current_user.id}")
         end
-        puts("Current user is now #{current_user.id}")
-        puts("Ok, logging back in... fucking asshole!")
-        sign_in :user, user, :bypass => true
-        puts("Current user is now #{current_user.id}")
       end
-    end
 
-    # render :json => [form_authenticity_token]
-    # return
+      # render :json => [form_authenticity_token]
+      # return
 
-    # Third-party auth can give us some custom user attributes,
-    # like "google_uid" and "facebook_uid".  Now we will merge
-    # those into our database for this user.
-    if third_party_token
-      user_params  = current_user.update_attributes(
-        User.params_from_third_party_token(third_party_token))
-      current_user.save
-      avatar_dirty = third_party_token.has_key?(:avatar_url) || params.has_key?(:avatar) 
+      # Third-party auth can give us some custom user attributes,
+      # like "google_uid" and "facebook_uid".  Now we will merge
+      # those into our database for this user.
+      if third_party_token
+        user_params  = current_user.update_attributes(
+          User.params_from_third_party_token(third_party_token))
+        current_user.save
+        avatar_dirty = third_party_token.has_key?(:avatar_url) || params.has_key?(:avatar) 
+      end
     end
 
     # Register the account

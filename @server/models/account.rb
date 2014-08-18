@@ -31,7 +31,9 @@ class Account < ActiveRecord::Base
 
   def as_json(options={})
     options[:only] ||= Account.my_public_fields
-    super(options)
+    json = super(options)
+    json['key'] = 'customer'
+    json
   end
 
   def host_without_subdomain

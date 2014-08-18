@@ -303,7 +303,7 @@ Proposal = ReactiveComponent
               do (field) => 
                 R.div className: 'description_field', key: field.label,
                   R.div className: 'field_heading', onClick: (=> field.expanded = !field.expanded; save(@local);),
-                    R.span className: 'expand_arrow', dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9654;'}
+                    R.span className: 'expand_arrow', dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
                     R.span className: 'field_name', field.label
                   if field.expanded
                     R.div className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}

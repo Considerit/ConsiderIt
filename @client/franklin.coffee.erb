@@ -575,7 +575,7 @@ Slider = ReactiveComponent
 
     # On initial page load, initialize slider value based on your_opinion
     your_opinion = @data(@data('root').your_opinion_key)
-    if !slider.has_moved && slider.stance != your_opinion.stance
+    if !slider.has_moved && your_opinion.published
       slider.stance = your_opinion.stance
       slider.stance_segment = your_opinion.stance_segment
       slider.has_moved = true

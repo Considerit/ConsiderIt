@@ -12,6 +12,8 @@ class OpinionController < ApplicationController
   end
 
   def create
+    raise "This shouldn't be called anymore"
+
     opinion = Opinion.create params[:opinion].permit!
     authorize! :create, opinion
 
@@ -54,31 +56,8 @@ class OpinionController < ApplicationController
     already_published = opinion.published
     stance_changed = already_published && updates['stance'] != opinion.stance
     
-    if current_user
-      existing_opinion = proposal.opinions.published.where("id != #{opinion.id}").find_by_user_id(current_user.id)
-    else 
-      existing_opinion = nil
-    end
-
     # Update this opinion
     opinion.update_attributes ActionController::Parameters.new(updates).permit!
-
-    if existing_opinion
-      opinion.subsume existing_opinion
-    end
-
-    # Mike, you might want to check if this is a good place for this. 
-    # Basically we need a way of updating this Opinion's owner after
-    # they've logged in and seek to publish the opinion. It is possible
-    # that we might actually want to set the user_id of all the user's opinions,
-    # points, etc in the current_user methods upon authorization. 
-    if opinion.published && !opinion.user_id
-      opinion.user_id = current_user.id
-      opinion.inclusions.each do |inc|
-        inc.user_id = current_user.id
-        inc.save
-      end
-    end
 
     opinion.save
 
@@ -107,7 +86,7 @@ class OpinionController < ApplicationController
 
     pp 1, opinion.as_json
 
-    opinion.update_inclusions
+    opinion.recache
 
     pp 2, opinion.as_json
 

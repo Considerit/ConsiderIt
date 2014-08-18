@@ -12,5 +12,5 @@
 //= require_tree ./vendor/main
 
 //= require_tree ./vendor_extensions
-//= require ../../nonactiverest
+//= require ../../activerest-m
 //= require ../../testmike

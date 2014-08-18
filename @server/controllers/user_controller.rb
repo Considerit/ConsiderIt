@@ -14,6 +14,7 @@ class UserController < ApplicationController
     
     id = params[:id]
     user = User.find_by_id(params[:id])
+    puts("User #{params[:id]} is #{user}")
     render :json => {
              'key' => "/user/#{user.id}",
              'name' => user.name,

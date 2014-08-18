@@ -707,13 +707,17 @@ OpinionFilter = ReactiveComponent
   displayName: 'OpinionFilter'
 
   onSelectSegment : (segment) ->
-    if @data('root').page_name == 'results'
-      hist = @data('histogram')
-      hist.selected_segment = if hist.selected_segment == segment then [null, null] else [segment, segment != null]
-      save(hist)
+    hist = @data('histogram')
+    hist.selected_segment = if hist.selected_segment == segment then [null, null] else [segment, segment != null]
+    save(hist)
 
   render : ->
-    @hist = @data('histogram')
+    hist = @data('histogram')
+
+    # Remove filter when on crafting page
+    if @data('root').page_name == 'crafting'
+      hist.selected_segment = [null, null] if hist.selected_segment[0] 
+
     filter_options = ['show all opinions',
         'only full opposers',
         'only firm opposers',
@@ -732,7 +736,7 @@ OpinionFilter = ReactiveComponent
           i = null
 
         c = "filter_option"
-        if @hist.selected_segment[0] == i
+        if hist.selected_segment[0] == i
           c = c + ' selected'
 
         # I had to make this wrapper to make a new context for i

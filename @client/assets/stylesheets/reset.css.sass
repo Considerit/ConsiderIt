@@ -43,10 +43,10 @@
 .l_header
   margin: 0 auto
   // min-height: 32px
-  color: $header_text_color
-  background: $header_background_declaration
-  a
-    +link_style(emphasize($header_text_color, 10%, $reference: $header_background_color), $header_background_color, 25%)
+  // color: $header_text_color
+  // background: $header_background_declaration
+  // a
+  //   +link_style(emphasize($header_text_color, 10%, $reference: $header_background_color), $header_background_color, 25%)
 
 // .l_heading_wrap
 //   width: $content_width
@@ -63,19 +63,6 @@
 #inner_body
   margin: auto
 
-.l_footer
-  padding: $vertical_baseline/2 0
-  text-align: center
-  background-color: #eee
-  a
-    text-decoration: underline
-    +link_style(emphasize($footer_text_color, 10%, $reference: $footer_background_color), $footer_background_color, 25%)
-    font-weight: 600
-
-  .separator
-    +font-size(-2)
-    color: #aaa
-    padding: 0 10px
 
 // .l_footer_wrap
 //   width: $body_width

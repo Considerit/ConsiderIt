@@ -28,6 +28,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
+
 /////////////////////
 // DESCRIPTION REGION
 // Proposal description
@@ -37,7 +38,7 @@
   position: relative
   margin: auto
   +font-size(1)
-  // margin-bottom: 5 * $vertical_baseline
+  margin-bottom: 2 * $vertical_baseline
 
 // Proposal proposer is the avatar of the user who submitted the proposal
 $proposer_img_size: 50px
@@ -71,33 +72,22 @@ $proposer_img_size: 50px
   vertical-align: bottom 
 
 $proposal_header_color: #E37765
-.proposal_author_tic
-  left: 50%
-  margin-left: -10px
-  width: 0
-  height: 0 
-  border-left: 10px solid transparent
-  border-right: 10px solid transparent  
-  border-top: 12px solid $proposal_header_color
-  position: absolute
-  top: -34px
-
 .proposal_heading
-  border-bottom: 1px solid darken($proposal_header_color, 15%)
   width: 100%
   background-color: $proposal_header_color
   color: white
   +font-size(5)
-  padding: $vertical_baseline/8 $grid_gutter / 2
+  padding: $vertical_baseline/8 $grid_gutter * 5
   z-index: 999
   position: relative
   text-align: center
 
 // The proposal details revealed 
 .proposal_details
-  padding: $vertical_baseline / 2 0
+  padding-top: $vertical_baseline
   +font-size(2)
 
+.proposal_details, .description_field
   // some default styles for html written by users rendered here
   br
     padding-bottom: $vertical_baseline/2
@@ -105,7 +95,31 @@ $proposal_header_color: #E37765
     margin-bottom: $vertical_baseline / 2
   td
     padding: 0 3px
-    
+  li
+    list-style: outside
+  ul
+    padding-left: 20px
+  a
+    text-decoration: underline
+
+
+.description_field
+  padding: $vertical_baseline / 4 0
+  color: #414141
+
+  .field_heading
+    cursor: pointer
+
+  .field_name
+    font-weight: 600
+
+  .expand_arrow
+    padding-right: 6px
+    +font-size(2)
+
+  .field_body
+    padding: 6px 24px
+
 
 /////////////////////
 // FEELINGS REGION
@@ -726,18 +740,8 @@ $point-includer-width: 22px
       +font-size(-1)
 
 
-
-
-
-
-
 // Auth styling
-.userbar
-  text-align: right
-  padding: 4px 15px
 
-  a
-    padding-left: 3px
 
 [data-authmode]
   visibility: hidden
@@ -745,6 +749,7 @@ $point-includer-width: 22px
     visibility: visible
   .auth_region
     visibility: visible
+
 
 [data-authmode="login"], [data-authmode="register"]
 
@@ -929,3 +934,50 @@ $avatar_preview_size: 60px
     //margin: 0 5px
     // +font-size(2)
     //font-weight: 600
+
+
+
+// HEADER
+$page_header_color: $proposal_header_color
+.l_header
+  background-color: $page_header_color
+
+  .userbar
+    text-align: right
+    padding: 8px 15px
+
+    a
+      color: #eee
+      padding-left: 6px
+
+// FOOTER
+
+.l_footer
+  padding: $vertical_baseline/2 0
+  text-align: center
+  background-color: #eee
+  a
+    text-decoration: underline
+    +link_style(emphasize($footer_text_color, 10%, $reference: $footer_background_color), $footer_background_color, 25%)
+    font-weight: 600
+
+  .separator
+    +font-size(-2)
+    color: #aaa
+    padding: 0 10px
+
+
+////////////////////////////////
+////// CUSTOMER SPECIFIC STYLES
+
+[customer="livingvotersguide"]
+
+[customer="cityoftigard"]
+  .proposal_heading
+    width: 100%
+    background-color: #4CA242
+
+  .l_header
+    height: 38px
+    background-color: #083667
+

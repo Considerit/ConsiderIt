@@ -85,7 +85,7 @@ class Proposal < ActiveRecord::Base
       :points => pointz,
       #:included_points => includeds,
       :opinions => ops,
-      :your_opinion => your_opinion.as_json
+      :your_opinion => "/opinion/#{your_opinion.id}"
     })
 
     response

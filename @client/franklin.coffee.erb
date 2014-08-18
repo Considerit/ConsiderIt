@@ -243,9 +243,8 @@ Proposal = ReactiveComponent
   render : ->
     proposal = @data()
     root = @data('root')
-    @page # Is this needed?  (Does it even work?)
-    included_points = proposal.your_opinion.point_inclusions
-    your_opinion = proposal.your_opinion
+    your_opinion = @data(proposal.your_opinion)
+    included_points = your_opinion.point_inclusions
 
     description_region_style = {width: 1.25 * BODY_WIDTH}
 
@@ -256,8 +255,15 @@ Proposal = ReactiveComponent
     window.user_opinions = {}
     for opinion in proposal.opinions
       window.user_opinions[opinion.user] = opinion
-    window.current_proposal = proposal.key
-    window.your_opinion_key = proposal.your_opinion.key
+
+    # I need to improve save() so that it knows when things actually
+    # change because these if statements are stupid
+    if root.current_proposal != proposal.key
+      root.current_proposal = proposal.key
+      save(root)
+    if root.your_opinion_key != proposal.your_opinion
+      root.your_opinion_key = proposal.your_opinion
+      save(root)
 
     proposer = @data(proposal.user)
 
@@ -352,7 +358,7 @@ Histogram = ReactiveComponent
   buildHistogram : ->
     ##
     # Size the avatars. Size of avatar shrinks proportional to 1/sqrt(num_opinions)
-    opinions = @data(current_proposal).opinions || []
+    opinions = @data(@data('root').current_proposal).opinions || []
 
     avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, 
       Math.floor(BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (opinions.length + 1) / 10 )  )
@@ -530,7 +536,7 @@ Slider = ReactiveComponent
         min: -1
         max: 1
         step: .01
-        value: -@data(your_opinion_key).stance
+        value: -@data(root.your_opinion_key).stance
         slide: (ev, ui) => 
           # Update the stance segment if it has changed. This facilitates 
           # the feedback atop the slider changing from e.g. 'strong 
@@ -558,7 +564,7 @@ Slider = ReactiveComponent
   saveSlider : (ev) ->
     # We save the slider's position to the server only on mouse-up.
     # This way you can drag it with good performance.
-    your_opinion = @data(your_opinion_key)
+    your_opinion = @data(@data('root').your_opinion_key)
     slider = @data('slider')
     if your_opinion.stance != slider.stance
       your_opinion.stance         = slider.stance
@@ -571,7 +577,7 @@ Slider = ReactiveComponent
     segment = slider.stance_segment
 
     # On initial page load, initialize slider value based on your_opinion
-    your_opinion = @data(your_opinion_key)
+    your_opinion = @data(@data('root').your_opinion_key)
     if !slider.has_moved && slider.stance != your_opinion.stance
       slider.stance = your_opinion.stance
       slider.stance_segment = your_opinion.stance_segment
@@ -735,7 +741,7 @@ DecisionBoard = ReactiveComponent
       accept: ".point_content"
       drop : (ev, ui) =>
         if ui.draggable.parent().is('.community_point')
-          your_opinion = @data(your_opinion_key)
+          your_opinion = @data(@data('root').your_opinion_key)
           ui.draggable.parent().velocity 'fadeOut', 200, -> 
             your_opinion.point_inclusions.push(
               ui.draggable.parent().data('id'))
@@ -777,13 +783,13 @@ DecisionBoard = ReactiveComponent
 
   # When user clicks the big bold button at the bottom of the crafting page
   saveYourOpinion : -> 
-    your_opinion = @data your_opinion_key
+    root = @data('root')
+    your_opinion = @data (root.your_opinion_key)
     if @data('/current_user').logged_in
       your_opinion.published = true
       save your_opinion
       togglePage('results')
     else
-      root = @data('root')
       root.auth_mode = 'register'
       #we'll need to publish this opinion after auth is completed
       root.publish_this_opinion = true
@@ -794,7 +800,7 @@ DecisionBoard = ReactiveComponent
     root = @data('root')
     root = root.page_name
     current_user = @data('/current_user')
-    your_opinion = @data(your_opinion_key)
+    your_opinion = @data(root.your_opinion_key)
 
     # Need to register this dependency because ActiveREST doesn't pick it up. 
     # In results state, decision board position depends on the slider position.
@@ -847,7 +853,8 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   render : ->
-    included_points = @data(your_opinion_key).point_inclusions
+    root = @data('root')
+    included_points = @data(root.your_opinion_key).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
     R.div 
@@ -881,7 +888,7 @@ CommunityPoints = ReactiveComponent
 
   buildNewPointThreshold : ->
     # Grab the 10th percentile
-    points = @data(current_proposal).points || []
+    points = @data(@data('root').current_proposal).points || []
     newpoint_threshold = 
       (_.sortBy points, (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
 
@@ -891,8 +898,8 @@ CommunityPoints = ReactiveComponent
   buildPointsList : ->
     is_results = @data('root').page_name == 'results'
     selected_segment = @data('histogram').selected_segment
-    proposal = @data(current_proposal)
-    included_points = @data(your_opinion_key).point_inclusions
+    proposal = @data(@data('root').current_proposal)
+    included_points = @data(@data('root').your_opinion_key).point_inclusions
     points = proposal.points
     opinions = proposal.opinions
 
@@ -979,7 +986,7 @@ Point = ReactiveComponent
       then 'invalid' 
       else (valid) =>
         if !valid
-          your_opinion = @data(your_opinion_key)
+          your_opinion = @data(@data('root').your_opinion_key)
           your_opinion.point_inclusions = _.without your_opinion.point_inclusions, @props.key
           save(your_opinion)
           console.log('Saved it.', your_opinion)
@@ -1152,6 +1159,7 @@ NewPoint = ReactiveComponent
 
   handleSubmitNewPoint : (ev) ->
     $form = $(@getDOMNode())
+    root = @data('root')
 
     current_user = @data('/current_user').user
     point =
@@ -1162,7 +1170,7 @@ NewPoint = ReactiveComponent
       user : current_user
       comment_count : 0 
       includers : [current_user]
-      proposal : @data(current_proposal).key
+      proposal : @data(root.current_proposal).key
       hide_name : $form.find("sign_name-#{@props.valence}").val()
     save(point)
 
@@ -1171,8 +1179,9 @@ NewPoint = ReactiveComponent
 
     # This is a kludge cause activerest sucks for pre-rendering
     # changes before the server returns them
-    @data(your_opinion_key).point_inclusions.push(point.key)
-    re_render([your_opinion_key])
+    
+    @data(root.your_opinion_key).point_inclusions.push(point.key)
+    re_render([root.your_opinion_key])
   render : ->
     #TODO: refactor HTML/CSS for new point after we get better sense of new point redesign
     @local = @data @local_key,
@@ -1334,13 +1343,14 @@ AuthHeader = ReactiveComponent
   displayName: 'AuthHeader'
 
   componentDidMount : -> 
+    root = @data('root')
     # Mike note: Wondering why we are setting up the slider here, and
     # why we need to compute the default for your_opinion.stance here.
     #
     # I'd imagine that ideally, this component would assume that there
     # is a your_opinion_key, and that there is a stance, and that the
     # default was already set.
-    stance = (window.your_opinion_key and @data(your_opinion_key).stance) or 0
+    stance = (root.your_opinion_key and @data(root.your_opinion_key).stance) or 0
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if !$slider_base.hasClass "ui-slider"
       $slider_base.slider
@@ -1358,9 +1368,9 @@ AuthHeader = ReactiveComponent
     save(root)
 
   render : ->
-    stance =  @data(your_opinion_key).stance
-    segment = @data(your_opinion_key).stance_segment
     root = @data('root')
+    stance =  @data(root.your_opinion_key).stance
+    segment = @data(root.your_opinion_key).stance_segment
 
     # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
     # also why this file is ERB
@@ -1677,16 +1687,15 @@ Root = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
+    root = @data('root')
+
     # Update the location bar if it's different
-    url = "/#{@props.long_id}#{if @data('root').page_name == 'results' then '/results' else ''}"
+    url = "/#{@props.long_id}#{if root.page_name == 'results' then '/results' else ''}"
     if (window.location.pathname != url)
       window.app_router.navigate url, {trigger : true}
 
-    # Pull in this page's data from the server
-    window.current_page = "/page/#{@props.long_id}"
-
     # Now let's render
-    Page key: window.current_page
+    Page key: "/page/#{@props.long_id}"
 
 Page = ReactiveComponent
   displayName: 'Page'
@@ -1715,21 +1724,19 @@ Computer = ReactiveComponent
     # This will need to be updated with better arest
     if current_user.user != @local.last_curr_user
       if @local.last_curr_user
+        current_proposal = @data('root').current_proposal
         console.log('Forcing refetch of current_proposal',current_proposal)
-        delete arest.cache[current_proposal]
-        window.current_proposal = undefined
-        window.your_opinion_key = undefined
-        fetch(current_proposal)
+        arest.serverFetch(@data('root').current_proposal)
       @local.last_curr_user = current_user.user
       save(@local)
 
-    # Publish this opinion if we can
-    root = @data('root')
-    if root.publish_this_opinion and current_user.logged_in and window.your_opinion_key
-      opinion = @data(your_opinion_key)
-      opinion.published = true
-      root.publish_this_opinion = false
-      save(opinion, root)
+    # # Publish this opinion if we can
+    # root = @data('root')
+    # if root.publish_this_opinion and current_user.logged_in and window.your_opinion_key
+    #   opinion = @data(your_opinion_key)
+    #   opinion.published = true
+    #   root.publish_this_opinion = false
+    #   save(opinion, root)
 
     return R.span null, ''
 

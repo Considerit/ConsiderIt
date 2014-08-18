@@ -106,9 +106,10 @@ do ($, window, document) ->
           else 
             new_translate = @current_translate + (@last_viewport_top - viewport_top) #- (effective_viewport_top - container_top)
 
-        # make sure that inertial scroll didn't force us to scroll past the bottom of the screen
-        if element_bottom + (new_translate - @current_translate) + @options.bottom_offset > $(document).height()
-          new_translate = $(document).height() - element_bottom + @current_translate - @options.bottom_offset
+        # make sure that inertial scroll didn't force us to scroll past the bottom of the container
+        container_bottom = container_top + @options.container.height()
+        if element_bottom + (new_translate - @current_translate) + @options.bottom_offset > container_bottom
+          new_translate = container_bottom - element_bottom + @current_translate - @options.bottom_offset
 
         if new_translate != @current_translate
           @current_translate = new_translate

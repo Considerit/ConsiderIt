@@ -119,7 +119,7 @@ class ProposalController < ApplicationController
       inviter = nil
 
       if existing_access_list.nil? || existing_access_list == '' 
-        if !current_user.nil?
+        if !current_user.nil? && current_user.registered
           inviter = current_user
         end
         users = proposal.access_list.gsub(' ', '').split(',')

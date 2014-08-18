@@ -6,6 +6,11 @@ class InclusionsController < ApplicationController
   def create
     authorize! :create, Inclusion
 
+    # MIKE SAYS: It looks like this function does a lot of session
+    # stuff... but I think we don't need it anymore so I'm not going
+    # to fix it unless this exception gets thrown
+    raise "Mike doesn't think this function gets called anymore. You've proven him wrong!"
+
     proposal = Proposal.find_by_long_id params[:proposal_id]
 
     params[:proposal_id] = proposal.id
@@ -17,7 +22,7 @@ class InclusionsController < ApplicationController
     # not going though CanCan because of session query requirement
     if (current_user \
         && (!session[proposal.id][:deleted_points].has_key?(point.id) \
-        && current_user.inclusions.where( :point_id => point.id ).count > 0)) \
+           && current_user.inclusions.where( :point_id => point.id ).count > 0)) \
        || session[proposal.id][:included_points].has_key?(point.id)
       render :json => { :success => false }.to_json
       return

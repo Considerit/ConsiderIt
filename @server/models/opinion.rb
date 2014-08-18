@@ -15,7 +15,7 @@ class Opinion < ActiveRecord::Base
   _public_fields = 
 
   scope :published, -> {where( :published => true )}
-  scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :point_inclusions, :proposal_id, :stance, :stance_segment, :user_id, :explanation, :published] )}
+  scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :proposal_id, :stance, :stance_segment, :user_id, :explanation, :point_inclusions, :published] )}
 
   before_save do 
     self.explanation = self.explanation.sanitize if self.explanation
@@ -42,21 +42,17 @@ class Opinion < ActiveRecord::Base
   def self.get_or_make(proposal, user, tenant)
     # Each (user,proposal) should have only one opinion.
 
-    # This function can be called with null user, in which case it
-    # just creates a new opinion.  This happens when you load a
-    # proposal before the user has logged in... you just give them a
-    # blank scratchwork opinion to work through.
-    
-    your_opinion = nil
-    if user
-      # First try to find a published opinion for this user
-      your_opinion = Opinion.where(:proposal_id => proposal.id, 
-                                   :user => user)
-      if your_opinion.length > 1
-        raise "Duplicate opinions for user #{user}!"
-      end
-      your_opinion = your_opinion.first
+    if not user
+      raise "Need a user to get their opinion!"
     end
+    
+    # First try to find a published opinion for this user
+    your_opinion = Opinion.where(:proposal_id => proposal.id, 
+                                 :user => user)
+    if your_opinion.length > 1
+      raise "Duplicate opinions for user #{user}!"
+    end
+    your_opinion = your_opinion.first
 
     # Otherwise create one
     if not your_opinion
@@ -89,18 +85,21 @@ class Opinion < ActiveRecord::Base
     }
           
     Inclusion.create! ActionController::Parameters.new(attrs).permit!
-    self.update_inclusions()
+    self.recache()
   end    
-  def subsume( subsumed_opinion )
-    subsumed_opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
-    subsumed_opinion.points.update_all({:user_id => user_id, :opinion_id => id})
-    subsumed_opinion.inclusions.update_all({:user_id => user_id, :opinion_id => id})
-    subsumed_opinion.comments.update_all({:commentable_id => id})
-    subsumed_opinion.published = false
-    subsumed_opinion.save
+  def absorb( opinion )
+    puts("Absorbing opinion #{opinion.id} into #{self.id}")
+    # Change the absorbed's everythings to point at this opinion
+    opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
+    opinion.points.update_all(        {:user_id => user_id, :opinion_id => id})
+    opinion.inclusions.update_all(    {:user_id => user_id, :opinion_id => id})
+    opinion.comments.update_all({:commentable_id => id})
+    self.published = self.published or opinion.published
+    self.recache()
+    opinion.delete()
   end
 
-  def update_inclusions
+  def recache
     inclusions = self.inclusions.select(:point_id)
 
     self.point_inclusions = inclusions.map {|x| x.point_id }.uniq.compact.to_s
@@ -183,6 +182,15 @@ class Opinion < ActiveRecord::Base
         end
       end
     end
+
+    # And cause I want this too
+    Point.all.each do |p|
+      if p.published
+        puts("Fixing #{p.id}")
+      end
+      p.update_absolute_score(true)
+    end
+    'done'
   end
 
   def self.purge

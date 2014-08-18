@@ -81,12 +81,12 @@ togglePage = (page_name) ->
 stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
 
 stance_names = 
-  6 : 'Rigidly Support'
-  0 : 'Rigidly Oppose'
+  6 : 'Completely Support'
+  0 : 'Utterly Oppose'
   5 : 'Firmly Support'
   1 : 'Firmly Oppose'
-  4 : 'Lean Support'
-  2 : 'Lean Oppose'
+  4 : 'Slightly Support'
+  2 : 'Slightly Oppose'
   3 : 'Are Neutral'
 
 ##
@@ -691,13 +691,13 @@ OpinionFilter = ReactiveComponent
   render : ->
     @hist = @data('histogram')
     filter_options = ['show all opinions',
-        'only rigid opposers',
+        'only utter opposers',
         'only firm opposers',
-        'only lean opposers',
+        'only slight opposers',
         'only neutrals',
-        'only lean supporters',
+        'only slight supporters',
         'only firm supporters',
-        'only rigid supporters']
+        'only complete supporters']
 
     R.div className: 'opinion_filter_region',
       for phrase, i in filter_options

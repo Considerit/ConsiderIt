@@ -281,7 +281,7 @@ Proposal = ReactiveComponent
 
 
     R.div className:'proposal', key:@props.long_id, 'data-page':root.page_name,
-      R.div className: 'proposal_heading stickable', 
+      R.div className: 'proposal_heading stickable',  style : { minWidth: PAGE_WIDTH }, # minwidth is for width consistency when dropping into fixed sticky header
         R.span null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
 
       R.div className: 'proposal_heading placeholder', 
@@ -763,11 +763,11 @@ DecisionBoard = ReactiveComponent
       top_offset: $('.proposal_heading').outerHeight() + slider_region_height
       bottom_offset: 20
       unsticks: =>
-        d = @data('decisionboard')
+        d = @local
         d.sticky = false
         save(d)
       sticks: =>
-        d = @data('decisionboard')
+        d = @local
         d.sticky = true
         save(d)
       conditional: => @data('root').page_name == 'crafting'
@@ -793,7 +793,6 @@ DecisionBoard = ReactiveComponent
 
   render : ->
     root = @data('root')
-    root = root.page_name
     current_user = @data('/current_user')
     your_opinion = @data(your_opinion_key)
 
@@ -801,17 +800,29 @@ DecisionBoard = ReactiveComponent
     # In results state, decision board position depends on the slider position.
     @data('slider')
 
-    opinion_region_style = 
-      left: '50%'
-      width: DECISION_BOARD_WIDTH
-      marginLeft: -DECISION_BOARD_WIDTH / 2
+    # Centering the Decisionboard
+    # When the screen is too small & the board is sticky, the board can be 
+    # misplaced because fixed elements are not sized wrt their parents, but
+    # the viewport. So we're going to be sensitive to the width of the screen
+    # in how we center the decision board. 
+    media = @data('media')
+    if media.width >= PAGE_WIDTH || !@local.sticky
+      opinion_region_style = 
+        left: '50%'
+        marginLeft: -DECISION_BOARD_WIDTH / 2
+    else
+      console.log (PAGE_WIDTH - CONTENT_WIDTH) / 2, POINT_WIDTH
+      opinion_region_style = 
+        left: POINT_CONTENT_WIDTH + 2 * GRID_GUTTER + 69 #69 is the margin of the reasons_region
+
+    opinion_region_style.width = DECISION_BOARD_WIDTH
 
     R.div className:'opinion_region focal_wrapper', style: opinion_region_style,
       Slider()
 
       R.div 
         className:'decision_board_body focal_area'
-        onClick: => if @data('root').page_name == 'results' then togglePage('crafting')
+        onClick: => if root.page_name == 'results' then togglePage('crafting')
       ,
 
         R.div null, 
@@ -1700,6 +1711,7 @@ Page = ReactiveComponent
           Proposal key: @page.proposal.key
       Footer()
       Computer() # Doesn't actually render anything
+      Media() # Doesn't actually render anything
 
 Computer = ReactiveComponent
   # This doesn't actually render anything.  It just processes state
@@ -1710,6 +1722,30 @@ Computer = ReactiveComponent
     if current_user.csrf
       arest.csrf(current_user.csrf)
     return R.span null, ''
+
+Media = ReactiveComponent
+  # This doesn't actually render anything.  It just tracks data
+  # useful for responsive layouts.
+  displayName: 'Media'
+  
+  componentWillMount : ->
+    @registerCallbacks() 
+    @updateMeasurements()
+
+  registerCallbacks : -> 
+    $(window).on "resize.plugin_stickytopbottom-#{@my_id}", => @updateMeasurements()
+
+  updateMeasurements : ->
+    media = @data()
+    media.height = $(window).height()
+    media.width = $(window).width()
+    save media
+
+  render : ->
+    media = @data()
+
+    return R.span null, ''  
+
 
 Header = ReactiveComponent
   displayName: 'Header'

@@ -20,8 +20,8 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable
   devise :omniauthable, :omniauth_providers => [:facebook, :twitter, :google_oauth2]
 
-  validates :name, :presence => true
-  validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
+  #validates :name, :presence => true
+  #validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
   #attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url, :metric_points, :metric_conversations, :metric_opinions, :metric_comments, :metric_influence, :b64_thumbnail
 
@@ -59,6 +59,11 @@ class User < ActiveRecord::Base
       :processors => [:thumbnail, :compression]
 
   validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif)
+
+  def logged_in?
+    # Logged-in now means that the current user account is registered
+    self.registered
+  end
 
   def unsubscribe!
     self.follows.update_all( {:explicit => true, :follow => false} )

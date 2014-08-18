@@ -27,19 +27,7 @@
 /// STYLES for Franklin
 /////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////
-// CUSTOMER-specific STYLES
-///////////////////////////
-$proposal_header_color: #E37765
-$page_header_color: $proposal_header_color
 
-[customer="cityoftigard"]
-  $proposal_header_color: #4CA242
-  $page_header_color: #083667
-  .l_header
-    height: 38px
-
-[customer="livingvotersguide"]
 
 /////////////////////
 // DESCRIPTION REGION
@@ -83,19 +71,8 @@ $proposer_img_size: 50px
   width: $proposer_img_size // - 30
   vertical-align: bottom 
 
-.proposal_author_tic
-  left: 50%
-  margin-left: -10px
-  width: 0
-  height: 0 
-  border-left: 10px solid transparent
-  border-right: 10px solid transparent  
-  border-top: 12px solid $proposal_header_color
-  position: absolute
-  top: -34px
-
+$proposal_header_color: #E37765
 .proposal_heading
-  border-bottom: 1px solid darken($proposal_header_color, 15%)
   width: 100%
   background-color: $proposal_header_color
   color: white
@@ -961,6 +938,7 @@ $avatar_preview_size: 60px
 
 
 // HEADER
+$page_header_color: $proposal_header_color
 .l_header
   background-color: $page_header_color
 
@@ -987,3 +965,19 @@ $avatar_preview_size: 60px
     +font-size(-2)
     color: #aaa
     padding: 0 10px
+
+
+////////////////////////////////
+////// CUSTOMER SPECIFIC STYLES
+
+[customer="livingvotersguide"]
+
+[customer="cityoftigard"]
+  .proposal_heading
+    width: 100%
+    background-color: #4CA242
+
+  .l_header
+    height: 38px
+    background-color: #083667
+

@@ -222,7 +222,7 @@ Proposal = ReactiveComponent
     $el = $(@getDOMNode())
     $el.find('.proposal_heading.stickable').stickyTopBottom
       placeholder: $el.find('.proposal_heading.placeholder')[0]
-
+      container: $el
 
   componentDidUpdate : ->
     $el = $(@getDOMNode())
@@ -1725,14 +1725,18 @@ Header = ReactiveComponent
   render : ->
     current_user = @data('/current_user')
     root = @data('root')
+    customer = @data('customer')
 
-    R.div className: 'l_header', 
+    R.div className: 'l_header',       
       R.div style: {
           'background-color': '#eee',
           'color': '#f00',
           'display' : if root.error then 'block'  else 'none'
         },
         'Warning: there was a server error!'
+
+      if customer.identifier == 'cityoftigard'
+        R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '86px', position: 'absolute', bottom: '-35px', zIndex: 999999}
 
       if current_user.user # or we could do if current_user.logged_in
         R.div className: 'userbar', 

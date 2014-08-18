@@ -12,8 +12,6 @@ class Opinion < ActiveRecord::Base
 
   acts_as_tenant(:account)
 
-  _public_fields = 
-
   scope :published, -> {where( :published => true )}
   scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :proposal_id, :stance, :stance_segment, :user_id, :explanation, :point_inclusions, :published] )}
 
@@ -96,7 +94,7 @@ class Opinion < ActiveRecord::Base
     opinion.comments.update_all({:commentable_id => id})
     self.published = self.published or opinion.published
     self.recache()
-    opinion.delete()
+    opinion.destroy()
   end
 
   def recache

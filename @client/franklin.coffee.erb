@@ -1736,7 +1736,8 @@ Header = ReactiveComponent
         'Warning: there was a server error!'
 
       if customer.identifier == 'cityoftigard'
-        R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '86px', position: 'absolute', bottom: '-38px', zIndex: 999999}
+        R.a href: 'http://www.tigard-or.gov/', target: '_blank',
+          R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '86px', position: 'absolute', bottom: '-38px', zIndex: 999999}
 
       if current_user.user # or we could do if current_user.logged_in
         R.div className: 'userbar', 

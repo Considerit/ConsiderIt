@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140817035737) do
+ActiveRecord::Schema.define(version: 20140212194651) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -583,7 +583,7 @@ ActiveRecord::Schema.define(version: 20140817035737) do
     t.string   "openid_uid"
     t.string   "twitter_uid"
     t.string   "twitter_handle"
-    t.boolean  "registered",                         default: false
+    t.boolean  "registration_complete",              default: false
     t.integer  "domain_id"
     t.integer  "roles_mask",                         default: 0
     t.text     "referer"

@@ -82,6 +82,7 @@ $proposal_header_color: #E37765
   position: relative
   text-align: center
 
+
 // The proposal details revealed 
 .proposal_details
   padding-top: $vertical_baseline
@@ -114,8 +115,9 @@ $proposal_header_color: #E37765
     font-weight: 600
 
   .expand_arrow
+    font-family: "Courier New"  // monospaced so that on expansion we don't see weird jumps
     padding-right: 6px
-    +font-size(2)
+    +font-size(4)
 
   .field_body
     padding: 6px 24px
@@ -132,6 +134,8 @@ $proposal_header_color: #E37765
   position: relative
 
 .histogram
+  min-height: 75px
+
   table, td, tr
     height: 100%
 
@@ -297,9 +301,6 @@ $slider_handle_size: 22px
 .slider_feedback
   position: absolute
   top: -80px
-  width: 450px
-  left: 50%
-  margin-left: -225px
   border-radius: 10px
   background-color: rgba($base_background_color, .2)
 
@@ -309,7 +310,7 @@ $slider_handle_size: 22px
   text-align: center
 
 .opinion_region .slider_feedback
-  pointer-events: none // clicking on this interferes with slider and toggle state
+  // pointer-events: none // clicking on this interferes with slider and toggle state
 
 
 [data-page="results"] .slider_feedback

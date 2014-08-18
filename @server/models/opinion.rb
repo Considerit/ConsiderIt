@@ -174,7 +174,7 @@ class Opinion < ActiveRecord::Base
         # Let's find the most recent
         ops = ops.sort {|a,b| a.updated_at <=> b.updated_at}
         # And purge all but the last
-        pp("We found #{ops.length} duplicates for user #{u.id}")
+        pp("We found #{ops.length-1} duplicates for user #{u.id}")
         ops.each do |op|
           if op.id != ops.last.id
             pp("We are deleting opinion #{op.id}, cause it is not the most recent: #{ops.last.id}.")

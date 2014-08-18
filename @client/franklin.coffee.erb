@@ -937,7 +937,7 @@ CommunityPoints = ReactiveComponent
 
     R.div 
       className:"points_by_community #{@props.key}_by_community"
-      style: { width: POINT_CONTENT_WIDTH, minHeight: jQuery(window).height() }
+      style: { width: POINT_CONTENT_WIDTH, minHeight: (if points.length > 3 then jQuery(window).height() else 400) }
     , 
       R.div className:'points_heading_label', 
         if @data('root').page_name == 'results' then "Top #{label}" else "Others' #{label}"

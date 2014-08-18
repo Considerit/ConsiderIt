@@ -326,6 +326,74 @@ class User < ActiveRecord::Base
     end
   end
 
+  def absorb (user)
+    puts("Merging!  Kill #{user and user.id}, put into #{self and self.id}")
+    return if not (self and user)
+    return if user.id == self.id
+    
+    # Not only do we need to merge the user objects, but we'll need to
+    # merge their opinion objects too.
+
+    # To do this, we take the following steps
+    #  1. Merge both users' opinions
+    #  2. Update the user_id cached in every Point.includers json string
+    #  3. Change user_id for every object that has one to the new user_id
+    #  4. Delete the old user
+
+    # 1. Merge opinions
+    # puts("Merging opinions")
+    # user_props = Proposal.where(:user_id => user.id).to_a
+    # self_props = Proposal.where(:user_id => self.id).to_a
+    # dupes = user_props & self_props
+    # dupe_ids = dupes.map{|p| p.id}
+    # puts("Duplicate proposals are #{dupe_ids}")
+    # for p in dupes
+    #   # Now merge the inclusions on these proposals
+    #   puts("Merging opinions on #{p.id}")
+    #   old_o = Opinion.where(:user_id => user.id, :proposal_id => p.id).first
+    #   new_o = Opinion.where(:user_id => self.id, :proposal_id => p.id).first
+    #   for i in old_o.inclusions
+    #     puts("Copying point #{i.point.id} into new opinion #{new_o.id}")
+    #     new_o.include(i.point, current_tenant)
+    #   end
+    #   puts("Deleting the old opinion #{old_o.id}")
+    #   old_o.delete()
+    # end
+    
+    old_u_ops = Opinion.where(:user_id => user.id).map{|o| o.id}
+    new_u_ops = Opinion.where(:user_id => self.id).map{|o| o.id}
+
+    puts("Merging opinions from #{old_u_ops} to #{new_u_ops}")
+    for absorbed_o in Opinion.where(:user_id => user.id)
+      puts("Looking for opinion to absorb on #{absorbed_o.id}")
+      self_o = Opinion.where(:user_id => self.id,
+                             :proposal_id => absorbed_o.proposal.id).first
+      if (self_o)
+        self_o.absorb(absorbed_o)
+      end
+    end
+
+    # 2. Update the user_id in cached Point.includers
+    # 
+    # Each point has a cached "includers" field that we need to
+    # update... the way to do that is to call
+    # point.update_absolute_score() on it.
+    #
+    # The points that need to be updated are all the ones that this
+    # user has included.  So let's get those inclusions, then grab their
+    # points, and update their scores.
+    for i in Inclusion.where(:user_id => user.id)
+      i.point.update_absolute_score
+    end
+
+    # 2. Change user_id columns over in bulk
+    for table in [Point, Opinion, Proposal, Comment, Assessable::Assessment,\
+                  Follow, Inclusion, Moderation, PageView, PointListing, Thank]
+      # Missing: ReflectResponseRevision, PointSimilarity, Request
+      table.where(:user_id => user.id).update_all(user_id: self.id)
+    end
+  end
+
   def self.purge
     users = User.all.map {|u| u.id}
     missing_users = []

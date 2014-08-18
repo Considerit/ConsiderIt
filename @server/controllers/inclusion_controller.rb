@@ -64,7 +64,7 @@ class InclusionsController < ApplicationController
 
       point.destroy
 
-      opinion.update_inclusions if update_opinion
+      opinion.recache if update_opinion
       proposal.update_metrics if update_proposal_metrics
 
       destroyed = true

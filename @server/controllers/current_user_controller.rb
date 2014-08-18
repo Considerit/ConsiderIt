@@ -22,7 +22,7 @@ class CurrentUserController < DeviseController
     user = User.find_by_lower_email('toomim@gmail.com')
     if user and user.valid_password?(params[:password])
       puts('Password is valid, here we go...merging first')
-      merge_users(current_user, user)
+      user.absorb(current_user)
       puts("Now signing in #{user.id}. Going from #{current_user and current_user.id}.")
       sign_in :user, user
     end
@@ -96,7 +96,7 @@ class CurrentUserController < DeviseController
           params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
           old_user = current_user
           User.reset_password_by_token params
-          merge_users(old_user, user)
+          replace_user(old_user, current_user)
         # NOTE: Mike assumes that this "reset_password_by_token"
         # method logs the user in.  But this should be tested.
 
@@ -104,7 +104,7 @@ class CurrentUserController < DeviseController
         elsif third_party_token
           puts("Signing in by third party")
           user = User.find_by_third_party_token(third_party_token)
-          merge_users(current_user, user)
+          replace_user(current_user, user)
           sign_in :user, user
 
         # Sign in by email and password
@@ -115,7 +115,7 @@ class CurrentUserController < DeviseController
           puts('Found a user') if user
           if user and user.valid_password?(params[:password])
             puts('Password is valid, here we go...merging first')
-            merge_users(current_user, user)
+            replace_user(current_user, user)
             puts("Now signing in #{user.id}. Going from #{current_user and current_user.id}.")
             sign_in :user, user
             puts("Signed in! Now current is #{current_user and current_user.id}")
@@ -175,6 +175,9 @@ class CurrentUserController < DeviseController
         puts('XXX Need to figure out how to validate email address in here')
         # Okay, here comes a new email address!
         current_user.update_attributes({:email => params[:email]})
+        if !current_user.save
+          raise "Error saving this user's email"
+        end
       end
     end
 
@@ -246,7 +249,7 @@ class CurrentUserController < DeviseController
 
     puts('Is this a XHR request?', request.xhr?)
     if true || request.xhr?
-      render :json => response 
+      render :json => response
     else
       # non-ajax method is used for legacy support for dash
       if errors[:register].length == 0 and errors[:login].length == 0
@@ -288,25 +291,19 @@ class CurrentUserController < DeviseController
     end
   end
 
-  def merge_users (old_user, new_user)
-    puts("Merging!  Kill #{old_user and old_user.id}, put into #{new_user and new_user.id}")
-    return if not (new_user and old_user)
-    return if old_user.id == new_user.id
-    
-    for table in [Point, Opinion, Proposal, Comment, Assessable::Assessment,\
-                  Follow, Inclusion, Moderation, PageView, PointListing, Thank]
-      # Missing: ReflectResponseRevision, PointSimilarity, Request
-      table.where(:user_id => old_user.id).update_all(user_id: new_user.id)
-    end
+  
+  def replace_user(old_user, new_user)
+    new_user.absorb(old_user)
+
     puts("Deleting old user #{old_user.id}")
     if current_user.id == old_user.id
-      puts("Signing out of #{current_user.id} before we sign into the stubby")
+      puts("Signing out of #{current_user.id} before we delete it")
       sign_out current_user
     end
     old_user.delete()
-    puts("Done merging. current_user=#{current_user}")
+    puts("Done replacing. current_user=#{current_user}")
   end
-  
+
   #TODO: activeRESTify this method
   def send_password_reset_token
     user = User.find_by_lower_email(params[:user][:email]) if params[:user][:email].strip.length > 0

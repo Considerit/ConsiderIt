@@ -114,8 +114,6 @@ ConsiderIt::Application.routes.draw do
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :point_discussion, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :create, :show]
-  resources :inclusion, :path => 'inclusion/:point_id', :only => [:create]
-  match 'inclusion/:point_id' => 'inclusion#destroy', :via => :delete
 
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]

@@ -58,8 +58,6 @@ ConsiderIt::Application.routes.draw do
 
   end
 
-  get "/feed" => "trackable#feed"
-
   #match "/theme" => "theme#set", :via => :post
   get '/home/avatars' => "home#avatars", :as => :get_avatars
   match "/home/domain" => "home#set_domain", :via => :post

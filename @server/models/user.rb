@@ -2,7 +2,7 @@ require 'open-uri'
 require 'role_model'
 
 class User < ActiveRecord::Base
-  include RoleModel, Trackable
+  include RoleModel
 
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy

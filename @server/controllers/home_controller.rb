@@ -5,6 +5,14 @@ class HomeController < ApplicationController
   }
 
   def index
+    # We don't have a homepage. In the iterim, let's just redirect 
+    # accesses to the homepage to the latest published proposal
+    if request.path == '/'
+      proposal = current_tenant.proposals.open_to_public.active.last
+      redirect_to "/#{proposal.long_id}"
+      return
+    end
+
     render "layouts/application", :layout => false
   end
 

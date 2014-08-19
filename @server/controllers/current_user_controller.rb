@@ -150,12 +150,11 @@ class CurrentUserController < DeviseController
 
       # Update their name, bio, photo, and anonymity.
       permitted = ActionController::Parameters.new(new_params).permit!
-      puts("Params is #{new_params}")
-      user = User.find(current_user.id)
-      if user.update_attributes(permitted) # Why is this bullshit so complicated?
+      puts("Params is #{new_params}, permitted version #{permitted}")
+      if current_user.update_attributes(permitted) # Why is this bullshit so complicated?
         puts("Updated those damn params.  Now name is #{current_user.name}")
-        if user.save
-          puts("Saved that shit.")
+        if current_user.save
+          puts("Saved that shit. Now current_user.name is #{current_user.name}")
         else
           puts("Save goddam failed")
         end
@@ -194,14 +193,13 @@ class CurrentUserController < DeviseController
           errors[:register].append 'Password is too short'
         else
           puts("Ok let's change the password.")
-          user = current_user
           current_user.password = params[:password]
           if !current_user.save
             raise "Error saving this user's password"
           end
           puts("Current user is now #{current_user.id}")
           puts("Ok, logging back in... fucking asshole!")
-          sign_in :user, user, :bypass => true
+          sign_in :user, current_user, :bypass => true
           puts("Current user is now #{current_user.id}")
         end
       end

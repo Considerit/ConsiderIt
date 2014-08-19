@@ -45,6 +45,13 @@ MAX_HISTOGRAM_HEIGHT = 200
 capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
 L = loading_indicator = R.div null, 'Loading...'
 
+# safari only respects -webkit-transform
+crossbrowserTransformProperty = (props) -> _.extend props,
+  '-webkit-transform' : props.transform
+  '-ms-transform' : props.transform
+  '-moz-transform' : props.transform
+
+
 # Returns the top level Proposal component key. Components use this to grab data
 # from its Proposal. This is a hack. Shadowing parent state would solve the problem.
 # window.current_proposal = () ->
@@ -138,15 +145,17 @@ PageTransition =
       when 'slider'
         slider = @data('slider')
 
-        mouth_scaler = if slider.stance_segment >  3 then -1 else 1
-        mouth_x      = if slider.stance_segment == 3 then  0 else -7.5
+        direction = if slider.stance_segment >  3 then -1 else 1
+        mouth_x      = if slider.stance_segment == 3 then  0 else -22
+
+        handle_width = 22
 
         if root.page_name == 'crafting'
-          bubblemouth_style = { scaleX: mouth_scaler * 1.5, scaleY: 1.5, translateY: 7, translateX: mouth_x * 1.5  }
-          handle_style = { scale: 2.5, translateY: -8 }
+          bubblemouth_style = { translateX: direction * mouth_x, translateY: 20, scaleX: direction * 1.5, scaleY: 1.5  }
+          handle_style = { scale: 2.5 }
         else 
-          bubblemouth_style = { scaleX: mouth_scaler, scaleY: 1, translateY: -4.5, translateX: mouth_x  }
-          handle_style = { scale: 1, translateY: -9 }
+          bubblemouth_style = { translateX: direction * mouth_x, translateY: -4, scaleX: direction, scaleY: 1  }
+          handle_style = { scale: 1 }
 
         $el.find('.bubblemouth').velocity bubblemouth_style, {duration}
         $el.find('.the_handle').velocity handle_style, {duration}
@@ -154,7 +163,7 @@ PageTransition =
       # The decision board will have to expand for crafting and collapse into to the Give Opinion button in results
       when 'decisionboard'
         if root.page_name == 'crafting'
-          decision_board_style =  { translateX: 0, translateY: 0, width: "#{DECISION_BOARD_WIDTH}px", minHeight: "275px"}
+          decision_board_style =  { translateX: 0, translateY: 10, width: "#{DECISION_BOARD_WIDTH}px", minHeight: "275px" }
 
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
 
@@ -167,14 +176,16 @@ PageTransition =
 
         else 
           slider = @data('slider')
-          stance = slider.stance
+          slider_position = slider.clientX
 
           give_opinion_button_width = 200
+
           gutter = .1 * give_opinion_button_width
+          opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * slider_position/HISTOGRAM_WIDTH
 
-          opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * -(stance-1) / 2.0
+          decision_board_style =  { translateX: opinion_region_x, translateY: -18, width: "#{give_opinion_button_width}px", minHeight: "32px", marginTop: 0}
 
-          decision_board_style =  { translateX: opinion_region_x, translateY: -18, width: "#{give_opinion_button_width}px", minHeight: "32px"}
+
 
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
 
@@ -240,9 +251,8 @@ Proposal = ReactiveComponent
   render : ->
     proposal = @data()
     root = @data('root')
-    @page # Is this needed?  (Does it even work?)
-    included_points = proposal.your_opinion.point_inclusions
-    your_opinion = proposal.your_opinion
+    your_opinion = @data(proposal.your_opinion)
+    included_points = your_opinion.point_inclusions
 
     description_region_style = {width: 1.25 * BODY_WIDTH}
 
@@ -253,8 +263,15 @@ Proposal = ReactiveComponent
     window.user_opinions = {}
     for opinion in proposal.opinions
       window.user_opinions[opinion.user] = opinion
-    window.current_proposal = proposal.key
-    window.your_opinion_key = proposal.your_opinion.key
+
+    # I need to improve save() so that it knows when things actually
+    # change because these if statements are stupid
+    if root.current_proposal != proposal.key
+      root.current_proposal = proposal.key
+      save(root)
+    if root.your_opinion_key != proposal.your_opinion
+      root.your_opinion_key = proposal.your_opinion
+      save(root)
 
     proposer = @data(proposal.user)
 
@@ -349,7 +366,7 @@ Histogram = ReactiveComponent
   buildHistogram : ->
     ##
     # Size the avatars. Size of avatar shrinks proportional to 1/sqrt(num_opinions)
-    opinions = @data(current_proposal).opinions || []
+    opinions = @data(@data('root').current_proposal).opinions || []
 
     avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, 
       Math.floor(BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (opinions.length + 1) / 10 )  )
@@ -506,107 +523,101 @@ Slider = ReactiveComponent
   displayName: 'Slider'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
-  componentDidMount : -> 
-    @setSlidability()
+  # Kick off sliding 
+  handleMouseDown: (e) -> 
+    el = @getDOMNode()
 
-  componentWillUpdate : (prev_props, prev_state) ->
-    @setSlidability()
+    # Dragging has to start by dragging the slider handle
+    return if !$(e.target).is('.the_handle')
 
-  ##
-  # setSlidability
-  # Inits jQuery UI slider and enables/disables it between pages
-  setSlidability : ->
-    root = @data('root')
+    e.preventDefault()
+
+    # Initiate dragging
     slider = @data('slider')
-    $slider_base = $(@getDOMNode()).find('.slider_base')
-    if $slider_base.hasClass "ui-slider"
-      $slider_base.slider(if root.auth_mode then 'disable' else 'enable')
-    else
-      $slider_base.slider
-        disabled: root.auth_mode
-        min: -1
-        max: 1
-        step: .01
-        value: -@data(your_opinion_key).stance
-        slide: (ev, ui) => 
-          # Update the stance segment if it has changed. This facilitates 
-          # the feedback atop the slider changing from e.g. 'strong 
-          # supporter' to 'neutral'
-          return false if ev.originalEvent.type != 'mousemove'
+    slider.is_moving = true
+    slider.offsetX = e.clientX
+    slider.startX = parseInt($(e.target)[0].style.left, 10) || 0
+    save slider
 
-          if !slider.has_moved
-            slider.has_moved = true
+    $(window).on "mousemove.slider", @handleMouseMove
+    $(window).on "mouseup.slider", @handleMouseUp
 
-          slider.stance_segment = getStanceSegment -ui.value
-          slider.stance = -ui.value
 
-          save(slider)
-        stop : (ev, ui) =>
-          if root.page_name == 'results'
-            togglePage('crafting')
+  # Stop sliding
+  handleMouseUp: (e) ->
+    # Don't do anything if we're not actually dragging. We only hit this logic
+    # if there is some delay in removing the event handlers.
+    slider = @data 'slider'
+    return if !slider.is_moving
 
-  togglePage : (ev) ->
-    root = @data('root')
-    if !root.auth_mode
+    e.preventDefault()
+
+    your_opinion = @data(@data('root').your_opinion_key)    
+    root = @data 'root'
+    
+    # Clicking on the slider handle should transition us between crafting <=> results. 
+    # We should also transition to crafting when we've been dragging on the results page. 
+    if slider.stance == your_opinion.stance || root.page_name == 'results'
       new_page = if root.page_name == 'results' then 'crafting' else 'results'
-      togglePage(new_page)
-    ev.stopPropagation()
+      togglePage new_page
+      e.stopPropagation()
 
-  saveSlider : (ev) ->
     # We save the slider's position to the server only on mouse-up.
     # This way you can drag it with good performance.
-    your_opinion = @data(your_opinion_key)
-    slider = @data('slider')
     if your_opinion.stance != slider.stance
       your_opinion.stance         = slider.stance
       your_opinion.stance_segment = slider.stance_segment
-      save(your_opinion)
+      save your_opinion
+
+    # Turn off dragging
+    slider.is_moving = false
+    save slider
+
+    $(window).off ".slider" # Remove event handlers
+
+  # While sliding
+  handleMouseMove: (e) ->
+    e.preventDefault() # prevents text selection of surrounding elements
+
+    slider = @data('slider')
+
+    # Update position
+    slider.clientX = slider.startX + e.clientX - slider.offsetX
+    slider.clientX = 0 if slider.clientX < 0
+    slider.clientX = @props.width if slider.clientX > @props.width
+    slider.has_moved = true
+
+    # convert position of handle to a slider value on [1, -1]
+    slider.stance = -(2 * slider.clientX / @props.width - 1)
+    slider.stance_segment = getStanceSegment slider.stance
+    save slider
+
 
   render : ->
     slider = @data('slider')
     stance = slider.stance
     segment = slider.stance_segment
 
-    # On initial page load, initialize slider value based on your_opinion
-    your_opinion = @data(your_opinion_key)
-    if !slider.has_moved && slider.stance != your_opinion.stance
+    # Update the slider position when the server gets back to us
+    your_opinion = @data(@data('root').your_opinion_key)
+    if slider.stance != your_opinion.stance and !slider.is_moving
       slider.stance = your_opinion.stance
       slider.stance_segment = your_opinion.stance_segment
+      slider.clientX = @props.width * (1 - slider.stance) / 2
       slider.has_moved = true
       save(slider)
 
-
     page = @data('root').page_name
-    is_auth_mode = @data('root').auth_mode
     sticky = @data('decisionboard').sticky
 
-    #jquery UI slider will pick an el with this class name up
-    props_for_slider_handle = { className:'ui-slider-handle' } 
-    if page == 'results'    
-      _.extend props_for_slider_handle, 
-        onClick: => @togglePage
-        style: { cursor : 'pointer' } 
-
-    # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
-    # also why this file is ERB
-    if segment == 3
-      if page == 'crafting'
-        bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
-      else
-        bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-results.png' %>"
-    else
-      if page == 'crafting'
-        bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
-      else
-        bubblemouth_src = "<%= asset_path 'bubblemouth-results.png' %>"
-
-    slider_feedback_percent = 
-      if segment == 3 
-      then "Neutral" 
-      else "#{Math.floor(Math.abs(stance) * 100)}% #{if segment > 3 then 'Support' else 'Oppose'}"
-
-    slider_feedback_bucket = stance_names[segment]
+    # Can't be dynamically set b/c of integration with asset fingerprinting. 
+    # This is also why this file is ERB.
+    bubblemouth_srcs = 
+      neutral : {crafting: "<%= asset_path 'bubblemouth_neutral-crafting.png' %>", results: "<%= asset_path 'bubblemouth_neutral-results.png' %>"}
+      other : {crafting: "<%= asset_path 'bubblemouth-crafting.png' %>", results: "<%= asset_path 'bubblemouth-results.png' %>"}
     
+    bubblemouth_src = if segment == 3 then bubblemouth_srcs['neutral'][page] else bubblemouth_srcs['other'][page]
+
     face_left_eye_style = 
       transform: 
         if segment in [0, 6] 
@@ -626,12 +637,6 @@ Slider = ReactiveComponent
          rotate(45deg) 
          skew(#{if segment in [0,6] then '10deg' else '0deg'})"
 
-    # safari only respects -webkit-transform
-    crossbrowserTransformProperty = (props) -> _.extend props,
-      '-webkit-transform' : props.transform
-      '-ms-transform' : props.transform
-      '-moz-transform' : props.transform
-
     crossbrowserTransformProperty sty for sty in [
       face_left_eye_style, face_right_eye_style, face_mouth_style]
 
@@ -645,36 +650,28 @@ Slider = ReactiveComponent
       borderLeft: "#{triangle_width}px solid transparent"
       borderRight: "#{triangle_width}px solid transparent"
 
-
-
     # Keep feedback centered over handle, but keep within the bounds of the slider region 
     # when the slider is in an extreme position. 
-    feedback_left = (DECISION_BOARD_WIDTH ) * -(stance-1) / 2.0 
+    feedback_left = (@props.width ) * -(stance-1) / 2.0 
     if sticky 
       feedback_width = if slider.has_moved then 190 else 400
-      if feedback_left > DECISION_BOARD_WIDTH / 2
-        feedback_left = Math.min(DECISION_BOARD_WIDTH - feedback_width/2 + 35, feedback_left)
-      else if feedback_left < DECISION_BOARD_WIDTH / 2
+      if feedback_left > @props.width / 2
+        feedback_left = Math.min(@props.width - feedback_width/2 + 35, feedback_left)
+      else if feedback_left < @props.width / 2
         feedback_left = Math.max(feedback_width/2 - 35, feedback_left)
     else
       feedback_width = 450
 
     slider_feedback_style = 
-      visibility: if sticky && !is_auth_mode then 'visible' else 'visible'
+      visibility: 'visible'
       left: feedback_left
       marginLeft: -feedback_width / 2
       width: feedback_width
       fontSize: if sticky then '18px' else '29px'
       top: if sticky then '-65px' else '-80px'
 
-    if !slider.has_moved 
-      slider_feedback = 'Give Your Overall Opinion' 
-    else 
-      slider_feedback = "You #{slider_feedback_bucket}"
-
-
     R.div className: 'slider', 
-      R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
+      R.div className:'slider_base', style : {width: @props.width}, 
         R.div 
           className: 'slider_base_triangle_left'
           style: _.extend({}, slider_base_triangle_style, {left: -triangle_width})
@@ -683,22 +680,19 @@ Slider = ReactiveComponent
           style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
         R.div 
           className:'slider_feedback'
-          'data-stance-segment': segment
           style: slider_feedback_style
-        , slider_feedback
+        , if !slider.has_moved then 'Give Your Overall Opinion' else "You #{stance_names[segment]}"
 
-        R.div props_for_slider_handle, 
+        R.div className: 'the_handle', style: {left: slider.clientX}, onMouseUp: @handleMouseUp, onMouseDown: @handleMouseDown,
+          if page == 'crafting'
+            R.div className: 'face',            
+              R.div className: 'face_mouth face_part', style: face_mouth_style
+              R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
+              R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
+          R.div className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved
+          R.div className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved
 
-          R.div className: 'the_handle', onClick: @togglePage, onMouseUp: @saveSlider,
-            if page == 'crafting'
-              R.div className: 'face',            
-                R.div className: 'face_mouth face_part', style: face_mouth_style
-                R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
-                R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
-            R.div className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved && !is_auth_mode
-            R.div className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved && !is_auth_mode
-
-          R.img className:'bubblemouth', src: bubblemouth_src
+        R.img className:'bubblemouth', src: bubblemouth_src, style: {left: slider.clientX}
 
 ##
 # OpinionFilter
@@ -760,7 +754,7 @@ DecisionBoard = ReactiveComponent
       accept: ".point_content"
       drop : (ev, ui) =>
         if ui.draggable.parent().is('.community_point')
-          your_opinion = @data(your_opinion_key)
+          your_opinion = @data(@data('root').your_opinion_key)
           ui.draggable.parent().velocity 'fadeOut', 200, -> 
             your_opinion.point_inclusions.push(
               ui.draggable.parent().data('id'))
@@ -805,27 +799,23 @@ DecisionBoard = ReactiveComponent
 
   # When user clicks the big bold button at the bottom of the crafting page
   saveYourOpinion : -> 
-    your_opinion = @data your_opinion_key
+    root = @data('root')
+    your_opinion = @data (root.your_opinion_key)
     if @data('/current_user').logged_in
       your_opinion.published = true
       save your_opinion
       togglePage('results')
     else
-      root = @data('root')
       root.auth_mode = 'register'
-
       #we'll need to publish this opinion after auth is completed
-      your_opinion = @data your_opinion_key
-      your_opinion.publish_pending_authorization = true
-      save your_opinion
-
+      root.publish_this_opinion = true
       save(root)
 
 
   render : ->
     root = @data('root')
     current_user = @data('/current_user')
-    your_opinion = @data(your_opinion_key)
+    your_opinion = @data(root.your_opinion_key)
 
     # Need to register this dependency because ActiveREST doesn't pick it up. 
     # In results state, decision board position depends on the slider position.
@@ -848,7 +838,8 @@ DecisionBoard = ReactiveComponent
     opinion_region_style.width = DECISION_BOARD_WIDTH
 
     R.div className:'opinion_region focal_wrapper', style: opinion_region_style,
-      Slider()
+      Slider
+        width: HISTOGRAM_WIDTH
 
       R.div 
         className:'decision_board_body focal_area'
@@ -889,7 +880,8 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   render : ->
-    included_points = @data(your_opinion_key).point_inclusions
+    root = @data('root')
+    included_points = @data(root.your_opinion_key).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
     R.div 
@@ -923,7 +915,7 @@ CommunityPoints = ReactiveComponent
 
   buildNewPointThreshold : ->
     # Grab the 10th percentile
-    points = @data(current_proposal).points || []
+    points = @data(@data('root').current_proposal).points || []
     newpoint_threshold = 
       (_.sortBy points, (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
 
@@ -933,8 +925,8 @@ CommunityPoints = ReactiveComponent
   buildPointsList : ->
     is_results = @data('root').page_name == 'results'
     selected_segment = @data('histogram').selected_segment
-    proposal = @data(current_proposal)
-    included_points = @data(your_opinion_key).point_inclusions
+    proposal = @data(@data('root').current_proposal)
+    included_points = @data(@data('root').your_opinion_key).point_inclusions
     points = proposal.points
     opinions = proposal.opinions
 
@@ -1021,7 +1013,7 @@ Point = ReactiveComponent
       then 'invalid' 
       else (valid) =>
         if !valid
-          your_opinion = @data(your_opinion_key)
+          your_opinion = @data(@data('root').your_opinion_key)
           your_opinion.point_inclusions = _.without your_opinion.point_inclusions, @props.key
           save(your_opinion)
           console.log('Saved it.', your_opinion)
@@ -1194,6 +1186,7 @@ NewPoint = ReactiveComponent
 
   handleSubmitNewPoint : (ev) ->
     $form = $(@getDOMNode())
+    root = @data('root')
 
     current_user = @data('/current_user').user
     point =
@@ -1204,7 +1197,7 @@ NewPoint = ReactiveComponent
       user : current_user
       comment_count : 0 
       includers : [current_user]
-      proposal : @data(current_proposal).key
+      proposal : @data(root.current_proposal).key
       hide_name : $form.find("sign_name-#{@props.valence}").val()
     save(point)
 
@@ -1213,8 +1206,9 @@ NewPoint = ReactiveComponent
 
     # This is a kludge cause activerest sucks for pre-rendering
     # changes before the server returns them
-    @data(your_opinion_key).point_inclusions.push(point.key)
-    re_render([your_opinion_key])
+    
+    @data(root.your_opinion_key).point_inclusions.push(point.key)
+    re_render([root.your_opinion_key])
   render : ->
     #TODO: refactor HTML/CSS for new point after we get better sense of new point redesign
     @local = @data @local_key,
@@ -1376,13 +1370,14 @@ AuthHeader = ReactiveComponent
   displayName: 'AuthHeader'
 
   componentDidMount : -> 
+    root = @data('root')
     # Mike note: Wondering why we are setting up the slider here, and
     # why we need to compute the default for your_opinion.stance here.
     #
     # I'd imagine that ideally, this component would assume that there
     # is a your_opinion_key, and that there is a stance, and that the
     # default was already set.
-    stance = (window.your_opinion_key and @data(your_opinion_key).stance) or 0
+    stance = (root.your_opinion_key and @data(root.your_opinion_key).stance) or 0
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if !$slider_base.hasClass "ui-slider"
       $slider_base.slider
@@ -1400,9 +1395,9 @@ AuthHeader = ReactiveComponent
     save(root)
 
   render : ->
-    stance =  @data(your_opinion_key).stance
-    segment = @data(your_opinion_key).stance_segment
     root = @data('root')
+    stance =  @data(root.your_opinion_key).stance
+    segment = @data(root.your_opinion_key).stance_segment
 
     # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
     # also why this file is ERB
@@ -1473,7 +1468,7 @@ Auth = ReactiveComponent
           if new_current_user.csrf
             arest.csrf(new_current_user.csrf)
 
-          @publishOpinionsAfterAuth()
+          # @publishOpinionsAfterAuth()
           save(root)
         else 
           # We still need to show the pledge!
@@ -1510,13 +1505,13 @@ Auth = ReactiveComponent
         root.auth_mode = 'password_reminder'
         save(root)
 
-  publishOpinionsAfterAuth: -> 
-    # publish any opinions that were awaiting authorization
-    your_opinion = @data your_opinion_key
-    if your_opinion.publish_pending_authorization
-      delete your_opinion['publish_pending_authorization']
-      your_opinion.published = true
-      save your_opinion
+  # publishOpinionsAfterAuth: -> 
+  #   # publish any opinions that were awaiting authorization
+  #   your_opinion = @data your_opinion_key
+  #   if your_opinion.publish_pending_authorization
+  #     delete your_opinion['publish_pending_authorization']
+  #     your_opinion.published = true
+  #     save your_opinion
 
   render: -> 
     current_user = @data('/current_user')
@@ -1525,7 +1520,7 @@ Auth = ReactiveComponent
     # Once the user logs in, we will stop showing the log-in screen
     if current_user.logged_in
       root.auth_mode = null
-      @publishOpinionsAfterAuth()
+      # @publishOpinionsAfterAuth()
 
       save(root)
       setTimeout((() -> togglePage('results')), 700)
@@ -1711,6 +1706,7 @@ Auth = ReactiveComponent
           className:'cancel_auth_button primary_cancel_button'
           onClick: (=>
             root.auth_mode = null
+            root.publish_this_opinion = null
             save(root))
         , 'cancel log in'
 
@@ -1719,16 +1715,15 @@ Root = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
+    root = @data('root')
+
     # Update the location bar if it's different
-    url = "/#{@props.long_id}#{if @data('root').page_name == 'results' then '/results' else ''}"
+    url = "/#{@props.long_id}#{if root.page_name == 'results' then '/results' else ''}"
     if (window.location.pathname != url)
       window.app_router.navigate url, {trigger : true}
 
-    # Pull in this page's data from the server
-    window.current_page = "/page/#{@props.long_id}"
-
     # Now let's render
-    Page key: window.current_page
+    Page key: "/page/#{@props.long_id}"
 
 Page = ReactiveComponent
   displayName: 'Page'
@@ -1741,37 +1736,38 @@ Page = ReactiveComponent
           Proposal key: @page.proposal.key
       Footer()
       Computer() # Doesn't actually render anything
-      Media() # Doesn't actually render anything
 
 Computer = ReactiveComponent
   # This doesn't actually render anything.  It just processes state
-  # changes to CSRF.
+  # changes to current_user for CSRF and logging in and out.
   displayName: 'Computer'
   render : ->
     current_user = @data('/current_user')
     if current_user.csrf
       arest.csrf(current_user.csrf)
+
+    # If the user changed, reload the current opinion
+    # This will need to be updated with better arest
+    if current_user.user != @local.last_curr_user
+      console.log("COMPUTER: New currnet_user: #{current_user.user}, last: #{@local.last_curr_user}")
+      if @local.last_curr_user
+        current_proposal = @data('root').current_proposal
+        console.log('Forcing refetch of current_proposal',current_proposal)
+        arest.serverFetch(@data('root').current_proposal)
+      @local.last_curr_user = current_user.user
+      save(@local)
+
+    # Publish this opinion if we can
+    root = @data('root')
+    if root.publish_this_opinion and current_user.logged_in
+      opinion = @data(root.your_opinion_key)
+      opinion.published = true
+      root.publish_this_opinion = false
+      save(root)
+      save(opinion)
+
     return R.span null, ''
 
-Media = ReactiveComponent
-  # This doesn't actually render anything.  It just tracks data
-  # useful for responsive layouts.
-  displayName: 'Media'
-  
-  componentWillMount : ->
-    @registerCallbacks() 
-    @updateMeasurements()
-
-  registerCallbacks : -> 
-    $(window).on "resize.plugin_stickytopbottom-#{@my_id}", => @updateMeasurements()
-
-  updateMeasurements : ->
-    media = @data()
-    media.height = $(window).height()
-    media.width = $(window).width()
-    save media
-
-  render : -> return R.span null, ''  
 
 
 Header = ReactiveComponent
@@ -1783,7 +1779,8 @@ Header = ReactiveComponent
     root = @data('root')
     root.auth_mode = null
 
-    save(current_user, root)
+    save(current_user)
+    save(root)
 
   render : ->
     current_user = @data('/current_user')
@@ -1791,10 +1788,14 @@ Header = ReactiveComponent
     customer = @data('customer')
 
     R.div className: 'l_header',       
+      if customer.identifier == 'cityoftigard'
+        R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '86px', position: 'absolute', bottom: '-38px', zIndex: 999999}
+
       R.div style: {
           'background-color': '#eee',
           'color': '#f00',
-          'display' : if root.error then 'block'  else 'none'
+          'padding': '5px 20px',
+          'display' : if root.server_error then 'block'  else 'none'
         },
         'Warning: there was a server error!'
 
@@ -1802,10 +1803,11 @@ Header = ReactiveComponent
         R.a href: 'http://www.tigard-or.gov/', target: '_blank',
           R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '86px', position: 'absolute', bottom: '-38px', zIndex: 999999}
 
-      if current_user.user # or we could do if current_user.logged_in
+      if current_user.logged_in
         R.div className: 'userbar', 
           Avatar key: current_user.user, tag: R.span, className: 'userbar_avatar', style: {height: 20, width: 20}
           R.a 'data-action': 'logout', onClick: @logout, 'logout'
+
 
 Footer = ReactiveComponent
   displayName: 'Footer'
@@ -1818,6 +1820,18 @@ Footer = ReactiveComponent
       R.a href: "mailto:admin@consider.it", 'Email us'
 
 
+# Tracks data useful for responsive layouts.
+$(document).ready ->
+  updateMedia()
+  $(window).on "resize", -> updateMedia()
+
+updateMedia = ->
+  media = fetch('media')
+  media.height = $(window).height()
+  media.width = $(window).width()
+  save media
+
+
 
 ## ########################
 ## Initialize defaults for client data
@@ -1828,6 +1842,7 @@ fetch 'histogram',
 
 fetch 'slider',
   has_moved : false
+  is_moving : false
   stance : 0
   stance_segment : getStanceSegment 0
 
@@ -1837,6 +1852,9 @@ fetch 'decisionboard',
 fetch 'root',
   page_name : 'crafting'
   auth_mode : null
+  your_opinion_key : null
+  current_proposal : null
+  publish_this_opinion : false
 
 fetch('/current_user')
 
@@ -1866,13 +1884,13 @@ Router = Backbone.Router.extend
                                          long_id : long_id
                                          ), document.getElementById('content')
 
-      
-
 
   results : (long_id) -> @proposal long_id, 'results'
 
 window.app_router = new Router()
-window.ajax_error = () ->
+window.on_ajax_error = () ->
   (root = fetch('root')).server_error = true
   save(root)
+window.on_client_error = (e) ->
+  save({ key: '/new/error', stack: JSON.stringify(e.stack) })
 $(document).ready -> Backbone.history.start {pushState: true}

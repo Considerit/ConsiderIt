@@ -104,7 +104,7 @@ class OpinionController < ApplicationController
     end
 
     # This isn't working... undefined method confirmed? ... need to fix
-    #alert_new_published_opinion(proposal, opinion) unless already_published
+    alert_new_published_opinion(proposal, opinion) unless already_published
 
     # Enable this next line if I make sure it's properly prepared and won't clobber cache
     #proposal[:key] = "/proposal/#{proposal.id}"
@@ -247,14 +247,14 @@ protected
     )
 
     # send out confirmation email if user is not yet confirmed
-    if !current_user.confirmed? && current_user.opinions.published.count == 1
-      ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
-        :user => current_user,
-        :proposal => proposal,
-        :current_tenant => current_tenant,
-        :mail_options => mail_options
-      )
-    end
+    # if !current_user.confirmed? && current_user.opinions.published.count == 1
+    #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
+    #     :user => current_user,
+    #     :proposal => proposal,
+    #     :current_tenant => current_tenant,
+    #     :mail_options => mail_options
+    #   )
+    # end
 
   end
       

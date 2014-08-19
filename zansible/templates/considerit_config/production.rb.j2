@@ -101,7 +101,7 @@ ConsiderIt::Application.configure do
     :email => {
       :email_prefix => "[{{app_name}} Error] ",
       :sender_address => "\"Notifier\" <tkriplean@gmail.com>",
-      :exception_recipients => ['{{ config.exception_notifier.email_recipients }}']
+      :exception_recipients => %w{ {{ config.exception_notifier.email_recipients }} }
     }
 
 end

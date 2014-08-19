@@ -19,21 +19,21 @@
         return cache[url] = extend({key: url}, defaults)
     }
 
-    /*
-     *  Takes any number of object arguments.  For each:
+    /*  Can be called as save(object) or save([object1, object2]).
+     *  For each object:
      *  - Update cache
      *  - Saves to server
      *
-     *  It supports multiple arguments to allow batching multiple
-     *  serverSave() calls together in future optimizations.
+     *  You can pass a callback that will run when the saves have finished.
      */
-    function save() {
-        for (var i=0; i < arguments.length; i++) {
-            var object = arguments[i]
-            updateCache(object)
-            if (object.key && object.key[0] == '/')
-                serverSave(object)
-        }
+    function save(object, continuation) {
+        updateCache(object)
+
+        // Save all the objects
+        if (object.key && object.key[0] == '/')
+            serverSave(object, continuation)
+        else
+            if (continuation) continuation()
     }
 
     // ================================
@@ -104,7 +104,7 @@
                 updateCache(result)
             }
             else if (request.status === 500)
-                window.ajax_error && window.ajax_error()
+                if (window.on_ajax_error) window.on_ajax_error()
 
         }
 
@@ -115,7 +115,7 @@
         request.send(null);
     }
 
-    function serverSave(object) {
+    function serverSave(object, continuation) {
         var original_key = object.key
         
         // Special case for /new.  Grab the pieces of the URL.
@@ -140,6 +140,7 @@
                     }
                 })
                 updateCache(result)
+                if (continuation) continuation()
             }
             else if (request.status === 500)
                 window.ajax_error && window.ajax_error()
@@ -274,7 +275,17 @@
             //sanity(this.local_key)
         })
         obj.shouldComponentUpdate = function (next_props, next_state) {
-            return dirty_components[this.local_key] !== undefined || JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this.props])
+            // This component definitely needs to update if it is marked as dirty
+            if (dirty_components[this.local_key] !== undefined) return true
+
+            // Otherwise, we'll check to see if its state or props have changed. 
+            // We can do so by simply serializing them and then comparing them. 
+            // There is a catch however: If React's children property is set on the 
+            // props, serialization will lead to an error because of a circular 
+            // reference. So we'll remove the children property.
+            next_props = clone(next_props); this_props = clone(this.props)
+            delete next_props['children']; delete this_props['children']
+            return JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this_props])
         }
         
         obj.is_waiting = function () {
@@ -386,8 +397,8 @@
                 execution_context = []
                 if (e instanceof TypeError) {
                     if (this.is_waiting()) return loading_indicator
-                    else { console.error("In", this.name + ':', e.stack); return error_indicator(e.message) }
-                } else { console.error('In', this.name + ':', e.stack); throw e }
+                    else { error(e); return error_indicator(e.message) }
+                } else { error(e) }
             }
             execution_context = []
             after && after.apply(this, arguments)
@@ -404,6 +415,12 @@
             for (var k in object)
                 map_objects(object[k], func)
         }
+    }
+
+    function error(e) {
+        console.error('In', this.name + ':', e.stack)
+        if (window.on_client_error)
+            window.on_client_error(e)
     }
 
     // Export the public API

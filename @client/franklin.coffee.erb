@@ -522,8 +522,14 @@ Slider = ReactiveComponent
   # setSlidability
   # Inits jQuery UI slider and enables/disables it between pages
   setSlidability : ->
+
     root = @data('root')
     slider = @data('slider')
+    
+    # wait to set slidability until we have an opinion from the server
+    return if !@data(root.your_opinion_key).stance?
+
+
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
       $slider_base.slider(if root.auth_mode then 'disable' else 'enable')

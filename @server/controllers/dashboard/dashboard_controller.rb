@@ -9,7 +9,7 @@ class Dashboard::DashboardController < ApplicationController
     if request.xhr?
       render :json => result 
     else
-      if current_user
+      if current_user && current_user.registration_complete
         render :json => result
       else
         session[:redirect_after_login] = request.path

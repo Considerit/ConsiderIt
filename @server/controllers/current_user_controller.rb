@@ -446,6 +446,7 @@ class CurrentUserController < DeviseController
 
   def to_json_current_user
     {
+      id: current_user.id, #leave the id in for now for backwards compatability with Dash
       key: '/current_user',
       user: current_user ? "/user/#{current_user.id}" : nil,
       logged_in: current_user.registration_complete,

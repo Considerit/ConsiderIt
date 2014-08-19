@@ -534,6 +534,8 @@ Slider = ReactiveComponent
 
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
+      if !slider.is_moving
+        $('.slider_base').slider({value: -slider.stance})
       $slider_base.slider(if root.auth_mode then 'disable' else 'enable')
     else
       $slider_base.slider
@@ -548,9 +550,8 @@ Slider = ReactiveComponent
           # supporter' to 'neutral'
           return false if ev.originalEvent.type != 'mousemove'
 
-          if !slider.has_moved
-            slider.has_moved = true
-
+          slider.has_moved = true
+          slider.is_moving = true
           slider.stance_segment = getStanceSegment -ui.value
           slider.stance = -ui.value
 
@@ -559,6 +560,18 @@ Slider = ReactiveComponent
           if root.page_name == 'results'
             togglePage('crafting')
 
+          # We save the slider's position to the server only on mouse-up.
+          # This way you can drag it with good performance.
+          your_opinion = @data(@data('root').your_opinion_key)
+          slider = @data('slider')
+          if your_opinion.stance != slider.stance
+            your_opinion.stance         = slider.stance
+            your_opinion.stance_segment = slider.stance_segment
+            save(your_opinion)
+
+          slider.is_moving = false
+          save(slider)
+
   togglePage : (ev) ->
     root = @data('root')
     if !root.auth_mode
@@ -566,24 +579,14 @@ Slider = ReactiveComponent
       togglePage(new_page)
     ev.stopPropagation()
 
-  saveSlider : (ev) ->
-    # We save the slider's position to the server only on mouse-up.
-    # This way you can drag it with good performance.
-    your_opinion = @data(@data('root').your_opinion_key)
-    slider = @data('slider')
-    if your_opinion.stance != slider.stance
-      your_opinion.stance         = slider.stance
-      your_opinion.stance_segment = slider.stance_segment
-      save(your_opinion)
-
   render : ->
     slider = @data('slider')
     stance = slider.stance
     segment = slider.stance_segment
 
-    # On initial page load, initialize slider value based on your_opinion
+    # Update the slider position when the server gets back to us
     your_opinion = @data(@data('root').your_opinion_key)
-    if !slider.has_moved && your_opinion.published
+    if slider.stance != your_opinion.stance and !slider.is_moving
       slider.stance = your_opinion.stance
       slider.stance_segment = your_opinion.stance_segment
       slider.has_moved = true
@@ -703,7 +706,7 @@ Slider = ReactiveComponent
 
         R.div props_for_slider_handle, 
 
-          R.div className: 'the_handle', onClick: @togglePage, onMouseUp: @saveSlider,
+          R.div className: 'the_handle', onClick: @togglePage,
             if page == 'crafting'
               R.div className: 'face',            
                 R.div className: 'face_mouth face_part', style: face_mouth_style
@@ -1860,6 +1863,7 @@ fetch 'histogram',
 
 fetch 'slider',
   has_moved : false
+  is_moving : false
   stance : 0
   stance_segment : getStanceSegment 0
 

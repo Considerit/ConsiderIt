@@ -20,8 +20,8 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable
   devise :omniauthable, :omniauth_providers => [:facebook, :twitter, :google_oauth2]
 
-  validates :name, :presence => true
-  validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
+  #validates :name, :presence => true
+  #validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
 
   #attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url, :metric_points, :metric_conversations, :metric_opinions, :metric_comments, :metric_influence, :b64_thumbnail
 
@@ -59,6 +59,11 @@ class User < ActiveRecord::Base
       :processors => [:thumbnail, :compression]
 
   validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif)
+
+  def logged_in?
+    # Logged-in now means that the current user account is registered
+    self.registration_complete
+  end
 
   def unsubscribe!
     self.follows.update_all( {:explicit => true, :follow => false} )
@@ -318,6 +323,56 @@ class User < ActiveRecord::Base
           pp "Could not update User #{user.id}"
         end
       end
+    end
+  end
+
+  def absorb (user)
+    puts("Merging!  Kill #{user and user.id}, put into #{self and self.id}")
+    return if not (self and user)
+    return if user.id == self.id
+    
+    # Not only do we need to merge the user objects, but we'll need to
+    # merge their opinion objects too.
+
+    # To do this, we take the following steps
+    #  1. Merge both users' opinions
+    #  2. Update the user_id cached in every Point.includers json string
+    #  3. Change user_id for every object that has one to the new user_id
+    #  4. Delete the old user
+
+    # 1. Merge opinions
+    puts("Merging opinions")
+    old_u_ops = Opinion.where(:user_id => user.id).map{|o| o.id}
+    new_u_ops = Opinion.where(:user_id => self.id).map{|o| o.id}
+
+    puts("Merging opinions from #{old_u_ops} to #{new_u_ops}")
+    for absorbed_o in Opinion.where(:user_id => user.id)
+      puts("Looking for opinion to absorb on #{absorbed_o.id}")
+      self_o = Opinion.where(:user_id => self.id,
+                             :proposal_id => absorbed_o.proposal.id).first
+      if (self_o)
+        self_o.absorb(absorbed_o)
+      end
+    end
+
+    # 2. Update the user_id in cached Point.includers
+    # 
+    # Each point has a cached "includers" field that we need to
+    # update... the way to do that is to call
+    # point.update_absolute_score() on it.
+    #
+    # The points that need to be updated are all the ones that this
+    # user has included.  So let's get those inclusions, then grab their
+    # points, and update their scores.
+    for i in Inclusion.where(:user_id => user.id)
+      i.point.update_absolute_score
+    end
+
+    # 2. Change user_id columns over in bulk
+    for table in [Point, Opinion, Proposal, Comment, Assessable::Assessment,\
+                  Follow, Inclusion, Moderation, PageView, PointListing, Thank]
+      # Missing: ReflectResponseRevision, PointSimilarity, Request
+      table.where(:user_id => user.id).update_all(user_id: self.id)
     end
   end
 

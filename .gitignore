@@ -55,6 +55,6 @@ zansible/hosts/chlkit
 zansible/hosts/workbus
 zansible/hosts/considerit
 zansible/hosts/iweb
-zansible/hosts/considerit_old
-
 zansible/hosts/group_vars/considerit_old
+
+zansible/hosts/considerit_old

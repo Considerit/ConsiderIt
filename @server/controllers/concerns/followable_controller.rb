@@ -5,7 +5,11 @@ class FollowableController < ApplicationController
       followable_objects = {}
       target_user.follows.each do |follow|
         followable_objects[follow.followable_type] = {} if !(followable_objects.has_key?(follow.followable_type))
-        followable_objects[follow.followable_type][follow.followable_id] = follow.root_object()
+
+        root_obj = follow.root_object()
+        if root_obj
+          followable_objects[follow.followable_type][follow.followable_id] = root_obj
+        end
       end
       render :json => {:success => true, :followable_objects => followable_objects}
     else

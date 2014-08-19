@@ -522,8 +522,16 @@ Slider = ReactiveComponent
   # setSlidability
   # Inits jQuery UI slider and enables/disables it between pages
   setSlidability : ->
+
     root = @data('root')
     slider = @data('slider')
+    
+    # Wait to set slidability until we have an opinion from the server.
+    # Otherwise slider will get initialized with a NaN stance that 
+    # breaks the slider. 
+    return if !@data(root.your_opinion_key).stance?
+
+
     $slider_base = $(@getDOMNode()).find('.slider_base')
     if $slider_base.hasClass "ui-slider"
       $slider_base.slider(if root.auth_mode then 'disable' else 'enable')
@@ -575,7 +583,7 @@ Slider = ReactiveComponent
 
     # On initial page load, initialize slider value based on your_opinion
     your_opinion = @data(@data('root').your_opinion_key)
-    if !slider.has_moved && slider.stance != your_opinion.stance
+    if !slider.has_moved && your_opinion.published
       slider.stance = your_opinion.stance
       slider.stance_segment = your_opinion.stance_segment
       slider.has_moved = true
@@ -1746,7 +1754,6 @@ Page = ReactiveComponent
           Proposal key: @page.proposal.key
       Footer()
       Computer() # Doesn't actually render anything
-      Media() # Doesn't actually render anything
 
 Computer = ReactiveComponent
   # This doesn't actually render anything.  It just processes state
@@ -1779,25 +1786,6 @@ Computer = ReactiveComponent
 
     return R.span null, ''
 
-Media = ReactiveComponent
-  # This doesn't actually render anything.  It just tracks data
-  # useful for responsive layouts.
-  displayName: 'Media'
-  
-  componentWillMount : ->
-    @registerCallbacks() 
-    @updateMeasurements()
-
-  registerCallbacks : -> 
-    $(window).on "resize.plugin_stickytopbottom-#{@my_id}", => @updateMeasurements()
-
-  updateMeasurements : ->
-    media = @data()
-    media.height = $(window).height()
-    media.width = $(window).width()
-    save media
-
-  render : -> return R.span null, ''  
 
 
 Header = ReactiveComponent
@@ -1832,7 +1820,7 @@ Header = ReactiveComponent
         R.a href: 'http://www.tigard-or.gov/', target: '_blank',
           R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '86px', position: 'absolute', bottom: '-38px', zIndex: 999999}
 
-      if current_user.user # or we could do if current_user.logged_in
+      if current_user.logged_in
         R.div className: 'userbar', 
           Avatar key: current_user.user, tag: R.span, className: 'userbar_avatar', style: {height: 20, width: 20}
           R.a 'data-action': 'logout', onClick: @logout, 'logout'
@@ -1847,6 +1835,19 @@ Footer = ReactiveComponent
       R.span className: 'separator', '•'
       'Bug to report? '
       R.a href: "mailto:admin@consider.it", 'Email us'
+
+
+# Tracks data useful for responsive layouts.
+$(document).ready ->
+  updateMedia()
+  $(window).on "resize", -> updateMedia()
+
+updateMedia = ->
+  console.log 'HI'
+  media = fetch('media')
+  media.height = $(window).height()
+  media.width = $(window).width()
+  save media
 
 
 

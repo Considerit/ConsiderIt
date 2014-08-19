@@ -1754,7 +1754,6 @@ Page = ReactiveComponent
           Proposal key: @page.proposal.key
       Footer()
       Computer() # Doesn't actually render anything
-      Media() # Doesn't actually render anything
 
 Computer = ReactiveComponent
   # This doesn't actually render anything.  It just processes state
@@ -1787,25 +1786,6 @@ Computer = ReactiveComponent
 
     return R.span null, ''
 
-Media = ReactiveComponent
-  # This doesn't actually render anything.  It just tracks data
-  # useful for responsive layouts.
-  displayName: 'Media'
-  
-  componentWillMount : ->
-    @registerCallbacks() 
-    @updateMeasurements()
-
-  registerCallbacks : -> 
-    $(window).on "resize.plugin_stickytopbottom-#{@my_id}", => @updateMeasurements()
-
-  updateMeasurements : ->
-    media = @data()
-    media.height = $(window).height()
-    media.width = $(window).width()
-    save media
-
-  render : -> return R.span null, ''  
 
 
 Header = ReactiveComponent
@@ -1855,6 +1835,19 @@ Footer = ReactiveComponent
       R.span className: 'separator', '•'
       'Bug to report? '
       R.a href: "mailto:admin@consider.it", 'Email us'
+
+
+# Tracks data useful for responsive layouts.
+$(document).ready ->
+  updateMedia()
+  $(window).on "resize", -> updateMedia()
+
+updateMedia = ->
+  console.log 'HI'
+  media = fetch('media')
+  media.height = $(window).height()
+  media.width = $(window).width()
+  save media
 
 
 

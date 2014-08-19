@@ -8,7 +8,7 @@ class Opinion < ActiveRecord::Base
   
   # has_paper_trail
 
-  include Trackable, Followable, Commentable
+  include Followable, Commentable
 
   acts_as_tenant(:account)
 

@@ -1782,7 +1782,7 @@ Computer = ReactiveComponent
     # Publish this opinion if we can
     root = @data('root')
     if root.publish_this_opinion and current_user.logged_in
-      opinion = @data(your_opinion_key)
+      opinion = @data(root.your_opinion_key)
       opinion.published = true
       root.publish_this_opinion = false
       save(root)

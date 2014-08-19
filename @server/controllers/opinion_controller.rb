@@ -116,6 +116,26 @@ class OpinionController < ApplicationController
 
 protected
 
+  def publish_opinion(opinion)
+    for p in opinion.inclusions.map{|i| i.point}
+      pnt.published = 1
+
+      # What do I do with this?
+      update_attrs = {"score_stance_group_#{opinion.stance_segment}".intern => 0.001, :score => 0.0000001}
+      p.update_attributes ActionController::Parameters.new(update_attrs).permit!
+
+      # What is track about?
+      p.track!
+      p.follow!(current_user, :follow => true, :explicit => false)
+
+      ActiveSupport::Notifications.instrument("point:published", 
+        :point => p,
+        :current_tenant => current_tenant,
+        :mail_options => mail_options
+      )
+    end
+  end
+
   def include_points (opinion, points)
     curr_inclusions = Inclusion.where(:opinion => opinion.id)
 

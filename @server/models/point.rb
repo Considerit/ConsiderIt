@@ -1,6 +1,6 @@
 class Point < ActiveRecord::Base
   
-  include Trackable, Followable, Commentable, Moderatable, Assessable
+  include Followable, Commentable, Moderatable, Assessable
   
   # has_paper_trail :only => [:hide_name, :published, :is_pro, :text, :nutshell, :user_id]  
   
@@ -62,11 +62,6 @@ class Point < ActiveRecord::Base
   scope :ranked_unify, -> { published.order( "points.appeal DESC" ) } 
   scope :ranked_divisive, -> { published.order( "points.divisiveness DESC" ) } 
   scope :ranked_persuasiveness, -> { published.order( "points.persuasiveness DESC" ) }
-  scope :ranked_for_stance_segment, proc {|stance_segment|
-      published.
-      where("points.score_stance_group_#{stance_segment} > 0").
-      order("points.score_stance_group_#{stance_segment} DESC")
-  }
   
   scope :not_included_by, proc {|user, included_points, deleted_points| 
     #chain = !user.nil? ? joins(:inclusions.outer, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NULL") : nil

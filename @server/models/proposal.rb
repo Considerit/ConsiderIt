@@ -11,7 +11,7 @@ class Proposal < ActiveRecord::Base
 
   acts_as_tenant(:account)
 
-  include Trackable, Followable, Moderatable
+  include Followable, Moderatable
   
   self.moderatable_fields = [:name, :description, :long_description]
   self.moderatable_objects = lambda { Proposal.published_web }

@@ -239,64 +239,64 @@ $segment_color: #db004d
   border-bottom: 6px solid #787878
 
 $slider_handle_size: 22px
-.ui-slider-handle  // dashes in name b/c jquery UI
+
+.the_handle
+  z-index: 10
+  border-radius: 50%
+  width: $slider_handle_size
+  height: $slider_handle_size
   margin-left: -$slider_handle_size / 2
-
-  .the_handle
-    border-radius: 50%
-    width: $slider_handle_size
-    height: $slider_handle_size
-    background-color: $decision_board_text_color
-    position: relative
-    box-shadow: 0px 1px 0px darken($decision_board_text_color, 15%), inset 0 1px 2px rgba(white, .4), 0px 0px 0px 1px darken($decision_board_text_color, 0%)
-
-    .face_part
-      position: absolute
-      pointer-events: none
-
-    .face_eye
-      border-radius: 50%
-      background-color: white
-      top: 6px
-      width: 3px
-      height: 3px
-
-      &.face_left_eye
-        left: 6px
-      &.face_right_eye
-        right: 6px
-
-    .face_mouth
-      bottom: -1px
-      width: $slider_handle_size - 4
-      left: 2px 
-      height: $slider_handle_size - 4
-      border-radius: 50%
-      box-shadow: 3px 3px 0 0 white
-
-    .drag_arrow
-      position: absolute
-      top: 2px
-      color: rgba($decision_board_border_color, .6)
-      +font-size(-2)
-
-      &.left
-        left: -15px
-      &.right
-        right: -15px
-
-
-  // the mouth leading into the "give opinion button" or the decision board, depending on state
-  .bubblemouth
-    position: absolute  
-    width: 18px
-
-.ui-slider-handle
+  top: -9px
+  background-color: $decision_board_text_color
+  position: relative
+  box-shadow: 0px 1px 0px darken($decision_board_text_color, 15%), inset 0 1px 2px rgba(white, .4), 0px 0px 0px 1px darken($decision_board_text_color, 0%)
   +grab_cursor
 
-.ui-slider-disabled .ui-slider-handle
-  cursor: default
+  .face_part
+    position: absolute
+    pointer-events: none
 
+  .face_eye
+    border-radius: 50%
+    background-color: white
+    top: 6px
+    width: 3px
+    height: 3px
+
+    &.face_left_eye
+      left: 6px
+    &.face_right_eye
+      right: 6px
+
+  .face_mouth
+    bottom: -1px
+    width: $slider_handle_size - 4
+    left: 2px 
+    height: $slider_handle_size - 4
+    border-radius: 50%
+    box-shadow: 3px 3px 0 0 white
+
+  .drag_arrow
+    position: absolute
+    top: 2px
+    color: rgba($decision_board_border_color, .6)
+    +font-size(-2)
+
+    &.left
+      left: -15px
+    &.right
+      right: -15px
+
+
+// the mouth leading into the "give opinion button" or the decision board, depending on state
+.bubblemouth
+  position: absolute  
+  width: 18px
+  pointer-events: none
+  z-index: 10
+  margin-left: -$slider_handle_size / 2
+
+  
 // The area on top of the slider that shows in crafting to let user know what their stance is
 .slider_feedback
   position: absolute
@@ -310,7 +310,7 @@ $slider_handle_size: 22px
   text-align: center
 
 .opinion_region .slider_feedback
-  // pointer-events: none // clicking on this interferes with slider and toggle state
+  pointer-events: none // clicking on this interferes with slider and toggle state
 
 
 [data-page="results"] .slider_feedback
@@ -353,8 +353,11 @@ $slider_handle_size: 22px
   display: inline-block
   vertical-align: top
 
-.points_by_community, .points_on_decision_board
+.points_by_community
   margin-top: 38px
+
+.points_on_decision_board
+  margin-top: 28px
 
 .points_by_community
   margin-left: $grid_gutter
@@ -461,6 +464,7 @@ $slider_handle_size: 22px
   //     border-color: #883333
   //     &:focus
   //       +inset-border($decision_board_text_color)
+
 
 [data-page="results"]
   .decision_board_body
@@ -756,6 +760,9 @@ $point-includer-width: 22px
 
   .slider_feedback
     margin-top: -25px
+    margin-left: -225px
+    width: 500px
+
 
 .auth_region
   margin-bottom: 10 * $vertical_baseline

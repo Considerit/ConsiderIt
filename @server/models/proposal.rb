@@ -72,8 +72,12 @@ class Proposal < ActiveRecord::Base
     your_opinion = Opinion.get_or_make(self, current_user, current_tenant)
 
     # Compute opinions
-    ops = opinions.published.public_fields.map {|x| x.as_json}
+    published_opinions = opinions.published
+    ops = published_opinions.public_fields.map {|x| x.as_json}
 
+    if published_opinions.where(:user_id => nil).count > 0
+      throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
+    end
     # Compute Included points
     #includeds = Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).pluck('points.id')
                 

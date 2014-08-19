@@ -59,7 +59,6 @@ namespace :tenants do
           new_user.account_id = accnt
           new_user.skip_confirmation!
           new_user.save!
-          new_user.track!
 
           tables_to_update.each do |tbl|
             ActiveRecord::Base.connection.execute("UPDATE #{tbl} SET user_id=#{new_user.id} WHERE user_id=#{u.id} AND account_id=#{accnt}")

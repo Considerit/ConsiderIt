@@ -274,7 +274,6 @@
             //sanity(this.local_key)
         })
         obj.shouldComponentUpdate = function (next_props, next_state) {
-
             // This component definitely needs to update if it is marked as dirty
             if (dirty_components[this.local_key] !== undefined) return true
 
@@ -282,26 +281,10 @@
             // We can do so by simply serializing them and then comparing them. 
             // There is a catch however: If React's children property is set on the 
             // props, serialization will lead to an error because of a circular 
-            // reference. So we'll remove the children property if it exists
-            // for the check, then restore it. 
-            var children = null, next_children = null;
-            if (next_props && next_props.children !== undefined){
-                next_children = next_props.children
-                delete next_props['children']
-            }
-            if (this.props && this.props.children !== undefined){
-                children = this.props.children
-                delete this.props['children']                
-            }
-
-            should_update = JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this.props])
-            if (children) {
-                this.props.children = children
-            } if (next_children) {
-                next_props.children = next_children
-            }
-
-            return should_update
+            // reference. So we'll remove the children property.
+            next_props = clone(next_props); this_props = clone(this.props)
+            delete next_props['children']; delete this_props['children']
+            return JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this_props])
         }
         
         obj.is_waiting = function () {

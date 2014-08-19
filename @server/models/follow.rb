@@ -24,7 +24,11 @@ class Follow < ActiveRecord::Base
   end
 
   def root_object
-    followable_type.constantize.find(followable_id)
+    begin 
+      followable_type.constantize.find(followable_id)
+    rescue
+      pp "Could not find a #{followable_type} of id #{followable_id}"
+    end
   end
 
   def self.purge

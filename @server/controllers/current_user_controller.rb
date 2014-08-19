@@ -289,7 +289,6 @@ class CurrentUserController < DeviseController
       puts("Signing into the stubby.  Curr=#{current_user}")
       sign_in :user, user
       puts("Signed into stubby.  Curr=#{current_user}")
-    # current_user.track!
     else
       raise 'Error making stub account. Yikes!'
     end

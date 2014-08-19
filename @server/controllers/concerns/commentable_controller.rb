@@ -25,8 +25,6 @@ class CommentableController < ApplicationController
           :mail_options => mail_options
         )
 
-        #TODO: implement this as instrumentation        
-        comment.track!
         # comment.follow!(current_user, :follow => true, :explicit => false)
 
         if commentable.respond_to? :follow!

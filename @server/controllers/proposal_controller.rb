@@ -71,11 +71,6 @@ class ProposalController < ApplicationController
 
     proposal.save
 
-    #########
-    # Wrong! This should only happen when a proposal is published! And care needs to be taken to filter this according to its publicity!
-    proposal.track! 
-    #########
-
     # why do we subscribe the creator to email notifications for new proposals by other people?
     current_tenant.follow!(current_user, :follow => true, :explicit => false)
 

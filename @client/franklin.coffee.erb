@@ -526,7 +526,9 @@ Slider = ReactiveComponent
     root = @data('root')
     slider = @data('slider')
     
-    # wait to set slidability until we have an opinion from the server
+    # Wait to set slidability until we have an opinion from the server.
+    # Otherwise slider will get initialized with a NaN stance that 
+    # breaks the slider. 
     return if !@data(root.your_opinion_key).stance?
 
 

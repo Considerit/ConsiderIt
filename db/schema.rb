@@ -70,6 +70,21 @@ ActiveRecord::Schema.define(version: 20140212194651) do
 
   add_index "accounts", ["identifier"], name: "by_identifier", length: {"identifier"=>10}, using: :btree
 
+  create_table "active_admin_comments", force: true do |t|
+    t.string   "resource_id",   null: false
+    t.string   "resource_type", null: false
+    t.integer  "author_id"
+    t.string   "author_type"
+    t.text     "body"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.string   "namespace"
+  end
+
+  add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id", using: :btree
+  add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
+  add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_admin_notes_on_resource_type_and_resource_id", using: :btree
+
   create_table "activities", force: true do |t|
     t.string   "action_type"
     t.integer  "action_id",   null: false
@@ -164,6 +179,23 @@ ActiveRecord::Schema.define(version: 20140212194651) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+
+  create_table "domain_maps", force: true do |t|
+    t.integer "proposal_id"
+    t.integer "domain_id"
+    t.integer "account_id"
+  end
+
+  add_index "domain_maps", ["account_id"], name: "index_domain_maps_on_account_id", using: :btree
+
+  create_table "domains", force: true do |t|
+    t.integer "identifier"
+    t.string  "name"
+    t.integer "account_id"
+  end
+
+  add_index "domains", ["account_id"], name: "index_domains_on_account_id", using: :btree
+  add_index "domains", ["identifier"], name: "index_domains_on_identifier", using: :btree
 
   create_table "emails", force: true do |t|
     t.string   "from_address"
@@ -267,6 +299,16 @@ ActiveRecord::Schema.define(version: 20140212194651) do
   add_index "point_listings", ["opinion_id"], name: "index_point_listings_on_opinion_id", using: :btree
   add_index "point_listings", ["point_id"], name: "index_point_listings_on_point_id", using: :btree
   add_index "point_listings", ["user_id", "point_id"], name: "index_point_listings_on_user_id_and_point_id", unique: true, using: :btree
+
+  create_table "point_similarities", force: true do |t|
+    t.integer  "p1_id"
+    t.integer  "p2_id"
+    t.integer  "proposal_id"
+    t.integer  "user_id"
+    t.integer  "value"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
 
   create_table "points", force: true do |t|
     t.integer  "proposal_id"
@@ -400,6 +442,65 @@ ActiveRecord::Schema.define(version: 20140212194651) do
 
   add_index "rails_admin_histories", ["item", "table", "month", "year"], name: "index_histories_on_item_and_table_and_month_and_year", using: :btree
 
+  create_table "reflect_bullet_revisions", force: true do |t|
+    t.integer  "bullet_id"
+    t.integer  "comment_id"
+    t.text     "text"
+    t.integer  "user_id"
+    t.boolean  "active",       default: true
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+    t.integer  "account_id"
+    t.text     "comment_type"
+  end
+
+  add_index "reflect_bullet_revisions", ["account_id"], name: "index_reflect_bullet_revisions_on_account_id", using: :btree
+
+  create_table "reflect_bullets", force: true do |t|
+    t.integer  "comment_id"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.integer  "account_id"
+    t.text     "comment_type"
+  end
+
+  add_index "reflect_bullets", ["account_id"], name: "index_reflect_bullets_on_account_id", using: :btree
+
+  create_table "reflect_highlights", force: true do |t|
+    t.integer  "bullet_id"
+    t.integer  "bullet_rev"
+    t.string   "element_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "account_id"
+  end
+
+  add_index "reflect_highlights", ["account_id"], name: "index_reflect_highlights_on_account_id", using: :btree
+
+  create_table "reflect_response_revisions", force: true do |t|
+    t.integer  "bullet_id"
+    t.integer  "bullet_rev"
+    t.integer  "response_id"
+    t.text     "text"
+    t.integer  "user_id"
+    t.integer  "signal"
+    t.boolean  "active",      default: true
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+    t.integer  "account_id"
+  end
+
+  add_index "reflect_response_revisions", ["account_id"], name: "index_reflect_response_revisions_on_account_id", using: :btree
+
+  create_table "reflect_responses", force: true do |t|
+    t.integer  "bullet_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "account_id"
+  end
+
+  add_index "reflect_responses", ["account_id"], name: "index_reflect_responses_on_account_id", using: :btree
+
   create_table "requests", force: true do |t|
     t.integer  "user_id"
     t.integer  "assessment_id"
@@ -420,6 +521,25 @@ ActiveRecord::Schema.define(version: 20140212194651) do
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", using: :btree
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
+
+  create_table "taggings", force: true do |t|
+    t.integer  "tag_id"
+    t.integer  "account_id"
+    t.integer  "taggable_id"
+    t.string   "taggable_type"
+    t.integer  "tagger_id"
+    t.string   "tagger_type"
+    t.string   "context",       limit: 128
+    t.datetime "created_at"
+  end
+
+  add_index "taggings", ["tag_id"], name: "index_taggings_on_tag_id", using: :btree
+  add_index "taggings", ["taggable_id", "taggable_type", "context"], name: "index_taggings_on_taggable_id_and_taggable_type_and_context", using: :btree
+
+  create_table "tags", force: true do |t|
+    t.string  "name"
+    t.integer "account_id"
+  end
 
   create_table "thanks", force: true do |t|
     t.integer  "user_id"

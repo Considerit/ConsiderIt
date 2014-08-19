@@ -1728,6 +1728,7 @@ Auth = ReactiveComponent
           className:'cancel_auth_button primary_cancel_button'
           onClick: (=>
             root.auth_mode = null
+            root.publish_this_opinion = null
             save(root))
         , 'cancel log in'
 
@@ -1767,11 +1768,10 @@ Computer = ReactiveComponent
     if current_user.csrf
       arest.csrf(current_user.csrf)
 
-    console.log("COMPUTER: Got new user data #{current_user.user} and last #{@local.last_curr_user}, local", @local)
-
     # If the user changed, reload the current opinion
     # This will need to be updated with better arest
     if current_user.user != @local.last_curr_user
+      console.log("COMPUTER: New currnet_user: #{current_user.user}, last: #{@local.last_curr_user}")
       if @local.last_curr_user
         current_proposal = @data('root').current_proposal
         console.log('Forcing refetch of current_proposal',current_proposal)
@@ -1779,13 +1779,14 @@ Computer = ReactiveComponent
       @local.last_curr_user = current_user.user
       save(@local)
 
-    # # Publish this opinion if we can
-    # root = @data('root')
-    # if root.publish_this_opinion and current_user.logged_in and window.your_opinion_key
-    #   opinion = @data(your_opinion_key)
-    #   opinion.published = true
-    #   root.publish_this_opinion = false
-    #   save(opinion, root)
+    # Publish this opinion if we can
+    root = @data('root')
+    if root.publish_this_opinion and current_user.logged_in
+      opinion = @data(your_opinion_key)
+      opinion.published = true
+      root.publish_this_opinion = false
+      save(root)
+      save(opinion)
 
     return R.span null, ''
 
@@ -1800,7 +1801,8 @@ Header = ReactiveComponent
     root = @data('root')
     root.auth_mode = null
 
-    save(current_user, root)
+    save(current_user)
+    save(root)
 
   render : ->
     current_user = @data('/current_user')
@@ -1911,7 +1913,9 @@ Router = Backbone.Router.extend
   results : (long_id) -> @proposal long_id, 'results'
 
 window.app_router = new Router()
-window.ajax_error = () ->
+window.on_ajax_error = () ->
   (root = fetch('root')).server_error = true
   save(root)
+window.on_client_error = (e) ->
+  save({ key: '/new/error', stack: JSON.stringify(e.stack) })
 $(document).ready -> Backbone.history.start {pushState: true}

@@ -37,19 +37,6 @@
 
       #content.content{ customer: current_tenant.identifier, theme: current_tenant.theme }
 
-      - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
-        :javascript
-          var _gaq = _gaq || [];
-          _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-          _gaq.push(['_setDomainName', ".#{get_root_domain}"]);
-          _gaq.push(['_trackPageview']);
-
-
-      - if current_tenant.analytics_google && current_tenant.analytics_google != ''
-        :javascript
-          var _gaq_account = _gaq_account || [];
-          _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-          _gaq_account.push(['_trackPageview']);
 
     :javascript
       window.activeREST_data = #{@activeREST_data.to_json};

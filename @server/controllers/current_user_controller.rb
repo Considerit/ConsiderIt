@@ -281,20 +281,7 @@ class CurrentUserController < DeviseController
 
   end
 
-  def make_stub_user
-    user = User.new
-    # Record where this user initially came from:
-    user.referer = user.page_views.first.referer if user.page_views.count > 0
-    if user.save
-      puts("Signing into the stubby.  Curr=#{current_user}")
-      sign_in :user, user
-      puts("Signed into stubby.  Curr=#{current_user}")
-    else
-      raise 'Error making stub account. Yikes!'
-    end
-  end
-
-  
+ 
   def replace_user(old_user, new_user)
     new_user.absorb(old_user)
 

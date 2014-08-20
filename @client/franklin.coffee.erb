@@ -850,10 +850,10 @@ DecisionBoard = ReactiveComponent
           # only shown during crafting, but needs to be present always for animation
           R.div className: 'your_points',
             # your pros
-            YourPoints { valence: 'pros' }
+            YourPoints { key: 'your_pro_points', valence: 'pros' }
 
             # your cons
-            YourPoints { valence: 'cons' }
+            YourPoints { key: 'your_con_points', valence: 'cons' }
 
           # only shown during results, but needs to be present always for animation
           R.a 
@@ -879,10 +879,19 @@ DecisionBoard = ReactiveComponent
 YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
+  handleAddPointBegin : ->
+    your_points = @data()
+    your_points.adding_new_point = true
+    save your_points
+
   render : ->
     root = @data('root')
     included_points = @data(root.your_opinion_key).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
+
+    your_points = @data @props.key,
+      editing_points : []
+      adding_new_point : false
 
     R.div 
       className:"points_on_decision_board #{@props.valence}_on_decision_board"
@@ -894,7 +903,10 @@ YourPoints = ReactiveComponent
       R.ul null,
         for point in included_points
           if @data(point).is_pro == (@props.valence == 'pros')
-            Point { key: point, location_class: 'decision_board_point' }
+            if point in your_points.editing_points
+              EditPoint { key: point, fresh: false, valence: @props.valence, your_points_key: @props.key }
+            else
+              Point { key: point, location_class: 'decision_board_point', your_points_key: @props.key }
 
         R.div className:'add_point_drop_target',
           R.div className: "drop_target_circle_#{left_or_right}"
@@ -903,7 +915,18 @@ YourPoints = ReactiveComponent
             #"Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
             "Drag a #{capitalize(if @props.valence=='pros' then 'pro' else 'con')} from the #{left_or_right}"
 
-        NewPoint { valence: @props.valence }
+
+        if !your_points.adding_new_point
+          R.div className:'newpoint_prompt',
+            R.span className:'qualifier', 
+              'or '
+            R.span className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
+            R.a className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
+            "Express a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
+        else
+          EditPoint { key: "new_point_#{@props.valence}", fresh: true, valence: @props.valence, your_points_key: @props.key }
+
+
 
 ##
 # CommunityPoints
@@ -987,6 +1010,10 @@ CommunityPoints = ReactiveComponent
         else
           R.li className: 'empty_point', "No #{label} listed"
 
+
+
+
+
 ##
 # Point
 # A single point in a list. 
@@ -1030,6 +1057,9 @@ Point = ReactiveComponent
   showDetails : -> 
     @local.show_details = !@local.show_details
     save(@local)
+
+  deletePoint : -> 
+    console.log 'delete!'
 
   ## ##
   # On hovering over a point, highlight the people who included this 
@@ -1123,6 +1153,7 @@ Point = ReactiveComponent
 
     selected_segment = @data('histogram').selected_segment
     author_opinion = @data(userOpinion(point.user))
+    current_user = @data('/current_user')
 
     R.li 
       className: "point closed_point #{@props.location_class} 
@@ -1157,111 +1188,129 @@ Point = ReactiveComponent
               R.span className: 'point_details_tease', 
                 $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + "... [more]"
 
-        # R.a className:'open_point_link',
-        #   "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"
+      if current_user.user == point.user && @props.location_class == 'decision_board_point'
+        R.div null,
+          # Should we only allow editing of a point before it is published? 
+          # Is an author allowed to edit a point after someone else has included it?
+          R.a className: 'edit_point', onClick: (=> points = @data(@props.your_points_key); points.editing_points.push(@props.key); save(points)), 
+            R.span null, 'edit'
+
+          # Allow the point author to delete this point before it is published.
+          # After it gets published, however, it can influence other people, so the author shouldn't be able to delete.
+          # Later they can just remove it from their list if they don't believe it anymore. 
+          if !point.published
+            R.a className: 'delete_point', onClick: @deletePoint, 
+              R.span null, 'delete'
+
 
 ##
-# NewPoint
-# Handles adding a new point into the system. Only rendered when proposal is
-# in Crafting state. Manages whether the user has clicked "add a new point". 
-# If they have, show new point form. 
-NewPoint = ReactiveComponent
-  displayName: 'NewPoint'
-  componentDidUpdate : ->
-    if @local.edit_mode
-      $(@getDOMNode()).find('#nutshell').focus()
+# EditPoint
+# Form for editing or creating a point. Used by NewPoint component & when someone
+# edits their point. 
+EditPoint = ReactiveComponent
+  displayName: 'EditPoint'
 
-  handleAddPointBegin : (ev) -> 
-    @local.edit_mode = true
-    @local.add_details = false
-    save(@local)
-
-  handleAddPointCancel : (ev) -> 
-    @local.edit_mode = false
-    save(@local)
+  componentDidMount : ->
+    $el = $(@getDOMNode())
+    $el.find('#nutshell').focus()
+    $el.find('.newpoint-cancel').ensureInView {scroll: false, position: 'bottom'}
 
   handleToggleDetails : (ev) -> 
     @local.add_details = !@local.add_details
     save(@local)
 
-  handleSubmitNewPoint : (ev) ->
+  done : -> 
+    your_points = @data @props.your_points_key
+    if @props.fresh
+      your_points.adding_new_point = false
+    else
+      your_points.editing_points = _.without your_points.editing_points, @props.key
+    save your_points
+
+  savePoint : (ev) ->
     $form = $(@getDOMNode())
     root = @data('root')
 
-    current_user = @data('/current_user').user
-    point =
-      key : '/new/point'
-      nutshell : $form.find('#nutshell').val()
-      text : $form.find('#text').val()
-      is_pro : @props.valence == 'pros'
-      user : current_user
-      comment_count : 0 
-      includers : [current_user]
-      proposal : @data(root.current_proposal).key
-      hide_name : $form.find("sign_name-#{@props.valence}").val()
-    save(point)
+    nutshell = $form.find('#nutshell').val()
+    text = $form.find('#text').val()
+    hide_name = $form.find("sign_name-#{@props.valence}").val()
 
-    @local.edit_mode = false
-    save(@local)
+    if !@props.fresh
+      # If we're updating an existing point, we just have to update 
+      # some of the fields from the form
+      point = @data()
+      point.nutshell = nutshell
+      point.text = text
+      point.hide_name = hide_name
+    else 
+      current_user = @data('/current_user').user
+      point =
+        key : '/new/point'
+        is_pro : @props.valence == 'pros'
+        user : current_user
+        comment_count : 0 
+        includers : [current_user]
+        proposal : @data(root.current_proposal).key
+        nutshell : nutshell
+        text : text
+        hide_name : hide_name
+
+    save point
+
+    @done()
 
     # This is a kludge cause activerest sucks for pre-rendering
     # changes before the server returns them
-    
     @data(root.your_opinion_key).point_inclusions.push(point.key)
     re_render([root.your_opinion_key])
+
+  handleAddPointCancel : (ev) -> @done()
+
   render : ->
-    #TODO: refactor HTML/CSS for new point after we get better sense of new point redesign
     @local = @data @local_key,
-      edit_mode : false
       sign_name : true
       add_details : false
 
-    R.div className:'newpoint',
-      if !@local.edit_mode
-        R.div className:'newpoint_prompt',
-          R.span className:'qualifier', 
-            'or '
-          R.span className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
-          R.a className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
-          "Express a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
-      else
-        R.div className:'newpoint_form',
-          R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pros'}"
-          R.label htmlFor:'nutshell', 'Your point'
-          CharacterCountTextInput id:'nutshell', className:'newpoint_nutshell', maxLength:140, name:'nutshell', pattern:'^.{3,}', placeholder:'Make this summary succinct.', required:'required'
-          
-          R.div null,
-            R.a className: 'add_details', onClick: @handleToggleDetails, title: 'Provide background and/or back your point up with evidence.',
-              R.i className: if @local.add_details then 'fa-caret-down fa' else 'fa-caret-right fa'
-              R.span null, 'Expand on your point'
+    R.div className:'newpoint_form',
+      R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pros'}"
+      R.label htmlFor:'nutshell', 'Your point'
+      CharacterCountTextInput id:'nutshell', className:'newpoint_nutshell', maxLength:140, name:'nutshell', pattern:'^.{3,}', placeholder:'Make this summary succinct.', required:'required'
+      
+      R.div null,
+        R.a className: 'add_details', onClick: @handleToggleDetails, title: 'Provide background and/or back your point up with evidence.',
+          R.i className: if @local.add_details then 'fa-caret-down fa' else 'fa-caret-right fa'
+          R.span null, 'Expand on your point'
 
-            if @local.add_details
-              R.div null, 
-                AutoGrowTextArea 
-                  id:'text'
-                  className:'newpoint_description'
-                  name:'text'
-                  placeholder:'Provide background and/or back your point up with evidence.'
-                  required:'required'
-                  min_height: 170
+        if @local.add_details
+          R.div null, 
+            AutoGrowTextArea 
+              id:'text'
+              className:'newpoint_description'
+              name:'text'
+              placeholder:'Provide background and/or back your point up with evidence.'
+              required:'required'
+              min_height: 170
 
-          R.div className:'newpoint_hide_name',
-            R.input
-              className: 'newpoint-anonymous'
-              type:      'checkbox'
-              id:        "sign_name-#{@props.valence}"
-              name:      "sign_name-#{@props.valence}"
-              checked:   @local.sign_name
-              onChange: =>
-                @local.sign_name = !@local.sign_name
-                save(@local)
-            R.label htmlFor: "sign_name-#{@props.valence}", title:'Signing your point with your name lends it more weight with other participants.', 'Sign your name'
-          
-          R.div className:'newpoint-submit',
-            R.input className:'button primary_button', action:'submit-point', type:'submit', value:'Done', onClick: @handleSubmitNewPoint
+      R.div className:'newpoint_hide_name',
+        R.input
+          className: 'newpoint-anonymous'
+          type:      'checkbox'
+          id:        "sign_name-#{@props.valence}"
+          name:      "sign_name-#{@props.valence}"
+          checked:   @local.sign_name
+          onChange: =>
+            @local.sign_name = !@local.sign_name
+            save(@local)
+        R.label htmlFor: "sign_name-#{@props.valence}", title:'Signing your point with your name lends it more weight with other participants.', 'Sign your name'
+      
+      R.div className:'newpoint-submit',
+        R.input className:'button primary_button', action:'submit-point', type:'submit', value:'Done', onClick: @savePoint
 
-            R.a className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
-              'cancel'
+        R.a className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
+          'cancel'  
+
+
+
 
 ##
 # Avatar

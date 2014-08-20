@@ -1188,6 +1188,7 @@ NewPoint = ReactiveComponent
     $form = $(@getDOMNode())
     root = @data('root')
 
+    your_opinion = @data(root.your_opinion_key)
     current_user = @data('/current_user').user
     point =
       key : '/new/point'
@@ -1206,9 +1207,9 @@ NewPoint = ReactiveComponent
 
     # This is a kludge cause activerest sucks for pre-rendering
     # changes before the server returns them
-    
-    @data(root.your_opinion_key).point_inclusions.push(point.key)
+    your_opinion.point_inclusions.push(point)
     re_render([root.your_opinion_key])
+
   render : ->
     #TODO: refactor HTML/CSS for new point after we get better sense of new point redesign
     @local = @data @local_key,

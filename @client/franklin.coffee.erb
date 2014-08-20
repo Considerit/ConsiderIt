@@ -26,9 +26,9 @@ R = React.DOM
 # Constants, especially used for layout styling
 TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
-GRID_MAJOR = 48  #GRID_MAJOR = GRID_MINOR + GRID_GUTTER
 GRID_MINOR = 30
 GRID_GUTTER = 18
+GRID_MAJOR = GRID_MINOR + GRID_GUTTER #golden ratio
 PAGE_WIDTH = 24 * GRID_MAJOR
 CONTENT_WIDTH = PAGE_WIDTH - 4 * GRID_MAJOR
 BODY_WIDTH = CONTENT_WIDTH - 8 * GRID_MAJOR - 2 * GRID_GUTTER
@@ -652,7 +652,7 @@ Slider = ReactiveComponent
 
     # Keep feedback centered over handle, but keep within the bounds of the slider region 
     # when the slider is in an extreme position. 
-    feedback_left = (@props.width ) * -(stance-1) / 2.0 
+    feedback_left = @props.width * -(stance-1) / 2.0 
     if sticky 
       feedback_width = if slider.has_moved then 190 else 400
       if feedback_left > @props.width / 2
@@ -1361,89 +1361,11 @@ CharacterCountTextInput = ReactiveComponent
       R.span className: 'count', @props.maxLength - @local.count
 
 
-
-
-##
-# AuthHeader
-# Should be refactored into Auth. Shares styles with Slider.
-AuthHeader = ReactiveComponent
-  displayName: 'AuthHeader'
-
-  componentDidMount : -> 
-    root = @data('root')
-    # Mike note: Wondering why we are setting up the slider here, and
-    # why we need to compute the default for your_opinion.stance here.
-    #
-    # I'd imagine that ideally, this component would assume that there
-    # is a your_opinion_key, and that there is a stance, and that the
-    # default was already set.
-    stance = (root.your_opinion_key and @data(root.your_opinion_key).stance) or 0
-    $slider_base = $(@getDOMNode()).find('.slider_base')
-    if !$slider_base.hasClass "ui-slider"
-      $slider_base.slider
-        disabled: true
-        min: -1
-        max: 1
-        step: .01
-        value: -stance
-
-  toggleAuthMode : -> 
-    root = @data('root')
-    current_user = @data('/current_user')
-    root.auth_mode = if root.auth_mode == 'register' then 'login' else 'register'
-    current_user.errors = {}
-    save(root)
-
-  render : ->
-    root = @data('root')
-    stance =  @data(root.your_opinion_key).stance
-    segment = @data(root.your_opinion_key).stance_segment
-
-    # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
-    # also why this file is ERB
-    if segment == 3
-      bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
-    else
-      bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
-
-    slider_feedback = 'Please Introduce Yourself' 
-
-    mouth_scaler = if segment > 3 then -1 else 1
-    mouth_x =      if segment == 3 then 0 else -7.5
-
-
-    bubble_mouth_props = 
-      transform: "scale(#{mouth_scaler * 1.5}, 1.5) translate(#{mouth_x * 1.5}px, 7px)"
-    handle_props = 
-      transform: "scale(2.5) translateY(-8px)"
-
-    crossbrowserTransformProperty = (props) -> _.extend props,
-      '-webkit-transform' : props.transform
-      '-ms-transform' : props.transform
-      '-moz-transform' : props.transform
-
-    crossbrowserTransformProperty bubble_mouth_props
-    crossbrowserTransformProperty handle_props
-
-    R.div className: 'slider', 
-      R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
-        R.div className: 'ui-slider-handle', 
-          R.div className: 'the_handle', onClick: @togglePage, style: handle_props
-          R.img className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
-          R.div className:'slider_feedback', 
-            slider_feedback
-
-            if root.auth_mode in ['login', 'register']
-              R.div className: 'switch_auth_mode', 
-                R.span null, if root.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
-                R.a className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
-
-
 Auth = ReactiveComponent
   displayName: 'Auth'
 
   componentDidMount : -> 
-    $(document).scrollTop $(@getDOMNode()).find('.slider_feedback').offset().top - 10
+    $(document).scrollTop $(@getDOMNode()).find('.auth_heading').offset().top - 10
 
   startThirdPartyAuth : (provider) ->
 
@@ -1513,6 +1435,13 @@ Auth = ReactiveComponent
   #     your_opinion.published = true
   #     save your_opinion
 
+  toggleAuthMode : -> 
+    root = @data('root')
+    current_user = @data('/current_user')
+    root.auth_mode = if root.auth_mode == 'register' then 'login' else 'register'
+    current_user.errors = {}
+    save(root)
+
   render: -> 
     current_user = @data('/current_user')
     root = @data('root')
@@ -1570,8 +1499,52 @@ Auth = ReactiveComponent
     if root.auth_mode in ['login', 'password_reminder']
       providers.push('twitter')
 
+    ## We'll be displaying the Auth header using the position and styling of the slider
+    root = @data('root')
+    slider = @data('slider')
+    stance =  slider.stance
+    segment = slider.stance_segment
+
+    # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
+    # also why this file is ERB
+    if segment == 3
+      bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
+    else
+      bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
+
+    direction = if segment > 3 then -1 else 1
+    mouth_x =      if segment == 3 then 0 else -22
+
+    bubble_mouth_props = 
+      transform: "translate(#{direction * mouth_x}px, 20px) scale(#{direction * 1.5}, 1.5)"
+      left: slider.clientX
+    handle_props = 
+      transform: "scale(2.5)"
+      left: slider.clientX
+
+    crossbrowserTransformProperty bubble_mouth_props
+    crossbrowserTransformProperty handle_props
+
+    auth_heading_style = 
+      visibility: 'visible'
+      left: HISTOGRAM_WIDTH * -(stance-1) / 2.0
+      marginLeft: -225
+      width: 450
+      fontSize: '29px'
+      top: '-80px'
+
+
     R.div className:'auth_region focal_wrapper', style: focal_wrapper_style,
-      AuthHeader()
+      R.div className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
+        R.div className: 'the_handle', onClick: @togglePage, style: handle_props
+        R.img className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
+        R.div className:'auth_heading', style: auth_heading_style,
+          'Please Introduce Yourself' 
+
+          if root.auth_mode in ['login', 'register']
+            R.div className: 'switch_auth_mode', 
+              R.span null, if root.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
+              R.a className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
 
       R.div className:'auth focal_area',
         if root.auth_mode in ['login', 'register'] && !current_user.provider

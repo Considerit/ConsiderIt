@@ -173,7 +173,7 @@ class CurrentUserController < DeviseController
         if User.find_by_email(params[:email])
           errors[:register].append 'That email is not available.'
         # And that it's valid
-        elsif false # I don't know how to check an email address in rails, so fuck it!
+        elsif false # I don't know how to check an email address in rails, so punt!
           errors[:register].append 'Bad email address'
         else
           puts('XXX Need to figure out how to validate email address in here')
@@ -198,7 +198,7 @@ class CurrentUserController < DeviseController
             raise "Error saving this user's password"
           end
           puts("Current user is now #{current_user.id}")
-          puts("Ok, logging back in... fucking asshole!")
+          puts("Ok, logging back in...")
           sign_in :user, current_user, :bypass => true
           puts("Current user is now #{current_user.id}")
         end

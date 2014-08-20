@@ -1,114 +1,67 @@
 source 'http://rubygems.org'
 
-gem "therubyracer", :require => 'v8'
+# CORE
 gem 'rails', '~>4'
+gem 'actionpack-action_caching' # To make smooth upgrade from Rails 3 to 4
 
-gem "mysql2"
+# CONFIGURATION
+gem 'yamler' # https://github.com/markbates/yamler
 
-gem "haml"
+# CACHING / SESSIONS
+gem 'dalli' # https://github.com/mperham/dalli/
 
-# https://github.com/railsware/js-routes
-gem "js-routes"
-
-# https://github.com/ohler55/oj
-gem "oj"
-
-# https://github.com/plataformatec/devise
+# AUTHENTICATION
 gem 'devise'
-
 gem "omniauth"
 gem 'omniauth-oauth2'
 gem 'omniauth-twitter' 
 gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
-
 gem 'twitter'
 
-# https://rubygems.org/gems/remotipart
-gem "remotipart"
+# AUTHORIZATION
+gem 'cancan' #https://github.com/ryanb/cancan
+gem 'role_model' #http://rubydoc.info/gems/role_model/0.7.1/frames
 
-# https://github.com/ErwinM/acts_as_tenant
-gem 'acts_as_tenant'
+# DATABASE & DATABASE MIDDLEWARE
+gem "mysql2"
+gem 'acts_as_tenant' # https://github.com/ErwinM/acts_as_tenant
 
-#https://github.com/ryanb/cancan
-gem 'cancan'
-
-#http://rubydoc.info/gems/role_model/0.7.1/frames
-
-gem 'role_model'
-
-# https://github.com/thoughtbot/paperclip
-gem 'paperclip'
+# VIEWS / FORMS / CLIENT
+gem "haml"
+gem 'paperclip' # https://github.com/thoughtbot/paperclip
 gem 'paperclip-compression'
+gem "remotipart" # https://rubygems.org/gems/remotipart
+gem 'font-awesome-rails'
+gem "js-routes" # https://github.com/railsware/js-routes
+gem "therubyracer", :require => 'v8'
+gem 'jquery-rails' # https://github.com/indirect/jquery-rails
 
-# https://github.com/javan/whenever
-gem 'whenever'
-
-# https://github.com/collectiveidea/delayed_job
-gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' #TODO: remove git location after they release new version
+# BACKGROUND PROCESSING / EMAIL
+gem 'whenever' # https://github.com/javan/whenever
+gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' # https://github.com/collectiveidea/delayed_job
 gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delayed_job_active_record.git'
 gem "daemons"
+gem 'mailhopper' # https://github.com/cerebris/mailhopper
+gem 'delayed_mailhopper' # https://github.com/cerebris/delayed_mailhopper
+gem 'actionmailer-with-request' # https://github.com/weppos/actionmailer_with_request
+gem 'premailer-rails' # https://github.com/fphilipe/premailer-rails
+gem 'backup' #https://github.com/meskyanichi/backup
 
-# https://github.com/cerebris/mailhopper
-gem 'mailhopper' 
+# needed anymore? 
+gem "oj" # https://github.com/ohler55/oj
+gem 'rinku' # https://github.com/vmg/rinku
+gem 'useragent' # https://github.com/josh/useragent
 
-# https://github.com/cerebris/delayed_mailhopper
-gem 'delayed_mailhopper'
-
-# https://github.com/fphilipe/premailer-rails
-#gem 'hpricot'
-gem 'premailer-rails'
-
-# https://github.com/markbates/yamler
-gem 'yamler'
-
-# https://github.com/rgrove/sanitize/
-# gem 'sanitize'
-
-# https://github.com/indirect/jquery-rails
-gem 'jquery-rails'
-
-# https://github.com/weppos/actionmailer_with_request
-gem 'actionmailer-with-request'
-
-#https://github.com/meskyanichi/backup
-gem 'backup'
-
-# https://github.com/mperham/dalli/
-gem 'dalli'
-
-# https://github.com/vmg/rinku
-gem 'rinku' # needed anymore?
-
-gem 'sitemap_generator'
-
-# https://github.com/cmer/cacheable-csrf-token-rails
-# gem 'cacheable-csrf-token-rails', :git => 'git://github.com/ekampp/cacheable-csrf-token-rails'
-
-# https://github.com/josh/useragent
-gem 'useragent'
-
-gem 'font-awesome-rails'
-
-#######
-# https://github.com/rails/protected_attributes
-# These are primarily to make smooth upgrade from Rails 3 to 4
-gem 'actionpack-action_caching'
-#######
-
-##
-# These used to be the Assets group
+# BUILD / DEPLOY / ASSET PIPELINE 
 gem 'sprockets'
 gem 'sprockets-rails', :require => 'sprockets/railtie'
-
 gem 'coffee-rails' #, "~> 3.2.2"
 gem 'uglifier'
 gem "asset_sync"
-
 gem 'sass-rails', "~> 4.0.3"
-
 gem 'bourbon'
-
+gem 'sitemap_generator' # SEO
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
@@ -128,4 +81,3 @@ group :production do
   gem "aws-ses", "~> 0.5.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
   gem 'aws-sdk'
 end
-

@@ -1762,19 +1762,11 @@ Header = ReactiveComponent
 
     R.div className: 'l_header',       
       if customer.identifier == 'cityoftigard'
-        R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '86px', position: 'absolute', bottom: '-38px', zIndex: 999999}
-
-      R.div style: {
-          'background-color': '#eee',
-          'color': '#f00',
-          'padding': '5px 20px',
-          'display' : if root.server_error then 'block'  else 'none'
-        },
-        'Warning: there was a server error!'
-
-      if customer.identifier == 'cityoftigard'
         R.a href: 'http://www.tigard-or.gov/', target: '_blank',
-          R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '86px', position: 'absolute', bottom: '-38px', zIndex: 999999}
+          R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '82px', position: 'absolute', bottom: '-43px', zIndex: 999999, backgroundColor: 'white', borderRight: '2px solid white'}
+
+      R.div style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if root.server_error then 'block' else 'none'},
+        'Warning: there was a server error!'
 
       if current_user.logged_in
         R.div className: 'userbar', 

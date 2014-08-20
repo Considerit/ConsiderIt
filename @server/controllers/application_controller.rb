@@ -3,9 +3,10 @@ require 'digest/md5'
 class ApplicationController < ActionController::Base
   #protect_from_forgery
   set_current_tenant_through_filter
-  prepend_before_filter :get_current_tenant
-  before_filter :theme_resolver
-  after_filter  :pageview
+  prepend_before_action :get_current_tenant
+  before_action :theme_resolver
+  after_action  :pageview
+  before_action :ensure_stub_user
   #include CacheableCSRFTokenRails
 
   def render(*args)
@@ -212,6 +213,27 @@ private
 
     # set_theme(session["user_theme"])
   end
+
+  def ensure_stub_user
+    puts("In before... is there a current user? #{current_user}")
+    if not current_user
+      make_stub_user
+    end
+  end
+
+  def make_stub_user
+    user = User.new
+    # Record where this user initially came from:
+    user.referer = user.page_views.first.referer if user.page_views.count > 0
+    if user.save
+      puts("Signing into the stubby.  Curr=#{current_user}")
+      sign_in :user, user
+      puts("Signed into stubby.  Curr=#{current_user}")
+    else
+      raise 'Error making stub account. Yikes!'
+    end
+  end
+
 
   def store_location(path)
     session[:return_to] = path

@@ -222,12 +222,12 @@ $segment_color: #db004d
 
 // slider
 
-.slider
+.slider, .auth_header
   position: absolute
   top: -48px
+  margin: auto
 
 .slider_base
-  margin: auto
   height: 6px
   background-color: desaturate($decision_board_text_color, 100%)
 
@@ -289,6 +289,7 @@ $slider_handle_size: 22px
 
 
 // the mouth leading into the "give opinion button" or the decision board, depending on state
+// also used for the bubble shown during Authentication after clicking "save opinion"
 .bubblemouth
   position: absolute  
   width: 18px
@@ -298,7 +299,8 @@ $slider_handle_size: 22px
 
   
 // The area on top of the slider that shows in crafting to let user know what their stance is
-.slider_feedback
+// Also used for the auth header "Introduce yourself"
+.slider_feedback, .auth_heading
   position: absolute
   top: -80px
   border-radius: 10px
@@ -309,7 +311,7 @@ $slider_handle_size: 22px
   color: $decision_board_text_color
   text-align: center
 
-.opinion_region .slider_feedback
+.slider_feedback
   pointer-events: none // clicking on this interferes with slider and toggle state
 
 
@@ -756,14 +758,6 @@ $point-includer-width: 22px
     visibility: visible
 
 
-[data-authmode="login"], [data-authmode="register"]
-
-  .slider_feedback
-    margin-top: -25px
-    margin-left: -225px
-    width: 500px
-
-
 .auth_region
   margin-bottom: 10 * $vertical_baseline
 
@@ -773,6 +767,7 @@ $point-includer-width: 22px
 .auth
   padding: 1.5 * $vertical_baseline $grid_gutter .5 * $vertical_baseline $grid_gutter
   +font-size(3)
+  margin-top: 10px
 
   .third_party_call
     margin-right: $grid_gutter * 2

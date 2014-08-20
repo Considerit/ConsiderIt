@@ -41,6 +41,11 @@ class PointController < ApplicationController
     result['key'] = "/point/#{point.id}?original_id=#{original_id}"
     pp(result)
 
+    session[:new_keys] = {} if not session[:new_keys]
+    session[:new_keys][params[:key]] = "/point/#{point.id}"
+
+    puts("New_keys session now is #{session[:new_keys]}")
+
     # Now let's return the proposal's changes too
     proposal_json = proposal.proposal_data(current_tenant,
                                            current_user,
@@ -100,7 +105,5 @@ class PointController < ApplicationController
     end
 
   end
-
-  
-  
+ 
 end

@@ -23,7 +23,7 @@ class OpinionController < ApplicationController
   end
   
   def update
-    opinion = Opinion.find key_id(params[:key])
+    opinion = Opinion.find key_id(params)
     authorize! :update, opinion
 
     update_or_create opinion, params
@@ -44,7 +44,7 @@ class OpinionController < ApplicationController
       # Damn rails http://guides.rubyonrails.org/security.html#unsafe-query-generation
       incs = []
     end
-    incs = incs.map! {|p| key_id(p)}
+    incs = incs.map! {|p| key_id(p, session)}
     include_points(opinion, incs)
     updates['point_inclusions'] = JSON.dump(incs)
 
@@ -56,11 +56,34 @@ class OpinionController < ApplicationController
     already_published = opinion.published
     stance_changed = already_published && updates['stance'] != opinion.stance
     
+    # Recalculate some scores... Travis is this right?  It threw an error.
+    #updates["score_stance_group_#{opinion.stance_segment}".intern] = 0.001,
+    #updates[:score] = 0.0000001
+
     # Update this opinion
     opinion.update_attributes ActionController::Parameters.new(updates).permit!
-
     opinion.save
 
+    # Follow all the points user included
+    for p in opinion.inclusions.map{|i| i.point}
+      p.follow!(current_user, :follow => true, :explicit => false)
+    end
+
+    # Publish all the user's newly-written points too
+    if opinion.published
+      Point.where(:user_id => current_user, :long_id => proposal.long_id,
+                  :published => false).each do |p|
+          p.published = true
+          p.save
+
+          ActiveSupport::Notifications.instrument("point:published", 
+            :point => p,
+            :current_tenant => current_tenant,
+            :mail_options => mail_options
+          )
+      end
+    end
+    
     # Need to add back in this tracking of viewed points
     # params[:viewed_points] ||= []
     # params[:viewed_points].each do |pnt|
@@ -72,9 +95,11 @@ class OpinionController < ApplicationController
     updated_points = []
     
     if stance_changed
-      # if the user has updated their stance, we need to update the scores of all the points that 
-      # they included so that the segment metrics are correct
-      Inclusion.where(:user_id => opinion.user_id, :proposal_id => opinion.proposal_id).select(:point_id).each do |inc|
+      # if the user has updated their stance, we need to update the
+      # scores of all the points that they included so that the
+      # segment metrics are correct
+      Inclusion.where(:user_id => opinion.user_id,
+                      :proposal_id => opinion.proposal_id).select(:point_id).each do |inc|
         updated_points[inc.point_id] = 1
       end
     end
@@ -113,20 +138,6 @@ class OpinionController < ApplicationController
 
 
 protected
-
-  def publish_opinion(opinion)
-    for p in opinion.inclusions.map{|i| i.point}
-      pnt.published = 1
-
-      p.follow!(current_user, :follow => true, :explicit => false)
-
-      ActiveSupport::Notifications.instrument("point:published", 
-        :point => p,
-        :current_tenant => current_tenant,
-        :mail_options => mail_options
-      )
-    end
-  end
 
   def include_points (opinion, points)
     curr_inclusions = Inclusion.where(:opinion => opinion.id)

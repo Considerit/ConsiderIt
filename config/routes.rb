@@ -125,13 +125,7 @@ ConsiderIt::Application.routes.draw do
     resources :commentable, :only => [:create, :update]
   end
 
-
-  concern :thankable do 
-    resources :thankable, :only => [:create, :destroy]
-  end
-
   concerns :commentable
-  concerns :thankable
   #################
 
 

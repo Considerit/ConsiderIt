@@ -685,24 +685,29 @@ $point-includer-width: 22px
     font-weight: 300
     color: $base_text_color
 
+// point actions
+a.edit_point, a.delete_point
+  +font-size(-2)
+  color: #999
+  padding-right: 8px
+
+
 
 // Add a new point form
 // TODO: refactor once design more complete
-.newpoint
+.newpoint_form
+  margin: 0 $grid_gutter
 
-  .newpoint_form
-    margin: 0 $grid_gutter
+  position: relative
+  margin-left: $grid_gutter
+  input, textarea
+    +font-size(0)
+    padding-top: 0
+    padding-bottom: 0
 
-    position: relative
-    margin-left: $grid_gutter
-    input, textarea
-      +font-size(0)
-      padding-top: 0
-      padding-bottom: 0
-  
-    &:before
-      left: -11px    
-      +font-size(-4)
+  &:before
+    left: -11px    
+    +font-size(-4)
 
   label
     +font-size(0)

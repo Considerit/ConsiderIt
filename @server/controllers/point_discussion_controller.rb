@@ -9,12 +9,9 @@ class PointDiscussionController < ApplicationController
     # Getting all comments. Remember that there are multiple types of comments: straight comments and expert review comments
     #todo: make this more efficient and natural
     comments = point.comments
-    thanks = point.comments.map {|x| x.thanks.public_fields.to_a}.compact.flatten
-    thanks.concat point.claims.map {|x| x.thanks.public_fields.to_a}.compact.flatten
     
     response = {
       :comments => comments.public_fields,
-      :thanks => thanks
     }
 
     if current_tenant.assessment_enabled

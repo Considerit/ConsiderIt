@@ -48,7 +48,7 @@ class Point < ActiveRecord::Base
   self.my_public_fields = [:comment_count, :created_at, :id, :includers, :is_pro, :moderation_status, :nutshell, :persuasiveness, :opinion_id, :proposal_id, :published, :score, :text, :user_id, :hide_name]
 
   scope :public_fields, -> {select(self.my_public_fields)}
-  scope :metrics_fields, -> {select([:id, :appeal, :attention, :comment_count, :divisiveness, :includers, :is_pro, :num_inclusions, :persuasiveness, :score, :score_stance_group_0, :score_stance_group_1, :score_stance_group_2, :score_stance_group_3, :score_stance_group_4, :score_stance_group_5, :score_stance_group_6, :unique_listings])}
+  scope :metrics_fields, -> {select([:id, :appeal, :attention, :comment_count, :divisiveness, :includers, :is_pro, :num_inclusions, :persuasiveness, :score, :unique_listings])}
 
   scope :named, -> {where( :hide_name => false )}
   scope :published, -> {where( :published => true )}
@@ -153,38 +153,10 @@ class Point < ActiveRecord::Base
     define_appeal
     define_attention
     define_persuasiveness
-    
-    define_segment_scores
-    
+        
     save(:validate => false) if changed?
   end
   
-  def define_segment_scores
-    
-    metrics_per_segment = {}
-    (0..6).each {|stance_segment| metrics_per_segment[stance_segment] = [0,0]}
-
-    inclusions_by_segment = inclusions.joins(:opinion).select('COUNT(*) AS cnt, opinions.stance_segment AS stance_segment').group("opinions.stance_segment").order("opinions.stance_segment")
-    inclusions_by_segment.each do |row|
-      metrics_per_segment[row.stance_segment.to_i][0] = row.cnt.to_i
-    end
-
-    listings_by_segment = point_listings.joins(:opinion).select('COUNT(*) AS cnt, opinions.stance_segment AS stance_segment').group("opinions.stance_segment").order("opinions.stance_segment")        
-    listings_by_segment.each do |row|
-      metrics_per_segment[row.stance_segment.to_i][1] = row.cnt.to_i
-    end
-    
-    (0..6).each do |stance_segment|
-      segment_score = "score_stance_group_#{stance_segment}".intern
-            
-      if metrics_per_segment[stance_segment][1] == 0
-        self[segment_score] = 0.0
-      else
-        self[segment_score] = metrics_per_segment[stance_segment][0]**2 / metrics_per_segment[stance_segment][1].to_f        
-      end
-    end
-  end
-
   def define_appeal
     e = entropy
     if e.nil? or self.num_inclusions.nil?

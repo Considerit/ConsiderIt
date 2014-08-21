@@ -5,8 +5,10 @@ def recursive_symbolize_keys! hash
   hash.values.select{|v| v.is_a? Hash}.each{|h| recursive_symbolize_keys!(h)}
 end
 
-local_config = YAML.load_file "config/local_environment.yml"
+def load_local_environment()
+  local_config = YAML.load_file "config/local_environment.yml"
+  recursive_symbolize_keys! local_config
+  return local_config[:default]
+end
 
-recursive_symbolize_keys! local_config
-
-APP_CONFIG = local_config[:default]
+APP_CONFIG = load_local_environment()

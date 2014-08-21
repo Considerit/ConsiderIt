@@ -328,7 +328,7 @@
     .dashboard-subheading
       Modify your authentication options.
 
-  = form_tag("{{ Routes.current_user_path() }}", :method => :put, :remote => true, :html => { :multipart => true, :class => 'dashboard-edit-user' }) do |f|
+  = form_tag("{{ Routes.current_user_path() }}", :method => :put, :remote => true, :html => {:class => 'dashboard-edit-user' }) do |f|
 
     .field
       = label_tag :email, "Email address"

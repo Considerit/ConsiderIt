@@ -1,7 +1,6 @@
 // ...
-//= require jquery
-//= require jquery_ujs
-//= require jquery.remotipart
+//= require vendor/jquery
+//= require ./vendor/jquery_ujs
 
 //= require ./vendor/underscore
 //= require ./vendor/backbone

@@ -56,12 +56,6 @@ class OpinionController < ApplicationController
     already_published = opinion.published
     stance_changed = already_published && updates['stance'] != opinion.stance
     
-    # Recalculate some scores... Travis is this right?  It threw an
-    # error.  ... oh... this is for points.  I guess it needs to get
-    # run when a point is included?
-    #updates["score_stance_group_#{opinion.stance_segment}".intern] = 0.001,
-    #updates[:score] = 0.0000001
-
     # Update this opinion
     opinion.update_attributes ActionController::Parameters.new(updates).permit!
     opinion.save

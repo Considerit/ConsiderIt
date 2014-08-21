@@ -189,23 +189,23 @@ class Proposal < ActiveRecord::Base
 
   end
 
-  def notable_points
-    opposers = points.order('score_stance_group_0 + score_stance_group_1 + score_stance_group_2 DESC').limit(1).first
-    supporters = points.order('score_stance_group_6 + score_stance_group_5 + score_stance_group_4 DESC').limit(1).first
-    common = points.order('appeal DESC').limit(1).first
+  # def notable_points
+  #   opposers = points.order('score_stance_group_0 + score_stance_group_1 + score_stance_group_2 DESC').limit(1).first
+  #   supporters = points.order('score_stance_group_6 + score_stance_group_5 + score_stance_group_4 DESC').limit(1).first
+  #   common = points.order('appeal DESC').limit(1).first
 
-    if opposers && opposers.inclusions.count > 1 && \
-       supporters && supporters.inclusions.count > 1 && \
-       common && common.appeal > 0 && common.inclusions.count > 1
-      {
-        :important_for_opposers => opposers,
-        :important_for_supporters => supporters,
-        :common => common
-      }
-    else
-      nil
-    end
-  end
+  #   if opposers && opposers.inclusions.count > 1 && \
+  #      supporters && supporters.inclusions.count > 1 && \
+  #      common && common.appeal > 0 && common.inclusions.count > 1
+  #     {
+  #       :important_for_opposers => opposers,
+  #       :important_for_supporters => supporters,
+  #       :common => common
+  #     }
+  #   else
+  #     nil
+  #   end
+  # end
 
   def stance_fractions
     distribution = Array.new(7,0)

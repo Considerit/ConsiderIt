@@ -26,7 +26,15 @@ def jsonify_objects(objects, name, reference_names=[], delete_names=[], parse_na
   }
 end
 
-def key_id(key)
+def key_id(object_or_key, session=nil)
+  puts("key_id called with #{object_or_key} and sess? #{session!=nil}")
+  # Make it into a key
+  key = object_or_key.is_a?(Hash) ? object_or_key['key'] : object_or_key
+
+  # Translate from '/new/'
+  key = session[:new_keys][key] if session and key.match('/new/')
+
+  # Grab the id out
   key.split('/')[-1].to_i
 end
 

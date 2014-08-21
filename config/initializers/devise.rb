@@ -222,13 +222,13 @@ Devise.setup do |config|
   OAUTH_SETUP_PROC = lambda do |env|
     case env['omniauth.strategy'].name()
     when 'google_oauth2'
-      provider = 'google'
+      provider = :google
     else
-      provider = env['omniauth.strategy'].name()
+      provider = env['omniauth.strategy'].name().intern
     end
 
     case provider
-    when 'twitter'
+    when :twitter
       key = :consumer_key
       secret = :consumer_secret
     else
@@ -236,24 +236,27 @@ Devise.setup do |config|
       secret = :client_secret
     end      
 
-    conf = APP_CONFIG && APP_CONFIG.has_key?('domain') ? APP_CONFIG : Configuration.load_yaml( "config/local_environment.yml", :hash => Rails.env, :inherit => :default_to)  
+    conf = load_local_environment()
+    pp load_local_environment, conf
 
     request = Rack::Request.new(env)
     host = request.host.split('.')
     if host.length > 2
       host = host[host.length-2..host.length-1]
     end
-    host = host.join('.')
+    host = host.join('.').intern
 
-    if !conf['domain'].has_key?(host)
+
+    if !conf[:domain].has_key?(host)
       raise "#{host} is not a configured host for third party authentication."
-    elsif !conf['domain'][host].has_key?(provider)
+    elsif !conf[:domain][host].has_key?(provider)
+      pp provider, host, conf[:domain][host]
       raise "#{provider} is not configured for host #{host}."
     end
     
-    settings = conf['domain'][host][provider]
-    env['omniauth.strategy'].options[key] = settings['consumer_key']
-    env['omniauth.strategy'].options[secret] = settings['consumer_secret']
+    settings = conf[:domain][host][provider]
+    env['omniauth.strategy'].options[key] = settings[:consumer_key]
+    env['omniauth.strategy'].options[secret] = settings[:consumer_secret]
 
   end
 

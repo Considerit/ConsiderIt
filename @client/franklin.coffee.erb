@@ -1435,21 +1435,22 @@ Auth = ReactiveComponent
 
   submitAuth : (ev) -> 
     ev.preventDefault()
-    save(@get('/current_user'))
+    current_user = @data('/current_user')
 
-        # # hack for submitting file data in ActiveREST for now
-        # # we'll just submit the file form after user is signed in
-        # if submit_avatar_form
-        #   $('#user_avatar_form').ajaxSubmit
-        #     type: 'PUT'
-        #     data: 
-        #       authenticity_token: current_user.csrf
-        #     success: (data, status, xhr) -> 
-        #       current_user.user = data.key
-        #       current_user.errors = if data.errors then data.errors else []
-        #       current_user.csrf = data.csrf
-        #       current_user.name = data.name
-        #       save(current_user)
+    save(current_user)
+
+    # hack for submitting file data in ActiveREST for now
+    # we'll just submit the file form after user is signed in
+    # TODO: investigate alternatives for submitting form data
+    if @submit_avatar_form
+      $('#user_avatar_form').ajaxSubmit
+        type: 'PUT'
+        data: 
+          authenticity_token: current_user.csrf
+        success: (current_user_data, status, xhr) -> 
+          current_user.errors = if current_user_data.errors then current_user_data.errors else []
+          current_user.csrf = current_user_data.csrf
+          save(current_user)
 
   sendPasswordReminder : -> 
     email = @data('/current_user').email
@@ -1670,14 +1671,15 @@ Auth = ReactiveComponent
                   R.div className: 'avatar_preview_enclosure',
                     R.img id: 'avatar_preview', src: if current_user.image_url then current_user.image_url else null #todo: make sure that if user overrides image_url, that the new image is used
                 
-                  R.input id: 'user_avatar', name: "user[avatar]", type: "file", onChange: (ev) -> 
+                  R.input id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
                     input = $('#user_avatar')[0]
                     if input.files && input.files[0]
                       reader = new FileReader()
                       reader.onload = (e) ->
                         $("#avatar_preview").attr 'src', e.target.result
                       reader.readAsDataURL input.files[0]
-                      current_user.avatar_file_name = input.files[0]
+                      #current_user.avatar = input.files[0]
+                      @submit_avatar_form = true
                     else
                       $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
                       

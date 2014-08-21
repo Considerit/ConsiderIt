@@ -167,9 +167,6 @@ GEM
     i18n (0.6.11)
     inflecto (0.0.2)
     ipaddress (0.8.0)
-    jquery-rails (3.1.1)
-      railties (>= 3.0, < 5.0)
-      thor (>= 0.14, < 2.0)
     js-routes (0.9.9)
       railties (>= 3.2)
       sprockets-rails
@@ -277,7 +274,6 @@ GEM
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
     ref (1.0.5)
-    remotipart (1.2.1)
     request_store (1.1.0)
     role_model (0.8.1)
     ruby-imagespec (0.3.1)
@@ -366,7 +362,6 @@ DEPENDENCIES
   guard (>= 2.2.2)
   guard-livereload
   haml
-  jquery-rails
   js-routes
   mailhopper
   mysql2
@@ -382,7 +377,6 @@ DEPENDENCIES
   rack-livereload
   rails (~> 4)
   rb-fsevent
-  remotipart
   role_model
   sass-rails (~> 4.0.3)
   sitemap_generator

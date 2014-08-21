@@ -30,10 +30,8 @@ gem 'acts_as_tenant' # https://github.com/ErwinM/acts_as_tenant
 gem "haml"
 gem 'paperclip' # https://github.com/thoughtbot/paperclip
 gem 'paperclip-compression'
-gem "remotipart" # https://rubygems.org/gems/remotipart
 gem 'font-awesome-rails'
 gem "js-routes" # https://github.com/railsware/js-routes
-gem 'jquery-rails' # https://github.com/indirect/jquery-rails
 
 # used for parsing useragent string for logging client errors
 gem 'useragent' # https://github.com/josh/useragent

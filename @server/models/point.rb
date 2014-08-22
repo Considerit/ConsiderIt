@@ -138,7 +138,6 @@ class Point < ActiveRecord::Base
 
   def category
     is_pro ? 'pro' : 'con'
-
   end
 
   def update_absolute_score(in_batch = false)

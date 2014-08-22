@@ -85,6 +85,7 @@ class Opinion < ActiveRecord::Base
     Inclusion.create! ActionController::Parameters.new(attrs).permit!
     self.recache()
   end    
+  
   def absorb( opinion )
     puts("Absorbing opinion #{opinion.id} into #{self.id}")
     # Change the absorbed's everythings to point at this opinion

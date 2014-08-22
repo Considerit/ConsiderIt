@@ -117,14 +117,13 @@ protected
     Inclusion.transaction do
       # Delete goners
       inclusions_to_delete.each do |i|
-        i.delete()
+        i.destroy()
         i.point.follow! current_user, :follow => false, :explicit => false
       end
     
       # Add newbies
       points_to_add.each do |point_id|
         opinion.include(point_id)
-        point = Point.find(point_id)
       end
     end
     # we need to update the point scores of these guys so that includers gets set properly

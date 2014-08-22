@@ -6,7 +6,10 @@
     // ****************
     // Public API
     var cache = {}
+    window.watch = function (url) {return url == '/user/14955'}
     function fetch(url, defaults) {
+        if (window.watch && watch(url)) console.trace()
+
         record_dependence(url)
 
         // Return the cached version if it exists

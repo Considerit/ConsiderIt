@@ -34,7 +34,7 @@ class PointController < ApplicationController
     # Include into the user's opinion
     opinion = Opinion.where(:user_id => current_user.id,
                             :proposal => proposal).first
-    opinion.include(point, current_tenant)
+    opinion.include(point)
     point.seen_by(current_user)
 
     original_id = key_id(params[:key])

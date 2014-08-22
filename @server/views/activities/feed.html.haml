@@ -1,9 +1,0 @@
-
-
-%ul.feed
-  - @actions.each do |action| 
-    %li.action  
-      .title=action.title
-      .description=action.description
-      .date=action.created_at.to_s(:rfc822)
-      .link=link_to action.url(request.host_with_port)

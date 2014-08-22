@@ -1,6 +1,6 @@
 class Comment < ActiveRecord::Base
   #is_reflectable
-  include Thankable, Moderatable #, Followable
+  include Moderatable #, Followable
 
   scope :public_fields, -> {select('id, body, user_id, commentable_type, created_at, commentable_id, moderation_status')}
   

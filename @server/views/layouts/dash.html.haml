@@ -35,13 +35,6 @@
 
       #t_bg.content_style
         #t_bg-top
-          %svg{ :xmlns => "http://www.w3.org/2000/svg", :height => 0, :style => "position: absolute", :version => "1.1", :baseProfile => "full" }
-            %defs
-              %filter{ :id => "bubble_gradient"}
-                %feImage{ :x => "10", :y => "0", :'xlink:href' => "#{image_path('bubble_gradient.png')}", :result => "overlay" }
-                %feOffset{ :dy => ".2", :dx => "0" }  
-                %feComposite{ :in2 => "SourceGraphic", :operator => "over" }
-
           #l_wrap
             #l-loading-indicator
             .l_header
@@ -59,21 +52,8 @@
 
             .l_footer
 
-            - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
-              :javascript
-                var _gaq = _gaq || [];
-                _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-                _gaq.push(['_setDomainName', ".#{get_root_domain}"]);
-                _gaq.push(['_trackPageview']);
 
-
-            - if current_tenant.analytics_google && current_tenant.analytics_google != ''
-              :javascript
-                var _gaq_account = _gaq_account || [];
-                _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-                _gaq_account.push(['_trackPageview']);
-
-    = render :partial => './data'        
+    = render :partial => 'old/data'        
 
     :javascript
       $(function() {

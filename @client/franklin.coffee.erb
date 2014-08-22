@@ -26,9 +26,9 @@ R = React.DOM
 # Constants, especially used for layout styling
 TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
-GRID_MAJOR = 48  #GRID_MAJOR = GRID_MINOR + GRID_GUTTER
 GRID_MINOR = 30
 GRID_GUTTER = 18
+GRID_MAJOR = GRID_MINOR + GRID_GUTTER #golden ratio
 PAGE_WIDTH = 24 * GRID_MAJOR
 CONTENT_WIDTH = PAGE_WIDTH - 4 * GRID_MAJOR
 BODY_WIDTH = CONTENT_WIDTH - 8 * GRID_MAJOR - 2 * GRID_GUTTER
@@ -652,7 +652,7 @@ Slider = ReactiveComponent
 
     # Keep feedback centered over handle, but keep within the bounds of the slider region 
     # when the slider is in an extreme position. 
-    feedback_left = (@props.width ) * -(stance-1) / 2.0 
+    feedback_left = @props.width * -(stance-1) / 2.0 
     if sticky 
       feedback_width = if slider.has_moved then 190 else 400
       if feedback_left > @props.width / 2
@@ -850,10 +850,10 @@ DecisionBoard = ReactiveComponent
           # only shown during crafting, but needs to be present always for animation
           R.div className: 'your_points',
             # your pros
-            YourPoints { valence: 'pros' }
+            YourPoints { key: 'your_pro_points', valence: 'pros' }
 
             # your cons
-            YourPoints { valence: 'cons' }
+            YourPoints { key: 'your_con_points', valence: 'cons' }
 
           # only shown during results, but needs to be present always for animation
           R.a 
@@ -879,10 +879,19 @@ DecisionBoard = ReactiveComponent
 YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
+  handleAddPointBegin : ->
+    your_points = @data()
+    your_points.adding_new_point = true
+    save your_points
+
   render : ->
     root = @data('root')
     included_points = @data(root.your_opinion_key).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
+
+    your_points = @data @props.key,
+      editing_points : []
+      adding_new_point : false
 
     R.div 
       className:"points_on_decision_board #{@props.valence}_on_decision_board"
@@ -894,7 +903,10 @@ YourPoints = ReactiveComponent
       R.ul null,
         for point in included_points
           if @data(point).is_pro == (@props.valence == 'pros')
-            Point { key: point, location_class: 'decision_board_point' }
+            if point in your_points.editing_points
+              EditPoint { key: point, fresh: false, valence: @props.valence, your_points_key: @props.key }
+            else
+              Point { key: point, location_class: 'decision_board_point', your_points_key: @props.key }
 
         R.div className:'add_point_drop_target',
           R.div className: "drop_target_circle_#{left_or_right}"
@@ -903,7 +915,18 @@ YourPoints = ReactiveComponent
             #"Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
             "Drag a #{capitalize(if @props.valence=='pros' then 'pro' else 'con')} from the #{left_or_right}"
 
-        NewPoint { valence: @props.valence }
+
+        if !your_points.adding_new_point
+          R.div className:'newpoint_prompt',
+            R.span className:'qualifier', 
+              'or '
+            R.span className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
+            R.a className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
+            "Express a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
+        else
+          EditPoint { key: "new_point_#{@props.valence}", fresh: true, valence: @props.valence, your_points_key: @props.key }
+
+
 
 ##
 # CommunityPoints
@@ -987,6 +1010,10 @@ CommunityPoints = ReactiveComponent
         else
           R.li className: 'empty_point', "No #{label} listed"
 
+
+
+
+
 ##
 # Point
 # A single point in a list. 
@@ -1030,6 +1057,9 @@ Point = ReactiveComponent
   showDetails : -> 
     @local.show_details = !@local.show_details
     save(@local)
+
+  deletePoint : -> 
+    destroy @props.key
 
   ## ##
   # On hovering over a point, highlight the people who included this 
@@ -1123,6 +1153,7 @@ Point = ReactiveComponent
 
     selected_segment = @data('histogram').selected_segment
     author_opinion = @data(userOpinion(point.user))
+    current_user = @data('/current_user')
 
     R.li 
       className: "point closed_point #{@props.location_class} 
@@ -1157,112 +1188,140 @@ Point = ReactiveComponent
               R.span className: 'point_details_tease', 
                 $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + "... [more]"
 
-        # R.a className:'open_point_link',
-        #   "#{@props.comment_count} comment#{if @props.comment_count != 1 then 's' else ''}"
+      if current_user.user == point.user && @props.location_class == 'decision_board_point'
+        R.div null,
+          # Should we only allow editing of a point before it is published? 
+          # Is an author allowed to edit a point after someone else has included it?
+          R.a className: 'edit_point', onClick: (=> points = @data(@props.your_points_key); points.editing_points.push(@props.key); save(points)), 
+            R.span null, 'edit'
+
+          # Allow the point author to delete this point before it is published.
+          # After it gets published, however, it can influence other people, so the author shouldn't be able to delete.
+          # Later they can just remove it from their list if they don't believe it anymore. 
+          if point.includers.length == 0 || (point.includers.length == 1 && point.includers[0] == current_user.user)
+            R.a className: 'delete_point', onClick: @deletePoint, 
+              R.span null, 'delete'
+
 
 ##
-# NewPoint
-# Handles adding a new point into the system. Only rendered when proposal is
-# in Crafting state. Manages whether the user has clicked "add a new point". 
-# If they have, show new point form. 
-NewPoint = ReactiveComponent
-  displayName: 'NewPoint'
-  componentDidUpdate : ->
-    if @local.edit_mode
-      $(@getDOMNode()).find('#nutshell').focus()
+# EditPoint
+# Form for editing or creating a point. Used by NewPoint component & when someone
+# edits their point. 
+EditPoint = ReactiveComponent
+  displayName: 'EditPoint'
 
-  handleAddPointBegin : (ev) -> 
-    @local.edit_mode = true
-    @local.add_details = false
-    save(@local)
-
-  handleAddPointCancel : (ev) -> 
-    @local.edit_mode = false
-    save(@local)
+  componentDidMount : ->
+    $el = $(@getDOMNode())
+    $el.find('#nutshell').focus()
+    $el.find('.newpoint-cancel').ensureInView {scroll: false, position: 'bottom'}
 
   handleToggleDetails : (ev) -> 
     @local.add_details = !@local.add_details
     save(@local)
 
-  handleSubmitNewPoint : (ev) ->
+  done : -> 
+    your_points = @data @props.your_points_key
+    if @props.fresh
+      your_points.adding_new_point = false
+    else
+      your_points.editing_points = _.without your_points.editing_points, @props.key
+    save your_points
+
+  savePoint : (ev) ->
     $form = $(@getDOMNode())
     root = @data('root')
 
-    your_opinion = @data(root.your_opinion_key)
-    current_user = @data('/current_user').user
-    point =
-      key : '/new/point'
-      nutshell : $form.find('#nutshell').val()
-      text : $form.find('#text').val()
-      is_pro : @props.valence == 'pros'
-      user : current_user
-      comment_count : 0 
-      includers : [current_user]
-      proposal : @data(root.current_proposal).key
-      hide_name : $form.find("sign_name-#{@props.valence}").val()
-    save(point)
+    nutshell = $form.find('#nutshell').val()
+    text = $form.find('#text').val()
+    hide_name = !$form.find("#sign_name-#{@props.valence}").is(':checked')
 
-    @local.edit_mode = false
-    save(@local)
+    if !@props.fresh
+      # If we're updating an existing point, we just have to update 
+      # some of the fields from the form
+      point = @data()
+      point.nutshell = nutshell
+      point.text = text
+      point.hide_name = hide_name
+    else 
+      current_user = @data('/current_user').user
+      point =
+        key : '/new/point'
+        is_pro : @props.valence == 'pros'
+        user : current_user
+        comment_count : 0 
+        includers : [current_user]
+        proposal : @data(root.current_proposal).key
+        nutshell : nutshell
+        text : text
+        hide_name : hide_name
+
+    save point
+
+    @done()
 
     # This is a kludge cause activerest sucks for pre-rendering
     # changes before the server returns them
-    your_opinion.point_inclusions.push(point)
+    @data(root.your_opinion_key).point_inclusions.push(point.key)
     re_render([root.your_opinion_key])
 
+  handleAddPointCancel : (ev) -> @done()
+
   render : ->
-    #TODO: refactor HTML/CSS for new point after we get better sense of new point redesign
     @local = @data @local_key,
-      edit_mode : false
-      sign_name : true
+      sign_name : if @props.fresh then true else !@data().hide_name
       add_details : false
 
-    R.div className:'newpoint',
-      if !@local.edit_mode
-        R.div className:'newpoint_prompt',
-          R.span className:'qualifier', 
-            'or '
-          R.span className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
-          R.a className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
-          "Express a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
-      else
-        R.div className:'newpoint_form',
-          R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pros'}"
-          R.label htmlFor:'nutshell', 'Your point'
-          CharacterCountTextInput id:'nutshell', className:'newpoint_nutshell', maxLength:140, name:'nutshell', pattern:'^.{3,}', placeholder:'Make this summary succinct.', required:'required'
-          
-          R.div null,
-            R.a className: 'add_details', onClick: @handleToggleDetails, title: 'Provide background and/or back your point up with evidence.',
-              R.i className: if @local.add_details then 'fa-caret-down fa' else 'fa-caret-right fa'
-              R.span null, 'Expand on your point'
+    R.div className:'newpoint_form',
+      R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pros'}"
+      R.label htmlFor:'nutshell', 'Your point'
+      CharacterCountTextInput 
+        id:'nutshell'
+        className:'newpoint_nutshell'
+        maxLength:140
+        name:'nutshell'
+        pattern:'^.{3,}'
+        placeholder:'Make this summary succinct.'
+        required:'required'
+        defaultValue: if @props.fresh then null else @data().nutshell
 
-            if @local.add_details
-              R.div null, 
-                AutoGrowTextArea 
-                  id:'text'
-                  className:'newpoint_description'
-                  name:'text'
-                  placeholder:'Provide background and/or back your point up with evidence.'
-                  required:'required'
-                  min_height: 170
+      
+      R.div null,
+        R.a className: 'add_details', onClick: @handleToggleDetails, title: 'Provide background and/or back your point up with evidence.',
+          R.i className: if @local.add_details then 'fa-caret-down fa' else 'fa-caret-right fa'
+          R.span null, 'Expand on your point'
 
-          R.div className:'newpoint_hide_name',
-            R.input
-              className: 'newpoint-anonymous'
-              type:      'checkbox'
-              id:        "sign_name-#{@props.valence}"
-              name:      "sign_name-#{@props.valence}"
-              checked:   @local.sign_name
-              onChange: =>
-                @local.sign_name = !@local.sign_name
-                save(@local)
-            R.label htmlFor: "sign_name-#{@props.valence}", title:'Signing your point with your name lends it more weight with other participants.', 'Sign your name'
-          
-          R.div className:'newpoint-submit',
-            R.input className:'button primary_button', action:'submit-point', type:'submit', value:'Done', onClick: @handleSubmitNewPoint
+        if @local.add_details
+          R.div null, 
+            AutoGrowTextArea 
+              id:'text'
+              className:'newpoint_description'
+              name:'text'
+              placeholder:'Provide background and/or back your point up with evidence.'
+              required:'required'
+              min_height: 170
+              defaultValue: if @props.fresh then null else @data().text
 
-            R.a className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
-              'cancel'
+
+      R.div className:'newpoint_hide_name',
+        R.input
+          className: 'newpoint-anonymous'
+          type:      'checkbox'
+          id:        "sign_name-#{@props.valence}"
+          name:      "sign_name-#{@props.valence}"
+          checked:   @local.sign_name
+          onChange: =>
+            @local.sign_name = !@local.sign_name
+            save(@local)
+        R.label htmlFor: "sign_name-#{@props.valence}", title:'Signing your point with your name lends it more weight with other participants.', 'Sign your name'
+      
+      R.div className:'newpoint-submit',
+        R.input className:'button primary_button', action:'submit-point', type:'submit', value:'Done', onClick: @savePoint
+
+        R.a className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
+          'cancel'  
+
+
+
 
 ##
 # Avatar
@@ -1362,89 +1421,11 @@ CharacterCountTextInput = ReactiveComponent
       R.span className: 'count', @props.maxLength - @local.count
 
 
-
-
-##
-# AuthHeader
-# Should be refactored into Auth. Shares styles with Slider.
-AuthHeader = ReactiveComponent
-  displayName: 'AuthHeader'
-
-  componentDidMount : -> 
-    root = @data('root')
-    # Mike note: Wondering why we are setting up the slider here, and
-    # why we need to compute the default for your_opinion.stance here.
-    #
-    # I'd imagine that ideally, this component would assume that there
-    # is a your_opinion_key, and that there is a stance, and that the
-    # default was already set.
-    stance = (root.your_opinion_key and @data(root.your_opinion_key).stance) or 0
-    $slider_base = $(@getDOMNode()).find('.slider_base')
-    if !$slider_base.hasClass "ui-slider"
-      $slider_base.slider
-        disabled: true
-        min: -1
-        max: 1
-        step: .01
-        value: -stance
-
-  toggleAuthMode : -> 
-    root = @data('root')
-    current_user = @data('/current_user')
-    root.auth_mode = if root.auth_mode == 'register' then 'login' else 'register'
-    current_user.errors = {}
-    save(root)
-
-  render : ->
-    root = @data('root')
-    stance =  @data(root.your_opinion_key).stance
-    segment = @data(root.your_opinion_key).stance_segment
-
-    # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
-    # also why this file is ERB
-    if segment == 3
-      bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
-    else
-      bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
-
-    slider_feedback = 'Please Introduce Yourself' 
-
-    mouth_scaler = if segment > 3 then -1 else 1
-    mouth_x =      if segment == 3 then 0 else -7.5
-
-
-    bubble_mouth_props = 
-      transform: "scale(#{mouth_scaler * 1.5}, 1.5) translate(#{mouth_x * 1.5}px, 7px)"
-    handle_props = 
-      transform: "scale(2.5) translateY(-8px)"
-
-    crossbrowserTransformProperty = (props) -> _.extend props,
-      '-webkit-transform' : props.transform
-      '-ms-transform' : props.transform
-      '-moz-transform' : props.transform
-
-    crossbrowserTransformProperty bubble_mouth_props
-    crossbrowserTransformProperty handle_props
-
-    R.div className: 'slider', 
-      R.div className:'slider_base', style : {width: HISTOGRAM_WIDTH}, 
-        R.div className: 'ui-slider-handle', 
-          R.div className: 'the_handle', onClick: @togglePage, style: handle_props
-          R.img className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
-          R.div className:'slider_feedback', 
-            slider_feedback
-
-            if root.auth_mode in ['login', 'register']
-              R.div className: 'switch_auth_mode', 
-                R.span null, if root.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
-                R.a className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
-
-
 Auth = ReactiveComponent
   displayName: 'Auth'
 
   componentDidMount : -> 
-    $(document).scrollTop $(@getDOMNode()).find('.slider_feedback').offset().top - 10
+    $(document).scrollTop $(@getDOMNode()).find('.auth_heading').offset().top - 10
 
   startThirdPartyAuth : (provider) ->
 
@@ -1478,21 +1459,22 @@ Auth = ReactiveComponent
 
   submitAuth : (ev) -> 
     ev.preventDefault()
-    save(@get('/current_user'))
+    current_user = @data('/current_user')
 
-        # # hack for submitting file data in ActiveREST for now
-        # # we'll just submit the file form after user is signed in
-        # if submit_avatar_form
-        #   $('#user_avatar_form').ajaxSubmit
-        #     type: 'PUT'
-        #     data: 
-        #       authenticity_token: current_user.csrf
-        #     success: (data, status, xhr) -> 
-        #       current_user.user = data.key
-        #       current_user.errors = if data.errors then data.errors else []
-        #       current_user.csrf = data.csrf
-        #       current_user.name = data.name
-        #       save(current_user)
+    save(current_user)
+
+    # hack for submitting file data in ActiveREST for now
+    # we'll just submit the file form after user is signed in
+    # TODO: investigate alternatives for submitting form data
+    if @submit_avatar_form
+      $('#user_avatar_form').ajaxSubmit
+        type: 'PUT'
+        data: 
+          authenticity_token: current_user.csrf
+        success: (current_user_data, status, xhr) -> 
+          current_user.errors = if current_user_data.errors then current_user_data.errors else []
+          current_user.csrf = current_user_data.csrf
+          save(current_user)
 
   sendPasswordReminder : -> 
     email = @data('/current_user').email
@@ -1513,6 +1495,13 @@ Auth = ReactiveComponent
   #     delete your_opinion['publish_pending_authorization']
   #     your_opinion.published = true
   #     save your_opinion
+
+  toggleAuthMode : -> 
+    root = @data('root')
+    current_user = @data('/current_user')
+    root.auth_mode = if root.auth_mode == 'register' then 'login' else 'register'
+    current_user.errors = {}
+    save(root)
 
   render: -> 
     current_user = @data('/current_user')
@@ -1571,8 +1560,52 @@ Auth = ReactiveComponent
     if root.auth_mode in ['login', 'password_reminder']
       providers.push('twitter')
 
+    ## We'll be displaying the Auth header using the position and styling of the slider
+    root = @data('root')
+    slider = @data('slider')
+    stance =  slider.stance
+    segment = slider.stance_segment
+
+    # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
+    # also why this file is ERB
+    if segment == 3
+      bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
+    else
+      bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
+
+    direction = if segment > 3 then -1 else 1
+    mouth_x =      if segment == 3 then 0 else -22
+
+    bubble_mouth_props = 
+      transform: "translate(#{direction * mouth_x}px, 20px) scale(#{direction * 1.5}, 1.5)"
+      left: slider.clientX
+    handle_props = 
+      transform: "scale(2.5)"
+      left: slider.clientX
+
+    crossbrowserTransformProperty bubble_mouth_props
+    crossbrowserTransformProperty handle_props
+
+    auth_heading_style = 
+      visibility: 'visible'
+      left: HISTOGRAM_WIDTH * -(stance-1) / 2.0
+      marginLeft: -225
+      width: 450
+      fontSize: '29px'
+      top: '-80px'
+
+
     R.div className:'auth_region focal_wrapper', style: focal_wrapper_style,
-      AuthHeader()
+      R.div className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
+        R.div className: 'the_handle', onClick: @togglePage, style: handle_props
+        R.img className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
+        R.div className:'auth_heading', style: auth_heading_style,
+          'Please Introduce Yourself' 
+
+          if root.auth_mode in ['login', 'register']
+            R.div className: 'switch_auth_mode', 
+              R.span null, if root.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
+              R.a className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
 
       R.div className:'auth focal_area',
         if root.auth_mode in ['login', 'register'] && !current_user.provider
@@ -1662,14 +1695,15 @@ Auth = ReactiveComponent
                   R.div className: 'avatar_preview_enclosure',
                     R.img id: 'avatar_preview', src: if current_user.image_url then current_user.image_url else null #todo: make sure that if user overrides image_url, that the new image is used
                 
-                  R.input id: 'user_avatar', name: "user[avatar]", type: "file", onChange: (ev) -> 
+                  R.input id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
                     input = $('#user_avatar')[0]
                     if input.files && input.files[0]
                       reader = new FileReader()
                       reader.onload = (e) ->
                         $("#avatar_preview").attr 'src', e.target.result
                       reader.readAsDataURL input.files[0]
-                      current_user.avatar_file_name = input.files[0]
+                      #current_user.avatar = input.files[0]
+                      @submit_avatar_form = true
                     else
                       $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
                       
@@ -1782,19 +1816,11 @@ Header = ReactiveComponent
 
     R.div className: 'l_header',       
       if customer.identifier == 'cityoftigard'
-        R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '86px', position: 'absolute', bottom: '-38px', zIndex: 999999}
-
-      R.div style: {
-          'background-color': '#eee',
-          'color': '#f00',
-          'padding': '5px 20px',
-          'display' : if root.server_error then 'block'  else 'none'
-        },
-        'Warning: there was a server error!'
-
-      if customer.identifier == 'cityoftigard'
         R.a href: 'http://www.tigard-or.gov/', target: '_blank',
-          R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '86px', position: 'absolute', bottom: '-38px', zIndex: 999999}
+          R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '117px', position: 'absolute', bottom: '-79px', zIndex: 999999, backgroundColor: 'white', borderRight: '2px solid white'}
+
+      R.div style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if root.server_error then 'block' else 'none'},
+        'Warning: there was a server error!'
 
       if current_user.logged_in
         R.div className: 'userbar', 

@@ -253,8 +253,6 @@ class CurrentUserController < DeviseController
 
     puts('Is this a XHR request?', request.xhr?)
     if true || request.xhr?
-      dirtied_keys = Thread.current[:dirtied_keys]
-
       response = [response]
       response.concat(affected_objects())
       render :json => response

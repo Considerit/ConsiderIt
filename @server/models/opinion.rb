@@ -66,13 +66,41 @@ class Opinion < ActiveRecord::Base
     end
     your_opinion
   end
+
+  def update_inclusions (points)
+    points_to_exclude = inclusions.select {|i| not points.include? i.point_id}
+
+    # The point id versions
+    points_to_exclude = points_to_exclude.map{|i| i.point_id}
+    points_to_add    = points.select {|p_id| inclusions.where(:point_id => p_id).count == 0}
+
+    pp("Deleting #{points_to_exclude}, adding #{points_to_add}")
+
+    # Delete goners
+    points_to_exclude.each do |point_id|
+      self.exclude point_id
+    end
     
+    # Add newbies
+    points_to_add.each do |point_id|
+      self.include point_id
+    end
+
+  end
+
   def include(point)
-    point_id = (point.is_a?(Point) && point.id) || point
+    if point.is_a? Point
+      point_id = point.id
+    else
+      point_id = point
+      point = Point.find point_id
+    end
+
     dirty_key("/point/#{point_id}")
     dirty_key("/opinion/#{self.id}")
 
-    if Inclusion.where( :point_id => point_id, :user_id => self.user_id ).count !=0
+    user = User.find(self.user_id)
+    if user.inclusions.where( :point_id => point_id ).count > 0
       raise 'Including a point twice!'
     end
     
@@ -83,10 +111,32 @@ class Opinion < ActiveRecord::Base
       :proposal_id => self.proposal_id,
       :account_id => Thread.current[:tenant].id
     }
-          
     Inclusion.create! ActionController::Parameters.new(attrs).permit!
-    self.recache()
+
+
+    point.follow! user, :follow => true, :explicit => false
+    point.recache
+    self.recache
   end    
+
+  def exclude(point)
+    if point.is_a? Point
+      point_id = point.id
+    else
+      point_id = point
+      point = Point.find point_id
+    end
+    dirty_key("/point/#{point_id}")
+    dirty_key("/opinion/#{self.id}")
+
+    user = User.find(self.user_id)
+    inclusion = user.inclusions.find_by_point_id point_id
+
+    inclusion.destroy
+    point.follow! user, :follow => false, :explicit => false
+    point.recache
+    self.recache
+  end
   
   def absorb( opinion )
     puts("Absorbing opinion #{opinion.id} into #{self.id}")
@@ -107,8 +157,7 @@ class Opinion < ActiveRecord::Base
   end
 
   def recache
-    inclusions = self.inclusions.select(:point_id)
-    self.point_inclusions = inclusions.map {|x| x.point_id }.uniq.compact.to_s
+    self.point_inclusions = inclusions.select(:point_id).map {|x| x.point_id }.uniq.compact.to_s
     self.save
   end
 
@@ -194,7 +243,7 @@ class Opinion < ActiveRecord::Base
       if p.published
         puts("Fixing #{p.id}")
       end
-      p.update_absolute_score(true)
+      p.recache(true)
     end
     'done'
   end

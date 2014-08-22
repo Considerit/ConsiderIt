@@ -1198,7 +1198,7 @@ Point = ReactiveComponent
           # Allow the point author to delete this point before it is published.
           # After it gets published, however, it can influence other people, so the author shouldn't be able to delete.
           # Later they can just remove it from their list if they don't believe it anymore. 
-          if !point.published
+          if point.includers.length == 0 || (point.includers.length == 1 && point.includers[0] == current_user.user)
             R.a className: 'delete_point', onClick: @deletePoint, 
               R.span null, 'delete'
 

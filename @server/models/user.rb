@@ -331,6 +331,8 @@ class User < ActiveRecord::Base
     return if not (self and user)
     return if user.id == self.id
     
+    remap_key("/user/#{user.id}", "/user/#{self.id}")
+
     # Not only do we need to merge the user objects, but we'll need to
     # merge their opinion objects too.
 
@@ -370,8 +372,11 @@ class User < ActiveRecord::Base
 
     # 2. Change user_id columns over in bulk
     for table in [Point, Opinion, Proposal, Comment, Assessable::Assessment,\
-                  Follow, Inclusion, Moderation, PageView, PointListing, Thank]
-      # Missing: ReflectResponseRevision, PointSimilarity, Request
+                  Follow, Inclusion, Moderation, PageView, PointListing, Thank\
+                 ] # Missing: ReflectResponseRevision, PointSimilarity, Request
+
+      # First, remember what we're dirtying
+      table.where(:user_id => user.id).each{|x| dirty_key("/#{table.name.downcase}/#{x.id}")}
       table.where(:user_id => user.id).update_all(user_id: self.id)
     end
   end

@@ -253,6 +253,30 @@ class CurrentUserController < DeviseController
 
     puts('Is this a XHR request?', request.xhr?)
     if true || request.xhr?
+      dirtied_keys = Thread.current[:dirtied_keys]
+
+      response = [response,
+                  # {'key' => '/remapped',
+                  #  'keys' => Thread.current[:remapped_keys]},
+                  {'key' => '/dirtied_keys',
+                   'keys' => Thread.current[:dirtied_keys]}]
+
+      # Let's include dirtied points and opinions directly
+      for type in [Point, Opinion]
+        response.concat(dirtied_keys.select{|k| k.match("/#{type.name.downcase}/")}\
+                         .map {|k| type.find(key_id(k)).as_json })
+      end
+
+      # And we need the whole proposal for any opinions belonging to
+      # the current user, because the proposal stores your_opinion
+      opinions = dirtied_keys.select{|k| k.match("/opinion/")}
+      your_opinions = opinions.select{|k| Opinion.find(key_id(k)).user_id == current_user.id}
+      proposals = your_opinions.map{|o| Opinion.find(key_id(o)).proposal.proposal_data(
+                                           current_tenant,
+                                           current_user,
+                                           session)}
+      response.concat(proposals)
+
       render :json => response
     else
       # non-ajax method is used for legacy support for dash

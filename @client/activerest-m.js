@@ -36,6 +36,29 @@
             if (continuation) continuation()
     }
 
+    /*  Can be called as destroy(object).
+     *  For each object:
+     *  - Delete from server (if server-managed)
+     *  - Remove key from cache
+     */
+    function destroy(key, continuation) {
+        if (!key) return
+
+        // Save all the objects
+        if (key[0] == '/')
+            serverDestroy(key, continuation)
+        else { 
+            // Just remove the key from the cache if this 
+            // state is owned by the client. 
+            // Note that this won't clean up references to this 
+            // object in e.g. any lists. The Client is responsible
+            // for updating all the relevant references. 
+            delete cache[key]
+            if (continuation) continuation()
+        }
+    }
+
+
     // ================================
     // == Internal funcs
 
@@ -86,15 +109,15 @@
         re_render(affected_keys)
     }
 
-    var outstanding_requests = {}
+    var outstanding_fetches = {}
     function serverFetch(key) {
         // Error check
-        if (outstanding_requests[key]) throw Error('Duplicate request for '+key)
+        if (outstanding_fetches[key]) throw Error('Duplicate request for '+key)
 
         // Build request
         var request = new XMLHttpRequest()
         request.onload = function () {
-            delete outstanding_requests[key]
+            delete outstanding_fetches[key]
             if (request.status === 200) {
                 console.log('Fetch returned for', key)
                 var result = JSON.parse(request.responseText)
@@ -109,10 +132,10 @@
         }
 
         // Open request
-        outstanding_requests[key] = request
+        outstanding_fetches[key] = request
         request.open('GET', key, true)
         request.setRequestHeader('Accept','application/json')
-        request.send(null);
+        request.send(null)
     }
 
     function serverSave(object, continuation) {
@@ -155,20 +178,52 @@
         request.setRequestHeader('Accept','application/json')
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         request.setRequestHeader('X-CSRF-Token', csrf())
-        request.send(JSON.stringify(object));
+        request.send(JSON.stringify(object))
     }
+
+    function serverDestroy(key, continuation) {
+        // Build request
+        var request = new XMLHttpRequest()
+        request.onload = function () {
+            if (request.status === 200) {
+                console.log('Destroy returned for', key)
+                var result = JSON.parse(request.responseText)
+                delete cache[key]
+                updateCache(result)                
+                if (continuation) continuation()                
+            }
+            else if (request.status === 500)
+                if (window.on_ajax_error) window.on_ajax_error()
+            else {
+                // TODO: give user feedback that DELETE failed
+                console.log('DELETE of', key, 'failed!')
+            }
+
+        }
+
+        payload = {'authenticity_token': csrf()}
+
+        // Open request
+        request.open('DELETE', key, true)
+        request.setRequestHeader('Accept','application/json')
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        request.setRequestHeader('X-CSRF-Token', csrf())
+        request.send(JSON.stringify(payload))
+    }
+
+
 
     var csrf_token = null
     function csrf(new_token) {
         if (new_token) csrf_token = new_token
         if (csrf_token) return csrf_token
-        var metas = document.getElementsByTagName('meta'); 
+        var metas = document.getElementsByTagName('meta')
         for (i=0; i<metas.length; i++) { 
             if (metas[i].getAttribute("name") == "csrf-token") { 
-                return metas[i].getAttribute("content"); 
+                return metas[i].getAttribute("content");
             } 
         } 
-        return "";
+        return ""
     }
 
     loading_indicator = React.DOM.div({style: {height: '100%', width: '100%'},
@@ -293,7 +348,7 @@
             // requested?
             var dependent_keys = keys_4_component.get(this.local_key)
             for (var i=0; i<dependent_keys.length; i++)
-                if (outstanding_requests[dependent_keys[i]])
+                if (outstanding_fetches[dependent_keys[i]])
                     return true
             return false
         }
@@ -427,6 +482,7 @@
     window.ReactiveComponent = ReactiveComponent
     window.fetch = fetch
     window.save = save
+    window.destroy = destroy
 
     // Make the private methods accessible under "window.arest"
     vars = 'cache fetch save serverFetch serverSave updateCache csrf keys_4_component components_4_key components execution_context hashset clone wrap sanity clearComponentDeps dirty_components'.split(' ')

@@ -14,7 +14,7 @@ class CurrentUserController < DeviseController
     make_stub_user if not current_user
     pp("After stubby, it\'s #{current_user}")
     
-    render :json => to_json_current_user
+    render :json => current_user_hash
   end  
 
   def update2
@@ -240,7 +240,7 @@ class CurrentUserController < DeviseController
     end
     
     # 4. Now wrap everything up
-    response = to_json_current_user
+    response = current_user_hash
     response['errors'] = errors
 
     #HACKY! supports local measures w/ zipcodes
@@ -353,7 +353,7 @@ class CurrentUserController < DeviseController
 
     render :inline =>
       "<script type=\"text/javascript\">" +
-      "  window.open_id_params = #{to_json_current_user.to_json};  " +
+      "  window.open_id_params = #{current_user_hash.to_json};  " +
       "</script>"
   end
 
@@ -429,7 +429,7 @@ class CurrentUserController < DeviseController
     Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)   
   end
 
-  def to_json_current_user
+  def current_user_hash
     {
       id: current_user.id, #leave the id in for now for backwards compatability with Dash
       key: '/current_user',

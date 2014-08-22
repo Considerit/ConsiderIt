@@ -195,19 +195,20 @@ class CurrentUserController < DeviseController
       can_login = ((current_user.email and current_user.email.length > 0)\
                    or (current_user.twitter_uid or current_user.facebook_uid\
                        or current_user.google_uid))
-      signed_pledge = true
+      signed_pledge = params[:signed_pledge]
 
       puts('XXX Need to check password or third_party login')
       puts('XXX Need to check the pledge')
 
-      if has_name and can_login
+
+      if has_name and can_login and signed_pledge
         current_user.registration_complete = true
         if !current_user.save
           raise "Error registering this uesr"
         end
-
         # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
-
+      elsif !signed_pledge
+        errors[:register].append 'Community pledge required'
       end
     end
     
@@ -271,7 +272,7 @@ class CurrentUserController < DeviseController
 
     render :inline =>
       "<script type=\"text/javascript\">" +
-      "  window.open_id_params = #{current_user_hash.to_json};  " +
+      "  window.current_user_hash = #{current_user_hash.to_json};  " +
       "</script>"
   end
 

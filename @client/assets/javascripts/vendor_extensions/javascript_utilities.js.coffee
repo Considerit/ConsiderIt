@@ -1,14 +1,6 @@
 
 do (_) ->
   _.extend window, 
-    # from https://github.com/jashkenas/coffee-script/issues/452
-    mixOf : (base, mixins...) ->
-      class Mixed extends base
-      for mixin in mixins by -1
-        for name, method of mixin::
-          Mixed::[name] = method
-      Mixed
-
 
     getTileSize : (width, height, tileCount) ->
       # come up with an initial guess
@@ -46,11 +38,6 @@ do (_) ->
         
       tileSize - 1
 
-    addCSRF : (params) ->
-      csrfName = $("meta[name='csrf-param']").attr('content')
-      csrfValue = $("meta[name='csrf-token']").attr('content')
-      params[csrfName] = csrfValue
-
     trace : ->
       try
         throw new Error("myError")
@@ -70,18 +57,5 @@ $(document).ready () ->
     s.parentNode.insertBefore(ga, s)
 
   )()
-
-  
-  #adapted from http://www.thecssninja.com/javascript/pointer-events-60fps
-  # $body = $('body')
-  # timer = null
-  # $(window).scroll ->
-  #   clearTimeout timer
-  #   if document.body.style.pointerEvents != 'none'
-  #     document.body.style.pointerEvents = 'none'
-    
-  #   timer = setTimeout ->
-  #     document.body.style.pointerEvents = ''
-  #   , 200
 
 

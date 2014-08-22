@@ -92,7 +92,7 @@ class OpinionController < ApplicationController
     # Enable this next line if I make sure it's properly prepared and won't clobber cache
     #proposal[:key] = "/proposal/#{proposal.id}"
     
-    render :json => [opinion.as_json] + dirty_objects_json()
+    render :json => [opinion.as_json] + affected_objects()
 
   end
 

@@ -69,6 +69,8 @@ class Opinion < ActiveRecord::Base
     
   def include(point, tenant)
     point_id = (point.is_a?(Point) && point.id) || point
+    dirty_key("/point/#{point_id}")
+    dirty_key("/opinion/#{self.id}")
 
     if Inclusion.where( :point_id => point_id, :user_id => self.user_id ).count !=0
       raise 'Including a point twice!'

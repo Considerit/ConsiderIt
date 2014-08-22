@@ -91,9 +91,8 @@ class OpinionController < ApplicationController
 
     # Enable this next line if I make sure it's properly prepared and won't clobber cache
     #proposal[:key] = "/proposal/#{proposal.id}"
-
-    # MIKE! return the modified points (included, deleted) here
-    render :json => opinion.as_json
+    
+    render :json => [opinion.as_json] + dirty_objects_json()
 
   end
 
@@ -104,7 +103,11 @@ protected
     curr_inclusions = Inclusion.where(:opinion => opinion.id)
 
     to_delete = curr_inclusions.select {|i| not points.include? i.point_id}
-    to_add = points.select {|p| curr_inclusions.where(:point_id => p).count == 0}
+    to_add = points.select {|p_id| curr_inclusions.where(:point_id => p_id).count == 0}
+
+    for p_id in to_delete + to_add
+      dirty_key("/point/#{p_id}")
+    end
 
     to_delete_ids = to_delete.map{|i| i.point_id}
     pp("Deleting #{to_delete}, adding #{to_add}")

@@ -32,8 +32,9 @@ class PointController < ApplicationController
     #ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
 
     # Include into the user's opinion
-    Opinion.where(:user_id => current_user.id,
-                  :proposal => proposal).first.include(point, current_tenant)
+    opinion = Opinion.where(:user_id => current_user.id,
+                            :proposal => proposal).first
+    opinion.include(point, current_tenant)
     point.seen_by(current_user)
 
     original_id = key_id(params[:key])
@@ -52,7 +53,7 @@ class PointController < ApplicationController
                                            current_user,
                                            can?(:manage, proposal))
 
-    render :json => [result, proposal_json]
+    render :json => [result, proposal_json] + dirty_objects_json()
   end
 
   def update
@@ -81,19 +82,18 @@ class PointController < ApplicationController
     
     authorize! :destroy, point
 
-    update_opinion = current_user && opinion = current_user.opinions.find_by_proposal_id(point.proposal_id)
+    puts("getting opinions")
+    opinions = point.inclusions.map{|i| i.opinion}
+    puts("destroy point")
     point.destroy
-
-    opinion.recache if update_opinion
-
-    response = {:result => 'successful'}
-
-    result = proposal.proposal_data(current_tenant,
-                                current_user,
-                                session[proposal.id],
-                                can?(:manage, proposal))
-    render :json => result
-
+    for opinion in opinions
+      puts("recaching opinions")
+      opinion.recache
+      dirty_key("/opinion/#{opinion.id}")
+    end
+    puts("rendering dirty stuff")
+    render :json => dirty_objects_json()
+    puts("done with destroy")
   end
  
 end

@@ -1785,7 +1785,7 @@ Computer = ReactiveComponent
 
     console.log("Maybe we will publish: #{root.publish_this_opinion} #{current_user.logged_in} #{root.your_opinion_key}")
     # Publish this opinion if we can
-    if (root.publish_this_opinion not your_opinion.published
+    if (root.publish_this_opinion and not your_opinion.published \
         and current_user.logged_in and root.your_opinion_key)
       console.log("Publishing the opinion. It's", your_opinion)
       your_opinion.published = true

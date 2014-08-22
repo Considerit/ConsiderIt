@@ -44,7 +44,9 @@ def key_id(object_or_key, session=nil)
 end
 
 def dirty_key(key)
-  Thread.current[:dirtied_keys][key] = 1
+  if Thread.current.dirtied_keys
+    Thread.current[:dirtied_keys][key] = 1
+  end
 end
 def remap_key(old_key, new_key)
 #   Thread.current[:remapped_keys][old_key] = new_key

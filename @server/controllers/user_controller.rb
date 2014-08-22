@@ -1,7 +1,7 @@
 class UserController < ApplicationController
   respond_to :json
   def show
-    puts("Current_user is #{current_user and current_user.id}")
+    puts("Show(#{params[:id]})")
 
     if params[:id] == '-1'
       render :json => {
@@ -12,9 +12,7 @@ class UserController < ApplicationController
       return
     end
     
-    id = params[:id]
-    user = User.find_by_id(params[:id])
-    puts("User #{params[:id]} is #{user}")
+    user = User.find(params[:id])
     render :json => {
              'key' => "/user/#{user.id}",
              'name' => user.name,

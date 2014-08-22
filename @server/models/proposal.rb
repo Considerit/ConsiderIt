@@ -32,19 +32,21 @@ class Proposal < ActiveRecord::Base
   scope :published_web, -> {where( :published => true)}
   scope :browsable, -> {where( :targettable => false)}
 
-  def full_data(current_tenant, current_user, show_private = false)
+  def full_data(current_user, show_private = false)
+    tenant = Thread.current[:tenant]
+    
     # Compute the users
-    users = ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id}")
+    users = ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{tenant.id}")
     users = users.as_json
     users = jsonify_objects(users, 'user')
 
-    p = proposal_data(current_tenant, current_user, show_private)
+    p = proposal_data(current_user, show_private)
     response = {
       :proposal => p,
       :users => users
     }
 
-    if current_tenant.assessment_enabled
+    if tenant.assessment_enabled
       response.update({
         :assessments => assessments.completed.public_fields,
         :claims => assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
@@ -61,7 +63,7 @@ class Proposal < ActiveRecord::Base
     response
   end
 
-  def proposal_data(current_tenant, current_user, show_private = false)
+  def proposal_data(current_user, show_private = false)
     # Compute points
     pointz = points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
     pointz = pointz.public_fields.map do |p|
@@ -69,7 +71,7 @@ class Proposal < ActiveRecord::Base
     end
 
     # Find an existing opinion for this user
-    your_opinion = Opinion.get_or_make(self, current_user, current_tenant)
+    your_opinion = Opinion.get_or_make(self, current_user)
 
     # Compute opinions
     published_opinions = opinions.published

@@ -41,15 +41,15 @@ class PointController < ApplicationController
     result['key'] = "/point/#{point.id}?original_id=#{original_id}"
     pp(result)
 
-    session[:new_keys] ||= {}
-    session[:new_keys][params[:key]] = "/point/#{point.id}"
-
-    puts("New_keys session now is #{session[:new_keys]}")
+    remap_key(params[:key], "/point/#{point.id}")
+    # # This session stuff is broken!  Because the session gets cleared
+    # # when we switch accounts.  Sucks.  Need a new way to store this.
+    # session[:remapped_keys] ||= {}
+    # session[:remapped_keys][params[:key]] = "/point/#{point.id}"
 
     # Now let's return the proposal's changes too
     proposal_json = proposal.proposal_data(current_tenant,
                                            current_user,
-                                           session[proposal.id],
                                            can?(:manage, proposal))
 
     render :json => [result, proposal_json]

@@ -1744,28 +1744,20 @@ Computer = ReactiveComponent
   displayName: 'Computer'
   render : ->
     current_user = @data('/current_user')
+    root = @data('root')
+    your_opinion = @data(root.your_opinion_key)
     if current_user.csrf
       arest.csrf(current_user.csrf)
 
-    # If the user changed, reload the current opinion
-    # This will need to be updated with better arest
-    if current_user.user != @local.last_curr_user
-      console.log("COMPUTER: New currnet_user: #{current_user.user}, last: #{@local.last_curr_user}")
-      if @local.last_curr_user
-        current_proposal = @data('root').current_proposal
-        console.log('Forcing refetch of current_proposal',current_proposal)
-        arest.serverFetch(@data('root').current_proposal)
-      @local.last_curr_user = current_user.user
-      save(@local)
-
+    console.log("Maybe we will publish: #{root.publish_this_opinion} #{current_user.logged_in} #{root.your_opinion_key}")
     # Publish this opinion if we can
-    root = @data('root')
-    if root.publish_this_opinion and current_user.logged_in
-      opinion = @data(root.your_opinion_key)
-      opinion.published = true
+    if (root.publish_this_opinion not your_opinion.published
+        and current_user.logged_in and root.your_opinion_key)
+      console.log("Publishing the opinion. It's", your_opinion)
+      your_opinion.published = true
       root.publish_this_opinion = false
       save(root)
-      save(opinion)
+      save(your_opinion)
 
     return R.span null, ''
 

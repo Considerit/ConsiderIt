@@ -87,11 +87,17 @@ class Opinion < ActiveRecord::Base
   end    
   def absorb( opinion )
     puts("Absorbing opinion #{opinion.id} into #{self.id}")
+
+    # First record everything we're dirtying and remapping
+    dirty_key("/opinion/#{id}")
+    remap_key("/opinion/#{opinion.id}", "/opinion/#{id}")
+    opinion.points.each {|p| dirty_key("/point/#{p.id}")}
+
     # Change the absorbed's everythings to point at this opinion
     opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
     opinion.points.update_all(        {:user_id => user_id, :opinion_id => id})
     opinion.inclusions.update_all(    {:user_id => user_id, :opinion_id => id})
-    opinion.comments.update_all({:commentable_id => id})
+    opinion.comments.update_all(      {:commentable_id => id})
     self.published = self.published or opinion.published
     self.recache()
     opinion.destroy()
@@ -99,7 +105,6 @@ class Opinion < ActiveRecord::Base
 
   def recache
     inclusions = self.inclusions.select(:point_id)
-
     self.point_inclusions = inclusions.map {|x| x.point_id }.uniq.compact.to_s
     self.save
   end

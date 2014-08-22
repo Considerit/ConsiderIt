@@ -40,7 +40,6 @@ class ProposalController < ApplicationController
       ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
       result = proposal.proposal_data(current_tenant,
                                       current_user,
-                                      session[proposal.id],
                                       can?(:manage, proposal))
     end
     render :json => result
@@ -79,7 +78,7 @@ class ProposalController < ApplicationController
 
     ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
 
-    data = proposal.full_data current_tenant, current_user, session[proposal.id]
+    data = proposal.full_data current_tenant, current_user
 
     # opinion = ProposalsController.get_opinion_for_user(proposal, current_user, session)
     # data[:opinion] = opinion

@@ -32,13 +32,13 @@ class Proposal < ActiveRecord::Base
   scope :published_web, -> {where( :published => true)}
   scope :browsable, -> {where( :targettable => false)}
 
-  def full_data(current_tenant, current_user, prop_data, show_private = false)
+  def full_data(current_tenant, current_user, show_private = false)
     # Compute the users
     users = ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id}")
     users = users.as_json
     users = jsonify_objects(users, 'user')
 
-    p = proposal_data(current_tenant, current_user, prop_data, show_private)
+    p = proposal_data(current_tenant, current_user, show_private)
     response = {
       :proposal => p,
       :users => users
@@ -61,7 +61,7 @@ class Proposal < ActiveRecord::Base
     response
   end
 
-  def proposal_data(current_tenant, current_user, prop_data, show_private = false)
+  def proposal_data(current_tenant, current_user, show_private = false)
     # Compute points
     pointz = points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
     pointz = pointz.public_fields.map do |p|
@@ -78,16 +78,11 @@ class Proposal < ActiveRecord::Base
     if published_opinions.where(:user_id => nil).count > 0
       throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
     end
-    # Compute Included points
-    #includeds = Point.included_by_stored(current_user, self, prop_data[:deleted_points].keys).pluck('points.id')
-                
-    #includeds.map! {|p| "/point/#{p}"}
 
     # Put them together
     response = self.as_json
     response.update({
       :points => pointz,
-      #:included_points => includeds,
       :opinions => ops,
       :your_opinion => "/opinion/#{your_opinion.id}"
     })

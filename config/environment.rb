@@ -44,7 +44,7 @@ def key_id(object_or_key, session=nil)
 end
 
 def dirty_key(key)
-  if Thread.current.has_key? :dirtied_keys
+  if Thread.current[:dirtied_keys]
     Thread.current[:dirtied_keys][key] = 1
   end
 end

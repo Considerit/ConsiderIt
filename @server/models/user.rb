@@ -361,13 +361,13 @@ class User < ActiveRecord::Base
     # 
     # Each point has a cached "includers" field that we need to
     # update... the way to do that is to call
-    # point.update_absolute_score() on it.
+    # point.recache() on it.
     #
     # The points that need to be updated are all the ones that this
     # user has included.  So let's get those inclusions, then grab their
     # points, and update their scores.
     for i in Inclusion.where(:user_id => user.id)
-      i.point.update_absolute_score
+      i.point.recache
     end
 
     # 2. Change user_id columns over in bulk

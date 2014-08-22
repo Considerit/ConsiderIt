@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   prepend_before_action :get_current_tenant
   before_action :theme_resolver
   before_action :ensure_stub_user
-  before_action :init_arest
+  before_action :init_thread_globals
   after_action  :pageview
   #include CacheableCSRFTokenRails
 
@@ -215,11 +215,14 @@ private
     # set_theme(session["user_theme"])
   end
 
-  def init_arest
+  def init_thread_globals
     # Make things to remember changes
     Thread.current[:dirtied_keys] = []
-    # Thread.current[:remapped_keys] = {}
 
+    Thread.current[:tenant] = current_tenant
+
+    # Remap crap:
+    # Thread.current[:remapped_keys] = {}
     # # Remember remapped keys (but it turns out this doesn't work,
     # # cause session dies on sign_out!)
     # puts("Session remapped keys is #{session[:remapped_keys]}")

@@ -371,9 +371,9 @@ class User < ActiveRecord::Base
     end
 
     # 2. Change user_id columns over in bulk
-    for table in [Point, Opinion, Proposal, Comment, Assessable::Assessment,\
-                  Follow, Inclusion, Moderation, PageView, PointListing, Thank\
-                 ] # Missing: ReflectResponseRevision, PointSimilarity, Request
+    for table in [Point, Opinion, Proposal, Comment, Assessable::Assessment, \
+                  Follow, Inclusion, Moderation, PageView, PointListing, \
+                 ] # Missing: ReflectResponseRevision, PointSimilarity, Request, Thank
 
       # First, remember what we're dirtying
       table.where(:user_id => user.id).each{|x| dirty_key("/#{table.name.downcase}/#{x.id}")}

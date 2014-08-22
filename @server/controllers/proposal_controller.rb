@@ -38,8 +38,7 @@ class ProposalController < ApplicationController
       result = { errors: ["not found"] }
     else
       ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-      result = proposal.proposal_data(current_tenant,
-                                      current_user,
+      result = proposal.proposal_data(current_user,
                                       can?(:manage, proposal))
     end
     render :json => result

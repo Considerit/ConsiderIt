@@ -10,28 +10,12 @@ class OpinionController < ApplicationController
     authorize! :read, opinion
     render :json => opinion.as_json
   end
-
-  def create
-    raise "This shouldn't be called anymore"
-
-    opinion = Opinion.create params[:opinion].permit!
-    authorize! :create, opinion
-
-    opinion[:user_id] = current_user ? current_user.id : nil
-    opinion[:account_id] = current_tenant.id
-    update_or_create opinion, params
-  end
   
   def update
     opinion = Opinion.find key_id(params)
     authorize! :update, opinion
 
-    update_or_create opinion, params
-  end
-
-  def update_or_create(opinion, params)
-
-    fields = ['proposal', 'explanation', 'stance', 'published', 'point_inclusions']
+    fields = ['proposal', 'explanation', 'stance', 'point_inclusions']
     updates = params.select{|k,v| fields.include? k}
 
     # Convert proposal key to id
@@ -45,119 +29,32 @@ class OpinionController < ApplicationController
       incs = []
     end
     incs = incs.map! {|p| key_id(p, session)}
-    include_points(opinion, incs)
+    opinion.update_inclusions incs
     updates['point_inclusions'] = JSON.dump(incs)
 
     # Grab the proposal
     proposal = Proposal.find(updates['proposal_id'])
     updates['long_id'] = proposal.long_id  # Remove this soon
     
-    # Record things for later
-    already_published = opinion.published
-    stance_changed = already_published && updates['stance'] != opinion.stance
-    
-    # Update this opinion
+    # Update the normal fields
     opinion.update_attributes ActionController::Parameters.new(updates).permit!
     opinion.save
 
-    # Follow all the points user included
-    for p in opinion.inclusions.map{|i| i.point}
-      p.follow!(current_user, :follow => true, :explicit => false)
+    # Update published
+    if params['published'] and not opinion.published
+      opinion.publish()  # This will also publish all the newly-written points
     end
-
-    # Publish all the user's newly-written points too
-    if opinion.published
-      Point.where(:user_id => current_user, :long_id => proposal.long_id,
-                  :published => false).each do |p|
-          p.published = true
-          p.save
-
-          ActiveSupport::Notifications.instrument("point:published", 
-            :point => p,
-            :current_tenant => current_tenant,
-            :mail_options => mail_options
-          )
-      end
-    end
-    
-    opinion.recache
 
     # Need to add following in somewhere else
     #proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
     proposal.delay.update_metrics()
 
-    alert_new_published_opinion(proposal, opinion) unless already_published
-
     # Enable this next line if I make sure it's properly prepared and won't clobber cache
     #proposal[:key] = "/proposal/#{proposal.id}"
     
-    render :json => [opinion.as_json] + affected_objects()
+    dirty_key("/opinion/#{opinion.id}")
+    render :json => affected_objects()
 
   end
-
-
-protected
-
-  def include_points (opinion, points)
-    curr_inclusions = Inclusion.where(:opinion => opinion.id)
-
-    inclusions_to_delete = curr_inclusions.select {|i| not points.include? i.point_id}
-
-    # The point id versions
-    points_to_delete = inclusions_to_delete.map{|i| i.point_id}
-    points_to_add    = points.select {|p_id| curr_inclusions.where(:point_id => p_id).count == 0}
-
-    for p_id in points_to_delete + points_to_add
-      dirty_key("/point/#{p_id}")
-    end
-
-    puts("Deleting #{points_to_delete}, adding #{points_to_add}")
-
-    Inclusion.transaction do
-      # Delete goners
-      inclusions_to_delete.each do |i|
-        i.delete()
-        i.point.follow! current_user, :follow => false, :explicit => false
-      end
-    
-      # Add newbies
-      points_to_add.each do |point_id|
-        opinion.include(point_id)
-        point = Point.find(point_id)
-      end
-    end
-    # we need to update the point scores of these guys so that includers gets set properly
-    # We have to do it after the above transaction so that the changes to inclusions are saved
-    # into the database when the update score method is run. 
-    Point.transaction do
-      for point_id in points_to_delete + points_to_add
-        point = Point.find(point_id)
-        point.update_absolute_score
-      end
-    end
-  end
-
-  def alert_new_published_opinion ( proposal, opinion )
-
-    ActiveSupport::Notifications.instrument("published_new_opinion", 
-      :opinion => opinion,
-      :current_tenant => current_tenant,
-      :mail_options => mail_options
-    )
-
-    # send out confirmation email if user is not yet confirmed
-    # if !current_user.confirmed? && current_user.opinions.published.count == 1
-    #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
-    #     :user => current_user,
-    #     :proposal => proposal,
-    #     :current_tenant => current_tenant,
-    #     :mail_options => mail_options
-    #   )
-    # end
-
-  end
-      
-      
- 
 end

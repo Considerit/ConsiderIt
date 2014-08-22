@@ -19,15 +19,15 @@ class ThirdPartyAuthHandler
     @callback parameters
 
   pollLoginPopup : ->
-    if @popup? && @popup.location && window.location && window.location.origin == @popup.location.origin && @popup.open_id_params?
-      @handleOpenIdResponse(@popup.open_id_params)
+    if @popup? && @popup.location && window.location && window.location.origin == @popup.location.origin && @popup.current_user_hash?
+      @handleOpenIdResponse(@popup.current_user_hash)
       @popup.close()
       @popup = null
       clearInterval(@polling_interval)
 
   openPopupWindow : (url) ->
     openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
-    openidpopup.open_id_params = null
+    openidpopup.current_user_hash = null
     coords = @getCenteredCoords(450,500)  
     openidpopup.moveTo(coords[0],coords[1])
     @polling_interval = setInterval => 

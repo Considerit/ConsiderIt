@@ -1727,12 +1727,10 @@ Auth = ReactiveComponent
                     R.input className:'pledge-3 pledge-input', type:'checkbox', id:"pledge-3", name:"pledge-3"
                     R.label htmlFor: "pledge-3", 'I will use only one account to participate.'
 
-
-
-        if current_user.errors && current_user.errors.length > 0
+        if current_user.errors && current_user.errors[root.auth_mode] && current_user.errors[root.auth_mode].length > 0
           R.div className: "auth_errors", 
             R.i className: 'fa fa-exclamation-circle'
-            R.span null, "#{current_user.errors.join(', ')}"
+            R.span null, "#{current_user.errors[root.auth_mode].join(', ')}"
 
 
       R.div null, 

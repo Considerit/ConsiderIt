@@ -181,20 +181,34 @@
     // Utility for React Components
     function hashset() {
         var hash = this.hash = {}
-        this.get = function (k) { return hash[k] || [] }
+        this.get = function (k) { return Object.keys(hash[k] || {}) }
         this.add = function (k, v) {
             // if (k == 'component/946') {console.log('Adding component/946');console.trace()}
             if (hash[k] === undefined)
-                hash[k] = []
-            hash[k].push(v)
+                hash[k] = {}
+            hash[k][v] = true
         }
         this.del = function (k, v) {
-            var i = hash[k].indexOf(v)
-            hash[k].splice(i, 1)
+            delete hash[k][v]
         }
-        this.delAll = function (k) { hash[k] = [] }
+        this.delAll = function (k) { hash[k] = {} }
     }
 
+    // I'm partway through developing this improved utility func
+    function two_way_map() {
+        var data = hashset()
+        this.add = function (a,b) {
+            data.add(a,b)
+            data.add(b,a)
+        }
+        this.get = function (a) { return data.get(a) }
+        this.del = function (a,b) {
+            // Nevermind I'm gonna stop trying to write this now, but
+            // maybe in the future this would be a better abstraction
+            // than hashset.
+        }
+        this.delAll = function (a) { data.delAll(a) }
+    }
 
     // ****************
     // Wrapper for React Components

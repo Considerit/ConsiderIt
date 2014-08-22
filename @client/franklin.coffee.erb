@@ -1462,6 +1462,9 @@ Auth = ReactiveComponent
     ev.preventDefault()
     current_user = @data('/current_user')
 
+    $el = $(@getDOMNode())
+    current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
+
     save(current_user)
 
     # hack for submitting file data in ActiveREST for now
@@ -1715,13 +1718,13 @@ Auth = ReactiveComponent
               R.td className: 'field_cell',
                 R.ul className: 'pledges',
                   R.li className: 'pledge', 
-                    R.input className:'pledge-1', type:'checkbox', id:"pledge-1", name:"pledge-1"
+                    R.input className:'pledge-1 pledge-input', type:'checkbox', id:"pledge-1", name:"pledge-1"
                     R.label htmlFor: "pledge-1", 'I will not attack or mock others.'
                   R.li className: 'pledge', 
-                    R.input className:'pledge-2', type:'checkbox', id:"pledge-2", name:"pledge-2"
+                    R.input className:'pledge-2 pledge-input', type:'checkbox', id:"pledge-2", name:"pledge-2"
                     R.label htmlFor: "pledge-2", 'I will speak only on behalf of myself.'
                   R.li className: 'pledge', 
-                    R.input className:'pledge-3', type:'checkbox', id:"pledge-3", name:"pledge-3"
+                    R.input className:'pledge-3 pledge-input', type:'checkbox', id:"pledge-3", name:"pledge-3"
                     R.label htmlFor: "pledge-3", 'I will use only one account to participate.'
 
 

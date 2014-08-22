@@ -66,13 +66,69 @@ class Opinion < ActiveRecord::Base
     end
     your_opinion
   end
+
+  def publish()
+    already_published = self.published
+    self.published = true
+    self.save
+
+    # When we publish an opinion, all the points the user wrote on
+    # this opinion/proposal become published too
+    Point.where(:user_id => self.user_id,
+                :proposal_id => self.proposal_id).each {|p| p.publish()}
+
+    if not already_published
+      ActiveSupport::Notifications.instrument("published_new_opinion", 
+                                              :opinion => self,
+                                              :current_tenant => Thread.current[:tenant],
+                                              :mail_options => Thread.current[:mail_options])
+      # send out confirmation email if user is not yet confirmed
+      # if !current_user.confirmed? && current_user.opinions.published.count == 1
+      #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
+      #     :user => current_user,
+      #     :proposal => proposal,
+      #     :current_tenant => current_tenant,
+      #     :mail_options => mail_options
+      #   )
+      # end
+    end
+  end
+
+  def update_inclusions (points)
+    points_to_exclude = inclusions.select {|i| not points.include? i.point_id}
+
+    # The point id versions
+    points_to_exclude = points_to_exclude.map{|i| i.point_id}
+    points_to_add    = points.select {|p_id| inclusions.where(:point_id => p_id).count == 0}
+
+    pp("Deleting #{points_to_exclude}, adding #{points_to_add}")
+
+    # Delete goners
+    points_to_exclude.each do |point_id|
+      self.exclude point_id
+    end
     
+    # Add newbies
+    points_to_add.each do |point_id|
+      self.include point_id
+    end
+
+  end
+
+
   def include(point)
-    point_id = (point.is_a?(Point) && point.id) || point
+    if point.is_a? Point
+      point_id = point.id
+    else
+      point_id = point
+      point = Point.find point_id
+    end
+
     dirty_key("/point/#{point_id}")
     dirty_key("/opinion/#{self.id}")
 
-    if Inclusion.where( :point_id => point_id, :user_id => self.user_id ).count !=0
+    user = User.find(self.user_id)
+    if user.inclusions.where( :point_id => point_id ).count > 0
       raise 'Including a point twice!'
     end
     
@@ -83,10 +139,32 @@ class Opinion < ActiveRecord::Base
       :proposal_id => self.proposal_id,
       :account_id => Thread.current[:tenant].id
     }
-          
     Inclusion.create! ActionController::Parameters.new(attrs).permit!
-    self.recache()
+
+
+    point.follow! user, :follow => true, :explicit => false
+    point.recache
+    self.recache
   end    
+
+  def exclude(point)
+    if point.is_a? Point
+      point_id = point.id
+    else
+      point_id = point
+      point = Point.find point_id
+    end
+    dirty_key("/point/#{point_id}")
+    dirty_key("/opinion/#{self.id}")
+
+    user = User.find(self.user_id)
+    inclusion = user.inclusions.find_by_point_id point_id
+
+    inclusion.destroy
+    point.follow! user, :follow => false, :explicit => false
+    point.recache
+    self.recache
+  end
   
   def absorb( opinion )
     puts("Absorbing opinion #{opinion.id} into #{self.id}")
@@ -94,6 +172,8 @@ class Opinion < ActiveRecord::Base
     # First record everything we're dirtying and remapping
     dirty_key("/opinion/#{id}")
     remap_key("/opinion/#{opinion.id}", "/opinion/#{id}")
+    dirty_key("/proposal/#{opinion.proposal_id}")
+
     points = opinion.points
     points.each {|p| dirty_key("/point/#{p.id}")}
 
@@ -101,12 +181,17 @@ class Opinion < ActiveRecord::Base
     opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
     opinion.points.update_all(        {:user_id => user_id, :opinion_id => id}) # We don't use this field anymore
     opinion.comments.update_all(      {:commentable_id => id})
-    self.published = self.published or opinion.published
 
     # Union the included points
-    included_points_union = (     self.inclusions.map{|i| i.point.id} \
-                             + opinion.inclusions.map{|i| i.point.id}).uniq
-    self.include_points(included_points_union) # And this will recache
+    all_points = (     self.inclusions.map{|i| i.point.id} \
+                  + opinion.inclusions.map{|i| i.point.id}).uniq
+    self.update_inclusions(all_points) # And this will recache
+
+    # Copy the stance
+    self.stance = opinion.stance
+
+    # If something was published, ensure everything is published
+    self.publish() if self.published or opinion.published
 
     opinion.destroy()
   end
@@ -116,6 +201,7 @@ class Opinion < ActiveRecord::Base
 
     # First record everything we're dirtying and remapping
     dirty_key("/opinion/#{id}")
+    dirty_key("/proposal/#{opinion.proposal_id}")
     self.points.each {|p| dirty_key("/point/#{p.id}")}
 
     # Change the opinion's everythings to point at the new user
@@ -131,8 +217,7 @@ class Opinion < ActiveRecord::Base
   end    
 
   def recache
-    inclusions = self.inclusions.select(:point_id)
-    self.point_inclusions = inclusions.map {|x| x.point_id }.uniq.compact.to_s
+    self.point_inclusions = inclusions.select(:point_id).map {|x| x.point_id }.uniq.compact.to_s
     self.save
   end
 
@@ -218,7 +303,7 @@ class Opinion < ActiveRecord::Base
       if p.published
         puts("Fixing #{p.id}")
       end
-      p.update_absolute_score(true)
+      p.recache(true)
     end
     'done'
   end

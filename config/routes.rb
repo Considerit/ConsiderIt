@@ -111,7 +111,7 @@ ConsiderIt::Application.routes.draw do
   resources :proposal
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :point_discussion, :only => [:create, :update, :destroy, :show]
-  resources :opinion, :only => [:update, :create, :show]
+  resources :opinion, :only => [:update, :show]
   resources :error, :only => [:create]
 
   # This is for the special /opinion/current_user/234:

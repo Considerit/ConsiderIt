@@ -343,17 +343,21 @@ class User < ActiveRecord::Base
     #  4. Delete the old user
 
     # 1. Merge opinions
-    puts("Merging opinions")
-    old_u_ops = Opinion.where(:user_id => user.id).map{|o| o.id}
-    new_u_ops = Opinion.where(:user_id => self.id).map{|o| o.id}
+    old_ops = Opinion.where(:user_id => user.id)
+    new_ops = Opinion.where(:user_id => self.id)
+    puts("Merging opinions from #{old_ops.map{|o| o.id}} to #{new_ops.map{|o| o.id}}")
 
-    puts("Merging opinions from #{old_u_ops} to #{new_u_ops}")
-    for absorbed_o in Opinion.where(:user_id => user.id)
-      puts("Looking for opinion to absorb on #{absorbed_o.id}")
-      self_o = Opinion.where(:user_id => self.id,
-                             :proposal_id => absorbed_o.proposal.id).first
-      if (self_o)
-        self_o.absorb(absorbed_o)
+    for old_op in old_ops
+      puts("Looking for opinion to absorb on #{old_op.id}")
+      new_op = Opinion.where(:user_id => self.id,
+                             :proposal_id => old_op.proposal.id).first
+
+      if (new_op)
+        # Merge the two opinions
+        new_op.absorb(old_op)
+      else
+        # ... or just transform the old one
+        old_op.change_user(self)
       end
     end
 

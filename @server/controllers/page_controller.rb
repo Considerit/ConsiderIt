@@ -10,7 +10,6 @@ class PageController < ApplicationController
 
     result = proposal.full_data(current_tenant,
                                 current_user,
-                                session[proposal.id],
                                 can?(:manage, proposal))
 
     result['customer'] = current_tenant

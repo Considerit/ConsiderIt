@@ -5,8 +5,9 @@ class ApplicationController < ActionController::Base
   set_current_tenant_through_filter
   prepend_before_action :get_current_tenant
   before_action :theme_resolver
-  after_action  :pageview
   before_action :ensure_stub_user
+  before_action :init_arest
+  after_action  :pageview
   #include CacheableCSRFTokenRails
 
   def render(*args)
@@ -214,6 +215,16 @@ private
     # set_theme(session["user_theme"])
   end
 
+  def init_arest
+    # Make things to remember changes
+    Thread.current[:dirtied_keys] = []
+    # Thread.current[:remapped_keys] = {}
+
+    # # Remember remapped keys (but it turns out this doesn't work,
+    # # cause session dies on sign_out!)
+    # puts("Session remapped keys is #{session[:remapped_keys]}")
+    # session[:remapped_keys] ||= {}
+  end
   def ensure_stub_user
     puts("In before... is there a current user? #{current_user}")
     if not current_user

@@ -53,7 +53,7 @@ class PointController < ApplicationController
                                            current_user,
                                            can?(:manage, proposal))
 
-    render :json => [result, proposal_json] + dirty_objects_json()
+    render :json => [result, proposal_json] + affected_objects()
   end
 
   def update
@@ -92,7 +92,7 @@ class PointController < ApplicationController
       dirty_key("/opinion/#{opinion.id}")
     end
     puts("rendering dirty stuff")
-    render :json => dirty_objects_json()
+    render :json => affected_objects()
     puts("done with destroy")
   end
  

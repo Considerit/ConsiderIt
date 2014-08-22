@@ -256,7 +256,7 @@ class CurrentUserController < DeviseController
       dirtied_keys = Thread.current[:dirtied_keys]
 
       response = [response]
-      response.concat(dirty_objects_json())
+      response.concat(affected_objects())
       render :json => response
     else
       # non-ajax method is used for legacy support for dash

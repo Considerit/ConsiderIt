@@ -217,9 +217,9 @@ private
 
   def init_thread_globals
     # Make things to remember changes
-    Thread.current[:dirtied_keys] = []
-
+    Thread.current[:dirtied_keys] = {}
     Thread.current[:tenant] = current_tenant
+    Thread.current[:mail_options] = mail_options
 
     # Remap crap:
     # Thread.current[:remapped_keys] = {}
@@ -232,7 +232,7 @@ private
     # Right now this works for points, opinions, proposals, and the
     # current opinion's proposal if the current opinion is dirty.
     response = []
-    dirtied_keys = Thread.current[:dirtied_keys]
+    dirtied_keys = Thread.current[:dirtied_keys].keys
 
     # Grab dirtied points and opinions
     for type in [Point, Opinion]
@@ -241,16 +241,8 @@ private
     end
 
     # Grab dirtied proposals
-    proposals = dirtied_keys.select{|k| k.match("/proposal/")} \
-                .map {|k| Proposal.find(key_id(k)).proposal}
-
-    # Grab dirtied your_opinion proposals
-    opinions = dirtied_keys.select{|k| k.match("/opinion/")}
-    your_opinions = opinions.select{|k| Opinion.find(key_id(k)).user_id == current_user.id}
-    proposals.concat(your_opinions.map{|o| Opinion.find(key_id(o)).proposal})
-
-    # Add these proposals into it
-    response.concat(proposals.map{|p| p.proposal_data(current_user)})
+    response.concat(dirtied_keys.select{|k| k.match("/proposal/")} \
+                     .map {|k| Proposal.find(key_id(k)).proposal_data(current_user)})
     return response
   end
 

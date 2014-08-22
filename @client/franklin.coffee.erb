@@ -1233,7 +1233,7 @@ EditPoint = ReactiveComponent
 
     nutshell = $form.find('#nutshell').val()
     text = $form.find('#text').val()
-    hide_name = $form.find("sign_name-#{@props.valence}").val()
+    hide_name = !$form.find("#sign_name-#{@props.valence}").is(':checked')
 
     if !@props.fresh
       # If we're updating an existing point, we just have to update 
@@ -1268,13 +1268,22 @@ EditPoint = ReactiveComponent
 
   render : ->
     @local = @data @local_key,
-      sign_name : true
+      sign_name : if @props.fresh then true else !@data().hide_name
       add_details : false
 
     R.div className:'newpoint_form',
       R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pros'}"
       R.label htmlFor:'nutshell', 'Your point'
-      CharacterCountTextInput id:'nutshell', className:'newpoint_nutshell', maxLength:140, name:'nutshell', pattern:'^.{3,}', placeholder:'Make this summary succinct.', required:'required'
+      CharacterCountTextInput 
+        id:'nutshell'
+        className:'newpoint_nutshell'
+        maxLength:140
+        name:'nutshell'
+        pattern:'^.{3,}'
+        placeholder:'Make this summary succinct.'
+        required:'required'
+        defaultValue: if @props.fresh then null else @data().nutshell
+
       
       R.div null,
         R.a className: 'add_details', onClick: @handleToggleDetails, title: 'Provide background and/or back your point up with evidence.',
@@ -1290,6 +1299,8 @@ EditPoint = ReactiveComponent
               placeholder:'Provide background and/or back your point up with evidence.'
               required:'required'
               min_height: 170
+              defaultValue: if @props.fresh then null else @data().text
+
 
       R.div className:'newpoint_hide_name',
         R.input

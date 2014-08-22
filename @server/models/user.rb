@@ -159,8 +159,7 @@ class User < ActiveRecord::Base
   def update_from_third_party_data(access_token)
     params = {
       'name' => access_token.info.name,
-      'password' => Devise.friendly_token[0,20],
-      'key' => '/current_user'
+      # 'password' => Devise.friendly_token[0,20]
     }
             
     case access_token.provider

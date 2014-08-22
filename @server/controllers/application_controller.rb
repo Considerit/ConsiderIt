@@ -228,7 +228,7 @@ private
     # puts("Session remapped keys is #{session[:remapped_keys]}")
     # session[:remapped_keys] ||= {}
   end
-  def dirty_objects_json
+  def affected_objects
     # Right now this works for points, opinions, proposals, and the
     # current opinion's proposal if the current opinion is dirty.
     response = []

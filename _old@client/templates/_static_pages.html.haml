@@ -6,8 +6,6 @@
       (( } else { ))
       - if current_tenant.managing_account && current_tenant.managing_account.avatar_file_name
         = image_tag current_tenant.managing_account.avatar.url(:large), :class => 't-logo'
-      - else
-        = theme_image_tag 'logo_large.png'
       (( } ))
 
 

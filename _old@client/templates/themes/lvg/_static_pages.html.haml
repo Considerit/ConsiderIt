@@ -1,7 +1,5 @@
 %script{ :type => "text/template", :id => "tpl_static_sidebar" }
   %ul
-    %li.sidebar-image
-      = theme_image_tag 'logo_large.png'
 
     %li
       %a.sidebar_link{:href => "/home/about", :'action' => 'about'}
@@ -59,8 +57,6 @@
       describing the design and evolution of the technology, while also analyzing the outcomes. For example, we have found that LVG encourages citizens to consider tradeoffs. Despite the contentious nature of many of these ballot measures, 45.0% of all pro/con lists include both pros and cons, demonstrating that it is possible to encourage citizens to consider tradeoffs and shed light on those more nuanced deliberations. In summative user studies, we've also found that citizens are surprised and encouraged when LVG shows people with whom they disagreed recognizing the importance of both pros and cons, especially when the &#8220;disagreers&#8221; included some of the same points they themselves thought important. Citizens could thus unexpectedly find common ground.
 
     %p.history
-      %a.t-about-image.fl{:href => "http://www.seattlecityclub.org", :target => "_blank"}
-        = theme_image_tag 'cityclub.png', :width => '100'
 
       %a{:href => "http://seattlecityclub.org", :target => "_blank"}
         Seattle CityClub
@@ -82,8 +78,6 @@
 
 
     %p.history
-      %a.t-about-image.fl{ :href => "http://spl.org", :target=>"_blank"}
-        = theme_image_tag 'spl-logo.png', :width => '100'
       %a{:href => "http://spl.org", :target => "_blank"}
         Seattle Public Library 
       joined the partnership in 2012 to offer a popular

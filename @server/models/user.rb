@@ -134,31 +134,29 @@ class User < ActiveRecord::Base
         user = User.find_by_twitter_uid(access_token.uid)
       when 'facebook'
         user = User.find_by_facebook_uid(access_token.uid) || User.find_by_lower_email(access_token.info.email)
-        if user
-          user.facebook_uid = access_token.uid
-        end
-      when 'google'
-        user = User.find_by_google_uid(access_token.uid) || User.find_by_lower_email(access_token.info.email)
-        if user
-          user.google_uid = access_token.uid
-        end
-
       when 'google_oauth2'
-        user = User.find_by_google_uid(access_token.uid) || User.find_by_lower_email(access_token.info.email)  #for_google_oauth2(request.env["omniauth.auth"], current_user)
+        user = User.find_by_google_uid(access_token.uid) || User.find_by_lower_email(access_token.info.email)
+    end
 
-        if user
-          user.google_uid = access_token.uid
-        end
-
-      else  
-        user = User.find_by_lower_email(access_token.info.email)
+    # If we didn't find a user by the uid, perhaps they already have a user
+    # registered by the given email address, but just having authenticated 
+    # yet by this particular third party. For example, say I register by 
+    # email/password with me@gmail.com, but then later I try to authenticate
+    # via google oauth. We'll want to match with the existing user and 
+    # set the proper google uid. 
+    if !user && access_token.info.email
+      user = User.find_by_lower_email(access_token.info.email)
+      if user
+        user["#{access_token.provider}_uid".intern] = access_token.uid
+        user.save
+      end
     end
 
     user
 
   end
 
-  def self.params_from_third_party_token(access_token)
+  def update_from_third_party_data(access_token)
     params = {
       'name' => access_token.info.name,
       'password' => Devise.friendly_token[0,20],
@@ -166,17 +164,13 @@ class User < ActiveRecord::Base
     }
             
     case access_token.provider
-      when 'google'
-        third_party_params = {
-          'google_uid' => access_token.uid,
-          'email' => access_token.info.email
-        }
 
       when 'google_oauth2'
         third_party_params = {
           'google_uid' => access_token.uid,
           'email' => access_token.info.email,
-          'avatar_url' => access_token.info.image
+          'avatar_url' => access_token.info.image,
+          'google_uid' => access_token.uid
         }        
 
       when 'twitter'
@@ -185,7 +179,8 @@ class User < ActiveRecord::Base
           'bio' => access_token.info.description,
           'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
           # 'twitter_handle' => access_token.info.nickname,
-          'avatar_url' => access_token.info.image.gsub('_normal', '') #'_reasonably_small'),
+          'avatar_url' => access_token.info.image.gsub('_normal', ''), #'_reasonably_small'),
+          'twitter_uid' => access_token.uid
         }
 
       when 'facebook'
@@ -193,13 +188,17 @@ class User < ActiveRecord::Base
           'facebook_uid' => access_token.uid,
           'email' => access_token.info.email,
           'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter, #TODO: fix this for facebook
-          'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large'
+          'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large',
+          'twitter_uid' => access_token.uid
         }
+
 
       else
         raise 'Unsupported provider'
     end
     params.update third_party_params
+    params = ActionController::Parameters.new(params).permit!
+    self.update_attributes! params
 
   end
 

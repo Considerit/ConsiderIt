@@ -94,17 +94,41 @@ class Opinion < ActiveRecord::Base
     # First record everything we're dirtying and remapping
     dirty_key("/opinion/#{id}")
     remap_key("/opinion/#{opinion.id}", "/opinion/#{id}")
-    opinion.points.each {|p| dirty_key("/point/#{p.id}")}
+    points = opinion.points
+    points.each {|p| dirty_key("/point/#{p.id}")}
 
     # Change the absorbed's everythings to point at this opinion
     opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
-    opinion.points.update_all(        {:user_id => user_id, :opinion_id => id})
-    opinion.inclusions.update_all(    {:user_id => user_id, :opinion_id => id})
+    opinion.points.update_all(        {:user_id => user_id, :opinion_id => id}) # We don't use this field anymore
     opinion.comments.update_all(      {:commentable_id => id})
     self.published = self.published or opinion.published
-    self.recache()
+
+    # Union the included points
+    included_points_union = (     self.inclusions.map{|i| i.point.id} \
+                             + opinion.inclusions.map{|i| i.point.id}).uniq
+    self.include_points(included_points_union) # And this will recache
+
     opinion.destroy()
   end
+
+  def change_user(new_user)
+    puts("Changing user for #{opinion.id} to #{new_user}")
+
+    # First record everything we're dirtying and remapping
+    dirty_key("/opinion/#{id}")
+    self.points.each {|p| dirty_key("/point/#{p.id}")}
+
+    # Change the opinion's everythings to point at the new user
+    self.point_listings.update_all({:user_id => user_id})
+    self.points.update_all(        {:user_id => user_id}) # We should remove opinion.points
+    self.inclusions.update_all(    {:user_id => user_id}) # We should remove inclusions.user_id field
+    self.recache()                                        # We don't use either of those fields anymore
+
+    # Update each point.includers field
+    self.points.each {|p| p.update_absolute_score}
+
+    opinion.destroy()
+  end    
 
   def recache
     inclusions = self.inclusions.select(:point_id)

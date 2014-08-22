@@ -112,7 +112,7 @@ protected
       dirty_key("/point/#{p_id}")
     end
 
-    pp("Deleting #{points_to_delete}, adding #{points_to_add}")
+    puts("Deleting #{points_to_delete}, adding #{points_to_add}")
 
     Inclusion.transaction do
       # Delete goners

@@ -59,7 +59,7 @@ class CurrentUserController < DeviseController
     end
 
     # Validate input
-    types = {:avatar => String, :bio => String, :name => String,
+    types = {:avatar => ActionDispatch::Http::UploadedFile, :bio => String, :name => String,
              :hide_name => 'boolean',
              :email => String, :password => String}
     types.each {|field, value| validate(field, value)}

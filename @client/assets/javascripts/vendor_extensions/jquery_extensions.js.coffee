@@ -259,12 +259,3 @@ do ($, window, document) ->
     else
       $(document).scrollTop target
 
-do ($, window, document) ->
-
-  $.fn.putBehindLightbox = ->
-    $('#lightbox').remove()
-    $(this).after '<div id="lightbox">'
-
-  $.fn.removeLightbox = ->
-    $('#lightbox').remove()
-

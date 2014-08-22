@@ -76,33 +76,23 @@ class PointController < ApplicationController
   end
 
   def destroy
-    return unless request.xhr?
-
-    @point = Point.find params[:id]
+    point = Point.find params[:id]
+    proposal = point.proposal
     
-    authorize! :destroy, @point
+    authorize! :destroy, point
 
-    # ApplicationController.reset_user_activities(session, @point.proposal) if !session.has_key?(@point.proposal.id)
-    
-    # session[@point.proposal_id][:written_points].delete(@point.id)
-    # session[@point.proposal_id][:included_points].delete(@point.id)  
-    # session[@point.proposal_id][:viewed_points].delete(@point.id)
-
-    # if this point is a top pro or con, need to trigger proposal update
-    proposal = @point.proposal
-    update_proposal_metrics = proposal.top_pro == @point.id || proposal.top_con == @point.id      
     update_opinion = current_user && opinion = current_user.opinions.find_by_proposal_id(point.proposal_id)
-
-    @point.destroy
+    point.destroy
 
     opinion.recache if update_opinion
-    proposal.update_metrics if update_proposal_metrics
 
     response = {:result => 'successful'}
 
-    respond_to do |format|
-      format.json {render :json => response}
-    end
+    result = proposal.proposal_data(current_tenant,
+                                current_user,
+                                session[proposal.id],
+                                can?(:manage, proposal))
+    render :json => result
 
   end
  

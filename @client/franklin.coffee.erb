@@ -1059,7 +1059,7 @@ Point = ReactiveComponent
     save(@local)
 
   deletePoint : -> 
-    console.log 'delete!'
+    destroy @props.key
 
   ## ##
   # On hovering over a point, highlight the people who included this 

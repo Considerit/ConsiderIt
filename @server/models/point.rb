@@ -119,6 +119,17 @@ class Point < ActiveRecord::Base
   #   end
   # end
 
+  def publish()
+    self.published = true
+    self.save
+
+    ActiveSupport::Notifications.instrument("point:published", 
+      :point => self,
+      :current_tenant => Thread.current[:tenant],
+      :mail_options => Thread.current[:mail_options]
+    )
+  end
+
   def seen_by(user)
     # unimplemented. It was:
     # session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
@@ -140,7 +151,7 @@ class Point < ActiveRecord::Base
     is_pro ? 'pro' : 'con'
   end
 
-  def update_absolute_score(in_batch = false)
+  def recache(in_batch = false)
     self.comment_count = comments.count
     if !in_batch
       self.num_inclusions = self.inclusions.count
@@ -213,7 +224,7 @@ class Point < ActiveRecord::Base
             group.each do |pnt|
               pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
               pnt.unique_listings = num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
-              pnt.update_absolute_score(true)
+              pnt.recache(true)
               relative_scores[pnt.id] = []
             end
           end

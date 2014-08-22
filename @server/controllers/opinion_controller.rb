@@ -80,54 +80,19 @@ class OpinionController < ApplicationController
       end
     end
     
-    # Need to add back in this tracking of viewed points
-    # params[:viewed_points] ||= []
-    # params[:viewed_points].each do |pnt|
-    #   session[opinion.proposal_id][:viewed_points].push([pnt,-1])
-    # end
-
-    # Add this back in when I know how to make it work
-    #updated_points = save_actions(opinion)
-    updated_points = []
-    
-    if stance_changed
-      # if the user has updated their stance, we need to update the
-      # scores of all the points that they included so that the
-      # segment metrics are correct
-      Inclusion.where(:user_id => opinion.user_id,
-                      :proposal_id => opinion.proposal_id).select(:point_id).each do |inc|
-        updated_points[inc.point_id] = 1
-      end
-    end
-
-    updated_points = Point.where('id in (?)', updated_points)
-    updated_points.each do |pnt|
-      pnt.update_absolute_score
-    end
-
-    pp 1, opinion.as_json
-
     opinion.recache
-
-    pp 2, opinion.as_json
 
     # Need to add following in somewhere else
     #proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
-    # update proposal metrics right away if a new point could become a
-    # top point; otherwise schedule an update to be processed offline
-    if updated_points.count > 0 && (proposal.top_pro.nil? || proposal.top_pro.nil?)
-      proposal.update_metrics()
-    else
-      proposal.delay.update_metrics()
-    end
+    proposal.delay.update_metrics()
 
-    # This isn't working... undefined method confirmed? ... need to fix
     alert_new_published_opinion(proposal, opinion) unless already_published
 
     # Enable this next line if I make sure it's properly prepared and won't clobber cache
     #proposal[:key] = "/proposal/#{proposal.id}"
 
+    # MIKE! return the modified points (included, deleted) here
     render :json => opinion.as_json
 
   end
@@ -146,90 +111,26 @@ protected
 
     Inclusion.transaction do
       # Delete goners
-      to_delete.each {|i| i.delete()}
+      to_delete.each do |i| 
+        i.delete()
+        i.point.follow! current_user, :follow => false, :explicit => false
+      end
     
       # Add newbies
-      to_add.each {|point_id| opinion.include(point_id, current_tenant)}
-    end
-  end
-
-  def save_actions ( opinion )
-    actions = session[opinion.proposal_id]
-    updated_points = {}
-
-    Inclusion.transaction do
-      actions[:included_points].each do |point_id, value|
-        if Inclusion.where( :point_id => point_id, :user_id => opinion.user_id ).count == 0
-          inc_attrs = { 
-            :point_id => point_id,
-            :user_id => opinion.user_id,
-            :opinion_id => opinion.id,
-            :proposal_id => opinion.proposal_id,
-            :account_id => current_tenant.id
-          }
-          
-          inc = Inclusion.create! ActionController::Parameters.new(inc_attrs).permit!
-          if !actions[:written_points].include?(point_id) 
-            pnt = Point.find(point_id)
-            pnt.follow!(current_user, :follow => true, :explicit => false)
-            updated_points[point_id] = 1
-          end
-
-        end
-
+      to_add.each do |point_id| 
+        opinion.include(point_id, current_tenant)
+        point = Point.find(point_id)
       end
     end
-    actions[:included_points] = {}
-
-    actions[:written_points].each do |pnt_id|
-      pnt = Point.find( pnt_id )
-
-      pnt.user_id = opinion.user_id
-      pnt.published = 1
-      
-      pnt.opinion_id = opinion.id
-
-      updated_points[pnt_id] = 1
-
-      pnt.follow!(current_user, :follow => true, :explicit => false)
-
-
-      ActiveSupport::Notifications.instrument("point:published", 
-        :point => pnt,
-        :current_tenant => current_tenant,
-        :mail_options => mail_options
-      )
-
-    end
-    actions[:written_points] = []
-
-    actions[:deleted_points].each do |point_id, value|
-      current_user.inclusions.where(:point_id => point_id).each do |inc|
-        inc.destroy
+    # we need to update the point scores of these guys so that includers gets set properly
+    # We have to do it after the above transaction so that the changes to inclusions are saved
+    # into the database when the update score method is run. 
+    Point.transaction do
+      for point_id in to_delete + to_add
+        point = Point.find(point_id)
+        point.update_absolute_score
       end
-      updated_points[point_id] = 1
     end
-
-    actions[:deleted_points] = {}
-
-    point_listings = []
-    now = "#{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
-    actions[:viewed_points].to_set.each do |point_id, context|
-      point_listings.push("(#{opinion.proposal_id}, #{opinion.id}, #{point_id}, #{opinion.user_id}, #{current_tenant.id}, '#{now}', '#{now}')")
-    end
-    if point_listings.length > 0
-      qry = "INSERT INTO point_listings 
-              (proposal_id, opinion_id, point_id, user_id, account_id, created_at, updated_at) 
-              VALUES #{point_listings.join(',')}
-              ON DUPLICATE KEY UPDATE count=count+1"
-
-      ActiveRecord::Base.connection.execute qry
-    end
-
-    actions[:viewed_points] = []
-
-
-    return updated_points
   end
 
   def alert_new_published_opinion ( proposal, opinion )

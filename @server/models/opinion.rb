@@ -144,6 +144,7 @@ class Opinion < ActiveRecord::Base
     # First record everything we're dirtying and remapping
     dirty_key("/opinion/#{id}")
     remap_key("/opinion/#{opinion.id}", "/opinion/#{id}")
+    dirty_key("/proposal/#{opinion.proposal_id}")
     opinion.points.each {|p| dirty_key("/point/#{p.id}")}
 
     # Change the absorbed's everythings to point at this opinion

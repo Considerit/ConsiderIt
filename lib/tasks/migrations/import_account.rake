@@ -20,7 +20,6 @@ namespace :import do
           ['points', 'account_id'],
           ['opinions', 'account_id'],
           ['comments', 'account_id'],
-          ['activities', 'account_id'],
           ['assessments', 'account_id'],
           ['claims', 'account_id'],
           ['follows', 'account_id'],
@@ -38,15 +37,12 @@ namespace :import do
           ['points', 'user_id'],
           ['opinions', 'user_id'],
           ['comments', 'user_id'],
-          ['activities', 'user_id'],
           ['assessments', 'user_id'],
           ['follows', 'user_id'],
           ['inclusions', 'user_id'],
           ['moderations', 'user_id'],
           ['point_listings', 'user_id'],
           ['requests', 'user_id'],
-          ['activities', ['action_id', "action_type='User'"]],    
-          ['thanks', 'user_id'],
           ['claims', 'creator'],
           ['claims', 'approver']
         ]
@@ -58,14 +54,12 @@ namespace :import do
           ['opinions', 'proposal_id'],
           ['inclusions', 'proposal_id'],
           ['point_listings', 'proposal_id'],
-          ['activities', ['action_id', "action_type='Proposal'"]]          
         ]
       }],      
       ['points', {
         :max_id => Point.last.id + 1000,
         :fks => [
           ['comments', ['commentable_id', "commentable_type='Point'"]],
-          ['activities', ['action_id', "action_type='Point'"]],
           ['assessments', ['assessable_id', "assessable_type='Point'"]],
           ['follows', ['followable_id', "followable_type='Point'"]],
           ['inclusions', 'point_id'],
@@ -78,7 +72,6 @@ namespace :import do
         :fks => [
           ['points', 'opinion_id'],
           ['comments', ['commentable_id', "commentable_type='Opinion'"]],
-          ['activities', ['action_id', "action_type='Opinion'"]],
           ['follows', ['followable_id', "followable_type='Opinion'"]],
           ['inclusions', 'opinion_id'],
           ['point_listings', 'opinion_id']
@@ -87,19 +80,9 @@ namespace :import do
       ['comments', {
         :max_id => Comment.last.id + 1000,
         :fks => [
-          ['activities', ['action_id', "action_type='Comment'"]],
           ['follows', ['followable_id', "followable_type='Comment'"]],
           ['moderations', ['moderatable_id', "moderatable_type='Comment'"]],
-          ['thanks', ['thankable_id', "thankable_type='Comment'"]]
         ]
-      }],
-      ['thanks', {
-        :max_id => Thank.last.id + 1000,
-        :fks => []
-      }],      
-      ['activities', {
-        :max_id => Activity.last.id + 1000,
-        :fks => []
       }],
       ['assessments', {
         :max_id => Assessable::Assessment.last.id + 1000,

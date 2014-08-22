@@ -600,6 +600,7 @@ Slider = ReactiveComponent
 
     # Update the slider position when the server gets back to us
     your_opinion = @data(@data('root').your_opinion_key)
+
     if slider.stance != your_opinion.stance and !slider.is_moving
       slider.stance = your_opinion.stance
       slider.stance_segment = your_opinion.stance_segment
@@ -1862,8 +1863,8 @@ fetch 'histogram',
 fetch 'slider',
   has_moved : false
   is_moving : false
-  stance : 0
-  stance_segment : getStanceSegment 0
+  stance : -1
+  stance_segment : -1
 
 fetch 'decisionboard',
   sticky : false

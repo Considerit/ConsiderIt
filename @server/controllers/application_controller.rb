@@ -250,7 +250,7 @@ private
     proposals.concat(your_opinions.map{|o| Opinion.find(key_id(o)).proposal})
 
     # Add these proposals into it
-    response.concat(proposals.map{|p| p.proposal_data(current_user)})
+    # response.concat(proposals.map{|p| p.proposal_data(current_user)})
     return response
   end
 

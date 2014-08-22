@@ -27,15 +27,27 @@ def jsonify_objects(objects, name, reference_names=[], delete_names=[], parse_na
 end
 
 def key_id(object_or_key, session=nil)
-  puts("key_id called with #{object_or_key} and sess? #{session!=nil}")
+  # puts("Key_id called for #{object_or_key}")
+
   # Make it into a key
   key = object_or_key.is_a?(Hash) ? object_or_key['key'] : object_or_key
 
-  # Translate from '/new/'
-  key = session[:new_keys][key] if session and key.match('/new/')
-
+  # # Translate from '/new/', and similar things
+  # if session and session[:remapped_keys] and session[:remapped_keys][key]
+  #   key = session[:remapped_keys][key]
+  # end
+  
   # Grab the id out
-  key.split('/')[-1].to_i
+  result = key.split('/')[-1].to_i
+  # puts("Returning id #{result}")
+  result
+end
+
+def dirty_key(key)
+  Thread.current[:dirtied_keys].append(key)
+end
+def remap_key(old_key, new_key)
+#   Thread.current[:remapped_keys][old_key] = new_key
 end
 
 # Initialize the rails application
@@ -48,7 +60,7 @@ if "irb" == $0
   ActiveSupport::Cache::Store.logger = Logger.new(STDOUT)
 end
 
-# ActiveRecord::Base.logger.level = 1
+ActiveRecord::Base.logger.level = 1
 
 code_revision = `git log --pretty=format:%h -n1`.strip
 ENV['RAILS_CACHE_ID'] = code_revision

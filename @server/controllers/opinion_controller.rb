@@ -102,25 +102,27 @@ protected
   def include_points (opinion, points)
     curr_inclusions = Inclusion.where(:opinion => opinion.id)
 
-    to_delete = curr_inclusions.select {|i| not points.include? i.point_id}
-    to_add = points.select {|p_id| curr_inclusions.where(:point_id => p_id).count == 0}
+    inclusions_to_delete = curr_inclusions.select {|i| not points.include? i.point_id}
 
-    for p_id in to_delete + to_add
+    # The point id versions
+    points_to_delete = inclusions_to_delete.map{|i| i.point_id}
+    points_to_add    = points.select {|p_id| curr_inclusions.where(:point_id => p_id).count == 0}
+
+    for p_id in points_to_delete + points_to_add
       dirty_key("/point/#{p_id}")
     end
 
-    to_delete_ids = to_delete.map{|i| i.point_id}
-    pp("Deleting #{to_delete}, adding #{to_add}")
+    pp("Deleting #{points_to_delete}, adding #{points_to_add}")
 
     Inclusion.transaction do
       # Delete goners
-      to_delete.each do |i| 
+      inclusions_to_delete.each do |i|
         i.delete()
         i.point.follow! current_user, :follow => false, :explicit => false
       end
     
       # Add newbies
-      to_add.each do |point_id| 
+      points_to_add.each do |point_id|
         opinion.include(point_id)
         point = Point.find(point_id)
       end
@@ -129,7 +131,7 @@ protected
     # We have to do it after the above transaction so that the changes to inclusions are saved
     # into the database when the update score method is run. 
     Point.transaction do
-      for point_id in to_delete + to_add
+      for point_id in points_to_delete + points_to_add
         point = Point.find(point_id)
         point.update_absolute_score
       end

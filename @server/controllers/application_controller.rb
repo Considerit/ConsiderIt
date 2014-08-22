@@ -225,6 +225,34 @@ private
     # puts("Session remapped keys is #{session[:remapped_keys]}")
     # session[:remapped_keys] ||= {}
   end
+  def dirty_objects_json
+    # Right now this works for points, opinions, proposals, and the
+    # current opinion's proposal if the current opinion is dirty.
+    response = []
+    dirtied_keys = Thread.current[:dirtied_keys]
+
+    # Grab dirtied points and opinions
+    for type in [Point, Opinion]
+      response.concat(dirtied_keys.select{|k| k.match("/#{type.name.downcase}/")}\
+                       .map {|k| type.find(key_id(k)).as_json })
+    end
+
+    # Grab dirtied proposals
+    proposals = dirtied_keys.select{|k| k.match("/proposal/")} \
+                .map {|k| Proposal.find(key_id(k)).proposal}
+
+    # Grab dirtied your_opinion proposals
+    opinions = dirtied_keys.select{|k| k.match("/opinion/")}
+    your_opinions = opinions.select{|k| Opinion.find(key_id(k)).user_id == current_user.id}
+    proposals.concat(your_opinions.map{|o| Opinion.find(key_id(o)).proposal})
+
+    # Add these proposals into it
+    response.concat(proposals.map{|p| p.proposal_data(current_tenant,
+                                                      current_user,
+                                                      session)})
+    return response
+  end
+
   def ensure_stub_user
     puts("In before... is there a current user? #{current_user}")
     if not current_user
@@ -244,7 +272,6 @@ private
       raise 'Error making stub account. Yikes!'
     end
   end
-
 
   def store_location(path)
     session[:return_to] = path

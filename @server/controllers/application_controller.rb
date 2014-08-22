@@ -217,7 +217,7 @@ private
 
   def init_thread_globals
     # Make things to remember changes
-    Thread.current[:dirtied_keys] = []
+    Thread.current[:dirtied_keys] = {}
 
     Thread.current[:tenant] = current_tenant
 
@@ -232,7 +232,7 @@ private
     # Right now this works for points, opinions, proposals, and the
     # current opinion's proposal if the current opinion is dirty.
     response = []
-    dirtied_keys = Thread.current[:dirtied_keys]
+    dirtied_keys = Thread.current[:dirtied_keys].keys
 
     # Grab dirtied points and opinions
     for type in [Point, Opinion]

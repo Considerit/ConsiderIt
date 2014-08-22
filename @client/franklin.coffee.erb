@@ -1231,27 +1231,40 @@ EditPoint = ReactiveComponent
     $form = $(@getDOMNode())
     root = @data('root')
 
-    your_opinion = @data(root.your_opinion_key)
-    current_user = @data('/current_user').user
-    point =
-      key : '/new/point'
-      nutshell : $form.find('#nutshell').val()
-      text : $form.find('#text').val()
-      is_pro : @props.valence == 'pros'
-      user : current_user
-      comment_count : 0 
-      includers : [current_user]
-      proposal : @data(root.current_proposal).key
-      hide_name : $form.find("sign_name-#{@props.valence}").val()
-    save(point)
+    nutshell = $form.find('#nutshell').val()
+    text = $form.find('#text').val()
+    hide_name = $form.find("sign_name-#{@props.valence}").val()
 
-    @local.edit_mode = false
-    save(@local)
+    if !@props.fresh
+      # If we're updating an existing point, we just have to update 
+      # some of the fields from the form
+      point = @data()
+      point.nutshell = nutshell
+      point.text = text
+      point.hide_name = hide_name
+    else 
+      current_user = @data('/current_user').user
+      point =
+        key : '/new/point'
+        is_pro : @props.valence == 'pros'
+        user : current_user
+        comment_count : 0 
+        includers : [current_user]
+        proposal : @data(root.current_proposal).key
+        nutshell : nutshell
+        text : text
+        hide_name : hide_name
+
+    save point
+
+    @done()
 
     # This is a kludge cause activerest sucks for pre-rendering
     # changes before the server returns them
-    your_opinion.point_inclusions.push(point)
+    @data(root.your_opinion_key).point_inclusions.push(point.key)
     re_render([root.your_opinion_key])
+
+  handleAddPointCancel : (ev) -> @done()
 
   render : ->
     @local = @data @local_key,

@@ -121,7 +121,7 @@ protected
     
       # Add newbies
       to_add.each do |point_id| 
-        opinion.include(point_id, current_tenant)
+        opinion.include(point_id)
         point = Point.find(point_id)
       end
     end

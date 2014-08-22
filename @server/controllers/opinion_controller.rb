@@ -45,7 +45,7 @@ class OpinionController < ApplicationController
       incs = []
     end
     incs = incs.map! {|p| key_id(p, session)}
-    include_points(opinion, incs)
+    opinion.update_inclusions incs
     updates['point_inclusions'] = JSON.dump(incs)
 
     # Grab the proposal
@@ -59,11 +59,6 @@ class OpinionController < ApplicationController
     # Update this opinion
     opinion.update_attributes ActionController::Parameters.new(updates).permit!
     opinion.save
-
-    # Follow all the points user included
-    for p in opinion.inclusions.map{|i| i.point}
-      p.follow!(current_user, :follow => true, :explicit => false)
-    end
 
     # Publish all the user's newly-written points too
     if opinion.published
@@ -80,8 +75,6 @@ class OpinionController < ApplicationController
       end
     end
     
-    opinion.recache
-
     # Need to add following in somewhere else
     #proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
@@ -99,43 +92,6 @@ class OpinionController < ApplicationController
 
 protected
 
-  def include_points (opinion, points)
-    curr_inclusions = Inclusion.where(:opinion => opinion.id)
-
-    inclusions_to_delete = curr_inclusions.select {|i| not points.include? i.point_id}
-
-    # The point id versions
-    points_to_delete = inclusions_to_delete.map{|i| i.point_id}
-    points_to_add    = points.select {|p_id| curr_inclusions.where(:point_id => p_id).count == 0}
-
-    for p_id in points_to_delete + points_to_add
-      dirty_key("/point/#{p_id}")
-    end
-
-    pp("Deleting #{points_to_delete}, adding #{points_to_add}")
-
-    Inclusion.transaction do
-      # Delete goners
-      inclusions_to_delete.each do |i|
-        i.destroy()
-        i.point.follow! current_user, :follow => false, :explicit => false
-      end
-    
-      # Add newbies
-      points_to_add.each do |point_id|
-        opinion.include(point_id)
-      end
-    end
-    # we need to update the point scores of these guys so that includers gets set properly
-    # We have to do it after the above transaction so that the changes to inclusions are saved
-    # into the database when the update score method is run. 
-    Point.transaction do
-      for point_id in points_to_delete + points_to_add
-        point = Point.find(point_id)
-        point.update_absolute_score
-      end
-    end
-  end
 
   def alert_new_published_opinion ( proposal, opinion )
 

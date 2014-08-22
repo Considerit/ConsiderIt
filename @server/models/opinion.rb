@@ -37,7 +37,7 @@ class Opinion < ActiveRecord::Base
     result
   end
 
-  def self.get_or_make(proposal, user, tenant)
+  def self.get_or_make(proposal, user)
     # Each (user,proposal) should have only one opinion.
 
     if not user
@@ -57,7 +57,7 @@ class Opinion < ActiveRecord::Base
       your_opinion = Opinion.create(:proposal_id => proposal.id,
                                     :user => user ? user : nil,
                                     :long_id => proposal.long_id,
-                                    :account_id => tenant.id,
+                                    :account_id => Thread.current[:tenant].id,
                                     :published => false,
                                     :stance => 0,
                                     :point_inclusions => '[]',
@@ -67,7 +67,7 @@ class Opinion < ActiveRecord::Base
     your_opinion
   end
     
-  def include(point, tenant)
+  def include(point)
     point_id = (point.is_a?(Point) && point.id) || point
     dirty_key("/point/#{point_id}")
     dirty_key("/opinion/#{self.id}")
@@ -81,7 +81,7 @@ class Opinion < ActiveRecord::Base
       :user_id => self.user_id,
       :opinion_id => self.id,
       :proposal_id => self.proposal_id,
-      :account_id => tenant.id
+      :account_id => Thread.current[:tenant].id
     }
           
     Inclusion.create! ActionController::Parameters.new(attrs).permit!

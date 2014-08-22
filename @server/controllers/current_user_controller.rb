@@ -68,9 +68,7 @@ class CurrentUserController < DeviseController
     fields = ['avatar', 'bio', 'name', 'hide_name']
     new_params = params.select{|k,v| fields.include? k}
 
-    third_party_token = session[:access_token]
     password_reset_token = params[:reset_password_token]
-    session.delete(:access_token)
 
     # 0. Try logging out
     puts("Current user is #{current_user} and logged in? #{current_user and current_user.logged_in?}")
@@ -89,7 +87,7 @@ class CurrentUserController < DeviseController
       # 1. Try logging in
       # 
       # We can log in with three methods
-      #  • A third-party account, like facebook or google or twitter
+      #  • A third-party account, like facebook or google or twitter (handled below in third_party_callback)
       #  • A password reset token
       #  • Or the email address that has been passed into this method
       if not current_user or not current_user.logged_in?
@@ -106,11 +104,11 @@ class CurrentUserController < DeviseController
         # method logs the user in.  But this should be tested.
 
         # Sign in by third party
-        elsif third_party_token
-          puts("Signing in by third party")
-          user = User.find_by_third_party_token(third_party_token)
-          replace_user(current_user, user)
-          sign_in :user, user
+        # elsif third_party_token
+        #   puts("Signing in by third party")
+        #   user = User.find_by_third_party_token(third_party_token)
+        #   replace_user(current_user, user)
+        #   sign_in :user, user
 
         # Sign in by email and password
         elsif (params[:password] and params[:password].length > 0\
@@ -151,6 +149,7 @@ class CurrentUserController < DeviseController
       # Update their name, bio, photo, and anonymity.
       permitted = ActionController::Parameters.new(new_params).permit!
       puts("Params is #{new_params}, permitted version #{permitted}")
+
       if current_user.update_attributes(permitted) # Why is this bullshit so complicated?
         puts("Updated those damn params.  Now name is #{current_user.name}")
         if current_user.save
@@ -159,7 +158,7 @@ class CurrentUserController < DeviseController
           puts("Save goddam failed")
         end
         if params.has_key? :avatar
-          dirty_avatar_cache   
+          dirty_avatar_cache
         end
       else
         puts("No updating of bio and shit happened #{current_user.bio}")
@@ -207,15 +206,15 @@ class CurrentUserController < DeviseController
       # render :json => [form_authenticity_token]
       # return
 
-      # Third-party auth can give us some custom user attributes,
-      # like "google_uid" and "facebook_uid".  Now we will merge
-      # those into our database for this user.
-      if third_party_token
-        user_params  = current_user.update_attributes(
-          User.params_from_third_party_token(third_party_token))
-        current_user.save
-        avatar_dirty = third_party_token.has_key?(:avatar_url) || params.has_key?(:avatar) 
-      end
+      # # Third-party auth can give us some custom user attributes,
+      # # like "google_uid" and "facebook_uid".  Now we will merge
+      # # those into our database for this user.
+      # if third_party_token
+      #   user_params  = current_user.update_attributes(
+      #     User.params_from_third_party_token(third_party_token))
+      #   current_user.save
+      #   avatar_dirty = third_party_token.has_key?(:avatar_url) || params.has_key?(:avatar) 
+      # end
     end
 
     # Register the account
@@ -236,9 +235,7 @@ class CurrentUserController < DeviseController
         end
 
         # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
-        if avatar_dirty
-          dirty_avatar_cache
-        end
+
       end
     end
     
@@ -340,26 +337,26 @@ class CurrentUserController < DeviseController
     access_token = env["omniauth.auth"]
     user = User.find_by_third_party_token access_token
 
-    # We currently assume that if a user object has been created, then
-    # the registration is complete -- the user has finished the pledge
-    # and everything.
-    if user
+    # If a registered user is associated with this third party, just log them in
+    if user && user.registration_complete
       # Then the user registration is complete.
-      sign_in user, :event => :authentication
-      current_user = to_json_current_user
+      replace_user current_user, user
+      sign_in :user, user
     else
       # Then the user still needs to complete the pledge.  Let's just
       # get some of the user's current data (we have them temporarily
       # referenced via the access_token)
       session[:access_token] = access_token
-      current_user = User.params_from_third_party_token(access_token)
+      current_user.update_from_third_party_data(access_token)
+      dirty_avatar_cache
     end
 
     render :inline =>
       "<script type=\"text/javascript\">" +
-      "  window.open_id_params = #{current_user.to_json};  " +
+      "  window.open_id_params = #{to_json_current_user.to_json};  " +
       "</script>"
   end
+
 
   # when something goes wrong in an oauth transation, this method gets called
   def failure

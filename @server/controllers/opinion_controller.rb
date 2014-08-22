@@ -10,26 +10,10 @@ class OpinionController < ApplicationController
     authorize! :read, opinion
     render :json => opinion.as_json
   end
-
-  def create
-    raise "This shouldn't be called anymore"
-
-    opinion = Opinion.create params[:opinion].permit!
-    authorize! :create, opinion
-
-    opinion[:user_id] = current_user ? current_user.id : nil
-    opinion[:account_id] = current_tenant.id
-    update_or_create opinion, params
-  end
   
   def update
     opinion = Opinion.find key_id(params)
     authorize! :update, opinion
-
-    update_or_create opinion, params
-  end
-
-  def update_or_create(opinion, params)
 
     fields = ['proposal', 'explanation', 'stance', 'published', 'point_inclusions']
     updates = params.select{|k,v| fields.include? k}

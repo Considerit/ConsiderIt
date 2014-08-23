@@ -13,10 +13,6 @@ class UserController < ApplicationController
     end
     
     user = User.find(params[:id])
-    render :json => {
-             'key' => "/user/#{user.id}",
-             'name' => user.name,
-             'avatar_file_name' => user.avatar_file_name
-           }
+    render :json => user.as_json
   end
 end

@@ -1545,6 +1545,7 @@ Auth = ReactiveComponent
 
     name_input_field     = input_box('name', 'first and last name')
     email_input_field    = input_box('email', 'email@address', 'email')
+
     password_input_field =
       input_box('password',
                  if root.auth_mode == 'login' then "password" else "new password",
@@ -1686,7 +1687,11 @@ Auth = ReactiveComponent
                 R.td className: 'label_cell',
                   R.label htmlFor: 'user_email', 'I login as:'
                 R.td className: 'field_cell', 
+                  if !Modernizr.input.placeholder
+                    R.label htmlFor: 'user_email', 'Email:'
                   email_input_field,
+                  if !Modernizr.input.placeholder
+                    R.label htmlFor: 'user_password', 'Password:'
                   password_input_field
 
             # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 

@@ -1695,12 +1695,13 @@ Auth = ReactiveComponent
               R.td className: 'field_cell',
                 # hack for submitting file data in ActiveREST for now
                 # we'll just submit the file form after user is signed in
-                R.form id: 'user_avatar_form',action: Routes.current_user_path(), 
+                R.form id: 'user_avatar_form', action: Routes.current_user_path(), 
 
                   R.div className: 'avatar_preview_enclosure',
                     R.img id: 'avatar_preview', src: if current_user.image_url then current_user.image_url else null #todo: make sure that if user overrides image_url, that the new image is used
                 
                   R.input id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
+                    @submit_avatar_form = true
                     input = $('#user_avatar')[0]
                     if input.files && input.files[0]
                       reader = new FileReader()
@@ -1708,7 +1709,6 @@ Auth = ReactiveComponent
                         $("#avatar_preview").attr 'src', e.target.result
                       reader.readAsDataURL input.files[0]
                       #current_user.avatar = input.files[0]
-                      @submit_avatar_form = true
                     else
                       $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
                       

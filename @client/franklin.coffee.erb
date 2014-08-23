@@ -1479,6 +1479,10 @@ Auth = ReactiveComponent
           current_user.errors = if current_user_data.errors then current_user_data.errors else []
           current_user.csrf = current_user_data.csrf
           save(current_user)
+          fetchAvatars()
+    else
+      fetchAvatars()
+
 
   sendPasswordReminder : -> 
     email = @data('/current_user').email
@@ -1879,8 +1883,14 @@ fetch('/current_user')
 
 ##
 # load users' pictures
-$.get Routes.get_avatars_path(), (data) -> $('head').append data
 
+fetchAvatars = ->
+  $.get Routes.get_avatars_path(), (data) -> 
+    if $('#b64-avatars').length > 0
+      $('#b64-avatars').remove()
+    $('head').append data
+
+fetchAvatars()
 
 ##
 # Backbone routing

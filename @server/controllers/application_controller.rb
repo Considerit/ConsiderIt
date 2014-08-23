@@ -228,6 +228,7 @@ private
     # puts("Session remapped keys is #{session[:remapped_keys]}")
     # session[:remapped_keys] ||= {}
   end
+
   def affected_objects
     # Right now this works for points, opinions, proposals, and the
     # current opinion's proposal if the current opinion is dirty.
@@ -236,13 +237,14 @@ private
 
     # Grab dirtied points and opinions
     for type in [Point, Opinion]
-      response.concat(dirtied_keys.select{|k| k.match("/#{type.name.downcase}/")}\
-                       .map {|k| type.find(key_id(k)).as_json })
+      response.concat(dirtied_keys.select{|k| k.match("/#{type.name.downcase}/")} \
+            .map {|k| type.find(key_id(k)).as_json })
     end
 
     # Grab dirtied proposals
     response.concat(dirtied_keys.select{|k| k.match("/proposal/")} \
-                     .map {|k| Proposal.find(key_id(k)).proposal_data(current_user)})
+            .map {|k| Proposal.find(key_id(k)).proposal_data(current_user)})
+
     return response
   end
 

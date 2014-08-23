@@ -19,7 +19,7 @@ class CurrentUserController < DeviseController
 
   # handles auth (login, new accounts, and login via reset password token) and updating user info
   def update
-    errors = {:login => [], :register => []}
+    errors = {:login => [], :register => [], :password_reminder => []}
 
     puts("")
     puts("")
@@ -80,10 +80,15 @@ class CurrentUserController < DeviseController
           puts("Signing in by password reset")
           params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
           old_user = current_user
-          User.reset_password_by_token params
-          replace_user(old_user, current_user)
-        # NOTE: Mike assumes that this "reset_password_by_token"
-        # method logs the user in.  But this should be tested.
+          user = User.reset_password_by_token params
+
+          if !user.errors || user.errors.count == 0
+            replace_user(current_user, user)
+            sign_in :user, user
+          else
+            errors[:password_reminder].append 'Invalid verification token!'
+          end
+
 
         # Sign in by third party
         # elsif third_party_token
@@ -359,6 +364,7 @@ class CurrentUserController < DeviseController
     devise_parameter_sanitizer.for(:account_update) { |u| u.permit! }    
   end
 
+  # this won't be needed after old dash is replaced
   def file_uploaded
     params[:remotipart_submitted].present? && params[:remotipart_submitted] == "true"
   end

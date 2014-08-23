@@ -1433,23 +1433,25 @@ Auth = ReactiveComponent
     root = @data('root')
     new ThirdPartyAuthHandler
       provider : provider
-      callback : (new_current_user) => 
+      callback : (new_data) => 
         # Yay we got a new current_user object!  But this hasn't gone
         # through the normal arest channel, so we gotta save it in
         # sneakily with updateCache()
-        arest.updateCache(new_current_user)
+        arest.updateCache(new_data)
 
         # We know that the user has authenticated, but we don't know
         # whether they've completed OUR registration process including
         # the pledge.  The server tells us this via the existence of a
         # `user' object in current_user.
-        if new_current_user.user
+
+        current_user = @data('/current_user')
+        if current_user.logged_in
           # We are logged in!  The user has completed registration.
           # Let's transition to results.
           root.page_name = 'results'
           root.auth_mode = null
-          if new_current_user.csrf
-            arest.csrf(new_current_user.csrf)
+          if current_user.csrf
+            arest.csrf(current_user.csrf)
 
           # @publishOpinionsAfterAuth()
           save(root)

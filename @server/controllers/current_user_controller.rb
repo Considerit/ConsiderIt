@@ -89,14 +89,6 @@ class CurrentUserController < DeviseController
             errors[:password_reminder].append 'Invalid verification token!'
           end
 
-
-        # Sign in by third party
-        # elsif third_party_token
-        #   puts("Signing in by third party")
-        #   user = User.find_by_third_party_token(third_party_token)
-        #   replace_user(current_user, user)
-        #   sign_in :user, user
-
         # Sign in by email and password
         elsif (params[:password] and params[:password].length > 0\
                and params[:email] and params[:email].length > 0)
@@ -271,9 +263,12 @@ class CurrentUserController < DeviseController
       dirty_avatar_cache
     end
 
+    response = [current_user.current_user_hash(form_authenticity_token)]
+    response.concat(affected_objects())
+
     render :inline =>
       "<script type=\"text/javascript\">" +
-      "  window.current_user_hash = #{current_user.current_user_hash(form_authenticity_token).to_json};  " +
+      "  window.current_user_hash = #{response.to_json};  " +
       "</script>"
   end
 

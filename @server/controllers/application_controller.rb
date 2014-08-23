@@ -236,8 +236,8 @@ private
 
     dirtied_keys = Thread.current[:dirtied_keys].keys
 
-    # Grab dirtied points and opinions
-    for type in [Point, Opinion]
+    # Grab dirtied points, opinions, and users
+    for type in [Point, Opinion, User]
       response.concat(dirtied_keys.select{|k| k.match("/#{type.name.downcase}/")} \
             .map {|k| type.find(key_id(k)).as_json })
     end
@@ -247,7 +247,8 @@ private
             .map {|k| Proposal.find(key_id(k)).proposal_data(current_user)})
 
     # Output dirty current_user
-    if Thread.current[:dirtied_keys].has_key? '/current_user'
+    if (Thread.current[:dirtied_keys].has_key? '/current_user' \
+        or Thread.current[:dirtied_keys].has_key? "/user/#{current_user.id}")
       response.append current_user.current_user_hash(form_authenticity_token) 
     end
     

@@ -206,9 +206,7 @@ class Point < ActiveRecord::Base
     end
 
     Account.find_each do |accnt|
-
-      accnt.proposals.active.select(:id).each do |proposal|
-
+      accnt.proposals.select(:id).each do |proposal|
         
         # Point ranking across the metrics is done separately for pros and cons,
         # fixed on a particular Proposal
@@ -220,13 +218,11 @@ class Point < ActiveRecord::Base
         point_groups.each do |group|        
           relative_scores = {}
 
-          Point.transaction do
-            group.each do |pnt|
-              pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
-              pnt.unique_listings = num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
-              pnt.recache(true)
-              relative_scores[pnt.id] = []
-            end
+          group.each do |pnt|
+            pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
+            pnt.unique_listings = num_listings_per_point.has_key?(pnt.id) ? num_listings_per_point[pnt.id] : 0
+            pnt.recache(true)
+            relative_scores[pnt.id] = []
           end
           
           [:appeal.to_s, :attention.to_s, :persuasiveness.to_s].each do |metric|
@@ -246,11 +242,9 @@ class Point < ActiveRecord::Base
             end
           end
           
-          Point.transaction do
-            group.each do |pnt|
-              pnt.score = relative_scores[pnt.id].inject(:+) / relative_scores[pnt.id].length
-              pnt.save(:validate => false)
-            end
+          group.each do |pnt|
+            pnt.score = relative_scores[pnt.id].inject(:+) / relative_scores[pnt.id].length
+            pnt.save(:validate => false)
           end
                               
         end

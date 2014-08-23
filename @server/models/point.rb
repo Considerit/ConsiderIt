@@ -119,6 +119,17 @@ class Point < ActiveRecord::Base
   #   end
   # end
 
+  def publish()
+    self.published = true
+    self.save
+
+    ActiveSupport::Notifications.instrument("point:published", 
+      :point => self,
+      :current_tenant => Thread.current[:tenant],
+      :mail_options => Thread.current[:mail_options]
+    )
+  end
+
   def seen_by(user)
     # unimplemented. It was:
     # session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen

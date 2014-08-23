@@ -67,6 +67,33 @@ class Opinion < ActiveRecord::Base
     your_opinion
   end
 
+  def publish()
+    already_published = self.published
+    self.published = true
+    self.save
+
+    # When we publish an opinion, all the points the user wrote on
+    # this opinion/proposal become published too
+    Point.where(:user_id => self.user_id,
+                :proposal_id => self.proposal_id).each {|p| p.publish()}
+
+    if not already_published
+      ActiveSupport::Notifications.instrument("published_new_opinion", 
+                                              :opinion => self,
+                                              :current_tenant => Thread.current[:tenant],
+                                              :mail_options => Thread.current[:mail_options])
+      # send out confirmation email if user is not yet confirmed
+      # if !current_user.confirmed? && current_user.opinions.published.count == 1
+      #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
+      #     :user => current_user,
+      #     :proposal => proposal,
+      #     :current_tenant => current_tenant,
+      #     :mail_options => mail_options
+      #   )
+      # end
+    end
+  end
+
   def update_inclusions (points)
     points_to_exclude = inclusions.select {|i| not points.include? i.point_id}
 
@@ -87,6 +114,7 @@ class Opinion < ActiveRecord::Base
     end
 
   end
+
 
   def include(point)
     if point.is_a? Point
@@ -145,17 +173,48 @@ class Opinion < ActiveRecord::Base
     dirty_key("/opinion/#{id}")
     remap_key("/opinion/#{opinion.id}", "/opinion/#{id}")
     dirty_key("/proposal/#{opinion.proposal_id}")
-    opinion.points.each {|p| dirty_key("/point/#{p.id}")}
+
+    points = opinion.points
+    points.each {|p| dirty_key("/point/#{p.id}")}
 
     # Change the absorbed's everythings to point at this opinion
     opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
-    opinion.points.update_all(        {:user_id => user_id, :opinion_id => id})
-    opinion.inclusions.update_all(    {:user_id => user_id, :opinion_id => id})
+    opinion.points.update_all(        {:user_id => user_id, :opinion_id => id}) # We don't use this field anymore
     opinion.comments.update_all(      {:commentable_id => id})
-    self.published = self.published or opinion.published
-    self.recache()
+
+    # Union the included points
+    all_points = (     self.inclusions.map{|i| i.point.id} \
+                  + opinion.inclusions.map{|i| i.point.id}).uniq
+    self.update_inclusions(all_points) # And this will recache
+
+    # Copy the stance
+    self.stance = opinion.stance
+
+    # If something was published, ensure everything is published
+    self.publish() if self.published or opinion.published
+
     opinion.destroy()
   end
+
+  def change_user(new_user)
+    puts("Changing user for #{opinion.id} to #{new_user}")
+
+    # First record everything we're dirtying and remapping
+    dirty_key("/opinion/#{id}")
+    dirty_key("/proposal/#{opinion.proposal_id}")
+    self.points.each {|p| dirty_key("/point/#{p.id}")}
+
+    # Change the opinion's everythings to point at the new user
+    self.point_listings.update_all({:user_id => user_id})
+    self.points.update_all(        {:user_id => user_id}) # We should remove opinion.points
+    self.inclusions.update_all(    {:user_id => user_id}) # We should remove inclusions.user_id field
+    self.recache()                                        # We don't use either of those fields anymore
+
+    # Update each point.includers field
+    self.points.each {|p| p.update_absolute_score}
+
+    opinion.destroy()
+  end    
 
   def recache
     self.point_inclusions = inclusions.select(:point_id).map {|x| x.point_id }.uniq.compact.to_s

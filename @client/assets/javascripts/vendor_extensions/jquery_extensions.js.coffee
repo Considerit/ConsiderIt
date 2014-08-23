@@ -37,6 +37,7 @@ do ($, window, document) ->
 
       if @options.placeholder
         @options.placeholder.style['visibility'] = 'hidden'
+        @options.placeholder.style['display'] = 'none'
 
       @resize()
       @update()

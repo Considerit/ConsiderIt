@@ -233,6 +233,7 @@ private
     # Right now this works for points, opinions, proposals, and the
     # current opinion's proposal if the current opinion is dirty.
     response = []
+
     dirtied_keys = Thread.current[:dirtied_keys].keys
 
     # Grab dirtied points and opinions
@@ -245,6 +246,11 @@ private
     response.concat(dirtied_keys.select{|k| k.match("/proposal/")} \
             .map {|k| Proposal.find(key_id(k)).proposal_data(current_user)})
 
+    # Output dirty current_user
+    if Thread.current[:dirtied_keys].has_key? '/current_user'
+      response.append current_user.current_user_hash(form_authenticity_token) 
+    end
+    
     return response
   end
 

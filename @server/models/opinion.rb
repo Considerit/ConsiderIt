@@ -4,7 +4,6 @@ class Opinion < ActiveRecord::Base
   has_many :inclusions
   has_many :points
   has_many :point_listings
-  has_many :comments, :as => :commentable, :dependent => :destroy
   
   # has_paper_trail
 
@@ -101,7 +100,7 @@ class Opinion < ActiveRecord::Base
     points_to_exclude = points_to_exclude.map{|i| i.point_id}
     points_to_add    = points.select {|p_id| inclusions.where(:point_id => p_id).count == 0}
 
-    puts("Deleting #{points_to_exclude}, adding #{points_to_add}")
+    puts("Excluding points #{points_to_exclude}, including points #{points_to_add}")
 
     # Delete goners
     points_to_exclude.each do |point_id|
@@ -171,7 +170,7 @@ class Opinion < ActiveRecord::Base
     # First record everything we're dirtying and remapping
     dirty_key("/opinion/#{id}")
     remap_key("/opinion/#{opinion.id}", "/opinion/#{id}")
-    dirty_key("/proposal/#{opinion.proposal_id}")
+    dirty_key("/proposal/#{opinion.proposal_id}")    
 
     points = opinion.points
     points.each {|p| dirty_key("/point/#{p.id}")}
@@ -179,16 +178,18 @@ class Opinion < ActiveRecord::Base
     # Change the absorbed's everythings to point at this opinion
     opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
     opinion.points.update_all(        {:user_id => user_id, :opinion_id => id}) # We don't use this field anymore
-    opinion.comments.update_all(      {:commentable_id => id})
 
     # Union the included points
     all_points = (     self.inclusions.map{|i| i.point.id} \
                   + opinion.inclusions.map{|i| i.point.id}).uniq
     self.update_inclusions(all_points) # And this will recache
 
-    # Copy the stance
-    self.stance = opinion.stance
-
+    # Copy the stance of the opinion if the opinion is newer
+    if opinion.updated_at > updated_at
+      self.stance = opinion.stance
+      self.stance_segment = opinion.stance_segment
+    end
+    
     # If something was published, ensure everything is published
     self.publish() if self.published or opinion.published
 
@@ -196,23 +197,33 @@ class Opinion < ActiveRecord::Base
   end
 
   def change_user(new_user)
-    puts("Changing user for #{opinion.id} to #{new_user}")
+    new_user_id = new_user.id
+    puts("Changing user for Opinion #{id} to #{new_user_id}")
 
     # First record everything we're dirtying and remapping
     dirty_key("/opinion/#{id}")
-    dirty_key("/proposal/#{opinion.proposal_id}")
+    dirty_key("/proposal/#{proposal_id}")
     self.points.each {|p| dirty_key("/point/#{p.id}")}
 
     # Change the opinion's everythings to point at the new user
-    self.point_listings.update_all({:user_id => user_id})
-    self.points.update_all(        {:user_id => user_id}) # We should remove opinion.points
-    self.inclusions.update_all(    {:user_id => user_id}) # We should remove inclusions.user_id field
-    self.recache()                                        # We don't use either of those fields anymore
+    self.point_listings.update_all({:user_id => new_user_id})
+    self.points.update_all(        {:user_id => new_user_id}) # We should remove opinion.points
+    self.inclusions.update_all(    {:user_id => new_user_id}) # We should remove inclusions.user_id field
+                                                              # We don't use either of those fields anymore
+    # inclusions.update_all could create duplicates, so make sure to remove them!
+    included_points = {}
+    self.inclusions.each do |i|
+      if included_points.has_key? i.point_id 
+        i.destroy
+      else
+        included_points[i.point_id] = 1
+      end
+    end
 
-    # Update each point.includers field
-    self.points.each {|p| p.update_absolute_score}
+    self.recache()                                        
 
-    opinion.destroy()
+    # Update the includers field for the points this user has included
+    self.inclusions.each {|i| i.point.recache}
   end    
 
   def recache

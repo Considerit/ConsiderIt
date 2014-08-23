@@ -364,6 +364,7 @@ class CurrentUserController < DeviseController
     devise_parameter_sanitizer.for(:account_update) { |u| u.permit! }    
   end
 
+  # this won't be needed after old dash is replaced
   def file_uploaded
     params[:remotipart_submitted].present? && params[:remotipart_submitted] == "true"
   end

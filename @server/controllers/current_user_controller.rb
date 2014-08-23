@@ -153,18 +153,19 @@ class CurrentUserController < DeviseController
       end
 
       # Update their email address.  First, check if they gave us a new address
-      if params[:email] and params[:email] != current_user.email
+      email = params[:email]
+      if email and email != current_user.email
         puts("Updating email from #{current_user.email} to #{params[:email]}")
         # And if it's not taken
-        if User.find_by_email(params[:email])
+        if User.find_by_email email
           errors[:register].append 'That email is not available.'
         # And that it's valid
-        elsif false # I don't know how to check an email address in rails, so punt!
+        elsif !email.include?('.') || !email.include?('@') # instead of a complicated regex, let's just check for @ and .
           errors[:register].append 'Bad email address'
         else
-          puts('XXX Need to figure out how to validate email address in here')
+          puts('XXX Need to figure out how to confirm email address in here')
           # Okay, here comes a new email address!
-          current_user.update_attributes({:email => params[:email]})
+          current_user.update_attributes({:email => email})
           if !current_user.save
             raise "Error saving this user's email"
           end

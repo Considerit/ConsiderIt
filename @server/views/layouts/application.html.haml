@@ -27,6 +27,19 @@
     /[if lte IE 8]
       = stylesheet_link_tag 'browser/ie'
 
+    :javascript
+      //http://stackoverflow.com/questions/7742781/why-javascript-only-works-after-opening-developer-tools-in-ie-once
+      if(!window.console) {
+        window.console={
+          log : function(){},
+          assert : function(){},
+          warn : function(){},
+          error : function(){},
+          time : function(){},
+          timeEnd : function(){}
+        }
+      }
+
     = javascript_include_tag 'javascripts/load_everything', debug: Rails.env.development?
 
 

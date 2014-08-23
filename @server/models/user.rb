@@ -83,6 +83,12 @@ class User < ActiveRecord::Base
     }
   end
 
+  def as_json(options={})
+    return { 'key' => "/user/#{id}",
+             'name' => name,
+             'avatar_file_name' => avatar_file_name }
+  end
+
   def logged_in?
     # Logged-in now means that the current user account is registered
     self.registration_complete

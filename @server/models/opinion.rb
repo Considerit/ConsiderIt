@@ -101,7 +101,7 @@ class Opinion < ActiveRecord::Base
     points_to_exclude = points_to_exclude.map{|i| i.point_id}
     points_to_add    = points.select {|p_id| inclusions.where(:point_id => p_id).count == 0}
 
-    pp("Deleting #{points_to_exclude}, adding #{points_to_add}")
+    puts("Deleting #{points_to_exclude}, adding #{points_to_add}")
 
     # Delete goners
     points_to_exclude.each do |point_id|
@@ -140,7 +140,6 @@ class Opinion < ActiveRecord::Base
       :account_id => Thread.current[:tenant].id
     }
     Inclusion.create! ActionController::Parameters.new(attrs).permit!
-
 
     point.follow! user, :follow => true, :explicit => false
     point.recache

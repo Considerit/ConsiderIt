@@ -15,7 +15,7 @@ class OpinionController < ApplicationController
     opinion = Opinion.find key_id(params)
     authorize! :update, opinion
 
-    fields = ['proposal', 'explanation', 'stance', 'published', 'point_inclusions']
+    fields = ['proposal', 'explanation', 'stance', 'point_inclusions']
     updates = params.select{|k,v| fields.include? k}
 
     # Convert proposal key to id
@@ -36,67 +36,25 @@ class OpinionController < ApplicationController
     proposal = Proposal.find(updates['proposal_id'])
     updates['long_id'] = proposal.long_id  # Remove this soon
     
-    # Record things for later
-    already_published = opinion.published
-    stance_changed = already_published && updates['stance'] != opinion.stance
-    
-    # Update this opinion
+    # Update the normal fields
     opinion.update_attributes ActionController::Parameters.new(updates).permit!
     opinion.save
 
-    # Publish all the user's newly-written points too
-    if opinion.published
-      Point.where(:user_id => current_user, :long_id => proposal.long_id,
-                  :published => false).each do |p|
-          p.published = true
-          p.save
-
-          ActiveSupport::Notifications.instrument("point:published", 
-            :point => p,
-            :current_tenant => current_tenant,
-            :mail_options => mail_options
-          )
-      end
+    # Update published
+    if params['published'] and not opinion.published
+      opinion.publish()  # This will also publish all the newly-written points
     end
-    
+
     # Need to add following in somewhere else
     #proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
     proposal.delay.update_metrics()
 
-    alert_new_published_opinion(proposal, opinion) unless already_published
-
     # Enable this next line if I make sure it's properly prepared and won't clobber cache
     #proposal[:key] = "/proposal/#{proposal.id}"
     
-    render :json => [opinion.as_json] + affected_objects()
+    dirty_key("/opinion/#{opinion.id}")
+    render :json => affected_objects()
 
   end
-
-
-protected
-
-
-  def alert_new_published_opinion ( proposal, opinion )
-
-    ActiveSupport::Notifications.instrument("published_new_opinion", 
-      :opinion => opinion,
-      :current_tenant => current_tenant,
-      :mail_options => mail_options
-    )
-
-    # send out confirmation email if user is not yet confirmed
-    # if !current_user.confirmed? && current_user.opinions.published.count == 1
-    #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
-    #     :user => current_user,
-    #     :proposal => proposal,
-    #     :current_tenant => current_tenant,
-    #     :mail_options => mail_options
-    #   )
-    # end
-
-  end
-      
-      
- 
 end

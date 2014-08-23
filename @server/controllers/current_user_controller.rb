@@ -14,26 +14,8 @@ class CurrentUserController < DeviseController
     make_stub_user if not current_user
     pp("After stubby, it\'s #{current_user}")
     
-    render :json => to_json_current_user
+    render :json => current_user_hash
   end  
-
-  def update2
-    puts("INIT! Current_user = #{current_user}")
-    user = User.find_by_lower_email('toomim@gmail.com')
-    if user and user.valid_password?(params[:password])
-      puts('Password is valid, here we go...merging first')
-      user.absorb(current_user)
-      puts("Now signing in #{user.id}. Going from #{current_user and current_user.id}.")
-      sign_in :user, user
-    end
-    
-    # if not current_user
-    #   make_stub_user()
-    # end
-
-    render :json => [form_authenticity_token]
-  end
-  
 
   # handles auth (login, new accounts, and login via reset password token) and updating user info
   def update
@@ -68,9 +50,7 @@ class CurrentUserController < DeviseController
     fields = ['avatar', 'bio', 'name', 'hide_name']
     new_params = params.select{|k,v| fields.include? k}
 
-    third_party_token = session[:access_token]
     password_reset_token = params[:reset_password_token]
-    session.delete(:access_token)
 
     # 0. Try logging out
     puts("Current user is #{current_user} and logged in? #{current_user and current_user.logged_in?}")
@@ -89,7 +69,7 @@ class CurrentUserController < DeviseController
       # 1. Try logging in
       # 
       # We can log in with three methods
-      #  • A third-party account, like facebook or google or twitter
+      #  • A third-party account, like facebook or google or twitter (handled below in update_via_third_party)
       #  • A password reset token
       #  • Or the email address that has been passed into this method
       if not current_user or not current_user.logged_in?
@@ -106,11 +86,11 @@ class CurrentUserController < DeviseController
         # method logs the user in.  But this should be tested.
 
         # Sign in by third party
-        elsif third_party_token
-          puts("Signing in by third party")
-          user = User.find_by_third_party_token(third_party_token)
-          replace_user(current_user, user)
-          sign_in :user, user
+        # elsif third_party_token
+        #   puts("Signing in by third party")
+        #   user = User.find_by_third_party_token(third_party_token)
+        #   replace_user(current_user, user)
+        #   sign_in :user, user
 
         # Sign in by email and password
         elsif (params[:password] and params[:password].length > 0\
@@ -151,6 +131,7 @@ class CurrentUserController < DeviseController
       # Update their name, bio, photo, and anonymity.
       permitted = ActionController::Parameters.new(new_params).permit!
       puts("Params is #{new_params}, permitted version #{permitted}")
+
       if current_user.update_attributes(permitted) # Why is this bullshit so complicated?
         puts("Updated those damn params.  Now name is #{current_user.name}")
         if current_user.save
@@ -159,7 +140,7 @@ class CurrentUserController < DeviseController
           puts("Save goddam failed")
         end
         if params.has_key? :avatar
-          dirty_avatar_cache   
+          dirty_avatar_cache
         end
       else
         puts("No updating of bio and shit happened #{current_user.bio}")
@@ -203,19 +184,6 @@ class CurrentUserController < DeviseController
           puts("Current user is now #{current_user.id}")
         end
       end
-
-      # render :json => [form_authenticity_token]
-      # return
-
-      # Third-party auth can give us some custom user attributes,
-      # like "google_uid" and "facebook_uid".  Now we will merge
-      # those into our database for this user.
-      if third_party_token
-        user_params  = current_user.update_attributes(
-          User.params_from_third_party_token(third_party_token))
-        current_user.save
-        avatar_dirty = third_party_token.has_key?(:avatar_url) || params.has_key?(:avatar) 
-      end
     end
 
     # Register the account
@@ -224,26 +192,23 @@ class CurrentUserController < DeviseController
       can_login = ((current_user.email and current_user.email.length > 0)\
                    or (current_user.twitter_uid or current_user.facebook_uid\
                        or current_user.google_uid))
-      signed_pledge = true
+      signed_pledge = params[:signed_pledge]
 
       puts('XXX Need to check password or third_party login')
-      puts('XXX Need to check the pledge')
 
-      if has_name and can_login
+      if has_name and can_login and signed_pledge
         current_user.registration_complete = true
         if !current_user.save
           raise "Error registering this uesr"
         end
-
         # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
-        if avatar_dirty
-          dirty_avatar_cache
-        end
+      elsif !signed_pledge
+        errors[:register].append 'Community pledge required'
       end
     end
     
     # 4. Now wrap everything up
-    response = to_json_current_user
+    response = current_user_hash
     response['errors'] = errors
 
     #HACKY! supports local measures w/ zipcodes
@@ -283,7 +248,30 @@ class CurrentUserController < DeviseController
 
   end
 
- 
+  def update_via_third_party
+    access_token = env["omniauth.auth"]
+    user = User.find_by_third_party_token access_token
+
+    # If a registered user is associated with this third party, just log them in
+    if user && user.registration_complete
+      # Then the user registration is complete.
+      replace_user current_user, user
+      sign_in :user, user
+    else
+      # Then the user still needs to complete the pledge.  Let's just
+      # get some of the user's current data (we have them temporarily
+      # referenced via the access_token)
+      current_user.update_from_third_party_data(access_token)
+      dirty_avatar_cache
+    end
+
+    render :inline =>
+      "<script type=\"text/javascript\">" +
+      "  window.current_user_hash = #{current_user_hash.to_json};  " +
+      "</script>"
+  end
+
+
   def replace_user(old_user, new_user)
     new_user.absorb(old_user)
 
@@ -321,44 +309,15 @@ class CurrentUserController < DeviseController
 
   # Omniauth oauth handlers
   def facebook
-    third_party_callback
-  end
-
-  def google
-    third_party_callback
+    update_via_third_party
   end
 
   def google_oauth2
-    third_party_callback
+    update_via_third_party
   end
 
   def twitter
-    third_party_callback
-  end
-
-  def third_party_callback
-    access_token = env["omniauth.auth"]
-    user = User.find_by_third_party_token access_token
-
-    # We currently assume that if a user object has been created, then
-    # the registration is complete -- the user has finished the pledge
-    # and everything.
-    if user
-      # Then the user registration is complete.
-      sign_in user, :event => :authentication
-      current_user = to_json_current_user
-    else
-      # Then the user still needs to complete the pledge.  Let's just
-      # get some of the user's current data (we have them temporarily
-      # referenced via the access_token)
-      session[:access_token] = access_token
-      current_user = User.params_from_third_party_token(access_token)
-    end
-
-    render :inline =>
-      "<script type=\"text/javascript\">" +
-      "  window.open_id_params = #{current_user.to_json};  " +
-      "</script>"
+    update_via_third_party
   end
 
   # when something goes wrong in an oauth transation, this method gets called
@@ -367,64 +326,6 @@ class CurrentUserController < DeviseController
     raise "Something went wrong in authenticating your account"
   end
 
-  # /end oauth
-
-  # def content_for_user
-  #   # proposals that are written by this user; private proposals this user has access to
-  #   proposals = Proposal.content_for_user(current_user) || []
-
-  #   top = []
-
-  #   proposals.each do |prop|
-  #     top.push(prop.top_con) if prop.top_con
-  #     top.push(prop.top_pro) if prop.top_pro
-  #   end
-
-  #   points = {}
-  #   Point.where('id in (?)', top).public_fields.each do |pnt|
-  #     points[pnt.id] = pnt
-  #   end
-
-  #   current_user.points.published.where(:hide_name => true).public_fields.each do |pnt|
-  #     points[pnt.id] = pnt
-  #   end
-
-  #   respond_to do |format|
-  #     format.json {
-  #       render :json => {
-  #         :points => points.values,
-  #         :proposals => proposals,
-  #         :opinions => current_user.opinions.published
-  #       }
-  #     }
-  #   end
-  # end
-
-  # # right now this is only used by LVG for zip codes...
-  # # TODO: move this to a taggable controller, and specify the model type being tagged
-  # def set_tag
-
-  #   new_tags = params[:tags].split(';')
-
-  #   if current_user
-  #     current_user.addTags new_tags, params['overwrite_type']
-  #     tags = current_user.getTags()
-  #   else
-  #     tags = session.has_key?(:tags) ? session[:tags] : []
-  #     if params['overwrite_type']
-  #       types = new_tags.map{|t| t.split(':')[0]}
-  #       tags.delete_if {|t| types.include?(t.split(':')[0])}
-  #     end
-  #     tags |= new_tags
-  #     session[:tags] = tags
-  #   end
-
-  #   respond_to do |format|
-  #     format.json { render :json => { :success => true, :user_tags => tags} }
-  #   end
-  # end  
-
-
   private
 
   def dirty_avatar_cache
@@ -432,7 +333,7 @@ class CurrentUserController < DeviseController
     Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)   
   end
 
-  def to_json_current_user
+  def current_user_hash
     {
       id: current_user.id, #leave the id in for now for backwards compatability with Dash
       key: '/current_user',

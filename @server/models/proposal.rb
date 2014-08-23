@@ -36,7 +36,8 @@ class Proposal < ActiveRecord::Base
     tenant = Thread.current[:tenant]
     
     # Compute the users
-    users = ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{tenant.id}")
+    users = ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{tenant.id} AND (registration_complete=true OR id=#{current_user.id})")
+
     users = users.as_json
     users = jsonify_objects(users, 'user')
 

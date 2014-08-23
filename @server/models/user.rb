@@ -60,6 +60,29 @@ class User < ActiveRecord::Base
 
   validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
+
+  # This will output the data for this user _as if this user is currently logged in_
+  # So make sure to only send this data to the client if the client is authorized. 
+  def current_user_hash(form_authenticity_token)
+    {
+      id: id, #leave the id in for now for backwards compatability with Dash
+      key: '/current_user',
+      user: "/user/#{id}",
+      logged_in: registration_complete,
+      email: email,
+      password: nil,
+      csrf: form_authenticity_token,
+      follows: follows,
+      avatar_url: nil,
+      url: url,
+      bio: bio,
+      twitter_uid: nil,
+      facebook_uid: nil,
+      google_uid: nil,
+      name: name
+    }
+  end
+
   def logged_in?
     # Logged-in now means that the current user account is registered
     self.registration_complete
@@ -325,51 +348,52 @@ class User < ActiveRecord::Base
   end
 
   def absorb (user)
-    puts("Merging!  Kill #{user and user.id}, put into #{self and self.id}")
     return if not (self and user)
-    return if user.id == self.id
+
+    dest_user = self.id #user that will do the absorbing
+    source_user = user.id #user that will be absorbed
+
+    puts("Merging!  Kill User #{source_user}, put into User #{dest_user}")
+
+    return if dest_user == source_user
     
-    remap_key("/user/#{user.id}", "/user/#{self.id}")
+    remap_key("/user/#{source_user}", "/user/#{dest_user}")
+    dirty_key("/current_user") # in case absorb gets called outside 
+                               # of CurrentUserController
 
     # Not only do we need to merge the user objects, but we'll need to
     # merge their opinion objects too.
 
     # To do this, we take the following steps
     #  1. Merge both users' opinions
-    #  2. Update the user_id cached in every Point.includers json string
-    #  3. Change user_id for every object that has one to the new user_id
-    #  4. Delete the old user
+    #  2. Change user_id for every object that has one to the new user_id
+    #  3. Delete the old user
 
     # 1. Merge opinions
-    old_ops = Opinion.where(:user_id => user.id)
-    new_ops = Opinion.where(:user_id => self.id)
+    #    ASSUMPTION: The Opinion of the user being absorbed is _newer_ than 
+    #                the Opinion of the user doing the absorbtion. 
+    #                This is currently TRUE for considerit. 
+    #    TODO: Reconsider this assumption. Should we use Opinion.updated_at to 
+    #          decide which is the new one and which is the old, and consequently 
+    #          which gets absorbed into the other?
+    new_ops = Opinion.where(:user_id => source_user)
+    old_ops = Opinion.where(:user_id => dest_user)
     puts("Merging opinions from #{old_ops.map{|o| o.id}} to #{new_ops.map{|o| o.id}}")
 
-    for old_op in old_ops
-      puts("Looking for opinion to absorb on #{old_op.id}")
-      new_op = Opinion.where(:user_id => self.id,
-                             :proposal_id => old_op.proposal.id).first
+    for new_op in new_ops
+      puts("Looking for opinion to absorb into #{new_op.id}...")
+      old_op = Opinion.where(:user_id => dest_user,
+                             :proposal_id => new_op.proposal.id).first
 
-      if (new_op)
-        # Merge the two opinions
+      if old_op
+        puts("Found opinion to absorb into #{new_op.id}: #{old_op.id}")
+        # Merge the two opinions. We'll absorb the old opinion into the new one!
+        # new_ops' original user has been remapped to the old user. We must do 
+        # this before the new_op absorbs the old_op. 
+        new_op.change_user(self) 
         new_op.absorb(old_op)
-      else
-        # ... or just transform the old one
-        old_op.change_user(self)
       end
-    end
-
-    # 2. Update the user_id in cached Point.includers
-    # 
-    # Each point has a cached "includers" field that we need to
-    # update... the way to do that is to call
-    # point.recache() on it.
-    #
-    # The points that need to be updated are all the ones that this
-    # user has included.  So let's get those inclusions, then grab their
-    # points, and update their scores.
-    for i in Inclusion.where(:user_id => user.id)
-      i.point.recache
+      
     end
 
     # 2. Change user_id columns over in bulk
@@ -378,9 +402,16 @@ class User < ActiveRecord::Base
                  ] # Missing: ReflectResponseRevision, PointSimilarity, Request, Thank
 
       # First, remember what we're dirtying
-      table.where(:user_id => user.id).each{|x| dirty_key("/#{table.name.downcase}/#{x.id}")}
-      table.where(:user_id => user.id).update_all(user_id: self.id)
+      table.where(:user_id => source_user).each{|x| dirty_key("/#{table.name.downcase}/#{x.id}")}
+      table.where(:user_id => source_user).update_all(user_id: dest_user)
     end
+
+    # 3. Delete the old user
+    # TODO: Enable this once we're confident everything is working.
+    #       I see that this is being done in CurrentUserController#replace_user. 
+    #       Where should it live? 
+    # user.destroy()
+
   end
 
   def self.purge

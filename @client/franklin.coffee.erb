@@ -1550,15 +1550,12 @@ Auth = ReactiveComponent
 
     password_reset_token_field =
       R.input
-        id: "user_verification_code"
-        name: "user[password_code]"
+        id: "reset_password_token"
+        name: "reset_password_token"
         placeholder: "verification code"
         required: "required"
         type: "text"
-        onChange: (event) => current_user.password_reset = {
-            token: event.target.value,
-            generate_new_token: false
-          }
+        onChange: (event) => current_user.reset_password_token = event.target.value
 
     providers = ['facebook', 'google']
     if root.auth_mode in ['login', 'password_reminder']

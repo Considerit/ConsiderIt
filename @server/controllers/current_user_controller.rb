@@ -14,7 +14,7 @@ class CurrentUserController < DeviseController
     make_stub_user if not current_user
     pp("After stubby, it\'s #{current_user}")
     
-    render :json => current_user_hash
+    render :json => current_user.current_user_hash(form_authenticity_token)
   end  
 
   # handles auth (login, new accounts, and login via reset password token) and updating user info
@@ -214,7 +214,7 @@ class CurrentUserController < DeviseController
     end
     
     # 4. Now wrap everything up
-    response = current_user_hash
+    response = current_user.current_user_hash(form_authenticity_token)
     response['errors'] = errors
 
     #HACKY! supports local measures w/ zipcodes
@@ -273,20 +273,26 @@ class CurrentUserController < DeviseController
 
     render :inline =>
       "<script type=\"text/javascript\">" +
-      "  window.current_user_hash = #{current_user_hash.to_json};  " +
+      "  window.current_user_hash = #{current_user.current_user_hash(form_authenticity_token).to_json};  " +
       "</script>"
   end
 
 
   def replace_user(old_user, new_user)
+    return if old_user.id == new_user.id
+
     new_user.absorb(old_user)
 
     puts("Deleting old user #{old_user.id}")
     if current_user.id == old_user.id
       puts("Signing out of #{current_user.id} before we delete it")
       sign_out current_user
+
+      # Travis: should we be signing in new_user here? Everytime replace_user is
+      #         called, sign_in follows
     end
-    old_user.delete()
+    old_user.destroy()
+
     puts("Done replacing. current_user=#{current_user}")
   end
 
@@ -339,25 +345,6 @@ class CurrentUserController < DeviseController
     Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)   
   end
 
-  def current_user_hash
-    {
-      id: current_user.id, #leave the id in for now for backwards compatability with Dash
-      key: '/current_user',
-      user: current_user ? "/user/#{current_user.id}" : nil,
-      logged_in: current_user.registration_complete,
-      email: current_user.email,
-      password: nil,
-      csrf: form_authenticity_token,
-      follows: current_user.follows,
-      avatar_url: nil,
-      url: current_user.url,
-      bio: current_user.bio,
-      twitter_uid: nil,
-      facebook_uid: nil,
-      google_uid: nil,
-      name: current_user.name
-    }
-  end
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.for(:sign_in) { |u| u.permit! }

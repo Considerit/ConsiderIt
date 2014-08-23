@@ -117,23 +117,20 @@ class Opinion < ActiveRecord::Base
 
 
   def include(point)
-    if point.is_a? Point
-      point_id = point.id
-    else
-      point_id = point
-      point = Point.find point_id
+    if not point.is_a? Point
+      point = Point.find point
     end
 
-    dirty_key("/point/#{point_id}")
+    dirty_key("/point/#{point.id}")
     dirty_key("/opinion/#{self.id}")
 
     user = User.find(self.user_id)
-    if user.inclusions.where( :point_id => point_id ).count > 0
+    if user.inclusions.where( :point_id => point.id ).count > 0
       raise 'Including a point twice!'
     end
     
     attrs = { 
-      :point_id => point_id,
+      :point_id => point.id,
       :user_id => self.user_id,
       :opinion_id => self.id,
       :proposal_id => self.proposal_id,
@@ -147,17 +144,14 @@ class Opinion < ActiveRecord::Base
   end    
 
   def exclude(point)
-    if point.is_a? Point
-      point_id = point.id
-    else
-      point_id = point
-      point = Point.find point_id
+    if not point.is_a? Point
+      point = Point.find point
     end
-    dirty_key("/point/#{point_id}")
+    dirty_key("/point/#{point.id}")
     dirty_key("/opinion/#{self.id}")
 
     user = User.find(self.user_id)
-    inclusion = user.inclusions.find_by_point_id point_id
+    inclusion = user.inclusions.find_by_point_id point.id
 
     inclusion.destroy
     point.follow! user, :follow => false, :explicit => false

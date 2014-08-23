@@ -1545,6 +1545,7 @@ Auth = ReactiveComponent
 
     name_input_field     = input_box('name', 'first and last name')
     email_input_field    = input_box('email', 'email@address', 'email')
+
     password_input_field =
       input_box('password',
                  if root.auth_mode == 'login' then "password" else "new password",
@@ -1686,32 +1687,43 @@ Auth = ReactiveComponent
                 R.td className: 'label_cell',
                   R.label htmlFor: 'user_email', 'I login as:'
                 R.td className: 'field_cell', 
+                  if !Modernizr.input.placeholder
+                    R.label htmlFor: 'user_email', 'Email:'
                   email_input_field,
+                  if !Modernizr.input.placeholder
+                    R.label htmlFor: 'user_password', 'Password:'
                   password_input_field
 
-            R.tr null, 
-              R.td className: 'label_cell', 
-                R.label htmlFor: 'user_avatar', 'I look like this:'
-              R.td className: 'field_cell',
-                # hack for submitting file data in ActiveREST for now
-                # we'll just submit the file form after user is signed in
-                R.form id: 'user_avatar_form',action: Routes.current_user_path(), 
+            # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
+            if window.FormData
 
-                  R.div className: 'avatar_preview_enclosure',
-                    R.img id: 'avatar_preview', src: if current_user.image_url then current_user.image_url else null #todo: make sure that if user overrides image_url, that the new image is used
-                
-                  R.input id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
-                    input = $('#user_avatar')[0]
-                    if input.files && input.files[0]
-                      reader = new FileReader()
-                      reader.onload = (e) ->
-                        $("#avatar_preview").attr 'src', e.target.result
-                      reader.readAsDataURL input.files[0]
-                      #current_user.avatar = input.files[0]
+              R.tr null, 
+                R.td className: 'label_cell', 
+                  R.label htmlFor: 'user_avatar', 'I look like this:'
+                R.td className: 'field_cell',
+                  # hack for submitting file data in ActiveREST for now
+                  # we'll just submit the file form after user is signed in
+
+
+                  R.form id: 'user_avatar_form', action: Routes.current_user_path(), 
+
+                    R.div className: 'avatar_preview_enclosure',
+                      R.img id: 'avatar_preview', src: if current_user.image_url then current_user.image_url else null #todo: make sure that if user overrides image_url, that the new image is used
+                  
+
+
+                    R.input id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
                       @submit_avatar_form = true
-                    else
-                      $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
-                      
+                      input = $('#user_avatar')[0]
+                      if input.files && input.files[0]
+                        reader = new FileReader()
+                        reader.onload = (e) ->
+                          $("#avatar_preview").attr 'src', e.target.result
+                        reader.readAsDataURL input.files[0]
+                        #current_user.avatar = input.files[0]
+                      else
+                        $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
+                        
 
             R.tr null,
               R.td className: 'label_cell', 

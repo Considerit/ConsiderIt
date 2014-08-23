@@ -237,7 +237,6 @@ Devise.setup do |config|
     end      
 
     conf = load_local_environment()
-    pp load_local_environment, conf
 
     request = Rack::Request.new(env)
     host = request.host.split('.')
@@ -250,7 +249,6 @@ Devise.setup do |config|
     if !conf[:domain].has_key?(host)
       raise "#{host} is not a configured host for third party authentication."
     elsif !conf[:domain][host].has_key?(provider)
-      pp provider, host, conf[:domain][host]
       raise "#{provider} is not configured for host #{host}."
     end
     

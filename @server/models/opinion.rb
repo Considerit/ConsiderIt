@@ -1,7 +1,6 @@
 class Opinion < ActiveRecord::Base
   belongs_to :user
   belongs_to :proposal, :touch => true 
-  has_many :inclusions
   has_many :points
   has_many :point_listings
   
@@ -93,12 +92,14 @@ class Opinion < ActiveRecord::Base
     end
   end
 
-  def update_inclusions (points)
-    points_to_exclude = inclusions.select {|i| not points.include? i.point_id}
+  def update_inclusions (points_to_include)
+
+    points_to_exclude = inclusions.select {|i| not points_to_include.include? i.point_id}
+
 
     # The point id versions
     points_to_exclude = points_to_exclude.map{|i| i.point_id}
-    points_to_add    = points.select {|p_id| inclusions.where(:point_id => p_id).count == 0}
+    points_to_add    = points_to_include.select {|p_id| inclusions.where(:point_id => p_id).count == 0}
 
     puts("Excluding points #{points_to_exclude}, including points #{points_to_add}")
 
@@ -128,7 +129,7 @@ class Opinion < ActiveRecord::Base
 
     user = User.find(self.user_id)
     if user.inclusions.where( :point_id => point_id ).count > 0
-      raise 'Including a point twice!'
+      raise "Including a point (#{point_id}) for user #{self.user_id} twice!'"
     end
     
     attrs = { 
@@ -164,71 +165,63 @@ class Opinion < ActiveRecord::Base
     self.recache
   end
   
-  def absorb( opinion )
-    puts("Absorbing opinion #{opinion.id} into #{self.id}")
+  def absorb( opinion, absorb_user = false)
 
     # First record everything we're dirtying and remapping
     dirty_key("/opinion/#{id}")
     remap_key("/opinion/#{opinion.id}", "/opinion/#{id}")
-    dirty_key("/proposal/#{opinion.proposal_id}")    
+    dirty_key("/proposal/#{proposal_id}")    
+    opinion.points.each {|p| dirty_key("/point/#{p.id}")}
 
-    points = opinion.points
-    points.each {|p| dirty_key("/point/#{p.id}")}
+    # If we're absorbing the Opinion's user as well
+    if absorb_user
+      puts("Changing user for Opinion #{id} to #{opinion.user_id}")
+
+      self.points.each {|p| dirty_key("/point/#{p.id}")}
+
+      # Change the opinion's everythings to point at the new user
+      self.point_listings.update_all({:user_id => opinion.user_id})
+      self.points.update_all(        {:user_id => opinion.user_id}) # We should remove opinion.points
+
+      # We only have to update inclusions if the user is changing because
+      # inclusions are identified by (proposal_id, user_id), not by Opinion.
+      new_inclusions = self.proposal.inclusions.where(:user_id => opinion.user_id)
+      all_inclusions = ( inclusions.map{|i| i.point.id} \
+                    + new_inclusions.map{|i| i.point.id}).uniq
+
+
+      self.user_id = opinion.user_id # Do this after getting all_inclusions, but before update_inclusions.
+      self.update_inclusions(all_inclusions) # And this will recached
+    end
+
+    puts("Absorbing opinion #{opinion.id} into #{self.id}")
+
 
     # Change the absorbed's everythings to point at this opinion
     opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
     opinion.points.update_all(        {:user_id => user_id, :opinion_id => id}) # We don't use this field anymore
-
-    # Union the included points
-    all_points = (     self.inclusions.map{|i| i.point.id} \
-                  + opinion.inclusions.map{|i| i.point.id}).uniq
-    self.update_inclusions(all_points) # And this will recache
 
     # Copy the stance of the opinion if the opinion is newer
     if opinion.updated_at > updated_at
       self.stance = opinion.stance
       self.stance_segment = opinion.stance_segment
     end
-    
+
     # If something was published, ensure everything is published
     self.publish() if self.published or opinion.published
 
     opinion.destroy()
+    recache
+
   end
-
-  def change_user(new_user)
-    new_user_id = new_user.id
-    puts("Changing user for Opinion #{id} to #{new_user_id}")
-
-    # First record everything we're dirtying and remapping
-    dirty_key("/opinion/#{id}")
-    dirty_key("/proposal/#{proposal_id}")
-    self.points.each {|p| dirty_key("/point/#{p.id}")}
-
-    # Change the opinion's everythings to point at the new user
-    self.point_listings.update_all({:user_id => new_user_id})
-    self.points.update_all(        {:user_id => new_user_id}) # We should remove opinion.points
-    self.inclusions.update_all(    {:user_id => new_user_id}) # We should remove inclusions.user_id field
-                                                              # We don't use either of those fields anymore
-    # inclusions.update_all could create duplicates, so make sure to remove them!
-    included_points = {}
-    self.inclusions.each do |i|
-      if included_points.has_key? i.point_id 
-        i.destroy
-      else
-        included_points[i.point_id] = 1
-      end
-    end
-
-    self.recache()                                        
-
-    # Update the includers field for the points this user has included
-    self.inclusions.each {|i| i.point.recache}
-  end    
 
   def recache
     self.point_inclusions = inclusions.select(:point_id).map {|x| x.point_id }.uniq.compact.to_s
     self.save
+  end
+
+  def inclusions
+    Inclusion.where(:proposal_id => proposal_id, :user_id => user_id)
   end
 
   def self.get_segment(value)

@@ -218,8 +218,8 @@ private
   def init_thread_globals
     # Make things to remember changes
     Thread.current[:dirtied_keys] = {}
-
     Thread.current[:tenant] = current_tenant
+    Thread.current[:mail_options] = mail_options
 
     # Remap crap:
     # Thread.current[:remapped_keys] = {}
@@ -244,6 +244,7 @@ private
     # Grab dirtied proposals
     response.concat(dirtied_keys.select{|k| k.match("/proposal/")} \
             .map {|k| Proposal.find(key_id(k)).proposal_data(current_user)})
+
     return response
   end
 

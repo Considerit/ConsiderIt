@@ -1,9 +1,7 @@
 class Point < ActiveRecord::Base
   
   include Followable, Commentable, Moderatable, Assessable
-  
-  # has_paper_trail :only => [:hide_name, :published, :is_pro, :text, :nutshell, :user_id]  
-  
+    
   belongs_to :user
   belongs_to :proposal
   has_many :inclusions, :dependent => :destroy
@@ -30,9 +28,6 @@ class Point < ActiveRecord::Base
 
   acts_as_tenant(:account)
 
-  # cattr_reader :per_page
-  # @@per_page = 4  
-
   self.moderatable_fields = [:nutshell, :text]
   self.moderatable_objects = lambda {
     Point.joins(:proposal).published.where(:proposals => {:active => true})
@@ -47,33 +42,14 @@ class Point < ActiveRecord::Base
   self.my_public_fields = [:comment_count, :created_at, :id, :includers, :is_pro, :moderation_status, :nutshell, :persuasiveness, :opinion_id, :proposal_id, :published, :score, :text, :user_id, :hide_name]
 
   scope :public_fields, -> {select(self.my_public_fields)}
-  scope :metrics_fields, -> {select([:id, :appeal, :attention, :comment_count, :divisiveness, :includers, :is_pro, :num_inclusions, :persuasiveness, :score, :unique_listings])}
 
   scope :named, -> {where( :hide_name => false )}
   scope :published, -> {where( :published => true )}
   scope :viewable, -> {where( 'published=1 AND (moderation_status IS NULL OR moderation_status=1)')}
-  #default_scope where( :published => true )  
   
   scope :pros, -> {where( :is_pro => true )}
   scope :cons, -> {where( :is_pro => false )}
-  scope :ranked_overall, -> { published.order( "points.score DESC" ) }
-  scope :ranked_popularity, -> { published.order( "points.attention DESC" ) }
-  scope :ranked_unify, -> { published.order( "points.appeal DESC" ) } 
-  scope :ranked_divisive, -> { published.order( "points.divisiveness DESC" ) } 
-  scope :ranked_persuasiveness, -> { published.order( "points.persuasiveness DESC" ) }
   
-  scope :not_included_by, proc {|user, included_points, deleted_points| 
-    #chain = !user.nil? ? joins(:inclusions.outer, "AND inclusions.user_id = #{user.id}").where("inclusions.user_id IS NULL") : nil
-    additional = (deleted_points && deleted_points.length > 0) ? " OR points.id IN (?)" : ""
-
-    chain = user.nil? ? nil : published.joins("LEFT OUTER JOIN inclusions ON points.id = inclusions.point_id AND inclusions.user_id = #{user.id}").where(
-      "inclusions.user_id IS NULL" + additional, deleted_points)
-
-    if included_points.length > 0
-      chain = chain.nil? ? where("points.id NOT IN (?)", included_points) : chain.where("points.id NOT IN (?)", included_points)
-    end 
-    chain
-  }
 
   def as_json(options={}, current_user=nil)
     options[:only] ||= Point.my_public_fields
@@ -98,25 +74,6 @@ class Point < ActiveRecord::Base
   def only_public_fields
     self.to_json :only => Point.my_public_fields
   end  
-  
-  # def self.included_by_stored(user, proposal, deleted_points)
-  #   if user
-  #     additional = (deleted_points && deleted_points.length > 0) ? " AND points.id NOT IN (?)" : ""
-  #     Point.published.
-  #       joins(:inclusions, "AND inclusions.user_id = #{user.id} AND points.proposal_id = #{proposal.id}").
-  #       where("inclusions.user_id IS NOT NULL" + additional, deleted_points)
-  #   else
-  #     proposal.points.where(:id => -1) #null set
-  #   end
-  # end
-
-  # def self.included_by_unstored(included_points, proposal)
-  #   if included_points.length > 0
-  #     proposal.points.where("points.id IN (?)", included_points)
-  #   else
-  #     proposal.points.published.where(:id => -1) #null set
-  #   end
-  # end
 
   def publish()
     self.published = true
@@ -132,18 +89,6 @@ class Point < ActiveRecord::Base
   def seen_by(user)
     # unimplemented. It was:
     # session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
-  end
-
-  def short_desc(max_len = 140)
-    if nutshell.length > 0
-      if text && text.length > 0 
-        nutshell[(0..max_len)] + '...' 
-      else 
-        nutshell.length > max_len ? nutshell[(0..max_len)]+ '...' : nutshell
-      end
-    else
-      return text && text.length > 0 ? text[(0..max_len)] : ''
-    end
   end
 
   def category

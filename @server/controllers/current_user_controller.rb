@@ -19,17 +19,14 @@ class CurrentUserController < DeviseController
 
   # handles auth (login, new accounts, and login via reset password token) and updating user info
   def update
-    errors = {:login => [], :register => [], :password_reminder => []}
 
     puts("")
+    puts("--------------------------------")
+    puts("----Start UPDATE CURRENT USER---")
     puts("")
-    puts("")
-    puts("-------------- #{current_user}")
-    puts("-------")
-    puts("")
-    puts("")
-    puts("")
-    puts("")
+
+    errors = {:login => [], :register => [], :password_reminder => []}
+
     def validate(field, type)
       value = params[field]
       error = "Field #{field} is wrong type #{value.class}"
@@ -53,16 +50,10 @@ class CurrentUserController < DeviseController
     password_reset_token = params[:reset_password_token]
 
     # 0. Try logging out
-    puts("Current user is #{current_user} and logged in? #{current_user and current_user.logged_in?}")
     if current_user and current_user.logged_in? and params[:logged_in] == false
-      puts("Logging out... what is this resource_name thing? #{resource_name}")
-      puts("And the all scopes thing? #{Devise.sign_out_all_scopes}")
-      Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name)
-
-      puts("Making a stub user.")
+      puts("Signing out")      
+      sign_out :user
       make_stub_user()
-      puts("Now current_user is #{current_user}")
-
     else
       # Otherwise, we'll try logging in and/or updating this user
 
@@ -73,8 +64,6 @@ class CurrentUserController < DeviseController
       #  • A password reset token
       #  • Or the email address that has been passed into this method
       if not current_user or not current_user.logged_in?
-        puts("Trying to sign in with #{params[:email]} and #{params[:password]}")
-
         # Sign in by password reset token
         if password_reset_token
           puts("Signing in by password reset")
@@ -94,60 +83,44 @@ class CurrentUserController < DeviseController
                and params[:email] and params[:email].length > 0)
           puts("Signing in by email and password")
           user = User.find_by_lower_email(params[:email])
-          puts('Found a user') if user
           if user and user.valid_password?(params[:password])
             puts('Password is valid, here we go...merging first')
             replace_user(current_user, user)
-            puts("Now signing in #{user.id}. Going from #{current_user and current_user.id}.")
             sign_in :user, user
             puts("Signed in! Now current is #{current_user and current_user.id}")
           else
             errors[:login].append 'wrong password'
           end
         end
-
-        puts("Done trying singing in.  Current user is #{current_user}")
       end
 
 
       # 2. If they still need an account, make a stub
-      if not current_user
-        puts("Making a stub user.")
-        make_stub_user()
-        puts("Now current_user is #{current_user}")
-      end      
-
+      make_stub_user() if not current_user
+        
       # 3. Now the user has an account.  Let them manipulate themself:
       #   • Update their name, bio, photo...
       #   • Update their email (if it doesn't already exist)
       #   • Get registered if they filled everything out
 
-      puts("Current user is #{current_user.id}")
-      puts("and the user of that is #{User.find(current_user.id)}")
-
       # Update their name, bio, photo, and anonymity.
       permitted = ActionController::Parameters.new(new_params).permit!
-      puts("Params is #{new_params}, permitted version #{permitted}")
 
-      if current_user.update_attributes(permitted) # Why is this bullshit so complicated?
-        puts("Updated those damn params.  Now name is #{current_user.name}")
-        if current_user.save
-          puts("Saved that shit. Now current_user.name is #{current_user.name}")
-        else
-          puts("Save goddam failed")
+      if current_user.update_attributes(permitted) 
+        puts("Updating params. #{new_params}; permitted version #{permitted}")
+        if !current_user.save
+          puts("Save failed")
         end
         if params.has_key? :avatar
           dirty_avatar_cache
         end
       else
-        puts("No updating of bio and shit happened #{current_user.bio}")
         raise 'Had trouble manipulating this user!'
       end
 
       # Update their email address.  First, check if they gave us a new address
       email = params[:email]
       if email and email != current_user.email
-        puts("Updating email from #{current_user.email} to #{params[:email]}")
         # And if it's not taken
         if User.find_by_email email
           errors[:register].append 'That email is not available.'
@@ -155,7 +128,7 @@ class CurrentUserController < DeviseController
         elsif !email.include?('.') || !email.include?('@') # instead of a complicated regex, let's just check for @ and .
           errors[:register].append 'Bad email address'
         else
-          puts('XXX Need to figure out how to confirm email address in here')
+          puts("Updating email from #{current_user.email} to #{params[:email]}")
           # Okay, here comes a new email address!
           current_user.update_attributes({:email => email})
           if !current_user.save
@@ -166,20 +139,15 @@ class CurrentUserController < DeviseController
 
       # Update their password
       if (params[:password] and params[:password].length > 0)
-        puts("There's a password. #{params[:password]}")
         if params[:password].length < 4
-          puts("But it's too short")
           errors[:register].append 'Password is too short'
         else
-          puts("Ok let's change the password.")
+          puts("Chaning user's the password.")
           current_user.password = params[:password]
           if !current_user.save
             raise "Error saving this user's password"
           end
-          puts("Current user is now #{current_user.id}")
-          puts("Ok, logging back in...")
           sign_in :user, current_user, :bypass => true
-          puts("Current user is now #{current_user.id}")
         end
       end
     end
@@ -214,7 +182,6 @@ class CurrentUserController < DeviseController
     #   user.addTags session[:tags]
     # end
 
-    puts('Is this a XHR request?', request.xhr?)
     if true || request.xhr?
       response = [response]
       response.concat(affected_objects())
@@ -238,11 +205,9 @@ class CurrentUserController < DeviseController
       end
     end
 
-    puts("Finalizing.  Current_user=#{current_user}")
     puts("")
-    puts("")
-    puts("-------")
-    puts("--------------")
+    puts("----End UPDATE CURRENT USER---")
+    puts("------------------------------")
 
   end
 

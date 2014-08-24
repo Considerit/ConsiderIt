@@ -89,13 +89,14 @@ class Opinion < ActiveRecord::Base
   end
 
   def update_inclusions (points_to_include)
+    already_included = inclusions.map {|i| i.point_id}
 
-    points_to_exclude = inclusions.select {|i| not points_to_include.include? i.point_id}
+    points_to_exclude = already_included.select {|point_id| not points_to_include.include? point_id}
 
 
     # The point id versions
     points_to_exclude = points_to_exclude.map{|i| i.point_id}
-    points_to_add    = points_to_include.select {|p_id| inclusions.where(:point_id => p_id).count == 0}
+    points_to_add    = points_to_include.select {|p_id| not already_included.include? p_id }
 
     puts("Excluding points #{points_to_exclude}, including points #{points_to_add}")
 
@@ -109,6 +110,9 @@ class Opinion < ActiveRecord::Base
       self.include point_id
     end
 
+    # Return the points that were not touched in this process
+    # These points are used in the absorb method. 
+    points_to_include.select {|p_id| already_included.include? p_id }
   end
 
 
@@ -173,8 +177,12 @@ class Opinion < ActiveRecord::Base
                     + new_inclusions.map{|i| i.point.id}).uniq
 
       proposal.inclusions.where(:user_id => self.user_id).destroy_all
+
       self.user_id = opinion.user_id # Do this after getting all_inclusions, but before update_inclusions.
-      self.update_inclusions(all_inclusions) # And this will recached
+      not_recached = self.update_inclusions(all_inclusions) # And this will recached
+      not_recached.each do |pnt_id|
+        Point.find(pnt_id).recache
+      end
     end
 
     puts("Absorbing opinion #{opinion.id} into #{self.id}")

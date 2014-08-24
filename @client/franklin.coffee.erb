@@ -980,7 +980,7 @@ CommunityPoints = ReactiveComponent
     else
       # Default sort order
       points = 
-        _.sortBy points, (pnt) => - if is_results then pnt.score else pnt.persuasiveness
+        _.sortBy points, (pnt) => - if is_results then pnt.score else pnt.last_inclusion
 
     points
 

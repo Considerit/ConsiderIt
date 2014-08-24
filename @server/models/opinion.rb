@@ -1,8 +1,6 @@
 class Opinion < ActiveRecord::Base
   belongs_to :user
   belongs_to :proposal, :touch => true 
-  has_many :points
-  has_many :point_listings
   
   # has_paper_trail
 
@@ -126,14 +124,13 @@ class Opinion < ActiveRecord::Base
 
     user = User.find(self.user_id)
 
-    if user.inclusions.where( :point_id => point_id ).count > 0
+    if user.inclusions.where( :point_id => point.id ).count > 0
       raise "Including a point (#{point_id}) for user #{self.user_id} twice!'"
     end
     
     attrs = { 
       :point_id => point.id,
       :user_id => self.user_id,
-      :opinion_id => self.id,
       :proposal_id => self.proposal_id,
       :account_id => Thread.current[:tenant].id
     }
@@ -166,17 +163,10 @@ class Opinion < ActiveRecord::Base
     dirty_key("/opinion/#{id}")
     remap_key("/opinion/#{opinion.id}", "/opinion/#{id}")
     dirty_key("/proposal/#{proposal_id}")    
-    opinion.points.each {|p| dirty_key("/point/#{p.id}")}
 
     # If we're absorbing the Opinion's user as well
     if absorb_user
       puts("Changing user for Opinion #{id} to #{opinion.user_id}")
-
-      self.points.each {|p| dirty_key("/point/#{p.id}")}
-
-      # Change the opinion's everythings to point at the new user
-      self.point_listings.update_all({:user_id => opinion.user_id})
-      self.points.update_all(        {:user_id => opinion.user_id}) # We should remove opinion.points
 
       # We only have to update inclusions if the user is changing because
       # inclusions are identified by (proposal_id, user_id), not by Opinion.
@@ -184,17 +174,12 @@ class Opinion < ActiveRecord::Base
       all_inclusions = ( inclusions.map{|i| i.point.id} \
                     + new_inclusions.map{|i| i.point.id}).uniq
 
-
+      proposal.inclusions.where(:user_id => self.user_id).destroy_all
       self.user_id = opinion.user_id # Do this after getting all_inclusions, but before update_inclusions.
       self.update_inclusions(all_inclusions) # And this will recached
     end
 
     puts("Absorbing opinion #{opinion.id} into #{self.id}")
-
-
-    # Change the absorbed's everythings to point at this opinion
-    opinion.point_listings.update_all({:user_id => user_id, :opinion_id => id})
-    opinion.points.update_all(        {:user_id => user_id, :opinion_id => id}) # We don't use this field anymore
 
     # Copy the stance of the opinion if the opinion is newer
     if opinion.updated_at > updated_at
@@ -235,44 +220,6 @@ class Opinion < ActiveRecord::Base
     elsif value <= -0.05
       return 2
     end   
-  end
-
-  def stance_name
-    case stance_segment
-      when 0
-        return "strong oppose"
-      when 1
-        return "oppose"
-      when 2
-        return "weak oppose"
-      when 3
-        return "undecided"
-      when 4
-        return "weak support"
-      when 5
-        return "support"
-      when 6
-        return "strong support"
-    end
-  end
-
-  def stance_name_singular
-    case stance_segment
-      when 0
-        return "strongly opposes"
-      when 1
-        return "opposes"
-      when 2
-        return "weakly opposes"
-      when 3
-        return "is neutral about"
-      when 4
-        return "weakly supports"
-      when 5
-        return "supports"
-      when 6
-        return "strongly supports"
-    end
   end
 
   # This is a maintenance function.  You shouldn't need to run it

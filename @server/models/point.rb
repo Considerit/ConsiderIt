@@ -61,6 +61,7 @@ class Point < ActiveRecord::Base
 
     result['includers'] = JSON.parse (result['includers'] || '[]')
     result['includers'].map! {|p| "/user/#{p}"}
+    result['last_inclusion'] = inclusions.count > 0 ? inclusions.last.created_at.to_i : -1
     make_key(result, 'point')
     #result['included_by'] = result['includers']
     #result.delete('includers')

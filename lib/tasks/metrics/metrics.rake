@@ -30,7 +30,7 @@ namespace :metrics do
       opinions = Opinion.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')
       users = User.where(:account_id => accnt_id).where("YEAR(created_at)=#{year} OR YEAR(last_sign_in_at)=#{year}").where('MONTH(created_at)>8')
       points = Point.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')      
-      inclusions = Inclusion.where(:account_id => accnt_id).where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins(:opinion).where('opinions.published = 1')
+      inclusions = Inclusion.where(:account_id => accnt_id).where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins('INNER JOIN opinions ON inclusions.user_id=opinions.user_id AND inclusions.proposal_id=opinions.proposal_id').where('opinions.published = 1')
       comments = Comment.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')
 
       printf("%i\t%s\t%i\t%i\t%i\t%i\n",
@@ -44,7 +44,7 @@ namespace :metrics do
       opinions = Opinion.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').group(:user_id)
       users = User.where(:account_id => accnt_id).where("YEAR(created_at)=#{year} OR YEAR(last_sign_in_at)=#{year}").where('MONTH(created_at)>8')
       points = Point.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').group(:user_id)
-      inclusions = Inclusion.where(:account_id => accnt_id).where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins(:opinion).where('opinions.published = 1').group("inclusions.user_id")
+      inclusions = Inclusion.where(:account_id => accnt_id).where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins('INNER JOIN opinions ON inclusions.user_id=opinions.user_id AND inclusions.proposal_id=opinions.proposal_id').where('opinions.published = 1').group("inclusions.user_id")
       comments = Comment.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').group(:user_id)
 
       printf("%i\t%s\t%i\t%i\t%i\t%i\n",
@@ -63,7 +63,7 @@ namespace :metrics do
       opinions = Opinion.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')
       users = User.where(:account_id => accnt_id).where("YEAR(created_at)=#{year} OR YEAR(last_sign_in_at)=#{year}").where('MONTH(created_at)>8')
       points = Point.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')      
-      inclusions = Inclusion.where(:account_id => accnt_id).where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins(:opinion).where('opinions.published = 1')
+      inclusions = Inclusion.where(:account_id => accnt_id).where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins('INNER JOIN opinions ON inclusions.user_id=opinions.user_id AND inclusions.proposal_id=opinions.proposal_id').where('opinions.published = 1')
       comments = Comment.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')
 
       printf("%i\t%.2f\t%.2f\t%.2f\t%.2f\n",
@@ -789,7 +789,7 @@ namespace :metrics do
       domains[domain][:users] += 1 
       domains[domain][:opinions] += user.opinions.published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count
       domains[domain][:points] += user.points.published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count      
-      domains[domain][:inclusions] += user.inclusions.where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins(:opinion).where('opinions.published = 1').count
+      domains[domain][:inclusions] += user.inclusions.where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins('INNER JOIN opinions ON inclusions.user_id=opinions.user_id AND inclusions.proposal_id=opinions.proposal_id').where('opinions.published = 1').count
       #domains[domain][:comments] += user.comments.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count      
     end
 

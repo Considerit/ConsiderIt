@@ -2,8 +2,6 @@ class Opinion < ActiveRecord::Base
   belongs_to :user
   belongs_to :proposal, :touch => true 
   
-  # has_paper_trail
-
   include Followable, Commentable
 
   acts_as_tenant(:account)

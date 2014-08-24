@@ -1,6 +1,5 @@
 class PointListing < ActiveRecord::Base
   belongs_to :proposal
-  belongs_to :opinion
   belongs_to :point
   belongs_to :user
 

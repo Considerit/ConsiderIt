@@ -8,8 +8,6 @@ class Inclusion < ActiveRecord::Base
     
   after_save :check_dupes
 
-  #scope :by_user_with_stance, proc {|stance_segment| joins(:opinion).where("opinions.stance_segment=" + stance_segment.to_s) }
-
   def check_dupes
     user_points    = Inclusion.where(:user_id => self.user_id, :point_id => self.point_id)
     if user_points.length > 1

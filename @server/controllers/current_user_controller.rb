@@ -10,9 +10,8 @@ class CurrentUserController < DeviseController
 
   # Gets the current user data
   def show
-    pp("Current_user is #{current_user}")
     make_stub_user if not current_user
-    pp("After stubby, it\'s #{current_user}")
+    pp("Current_user is #{current_user.id}")
     
     render :json => current_user.current_user_hash(form_authenticity_token)
   end  
@@ -142,7 +141,7 @@ class CurrentUserController < DeviseController
         if params[:password].length < 4
           errors[:register].append 'Password is too short'
         else
-          puts("Chaning user's the password.")
+          puts("Changing user's the password.")
           current_user.password = params[:password]
           if !current_user.save
             raise "Error saving this user's password"

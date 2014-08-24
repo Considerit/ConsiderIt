@@ -2,7 +2,6 @@ class Proposal < ActiveRecord::Base
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
-  has_many :point_listings, :dependent => :destroy
 
   has_many :assessments, :through => :points, :dependent => :destroy
   has_many :claims, :through => :assessments, :dependent => :destroy

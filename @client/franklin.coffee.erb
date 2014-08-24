@@ -1823,8 +1823,15 @@ Header = ReactiveComponent
     root = @data('root')
     root.auth_mode = null
 
-    save(current_user)
-    save(root)
+    save current_user, ->
+      # We need to get a fresh your_opinion object
+      # after logging out. 
+      # TODO: accomplish in a more principled fashion. 
+      current_proposal = root.current_proposal
+      arest.serverFetch(root.current_proposal)
+
+    save root 
+
 
   render : ->
     current_user = @data('/current_user')

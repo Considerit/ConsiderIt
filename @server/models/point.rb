@@ -6,7 +6,6 @@ class Point < ActiveRecord::Base
   
   belongs_to :user
   belongs_to :proposal
-  belongs_to :opinion
   has_many :inclusions, :dependent => :destroy
   has_many :point_listings, :dependent => :destroy
   
@@ -258,9 +257,9 @@ protected
     
     distribution = Array.new(5, 0.0001)
 
-    qry = inclusions.joins(:opinion)   \
+    qry = inclusions.joins("INNER JOIN opinions ON opinions.user_id=inclusions.user_id AND opinions.proposal_id=inclusions.proposal_id") \
                     .where("opinions.published=1" )                                      \
-                    .group('opinions.stance_segment')                                            \
+                    .group('opinions.stance_segment')                                    \
                     .select("COUNT(*) AS cnt, opinions.stance_segment")
                         
     # get the number of inclusions per stance group
@@ -283,9 +282,9 @@ protected
     # scale the number of inclusions per stance group by the number of people who saw this 
     # point in the stance group
     scaling_distribution = Array.new(5, 0)
-    qry = point_listings.joins(:opinion)   \
-                        .where("opinions.published=1" )                                      \
-                        .group('opinions.stance_segment')                                            \
+    qry = point_listings.joins("INNER JOIN opinions ON opinions.user_id=point_listings.user_id AND opinions.proposal_id=point_listings.proposal_id")   \
+                        .where("opinions.published=1" )                                            \
+                        .group('opinions.stance_segment')                                          \
                         .select("COUNT(distinct point_listings.user_id) AS cnt, opinions.stance_segment")
                  
     qry.each do |row|

@@ -1,6 +1,27 @@
 require 'csv'
 require 'pp'
 
+def stance_name(stance_segment)
+  case stance_segment
+    when 0
+      return "strong oppose"
+    when 1
+      return "oppose"
+    when 2
+      return "weak oppose"
+    when 3
+      return "undecided"
+    when 4
+      return "weak support"
+    when 5
+      return "support"
+    when 6
+      return "strong support"
+  end
+end
+
+
+
 task :insert_empty_users => :environment do
   log_level = 'error'
   #host = "localhost:3000"
@@ -104,12 +125,12 @@ task :export_gsacrd_data => :environment do
 
       account.points.published.order(:proposal_id).each do |pnt|
         opinion = pnt.user.opinions.find_by_long_id(pnt.proposal.long_id)
-        csv << [pnt.proposal.long_id, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance_name : '-', pnt.inclusions.count, pnt.comments.count]
+        csv << [pnt.proposal.long_id, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
 
         pnt.comments.each do |comment|
           opinion = comment.user.opinions.find_by_long_id(pnt.proposal.long_id)
 
-          csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? opinion.stance_name : '-', '', '']
+          csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? stance_name(opinion.stance_segment) : '-', '', '']
         end
       end
     end
@@ -129,7 +150,7 @@ task :export_proposal_data => :environment do
 
     proposal.opinions.published.each do |opinion|
       user = opinion.user
-      csv << [user.name, user.email, user.created_at, opinion.stance_name, user.points.where(:long_id => long_id).count]
+      csv << [user.name, user.email, user.created_at, stance_name(opinion.stance_segment), user.points.where(:long_id => long_id).count]
     end
   end
 
@@ -138,12 +159,12 @@ task :export_proposal_data => :environment do
 
     proposal.points.published.each do |pnt|
       opinion = pnt.user.opinions.find_by_long_id(pnt.proposal.long_id)
-      csv << [pnt.proposal.long_id, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance_name : '-', pnt.inclusions.count, pnt.comments.count]
+      csv << [pnt.proposal.long_id, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
 
       pnt.comments.each do |comment|
         opinion = comment.user.opinions.find_by_long_id(pnt.proposal.long_id)
 
-        csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? opinion.stance_name : '-', '', '']
+        csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? stance_name(opinion.stance_segment) : '-', '', '']
       end
     end
   end
@@ -162,7 +183,7 @@ task :export_proposal_data => :environment do
 
     proposal.opinions.published.each do |opinion|
       user = opinion.user
-      csv << [user.name, user.email, user.created_at, opinion.stance_name, user.points.where(:long_id => long_id).count]
+      csv << [user.name, user.email, user.created_at, stance_name(opinion.stance_segment), user.points.where(:long_id => long_id).count]
     end
   end
 
@@ -171,12 +192,12 @@ task :export_proposal_data => :environment do
 
     proposal.points.published.each do |pnt|
       opinion = pnt.user.opinions.find_by_long_id(pnt.proposal.long_id)
-      csv << [pnt.proposal.long_id, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance_name : '-', pnt.inclusions.count, pnt.comments.count]
+      csv << [pnt.proposal.long_id, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
 
       pnt.comments.each do |comment|
         opinion = comment.user.opinions.find_by_long_id(pnt.proposal.long_id)
 
-        csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? opinion.stance_name : '-', '', '']
+        csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? stance_name(opinion.stance_segment) : '-', '', '']
       end
     end
   end

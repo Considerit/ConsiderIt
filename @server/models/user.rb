@@ -394,17 +394,16 @@ class User < ActiveRecord::Base
       if old_op
         puts("Found opinion to absorb into #{new_op.id}: #{old_op.id}")
         # Merge the two opinions. We'll absorb the old opinion into the new one!
-        # We'll change new_ops' user has been remapped to the old user. 
+        # Update new_ops' user_id to the old user. 
         new_op.absorb(old_op, true)
       end
       
     end
 
     # 2. Change user_id columns over in bulk
-    # TRAVIS: updating Point, Opinion, & Inclusion is taken care of in absorbing opinion
-    for table in [Proposal, Comment, Assessable::Assessment, \
-                  Follow, Moderation, PageView, PointListing, \
-                 ] # Missing: ReflectResponseRevision, PointSimilarity, Request, Thank
+    # TRAVIS: Opinion & Inclusion is taken care of when absorbing an Opinion
+    for table in [Point, Proposal, Comment, Assessable::Assessment, Assessable::Request, \
+                  Follow, Moderation, PageView, PointListing ] 
 
       # First, remember what we're dirtying
       table.where(:user_id => source_user).each{|x| dirty_key("/#{table.name.downcase}/#{x.id}")}

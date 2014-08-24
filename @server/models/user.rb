@@ -7,7 +7,6 @@ class User < ActiveRecord::Base
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
-  has_many :point_listings, :dependent => :destroy
   has_many :comments, :dependent => :destroy
   has_many :proposals
   has_many :follows, :dependent => :destroy, :class_name => 'Follow'
@@ -403,7 +402,7 @@ class User < ActiveRecord::Base
     # 2. Change user_id columns over in bulk
     # TRAVIS: Opinion & Inclusion is taken care of when absorbing an Opinion
     for table in [Point, Proposal, Comment, Assessable::Assessment, Assessable::Request, \
-                  Follow, Moderation, PageView, PointListing ] 
+                  Follow, Moderation, PageView ] 
 
       # First, remember what we're dirtying
       table.where(:user_id => source_user).each{|x| dirty_key("/#{table.name.downcase}/#{x.id}")}
@@ -421,7 +420,7 @@ class User < ActiveRecord::Base
   def self.purge
     users = User.all.map {|u| u.id}
     missing_users = []
-    classes = [Opinion, Point, PointListing, Inclusion]
+    classes = [Opinion, Point, Inclusion]
     classes.each do |cls|
       cls.where("user_id IS NOT NULL AND user_id NOT IN (?)", users ).each do |r|
         missing_users.push r.user_id

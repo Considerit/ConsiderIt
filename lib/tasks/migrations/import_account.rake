@@ -25,7 +25,6 @@ namespace :import do
           ['follows', 'account_id'],
           ['inclusions', 'account_id'],
           ['moderations', 'account_id'],
-          ['point_listings', 'account_id'],
           ['requests', 'account_id'],
           ['users', 'account_id']
         ]
@@ -41,7 +40,6 @@ namespace :import do
           ['follows', 'user_id'],
           ['inclusions', 'user_id'],
           ['moderations', 'user_id'],
-          ['point_listings', 'user_id'],
           ['requests', 'user_id'],
           ['claims', 'creator'],
           ['claims', 'approver']
@@ -53,7 +51,6 @@ namespace :import do
           ['points', 'proposal_id'],
           ['opinions', 'proposal_id'],
           ['inclusions', 'proposal_id'],
-          ['point_listings', 'proposal_id'],
         ]
       }],      
       ['points', {
@@ -64,7 +61,6 @@ namespace :import do
           ['follows', ['followable_id', "followable_type='Point'"]],
           ['inclusions', 'point_id'],
           ['moderations', ['moderatable_id', "moderatable_type='Point'"]],
-          ['point_listings', 'point_id']
         ]
       }],
       ['opinions', {
@@ -74,7 +70,6 @@ namespace :import do
           ['comments', ['commentable_id', "commentable_type='Opinion'"]],
           ['follows', ['followable_id', "followable_type='Opinion'"]],
           ['inclusions', 'opinion_id'],
-          ['point_listings', 'opinion_id']
         ]
       }],
       ['comments', {
@@ -113,10 +108,6 @@ namespace :import do
       }],          
       ['moderations', {
         :max_id => Moderation.last.id + 1000,
-        :fks => []
-      }],
-      ['point_listings', {
-        :max_id => PointListing.last.id + 1000,
         :fks => []
       }],
       ['page_views', {

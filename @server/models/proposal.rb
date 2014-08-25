@@ -82,7 +82,7 @@ class Proposal < ActiveRecord::Base
     end
 
     # Put them together
-    response = self.as_json
+    response = self.as_json {}, current_user
     response.update({
       :points => pointz,
       :opinions => ops,
@@ -96,7 +96,7 @@ class Proposal < ActiveRecord::Base
     user.proposals.public_fields.to_a + Proposal.privately_shared.where("LOWER(CONVERT(access_list USING utf8)) like '%#{user.email}%' ").public_fields.to_a
   end
 
-  def as_json(options={})
+  def as_json(options={}, current_user)
     options[:only] ||= Proposal.my_public_fields
     result = super(options)
 
@@ -106,8 +106,22 @@ class Proposal < ActiveRecord::Base
     result["participants"].map! {|p| "/user/#{p}"}
     result["top_con"] = "/point/#{result['top_con']}"
     result["top_pro"] = "/point/#{result['top_pro']}"
+    result["is_following"] = following_proposal current_user
     result
   end
+
+
+  # The user is subscribed to the proposal _implicitly_ if:
+  #   • they have an opinion (published or not)
+  def following_proposal(follower)
+    explicit = get_explicit_follow follower #using the Followable polymophic method
+    if explicit
+      return explicit.follow
+    else
+      return opinions.where(:user_id => follower.id).count > 0
+    end
+  end
+
 
   def public?
     publicity == 2

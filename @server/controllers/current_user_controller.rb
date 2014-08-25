@@ -185,26 +185,32 @@ class CurrentUserController < ApplicationController
     #   user.addTags session[:tags]
     # end
 
-    if request.xhr?
-      dirty_key('/current_user')
-      render :json => affected_objects()
-    else
-      # non-ajax method is used for legacy support for dash
-      if errors[:register].length == 0 and errors[:login].length == 0
-        # redirect here
-        if session.has_key? :redirect_after_login
-          path = session[:redirect_after_login]
-          session.delete :redirect_after_login
-          redirect_to path
-          return
-        else 
-          render :json => response
-        end
-      else
-        @errors = errors
-        @not_logged_in = true        
-        render :template => "old/login", :layout => 'dash' 
+    respond_to do |format|
+      format.json do 
+        dirty_key('/current_user')
+        render :json => affected_objects()
       end
+
+      format.html do
+        # non-ajax method is used for legacy support for dash
+        if current_user.registration_complete
+          # redirect here
+          if session.has_key? :redirect_after_login
+            path = session[:redirect_after_login]
+            session.delete :redirect_after_login
+            redirect_to path
+            return
+          else 
+            render :json => response
+          end
+        else
+          @errors = errors
+          @not_logged_in = true        
+          render :template => "old/login", :layout => 'dash' 
+        end
+
+      end
+
     end
 
     puts("")

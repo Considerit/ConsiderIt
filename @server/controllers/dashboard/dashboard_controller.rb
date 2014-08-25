@@ -22,7 +22,17 @@ class Dashboard::DashboardController < ApplicationController
 
 
   def render(*args)
-    @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_opinions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
+
+    # #TODO: what does this do?
+    # if args && args.first.respond_to?('has_key?')
+    #   args.first[:layout] = false if request.xhr? && args.first[:layout].nil?
+    # elsif args && args.last.respond_to?('has_key?')
+    #   args.last[:layout] = false if request.xhr? && args.last[:layout].nil?
+    # else
+    #   args.append({:layout => false}) if request.xhr?
+    # end
+
+    @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,email,avatar_file_name,created_at,avatar_file_name,roles_mask, metric_influence, metric_points, metric_conversations,metric_opinions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
     @current_tenant = current_tenant
     active_proposals = Proposal.open_to_public.active.browsable
     inactive_proposals = Proposal.open_to_public.inactive.browsable

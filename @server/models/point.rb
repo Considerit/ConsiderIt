@@ -98,7 +98,8 @@ class Point < ActiveRecord::Base
     if explicit
       return explicit.follow
     else
-      return JSON.parse(includers).include?(follower.id) || comments.map {|c| c.user_id}.include?(follower.id)
+      return JSON.parse(includers || '[]').include?(follower.id) \
+             || comments.map {|c| c.user_id}.include?(follower.id)
     end
   end
 

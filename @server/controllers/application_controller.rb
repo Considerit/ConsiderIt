@@ -276,6 +276,11 @@ private
     if (Thread.current[:dirtied_keys].has_key? '/current_user' \
         or Thread.current[:dirtied_keys].has_key? "/user/#{current_user.id}")
       response.append current_user.current_user_hash(form_authenticity_token) 
+
+      # And include the user object too, if we haven't already
+      if not Thread.current[:dirtied_keys].has_key?("/user/#{current_user.id}")
+        response.append(User.find(current_user.id).as_json)
+      end
     end
     
     return response

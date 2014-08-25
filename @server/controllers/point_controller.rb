@@ -49,8 +49,7 @@ class PointController < ApplicationController
     # session[:remapped_keys][params[:key]] = "/point/#{point.id}"
 
     # Now let's return the proposal's changes too
-    proposal_json = proposal.proposal_data(current_user,
-                                           can?(:manage, proposal))
+    proposal_json = proposal.proposal_data(can?(:manage, proposal))
 
     render :json => [result, proposal_json] + affected_objects()
   end
@@ -58,6 +57,12 @@ class PointController < ApplicationController
   def update
     point = Point.find params[:id]
     #authorize! :update, point
+
+    if params.has_key?(:is_following) && params[:is_following] != point.is_following()
+      # if is following has changed, that means the user has explicitly expressed 
+      # whether they want to be subscribed or not
+      point.follow! current_user, {:follow => params[:is_following], :explicit => true}
+    end
 
     fields = ["nutshell", "text", "hide_name"]
     updates = params.select{|k,v| fields.include? k}

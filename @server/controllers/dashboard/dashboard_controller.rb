@@ -32,8 +32,7 @@ class Dashboard::DashboardController < ApplicationController
     #   args.append({:layout => false}) if request.xhr?
     # end
 
-    pp 'DASHBOARD CONTROLLER RENDER'
-    @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name,created_at, metric_influence, metric_points, metric_conversations,metric_opinions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
+    @users = ActiveSupport::JSON.encode(ActiveRecord::Base.connection.select( "SELECT id,name,email,avatar_file_name,created_at,avatar_file_name,roles_mask, metric_influence, metric_points, metric_conversations,metric_opinions,metric_comments FROM users WHERE account_id=#{current_tenant.id}"))
     @current_tenant = current_tenant
     active_proposals = Proposal.open_to_public.active.browsable
     inactive_proposals = Proposal.open_to_public.inactive.browsable

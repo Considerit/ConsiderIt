@@ -45,22 +45,24 @@ notify_point = Proc.new do |data|
 
   voters = proposal.opinions.published.select(:user_id).uniq.map {|x| x.user_id }
 
-  proposal.follows.where(:follow => true).each do |follow|
+  account.users.each do |u|
+
+    return if !proposal.following_proposal(u)
 
     # if follower's action triggered event, skip...
-    if follow.user_id == point.user_id 
+    if u.id == point.user_id 
       next
 
     # if follower doesn't have an email address, skip...
-    elsif !follow.user.email || follow.user.email.length == 0
+    elsif !u.email || u.email.length == 0
       next
 
     # if follower is the proposal author
-    elsif follow.user_id == proposal.user_id
+    elsif u.id == proposal.user_id
       notification_type = 'your proposal' 
     
     # if follower has submitted a opinion on this proposal
-    elsif voters.include? follow.user_id
+    elsif voters.include? u.id
       notification_type = 'opinion submitter'
 
     # lurker 
@@ -69,7 +71,7 @@ notify_point = Proc.new do |data|
 
     end
 
-    EventMailer.proposal_new_point(follow.user, point, mail_options, notification_type).deliver!
+    EventMailer.proposal_new_point(u, point, mail_options, notification_type).deliver!
 
   end
 

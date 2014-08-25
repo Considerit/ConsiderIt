@@ -223,6 +223,7 @@ private
       new_current_user()
     end
     Thread.current[:current_user_id2] = session[:current_user_id2]
+    Thread.current[:current_user2] = nil
 
     # Remap crap:
     # Thread.current[:remapped_keys] = {}

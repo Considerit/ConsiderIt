@@ -4,9 +4,6 @@ class CurrentUserController < ApplicationController
   protect_from_forgery :except => :update
   skip_before_filter :verify_authenticity_token, :if => :file_uploaded
 
-  # TODO: test if we need the following to support oauth transactions
-  #prepend_before_filter { request.env["devise.skip_timeout"] = true }
-
   # Gets the current user data
   def show
     puts("Current_user is #{current_user.id}")

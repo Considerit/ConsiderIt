@@ -286,7 +286,7 @@ private
   end
 
   def pageview
-    if request.method == 'GET' && request.fullpath.index('/users/auth').nil?
+    if request.method == 'GET' && request.fullpath.index('/auth').nil?
       begin
         user = current_user ? current_user.id : nil
         params = {

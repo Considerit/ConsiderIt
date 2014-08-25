@@ -4,9 +4,6 @@ class CurrentUserController < ApplicationController
   protect_from_forgery :except => :update
   skip_before_filter :verify_authenticity_token, :if => :file_uploaded
 
-  # TODO: test if we need the following to support oauth transactions
-  #prepend_before_filter { request.env["devise.skip_timeout"] = true }
-
   # Gets the current user data
   def show
     puts("Current_user is #{current_user.id}")
@@ -228,6 +225,10 @@ class CurrentUserController < ApplicationController
       # Then the user still needs to complete the pledge.  Let's just
       # get some of the user's current data (we have them temporarily
       # referenced via the access_token)
+      if user
+        replace_user current_user, user
+        set_current_user(user)
+      end      
       current_user.update_from_third_party_data(access_token)
       dirty_avatar_cache
     end
@@ -305,6 +306,11 @@ class CurrentUserController < ApplicationController
   def twitter
     update_via_third_party
   end
+
+  def passthru
+    render status: 404, text: "Not found. Oauth authentication passthru."
+  end
+
 
   # when something goes wrong in an oauth transation, this method gets called
   def failure

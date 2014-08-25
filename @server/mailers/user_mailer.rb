@@ -1,7 +1,7 @@
 require 'mail'
 
 class UserMailer < Mailer
-  include Devise::Mailers::Helpers
+  #include Devise::Mailers::Helpers
 
   ######### DEVISE MAILERS
   def confirmation_instructions(user, proposal, token, options)

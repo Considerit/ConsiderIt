@@ -1,3 +1,4 @@
+# coding: utf-8
 class Point < ActiveRecord::Base
   
   include Followable, Commentable, Moderatable, Assessable
@@ -90,7 +91,7 @@ class Point < ActiveRecord::Base
   end
 
   # The user is subscribed to the point _implicitly_ if:
-  #   • they have included the point
+  #   • they have included the point
   #   • they have commented on the point
   def following_point(follower)
     explicit = get_explicit_follow follower #using the Followable polymophic method

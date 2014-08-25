@@ -415,9 +415,11 @@ Histogram = ReactiveComponent
       # If this opinion is somewhere else on the spectrum...
       else
         adjusted_stance = Math.abs(opinion.stance - stanceSegmentBoundaries[segment])
+
         col_width = Math.abs( stanceSegmentBoundaries[segment + 1] - 
           stanceSegmentBoundaries[segment])/segments[segment].length
-        segments[segment][Math.floor(adjusted_stance / col_width)].push opinion
+
+        segments[segment][segments[segment].length - Math.floor(adjusted_stance / col_width) - 1].push opinion
 
       opinions_in_segment[segment] += 1
 

@@ -61,17 +61,16 @@ class Opinion < ActiveRecord::Base
     your_opinion
   end
 
-  def publish()
-    already_published = self.published
-    self.published = true
-    self.save
+  def publish
+    if !self.published
+      self.published = true
+      self.save
 
-    # When we publish an opinion, all the points the user wrote on
-    # this opinion/proposal become published too
-    Point.where(:user_id => self.user_id,
-                :proposal_id => self.proposal_id).each {|p| p.publish()}
+      # When we publish an opinion, all the points the user wrote on
+      # this opinion/proposal become published too
+      Point.where(:user_id => self.user_id,
+                  :proposal_id => self.proposal_id).each {|p| p.publish()}
 
-    if not already_published
       # New opinion means the proposal needs to be re-fetched so that
       # it includes it in its list of stuff
       dirty_key("/proposal/#{proposal_id}")

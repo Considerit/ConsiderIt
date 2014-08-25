@@ -7,7 +7,7 @@
 #{num_opinions} people have now weighed in on#{@proposal.user_id ? ' ' + @proposal.user.username + "'s proposal" : '' } "#{@proposal.title}" 
 
 = "\r\n"
-Explore & discuss further at #{proposal_url(@proposal.long_id, :host => @host)} 
+Explore & discuss further at #{@host}/#{@proposal.long_id}
 
 = "\r\n"
 Summary: 

@@ -5,7 +5,6 @@ class ApplicationController < ActionController::Base
   set_current_tenant_through_filter
   prepend_before_action :get_current_tenant
   before_action :theme_resolver
-  before_action :ensure_stub_user
   before_action :init_thread_globals
   after_action  :pageview
   #include CacheableCSRFTokenRails
@@ -219,12 +218,40 @@ private
     Thread.current[:tenant] = current_tenant
     Thread.current[:mail_options] = mail_options
 
+    puts("In before: is there a current user? '#{session[:current_user_id2]}'")
+    if not session[:current_user_id2]
+      new_current_user()
+    end
+    Thread.current[:current_user_id2] = session[:current_user_id2]
+
     # Remap crap:
     # Thread.current[:remapped_keys] = {}
     # # Remember remapped keys (but it turns out this doesn't work,
     # # cause session dies on sign_out!)
     # puts("Session remapped keys is #{session[:remapped_keys]}")
     # session[:remapped_keys] ||= {}
+  end
+  def new_current_user
+    user = User.new
+    # Record where this user initially came from:
+    user.referer = user.page_views.first.referer if user.page_views.count > 0
+    if user.save
+      puts("Signing into the stubby.  Curr=#{current_user}")
+      set_current_user(user)
+      puts("Signed into stubby.  Curr=#{current_user}")
+    else
+      raise 'Error making stub account. Yikes!'
+    end
+  end
+
+  def set_current_user(user)
+    ## TODO: delete the existing current user if there's nothing
+    ## important in it
+
+    puts("Setting current user to #{user.id}")
+    session[:current_user_id2] = user.id
+    Thread.current[:current_user_id2] = user.id
+    Thread.current[:current_user2]    = user
   end
 
   def affected_objects
@@ -251,26 +278,6 @@ private
     end
     
     return response
-  end
-
-  def ensure_stub_user
-    puts("In before... is there a current user? #{current_user}")
-    if not current_user
-      make_stub_user
-    end
-  end
-
-  def make_stub_user
-    user = User.new
-    # Record where this user initially came from:
-    user.referer = user.page_views.first.referer if user.page_views.count > 0
-    if user.save
-      puts("Signing into the stubby.  Curr=#{current_user}")
-      sign_in :user, user
-      puts("Signed into stubby.  Curr=#{current_user}")
-    else
-      raise 'Error making stub account. Yikes!'
-    end
   end
 
   def store_location(path)

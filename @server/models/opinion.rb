@@ -89,14 +89,9 @@ class Opinion < ActiveRecord::Base
   end
 
   def update_inclusions (points_to_include)
-    already_included = inclusions.map {|i| i.point_id}
-
-    points_to_exclude = already_included.select {|point_id| not points_to_include.include? point_id}
-
-
-    # The point id versions
-    points_to_exclude = points_to_exclude.map{|i| i.point_id}
-    points_to_add    = points_to_include.select {|p_id| not already_included.include? p_id }
+    points_already_included = inclusions.map {|i| i.point_id}
+    points_to_exclude = points_already_included.select {|point_id| not points_to_include.include? point_id}
+    points_to_add    = points_to_include.select {|p_id| not points_already_included.include? p_id }
 
     puts("Excluding points #{points_to_exclude}, including points #{points_to_add}")
 
@@ -112,7 +107,7 @@ class Opinion < ActiveRecord::Base
 
     # Return the points that were not touched in this process
     # These points are used in the absorb method. 
-    points_to_include.select {|p_id| already_included.include? p_id }
+    points_to_include.select {|p_id| points_already_included.include? p_id }
   end
 
 

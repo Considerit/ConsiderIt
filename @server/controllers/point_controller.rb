@@ -59,6 +59,12 @@ class PointController < ApplicationController
     point = Point.find params[:id]
     #authorize! :update, point
 
+    if params.has_key?(:is_following) && params[:is_following] != point.is_following()
+      # if is following has changed, that means the user has explicitly expressed 
+      # whether they want to be subscribed or not
+      point.follow! current_user, {:follow => params[:is_following], :explicit => true}
+    end
+
     fields = ["nutshell", "text", "hide_name"]
     updates = params.select{|k,v| fields.include? k}
 

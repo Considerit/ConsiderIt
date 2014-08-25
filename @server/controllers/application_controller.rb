@@ -269,7 +269,7 @@ private
 
     # Grab dirtied proposals
     response.concat(dirtied_keys.select{|k| k.match("/proposal/")} \
-            .map {|k| Proposal.find(key_id(k)).proposal_data(current_user)})
+            .map {|k| Proposal.find(key_id(k)).proposal_data()})
 
     # Output dirty current_user
     if (Thread.current[:dirtied_keys].has_key? '/current_user' \

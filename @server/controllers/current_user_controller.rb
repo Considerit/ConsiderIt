@@ -153,14 +153,13 @@ class CurrentUserController < ApplicationController
 
     # Register the account
     if not current_user.registration_complete
+      third_party_authenticated = current_user.twitter_uid or current_user.facebook_uid\
+                                    or current_user.google_uid
       has_name = current_user.name and current_user.name.length > 0
       can_login = ((current_user.email and current_user.email.length > 0)\
-                   or (current_user.twitter_uid or current_user.facebook_uid\
-                       or current_user.google_uid))
+                   or third_party_authenticated)
       signed_pledge = params[:signed_pledge]
-      ok_password = params[:password] and params[:password].length > min_pass
-
-      puts('XXX Need to check password or third_party login')
+      ok_password = third_party_authenticated || (params[:password] and params[:password].length > min_pass)
 
       if has_name and can_login and signed_pledge and ok_password
         current_user.registration_complete = true

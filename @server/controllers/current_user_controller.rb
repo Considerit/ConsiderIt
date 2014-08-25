@@ -1,8 +1,7 @@
 # coding: utf-8
 
-class CurrentUserController < DeviseController
+class CurrentUserController < ApplicationController
   protect_from_forgery :except => :update
-  before_filter :configure_permitted_parameters
   skip_before_filter :verify_authenticity_token, :if => :file_uploaded
 
   # TODO: test if we need the following to support oauth transactions
@@ -10,10 +9,8 @@ class CurrentUserController < DeviseController
 
   # Gets the current user data
   def show
-    make_stub_user if not current_user
-    pp("Current_user is #{current_user.id}")
-    
-    render :json => current_user.current_user_hash(form_authenticity_token)
+    puts("Current_user is #{current_user.id}")
+    render :json => current_user().current_user_hash(form_authenticity_token)
   end  
 
   # handles auth (login, new accounts, and login via reset password token) and updating user info
@@ -22,6 +19,7 @@ class CurrentUserController < DeviseController
     puts("")
     puts("--------------------------------")
     puts("----Start UPDATE CURRENT USER---")
+    puts("  with current_user=#{current_user.id}")
     puts("")
 
     errors = {:login => [], :register => [], :password_reminder => []}
@@ -50,16 +48,15 @@ class CurrentUserController < DeviseController
 
     # 0. Try logging out
     if current_user and current_user.logged_in? and params[:logged_in] == false
-      puts("Signing out")      
-      sign_out :user
-      make_stub_user()
+      new_current_user()
     else
       # Otherwise, we'll try logging in and/or updating this user
 
       # 1. Try logging in
       # 
       # We can log in with three methods
-      #  • A third-party account, like facebook or google or twitter (handled below in update_via_third_party)
+      #  • A third-party account, like facebook or google or twitter
+      #    (handled below in update_via_third_party)
       #  • A password reset token
       #  • Or the email address that has been passed into this method
       if not current_user or not current_user.logged_in?
@@ -72,7 +69,7 @@ class CurrentUserController < DeviseController
 
           if !user.errors || user.errors.count == 0
             replace_user(current_user, user)
-            sign_in :user, user
+            set_current_user(user)
           else
             errors[:password_reminder].append 'Invalid verification token!'
           end
@@ -82,22 +79,17 @@ class CurrentUserController < DeviseController
                and params[:email] and params[:email].length > 0)
           puts("Signing in by email and password")
           user = User.find_by_lower_email(params[:email])
-          if user and user.valid_password?(params[:password])
-            puts('Password is valid, here we go...merging first')
+          if user and user.authenticate(params[:password])
             replace_user(current_user, user)
-            sign_in :user, user
-            puts("Signed in! Now current is #{current_user and current_user.id}")
+            set_current_user(user)
+            puts("Now current is #{current_user and current_user.id}")
           else
             errors[:login].append 'wrong password'
           end
         end
       end
 
-
-      # 2. If they still need an account, make a stub
-      make_stub_user() if not current_user
-        
-      # 3. Now the user has an account.  Let them manipulate themself:
+      # 2. Now we know the user's account.  Let them manipulate themself:
       #   • Update their name, bio, photo...
       #   • Update their email (if it doesn't already exist)
       #   • Get registered if they filled everything out
@@ -141,12 +133,11 @@ class CurrentUserController < DeviseController
         if params[:password].length < 4
           errors[:register].append 'Password is too short'
         else
-          puts("Changing user's the password.")
+          puts("Changing user's password.")
           current_user.password = params[:password]
           if !current_user.save
             raise "Error saving this user's password"
           end
-          sign_in :user, current_user, :bypass => true
         end
       end
     end
@@ -218,7 +209,7 @@ class CurrentUserController < DeviseController
     if user && user.registration_complete
       # Then the user registration is complete.
       replace_user current_user, user
-      sign_in :user, user
+      set_current_user(user)
     else
       # Then the user still needs to complete the pledge.  Let's just
       # get some of the user's current data (we have them temporarily
@@ -245,7 +236,6 @@ class CurrentUserController < DeviseController
     puts("Deleting old user #{old_user.id}")
     if current_user.id == old_user.id
       puts("Signing out of #{current_user.id} before we delete it")
-      sign_out current_user
 
       # Travis: should we be signing in new_user here? Everytime replace_user is
       #         called, sign_in follows
@@ -259,7 +249,7 @@ class CurrentUserController < DeviseController
   def send_password_reset_token
     user = User.find_by_lower_email(params[:user][:email]) if params[:user][:email].strip.length > 0
     if !user.nil?
-      raw, enc = Devise.token_generator.generate(User, :reset_password_token)
+      raw, enc = fail(nil, nil)
       user.reset_password_token   = enc
       user.reset_password_sent_at = Time.now.utc
       user.save(:validate => false)
@@ -304,12 +294,6 @@ class CurrentUserController < DeviseController
     Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)   
   end
 
-
-  def configure_permitted_parameters
-    devise_parameter_sanitizer.for(:sign_in) { |u| u.permit! }
-    devise_parameter_sanitizer.for(:sign_up) { |u| u.permit! }
-    devise_parameter_sanitizer.for(:account_update) { |u| u.permit! }    
-  end
 
   # this won't be needed after old dash is replaced
   def file_uploaded

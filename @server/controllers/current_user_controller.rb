@@ -48,9 +48,12 @@ class CurrentUserController < ApplicationController
     if current_user and current_user.logged_in? and params[:logged_in] == false
       new_current_user()
     else
-      # Otherwise, we'll try logging in and/or updating this user
+      # Otherwise, we'll
+      #  (1) Authenticate: "HEY WHO ARE YOU, REALLY?" ... we might switch users.
+      #  (2) Update:       "Ok, tell me more about you."
+      #  (3) Test Registration-Complete  "Do you deserve your badge of power yet?"
 
-      # 1. Try logging in
+      # 1. Authenticate.  Log in.  Switch Users.
       # 
       # We can log in with three methods
       #  • A third-party account, like facebook or google or twitter

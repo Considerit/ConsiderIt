@@ -76,10 +76,10 @@ class Opinion < ActiveRecord::Base
       # it includes it in its list of stuff
       dirty_key("/proposal/#{proposal_id}")
 
-      ActiveSupport::Notifications.instrument("published_new_opinion", 
-                                              :opinion => self,
-                                              :current_tenant => Thread.current[:tenant],
-                                              :mail_options => Thread.current[:mail_options])
+      # ActiveSupport::Notifications.instrument("published_new_opinion", 
+      #                                         :opinion => self,
+      #                                         :current_tenant => Thread.current[:tenant],
+      #                                         :mail_options => Thread.current[:mail_options])
       # send out confirmation email if user is not yet confirmed
       # if !current_user.confirmed? && current_user.opinions.published.count == 1
       #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 

@@ -26,7 +26,15 @@
     setupLayout : ->
       layout = @getLayout()
       @listenTo layout, 'user:update:requested', (data) =>
-        App.request "user:update_current_user", data
+        if data.key?
+          updated_user = data
+        else
+          updated_user = {}
+          for updated in data
+            if updated.key == '/current_user'
+              updated_user = updated
+
+        App.request "user:update_current_user", updated_user
         layout.render()
       layout
 

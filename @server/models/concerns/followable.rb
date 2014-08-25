@@ -11,7 +11,12 @@ module Followable
   end
 
   def get_explicit_follow(user)
-    Follow.where(:followable_type => self.class.name, :user_id => user.id).find_by_followable_id(self.id)
+    f = Follow.where(:followable_type => self.class.name, :user_id => user.id, :followable_id => self.id)
+    if f.count > 1
+      to_delete = f.order('created_at desc')[1..99999]
+      to_delete.each {|df| df.destroy}
+    end
+    f.last
   end
 
   def follow!(user, params)

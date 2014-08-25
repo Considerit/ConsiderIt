@@ -64,7 +64,7 @@
       Routes.manage_roles_path()
 
     process_data_from_server : (data) ->
-      App.request 'users:update', data.users_by_roles_mask
+      # App.request 'users:update', data.users_by_roles_mask
       @collection = App.request 'users'
       data
 

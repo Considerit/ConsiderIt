@@ -13,6 +13,40 @@ class HomeController < ApplicationController
       return
     end
 
+    response.headers["Strict Transport Security"] = 'max-age=0'
+    
+    @page = request.path
+
+
+    #### Setting meta tag info ####
+    if APP_CONFIG[:meta].has_key? current_tenant.identifier.intern
+      meta = APP_CONFIG[:meta][current_tenant.identifier.intern]
+      using_default_meta = false
+    else 
+      meta = APP_CONFIG[:meta][:default]
+      using_default_meta = true
+    end
+
+    if using_default_meta
+      @title = current_tenant.app_title || meta[:title]
+      if current_tenant.header_text
+        description = ActionView::Base.full_sanitizer.sanitize(current_tenant.header_text, :tags=>[])  
+        if current_tenant.header_details_text && current_tenant.header_details_text != ''
+          description = "#{description} - #{ActionView::Base.full_sanitizer.sanitize(current_tenant.header_details_text, :tags=>[])}"
+        end
+      else
+        description = meta[:description]
+      end
+    else
+      @title = meta[:title] || current_tenant.app_title
+      description = meta[:description]
+    end
+
+    @title = @title.strip
+    @keywords = meta[:keywords].strip
+    @description = description.strip
+
+
     render "layouts/application", :layout => false
   end
 

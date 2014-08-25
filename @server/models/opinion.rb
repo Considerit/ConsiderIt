@@ -72,6 +72,10 @@ class Opinion < ActiveRecord::Base
                 :proposal_id => self.proposal_id).each {|p| p.publish()}
 
     if not already_published
+      # New opinion means the proposal needs to be re-fetched so that
+      # it includes it in its list of stuff
+      dirty_key("/proposal/#{proposal_id}")
+
       ActiveSupport::Notifications.instrument("published_new_opinion", 
                                               :opinion => self,
                                               :current_tenant => Thread.current[:tenant],

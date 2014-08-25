@@ -109,11 +109,6 @@ class Point < ActiveRecord::Base
     end
   end
 
-  def seen_by(user)
-    # unimplemented. It was:
-    # session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
-  end
-
   def category
     is_pro ? 'pro' : 'con'
   end

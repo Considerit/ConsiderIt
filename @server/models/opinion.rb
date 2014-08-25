@@ -7,7 +7,7 @@ class Opinion < ActiveRecord::Base
   acts_as_tenant(:account)
 
   scope :published, -> {where( :published => true )}
-  scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :proposal_id, :stance, :stance_segment, :user_id, :explanation, :point_inclusions, :published] )}
+  scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :proposal_id, :stance, :stance_segment, :user_id, :point_inclusions, :published] )}
 
   before_save do 
     self.explanation = self.explanation.sanitize if self.explanation

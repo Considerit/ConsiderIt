@@ -867,16 +867,17 @@ DecisionBoard = ReactiveComponent
         onClick: @saveYourOpinion
       , 'Save your opinion and see results'
 
-      R.a className:'follow_proposal',
-        R.input
-          type:      'checkbox'
-          id:        "follow_proposal"
-          name:      "follow_proposal"
-          checked:   proposal.is_following
-          onChange: =>
-            proposal.is_following = !proposal.is_following
-            save proposal
-        R.label htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
+      if root.page_name == 'crafting'
+        R.a className:'follow_proposal',
+          R.input
+            type:      'checkbox'
+            id:        "follow_proposal"
+            name:      "follow_proposal"
+            checked:   proposal.is_following
+            onChange: =>
+              proposal.is_following = !proposal.is_following
+              save proposal
+          R.label htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
 
       R.a 
         className:'cancel_opinion_button primary_cancel_button'

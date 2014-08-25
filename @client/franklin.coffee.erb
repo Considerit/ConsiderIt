@@ -1548,9 +1548,12 @@ Auth = ReactiveComponent
       if event.which == 13
         event.preventDefault()
         @submitAuth(event)
+
     input_box = (name, placeholder, type, onChange, pattern) ->
       type = type || 'text'
-      onChange = onChange || (event) => current_user[name] = event.target.value
+      onChange = onChange || (event) => 
+        current_user[name] = event.target.value
+
       R.input
         id: 'user_' + name
         defaultValue: current_user[name]
@@ -1585,6 +1588,8 @@ Auth = ReactiveComponent
     providers = ['facebook', 'google']
     if root.auth_mode in ['login', 'password_reminder']
       providers.push('twitter')
+
+    third_party_authenticated = current_user.facebook_uid || current_user.twitter_uid || current_user.google_uid
 
     ## We'll be displaying the Auth header using the position and styling of the slider
     root = @data('root')
@@ -1634,7 +1639,7 @@ Auth = ReactiveComponent
               R.a className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
 
       R.div className:'auth focal_area',
-        if root.auth_mode in ['login', 'register'] && !current_user.provider
+        if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
           R.div className: 'third_party_auth',
             R.label className: 'third_party_call', 'Instantly:'
             for provider in providers
@@ -1688,13 +1693,18 @@ Auth = ReactiveComponent
               R.td className: 'label_cell',
                 R.label htmlFor: 'user_name', 'Hi, my name is:'
               R.td className: 'field_cell', 
-                name_input_field
-            if current_user.provider
-              p = current_user.provider # will be 'facebook', 'google', or 'twitter'
+                if third_party_authenticated
+                  R.div null, current_user.name
+                else 
+                  name_input_field
+
+            if third_party_authenticated 
+              p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
               R.tr null, 
 
                 R.td className: 'label_cell',
-                  R.label htmlFor: 'user_provider', 'I login via:'
+                  R.label htmlFor: 'user_provider', 
+                    if third_party_authenticated then 'I login via:' else 'I login as:'
                 R.td className: 'field_cell', 
                   R.button className: "third_party_option #{p}", style: {cursor: 'default'},
                     R.i className: "fa fa-#{p}"
@@ -1710,6 +1720,7 @@ Auth = ReactiveComponent
                   if !Modernizr.input.placeholder
                     R.label htmlFor: 'user_email', 'Email:'
                   email_input_field,
+
                   if !Modernizr.input.placeholder
                     R.label htmlFor: 'user_password', 'Password:'
                   password_input_field
@@ -1728,7 +1739,7 @@ Auth = ReactiveComponent
                   R.form id: 'user_avatar_form', action: Routes.current_user_path(), 
 
                     R.div className: 'avatar_preview_enclosure',
-                      R.img id: 'avatar_preview', src: if current_user.image_url then current_user.image_url else null #todo: make sure that if user overrides image_url, that the new image is used
+                      R.img id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else null #todo: make sure that if user overrides image_url, that the new image is used
                   
 
 

@@ -39,7 +39,7 @@ class Point < ActiveRecord::Base
   }
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:comment_count, :created_at, :id, :includers, :is_pro, :moderation_status, :nutshell, :opinion_id, :proposal_id, :published, :score, :text, :user_id, :hide_name]
+  self.my_public_fields = [:comment_count, :created_at, :id, :includers, :is_pro, :moderation_status, :nutshell, :opinion_id, :proposal_id, :published, :score, :text, :user_id, :hide_name, :last_inclusion]
 
   scope :public_fields, -> {select(self.my_public_fields)}
 
@@ -63,9 +63,14 @@ class Point < ActiveRecord::Base
     result['includers'] = JSON.parse (result['includers'] || '[]')
     result['includers'].map! {|u| hide_name && u == user_id ? -1 : u}
     result['includers'].map! {|u| "/user/#{u}"}
-    result['last_inclusion'] = inclusions.count > 0 ? inclusions.order(:created_at).last.created_at.to_i : -1
+
+    # super slow!
+    # result['last_inclusion'] = inclusions.count > 0 ? inclusions.order(:created_at).last.created_at.to_i : -1
     
-    result['is_following'] = following_point current_user
+    #pp self.last_inclusion
+    #result['last_inclusion'] = self.last_inclusion
+    
+    # result['is_following'] = following_point current_user
 
     make_key(result, 'point')
     #result['included_by'] = result['includers']
@@ -120,6 +125,7 @@ class Point < ActiveRecord::Base
     end
 
     self.includers = self.inclusions(:select => [:user_id]).map {|x| x.user_id}.compact.uniq.to_s
+    self.last_inclusion = inclusions.count > 0 ? self.inclusions.order(:created_at).last.created_at.to_i : -1
 
     define_appeal
     define_attention

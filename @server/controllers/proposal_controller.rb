@@ -38,8 +38,7 @@ class ProposalController < ApplicationController
       result = { errors: ["not found"] }
     else
       ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-      result = proposal.proposal_data(current_user,
-                                      can?(:manage, proposal))
+      result = proposal.proposal_data(can?(:manage, proposal))
     end
     render :json => result
 
@@ -77,7 +76,7 @@ class ProposalController < ApplicationController
 
     ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
 
-    data = proposal.full_data current_tenant, current_user
+    data = proposal.full_data 
 
     render :json => data
     
@@ -99,7 +98,7 @@ class ProposalController < ApplicationController
     # updates = params.select{|k,v| fields.include? k}
     # proposal.update_attributes! ActionController::Parameters.new(updates).permit!
 
-    data = proposal.full_data current_tenant, current_user
+    data = proposal.full_data
     render :json => data
   end
 

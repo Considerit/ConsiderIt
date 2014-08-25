@@ -50,7 +50,7 @@ class Point < ActiveRecord::Base
   scope :cons, -> {where( :is_pro => false )}
   
 
-  def as_json(options={}, current_user=nil)
+  def as_json(options={})
     options[:only] ||= Point.my_public_fields
     result = super(options)
 

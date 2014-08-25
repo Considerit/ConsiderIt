@@ -4,6 +4,9 @@ require 'role_model'
 class User < ActiveRecord::Base
   include RoleModel
 
+  has_secure_password validations: false
+  alias_attribute :password_digest, :encrypted_password
+
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
@@ -14,13 +17,8 @@ class User < ActiveRecord::Base
 
   acts_as_tenant(:account)
 
-  # Include default devise modules. Others available are:
-  # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :trackable
-  devise :omniauthable, :omniauth_providers => [:facebook, :twitter, :google_oauth2]
-
   #validates :name, :presence => true
-  #validates :email, :uniqueness => {:scope => :account_id}, :format => Devise.email_regexp, :allow_blank => true
+  #validates :email, :uniqueness => {:scope => :account_id}, :allow_blank => true
 
   #attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url, :metric_points, :metric_conversations, :metric_opinions, :metric_comments, :metric_influence, :b64_thumbnail
 
@@ -99,12 +97,18 @@ class User < ActiveRecord::Base
 
   def send_on_create_confirmation_instructions
     #don't deliver confirmation instructions. We will wait for them to submit an opinion. 
-    #self.devise_mailer.confirmation_instructions(self).deliver
   end
 
   def is_admin?
     has_any_role? :admin, :superadmin
   end
+
+  # def password_digest=(what)
+  #     encrypted_password = what
+  # end
+  # def password_digest
+  #   encrypted_password
+  # end
 
   def role_list
     if roles_mask == 0
@@ -186,8 +190,7 @@ class User < ActiveRecord::Base
 
   def update_from_third_party_data(access_token)
     params = {
-      'name' => access_token.info.name,
-      # 'password' => Devise.friendly_token[0,20]
+      'name' => access_token.info.name
     }
             
     case access_token.provider

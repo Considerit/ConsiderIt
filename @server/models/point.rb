@@ -50,7 +50,7 @@ class Point < ActiveRecord::Base
   scope :cons, -> {where( :is_pro => false )}
   
 
-  def as_json(options={}, current_user=nil)
+  def as_json(options={})
     options[:only] ||= Point.my_public_fields
     result = super(options)
 
@@ -62,6 +62,9 @@ class Point < ActiveRecord::Base
     result['includers'] = JSON.parse (result['includers'] || '[]')
     result['includers'].map! {|p| "/user/#{p}"}
     result['last_inclusion'] = inclusions.count > 0 ? inclusions.order(:created_at).last.created_at.to_i : -1
+    
+    result['is_following'] = following_point current_user
+
     make_key(result, 'point')
     #result['included_by'] = result['includers']
     #result.delete('includers')
@@ -84,6 +87,18 @@ class Point < ActiveRecord::Base
       :current_tenant => Thread.current[:tenant],
       :mail_options => Thread.current[:mail_options]
     )
+  end
+
+  # The user is subscribed to the point _implicitly_ if:
+  #   • they have included the point
+  #   • they have commented on the point
+  def following_point(follower)
+    explicit = get_explicit_follow follower #using the Followable polymophic method
+    if explicit
+      return explicit.follow
+    else
+      return includers.split(',').include?(follower.id) || comments.map {|c| c.user_id}.include?(follower.id)
+    end
   end
 
   def seen_by(user)

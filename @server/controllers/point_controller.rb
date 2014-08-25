@@ -32,9 +32,11 @@ class PointController < ApplicationController
 
     if opinion.published
       point.publish
+    else
+      point.save
     end
 
-    point.save if changed?
+    
 
     # Include into the user's opinion
     opinion.include(point)

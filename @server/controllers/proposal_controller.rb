@@ -79,13 +79,32 @@ class ProposalController < ApplicationController
 
     data = proposal.full_data current_tenant, current_user
 
-    # opinion = ProposalsController.get_opinion_for_user(proposal, current_user, session)
-    # data[:opinion] = opinion
     render :json => data
     
   end
 
   def update
+    # Right now, proposal can't be updated with any fields. We're only checking for 
+    # the is_following parameter, which isn't actually stored on the proposal itself
+
+    proposal = Proposal.find params[:id]
+
+    if params.has_key?(:is_following) && params[:is_following] != proposal.is_following()
+      # if is following has changed, that means the user has explicitly expressed 
+      # whether they want to be subscribed or not
+      proposal.follow! current_user, {:follow => params[:is_following], :explicit => true}
+    end
+
+    # fields = []
+    # updates = params.select{|k,v| fields.include? k}
+    # proposal.update_attributes! ActionController::Parameters.new(updates).permit!
+
+    data = proposal.full_data current_tenant, current_user
+    render :json => data
+  end
+
+
+  def old_update
     # ASSUMPTION: a proposal cannot become unpublished after it has been published
     proposal = Proposal.find_by_long_id(params[:long_id])
     authorize! :update, proposal
@@ -152,7 +171,6 @@ class ProposalController < ApplicationController
       :published => proposal.published,
       :active => proposal.active,
       :proposal => proposal
-      # :opinion => ProposalsController.get_opinion_for_user(proposal, current_user, session)
     }
     render :json => response.to_json
   end
@@ -164,20 +182,6 @@ class ProposalController < ApplicationController
     render :json => {:success => true}
   end
 
-  def self.get_opinion_for_user(proposal, current_user, session)
-    opinion = current_user ? current_user.opinions.published.where(:proposal_id => proposal.id).last : !session["opinion-#{proposal.id}"].nil? ? Opinion.find(session["opinion-#{proposal.id}"]) : nil
-    opinion ||= Opinion.create!(ActionController::Parameters.new({ 
-      :stance => 0.0, 
-      :proposal_id => proposal.id, 
-      :long_id => proposal.long_id,
-      :user_id => current_user ? current_user.id : nil,
-      :account_id => proposal.account_id
-    }).permit!)
-
-    opinion
-
-
-  end
 end
 
 

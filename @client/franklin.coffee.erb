@@ -1499,7 +1499,7 @@ Auth = ReactiveComponent
 
   sendPasswordReminder : -> 
     email = @data('/current_user').email
-    $.post Routes.send_password_reset_token_path(), {user : {email: email}}, (data) =>
+    $.post '/send_password_reset_token', {user : {email: email}}, (data) =>
       if data.errors && data.errors.length > 0
         current_user = @data('/current_user')
         current_user.errors = data.errors

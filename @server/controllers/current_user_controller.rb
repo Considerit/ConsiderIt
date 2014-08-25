@@ -45,7 +45,7 @@ class CurrentUserController < ApplicationController
     fields = ['avatar', 'bio', 'name', 'hide_name']
     new_params = params.select{|k,v| fields.include? k}
 
-    password_reset_token = params[:reset_password_token]
+    reset_password_token = params[:reset_password_token]
 
     # 0. Try logging out
     if current_user and current_user.logged_in? and params[:logged_in] == false
@@ -62,17 +62,28 @@ class CurrentUserController < ApplicationController
       #  • Or the email address that has been passed into this method
       if not current_user or not current_user.logged_in?
         # Sign in by password reset token
-        if password_reset_token
-          puts("Signing in by password reset")
-          params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
-          old_user = current_user
-          user = User.reset_password_by_token params
-
-          if !user.errors || user.errors.count == 0
-            replace_user(current_user, user)
-            set_current_user(user)
+        if reset_password_token
+          password = params[:password] and params[:password].length > min_pass
+          if not password
+            errors[:password_reminder].append("You must provide a new password at least #{min_pass} letters long")
           else
-            errors[:password_reminder].append 'Invalid verification token!'
+            puts("Signing in by password reset")
+            params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
+            old_user = current_user
+
+            # Now let's take that raw reset_password_token, and compute
+            # the digest and see if it matches any users
+            encoded_token = OpenSSL::HMAC.hexdigest('SHA256',
+                                                    'reset_password_token',
+                                                    reset_password_token)
+            user = User.where(reset_password_token: encoded_token).first
+            puts("We found user #{user} with a password reset token")
+            if user
+              replace_user(current_user, user)
+              set_current_user(user)
+            else
+              errors[:password_reminder].append "Sorry, that's the wrong verification code."
+            end
           end
 
         # Sign in by email and password
@@ -252,12 +263,23 @@ class CurrentUserController < ApplicationController
   def send_password_reset_token
     user = User.find_by_lower_email(params[:user][:email]) if params[:user][:email].strip.length > 0
     if !user.nil?
-      raw, enc = fail(nil, nil)
-      user.reset_password_token   = enc
+      # This algorithm is copied/extracted from devise
+
+      # Generate a token that nobody's using
+      raw_token = loop do
+        raw_token = SecureRandom.urlsafe_base64(15)
+        raw_token = raw_token.tr('lIO0', 'sxyz') # Remove hard-to-distinguish characters
+        # Now we have a raw token... let's see if anyone's using it
+        break raw_token unless User.where(reset_password_token: raw_token).first
+      end
+
+      # Now we'll store an encoded version of the token on the user table
+      encoded_token = OpenSSL::HMAC.hexdigest('SHA256', 'reset_password_token', raw_token)
+      user.reset_password_token   = encoded_token
       user.reset_password_sent_at = Time.now.utc
       user.save(:validate => false)
 
-      UserMailer.reset_password_instructions(user, raw, mail_options).deliver!
+      UserMailer.reset_password_instructions(user, raw_token, mail_options).deliver!
       render :json => {
                :result => 'success'
              }

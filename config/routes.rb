@@ -83,7 +83,20 @@ ConsiderIt::Application.routes.draw do
   #              OAUTH stipulates that the third party submit a non-ajax
   #              GET back to the server with the user data. This must be handled by
   #              CurrentUserController#third_party_callback.
-  # devise_for :users, skip: [:registrations, :sessions, :passwords], controllers: {:omniauth_callbacks => 'current_user'}
+
+  match "/auth/:provider",
+    constraints: { provider: /google_oauth2|facebook|twitter/},
+    to: "current_user#passthru",
+    as: :user_omniauth_authorize,
+    via: [:get, :post]
+
+  match "/auth/:action/callback",
+    constraints: { action: /google_oauth2|facebook|twitter/ },
+    to: "current_user#update_via_third_party",
+    as: :user_omniauth_callback,
+    via: [:get, :post]
+
+
 
   # All user-visible URLs go to the "home" controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON

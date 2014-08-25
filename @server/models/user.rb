@@ -69,14 +69,19 @@ class User < ActiveRecord::Base
       email: email,
       password: nil,
       csrf: form_authenticity_token,
-      follows: follows,
       avatar_remote_url: avatar_remote_url,
       url: url,
       bio: bio,
       twitter_uid: twitter_uid,
       facebook_uid: facebook_uid,
       google_uid: google_uid,
-      name: name
+      name: name,
+      # temporary for legacy dashboard:
+      third_party_authenticated: third_party_authenticated, 
+      follows: follows,
+      roles_mask: roles_mask,
+      avatar_file_name: avatar_file_name
+
     }
   end
 

@@ -24,7 +24,6 @@ class Dashboard::AdminController < Dashboard::DashboardController
       }
     else
       result = { 
-        :users_by_roles_mask => current_tenant.users.order('roles_mask DESC').select([:id, :name, :email, :roles_mask]), 
         :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil}
     end
 

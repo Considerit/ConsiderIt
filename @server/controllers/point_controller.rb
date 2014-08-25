@@ -49,8 +49,7 @@ class PointController < ApplicationController
     # session[:remapped_keys][params[:key]] = "/point/#{point.id}"
 
     # Now let's return the proposal's changes too
-    proposal_json = proposal.proposal_data(current_user,
-                                           can?(:manage, proposal))
+    proposal_json = proposal.proposal_data(can?(:manage, proposal))
 
     render :json => [result, proposal_json] + affected_objects()
   end

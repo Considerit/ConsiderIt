@@ -31,7 +31,7 @@ class Proposal < ActiveRecord::Base
   scope :published_web, -> {where( :published => true)}
   scope :browsable, -> {where( :targettable => false)}
 
-  def full_data(current_user, show_private = false)
+  def full_data(show_private = false)
     tenant = Thread.current[:tenant]
     
     # Compute the users
@@ -40,7 +40,7 @@ class Proposal < ActiveRecord::Base
     users = users.as_json
     users = jsonify_objects(users, 'user')
 
-    p = proposal_data(current_user, show_private)
+    p = proposal_data(show_private)
     response = {
       :proposal => p,
       :users => users
@@ -63,11 +63,11 @@ class Proposal < ActiveRecord::Base
     response
   end
 
-  def proposal_data(current_user, show_private = false)
+  def proposal_data(show_private = false)
     # Compute points
     pointz = points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
     pointz = pointz.public_fields.map do |p|
-      p.as_json({}, current_user)
+      p.as_json
     end
 
     # Find an existing opinion for this user
@@ -82,7 +82,7 @@ class Proposal < ActiveRecord::Base
     end
 
     # Put them together
-    response = self.as_json {}, current_user
+    response = self.as_json
     response.update({
       :points => pointz,
       :opinions => ops,
@@ -96,7 +96,7 @@ class Proposal < ActiveRecord::Base
     user.proposals.public_fields.to_a + Proposal.privately_shared.where("LOWER(CONVERT(access_list USING utf8)) like '%#{user.email}%' ").public_fields.to_a
   end
 
-  def as_json(options={}, current_user)
+  def as_json(options={})
     options[:only] ||= Proposal.my_public_fields
     result = super(options)
 

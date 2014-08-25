@@ -8,8 +8,7 @@ class PageController < ApplicationController
     #   ApplicationController.reset_user_activities(session, proposal)
     # end
 
-    result = proposal.full_data(current_user,
-                                can?(:manage, proposal))
+    result = proposal.full_data(can?(:manage, proposal))
 
     result['customer'] = current_tenant
 

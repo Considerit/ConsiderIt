@@ -221,10 +221,6 @@ end
 
 
 ActiveSupport::Notifications.subscribe("published_new_opinion") do |*args|
-  
-  # disable for now...
-  return
-
 
   def fib(n)
     curr = 0; succ = 1

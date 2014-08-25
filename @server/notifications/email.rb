@@ -45,7 +45,7 @@ notify_point = Proc.new do |data|
 
   voters = proposal.opinions.published.select(:user_id).uniq.map {|x| x.user_id }
 
-  account.users.each do |u|
+  current_tenant.users.each do |u|
 
     return if !proposal.following_proposal(u)
 

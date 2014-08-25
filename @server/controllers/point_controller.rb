@@ -27,14 +27,16 @@ class PointController < ApplicationController
     #TODO: look into cancan to figure out how we can move this earlier in the method
     authorize! :create, point
 
-    point.save
-
-    #ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-
-    # Include into the user's opinion
     opinion = Opinion.where(:user_id => current_user.id,
                             :proposal => proposal).first
-    point.seen_by(current_user)
+
+    if opinion.published
+      point.publish
+    end
+
+    point.save if changed?
+
+    # Include into the user's opinion
     opinion.include(point)
 
     original_id = key_id(params[:key])

@@ -118,7 +118,7 @@ class Proposal < ActiveRecord::Base
     if explicit
       return explicit.follow
     else
-      return opinions.where(:user_id => follower.id).count > 0
+      return opinions.where(:user_id => follower.id, :published => true).count > 0
     end
   end
 

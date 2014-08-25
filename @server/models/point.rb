@@ -61,7 +61,8 @@ class Point < ActiveRecord::Base
     end
 
     result['includers'] = JSON.parse (result['includers'] || '[]')
-    result['includers'].map! {|p| "/user/#{p}"}
+    result['includers'].map! {|u| hide_name && u == user_id ? -1 : u}
+    result['includers'].map! {|u| "/user/#{u}"}
     result['last_inclusion'] = inclusions.count > 0 ? inclusions.order(:created_at).last.created_at.to_i : -1
     
     result['is_following'] = following_point current_user

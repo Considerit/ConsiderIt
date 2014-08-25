@@ -70,12 +70,12 @@ class User < ActiveRecord::Base
       password: nil,
       csrf: form_authenticity_token,
       follows: follows,
-      avatar_url: nil,
+      avatar_remote_url: avatar_remote_url,
       url: url,
       bio: bio,
-      twitter_uid: nil,
-      facebook_uid: nil,
-      google_uid: nil,
+      twitter_uid: twitter_uid,
+      facebook_uid: facebook_uid,
+      google_uid: google_uid,
       name: name
     }
   end

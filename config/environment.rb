@@ -52,6 +52,16 @@ def remap_key(old_key, new_key)
 #   Thread.current[:remapped_keys][old_key] = new_key
 end
 
+def current_user
+  return nil if not (Thread.current[:current_user2] or Thread.current[:current_user_id2])
+
+  if not Thread.current[:current_user2]
+    Thread.current[:current_user2] = User.find(Thread.current[:current_user_id2])
+  end
+  Thread.current[:current_user2]
+end
+
+
 # Initialize the rails application
 ConsiderIt::Application.initialize! do |config|
   config.serve_static_assets = true    

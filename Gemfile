@@ -7,7 +7,8 @@ gem 'actionpack-action_caching' # Required for caches_action on Avatars
 
 #############
 # AUTHENTICATION
-gem 'devise'
+#gem 'devise'
+gem "bcrypt"
 gem "omniauth" # this gem may no longer be necessary
 gem 'omniauth-oauth2'
 gem 'omniauth-twitter' 

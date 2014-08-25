@@ -87,9 +87,8 @@ class User < ActiveRecord::Base
 
   def as_json(options={})
     return { 'key' => "/user/#{id}",
-             'name' => name#,
-             #'avatar_file_name' => avatar_file_name ? avatar_file_name : nil
-           }
+             'name' => name,
+             'avatar_file_name' => avatar_file_name }
   end
 
   def logged_in?

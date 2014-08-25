@@ -10,6 +10,10 @@ module Followable
     true
   end
 
+  def get_explicit_follow(user)
+    Follow.where(:followable_type => self.class.name, :user_id => user.id).find_by_followable_id(self.id)
+  end
+
   def follow!(user, params)
     if user.nil?
       return
@@ -17,7 +21,7 @@ module Followable
     follow = params[:follow]
     explicit = params[:explicit]
 
-    existing = Follow.where(:followable_type => self.class.name, :user_id => user.id).find_by_followable_id(self.id)
+    existing = get_explicit_follow user
 
     if existing
       unless existing.explicit && !explicit

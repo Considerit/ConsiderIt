@@ -79,7 +79,8 @@ class Dashboard::DashboardController < ApplicationController
       :proposals_inactive_count => proposals_inactive_count,
     }
 
-    
+    @public_root = Rails.application.config.action_controller.asset_host.nil? ? "" : Rails.application.config.action_controller.asset_host
+
     super
   end
 

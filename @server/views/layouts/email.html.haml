@@ -3,6 +3,158 @@
 !!! Strict
 %html{html_attrs}
   %head{ :profile => "http://gmpg.org/xfn/1" }
+    %style(type="text/css") 
+      :sass
+        $background-color: #404040
+        $dark_bg_color: #ccc
+        $link_color: #444
+
+        $blue: #2B6FAE
+        $green: #418A00
+        $red: #A72C26
+
+        body 
+          margin: 0
+          font-size: 14px
+        table
+          border-collapse: collapse
+          border-spacing: 0px
+          padding: 0
+          margin: 0
+
+          td
+            border-collapse:collapse
+            padding: 0
+            margin: 0
+
+        p
+          margin: 6px 0
+
+          &.head
+            font-weight: bold
+            padding-bottom: 5px
+
+        blockquote 
+          padding-left: 10px
+          border-left: 1px solid #666
+
+        #l_content
+          max-width: 600px
+          font-family: "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
+          font-size: 12px
+
+          //background-color: #F5F5F5
+
+          #inner
+            margin: 0
+            //width: 550px
+            background-color: white
+
+            > table
+              width: 100%
+
+              > tr
+                width: 100%
+
+                > td
+                  padding: 5px 20px
+
+              tr#header
+                td
+                  color: #eeeeee
+                  font-weight: bold
+                  font-family: Georgia, serif
+                  background-color: $background-color
+
+
+              tr.l_footer 
+                
+
+                table
+                  td
+                    font-size: 10px
+                    padding: 10px 5px 10px 0        
+                    border-top: 1px solid #bbbbbb
+                    text-align: center
+                    max-width: 48%
+                    min-width: 48%
+                    width: 48%
+                    color: #777777
+
+                    a
+                      color: #777777
+
+              tr#body
+                strong
+                  font-weight: bold
+
+                > td
+                  //border: 1px solid #C5C5C5
+
+                .action_call
+                  margin: 20px 0 10px 0
+
+                  .rest
+
+                    .call a
+                      padding: 5px 8px
+                      font-weight: bold
+                      border: 1px solid black
+                      text-decoration: none 
+                      background-color: #aaaaaa
+                      color: #222
+
+                    .after
+                      color: #aaaaaa
+                      font-size: 11px
+
+                  &.prominent
+
+                    .rest
+                      text-align: center
+                      .call a
+                        margin: auto
+                        max-width: 350px
+                        background-color: $blue
+                        color: white
+                      .after
+                        padding-top: 10px
+
+
+                p.intro .object
+                  font-size: 16px
+                  font-weight: bold
+
+                .object
+                  a
+                    color: #555555
+                    text-decoration: underline
+                    font-size: 14px
+                  .user_name
+                    font-style: italic
+                    color: #777777
+                    font-weight: bold
+                    font-size: 11px
+                    display: block
+
+                .notable_point  
+                  .notable_header 
+                    font-weight: bold
+                    padding-bottom: 2px
+                  &.supporter
+                    .notable_header        
+                      color: $green
+                  &.opposer
+                    .notable_header        
+                      color: $red
+                  &.common
+                    .notable_header        
+                      color: $blue
+
+        .personal_opinion
+          color: #444444
+          a
+            color: #444444
 
   %body
     #l_content

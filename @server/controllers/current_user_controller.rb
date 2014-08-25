@@ -217,6 +217,10 @@ class CurrentUserController < ApplicationController
       # Then the user still needs to complete the pledge.  Let's just
       # get some of the user's current data (we have them temporarily
       # referenced via the access_token)
+      if user
+        replace_user current_user, user
+        set_current_user(user)
+      end      
       current_user.update_from_third_party_data(access_token)
       dirty_avatar_cache
     end
@@ -283,6 +287,11 @@ class CurrentUserController < ApplicationController
   def twitter
     update_via_third_party
   end
+
+  def passthru
+    render status: 404, text: "Not found. Oauth authentication passthru."
+  end
+
 
   # when something goes wrong in an oauth transation, this method gets called
   def failure

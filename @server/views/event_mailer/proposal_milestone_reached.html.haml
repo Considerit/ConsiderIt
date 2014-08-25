@@ -15,7 +15,7 @@
     = surround ' ', '\'s proposal '  do 
       %span.user_name=@proposal.user.username 
   %span.object
-    "#{link_to @proposal.title, proposal_url(@proposal.long_id, :host => @host)}"
+    "#{link_to @proposal.title, "#{@host}/#{@proposal.long_id}"}"
 
 - height_scaler = stance_breakdown.max
 - user_opinion = @user.opinions.published.where(:proposal_id => @proposal.id).first
@@ -119,7 +119,7 @@
 .action_call.prominent
   .rest
     .call.prominent
-      = link_to 'Explore & discuss the proposal', proposal_url(@proposal.long_id, :host => @host)
+      = link_to 'Explore & discuss the proposal', "#{@host}/#{@proposal.long_id}"
     .after
       The next update will be sent after #{@next_aggregate} people have weighed in.
 

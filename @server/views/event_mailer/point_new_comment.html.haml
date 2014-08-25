@@ -30,7 +30,7 @@
 %p 
   The proposal: 
   .object
-    &ldquo;#{link_to @proposal.title, proposal_url(@proposal.long_id, :host => @host)}&rdquo;
+    &ldquo;#{link_to @proposal.title, "#{@host}/#{@proposal.long_id}"}&rdquo;
 
 .action_call
   .rest

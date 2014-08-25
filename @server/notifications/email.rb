@@ -47,7 +47,7 @@ notify_point = Proc.new do |data|
 
   current_tenant.users.each do |u|
 
-    return if !proposal.following_proposal(u)
+    next if !proposal.following_proposal(u)
 
     # if follower's action triggered event, skip...
     if u.id == point.user_id 

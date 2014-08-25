@@ -125,7 +125,7 @@ ConsiderIt::Application.routes.draw do
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :point_discussion, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :show]
-  resources :error, :only => [:create]
+  resources :client_error, :only => [:create]
   # These next ones are done with "match" because "resources" was
   # being all "I need an id like "/current_user/234" and I don't know
   # how to tell it to be like "/current_user"

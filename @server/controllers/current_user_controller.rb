@@ -23,6 +23,7 @@ class CurrentUserController < ApplicationController
     puts("")
 
     errors = {:login => [], :register => [], :password_reminder => []}
+    min_pass = 4
 
     def validate(field, type)
       value = params[field]
@@ -111,7 +112,7 @@ class CurrentUserController < ApplicationController
 
       # Update their email address.  First, check if they gave us a new address
       email = params[:email]
-      if email and email != current_user.email
+      if email and email.length > 0 and email != current_user.email
         # And if it's not taken
         if User.find_by_email email
           errors[:register].append 'That email is not available.'
@@ -130,7 +131,7 @@ class CurrentUserController < ApplicationController
 
       # Update their password
       if (params[:password] and params[:password].length > 0)
-        if params[:password].length < 4
+        if params[:password].length < min_pass
           errors[:register].append 'Password is too short'
         else
           puts("Changing user's password.")
@@ -149,17 +150,19 @@ class CurrentUserController < ApplicationController
                    or (current_user.twitter_uid or current_user.facebook_uid\
                        or current_user.google_uid))
       signed_pledge = params[:signed_pledge]
+      ok_password = params[:password] and params[:password].length > min_pass
 
       puts('XXX Need to check password or third_party login')
 
-      if has_name and can_login and signed_pledge
+      if has_name and can_login and signed_pledge and ok_password
         current_user.registration_complete = true
         if !current_user.save
           raise "Error registering this uesr"
         end
         # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
-      elsif !signed_pledge
-        errors[:register].append 'Community pledge required'
+      else
+        errors[:register].append('Community pledge required') if !signed_pledge
+        errors[:register].append("Password must be at least #{min_pass} letters long") if !ok_password
       end
     end
     

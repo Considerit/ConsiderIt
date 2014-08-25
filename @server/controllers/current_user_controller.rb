@@ -182,10 +182,9 @@ class CurrentUserController < ApplicationController
     #   user.addTags session[:tags]
     # end
 
-    if true || request.xhr?
-      response = [response]
-      response.concat(affected_objects())
-      render :json => response
+    if request.xhr?
+      dirty_key('/current_user')
+      render :json => affected_objects()
     else
       # non-ajax method is used for legacy support for dash
       if errors[:register].length == 0 and errors[:login].length == 0
@@ -320,8 +319,16 @@ class CurrentUserController < ApplicationController
   private
 
   def dirty_avatar_cache
-    current = Rails.cache.read("avatar-digest-#{current_tenant.id}") || 0
-    Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)   
+    begin
+      current = Rails.cache.read("avatar-digest-#{current_tenant.id}") || 0
+      Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)   
+    rescue => e
+      if Rails.env.production?
+        ExceptionNotifier.notify_exception(e, :env => request.env, :data => {})
+      else
+        raise e
+      end
+    end
   end
 
 

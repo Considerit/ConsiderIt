@@ -1957,5 +1957,5 @@ window.on_ajax_error = () ->
   (root = fetch('root')).server_error = true
   save(root)
 window.on_client_error = (e) ->
-  save({ key: '/new/error', stack: JSON.stringify(e.stack) })
+  save({ key: '/new/client_error', stack: JSON.stringify(e.stack) })
 $(document).ready -> Backbone.history.start {pushState: true}

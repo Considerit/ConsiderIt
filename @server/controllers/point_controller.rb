@@ -86,18 +86,15 @@ class PointController < ApplicationController
     
     authorize! :destroy, point
 
-    puts("getting opinions")
-    opinions = point.inclusions.map{|i| i.opinion}
-    puts("destroy point")
     point.destroy
-    for opinion in opinions
-      puts("recaching opinions")
-      opinion.recache
-      dirty_key("/opinion/#{opinion.id}")
+    proposal.opinions.where("point_inclusions like '%#{params[:id]}%'").map do |o|
+      o.recache
+      dirty_key("/opinion/#{o.id}")
     end
-    puts("rendering dirty stuff")
+
+    dirty_key("/proposal/#{proposal.id}") #because /points is changed...
+
     render :json => affected_objects()
-    puts("done with destroy")
   end
  
 end

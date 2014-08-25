@@ -1427,7 +1427,6 @@ Auth = ReactiveComponent
 
   componentDidMount : -> 
     $(document).scrollTop $(@getDOMNode()).find('.auth_heading').offset().top - 10
-
   startThirdPartyAuth : (provider) ->
 
     root = @data('root')
@@ -1532,6 +1531,10 @@ Auth = ReactiveComponent
       marginLeft: -DECISION_BOARD_WIDTH / 2
 
     # Let's set up some useful helpers
+    submitOnEnter = (event) =>
+      if event.which == 13
+        event.preventDefault()
+        @submitAuth(event)
     input_box = (name, placeholder, type, onChange, pattern) ->
       type = type || 'text'
       onChange = onChange || (event) => current_user[name] = event.target.value
@@ -1543,6 +1546,7 @@ Auth = ReactiveComponent
         required: "required"
         type: type
         onChange: onChange
+        onKeyPress: submitOnEnter
         pattern: pattern
 
     name_input_field     = input_box('name', 'first and last name')
@@ -1562,6 +1566,7 @@ Auth = ReactiveComponent
         placeholder: "verification code"
         required: "required"
         type: "text"
+        onKeyPress: submitOnEnter
         onChange: (event) => current_user.reset_password_token = event.target.value
 
     providers = ['facebook', 'google']
@@ -1725,7 +1730,6 @@ Auth = ReactiveComponent
                         #current_user.avatar = input.files[0]
                       else
                         $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
-                        
 
             R.tr null,
               R.td className: 'label_cell', 

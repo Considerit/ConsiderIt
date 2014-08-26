@@ -71,7 +71,7 @@ class Point < ActiveRecord::Base
     #pp self.last_inclusion
     #result['last_inclusion'] = self.last_inclusion
     
-    # result['is_following'] = following_point current_user
+    # result['is_following'] = following current_user
 
     make_key(result, 'point')
     #result['included_by'] = result['includers']
@@ -105,7 +105,7 @@ class Point < ActiveRecord::Base
   # The user is subscribed to the point _implicitly_ if:
   #   • they have included the point
   #   • they have commented on the point
-  def following_point(follower)
+  def following(follower)
     explicit = get_explicit_follow follower #using the Followable polymophic method
     if explicit
       return explicit.follow

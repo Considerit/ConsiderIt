@@ -15,7 +15,7 @@
     = surround ' ', '\'s proposal '  do 
       %span.user_name=@proposal.user.username 
   %span.object
-    "#{link_to @proposal.title, proposal_url(@proposal.long_id, :host => @host)}"
+    "#{link_to @proposal.title, "#{@host}/#{@proposal.long_id}"}"
 
 - height_scaler = stance_breakdown.max
 - user_opinion = @user.opinions.published.where(:proposal_id => @proposal.id).first
@@ -95,7 +95,7 @@
         .notable_header
           Most important to supporters
         .object
-          &ldquo;#{link_to notable_points[:important_for_supporters].nutshell, proposal_point_url(@proposal.long_id, notable_points[:important_for_supporters], :host => @host)}&rdquo;
+          &ldquo;#{link_to notable_points[:important_for_supporters].nutshell, point_url(notable_points[:important_for_supporters], :host => @host)}&rdquo;
           .user_name
             &ndash; #{notable_points[:important_for_supporters].user.username}
 
@@ -103,7 +103,7 @@
         .notable_header
           Most important to opposers
         .object
-          &ldquo;#{link_to notable_points[:important_for_opposers].nutshell, proposal_point_url(@proposal.long_id, notable_points[:important_for_opposers], :host => @host)}&rdquo;
+          &ldquo;#{link_to notable_points[:important_for_opposers].nutshell, point_url(notable_points[:important_for_opposers], :host => @host)}&rdquo;
           .user_name
             &ndash; #{notable_points[:important_for_opposers].user.username}
 
@@ -112,14 +112,14 @@
         .notable_header
           Common ground for supporters and opposers
         .object
-          &ldquo;#{link_to notable_points[:common].nutshell, proposal_point_url(@proposal.long_id, notable_points[:common], :host => @host)}&rdquo;
+          &ldquo;#{link_to notable_points[:common].nutshell, point_url( notable_points[:common], :host => @host)}&rdquo;
           .user_name
             &ndash; #{notable_points[:common].user.username}        
 
 .action_call.prominent
   .rest
     .call.prominent
-      = link_to 'Explore & discuss the proposal', proposal_url(@proposal.long_id, :host => @host)
+      = link_to 'Explore & discuss the proposal', "#{@host}/#{@proposal.long_id}"
     .after
       The next update will be sent after #{@next_aggregate} people have weighed in.
 

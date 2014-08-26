@@ -219,7 +219,9 @@ class CurrentUserController < ApplicationController
     end
     
     # 4. Now wrap everything up
-    response = current_user.current_user_hash(form_authenticity_token, errors)
+    response = current_user.current_user_hash(form_authenticity_token)
+    response[:errors] = errors
+
     if response[:logged_in] || logging_out
       response[:password] = nil
     else

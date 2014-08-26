@@ -1,4 +1,4 @@
-class MessageController < ApplicationController
+class Dashboard::MessageController < ApplicationController
   respond_to :json
 
   def create

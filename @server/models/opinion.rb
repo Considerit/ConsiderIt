@@ -61,8 +61,9 @@ class Opinion < ActiveRecord::Base
     your_opinion
   end
 
-  def publish()
-    already_published = self.published
+  def publish
+    return if self.published
+
     self.published = true
     self.save
 
@@ -71,25 +72,23 @@ class Opinion < ActiveRecord::Base
     Point.where(:user_id => self.user_id,
                 :proposal_id => self.proposal_id).each {|p| p.publish()}
 
-    if not already_published
-      # New opinion means the proposal needs to be re-fetched so that
-      # it includes it in its list of stuff
-      dirty_key("/proposal/#{proposal_id}")
+    # New opinion means the proposal needs to be re-fetched so that
+    # it includes it in its list of stuff
+    dirty_key("/proposal/#{proposal_id}")
 
-      ActiveSupport::Notifications.instrument("published_new_opinion", 
-                                              :opinion => self,
-                                              :current_tenant => Thread.current[:tenant],
-                                              :mail_options => Thread.current[:mail_options])
-      # send out confirmation email if user is not yet confirmed
-      # if !current_user.confirmed? && current_user.opinions.published.count == 1
-      #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
-      #     :user => current_user,
-      #     :proposal => proposal,
-      #     :current_tenant => current_tenant,
-      #     :mail_options => mail_options
-      #   )
-      # end
-    end
+    # ActiveSupport::Notifications.instrument("published_new_opinion", 
+    #                                         :opinion => self,
+    #                                         :current_tenant => Thread.current[:tenant],
+    #                                         :mail_options => Thread.current[:mail_options])
+    # send out confirmation email if user is not yet confirmed
+    # if !current_user.confirmed? && current_user.opinions.published.count == 1
+    #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
+    #     :user => current_user,
+    #     :proposal => proposal,
+    #     :current_tenant => current_tenant,
+    #     :mail_options => mail_options
+    #   )
+    # end
   end
 
   def update_inclusions (points_to_include)

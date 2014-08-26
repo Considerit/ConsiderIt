@@ -62,8 +62,7 @@
       App.request 'meta:change:default'
 
 
-    emailNotifications : (user_id) ->
-
+    emailNotifications : (user_id, params) ->
       $(document).scrollTop(0)
 
       @current_controller.close() if @current_controller      
@@ -71,6 +70,7 @@
       @current_controller = new Dash.User.EmailNotificationsController
         region : @_getMainRegion()  
         model : user
+        params : params || {}
 
       App.vent.trigger 'route:completed', [ 
         ['homepage', '/'], 

@@ -71,7 +71,6 @@ ConsiderIt::Application.routes.draw do
   concern :followable do 
     get "followable_index" => 'followable#index', :as => 'followable_index'
     match "follow" => 'followable#follow', :via => :post
-    #match "unfollow" => 'followable#unfollow'
     match "unfollow" => 'followable#unfollow', :via => :post
   end
   concerns :followable

@@ -5,12 +5,31 @@ class FollowableController < ApplicationController
         'Proposal' => {},
         'Point' => {}
       }
-      target_user.follows.where(:follow => true).each do |follow|
-        root_obj = follow.root_object()
-        if root_obj
-          followable_objects[follow.followable_type][follow.followable_id] = root_obj
+
+      for followable_type in followable_objects.keys
+        # select all the objects of followable_type that target_user follows implicitly and explicitly
+        case followable_type
+        when 'Point'
+          following = target_user.inclusions.map {|i| i.point} + \
+                   target_user.comments.where(:commentable_type => 'Point').map {|c| c.root_object() } + \
+                   target_user.follows.where(:follow => true, :followable_type => 'Point').map {|f| f.root_object() }
+
+        when 'Proposal'
+          following = target_user.opinions.published.map {|o| o.proposal} + \
+                   target_user.follows.where(:follow => true, :followable_type => 'Proposal').map {|f| f.root_object() }
         end
+
+        following = following.uniq.compact #remove dupes and nils
+        # store in a structure that the client can easily parse
+        following.each {|root_obj| followable_objects[followable_type][root_obj.id] = root_obj }
+
+        # remove objs that have been explicitly unfollowed already
+        target_user.follows.where(:follow => false, :followable_type => followable_type).each do |f|
+          followable_objects[f.followable_type].delete(f.followable_id)
+        end
+
       end
+
       render :json => {:success => true, :followable_objects => followable_objects}
     else
       render :json => {:success => false, :reason => "Permission denied"}
@@ -40,7 +59,7 @@ class FollowableController < ApplicationController
         followable_type = my_params[:followable_type]
         followable_id = my_params[:followable_id]
         obj_to_follow = followable_type.constantize.find(followable_id)
-        follow = obj_to_follow.follow!(target_user, :follow => my_params[:follow] && my_params[:follow] == 'true', :explicit => true)
+        follow = obj_to_follow.follow!(target_user, :follow => false, :explicit => true)
 
         render :json => {:success => true, :follow => follow}.to_json
       end

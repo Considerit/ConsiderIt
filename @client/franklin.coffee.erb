@@ -612,7 +612,8 @@ Slider = ReactiveComponent
       slider.stance = your_opinion.stance
       slider.stance_segment = your_opinion.stance_segment
       slider.clientX = @props.width * (1 - slider.stance) / 2
-      slider.has_moved = true
+      if your_opinion.stance
+        slider.has_moved = true
       save(slider)
 
     page = @data('root').page_name

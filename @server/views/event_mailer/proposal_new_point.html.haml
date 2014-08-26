@@ -18,18 +18,18 @@
 %p 
   The new point:
   .object
-    &ldquo;#{link_to @point.nutshell, proposal_point_url(@proposal.long_id, @point, :host => @host)}&rdquo;
+    &ldquo;#{link_to @point.nutshell, "#{@host}/#{@proposal.long_id}"}&rdquo;
 
 %p 
   The proposal: 
 
   .object
-    &ldquo;#{link_to @proposal.title, proposal_url(@proposal.long_id, :host => @host)}&rdquo;
+    &ldquo;#{link_to @proposal.title, "#{@host}/#{@proposal.long_id}"}&rdquo;
 
 .action_call
   .rest
     .call
-      = link_to 'Read and discuss further', proposal_point_url(@proposal.long_id, @point, :host => @host)
+      = link_to 'Read and discuss further', "#{@host}/#{@proposal.long_id}"
 
 = content_for :footer do
   = render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this proposal'}

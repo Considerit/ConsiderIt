@@ -107,6 +107,9 @@ class Proposal < ActiveRecord::Base
     result["top_con"] = "/point/#{result['top_con']}"
     result["top_pro"] = "/point/#{result['top_pro']}"
     result["is_following"] = following_proposal current_user
+
+    #for legacy dash support
+    result["id"] = id
     result
   end
 
@@ -118,7 +121,7 @@ class Proposal < ActiveRecord::Base
     if explicit
       return explicit.follow
     else
-      return opinions.where(:user_id => follower.id).count > 0
+      return opinions.where(:user_id => follower.id, :published => true).count > 0
     end
   end
 

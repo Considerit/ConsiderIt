@@ -27,14 +27,18 @@ class PointController < ApplicationController
     #TODO: look into cancan to figure out how we can move this earlier in the method
     authorize! :create, point
 
-    point.save
-
-    #ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-
-    # Include into the user's opinion
     opinion = Opinion.where(:user_id => current_user.id,
                             :proposal => proposal).first
-    point.seen_by(current_user)
+
+    if opinion.published
+      point.publish
+    else
+      point.save
+    end
+
+    
+
+    # Include into the user's opinion
     opinion.include(point)
 
     original_id = key_id(params[:key])
@@ -58,11 +62,11 @@ class PointController < ApplicationController
     point = Point.find params[:id]
     #authorize! :update, point
 
-    if params.has_key?(:is_following) && params[:is_following] != point.is_following()
-      # if is following has changed, that means the user has explicitly expressed 
-      # whether they want to be subscribed or not
-      point.follow! current_user, {:follow => params[:is_following], :explicit => true}
-    end
+    # if params.has_key?(:is_following) && params[:is_following] != point.following_point(current_user)
+    #   # if is following has changed, that means the user has explicitly expressed 
+    #   # whether they want to be subscribed or not
+    #   point.follow! current_user, {:follow => params[:is_following], :explicit => true}
+    # end
 
     fields = ["nutshell", "text", "hide_name"]
     updates = params.select{|k,v| fields.include? k}
@@ -86,18 +90,15 @@ class PointController < ApplicationController
     
     authorize! :destroy, point
 
-    puts("getting opinions")
-    opinions = point.inclusions.map{|i| i.opinion}
-    puts("destroy point")
     point.destroy
-    for opinion in opinions
-      puts("recaching opinions")
-      opinion.recache
-      dirty_key("/opinion/#{opinion.id}")
+    proposal.opinions.where("point_inclusions like '%#{params[:id]}%'").map do |o|
+      o.recache
+      dirty_key("/opinion/#{o.id}")
     end
-    puts("rendering dirty stuff")
+
+    dirty_key("/proposal/#{proposal.id}") #because /points is changed...
+
     render :json => affected_objects()
-    puts("done with destroy")
   end
  
 end

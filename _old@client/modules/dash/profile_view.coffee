@@ -83,18 +83,23 @@
         account_follower : account_follower
         submit_text : if account_follower then 'Unsubscribe' else 'Subscribe'
         tenant_id : tenant.id
+        u : @options.params['u']
+        t : @options.params['t']
         
     events : 
       'ajax:complete .dashboard-notifications-unfollow_all' : 'unfollowed_all'
       'ajax:complete .dashboard-notifications-unfollow' : 'unfollow'
 
     unfollowed_all : (ev, response, status) ->
-      @trigger 'unfollow:all'
+      location.reload()
 
     unfollow : (ev, response, status) ->
       data = $.parseJSON(response.responseText)
+      return if !data.success || data.success == 'false'
       follow = data.follow
+      delete @options.followable_objects[follow.followable_type][follow.followable_id]
       @trigger 'unfollow', data.follow
+      @render
 
 
 

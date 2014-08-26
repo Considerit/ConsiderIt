@@ -41,7 +41,7 @@ class OpinionController < ApplicationController
     opinion.save
 
     # Update published
-    if params['published'] and not opinion.published
+    if params['published'] && !opinion.published
       opinion.publish()  # This will also publish all the newly-written points
     end
 

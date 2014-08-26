@@ -5,17 +5,20 @@ class EventMailer < Mailer
   def send_message(message, current_user, options = {})
     @message = message
 
-    domain = options[:host].end_with?('consider.it') ? 'consider.it' : options[:host]
-    message.sender = message.sender.gsub '{{domain}}', domain
+    # domain = options[:host].end_with?('consider.it') ? 'consider.it' : options[:host]
+    #message.sender = message.sender.gsub '{{domain}}', domain
+
+    # from e.g. Moderator <hank@cityclub.org>
+    from = format_email current_user.email, message.sender
 
     recipient = message.addressedTo()
 
-    reply_to = format_email @message.sender, @message.senderName()
+    # reply_to = format_email @message.sender, @message.senderName()
     to = format_email recipient.email, recipient.name
 
     subject = "[#{options[:app_title]}] #{@message.subject}"
 
-    mail(:from => format_email('admin@consider.it', options[:app_title]), :to => to, :subject => subject, :reply_to => reply_to, :bcc => current_user.email)
+    mail(:from => from, :to => to, :subject => subject)
 
   end
 

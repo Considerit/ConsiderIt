@@ -176,7 +176,7 @@
       recipient : @options.model.get 'user_id'
       body : "(write your message)\n\n--\n\nThe point referred to can be found at #{window.location.origin}#{@options.link}" 
       subject : @options.title
-      sender :  'factcheckers@livingvotersguide.org' #'factcheckers@{{domain}}'
+      sender :  'factchecker' #'factcheckers@{{domain}}'
 
     getEmailView : ->
       new Assessment.EmailDialogView

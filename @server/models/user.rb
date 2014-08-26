@@ -60,8 +60,8 @@ class User < ActiveRecord::Base
 
   # This will output the data for this user _as if this user is currently logged in_
   # So make sure to only send this data to the client if the client is authorized. 
-  def current_user_hash(form_authenticity_token)
-    {
+  def current_user_hash(form_authenticity_token, legacy = false)
+    data = {
       id: id, #leave the id in for now for backwards compatability with Dash
       key: '/current_user',
       user: "/user/#{id}",
@@ -75,14 +75,22 @@ class User < ActiveRecord::Base
       twitter_uid: twitter_uid,
       facebook_uid: facebook_uid,
       google_uid: google_uid,
-      name: name,
-      # temporary for legacy dashboard:
-      third_party_authenticated: third_party_authenticated, 
-      follows: follows,
-      roles_mask: roles_mask,
-      avatar_file_name: avatar_file_name
-
+      name: name
     }
+
+    # temporary for legacy dashboard:
+
+    if legacy
+      data.merge! ({
+              :third_party_authenticated => third_party_authenticated, 
+              :follows => follows,
+              :roles_mask => roles_mask,
+              :avatar_file_name => avatar_file_name
+            })
+    end
+
+    data
+    
   end
 
   def as_json(options={})

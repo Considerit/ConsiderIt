@@ -1,11 +1,11 @@
 class FollowableController < ApplicationController
   def index
-    target_user = User.find(params[:user_id])
-    if authorized(target_user)
-      followable_objects = {}
-      target_user.follows.each do |follow|
-        followable_objects[follow.followable_type] = {} if !(followable_objects.has_key?(follow.followable_type))
-
+    if authorized(target_user, params['u'], params['t'])
+      followable_objects = {
+        'Proposal' => {},
+        'Point' => {}
+      }
+      target_user.follows.where(:follow => true).each do |follow|
         root_obj = follow.root_object()
         if root_obj
           followable_objects[follow.followable_type][follow.followable_id] = root_obj
@@ -30,18 +30,17 @@ class FollowableController < ApplicationController
   end
 
   def unfollow
+    my_params = params[:follows]
 
-    target_user = User.find(params[:follows][:user_id])
-
-    if authorized(target_user)
-      if params[:follows].has_key?(:unsubscribe_all) && params[:follows][:unsubscribe_all] == 'true'
+    if authorized(target_user, my_params['u'], my_params['t'])
+      if my_params.has_key?(:unsubscribe_all) && my_params[:unsubscribe_all] == 'true'
         target_user.unsubscribe!
         render :json => {:success => true}
       else
-        followable_type = params[:follows][:followable_type]
-        followable_id = params[:follows][:followable_id]
+        followable_type = my_params[:followable_type]
+        followable_id = my_params[:followable_id]
         obj_to_follow = followable_type.constantize.find(followable_id)
-        follow = obj_to_follow.follow!(target_user, :follow => params[:follows][:follow] && params[:follows][:follow] == 'true', :explicit => true)
+        follow = obj_to_follow.follow!(target_user, :follow => my_params[:follow] && my_params[:follow] == 'true', :explicit => true)
 
         render :json => {:success => true, :follow => follow}.to_json
       end
@@ -53,8 +52,20 @@ class FollowableController < ApplicationController
 
   private
 
-  def authorized(target_user)
-    (!current_user.id.nil? && target_user.id == current_user.id) || (session.has_key?(:limited_user) && session[:limited_user] == target_user.id)
+  def target_user
+    data = params.has_key?(:follows) ? params[:follows] : params
+    u = data['u']
+    if u && u.length > 0
+      User.find_by_email(u)
+    else
+      User.find(data[:user_id])
+    end
+  end
+
+  def authorized(target_user, u = '', t = '')
+    encrypted = ApplicationController.arbitrary_token("#{u}#{target_user.unique_token}#{current_tenant.identifier}")
+    valid_token = encrypted == t
+    (current_user && target_user.id == current_user.id) || valid_token
   end
   
 end

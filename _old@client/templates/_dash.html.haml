@@ -364,22 +364,26 @@
     = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => { :class => 'dashboard-notifications-unfollow_all'} do |f|
       = f.hidden_field :user_id, :value => "{{id}}"
       = f.hidden_field :unsubscribe_all, :value => true
+      = f.hidden_field :u, :value => "{{u}}"
+      = f.hidden_field :t, :value => "{{t}}"      
       = f.submit "Unsubscribe to all notifications", :class => 'button', data: { confirm: "Are you sure you want to unsubscribe to all notifications? This is irreversable." }
 
-  .dashboard-notifications-followable_group
-    .dashboard-heading
-      %h2
-        Site-wide notifications
+  / .dashboard-notifications-followable_group
+  /   .dashboard-heading
+  /     %h2
+  /       Site-wide notifications
 
-      .dashboard-subheading
-        Receive an email whenever a new conversation is started.
+  /     .dashboard-subheading
+  /       Receive an email whenever a new conversation is started.
 
-      = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => {:class => "dashboard-notifications-unfollow"} do |f|
-        = f.hidden_field :user_id, :value => "{{ id }}"
-        = f.hidden_field :followable_type, :value => "Account"
-        = f.hidden_field :followable_id, :value => "{{ tenant_id }}"  
-        = f.hidden_field :follow, :value => "{{ !account_follower }}"
-        = f.submit "{{ submit_text }}", :class => 'button'      
+  /     = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => {:class => "dashboard-notifications-unfollow"} do |f|
+  /       = f.hidden_field :user_id, :value => "{{ id }}"
+  /       = f.hidden_field :followable_type, :value => "Account"
+  /       = f.hidden_field :followable_id, :value => "{{ tenant_id }}"  
+  /       = f.hidden_field :follow, :value => "{{ !account_follower }}"
+  /       = f.hidden_field :u, :value => "{{u}}"
+  /       = f.hidden_field :t, :value => "{{t}}"      
+  /       = f.submit "{{ submit_text }}", :class => 'button'      
 
   (( _.each( followable_types, function(followable_type){  ))
   .dashboard-notifications-followable_group
@@ -394,13 +398,10 @@
       %table.table.table-condensed.table-striped
         %tbody
           (( var is_following = false; ))
-          (( if(follows[followable_type.model]) { ))
-          (( _.each( _.values(follows[followable_type.model]), function(obj){ ))
 
-          (( if( obj.follow ){ ))
-          (( is_following = true; ))
-
-          (( var root_object = followable_objects[obj.followable_type][obj.followable_id]; ))
+          (( console.log(followable_objects, followable_type.model, followable_objects[followable_type.model]); ))
+          (( if(_.values(followable_objects[followable_type.model]).length > 0) { ))
+          (( _.each( _.values(followable_objects[followable_type.model]), function(root_object){ ))
 
           %tr.follow_row
 
@@ -409,16 +410,15 @@
 
             %td
               = form_for :follows, :url => unfollow_path, :remote => true, :as => :follow, :html => {:class => "dashboard-notifications-unfollow"} do |f|
+                = f.hidden_field :u, :value => "{{u}}"
+                = f.hidden_field :t, :value => "{{t}}"      
                 = f.hidden_field :user_id, :value => "{{id}}"
-                = f.hidden_field :followable_type, :value => "{{obj.followable_type}}"
-                = f.hidden_field :followable_id, :value => "{{obj.followable_id}}"  
+                = f.hidden_field :followable_type, :value => "{{followable_type.model}}"
+                = f.hidden_field :followable_id, :value => "{{root_object.id}}"  
                 = f.submit "Unsubscribe", :class => 'button'
-
-          (( } ))
           (( }); ))
-          (( if( !is_following ){ ))
+          (( } else { ))
           Not following any {{followable_type.label}}
-          (( } ))
           (( } ))
   (( }); ))
 

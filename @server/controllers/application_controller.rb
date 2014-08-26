@@ -177,9 +177,8 @@ private
             .map {|k| Proposal.find(key_id(k)).proposal_data()})
 
     # Output dirty current_user
-    if (Thread.current[:dirtied_keys].has_key? '/current_user' \
-        or Thread.current[:dirtied_keys].has_key? "/user/#{current_user.id}")
-      response.append current_user.current_user_hash(form_authenticity_token) 
+    if (Thread.current[:dirtied_keys].has_key? '/current_user')
+      response.append current_user.current_user_hash(form_authenticity_token)
 
       # And include the user object too, if we haven't already
       if not Thread.current[:dirtied_keys].has_key?("/user/#{current_user.id}")

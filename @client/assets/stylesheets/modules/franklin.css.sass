@@ -445,7 +445,7 @@ $slider_handle_size: 22px
 .user_is_hovering_on_a_drop_target .decision_board_body
   border-style: solid  
 
-.focal_area
+.decision_board_body
   border-radius: 16px
   border: 3px dashed $decision_board_border_color
 
@@ -848,6 +848,10 @@ a.edit_point, a.delete_point
     padding: $vertical_baseline 0
     display: block
 
+  .reset_password_section_label
+    padding: 0 0 $vertical_baseline 0
+    display: block
+
   input[type="text"], input[type="email"], input[type="password"]
     border: 1px solid #aaa
     padding: 5px 10px
@@ -870,7 +874,7 @@ a.edit_point, a.delete_point
     vertical-align: top
 
     &.label_cell
-      width: 35%
+      width: 37%
 
     &.field_cell
       width: 100%
@@ -927,10 +931,11 @@ $avatar_preview_size: 60px
 
 .auth_errors
   text-align: center
-  +font-size(0)
-  color: white
-  background-color: desaturate(red, 50%)
-  border-radius: 16px
+  font-size: 21px
+  color: darkred
+  background-color: #ffD8D8
+  padding: 10px
+  //border-radius: 16px
   i
     padding-right: $grid_gutter/2
 

@@ -64,6 +64,7 @@ class Point < ActiveRecord::Base
     result['includers'].map! {|u| hide_name && u == user_id ? -1 : u}
     result['includers'].map! {|u| "/user/#{u}"}
 
+
     # super slow!
     # result['last_inclusion'] = inclusions.count > 0 ? inclusions.order(:created_at).last.created_at.to_i : -1
     
@@ -78,6 +79,10 @@ class Point < ActiveRecord::Base
     stubify_field(result, 'proposal')
     stubify_field(result, 'opinion')
     stubify_field(result, 'user')
+
+    # for legacy dash support
+    result['id'] = id
+    
     result
   end
 

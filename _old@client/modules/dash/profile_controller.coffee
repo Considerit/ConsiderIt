@@ -64,7 +64,7 @@
 
   class User.EmailNotificationsController extends App.Dash.RegionController
     data_uri : -> 
-      Routes.followable_index_path {user_id : @options.model.id}
+      Routes.followable_index_path {user_id : @options.model.id, u : @options.params['u'], t : @options.params['t']}
 
     process_data_from_server : (data) ->
       @followable_objects = data.followable_objects
@@ -82,5 +82,6 @@
 
     getLayout : ->
       new User.EmailNotificationsView
+        params : @options.params
         model : @options.model
         followable_objects : @followable_objects

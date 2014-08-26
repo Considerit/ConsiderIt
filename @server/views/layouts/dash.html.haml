@@ -31,26 +31,25 @@
 
   %body
 
-    - cache ['dash_body', current_tenant] do
 
-      #t_bg.content_style
-        #t_bg-top
-          #l_wrap
-            #l-loading-indicator
-            .l_header
-            #l_content
+    #t_bg.content_style
+      #t_bg-top
+        #l_wrap
+          #l-loading-indicator
+          .l_header
+          #l_content
 
-              #l_content_main
-                #t_bg-content
-                  #t_bg_content_top
-                    #l_content_main_wrap
+            #l_content_main
+              #t_bg-content
+                #t_bg_content_top
+                  #l_content_main_wrap
 
-                    = image_tag "ajax-loader.gif", :id => 'l_preloader'
-                    = yield
+                  = image_tag "ajax-loader.gif", :id => 'l_preloader'
+                  = yield
 
-            #l_sticky_footer_region
+          #l_sticky_footer_region
 
-            .l_footer
+          .l_footer
 
 
     = render :partial => 'old/data'        

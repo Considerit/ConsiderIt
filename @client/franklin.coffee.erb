@@ -1001,15 +1001,21 @@ CommunityPoints = ReactiveComponent
 
   render : ->
     selected_segment = @data('histogram').selected_segment
+    proposal = @data(@data('root').current_proposal)
 
     #filter to pros or cons & down to points that haven't been included
     points = @buildPointsList() #todo: memoize
     newpoint_threshold = @buildNewPointThreshold() #todo: memoize
     label = capitalize @props.key
 
+    # TODO: The minheight below is not a principled or complete solution to two sizing issues: 
+    #           1) resizing the reasons region when the height of the decision board 
+    #              (which is absolutely positioned) grows taller the wing points
+    #           2) when filtering the points on result page to a segment without many inclusions,
+    #              the document height can jarringly fluctuate
     R.div 
       className:"points_by_community #{@props.key}_by_community"
-      style: { width: POINT_CONTENT_WIDTH, minHeight: (if points.length > 3 then jQuery(window).height() else 400) }
+      style: { width: POINT_CONTENT_WIDTH, minHeight: (if proposal.points.length > 4 then jQuery(window).height() else 400) }
     , 
       R.div className:'points_heading_label', 
         if @data('root').page_name == 'results' then "Top #{label}" else "Others' #{label}"

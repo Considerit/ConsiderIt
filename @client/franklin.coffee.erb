@@ -1490,13 +1490,15 @@ Auth = ReactiveComponent
 
     $el = $(@getDOMNode())
     current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
-
-    save(current_user)
+    local = @local
+    local.submitting = true
+    save(local)
 
     # hack for submitting file data in ActiveREST for now
     # we'll just submit the file form after user is signed in
     # TODO: investigate alternatives for submitting form data
     if @submit_avatar_form
+      save(current_user)
       $('#user_avatar_form').ajaxSubmit
         type: 'PUT'
         data: 
@@ -1504,9 +1506,14 @@ Auth = ReactiveComponent
         success: (current_user_data, status, xhr) -> 
           current_user.errors = if current_user_data.errors then current_user_data.errors else []
           current_user.csrf = current_user_data.csrf
-          save(current_user)
+          save(current_user, =>
+            local.submitting = false
+            save(local))
           fetchAvatars()
     else
+      save(current_user, =>
+        local.submitting = false
+        save(local))
       fetchAvatars()
 
 
@@ -1656,7 +1663,7 @@ Auth = ReactiveComponent
               R.span null, if root.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
               R.a className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
 
-      R.div className:'auth decision_board_body',
+      R.div className:'auth decision_board_body' + (if @local.submitting then ' waiting' else ''),
         if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
           R.div className: 'third_party_auth',
             R.label className: 'third_party_call', 'Instantly:'
@@ -1802,7 +1809,7 @@ Auth = ReactiveComponent
 
       R.div null, 
         R.div 
-          className:'auth_button primary_button'
+          className:'auth_button primary_button' + (if @local.submitting then ' disabled' else '')
           onClick: @submitAuth
         , if root.auth_mode == 'register' then 'Create account and save your opinion' else 'Login and save your opinion'
 

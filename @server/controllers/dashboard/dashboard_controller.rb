@@ -6,16 +6,22 @@ class Dashboard::DashboardController < ApplicationController
       :reason => current_user.nil? ? 'not logged in' : 'not authorized'
     }
 
-    if request.xhr?
-      render :json => result 
-    else
-      if current_user && current_user.registration_complete
-        render :json => result
-      else
-        session[:redirect_after_login] = request.path
-        @not_logged_in = true
-        render :template => "old/login", :layout => 'dash' 
+    respond_to do |format|
+
+      format.json do
+        render :json => result 
       end
+      format.html do
+        if current_user && current_user.registration_complete
+          render :json => result
+        else
+          session[:redirect_after_login] = request.path
+          @not_logged_in = true
+          render :template => "old/login", :layout => 'dash' 
+        end
+      end
+
+
     end
 
   end

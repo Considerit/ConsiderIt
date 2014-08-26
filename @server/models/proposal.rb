@@ -106,7 +106,7 @@ class Proposal < ActiveRecord::Base
     result["participants"].map! {|p| "/user/#{p}"}
     result["top_con"] = "/point/#{result['top_con']}"
     result["top_pro"] = "/point/#{result['top_pro']}"
-    result["is_following"] = following_proposal current_user
+    result["is_following"] = following current_user
 
     #for legacy dash support
     result["id"] = id
@@ -116,7 +116,7 @@ class Proposal < ActiveRecord::Base
 
   # The user is subscribed to the proposal _implicitly_ if:
   #   • they have an opinion (published or not)
-  def following_proposal(follower)
+  def following(follower)
     explicit = get_explicit_follow follower #using the Followable polymophic method
     if explicit
       return explicit.follow

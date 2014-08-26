@@ -1381,10 +1381,6 @@ Avatar = ReactiveComponent
 
     attrs.src = filename if filename
     
-    R.span style: {position: 'absolute'},
-      if @local.show_details
-        R.span style: {position: 'absolute', bottom: -10},
-          @local.name
     @transferPropsTo @props.tag attrs
 
   getDefaultProps : ->
@@ -1404,9 +1400,11 @@ Avatar = ReactiveComponent
     $name = $("<span class='hover_avatar_name'>#{display_name}</span>")
     $('body').append $name   # ugly!
 
+    # if we're at the top of the page, stick the name below
+    direction = if $el.offset().top < 50 then 1 else -1
     $name.css 
       left: pos.left - $name.width() / 2 + $el.width()/2
-      top: pos.top - $name.height()
+      top: pos.top + direction * $name.height()
 
   showDetails : (ev) -> 
     @local.show_details = true

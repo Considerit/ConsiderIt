@@ -846,7 +846,7 @@ DecisionBoard = ReactiveComponent
         width: HISTOGRAM_WIDTH
 
       R.div 
-        className:'decision_board_body focal_area'
+        className:'decision_board_body'
         onClick: => if root.page_name == 'results' then togglePage('crafting')
       ,
 
@@ -1500,26 +1500,22 @@ Auth = ReactiveComponent
       fetchAvatars()
 
 
-  sendPasswordReminder : -> 
-    email = @data('/current_user').email
-    $.post '/send_password_reset_token', {user : {email: email}}, (data) =>
-      if data.errors && data.errors.length > 0
-        current_user = @data('/current_user')
-        current_user.errors = data.errors
-        save(current_user)
-      else 
-        root = @data('root')
-        root.auth_mode = 'password_reminder'
+  sendResetPassword : -> 
+    console.log('Resetting password')
+
+    # Tell the server to email us a token
+    (current_user = @data('/current_user')).reset_my_password = true
+    save(current_user, =>
+      if not (current_user.errors?.reset_password?.length > 0)
+        # Switch to reset_password mode
+        (root = @data('root')).auth_mode = 'reset_password'  # Is this confusing to read?
         save(root)
-
-  # publishOpinionsAfterAuth: -> 
-  #   # publish any opinions that were awaiting authorization
-  #   your_opinion = @data your_opinion_key
-  #   if your_opinion.publish_pending_authorization
-  #     delete your_opinion['publish_pending_authorization']
-  #     your_opinion.published = true
-  #     save your_opinion
-
+      else
+        # Tell the login screen to show the reset_password errors
+        current_user.errors.login = current_user.errors.reset_password
+        console.log("Waiting for user to fix errors #{current_user.errors?.reset_password}")
+        arest.updateCache(current_user)
+      )
   toggleAuthMode : -> 
     root = @data('root')
     current_user = @data('/current_user')
@@ -1530,6 +1526,13 @@ Auth = ReactiveComponent
   render: -> 
     current_user = @data('/current_user')
     root = @data('root')
+
+    # When we switch to new auth_mode screens, wipe out all the old
+    # errors, cause we're startin' fresh!
+    if not @local.last_auth_mode or @local.last_auth_mode != root.auth_mode
+      @local.last_auth_mode = root.auth_mode
+      for error_type in current_user.errors
+        current_user.errors[error_type] = []
 
     # Once the user logs in, we will stop showing the log-in screen
     if current_user.logged_in
@@ -1560,6 +1563,7 @@ Auth = ReactiveComponent
         id: 'user_' + name
         defaultValue: current_user[name]
         name: "user[#{name}]"
+        key: "#{name}_input_box"
         placeholder: placeholder
         required: "required"
         type: type
@@ -1572,23 +1576,25 @@ Auth = ReactiveComponent
 
     password_input_field =
       input_box('password',
-                 if root.auth_mode == 'login' then "password" else "new password",
+                 if root.auth_mode == 'login' then "password" else "choose a new password",
                  'password',
                  null,
                  if root.auth_mode == 'register' then ".{5,}" else '')
 
-    password_reset_token_field =
+    reset_password_token_field =
       R.input
         id: "reset_password_token"
         name: "reset_password_token"
+        key: "reset_password_token_input_box"
         placeholder: "verification code"
         required: "required"
         type: "text"
+        defaultValue: current_user.reset_password_token
         onKeyPress: submitOnEnter
         onChange: (event) => current_user.reset_password_token = event.target.value
 
     providers = ['facebook', 'google']
-    if root.auth_mode in ['login', 'password_reminder']
+    if root.auth_mode in ['login', 'reset_password']
       providers.push('twitter')
 
     third_party_authenticated = current_user.facebook_uid || current_user.twitter_uid || current_user.google_uid
@@ -1640,7 +1646,7 @@ Auth = ReactiveComponent
               R.span null, if root.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
               R.a className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
 
-      R.div className:'auth focal_area',
+      R.div className:'auth decision_board_body',
         if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
           R.div className: 'third_party_auth',
             R.label className: 'third_party_call', 'Instantly:'
@@ -1652,41 +1658,47 @@ Auth = ReactiveComponent
 
             R.div className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 
-        if root.auth_mode in ['login', 'password_reminder']
-          # logging in
+        if root.auth_mode in ['login', 'reset_password']
+          # logging in or resetting password
 
           R.div null, 
-            R.label className: 'auth_section_label', if root.auth_mode == 'login' then 'By email address:' else 'Change your password to login'
+            if root.auth_mode == 'login'
+              R.label className: 'auth_section_label', 'By email address:'
+            else
+              R.div null,
+                R.label className: 'reset_password_section_label', 'Reset your password'
+                R.div style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
+            R.table className: 'auth_fields login',
+              if root.auth_mode == 'reset_password'
+                R.tr null,
+                  R.td null, 'We just emailed you a code. Enter it here:'
+                R.tr null, 
+                  R.td className: 'label_cell', 
+                    R.label htmlFor: 'user_verification_code', 'code:'
 
-            R.table className: 'auth_fields login', 
-              R.tr null, 
-                R.td className: 'label_cell',
-                  if root.auth_mode == 'login'  
+                  R.td className: 'field_cell', 
+                    reset_password_token_field,
+                    R.div className: 'password_verification_explanation', "Find code in an email just sent to you."
+              else
+                R.tr null,
+                  R.td className: 'label_cell',
                     R.label htmlFor: 'user_email', 'email:'
-                R.td className: 'field_cell',
-                  email_input_field
+                  R.td className: 'field_cell',
+                    email_input_field
 
-              R.tr null, 
-                R.td className: 'label_cell', 
+              R.tr null,
+                R.td {style: (if root.auth_mode == 'reset_password' then {width: '37%'} else {}), className: 'label_cell'},
                   switch root.auth_mode
                     when 'login'
                       R.label htmlFor: 'user_password', 'password:'
-                    when 'password_reminder'
+                    when 'reset_password'
                       R.label htmlFor: 'user_password', 'new password:'
 
                 R.td className: 'field_cell', 
                   password_input_field,
                   if root.auth_mode == 'login'
-                    R.a className: 'forgot_password', onClick: @sendPasswordReminder, 'I forgot! Email me password instructions.'
+                    R.a className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
 
-              if root.auth_mode == 'password_reminder'
-                R.tr null, 
-                  R.td className: 'label_cell', 
-                    R.label htmlFor: 'user_verification_code', 'verification code:'
-
-                  R.td className: 'field_cell', 
-                    password_reset_token_field,
-                    R.div className: 'password_verification_explanation', "Find code in an email just sent to you."
 
         else 
           # creating new account

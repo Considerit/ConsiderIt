@@ -21,7 +21,7 @@
     // CURRENT USER
     ConsiderIt.current_user = #{current_user ? current_user.id : 'null'};
 
-    #{!current_user ? '' : "ConsiderIt.current_user_data = #{current_user.current_user_hash(form_authenticity_token).to_json}"}
+    #{!current_user ? '' : "ConsiderIt.current_user_data = #{current_user.current_user_hash(form_authenticity_token, true).to_json}"}
 
     //.update( {follows: current_user.follows.load.to_json})}"}
 

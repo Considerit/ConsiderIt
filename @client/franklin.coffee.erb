@@ -1541,7 +1541,7 @@ Auth = ReactiveComponent
     # errors, cause we're startin' fresh!
     if not @local.last_auth_mode or @local.last_auth_mode != root.auth_mode
       @local.last_auth_mode = root.auth_mode
-      for error_type in current_user.errors
+      for error_type in (current_user.errors or {})
         current_user.errors[error_type] = []
 
     # Once the user logs in, we will stop showing the log-in screen

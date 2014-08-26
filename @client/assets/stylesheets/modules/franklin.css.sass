@@ -449,6 +449,10 @@ $slider_handle_size: 22px
   border-radius: 16px
   border: 3px dashed $decision_board_border_color
 
+.decision_board_body.waiting
+  cursor: wait
+  border-color: #ccc
+
   // a
   //   +link_style( emphasize($decision_board_text_color, 10%, $reference: $decision_board_background_color), $decision_board_background_color, 25%)
   
@@ -536,7 +540,12 @@ $slider_handle_size: 22px
 .primary_button
   +blue_button
   font-weight: 600
-
+.primary_button.disabled
+  background-color: #eee
+  color: #ccc
+  box-shadow: none
+  border: none
+  cursor: wait
 a.primary_cancel_button
   color: #888
   margin-top: $vertical_baseline / 2

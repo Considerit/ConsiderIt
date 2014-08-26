@@ -7,6 +7,8 @@
 ##################################################
 ############ Notifications for moderatable models
 
+
+#### notify_proposal is NOT MIGRATED / TESTED!!!!######
 notify_proposal = Proc.new do |data|
   #params : proposal, current_tenant, mail_options
   proposal = data[:proposal] || data[:model]
@@ -25,11 +27,6 @@ notify_proposal = Proc.new do |data|
         EventMailer.discussion_new_proposal(follow.user, proposal, mail_options, '').deliver!
       end
     end
-  end
-
-  if current_tenant.tweet_notifications
-    msg = new_published_proposal_tweet(proposal)
-    post_to_twitter_client(current_tenant, msg)
   end
 
 end
@@ -77,7 +74,7 @@ notify_point = Proc.new do |data|
 
 end
 
-
+#### notify_comment is NOT MIGRATED / TESTED!!!!######
 notify_comment = Proc.new do |args|
   #params: comment, current_tenant, mail_options
   comment = args[:model] || args[:comment]
@@ -178,24 +175,12 @@ end
 
 
 
-##############################
-##### DISCUSSION LEVEL #######
-##############################
-
-
-
-def new_published_proposal_tweet(proposal)
-  proposal_link = Rails.application.routes.url_helpers.new_opinion_proposal_url(proposal.long_id, :host => proposal.account.host_with_port)
-  proposal_link = shorten_link(proposal_link)
-
-  space_for_body = 140 - proposal_link.length - 23
-  "New proposal: \"#{proposal.title_with_hashtags(space_for_body)} ...\" #{proposal_link}"
-end
-
 
 ###########################
 ##### PROPOSAL LEVEL ######
 ###########################
+
+#### alert_proposal_publicity_changed is NOT MIGRATED / TESTED!!!!######
 
 ActiveSupport::Notifications.subscribe("alert_proposal_publicity_changed") do |*args|
   data = args.last
@@ -219,7 +204,7 @@ ActiveSupport::Notifications.subscribe("alert_proposal_publicity_changed") do |*
 end
 
 
-
+#### published_new_opinion is NOT MIGRATED / TESTED!!!!######
 ActiveSupport::Notifications.subscribe("published_new_opinion") do |*args|
 
   def fib(n)
@@ -271,129 +256,5 @@ ActiveSupport::Notifications.subscribe("published_new_opinion") do |*args|
     proposal.followable_last_notification = DateTime.now
     proposal.save
 
-    if current_tenant.tweet_notifications && opinions.count > 10 #only send tweets for milestones past 10 opinions
-      msg = new_proposal_milestone_tweet(proposal)
-      post_to_twitter_client(current_tenant, msg) 
-    end
-
-  end
-end
-
-def new_proposal_milestone_tweet(proposal)
-  proposal_link = Rails.application.routes.url_helpers.proposal_url(proposal.long_id, :host => proposal.account.host_with_port)
-  proposal_link = shorten_link(proposal_link)
-
-  lead = "Milestone: #{proposal.opinions.count} opinions for "
-  space_for_body = 140 - proposal_link.length - lead.length - 9
-  "#{lead}\"#{proposal.title_with_hashtags(space_for_body)} ...\" #{proposal_link}"
-end
-
-
-
-#########################
-##### POINT LEVEL #######
-#########################
-
-
-# ActiveSupport::Notifications.subscribe("comment:opinion:created") do |*args|
-#   data = args.last
-#   commentable = data[:commentable]
-#   comment = data[:comment]
-#   current_tenant = data[:current_tenant]
-#   mail_options = data[:mail_options]
-
-#   commenters = commentable.comments.select(:user_id).uniq
-#   includers = commentable.inclusions.select(:user_id).uniq
-
-#   commentable.follows.where(:follow => true).each do |follow|
-
-#     # if follower's action triggered event, skip...
-#     if follow.user_id == comment.user_id 
-#       next
-
-#     # if follower doesn't have an email address, skip...
-#     elsif !follow.user.email || follow.user.email.length == 0
-#       next
-
-#     # if follower is author of commentable
-#     elsif follow.user_id == commentable.user_id
-#       #EventMailer.someone_discussed_your_opinion(follow.user, commentable, comment, mail_options).deliver!
-
-#     # else if follower is a participant in the discussion
-#     elsif commenters.include? follow.user_id
-#       #TODO: make sure this message is relevant for opinion
-#       #EventMailer.someone_commented_on_thread(follow.user, commentable, comment, mail_options).deliver!
-
-#     # TODO
-#     # lurker 
-#     else
-
-#     end
-
-#   end
-
-# end
-
-
-##########################
-### USERS ###
-####################
-
-
-# ActiveSupport::Notifications.subscribe("first_opinion_by_new_user") do |*args|
-#   data = args.last
-#   user = data[:user]
-#   proposal = data[:proposal]
-#   current_tenant = data[:current_tenant]
-#   mail_options = data[:mail_options]
-
-
-#   #UserMailer.confirmation_instructions(user, proposal, mail_options).deliver!
-
-# end
-
-
-
-##########################
-### Twitter
-##########################
-
-def shorten_link(link)
-  shortened_link = ''
-  # if link && APP_CONFIG.has_key?(:bitly)
-  #   bitly_client = Bitly.new(APP_CONFIG[:bitly][:user_name], APP_CONFIG[:bitly][:api_key])
-  #   shortened_link = bitly_client.shorten(link).short_url
-  # end
-  shortened_link
-end
-
-def post_to_twitter_client(account, msg)
-  if account.tweet_notifications
-    _post_to_twitter_client(msg,
-      account.socmedia_twitter_consumer_key, 
-      account.socmedia_twitter_consumer_secret, 
-      account.socmedia_twitter_oauth_token, 
-      account.socmedia_twitter_oauth_token_secret)#.delay
-  end
-end
-
-def _post_to_twitter_client(msg, consumer_key, secret, token, token_secret)
-  
-  twitter_client = Twitter::Client.new(
-    :consumer_key => consumer_key,
-    :consumer_secret => secret,
-    :oauth_token => token,
-    :oauth_token_secret => token_secret
-  )
-  begin
-    twitter_client.update(msg)
-    #logger.info "Sent tweet: #{msg}"
-    pp "Sent tweet: #{msg}"
-  rescue
-    pp "Could not send tweet: #{msg}"
-    #begin
-      #logger.error "Could not send tweet: #{msg}"
-    #rescue
-    #end
   end
 end

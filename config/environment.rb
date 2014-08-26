@@ -6,12 +6,12 @@ require File.expand_path('../application', __FILE__)
 def stubify_field(hash, name)
   id = hash[name + '_id']
   #hash[name] = (id and { :key => "/#{name}/#{id}?stub" })
-  hash[name] = (id and "/#{name}/#{id}")
+  hash[name] = (id && "/#{name}/#{id}")
   hash.delete(name + '_id')
 end
 def make_key(hash, name)
   id = hash["id"]
-  hash['key'] = (id and "/#{name}/#{id}")
+  hash['key'] = (id && "/#{name}/#{id}")
   hash.delete('id')
 end
 
@@ -53,9 +53,9 @@ def remap_key(old_key, new_key)
 end
 
 def current_user
-  return nil if not (Thread.current[:current_user2] or Thread.current[:current_user_id2])
+  return nil if !(Thread.current[:current_user2] || Thread.current[:current_user_id2])
 
-  if not Thread.current[:current_user2]
+  if !Thread.current[:current_user2]
     Thread.current[:current_user2] = User.find(Thread.current[:current_user_id2])
   end
   Thread.current[:current_user2]

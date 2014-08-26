@@ -19,16 +19,72 @@ class CurrentUserController < ApplicationController
     puts("  with current_user=#{current_user.id}")
     puts("")
 
-    errors = {:login => [], :register => [], :password_reminder => []}
-    min_pass = 4
+    errors = {:login => [], :register => [], :reset_password => []}
+    min_pass = @min_pass = 4
+    logging_out = false
+    email_regexp = /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
+    
+    def try_email_authentication(params)
+      puts("Signing in by email and password")
+
+      return ['Missing email']    if !params[:email] || params[:email].length == 0
+      return ['Missing password'] if !params[:password] || params[:password].length == 0
+      
+      user = User.find_by_lower_email(params[:email])
+      return ["No user exists at that email address"] if !user || !user.registration_complete
+      # note: Returning this error message is a security risk as it
+      #       reveals that a particular email address exists in the
+      #       system or not.  But it's prolly the right tradeoff.
+
+      pp(params[:password])
+      if !user.authenticate(params[:password])
+        return ["Wrong password"]
+      end
+
+      replace_user(current_user, user)
+      set_current_user(user)
+      puts("Now current is #{current_user && current_user.id}")
+      return []
+    end
+
+    def try_password_reset_authentication(params)
+      puts("Signing in by password reset.  min_pass is #{@min_pass}")
+      has_password = params[:password] && params[:password].length >= @min_pass
+      if !has_password
+        puts("They need to provide a longer password. Bailing.")
+        return ["Please make a new password at least #{@min_pass} letters long"]
+      end
+      
+      # What's this next line?  I'm guessing this next line is for
+      # when you create an account and click a link in a confirmation
+      # email, but I'm not sure. -mike
+      params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
+
+      # Now let's take that raw reset_password_token, and compute the
+      # digest and see if it matches any users
+      encoded_token = OpenSSL::HMAC.hexdigest('SHA256',
+                                              'reset_password_token',
+                                              params[:reset_password_token])
+      user = User.where(reset_password_token: encoded_token).first
+      puts("We found user #{user} with a password reset token")
+      
+      if !user
+        return ["Sorry, that's the wrong verification code."]
+      end
+      
+      replace_user(current_user, user)
+      set_current_user(user)
+
+      return []
+    end
 
     def validate(field, type)
       value = params[field]
       error = "Field #{field} is wrong type #{value.class}"
       if type == 'boolean'
-        raise error if value and not (!!value == value)
+        raise error if value && !(!!value == value)
       else
-        raise error if value and value.class != type
+        raise error if value && value.class != type
       end
     end
 
@@ -41,11 +97,21 @@ class CurrentUserController < ApplicationController
 
     fields = ['avatar', 'bio', 'name', 'hide_name']
     new_params = params.select{|k,v| fields.include? k}
+    new_params[:name] = '' if !new_params[:name]
 
-    reset_password_token = params[:reset_password_token]
+    puts("Reset my password? #{params[:reset_my_password]}")
+
+    # Send the reset_password token if client wants
+    if params[:reset_my_password] && params[:reset_my_password]
+      puts("Initiating reset_password")
+      errors[:reset_password].concat(send_reset_password_token(params))
+      puts("Errors are #{errors[:reset_password]}")
+    end
 
     # 0. Try logging out
-    if current_user and current_user.logged_in? and params[:logged_in] == false
+    if current_user && current_user.logged_in? && params[:logged_in] == false
+      puts("Logging out.")
+      logging_out = true
       new_current_user()
     else
       # Otherwise, we'll
@@ -55,49 +121,26 @@ class CurrentUserController < ApplicationController
 
       # 1. Authenticate.  Log in.  Switch Users.
       # 
-      # We can log in with three methods
-      #  • A third-party account, like facebook or google or twitter
-      #    (handled below in update_via_third_party)
+      # The user can log in with:
       #  • A password reset token
       #  • Or the email address that has been passed into this method
-      if not current_user or not current_user.logged_in?
+      #
+      # There's also third-party auth (fb/twit/goog) but that
+      # happens in other functions.
+      if !current_user || !current_user.logged_in?
+        # This can return the following errors:
+        #  errors.reset_password = bad password
+        #  errors.reset_password = bad verification code
+        #  errors.login = bad password
+
+        puts("Trying to log in.")
+
         # Sign in by password reset token
-        if reset_password_token
-          password = params[:password] and params[:password].length > min_pass
-          if not password
-            errors[:password_reminder].append("You must provide a new password at least #{min_pass} letters long")
-          else
-            puts("Signing in by password reset")
-            params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
-            old_user = current_user
-
-            # Now let's take that raw reset_password_token, and compute
-            # the digest and see if it matches any users
-            encoded_token = OpenSSL::HMAC.hexdigest('SHA256',
-                                                    'reset_password_token',
-                                                    reset_password_token)
-            user = User.where(reset_password_token: encoded_token).first
-            puts("We found user #{user} with a password reset token")
-            if user
-              replace_user(current_user, user)
-              set_current_user(user)
-            else
-              errors[:password_reminder].append "Sorry, that's the wrong verification code."
-            end
-          end
-
+        if params[:reset_password_token]
+          errors[:reset_password].concat(try_password_reset_authentication(params))
         # Sign in by email and password
-        elsif (params[:password] and params[:password].length > 0\
-               and params[:email] and params[:email].length > 0)
-          puts("Signing in by email and password")
-          user = User.find_by_lower_email(params[:email])
-          if user and user.authenticate(params[:password])
-            replace_user(current_user, user)
-            set_current_user(user)
-            puts("Now current is #{current_user and current_user.id}")
-          else
-            errors[:login].append 'wrong password'
-          end
+        else
+          errors[:login].concat(try_email_authentication(params))
         end
       end
 
@@ -112,73 +155,79 @@ class CurrentUserController < ApplicationController
       if current_user.update_attributes(permitted) 
         puts("Updating params. #{new_params}; permitted version #{permitted}")
         if !current_user.save
-          puts("Save failed")
+          raise 'Error saving basic current_user parameters!'
         end
-        if params.has_key? :avatar
-          dirty_avatar_cache
-        end
+        dirty_avatar_cache if params.has_key? :avatar
       else
         raise 'Had trouble manipulating this user!'
       end
 
       # Update their email address.  First, check if they gave us a new address
       email = params[:email]
-      if email and email.length > 0 and email != current_user.email
-        # And if it's not taken
-        if User.find_by_email email
-          errors[:register].append 'That email is not available.'
-        # And that it's valid
-        elsif !email.include?('.') || !email.include?('@') # instead of a complicated regex, let's just check for @ and .
-          errors[:register].append 'Bad email address'
-        else
-          puts("Updating email from #{current_user.email} to #{params[:email]}")
-          # Okay, here comes a new email address!
-          current_user.update_attributes({:email => email})
-          if !current_user.save
-            raise "Error saving this user's email"
-          end
+      user = User.find_by_email(email)
+      if !email || email.length == 0
+        errors[:register].append 'No email address specified'
+      # And if it's not taken
+      elsif user && (user != current_user)
+        errors[:register].append 'That email is not available'
+      # And that it's valid
+      elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
+        errors[:register].append 'Bad email address'
+      else
+        puts("Updating email from #{current_user.email} to #{params[:email]}")
+        # Okay, here comes a new email address!
+        current_user.update_attributes({:email => email})
+        if !current_user.save
+          raise "Error saving this user's email"
         end
       end
 
       # Update their password
-      if (params[:password] and params[:password].length > 0)
-        if params[:password].length < min_pass
-          errors[:register].append 'Password is too short'
-        else
-          puts("Changing user's password.")
-          current_user.password = params[:password]
-          if !current_user.save
-            raise "Error saving this user's password"
-          end
+      if !params[:password] || params[:password].length == 0
+        errors[:register].append 'No password specified'
+      elsif params[:password].length < min_pass
+        errors[:register].append 'Password is too short'
+      else
+        puts("Changing user's password.")
+        current_user.password = params[:password]
+        if !current_user.save
+          raise "Error saving this user's password"
         end
       end
-    end
 
-    # Register the account
-    if not current_user.registration_complete
-      third_party_authenticated = current_user.twitter_uid or current_user.facebook_uid\
-                                    or current_user.google_uid
-      has_name = current_user.name and current_user.name.length > 0
-      can_login = ((current_user.email and current_user.email.length > 0)\
-                   or third_party_authenticated)
-      signed_pledge = params[:signed_pledge]
-      ok_password = third_party_authenticated || (params[:password] and params[:password].length > min_pass)
+      # Register the account
+      if !current_user.registration_complete
+        third_party_authenticated = current_user.twitter_uid || current_user.facebook_uid\
+                                    || current_user.google_uid
+        has_name = current_user.name && current_user.name.length > 0
+        can_login = ((current_user.email && current_user.email.length > 0)\
+                     || third_party_authenticated)
+        signed_pledge = params[:signed_pledge]
+        ok_password = third_party_authenticated || (params[:password] && params[:password].length >= min_pass)
 
-      if has_name and can_login and signed_pledge and ok_password
-        current_user.registration_complete = true
-        if !current_user.save
-          raise "Error registering this uesr"
-        end
+        if has_name && can_login && signed_pledge && ok_password
+          current_user.registration_complete = true
+          if !current_user.save
+            raise "Error registering this uesr"
+          end
         # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
-      else
-        errors[:register].append('Community pledge required') if !signed_pledge
-        errors[:register].append("Password must be at least #{min_pass} letters long") if !ok_password
+        else
+          errors[:register].append('Name is blank') if !has_name
+          errors[:register].append('Community pledge required') if !signed_pledge
+        end
       end
     end
     
     # 4. Now wrap everything up
-    response = current_user.current_user_hash(form_authenticity_token)
-    response['errors'] = errors
+    response = current_user.current_user_hash(form_authenticity_token, errors)
+    if response[:logged_in] || logging_out
+      response[:password] = nil
+    else
+      # Keep these parameters around while the user re-types them in
+      response[:reset_password_token] = params[:reset_password_token]
+      response[:password] = params[:password]
+      response[:email] = params[:email] if params[:email]
+    end
 
     #HACKY! supports local measures w/ zipcodes
     # if user && (session.has_key? :tags) && session[:tags]
@@ -187,8 +236,9 @@ class CurrentUserController < ApplicationController
 
     respond_to do |format|
       format.json do 
-        dirty_key('/current_user')
-        render :json => affected_objects()
+        Thread.current[:dirtied_keys].delete('/current_user') # Because we're adding our own
+        dirty_key("/user/#{current_user.id}")                 # But let's get the /user
+        render :json => [response] + affected_objects()
       end
 
       format.html do
@@ -267,38 +317,38 @@ class CurrentUserController < ApplicationController
     puts("Done replacing. current_user=#{current_user}")
   end
 
-  #TODO: activeRESTify this method
-  def send_password_reset_token
-    user = User.find_by_lower_email(params[:user][:email]) if params[:user][:email].strip.length > 0
-    if !user.nil?
-      # This algorithm is copied/extracted from devise
-
-      # Generate a token that nobody's using
-      raw_token = loop do
-        raw_token = SecureRandom.urlsafe_base64(15)
-        raw_token = raw_token.tr('lIO0', 'sxyz') # Remove hard-to-distinguish characters
-        # Now we have a raw token... let's see if anyone's using it
-        break raw_token unless User.where(reset_password_token: raw_token).first
-      end
-
-      # Now we'll store an encoded version of the token on the user table
-      encoded_token = OpenSSL::HMAC.hexdigest('SHA256', 'reset_password_token', raw_token)
-      user.reset_password_token   = encoded_token
-      user.reset_password_sent_at = Time.now.utc
-      user.save(:validate => false)
-
-      UserMailer.reset_password_instructions(user, raw_token, mail_options).deliver!
-      render :json => {
-               :result => 'success'
-             }
-    else 
-      # note: returning this is a security risk as it reveals that a particular
-      #       email address exists in the system or not
-      render :json => {
-               :errors => ["We couldn\'t find an account matching that email."]
-             } 
+  def send_reset_password_token(params)
+    has_email = params[:email] && params[:email].strip.length > 0
+    user = has_email && User.find_by_lower_email(params[:email])
+    
+    if !user
+      # note: returning this is a security risk as it reveals that a
+      #       particular email address exists in the system or not.
+      #       But it's prolly the right tradeoff.
+      return ["We have no account for that email address."]
     end
 
+    # This algorithm is copied/extracted from devise
+
+    # Generate a token that nobody's using
+    raw_token = loop do
+      raw_token = SecureRandom.urlsafe_base64(15)
+      raw_token = raw_token.tr('lIO0', 'sxyz') # Remove hard-to-distinguish characters
+      # Now we have a raw token... let's see if anyone's using it
+      break raw_token unless User.where(reset_password_token: raw_token).first
+    end
+
+    puts("\nYO YO the raw token to login is #{raw_token}\n")
+
+    # Now we'll store an encoded version of the token on the user table
+    encoded_token = OpenSSL::HMAC.hexdigest('SHA256', 'reset_password_token', raw_token)
+    user.reset_password_token   = encoded_token
+    user.reset_password_sent_at = Time.now.utc
+    user.save(:validate => false)
+    
+    UserMailer.reset_password_instructions(user, raw_token, mail_options).deliver!
+
+    return []
   end
 
   # Omniauth oauth handlers

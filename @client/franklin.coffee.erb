@@ -284,7 +284,7 @@ Proposal = ReactiveComponent
     # Description fields are the expandable details that help people drill
     # into the proposal. They are very specific to the type of proposal (e.g. for
     # an LVG ballot measure, one of the fields might be "fiscal impact statement").  
-    # For Tigard, I'm storing all these fields in proposal.additional_description1
+    # For Tigard, I'm storing all these fields in proposal.description_fields
     # as a serialized JSON object of the following structure:
     #       [ {"label": "field one", "html": "<p>some details</p>"}, ... ] 
     # If we choose to use this more flexible approach, we can migrate all the old 
@@ -296,7 +296,7 @@ Proposal = ReactiveComponent
       # This will fail for proposals that are not using the serialized JSON format; 
       # For now, we'll just catch the error and carry on 
       try 
-        @local.description_fields = $.parseJSON(@data().additional_description1)
+        @local.description_fields = $.parseJSON(@data().description_fields)
         @local.expanded_field = null
       catch
         @local.description_fields = null

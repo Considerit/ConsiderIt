@@ -123,11 +123,16 @@ private
     Thread.current[:mail_options] = mail_options
 
     puts("In before: is there a current user? '#{session[:current_user_id2]}'")
-    if not session[:current_user_id2]
-      new_current_user()
-    end
+    # First, reset the thread's current_user values from the session
     Thread.current[:current_user_id2] = session[:current_user_id2]
     Thread.current[:current_user2] = nil
+    # Now let's see if they work
+    if !current_user()
+      # If not, let's make a new one, which will replace the old
+      # values in the session and thread
+      puts("That current_user '#{session[:current_user_id2]}' is bad. Making a new one.")
+      new_current_user
+    end
 
     # Remap crap:
     # Thread.current[:remapped_keys] = {}
@@ -147,6 +152,7 @@ private
     else
       raise 'Error making stub account. Yikes!'
     end
+    user
   end
 
   def set_current_user(user)

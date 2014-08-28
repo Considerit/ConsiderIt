@@ -11,7 +11,7 @@ class AlertMailer < Mailer
 
     subject = "Pending content to moderate"
 
-    to = format_email user.email, user.username
+    to = format_email user.email, user.name
     from = format_email(from_email(tenant), tenant.app_title)
 
     mail(:from => from, :to => to, :subject => "[#{tenant.app_title}] #{subject}")
@@ -27,7 +27,7 @@ class AlertMailer < Mailer
 
   #   subject = "A new fact check request"
 
-  #   to = format_email user.email, user.username    
+  #   to = format_email user.email, user.name    
   #   from = format_email(from_email(tenant), tenant.app_title)
 
   #   mail(:from => from, :to => to, :subject => "[#{tenant.app_title}] #{subject}")

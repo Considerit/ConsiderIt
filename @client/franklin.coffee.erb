@@ -907,7 +907,7 @@ DecisionBoard = ReactiveComponent
       R.div 
         className:'save_opinion_button primary_button'
         onClick: @saveYourOpinion
-      , 'Save your opinion and see results'
+      , if your_opinion.published then 'Switch back to results' else 'Save your opinion and see results'
 
       if root.page_name == 'crafting'
         R.a className:'follow_proposal',
@@ -921,10 +921,11 @@ DecisionBoard = ReactiveComponent
               save proposal
           R.label htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
 
-      R.a 
-        className:'cancel_opinion_button primary_cancel_button'
-        onClick: (=> togglePage('results'))
-      , 'or just skip to the results'  
+      if !your_opinion.published
+        R.a 
+          className:'cancel_opinion_button primary_cancel_button'
+          onClick: (=> togglePage('results'))
+        , 'or just skip to the results'  
 
 
 ##

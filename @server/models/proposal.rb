@@ -18,7 +18,7 @@ class Proposal < ActiveRecord::Base
   #before_save :extract_tags
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :long_id, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :top_pro, :top_con, :participants, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description]
+  self.my_public_fields = [:id, :long_id, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description]
   
   #attr_accessible :long_id, :activity, :additional_description2, :category, :created_at, :contested, :description, :designator, :additional_description1, :additional_description3, :name, :trending, :updated_at, :url1,:url2,:url3,:user_id, :active, :top_pro, :top_con, :participants, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description
 
@@ -102,11 +102,12 @@ class Proposal < ActiveRecord::Base
 
     make_key(result, 'proposal')
     stubify_field(result, 'user')
-    result["participants"] = JSON.parse(result["participants"] || '[]')
-    result["participants"].map! {|p| "/user/#{p}"}
+    # result["participants"] = JSON.parse(result["participants"] || '[]')
+    # result["participants"].map! {|p| "/user/#{p}"}
     result["top_con"] = "/point/#{result['top_con']}"
     result["top_pro"] = "/point/#{result['top_pro']}"
-    result["is_following"] = following current_user
+    follows = get_explicit_follow(current_user) 
+    result["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 
     #for legacy dash support
     result["id"] = id
@@ -114,7 +115,7 @@ class Proposal < ActiveRecord::Base
   end
 
 
-  # The user is subscribed to the proposal _implicitly_ if:
+  # The user is subscribed to proposal notifications _implicitly_ if:
   #   • they have an opinion (published or not)
   def following(follower)
     explicit = get_explicit_follow follower #using the Followable polymophic method

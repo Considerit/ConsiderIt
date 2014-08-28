@@ -389,7 +389,7 @@ Histogram = ReactiveComponent
       segments[segment].push []
 
     # ensure neutral segment has 3 columns
-    segments[3].push([]) while segments[3].length < 3   
+    #segments[3].push([]) while segments[3].length < 3   
 
     # Assign each Opinion to a column
     # This gets complicated because we treat the extremes and Neutral differently. 
@@ -406,11 +406,11 @@ Histogram = ReactiveComponent
       segment = getStanceSegment opinion.stance
 
       # If this is a Neutral opinion, fill up all three neutral cols equally
-      if segment == 3
-        segments[3][opinions_in_segment[3] % 3].push opinion
+      # if segment == 3
+      #   segments[3][opinions_in_segment[3] % 3].push opinion
 
       # If this is an extreme opinion...
-      else if segment in [0,6]
+      if segment in [0,6]
         last_col_in_segment = segments[segment].length - 1
         if segments[segment][last_col_in_segment].length == max_opinions_in_column - 1
           segments[segment].push []
@@ -445,6 +445,10 @@ Histogram = ReactiveComponent
       for opinion, idx in all_opinions_in_smaller
         smaller[idx%smaller.length].push opinion
 
+      segments[6].reverse() # ensures that the extreme supporters segment grows 
+                            # in the same symmetric pattern as the extreme opposers
+
+
     num_columns = _.flatten(_.values(segments), true).length
 
     [num_columns, segments, avatar_size]
@@ -476,9 +480,11 @@ Histogram = ReactiveComponent
     [num_columns, segments, avatar_size] = @buildHistogram() #todo: memoize
 
     effective_histogram_width = num_columns * avatar_size
-    margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH)/2
-    #make sure that the neutral segment is centered
-    margin_adjustment += (segments[0].length - segments[6].length) / 2 * avatar_size
+    margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2 #- avatar_size / 4
+    #make sure that the extreme segments are balanced
+    margin_adjustment -= avatar_size * (segments[0].length - segments[6].length) / 2 
+
+    console.log effective_histogram_width, num_columns, avatar_size, segments[0].length, segments[6].length, margin_adjustment
 
     R.table 
       className: 'histogram'
@@ -679,7 +685,7 @@ Slider = ReactiveComponent
       fontSize: if sticky then '18px' else '29px'
       top: if sticky then '-65px' else '-80px'
 
-    R.div className: 'slider', 
+    R.div className: 'slider', style : { left: - (@props.width - DECISION_BOARD_WIDTH) / 2 },
       R.div className:'slider_base', style : {width: @props.width}, 
         R.div 
           className: 'slider_base_triangle_left'
@@ -702,6 +708,7 @@ Slider = ReactiveComponent
           R.div className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved
 
         R.img className:'bubblemouth', src: bubblemouth_src, style: {left: slider.clientX}
+    
 
 ##
 # OpinionFilter

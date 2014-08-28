@@ -424,6 +424,23 @@ class User < ActiveRecord::Base
 
     # 2. Change user_id columns over in bulk
     # TRAVIS: Opinion & Inclusion is taken care of when absorbing an Opinion
+
+    # Follow can't be updated in bulk because it can result in duplicates of what should be a unique 
+    # (user, followable) constraint. So we'll first handle any duplicates. Then the rest can be bulk updated. 
+    self.follows.each do |my_follow|
+      new_follow = user.follows.where(:followable_type => my_follow.followable_type, :followable_id => my_follow.followable_id)
+      if new_follow.count > 0
+        f = new_follow.last
+        if f.explicit || !my_follow.explicit
+          my_follow.follow = f.follow
+          my_follow.explicit = f.explicit
+          my_follow.save 
+        end
+        new_follow.destroy_all
+      end
+    end
+
+    # Bulk updates...
     for table in [Point, Proposal, Comment, Assessable::Assessment, Assessable::Request, \
                   Follow, Moderation, PageView ] 
 
@@ -431,6 +448,9 @@ class User < ActiveRecord::Base
       table.where(:user_id => source_user).each{|x| dirty_key("/#{table.name.downcase}/#{x.id}")}
       table.where(:user_id => source_user).update_all(user_id: dest_user)
     end
+
+
+
 
     # 3. Delete the old user
     # TODO: Enable this once we're confident everything is working.

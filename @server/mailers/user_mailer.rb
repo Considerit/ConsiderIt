@@ -19,7 +19,7 @@ class UserMailer < Mailer
 
   #   subject = "please confirm your email"
 
-  #   to = format_email @user.email, @user.username
+  #   to = format_email @user.email, @user.name
   #   from = format_email(options[:from], options[:app_title])
 
   #   mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
@@ -35,7 +35,7 @@ class UserMailer < Mailer
     @token = token 
     subject = "password reset instructions"
 
-    to = format_email @user.email, @user.username
+    to = format_email @user.email, @user.name
     from = format_email(options[:from], options[:app_title])
     mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
   end

@@ -96,7 +96,7 @@ class EventMailer < Mailer
   #   if notification_type == 'your point'
   #     subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote"
   #   elsif notification_type == 'participant'
-  #     subject = "#{@comment.user.username} commented on a discussion in which you participated"
+  #     subject = "#{@comment.user.name} commented on a discussion in which you participated"
   #   elsif notification_type == 'included point'
   #     subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you follow"
   #   else

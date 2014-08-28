@@ -11,7 +11,7 @@ module Followable
   end
 
   def get_explicit_follow(user)
-    f = Follow.where(:followable_type => self.class.name, :user_id => user.id, :followable_id => self.id)
+    f = Follow.where(:followable_type => self.class.name, :user_id => user.id, :followable_id => self.id, :explicit => true)
     if f.count > 1
       to_delete = f.order('created_at desc')[1..99999]
       to_delete.each {|df| df.destroy}
@@ -29,9 +29,8 @@ module Followable
     existing = get_explicit_follow user
 
     if existing
-      unless existing.explicit && !explicit
+      unless !explicit
         existing.follow = follow
-        existing.explicit = explicit
         existing.save
       end
       return existing

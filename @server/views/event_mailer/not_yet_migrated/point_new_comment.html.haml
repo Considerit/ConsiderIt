@@ -4,18 +4,18 @@
   #{@user.first_name}, 
 
   - if @notification_type == 'your point'
-    #{@comment.user.username} commented on your #{@point.is_pro ? 'pro' : 'con'} point. 
+    #{@comment.user.name} commented on your #{@point.is_pro ? 'pro' : 'con'} point. 
 
   - elsif @notification_type == 'participant'
-    #{@comment.user.username} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you also commented on. 
+    #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you also commented on. 
 
   - elsif @notification_type == 'included point'
 
-    #{@comment.user.username} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you follow.
+    #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you follow.
 
   - elsif @notification_type == 'lurker'
 
-    #{@comment.user.username} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you follow.
+    #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you follow.
 
 %p 
   The new comment: 

@@ -15,12 +15,10 @@ class User < ActiveRecord::Base
   has_many :follows, :dependent => :destroy, :class_name => 'Follow'
   has_many :page_views, :dependent => :destroy
 
-  acts_as_tenant(:account)
+  acts_as_tenant :account
 
-  #validates :name, :presence => true
-  #validates :email, :uniqueness => {:scope => :account_id}, :allow_blank => true
+  roles :superadmin, :admin, :analyst, :moderator, :manager, :evaluator, :developer
 
-  #attr_accessible :name, :bio, :email, :password, :password_confirmation, :remember_me, :avatar, :registration_complete, :roles_mask, :url, :google_uid, :twitter_uid, :twitter_handle, :facebook_uid, :referer, :avatar_url, :metric_points, :metric_conversations, :metric_opinions, :metric_comments, :metric_influence, :b64_thumbnail
 
   attr_accessor :avatar_url, :downloaded
 
@@ -30,23 +28,10 @@ class User < ActiveRecord::Base
 
     self.name = self.name.sanitize if self.name   
     self.bio = self.bio.sanitize if self.bio
-    if self.avatar_file_name_changed?
-      img_data = self.avatar.queued_for_write[:small].read
-      self.avatar.queued_for_write[:small].rewind
-      data = Base64.encode64(img_data)
-
-      thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
-      self.b64_thumbnail = thumbnail
-
-    end
-
   end
-
 
   #validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'
   after_create :add_token
-
-  roles :superadmin, :admin, :analyst, :moderator, :manager, :evaluator, :developer
 
   has_attached_file :avatar, 
       :styles => { 
@@ -54,6 +39,16 @@ class User < ActiveRecord::Base
         :small => "50x50#"
       },
       :processors => [:thumbnail, :compression]
+
+  process_in_background :avatar
+
+  after_post_process do 
+    img_data = self.avatar.queued_for_write[:small].read
+    self.avatar.queued_for_write[:small].rewind
+    data = Base64.encode64(img_data)
+    self.b64_thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
+    dirty_avatar_cache
+  end
 
   validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
@@ -82,7 +77,7 @@ class User < ActiveRecord::Base
       roles_mask: roles_mask,
       avatar_file_name: avatar_file_name,
       reset_my_password: false,
-      reset_password_token: nil,
+      reset_password_token: nil
     }
 
     # temporary for legacy dashboard:
@@ -115,10 +110,6 @@ class User < ActiveRecord::Base
     self.follows.update_all( {:explicit => true, :follow => false} )
   end
 
-  def send_on_create_confirmation_instructions
-    #don't deliver confirmation instructions. We will wait for them to submit an opinion. 
-  end
-
   def is_admin?
     has_any_role? :admin, :superadmin
   end
@@ -134,11 +125,7 @@ class User < ActiveRecord::Base
     if roles_mask == 0
       return '-'
     else
-      lst = []
-      roles.each do |role|
-        lst.push(role.to_s)
-      end
-      lst.join(', ').gsub(':', '')
+      roles.map {|role| role.to_s}.join(', ').gsub(':', '')
     end
   end
 
@@ -191,7 +178,7 @@ class User < ActiveRecord::Base
     end
 
     # If we didn't find a user by the uid, perhaps they already have a user
-    # registered by the given email address, but just having authenticated 
+    # registered by the given email address, but just haven't authenticated 
     # yet by this particular third party. For example, say I register by 
     # email/password with me@gmail.com, but then later I try to authenticate
     # via google oauth. We'll want to match with the existing user and 
@@ -220,8 +207,15 @@ class User < ActiveRecord::Base
           'google_uid' => access_token.uid,
           'email' => access_token.info.email,
           'avatar_url' => access_token.info.image,
-          'google_uid' => access_token.uid
         }        
+
+      when 'facebook'
+        third_party_params = {
+          'facebook_uid' => access_token.uid,
+          'email' => access_token.info.email,
+          #'url' => access_token.info.urls.Website ? access_token.info.urls.Website : nil, #TODO: fix this for facebook
+          'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large'
+        }
 
       when 'twitter'
         third_party_params = {
@@ -230,30 +224,16 @@ class User < ActiveRecord::Base
           'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
           # 'twitter_handle' => access_token.info.nickname,
           'avatar_url' => access_token.info.image.gsub('_normal', ''), #'_reasonably_small'),
-          'twitter_uid' => access_token.uid
         }
-
-      when 'facebook'
-        third_party_params = {
-          'facebook_uid' => access_token.uid,
-          'email' => access_token.info.email,
-          'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter, #TODO: fix this for facebook
-          'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large',
-          'twitter_uid' => access_token.uid
-        }
-
 
       else
         raise 'Unsupported provider'
     end
+
     params.update third_party_params
     params = ActionController::Parameters.new(params).permit!
     self.update_attributes! params
 
-  end
-
-  def email_required? 
-    twitter_uid.nil?
   end
 
   def key
@@ -270,10 +250,6 @@ class User < ActiveRecord::Base
   
   def first_name
     username.split(' ')[0]
-  end
-
-  def last_name
-    username.split(' ').last
   end
 
   def short_name
@@ -313,7 +289,7 @@ class User < ActiveRecord::Base
     User.where(:unique_token => nil).each do |u|
       u.unique_token
     end
-  end     
+  end
 
   def update_metrics
     referenced_proposals = {}
@@ -474,5 +450,11 @@ class User < ActiveRecord::Base
     end
 
   end
-      
+
+  def dirty_avatar_cache
+    current = Rails.cache.read("avatar-digest-#{self.account_id}") || 0
+    Rails.cache.write("avatar-digest-#{self.account_id}", current + 1)   
+  end
+   
+
 end

@@ -47,7 +47,9 @@ class User < ActiveRecord::Base
     self.avatar.queued_for_write[:small].rewind
     data = Base64.encode64(img_data)
     self.b64_thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
-    dirty_avatar_cache
+    
+    current = Rails.cache.read("avatar-digest-#{self.account_id}") || 0
+    Rails.cache.write("avatar-digest-#{self.account_id}", current + 1)   
   end
 
   validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif)
@@ -77,7 +79,8 @@ class User < ActiveRecord::Base
       roles_mask: roles_mask,
       avatar_file_name: avatar_file_name,
       reset_my_password: false,
-      reset_password_token: nil
+      reset_password_token: nil,
+      b64_thumbnail: b64_thumbnail
     }
 
     # temporary for legacy dashboard:
@@ -449,11 +452,6 @@ class User < ActiveRecord::Base
       cls.where("user_id in (?)", missing_users.uniq).delete_all
     end
 
-  end
-
-  def dirty_avatar_cache
-    current = Rails.cache.read("avatar-digest-#{self.account_id}") || 0
-    Rails.cache.write("avatar-digest-#{self.account_id}", current + 1)   
   end
    
 

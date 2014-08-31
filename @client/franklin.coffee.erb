@@ -1529,6 +1529,20 @@ Auth = ReactiveComponent
     local.submitting = true
     save(local)
 
+    # It is important that a user that just submitted a user picture see the picture
+    # on the results and in the header. However, this is a bit tricky because the avatars
+    # are cached on the server and the image is processed in a background task. 
+    # Therefore, we'll wait until the image is available and then make it available
+    # in the avatar cache.  
+    ensureCurrentUserAvatar = ->
+      if current_user.b64_thumbnail
+        $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{current_user.b64_thumbnail}');}</style>")
+      else
+        # Ugly: wait a little while for offline avatar processing
+        # to complete, then refetch
+        arest.serverFetch('/current_user')
+        _.delay ensureCurrentUserAvatar, 1000
+
     # hack for submitting file data in ActiveREST for now
     # we'll just submit the file form after user is signed in
     # TODO: investigate alternatives for submitting form data
@@ -1541,15 +1555,17 @@ Auth = ReactiveComponent
         success: (current_user_data, status, xhr) -> 
           current_user.errors = if current_user_data.errors then current_user_data.errors else []
           current_user.csrf = current_user_data.csrf
-          save(current_user, =>
+          save current_user, =>
             local.submitting = false
-            save(local))
-          fetchAvatars()
+            save(local)
+            ensureCurrentUserAvatar()
     else
       save(current_user, =>
         local.submitting = false
         save(local))
-      fetchAvatars()
+
+      if current_user.avatar_remote_url
+        ensureCurrentUserAvatar()
 
 
   sendResetPassword : -> 

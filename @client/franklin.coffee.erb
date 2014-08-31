@@ -1889,6 +1889,10 @@ Root = ReactiveComponent
 
 Page = ReactiveComponent
   displayName: 'Page'
+
+  componentDidMount : ->
+    fetchAvatars()
+
   render: ->
     root = @data('root')
     R.div 'data-authmode': root.auth_mode, #authmode controls styling during authentication process
@@ -2020,7 +2024,6 @@ fetchAvatars = ->
       $('#b64-avatars').remove()
     $('head').append data
 
-fetchAvatars()
 
 ##
 # Backbone routing

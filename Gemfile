@@ -37,6 +37,14 @@ gem "js-routes" # https://github.com/railsware/js-routes
 gem 'useragent' # https://github.com/josh/useragent
 
 #############
+# PURE PERFORMANCE
+# Rails JSON encoding is super slow, oj makes it faster
+gem 'oj'
+gem 'oj_mimic_json' # we need this for Rails 4.1.x
+
+
+
+#############
 # BACKGROUND PROCESSING / EMAIL
 gem 'whenever' # https://github.com/javan/whenever
 gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' # https://github.com/collectiveidea/delayed_job

@@ -29,6 +29,7 @@ gem 'acts_as_tenant' # https://github.com/ErwinM/acts_as_tenant
 gem "haml"
 gem 'paperclip' # https://github.com/thoughtbot/paperclip
 gem 'paperclip-compression'
+gem 'delayed_paperclip'
 gem 'font-awesome-rails'
 gem "js-routes" # https://github.com/railsware/js-routes
 

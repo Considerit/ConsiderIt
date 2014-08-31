@@ -99,6 +99,8 @@ GEM
     delayed_mailhopper (0.0.7)
       delayed_job
       mailhopper (>= 0.0.1)
+    delayed_paperclip (2.8.0)
+      paperclip (>= 3.3)
     em-websocket (0.5.1)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0.6.0)
@@ -329,6 +331,7 @@ DEPENDENCIES
   delayed_job!
   delayed_job_active_record!
   delayed_mailhopper
+  delayed_paperclip
   exception_notification
   font-awesome-rails
   guard (>= 2.2.2)

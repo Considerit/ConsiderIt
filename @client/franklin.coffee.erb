@@ -814,12 +814,15 @@ DecisionBoard = ReactiveComponent
 
   componentDidUpdate : -> 
     $el = $(@getDOMNode())    
+    root = @data('root')
 
     # hack to get around a problem where the browser's remembered scroll position messes
     # up the sticky location after initialization
     if !@initial_position_fixed
       $el.stickyTopBottom('fix_initial_position')
       @initial_position_fixed = true
+    else if root.page_name == 'results' #fix problem where it would stay sticky moving to results page
+      $el.stickyTopBottom('update')
 
   setStickyHeader : ->
     $el = $(@getDOMNode())
@@ -1573,7 +1576,6 @@ Auth = ReactiveComponent
 
 
   sendResetPassword : -> 
-    console.log('Resetting password')
 
     # Tell the server to email us a token
     (current_user = @data('/current_user')).reset_my_password = true
@@ -1585,7 +1587,7 @@ Auth = ReactiveComponent
       else
         # Tell the login screen to show the reset_password errors
         current_user.errors.login = current_user.errors.reset_password
-        console.log("Waiting for user to fix errors #{current_user.errors?.reset_password}")
+        # console.log("Waiting for user to fix errors #{current_user.errors?.reset_password}")
         arest.updateCache(current_user)
       )
   toggleAuthMode : -> 
@@ -1887,15 +1889,12 @@ Root = ReactiveComponent
     query_parameters = Backbone.history.getQueryParameters()
     delete query_parameters['results']
 
-    console.log window.location.search, window.location.hash
-
     if root.page_name == 'results'
       query_parameters['results'] = true
 
     url = window.app_router.toFragment @props.long_id, query_parameters
 
     if ( "#{window.location.pathname}#{window.location.search}" != "/" + url)
-      console.log 'NAVIGATING TO', url
       window.app_router.navigate url, {trigger : true}
 
     # Now let's render

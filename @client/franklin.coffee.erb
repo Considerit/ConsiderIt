@@ -1200,16 +1200,20 @@ Point = ReactiveComponent
 
   renderNewIndicator : ->
     if @data().includers
-      side_offset = 51
+      side_offset = 48
       left_right = if @data().is_pro then 'left' else 'right'
       style = 
         position: 'absolute'
         color: 'rgb(255,22,3)'
         fontSize: '11px'
-        top:'41px'
-        backgroundColor: 'white', zIndex: 5
+        top: -14
+        #backgroundColor: 'white'
+        zIndex: 5
+        fontVariant: 'small-caps'
+        fontWeight: 'bold'
+
       style[left_right] = "#{-side_offset}"
-      R.span {style: style}, '*New*'
+      R.span {style: style}, '-new-'
 
   render : -> 
     point = @data()

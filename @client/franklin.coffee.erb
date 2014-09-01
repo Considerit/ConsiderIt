@@ -59,7 +59,7 @@ crossbrowserTransformProperty = (props) -> _.extend props,
 #         fetch('/page/' + long_id).proposal
 getStanceSegment = (value) ->
   for i in [0..5]
-    if value < stanceSegmentBoundaries[i + 1]
+    if value < stance_segment_boundaries[i + 1]
       return i
   return 6
 
@@ -85,7 +85,7 @@ togglePage = (page_name) ->
 
 
 
-stanceSegmentBoundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
+stance_segment_boundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
 
 stance_names = 
   6 : 'Fully Support'
@@ -421,10 +421,10 @@ HistogramData = ReactiveComponent
 
         # If this opinion is somewhere else on the spectrum...
         else
-          adjusted_stance = Math.abs(opinion.stance - stanceSegmentBoundaries[segment])
+          adjusted_stance = Math.abs(opinion.stance - stance_segment_boundaries[segment])
 
-          col_width = Math.abs( stanceSegmentBoundaries[segment + 1] - 
-            stanceSegmentBoundaries[segment])/segments[segment].length
+          col_width = Math.abs( stance_segment_boundaries[segment + 1] - 
+            stance_segment_boundaries[segment])/segments[segment].length
 
           segments[segment][segments[segment].length - Math.floor(adjusted_stance / col_width) - 1].push opinion
 
@@ -1884,8 +1884,18 @@ Root = ReactiveComponent
     root = @data('root')
 
     # Update the location bar if it's different
-    url = "/#{@props.long_id}#{if root.page_name == 'results' then '/results' else ''}"
-    if (window.location.pathname != url)
+    query_parameters = Backbone.history.getQueryParameters()
+    delete query_parameters['results']
+
+    console.log window.location.search, window.location.hash
+
+    if root.page_name == 'results'
+      query_parameters['results'] = true
+
+    url = window.app_router.toFragment @props.long_id, query_parameters
+
+    if ( "#{window.location.pathname}#{window.location.search}" != "/" + url)
+      console.log 'NAVIGATING TO', url
       window.app_router.navigate url, {trigger : true}
 
     # Now let's render
@@ -2037,9 +2047,9 @@ Router = Backbone.Router.extend
 
   routes :
     ":proposal(/)": "proposal"
-    ":proposal/results(/)": "results"
 
-  proposal : (long_id, page = 'crafting') ->
+  proposal : (long_id, params) ->
+    page = if params && params['results'] then 'results' else 'crafting'
     root = fetch('root')
     root.page_name = page
     save(root)
@@ -2049,8 +2059,6 @@ Router = Backbone.Router.extend
                                          long_id : long_id
                                          ), document.getElementById('content')
 
-
-  results : (long_id) -> @proposal long_id, 'results'
 
 window.app_router = new Router()
 window.on_ajax_error = () ->

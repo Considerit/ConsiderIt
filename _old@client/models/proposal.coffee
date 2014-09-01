@@ -132,13 +132,13 @@
         if !@user_participated(user_id)
           @participant_list.push user_id 
 
-        if !@get('top_pro')
-          _.each opinion.written_points, (pnt) =>
-            @set('top_pro', pnt.id) if pnt.isPro()
+        # if !@get('top_pro')
+        #   _.each opinion.written_points, (pnt) =>
+        #     @set('top_pro', pnt.id) if pnt.isPro()
 
-        if !@get('top_con')
-          _.each opinion.written_points, (pnt) =>
-            @set('top_con', pnt.id) if !pnt.isPro()
+        # if !@get('top_con')
+        #   _.each opinion.written_points, (pnt) =>
+        #     @set('top_con', pnt.id) if !pnt.isPro()
 
     isActive : ->
       @get('active')

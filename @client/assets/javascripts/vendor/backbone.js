@@ -329,7 +329,7 @@
       var url = this.root + (fragment = this.getFragment(fragment || ''));
 
       // Strip the fragment of the query and hash for matching.
-      fragment = fragment.replace(pathStripper, '');
+      // fragment = fragment.replace(pathStripper, '');
 
       if (this.fragment === fragment) return;
       this.fragment = fragment;

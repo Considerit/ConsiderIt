@@ -80,7 +80,7 @@ class Dashboard::DashboardController < ApplicationController
 
     @proposals = {
       :proposals => proposals,
-      :points => top_points.values,
+      # :points => top_points.values,
       :proposals_active_count => proposals_active_count,
       :proposals_inactive_count => proposals_inactive_count,
     }

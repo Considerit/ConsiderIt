@@ -275,8 +275,8 @@
     var keys_4_component = new hashset() // Maps component to its dependence keys
     var components_4_key = new hashset() // Maps key to its dependent components
     var dirty_components = {}
-    function ReactiveComponent(obj) {
-        obj.data = obj.get = function (key, defaults) {
+    function ReactiveComponent(component) {
+        component.data = component.get = function (key, defaults) {
             if (!this._lifeCycleState || this._lifeCycleState == 'UNMOUNTED')
                 throw Error('Component ' + this.name + ' (' + this.local_key 
                             + ') is tryin to get data(' + key + ') after it died.')
@@ -288,24 +288,24 @@
             if (key.key) key = key.key   // If user passes key as object
             return fetch(key, defaults)  // Call into main activerest
         }
-        obj.save = save                  // Call into main activerest
+        component.save = save                  // Call into main activerest
         
         // Render will need to clear the component's old dependencies
         // before rendering and finding new ones
-        wrap(obj, 'render', function () {
+        wrap(component, 'render', function () {
             clearComponentDeps(this.local_key)
             delete dirty_components[this.local_key]
         })
 
         // We will register this component when creating it
-        wrap(obj, 'componentWillMount',
+        wrap(component, 'componentWillMount',
              function () { 
                  this.local_key = 'component/' + components_next_id++
                  // console.log('mounting', this.props.key)
 
-                 if (obj.displayName === undefined) throw 'Component has not defined a displayName'
+                 if (component.displayName === undefined) throw 'Component has not defined a displayName'
 
-                 this.name = obj.displayName.toLowerCase()
+                 this.name = component.displayName.toLowerCase()
                  components[this.local_key] = this
 
                  if (this.props.key && this.props.key.key)
@@ -331,22 +331,26 @@
                      delete this[name]
                      Object.defineProperty(this,
                                            name,
-                                           { get: function () { return this.get(key) },
+                                           //     We have to make a closure on key
+                                           { get: (function (curr_key) {
+                                                     // And now return this.get(key)
+                                                     return function () { return this.get(curr_key) }}
+                                                  )(key),
                                              configurable: true })
                  }
              })
-        wrap(obj, 'componentDidMount')
-        wrap(obj, 'componentDidUpdate')
-        wrap(obj, 'getDefaultProps')
-        //wrap(obj, 'componentWillReceiveProps')
-        wrap(obj, 'componentWillUnmount', function () {
+        wrap(component, 'componentDidMount')
+        wrap(component, 'componentDidUpdate')
+        wrap(component, 'getDefaultProps')
+        //wrap(component, 'componentWillReceiveProps')
+        wrap(component, 'componentWillUnmount', function () {
             clearComponentDeps(this.local_key)
             delete cache[this.local_key]
             delete components[this.local_key]
             delete dirty_components[this.local_key]
             //sanity(this.local_key)
         })
-        obj.shouldComponentUpdate = function (next_props, next_state) {
+        component.shouldComponentUpdate = function (next_props, next_state) {
             // This component definitely needs to update if it is marked as dirty
             if (dirty_components[this.local_key] !== undefined) return true
 
@@ -360,7 +364,7 @@
             return JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this_props])
         }
         
-        obj.is_waiting = function () {
+        component.is_waiting = function () {
             // Does this component depend on any keys that are being
             // requested?
             var dependent_keys = keys_4_component.get(this.local_key)
@@ -388,7 +392,7 @@
             })
         }
 
-        var react_class = React.createClass(obj)
+        var react_class = React.createClass(component)
         return function (props, children) {
             props = props || {}
             props.parents = execution_context.slice()

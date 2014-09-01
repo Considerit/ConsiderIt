@@ -60,7 +60,9 @@ do ($, window, document) ->
         @$el[0].style.transform = ""        
         @$el[0].style['-webkit-transform'] = ""
         @$el[0].style['-ms-transform'] = ""
-        @$el[0].style['-moz-transform'] = ""        
+        @$el[0].style['-moz-transform'] = "" 
+        @$el[0].style['position'] = ''
+        @$el[0].style['top'] = ''
         return
 
       #Get the top of the reference element.

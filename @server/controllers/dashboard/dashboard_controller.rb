@@ -50,29 +50,29 @@ class Dashboard::DashboardController < ApplicationController
     proposals = current_tenant.enable_hibernation ? inactive_proposals : active_proposals
 
 
-    top = []
-    top_con_qry = proposals.where 'top_con IS NOT NULL'
-    if top_con_qry.count > 0
-      top += top_con_qry.select(:top_con).map {|x| x.top_con}.compact
-    end
+    # top = []
+    # top_con_qry = proposals.where 'top_con IS NOT NULL'
+    # if top_con_qry.count > 0
+    #   top += top_con_qry.select(:top_con).map {|x| x.top_con}.compact
+    # end
 
-    top_pro_qry = proposals.where 'top_pro IS NOT NULL' 
-    if top_pro_qry.count > 0
-      top += top_pro_qry.select(:top_pro).map {|x| x.top_pro}.compact
-    end
+    # top_pro_qry = proposals.where 'top_pro IS NOT NULL' 
+    # if top_pro_qry.count > 0
+    #   top += top_pro_qry.select(:top_pro).map {|x| x.top_pro}.compact
+    # end
     
-    top_points = {}
-    Point.where('id in (?)', top).public_fields.each do |pnt|
-      top_points[pnt.id] = pnt
-    end
+    # top_points = {}
+    # Point.where('id in (?)', top).public_fields.each do |pnt|
+    #   top_points[pnt.id] = pnt
+    # end
 
     @opinions = {}
     if current_user
       hidden_proposals = Proposal.content_for_user(current_user)
-      hidden_proposals.each do |hidden|          
-        top_points[hidden.top_pro] = Point.find(hidden.top_pro) if hidden.top_pro
-        top_points[hidden.top_con] = Point.find(hidden.top_con) if hidden.top_con
-      end
+      # hidden_proposals.each do |hidden|          
+      #   top_points[hidden.top_pro] = Point.find(hidden.top_pro) if hidden.top_pro
+      #   top_points[hidden.top_con] = Point.find(hidden.top_con) if hidden.top_con
+      # end
       proposals += hidden_proposals
       @opinions = current_user.opinions.published
     end

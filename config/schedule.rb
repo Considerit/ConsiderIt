@@ -8,7 +8,7 @@ job_type :envcommand, '. ~/.profile; cd :path && RAILS_ENV=:environment :task'
 # on some systems, need to source rvm before running standard rake command
 job_type :rake, '. ~/.profile; cd :path && RAILS_ENV=:environment bundle exec rake :task --silent :output'
 
-every 15.minutes do
+every 30.minutes do
   rake 'compute_metrics'
 end
 

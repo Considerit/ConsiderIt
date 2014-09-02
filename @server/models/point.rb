@@ -140,32 +140,21 @@ class Point < ActiveRecord::Base
       self.appeal = 0.001
     else
       # Compute the variance of the distribution of stances of users
-      # including this point. We'll only use 3 bins, support / neutral / oppose,
-      # for the distribution. The appeal is high when there is low
-      # variance (uniform appeal across the spectrum). 
+      # including this point. 
       qry = Opinion.published \
               .where(:proposal_id => self.proposal_id) \
               .where("user_id in (#{self.includers[1..self.includers.length-2]})")
-              .group(:stance_segment)
-              .select("COUNT(*) AS cnt, opinions.stance_segment")
-      includer_stance_distribution = qry.each_with_object({0 => 0, 1 => 0, 2 => 0}) do |row, hash|
-        if row.stance_segment == 3
-          hash[1] += row.cnt
-        elsif row.stance_segment < 3
-          hash[0] += row.cnt
-        else
-          hash[2] += row.cnt
-        end
-      end
-      includer_stance_distribution = includer_stance_distribution.values()
-      n = includer_stance_distribution.length
-      mean = includer_stance_distribution.inject(:+) / n
+              .select(:stance)
+      includer_stances = qry.map {|o| o.stance} 
 
-      variance = 1.0 / n * (includer_stance_distribution.map {|v| (v - mean) ** 2 }).inject(:+)
-      standard_deviation = Math.sqrt(variance) + 1
+      n = includer_stances.length
+      mean = includer_stances.inject(:+) / n
 
-      self.appeal = num_inclusions / standard_deviation
-      self.score = appeal * num_inclusions + num_inclusions
+      variance = 1.0 / n * (includer_stances.map {|v| (v - mean) ** 2 }).inject(:+)
+      standard_deviation = Math.sqrt(variance)
+
+      self.appeal = standard_deviation
+      self.score = num_inclusions + appeal * num_inclusions
     end
 
 

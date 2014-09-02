@@ -1059,7 +1059,7 @@ CommunityPoints = ReactiveComponent
       R.div className:'points_heading_label', 
         if @data('root').page_name == 'results' then "Top #{label}" else "Others' #{label}"
         R.p className:'points_segment_label', style: {visibility: if selected_segment[0] == null then 'hidden' else 'visible'},
-          if selected_segment[0] == null then '-' else "for #{stance_names[selected_segment[0]]}s"          
+          if selected_segment[0] == null then '-' else "for those who #{stance_names[selected_segment[0]]}"          
 
       R.ul null, 
         if points.length > 0

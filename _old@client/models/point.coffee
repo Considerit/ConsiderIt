@@ -142,8 +142,8 @@
 
     getTopPointsByProposal : (long_id) ->
       proposal = App.request 'proposal:get', long_id
-      top_pro = if proposal.get('top_pro') then @getPoint proposal.get('top_pro'), false, long_id else null
-      top_con = if proposal.get('top_con') then @getPoint proposal.get('top_con'), false, long_id else null
+      # top_pro = if proposal.get('top_pro') then @getPoint proposal.get('top_pro'), false, long_id else null
+      # top_con = if proposal.get('top_con') then @getPoint proposal.get('top_con'), false, long_id else null
 
       new Entities.Points _.compact([top_pro, top_con])
 

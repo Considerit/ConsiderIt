@@ -109,12 +109,12 @@ PageTransition =
 
   componentDidMount : -> @applyStyles false
 
-  componentDidUpdate : (prev_props, prev_page) -> 
+  componentDidUpdate : (prev_props, prev_page) ->
     @applyStyles _route_changed
 
-  applyStyles : (animate) -> 
+  applyStyles : (animate) ->
     duration = if animate then TRANSITION_SPEED else 0
-    root = @data('root')        
+    root = @root
     $el = $(@getDOMNode())
 
 
@@ -254,8 +254,7 @@ Proposal = ReactiveComponent
   ##
   # Make this thing!
   render : ->
-    proposal = @data()
-    root = @data('root')
+    proposal = @proposal
     your_opinion = @data(proposal.your_opinion)
     included_points = your_opinion.point_inclusions
 
@@ -271,12 +270,12 @@ Proposal = ReactiveComponent
 
     # I need to improve save() so that it knows when things actually
     # change because these if statements are stupid
-    if root.current_proposal != proposal.key
-      root.current_proposal = proposal.key
-      save(root)
-    if root.your_opinion_key != proposal.your_opinion
-      root.your_opinion_key = proposal.your_opinion
-      save(root)
+    # if @root.current_proposal != proposal.key
+    #   @root.current_proposal = proposal.key
+    #   save(@root)
+    # if @root.your_opinion_key != proposal.your_opinion
+    #   @root.your_opinion_key = proposal.your_opinion
+    #   save(@root)
 
     proposer = @data(proposal.user)
 
@@ -302,7 +301,7 @@ Proposal = ReactiveComponent
         @local.description_fields = null
 
 
-    R.div className:'proposal', key:@props.long_id, 'data-page':root.page_name,
+    R.div className:'proposal', key:@props.long_id, 'data-page':@root.page_name,
       R.div className: 'proposal_heading stickable',  style : { minWidth: PAGE_WIDTH }, # minwidth is for width consistency when dropping into fixed sticky header
         R.span null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
 
@@ -336,7 +335,7 @@ Proposal = ReactiveComponent
         OpinionFilter()
         Histogram()
 
-      if root.auth_mode
+      if @root.auth_mode
         Auth()
       else
         #reasons
@@ -371,7 +370,7 @@ Histogram = ReactiveComponent
   buildHistogram : ->
     ##
     # Size the avatars. Size of avatar shrinks proportional to 1/sqrt(num_opinions)
-    opinions = @data(@data('root').current_proposal).opinions || []
+    opinions = @data(@proposal).opinions || []
 
     avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, 
       Math.floor(BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (opinions.length + 1) / 10 )  )
@@ -450,11 +449,11 @@ Histogram = ReactiveComponent
     [num_columns, segments, avatar_size]
 
   onClickHistogram : (ev) ->
-    if @data('root').page_name == 'crafting'
+    if @root.page_name == 'crafting'
       togglePage('results')
 
   onSelectSegment : (ev) ->
-    if @data('root').page_name == 'results'
+    if @root.page_name == 'results'
       segment = $(ev.currentTarget).data('segment')
 
       selected_segment = @data('histogram').selected_segment
@@ -506,7 +505,7 @@ Histogram = ReactiveComponent
                           tag: R.span, 
                           key: user
                           user: user
-                          hide_face: @data('root').page_name == 'crafting'                             
+                          hide_face: @root.page_name == 'crafting'
                           'data-segment':segment
                           style:
                             height: avatar_size
@@ -559,7 +558,7 @@ Slider = ReactiveComponent
 
     e.preventDefault()
 
-    your_opinion = @data(@data('root').your_opinion_key)    
+    your_opinion = @data(@proposal.your_opinion)
     root = @data 'root'
     
     # Clicking on the slider handle should transition us between crafting <=> results. 
@@ -602,11 +601,9 @@ Slider = ReactiveComponent
 
   render : ->
     slider = @data('slider')
-    stance = slider.stance
-    segment = slider.stance_segment
 
     # Update the slider position when the server gets back to us
-    your_opinion = @data(@data('root').your_opinion_key)
+    your_opinion = @data(@proposal.your_opinion)
 
     if slider.stance != your_opinion.stance and !slider.is_moving
       slider.stance = your_opinion.stance
@@ -616,8 +613,10 @@ Slider = ReactiveComponent
         slider.has_moved = true
       save(slider)
 
-    page = @data('root').page_name
+    page = @root.page_name
     sticky = @data('decisionboard').sticky
+    stance = slider.stance
+    segment = slider.stance_segment
 
     # Can't be dynamically set b/c of integration with asset fingerprinting. 
     # This is also why this file is ERB.
@@ -718,7 +717,7 @@ OpinionFilter = ReactiveComponent
     hist = @data('histogram')
 
     # Remove filter when on crafting page
-    if @data('root').page_name == 'crafting'
+    if @root.page_name == 'crafting'
       hist.selected_segment = [null, null] if hist.selected_segment[0] 
 
     filter_options = ['show all opinions',
@@ -763,7 +762,7 @@ DecisionBoard = ReactiveComponent
       accept: ".point_content"
       drop : (ev, ui) =>
         if ui.draggable.parent().is('.community_point')
-          your_opinion = @data(@data('root').your_opinion_key)
+          your_opinion = @data(@proposal.your_opinion)
           ui.draggable.parent().velocity 'fadeOut', 200, -> 
             your_opinion.point_inclusions.push(
               ui.draggable.parent().data('id'))
@@ -804,32 +803,29 @@ DecisionBoard = ReactiveComponent
         d = @data()
         d.sticky = true
         save(d)
-      conditional: => @data('root').page_name == 'crafting'
+      conditional: => @root.page_name == 'crafting'
 
   # When user clicks the big bold button at the bottom of the crafting page
   saveYourOpinion : -> 
-    root = @data('root')
-    your_opinion = @data (root.your_opinion_key)
+    your_opinion = @data (@proposal.your_opinion)
     if @data('/current_user').logged_in
       your_opinion.published = true
-      save your_opinion
+      save (your_opinion)
       togglePage('results')
     else
-      root.auth_mode = 'register'
+      @root.auth_mode = 'register'
       #we'll need to publish this opinion after auth is completed
-      root.publish_this_opinion = true
-      save(root)
+      @root.opinions_to_publish.push(@proposal.your_opinion)
+      save(@root)
 
 
   render : ->
-    root = @data('root')
+    root = @root
     current_user = @data('/current_user')
-    your_opinion = @data(root.your_opinion_key)
-    proposal = @data root.current_proposal
 
     # Need to register this dependency because ActiveREST doesn't pick it up. 
     # In results state, decision board position depends on the slider position.
-    @data('slider')
+    @data('slider')  # Mike: I don't think this is needed anymore
 
     # Centering the Decisionboard
     # When the screen is too small & the board is sticky, the board can be 
@@ -868,7 +864,7 @@ DecisionBoard = ReactiveComponent
           # only shown during results, but needs to be present always for animation
           R.a 
             className:'give_opinion_button primary_button'
-          , if your_opinion.published then 'Update your Opinion' else 'Give your Opinion'
+          , if @data(@proposal.your_opinion).published then 'Update your Opinion' else 'Give your Opinion'
 
       R.div 
         className:'save_opinion_button primary_button'
@@ -881,10 +877,10 @@ DecisionBoard = ReactiveComponent
             type:      'checkbox'
             id:        "follow_proposal"
             name:      "follow_proposal"
-            checked:   proposal.is_following
+            checked:   @proposal.is_following
             onChange: =>
-              proposal.is_following = !proposal.is_following
-              save proposal
+              @proposal.is_following = !@proposal.is_following
+              save @proposal
           R.label htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
 
       R.a 
@@ -908,7 +904,7 @@ YourPoints = ReactiveComponent
 
   render : ->
     root = @data('root')
-    included_points = @data(root.your_opinion_key).point_inclusions
+    included_points = @data(@proposal.your_opinion).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
     your_points = @data @props.key,
@@ -960,7 +956,7 @@ CommunityPoints = ReactiveComponent
 
   buildNewPointThreshold : ->
     # Grab the 10th percentile
-    points = @data(@data('root').current_proposal).points || []
+    points = @proposal.points || []
     newpoint_threshold = 
       (_.sortBy points, (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
 
@@ -970,10 +966,9 @@ CommunityPoints = ReactiveComponent
   buildPointsList : ->
     is_results = @data('root').page_name == 'results'
     selected_segment = @data('histogram').selected_segment
-    proposal = @data(@data('root').current_proposal)
-    included_points = @data(@data('root').your_opinion_key).point_inclusions
-    points = proposal.points
-    opinions = proposal.opinions
+    included_points = @data(@proposal.your_opinion).point_inclusions
+    points = @proposal.points
+    opinions = @proposal.opinions
 
     points =
       _.filter points, (pnt) =>
@@ -1007,7 +1002,6 @@ CommunityPoints = ReactiveComponent
 
   render : ->
     selected_segment = @data('histogram').selected_segment
-    proposal = @data(@data('root').current_proposal)
 
     #filter to pros or cons & down to points that haven't been included
     points = @buildPointsList() #todo: memoize
@@ -1021,7 +1015,7 @@ CommunityPoints = ReactiveComponent
     #              the document height can jarringly fluctuate
     R.div 
       className:"points_by_community #{@props.key}_by_community"
-      style: { width: POINT_CONTENT_WIDTH, minHeight: (if proposal.points.length > 4 then jQuery(window).height() else 400) }
+      style: { width: POINT_CONTENT_WIDTH, minHeight: (if @proposal.points.length > 4 then jQuery(window).height() else 400) }
     , 
       R.div className:'points_heading_label', 
         if @data('root').page_name == 'results' then "Top #{label}" else "Others' #{label}"
@@ -1068,7 +1062,7 @@ Point = ReactiveComponent
       then 'invalid' 
       else (valid) =>
         if !valid
-          your_opinion = @data(@data('root').your_opinion_key)
+          your_opinion = @data(@proposal.your_opinion)
           your_opinion.point_inclusions = _.without your_opinion.point_inclusions, @props.key
           save(your_opinion)
           console.log('Saved it.', your_opinion)
@@ -1278,7 +1272,7 @@ EditPoint = ReactiveComponent
         user : current_user
         comment_count : 0 
         includers : [current_user]
-        proposal : @data(root.current_proposal).key
+        proposal : @proposal.key
         nutshell : nutshell
         text : text
         hide_name : hide_name
@@ -1289,8 +1283,8 @@ EditPoint = ReactiveComponent
 
     # This is a kludge cause activerest sucks for pre-rendering
     # changes before the server returns them
-    @data(root.your_opinion_key).point_inclusions.push(point.key)
-    re_render([root.your_opinion_key])
+    @data(@proposal.your_opinion).point_inclusions.push(point.key)
+    re_render([@proposal.your_opinion])
 
   handleAddPointCancel : (ev) -> @done()
 
@@ -1454,7 +1448,7 @@ Auth = ReactiveComponent
     $(document).scrollTop $(@getDOMNode()).find('.auth_heading').offset().top - 10
   startThirdPartyAuth : (provider) ->
 
-    root = @data('root')
+    root = @root
     new ThirdPartyAuthHandler
       provider : provider
       callback : (new_data) => 
@@ -1494,6 +1488,20 @@ Auth = ReactiveComponent
     local.submitting = true
     save(local)
 
+    # It is important that a user that just submitted a user picture see the picture
+    # on the results and in the header. However, this is a bit tricky because the avatars
+    # are cached on the server and the image is processed in a background task. 
+    # Therefore, we'll wait until the image is available and then make it available
+    # in the avatar cache.  
+    ensureCurrentUserAvatar = ->
+      if current_user.b64_thumbnail
+        $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{current_user.b64_thumbnail}');}</style>")
+      else
+        # Ugly: wait a little while for offline avatar processing
+        # to complete, then refetch
+        arest.serverFetch('/current_user')
+        _.delay ensureCurrentUserAvatar, 1000
+
     # hack for submitting file data in ActiveREST for now
     # we'll just submit the file form after user is signed in
     # TODO: investigate alternatives for submitting form data
@@ -1506,39 +1514,39 @@ Auth = ReactiveComponent
         success: (current_user_data, status, xhr) -> 
           current_user.errors = if current_user_data.errors then current_user_data.errors else []
           current_user.csrf = current_user_data.csrf
-          save(current_user, =>
+          save current_user, =>
             local.submitting = false
-            save(local))
-          fetchAvatars()
+            save(local)
+            ensureCurrentUserAvatar()
     else
       save(current_user, =>
         local.submitting = false
         save(local))
-      fetchAvatars()
+
+      if current_user.avatar_remote_url
+        ensureCurrentUserAvatar()
 
 
   sendResetPassword : -> 
-    console.log('Resetting password')
 
     # Tell the server to email us a token
     (current_user = @data('/current_user')).reset_my_password = true
     save(current_user, =>
       if not (current_user.errors?.reset_password?.length > 0)
         # Switch to reset_password mode
-        (root = @data('root')).auth_mode = 'reset_password'  # Is this confusing to read?
-        save(root)
+        @root.auth_mode = 'reset_password'  # Is this confusing to read?
+        save(@root)
       else
         # Tell the login screen to show the reset_password errors
         current_user.errors.login = current_user.errors.reset_password
-        console.log("Waiting for user to fix errors #{current_user.errors?.reset_password}")
+        # console.log("Waiting for user to fix errors #{current_user.errors?.reset_password}")
         arest.updateCache(current_user)
       )
   toggleAuthMode : -> 
-    root = @data('root')
     current_user = @data('/current_user')
-    root.auth_mode = if root.auth_mode == 'register' then 'login' else 'register'
+    @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
     current_user.errors = {}
-    save(root)
+    save(@root)
 
   render: -> 
     current_user = @data('/current_user')
@@ -1826,10 +1834,8 @@ Root = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
-    root = @data('root')
-
     # Update the location bar if it's different
-    url = "/#{@props.long_id}#{if root.page_name == 'results' then '/results' else ''}"
+    url = "/#{@props.long_id}#{if @root.page_name == 'results' then '/results' else ''}"
     if (window.location.pathname != url)
       window.app_router.navigate url, {trigger : true}
 
@@ -1839,8 +1845,7 @@ Root = ReactiveComponent
 Page = ReactiveComponent
   displayName: 'Page'
   render: ->
-    root = @data('root')
-    R.div 'data-authmode': root.auth_mode, #authmode controls styling during authentication process
+    R.div 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
       Header()
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
         R.div id: 'inner_body', #style : { width: CONTENT_WIDTH },
@@ -1854,20 +1859,19 @@ Computer = ReactiveComponent
   displayName: 'Computer'
   render : ->
     current_user = @data('/current_user')
-    root = @data('root')
-    your_opinion = @data(root.your_opinion_key)
     if current_user.csrf
       arest.csrf(current_user.csrf)
 
-    console.log("Maybe we will publish: #{root.publish_this_opinion} #{current_user.logged_in} #{root.your_opinion_key}")
-    # Publish this opinion if we can
-    if (root.publish_this_opinion and not your_opinion.published \
-        and current_user.logged_in and root.your_opinion_key)
-      console.log("Publishing the opinion. It's", your_opinion)
-      your_opinion.published = true
-      root.publish_this_opinion = false
-      save(root)
-      save(your_opinion)
+    console.log("Maybe we will publish: '#{@root.opinions_to_publish}' #{current_user.logged_in}")
+
+    # Publish pending opinions if we can
+    while @root.opinions_to_publish.length > 0 and current_user.logged_in
+      opinion = @data(@root.opinions_to_publish.pop()); save(@root)
+      if opinion.published
+        break
+      console.log("Publishing the opinion. It's", opinion)
+      opinion.published = true
+      save(opinion)
 
     return R.span null, ''
 
@@ -1879,21 +1883,21 @@ Header = ReactiveComponent
     current_user = @data('/current_user')
     current_user.logged_in = false
 
-    root = @data('root')
-    root.auth_mode = null
+    @root.auth_mode = null
 
-    save current_user, ->
+    save current_user, =>
       # We need to get a fresh your_opinion object
       # after logging out. 
-      # TODO: accomplish in a more principled fashion. 
-      arest.serverFetch(root.current_proposal)
 
-    save root 
+      # TODO: the server should dirty keys on the client when the
+      # current_user logs out
+      arest.clear_objects((key) -> key.match( /\/proposal\// ) )
+
+    save @root
 
 
   render : ->
     current_user = @data('/current_user')
-    root = @data('root')
     customer = @data('customer')
 
     R.div className: 'l_header',       
@@ -1901,7 +1905,7 @@ Header = ReactiveComponent
         R.a href: 'http://www.tigard-or.gov/', target: '_blank',
           R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '117px', position: 'absolute', bottom: '-79px', zIndex: 999999, backgroundColor: 'white', borderRight: '2px solid white'}
 
-      R.div style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if root.server_error then 'block' else 'none'},
+      R.div style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if @root.server_error then 'block' else 'none'},
         'Warning: there was a server error!'
 
       if current_user.logged_in
@@ -1953,9 +1957,9 @@ fetch 'decisionboard',
 fetch 'root',
   page_name : 'crafting'
   auth_mode : null
-  your_opinion_key : null
-  current_proposal : null
-  publish_this_opinion : false
+  # your_opinion_key : null
+  # current_proposal : null
+  opinions_to_publish : []
 
 fetch('/current_user')
 
@@ -1974,7 +1978,7 @@ fetchAvatars()
 ##
 # Backbone routing
 # Note: not committed to backbone. Want to experiment with other routing techniques too.
-top_level_component = null
+window.root = null
 Router = Backbone.Router.extend
 
   routes :
@@ -1986,10 +1990,9 @@ Router = Backbone.Router.extend
     root.page_name = page
     save(root)
 
-    if !top_level_component
-      top_level_component = React.renderComponent Root(
-                                         long_id : long_id
-                                         ), document.getElementById('content')
+    if !window.root
+      params = {long_id : long_id}
+      window.root = React.renderComponent(Root(params), document.getElementById('content'))
 
 
   results : (long_id) -> @proposal long_id, 'results'

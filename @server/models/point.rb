@@ -128,121 +128,52 @@ class Point < ActiveRecord::Base
     self.includers = self.inclusions(:select => [:user_id]).map {|x| x.user_id}.compact.uniq.to_s
     self.last_inclusion = inclusions.count > 0 ? self.inclusions.order(:created_at).last.created_at.to_i : -1
 
-    define_appeal
-    define_attention
-        
+    self.attention = self.num_inclusions
+
+
+    ###
+    # define cross-spectrum appeal
+
+    if num_inclusions == 0 #special cases
+      self.appeal = 0.001
+    elsif num_inclusions == 1
+      self.appeal = 0.001
+    else
+      # Compute the variance of the distribution of stances of users
+      # including this point. We'll only use 3 bins, support / neutral / oppose,
+      # for the distribution. The appeal is high when there is low
+      # variance (uniform appeal across the spectrum). 
+      qry = Opinion.published \
+              .where(:proposal_id => self.proposal_id) \
+              .where("user_id in (#{self.includers[1..self.includers.length-2]})")
+              .group(:stance_segment)
+              .select("COUNT(*) AS cnt, opinions.stance_segment")
+      includer_stance_distribution = qry.each_with_object({0 => 0, 1 => 0, 2 => 0}) do |row, hash|
+        if row.stance_segment == 3
+          hash[1] += row.cnt
+        elsif row.stance_segment < 3
+          hash[0] += row.cnt
+        else
+          hash[2] += row.cnt
+        end
+      end
+      includer_stance_distribution = includer_stance_distribution.values()
+      n = includer_stance_distribution.length
+      mean = includer_stance_distribution.inject(:+) / n
+
+      variance = 1.0 / n * (includer_stance_distribution.map {|v| (v - mean) ** 2 }).inject(:+)
+      standard_deviation = Math.sqrt(variance) + 1
+
+      self.appeal = num_inclusions / standard_deviation
+      self.score = appeal * num_inclusions + num_inclusions
+    end
+
+
     save(:validate => false) if changed?
   end
-  
-  def define_appeal
-    e = entropy
-    if e.nil? or self.num_inclusions.nil?
-      self.appeal = 0
-      self.divisiveness = 0
-    else
-      self.appeal = e * self.num_inclusions
-      self.divisiveness = (1 - e) * self.num_inclusions      
-    end
-  end
-  
-  def define_attention
-    self.attention = self.num_inclusions
-  end
-    
-  # Class method for iterating through all Points to 
-  # update their relative scores. Very computationally
-  # expensive, so should only be called periodically by cron job
-  def self.update_relative_scores
-    num_inclusions_per_point = {}
-
-    Inclusion.select("COUNT(*) AS cnt, point_id AS pnt").group(:point_id).each do |row|
-      num_inclusions_per_point[row.pnt.to_i] = row.cnt.to_i
-    end
-
-    Account.find_each do |accnt|
-      accnt.proposals.select(:id).each do |proposal|
         
-        # Point ranking across the metrics is done separately for pros and cons,
-        # fixed on a particular Proposal
-        point_groups = [
-          proposal.points.viewable.pros.select("id, appeal, attention, score, num_inclusions").to_a,
-          proposal.points.viewable.cons.select("id, appeal, attention, score, num_inclusions").to_a
-        ]
-
-        point_groups.each do |group|        
-          relative_scores = {}
-
-          group.each do |pnt|
-            pnt.num_inclusions = num_inclusions_per_point.has_key?(pnt.id) ? num_inclusions_per_point[pnt.id] : 0
-            pnt.recache(true)
-            relative_scores[pnt.id] = []
-          end
-          
-          [:appeal.to_s, :attention.to_s].each do |metric|
-            
-            # descending sort of points by current metric
-            group.sort! {|x,y| y.attributes[metric] <=> x.attributes[metric]}
-            
-            # now we'll compute the relative percentile ranking for the metric for each point (1=highest, 0 lowest)
-            cur_val = nil
-            rank = nil
-            group.each_with_index do |pnt, idx|
-              if !cur_val || pnt.attributes[metric] < cur_val
-                rank = idx.to_f
-                cur_val = pnt.attributes[metric]
-              end
-              relative_scores[pnt.id].push( 1 - rank / group.length )
-            end
-          end
-          
-          group.each do |pnt|
-            pnt.score = relative_scores[pnt.id].inject(:+) / relative_scores[pnt.id].length
-            pnt.save(:validate => false)
-          end
-                              
-        end
-      end
-    end    
+  def self.update_scores
+    Point.all.each {|pnt| pnt.recache }
   end
-  
 
-protected
-  def entropy
-    
-    distribution = Array.new(5, 0.0001)
-
-    qry = inclusions.joins("INNER JOIN opinions ON opinions.user_id=inclusions.user_id AND opinions.proposal_id=inclusions.proposal_id") \
-                    .where("opinions.published=1" )                                      \
-                    .group('opinions.stance_segment')                                    \
-                    .select("COUNT(*) AS cnt, opinions.stance_segment")
-                        
-    # get the number of inclusions per stance group
-    qry.each do |row|
-      # collapse strong and moderate support/oppose to make more fair distribution
-      if row.stance_segment == '0'
-        row.stance_segment = '1'
-      elsif row.stance_segment == '6'
-        row.stance_segment = '5'
-      end
-      begin
-        distribution[row.stance_segment.to_i - 1] += row.cnt.to_i    
-      rescue
-        'error'
-      end
-       
-    end
-
-    e = 0
-    total = distribution.inject(:+)
-    if total > 0
-      distribution.each do |val|
-        if val > 0
-          # p is the probability of seeing this stance in the distribution
-          p = 1.0 * val / total
-          e -= p * Math.log(p, 5)
-        end
-      end
-    end
-    e    
-  end
 end

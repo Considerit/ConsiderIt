@@ -5,15 +5,15 @@
 
   - if @notification_type == 'your proposal'
 
-    #{@point.user.username} added a new #{@point.is_pro ? 'pro' : 'con'} point for your proposal.
+    #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for your proposal.
 
   - elsif @notification_type == 'opinion submitter'
 
-    #{@point.user.username} added a new #{@point.is_pro ? 'pro' : 'con'} point on a proposal you follow. 
+    #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point on a proposal you follow. 
 
   - elsif @notification_type == 'lurker'
 
-    #{@point.user.username} added a new #{@point.is_pro ? 'pro' : 'con'} point on a proposal you follow. 
+    #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point on a proposal you follow. 
 
 %p 
   The new point:

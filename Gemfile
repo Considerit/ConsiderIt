@@ -29,11 +29,20 @@ gem 'acts_as_tenant' # https://github.com/ErwinM/acts_as_tenant
 gem "haml"
 gem 'paperclip' # https://github.com/thoughtbot/paperclip
 gem 'paperclip-compression'
+gem 'delayed_paperclip'
 gem 'font-awesome-rails'
 gem "js-routes" # https://github.com/railsware/js-routes
 
 # used for parsing useragent string for logging client errors
 gem 'useragent' # https://github.com/josh/useragent
+
+#############
+# PURE PERFORMANCE
+# Rails JSON encoding is super slow, oj makes it faster
+gem 'oj'
+gem 'oj_mimic_json' # we need this for Rails 4.1.x
+
+
 
 #############
 # BACKGROUND PROCESSING / EMAIL

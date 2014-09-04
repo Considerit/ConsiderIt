@@ -2,18 +2,18 @@ Hi #{@user.first_name},
 = "\r\n"
 
 - if @notification_type == 'your point'
-  #{@comment.user.username} commented on your #{@point.is_pro ? 'pro' : 'con'} point. The comment says:
+  #{@comment.user.name} commented on your #{@point.is_pro ? 'pro' : 'con'} point. The comment says:
 
 - elsif @notification_type == 'participant'
-  #{@comment.user.username} commented on a #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}" that you also commented on. The point states that "#{@point.nutshell}". The comment says:
+  #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}" that you also commented on. The point states that "#{@point.nutshell}". The comment says:
 
 - elsif @notification_type == 'included point'
 
-  #{@comment.user.username} commented on a #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}" that you included in your pro/con list. The point states that "#{@point.nutshell}". The comment says:
+  #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}" that you included in your pro/con list. The point states that "#{@point.nutshell}". The comment says:
 
 - elsif @notification_type == 'lurker'
 
-  #{@comment.user.username} commented on a #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}" that you are following. The point states that "#{@point.nutshell}". The comment says:
+  #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}" that you are following. The point states that "#{@point.nutshell}". The comment says:
   
 = "\r\n"
 "#{@comment.body}"

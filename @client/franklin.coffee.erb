@@ -859,6 +859,7 @@ DecisionBoard = ReactiveComponent
   render : ->
     root = @root
     current_user = @data('/current_user')
+    published = @data(@proposal.your_opinion).published
 
     # Need to register this dependency because ActiveREST doesn't pick it up. 
     # In results state, decision board position depends on the slider position.
@@ -901,12 +902,12 @@ DecisionBoard = ReactiveComponent
           # only shown during results, but needs to be present always for animation
           R.a 
             className:'give_opinion_button primary_button'
-          , if @data(@proposal.your_opinion).published then 'Update your Opinion' else 'Give your Opinion'
+          , if published then 'Update your Opinion' else 'Give your Opinion'
 
       R.div 
         className:'save_opinion_button primary_button'
         onClick: @saveYourOpinion
-      , if your_opinion.published then 'Switch back to results' else 'Save your opinion and see results'
+      , if published then 'Switch back to results' else 'Save your opinion and see results'
 
       if root.page_name == 'crafting'
         R.a className:'follow_proposal',
@@ -920,7 +921,7 @@ DecisionBoard = ReactiveComponent
               save @proposal
           R.label htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
 
-      if !your_opinion.published
+      if !published
         R.a 
           className:'cancel_opinion_button primary_cancel_button'
           onClick: (=> togglePage('results'))

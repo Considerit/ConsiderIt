@@ -6,7 +6,6 @@
     // ****************
     // Public API
     var cache = {}
-    window.watch = function (url) {return url == '/user/14955'}
     function fetch(url, defaults) {
         if (window.watch && watch(url)) console.trace()
 
@@ -66,8 +65,10 @@
     // == Internal funcs
 
     var new_index = 0
+    var affected_keys = new Set()
+    var re_render_timer = null
     function updateCache(object) {
-        var affected_keys = []
+        affected_keys = affected_keys || new Set()
         function updateCacheInternal(object) {
             // Recurses through object and folds it into the cache.
 
@@ -89,7 +90,8 @@
                         cache[key][k] = object[k]  // pointers to this object
 
                 // Remember this key for re-rendering
-                affected_keys.push(key)
+                //console.log('Adding key', key)
+                affected_keys.add(key)
             }
 
             // Now recurse into this object.
@@ -107,9 +109,25 @@
         }
 
         updateCacheInternal(object)
-        var re_render = (window.re_render || function () {
-            console.log('You need to implement re_render()') })
-        re_render(affected_keys)
+
+        // console.log('Maybe spawning re-render', object && object.key,
+        //             'with', re_render_timer,
+        //             (affected_keys.all().indexOf('slider') != -1)
+        //             ? affected_keys.all() : 'no slider')
+        re_render_timer = re_render_timer || setTimeout(function () {
+            // console.log("Re-render going")
+            re_render_timer = null
+            var keys = affected_keys.all()
+            // if (keys.indexOf('slider') != -1)
+            //     console.log('   ... with keys', keys)
+            affected_keys.clear()
+            if (keys.length > 0) {
+                var re_render = (window.re_render || function () {
+                    console.log('You need to implement re_render()') })
+                re_render(keys)
+            }
+        })
+        // console.log('Now it\'s', re_render_timer)
     }
 
     var outstanding_fetches = {}
@@ -268,6 +286,15 @@
         this.delAll = function (a) { data.delAll(a) }
     }
 
+    function Set() {
+        var hash = {}
+        this.n = 0;
+        this.add = function (a) { hash[a] = true }
+        this.all = function () { return Object.keys(hash) }
+        this.clear = function () { hash = {}; this.n++ }
+        this.hash = function () { return hash }
+    }
+
     // ****************
     // Wrapper for React Components
     var components = {}                  // Indexed by 'component/0', 'component/1', etc.
@@ -318,25 +345,25 @@
 
                  // Create shortcuts e.g. `this.foo' for all parents
                  // up the tree, and this component's local key
-                 Object.defineProperty(this, 'local', {
-                     get: function () { return this.get(this.local_key) },
-                     configurable: true })
+                 function add_shortcut (obj, shortcut_name, to_key) {
+                     //console.log('Giving '+obj.name+' shorcut @'+shortcut_name+'='+to_key)
+                     delete obj[name]
+                     Object.defineProperty(obj, shortcut_name, {
+                         get: function () { return obj.get(to_key) },
+                         configurable: true })
+                 }
 
+                 // ...first for @local
+                 add_shortcut(this, 'local', this.local_key)
+                 
+                 // ...and now for all parents
                  var parents = this.props.parents.concat([this.local_key])
                  for (var i=0; i<parents.length; i++) {
                      var name = components[parents[i]].name.toLowerCase()
                      var key = components[parents[i]].props.key
                      if (!key && cache[name] !== undefined)
                          key = name
-                     delete this[name]
-                     Object.defineProperty(this,
-                                           name,
-                                           //     We have to make a closure on key
-                                           { get: (function (curr_key) {
-                                                     // And now return this.get(key)
-                                                     return function () { return this.get(curr_key) }}
-                                                  )(key),
-                                             configurable: true })
+                     add_shortcut(this, name, key)
                  }
              })
         wrap(component, 'componentDidMount')
@@ -376,20 +403,18 @@
 
         window.re_render = function (keys) {
             // console.log('Re-rendering keys', keys)
-            setTimeout(function () {
-                for (var i=0; i<keys.length; i++) {
-                    affected_components = components_4_key.get(keys[i])
-                    for (var j=0; j<affected_components.length; j++)
-                        dirty_components[affected_components[j]] = true
-                }
+            for (var i=0; i<keys.length; i++) {
+                affected_components = components_4_key.get(keys[i])
+                for (var j=0; j<affected_components.length; j++)
+                    dirty_components[affected_components[j]] = true
+            }
 
-                for (var comp_key in dirty_components)
-                    // Cause they will clear from underneath us
-                    if (dirty_components[comp_key]) {
-                        // console.log('force updating component', components[comp_key].name)
-                        components[comp_key].forceUpdate()
-                    }
-            })
+            for (var comp_key in dirty_components)
+                // Cause they will clear from underneath us
+                if (dirty_components[comp_key]) {
+                    // console.log('force updating component', components[comp_key].name)
+                    components[comp_key].forceUpdate()
+                }
         }
 
         var react_class = React.createClass(component)
@@ -436,6 +461,11 @@
         keys_4_component.delAll(component)
     }
 
+    function clear_objects (match_key_func) {
+        for (key in cache)
+            if (match_key_func(key))
+                delete cache[key]
+    }
 
     // ******************
     // Internal helpers/utility funcs
@@ -506,7 +536,7 @@
     window.destroy = destroy
 
     // Make the private methods accessible under "window.arest"
-    vars = 'cache fetch save serverFetch serverSave updateCache csrf keys_4_component components_4_key components execution_context hashset clone wrap sanity clearComponentDeps dirty_components'.split(' ')
+    vars = 'cache fetch save serverFetch serverSave updateCache csrf keys_4_component components_4_key components execution_context hashset clone wrap sanity clearComponentDeps dirty_components affected_keys clear_objects'.split(' ')
     window.arest = {}
     for (var i=0; i<vars.length; i++)
         window.arest[vars[i]] = eval(vars[i])

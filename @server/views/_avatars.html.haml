@@ -1,4 +1,4 @@
 -# cache "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}" do
 %style{:type => "text/css", :id => "b64-avatars"}
-  - current_tenant.users.where('avatar_file_name IS NOT NULL AND registration_complete').select([:id,:b64_thumbnail]).each do |user|
+  - current_tenant.users.where('b64_thumbnail IS NOT NULL AND registration_complete').select([:id,:b64_thumbnail]).each do |user|
     \#avatar-#{user.id} { background-image: url("#{user.b64_thumbnail}");}

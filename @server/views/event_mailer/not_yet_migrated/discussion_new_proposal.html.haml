@@ -1,7 +1,7 @@
 
 
 %p.head
-  #{@user.first_name}, a new proposal has been added#{@proposal.user_id ? " by " + @proposal.user.username : ''}.
+  #{@user.first_name}, a new proposal has been added#{@proposal.user_id ? " by " + @proposal.user.name : ''}.
 
 .object
   &ldquo;#{link_to @proposal.title, @url}&rdquo;

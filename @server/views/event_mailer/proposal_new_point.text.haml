@@ -5,15 +5,15 @@ Hi #{@user.first_name},
 
 - if @notification_type == 'your proposal'
 
-  #{@point.user.username} added a new #{@point.is_pro ? 'pro' : 'con'} point for your proposal "#{@point.proposal.title}":
+  #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for your proposal "#{@point.proposal.title}":
 
 - elsif @notification_type == 'opinion submitter'
 
-  #{@point.user.username} added a new #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}":
+  #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}":
 
 - elsif @notification_type == 'lurker'
 
-  #{@point.user.username} added a new #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}":
+  #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}":
 
 = "\r\n"
 "#{@point.nutshell}"

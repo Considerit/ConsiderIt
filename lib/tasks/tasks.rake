@@ -2,7 +2,7 @@ namespace :cache do
   desc "Update cache"
   task :points => :environment do
     begin
-      Point.update_relative_scores()
+      Point.update_scores()
       Rails.logger.info "Updated point scores"
     rescue
       Rails.logger.info "Could not update point scores"

@@ -88,10 +88,13 @@ class ProposalController < ApplicationController
 
     proposal = Proposal.find params[:id]
 
-    if params.has_key?(:is_following) && params[:is_following] != proposal.following(current_user)
-      # if is following has changed, that means the user has explicitly expressed 
-      # whether they want to be subscribed or not
-      proposal.follow! current_user, {:follow => params[:is_following], :explicit => true}
+    if params.has_key?(:is_following) 
+      follows = proposal.get_explicit_follow(current_user) 
+      if params[:is_following] != (follows ? follows.follow : true)
+        # if is following has changed, that means the user has explicitly expressed 
+        # whether they want to be subscribed or not
+        proposal.follow! current_user, {:follow => params[:is_following], :explicit => true}
+      end
     end
 
     # fields = []

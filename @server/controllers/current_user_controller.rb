@@ -157,7 +157,6 @@ class CurrentUserController < ApplicationController
         if !current_user.save
           raise 'Error saving basic current_user parameters!'
         end
-        dirty_avatar_cache if params.has_key? :avatar
       else
         raise 'Had trouble manipulating this user!'
       end
@@ -289,7 +288,6 @@ class CurrentUserController < ApplicationController
         set_current_user(user)
       end      
       current_user.update_from_third_party_data(access_token)
-      dirty_avatar_cache
     end
 
     response = [current_user.current_user_hash(form_authenticity_token)]
@@ -379,18 +377,6 @@ class CurrentUserController < ApplicationController
 
   private
 
-  def dirty_avatar_cache
-    begin
-      current = Rails.cache.read("avatar-digest-#{current_tenant.id}") || 0
-      Rails.cache.write("avatar-digest-#{current_tenant.id}", current + 1)   
-    rescue => e
-      if Rails.env.production?
-        ExceptionNotifier.notify_exception(e, :env => request.env, :data => {})
-      else
-        raise e
-      end
-    end
-  end
 
 
   # this won't be needed after old dash is replaced

@@ -43,7 +43,7 @@ ConsiderIt::Application.configure do
     :enable_starttls_auto => true
   }
   
-  Paperclip.options[:command_path] = "/opt/local/bin/"
+  #Paperclip.options[:command_path] = "/opt/local/bin/"
 
 
 end  

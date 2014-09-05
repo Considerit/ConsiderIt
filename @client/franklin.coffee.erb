@@ -882,6 +882,8 @@ DecisionBoard = ReactiveComponent
     # misplaced because fixed elements are not sized wrt their parents, but
     # the viewport. So we're going to be sensitive to the width of the screen
     # in how we center the decision board. 
+    # TODO: there is still a problem when screen is small with horizontal
+    #       scrolling
     media = @data('media')
     if media.width >= PAGE_WIDTH || !@data().sticky
       opinion_region_style = 

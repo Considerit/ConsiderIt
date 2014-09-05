@@ -1,17 +1,29 @@
 class PageController < ApplicationController
   respond_to :json
   def show
-    proposal = Proposal.find_by_long_id(params[:id])
-    return if !proposal or cannot?(:read, proposal)
 
-    # if !session.has_key?(proposal.id)
-    #   ApplicationController.reset_user_activities(session, proposal)
-    # end
+    case params[:id]
 
-    result = proposal.full_data(can?(:manage, proposal))
+    when 'homepage'
+
+      result = {
+        :proposal_summaries => current_tenant.proposals.open_to_public.browsable.map {|proposal| proposal.proposal_summary()}
+      }
+
+    else
+
+      proposal = Proposal.find_by_long_id(params[:id])
+      if !proposal or cannot?(:read, proposal)
+        # TODO: return with a good HTML code for this case
+        render :json => {:result => 'Permission denied'}
+        return
+      end
+
+      result = proposal.full_data(can?(:manage, proposal))
+
+    end
 
     result['customer'] = current_tenant
-
     result['key'] = "/page/#{params[:id]}"
     render :json => result
   end

@@ -17,9 +17,10 @@ class Proposal < ActiveRecord::Base
 
   #before_save :extract_tags
 
-  class_attribute :my_public_fields
+  class_attribute :my_public_fields, :my_summary_fields
   self.my_public_fields = [:id, :long_id, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description]
-  
+  self.my_summary_fields = [:id, :long_id, :user_id, :created_at, :updated_at, :category, :designator, :name, :active, :publicity]
+
   #attr_accessible :long_id, :activity, :additional_description2, :category, :created_at, :contested, :description, :designator, :additional_description1, :additional_description3, :name, :trending, :updated_at, :url1,:url2,:url3,:user_id, :active, :top_pro, :top_con, :participants, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description
 
   scope :active, -> {where( :active => true, :published => true )}
@@ -92,6 +93,21 @@ class Proposal < ActiveRecord::Base
     response
   end
 
+  def proposal_summary
+    response = self.as_json :only => Proposal.my_summary_fields
+
+    # Find an existing opinion for this user
+    your_opinion = Opinion.get_or_make(self, current_user, false)
+
+    if your_opinion
+      response.update({
+        :your_opinion => "/opinion/#{your_opinion.id}"
+      })
+    end
+
+    response
+  end
+
   def self.content_for_user(user)
     user.proposals.public_fields.to_a + Proposal.privately_shared.where("LOWER(CONVERT(access_list USING utf8)) like '%#{user.email}%' ").public_fields.to_a
   end
@@ -104,8 +120,8 @@ class Proposal < ActiveRecord::Base
     stubify_field(result, 'user')
     # result["participants"] = JSON.parse(result["participants"] || '[]')
     # result["participants"].map! {|p| "/user/#{p}"}
-    result["top_con"] = "/point/#{result['top_con']}"
-    result["top_pro"] = "/point/#{result['top_pro']}"
+    # result["top_con"] = "/point/#{result['top_con']}"
+    # result["top_pro"] = "/point/#{result['top_pro']}"
     follows = get_explicit_follow(current_user) 
     result["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 

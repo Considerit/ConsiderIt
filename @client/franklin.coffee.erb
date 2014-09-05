@@ -1886,11 +1886,39 @@ Auth = ReactiveComponent
             save(root))
         , 'cancel log in'
 
+Homepage = ReactiveComponent
+  displayName: 'Homepage'
+
+  clickLink : (event) ->
+
+    href = $(event.currentTarget).attr('href')
+
+    # Allow shift+click for new tabs, etc.
+    if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
+      event.preventDefault()
+      # Instruct Backbone to trigger routing events
+      window.app_router.navigate href, { trigger : true }
+      return false
+
+
+  render : ->
+    homepage = @data()
+
+    R.div className: 'homepage', 
+      R.table null, 
+        for summary in homepage.proposal_summaries
+          R.tr null,
+            R.td className: 'summary_name', 
+              R.a onClick: @clickLink, href: "/#{summary.long_id}", summary.long_id.replace('_', ' ')
+            R.td className: 'summary_decide'
+            R.td className: 'summary_share' 
+
 
 Root = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
+    root = @data()
     # Update the location bar if it's different
     query_parameters = Backbone.history.getQueryParameters()
     delete query_parameters['results']
@@ -1898,13 +1926,14 @@ Root = ReactiveComponent
     if @root.page_name == 'results'
       query_parameters['results'] = true
 
-    url = window.app_router.toFragment @props.long_id, query_parameters
+    if root.endpoint != 'homepage'
+      url = window.app_router.toFragment root.endpoint, query_parameters
 
-    if ( "#{window.location.pathname}#{window.location.search}" != "/" + url)
-      window.app_router.navigate url, {trigger : true}
+      if ( "#{window.location.pathname}#{window.location.search}" != "/" + url)
+        window.app_router.navigate url, {trigger : true}
 
     # Now let's render
-    Page key: "/page/#{@props.long_id}"
+    Page key: "/page/#{root.endpoint}"
 
 Page = ReactiveComponent
   displayName: 'Page'
@@ -1913,11 +1942,17 @@ Page = ReactiveComponent
     fetchAvatars()
 
   render: ->
+    data = @page.key
+
     R.div 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
       Header()
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
         R.div id: 'inner_body', #style : { width: CONTENT_WIDTH },
-          Proposal key: @page.proposal.key
+          switch @root.page_name
+            when 'homepage'
+              Homepage key: @page.key
+            else 
+              Proposal key: @page.proposal.key
       Footer()
       Computer() # Doesn't actually render anything
 
@@ -2047,19 +2082,39 @@ fetchAvatars = ->
 # Note: not committed to backbone. Want to experiment with other routing techniques too.
 window.root = null
 Router = Backbone.Router.extend
-
+  
   routes :
     ":proposal(/)": "proposal"
+    "(/)" : "homepage"
 
   proposal : (long_id, params) ->
     page = if params && params['results'] then 'results' else 'crafting'
     root = fetch('root')
+
+    #TODO: Manage crafting/results with state on the proposal itself.
+    #      Then merge root.page_name & root.endpoint
     root.page_name = page
+    root.endpoint = long_id
     save(root)
 
     if !window.root
-      params = {long_id : long_id}
-      window.root = React.renderComponent(Root(params), document.getElementById('content'))
+      #TODO: destroy previous root component if it exists      
+      window.root = React.renderComponent(Root(), document.getElementById('content'))
+
+  homepage : (params) -> 
+    root = fetch('root')
+
+    #TODO: Manage crafting/results with state on the proposal itself.
+    #      Then merge root.page_name & root.endpoint     
+    root.page_name = 'homepage'
+    root.endpoint = 'homepage'
+    save(root)
+
+    if !window.root
+      @current_endpoint = 'homepage'
+      #TODO: destroy previous root component if it exists
+      window.root = React.renderComponent(Root(), document.getElementById('content'))
+
 
 
 window.app_router = new Router()

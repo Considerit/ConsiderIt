@@ -31,10 +31,10 @@ class Opinion < ActiveRecord::Base
     result
   end
 
-  def self.get_or_make(proposal, user)
+  def self.get_or_make(proposal, user, make = true)
     # Each (user,proposal) should have only one opinion.
 
-    if not user
+    if !user
       raise "Need a user to get their opinion!"
     end
     
@@ -47,7 +47,7 @@ class Opinion < ActiveRecord::Base
     your_opinion = your_opinion.first
 
     # Otherwise create one
-    if not your_opinion
+    if your_opinion.nil? && make
       your_opinion = Opinion.create(:proposal_id => proposal.id,
                                     :user => user ? user : nil,
                                     :long_id => proposal.long_id,

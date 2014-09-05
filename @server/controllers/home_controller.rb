@@ -7,7 +7,8 @@ class HomeController < ApplicationController
   def index
     # We don't have a homepage. In the iterim, let's just redirect 
     # accesses to the homepage to the latest published proposal
-    if request.path == '/' && request.query_string == ""
+    # TODO: better way of knowing if a particular customer has a homepage or not.
+    if current_tenant.id != 1 && request.path == '/' && request.query_string == ""
       proposal = current_tenant.proposals.open_to_public.active.last
       redirect_to "/#{proposal.long_id}"
       return

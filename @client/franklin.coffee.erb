@@ -251,6 +251,21 @@ Proposal = ReactiveComponent
     $el = $(@getDOMNode())
     $el.find('.proposal_heading.stickable').stickyTopBottom('destroy')
 
+
+  renderDescriptionField : (field) ->
+    R.div className: 'description_field', key: field.label,
+      R.div className: 'field_heading', onClick: (=> field.expanded = !field.expanded; save(@local);),
+        R.span className: 'expand_arrow', dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
+        R.span className: 'field_name', field.label
+      if field.expanded
+        R.div className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
+
+  renderDescriptionFieldGroup : (group) -> 
+    R.div className: 'description_group',
+      R.label className: 'description_group_name', group.group
+      for field in group.items
+        @renderDescriptionField field
+
   ##
   # Make this thing!
   render : ->
@@ -279,13 +294,14 @@ Proposal = ReactiveComponent
 
     proposer = @data(proposal.user)
 
-    # Temporary approach to Proposal description fields. 
+    # New approach to Proposal description fields. 
     # Description fields are the expandable details that help people drill
     # into the proposal. They are very specific to the type of proposal (e.g. for
     # an LVG ballot measure, one of the fields might be "fiscal impact statement").  
-    # For Tigard, I'm storing all these fields in proposal.description_fields
-    # as a serialized JSON object of the following structure:
+    # We're now storing all these fields in proposal.description_fields
+    # as a serialized JSON object of one of the following structures:
     #       [ {"label": "field one", "html": "<p>some details</p>"}, ... ] 
+    #       [ {"group": "group name", "items": [ {"label": "field one", "html": "<p>some details</p>"}, ... ]}, ...]
     # If we choose to use this more flexible approach, we can migrate all the old 
     # data to this format, rename the column, and get rid of a bunch of columns on 
     # Proposal that will be made obsolete. 
@@ -320,15 +336,11 @@ Proposal = ReactiveComponent
 
         if @local.description_fields
           R.div className: 'description_fields',
-            for field in @local.description_fields
-              do (field) => 
-                R.div className: 'description_field', key: field.label,
-                  R.div className: 'field_heading', onClick: (=> field.expanded = !field.expanded; save(@local);),
-                    R.span className: 'expand_arrow', dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
-                    R.span className: 'field_name', field.label
-                  if field.expanded
-                    R.div className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
-
+            for item in @local.description_fields
+              if item.group
+                @renderDescriptionFieldGroup item
+              else
+                @renderDescriptionField item
     
       #feelings
       R.div className:'feelings_region', style : { width: BODY_WIDTH },

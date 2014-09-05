@@ -104,6 +104,22 @@ $proposal_header_color: #E37765
     text-decoration: underline
 
 
+.description_group
+  position: relative
+  margin-bottom: 10px
+
+  .description_field
+    padding: 0
+
+.description_group_name
+  position: absolute
+  width: 130px
+  left: -155px
+  text-align: right
+  top: 10px
+  text-transform: lowercase
+  font-variant: small-caps
+
 .description_field
   padding: $vertical_baseline / 4 0
   color: #414141
@@ -122,6 +138,41 @@ $proposal_header_color: #E37765
   .field_body
     padding: 6px 24px
 
+[customer="livingvotersguide"]
+  .endorser_group
+    width: 305px
+    display: inline-block
+    
+    margin-bottom: $vertical_baseline
+    vertical-align: top
+
+    &.oppose
+      float: right
+
+    li, a
+      +font-size(-2)
+
+  .funder_name
+    text-transform: lowercase
+
+  .funders li
+    list-style: none
+
+    .funder_amount
+      float: right
+
+  .news 
+    padding-left: 0
+    li
+      +font-size(-1)
+      list-style: none
+      padding-bottom: 6px
+
+  .editorials ul
+    padding-left: 10px
+    li
+      list-style: none
+      padding-top: 6px
 
 /////////////////////
 // FEELINGS REGION

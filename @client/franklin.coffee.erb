@@ -1205,7 +1205,7 @@ Point = ReactiveComponent
         style = { top: top_offset }
         style[left_right] = -side_offset
 
-        # Finally draw the guy
+        # Finally draw the guys
         Avatar
           key: includer
           tag: R.span
@@ -1905,7 +1905,7 @@ Homepage = ReactiveComponent
   render : ->
     homepage = @data()
 
-    R.div className: 'homepage', 
+    R.div className: 'homepage',
       R.table null, 
         for summary in homepage.proposal_summaries
           R.tr null,
@@ -1934,7 +1934,10 @@ Root = ReactiveComponent
         window.app_router.navigate url, {trigger : true}
 
     # Now let's render
-    Page key: "/page/#{root.endpoint}"
+    R.div null,
+      StateDash(),
+      Page(key: "/page/#{root.endpoint}"),
+      Computer() # Doesn't actually render anything
 
 Page = ReactiveComponent
   displayName: 'Page'
@@ -1953,7 +1956,6 @@ Page = ReactiveComponent
             else 
               Proposal key: @page.proposal.key
       Footer()
-      Computer() # Doesn't actually render anything
 
 Computer = ReactiveComponent
   # This doesn't actually render anything.  It just processes state

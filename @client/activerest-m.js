@@ -311,7 +311,7 @@
                  // STEP 1. Register the component's basic info
                  if (component.displayName === undefined)
                      throw 'Component needs a displayName'
-                 this.name = component.displayName.toLowerCase()
+                 this.name = component.displayName.toLowerCase().replace(' ', '_')
                  this.local_key = 'component/' + components_count++
                  components[this.local_key] = this
 
@@ -340,7 +340,7 @@
                  // ...and now for all parents
                  var parents = this.props.parents.concat([this.local_key])
                  for (var i=0; i<parents.length; i++) {
-                     var name = components[parents[i]].name.toLowerCase()
+                     var name = components[parents[i]].name
                      var key = components[parents[i]].props.key
                      if (!key && cache[name] !== undefined)
                          key = name

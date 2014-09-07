@@ -1,3 +1,4 @@
+# coding: utf-8
 class Proposal < ActiveRecord::Base
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
@@ -97,7 +98,7 @@ class Proposal < ActiveRecord::Base
     response = self.as_json :only => Proposal.my_summary_fields
 
     # Find an existing opinion for this user
-    your_opinion = Opinion.get_or_make(self, current_user, false)
+    your_opinion = Opinion.where(:proposal_id => self.id, :user => current_user).first
 
     if your_opinion
       response.update({

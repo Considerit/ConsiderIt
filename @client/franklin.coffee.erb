@@ -602,12 +602,11 @@ Slider = ReactiveComponent
     e.preventDefault()
 
     your_opinion = @data(@proposal.your_opinion)
-    root = @data 'root'
     
     # Clicking on the slider handle should transition us between crafting <=> results. 
     # We should also transition to crafting when we've been dragging on the results page. 
-    if slider.stance == your_opinion.stance || root.page_name == 'results'
-      new_page = if root.page_name == 'results' then 'crafting' else 'results'
+    if slider.stance == your_opinion.stance || @root.page_name == 'results'
+      new_page = if @root.page_name == 'results' then 'crafting' else 'results'
       togglePage new_page
       e.stopPropagation()
 
@@ -1504,7 +1503,6 @@ Auth = ReactiveComponent
   componentDidMount : -> 
     $(document).scrollTop $(@getDOMNode()).find('.auth_heading').offset().top - 10
   startThirdPartyAuth : (provider) ->
-
     root = @root
     new ThirdPartyAuthHandler
       provider : provider
@@ -1942,8 +1940,6 @@ Page = ReactiveComponent
     fetchAvatars()
 
   render: ->
-    data = @page.key
-
     R.div 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
       Header()
       R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 

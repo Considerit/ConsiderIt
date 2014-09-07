@@ -715,12 +715,12 @@ Slider = ReactiveComponent
 
     R.div className: 'slider', style : { left: - (@props.width - DECISION_BOARD_WIDTH) / 2 },
       R.div className:'slider_base', style : {width: @props.width}, 
-        R.div 
-          className: 'slider_base_triangle_left'
-          style: _.extend({}, slider_base_triangle_style, {left: -triangle_width})
-        R.div 
-          className: 'slider_base_triangle_right'
-          style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
+        # R.div 
+        #   className: 'slider_base_triangle_left'
+        #   style: _.extend({}, slider_base_triangle_style, {left: -triangle_width})
+        # R.div 
+        #   className: 'slider_base_triangle_right'
+        #   style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
         R.div 
           className:'slider_feedback'
           style: slider_feedback_style
@@ -732,8 +732,8 @@ Slider = ReactiveComponent
               R.div className: 'face_mouth face_part', style: face_mouth_style
               R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
               R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
-          R.div className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved
-          R.div className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved
+          # R.div className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved
+          # R.div className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved
 
         R.img className:'bubblemouth', src: bubblemouth_src, style: {left: slider.clientX}
     

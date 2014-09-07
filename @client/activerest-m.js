@@ -9,14 +9,14 @@
     function fetch(url, defaults) {
         if (window.watch && watch(url)) console.trace()
 
-        record_dependence(url)
+        window.record_dependence && record_dependence(url)
 
         // Return the cached version if it exists
         if (cache[url]) return cache[url]
 
         // Else, start a serverFetch in the background and return stub.
         if (url[0] === '/')
-            serverFetch(url)
+            server_fetch(url)
 
         return cache[url] = extend({key: url}, defaults)
     }
@@ -29,11 +29,11 @@
      *  You can pass a callback that will run when the saves have finished.
      */
     function save(object, continuation) {
-        updateCache(object)
+        update_cache(object)
 
         // Save all the objects
         if (object.key && object.key[0] == '/')
-            serverSave(object, continuation)
+            server_save(object, continuation)
         else
             if (continuation) continuation()
     }
@@ -48,7 +48,7 @@
 
         // Save all the objects
         if (key[0] == '/')
-            serverDestroy(key, continuation)
+            server_destroy(key, continuation)
         else { 
             // Just remove the key from the cache if this 
             // state is owned by the client. 
@@ -67,10 +67,9 @@
     var new_index = 0
     var affected_keys = new Set()
     var re_render_timer = null
-    function updateCache(object) {
-        affected_keys = affected_keys || new Set()
-        function updateCacheInternal(object) {
-            // Recurses through object and folds it into the cache.
+    function update_cache(object) {
+        function recurse(object) {
+            // Recurses into object and folds it into the cache.
 
             // If this object has a key, update the cache for it
             var key = object && object.key
@@ -90,7 +89,6 @@
                         cache[key][k] = object[k]  // pointers to this object
 
                 // Remember this key for re-rendering
-                //console.log('Adding key', key)
                 affected_keys.add(key)
             }
 
@@ -99,27 +97,21 @@
             //  - And each property on objects
             if (Array.isArray(object))
                 for (var i=0; i < object.length; i++)
-                    object[i] = updateCacheInternal(object[i])
+                    object[i] = recurse(object[i])
             else if (typeof(object) === 'object' && object !== null)
                 for (var k in object)
-                    object[k] = updateCacheInternal(object[k])
+                    object[k] = recurse(object[k])
 
             // Return the new cached representation of this object
             return cache[key] || object
         }
 
-        updateCacheInternal(object)
+        recurse(object)
 
-        // console.log('Maybe spawning re-render', object && object.key,
-        //             'with', re_render_timer,
-        //             (affected_keys.all().indexOf('slider') != -1)
-        //             ? affected_keys.all() : 'no slider')
+        // Now initiate the re-rendering, if there isn't a timer already going
         re_render_timer = re_render_timer || setTimeout(function () {
-            // console.log("Re-render going")
             re_render_timer = null
             var keys = affected_keys.all()
-            // if (keys.indexOf('slider') != -1)
-            //     console.log('   ... with keys', keys)
             affected_keys.clear()
             if (keys.length > 0) {
                 var re_render = (window.re_render || function () {
@@ -127,11 +119,10 @@
                 re_render(keys)
             }
         })
-        // console.log('Now it\'s', re_render_timer)
     }
 
     var outstanding_fetches = {}
-    function serverFetch(key) {
+    function server_fetch(key) {
         // Error check
         if (outstanding_fetches[key]) throw Error('Duplicate request for '+key)
 
@@ -145,7 +136,7 @@
                 // Warn if the server returns data for a different url than we asked it for
                 console.assert(result.key && result.key === key,
                                'Server returned data with unexpected key', result, 'for key', key)
-                updateCache(result)
+                update_cache(result)
             }
             else if (request.status === 500)
                 if (window.on_ajax_error) window.on_ajax_error()
@@ -159,7 +150,7 @@
         request.send(null)
     }
 
-    function serverSave(object, continuation) {
+    function server_save(object, continuation) {
         var original_key = object.key
         
         // Special case for /new.  Grab the pieces of the URL.
@@ -183,7 +174,7 @@
                         obj.key = new_key                     // And it's no longer new
                     }
                 })
-                updateCache(result)
+                update_cache(result)
                 if (continuation) continuation()
             }
             else if (request.status === 500)
@@ -202,7 +193,7 @@
         request.send(JSON.stringify(object))
     }
 
-    function serverDestroy(key, continuation) {
+    function server_destroy(key, continuation) {
         // Build request
         var request = new XMLHttpRequest()
         request.onload = function () {
@@ -210,7 +201,7 @@
                 console.log('Destroy returned for', key)
                 var result = JSON.parse(request.responseText)
                 delete cache[key]
-                updateCache(result)                
+                update_cache(result)                
                 if (continuation) continuation()                
             }
             else if (request.status === 500)
@@ -232,6 +223,13 @@
         request.send(JSON.stringify(payload))
     }
 
+    // This is used in a specific hack.  I need to work on it.
+    function clear_matching_objects (match_key_func) {
+        // Clears all keys where match_key_func(key) returns true
+        for (key in cache)
+            if (match_key_func(key))
+                delete cache[key]
+    }
 
 
     var csrf_token = null
@@ -254,56 +252,14 @@
     }
 
     // ****************
-    // Utility for React Components
-    function hashset() {
-        var hash = this.hash = {}
-        this.get = function (k) { return Object.keys(hash[k] || {}) }
-        this.add = function (k, v) {
-            // if (k == 'component/946') {console.log('Adding component/946');console.trace()}
-            if (hash[k] === undefined)
-                hash[k] = {}
-            hash[k][v] = true
-        }
-        this.del = function (k, v) {
-            delete hash[k][v]
-        }
-        this.delAll = function (k) { hash[k] = {} }
-    }
-
-    // I'm partway through developing this improved utility func
-    function two_way_map() {
-        var data = hashset()
-        this.add = function (a,b) {
-            data.add(a,b)
-            data.add(b,a)
-        }
-        this.get = function (a) { return data.get(a) }
-        this.del = function (a,b) {
-            // Nevermind I'm gonna stop trying to write this now, but
-            // maybe in the future this would be a better abstraction
-            // than hashset.
-        }
-        this.delAll = function (a) { data.delAll(a) }
-    }
-
-    function Set() {
-        var hash = {}
-        this.n = 0;
-        this.add = function (a) { hash[a] = true }
-        this.all = function () { return Object.keys(hash) }
-        this.clear = function () { hash = {}; this.n++ }
-        this.hash = function () { return hash }
-    }
-
-    // ****************
     // Wrapper for React Components
     var components = {}                  // Indexed by 'component/0', 'component/1', etc.
-    var components_next_id = 0
-    var keys_4_component = new hashset() // Maps component to its dependence keys
-    var components_4_key = new hashset() // Maps key to its dependent components
+    var components_count = 0
     var dirty_components = {}
+    var execution_context = []  // The stack of components that are being rendered
     function ReactiveComponent(component) {
-        component.data = component.get = function (key, defaults) {
+        // STEP 1: Define get() and save()
+        component.fetch = component.data = component.get = function (key, defaults) {
             if (!this._lifeCycleState || this._lifeCycleState == 'UNMOUNTED')
                 throw Error('Component ' + this.name + ' (' + this.local_key 
                             + ') is tryin to get data(' + key + ') after it died.')
@@ -317,34 +273,59 @@
         }
         component.save = save                  // Call into main activerest
         
-        // Render will need to clear the component's old dependencies
-        // before rendering and finding new ones
-        wrap(component, 'render', function () {
-            clearComponentDeps(this.local_key)
-            delete dirty_components[this.local_key]
-        })
 
-        // We will register this component when creating it
+        // STEP 2: Wrap all the component's methods
+        function wrap(obj, method, before, after) {
+            var original_method = obj[method]
+            if (!(original_method || before || after)) return
+            obj[method] = function() {
+                before && before.apply(this, arguments)
+                if (this.local_key !== undefined)
+                    // We only want to set the execution context on wrapped methods
+                    // that are called on live instance.  getDefaultProps(), for
+                    // instance, is called when defining a component class, but not
+                    // on actual instances.  You can't render new components from
+                    // within there, so we don't need to track the execution context.
+                    execution_context = this.props.parents.concat([this.local_key])
+
+                try {
+                    var result = original_method && original_method.apply(this, arguments)
+                } catch (e) {
+                    execution_context = []
+                    if (e instanceof TypeError) {
+                        if (this.is_waiting()) return loading_indicator
+                        else { error(e); return error_indicator(e.message) }
+                    } else { error(e) }
+                }
+                execution_context = []
+                after && after.apply(this, arguments)
+
+                return result
+            }
+        }
+
+        // We register the component when mounting it into the DOM
         wrap(component, 'componentWillMount',
              function () { 
-                 this.local_key = 'component/' + components_next_id++
-                 // console.log('mounting', this.props.key)
 
-                 if (component.displayName === undefined) throw 'Component has not defined a displayName'
-
+                 // STEP 1. Register the component's basic info
+                 if (component.displayName === undefined)
+                     throw 'Component needs a displayName'
                  this.name = component.displayName.toLowerCase()
+                 this.local_key = 'component/' + components_count++
                  components[this.local_key] = this
 
+                 // You can pass an object in as a key if you want:
                  if (this.props.key && this.props.key.key)
                      this.props.key = this.props.key.key
 
-                 // XXX Putting this into WillMount probably won't let
-                 // you use the mounted_key inside getInitialState!
+                 // XXX Putting this into WillMount probably won't let you use the
+                 // mounted_key inside getInitialState!  But you should be using
+                 // activerest state anyway, right?
                  this.mounted_key = this.props.key
-                 window.tmp = this
 
-                 // Create shortcuts e.g. `this.foo' for all parents
-                 // up the tree, and this component's local key
+                 // STEP 2: Create shortcuts e.g. `this.foo' for all parents up the
+                 // tree, and this component's local key
                  function add_shortcut (obj, shortcut_name, to_key) {
                      //console.log('Giving '+obj.name+' shorcut @'+shortcut_name+'='+to_key)
                      delete obj[name]
@@ -366,26 +347,33 @@
                      add_shortcut(this, name, key)
                  }
              })
+
+        wrap(component, 'render', function () {
+            // Render will need to clear the component's old
+            // dependencies before rendering and finding new ones
+            clear_component_dependencies(this.local_key)
+            delete dirty_components[this.local_key]
+        })
+
         wrap(component, 'componentDidMount')
         wrap(component, 'componentDidUpdate')
         wrap(component, 'getDefaultProps')
         //wrap(component, 'componentWillReceiveProps')
         wrap(component, 'componentWillUnmount', function () {
-            clearComponentDeps(this.local_key)
+            // Clean up
+            clear_component_dependencies(this.local_key)
             delete cache[this.local_key]
             delete components[this.local_key]
             delete dirty_components[this.local_key]
-            //sanity(this.local_key)
         })
         component.shouldComponentUpdate = function (next_props, next_state) {
             // This component definitely needs to update if it is marked as dirty
             if (dirty_components[this.local_key] !== undefined) return true
 
-            // Otherwise, we'll check to see if its state or props have changed. 
-            // We can do so by simply serializing them and then comparing them. 
-            // There is a catch however: If React's children property is set on the 
-            // props, serialization will lead to an error because of a circular 
-            // reference. So we'll remove the children property.
+            // Otherwise, we'll check to see if its state or props
+            // have changed.  We can do so by simply serializing them
+            // and then comparing them.  But ignore React's 'children'
+            // prop, because it often has a circular reference.
             next_props = clone(next_props); this_props = clone(this.props)
             delete next_props['children']; delete this_props['children']
             return JSON.stringify([next_state, next_props]) != JSON.stringify([this.state, this_props])
@@ -401,74 +389,82 @@
             return false
         }
 
-        window.re_render = function (keys) {
-            // console.log('Re-rendering keys', keys)
-            for (var i=0; i<keys.length; i++) {
-                affected_components = components_4_key.get(keys[i])
-                for (var j=0; j<affected_components.length; j++)
-                    dirty_components[affected_components[j]] = true
-            }
+        // STEP 3: Configure the global function hooks for React
+        window.re_render = react_rerender
+        window.record_dependence = record_component_dependence
 
-            for (var comp_key in dirty_components)
-                // Cause they will clear from underneath us
-                if (dirty_components[comp_key]) {
-                    // console.log('force updating component', components[comp_key].name)
-                    components[comp_key].forceUpdate()
-                }
-        }
-
+        // Now create the actual React class with this definition, and
+        // return it.
         var react_class = React.createClass(component)
         return function (props, children) {
             props = props || {}
             props.parents = execution_context.slice()
-            // if (props.key === '/user/14733')
-            //     console.log('Found /user/14733 at', props)
             return react_class(props, children)
         }
     }
 
-    var execution_context = []
-    function record_dependence(key) {
+
+    // *****************
+    // Dependency-tracking for React components
+    var keys_4_component = new One_To_Many() // Maps component to its dependence keys
+    var components_4_key = new One_To_Many() // Maps key to its dependent components
+    function react_rerender (keys) {
+        // Re-renders only the components that depend on `keys'
+
+        // First we determine the components that will need to be updated
+        for (var i = 0; i < keys.length; i++) {
+            affected_components = components_4_key.get(keys[i])
+            for (var j = 0; j < affected_components.length; j++)
+                dirty_components[affected_components[j]] = true
+        }
+
+        // Then we sweep through and update them
+        for (var comp_key in dirty_components)
+            if (dirty_components[comp_key]) // Since one component might update another
+                components[comp_key].forceUpdate()
+    }
+    function record_component_dependence(key) {
+        // Looks up current component from the execution context
         if (execution_context.length > 0) {
             var component = execution_context[execution_context.length-1]
             keys_4_component.add(component, key)  // Track dependencies
             components_4_key.add(key, component)  // both ways
         }
     }
-
-    function sanity(compkey) {
-        for (var attr in components)
-            if (components[attr]._lifeCycleState != 'MOUNTED')
-                console.error('Component ' + attr + ' isn\'t mounted')
-
-        for (var attr in components_4_key.hash) {
-            var list = components_4_key.hash[attr]
-            for (var i=0; i < list.length; i++) {
-                if (list[i] === compkey
-                    && (!components[compkey]
-                        || components[compkey]._lifeCycleState != 'MOUNTED'))
-                    console.error('Did not clean this well!', compkey, attr, list, i)
-            }
-        }
-    }
-
-    function clearComponentDeps (component) {
-        // if (component === 'component/0')
-        //     console.log('Clearing component/0')
+    function clear_component_dependencies(component) {
         var depends_on_keys = keys_4_component.get(component)
         for (var i=0; i<depends_on_keys.length; i++)
             components_4_key.del(depends_on_keys[i], component)
         keys_4_component.delAll(component)
     }
 
-    function clear_objects (match_key_func) {
-        for (key in cache)
-            if (match_key_func(key))
-                delete cache[key]
+
+    // ****************
+    // Utility for React Components
+    function One_To_Many() {
+        var hash = this.hash = {}
+        this.get = function (k) { return Object.keys(hash[k] || {}) }
+        this.add = function (k, v) {
+            // if (k == 'component/946') {console.log('Adding component/946');console.trace()}
+            if (hash[k] === undefined)
+                hash[k] = {}
+            hash[k][v] = true
+        }
+        this.del = function (k, v) {
+            delete hash[k][v]
+        }
+        this.delAll = function (k) { hash[k] = {} }
+    }
+    function Set() {
+        var hash = {}
+        this.add = function (a) { hash[a] = true }
+        this.all = function () { return Object.keys(hash) }
+        this.clear = function () { hash = {} }
     }
 
+
     // ******************
-    // Internal helpers/utility funcs
+    // General utility funcs
     function clone(obj) {
         if (obj == null) return obj
         var copy = obj.constructor()
@@ -482,36 +478,6 @@
             if (!obj.hasOwnProperty(attr)) obj[attr] = with_obj[attr]
         return obj
     }
-    function wrap(obj, method, before, after) {
-        var original_method = obj[method]
-        if (!(original_method || before || after)) return
-        obj[method] = function() {
-            before && before.apply(this, arguments)
-            if (this.local_key !== undefined)
-                // We only want to set the execution context on
-                // wrapped methods that are called on live instance.
-                // getDefaultProps(), for instance, is called when
-                // defining a component class, but not on actual
-                // instances.  You can't render new components from
-                // within there, so we don't need to track the
-                // execution context.
-                execution_context = this.props.parents.concat([this.local_key])
-
-            try {
-                var result = original_method && original_method.apply(this, arguments)
-            } catch (e) {
-                execution_context = []
-                if (e instanceof TypeError) {
-                    if (this.is_waiting()) return loading_indicator
-                    else { error(e); return error_indicator(e.message) }
-                } else { error(e) }
-            }
-            execution_context = []
-            after && after.apply(this, arguments)
-
-            return result
-        }
-    }
     function map_objects(object, func) {
         if (Array.isArray(object))
             for (var i=0; i < object.length; i++)
@@ -522,12 +488,32 @@
                 map_objects(object[k], func)
         }
     }
-
     function error(e) {
         console.error('In', this.name + ':', e.stack)
         if (window.on_client_error)
             window.on_client_error(e)
     }
+
+    // function sanity(compkey) {
+    //     for (var attr in components)
+    //         if (components[attr]._lifeCycleState != 'MOUNTED')
+    //             console.error('Component ' + attr + ' isn\'t mounted')
+
+    //     for (var attr in components_4_key.hash) {
+    //         var list = components_4_key.hash[attr]
+    //         for (var i=0; i < list.length; i++) {
+    //             if (list[i] === compkey
+    //                 && (!components[compkey]
+    //                     || components[compkey]._lifeCycleState != 'MOUNTED'))
+    //                 console.error('Did not clean this well!', compkey, attr, list, i)
+    //         }
+    //     }
+    // }
+
+
+    // Camelcased API options
+    var updateCache=update_cache, serverFetch=server_fetch,
+        serverSave=server_save, serverDestroy=server_destroy
 
     // Export the public API
     window.ReactiveComponent = ReactiveComponent
@@ -536,7 +522,7 @@
     window.destroy = destroy
 
     // Make the private methods accessible under "window.arest"
-    vars = 'cache fetch save serverFetch serverSave updateCache csrf keys_4_component components_4_key components execution_context hashset clone wrap sanity clearComponentDeps dirty_components affected_keys clear_objects'.split(' ')
+    vars = 'cache fetch save server_fetch serverFetch server_save serverSave update_cache updateCache csrf keys_4_component components_4_key components execution_context One_To_Many clone dirty_components affected_keys clear_matching_objects'.split(' ')
     window.arest = {}
     for (var i=0; i<vars.length; i++)
         window.arest[vars[i]] = eval(vars[i])

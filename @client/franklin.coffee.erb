@@ -485,18 +485,22 @@ Histogram = ReactiveComponent
   onSelectSegment : (ev) ->
     if @root.page_name == 'results'
       segment = $(ev.currentTarget).data('segment')
+      hist = @data('histogram')
 
-      selected_segment = @data('histogram').selected_segment
+      selected_segment = hist.selected_segment
 
       # If clicking on already hard-selected segment, then we'll deselect. 
-      segment = if selected_segment[0] == segment && 
-                   selected_segment[1] then null else segment
+      if selected_segment == segment and selected_segment_isclicked
+        segment = null
+
       click_select = ev.type == 'click' 
 
       #ignore mouseEnter and mouseLeave events if selection was via click
-      return if selected_segment && selected_segment[1] && !click_select 
+      return if selected_segment and selected_segment_isclicked and !click_select 
 
-      @data('histogram').selected_segment = [segment, click_select && segment]
+      hist.selected_segment = segment
+      hist.selected_segment_isclicked = click_select and segment
+      save(hist)
       ev.stopPropagation()
 
   render : ->
@@ -521,13 +525,13 @@ Histogram = ReactiveComponent
         R.tr null, 
           for bars, idx in segments
             segment = 6 - idx
-            is_selected = selected_segment[0] == segment
+            is_selected = selected_segment == segment
             R.td 
               className:"histogram_segment #{if is_selected then 'is_selected' else 'not_selected'}"
               key:segment
               # onMouseEnter: @onSelectSegment
               'data-segment':segment
-              style : { opacity: (if is_selected && !selected_segment[0]? then '1' else '1') }
+              style : { opacity: (if is_selected && !selected_segment? then '1' else '1') }
             ,
               R.table null,
                 R.tr null,
@@ -547,7 +551,7 @@ Histogram = ReactiveComponent
                             opacity: if users_to_highlight && 
                               !_.contains(users_to_highlight, opinion.user) 
                               then '.15' 
-                              else if selected_segment[0] == null || is_selected 
+                              else if selected_segment == null || is_selected 
                               then '1.0'
                               else '.15'
 
@@ -746,7 +750,14 @@ OpinionFilter = ReactiveComponent
 
   onSelectSegment : (segment) ->
     hist = @data('histogram')
-    hist.selected_segment = if hist.selected_segment == segment then [null, null] else [segment, segment != null]
+    if !segment or hist.selected_segment == segment
+      # Deselect
+      hist.selected_segment = null
+      hist.selected_segment_isclicked = null
+    else
+      # Select
+      hist.selected_segment = segment
+      hist.selected_segment_isclicked = true
     save(hist)
 
   render : ->
@@ -754,7 +765,8 @@ OpinionFilter = ReactiveComponent
 
     # Remove filter when on crafting page
     if @root.page_name == 'crafting'
-      hist.selected_segment = [null, null] if hist.selected_segment[0] 
+      hist.selected_segment = null
+      hist.selected_segment_isclicked = null
 
     filter_options = ['show all opinions',
         'only full opposers',
@@ -774,7 +786,7 @@ OpinionFilter = ReactiveComponent
           i = null
 
         c = "filter_option"
-        if hist.selected_segment[0] == i
+        if hist.selected_segment == i
           c = c + ' selected'
 
         # I had to make this wrapper to make a new context for i
@@ -1019,13 +1031,13 @@ CommunityPoints = ReactiveComponent
         has_not_been_included = is_results || !_.contains(included_points, pnt.key)
         is_correct_valence && has_not_been_included
     
-    if selected_segment[0]?
+    if selected_segment?
       # If there is a histogram segment selected, we'll have to filter down 
       # to the points that users in this segment think are important, and 
       # order them by resonance to those users. I'm doing this quite inefficiently.
       point_inclusions_per_point_for_segment = {} # map of points to including users
       _.each opinions, (opinion) =>
-        if opinion.stance_segment == selected_segment[0] && opinion.point_inclusions
+        if opinion.stance_segment == selected_segment && opinion.point_inclusions
           for point in opinion.point_inclusions
             if !(point of point_inclusions_per_point_for_segment)
               point_inclusions_per_point_for_segment[point] = 1
@@ -1062,8 +1074,8 @@ CommunityPoints = ReactiveComponent
     , 
       R.div className:'points_heading_label', 
         if @data('root').page_name == 'results' then "Top #{label}" else "Others' #{label}"
-        R.p className:'points_segment_label', style: {visibility: if selected_segment[0] == null then 'hidden' else 'visible'},
-          if selected_segment[0] == null then '-' else "for those who #{stance_names[selected_segment[0]]}"          
+        R.p className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
+          if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
 
       R.ul null, 
         if points.length > 0
@@ -1158,11 +1170,11 @@ Point = ReactiveComponent
 
     # only show includers from this stance segment if a segment is selected
     selected_segment = @data('histogram').selected_segment
-    if selected_segment[0]?
+    if selected_segment?
       for includer in point.includers
         stance_segment = @data(userOpinion(includer)).stance_segment
 
-        if stance_segment && stance_segment != selected_segment[0]
+        if stance_segment && stance_segment != selected_segment
           to_remove.push(includer)
 
     _.difference point.includers, to_remove
@@ -1238,7 +1250,7 @@ Point = ReactiveComponent
         if @props.location_class == 'community_point'
           @renderIncluders()
 
-        if !selected_segment[0] || ( author_opinion && author_opinion.stance_segment == selected_segment[0] )
+        if !selected_segment || ( author_opinion && author_opinion.stance_segment == selected_segment )
           Avatar tag: R.span, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
 
       R.div className:'point_content', style : { width: POINT_CONTENT_WIDTH },
@@ -2033,7 +2045,8 @@ updateMedia = ->
 
 fetch 'histogram',
   highlighted_users : null
-  selected_segment : [null, null]
+  selected_segment : null
+  selected_segment_isclicked : null
 
 fetch 'slider',
   has_moved : false

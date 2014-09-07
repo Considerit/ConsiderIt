@@ -18,11 +18,12 @@
 #   - Managing top_level_component in Router
 #   - NewPoint CSS/HTML is still bulky, waiting on redesign
 
-# ##
-# React aliases
-R = React.DOM
+####
+# Make the DIV, SPAN, etc.
+for el of React.DOM
+  this[el.toUpperCase()] = React.DOM[el]
 
-# ##
+####
 # Constants, especially used for layout styling
 TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
@@ -43,7 +44,7 @@ MAX_HISTOGRAM_HEIGHT = 200
 # Helpers that should probably go elsewhere
 
 capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
-L = loading_indicator = R.div null, 'Loading...'
+L = loading_indicator = DIV null, 'Loading...'
 
 # safari only respects -webkit-transform
 crossbrowserTransformProperty = (props) -> _.extend props,
@@ -203,7 +204,7 @@ PageTransition =
     , duration
 
 
-## ##################
+#####################
 # React Components
 #
 # These are the components and their relationships:
@@ -253,16 +254,16 @@ Proposal = ReactiveComponent
 
 
   renderDescriptionField : (field) ->
-    R.div className: 'description_field', key: field.label,
-      R.div className: 'field_heading', onClick: (=> field.expanded = !field.expanded; save(@local);),
-        R.span className: 'expand_arrow', dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
-        R.span className: 'field_name', field.label
+    DIV className: 'description_field', key: field.label,
+      DIV className: 'field_heading', onClick: (=> field.expanded = !field.expanded; save(@local);),
+        SPAN className: 'expand_arrow', dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
+        SPAN className: 'field_name', field.label
       if field.expanded
-        R.div className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
+        DIV className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
 
   renderDescriptionFieldGroup : (group) -> 
-    R.div className: 'description_group',
-      R.label className: 'description_group_name', group.group
+    DIV className: 'description_group',
+      LABEL className: 'description_group_name', group.group
       for field in group.items
         @renderDescriptionField field
 
@@ -308,25 +309,25 @@ Proposal = ReactiveComponent
         @local.description_fields = null
 
 
-    R.div className:'proposal', key:@props.long_id, 'data-page':@root.page_name,
-      R.div className: 'proposal_heading stickable',  style : { minWidth: PAGE_WIDTH }, # minwidth is for width consistency when dropping into fixed sticky header
-        R.span null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
+    DIV className:'proposal', key:@props.long_id, 'data-page':@root.page_name,
+      DIV className: 'proposal_heading stickable',  style : { minWidth: PAGE_WIDTH }, # minwidth is for width consistency when dropping into fixed sticky header
+        SPAN null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
 
-      R.div className: 'proposal_heading placeholder', 
-        R.span null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
+      DIV className: 'proposal_heading placeholder', 
+        SPAN null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
 
       #description
 
-      R.div className:'description_region', style: description_region_style, 
+      DIV className:'description_region', style: description_region_style, 
 
-        # R.div className: 'context',
+        # DIV className: 'context',
           
-        #   R.div className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}" 
+        #   DIV className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}" 
 
-        R.div className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
+        DIV className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
 
         if @local.description_fields
-          R.div className: 'description_fields',
+          DIV className: 'description_fields',
             for item in @local.description_fields
               if item.group
                 @renderDescriptionFieldGroup item
@@ -334,7 +335,7 @@ Proposal = ReactiveComponent
                 @renderDescriptionField item
     
       #feelings
-      R.div className:'feelings_region', style : { width: BODY_WIDTH },
+      DIV className:'feelings_region', style : { width: BODY_WIDTH },
         OpinionFilter()
         HistogramData()
         Histogram()
@@ -343,7 +344,7 @@ Proposal = ReactiveComponent
         Auth()
       else
         #reasons
-        R.div 
+        DIV 
           className:'reasons_region'
           style : { width: REASONS_REGION_WIDTH },
             #community pros
@@ -468,7 +469,7 @@ HistogramData = ReactiveComponent
       save @local
 
 
-    R.span null #dummy DOM for React render 
+    SPAN null #dummy DOM for React render 
   
 
 
@@ -517,30 +518,30 @@ Histogram = ReactiveComponent
     #make sure that the extreme segments are balanced
     margin_adjustment -= avatar_size * (segments[0].length - segments[6].length) / 2 
 
-    R.table 
+    TABLE 
       className: 'histogram'
       onClick: @onClickHistogram
       # onMouseLeave: @onSelectSegment
       style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
-        R.tr null, 
+        TR null, 
           for bars, idx in segments
             segment = 6 - idx
             is_selected = selected_segment == segment
-            R.td 
+            TD 
               className:"histogram_segment #{if is_selected then 'is_selected' else 'not_selected'}"
               key:segment
               # onMouseEnter: @onSelectSegment
               'data-segment':segment
               style : { opacity: (if is_selected && !selected_segment? then '1' else '1') }
             ,
-              R.table null,
-                R.tr null,
+              TABLE null,
+                TR null,
                   for bar, idx in bars
-                    R.td key: idx , className:"histogram_bar", style: {width: avatar_size},
+                    TD key: idx , className:"histogram_bar", style: {width: avatar_size},
                       for opinion in bar
                         user = opinion.user
                         Avatar 
-                          tag: R.span, 
+                          tag: SPAN, 
                           key: user
                           user: user
                           hide_face: @root.page_name == 'crafting'
@@ -556,9 +557,9 @@ Histogram = ReactiveComponent
                               else '.15'
 
               if segment == 6
-                R.div className:"histogram_segment_pole", 'Supporters'
+                DIV className:"histogram_segment_pole", 'Supporters'
               else if segment == 0
-                R.div className:"histogram_segment_pole", 'Opposers'
+                DIV className:"histogram_segment_pole", 'Opposers'
 
 ##
 # Slider
@@ -717,29 +718,29 @@ Slider = ReactiveComponent
       fontSize: if sticky then '18px' else '29px'
       top: if sticky then '-65px' else '-80px'
 
-    R.div className: 'slider', style : { left: - (@props.width - DECISION_BOARD_WIDTH) / 2 },
-      R.div className:'slider_base', style : {width: @props.width}, 
-        # R.div 
+    DIV className: 'slider', style : { left: - (@props.width - DECISION_BOARD_WIDTH) / 2 },
+      DIV className:'slider_base', style : {width: @props.width}, 
+        # DIV 
         #   className: 'slider_base_triangle_left'
         #   style: _.extend({}, slider_base_triangle_style, {left: -triangle_width})
-        # R.div 
+        # DIV 
         #   className: 'slider_base_triangle_right'
         #   style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
-        R.div 
+        DIV 
           className:'slider_feedback'
           style: slider_feedback_style
         , if !slider.has_moved then 'Give Your Overall Opinion' else "You #{stance_names[segment]}"
 
-        R.div className: 'the_handle', style: {left: slider.clientX}, onMouseUp: @handleMouseUp, onMouseDown: @handleMouseDown,
+        DIV className: 'the_handle', style: {left: slider.clientX}, onMouseUp: @handleMouseUp, onMouseDown: @handleMouseDown,
           if page == 'crafting'
-            R.div className: 'face',            
-              R.div className: 'face_mouth face_part', style: face_mouth_style
-              R.div className: 'face_left_eye face_eye face_part', style: face_left_eye_style
-              R.div className: 'face_right_eye face_eye face_part', style: face_right_eye_style
-          # R.div className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved
-          # R.div className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved
+            DIV className: 'face',            
+              DIV className: 'face_mouth face_part', style: face_mouth_style
+              DIV className: 'face_left_eye face_eye face_part', style: face_left_eye_style
+              DIV className: 'face_right_eye face_eye face_part', style: face_right_eye_style
+          # DIV className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved
+          # DIV className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved
 
-        R.img className:'bubblemouth', src: bubblemouth_src, style: {left: slider.clientX}
+        IMG className:'bubblemouth', src: bubblemouth_src, style: {left: slider.clientX}
     
 
 ##
@@ -777,7 +778,7 @@ OpinionFilter = ReactiveComponent
         'only firm supporters',
         'only full supporters']
 
-    R.div className: 'opinion_filter_region',
+    DIV className: 'opinion_filter_region',
       for phrase, i in filter_options
 
         # Shift i by 1, and start with null
@@ -791,7 +792,7 @@ OpinionFilter = ReactiveComponent
 
         # I had to make this wrapper to make a new context for i
         wrapper = (i) => (=> @onSelectSegment(i))
-        R.a key: "segment-#{i}", className: c, onClick: wrapper(i), phrase
+        A key: "segment-#{i}", className: c, onClick: wrapper(i), phrase
 
 
 ##
@@ -897,18 +898,18 @@ DecisionBoard = ReactiveComponent
 
     opinion_region_style.width = DECISION_BOARD_WIDTH
 
-    R.div className:'opinion_region focal_wrapper', style: opinion_region_style,
+    DIV className:'opinion_region focal_wrapper', style: opinion_region_style,
       Slider
         width: HISTOGRAM_WIDTH
 
-      R.div 
+      DIV 
         className:'decision_board_body'
         onClick: => if root.page_name == 'results' then togglePage('crafting')
       ,
 
-        R.div null, 
+        DIV null, 
           # only shown during crafting, but needs to be present always for animation
-          R.div className: 'your_points',
+          DIV className: 'your_points',
             # your pros
             YourPoints { key: 'your_pro_points', valence: 'pros' }
 
@@ -916,18 +917,18 @@ DecisionBoard = ReactiveComponent
             YourPoints { key: 'your_con_points', valence: 'cons' }
 
           # only shown during results, but needs to be present always for animation
-          R.a 
+          A 
             className:'give_opinion_button primary_button'
           , if published then 'Update your Opinion' else 'Give your Opinion'
 
-      R.div 
+      DIV 
         className:'save_opinion_button primary_button'
         onClick: @saveYourOpinion
       , if published then 'Switch back to results' else 'Save your opinion and see results'
 
       if root.page_name == 'crafting'
-        R.a className:'follow_proposal',
-          R.input
+        A className:'follow_proposal',
+          INPUT
             type:      'checkbox'
             id:        "follow_proposal"
             name:      "follow_proposal"
@@ -935,10 +936,10 @@ DecisionBoard = ReactiveComponent
             onChange: =>
               @proposal.is_following = !@proposal.is_following
               save @proposal
-          R.label htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
+          LABEL htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
 
       if !published
-        R.a 
+        A 
           className:'cancel_opinion_button primary_cancel_button'
           onClick: (=> togglePage('results'))
         , 'or just skip to the results'  
@@ -966,14 +967,14 @@ YourPoints = ReactiveComponent
       editing_points : []
       adding_new_point : false
 
-    R.div 
+    DIV 
       className:"points_on_decision_board #{@props.valence}_on_decision_board"
       style: { width: POINT_WIDTH }
     ,
-      R.div className:'points_heading_label',
+      DIV className:'points_heading_label',
         "Give Your #{capitalize(@props.valence)}"
 
-      R.ul null,
+      UL null,
         for point in included_points
           if @data(point).is_pro == (@props.valence == 'pros')
             if point in your_points.editing_points
@@ -981,20 +982,20 @@ YourPoints = ReactiveComponent
             else
               Point { key: point, location_class: 'decision_board_point', your_points_key: @props.key }
 
-        R.div className:'add_point_drop_target',
-          R.div className: "drop_target_circle_#{left_or_right}"
-          R.img className:'drop_target', src: "<%= asset_path 'drop_target.png' %>"
-          R.span className:'drop_prompt',
+        DIV className:'add_point_drop_target',
+          DIV className: "drop_target_circle_#{left_or_right}"
+          IMG className:'drop_target', src: "<%= asset_path 'drop_target.png' %>"
+          SPAN className:'drop_prompt',
             #"Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
             "Drag a #{capitalize(if @props.valence=='pros' then 'pro' else 'con')} from the #{left_or_right}"
 
 
         if !your_points.adding_new_point
-          R.div className:'newpoint_prompt',
-            R.span className:'qualifier', 
+          DIV className:'newpoint_prompt',
+            SPAN className:'qualifier', 
               'or '
-            R.span className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
-            R.a className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
+            SPAN className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
+            A className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
             "Express a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
         else
           EditPoint { key: "new_point_#{@props.valence}", fresh: true, valence: @props.valence, your_points_key: @props.key }
@@ -1068,16 +1069,16 @@ CommunityPoints = ReactiveComponent
     #              (which is absolutely positioned) grows taller the wing points
     #           2) when filtering the points on result page to a segment without many inclusions,
     #              the document height can jarringly fluctuate
-    R.div 
+    DIV 
       className:"points_by_community #{@props.key}_by_community"
       style: { width: POINT_CONTENT_WIDTH, minHeight: (if @proposal.points.length > 4 then jQuery(window).height() else 400) }
     , 
-      R.div className:'points_heading_label', 
+      DIV className:'points_heading_label', 
         if @data('root').page_name == 'results' then "Top #{label}" else "Others' #{label}"
-        R.p className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
+        P className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
           if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
 
-      R.ul null, 
+      UL null, 
         if points.length > 0
           for point in points
             Point 
@@ -1085,7 +1086,7 @@ CommunityPoints = ReactiveComponent
               is_new: Date.parse(point.created_at) > newpoint_threshold
               location_class : 'community_point'
         else
-          R.li className: 'empty_point', "No #{label} listed"
+          LI className: 'empty_point', "No #{label} listed"
 
 
 
@@ -1208,7 +1209,7 @@ Point = ReactiveComponent
         # Finally draw the guys
         Avatar
           key: includer
-          tag: R.span
+          tag: SPAN
           className: "point_includer_avatar"
           style: style
 
@@ -1227,7 +1228,7 @@ Point = ReactiveComponent
         fontWeight: 'bold'
 
       style[left_right] = "#{-side_offset}"
-      R.span {style: style}, '-new-'
+      SPAN {style: style}, '-new-'
 
   render : -> 
     point = @data()
@@ -1236,7 +1237,7 @@ Point = ReactiveComponent
     author_opinion = @data(userOpinion(point.user))
     current_user = @data('/current_user')
 
-    R.li 
+    LI 
       className: "point closed_point #{@props.location_class} 
         #{if point.is_pro then 'pro' else 'con'}"
       'data-id':@props.key
@@ -1246,42 +1247,42 @@ Point = ReactiveComponent
       if @props.location_class == 'community_point' && @props.is_new
         @renderNewIndicator()
 
-      R.div className:'includers', onMouseEnter: @highlightIncluders, onMouseLeave: @unHighlightIncluders, 
+      DIV className:'includers', onMouseEnter: @highlightIncluders, onMouseLeave: @unHighlightIncluders, 
         if @props.location_class == 'community_point'
           @renderIncluders()
 
         if !selected_segment || ( author_opinion && author_opinion.stance_segment == selected_segment )
-          Avatar tag: R.span, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
+          Avatar tag: SPAN, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
 
-      R.div className:'point_content', style : { width: POINT_CONTENT_WIDTH },
+      DIV className:'point_content', style : { width: POINT_CONTENT_WIDTH },
         if @props.location_class == 'community_point'
-          R.img 
+          IMG 
             className: 'community_point_mouth'
             src: "<%= asset_path 'community_point_mouth.png' %>"
 
-        R.div className:'point_nutshell',
+        DIV className:'point_nutshell',
           point.nutshell
           if point.text
             if @local.show_details or 
               (point.nutshell.length + point.text.length) < 210
-                R.div className: 'point_details', dangerouslySetInnerHTML:{__html: point.text}
+                DIV className: 'point_details', dangerouslySetInnerHTML:{__html: point.text}
             else
-              R.span className: 'point_details_tease', 
+              SPAN className: 'point_details_tease', 
                 $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + "... [more]"
 
       if current_user.user == point.user && @props.location_class == 'decision_board_point'
-        R.div null,
+        DIV null,
           # Should we only allow editing of a point before it is published? 
           # Is an author allowed to edit a point after someone else has included it?
-          R.a className: 'edit_point', onClick: (=> points = @data(@props.your_points_key); points.editing_points.push(@props.key); save(points)), 
-            R.span null, 'edit'
+          A className: 'edit_point', onClick: (=> points = @data(@props.your_points_key); points.editing_points.push(@props.key); save(points)), 
+            SPAN null, 'edit'
 
           # Allow the point author to delete this point before it is published.
           # After it gets published, however, it can influence other people, so the author shouldn't be able to delete.
           # Later they can just remove it from their list if they don't believe it anymore. 
           if point.includers.length == 0 || (point.includers.length == 1 && point.includers[0] == current_user.user)
-            R.a className: 'delete_point', onClick: @deletePoint, 
-              R.span null, 'delete'
+            A className: 'delete_point', onClick: @deletePoint, 
+              SPAN null, 'delete'
 
 
 ##
@@ -1352,9 +1353,9 @@ EditPoint = ReactiveComponent
       sign_name : if @props.fresh then true else !@data().hide_name
       add_details : false
 
-    R.div className:'newpoint_form',
-      R.input id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pros'}"
-      R.label htmlFor:'nutshell', 'Your point'
+    DIV className:'newpoint_form',
+      INPUT id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pros'}"
+      LABEL htmlFor:'nutshell', 'Your point'
       CharacterCountTextInput 
         id:'nutshell'
         className:'newpoint_nutshell'
@@ -1366,13 +1367,13 @@ EditPoint = ReactiveComponent
         defaultValue: if @props.fresh then null else @data().nutshell
 
       
-      R.div null,
-        R.a className: 'add_details', onClick: @handleToggleDetails, title: 'Provide background and/or back your point up with evidence.',
-          R.i className: if @local.add_details then 'fa-caret-down fa' else 'fa-caret-right fa'
-          R.span null, 'Expand on your point'
+      DIV null,
+        A className: 'add_details', onClick: @handleToggleDetails, title: 'Provide background and/or back your point up with evidence.',
+          I className: if @local.add_details then 'fa-caret-down fa' else 'fa-caret-right fa'
+          SPAN null, 'Expand on your point'
 
         if @local.add_details
-          R.div null, 
+          DIV null, 
             AutoGrowTextArea 
               id:'text'
               className:'newpoint_description'
@@ -1383,8 +1384,8 @@ EditPoint = ReactiveComponent
               defaultValue: if @props.fresh then null else @data().text
 
 
-      R.div className:'newpoint_hide_name',
-        R.input
+      DIV className:'newpoint_hide_name',
+        INPUT
           className: 'newpoint-anonymous'
           type:      'checkbox'
           id:        "sign_name-#{@props.valence}"
@@ -1393,12 +1394,12 @@ EditPoint = ReactiveComponent
           onChange: =>
             @local.sign_name = !@local.sign_name
             save(@local)
-        R.label htmlFor: "sign_name-#{@props.valence}", title:'Signing your name lends your point more weight with other participants.', 'Sign your name'
+        LABEL htmlFor: "sign_name-#{@props.valence}", title:'Signing your name lends your point more weight with other participants.', 'Sign your name'
       
-      R.div className:'newpoint-submit',
-        R.input className:'button primary_button', action:'submit-point', type:'submit', value:'Done', onClick: @savePoint
+      DIV className:'newpoint-submit',
+        INPUT className:'button primary_button', action:'submit-point', type:'submit', value:'Done', onClick: @savePoint
 
-        R.a className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
+        A className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
           'cancel'  
 
 
@@ -1439,7 +1440,7 @@ Avatar = ReactiveComponent
 
   getDefaultProps : ->
     key: '/user/-1' # defaults to anonymous user
-    tag: R.img
+    tag: IMG
     img_style: null #null defaults to the css-based b64 embedded images
     hide_face: false
 
@@ -1485,7 +1486,7 @@ AutoGrowTextArea = ReactiveComponent
     if !@local.height
       @local.height = @props.min_height
 
-    @transferPropsTo R.textarea onKeyUp: @autoGrow, style: {height: @local.height} 
+    @transferPropsTo TEXTAREA onKeyUp: @autoGrow, style: {height: @local.height} 
 
 
 CharacterCountTextInput = ReactiveComponent
@@ -1493,11 +1494,11 @@ CharacterCountTextInput = ReactiveComponent
   componentWillMount : -> @data(@local_key).count = 0
   render : -> 
     class_name = "is_counted"
-    R.div style: {position: 'relative'}, 
-      @transferPropsTo R.textarea className: class_name, onChange: (=>
+    DIV style: {position: 'relative'}, 
+      @transferPropsTo TEXTAREA className: class_name, onChange: (=>
          @local.count = $(@getDOMNode()).find('textarea').val().length
          save(@local))
-      R.span className: 'count', @props.maxLength - @local.count
+      SPAN className: 'count', @props.maxLength - @local.count
 
 
 Auth = ReactiveComponent
@@ -1642,7 +1643,7 @@ Auth = ReactiveComponent
       onChange = onChange || (event) => 
         current_user[name] = event.target.value
 
-      R.input
+      INPUT
         id: 'user_' + name
         defaultValue: current_user[name]
         name: "user[#{name}]"
@@ -1665,7 +1666,7 @@ Auth = ReactiveComponent
                  if root.auth_mode == 'register' then ".{5,}" else '')
 
     reset_password_token_field =
-      R.input
+      INPUT
         id: "reset_password_token"
         name: "reset_password_token"
         key: "reset_password_token_input_box"
@@ -1717,130 +1718,130 @@ Auth = ReactiveComponent
       top: '-80px'
 
 
-    R.div className:'auth_region focal_wrapper', style: focal_wrapper_style,
-      R.div className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
-        R.div className: 'the_handle', onClick: @togglePage, style: handle_props
-        R.img className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
-        R.div className:'auth_heading', style: auth_heading_style,
+    DIV className:'auth_region focal_wrapper', style: focal_wrapper_style,
+      DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
+        DIV className: 'the_handle', onClick: @togglePage, style: handle_props
+        IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
+        DIV className:'auth_heading', style: auth_heading_style,
           'Please Introduce Yourself' 
 
           if root.auth_mode in ['login', 'register']
-            R.div className: 'switch_auth_mode', 
-              R.span null, if root.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
-              R.a className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
+            DIV className: 'switch_auth_mode', 
+              SPAN null, if root.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
+              A className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
 
-      R.div className:'auth decision_board_body' + (if @local.submitting then ' waiting' else ''),
+      DIV className:'auth decision_board_body' + (if @local.submitting then ' waiting' else ''),
         if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
-          R.div className: 'third_party_auth',
-            R.label className: 'third_party_call', 'Instantly:'
+          DIV className: 'third_party_auth',
+            LABEL className: 'third_party_call', 'Instantly:'
             for provider in providers
               do (provider) =>
-                R.button className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
-                  R.i className: "fa fa-#{provider}"
-                  R.span null, provider
+                BUTTON className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
+                  I className: "fa fa-#{provider}"
+                  SPAN null, provider
 
-            R.div className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
+            DIV className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 
         if root.auth_mode in ['login', 'reset_password']
           # logging in or resetting password
 
-          R.div null, 
+          DIV null, 
             if root.auth_mode == 'login'
-              R.label className: 'auth_section_label', 'By email address:'
+              LABEL className: 'auth_section_label', 'By email address:'
             else
-              R.div null,
-                R.label className: 'reset_password_section_label', 'Reset your password'
-                R.div style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
-            R.table className: 'auth_fields login',
+              DIV null,
+                LABEL className: 'reset_password_section_label', 'Reset your password'
+                DIV style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
+            TABLE className: 'auth_fields login',
               if root.auth_mode == 'reset_password'
-                R.tr null,
-                  R.td null, 'We just emailed you a code. Enter it here:'
-                R.tr null, 
-                  R.td className: 'label_cell', 
-                    R.label htmlFor: 'user_verification_code', 'code:'
+                TR null,
+                  TD null, 'We just emailed you a code. Enter it here:'
+                TR null, 
+                  TD className: 'label_cell', 
+                    LABEL htmlFor: 'user_verification_code', 'code:'
 
-                  R.td className: 'field_cell', 
+                  TD className: 'field_cell', 
                     reset_password_token_field,
-                    R.div className: 'password_verification_explanation', "Find code in an email just sent to you."
+                    DIV className: 'password_verification_explanation', "Find code in an email just sent to you."
               else
-                R.tr null,
-                  R.td className: 'label_cell',
-                    R.label htmlFor: 'user_email', 'email:'
-                  R.td className: 'field_cell',
+                TR null,
+                  TD className: 'label_cell',
+                    LABEL htmlFor: 'user_email', 'email:'
+                  TD className: 'field_cell',
                     email_input_field
 
-              R.tr null,
-                R.td {style: (if root.auth_mode == 'reset_password' then {width: '37%'} else {}), className: 'label_cell'},
+              TR null,
+                TD {style: (if root.auth_mode == 'reset_password' then {width: '37%'} else {}), className: 'label_cell'},
                   switch root.auth_mode
                     when 'login'
-                      R.label htmlFor: 'user_password', 'password:'
+                      LABEL htmlFor: 'user_password', 'password:'
                     when 'reset_password'
-                      R.label htmlFor: 'user_password', 'new password:'
+                      LABEL htmlFor: 'user_password', 'new password:'
 
-                R.td className: 'field_cell', 
+                TD className: 'field_cell', 
                   password_input_field,
                   if root.auth_mode == 'login'
-                    R.a className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
+                    A className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
 
 
         else 
           # creating new account
-          R.table className: 'auth_fields register', 
-            R.tr null, 
-              R.td className: 'label_cell',
-                R.label htmlFor: 'user_name', 'Hi, my name is:'
-              R.td className: 'field_cell', 
+          TABLE className: 'auth_fields register', 
+            TR null, 
+              TD className: 'label_cell',
+                LABEL htmlFor: 'user_name', 'Hi, my name is:'
+              TD className: 'field_cell', 
                 if third_party_authenticated
-                  R.div null, current_user.name
+                  DIV null, current_user.name
                 else 
                   name_input_field
 
             if third_party_authenticated 
               p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
-              R.tr null, 
+              TR null, 
 
-                R.td className: 'label_cell',
-                  R.label htmlFor: 'user_provider', 
+                TD className: 'label_cell',
+                  LABEL htmlFor: 'user_provider', 
                     if third_party_authenticated then 'I login via:' else 'I login as:'
-                R.td className: 'field_cell', 
-                  R.button className: "third_party_option #{p}", style: {cursor: 'default'},
-                    R.i className: "fa fa-#{p}"
-                    R.span null, p
+                TD className: 'field_cell', 
+                  BUTTON className: "third_party_option #{p}", style: {cursor: 'default'},
+                    I className: "fa fa-#{p}"
+                    SPAN null, p
 
             else
 
-              R.tr null, 
+              TR null, 
 
-                R.td className: 'label_cell',
-                  R.label htmlFor: 'user_email', 'I login as:'
-                R.td className: 'field_cell', 
+                TD className: 'label_cell',
+                  LABEL htmlFor: 'user_email', 'I login as:'
+                TD className: 'field_cell', 
                   if !Modernizr.input.placeholder
-                    R.label htmlFor: 'user_email', 'Email:'
+                    LABEL htmlFor: 'user_email', 'Email:'
                   email_input_field,
 
                   if !Modernizr.input.placeholder
-                    R.label htmlFor: 'user_password', 'Password:'
+                    LABEL htmlFor: 'user_password', 'Password:'
                   password_input_field
 
             # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
             if window.FormData
 
-              R.tr null, 
-                R.td className: 'label_cell', 
-                  R.label htmlFor: 'user_avatar', 'I look like this:'
-                R.td className: 'field_cell',
+              TR null, 
+                TD className: 'label_cell', 
+                  LABEL htmlFor: 'user_avatar', 'I look like this:'
+                TD className: 'field_cell',
                   # hack for submitting file data in ActiveREST for now
                   # we'll just submit the file form after user is signed in
 
 
-                  R.form id: 'user_avatar_form', action: Routes.current_user_path(), 
+                  FORM id: 'user_avatar_form', action: Routes.current_user_path(), 
 
-                    R.div className: 'avatar_preview_enclosure',
-                      R.img id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else null #todo: make sure that if user overrides image_url, that the new image is used
+                    DIV className: 'avatar_preview_enclosure',
+                      IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else null #todo: make sure that if user overrides image_url, that the new image is used
                   
 
 
-                    R.input id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
+                    INPUT id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
                       @submit_avatar_form = true
                       input = $('#user_avatar')[0]
                       if input.files && input.files[0]
@@ -1852,34 +1853,34 @@ Auth = ReactiveComponent
                       else
                         $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
 
-            R.tr null,
-              R.td className: 'label_cell', 
-                R.label null, 'Community pledge:'
-              R.td className: 'field_cell',
-                R.ul className: 'pledges',
-                  R.li className: 'pledge', 
-                    R.input className:'pledge-1 pledge-input', type:'checkbox', id:"pledge-1", name:"pledge-1"
-                    R.label htmlFor: "pledge-1", 'I will not attack or mock others.'
-                  R.li className: 'pledge', 
-                    R.input className:'pledge-2 pledge-input', type:'checkbox', id:"pledge-2", name:"pledge-2"
-                    R.label htmlFor: "pledge-2", 'I will speak only on behalf of myself.'
-                  R.li className: 'pledge', 
-                    R.input className:'pledge-3 pledge-input', type:'checkbox', id:"pledge-3", name:"pledge-3"
-                    R.label htmlFor: "pledge-3", 'I will use only one account to participate.'
+            TR null,
+              TD className: 'label_cell', 
+                LABEL null, 'Community pledge:'
+              TD className: 'field_cell',
+                UL className: 'pledges',
+                  LI className: 'pledge', 
+                    INPUT className:'pledge-1 pledge-input', type:'checkbox', id:"pledge-1", name:"pledge-1"
+                    LABEL htmlFor: "pledge-1", 'I will not attack or mock others.'
+                  LI className: 'pledge', 
+                    INPUT className:'pledge-2 pledge-input', type:'checkbox', id:"pledge-2", name:"pledge-2"
+                    LABEL htmlFor: "pledge-2", 'I will speak only on behalf of myself.'
+                  LI className: 'pledge', 
+                    INPUT className:'pledge-3 pledge-input', type:'checkbox', id:"pledge-3", name:"pledge-3"
+                    LABEL htmlFor: "pledge-3", 'I will use only one account to participate.'
 
         if current_user.errors && current_user.errors[root.auth_mode] && current_user.errors[root.auth_mode].length > 0
-          R.div className: "auth_errors", 
-            R.i className: 'fa fa-exclamation-circle'
-            R.span null, "#{current_user.errors[root.auth_mode].join(', ')}"
+          DIV className: "auth_errors", 
+            I className: 'fa fa-exclamation-circle'
+            SPAN null, "#{current_user.errors[root.auth_mode].join(', ')}"
 
 
-      R.div null, 
-        R.div 
+      DIV null, 
+        DIV 
           className:'auth_button primary_button' + (if @local.submitting then ' disabled' else '')
           onClick: @submitAuth
         , if root.auth_mode == 'register' then 'Create account and save your opinion' else 'Login and save your opinion'
 
-        R.a 
+        A 
           className:'cancel_auth_button primary_cancel_button'
           onClick: (=>
             root.auth_mode = null
@@ -1905,14 +1906,14 @@ Homepage = ReactiveComponent
   render : ->
     homepage = @data()
 
-    R.div className: 'homepage',
-      R.table null, 
+    DIV className: 'homepage',
+      TABLE null, 
         for summary in homepage.proposal_summaries
-          R.tr null,
-            R.td className: 'summary_name', 
-              R.a onClick: @clickLink, href: "/#{summary.long_id}", summary.long_id.replace('_', ' ')
-            R.td className: 'summary_decide'
-            R.td className: 'summary_share' 
+          TR null,
+            TD className: 'summary_name', 
+              A onClick: @clickLink, href: "/#{summary.long_id}", summary.long_id.replace('_', ' ')
+            TD className: 'summary_decide'
+            TD className: 'summary_share' 
 
 
 Root = ReactiveComponent
@@ -1934,7 +1935,7 @@ Root = ReactiveComponent
         window.app_router.navigate url, {trigger : true}
 
     # Now let's render
-    R.div null,
+    DIV null,
       StateDash(),
       Page(key: "/page/#{root.endpoint}"),
       Computer() # Doesn't actually render anything
@@ -1946,10 +1947,10 @@ Page = ReactiveComponent
     fetchAvatars()
 
   render: ->
-    R.div 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
+    DIV 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
       Header()
-      R.div id: 'body', style : { minWidth: PAGE_WIDTH }, 
-        R.div id: 'inner_body', #style : { width: CONTENT_WIDTH },
+      DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
+        DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
           switch @root.page_name
             when 'homepage'
               Homepage key: @page.key
@@ -1977,7 +1978,7 @@ Computer = ReactiveComponent
       opinion.published = true
       save(opinion)
 
-    return R.span null, ''
+    return SPAN null, ''
 
 
 
@@ -2004,29 +2005,29 @@ Header = ReactiveComponent
     current_user = @data('/current_user')
     customer = @data('customer')
 
-    R.div className: 'l_header',       
+    DIV className: 'l_header',       
       if customer.identifier == 'cityoftigard'
-        R.a href: 'http://www.tigard-or.gov/', target: '_blank',
-          R.img className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '117px', position: 'absolute', bottom: '-79px', zIndex: 999999, backgroundColor: 'white', borderRight: '2px solid white'}
+        A href: 'http://www.tigard-or.gov/', target: '_blank',
+          IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '117px', position: 'absolute', bottom: '-79px', zIndex: 999999, backgroundColor: 'white', borderRight: '2px solid white'}
 
-      R.div style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if @root.server_error then 'block' else 'none'},
+      DIV style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if @root.server_error then 'block' else 'none'},
         'Warning: there was a server error!'
 
       if current_user.logged_in
-        R.div className: 'userbar', 
-          Avatar key: current_user.user, tag: R.span, className: 'userbar_avatar', style: {height: 20, width: 20}
-          R.a 'data-action': 'logout', onClick: @logout, 'logout'
+        DIV className: 'userbar', 
+          Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 20, width: 20}
+          A 'data-action': 'logout', onClick: @logout, 'logout'
 
 
 Footer = ReactiveComponent
   displayName: 'Footer'
   render : -> 
-    R.div className: 'l_footer',
+    DIV className: 'l_footer',
       "Technology by "
-      R.a href: 'http://consider.it', target: '_blank', 'Considerit'
-      R.span className: 'separator', '•'
+      A href: 'http://consider.it', target: '_blank', 'Considerit'
+      SPAN className: 'separator', '•'
       'Bug to report? '
-      R.a href: "mailto:admin@consider.it", 'Email us'
+      A href: "mailto:admin@consider.it", 'Email us'
 
 
 # Tracks data useful for responsive layouts.

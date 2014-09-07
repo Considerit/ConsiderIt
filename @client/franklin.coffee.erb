@@ -283,15 +283,6 @@ Proposal = ReactiveComponent
     for opinion in proposal.opinions
       window.user_opinions[opinion.user] = opinion
 
-    # I need to improve save() so that it knows when things actually
-    # change because these if statements are stupid
-    # if @root.current_proposal != proposal.key
-    #   @root.current_proposal = proposal.key
-    #   save(@root)
-    # if @root.your_opinion_key != proposal.your_opinion
-    #   @root.your_opinion_key = proposal.your_opinion
-    #   save(@root)
-
     proposer = @data(proposal.user)
 
     # New approach to Proposal description fields. 
@@ -1567,7 +1558,7 @@ Auth = ReactiveComponent
         data: 
           authenticity_token: current_user.csrf
         success: (current_user_data, status, xhr) -> 
-          current_user.errors = if current_user_data.errors then current_user_data.errors else []
+          current_user.errors = current_user_data.errors or []
           current_user.csrf = current_user_data.csrf
           save current_user, =>
             local.submitting = false
@@ -1990,7 +1981,7 @@ Header = ReactiveComponent
 
       # TODO: the server should dirty keys on the client when the
       # current_user logs out
-      arest.clear_objects((key) -> key.match( /\/proposal\// ) )
+      arest.clear_matching_objects((key) -> key.match( /\/proposal\// ))
 
     save @root
 

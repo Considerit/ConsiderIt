@@ -12,3 +12,4 @@
 //= require ../../third_party_auth
 //= require ../../activerest-m
 //= require ../../franklin
+//= require ../../state_dash

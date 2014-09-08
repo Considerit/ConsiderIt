@@ -3,20 +3,10 @@
 #////////////////////////////////////////////////////////////
 
 # Ugliness in this prototype: 
-#   - Provision of @data() as a function via reactiveREST, rather than a straight up object. I couldn't
-#     figure out a way to do it more cleanly. 
-#   - Children needing to know the parent Proposal's key, and using active_proposal_key() to get it
-#   - Programmer needing to know multiple ActiveREST cache keys to save new points to
 #   - UI state and persisted data stored in same place (when saving, what to send to server?)
 #   - Figuring out if the route was changed. Or more generally, knowing what the diff in state was
 #     in the lifecycle methods now that we're not using @props or @state. Right now using a hack
 #     (see use of _route_changed ActiveREST cache key)
-#   - All UI state _must_ be declared in the @getDefaultData method for the component at which
-#     that state will be stored. Otherwise, getters and setters won't be operative!
-#   - Computed state not yet stored in ActiveREST
-#   - Easy for programmer to accidently mess up ActiveREST cache
-#   - Managing top_level_component in Router
-#   - NewPoint CSS/HTML is still bulky, waiting on redesign
 
 ####
 # Make the DIV, SPAN, etc.

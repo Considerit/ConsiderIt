@@ -1,7 +1,4 @@
 (function () {
-    /*   To do:
-          - Make fetch() work for root objects lacking cache key
-     */
 
     // ****************
     // Public API
@@ -49,12 +46,12 @@
         // Save all the objects
         if (key[0] == '/')
             server_destroy(key, continuation)
-        else { 
-            // Just remove the key from the cache if this 
-            // state is owned by the client. 
-            // Note that this won't clean up references to this 
-            // object in e.g. any lists. The Client is responsible
-            // for updating all the relevant references. 
+        else {
+            // Just remove the key from the cache if this state is
+            // owned by the client.  Note that this won't clean up
+            // references to this object in e.g. any lists. The Client
+            // is responsible for updating all the relevant
+            // references.
             delete cache[key]
             if (continuation) continuation()
         }
@@ -201,8 +198,8 @@
                 console.log('Destroy returned for', key)
                 var result = JSON.parse(request.responseText)
                 delete cache[key]
-                update_cache(result)                
-                if (continuation) continuation()                
+                update_cache(result)
+                if (continuation) continuation()
             }
             else if (request.status === 500)
                 if (window.on_ajax_error) window.on_ajax_error()
@@ -261,7 +258,7 @@
         // STEP 1: Define get() and save()
         component.fetch = component.data = component.get = function (key, defaults) {
             if (!this._lifeCycleState || this._lifeCycleState == 'UNMOUNTED')
-                throw Error('Component ' + this.name + ' (' + this.local_key 
+                throw Error('Component ' + this.name + ' (' + this.local_key
                             + ') is tryin to get data(' + key + ') after it died.')
 
             if (key === undefined)    key = this.mounted_key || this.name

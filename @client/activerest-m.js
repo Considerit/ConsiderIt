@@ -494,22 +494,6 @@
             window.on_client_error(e)
     }
 
-    // function sanity(compkey) {
-    //     for (var attr in components)
-    //         if (components[attr]._lifeCycleState != 'MOUNTED')
-    //             console.error('Component ' + attr + ' isn\'t mounted')
-
-    //     for (var attr in components_4_key.hash) {
-    //         var list = components_4_key.hash[attr]
-    //         for (var i=0; i < list.length; i++) {
-    //             if (list[i] === compkey
-    //                 && (!components[compkey]
-    //                     || components[compkey]._lifeCycleState != 'MOUNTED'))
-    //                 console.error('Did not clean this well!', compkey, attr, list, i)
-    //         }
-    //     }
-    // }
-
 
     // Camelcased API options
     var updateCache=update_cache, serverFetch=server_fetch,

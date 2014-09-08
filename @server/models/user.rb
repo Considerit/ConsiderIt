@@ -73,11 +73,6 @@ class User < ActiveRecord::Base
       facebook_uid: facebook_uid,
       google_uid: google_uid,
       name: name,
-      # temporary for legacy dashboard:
-      third_party_authenticated: third_party_authenticated, 
-      follows: follows,
-      roles_mask: roles_mask,
-      avatar_file_name: avatar_file_name,
       reset_my_password: false,
       reset_password_token: nil,
       b64_thumbnail: b64_thumbnail

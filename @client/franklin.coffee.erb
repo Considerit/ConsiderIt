@@ -70,12 +70,12 @@ userOpinion = (user_key) ->
 
 _route_changed = false
 
-togglePage = (page_name) -> 
+togglePage = (proposal_mode) -> 
   $('.histogram_segment_pole').ensureInView
     offset_buffer: 150
     callback : -> 
       root = fetch('root')
-      root.page_name = page_name
+      root.proposal_mode = proposal_mode
       save(root)
 
       # Kludge for tracking when the page changes
@@ -121,23 +121,23 @@ PageTransition =
 
     # Each Component that implements this mixin can get triggered multiple times after a route change. 
     # So we're going to ensure that we apply styles only once for a given route change. 
-    return if @transitioning == root.page_name
-    @transitioning = root.page_name
+    return if @transitioning == root.proposal_mode
+    @transitioning = root.proposal_mode
 
     switch @name
 
       # The histogram will get transparent when moving to crafting page
       when 'histogram'
-        opacity = if root.page_name == 'crafting' then '0.2' else '1.0'
+        opacity = if root.proposal_mode == 'crafting' then '0.2' else '1.0'
         $el.find('.histogram_bar').velocity {opacity: opacity}, {duration}
 
       # The position of the CommunityPoints will move to the wings on crafting, and 
       # be close together in results
       when 'communitypoints'
 
-        if root.page_name == 'crafting'
+        if root.proposal_mode == 'crafting'
           offset_x = if @props.key == 'pros' then 0 else DECISION_BOARD_WIDTH
-        else if root.page_name == 'results'
+        else if root.proposal_mode == 'results'
           offset_x = DECISION_BOARD_WIDTH / 2
 
         $el.velocity { translateX: offset_x }, {duration}
@@ -151,7 +151,7 @@ PageTransition =
 
         handle_width = 22
 
-        if root.page_name == 'crafting'
+        if root.proposal_mode == 'crafting'
           bubblemouth_style = { translateX: direction * mouth_x, translateY: 20, scaleX: direction * 1.5, scaleY: 1.5  }
           handle_style = { scale: 2.5 }
         else 
@@ -163,7 +163,7 @@ PageTransition =
 
       # The decision board will have to expand for crafting and collapse into to the Give Opinion button in results
       when 'decisionboard'
-        if root.page_name == 'crafting'
+        if root.proposal_mode == 'crafting'
           decision_board_style =  { translateX: 0, translateY: 10, width: "#{DECISION_BOARD_WIDTH}px", minHeight: "275px" }
 
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
@@ -171,7 +171,7 @@ PageTransition =
           $el.find('.give_opinion_button').css 'visibility', 'hidden'
           _.delay => 
             #delay & check in case of quick switch between pages
-            if root.page_name == 'crafting'
+            if root.proposal_mode == 'crafting'
               $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', ''
           , duration
 
@@ -193,7 +193,7 @@ PageTransition =
           $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', 'none'
           _.delay => 
             #check in case of quick switch between pages
-            if root.page_name == 'results'
+            if root.proposal_mode == 'results'
               $el.find('.give_opinion_button').css 'visibility', ''
           , duration  
       else
@@ -309,7 +309,7 @@ Proposal = ReactiveComponent
         @local.description_fields = null
 
 
-    DIV className:'proposal', key:@props.long_id, 'data-page':@root.page_name,
+    DIV className:'proposal', key:@props.long_id, 'data-page':@root.proposal_mode,
       DIV className: 'proposal_heading stickable',  style : { minWidth: PAGE_WIDTH }, # minwidth is for width consistency when dropping into fixed sticky header
         SPAN null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
 
@@ -480,11 +480,11 @@ Histogram = ReactiveComponent
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   onClickHistogram : (ev) ->
-    if @root.page_name == 'crafting'
+    if @root.proposal_mode == 'crafting'
       togglePage('results')
 
   onSelectSegment : (ev) ->
-    if @root.page_name == 'results'
+    if @root.proposal_mode == 'results'
       segment = $(ev.currentTarget).data('segment')
       hist = @data('histogram')
 
@@ -544,7 +544,7 @@ Histogram = ReactiveComponent
                           tag: SPAN, 
                           key: user
                           user: user
-                          hide_face: @root.page_name == 'crafting'
+                          hide_face: @root.proposal_mode == 'crafting'
                           'data-segment':segment
                           style:
                             height: avatar_size
@@ -601,8 +601,8 @@ Slider = ReactiveComponent
     
     # Clicking on the slider handle should transition us between crafting <=> results. 
     # We should also transition to crafting when we've been dragging on the results page. 
-    if slider.stance == your_opinion.stance || @root.page_name == 'results'
-      new_page = if @root.page_name == 'results' then 'crafting' else 'results'
+    if slider.stance == your_opinion.stance || @root.proposal_mode == 'results'
+      new_page = if @root.proposal_mode == 'results' then 'crafting' else 'results'
       togglePage new_page
       e.stopPropagation()
 
@@ -651,7 +651,7 @@ Slider = ReactiveComponent
         slider.has_moved = true
       save(slider)
 
-    page = @root.page_name
+    page = @root.proposal_mode
     sticky = @data('decisionboard').sticky
     stance = slider.stance
     segment = slider.stance_segment
@@ -765,7 +765,7 @@ OpinionFilter = ReactiveComponent
     hist = @data('histogram')
 
     # Remove filter when on crafting page
-    if @root.page_name == 'crafting'
+    if @root.proposal_mode == 'crafting'
       hist.selected_segment = null
       hist.selected_segment_isclicked = null
 
@@ -835,7 +835,7 @@ DecisionBoard = ReactiveComponent
     if !@initial_position_fixed
       $el.stickyTopBottom('fix_initial_position')
       @initial_position_fixed = true
-    else if root.page_name == 'results' #fix problem where it would stay sticky moving to results page
+    else if root.proposal_mode == 'results' #fix problem where it would stay sticky moving to results page
       $el.stickyTopBottom('update')
 
   setStickyHeader : ->
@@ -855,7 +855,7 @@ DecisionBoard = ReactiveComponent
         d = @data()
         d.sticky = true
         save(d)
-      conditional: => @root.page_name == 'crafting'
+      conditional: => @root.proposal_mode == 'crafting'
 
   # When user clicks the big bold button at the bottom of the crafting page
   saveYourOpinion : -> 
@@ -904,7 +904,7 @@ DecisionBoard = ReactiveComponent
 
       DIV 
         className:'decision_board_body'
-        onClick: => if root.page_name == 'results' then togglePage('crafting')
+        onClick: => if root.proposal_mode == 'results' then togglePage('crafting')
       ,
 
         DIV null, 
@@ -926,7 +926,7 @@ DecisionBoard = ReactiveComponent
         onClick: @saveYourOpinion
       , if published then 'Switch back to results' else 'Save your opinion and see results'
 
-      if root.page_name == 'crafting'
+      if root.proposal_mode == 'crafting'
         A className:'follow_proposal',
           INPUT
             type:      'checkbox'
@@ -1020,7 +1020,7 @@ CommunityPoints = ReactiveComponent
       new Date()
 
   buildPointsList : ->
-    is_results = @data('root').page_name == 'results'
+    is_results = @data('root').proposal_mode == 'results'
     selected_segment = @data('histogram').selected_segment
     included_points = @data(@proposal.your_opinion).point_inclusions
     points = @proposal.points
@@ -1074,7 +1074,7 @@ CommunityPoints = ReactiveComponent
       style: { width: POINT_CONTENT_WIDTH, minHeight: (if @proposal.points.length > 4 then jQuery(window).height() else 400) }
     , 
       DIV className:'points_heading_label', 
-        if @data('root').page_name == 'results' then "Top #{label}" else "Others' #{label}"
+        if @data('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
         P className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
           if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
 
@@ -1110,7 +1110,7 @@ Point = ReactiveComponent
     # also: disable for results page
 
 
-    disable = @data('root').page_name == 'results'
+    disable = @data('root').proposal_mode == 'results'
 
     $point_content = $(@getDOMNode()).find('.point_content')
     revert = 
@@ -1143,7 +1143,7 @@ Point = ReactiveComponent
   # On hovering over a point, highlight the people who included this 
   # point in the Histogram.
   highlightIncluders : -> 
-    if @data('root').page_name == 'results'
+    if @data('root').proposal_mode == 'results'
       includers = @data().includers
       point = @data()
 
@@ -1159,7 +1159,7 @@ Point = ReactiveComponent
         save(hist)
 
   unHighlightIncluders : -> 
-    if @data('root').page_name == 'results'
+    if @data('root').proposal_mode == 'results'
       hist = @data('histogram')
       hist.highlighted_users = null
       save(hist)
@@ -1525,7 +1525,7 @@ Auth = ReactiveComponent
         if current_user.logged_in
           # We are logged in!  The user has completed registration.
           # Let's transition to results.
-          root.page_name = 'results'
+          root.proposal_mode = 'results'
           root.auth_mode = null
           if current_user.csrf
             arest.csrf(current_user.csrf)
@@ -1720,7 +1720,7 @@ Auth = ReactiveComponent
 
     DIV className:'auth_region focal_wrapper', style: focal_wrapper_style,
       DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
-        DIV className: 'the_handle', onClick: @togglePage, style: handle_props
+        DIV className: 'the_handle', style: handle_props
         IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
         DIV className:'auth_heading', style: auth_heading_style,
           'Please Introduce Yourself' 
@@ -1921,23 +1921,32 @@ Root = ReactiveComponent
 
   render : -> 
     root = @data()
-    # Update the location bar if it's different
+
+
+    ######
+    # Handle application routing, derived from client state.
     query_parameters = Backbone.history.getQueryParameters()
-    delete query_parameters['results']
 
-    if @root.page_name == 'results'
-      query_parameters['results'] = true
+    if @root.proposal_mode == 'results'
+      query_parameters['results'] = true #the only query parameter we support now is ?results=true for proposal pages
+    else 
+      query_parameters = {}
 
-    if root.endpoint != 'homepage'
-      url = window.app_router.toFragment root.endpoint, query_parameters
+    # Second, construct the proper url
+    if root.page_name == 'homepage' 
+      url = ''
+    else #if we're rendering a proposal...
+      url = window.app_router.toFragment root.page_name, query_parameters
 
-      if ( "#{window.location.pathname}#{window.location.search}" != "/" + url)
-        window.app_router.navigate url, {trigger : true}
+    # Third, update the location bar if it's different
+    if "#{window.location.pathname}#{window.location.search}" != "/#{url}"
+      window.app_router.navigate url, {trigger : true}
+    ####
 
     # Now let's render
     DIV null,
       StateDash(),
-      Page(key: "/page/#{root.endpoint}"),
+      Page(key: "/page/#{root.page_name}"),
       Computer() # Doesn't actually render anything
 
 Page = ReactiveComponent
@@ -2061,10 +2070,7 @@ fetch 'decisionboard',
   sticky : false
 
 fetch 'root',
-  page_name : 'crafting'
   auth_mode : null
-  # your_opinion_key : null
-  # current_proposal : null
   opinions_to_publish : []
 
 fetch('/current_user')
@@ -2091,22 +2097,25 @@ Router = Backbone.Router.extend
     "(/)" : "homepage"
 
   proposal : (long_id, params) ->
-    page = if params && params['results'] then 'results' else 'crafting'
     root = fetch('root')
+    root.page_name = long_id
 
-    #TODO: Manage crafting/results with state on the proposal itself.
-    #      Then merge root.page_name & root.endpoint
-    root.page_name = page
-    root.endpoint = long_id
+    #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
+    #      Right now activeREST doesn't allow wide consumption of a component's client state
+    #      if its data is synced with the server. 
+    root.proposal_mode = if params && params['results'] then 'results' else 'crafting'  
+
     save(root)
 
   homepage : (params) -> 
     root = fetch('root')
-
-    #TODO: Manage crafting/results with state on the proposal itself.
-    #      Then merge root.page_name & root.endpoint     
     root.page_name = 'homepage'
-    root.endpoint = 'homepage'
+
+    #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
+    #      Right now activeREST doesn't allow wide consumption of a component's client state
+    #      if its data is synced with the server. 
+    root.proposal_mode = null
+
     save(root)
       
 
@@ -2116,7 +2125,7 @@ window.on_ajax_error = () ->
   save(root)
 window.on_client_error = (e) ->
   save({ key: '/new/client_error', stack: JSON.stringify(e.stack) })
-  
+
 $(document).ready -> 
-  window.root = React.renderComponent(Root(), document.getElementById('content'))
   Backbone.history.start {pushState: true}
+  window.root = React.renderComponent(Root(), document.getElementById('content'))

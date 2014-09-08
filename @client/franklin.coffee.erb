@@ -21,7 +21,7 @@
 ####
 # Make the DIV, SPAN, etc.
 for el of React.DOM
-  this[el.toUpperCase()] = React.DOM[el]
+  window[el.toUpperCase()] = React.DOM[el]
 
 ####
 # Constants, especially used for layout styling

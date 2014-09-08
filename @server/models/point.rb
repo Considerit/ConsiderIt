@@ -116,33 +116,32 @@ class Point < ActiveRecord::Base
     is_pro ? 'pro' : 'con'
   end
 
-  def recache(in_batch = false)
+  def recache
     self.comment_count = comments.count
-    if !in_batch
-      self.num_inclusions = self.inclusions.count
-    end
 
-    self.includers = self.inclusions(:select => [:user_id]).map {|x| x.user_id}.compact.uniq.to_s
-    self.last_inclusion = inclusions.count > 0 ? self.inclusions.order(:created_at).last.created_at.to_i : -1
+    # if we just look at self.inclusions, authors of unpublished opinions that
+    # included this point will be set as includers
+    opinions = Opinion.published \
+            .where(:proposal_id => self.proposal_id) \
+            .where("user_id IN (?)", self.inclusions.map {|i| i.user_id} ) \
+            .select(:stance, :user_id)
+ 
 
-    self.attention = self.num_inclusions
-
+    self.includers = opinions.map {|x| x.user_id}
+    self.num_inclusions = self.includers.length          
+    self.last_inclusion = num_inclusions > 0 ? self.inclusions.where("user_id IN (?)", self.includers).order(:created_at).last.created_at.to_i : -1
 
     ###
     # define cross-spectrum appeal
 
-    if num_inclusions == 0 #special cases
+    if num_inclusions == 0 # special cases
       self.appeal = 0.001
     elsif num_inclusions == 1
       self.appeal = 0.001
     else
       # Compute the variance of the distribution of stances of users
       # including this point. 
-      qry = Opinion.published \
-              .where(:proposal_id => self.proposal_id) \
-              .where("user_id in (#{self.includers[1..self.includers.length-2]})")
-              .select(:stance)
-      includer_stances = qry.map {|o| o.stance} 
+      includer_stances = opinions.map {|o| o.stance} 
 
       n = includer_stances.length
       mean = includer_stances.inject(:+) / n
@@ -151,9 +150,10 @@ class Point < ActiveRecord::Base
       standard_deviation = Math.sqrt(variance)
 
       self.appeal = standard_deviation
-      self.score = num_inclusions + appeal * num_inclusions
+      self.score = num_inclusions + standard_deviation * num_inclusions
     end
 
+    self.includers = self.includers.to_s
 
     save(:validate => false) if changed?
   end

@@ -80,9 +80,6 @@ class Point < ActiveRecord::Base
     stubify_field(result, 'opinion')
     stubify_field(result, 'user')
 
-    # for legacy dash support
-    result['id'] = id
-    
     result
   end
 

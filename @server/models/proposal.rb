@@ -20,9 +20,6 @@ class Proposal < ActiveRecord::Base
 
   class_attribute :my_public_fields, :my_summary_fields
   self.my_public_fields = [:id, :long_id, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description]
-  self.my_summary_fields = [:id, :long_id, :user_id, :created_at, :updated_at, :category, :designator, :name, :active, :publicity]
-
-  #attr_accessible :long_id, :activity, :additional_description2, :category, :created_at, :contested, :description, :designator, :additional_description1, :additional_description3, :name, :trending, :updated_at, :url1,:url2,:url3,:user_id, :active, :top_pro, :top_con, :participants, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description
 
   scope :active, -> {where( :active => true, :published => true )}
   scope :inactive, -> {where( :active => false, :published => true )}
@@ -95,10 +92,10 @@ class Proposal < ActiveRecord::Base
   end
 
   def proposal_summary
-    response = self.as_json :only => Proposal.my_summary_fields
+    response = self.as_json
 
-    # Find an existing opinion for this user
-    your_opinion = Opinion.where(:proposal_id => self.id, :user => current_user).first
+    # Find an existing published opinion for this user
+    your_opinion = Opinion.where(:proposal_id => self.id, :user => current_user, :published => true).first
 
     if your_opinion
       response.update({

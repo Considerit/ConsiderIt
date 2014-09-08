@@ -2100,10 +2100,6 @@ Router = Backbone.Router.extend
     root.endpoint = long_id
     save(root)
 
-    if !window.root
-      #TODO: destroy previous root component if it exists      
-      window.root = React.renderComponent(Root(), document.getElementById('content'))
-
   homepage : (params) -> 
     root = fetch('root')
 
@@ -2112,13 +2108,7 @@ Router = Backbone.Router.extend
     root.page_name = 'homepage'
     root.endpoint = 'homepage'
     save(root)
-
-    if !window.root
-      @current_endpoint = 'homepage'
-      #TODO: destroy previous root component if it exists
-      window.root = React.renderComponent(Root(), document.getElementById('content'))
-
-
+      
 
 window.app_router = new Router()
 window.on_ajax_error = () ->
@@ -2126,4 +2116,7 @@ window.on_ajax_error = () ->
   save(root)
 window.on_client_error = (e) ->
   save({ key: '/new/client_error', stack: JSON.stringify(e.stack) })
-$(document).ready -> Backbone.history.start {pushState: true}
+  
+$(document).ready -> 
+  window.root = React.renderComponent(Root(), document.getElementById('content'))
+  Backbone.history.start {pushState: true}

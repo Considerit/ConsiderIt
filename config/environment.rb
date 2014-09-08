@@ -12,7 +12,9 @@ end
 def make_key(hash, name)
   id = hash["id"]
   hash['key'] = (id && "/#{name}/#{id}")
-  hash.delete('id')
+
+  # This is disabled for the legacy dash.  Turn back on when we're free of it.
+  # hash.delete('id')
 end
 
 def jsonify_objects(objects, name, reference_names=[], delete_names=[], parse_names=[])

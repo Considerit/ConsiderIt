@@ -126,8 +126,6 @@ class Proposal < ActiveRecord::Base
     follows = get_explicit_follow(current_user) 
     result["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 
-    #for legacy dash support
-    result["id"] = id
     result
   end
 

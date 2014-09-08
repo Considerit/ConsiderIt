@@ -23,10 +23,15 @@ window.StateDash = ReactiveComponent
   render: ->
     dash = @fetch('state_dash')
     
+    if dash.filter?.match(/idfa/) or dash.filter?.match(/idmap/)
+      dash.on = false
+      dash.filter = ''
+      save(dash)
+
     if not dash.on
       return DIV null, ''
 
-    url_tree = () ->
+    url_tree = (cache) ->
       # The key tree looks like:
       #
       # {server: {thing: [obj1, obj2], shing: [obj1, obj2], ...}
@@ -36,19 +41,27 @@ window.StateDash = ReactiveComponent
       #  key_tree.server.shong[null]
       tree = {server: {}, client: {}}
       
-      incorporate_key = (key) ->
+      add_key = (key) ->
         p = parse_key(key)
         if not p
           console.log('The state dash can\'t deal with key', key); return null
 
         tree[p.owner][p.name] ||= []
-        tree[p.owner][p.name][p.number or null] = arest.cache[key]
+        tree[p.owner][p.name][p.number or null] = cache[key]
 
-      for key of arest.cache
-        incorporate_key(key)
+      for key of cache
+        add_key(key)
       return tree
 
-    tree = url_tree()
+    cache = @search_results().data_matches
+    tree = url_tree(cache)
+    first_key = do () ->
+      for key of cache
+        reject_name = dash.selected.name and parse_key(key).name != dash.selected.name
+        reject_numb = dash.selected.number and parse_key(key).number != dash.selected.number
+        if !reject_name and !reject_numb
+          return key
+      return null
 
     DIV className: 'state_dash',
       STYLE null,
@@ -71,47 +84,71 @@ window.StateDash = ReactiveComponent
         """
 
       # Render the top (name) menu
-      DIV className: 'top',
-        for owner in ['server', 'client']
-          SPAN {style: {'margin': '10px 0'}, key: owner},
-            B(style: {'font-weight': '600'}, owner.toUpperCase() + ':'),
+      DIV className: 'left', #onMouseLeave: reset_selection,
+        INPUT (className: 'search', onChange: @filter_to, onMouseEnter: reset_selection)
+        for owner in ['client', 'server']
+          prefix = (owner == 'server') and '/' or ''
+          DIV {key: owner},
             for name of tree[owner]
               do (owner, name) ->
                 f = -> dash.selected={owner, name, number:null}; save(dash)
                 style = (name == dash.selected.name) and {'background-color':'#aaf'} or {}
-                SPAN({onMouseEnter: f, key: name, style},
-                  ' ', name, ' ')
+                DIV onMouseEnter: f, key: name, style: style,
+                  prefix + name
 
-      # Render the side (number) menu
-      if dash.selected.name
-        DIV className: 'left',
-          for number of tree[dash.selected.owner][dash.selected.name]
-            if number == 'null'
-              continue
-            do (number) ->
-              f = -> dash.selected.number = number; save(dash)
-              style = number == dash.selected.number and {'background-color':'#aaf'} or {}
-
-              DIV {onMouseEnter: f, style}, number
-        
       # Render the object
-      if dash.selected.number or (dash.selected.name and tree[dash.selected.owner][dash.selected.name][null])
-        DIV className: 'right',
-          JSON.stringify(tree[dash.selected.owner][dash.selected.name][dash.selected.number])
+      DIV className: 'right',
+        JSON.stringify(arest.cache[first_key])
 
+  # Other methods
+  componentDidMount: ->
+    console.log('focused it')
+  search_results: () ->
+    # Returns two filtered views of the cache:
+    # 
+    #   { key_matches: {...a cache filtered to matching keys... }
+    #     data_matches: {...a cache filtered to matching data...} }
+
+    dash = fetch('state_dash')
+    key_matches = {}
+    data_matches = {}
+    if dash.filter
+      for key of arest.cache
+        if key.match(dash.filter)
+          key_matches[key] = arest.cache[key]
+        if JSON.stringify(arest.cache[key]).match(dash.filter)
+          data_matches[key] = arest.cache[key]
+    else
+      key_matches = data_matches = arest.cache
+
+    return {key_matches, data_matches}
+  filter_to: (e) ->
+    dash = @data('state_dash')
+    dash.filter = e.target.value
+    if dash.filter.length == 0
+      dash.filter = null
+    save(dash)
+    true
+reset_selection = () ->
+  dash = fetch('state_dash')
+  dash.selected = {owner: null, name: null, number: null}
+  save(dash)
 
 fetch 'state_dash',
   on: false
   selected: {owner: null, name: null, number: null}
+  filter: null
 
+recent_keys = [0,0,0,0,0]
 document.onkeypress = (e) ->
   key = (e and e.keyCode) or event.keyCode
-  console.log(key)
-  if key==4
+  recent_keys.push(key)
+  recent_keys = recent_keys.slice(1)
+  if key==4 or "#{recent_keys}" == "#{[105, 100, 109, 97, 112]}" # idmap
     dash = fetch('state_dash')
     if dash.on
       dash.on = false
     else
       dash.on = true
     save(dash)
-
+    setTimeout(->$('.state_dash input').focus())

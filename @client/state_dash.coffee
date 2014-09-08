@@ -143,8 +143,8 @@ window.StateDash = ReactiveComponent
     true
 
   componentDidUpdate: () ->
-    el = @refs.json_preview.getDOMNode()
-    if el.innerHTML.length < 10000
+    el = @refs.json_preview?.getDOMNode()
+    if el?.innerHTML.length < 10000
       el.innerHTML = rainbows(el.innerHTML)
 reset_selection = () ->
   dash = fetch('state_dash')

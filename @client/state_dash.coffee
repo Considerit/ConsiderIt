@@ -65,8 +65,8 @@ window.StateDash = ReactiveComponent
           return key
       return null
 
-    best_guess = first_key(search_results.key_matches) or \
-                 first_key(search_results.data_matches)
+    dash.curr_obj = first_key(search_results.key_matches) or \
+                    first_key(search_results.data_matches)
 
     DIV className: 'state_dash',
       STYLE null,
@@ -109,7 +109,7 @@ window.StateDash = ReactiveComponent
 
       # Render the object
       PRE className: 'right', ref: 'json_preview',
-        JSON.stringify(arest.cache[best_guess], undefined, 3)
+        JSON.stringify(arest.cache[dash.curr_obj], undefined, 3)
 
   # Other methods
   search_results: () ->
@@ -143,9 +143,10 @@ window.StateDash = ReactiveComponent
     true
 
   componentDidUpdate: () ->
+    dash = fetch('state_dash')
     el = @refs.json_preview?.getDOMNode()
-    if el?.innerHTML.length < 10000
-      el.innerHTML = rainbows(el.innerHTML)
+    if el?.innerHTML.length < 50000
+      el.innerHTML = rainbows(JSON.stringify(arest.cache[dash.curr_obj], undefined, 3))
 reset_selection = () ->
   dash = fetch('state_dash')
   dash.selected = {owner: null, name: null, number: null}

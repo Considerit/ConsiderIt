@@ -17,6 +17,8 @@ for el of React.DOM
 # Constants, especially used for layout styling
 TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
+
+# layout constants
 GRID_MINOR = 30
 GRID_GUTTER = 18
 GRID_MAJOR = GRID_MINOR + GRID_GUTTER #golden ratio
@@ -29,6 +31,8 @@ HISTOGRAM_WIDTH = BODY_WIDTH    # Width of the slider / histogram base
 DECISION_BOARD_WIDTH = BODY_WIDTH + 4 # the four is for the border
 REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 4 * GRID_GUTTER + 4
 MAX_HISTOGRAM_HEIGHT = 200
+
+
 
 ##
 # Helpers that should probably go elsewhere
@@ -176,8 +180,6 @@ PageTransition =
 
           decision_board_style =  { translateX: opinion_region_x, translateY: -18, width: "#{give_opinion_button_width}px", minHeight: "32px", marginTop: 0}
 
-
-
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
 
           $el.find('.your_points, .save_opinion_button, .cancel_opinion_button').css 'display', 'none'
@@ -195,7 +197,7 @@ PageTransition =
 
 
 #####################
-# React Components
+# React Components (needs to be updated)
 #
 # These are the components and their relationships:
 #
@@ -218,17 +220,8 @@ PageTransition =
 Proposal = ReactiveComponent
   displayName: 'Proposal'
 
-  ##
-  # Lifecycle methods
-  componentDidMount : -> 
-    $el = $(@getDOMNode())
-    $el.find('.proposal_heading.stickable').stickyTopBottom
-      placeholder: $el.find('.proposal_heading.placeholder')[0]
-      container: $el
-
   componentDidUpdate : ->
     $el = $(@getDOMNode())
-    $el.find('.proposal_heading.stickable').stickyTopBottom('update')
 
     # Resizing the reasons region to solve a layout error when 
     # the height of the decision board (which is absolutely positioned) 
@@ -237,10 +230,6 @@ Proposal = ReactiveComponent
 
     # $el.find('.description_region').css
     #   top: $el.find('.proposal_heading').height() + 24
-
-  componentWillUnmount : -> 
-    $el = $(@getDOMNode())
-    $el.find('.proposal_heading.stickable').stickyTopBottom('destroy')
 
 
   renderDescriptionField : (field) ->
@@ -299,12 +288,12 @@ Proposal = ReactiveComponent
         @local.description_fields = null
 
 
-    DIV className:'proposal', key:@props.long_id, 'data-page':@root.proposal_mode,
-      DIV className: 'proposal_heading stickable',  style : { minWidth: PAGE_WIDTH }, # minwidth is for width consistency when dropping into fixed sticky header
-        SPAN null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
+    color = @data('color')
 
-      DIV className: 'proposal_heading placeholder', 
-        SPAN null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
+
+    DIV className:'proposal', key:@props.long_id, 'data-page':@root.proposal_mode,
+
+      StickyProposalHeading()
 
       #description
 
@@ -345,6 +334,84 @@ Proposal = ReactiveComponent
             #community cons
             CommunityPoints { key: 'cons' }
 
+
+StickyProposalHeading = ReactiveComponent
+  displayName: 'StickyProposalHeading'
+
+  componentDidMount : -> 
+    $el = $(@getDOMNode())
+    $el.find('.proposal_heading.stickable').stickyTopBottom
+      placeholder: $el.find('.proposal_heading.placeholder')[0]
+      container: $el
+
+  componentDidUpdate : ->
+    $el = $(@getDOMNode())
+    $el.find('.proposal_heading.stickable').stickyTopBottom('update')
+
+  componentWillUnmount : -> 
+    $el = $(@getDOMNode())
+    $el.find('.proposal_heading.stickable').stickyTopBottom('destroy')
+
+  render : ->
+    proposal = @proposal
+    color = @data('color')
+    customer = @data('customer')
+    viewable_proposals = @data('viewable_proposals')
+
+    # If navigation bar is enabled, then we'll use a really short proposal name in the heading.
+    # Otherwise we'll display the full question. This split doesn't come from
+    # deep thought. 
+    use_navigation_bar = customer.identifier == 'livingvotersguide'
+
+    #extract the cluster this proposal belongs to
+    this_proposal_cluster = _.findWhere viewable_proposals.clusters, {name: proposal.cluster}
+    other_proposals_in_cluster = _.filter this_proposal_cluster.proposals, (prop) -> prop.id != proposal.id # remove this proposal from the list
+
+    if other_proposals_in_cluster.length > 0
+      # we'll call the next proposal a random proposal from this group, 
+      # with preference for proposals the user has yet to submit an opinion for. 
+      has_not_opined = _.filter other_proposals_in_cluster, (prop) => !prop.your_opinion || !@data(prop.your_opinion).published
+
+      if has_not_opined.length > 0
+        next_proposal = _.sample has_not_opined
+      else 
+        next_proposal = _.sample other_proposals_in_cluster
+
+    else
+      next_proposal = null
+
+    DIV null,
+
+      if use_navigation_bar
+        heading_height = 50
+        DIV null,
+          DIV className: 'proposal_heading placeholder', style: {height: heading_height} 
+          DIV className: 'proposal_heading stickable',  style : { height: heading_height, minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, textAlign: 'center' }, # minwidth is for width consistency when dropping into fixed sticky header
+            DIV className: 'current_proposal_cluster', proposal.cluster
+            DIV className: 'proposal_navigation_menu', 
+              DIV className: 'current_proposal', 
+                capitalize( proposal.long_id.replace(/_/g, ' ') )
+                I className: 'fa fa-caret-down', style: {paddingLeft: 8}
+            if next_proposal
+              DIV className: 'next_proposal', 
+                "Next: "
+                A onClick: (=> window.app_router.navigate("/#{next_proposal.long_id}", {trigger: true})), 
+                  "#{capitalize(next_proposal.long_id.replace(/_/g, ' '))}"
+
+      else
+        heading_style = { minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, fontSize: 26, padding: '4px 90px' } # minwidth is for width consistency when dropping into fixed sticky header
+        DIV null,
+          DIV className: 'proposal_heading stickable',  style : heading_style,
+            SPAN null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
+
+          DIV className: 'proposal_heading placeholder', style: heading_style,
+            SPAN null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
+
+      # TODO: we need a way of knowing whether this subdomain has a homepage or not
+      if customer.identifier == 'livingvotersguide'
+        A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', marginTop: 8, marginLeft: 16, fontWeight: 600}, 
+          I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
+          SPAN style: {fontSize: 15, paddingLeft: 6, color: '#777', verticalAlign: 'text-bottom'}, 'Home'
 
 
 ##
@@ -1707,6 +1774,9 @@ Auth = ReactiveComponent
       fontSize: '29px'
       top: '-80px'
 
+    pledges = ['I will participate with only one account', 
+               'I will speak only on behalf of myself', 
+               'I will not attack or mock others']
 
     DIV className:'auth_region focal_wrapper', style: focal_wrapper_style,
       DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
@@ -1843,20 +1913,16 @@ Auth = ReactiveComponent
                       else
                         $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
 
+            
             TR null,
               TD className: 'label_cell', 
                 LABEL null, 'Community pledge:'
               TD className: 'field_cell',
                 UL className: 'pledges',
-                  LI className: 'pledge', 
-                    INPUT className:'pledge-1 pledge-input', type:'checkbox', id:"pledge-1", name:"pledge-1"
-                    LABEL htmlFor: "pledge-1", 'I will not attack or mock others.'
-                  LI className: 'pledge', 
-                    INPUT className:'pledge-2 pledge-input', type:'checkbox', id:"pledge-2", name:"pledge-2"
-                    LABEL htmlFor: "pledge-2", 'I will speak only on behalf of myself.'
-                  LI className: 'pledge', 
-                    INPUT className:'pledge-3 pledge-input', type:'checkbox', id:"pledge-3", name:"pledge-3"
-                    LABEL htmlFor: "pledge-3", 'I will use only one account to participate.'
+                  for pledge, idx in pledges
+                    LI className: 'pledge', 
+                      INPUT className:"pledge-input", type:'checkbox', id:"pledge-#{idx}", name:"pledge-#{idx}"
+                      LABEL htmlFor: "pledge-#{idx}", pledge
 
         if current_user.errors && current_user.errors[root.auth_mode] && current_user.errors[root.auth_mode].length > 0
           DIV className: "auth_errors", 
@@ -1878,11 +1944,12 @@ Auth = ReactiveComponent
             save(root))
         , 'cancel log in'
 
-Homepage = ReactiveComponent
-  displayName: 'Homepage'
 
+ProposalSummary = ReactiveComponent
+  displayName: 'ProposalSummary'
+
+  # Handles router navigation for links so that a page reload doesn't happen
   clickLink : (event) ->
-
     href = $(event.currentTarget).attr('href')
 
     # Allow shift+click for new tabs, etc.
@@ -1892,18 +1959,248 @@ Homepage = ReactiveComponent
       window.app_router.navigate href, { trigger : true }
       return false
 
+  render : ->
+    customer = @data('customer')
+    color = @data('color')
+
+    proposal = @data()
+
+    TR 
+      className: "proposal_summary #{if @local.hovering_on == proposal.id then 'hovering'}"
+      style: {cursor: 'pointer', padding: '6px 30px', display: 'block', borderLeft: "1px solid #{if @local.hovering_on then color.link_hover_color else 'rgb(191, 192, 194)'}"}
+      onMouseEnter: (=> @local.hovering_on = true; save(@local))
+      onMouseLeave: (=> @local.hovering_on = false; save(@local))
+      onClick: (=> window.app_router.navigate("/#{proposal.long_id}", {trigger: true}))              
+    ,
+      if customer.identifier == 'livingvotersguide'
+        TD className: 'summary_measure_designator', style: {width: 55, display: 'inline-block', fontSize: 15},
+          if proposal.category && proposal.designator
+            A onClick: @clickLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+              "#{proposal.category[0]}-#{proposal.designator}"
+
+      TD className: 'summary_name', style: {width: 175, display: 'inline-block', fontSize: 18},
+        A onClick: @clickLink, href: "/#{proposal.long_id}", style: {fontWeight: 500, color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+          capitalize(proposal.long_id.replace(/_/g, ' '))
+      TD className: 'summary_decide', style: {width: 200, textAlign: 'center', display: 'inline-block'}, 
+        if !proposal.your_opinion || !@data(proposal.your_opinion).published
+          SPAN style: {fontWeight: 200, color: 'rgb(158,158,158)', fontSize: 21}, '?'
+        else if @data(proposal.your_opinion).stance_segment == 3
+          SPAN style: {fontFamily: 'helvetica', color: 'rgb(158,158,158)', fontSize: 18}, 'Neutral'
+        else if @data(proposal.your_opinion).stance_segment < 3
+          SPAN style: {position: 'relative'},
+            IMG 
+              className: 'summary_opinion_marker'
+              src: "<%= asset_path 'no_x.svg' %>"
+              style: {width: 24, position: 'absolute', left: -28}
+            SPAN style: {fontFamily: 'helvetica', color: 'rgb(239,95,98)', fontSize: 18}, 'No'
+        else
+          SPAN style: {position: 'relative'},
+            IMG 
+              className: 'summary_opinion_marker'
+              src: "<%= asset_path 'yes_check.svg' %>"
+              style: {width: 24, position: 'absolute', left: -28}
+
+            SPAN style: {fontFamily: 'helvetica', color: 'rgb(166,204,70)', fontSize: 18}, 'Yes'
+
+      TD className: 'summary_share', style: {width: 230, display: 'inline-block'},
+        if proposal.top_point
+          DIV className: 'top_point community_point con', style : { width: 270, position: 'relative' },
+            Avatar tag: SPAN, key: proposal.top_point.user, className:"point_author_avatar", hide_face: proposal.top_point.hide_name
+
+            DIV className:'point_content', style : { },
+              IMG 
+                className: 'community_point_mouth'
+                src: "<%= asset_path 'community_point_mouth.png' %>"
+
+              DIV className:'point_nutshell', style: {fontSize: 15},
+                "#{proposal.top_point.nutshell[0..20]}..."
+
+
+Homepage = ReactiveComponent
+  displayName: 'Homepage'
+
+  componentDidMount : -> @initOrUpdateHeader()
+
+  componentDidUpdate : -> @initOrUpdateHeader()
+
+  componentWillUnmount : -> 
+    $el = $(@getDOMNode())
+    $el.find('.sticky_header.stickable').stickyTopBottom('destroy')
+
+  initOrUpdateHeader : -> 
+    $el = $(@getDOMNode())
+
+    $header = $el.find('.sticky_header.stickable')
+    if $header.length > 0
+      if @local.sticky_initialized
+        $header.stickyTopBottom('update')
+      else 
+        $header.stickyTopBottom
+          placeholder: $el.find('.sticky_header.placeholder')[0]
+          container: $el
+        @local.sticky_initialized = true
+        save @local
 
   render : ->
-    homepage = @data()
+    customer = @data('customer')
+    color = @data('color')
+    viewable_proposals = @data('viewable_proposals')
+
+    # Columns of the sticky header for the proposal list.
+    if customer.identifier == 'livingvotersguide'
+      columns = [ {heading: 'Learn', details: 'about your ballot'}, {heading: 'Decide', details: 'how you\'ll vote'}, {heading: 'Share', details: 'your opinion'}]
+    else
+      columns = [ {heading: 'Learn', details: 'about the issues'}, {heading: 'Decide', details: 'what you think'}, {heading: 'Share', details: 'your opinion'}]
+
+    sticky_header_height = 60
 
     DIV className: 'homepage',
-      TABLE null, 
-        for summary in homepage.proposal_summaries
+      DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height} 
+      DIV 
+        className: "sticky_header stickable"
+        style: {height: sticky_header_height, width: '100%', backgroundColor: color.proposal_header, color: 'white', zIndex: 9999, minWidth: PAGE_WIDTH} #minwidth is for when dropping into sticky, position fixed mode
+      ,
+        TABLE style: {margin: 'auto'},
           TR null,
-            TD className: 'summary_name', 
-              A onClick: @clickLink, href: "/#{summary.long_id}", summary.long_id.replace('_', ' ')
-            TD className: 'summary_decide'
-            TD className: 'summary_share' 
+            for col in columns
+              TD style: {display: 'inline-block', width: 250},
+                DIV style: {fontWeight: 600, fontSize: 25, textAlign: 'center'}, 
+                  col.heading
+                DIV style: {fontWeight: 300, fontSize: 18, textAlign: 'center', position: 'relative', top: -8},
+                  col.details
+
+      for cluster in viewable_proposals.clusters
+        TABLE style: {borderLeft: '0px solid rgb(191, 192, 194)', margin: '35px auto', position: 'relative'},
+          TR null,
+            TH style: {textAlign: 'right', width: 115, padding: 8, display: 'inline-block', verticalAlign: 'top', fontSize: 16, fontWeight: 200, position: 'absolute', left: -125},
+              cluster.name
+
+          for proposal in cluster.proposals
+            ProposalSummary
+              key: proposal.key
+              cluster: cluster.name
+
+          # TODO: There are probably lots of cases where we want to add more details to a cluster of proposals. 
+          #       For example, saying that proposals in cluster "Council meeting 6/7" will be open for discussion 
+          #       at the upcoming meeting. Keep an eye on this possible generality (and eliminate this edge case 
+          #       if we do generalize it)
+          if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
+            TR null,
+              TD colSpan: 3, style: {color: 'rgb(108,107,98)', fontSize: 16, paddingLeft: 30, paddingTop: 12},
+                "* Advisory Votes are not binding. They are a consequence of "
+                A href: "http://en.wikipedia.org/wiki/Washington_Initiative_960", style: {fontWeight: 600, color: 'rgb(108,107,98)'}, 'Initiative 960' 
+                " passing in 2007."
+
+Header = ReactiveComponent
+  displayName: 'Header'
+  logout : -> 
+    current_user = @data('/current_user')
+    current_user.logged_in = false
+
+    @root.auth_mode = null
+
+    save current_user, =>
+      # We need to get a fresh your_opinion object
+      # after logging out. 
+
+      # TODO: the server should dirty keys on the client when the
+      # current_user logs out
+      arest.clear_matching_objects((key) -> key.match( /\/proposal\// ))
+
+    save @root
+
+
+  render : ->
+    current_user = @data('/current_user')
+    customer = @data('customer')
+    color = @data('color')
+
+    DIV className: 'l_header', style: {backgroundColor: color.header_bg},
+      if current_user.logged_in
+        userbar_style = {}
+        if customer.identifier == 'livingvotersguide' #to deal with the weird cream header for LVG
+          userbar_style = {color: 'black', backgroundColor: color.background}
+
+        DIV className: 'userbar', style: userbar_style,
+          Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 20, width: 20}
+          A 'data-action': 'logout', onClick: @logout, 'logout'
+
+
+      # We'll only show the extended header on the homepage
+      if @root.page_name == 'homepage'
+        # Define all the customer-specific styles for non-repeated elements directly. 
+        # This lets us iterate quicker and minimize where customer specific code lives.
+        switch customer.identifier
+          when 'cityoftigard'
+            logo_style = {height: '117px', position: 'absolute', bottom: '-79px', zIndex: 999999, backgroundColor: 'white', borderRight: '2px solid white'}
+            DIV style: {height: 38},
+              A href: 'http://www.tigard-or.gov/',
+                IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
+
+          when 'livingvotersguide'
+            logo_style = {width: 150, position: 'absolute', top: -158, left: '50%', marginLeft: -75, zIndex: 1, top: 14}
+            DIV null,
+              DIV style: {backgroundColor: color.background, height: 88, width: '100%'}
+              DIV style: {textAlign: 'center', color: 'white', paddingTop: 85, paddingBottom: 26}, 
+                A href: '/about', 
+                  IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.svg' %>", style: logo_style 
+                DIV className: 'tagline', style: {fontSize: 25, fontWeight: 'bold'},
+                  'Online Intelligence for Washington Voters'
+                DIV className: 'participation_line', style: {fontSize: 18, fontWeight: 400},
+                  'This guide improves with your participation. '
+                  A className: 'call_to_action', style: {textDecoration: 'underline', color: 'white'}, 'Join the conversation'
+                  '!'
+
+
+      DIV style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if @root.server_error then 'block' else 'none'},
+        'Warning: there was a server error!'
+
+
+
+Footer = ReactiveComponent
+  displayName: 'Footer'
+  render : -> 
+    customer = @data('customer')
+    color = @data('color')
+
+    DIV className: 'l_footer',  
+      if customer.identifier == 'livingvotersguide'
+        DIV null,
+          DIV style: {color: 'white', backgroundColor: color.header_bg, marginTop: 48, padding: 18},
+            DIV style: {fontSize: 18, fontStyle: 'italic', textAlign: 'justify', width: 690, fontStyle: 'italic', margin: 'auto'},
+              'Unlike voter guides generated by government, newspapers or advocacy organizations, Living Voters Guide is created '
+              SPAN style: {fontWeight: 600}, 'by the people'
+              ' and '
+              SPAN style: {fontWeight: 600}, 'for the people'
+              ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and share your opinions. We believe that sharing our collective wisdom leads to making wiser decisions together. '
+              A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', 'Learn more'
+              '.'
+          DIV style: {paddingTop: 24, paddingBottom: 12, fontSize: 18, fontWeight: 500, color: 'rgb(77,76,71)'},
+            'Bug to report? Have a comment? Confused? '
+            A href: "mailto:admin@livingvotersguide.org", style: {color: 'rgb(77,76,71)'},
+              'Email us'
+
+          DIV style: {paddingBottom: 18},
+
+            DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
+              A href: "http://seattlecityclub.org", style: {position: 'relative', top: 3, fontWeight: 400},
+                IMG src: "<%= asset_path 'livingvotersguide/cityclub.svg' %>"
+
+            DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
+              "Technology by "
+              A href: 'http://consider.it', style: {textDecoration: 'none', color: 'rgb(131,131,131)', display: 'block', fontWeight: 600}, target: '_blank', 'Considerit'
+
+            DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
+              "Fact-checking by "
+              A href: 'http://spl.org', style: {textDecoration: 'none', color: 'rgb(131,131,131)', display: 'block', fontWeight: 600}, target: '_blank', 'Seattle Public Library'
+
+      else
+        DIV null,
+          "Technology by "
+          A href: 'http://consider.it', target: '_blank', 'Considerit'
+          SPAN className: 'separator', '•'
+          'Bug to report? '
+          A href: "mailto:admin@consider.it", 'Email us'
 
 
 Root = ReactiveComponent
@@ -1911,7 +2208,6 @@ Root = ReactiveComponent
 
   render : -> 
     root = @data()
-
 
     ######
     # Handle application routing, derived from client state.
@@ -1938,6 +2234,7 @@ Root = ReactiveComponent
       StateDash(),
       Page(key: "/page/#{root.page_name}"),
       Computer() # Doesn't actually render anything
+      Colors() # Doesn't actually render anything
 
 Page = ReactiveComponent
   displayName: 'Page'
@@ -1946,7 +2243,9 @@ Page = ReactiveComponent
     fetchAvatars()
 
   render: ->
-    DIV 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
+    color = @data('color')
+
+    DIV style: {backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
       Header()
       DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
         DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
@@ -1980,53 +2279,40 @@ Computer = ReactiveComponent
     return SPAN null, ''
 
 
-
-Header = ReactiveComponent
-  displayName: 'Header'
-  logout : -> 
-    current_user = @data('/current_user')
-    current_user.logged_in = false
-
-    @root.auth_mode = null
-
-    save current_user, =>
-      # We need to get a fresh your_opinion object
-      # after logging out. 
-
-      # TODO: the server should dirty keys on the client when the
-      # current_user logs out
-      arest.clear_matching_objects((key) -> key.match( /\/proposal\// ))
-
-    save @root
-
-
+# Non-rendering component that makes customer-specific colors available for use
+Colors = ReactiveComponent
+  displayName: 'Color'
   render : ->
-    current_user = @data('/current_user')
     customer = @data('customer')
+    color = @data('color')
 
-    DIV className: 'l_header',       
-      if customer.identifier == 'cityoftigard'
-        A href: 'http://www.tigard-or.gov/', target: '_blank',
-          IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: {height: '117px', position: 'absolute', bottom: '-79px', zIndex: 999999, backgroundColor: 'white', borderRight: '2px solid white'}
+    # initialize colors if they haven't already been set
+    if !color.background && customer.identifier
+      # default colors
+      # I didn't want to put these in the defaults section below because 
+      # it would be annoying to refer back and forth to them here.
+      _.extend color,
+        background: 'white'
+        proposal_header: '#E37765'
+        header_bg: '#E37765'
+        link_hover_color: 'black'
 
-      DIV style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if @root.server_error then 'block' else 'none'},
-        'Warning: there was a server error!'
+      # Define colors for different customers. 
+      switch customer.identifier
+        when 'livingvotersguide'
+          color.header_bg = color.proposal_header = 'rgb(0,182,236)'
+          color.background = 'rgb(255,254,245)'
+          color.link_hover_color = 'rgb(118,148,41)'
+        when 'cityoftigard'
+          color.header_bg = '#253967'
+          color.proposal_header = '#46A046'
 
-      if current_user.logged_in
-        DIV className: 'userbar', 
-          Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 20, width: 20}
-          A 'data-action': 'logout', onClick: @logout, 'logout'
+      save color
+
+    SPAN null, ''
 
 
-Footer = ReactiveComponent
-  displayName: 'Footer'
-  render : -> 
-    DIV className: 'l_footer',
-      "Technology by "
-      A href: 'http://consider.it', target: '_blank', 'Considerit'
-      SPAN className: 'separator', '•'
-      'Bug to report? '
-      A href: "mailto:admin@consider.it", 'Email us'
+
 
 
 # Tracks data useful for responsive layouts.

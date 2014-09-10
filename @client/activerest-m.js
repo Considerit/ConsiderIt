@@ -162,7 +162,7 @@
                 var result = JSON.parse(request.responseText)
                 console.log('New save result', result)
                 // Handle /new/stuff
-                map_objects(result, function (obj) {
+                map_object_tree(result, function (obj) {
                     match = obj.key && obj.key.match(/(.*)\?original_id=(\d+)$/)
                     if (match && match[2]) {
                         // Let's map the old and new together
@@ -442,7 +442,6 @@
         var hash = this.hash = {}
         this.get = function (k) { return Object.keys(hash[k] || {}) }
         this.add = function (k, v) {
-            // if (k == 'component/946') {console.log('Adding component/946');console.trace()}
             if (hash[k] === undefined)
                 hash[k] = {}
             hash[k][v] = true
@@ -475,14 +474,14 @@
             if (!obj.hasOwnProperty(attr)) obj[attr] = with_obj[attr]
         return obj
     }
-    function map_objects(object, func) {
+    function map_object_tree(object, func) {
         if (Array.isArray(object))
             for (var i=0; i < object.length; i++)
-                map_objects(object[i], func)
+                map_object_tree(object[i], func)
         else if (typeof(object) === 'object' && object !== null) {
             func(object)
             for (var k in object)
-                map_objects(object[k], func)
+                map_object_tree(object[k], func)
         }
     }
     function error(e) {

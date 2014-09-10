@@ -19,7 +19,7 @@ class Proposal < ActiveRecord::Base
   #before_save :extract_tags
 
   class_attribute :my_public_fields, :my_summary_fields
-  self.my_public_fields = [:id, :long_id, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description]
+  self.my_public_fields = [:id, :long_id, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description]
 
   scope :active, -> {where( :active => true, :published => true )}
   scope :inactive, -> {where( :active => false, :published => true )}
@@ -33,16 +33,9 @@ class Proposal < ActiveRecord::Base
   def full_data(show_private = false)
     tenant = Thread.current[:tenant]
     
-    # Compute the users
-    users = ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{tenant.id} AND (registration_complete=true OR id=#{current_user.id})")
-
-    users = users.as_json
-    users = jsonify_objects(users, 'user')
-
     p = proposal_data(show_private)
     response = {
       :proposal => p,
-      :users => users
     }
 
     if tenant.assessment_enabled
@@ -96,6 +89,9 @@ class Proposal < ActiveRecord::Base
 
     # Find an existing published opinion for this user
     your_opinion = Opinion.where(:proposal_id => self.id, :user => current_user, :published => true).first
+
+    top_point = self.points.published.order(:score).last
+    response.update({:top_point => top_point})
 
     if your_opinion
       response.update({

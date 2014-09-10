@@ -1583,7 +1583,7 @@ Auth = ReactiveComponent
     save(current_user, =>
       if not (current_user.errors?.reset_password?.length > 0)
         # Switch to reset_password mode
-        @root.auth_mode = 'reset_password'  # Is this confusing to read?
+        @root.auth_mode = 'reset_password'
         save(@root)
       else
         # Tell the login screen to show the reset_password errors

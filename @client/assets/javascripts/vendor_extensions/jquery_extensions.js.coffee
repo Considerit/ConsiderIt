@@ -8,6 +8,7 @@ do ($, window, document) ->
     #  - track all the sticky elements and give them vertical preference
     #    so that the calculation as to where they offset with each other
     #    is automatically taken care of
+    #  - can we automatically insert a placeholder if needed?
 
     @current_id: 0 #track a unique id for each element with stickytopbottom
 

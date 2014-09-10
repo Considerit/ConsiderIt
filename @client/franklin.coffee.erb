@@ -400,7 +400,7 @@ StickyProposalHeading = ReactiveComponent
 
 
       else 
-        heading_style = { minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, fontSize: 26, padding: '4px 90px' } # minwidth is for width consistency when dropping into fixed sticky header
+        heading_style = { textAlign: 'center', minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, fontSize: 26, padding: '4px 90px' } # minwidth is for width consistency when dropping into fixed sticky header
         DIV null,
           DIV className: 'proposal_heading stickable',  style : heading_style,
             SPAN null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
@@ -2070,27 +2070,28 @@ Homepage = ReactiveComponent
                 DIV style: {fontWeight: 300, fontSize: 18, textAlign: 'center', position: 'relative', top: -8},
                   col.details
 
-      for cluster in viewable_proposals.clusters
-        TABLE style: {borderLeft: '0px solid rgb(191, 192, 194)', margin: '35px auto', position: 'relative'},
-          TR null,
-            TH style: {textAlign: 'right', width: 115, padding: 8, paddingTop: 13, display: 'inline-block', verticalAlign: 'top', fontSize: 16, fontWeight: 200, position: 'absolute', left: -125},
-              cluster.name
-
-          for proposal in cluster.proposals
-            ProposalSummary
-              key: proposal.key
-              cluster: cluster.name
-
-          # TODO: There are probably lots of cases where we want to add more details to a cluster of proposals. 
-          #       For example, saying that proposals in cluster "Council meeting 6/7" will be open for discussion 
-          #       at the upcoming meeting. Keep an eye on this possible generality (and eliminate this edge case 
-          #       if we do generalize it)
-          if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
+      if viewable_proposals.clusters
+        for cluster in viewable_proposals.clusters
+          TABLE style: {borderLeft: '0px solid rgb(191, 192, 194)', margin: '35px auto', position: 'relative'},
             TR null,
-              TD colSpan: 3, style: {color: 'rgb(108,107,98)', fontSize: 16, paddingLeft: 30, paddingTop: 12},
-                "* Advisory Votes are not binding. They are a consequence of "
-                A href: "http://en.wikipedia.org/wiki/Washington_Initiative_960", style: {fontWeight: 600, color: 'rgb(108,107,98)'}, 'Initiative 960' 
-                " passing in 2007."
+              TH style: {textAlign: 'right', width: 115, padding: 8, paddingTop: 13, display: 'inline-block', verticalAlign: 'top', fontSize: 16, fontWeight: 200, position: 'absolute', left: -125},
+                cluster.name
+
+            for proposal in cluster.proposals
+              ProposalSummary
+                key: proposal.key
+                cluster: cluster.name
+
+            # TODO: There are probably lots of cases where we want to add more details to a cluster of proposals. 
+            #       For example, saying that proposals in cluster "Council meeting 6/7" will be open for discussion 
+            #       at the upcoming meeting. Keep an eye on this possible generality (and eliminate this edge case 
+            #       if we do generalize it)
+            if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
+              TR null,
+                TD colSpan: 3, style: {color: 'rgb(108,107,98)', fontSize: 16, paddingLeft: 30, paddingTop: 12},
+                  "* Advisory Votes are not binding. They are a consequence of "
+                  A href: "http://en.wikipedia.org/wiki/Washington_Initiative_960", style: {fontWeight: 600, color: 'rgb(108,107,98)'}, 'Initiative 960' 
+                  " passing in 2007."
 
 Header = ReactiveComponent
   displayName: 'Header'

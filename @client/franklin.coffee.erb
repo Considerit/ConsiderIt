@@ -360,29 +360,29 @@ StickyProposalHeading = ReactiveComponent
 
     # If navigation bar is enabled, then we'll use a really short proposal name in the heading.
     # Otherwise we'll display the full question. This split doesn't come from
-    # deep thought. 
-    use_navigation_bar = customer.identifier == 'livingvotersguide'
+    # deep thought. Right now we'll just show the nav bar if the proposal belongs to a group
+    use_navigation_bar = proposal.cluster 
 
-    #extract the cluster this proposal belongs to
-    this_proposal_cluster = _.findWhere viewable_proposals.clusters, {name: proposal.cluster}
-    other_proposals_in_cluster = _.filter this_proposal_cluster.proposals, (prop) -> prop.id != proposal.id # remove this proposal from the list
-
-    if other_proposals_in_cluster.length > 0
-      # we'll call the next proposal a random proposal from this group, 
-      # with preference for proposals the user has yet to submit an opinion for. 
-      has_not_opined = _.filter other_proposals_in_cluster, (prop) => !prop.your_opinion || !@data(prop.your_opinion).published
-
-      if has_not_opined.length > 0
-        next_proposal = _.sample has_not_opined
-      else 
-        next_proposal = _.sample other_proposals_in_cluster
-
-    else
-      next_proposal = null
-
-    DIV null,
-
+    DIV null, 
       if use_navigation_bar
+        #extract the cluster this proposal belongs to
+        this_proposal_cluster = _.findWhere viewable_proposals.clusters, {name: proposal.cluster}
+        other_proposals_in_cluster = _.filter this_proposal_cluster.proposals, (prop) -> prop.id != proposal.id # remove this proposal from the list
+
+        if other_proposals_in_cluster.length > 0
+          # we'll call the next proposal a random proposal from this group, 
+          # with preference for proposals the user has yet to submit an opinion for. 
+          has_not_opined = _.filter other_proposals_in_cluster, (prop) => !prop.your_opinion || !@data(prop.your_opinion).published
+
+          if has_not_opined.length > 0
+            next_proposal = _.sample has_not_opined
+          else 
+            next_proposal = _.sample other_proposals_in_cluster
+
+        else
+          next_proposal = null
+
+
         heading_height = 50
         DIV null,
           DIV className: 'proposal_heading placeholder', style: {height: heading_height} 
@@ -398,7 +398,8 @@ StickyProposalHeading = ReactiveComponent
                 A onClick: (=> window.app_router.navigate("/#{next_proposal.long_id}", {trigger: true})), 
                   "#{capitalize(next_proposal.long_id.replace(/_/g, ' '))}"
 
-      else
+
+      else 
         heading_style = { minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, fontSize: 26, padding: '4px 90px' } # minwidth is for width consistency when dropping into fixed sticky header
         DIV null,
           DIV className: 'proposal_heading stickable',  style : heading_style,

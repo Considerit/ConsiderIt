@@ -1983,17 +1983,17 @@ ProposalSummary = ReactiveComponent
         A onClick: @clickLink, href: "/#{proposal.long_id}", style: {fontWeight: 500, color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
           capitalize(proposal.long_id.replace(/_/g, ' '))
       TD className: 'summary_decide', style: {width: 200, textAlign: 'center', display: 'inline-block'}, 
-        if !proposal.your_opinion || !@data(proposal.your_opinion).published
+        if !proposal.your_opinion || !@data(proposal.your_opinion).published || @data(proposal.your_opinion).stance_segment == 3
           SPAN style: {fontWeight: 200, color: 'rgb(158,158,158)', fontSize: 21}, '?'
-        else if @data(proposal.your_opinion).stance_segment == 3
-          SPAN style: {fontFamily: 'helvetica', color: 'rgb(158,158,158)', fontSize: 18}, 'Neutral'
+        # else if @data(proposal.your_opinion).stance_segment == 3
+        #   SPAN style: {fontFamily: 'avenir', color: 'rgb(158,158,158)', fontSize: 18}, 'Neutral'
         else if @data(proposal.your_opinion).stance_segment < 3
           SPAN style: {position: 'relative'},
             IMG 
               className: 'summary_opinion_marker'
               src: "<%= asset_path 'no_x.svg' %>"
               style: {width: 24, position: 'absolute', left: -28}
-            SPAN style: {fontFamily: 'helvetica', color: 'rgb(239,95,98)', fontSize: 18}, 'No'
+            SPAN style: {fontFamily: 'avenir', color: 'rgb(239,95,98)', fontSize: 18, fontWeight: 600}, 'No'
         else
           SPAN style: {position: 'relative'},
             IMG 
@@ -2001,7 +2001,7 @@ ProposalSummary = ReactiveComponent
               src: "<%= asset_path 'yes_check.svg' %>"
               style: {width: 24, position: 'absolute', left: -28}
 
-            SPAN style: {fontFamily: 'helvetica', color: 'rgb(166,204,70)', fontSize: 18}, 'Yes'
+            SPAN style: {fontFamily: 'avenir', color: 'rgb(166,204,70)', fontSize: 18, fontWeight: 600}, 'Yes'
 
       TD className: 'summary_share', style: {width: 230, display: 'inline-block'},
         if proposal.top_point

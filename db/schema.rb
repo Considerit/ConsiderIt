@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140827165617) do
+ActiveRecord::Schema.define(version: 20140909041312) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -381,6 +381,7 @@ ActiveRecord::Schema.define(version: 20140827165617) do
     t.string   "seo_keywords"
     t.string   "slider_middle"
     t.text     "description_fields",                     limit: 16777215
+    t.string   "cluster"
   end
 
   add_index "proposals", ["account_id", "active"], name: "select_proposal_by_active", using: :btree

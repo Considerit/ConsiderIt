@@ -27,6 +27,53 @@
 /// STYLES for Franklin
 /////////////////////////////////////////////////////////////////////////////
 
+///////////////////////
+// PROPOSAL SUMMARY
+
+
+///// Sticky proposal navigation header
+.current_proposal_cluster
+  display: inline-block
+  position: absolute
+  left: 17px
+  font-size: 18px
+  padding-top: 12px
+
+.next_proposal
+  display: inline-block
+  margin-left: 20px
+  font-size: 15px
+
+  a
+    color: white
+    text-decoration: underline
+    &:hover
+      color: white
+
+
+.proposal_navigation_menu
+  display: inline-block
+  font-size: 22px
+  font-weight: 700
+  position: relative
+  top: 4px
+
+  &:hover
+    cursor: pointer
+
+
+.current_proposal
+  padding: 3px 15px
+  background-color: rgba(0,0,0,.2)
+  border-radius: 6px
+  margin-top: 3px
+
+  i 
+    font-size: 30px
+    line-height: 0px
+    position: relative
+    top: 2px
+
 
 
 /////////////////////
@@ -71,16 +118,11 @@ $proposer_img_size: 50px
   width: $proposer_img_size // - 30
   vertical-align: bottom 
 
-$proposal_header_color: #E37765
 .proposal_heading
   width: 100%
-  background-color: $proposal_header_color
   color: white
-  +font-size(5)
-  padding: $vertical_baseline/8 $grid_gutter * 5
   z-index: 999
   position: relative
-  text-align: center
 
 
 // The proposal details revealed 
@@ -358,7 +400,6 @@ $slider_handle_size: 22px
   position: absolute
   top: -80px
   border-radius: 10px
-  background-color: rgba($base_background_color, .2)
 
   +font-size(6)
   font-weight: 600
@@ -653,7 +694,7 @@ $community_point_mouth_width: 17px
   .community_point_mouth
     position: absolute
     width: $community_point_mouth_width
-    top: 12px
+    top: 8px
     z-index: 1
 
   &.pro .community_point_mouth
@@ -669,20 +710,18 @@ $community_point_mouth_width: 17px
     background-color: $peer_background_color
     color: $peer_text_color
     box-shadow: #B5B5B5 0 1px 1px 0px
-    min-height: 38px
+    min-height: 34px
     
 
 // Point text
 .point_nutshell
   word-wrap: break-word
   +font-size(-1)
-  // color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
 .point_details_tease, .point_details 
   //padding-left: 10px
   font-weight: 300
   display: block
-  // color: deemphasize($base_text_color, 20%, $reference: $base_background_color)
 
 .point_details_tease:hover
   text-decoration: underline
@@ -1017,7 +1056,7 @@ $avatar_preview_size: 60px
     // border-radius: 16px
     color: $decision_board_border_color
     text-decoration: underline
-    background-color: transparent //darken($base_background_color, 5%)
+    background-color: transparent 
     border: none
     //padding: 5px 8px 
     //margin: 0 5px
@@ -1027,14 +1066,14 @@ $avatar_preview_size: 60px
 
 
 // HEADER
-$page_header_color: $proposal_header_color
 .l_header
-  background-color: $page_header_color
 
   .userbar
     text-align: right
     padding: 8px 15px
-
+    position: absolute
+    top: 0
+    right: 20px
     a
       color: #eee
       padding-left: 6px
@@ -1044,7 +1083,7 @@ $page_header_color: $proposal_header_color
 .l_footer
   padding: $vertical_baseline/2 0
   text-align: center
-  background-color: #eee
+
   a
     text-decoration: underline
     +link_style(emphasize($footer_text_color, 10%, $reference: $footer_background_color), $footer_background_color, 25%)
@@ -1060,13 +1099,10 @@ $page_header_color: $proposal_header_color
 ////// CUSTOMER SPECIFIC STYLES
 
 [customer="livingvotersguide"]
+  .userbar a 
+    color: black
+  
+
 
 [customer="cityoftigard"]
-  .proposal_heading
-    width: 100%
-    background-color: #46A046
-
-  .l_header
-    height: 38px
-    background-color: #253967
 

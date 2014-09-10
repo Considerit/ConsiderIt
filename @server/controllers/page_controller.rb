@@ -43,7 +43,7 @@ class PageController < ApplicationController
   def get_proposal_summaries
     clustered_proposals = {}
 
-    current_tenant.proposals.open_to_public.browsable.each do |proposal|        
+    current_tenant.proposals.open_to_public.browsable.where('cluster IS NOT NULL').each do |proposal|        
       clustered_proposals[proposal.cluster] = [] if !clustered_proposals.has_key? proposal.cluster
       clustered_proposals[proposal.cluster].append proposal.proposal_summary()
     end

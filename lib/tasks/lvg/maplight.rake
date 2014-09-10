@@ -35,7 +35,7 @@ namespace :lvg do
   end
 
   task :import_maplight => :environment do 
-    contests = ballot('California')
+    contests = ballot('Washington')
 
     contests.keys().each do |contest_id|
       date = contests[contest_id]['election_date']
@@ -47,7 +47,9 @@ namespace :lvg do
         measures.keys().each do |measure_id|
           pp "Getting data for measure #{measure_id}"
           measure_data = measure(measure_id)
-          #loadMeasureData measure_data
+          if measure_id == '117'
+            loadMeasureData measure_data
+          end
           #pp measure_data
         end
       elsif contest_id[0] == 'O'
@@ -67,8 +69,8 @@ namespace :lvg do
   end
 
   task :go => :environment do 
-    #loadMeasureData(example_measure_data)
-    loadCandidateData(example_candidate_data)
+    loadMeasureData(example_measure_data)
+    #loadCandidateData(example_candidate_data)
   end
 
 

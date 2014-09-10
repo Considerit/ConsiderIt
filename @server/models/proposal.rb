@@ -91,6 +91,14 @@ class Proposal < ActiveRecord::Base
     your_opinion = Opinion.where(:proposal_id => self.id, :user => current_user, :published => true).first
 
     top_point = self.points.published.order(:score).last
+
+    # TEMPORARY FOR DEMO!!!
+    if !top_point.user.avatar_file_name || top_point.user_id == 1
+      top_point.user_id = account.users.where('avatar_file_name is not null').all.sample.id
+      #top_point.save
+      pp top_point.user_id
+    end
+
     response.update({:top_point => top_point})
 
     if your_opinion

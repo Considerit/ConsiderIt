@@ -1950,7 +1950,7 @@ ProposalSummary = ReactiveComponent
   displayName: 'ProposalSummary'
 
   # Handles router navigation for links so that a page reload doesn't happen
-  clickLink : (event) ->
+  clickInternalLink : (event) ->
     href = $(event.currentTarget).attr('href')
 
     # Allow shift+click for new tabs, etc.
@@ -1976,11 +1976,11 @@ ProposalSummary = ReactiveComponent
       if customer.identifier == 'livingvotersguide'
         TD className: 'summary_measure_designator', style: {width: 55, display: 'inline-block', fontSize: 15},
           if proposal.category && proposal.designator
-            A onClick: @clickLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+            A onClick: @clickInternalLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
               "#{proposal.category[0]}-#{proposal.designator}"
 
       TD className: 'summary_name', style: {width: 175, display: 'inline-block', fontSize: 18},
-        A onClick: @clickLink, href: "/#{proposal.long_id}", style: {fontWeight: 500, color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+        A onClick: @clickInternalLink, href: "/#{proposal.long_id}", style: {fontWeight: 500, color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
           capitalize(proposal.long_id.replace(/_/g, ' '))
       TD className: 'summary_decide', style: {width: 200, textAlign: 'center', display: 'inline-block'}, 
         if !proposal.your_opinion || !@data(proposal.your_opinion).published || @data(proposal.your_opinion).stance_segment == 3

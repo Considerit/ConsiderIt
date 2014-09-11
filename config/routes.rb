@@ -125,10 +125,12 @@ ConsiderIt::Application.routes.draw do
   resources :point_discussion, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :show]
   resources :client_error, :only => [:create]
+  get '/proposals' => 'proposal#index'
+
   # These next ones are done with "match" because "resources" was
   # being all "I need an id like "/current_user/234" and I don't know
   # how to tell it to be like "/current_user"
-  match 'current_user' => 'current_user#show', :via => [:get]
+  get 'current_user' => 'current_user#show'
   match 'current_user' => 'current_user#update', :via => [:put]
 
   # This is for the special /opinion/current_user/234:

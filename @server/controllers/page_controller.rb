@@ -5,8 +5,10 @@ class PageController < ApplicationController
     case params[:id]
 
     when 'homepage'
-      result = get_proposal_summaries()
-      result['users'] = get_all_user_data()
+      result = {
+        # proposals: Proposal.summaries(), 
+        users: get_all_user_data()
+      } 
 
     else # if proposal
 
@@ -18,10 +20,11 @@ class PageController < ApplicationController
       end
 
       result = proposal.full_data(can?(:manage, proposal))
-      result.update(get_proposal_summaries())
       result['users'] = get_all_user_data()
 
     end
+
+    result['your_opinions'] = current_user.opinions.map {|o| o.as_json}
 
     result['customer'] = current_tenant
     result['key'] = "/page/#{params[:id]}"
@@ -40,32 +43,4 @@ class PageController < ApplicationController
     jsonify_objects(users, 'user')
   end
 
-  def get_proposal_summaries
-    clustered_proposals = {}
-
-    current_tenant.proposals.open_to_public.browsable.where('cluster IS NOT NULL').each do |proposal|        
-      clustered_proposals[proposal.cluster] = [] if !clustered_proposals.has_key? proposal.cluster
-      clustered_proposals[proposal.cluster].append proposal.proposal_summary()
-    end
-
-    if current_tenant.identifier == 'livingvotersguide'
-      # manual ordering for LVG
-      cluster_order = ['Statewide measures', 'Advisory votes'] 
-    else
-      #TODO: order the group for the general case. Probably sort groups by the most recent Opinion. 
-      cluster_order = clustered_proposals.keys()
-    end
-    proposals = {
-      key: 'viewable_proposals',
-      clusters: cluster_order.map {|cluster| {:name => cluster, :proposals => clustered_proposals[cluster] }}
-    }
-
-    result = {
-      :viewable_proposals => proposals,
-      :your_opinions => current_user.opinions.published.map {|o| o.as_json}
-    }
-
-    result
-
-  end
 end

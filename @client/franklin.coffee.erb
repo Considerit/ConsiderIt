@@ -338,15 +338,23 @@ Proposal = ReactiveComponent
 StickyProposalHeading = ReactiveComponent
   displayName: 'StickyProposalHeading'
 
-  componentDidMount : -> 
-    $el = $(@getDOMNode())
-    $el.find('.proposal_heading.stickable').stickyTopBottom
-      placeholder: $el.find('.proposal_heading.placeholder')[0]
-      container: $el
+  componentDidMount : -> @initOrUpdateHeader()
 
-  componentDidUpdate : ->
+  componentDidUpdate : -> @initOrUpdateHeader()
+
+  initOrUpdateHeader : -> 
     $el = $(@getDOMNode())
-    $el.find('.proposal_heading.stickable').stickyTopBottom('update')
+
+    $header = $el.find('.proposal_heading.stickable')
+    if $header.length > 0
+      if @local.sticky_initialized
+        $header.stickyTopBottom('update')
+      else 
+        $header.stickyTopBottom
+          placeholder: $el.find('.proposal_heading.placeholder')[0]
+          container: $el
+        @local.sticky_initialized = true
+        save @local
 
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
@@ -356,7 +364,7 @@ StickyProposalHeading = ReactiveComponent
     proposal = @proposal
     color = @data('color')
     customer = @data('customer')
-    viewable_proposals = @data('viewable_proposals')
+    viewable_proposals = @data('/proposals')
 
     # If navigation bar is enabled, then we'll use a really short proposal name in the heading.
     # Otherwise we'll display the full question. This split doesn't come from
@@ -2045,7 +2053,7 @@ Homepage = ReactiveComponent
   render : ->
     customer = @data('customer')
     color = @data('color')
-    viewable_proposals = @data('viewable_proposals')
+    viewable_proposals = @data('/proposals')
 
     # Columns of the sticky header for the proposal list.
     if customer.identifier == 'livingvotersguide'

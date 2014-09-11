@@ -2314,19 +2314,6 @@ Colors = ReactiveComponent
     SPAN null, ''
 
 
-# Tracks data useful for responsive layouts.
-$(document).ready ->
-  updateMedia()
-  $(window).on "resize", -> updateMedia()
-
-updateMedia = ->
-  media = fetch('media')
-  media.height = $(window).height()
-  media.width = $(window).width()
-  save media
-
-
-
 ## ########################
 ## Initialize defaults for client data
 
@@ -2401,6 +2388,18 @@ window.on_ajax_error = () ->
 window.on_client_error = (e) ->
   save({ key: '/new/client_error', stack: JSON.stringify(e.stack) })
 
+
+updateMedia = ->
+  media = fetch('media')
+  media.height = $(window).height()
+  media.width = $(window).width()
+  save media
+
+
 $(document).ready -> 
+  # Tracks data useful for responsive layouts.
+  updateMedia()
+  $(window).on "resize", -> updateMedia()
+
   Backbone.history.start {pushState: true}
   window.root = React.renderComponent(Root(), document.getElementById('content'))

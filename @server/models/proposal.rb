@@ -84,6 +84,47 @@ class Proposal < ActiveRecord::Base
     response
   end
 
+  def self.summaries
+        
+    # if a customer wants only specific clusters, ordered in a particular way, specify here
+    manual_clusters = nil
+    if Thread.current[:tenant].identifier == 'livingvotersguide'
+      manual_clusters = ['Statewide measures', 'Advisory votes'] 
+    end
+
+    # get all the relevant proposals
+    proposals = Thread.current[:tenant].proposals.active.open_to_public.browsable
+    if manual_clusters
+      proposals = proposals.where('cluster IN (?)', manual_clusters)
+    end
+
+    clustered_proposals = {}
+
+    # group all proposals into clusters
+
+    proposals.each do |proposal|        
+      clustered_proposals[proposal.cluster] = [] if !clustered_proposals.has_key? proposal.cluster
+      clustered_proposals[proposal.cluster].append proposal.proposal_summary()
+    end
+
+    # now order the clusters
+    if !manual_clusters
+      #TODO: order the group for the general case. Probably sort groups by the most recent Opinion.
+      ordered_clusters = clustered_proposals.keys()
+    else 
+      ordered_clusters = manual_clusters
+    end
+    clusters = ordered_clusters.map {|cluster| {:name => cluster, :proposals => clustered_proposals[cluster] }}
+
+    proposals = {
+      key: '/proposals',
+      clusters: clusters
+    }
+
+    proposals
+
+  end
+
   def proposal_summary
     response = self.as_json
 
@@ -113,10 +154,6 @@ class Proposal < ActiveRecord::Base
 
     make_key(result, 'proposal')
     stubify_field(result, 'user')
-    # result["participants"] = JSON.parse(result["participants"] || '[]')
-    # result["participants"].map! {|p| "/user/#{p}"}
-    # result["top_con"] = "/point/#{result['top_con']}"
-    # result["top_pro"] = "/point/#{result['top_pro']}"
     follows = get_explicit_follow(current_user) 
     result["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 

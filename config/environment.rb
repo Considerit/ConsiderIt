@@ -9,6 +9,7 @@ def stubify_field(hash, name)
   hash[name] = (id && "/#{name}/#{id}")
   hash.delete(name + '_id')
 end
+
 def make_key(hash, name)
   id = hash["id"]
   hash['key'] = (id && "/#{name}/#{id}")
@@ -50,6 +51,7 @@ def dirty_key(key)
     Thread.current[:dirtied_keys][key] = 1
   end
 end
+
 def remap_key(old_key, new_key)
 #   Thread.current[:remapped_keys][old_key] = new_key
 end

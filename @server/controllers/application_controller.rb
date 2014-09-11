@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   #protect_from_forgery
   set_current_tenant_through_filter
   prepend_before_action :get_current_tenant
-  before_action :theme_resolver
+
   before_action :init_thread_globals
   after_action  :pageview
 
@@ -99,21 +99,6 @@ private
     set_current_tenant(current_account)
     session["user_account_identifier"] = current_tenant.identifier
     current_account
-  end
-
-  def theme_resolver
-
-    if !session.has_key?('user_theme') || current_tenant.theme != session["user_theme"]
-      session["user_theme"] = current_tenant.theme
-    end
-    
-    # if !current_tenant.inherited_themes.nil?
-    #   current_tenant.inherited_themes.split(':').each do |parent_theme|
-    #     add_theme_view_path_for(parent_theme)
-    #   end
-    # end
-
-    # set_theme(session["user_theme"])
   end
 
   def init_thread_globals

@@ -168,7 +168,7 @@ private
             .map {|k| Proposal.find(key_id(k)).proposal_data()})
 
     # Output dirty current_user
-    if (Thread.current[:dirtied_keys].has_key? '/current_user')
+    if Thread.current[:dirtied_keys].has_key? '/current_user'
       response.append current_user.current_user_hash(form_authenticity_token)
 
       # And include the user object too, if we haven't already
@@ -176,6 +176,13 @@ private
         response.append(User.find(current_user.id).as_json)
       end
     end
+
+    # Handle dirty proposals key, which are all the summaries of active proposals 
+    # the current user can access
+    if Thread.current[:dirtied_keys].has_key? '/proposals'
+      resonse.append Proposal.summaries
+    end
+
     
     return response
   end

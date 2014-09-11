@@ -5,19 +5,7 @@ class ProposalController < ApplicationController
   respond_to :json
 
   def index
-
-    # if params.has_key?(:target)
-    #   target = params[:target]
-    #   proposals = Proposal.open_to_public.where(:targettable => true).where("tags LIKE '%#{target}%'")
-    # else
-    #   proposals = Proposal.open_to_public.browsable
-    # end
-
-    proposals = Proposal.open_to_public.browsable
-
-    render :json => {
-      :proposals => proposals.public_fields,
-    }
+    render :json => Proposal.summaries
   end
 
   def show

@@ -241,6 +241,7 @@ $proposer_img_size: 50px
 
 .histogram
   min-height: 75px
+  position: relative
 
   table, td, tr
     height: 100%
@@ -283,16 +284,16 @@ $segment_color: #db004d
     .avatar
       opacity: .05
 
-[data-segment="6"] 
 
-  .histogram_segment_pole
-    color: $extreme_supporter_color
-    left: -160px
+.histogram_segment_pole.supporters
+  color: $extreme_supporter_color
+  left: -160px
+  width: 145px
 
-[data-segment="0"] 
-  .histogram_segment_pole
-    color: $extreme_opposer_color  
-    right: -145px
+.histogram_segment_pole.opposers
+  color: $extreme_opposer_color  
+  right: -145px
+  width: 130px
 
 .histogram_segment_pole
   font-weight: 300
@@ -300,6 +301,10 @@ $segment_color: #db004d
   +font-size(6)
   bottom: -20px
   pointer-events: none
+
+  span
+    position: absolute
+    bottom: 0
 
 .histogram_bar
   display: inline-block

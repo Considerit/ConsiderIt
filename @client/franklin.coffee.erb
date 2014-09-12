@@ -360,52 +360,124 @@ StickyProposalHeading = ReactiveComponent
     $el = $(@getDOMNode())
     $el.find('.proposal_heading.stickable').stickyTopBottom('destroy')
 
+
+  mouseLeaveOtherCluster : (cluster) -> 
+    if @local.show_cluster == cluster
+      @local.show_cluster = null
+      save(@local)
+
   render : ->
     proposal = @proposal
     color = @data('color')
     customer = @data('customer')
-    viewable_proposals = @data('/proposals')
+    proposals = @data('/proposals')
 
     # If navigation bar is enabled, then we'll use a really short proposal name in the heading.
     # Otherwise we'll display the full question. This split doesn't come from
     # deep thought. Right now we'll just show the nav bar if the proposal belongs to a group
     use_navigation_bar = proposal.cluster 
-
+    
+    
     DIV null, 
       if use_navigation_bar
-        #extract the cluster this proposal belongs to
-        this_proposal_cluster = _.findWhere viewable_proposals.clusters, {name: proposal.cluster}
-        other_proposals_in_cluster = _.filter this_proposal_cluster.proposals, (prop) -> prop.id != proposal.id # remove this proposal from the list
 
-        if other_proposals_in_cluster.length > 0
-          # we'll call the next proposal a random proposal from this group, 
-          # with preference for proposals the user has yet to submit an opinion for. 
-          has_not_opined = _.filter other_proposals_in_cluster, (prop) => !prop.your_opinion || !@data(prop.your_opinion).published
+        if proposals.clusters #don't want to error out if /proposals isn't loaded yet
 
-          if has_not_opined.length > 0
-            next_proposal = _.sample has_not_opined
-          else 
-            next_proposal = _.sample other_proposals_in_cluster
+          #extract the cluster this proposal belongs to
+          this_proposal_cluster = _.findWhere proposals.clusters, {name: proposal.cluster}
 
-        else
-          next_proposal = null
+          if !@local.next_proposal
+            # the next proposal is the next proposal in the cluster, with 
+            # preference for proposals the user has yet to submit an opinion for. 
+            other_proposals_in_cluster = _.filter this_proposal_cluster.proposals, (prop) -> prop.id != proposal.id # remove this proposal from the list
+            has_not_opined = _.filter other_proposals_in_cluster, (prop) => !prop.your_opinion || !@data(prop.your_opinion).published
 
+            if has_not_opined.length > 0
+              @local.next_proposal = _.sample has_not_opined
+            else 
+              @local.next_proposal = _.sample other_proposals_in_cluster
+            save @local #save next_proposal so it doesn't change each rerender
 
         heading_height = 50
         DIV null,
           DIV className: 'proposal_heading placeholder', style: {height: heading_height} 
           DIV className: 'proposal_heading stickable',  style : { height: heading_height, minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, textAlign: 'center' }, # minwidth is for width consistency when dropping into fixed sticky header
             DIV className: 'current_proposal_cluster', proposal.cluster
-            DIV className: 'proposal_navigation_menu', 
-              DIV className: 'current_proposal', 
+
+            DIV className: 'proposal_navigation_menu', onMouseEnter: (=> @local.dropped_down = true; save(@local)), onMouseLeave: (=> @local.dropped_down = false; save(@local)), 
+
+              DIV className: 'current_proposal', style: {backgroundColor: 'rgba(0,0,0,.2)'},
                 capitalize( proposal.long_id.replace(/_/g, ' ') )
                 I className: 'fa fa-caret-down', style: {paddingLeft: 8}
-            if next_proposal
+
+              if @local.dropped_down
+                DIV className: 'proposal_navigation_dropdown', style: {width: 400, position: 'absolute', top: 38, paddingTop: 5},
+                  DIV style: {backgroundColor: color.header_bg, borderRadius: '4px'},
+                    DIV style: {backgroundColor: 'rgba(0,0,0,.2)', padding: '14px 0', borderRadius: '4px'},
+                      
+                      TABLE className: 'current_cluster', style: {width: '100%'}, 
+                        for other_proposal in this_proposal_cluster.proposals
+                          TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink,
+                            TD style: {textAlign: 'left', paddingLeft: 20},
+                              A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == proposal.id then 700 else 400},
+                                capitalize other_proposal.long_id.replace(/_/g, ' ')
+                              
+                            TD style: {position: 'relative'},
+                              if !other_proposal.your_opinion || !@data(other_proposal.your_opinion).published
+                                SPAN style: {fontWeight: 200, color: 'rgb(205,205,205)', fontSize: 21}, '?'
+                              else
+                                # make a small slider summary
+                                opinion = @data(other_proposal.your_opinion)
+                                face_size = 20 # height/width of the summary slider bar
+                                eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: color.proposal_header, position: 'absolute', top: 6 }
+                                mouth_style = {fontSize: 12, color: color.proposal_header, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
+                                crossbrowserTransformProperty mouth_style
+                                if opinion.stance_segment < 3
+                                  # frown!
+                                  mouth = '('
+                                else if opinion.stance_segment == 3
+                                  # confused!
+                                  mouth = '|'
+                                else
+                                  # pleased!
+                                  mouth = ')'
+
+                                DIV style: {borderBottom: "1px solid white", width: 100, position: 'relative', top: -5},
+
+                                  DIV {style: borderRadius: '50%', backgroundColor: 'white', width: face_size, height: face_size, position: 'absolute', top: -face_size / 2, marginLeft: -face_size / 2 , left: "#{100 * (-1 * opinion.stance + 1.0) / 2.0}%"},
+                                    DIV style: _.extend {}, eye_style, {left: 6} # left eye
+                                    DIV style: _.extend {}, eye_style, {left: face_size - 8} # right eye
+                                    DIV style: mouth_style, mouth
+
+
+                            TD style: {paddingRight: 20}
+
+                      DIV className: 'separator', style: {borderBottom: '1px dotted #dedede', width: '85%', margin: '28px auto 12px auto'}
+
+                      DIV className: 'other_clusters', 
+                        for cluster in proposals.clusters
+                          if proposal.cluster != cluster.name && cluster.proposals.length > 0
+                            do (cluster) =>
+                              DIV className: 'another_cluster', style: {padding: '0 50px', width: '100%', position: 'relative'}, onMouseEnter: (=> @local.show_cluster = cluster.name; save(@local)), onMouseLeave: (=> @mouseLeaveOtherCluster(cluster.name) ),
+                                SPAN style: {float: 'left', fontSize: 18, fontWeight: 400},
+                                  cluster.name
+                                I className: 'fa fa-caret-right', style: {float: 'right'}
+                                DIV style: {clear: 'both'}
+
+                                if @local.show_cluster == cluster.name
+                                  DIV style: {width: 200, backgroundColor: color.header_bg, borderRadius: '4px', position: 'absolute', left: 398, top: -12},                                  
+                                    UL className: 'other_proposal_list', style: {backgroundColor: 'rgba(0,0,0,.2)', borderRadius: '4px', padding: '8px 0' },
+                                      for other_proposal in cluster.proposals
+                                        LI style: {listStyle: 'none'},
+                                          A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {display: 'block', textAlign: 'left', padding: '2px 10px'},
+                                            capitalize other_proposal.long_id.replace(/_/g, ' ')
+                      
+                                  
+            if @local.next_proposal
               DIV className: 'next_proposal', 
                 "Next: "
-                A onClick: (=> window.app_router.navigate("/#{next_proposal.long_id}", {trigger: true})), 
-                  "#{capitalize(next_proposal.long_id.replace(/_/g, ' '))}"
-
+                A onClick: (=> window.app_router.navigate("/#{@local.next_proposal.long_id}", {trigger: true})), 
+                  "#{capitalize(@local.next_proposal.long_id.replace(/_/g, ' '))}"
 
       else 
         heading_style = { textAlign: 'center', minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, fontSize: 26, padding: '4px 90px' } # minwidth is for width consistency when dropping into fixed sticky header
@@ -421,6 +493,7 @@ StickyProposalHeading = ReactiveComponent
         A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', marginTop: 8, marginLeft: 16, fontWeight: 600}, 
           I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
           SPAN style: {fontSize: 15, paddingLeft: 6, color: '#777', verticalAlign: 'text-bottom'}, 'Home'
+
 
 
 ##
@@ -1957,17 +2030,6 @@ Auth = ReactiveComponent
 ProposalSummary = ReactiveComponent
   displayName: 'ProposalSummary'
 
-  # Handles router navigation for links so that a page reload doesn't happen
-  clickInternalLink : (event) ->
-    href = $(event.currentTarget).attr('href')
-
-    # Allow shift+click for new tabs, etc.
-    if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
-      event.preventDefault()
-      # Instruct Backbone to trigger routing events
-      window.app_router.navigate href, { trigger : true }
-      return false
-
   render : ->
     customer = @data('customer')
     color = @data('color')
@@ -1984,24 +2046,22 @@ ProposalSummary = ReactiveComponent
       if customer.identifier == 'livingvotersguide'
         TD className: 'summary_measure_designator', style: {width: 55, display: 'inline-block', fontSize: 15},
           if proposal.category && proposal.designator
-            A onClick: @clickInternalLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+            A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
               "#{proposal.category[0]}-#{proposal.designator}"
 
       TD className: 'summary_name', style: {width: 175, display: 'inline-block', fontSize: 18},
-        A onClick: @clickInternalLink, href: "/#{proposal.long_id}", style: {fontWeight: 500, color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+        A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {fontWeight: 500, color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
           capitalize(proposal.long_id.replace(/_/g, ' '))
       TD className: 'summary_decide', style: {width: 200, textAlign: 'center', display: 'inline-block'}, 
         if !proposal.your_opinion || !@data(proposal.your_opinion).published || @data(proposal.your_opinion).stance_segment == 3
           SPAN style: {fontWeight: 200, color: 'rgb(158,158,158)', fontSize: 21}, '?'
-        # else if @data(proposal.your_opinion).stance_segment == 3
-        #   SPAN style: {fontFamily: 'avenir', color: 'rgb(158,158,158)', fontSize: 18}, 'Neutral'
         else if @data(proposal.your_opinion).stance_segment < 3
           SPAN style: {position: 'relative', left: 14},
             IMG 
               className: 'summary_opinion_marker'
               src: "<%= asset_path 'no_x.svg' %>"
               style: {width: 24, position: 'absolute', left: -28}
-            SPAN style: {fontFamily: 'avenir', color: 'rgb(239,95,98)', fontSize: 18, fontWeight: 600}, 'No'
+            SPAN style: {color: 'rgb(239,95,98)', fontSize: 18, fontWeight: 600}, 'No'
         else
           SPAN style: {position: 'relative', left: 14},
             IMG 
@@ -2009,7 +2069,7 @@ ProposalSummary = ReactiveComponent
               src: "<%= asset_path 'yes_check.svg' %>"
               style: {width: 24, position: 'absolute', left: -28}
 
-            SPAN style: {fontFamily: 'avenir', color: 'rgb(166,204,70)', fontSize: 18, fontWeight: 600}, 'Yes'
+            SPAN style: {color: 'rgb(166,204,70)', fontSize: 18, fontWeight: 600}, 'Yes'
 
       TD className: 'summary_share', style: {width: 230, display: 'inline-block'},
         if proposal.top_point
@@ -2053,7 +2113,7 @@ Homepage = ReactiveComponent
   render : ->
     customer = @data('customer')
     color = @data('color')
-    viewable_proposals = @data('/proposals')
+    proposals = @data('/proposals')
 
     # Columns of the sticky header for the proposal list.
     if customer.identifier == 'livingvotersguide'
@@ -2078,8 +2138,8 @@ Homepage = ReactiveComponent
                 DIV style: {fontWeight: 300, fontSize: 18, textAlign: 'center', position: 'relative', top: -8},
                   col.details
 
-      if viewable_proposals.clusters
-        for cluster in viewable_proposals.clusters
+      if proposals.clusters
+        for cluster in proposals.clusters
           TABLE style: {borderLeft: '0px solid rgb(191, 192, 194)', margin: '35px auto', position: 'relative'},
             TR null,
               TH style: {textAlign: 'right', width: 115, padding: 8, paddingTop: 13, display: 'inline-block', verticalAlign: 'top', fontSize: 16, fontWeight: 200, position: 'absolute', left: -125},
@@ -2388,6 +2448,17 @@ Router = Backbone.Router.extend
 
     save(root)
       
+
+# Handles router navigation for links so that a page reload doesn't happen
+clickInternalLink = (event) ->
+  href = $(event.currentTarget).attr('href')
+
+  # Allow shift+click for new tabs, etc.
+  if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
+    event.preventDefault()
+    # Instruct Backbone to trigger routing events
+    window.app_router.navigate href, { trigger : true }
+    return false
 
 window.app_router = new Router()
 window.on_ajax_error = () ->

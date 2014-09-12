@@ -2074,7 +2074,7 @@ ProposalSummary = ReactiveComponent
       TD className: 'summary_share', style: {width: 230, display: 'inline-block'},
         if proposal.top_point
           DIV className: 'top_point community_point con', style : { width: 270, position: 'relative' },
-            Avatar tag: SPAN, key: proposal.top_point.user, className:"point_author_avatar", hide_face: proposal.top_point.hide_name
+            # Avatar tag: SPAN, key: proposal.top_point.user, className:"point_author_avatar", hide_face: proposal.top_point.hide_name
 
             DIV className:'point_content', style : { },
               IMG 
@@ -2082,7 +2082,7 @@ ProposalSummary = ReactiveComponent
                 src: "<%= asset_path 'community_point_mouth.png' %>"
 
               DIV className:'point_nutshell', style: {fontSize: 15},
-                "#{proposal.top_point.nutshell[0..20]}..."
+                "#{proposal.top_point.nutshell[0..30]}..."
 
 
 Homepage = ReactiveComponent

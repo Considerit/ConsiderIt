@@ -58,8 +58,10 @@
   position: relative
   top: 4px
 
-  &:hover
-    cursor: pointer
+  a 
+    color: white
+    &:hover
+      color: white
 
 
 .current_proposal
@@ -68,13 +70,24 @@
   border-radius: 6px
   margin-top: 3px
 
+  &:hover
+    cursor: pointer
+
   i 
     font-size: 30px
     line-height: 0px
     position: relative
     top: 2px
 
+.proposal_navigation_dropdown
+  a
+    font-size: 18px
+    font-weight: 400
 
+.current_cluster tr, .other_clusters .other_proposal_list li
+  &:hover
+    background-color: rgba(black, .1)
+    cursor: pointer
 
 /////////////////////
 // DESCRIPTION REGION

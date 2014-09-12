@@ -352,7 +352,7 @@ StickyProposalHeading = ReactiveComponent
       else 
         $header.stickyTopBottom
           placeholder: $el.find('.proposal_heading.placeholder')[0]
-          container: $el
+          container: $('body')
         @local.sticky_initialized = true
         save @local
 

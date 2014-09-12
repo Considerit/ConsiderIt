@@ -890,7 +890,7 @@ OpinionFilter = ReactiveComponent
 
   onSelectSegment : (segment) ->
     hist = @data('histogram')
-    if !segment or hist.selected_segment == segment
+    if !segment? || hist.selected_segment == segment
       # Deselect
       hist.selected_segment = null
       hist.selected_segment_isclicked = null

@@ -503,12 +503,7 @@ HistogramData = ReactiveComponent
   displayName: 'HistogramData'
 
   ##
-  # Split up opinions into segments. For now we'll keep three hashes: 
-  #   - all opinions
-  #   - high level segments (the seven segments, strong supporter, neutral, etc)
-  #   - small segments that represent individual columns in the histogram,
-  #     now that we do not have wide bars per se
-  
+  # Split up opinions into columns based on their stance.   
   render : ->
     ##
     # Size the avatars. Size of avatar shrinks proportional to 1/sqrt(num_opinions)
@@ -517,100 +512,58 @@ HistogramData = ReactiveComponent
     # we only need to recompute this data if the distribution of stances has changed
     last_computation_hash = JSON.stringify( _.map(opinions, (o) -> o.stance) )
     if @local.last_computation_hash != last_computation_hash
+
       avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, 
         Math.floor(BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (opinions.length + 1) / 10 )  )
 
-      # Calculate about how many columns of opinions to put on the histogram. 
-      columns_in_histogram = Math.floor(HISTOGRAM_WIDTH / avatar_size)
+      # Calculate the number of columns in the histogram. But we want to ensure that there
+      # are an _odd_ number of cols so that a neutral opinion falls into the exact 
+      # center of the histogram. To ensure this, we'll manipulate avatar_size. 
+      loop 
+        columns_in_histogram = Math.floor(HISTOGRAM_WIDTH / avatar_size)
+        break if columns_in_histogram % 2 == 1
+        avatar_size -= 1
 
-      max_slider_variance = 2.0 # Slider stances vary from -1.0 to 1.0. 
-
-      # Assign each column in the histogram to a segment. Each column is an 
-      # empty array which will eventually hold opinions.
-      segments = ( [] for segment in [0..6] )
-      for col in [0..columns_in_histogram]
-        segment = getStanceSegment(max_slider_variance * col / columns_in_histogram - 1)
-        segments[segment].push []
-
-      # ensure neutral segment has 3 columns
-      #segments[3].push([]) while segments[3].length < 3   
+      columns = ([] for col in [0..columns_in_histogram-1])
 
       # Assign each Opinion to a column
-      # This gets complicated because we treat the extremes and Neutral differently. 
-      #  - The number of columns in the extremes is variable, with the max number
-      #    of opinions per columns capped. Here we'll dynamically grow the number of 
-      #    cols in each extreme, subdividing the cols whenever they hit their max number. 
-      #  - There are three columns for Neutral. We distributed the opinions evenly 
-      #    across these three. 
-      #  - Opinions belonging to other places along the spectrum are mapped directly 
-      #    to the column associated with that stance.     
-      opinions_in_segment = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
-      max_opinions_in_column = Math.floor MAX_HISTOGRAM_HEIGHT / avatar_size
       for opinion in opinions
-        segment = getStanceSegment opinion.stance
+        column = Math.floor (opinion.stance + 1) / 2.0 * (columns_in_histogram - 1)
+        columns[column].push opinion
 
-        # If this is a Neutral opinion, fill up all three neutral cols equally
-        # if segment == 3
-        #   segments[3][opinions_in_segment[3] % 3].push opinion
+      # Spill out extremes into multiple columns. We'll cap the number of opinions
+      # in a column to max_opinions_in_column. We'll keep the number of extreme columns
+      # equal between supporters and opposers. 
+      max_opinions_in_column = Math.floor MAX_HISTOGRAM_HEIGHT / avatar_size
+      most_extreme_opinions = Math.max columns[0].length, columns[columns.length-1].length
+      if most_extreme_opinions > max_opinions_in_column
+        num_extreme_cols = Math.ceil most_extreme_opinions / max_opinions_in_column
 
-        # If this is an extreme opinion...
-        if segment in [0,6]
-          last_col_in_segment = segments[segment].length - 1
-          if segments[segment][last_col_in_segment].length == max_opinions_in_column - 1
-            segments[segment].push []
+        # split each extreme into num_extreme_cols. First supporters then opposers.
+        for extreme, idx in [columns[0], columns[columns.length - 1]]
+          for i in [0..num_extreme_cols - 2]
+            if extreme.length > max_opinions_in_column
+              opinions_for_new_col = extreme.splice(max_opinions_in_column, max_opinions_in_column)
+            else
+              opinions_for_new_col = []
 
-          segments[segment][last_col_in_segment].push opinion
+            if idx == 0 
+              columns.unshift opinions_for_new_col #add to beginning for supporters
+            else 
+              columns.push opinions_for_new_col #add to end for opposers
 
-        # If this opinion is somewhere else on the spectrum...
-        else
-          adjusted_stance = Math.abs(opinion.stance - stance_segment_boundaries[segment])
+      columns.reverse() #we're going from 1 <=> -1 for supporters <=> opposers
 
-          col_width = Math.abs( stance_segment_boundaries[segment + 1] - 
-            stance_segment_boundaries[segment])/segments[segment].length
-
-          segments[segment][segments[segment].length - Math.floor(adjusted_stance / col_width) - 1].push opinion
-
-        opinions_in_segment[segment] += 1
-
-      # make sure that the extreme segment with fewest opinions has as 
-      # many columns as the other extreme
-      if segments[0].length != segments[6].length
-        if segments[0].length > 
-           segments[6].length then [bigger, smaller] = [segments[0], segments[6]] else 
-                                   [bigger, smaller] = [segments[6], segments[0]]
-        
-        all_opinions_in_smaller = _.flatten(smaller)
-
-        smaller.push([]) while smaller.length < bigger.length
-
-        for column in smaller
-          column.pop() while column.length > 0
-
-        for opinion, idx in all_opinions_in_smaller
-          smaller[idx%smaller.length].push opinion
-
-        segments[6].reverse() # ensures that the extreme supporters segment grows 
-                              # in the same symmetric pattern as the extreme opposers
-
-
-      segments.reverse() #we're going from 6 <=> 0 for supporters <=> opposers
-
-      num_columns = _.flatten(_.values(segments), true).length
-
-
-      segment_data = @data()
-      segment_data.num_columns = num_columns
-      segment_data.segments = segments
-      segment_data.avatar_size = avatar_size
-      save segment_data
-
+      histogram_data = @data()
+      histogram_data.columns = columns
+      histogram_data.avatar_size = avatar_size
       @local.last_computation_hash = last_computation_hash
-      save @local
 
+      save histogram_data
+      save @local
 
     SPAN null #dummy DOM for React render 
   
-
 
 ##
 # Histogram
@@ -647,15 +600,14 @@ Histogram = ReactiveComponent
     selected_segment = @data('histogram').selected_segment
     users_to_highlight = @data('histogram').highlighted_users
 
-    segment_data = @data('histogramdata')
-    num_columns = segment_data.num_columns
-    segments = segment_data.segments
-    avatar_size = segment_data.avatar_size
+    histogram_data = @data('histogramdata')
+    columns = histogram_data.columns
+    num_columns = columns.length
+    avatar_size = histogram_data.avatar_size
 
     effective_histogram_width = num_columns * avatar_size
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2 #- avatar_size / 4
-    #make sure that the extreme segments are balanced
-    margin_adjustment -= avatar_size * (segments[0].length - segments[6].length) / 2 
+
 
     TABLE 
       className: 'histogram'
@@ -663,42 +615,38 @@ Histogram = ReactiveComponent
       # onMouseLeave: @onSelectSegment
       style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
         TR null, 
-          for bars, idx in segments
-            segment = 6 - idx
-            is_selected = selected_segment == segment
-            TD 
-              className:"histogram_segment #{if is_selected then 'is_selected' else 'not_selected'}"
-              key:segment
-              # onMouseEnter: @onSelectSegment
-              'data-segment':segment
-              style : { opacity: (if is_selected && !selected_segment? then '1' else '1') }
-            ,
-              TABLE null,
-                TR null,
-                  for bar, idx in bars
-                    TD key: idx , className:"histogram_bar", style: {width: avatar_size},
-                      for opinion in bar
-                        user = opinion.user
-                        Avatar 
-                          tag: SPAN, 
-                          key: user
-                          user: user
-                          hide_face: @root.proposal_mode == 'crafting'
-                          'data-segment':segment
-                          style:
-                            height: avatar_size
-                            width: avatar_size
-                            opacity: if users_to_highlight && 
-                              !_.contains(users_to_highlight, opinion.user) 
-                              then '.15' 
-                              else if selected_segment == null || is_selected 
-                              then '1.0'
-                              else '.15'
+          TD key: 'supporters', className: "histogram_segment_pole supporters", 
+            SPAN null, 'Supporters'
 
-              if segment == 6
-                DIV className:"histogram_segment_pole", 'Supporters'
-              else if segment == 0
-                DIV className:"histogram_segment_pole", 'Opposers'
+          for bar, idx in columns
+            segment = if bar.length > 0 then bar[0].stance_segment else -1
+            is_selected = selected_segment == segment
+
+            TD 
+              key: idx 
+              className: "histogram_bar #{if is_selected then 'is_selected' else 'not_selected'}"
+              style: {width: avatar_size, opacity: (if is_selected && !selected_segment? then '1' else '1')}
+            ,
+              for opinion in bar
+                user = opinion.user
+                Avatar 
+                  tag: SPAN, 
+                  key: user
+                  user: user
+                  hide_face: @root.proposal_mode == 'crafting'
+                  'data-segment':segment
+                  style:
+                    height: avatar_size
+                    width: avatar_size
+                    opacity: if users_to_highlight && 
+                      !_.contains(users_to_highlight, opinion.user) 
+                      then '.15' 
+                      else if selected_segment == null || is_selected 
+                      then '1.0'
+                      else '.15'
+
+          TD key: 'opposers', className: "histogram_segment_pole opposers", 
+            SPAN null, 'Opposers'
 
 ##
 # Slider
@@ -827,15 +775,15 @@ Slider = ReactiveComponent
 
 
     # slider triangles are the edge of the slider that extend sharply to the arbitrary sized extreme segments
-    slider_triangle_width = @data('histogramdata').segments[0].length * @data('histogramdata').avatar_size
-    triangle_width = 
-      if sticky
-      then 0 
-      else slider_triangle_width
+    # slider_triangle_width = @data('histogramdata').segments[0].length * @data('histogramdata').avatar_size
+    # triangle_width = 
+    #   if sticky
+    #   then 0 
+    #   else slider_triangle_width
 
-    slider_base_triangle_style = 
-      borderLeft: "#{triangle_width}px solid transparent"
-      borderRight: "#{triangle_width}px solid transparent"
+    # slider_base_triangle_style = 
+    #   borderLeft: "#{triangle_width}px solid transparent"
+    #   borderRight: "#{triangle_width}px solid transparent"
 
     # Keep feedback centered over handle, but keep within the bounds of the slider region 
     # when the slider is in an extreme position. 
@@ -1555,7 +1503,7 @@ Avatar = ReactiveComponent
   render : ->
     user = @data()
     @data(@local_key) # just to register a dependence
-    className = "#{@props.className} avatar"
+    className = "avatar #{if @props.className then @props.className else ''}"
 
     id = if @props.hide_face then "avatar-hidden" else "avatar-#{user.key.split('/')[2]}"
 

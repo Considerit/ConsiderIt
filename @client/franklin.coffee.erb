@@ -498,7 +498,7 @@ StickyProposalHeading = ReactiveComponent
 
 ##
 # HistogramData
-# Doesn't render anything. Memoizes computation of Histogram data. 
+# Doesn't render anything. Stores computed Histogram data. 
 HistogramData = ReactiveComponent
   displayName: 'HistogramData'
 
@@ -515,8 +515,8 @@ HistogramData = ReactiveComponent
     opinions = @data(@proposal).opinions || []
 
     # we only need to recompute this data if the distribution of stances has changed
-    memoize_hash = JSON.stringify( _.map(opinions, (o) -> o.stance) )
-    if @local.memoize_hash != memoize_hash
+    last_computation_hash = JSON.stringify( _.map(opinions, (o) -> o.stance) )
+    if @local.last_computation_hash != last_computation_hash
       avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, 
         Math.floor(BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (opinions.length + 1) / 10 )  )
 
@@ -604,7 +604,7 @@ HistogramData = ReactiveComponent
       segment_data.avatar_size = avatar_size
       save segment_data
 
-      @local.memoize_hash = memoize_hash
+      @local.last_computation_hash = last_computation_hash
       save @local
 
 

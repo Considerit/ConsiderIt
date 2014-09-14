@@ -1,113 +1,264 @@
-# require 'csv'
-# require 'pp'
+require 'csv'
+require 'pp'
 
-# namespace :lvg do
+year = "2014"
 
-#   task :add_zips_for_proposals => :environment do 
+# constructs a long_id from a data row
+def create_long_id(proposal_data)
+  long_id = proposal_data['topic'].gsub(' ', '_')
+  if proposal_data['category'] && proposal_data['designator']
+    long_id = "#{proposal_data['category'][0]}-#{proposal_data['designator']}_#{long_id}"
+  end
+  pp long_id
+end
 
-#     jurisdiction_to_proposals = {}
+# maps from considerit long_ids to maplight measure/candidate ids
+maplight_hash = {
+  'I-522_Require_labels_on_GMO_foods' => '117',
+  'I-517_Modify_initiative_processes' => '116'
+}
 
-#     CSV.foreach("lib/tasks/lvg/measures.csv", :headers => true) do |row|
-#       proposal = Proposal.find_by_long_id(row['long_id'])
-#       if !proposal
-#         throw 'Could not find proposal'
-#       end
-#       jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
-#       if jurisdiction == 'Statewide'
-#         proposal.add_tag 'type:statewide'
-#         proposal.add_tag "jurisdiction:State of Washington"
-#         proposal.add_seo_keyword 'Statewide'
-#         proposal.save
-#         next
-#       end
+MAPLIGHT_API_KEY = '1e6bae2f57efdf70d3bc198bd6b89869'
 
-#       if !(jurisdiction_to_proposals.has_key?(jurisdiction))
-#         jurisdiction_to_proposals[jurisdiction] = []
-#       end
+def fetchFromMaplight(url)
+  root = 'http://votersedge.org/services_open_api/'
+  url = "#{root}#{url}&apikey=#{MAPLIGHT_API_KEY}"
+  pp "Fetching #{url}"
+  results = ""
+  endpoint = open(url, :http_basic_authentication => ['beta', 'beta']) do |f|
+    f.each_line {|line| 
+      results = "#{results}#{line}" unless line[0] == '<'
+    }
+  end 
+  JSON.parse(results)
+end
 
-#       jurisdiction_to_proposals[jurisdiction].push proposal
-#     end
+def fetchAndParseMeasureFromMaplight(measure_id)
+  data = fetchFromMaplight "cvg.measure_v1.json?measure_id=#{measure_id}&data_type=all"
+  
+  funding_html = ""
+  endorsement_html = ""
+  editorial_html = ""
+  news_html = ""
 
-#     jurisdiction_to_zips = {}
-#     CSV.foreach("lib/tasks/lvg/jurisdictions.csv", :headers => true) do |row|
-#       jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
-#       if !jurisdiction_to_zips.has_key?(jurisdiction)
-#         jurisdiction_to_zips[jurisdiction] = []
-#       end
-#       jurisdiction_to_zips[jurisdiction].push row['zip']
-#     end
+  [ data['funding']['support'], data['funding']['oppose'] ].each_with_index do |funders, idx|
+    endorser_type = "The #{idx == 0 ? 'YES' : 'NO'} campaign has raised #{number_to_currency(funders['grand_total'])}"
+    funding_html += "<div class='endorser_group funders #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
 
-#     jurisdiction_to_proposals.each do |jurisdiction, proposals|
-#       jurisdiction = jurisdiction.split.map(&:capitalize).join(' ')
-#       zips = jurisdiction_to_zips[jurisdiction]
-#       if !jurisdiction_to_zips.has_key?(jurisdiction)
-#         pp "ERROR: jurisdiction #{jurisdiction} not found!...skipping"
-#         next
-#       end
-#       pp "For #{jurisdiction}, adding #{zips.length} zips to #{proposals.length} measures"
+    for funder in funders['items'][0..10]
+      funding_html += "<li><span class='funder_name'>#{funder['name']}</span><span class='funder_amount'>#{number_to_currency(funder['amount'])}</span></li>"
+    end
+    if funders['items'].length > 10
+      funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"
+    end
+    funding_html += "</ul></div>"
+  end
 
-#       # tags = zips.map{|z|"zip:#{z}"}.join(';')
+  [ data['endorsements']['support'], data['endorsements']['oppose'] ].each_with_index do |endorsers, idx|
+    endorser_type = idx == 0 ? 'This measure is endorsed by:' : 'This measure is opposed by:' 
+    endorsement_html += "<div class='endorser_group endorsements #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><p>"
+    for endorsement in endorsers
+      next if !endorsement
+      endorsement_html += "<a href='#{endorsement['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{endorsement['title']}</a>, "
+    end
+    endorsement_html = endorsement_html[0..endorsement_html.length-3]
+    endorsement_html += "</p></div>"
+  end
 
-#       proposals.each do |p|
-#         p.add_tag "type:local"
-#         p.add_tag "jurisdiction:#{jurisdiction}"
-#         p.add_seo_keyword jurisdiction
+  [ data['editorials']['support'], data['editorials']['oppose'] ].each_with_index do |editorials, idx|
+    endorser_type = idx == 0 ? 'Supporting this measure:' : 'Opposing this measure:' 
+    editorial_html += "<div class='endorser_group editorials #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
+    if editorials
+      for editorial in editorials
+        editorial_html += "<li><a href='#{editorial['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{editorial['headline']}</a>, #{editorial['outlet']}, #{editorial['date']}</li>"
+      end
+    end
+    editorial_html += "</ul></div>"
+  end
 
-#         zips.each do |zip|
-#           p.targettable = true
-#           p.add_tag "zip:#{zip}"
-#         end
-#         p.save
-
-#       end
-
-#     end
-
-#   end
-
-#   task :import_proposals => :environment do
-#     domains = {}
-#     measures = []
-
-#     CSV.foreach("lib/tasks/lvg/measures.csv", :headers => true) do |row|
-
-#       measure = {
-#         :account_id => 1, #TODO: remove, when moved into admin panel
-#         :user_id => 1, #TODO: make configurable
-#         :long_id => row['long_id'],
-#         :name => row['name'],
-#         :category => row['category'],
-#         :designator => row['designator'],
-#         :description => row['description'].encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ''),
-#         :published => true, #TODO: make configurable
-
-#         :additional_description1 => row.fetch('additional_description1', nil),
-#         :additional_description2 => row.fetch('additional_description2', nil),
-#         :additional_description3 => row.fetch('additional_description3', nil),
-#         :url1 => row.fetch('url1', nil),
-#         :url2 => row.fetch('url2', nil),
-#         :url3 => row.fetch('url3', nil),
-#         :url4 => row.fetch('url4', nil),
-
-#         :seo_title => row.fetch('seo_title', nil),
-#         :seo_description => row.fetch('seo_description', nil),
-#         :seo_keywords => row.fetch('seo_keywords', nil)
-#       }
-
-#       proposal = Proposal.find_by_long_id measure[:long_id]
-#       if !proposal
-#         proposal = Proposal.new measure
-#         proposal.save
-#         pp "Added #{row['name']}"
-#       else
-#         measure.delete :account_id
-#         proposal.update_attributes measure
-#         pp "Updated #{row['name']}"        
-#       end
-
-#     end
+  news_html += "<ul class='news'>"
+  stories = data['news']
+  stories.delete 'source'
+  for story in data['news'].values()
+    news_html += "<li><a href='#{story['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{story['headline']}</a>, #{story['outlet']}, #{story['date']}</li>"
+  end
+  news_html += "</ul>"
 
 
-#   end
-# end
+  description_fields = [
+    {
+      :group => "Who supports each side?",
+      :items => [{:label => 'Funding and endorsements', :html => "<div>#{funding_html}</div><div>#{endorsement_html}</div>"}, {:label => 'Editorials', :html => editorial_html}]
+    },
+    {
+      :group => "Media coverage",
+      :items => [{:label => 'News stories and debates', :html => news_html}]
+    }
+  ]
+
+  return [data['summary']['main_summary'], description_fields]
+
+end
+
+namespace :lvg do
+
+  task :import_proposals => :environment do
+    account = Account.find_by_identifier('livingvotersguide')
+
+    domains = {}
+    measures = []
+
+    CSV.foreach("lib/tasks/lvg/#{year}/measures.csv", :headers => true) do |row|
+      long_id = create_long_id row
+
+      description_fields = []    
+
+      explanatory_statement = row.fetch('explanatory statement', nil)
+      fiscal_impact = row.fetch('fiscal impact', nil)
+
+      if explanatory_statement || fiscal_impact
+        group = {
+          :group => "Provided by state of WA",
+          :items => []
+        }
+        state_data = [ [explanatory_statement, 'Explanatory statement by by Office of Attorney General'], \
+                       [fiscal_impact, 'Fiscal Impact Statement by Office of Financial Management']]
+        state_data.each do |field|
+          if field[0]
+            field[0] = field[0].encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+            group[:items].push({:label => field[1], :html => field[0]})
+          end
+        end
+        description_fields.push group
+      end
+
+      if additional_description = row.fetch('additional_description', nil)
+        description_fields = [{:label => 'Additional information', :html => additional_description.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')}] 
+      end
+
+      description = row['description'].encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+      if maplight_hash.has_key? long_id
+        description, more_description_fields = fetchAndParseMeasureFromMaplight maplight_hash[long_id]
+        description_fields += more_description_fields        
+        # NOTE: preferring Maplight's description over our own. 
+      end
+
+      description_fields = nil if description_fields == [] 
+
+      jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
+
+      category = row['category']
+      if jurisdiction == 'Statewide'
+        if category == 'Advisory Measure'
+          cluster = 'Advisory votes'
+        else
+          cluster = 'Statewide measures'
+        end
+
+      else 
+        cluster = jurisdiction
+      end
+
+      measure = {
+        :account_id => account.id,
+        :user_id => 1, #TODO: make configurable
+        :long_id => long_id,
+        :name => row['topic'],
+        :category => category,
+        :designator => row['designator'],
+        :description => description,
+        :published => true, #TODO: make configurable
+
+        :cluster => cluster,
+        :description_fields => JSON.dump(description_fields),
+
+        :url1 => row.fetch('url', nil),
+
+        :seo_title => row.fetch('seo_title', nil),
+        :seo_description => row.fetch('seo_description', nil),
+        :seo_keywords => row.fetch('seo_keywords', nil)
+      }
+
+      proposal = Proposal.find_by_long_id long_id
+      if !proposal
+        proposal = Proposal.new measure
+        proposal.save
+
+        pp "Added #{row['topic']}"
+      else
+        measure.delete :account_id
+        proposal.update_attributes measure
+        pp "Updated #{row['topic']}"        
+      end
+
+    end
+
+  end
+
+
+  task :add_zips_for_proposals => :environment do 
+
+    jurisdiction_to_proposals = {}
+
+    CSV.foreach("lib/tasks/lvg/#{year}/measures.csv", :headers => true) do |row|
+      proposal = Proposal.find_by_long_id(create_long_id(row))
+      if !proposal
+        throw 'Could not find proposal'
+      end
+      # jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
+
+      # proposal.cluster = jurisdiction
+      proposal.save
+
+      # if jurisdiction == 'Statewide'
+      #   proposal.add_tag 'type:statewide'
+      #   proposal.add_tag "jurisdiction:State of Washington"
+      #   proposal.add_seo_keyword 'Statewide'
+      #   proposal.save
+      #   next
+      # end
+
+      if jurisdiction != 'Statewide' #everyone has access to these...
+        if !(jurisdiction_to_proposals.has_key?(jurisdiction))
+          jurisdiction_to_proposals[jurisdiction] = []
+        end
+        jurisdiction_to_proposals[jurisdiction].push proposal
+      end
+    end
+
+    jurisdiction_to_zips = {}
+    CSV.foreach("lib/tasks/lvg/#{year}/jurisdictions.csv", :headers => true) do |row|
+      jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
+      if !jurisdiction_to_zips.has_key?(jurisdiction)
+        jurisdiction_to_zips[jurisdiction] = []
+      end
+      jurisdiction_to_zips[jurisdiction].push row['zip']
+    end
+
+    jurisdiction_to_proposals.each do |jurisdiction, proposals|
+      jurisdiction = jurisdiction.split.map(&:capitalize).join(' ')
+      zips = jurisdiction_to_zips[jurisdiction]
+      if !jurisdiction_to_zips.has_key?(jurisdiction)
+        pp "ERROR: jurisdiction #{jurisdiction} not found!...skipping"
+        next
+      end
+      pp "For #{jurisdiction}, adding #{zips.length} zips to #{proposals.length} measures"
+
+      # proposals.each do |p|
+      #   p.add_tag "type:local"
+      #   p.add_tag "jurisdiction:#{jurisdiction}"
+      #   p.add_seo_keyword jurisdiction
+
+      #   zips.each do |zip|
+      #     p.targettable = true
+      #     p.add_tag "zip:#{zip}"
+      #   end
+      #   p.save
+
+      # end
+
+    end
+
+  end  
+end
 

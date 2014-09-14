@@ -143,6 +143,10 @@ namespace :lvg do
         # NOTE: preferring Maplight's description over our own. 
       end
 
+      if row.fetch('url', nil)
+        description += " Read the <a href='#{row['url']}' target='_blank'>full text</a>."
+      end
+
       description_fields = nil if description_fields == [] 
 
       jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')

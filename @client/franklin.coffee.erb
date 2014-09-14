@@ -380,7 +380,7 @@ StickyProposalHeading = ReactiveComponent
     proposal_short = (proposal) -> 
       prefix = ""
       if proposal.designator && proposal.category
-        prefix = "#{proposal.category[0]}-#{proposal.designator}: "
+        prefix = "#{proposal.category[0]}-#{proposal.designator} "
       "#{prefix}#{proposal.name}?"
     
     DIV null, 
@@ -416,7 +416,7 @@ StickyProposalHeading = ReactiveComponent
                 I className: 'fa fa-caret-down', style: {paddingLeft: 8}
 
               if @local.dropped_down
-                DIV className: 'proposal_navigation_dropdown', style: {width: 400, position: 'absolute', top: 38, paddingTop: 5},
+                DIV className: 'proposal_navigation_dropdown', style: {width: 500, position: 'absolute', top: 38, paddingTop: 5},
                   DIV style: {backgroundColor: color.header_bg, borderRadius: '4px'},
                     DIV style: {backgroundColor: 'rgba(0,0,0,.2)', padding: '14px 0', borderRadius: '4px'},
                       
@@ -470,7 +470,7 @@ StickyProposalHeading = ReactiveComponent
                                 DIV style: {clear: 'both'}
 
                                 if @local.show_cluster == cluster.name
-                                  DIV style: {width: 200, backgroundColor: color.header_bg, borderRadius: '4px', position: 'absolute', left: 398, top: -12},                                  
+                                  DIV style: {width: 300, backgroundColor: color.header_bg, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
                                     UL className: 'other_proposal_list', style: {backgroundColor: 'rgba(0,0,0,.2)', borderRadius: '4px', padding: '8px 0' },
                                       for other_proposal in cluster.proposals
                                         LI style: {listStyle: 'none'},
@@ -482,7 +482,7 @@ StickyProposalHeading = ReactiveComponent
               DIV className: 'next_proposal', 
                 "Next: "
                 A onClick: (=> window.app_router.navigate("/#{@local.next_proposal.long_id}", {trigger: true})), 
-                  proposal_short @local.next_proposal
+                  @local.next_proposal.name
 
       else 
         heading_style = { textAlign: 'center', minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, fontSize: 26, padding: '4px 90px' } # minwidth is for width consistency when dropping into fixed sticky header

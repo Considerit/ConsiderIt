@@ -42,14 +42,17 @@ def fetchAndParseMeasureFromMaplight(measure_id)
   news_html = ""
 
   [ data['funding']['support'], data['funding']['oppose'] ].each_with_index do |funders, idx|
-    endorser_type = "The #{idx == 0 ? 'YES' : 'NO'} campaign has raised #{number_to_currency(funders['grand_total'])}"
+    endorser_type = "Donations in #{idx == 0 ? 'Support' : 'Opposition'} <span class='total_money_raised'>#{number_to_currency(funders['grand_total'])}</span>"
     funding_html += "<div class='endorser_group funders #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
-
-    for funder in funders['items'][0..10]
-      funding_html += "<li><span class='funder_name'>#{funder['name']}</span><span class='funder_amount'>#{number_to_currency(funder['amount'])}</span></li>"
-    end
-    if funders['items'].length > 10
-      funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"
+    if funders['items'].length > 0
+      for funder in funders['items'][0..10]
+        funding_html += "<li><span class='funder_name'>#{funder['name'].split.map(&:capitalize).join(' ').gsub('Llc', 'LLC')}</span><span class='funder_amount'>#{number_to_currency(funder['amount'])}</span></li>"
+      end
+      if funders['items'].length > 10
+        funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"
+      end
+    else
+      funding_html += "<li style='font-style: italic'>No funders yet</li>"
     end
     funding_html += "</ul></div>"
   end
@@ -57,21 +60,27 @@ def fetchAndParseMeasureFromMaplight(measure_id)
   [ data['endorsements']['support'], data['endorsements']['oppose'] ].each_with_index do |endorsers, idx|
     endorser_type = idx == 0 ? 'This measure is endorsed by:' : 'This measure is opposed by:' 
     endorsement_html += "<div class='endorser_group endorsements #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><p>"
-    for endorsement in endorsers
-      next if !endorsement
-      endorsement_html += "<a href='#{endorsement['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{endorsement['title']}</a>, "
+    
+    if endorsers.length == 0 || endorsers == [nil]
+      endorsement_html += "<span style='font-style: italic'>No endorsers yet</span>"
+    else
+      for endorsement in endorsers
+        endorsement_html += "<a href='#{endorsement['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{endorsement['title']}</a>, "
+      end
+      endorsement_html = endorsement_html[0..endorsement_html.length-3]
     end
-    endorsement_html = endorsement_html[0..endorsement_html.length-3]
     endorsement_html += "</p></div>"
   end
 
   [ data['editorials']['support'], data['editorials']['oppose'] ].each_with_index do |editorials, idx|
     endorser_type = idx == 0 ? 'Supporting this measure:' : 'Opposing this measure:' 
     editorial_html += "<div class='endorser_group editorials #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
-    if editorials
+    if (editorials && editorials.length > 0)
       for editorial in editorials
-        editorial_html += "<li><a href='#{editorial['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{editorial['headline']}</a>, #{editorial['outlet']}, #{editorial['date']}</li>"
+        editorial_html += "<li><a href='#{editorial['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{editorial['headline']}</a><br>#{editorial['outlet']}, #{editorial['date']}</li>"
       end
+    else
+      editorial_html += "<li style='font-style: italic'>None written yet</li>"
     end
     editorial_html += "</ul></div>"
   end
@@ -79,8 +88,12 @@ def fetchAndParseMeasureFromMaplight(measure_id)
   news_html += "<ul class='news'>"
   stories = data['news']
   stories.delete 'source'
-  for story in data['news'].values()
-    news_html += "<li><a href='#{story['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{story['headline']}</a>, #{story['outlet']}, #{story['date']}</li>"
+  if data['news'].values().length > 0
+    for story in data['news'].values()
+      news_html += "<li><a href='#{story['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{story['headline']}</a><br>#{story['outlet']}, #{story['date']}</li>"
+    end
+  else
+    news_html += "<li style='font-style: italic'>No news items yet</li>"
   end
   news_html += "</ul>"
 

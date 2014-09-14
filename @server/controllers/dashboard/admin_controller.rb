@@ -113,7 +113,7 @@ class Dashboard::AdminController < Dashboard::DashboardController
       :user_id => params[:account]["user_id"],
     }
 
-    if current_tenant.theme == 'lvg' && params[:account].has_key?(:csv_local) && params[:account][:csv_local]
+    if current_tenant.identifier == 'livingvotersguide' && params[:account].has_key?(:csv_local) && params[:account][:csv_local]
       result.update Proposal.import_jurisdictions params[:account][:csv], params[:account][:csv_local]
     end
 

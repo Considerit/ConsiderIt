@@ -377,6 +377,11 @@ StickyProposalHeading = ReactiveComponent
     # deep thought. Right now we'll just show the nav bar if the proposal belongs to a group
     use_navigation_bar = proposal.cluster 
     
+    proposal_short = (proposal) -> 
+      prefix = ""
+      if proposal.designator && proposal.category
+        prefix = "#{proposal.category[0]}-#{proposal.designator}: "
+      "#{prefix}#{proposal.name}?"
     
     DIV null, 
       if use_navigation_bar
@@ -407,7 +412,7 @@ StickyProposalHeading = ReactiveComponent
             DIV className: 'proposal_navigation_menu', onMouseEnter: (=> @local.dropped_down = true; save(@local)), onMouseLeave: (=> @local.dropped_down = false; save(@local)), 
 
               DIV className: 'current_proposal', style: {backgroundColor: 'rgba(0,0,0,.2)'},
-                capitalize( proposal.long_id.replace(/_/g, ' ') )
+                proposal_short proposal
                 I className: 'fa fa-caret-down', style: {paddingLeft: 8}
 
               if @local.dropped_down
@@ -420,7 +425,7 @@ StickyProposalHeading = ReactiveComponent
                           TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink,
                             TD style: {textAlign: 'left', paddingLeft: 20},
                               A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == proposal.id then 700 else 400},
-                                capitalize other_proposal.long_id.replace(/_/g, ' ')
+                                proposal_short other_proposal
                               
                             TD style: {position: 'relative'},
                               if !other_proposal.your_opinion || !@data(other_proposal.your_opinion).published
@@ -470,14 +475,14 @@ StickyProposalHeading = ReactiveComponent
                                       for other_proposal in cluster.proposals
                                         LI style: {listStyle: 'none'},
                                           A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {display: 'block', textAlign: 'left', padding: '2px 10px'},
-                                            capitalize other_proposal.long_id.replace(/_/g, ' ')
+                                            proposal_short other_proposal
                       
                                   
             if @local.next_proposal
               DIV className: 'next_proposal', 
                 "Next: "
                 A onClick: (=> window.app_router.navigate("/#{@local.next_proposal.long_id}", {trigger: true})), 
-                  "#{capitalize(@local.next_proposal.long_id.replace(/_/g, ' '))}"
+                  proposal_short @local.next_proposal
 
       else 
         heading_style = { textAlign: 'center', minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, fontSize: 26, padding: '4px 90px' } # minwidth is for width consistency when dropping into fixed sticky header
@@ -1999,7 +2004,7 @@ ProposalSummary = ReactiveComponent
 
       TD className: 'summary_name', style: {width: 175, display: 'inline-block', fontSize: 18},
         A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {fontWeight: 500, color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
-          capitalize(proposal.long_id.replace(/_/g, ' '))
+          proposal.name
       TD className: 'summary_decide', style: {width: 200, textAlign: 'center', display: 'inline-block'}, 
         if !proposal.your_opinion || !@data(proposal.your_opinion).published || @data(proposal.your_opinion).stance_segment == 3
           SPAN style: {fontWeight: 200, color: 'rgb(158,158,158)', fontSize: 21}, '?'

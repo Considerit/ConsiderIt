@@ -1,13 +1,13 @@
 require 'open-uri'
 include ActionView::Helpers::NumberHelper
 
-API_KEY = '1e6bae2f57efdf70d3bc198bd6b89869'
+MAPLIGHT_API_KEY = '1e6bae2f57efdf70d3bc198bd6b89869'
 
 namespace :lvg do
 
   def fetchFromMaplight(url)
     root = 'http://votersedge.org/services_open_api/'
-    url = "#{root}#{url}&apikey=#{API_KEY}"
+    url = "#{root}#{url}&apikey=#{MAPLIGHT_API_KEY}"
     pp "Fetching #{url}"
     results = ""
     endpoint = open(url, :http_basic_authentication => ['beta', 'beta']) do |f|

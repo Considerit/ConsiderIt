@@ -42,11 +42,11 @@ def fetchAndParseMeasureFromMaplight(measure_id)
   news_html = ""
 
   [ data['funding']['support'], data['funding']['oppose'] ].each_with_index do |funders, idx|
-    endorser_type = "Donations in #{idx == 0 ? 'Support' : 'Opposition'} <span class='total_money_raised'>#{number_to_currency(funders['grand_total'])}</span>"
+    endorser_type = "Donations in #{idx == 0 ? 'Support' : 'Opposition'} <span class='total_money_raised'>#{number_to_currency(funders['grand_total'], :precision => 0)}</span>"
     funding_html += "<div class='endorser_group funders #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
     if funders['items'].length > 0
       for funder in funders['items'][0..10]
-        funding_html += "<li><span class='funder_name'>#{funder['name'].split.map(&:capitalize).join(' ').gsub('Llc', 'LLC')}</span><span class='funder_amount'>#{number_to_currency(funder['amount'])}</span></li>"
+        funding_html += "<li><span class='funder_name'>#{funder['name'].split.map(&:capitalize).join(' ').gsub('Llc', 'LLC')}</span><span class='funder_amount'>#{number_to_currency(funder['amount'], :precision => 0)}</span></li>"
       end
       if funders['items'].length > 10
         funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"

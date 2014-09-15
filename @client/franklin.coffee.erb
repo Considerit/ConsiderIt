@@ -2149,8 +2149,8 @@ Header = ReactiveComponent
           A 'data-action': 'logout', onClick: @logout, 'logout'
 
 
-      # We'll only show the extended header on the homepage
-      if @root.page_name == 'homepage'
+      # We'll only show the extended header on certain pages
+      if @root.page_name in ['homepage', 'about']
         # Define all the customer-specific styles for non-repeated elements directly. 
         # This lets us iterate quicker and minimize where customer specific code lives.
         switch customer.identifier
@@ -2165,7 +2165,7 @@ Header = ReactiveComponent
             DIV null,
               DIV style: {backgroundColor: color.background, height: 88, width: '100%'}
               DIV style: {textAlign: 'center', color: 'white', paddingTop: 85, paddingBottom: 26}, 
-                A href: '/about', 
+                A href: (if @root.page_name == 'about' then '/' else '/about'), 
                   IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.svg' %>", style: logo_style 
                 DIV className: 'tagline', style: {fontSize: 25, fontWeight: 'bold'},
                   'Online Intelligence for Washington Voters'
@@ -2173,6 +2173,12 @@ Header = ReactiveComponent
                   'This guide improves with your participation. '
                   A className: 'call_to_action', style: {textDecoration: 'underline', color: 'white'}, 'Join the conversation'
                   '!'
+      if @root.page_name == 'about'
+        # TODO: we need a way of knowing whether this subdomain has a homepage or not
+        if customer.identifier == 'livingvotersguide'
+          A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', marginTop: 8, marginLeft: 16, fontWeight: 600}, 
+            I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
+            SPAN style: {fontSize: 15, paddingLeft: 6, color: '#777', verticalAlign: 'text-bottom'}, 'Home'
 
 
       DIV style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if @root.server_error then 'block' else 'none'},
@@ -2225,6 +2231,33 @@ Footer = ReactiveComponent
           'Bug to report? '
           A href: "mailto:admin@consider.it", 'Email us'
 
+About = ReactiveComponent
+  displayName: 'About'
+
+  componentDidMount : -> @setSize()  #REACT iframes don't support onLoad...
+  componentDidUpdate : -> @setSize()
+
+  setSize : -> 
+    $el = $(@getDOMNode())
+    console.log $el.prop('tagName').toLowerCase()
+    if $el.prop('tagName').toLowerCase() == 'iframe'
+      iframe = $el[0]
+      _.delay ->
+        try 
+          iframe.height = iframe.contentWindow.document.body.scrollHeight + "px"
+        catch 
+          iframe.height = "2000px"
+          console.error 'Couldn\'t set about page iframe height because of http/https mismatch. Should work in production.'
+      , 1000
+
+  render : -> 
+    about_page = @data('/page/about')
+    customer = @data('customer') #todo: make the customer a server-side object
+    if !customer.about_page_url
+      DIV null, 'No about page defined'
+    else
+      IFRAME src: customer.about_page_url, width: PAGE_WIDTH, style: {display: 'block', margin: 'auto'}
+
 
 Root = ReactiveComponent
   displayName: 'Root'
@@ -2244,6 +2277,8 @@ Root = ReactiveComponent
     # Second, construct the proper url
     if root.page_name == 'homepage' 
       url = ''
+    else if root.page_name == 'about'
+      url = 'about'
     else #if we're rendering a proposal...
       url = window.app_router.toFragment root.page_name, query_parameters
 
@@ -2266,6 +2301,7 @@ Page = ReactiveComponent
     fetchAvatars()
 
   render: ->
+
     color = @data('color')
 
     DIV style: {backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
@@ -2275,6 +2311,8 @@ Page = ReactiveComponent
           switch @root.page_name
             when 'homepage'
               Homepage key: @page.key
+            when 'about'
+              About()
             else 
               Proposal key: @page.proposal.key
       Footer()
@@ -2378,6 +2416,7 @@ Router = Backbone.Router.extend
   routes :
     ":proposal(/)": "proposal"
     "(/)" : "homepage"
+    "about(/)" : "about"
 
   proposal : (long_id, params) ->
     root = fetch('root')
@@ -2400,6 +2439,13 @@ Router = Backbone.Router.extend
     root.proposal_mode = null
 
     save(root)
+
+  about : (params) ->
+    root = fetch('root')
+    root.page_name = 'about'
+    root.proposal_mode = null
+    save(root)
+
       
 
 # Handles router navigation for links so that a page reload doesn't happen

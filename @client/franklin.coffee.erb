@@ -2151,15 +2151,20 @@ Header = ReactiveComponent
 
       DIV null, 
         # We'll only show the extended header on certain pages
-        if @root.page_name in ['homepage', 'about']
+        if @root.page_name in ['homepage', 'about'] || customer.identifier in ['cityoftigard', 'ihub']
           # Define all the customer-specific styles for non-repeated elements directly. 
           # This lets us iterate quicker and minimize where customer specific code lives.
           switch customer.identifier
             when 'cityoftigard'
-              logo_style = {height: '117px', position: 'absolute', bottom: '-79px', zIndex: 999999, backgroundColor: 'white', borderRight: '2px solid white'}
+              logo_style = {height: 117, position: 'absolute', bottom: '-79px', zIndex: 999999, backgroundColor: 'white', borderRight: '2px solid white'}
               DIV style: {height: 38},
                 A href: 'http://www.tigard-or.gov/',
                   IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
+            when 'ihub'
+              logo_style = {height: 42, position: 'absolute', bottom: 4, zIndex: 999999, left: 8}
+              DIV style: {height: 50},
+                A href: 'http://disruptingmedicine.org/about-the-innovation-hub/',
+                  IMG className: 'logo', src: "<%= asset_path 'ihub/logo.png' %>", style: logo_style 
 
             when 'livingvotersguide'
               logo_style = {width: 150, position: 'absolute', top: -158, left: '50%', marginLeft: -75, zIndex: 1, top: 14}
@@ -2369,6 +2374,8 @@ Colors = ReactiveComponent
         when 'cityoftigard'
           color.header_bg =  color.proposal_header = '#253967'
           #color.proposal_header = '#46A046'
+        when 'ihub'
+          color.header_bg =  color.proposal_header = "rgb(205,205,205)"
 
       save color
 

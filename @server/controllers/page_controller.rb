@@ -9,6 +9,10 @@ class PageController < ApplicationController
         # proposals: Proposal.summaries(), 
         users: get_all_user_data()
       } 
+      result['your_opinions'] = current_user.opinions.map {|o| o.as_json}
+
+    when 'about'
+      result = {} # don't need anything special, just the customer object with the about page url
 
     else # if proposal
 
@@ -21,10 +25,10 @@ class PageController < ApplicationController
 
       result = proposal.full_data(can?(:manage, proposal))
       result['users'] = get_all_user_data()
+      result['your_opinions'] = current_user.opinions.map {|o| o.as_json}
 
     end
 
-    result['your_opinions'] = current_user.opinions.map {|o| o.as_json}
 
     result['customer'] = current_tenant
     result['key'] = "/page/#{params[:id]}"
@@ -33,10 +37,6 @@ class PageController < ApplicationController
 
   private
 
-  # TODO: Not satisfied with this code. How should these requests be filled? 
-  #       proposal.full_data returns proposal data that is also 
-  #       included in get_proposal_summaries. It also returns your_opinion, which is returned in
-  #       your_opinions _if_ it is already published.
   def get_all_user_data
     users = ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id} AND (registration_complete=true OR id=#{current_user.id})")
     users = users.as_json

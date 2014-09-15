@@ -1997,12 +1997,12 @@ ProposalSummary = ReactiveComponent
       onClick: (=> window.app_router.navigate("/#{proposal.long_id}", {trigger: true}))              
     ,
       if customer.identifier == 'livingvotersguide'
-        TD className: 'summary_measure_designator', style: {width: 45, display: 'inline-block', fontSize: 15},
+        TD className: 'summary_measure_designator', style: {width: 50, display: 'inline-block', fontSize: 15, verticalAlign: 'top', paddingTop: 6},
           if proposal.category && proposal.designator
             A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
               "#{proposal.category[0]}-#{proposal.designator}"
 
-      TD className: 'summary_name', style: {width: 260, display: 'inline-block', fontSize: 18},
+      TD className: 'summary_name', style: {width: 255, display: 'inline-block', fontSize: 18},
         A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {fontWeight: 500, color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
           proposal.name
       TD className: 'summary_decide', style: {width: 200, textAlign: 'center', display: 'inline-block'}, 

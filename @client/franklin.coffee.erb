@@ -352,7 +352,7 @@ StickyProposalHeading = ReactiveComponent
       else 
         $header.stickyTopBottom
           placeholder: $el.find('.proposal_heading.placeholder')[0]
-          container: $('body')
+          container: $el.parents('.proposal')
         @local.sticky_initialized = true
         save @local
 
@@ -2156,10 +2156,12 @@ Header = ReactiveComponent
           # This lets us iterate quicker and minimize where customer specific code lives.
           switch customer.identifier
             when 'cityoftigard'
-              logo_style = {height: 117, position: 'absolute', bottom: '-79px', zIndex: 999999, backgroundColor: 'white', borderRight: '2px solid white'}
-              DIV style: {height: 38},
-                A href: 'http://www.tigard-or.gov/',
-                  IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
+              logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
+              DIV null,
+                DIV style: {height: 38},
+                  A href: 'http://www.tigard-or.gov/', style: {position: 'absolute', top:0, zIndex: 999999},
+                    IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
+                  
             # when 'ihub'
             #   logo_style = {height: 42, position: 'absolute', bottom: 4, zIndex: 999999, left: 8}
             #   DIV style: {height: 50},
@@ -2372,10 +2374,10 @@ Colors = ReactiveComponent
           color.background = 'rgb(255,254,245)'
           color.link_hover_color = 'rgb(118,148,41)'
         when 'cityoftigard'
-          color.header_bg =  color.proposal_header = '#253967'
-          #color.proposal_header = '#46A046'
+          color.header_bg =  '#253967'
+          color.proposal_header = '#46A046'
         when 'ihub'
-          color.header_bg =  color.proposal_header = "rgb(205,205,205)"
+          color.header_bg =  color.proposal_header = "rgb(150,150,150)"
 
       save color
 

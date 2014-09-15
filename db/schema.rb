@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140909041312) do
+ActiveRecord::Schema.define(version: 20140915155758) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -66,6 +66,7 @@ ActiveRecord::Schema.define(version: 20140909041312) do
     t.boolean  "enable_hibernation",                       default: false
     t.boolean  "enable_sharing",                           default: false
     t.string   "hibernation_message"
+    t.string   "about_page_url"
   end
 
   add_index "accounts", ["identifier"], name: "by_identifier", length: {"identifier"=>10}, using: :btree

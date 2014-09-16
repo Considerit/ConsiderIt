@@ -197,7 +197,7 @@ namespace :lvg do
       }
 
       #proposal = Proposal.find_by_long_id long_id
-      proposal = Proposal.where(:designator => measure[:designator], :category => category).first
+      proposal = Proposal.where(:designator => measure[:designator], :category => category, :cluster => cluster).first
       if !proposal
         proposal = Proposal.new measure
         proposal.save

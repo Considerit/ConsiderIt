@@ -4,7 +4,7 @@
     // Public API
     var cache = {}
     function fetch(url, defaults) {
-        if (window.watch && watch(url)) console.trace()
+        //if (window.watch && watch(url)) console.trace()
 
         window.record_dependence && record_dependence(url)
 

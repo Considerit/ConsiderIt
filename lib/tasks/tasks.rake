@@ -9,19 +9,19 @@ namespace :cache do
     end    
   end
 
-  task :proposals => :environment do
-    begin
-      Proposal.update_scores
-      Rails.logger.info "Updated proposal scores"
-    rescue
-      Rails.logger.info "Could not update proposal scores"
-    end
-  end
+  # task :proposals => :environment do
+  #   begin
+  #     Proposal.update_scores
+  #     Rails.logger.info "Updated proposal scores"
+  #   rescue
+  #     Rails.logger.info "Could not update proposal scores"
+  #   end
+  # end
 
-  task :users => :environment do
-    # compute influence score
-    User.update_user_metrics()
-  end
+  # task :users => :environment do
+  #   # compute influence score
+  #   User.update_user_metrics()
+  # end
 
   task :avatars => :environment do 
     beginning_time = Time.now
@@ -71,7 +71,9 @@ namespace :cache do
   end
 end
 
-task :compute_metrics => ["cache:points", "cache:proposals", "cache:users"]
+#task :compute_metrics => ["cache:points", "cache:proposals", "cache:users"]
+
+task :compute_metrics => ["cache:points"]
 
 namespace :alerts do
   task :check_moderation => :environment do

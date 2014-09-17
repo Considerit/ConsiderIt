@@ -2177,7 +2177,7 @@ Header = ReactiveComponent
               DIV null,
                 DIV style: {backgroundColor: color.background, height: 88, width: '100%'}
                 DIV style: {textAlign: 'center', color: 'white', paddingTop: 85, paddingBottom: 26}, 
-                  A href: (if @root.page_name == 'about' then '/' else '/about'), 
+                  A href: (if @root.page_name == 'about' then '/' else '/about'), onClick: clickInternalLink, 
                     IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.svg' %>", style: logo_style 
                   DIV className: 'tagline', style: {fontSize: 25, fontWeight: 'bold'},
                     'Online Intelligence for Washington Voters'
@@ -2215,7 +2215,7 @@ Footer = ReactiveComponent
               ' and '
               SPAN style: {fontWeight: 600}, 'for the people'
               ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and share your opinions. We believe that sharing our collective wisdom leads to making wiser decisions together. '
-              A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', 'Learn more'
+              A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', onClick: clickInternalLink, 'Learn more'
               '.'
 
             DIV style: {marginTop: 20},

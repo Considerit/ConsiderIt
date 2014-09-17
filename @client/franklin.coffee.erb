@@ -2177,7 +2177,7 @@ Header = ReactiveComponent
               DIV null,
                 DIV style: {backgroundColor: color.background, height: 88, width: '100%'}
                 DIV style: {textAlign: 'center', color: 'white', paddingTop: 85, paddingBottom: 26}, 
-                  A href: (if @root.page_name == 'about' then '/' else '/about'), 
+                  A href: (if @root.page_name == 'about' then '/' else '/about'), onClick: clickInternalLink, 
                     IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.svg' %>", style: logo_style 
                   DIV className: 'tagline', style: {fontSize: 25, fontWeight: 'bold'},
                     'Online Intelligence for Washington Voters'
@@ -2215,8 +2215,16 @@ Footer = ReactiveComponent
               ' and '
               SPAN style: {fontWeight: 600}, 'for the people'
               ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and share your opinions. We believe that sharing our collective wisdom leads to making wiser decisions together. '
-              A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', 'Learn more'
+              A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', onClick: clickInternalLink, 'Learn more'
               '.'
+
+            DIV style: {marginTop: 20},
+              SPAN style: {}, 
+                IFRAME style: {border: 'none', overflow: 'hidden', width: 90, height: 21}, src: "//www.facebook.com/plugins/like.php?href=http://www.facebook.com/pages/Living-Voters-Guide/157151824312366&send=false&layout=button_count&width=450&show_faces=false&action=like&colorscheme=light&font=lucida+grande&height=21", scrolling: "no", frameborder: "0", allowTransparency: "true"
+              SPAN style: {},
+                IFRAME src: "https://platform.twitter.com/widgets/tweet_button.1410542722.html#_=1410827370943&amp;count=none&amp;hashtags=lvguide&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=https%3A%2F%2Flivingvotersguide.org%2F&amp;related=lvguide&amp;size=m&amp;text=I%20flexed%20my%20civic%20muscle%20%40lvguide.&amp;url=https%3A%2F%2Flivingvotersguide.org%2F", scrolling: "no", frameborder: "0", allowtransparency: "true", class: "twitter-share-button twitter-tweet-button twitter-share-button twitter-count-none", style: {width: 57; height: 20}
+
+
           DIV style: {paddingTop: 24, paddingBottom: 12, fontSize: 18, fontWeight: 500, color: 'rgb(77,76,71)'},
             'Bug to report? Have a comment? Confused? '
             A href: "mailto:admin@livingvotersguide.org", style: {color: 'rgb(77,76,71)'},
@@ -2244,33 +2252,50 @@ Footer = ReactiveComponent
           'Bug to report? '
           A href: "mailto:admin@consider.it", 'Email us'
 
+
+
 About = ReactiveComponent
   displayName: 'About'
 
-  componentDidMount : -> @setSize()  #REACT iframes don't support onLoad...
-  componentDidUpdate : -> @setSize()
+  componentWillMount : ->
+    @local.embed_html_directly = true
+    @local.html = null
+    @local.save
 
-  setSize : -> 
+  # REACT iframes don't support onLoad, so we need to figure out when 
+  #               to check the height of the loaded content ourselves
+  componentDidMount : -> @setIframeHeight() 
+  componentDidUpdate : -> @setIframeHeight()
+  setIframeHeight : -> 
+
     $el = $(@getDOMNode())
-    console.log $el.prop('tagName').toLowerCase()
-    if $el.prop('tagName').toLowerCase() == 'iframe'
+
+    if !@local.embed_html_directly && $el.prop('tagName').toLowerCase() == 'iframe'
       iframe = $el[0]
       _.delay ->
         try 
           iframe.height = iframe.contentWindow.document.body.scrollHeight + "px"
-        catch 
+        catch e
           iframe.height = "2000px"
           console.error 'Couldn\'t set about page iframe height because of http/https mismatch. Should work in production.'
+          console.error e
       , 1000
 
   render : -> 
     about_page = @data('/page/about')
     customer = @data('customer') #todo: make the customer a server-side object
-    if !customer.about_page_url
-      DIV null, 'No about page defined'
-    else
-      IFRAME src: customer.about_page_url, width: PAGE_WIDTH, style: {display: 'block', margin: 'auto'}
 
+    if @local.embed_html_directly && !@local.html && customer.about_page_url
+      # fetch the about page HTML directly
+      $.get customer.about_page_url, (response) => @local.html = response; save @local
+
+    DIV style: {marginTop: 20},
+      if !customer.about_page_url
+        DIV null, 'No about page defined'
+      else if !@local.embed_html_directly
+        IFRAME src: customer.about_page_url, width: PAGE_WIDTH, style: {display: 'block', margin: 'auto'}
+      else
+        DIV {dangerouslySetInnerHTML: {__html: @local.html}}
 
 Root = ReactiveComponent
   displayName: 'Root'

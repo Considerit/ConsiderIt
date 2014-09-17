@@ -197,7 +197,7 @@ namespace :lvg do
       }
 
       #proposal = Proposal.find_by_long_id long_id
-      proposal = Proposal.where(:designator => measure[:designator], :category => category).first
+      proposal = Proposal.where(:designator => measure[:designator], :category => category, :cluster => cluster).first
       if !proposal
         proposal = Proposal.new measure
         proposal.save
@@ -223,25 +223,15 @@ namespace :lvg do
       if !proposal
         throw 'Could not find proposal'
       end
-      # jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
 
-      # proposal.cluster = jurisdiction
-      proposal.save
+      jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
 
-      # if jurisdiction == 'Statewide'
-      #   proposal.add_tag 'type:statewide'
-      #   proposal.add_tag "jurisdiction:State of Washington"
-      #   proposal.add_seo_keyword 'Statewide'
-      #   proposal.save
-      #   next
-      # end
+      next if jurisdiction == 'Statewide'
 
-      if jurisdiction != 'Statewide' #everyone has access to these...
-        if !(jurisdiction_to_proposals.has_key?(jurisdiction))
-          jurisdiction_to_proposals[jurisdiction] = []
-        end
-        jurisdiction_to_proposals[jurisdiction].push proposal
+      if !(jurisdiction_to_proposals.has_key?(jurisdiction))
+        jurisdiction_to_proposals[jurisdiction] = []
       end
+      jurisdiction_to_proposals[jurisdiction].push proposal
     end
 
     jurisdiction_to_zips = {}
@@ -262,18 +252,17 @@ namespace :lvg do
       end
       pp "For #{jurisdiction}, adding #{zips.length} zips to #{proposals.length} measures"
 
-      # proposals.each do |p|
-      #   p.add_tag "type:local"
-      #   p.add_tag "jurisdiction:#{jurisdiction}"
-      #   p.add_seo_keyword jurisdiction
+      proposals.each do |p|
+        #p.add_tag "type:local"
+        #p.add_tag "jurisdiction:#{jurisdiction}"
+        #p.add_seo_keyword jurisdiction
 
-      #   zips.each do |zip|
-      #     p.targettable = true
-      #     p.add_tag "zip:#{zip}"
-      #   end
-      #   p.save
-
-      # end
+        p.targettable = true
+        zips.each do |zip|
+          p.add_tag "zip:#{zip}"
+        end
+        p.save
+      end
 
     end
 

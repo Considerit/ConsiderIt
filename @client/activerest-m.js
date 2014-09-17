@@ -162,7 +162,7 @@
                 var result = JSON.parse(request.responseText)
                 console.log('New save result', result)
                 // Handle /new/stuff
-                map_object_tree(result, function (obj) {
+                deep_map(function (obj) {
                     match = obj.key && obj.key.match(/(.*)\?original_id=(\d+)$/)
                     if (match && match[2]) {
                         // Let's map the old and new together
@@ -170,7 +170,8 @@
                         cache[new_key] = cache[original_key]  // Point them at the same thing
                         obj.key = new_key                     // And it's no longer new
                     }
-                })
+                },
+                        result)
                 update_cache(result)
                 if (continuation) continuation()
             }
@@ -474,14 +475,14 @@
             if (!obj.hasOwnProperty(attr)) obj[attr] = with_obj[attr]
         return obj
     }
-    function map_object_tree(object, func) {
+    function deep_map(func, object) {
         if (Array.isArray(object))
             for (var i=0; i < object.length; i++)
-                map_object_tree(object[i], func)
+                deep_map(func, object[i])
         else if (typeof(object) === 'object' && object !== null) {
             func(object)
             for (var k in object)
-                map_object_tree(object[k], func)
+                deep_map(func, object[k])
         }
     }
     function error(e) {

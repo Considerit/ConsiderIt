@@ -2252,33 +2252,50 @@ Footer = ReactiveComponent
           'Bug to report? '
           A href: "mailto:admin@consider.it", 'Email us'
 
+
+
 About = ReactiveComponent
   displayName: 'About'
 
-  componentDidMount : -> @setSize()  #REACT iframes don't support onLoad...
-  componentDidUpdate : -> @setSize()
+  componentWillMount : ->
+    @local.embed_html_directly = true
+    @local.html = null
+    @local.save
 
-  setSize : -> 
+  # REACT iframes don't support onLoad, so we need to figure out when 
+  #               to check the height of the loaded content ourselves
+  componentDidMount : -> @setIframeHeight() 
+  componentDidUpdate : -> @setIframeHeight()
+  setIframeHeight : -> 
+
     $el = $(@getDOMNode())
-    console.log $el.prop('tagName').toLowerCase()
-    if $el.prop('tagName').toLowerCase() == 'iframe'
+
+    if !@local.embed_html_directly && $el.prop('tagName').toLowerCase() == 'iframe'
       iframe = $el[0]
       _.delay ->
         try 
           iframe.height = iframe.contentWindow.document.body.scrollHeight + "px"
-        catch 
+        catch e
           iframe.height = "2000px"
           console.error 'Couldn\'t set about page iframe height because of http/https mismatch. Should work in production.'
+          console.error e
       , 1000
 
   render : -> 
     about_page = @data('/page/about')
     customer = @data('customer') #todo: make the customer a server-side object
-    if !customer.about_page_url
-      DIV null, 'No about page defined'
-    else
-      IFRAME src: customer.about_page_url, width: PAGE_WIDTH, style: {display: 'block', margin: 'auto'}
 
+    if @local.embed_html_directly && !@local.html && customer.about_page_url
+      # fetch the about page HTML directly
+      $.get customer.about_page_url, (response) => @local.html = response; save @local
+
+    DIV style: {marginTop: 20},
+      if !customer.about_page_url
+        DIV null, 'No about page defined'
+      else if !@local.embed_html_directly
+        IFRAME src: customer.about_page_url, width: PAGE_WIDTH, style: {display: 'block', margin: 'auto'}
+      else
+        DIV {dangerouslySetInnerHTML: {__html: @local.html}}
 
 Root = ReactiveComponent
   displayName: 'Root'

@@ -2089,14 +2089,18 @@ Homepage = ReactiveComponent
     proposals = @data('/proposals')
 
     # The "Welcome to the community!" people
+    contributors = @page.contributors.filter((u)->console.log(u); fetch(u).avatar_file_name)
     welcome_column =
       TH className: 'welcome_column',
-        DIV className: 'message', 'We welcome these new contributors!'
-        DIV className: 'people',
-          do (users = @page.contributors.filter((u)->console.log(u);fetch(u).avatar_file_name)) ->
-            max_icons = 90
-            avatars = for user in _(users).first(max_icons)
-              Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
+        if contributors.length > 0
+          [
+            DIV className: 'message', 'We welcome these new contributors!'
+            DIV className: 'people',
+              for user in _(contributors).first(90)
+                Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
+          ]
+        else
+          ''
 
 
     # Columns of the sticky header for the proposal list.

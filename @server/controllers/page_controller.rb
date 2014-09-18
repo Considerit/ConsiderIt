@@ -5,12 +5,7 @@ class PageController < ApplicationController
     case params[:id]
 
     when 'homepage'
-      result = {
-        # proposals: Proposal.summaries(), 
-        users: get_all_user_data(),
-        contributors: recent_contributors()
-      } 
-      result['your_opinions'] = current_user.opinions.map {|o| o.as_json}
+      result = homepage_data()
 
     when 'about'
       result = {} # don't need anything special, just the customer object with the about page url
@@ -49,6 +44,18 @@ class PageController < ApplicationController
   def recent_contributors
     users = ActiveRecord::Base.connection.select( "SELECT u.id FROM users as u, opinions WHERE u.account_id=#{current_tenant.id} AND u.registration_complete=true AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")
     return users.map {|u| "/user/#{u['id']}"}
+  end
+
+  def homepage_data
+    result = {
+      # proposals: Proposal.summaries(), 
+      users: get_all_user_data(),
+      contributors: recent_contributors()
+    } 
+    result['your_opinions'] = current_user.opinions.map {|o| o.as_json}
+    result['customer'] = current_tenant
+    result['key'] = "/page/homepage"    
+    result
   end
 
 end

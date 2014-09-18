@@ -79,15 +79,6 @@ class ApplicationController < ActionController::Base
     Digest::MD5.hexdigest(key)
   end
 
-  def self.reset_user_activities(session, proposal)
-    session[proposal.id] = {
-      :included_points => {},
-      :deleted_points => {},
-      :written_points => [],
-      :viewed_points => []
-    }
-  end
-
 private
 
   def get_current_tenant(rq = nil)

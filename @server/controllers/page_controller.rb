@@ -18,9 +18,11 @@ class PageController < ApplicationController
     else # if proposal
 
       proposal = Proposal.find_by_long_id(params[:id])
-      if !proposal or cannot?(:read, proposal)
-        # TODO: return an appropriate HTML code for this case
-        render :json => {:result => 'Permission denied'}
+      if !proposal 
+        render :status => :not_found, :json => {:result => 'Not found'}
+        return
+      elsif cannot?(:read, proposal)
+        render :status => :forbidden, :json => {:result => 'Permission denied'}
         return
       end
 

@@ -22,13 +22,21 @@
 =inset-border($base_text_color)
   border-color: darken($base_text_color, 10%) lighten($base_text_color, 5%) lighten($base_text_color, 10%) lighten($base_text_color, 5%)
 
+$cityclub_navy:   rgb(0,   68,  124)
+$cityclub_green:  rgb(165, 206, 57)
+$cityclub_blue:   rgb(0,   182, 236)
+$cityclub_purple: rgb(154, 152, 203)
+//$cityclub_red:    
+//$cityclub_orange: 
+$cityclub_beige:  rgb(241, 235, 211)
+$cityclub_brown:  rgb(77,  76,  71)
 
 /////////////////////////////////////////////////////////////////////////////
 /// STYLES for Franklin
 /////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////
-// HOMEPAGE
+// HOMEPAGE proposals
 
 tr.proposal_summary
   height: 60px
@@ -58,11 +66,25 @@ td.summary_share
   padding-left: 15px
   margin-top: -4px
 
+
 ///////////////////////
-// PROPOSAL SUMMARY
+// HOMEPAGE welcome contributors
+.welcome_column
+  position: absolute
+  left: 1025px
+  width: 165px
+  margin-top: 30px
 
+.welcome_column .message
+  font-size: 18px
+  color: $cityclub_navy
+  font-style: italic
+  
+.welcome_column .people
+  padding: 10px
 
-///// Sticky proposal navigation header
+///////////////////////
+// NAVIGATION
 .current_proposal_cluster
   display: inline-block
   position: absolute

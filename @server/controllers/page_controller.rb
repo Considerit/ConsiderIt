@@ -42,7 +42,7 @@ class PageController < ApplicationController
   end
 
   def recent_contributors
-    users = ActiveRecord::Base.connection.select( "SELECT u.id FROM users as u, opinions WHERE u.account_id=#{current_tenant.id} AND u.registration_complete=true AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")
+    users = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE u.account_id=#{current_tenant.id} AND u.registration_complete=true AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")
     return users.map {|u| "/user/#{u['id']}"}
   end
 

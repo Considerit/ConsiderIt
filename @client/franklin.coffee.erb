@@ -2088,6 +2088,17 @@ Homepage = ReactiveComponent
     color = @data('color')
     proposals = @data('/proposals')
 
+    # The "Welcome to the community!" people
+    welcome_column =
+      TH className: 'welcome_column',
+        DIV className: 'message', 'We welcome these new contributors!'
+        DIV className: 'people',
+          do (users = @page.contributors.filter((u)->console.log(u);fetch(u).avatar_file_name)) ->
+            max_icons = 90
+            avatars = for user in _(users).first(max_icons)
+              Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
+
+
     # Columns of the sticky header for the proposal list.
     if customer.identifier == 'livingvotersguide'
       columns = [ {heading: 'Learn', details: 'about your ballot'}, {heading: 'Decide', details: 'how you\'ll vote'}, {heading: 'Share', details: 'your opinion'}]
@@ -2112,30 +2123,21 @@ Homepage = ReactiveComponent
                 DIV style: {fontWeight: 300, fontSize: 18, textAlign: 'center', position: 'relative', top: -8},
                   col.details
 
-      # Draw the "Welcome to the community!" people
-      DIV className: 'welcome_column',
-        DIV className: 'message', 'We welcome these new contributors!'
-        DIV className: 'people',
-          do (users = @page.contributors.filter((u)->console.log(u);fetch(u).avatar_file_name)) ->
-            max_icons = 90
-            avatars = for user in _(users).first(max_icons)
-              Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
-            # extras = if users.length > max_icons
-            #   A null,
-            #     "...and #{users.length - max_icons} more"
-            # [avatars, extras]
-
       # Draw the proposal summaries
       if proposals.clusters
-        for cluster in proposals.clusters
+        for cluster, index in proposals.clusters
           TABLE style: {borderLeft: '0px solid rgb(191, 192, 194)', margin: '35px auto', position: 'relative'},
             if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
               TR null, 
                 TD colSpan: 3, style: {fontStyle: 'italic', fontSize: 18, paddingBottom: 25}, 
                   "2014 Congressional candidates and local ballot measures coming soon!!!"          
+
+            # We stick a couple funny things into TH cells, and then stick them off to the side
             TR null,
               TH style: {textAlign: 'right', width: 115, padding: 8, paddingTop: 9, display: 'inline-block', verticalAlign: 'top', fontSize: 16, fontWeight: 200, position: 'absolute', left: -125},
                 cluster.name
+              if index == 0
+                welcome_column
 
             for proposal in cluster.proposals
               ProposalSummary

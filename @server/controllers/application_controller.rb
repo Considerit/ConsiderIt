@@ -171,10 +171,12 @@ private
     # Handle dirty proposals key, which are all the summaries of active proposals 
     # the current user can access
     if Thread.current[:dirtied_keys].has_key? '/proposals'
-      resonse.append Proposal.summaries
+      response.append Proposal.summaries
     end
 
-    
+    if Thread.current[:dirtied_keys].has_key? '/page/homepage'
+      response.append PageController.homepage_data()
+    end
     return response
   end
 

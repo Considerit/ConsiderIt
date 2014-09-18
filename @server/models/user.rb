@@ -289,65 +289,65 @@ class User < ActiveRecord::Base
     end
   end
 
-  def update_metrics
-    referenced_proposals = {}
-    opinions = 0
+  # def update_metrics
+  #   referenced_proposals = {}
+  #   opinions = 0
 
-    self.opinions.published.each do |opinion|
-      if !referenced_proposals.has_key?(opinion.proposal_id)
-        proposal = Proposal.find(opinion.proposal_id) 
-        #if can?(:read, proposal)  
-        referenced_proposals[opinion.proposal_id] = proposal
-        opinions += 1          
-      end
-    end
+  #   self.opinions.published.each do |opinion|
+  #     if !referenced_proposals.has_key?(opinion.proposal_id)
+  #       proposal = Proposal.find(opinion.proposal_id) 
+  #       #if can?(:read, proposal)  
+  #       referenced_proposals[opinion.proposal_id] = proposal
+  #       opinions += 1          
+  #     end
+  #   end
 
-    influenced_users = {}
-    accessible_points = []
+  #   influenced_users = {}
+  #   accessible_points = []
 
-    my_points = self.points.published.where(:hide_name => false)
-    my_points.each do |pnt|
-      accessible_points.push pnt.id
-      pnt.inclusions.where("user_id != #{self.id}").each do |inc|
-        influenced_users[inc.user_id] = 0 if ! influenced_users.has_key?(inc.user_id)
-        influenced_users[inc.user_id] +=1
-      end
-    end
+  #   my_points = self.points.published.where(:hide_name => false)
+  #   my_points.each do |pnt|
+  #     accessible_points.push pnt.id
+  #     pnt.inclusions.where("user_id != #{self.id}").each do |inc|
+  #       influenced_users[inc.user_id] = 0 if ! influenced_users.has_key?(inc.user_id)
+  #       influenced_users[inc.user_id] +=1
+  #     end
+  #   end
 
-    attrs = {
-      :metric_points => my_points.count,
-      :metric_opinions => opinions,
-      :metric_comments => self.comments.count,
-      :metric_influence => influenced_users.keys().count, 
-      :metric_conversations => self.proposals.open_to_public.count }
+  #   attrs = {
+  #     :metric_points => my_points.count,
+  #     :metric_opinions => opinions,
+  #     :metric_comments => self.comments.count,
+  #     :metric_influence => influenced_users.keys().count, 
+  #     :metric_conversations => self.proposals.open_to_public.count }
 
-    if self.name.blank?
-      attrs[:name] = 'Not Specified'
-    end
+  #   if self.name.blank?
+  #     attrs[:name] = 'Not Specified'
+  #   end
 
-    values_changed = false
-    attrs.keys.each do |key|
-      if self[key] != attrs[key]
-        values_changed = true
-        break
-      end
-    end
-    self.update_attributes!(ActionController::Parameters.new(attrs).permit!) if values_changed
+  #   values_changed = false
+  #   attrs.keys.each do |key|
+  #     if self[key] != attrs[key]
+  #       values_changed = true
+  #       break
+  #     end
+  #   end
+  #   self.update_attributes!(ActionController::Parameters.new(attrs).permit!) if values_changed
 
-  end
+  # end
 
-  def self.update_user_metrics
-    Account.all.each do |accnt|
+  # def self.update_user_metrics
+  #   Account.all.each do |accnt|
 
-      accnt.users.each do |user|
-        begin
-          user.update_metrics()
-        rescue
-          pp "Could not update User #{user.id}"
-        end
-      end
-    end
-  end
+  #     accnt.users.each do |user|
+  #       begin
+  #         user.update_metrics()
+  #       rescue
+  #         pp "Could not update User #{user.id}"
+  #       end
+  #     end
+  #   end
+  # end
 
   def absorb (user)
     return if not (self and user)

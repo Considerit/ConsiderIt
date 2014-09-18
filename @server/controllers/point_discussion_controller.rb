@@ -23,8 +23,6 @@ class PointDiscussionController < ApplicationController
       })
     end
 
-    ApplicationController.reset_user_activities(session, point.proposal) if !session.has_key?(point.proposal.id)
-
     respond_to do |format|
       format.json {render :json => response}
     end
@@ -52,12 +50,6 @@ class PointDiscussionController < ApplicationController
     authorize! :create, point
 
     point.save
-
-    ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
-
-    session[proposal.id][:written_points].push(point.id)
-    session[proposal.id][:included_points][point.id] = 1    
-    session[proposal.id][:viewed_points].push([point.id, 7]) # own point has been seen
     
     respond_to do |format|
       format.json {render :json => point}
@@ -102,12 +94,6 @@ class PointDiscussionController < ApplicationController
     @point = Point.find params[:id]
     
     authorize! :destroy, @point
-
-    ApplicationController.reset_user_activities(session, @point.proposal) if !session.has_key?(@point.proposal.id)
-    
-    session[@point.proposal_id][:written_points].delete(@point.id)
-    session[@point.proposal_id][:included_points].delete(@point.id)  
-    session[@point.proposal_id][:viewed_points].delete(@point.id)
 
     # if this point is a top pro or con, need to trigger proposal update
     proposal = @point.proposal

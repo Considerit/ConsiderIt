@@ -2082,6 +2082,7 @@ Homepage = ReactiveComponent
     sticky_header_height = 60
 
     DIV className: 'homepage',
+      # Draw the header
       DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height} 
       DIV 
         className: "sticky_header stickable"
@@ -2096,6 +2097,20 @@ Homepage = ReactiveComponent
                 DIV style: {fontWeight: 300, fontSize: 18, textAlign: 'center', position: 'relative', top: -8},
                   col.details
 
+      # Draw the "Welcome to the community!" people
+      DIV className: 'welcome_column',
+        DIV className: 'message', 'We welcome these new contributors!'
+        DIV className: 'people',
+          do (users = @page.contributors.filter((u)->console.log(u);arest.cache[u].avatar_file_name)) ->
+            max_icons = 90
+            avatars = for user in _(users).first(max_icons)
+              Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
+            # extras = if users.length > max_icons
+            #   A null,
+            #     "...and #{users.length - max_icons} more"
+            # [avatars, extras]
+
+      # Draw the proposal summaries
       if proposals.clusters
         for cluster in proposals.clusters
           TABLE style: {borderLeft: '0px solid rgb(191, 192, 194)', margin: '35px auto', position: 'relative'},
@@ -2112,10 +2127,11 @@ Homepage = ReactiveComponent
                 key: proposal.key
                 cluster: cluster.name
 
-            # TODO: There are probably lots of cases where we want to add more details to a cluster of proposals. 
-            #       For example, saying that proposals in cluster "Council meeting 6/7" will be open for discussion 
-            #       at the upcoming meeting. Keep an eye on this possible generality (and eliminate this edge case 
-            #       if we do generalize it)
+            # TODO: There are probably lots of cases where we want to add more details to
+            #       a cluster of proposals.  For example, saying that proposals in cluster
+            #       "Council meeting 6/7" will be open for discussion at the upcoming
+            #       meeting. Keep an eye on this possible generality (and eliminate this
+            #       edge case if we do generalize it)
             if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
               TR null,
                 TD colSpan: 3, style: {color: 'rgb(108,107,98)', fontSize: 16, paddingLeft: 30, paddingTop: 12},

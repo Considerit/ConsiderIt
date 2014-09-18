@@ -13,7 +13,6 @@ class ProposalController < ApplicationController
     if (!proposal || cannot?(:read, proposal))
       result = { errors: ["not found"] }
     else
-      ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
       result = proposal.proposal_data(can?(:manage, proposal))
     end
     render :json => result
@@ -49,8 +48,6 @@ class ProposalController < ApplicationController
 
 
     proposal.follow!(current_user, :follow => true, :explicit => false)
-
-    ApplicationController.reset_user_activities(session, proposal) if !session.has_key?(proposal.id)
 
     data = proposal.full_data 
 

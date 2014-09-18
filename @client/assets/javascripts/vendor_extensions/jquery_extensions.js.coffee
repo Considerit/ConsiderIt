@@ -65,6 +65,7 @@ do ($, window, document) ->
         @$el[0].style['-moz-transform'] = "" 
         @$el[0].style['position'] = ''
         @$el[0].style['top'] = ''
+        return 
 
       #Get the top of the reference element.
       #If the container is translated Y, then this method will fail I believe.

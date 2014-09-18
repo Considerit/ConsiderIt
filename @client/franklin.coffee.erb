@@ -1663,14 +1663,16 @@ Auth = ReactiveComponent
     # are cached on the server and the image is processed in a background task. 
     # Therefore, we'll wait until the image is available and then make it available
     # in the avatar cache.  
-    ensureCurrentUserAvatar = ->
+    ensureCurrentUserAvatar = (attempts = 0) ->
       if current_user.b64_thumbnail
         $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{current_user.b64_thumbnail}');}</style>")
-      else
+      else if attempts < 20
         # Ugly: wait a little while for offline avatar processing
         # to complete, then refetch
         arest.serverFetch('/current_user')
-        _.delay ensureCurrentUserAvatar, 1000
+        _.delay -> 
+          ensureCurrentUserAvatar(attempts + 1)
+        , 1000
 
     # hack for submitting file data in ActiveREST for now
     # we'll just submit the file form after user is signed in

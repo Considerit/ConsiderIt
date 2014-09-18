@@ -14,7 +14,13 @@
       %meta{ :content => 'text/html; charset=UTF-8', "http-equiv" => "Content-Type" }
       %meta{ :http_equiv => "X-UA-Compatible", :content => "IE=edge,chrome=1" }
 
-      // %link{ :href => "#{image_path 'favicon.ico'}", :rel => "icon", :type => "image/vnd.microsoft.icon" }
+      %link{ :href => "favicon.ico", :rel => "icon", :type => "image/vnd.microsoft.icon" }
+
+      //ios
+      %link{ :rel => "apple-touch-icon", :href => "touch_icon.png"} 
+
+      //android
+      %link{ :rel => "icon", :sizes => "196x196", :href => "touch_icon.png"} 
 
       = stylesheet_link_tag 'stylesheets/application', debug: false
 

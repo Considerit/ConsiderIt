@@ -43,6 +43,7 @@ class OpinionController < ApplicationController
     # Update published
     if params['published'] && !opinion.published
       opinion.publish()  # This will also publish all the newly-written points
+      dirty_key("/page/homepage") # you're now a recent contributor!
     end
 
     # Need to add following in somewhere else
@@ -54,6 +55,7 @@ class OpinionController < ApplicationController
     #proposal[:key] = "/proposal/#{proposal.id}"
     
     dirty_key("/opinion/#{opinion.id}")
+
     render :json => affected_objects()
 
   end

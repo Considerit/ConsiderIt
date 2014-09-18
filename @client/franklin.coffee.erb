@@ -645,7 +645,7 @@ Histogram = ReactiveComponent
             TD 
               key: idx 
               className: "histogram_bar #{if is_selected then 'is_selected' else 'not_selected'}"
-              style: {width: avatar_size, opacity: (if is_selected && !selected_segment? then '1' else '1')}
+              style: {width: avatar_size, opacity: (if is_selected && !selected_segment? then '1' else '1'), minHeight: (if bar.length == 0 then 75 else 0)}
             ,
               for opinion in bar
                 user = opinion.user

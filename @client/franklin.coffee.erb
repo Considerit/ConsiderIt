@@ -2008,7 +2008,7 @@ ProposalSummary = ReactiveComponent
               "#{proposal.category[0]}-#{proposal.designator}"
 
       TD className: 'summary_name',
-        A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {fontWeight: 500, color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+        A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
           proposal.name
       TD className: 'summary_decide',
         if !proposal.your_opinion || !@data(proposal.your_opinion).published || @data(proposal.your_opinion).stance_segment == 3

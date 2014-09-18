@@ -1988,24 +1988,25 @@ ProposalSummary = ReactiveComponent
     color = @data('color')
 
     proposal = @data()
+    hover_class = if @local.hovering_on == proposal.id then 'hovering' else ''
 
     TR 
-      className: "proposal_summary #{if @local.hovering_on == proposal.id then 'hovering'}"
-      style: {cursor: 'pointer', padding: '6px 30px', display: 'block', borderLeft: "1px solid #{if @local.hovering_on then color.link_hover_color else 'rgb(191, 192, 194)'}"}
+      className: "proposal_summary " + hover_class
+      style: {cursor: 'pointer', height: '', padding: '6px 30px', display: 'block', borderLeft: "1px solid #{if @local.hovering_on then color.link_hover_color else 'rgb(191, 192, 194)'}"}
       onMouseEnter: (=> @local.hovering_on = true; save(@local))
       onMouseLeave: (=> @local.hovering_on = false; save(@local))
       onClick: (=> window.app_router.navigate("/#{proposal.long_id}", {trigger: true}))              
     ,
       if customer.identifier == 'livingvotersguide'
-        TD className: 'summary_measure_designator', style: {width: 50, display: 'inline-block', fontSize: 15, verticalAlign: 'top', paddingTop: 6},
+        TD className: 'summary_measure_designator',
           if proposal.category && proposal.designator
             A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
               "#{proposal.category[0]}-#{proposal.designator}"
 
-      TD className: 'summary_name', style: {width: 255, display: 'inline-block', fontSize: 18},
+      TD className: 'summary_name',
         A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {fontWeight: 500, color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
           proposal.name
-      TD className: 'summary_decide', style: {width: 200, textAlign: 'center', display: 'inline-block'}, 
+      TD className: 'summary_decide',
         if !proposal.your_opinion || !@data(proposal.your_opinion).published || @data(proposal.your_opinion).stance_segment == 3
           SPAN style: {fontWeight: 200, color: 'rgb(158,158,158)', fontSize: 21}, '?'
         else if @data(proposal.your_opinion).stance_segment < 3
@@ -2024,7 +2025,7 @@ ProposalSummary = ReactiveComponent
 
             SPAN style: {color: 'rgb(166,204,70)', fontSize: 18, fontWeight: 600}, 'Yes'
 
-      TD className: 'summary_share', style: {width: 305, display: 'inline-block'},
+      TD className: 'summary_share',
         if proposal.top_point
           DIV className: 'top_point community_point con', style : { width: 270, position: 'relative' },
             # Avatar tag: SPAN, key: proposal.top_point.user, className:"point_author_avatar", hide_face: proposal.top_point.hide_name

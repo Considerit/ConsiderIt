@@ -27,7 +27,8 @@ do ($, window, document) ->
       @constructor.current_id += 1
 
       @$el = $(el)        
-      @current_translate = 0
+      @current_translate = @scroll_x = 0
+
       @is_stuck = false
       @last_viewport_top = document.documentElement.scrollTop || document.body.scrollTop
 
@@ -64,7 +65,6 @@ do ($, window, document) ->
         @$el[0].style['-moz-transform'] = "" 
         @$el[0].style['position'] = ''
         @$el[0].style['top'] = ''
-        return
 
       #Get the top of the reference element.
       #If the container is translated Y, then this method will fail I believe.
@@ -94,6 +94,10 @@ do ($, window, document) ->
       element_bottom = @$el.offset().top + element_height #container_top + element_height
       
       if @is_stuck 
+
+        # Make sure to fix this element horizontally too, so that it is fixed with respect to 
+        # surrounding elements
+        scroll_x = document.documentElement.scrollLeft || document.body.scrollLeft
         if !element_fits_in_viewport
           if is_scrolling_up
             if effective_viewport_top <= element_top
@@ -116,13 +120,14 @@ do ($, window, document) ->
           if element_bottom + (new_translate - @current_translate) + @options.bottom_offset > container_bottom
             new_translate = container_bottom - element_bottom + @current_translate - @options.bottom_offset
 
-          if new_translate != @current_translate
+          if new_translate != @current_translate || scroll_x != @scroll_x
             @current_translate = new_translate
+            @scroll_x = scroll_x
             @$el[0].style["-webkit-backface-visibility"] = "hidden"
-            @$el[0].style.transform = "translate(0, #{@current_translate}px)"        
-            @$el[0].style['-webkit-transform'] = "translate(0, #{@current_translate}px)"
-            @$el[0].style['-ms-transform'] = "translate(0, #{@current_translate}px)"
-            @$el[0].style['-moz-transform'] = "translate(0, #{@current_translate}px)"
+            @$el[0].style.transform = "translate(-#{@scroll_x}px, #{@current_translate}px)"        
+            @$el[0].style['-webkit-transform'] = "translate(-#{@scroll_x}px, #{@current_translate}px)"
+            @$el[0].style['-ms-transform'] = "translate(-#{@scroll_x}px, #{@current_translate}px)"
+            @$el[0].style['-moz-transform'] = "translate(-#{@scroll_x}px, #{@current_translate}px)"
 
         else
           # make sure that elements that fit within the viewport don't scroll down past their container bottom
@@ -132,6 +137,13 @@ do ($, window, document) ->
             @$el[0].style['top'] = "#{container_bottom - element_height - viewport_top}px" 
           else if @$el[0].style['top'] != "#{@options.top_offset}px"
             @$el[0].style['top'] = "#{@options.top_offset}px"          
+
+          @scroll_x = scroll_x
+          @$el[0].style.transform = "translate(-#{@scroll_x}px, 0)"        
+          @$el[0].style['-webkit-transform'] = "translate(-#{@scroll_x}px, 0)"
+          @$el[0].style['-ms-transform'] = "translate(-#{@scroll_x}px, 0)"
+          @$el[0].style['-moz-transform'] = "translate(-#{@scroll_x}px, 0)"
+
 
       if start_sticking
         @$el[0].style['position'] = 'fixed'

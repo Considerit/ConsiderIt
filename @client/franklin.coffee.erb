@@ -2347,7 +2347,7 @@ Page = ReactiveComponent
 
     color = @data('color')
 
-    DIV style: {backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
+    DIV style: {minWidth: PAGE_WIDTH, backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
       Header()
       DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
         DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },

@@ -2101,7 +2101,7 @@ Homepage = ReactiveComponent
       DIV className: 'welcome_column',
         DIV className: 'message', 'We welcome these new contributors!'
         DIV className: 'people',
-          do (users = @page.contributors.filter((u)->console.log(u);arest.cache[u].avatar_file_name)) ->
+          do (users = @page.contributors.filter((u)->console.log(u);fetch(u).avatar_file_name)) ->
             max_icons = 90
             avatars = for user in _(users).first(max_icons)
               Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
@@ -2235,7 +2235,7 @@ Footer = ReactiveComponent
               SPAN style: {fontWeight: 600}, 'by the people'
               ' and '
               SPAN style: {fontWeight: 600}, 'for the people'
-              ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and share your opinions. We believe that sharing our collective wisdom leads to making wiser decisions together. '
+              ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and share your opinions. We believe that sharing our diverse opinions leads to making wiser decisions together.'
               A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', onClick: clickInternalLink, 'Learn more'
               '.'
 

@@ -5,12 +5,17 @@ class HomeController < ApplicationController
   }
 
   def index
-    # We don't have a homepage. In the iterim, let's just redirect 
+    # Most customers don't have a homepage. In the iterim, let's just redirect 
     # accesses to the homepage to the latest published proposal
     # TODO: better way of knowing if a particular customer has a homepage or not.
-    if current_tenant.id != 1 && request.path == '/' && request.query_string == ""
+
+    if current_tenant.identifier != 'livingvotersguide' && request.path == '/' && request.query_string == ""
       proposal = current_tenant.proposals.open_to_public.active.last
-      redirect_to "/#{proposal.long_id}"
+      if proposal
+        redirect_to "/#{proposal.long_id}"
+      else
+        render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
+      end      
       return
     end
 

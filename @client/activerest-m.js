@@ -121,7 +121,10 @@
     var outstanding_fetches = {}
     function server_fetch(key) {
         // Error check
-        if (outstanding_fetches[key]) throw Error('Duplicate request for '+key)
+        if (outstanding_fetches[key]) {
+            console.error('Duplicate request for '+key)
+            return
+        }
 
         // Build request
         var request = new XMLHttpRequest()

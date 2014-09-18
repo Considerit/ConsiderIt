@@ -75,7 +75,7 @@ server {
     proxy_redirect off;
   }
 
-  location ~ \.(myadmin|aspx|php|jsp|cgi)$ {
+  location ~ \.(myadmin|aspx|php|jsp|cgi|zip)$ {
     return 410;
   }
 
@@ -89,6 +89,11 @@ server {
   }  
 
   location = /favicon.ico {
+    expires    max;
+    add_header Cache-Control public;
+  }
+  
+  location = /touch_icon.png {
     expires    max;
     add_header Cache-Control public;
   }

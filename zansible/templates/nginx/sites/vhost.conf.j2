@@ -93,4 +93,9 @@ server {
     add_header Cache-Control public;
   }
   
+  location = /touch_icon.png {
+    expires    max;
+    add_header Cache-Control public;
+  }
+  
 }

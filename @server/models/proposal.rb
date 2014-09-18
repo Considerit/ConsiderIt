@@ -280,46 +280,46 @@ class Proposal < ActiveRecord::Base
     return distribution
   end
 
-  def update_metrics
-    self.num_points = points.count
-    self.num_pros = points.pros.count
-    self.num_cons = points.cons.count
-    self.num_comments = 0
-    self.num_inclusions = 0
-    points.each do |pnt|
-      self.num_comments += pnt.comments.count
-      self.num_inclusions += pnt.inclusions.count
-    end
-    self.num_perspectives = opinions.published.count
-    self.num_unpublished_opinions = opinions.where(:published => false).count
-    self.num_supporters = opinions.published.where("stance_segment > ?", 3).count
-    self.num_opposers = opinions.published.where("stance_segment < ?", 3).count
+  # def update_metrics
+  #   self.num_points = points.count
+  #   self.num_pros = points.pros.count
+  #   self.num_cons = points.cons.count
+  #   self.num_comments = 0
+  #   self.num_inclusions = 0
+  #   points.each do |pnt|
+  #     self.num_comments += pnt.comments.count
+  #     self.num_inclusions += pnt.inclusions.count
+  #   end
+  #   self.num_perspectives = opinions.published.count
+  #   self.num_unpublished_opinions = opinions.where(:published => false).count
+  #   self.num_supporters = opinions.published.where("stance_segment > ?", 3).count
+  #   self.num_opposers = opinions.published.where("stance_segment < ?", 3).count
 
-    provocative = num_perspectives == 0 ? 0 : num_perspectives.to_f / (num_perspectives + num_unpublished_opinions)
+  #   provocative = num_perspectives == 0 ? 0 : num_perspectives.to_f / (num_perspectives + num_unpublished_opinions)
 
-    latest_opinions = opinions.published.where(:created_at => 1.week.ago.beginning_of_week.advance(:days => -1)..1.week.ago.end_of_week).order('created_at DESC')    
-    late_perspectives = latest_opinions.count
-    late_supporters = latest_opinions.where("stance_segment > ?", 3).count
-    self.trending = late_perspectives == 0 ? 0 : Math.log2(late_supporters + 1) * late_supporters.to_f / late_perspectives
+  #   latest_opinions = opinions.published.where(:created_at => 1.week.ago.beginning_of_week.advance(:days => -1)..1.week.ago.end_of_week).order('created_at DESC')    
+  #   late_perspectives = latest_opinions.count
+  #   late_supporters = latest_opinions.where("stance_segment > ?", 3).count
+  #   self.trending = late_perspectives == 0 ? 0 : Math.log2(late_supporters + 1) * late_supporters.to_f / late_perspectives
 
-    # combining provocative and trending for now...
-    self.trending = ( self.trending + provocative ) / 2
+  #   # combining provocative and trending for now...
+  #   self.trending = ( self.trending + provocative ) / 2
 
-    self.activity = Math.log2(num_perspectives + 1) * Math.log2(num_comments + num_points + num_inclusions + 1)      
+  #   self.activity = Math.log2(num_perspectives + 1) * Math.log2(num_comments + num_points + num_inclusions + 1)      
 
-    polarization = num_perspectives == 0 ? 1 : num_supporters.to_f / num_perspectives - 0.5
-    self.contested = -4 * polarization ** 2 + 1
+  #   polarization = num_perspectives == 0 ? 1 : num_supporters.to_f / num_perspectives - 0.5
+  #   self.contested = -4 * polarization ** 2 + 1
 
 
-    self.participants = opinions(:select => [:user_id]).published.map {|x| x.user_id}.uniq.compact.to_s
-    tc = points(:select => [:id]).cons.published.order('score DESC').limit(1)[0]
-    tp = points(:select => [:id]).pros.published.order('score DESC').limit(1)[0]
-    self.top_con = !tc.nil? ? tc.id : nil
-    self.top_pro = !tp.nil? ? tp.id : nil
+  #   self.participants = opinions(:select => [:user_id]).published.map {|x| x.user_id}.uniq.compact.to_s
+  #   tc = points(:select => [:id]).cons.published.order('score DESC').limit(1)[0]
+  #   tp = points(:select => [:id]).pros.published.order('score DESC').limit(1)[0]
+  #   self.top_con = !tc.nil? ? tc.id : nil
+  #   self.top_pro = !tp.nil? ? tp.id : nil
 
-    self.save if changed?
+  #   self.save if changed?
 
-  end
+  # end
 
   # def get_tags
   #   description.split.find_all{|word| /^#.+/.match word}
@@ -358,10 +358,10 @@ class Proposal < ActiveRecord::Base
   def self.update_scores
     # for now, order by activity; later, incorporate trending    
 
-    Proposal.active.each do |p|
-      p.update_metrics
-      p.save
-    end
+    # Proposal.active.each do |p|
+    #   p.update_metrics
+    #   p.save
+    # end
 
     true
   end

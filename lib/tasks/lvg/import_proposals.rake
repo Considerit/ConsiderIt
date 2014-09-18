@@ -3,6 +3,11 @@ require 'pp'
 
 year = "2014"
 
+def parse(html)
+  #HTML::WhiteListSanitizer.allowed_css_properties = Set.new(%w(text-align font-weight text-decoration font-style))
+  parsed = ActionController::Base.helpers.sanitize(html.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ''), tags: %w(table tr td div p br label ul li ol span strong h1 h2 h3 h4 h5), attributes: %w(id colspan) )  
+  parsed = parsed.gsub('<p>&nbsp;</p>', '')
+end
 # constructs a long_id from a data row
 def create_long_id(proposal_data)
   long_id = proposal_data['topic'].gsub(' ', '_')
@@ -138,7 +143,7 @@ namespace :lvg do
                        [fiscal_impact, 'Fiscal Impact Statement by Office of Financial Management']]
         state_data.each do |field|
           if field[0]
-            field[0] = field[0].encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+            field[0] = parse(field[0])
             group[:items].push({:label => field[1], :html => field[0]})
           end
         end
@@ -146,7 +151,7 @@ namespace :lvg do
       end
 
       if additional_description = row.fetch('additional_description', nil)
-        description_fields = [{:label => 'Additional information', :html => additional_description.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')}] 
+        description_fields = [{:label => 'Additional information', :html => parse(additional_description)}] 
       end
 
       description = row['description'].encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')

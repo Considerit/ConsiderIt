@@ -671,7 +671,7 @@ Slider = ReactiveComponent
     # Initiate dragging
     slider = @data('slider')
     slider.is_moving = true
-    slider.offsetX = if e.clientX then e.clientX else e.touches[0].clientX
+    slider.offsetX = e.clientX or e.touches[0].clientX
 
     slider.startX = parseInt($(e.target)[0].style.left, 10) || 0
     save slider
@@ -717,7 +717,7 @@ Slider = ReactiveComponent
 
     slider = @data('slider')
 
-    clientX = if e.clientX then e.clientX else e.touches[0].clientX
+    clientX = e.clientX or e.touches[0].clientX
 
     # Update position
     slider.clientX = slider.startX + clientX - slider.offsetX

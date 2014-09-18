@@ -117,7 +117,7 @@ class PointDiscussionController < ApplicationController
     @point.destroy
 
     opinion.recache if update_opinion
-    proposal.update_metrics if update_proposal_metrics
+    #proposal.update_metrics if update_proposal_metrics
 
     response = {:result => 'successful'}
 

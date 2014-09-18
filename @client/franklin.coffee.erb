@@ -663,7 +663,6 @@ Slider = ReactiveComponent
   # Kick off sliding 
   handleMouseDown: (e) -> 
     el = @getDOMNode()
-
     # Dragging has to start by dragging the slider handle
     return if !$(e.target).is('.the_handle')
 
@@ -672,19 +671,20 @@ Slider = ReactiveComponent
     # Initiate dragging
     slider = @data('slider')
     slider.is_moving = true
-    slider.offsetX = e.clientX
+    slider.offsetX = e.clientX or e.touches[0].clientX
+
     slider.startX = parseInt($(e.target)[0].style.left, 10) || 0
     save slider
 
     $(window).on "mousemove.slider", @handleMouseMove
     $(window).on "mouseup.slider", @handleMouseUp
 
-
   # Stop sliding
   handleMouseUp: (e) ->
     # Don't do anything if we're not actually dragging. We only hit this logic
     # if there is some delay in removing the event handlers.
     slider = @data 'slider'
+
     return if !slider.is_moving
 
     e.preventDefault()
@@ -717,8 +717,10 @@ Slider = ReactiveComponent
 
     slider = @data('slider')
 
+    clientX = e.clientX or e.touches[0].clientX
+
     # Update position
-    slider.clientX = slider.startX + e.clientX - slider.offsetX
+    slider.clientX = slider.startX + clientX - slider.offsetX
     slider.clientX = 0 if slider.clientX < 0
     slider.clientX = @props.width if slider.clientX > @props.width
     slider.has_moved = true
@@ -726,6 +728,7 @@ Slider = ReactiveComponent
     # convert position of handle to a slider value on [1, -1]
     slider.stance = -(2 * slider.clientX / @props.width - 1)
     slider.stance_segment = getStanceSegment slider.stance
+
     save slider
 
 
@@ -742,6 +745,7 @@ Slider = ReactiveComponent
       if your_opinion.stance
         slider.has_moved = true
       save(slider)
+
 
     page = @root.proposal_mode
     sticky = @data('decisionboard').sticky
@@ -823,7 +827,7 @@ Slider = ReactiveComponent
           style: slider_feedback_style
         , if !slider.has_moved then 'Give Your Overall Opinion' else "You #{stance_names[segment]}"
 
-        DIV className: 'the_handle', style: {left: slider.clientX}, onMouseUp: @handleMouseUp, onMouseDown: @handleMouseDown,
+        DIV className: 'the_handle', style: {left: slider.clientX}, onMouseUp: @handleMouseUp, onMouseDown: @handleMouseDown, onTouchStart: @handleMouseDown, onTouchMove: @handleMouseMove, onTouchEnd: @handleMouseUp, onTouchCancel: @handleMouseUp,
           if page == 'crafting'
             DIV className: 'face',            
               DIV className: 'face_mouth face_part', style: face_mouth_style
@@ -2221,9 +2225,9 @@ Footer = ReactiveComponent
 
             DIV style: {marginTop: 20},
               SPAN style: {}, 
-                IFRAME style: {border: 'none', overflow: 'hidden', width: 90, height: 21}, src: "//www.facebook.com/plugins/like.php?href=http://www.facebook.com/pages/Living-Voters-Guide/157151824312366&send=false&layout=button_count&width=450&show_faces=false&action=like&colorscheme=light&font=lucida+grande&height=21", scrolling: "no", frameborder: "0", allowTransparency: "true"
+                IFRAME style: {border: 'none', overflow: 'hidden', width: 90, height: 21}, src: "//www.facebook.com/plugins/like.php?href=http://www.facebook.com/pages/Living-Voters-Guide/157151824312366&send=false&layout=button_count&width=450&show_faces=false&action=like&colorscheme=light&font=lucida+grande&height=21", scrolling: "no", frameBorder: "0", allowTransparency: "true"
               SPAN style: {},
-                IFRAME src: "https://platform.twitter.com/widgets/tweet_button.1410542722.html#_=1410827370943&amp;count=none&amp;hashtags=lvguide&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=https%3A%2F%2Flivingvotersguide.org%2F&amp;related=lvguide&amp;size=m&amp;text=I%20flexed%20my%20civic%20muscle%20%40lvguide.&amp;url=https%3A%2F%2Flivingvotersguide.org%2F", scrolling: "no", frameborder: "0", allowtransparency: "true", class: "twitter-share-button twitter-tweet-button twitter-share-button twitter-count-none", style: {width: 57; height: 20}
+                IFRAME src: "https://platform.twitter.com/widgets/tweet_button.1410542722.html#_=1410827370943&amp;count=none&amp;hashtags=lvguide&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=https%3A%2F%2Flivingvotersguide.org%2F&amp;related=lvguide&amp;size=m&amp;text=I%20flexed%20my%20civic%20muscle%20%40lvguide.&amp;url=https%3A%2F%2Flivingvotersguide.org%2F", scrolling: "no", frameBorder: "0", allowTransparency: "true", className: "twitter-share-button twitter-tweet-button twitter-share-button twitter-count-none", style: {width: 57; height: 20}
 
 
           DIV style: {paddingTop: 24, paddingBottom: 12, fontSize: 18, fontWeight: 500, color: 'rgb(77,76,71)'},
@@ -2516,6 +2520,9 @@ updateMedia = ->
 
 
 $(document).ready -> 
+  if 'ontouchend' in document #detect touch support
+    React.initializeTouchEvents(true)
+
   # Tracks data useful for responsive layouts.
   updateMedia()
   $(window).on "resize", -> updateMedia()

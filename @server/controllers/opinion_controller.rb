@@ -48,7 +48,7 @@ class OpinionController < ApplicationController
     # Need to add following in somewhere else
     #proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
-    proposal.delay.update_metrics()
+    #proposal.delay.update_metrics()
 
     # Enable this next line if I make sure it's properly prepared and won't clobber cache
     #proposal[:key] = "/proposal/#{proposal.id}"

@@ -519,14 +519,21 @@ HistogramData = ReactiveComponent
   ##
   # Split up opinions into columns based on their stance.   
   render : ->
-    ##
-    # Size the avatars. Size of avatar shrinks proportional to 1/sqrt(num_opinions)
-    opinions = @data(@proposal).opinions || []
 
-    # we only need to recompute this data if the distribution of stances has changed
+
+    # We only need to recompute this data if the distribution of stances has changed. 
+    # Treat your_opinion specially so that we don't need to dirty the entire Page
+    # object whenever you drag your slider. 
+    opinions = @data(@proposal).opinions || []
+    opinions = opinions.slice(0)    
+    your_opinion = @data(@proposal.your_opinion)
+    opinions.push your_opinion
     last_computation_hash = JSON.stringify( _.map(opinions, (o) -> o.stance) )
+
     if @local.last_computation_hash != last_computation_hash
 
+      ##
+      # Size the avatars. Size of avatar shrinks proportional to 1/sqrt(num_opinions)
       avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, 
         Math.floor(BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (opinions.length + 1) / 10 )  )
 

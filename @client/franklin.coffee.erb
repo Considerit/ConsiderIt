@@ -522,13 +522,8 @@ HistogramData = ReactiveComponent
 
 
     # We only need to recompute this data if the distribution of stances has changed. 
-    # Treat your_opinion specially so that we don't need to dirty the entire Page
-    # object whenever you drag your slider. 
     opinions = @data(@proposal).opinions || []
-    opinions = opinions.slice(0)    
-    your_opinion = @data(@proposal.your_opinion)
-    opinions.push your_opinion
-    last_computation_hash = JSON.stringify( _.map(opinions, (o) -> o.stance) )
+    last_computation_hash = JSON.stringify( _.map(opinions, (o) => @data(o.key).stance) )
 
     if @local.last_computation_hash != last_computation_hash
 
@@ -549,7 +544,11 @@ HistogramData = ReactiveComponent
 
       # Assign each Opinion to a column
       for opinion in opinions
-        column = Math.floor (opinion.stance + 1) / 2.0 * (columns_in_histogram - 1)
+        opinion = @data(opinion.key)
+         
+        round_method = if opinion.stance_segment < 3 then Math.floor else Math.ceil
+
+        column = round_method (opinion.stance + 1) / 2.0 * (columns_in_histogram - 1)
         columns[column].push opinion
 
       # Spill out extremes into multiple columns. We'll cap the number of opinions

@@ -94,11 +94,10 @@ td.summary_share
   padding-top: 12px
 
 .next_proposal
-  position: absolute
-  right: 50px
   font-size: 15px
-  top: 14px
-
+  margin-left: 50px
+  display: inline-block
+  font-weight: 400
   a
     color: white
     text-decoration: underline
@@ -111,7 +110,6 @@ td.summary_share
   margin: auto
 
 .proposal_navigation_menu
-  display: inline-block
   font-size: 22px
   font-weight: 700
   position: relative
@@ -128,6 +126,7 @@ td.summary_share
   background-color: rgba(0,0,0,.2)
   border-radius: 6px
   margin-top: 3px
+  display: inline-block
 
   &:hover
     cursor: pointer
@@ -200,7 +199,7 @@ $proposer_img_size: 50px
 // The proposal details revealed 
 .proposal_details
   padding-top: $vertical_baseline
-  +font-size(2)
+  font-size: 18px
 
 .proposal_details, .description_field
   // some default styles for html written by users rendered here
@@ -260,6 +259,7 @@ $proposer_img_size: 50px
 
   .field_body
     padding: 6px 24px
+    width: 700px
 
 [customer="livingvotersguide"]
   .endorser_group

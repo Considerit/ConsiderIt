@@ -14433,7 +14433,6 @@ var SimpleEventPlugin = {
       case topLevelTypes.topTouchEnd:
       case topLevelTypes.topTouchMove:
       case topLevelTypes.topTouchStart:
-        console.log('constructor', topLevelType, topLevelTypes);
         EventConstructor = SyntheticTouchEvent;
         break;
       case topLevelTypes.topScroll:
@@ -15111,7 +15110,6 @@ var TouchEventInterface = {
  * @extends {SyntheticUIEvent}
  */
 function SyntheticTouchEvent(dispatchConfig, dispatchMarker, nativeEvent) {
-  console.log(dispatchConfig, dispatchMarker, nativeEvent);
   SyntheticUIEvent.call(this, dispatchConfig, dispatchMarker, nativeEvent);
 }
 

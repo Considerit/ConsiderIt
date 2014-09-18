@@ -2189,11 +2189,16 @@ Header = ReactiveComponent
             userbar_style = {backgroundColor: color.background}
 
             if @root.page_name not in ['homepage', 'about']
-              userbar_style = { top: 85, left: 2, right: 'auto' }
+              userbar_style = { top: 51, right: 2, left: 'auto' }
               link_style = { color: '#777', fontWeight: 600, fontSize: 15 }
           DIV className: 'userbar', style: userbar_style,
-            Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 26, width: 26}
+            Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
             A style: link_style, 'data-action': 'logout', onClick: @logout, 'Logout'
+
+        # Now draw the social sharing buttons
+        if @root.page_name in ['homepage', 'about']
+          DIV style: {position: 'absolute', top: 46, right: 32},
+            SharingButtons()
 
       DIV null, 
         # We'll only show the extended header on certain pages

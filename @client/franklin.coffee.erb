@@ -370,7 +370,7 @@ StickyProposalHeading = ReactiveComponent
   render : ->
     proposal = @proposal
     color = @data('color')
-    customer = @data('customer')
+    customer = @data('/customer')
     proposals = @data('/proposals')
 
     # If navigation bar is enabled, then we'll use a really short proposal name in the heading.
@@ -2005,7 +2005,7 @@ ProposalSummary = ReactiveComponent
   displayName: 'ProposalSummary'
 
   render : ->
-    customer = @data('customer')
+    customer = @data('/customer')
     color = @data('color')
 
     proposal = @data()
@@ -2086,7 +2086,7 @@ Homepage = ReactiveComponent
         save @local
 
   render : ->
-    customer = @data('customer')
+    customer = @data('/customer')
     color = @data('color')
     proposals = @data('/proposals')
 
@@ -2183,7 +2183,7 @@ Header = ReactiveComponent
 
   render : ->
     current_user = @data('/current_user')
-    customer = @data('customer')
+    customer = @data('/customer')
     color = @data('color')
 
     DIV className: 'l_header', style: {backgroundColor: color.header_bg},
@@ -2262,7 +2262,7 @@ SharingButtons = ReactiveComponent
 Footer = ReactiveComponent
   displayName: 'Footer'
   render : -> 
-    customer = @data('customer')
+    customer = @data('/customer')
     color = @data('color')
 
     DIV className: 'l_footer',  
@@ -2338,8 +2338,7 @@ About = ReactiveComponent
       , 1000
 
   render : -> 
-    about_page = @data('/page/about')
-    customer = @data('customer') #todo: make the customer a server-side object
+    customer = @data('/customer') 
 
     if @local.embed_html_directly && !@local.html && customer.about_page_url
       # fetch the about page HTML directly
@@ -2438,7 +2437,7 @@ Computer = ReactiveComponent
 Colors = ReactiveComponent
   displayName: 'Color'
   render : ->
-    customer = @data('customer')
+    customer = @data('/customer')
     color = @data('color')
 
     # initialize colors if they haven't already been set

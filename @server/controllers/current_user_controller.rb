@@ -112,6 +112,7 @@ class CurrentUserController < ApplicationController
     if current_user && current_user.logged_in? && params[:logged_in] == false
       puts("Logging out.")
       logging_out = true
+      dirty_key '/page/homepage'
       new_current_user()
     else
       # Otherwise, we'll

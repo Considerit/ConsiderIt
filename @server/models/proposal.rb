@@ -78,6 +78,7 @@ class Proposal < ActiveRecord::Base
     response.update({
       :points => pointz,
       :opinions => ops,
+      :top_point => self.points.published.order(:score).last, # otherwise top points get rewritten on homepage
       :your_opinion => "/opinion/#{your_opinion.id}"
     })
 

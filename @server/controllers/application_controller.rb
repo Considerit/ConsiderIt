@@ -175,7 +175,15 @@ private
     end
 
     if Thread.current[:dirtied_keys].has_key? '/page/homepage'
-      response.append PageController.homepage_data()
+      # copied from PageController...need to refactor
+      users = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE u.account_id=#{current_tenant.id} AND u.registration_complete=true AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
+      result = {
+        contributors: users.map {|u| "/user/#{u['id']}"},
+        your_opinions: current_user.opinions.map {|o| o.as_json},
+        proposals: Proposal.summaries(),
+        key: "/page/homepage"
+      } 
+      response.append result
     end
     return response
   end

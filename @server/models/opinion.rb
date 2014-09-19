@@ -74,7 +74,7 @@ class Opinion < ActiveRecord::Base
 
     # New opinion means the proposal needs to be re-fetched so that
     # it includes it in its list of stuff
-    dirty_key("/proposal/#{proposal_id}")
+    dirty_key "/proposal/#{proposal_id}"
 
     # ActiveSupport::Notifications.instrument("published_new_opinion", 
     #                                         :opinion => self,

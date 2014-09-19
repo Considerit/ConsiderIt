@@ -134,8 +134,10 @@
                 console.log('Fetch returned for', key)
                 var result = JSON.parse(request.responseText)
                 // Warn if the server returns data for a different url than we asked it for
-                console.assert(result.key && result.key === key,
-                               'Server returned data with unexpected key', result, 'for key', key)
+                // TRAVIS: this check is bad because the result may be an array of objects, 
+                //         one of which may be the requested object. Disabling for now.
+                // console.assert(result.key && result.key === key,
+                //                'Server returned data with unexpected key', result, 'for key', key)
                 update_cache(result)
             }
             else if (request.status === 500)

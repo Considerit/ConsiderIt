@@ -1,5 +1,6 @@
 class PageController < ApplicationController
   respond_to :json
+  
   def show
 
     case params[:id]
@@ -8,7 +9,7 @@ class PageController < ApplicationController
       result = homepage_data()
 
     when 'about'
-      result = {} # don't need anything special, just the customer object with the about page url
+      result = {} # don't need anything special
 
     else # if proposal
 
@@ -28,7 +29,6 @@ class PageController < ApplicationController
     end
 
 
-    result['customer'] = current_tenant
     result['key'] = "/page/#{params[:id]}"
     render :json => result
   end
@@ -38,7 +38,6 @@ class PageController < ApplicationController
       users: get_all_user_data(),
       contributors: recent_contributors(),
       your_opinions: current_user.opinions.map {|o| o.as_json}, 
-      customer: current_tenant, 
       key: "/page/homepage"    
     } 
     result

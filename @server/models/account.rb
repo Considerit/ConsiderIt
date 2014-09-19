@@ -32,7 +32,7 @@ class Account < ActiveRecord::Base
   def as_json(options={})
     options[:only] ||= Account.my_public_fields
     json = super(options)
-    json['key'] = 'customer'
+    json['key'] = '/customer'
     json
   end
 

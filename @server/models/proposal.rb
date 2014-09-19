@@ -30,60 +30,7 @@ class Proposal < ActiveRecord::Base
   scope :published_web, -> {where( :published => true)}
   scope :browsable, -> {where( :targettable => false)}
 
-  def full_data(show_private = false)
-    tenant = Thread.current[:tenant]
-    
-    p = proposal_data(show_private)
-    response = {
-      :proposal => p,
-    }
 
-    if tenant.assessment_enabled
-      response.update({
-        :assessments => assessments.completed.public_fields,
-        :claims => assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
-        :verdicts => jsonify_objects(Assessable::Verdict.all, 'verdict')
-      })
-    end
-
-    if show_private && self.publicity < 2
-      response.update({
-        :access_list => self.access_list
-      })
-    end
-
-    response
-  end
-
-  def proposal_data(show_private = false)
-    # Compute points
-    pointz = points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
-    pointz = pointz.public_fields.map do |p|
-      p.as_json
-    end
-
-    # Find an existing opinion for this user
-    your_opinion = Opinion.get_or_make(self, current_user)
-
-    # Compute opinions
-    published_opinions = opinions.published
-    ops = published_opinions.public_fields.map {|x| x.as_json}
-
-    if published_opinions.where(:user_id => nil).count > 0
-      throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
-    end
-
-    # Put them together
-    response = self.as_json
-    response.update({
-      :points => pointz,
-      :opinions => ops,
-      :top_point => self.points.published.order(:score).last, # otherwise top points get rewritten on homepage
-      :your_opinion => "/opinion/#{your_opinion.id}"
-    })
-
-    response
-  end
 
   def self.summaries
         
@@ -145,9 +92,44 @@ class Proposal < ActiveRecord::Base
     response
   end
 
-  def self.content_for_user(user)
-    user.proposals.public_fields.to_a + Proposal.privately_shared.where("LOWER(CONVERT(access_list USING utf8)) like '%#{user.email}%' ").public_fields.to_a
+  def proposal_data
+    # TODO: figure out how this method relates to proposal#as_json & proposal#proposal_summary
+
+    # Compute points
+    pointz = points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
+    pointz = pointz.public_fields.map do |p|
+      p.as_json
+    end
+
+    # Find an existing opinion for this user
+    your_opinion = Opinion.get_or_make(self, current_user)
+
+    # Compute opinions
+    published_opinions = opinions.published
+    ops = published_opinions.public_fields.map {|x| x.as_json}
+
+    if published_opinions.where(:user_id => nil).count > 0
+      throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
+    end
+
+    # Put them together
+    response = self.as_json
+    response.update({
+      :points => pointz,
+      :opinions => ops,
+      :top_point => self.points.published.order(:score).last, # otherwise top points get rewritten on homepage
+      :your_opinion => "/opinion/#{your_opinion.id}"
+    })
+
+    # if can?(:manage, proposal) && self.publicity < 2
+    #   response.update({
+    #     :access_list => self.access_list
+    #   })
+    # end
+
+    response
   end
+
 
   def as_json(options={})
     options[:only] ||= Proposal.my_public_fields
@@ -161,6 +143,9 @@ class Proposal < ActiveRecord::Base
     result
   end
 
+  # def self.content_for_user(user)
+  #   user.proposals.public_fields.to_a + Proposal.privately_shared.where("LOWER(CONVERT(access_list USING utf8)) like '%#{user.email}%' ").public_fields.to_a
+  # end
 
   # The user is subscribed to proposal notifications _implicitly_ if:
   #   • they have an opinion (published or not)

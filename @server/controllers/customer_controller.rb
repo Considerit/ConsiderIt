@@ -3,14 +3,16 @@ class CustomerController < ApplicationController
   respond_to :json
 
   def show
-    render :json => current_tenant
+    dirty_key '/customer'
+    render :json => []
   end
 
   def update
-    authorize! :update, Account
-    
     # not available yet
-    render :json => current_tenant, :status => :method_not_allowed
+
+    authorize! :update, Account
+    dirty_key '/customer'
+    render :json => [], :status => :method_not_allowed
   end
 
 end

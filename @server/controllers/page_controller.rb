@@ -33,6 +33,17 @@ class PageController < ApplicationController
     render :json => result
   end
 
+  def homepage_data
+    result = {
+      users: get_all_user_data(),
+      contributors: recent_contributors(),
+      your_opinions: current_user.opinions.map {|o| o.as_json}, 
+      customer: current_tenant, 
+      key: "/page/homepage"    
+    } 
+    result
+  end
+
   private
 
   def get_all_user_data
@@ -46,16 +57,5 @@ class PageController < ApplicationController
     return users.map {|u| "/user/#{u['id']}"}
   end
 
-  def homepage_data
-    result = {
-      # proposals: Proposal.summaries(), 
-      users: get_all_user_data(),
-      contributors: recent_contributors()
-    } 
-    result['your_opinions'] = current_user.opinions.map {|o| o.as_json}
-    result['customer'] = current_tenant
-    result['key'] = "/page/homepage"    
-    result
-  end
 
 end

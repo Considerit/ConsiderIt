@@ -6,8 +6,9 @@ class CurrentUserController < ApplicationController
 
   # Gets the current user data
   def show
-    puts("Current_user is #{current_user.id}")
-    render :json => current_user().current_user_hash(form_authenticity_token)
+    # puts("Current_user is #{current_user.id}")
+    dirty_key '/current_user'
+    render :json => []
   end  
 
   # handles auth (login, new accounts, and login via reset password token) and updating user info
@@ -240,7 +241,9 @@ class CurrentUserController < ApplicationController
       format.json do 
         Thread.current[:dirtied_keys].delete('/current_user') # Because we're adding our own
         dirty_key("/user/#{current_user.id}")                 # But let's get the /user
-        render :json => [response] + affected_objects()
+        # TODO: figure out how to let applicationcontroller#compile_dirty_objects
+        #       handle this response
+        render :json => [response]
       end
 
       format.html do
@@ -257,7 +260,7 @@ class CurrentUserController < ApplicationController
           end
         else
           @errors = errors
-          @not_logged_in = true        
+          @not_logged_in = true
           render :template => "old/login", :layout => 'dash' 
         end
 
@@ -292,7 +295,7 @@ class CurrentUserController < ApplicationController
     end
 
     response = [current_user.current_user_hash(form_authenticity_token)]
-    response.concat(affected_objects())
+    response.concat(compile_dirty_objects())
 
     render :inline =>
       "<script type=\"text/javascript\">" +

@@ -45,6 +45,20 @@ class ApplicationController < ActionController::Base
       current_tenant.save
     end
 
+    # if there are dirtied keys, we'll append the corresponding data to the response
+    if Thread.current[:dirtied_keys].keys.length > 0
+      for arg in args
+        if arg.is_a?(::Hash) && arg.has_key?(:json)
+          if arg[:json].is_a?(::Hash)
+            # This constraint is not principled, just how it works right now
+            raise "JSON response must be an array if there are dirty objects"
+          else 
+            arg[:json] += compile_dirty_objects()
+          end
+        end
+      end
+    end
+
     super
 
   end
@@ -141,51 +155,86 @@ private
     Thread.current[:current_user2]    = user
   end
 
-  def affected_objects
+  def compile_dirty_objects
     # Right now this works for points, opinions, proposals, and the
     # current opinion's proposal if the current opinion is dirty.
+
     response = []
 
-    dirtied_keys = Thread.current[:dirtied_keys].keys
-
-    # Grab dirtied points, opinions, and users
-    for type in [Point, Opinion, User]
-      response.concat(dirtied_keys.select{|k| k.match("/#{type.name.downcase}/")} \
-            .map {|k| type.find(key_id(k)).as_json })
+    # Include the user object too, if we haven't already when fetching /current_user
+    if Thread.current[:dirtied_keys].has_key?('/current_user') && !Thread.current[:dirtied_keys].has_key?("/user/#{current_user.id}")
+      dirty_key "/user/#{current_user.id}"
     end
 
-    # Grab dirtied proposals
-    response.concat(dirtied_keys.select{|k| k.match("/proposal/")} \
-            .map {|k| Proposal.find(key_id(k)).proposal_data()})
+    dirtied_keys = Thread.current[:dirtied_keys].keys
+    for key in Thread.current[:dirtied_keys].keys
 
-    # Output dirty current_user
-    if Thread.current[:dirtied_keys].has_key? '/current_user'
-      response.append current_user.current_user_hash(form_authenticity_token)
+      # Grab dirtied points, opinions, and users
+      for type in [Point, Opinion, User]
+        if key.match "/#{type.name.downcase}/"
+          response.append type.find(key_id(key)).as_json
+          next
+        end
+      end
 
-      # And include the user object too, if we haven't already
-      if not Thread.current[:dirtied_keys].has_key?("/user/#{current_user.id}")
-        response.append(User.find(current_user.id).as_json)
+      # Grab dirtied proposals
+      if key.match "/proposal/"
+        id = key[10..key.length]
+        proposal = Proposal.find_by_id(id) || Proposal.find_by_long_id(id)
+        response.append proposal.proposal_data
+
+      elsif key == '/customer'
+        response.append current_tenant.as_json
+
+      elsif key == '/current_user'
+        response.append current_user.current_user_hash(form_authenticity_token)
+
+      elsif key == '/proposals'
+        response.append Proposal.summaries
+
+      elsif key.match '/page/homepage'
+        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE u.account_id=#{current_tenant.id} AND u.registration_complete=true AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
+
+        clean = {
+          users: get_all_user_data(),
+          contributors: recent_contributors.map {|u| "/user/#{u['id']}"},
+          your_opinions: current_user.opinions.map {|o| o.as_json},
+          key: key
+        } 
+        response.append clean
+
+      elsif key.match "/page/"
+        # default to proposal 
+        long_id = key[6..key.length]
+        proposal = Proposal.find_by_long_id long_id
+
+        clean = { 
+          proposal: proposal.proposal_data(),
+          users: get_all_user_data(),
+          your_opinions: current_user.opinions.map {|o| o.as_json},
+          key: key
+        }
+
+        if current_tenant.assessment_enabled
+          clean.update({
+            :assessments => proposal.assessments.completed.public_fields,
+            :claims => proposal.assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
+            :verdicts => jsonify_objects(Assessable::Verdict.all, 'verdict')
+          })
+        end
+
+        response.append clean
+
       end
     end
 
-    # Handle dirty proposals key, which are all the summaries of active proposals 
-    # the current user can access
-    if Thread.current[:dirtied_keys].has_key? '/proposals'
-      response.append Proposal.summaries
-    end
-
-    if Thread.current[:dirtied_keys].has_key? '/page/homepage'
-      # copied from PageController...need to refactor
-      users = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE u.account_id=#{current_tenant.id} AND u.registration_complete=true AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
-      result = {
-        contributors: users.map {|u| "/user/#{u['id']}"},
-        your_opinions: current_user.opinions.map {|o| o.as_json},
-        proposals: Proposal.summaries(),
-        key: "/page/homepage"
-      } 
-      response.append result
-    end
     return response
+  end
+
+  def get_all_user_data
+    users = ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id} AND (registration_complete=true OR id=#{current_user.id})")
+    users = users.as_json
+    jsonify_objects(users, 'user')
   end
 
   def store_location(path)

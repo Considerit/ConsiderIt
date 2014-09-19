@@ -95,27 +95,11 @@ ConsiderIt::Application.routes.draw do
     as: :user_omniauth_callback,
     via: [:get, :post]
 
-
-
   # All user-visible URLs go to the "home" controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
   get '(*url)' => 'home#index', :constraints => NotJSON.new
 
-
-  # MIKE SAYS: not sure where to put this.  Is it JSON or what?
-  # TRAVIS SAYS: yes this is all JSON in here
-  # devise_scope :user do  
-  #   get "/content_for_user" => "current_user#content_for_user", :as => :content_for_user
-  #   get "users/check_login_info" => "current_user#check_login_info"
-  #   post "/users/set_tag" => "current_user#set_tag", :as => :set_tag
-  #   post "/send_password_reset_token" => "current_user#send_password_reset_token"
-  #   resource :current_user, controller: 'current_user', only: [:show, :create, :update, :destroy]
-  # end
-
-
   # mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
-
-
 
   # Here's the entire JSON API:
   resources :page, :only => [:show]
@@ -126,6 +110,8 @@ ConsiderIt::Application.routes.draw do
   resources :opinion, :only => [:update, :show]
   resources :client_error, :only => [:create]
   get '/proposals' => 'proposal#index'
+  get '/customer' => 'customer#show'
+  match '/customer' => 'customer#update', :via => [:put]
 
   # These next ones are done with "match" because "resources" was
   # being all "I need an id like "/current_user/234" and I don't know
@@ -136,7 +122,6 @@ ConsiderIt::Application.routes.draw do
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]
 
-  post "/send_password_reset_token" => "current_user#send_password_reset_token"
 
   ######
   ## concerns routes

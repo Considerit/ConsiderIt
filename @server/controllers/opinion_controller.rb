@@ -6,9 +6,9 @@ class OpinionController < ApplicationController
 
   def show
     opinion = Opinion.find(params[:id])
-
     authorize! :read, opinion
-    render :json => opinion.as_json
+    dirty_key "/opinion/#{params[:id]}"
+    render :json => []
   end
   
   def update
@@ -43,7 +43,7 @@ class OpinionController < ApplicationController
     # Update published
     if params['published'] && !opinion.published
       opinion.publish()  # This will also publish all the newly-written points
-      dirty_key("/page/homepage") # you're now a recent contributor!
+      dirty_key "/page/homepage" # you're now a recent contributor!
     end
 
     # Need to add following in somewhere else
@@ -54,9 +54,9 @@ class OpinionController < ApplicationController
     # Enable this next line if I make sure it's properly prepared and won't clobber cache
     #proposal[:key] = "/proposal/#{proposal.id}"
     
-    dirty_key("/opinion/#{opinion.id}")
+    dirty_key "/opinion/#{opinion.id}"
 
-    render :json => affected_objects()
+    render :json => []
 
   end
 end

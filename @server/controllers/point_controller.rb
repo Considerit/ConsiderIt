@@ -5,7 +5,8 @@ class PointController < ApplicationController
     point = Point.find params[:id]
     authorize! :read, point
 
-    render :json => point.as_json
+    dirty_key "/point/#{params[:id]}"
+    render :json => []
   end
 
 
@@ -37,7 +38,6 @@ class PointController < ApplicationController
     end
 
     
-
     # Include into the user's opinion
     opinion.include(point)
 
@@ -47,15 +47,16 @@ class PointController < ApplicationController
     pp(result)
 
     remap_key(params[:key], "/point/#{point.id}")
+
+    dirty_key "/proposal/#{proposal.long_id}"
+
     # # This session stuff is broken!  Because the session gets cleared
     # # when we switch accounts.  Sucks.  Need a new way to store this.
     # session[:remapped_keys] ||= {}
     # session[:remapped_keys][params[:key]] = "/point/#{point.id}"
 
-    # Now let's return the proposal's changes too
-    proposal_json = proposal.proposal_data(can?(:manage, proposal))
-
-    render :json => [result, proposal_json] + affected_objects()
+    #TODO: don't know how to dirty and handle the point key in compile_dirty_objects
+    render :json => [result]
   end
 
   def update
@@ -81,7 +82,8 @@ class PointController < ApplicationController
       )
     end
 
-    render :json => point.as_json
+    dirty_key "/point/#{params[:id]}"
+    render :json => []
   end
 
   def destroy
@@ -93,12 +95,12 @@ class PointController < ApplicationController
     point.destroy
     proposal.opinions.where("point_inclusions like '%#{params[:id]}%'").map do |o|
       o.recache
-      dirty_key("/opinion/#{o.id}")
+      dirty_key "/opinion/#{o.id}"
     end
 
     dirty_key("/proposal/#{proposal.id}") #because /points is changed...
 
-    render :json => affected_objects()
+    render :json => []
   end
  
 end

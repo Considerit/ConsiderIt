@@ -5,55 +5,55 @@ class ProposalController < ApplicationController
   respond_to :json
 
   def index
-    render :json => Proposal.summaries
+    dirty_key "/proposals"
+    render :json => []
   end
 
   def show
     proposal = Proposal.find_by_id(params[:id]) || Proposal.find_by_long_id(params[:id])
-    if (!proposal || cannot?(:read, proposal))
-      result = { errors: ["not found"] }
-    else
-      result = proposal.proposal_data(can?(:manage, proposal))
+    if !proposal || cannot?(:read, proposal)
+      render :json => { errors: ["not found"] }, :status => :not_found
+      return 
     end
-    render :json => result
 
+    dirty_key "/proposal/#{proposal.long_id}"
+    render :json => []
   end
 
-  def create
-    description = params[:proposal][:description] || ''
+  # def create
+  #   description = params[:proposal][:description] || ''
 
-    # NOTE: default hashtags haven't been used since Occupy deployment. Purge from system.
-    if current_tenant.default_hashtags && description.index('#').nil?
-      description += " #{current_tenant.default_hashtags}"
-    end
+  #   # NOTE: default hashtags haven't been used since Occupy deployment. Purge from system.
+  #   if current_tenant.default_hashtags && description.index('#').nil?
+  #     description += " #{current_tenant.default_hashtags}"
+  #   end
 
-    # TODO: handle remote possibility of name collisions?
-    # TODO: explicitly grab parameters
-    params[:proposal].update({
-      :long_id => SecureRandom.hex(5),
-      :account_id => current_tenant.id, 
-      :admin_id => SecureRandom.hex(6),  #NOTE: admin_id never used, should be purged from system
-      :user_id => current_user ? current_user.id : nil,
-      :description => description,
-    })
+  #   # TODO: handle remote possibility of name collisions?
+  #   # TODO: explicitly grab parameters
+  #   params[:proposal].update({
+  #     :long_id => SecureRandom.hex(5),
+  #     :account_id => current_tenant.id, 
+  #     :admin_id => SecureRandom.hex(6),  #NOTE: admin_id never used, should be purged from system
+  #     :user_id => current_user ? current_user.id : nil,
+  #     :description => description,
+  #   })
 
-    proposal = Proposal.create params[:proposal].permit!
+  #   proposal = Proposal.create params[:proposal].permit!
 
-    authorize! :create, proposal # TODO: This should happen first, I don't think cancan requires an object to authorize against
+  #   authorize! :create, proposal # TODO: This should happen first, I don't think cancan requires an object to authorize against
 
-    proposal.save
+  #   proposal.save
 
-    # why do we subscribe the creator to email notifications for new proposals by other people?
-    current_tenant.follow!(current_user, :follow => true, :explicit => false)
+  #   # why do we subscribe the creator to email notifications for new proposals by other people?
+  #   current_tenant.follow!(current_user, :follow => true, :explicit => false)
 
+  #   proposal.follow!(current_user, :follow => true, :explicit => false)
 
-    proposal.follow!(current_user, :follow => true, :explicit => false)
+  #   data = proposal.full_data 
 
-    data = proposal.full_data 
-
-    render :json => data
+  #   render :json => data
     
-  end
+  # end
 
   def update
     # Right now, proposal can't be updated with any fields. We're only checking for 
@@ -74,8 +74,8 @@ class ProposalController < ApplicationController
     # updates = params.select{|k,v| fields.include? k}
     # proposal.update_attributes! ActionController::Parameters.new(updates).permit!
 
-    data = proposal.full_data
-    render :json => data
+    dirty_key "/proposal/#{proposal.long_id}"
+    render :json => []
   end
 
 

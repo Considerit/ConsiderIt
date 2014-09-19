@@ -67,15 +67,15 @@ class Dashboard::DashboardController < ApplicationController
     # end
 
     @opinions = {}
-    if current_user
-      hidden_proposals = Proposal.content_for_user(current_user)
-      # hidden_proposals.each do |hidden|          
-      #   top_points[hidden.top_pro] = Point.find(hidden.top_pro) if hidden.top_pro
-      #   top_points[hidden.top_con] = Point.find(hidden.top_con) if hidden.top_con
-      # end
-      proposals += hidden_proposals
-      @opinions = current_user.opinions.published
-    end
+    # if current_user
+    #   hidden_proposals = Proposal.content_for_user(current_user)
+    #   # hidden_proposals.each do |hidden|          
+    #   #   top_points[hidden.top_pro] = Point.find(hidden.top_pro) if hidden.top_pro
+    #   #   top_points[hidden.top_con] = Point.find(hidden.top_con) if hidden.top_con
+    #   # end
+    #   proposals += hidden_proposals
+    #   @opinions = current_user.opinions.published
+    # end
 
 
     @proposals = {

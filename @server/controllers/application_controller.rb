@@ -131,6 +131,7 @@ private
     # puts("Session remapped keys is #{session[:remapped_keys]}")
     # session[:remapped_keys] ||= {}
   end
+  
   def new_current_user
     user = User.new
     # Record where this user initially came from:

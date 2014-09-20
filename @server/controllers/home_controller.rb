@@ -1,7 +1,7 @@
 
 class HomeController < ApplicationController
-  caches_action :avatars, :if => proc {|c| !session[:search_bot]}, :cache_path => proc {|c|
-    {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}"}
+  caches_action :avatars, :cache_path => proc {|c|
+    {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}-#{session[:search_bot]}"}
   }
 
   def index

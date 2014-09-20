@@ -74,8 +74,9 @@ class HomeController < ApplicationController
       if proposal.category && proposal.designator
         title = "#{proposal.category[0]}-#{proposal.designator}: #{title}"
       end
-      title = proposal.seo_title or title
-      description = proposal.seo_description or "#{proposal.name}#{proposal.name[proposal.name.length-1] == '?' ? '' : '?'} What do you think?"
+      title = proposal.seo_title || title
+      description = proposal.seo_description || "What do you think? #{proposal.description || proposal.name}"
+      description = ActionView::Base.full_sanitizer.sanitize description
       keywords = proposal.seo_keywords if proposal.seo_keywords
     end
 
@@ -101,7 +102,7 @@ class HomeController < ApplicationController
 
     ]
 
-    return [meta, page, title]
+    return meta, page, title
   end
 
 end

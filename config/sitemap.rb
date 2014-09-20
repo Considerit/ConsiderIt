@@ -41,6 +41,10 @@ Account.find_each do |accnt|
       end
     end
 
+    if accnt.about_page_url
+      add "about", {:priority => .8, :changefreq => 'monthly'}
+    end
+
   end
   #SitemapGenerator::Sitemap.ping_search_engines
 

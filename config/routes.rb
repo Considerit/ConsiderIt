@@ -58,11 +58,7 @@ ConsiderIt::Application.routes.draw do
 
   end
 
-  #match "/theme" => "theme#set", :via => :post
-  get '/home/avatars' => "home#avatars", :as => :get_avatars
-  match "/home/domain" => "home#set_domain", :via => :post
-  match "/home/theme" => "home#set_dev_options", :via => :post, :as => :set_dev_options
-
+  get '/avatars' => "home#avatars", :as => :get_avatars
 
   #match '/home/study/:category' => "home#study", :via => :post  
 

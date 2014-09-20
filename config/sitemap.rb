@@ -26,8 +26,7 @@ Account.find_each do |accnt|
     #
     accnt.proposals.active.open_to_public.each do |prop|
       begin
-        add new_opinion_proposal_path(prop.long_id), {:priority => 1.0, :changefreq => 'daily'}
-        #add proposal_path(prop.long_id), {:priority => 0.7, :changefreq => 'weekly'}
+        add prop.long_id, {:priority => 1.0, :changefreq => 'daily'}
       rescue
         pp "#{prop.long_id} failed"
       end
@@ -35,7 +34,7 @@ Account.find_each do |accnt|
 
     accnt.proposals.inactive.open_to_public.each do |prop|
       begin
-        add new_opinion_proposal_path(prop.long_id), {:priority => 0.2, :changefreq => 'monthly'}
+        add prop.long_id, {:priority => 0.2, :changefreq => 'monthly'}
         #add proposal_path(prop.long_id), {:priority => 0.7, :changefreq => 'weekly'}
       rescue
         pp "#{prop.long_id} failed"

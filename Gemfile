@@ -42,8 +42,6 @@ gem 'useragent' # https://github.com/josh/useragent
 gem 'oj'
 gem 'oj_mimic_json' # we need this for Rails 4.1.x
 
-
-
 #############
 # BACKGROUND PROCESSING / EMAIL
 gem 'whenever' # https://github.com/javan/whenever
@@ -65,8 +63,12 @@ gem 'coffee-rails' #, "~> 3.2.2"
 gem 'uglifier'
 gem 'sass-rails', "~> 4.0.3"
 gem 'bourbon'
-gem 'sitemap_generator' # SEO
 gem "asset_sync"
+
+##############
+# SEO
+gem 'sitemap_generator' # creates sitemaps for you. Defined in config/sitemap.rb
+gem 'prerender_rails' # takes html snapshots of pages and serves them to search bots
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

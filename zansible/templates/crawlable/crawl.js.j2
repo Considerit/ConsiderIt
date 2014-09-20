@@ -1,6 +1,6 @@
 var page = require('webpage').create();
 
-page.settings.userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1660.0 Safari/537.36';
+page.settings.userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1660.0 Safari/537.36 PHANTOM';
 
 var system = require('system');
 
@@ -50,7 +50,7 @@ page.open(system.args[1], function (status) {
       try {
         var avatar = document.getElementById('b64-avatars');
         avatar.parentNode.removeChild(avatar);
-      } catch {}
+      } catch(e) {}
     });
   }
 });

@@ -80,6 +80,11 @@ ConsiderIt::Application.configure do
 
   #{% endif %}
 
+  {% if allow_indexing %}
+  config.middleware.use Rack::Prerender, prerender_token: "{{ config.prerenderio }}"
+  {% endif %}
+  
+
   # Disable delivery errors, bad email addresses will be ignored
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default_url_options = { :address => 'localhost' }

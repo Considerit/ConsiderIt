@@ -31,7 +31,8 @@
 
       = stylesheet_link_tag 'stylesheets/application', debug: false
 
-      %link{ :href => "//fast.fonts.net/cssapi/cd97b194-90f2-4567-be7e-3a72011995f3.css",  :rel => 'stylesheet', :type => 'text/css' }
+      - if !@is_search_bot
+        %link{ :href => "//fast.fonts.net/cssapi/cd97b194-90f2-4567-be7e-3a72011995f3.css",  :rel => 'stylesheet', :type => 'text/css' }
 
       /[if IE 9]
         = stylesheet_link_tag 'browser/ie9'
@@ -59,26 +60,27 @@
 
       #content.content{ customer: current_tenant.identifier, theme: current_tenant.theme }
 
-      - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
+      - if !@is_search_bot
+        - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
+          :javascript
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
+            _gaq.push(['_setDomainName', ".#{get_root_domain}"]);
+            _gaq.push(['_trackPageview']);
+
+
+        - if current_tenant.analytics_google && current_tenant.analytics_google != ''
+          :javascript
+            var _gaq_account = _gaq_account || [];
+            _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
+            _gaq_account.push(['_trackPageview']);
+
         :javascript
-          var _gaq = _gaq || [];
-          _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-          _gaq.push(['_setDomainName', ".#{get_root_domain}"]);
-          _gaq.push(['_trackPageview']);
-
-
-      - if current_tenant.analytics_google && current_tenant.analytics_google != ''
-        :javascript
-          var _gaq_account = _gaq_account || [];
-          _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-          _gaq_account.push(['_trackPageview']);
-
-      :javascript
-        var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;
-        $buoop.ol = window.onload; 
-        try {if ($buoop.ol) $buoop.ol();}catch (e) {} 
-        var e = document.createElement("script"); 
-        e.setAttribute("type", "text/javascript"); 
-        e.setAttribute("src", "/browser-update.js"); 
-        document.body.appendChild(e); 
+          var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;
+          $buoop.ol = window.onload; 
+          try {if ($buoop.ol) $buoop.ol();}catch (e) {} 
+          var e = document.createElement("script"); 
+          e.setAttribute("type", "text/javascript"); 
+          e.setAttribute("src", "/browser-update.js"); 
+          document.body.appendChild(e); 
 

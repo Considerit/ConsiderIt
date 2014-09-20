@@ -24,6 +24,7 @@ class HomeController < ApplicationController
     response.headers["Strict Transport Security"] = 'max-age=0'
     
     @meta, @page, @title = get_meta_data()
+    @is_search_bot = session[:search_bot]
 
     render "layouts/application", :layout => false
   end

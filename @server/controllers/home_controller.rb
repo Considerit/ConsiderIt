@@ -1,6 +1,6 @@
 
 class HomeController < ApplicationController
-  caches_action :avatars, :cache_path => proc {|c|
+  caches_action :avatars, :if => proc {|c| !session[:search_bot]}, :cache_path => proc {|c|
     {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}"}
   }
 
@@ -33,8 +33,6 @@ class HomeController < ApplicationController
   end
 
   def avatars
-    #result = render_to_string :partial => './avatars'
-
     if session.has_key?(:search_bot) && session[:search_bot] # don't fetch avatars for search bots
       render :json => {}
     else 

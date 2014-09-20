@@ -2499,7 +2499,8 @@ fetchAvatars = ->
   $.get Routes.get_avatars_path(), (data) -> 
     if $('#b64-avatars').length > 0
       $('#b64-avatars').remove()
-    $('head').append data
+    if data
+      $('head').append data
 
 
 ##

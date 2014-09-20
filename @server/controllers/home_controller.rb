@@ -32,9 +32,14 @@ class HomeController < ApplicationController
 
   def avatars
     #result = render_to_string :partial => './avatars'
-    respond_to do |format|
-      format.html { render :partial => './avatars' } 
-      format.json { render :partial => './avatars' }
+
+    if request.user_agent.match 'PHANTOM' # don't fetch avatars for phantomjs crawlability reverse proxy
+      render :json => {}
+    else 
+      respond_to do |format|
+        format.html { render :partial => './avatars' } 
+        format.json { render :partial => './avatars' }
+      end
     end
   end
 

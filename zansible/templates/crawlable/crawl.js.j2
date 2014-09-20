@@ -47,8 +47,10 @@ page.open(system.args[1], function (status) {
           item.parentNode.removeChild(item);
         }
       }
-      var avatar = document.getElementById('b64-avatars');
-      avatar.parentNode.removeChild(avatar);
+      try {
+        var avatar = document.getElementById('b64-avatars');
+        avatar.parentNode.removeChild(avatar);
+      } catch {}
     });
   }
 });

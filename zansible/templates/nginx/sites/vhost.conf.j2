@@ -38,42 +38,80 @@ server {
     break;
   }  
 
-  set $redirect_as_bot 0;
-  if ($http_user_agent ~ "crawl|Googlebot|Slurp|spider|bingbot|tracker|click|parser|spider") {
-      set $redirect_as_bot 1;
-  }
-  if ($uri ~ "sitemaps"){
-      set $redirect_as_bot 0;
-  }
-  if ($redirect_as_bot = 1){
-      rewrite ^ /ajaxcrawlable;
+
+  ####
+  # Dealing with search indexing using prerender.io
+  # from https://gist.github.com/thoop/8165802
+
+  index  index.html;
+
+  location / {
+      try_files $uri @prerender;
   }
 
-  location /ajaxcrawlable {
-    # Send the original URI before any modifications.
-    # This is needed because error_page changes the URI.
-    proxy_set_header X-Request-URI   $request_uri;
-    # Set client's IP address
-    proxy_set_header X-Real-IP       $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    # Set original host name
-    proxy_set_header X-Forwarded-Host            $host;
-    proxy_set_header Host $http_host;
+  location @prerender {
+      proxy_set_header X-Prerender-Token {{ config.prerenderio }};
+      
+      set $prerender 0;
+      if ($http_user_agent ~* "baiduspider|twitterbot|facebookexternalhit|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest") {
+          set $prerender 1;
+      }
+      if ($args ~ "_escaped_fragment_") {
+          set $prerender 1;
+      }
+      if ($http_user_agent ~ "Prerender") {
+          set $prerender 0;
+      }
+      if ($uri ~ "\.(js|css|xml|less|png|jpg|jpeg|gif|pdf|doc|txt|ico|rss|zip|mp3|rar|exe|wmv|doc|avi|ppt|mpg|mpeg|tif|wav|mov|psd|ai|xls|mp4|m4a|swf|dat|dmg|iso|flv|m4v|torrent)") {
+        set $prerender 0;
+      }
 
-    # Set original port
-    proxy_set_header Port            $server_port;
+      if ($prerender = 1) {
+          rewrite .* /$scheme://$host$request_uri? break;
+          proxy_pass http://service.prerender.io;
+      }
+      if ($prerender = 0) {
+         rewrite .* /index.html break;
+      }
+  }
+  ###############
+
+  # set $redirect_as_bot 0;
+  # if ($http_user_agent ~ "crawl|Googlebot|Slurp|spider|bingbot|tracker|click|parser|spider") {
+  #     set $redirect_as_bot 1;
+  # }
+  # if ($uri ~ "sitemaps"){
+  #     set $redirect_as_bot 0;
+  # }
+  # if ($redirect_as_bot = 1){
+  #     rewrite ^ /ajaxcrawlable;
+  # }
+
+  # location /ajaxcrawlable {
+  #   # Send the original URI before any modifications.
+  #   # This is needed because error_page changes the URI.
+  #   proxy_set_header X-Request-URI   $request_uri;
+  #   # Set client's IP address
+  #   proxy_set_header X-Real-IP       $remote_addr;
+  #   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  #   # Set original host name
+  #   proxy_set_header X-Forwarded-Host            $host;
+  #   proxy_set_header Host $http_host;
+
+  #   # Set original port
+  #   proxy_set_header Port            $server_port;
     
-    # Redirect to the Node.js server(s).
-    # NOTE: This cannot end with a trailing slash.
-    {% if server.ssl %}
-      proxy_set_header X-Forwarded-Proto https; 
-    {% else %}
-      proxy_set_header X-Forwarded-Proto http; 
-    {% endif %}
+  #   # Redirect to the Node.js server(s).
+  #   # NOTE: This cannot end with a trailing slash.
+  #   {% if server.ssl %}
+  #     proxy_set_header X-Forwarded-Proto https; 
+  #   {% else %}
+  #     proxy_set_header X-Forwarded-Proto http; 
+  #   {% endif %}
 
-    proxy_pass http://nodejs;
-    proxy_redirect off;
-  }
+  #   proxy_pass http://nodejs;
+  #   proxy_redirect off;
+  # }
 
   location ~ \.(myadmin|aspx|php|jsp|cgi|zip)$ {
     return 410;

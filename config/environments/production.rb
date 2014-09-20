@@ -89,6 +89,8 @@ ConsiderIt::Application.configure do
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
 
+  config.middleware.use Rack::Prerender
+  
   # Exception Notification
   config.middleware.use ExceptionNotification::Rack,
     :email => {

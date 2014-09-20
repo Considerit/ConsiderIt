@@ -2,7 +2,10 @@ User-Agent: *
 {% if allow_indexing %}
 Disallow: /*/points/*
 Disallow: /*/points
+Disallow: /dashboard/*
+Disallow: /dashboard
 Disallow: /users
+Disallow: /*/opinions/*
 {% for key, value in config.indexability.iteritems() %}
 {% if value and key in config.meta %}
 Sitemap: {{config.meta[key].canonical}}/sitemaps/{{ key|e }}/sitemap.xml.gz

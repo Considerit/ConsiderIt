@@ -42,7 +42,7 @@ Account.find_each do |accnt|
     end
 
     if accnt.about_page_url
-      add "about", {:priority => .8, :changefreq => 'monthly'}
+      add "about", {:priority => 0.8, :changefreq => 'monthly'}
     end
 
   end

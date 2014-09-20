@@ -33,6 +33,8 @@ Account.find_each do |accnt|
     end
 
     accnt.proposals.inactive.open_to_public.each do |prop|
+      next if prop.opinions.published.count == 0
+      
       begin
         add prop.long_id, {:priority => 0.2, :changefreq => 'monthly'}
         #add proposal_path(prop.long_id), {:priority => 0.7, :changefreq => 'weekly'}

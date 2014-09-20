@@ -9,6 +9,8 @@ class HomeController < ApplicationController
     # accesses to the homepage to the latest published proposal
     # TODO: better way of knowing if a particular customer has a homepage or not.
 
+    session[:search_bot] = !!request.fullpath.match('_escaped_fragment_')
+
     if current_tenant.identifier != 'livingvotersguide' && request.path == '/' && request.query_string == ""
       proposal = current_tenant.proposals.open_to_public.active.last
       if proposal
@@ -33,7 +35,7 @@ class HomeController < ApplicationController
   def avatars
     #result = render_to_string :partial => './avatars'
 
-    if request.user_agent.match 'PHANTOM' # don't fetch avatars for phantomjs crawlability reverse proxy
+    if session.has_key?(:search_bot) && session[:search_bot] # don't fetch avatars for search bots
       render :json => {}
     else 
       respond_to do |format|

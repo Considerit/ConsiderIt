@@ -39,6 +39,22 @@ server {
   }  
 
 
+  rewrite ^/(.*)/results /$1 permanent;
+  rewrite ^/(.*)/points /$1 permanent;
+  
+  location ~ \.(myadmin|aspx|php|jsp|cgi|zip)$ {
+    return 410;
+  }
+
+  location ~ ^/(assets|images|javascripts|stylesheets|system)/ {
+    gzip_static on;
+    expires     max;
+    add_header  Cache-Control public;
+    add_header  Last-Modified "";
+    add_header  ETag "";
+    break;
+  }  
+
   ####
   # Dealing with search indexing using prerender.io
   # from https://gist.github.com/thoop/8165802
@@ -113,18 +129,7 @@ server {
   #   proxy_redirect off;
   # }
 
-  location ~ \.(myadmin|aspx|php|jsp|cgi|zip)$ {
-    return 410;
-  }
 
-  location ~ ^/(assets|images|javascripts|stylesheets|system)/ {
-    gzip_static on;
-    expires     max;
-    add_header  Cache-Control public;
-    add_header  Last-Modified "";
-    add_header  ETag "";
-    break;
-  }  
 
   location = /favicon.ico {
     expires    max;

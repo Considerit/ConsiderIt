@@ -9,7 +9,7 @@ class HomeController < ApplicationController
     # accesses to the homepage to the latest published proposal
     # TODO: better way of knowing if a particular customer has a homepage or not.
 
-    session[:search_bot] = !!request.fullpath.match('_escaped_fragment_')
+    session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || !!request.user_agent.match('Prerender')
 
     if current_tenant.identifier != 'livingvotersguide' && request.path == '/' && request.query_string == ""
       proposal = current_tenant.proposals.open_to_public.active.last

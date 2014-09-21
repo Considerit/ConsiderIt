@@ -14,8 +14,6 @@ class HomeController < ApplicationController
       return
     end
 
-    raise 'NOT RETURNED'
-
     if !session.has_key?(:search_bot)
       session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || !!request.user_agent.match('Prerender')
     end

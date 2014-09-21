@@ -20,7 +20,10 @@ end
 # maps from considerit long_ids to maplight measure/candidate ids
 maplight_hash = {
   'I-522_Require_labels_on_GMO_foods' => '117',
-  'I-517_Modify_initiative_processes' => '116'
+  'I-517_Modify_initiative_processes' => '116',
+  'I-591_Match_state_gun_regulation_to_national_standards' => '541',
+  'I-594_Increase_background_checks_on_gun_purchases' => '540',
+  'I-1351_Modify_K-12_funding' => '542'
 }
 
 MAPLIGHT_API_KEY = '1e6bae2f57efdf70d3bc198bd6b89869'
@@ -46,73 +49,100 @@ def fetchAndParseMeasureFromMaplight(measure_id)
   editorial_html = ""
   news_html = ""
 
-  [ data['funding']['support'], data['funding']['oppose'] ].each_with_index do |funders, idx|
-    endorser_type = "Donations in #{idx == 0 ? 'Support' : 'Opposition'} <span class='total_money_raised'>#{number_to_currency(funders['grand_total'], :precision => 0)}</span>"
-    funding_html += "<div class='endorser_group funders #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
-    if funders['items'].length > 0
-      for funder in funders['items'][0..10]
-        funding_html += "<li><span class='funder_name'>#{funder['name'].split.map(&:capitalize).join(' ').gsub('Llc', 'LLC')}</span><span class='funder_amount'>#{number_to_currency(funder['amount'], :precision => 0)}</span></li>"
+
+  if data['funding'] && ( data['funding']['oppose']['items'] != nil || data['funding']['support']['items'] != nil )
+    [ data['funding']['support'], data['funding']['oppose'] ].each_with_index do |funders, idx|
+      endorser_type = "Donations in #{idx == 0 ? 'Support' : 'Opposition'} <span class='total_money_raised'>#{number_to_currency(funders['grand_total'], :precision => 0)}</span>"
+      funding_html += "<div class='endorser_group funders #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
+      
+      if funders['items'] && funders['items'].length > 0
+        for funder in funders['items'][0..10]
+          funding_html += "<li><span class='funder_name'>#{funder['name'].split.map(&:capitalize).join(' ').gsub('Llc', 'LLC')}</span><span class='funder_amount'>#{number_to_currency(funder['amount'], :precision => 0)}</span></li>"
+        end
+        if funders['items'].length > 10
+          funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"
+        end
+      else
+        funding_html += "<li style='font-style: italic'>No funders yet</li>"
       end
-      if funders['items'].length > 10
-        funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"
-      end
-    else
-      funding_html += "<li style='font-style: italic'>No funders yet</li>"
+      funding_html += "</ul></div>"
     end
-    funding_html += "</ul></div>"
   end
 
-  [ data['endorsements']['support'], data['endorsements']['oppose'] ].each_with_index do |endorsers, idx|
-    endorser_type = idx == 0 ? 'This measure is endorsed by:' : 'This measure is opposed by:' 
-    endorsement_html += "<div class='endorser_group endorsements #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><p>"
-    
-    if endorsers.length == 0 || endorsers == [nil]
-      endorsement_html += "<span style='font-style: italic'>No endorsers yet</span>"
-    else
-      for endorsement in endorsers
-        endorsement_html += "<a href='#{endorsement['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{endorsement['title']}</a>, "
+  if (data['endorsements']['support'] != [nil] && data['endorsements']['support'].length > 0) || (data['endorsements']['oppose'] != [nil] && data['endorsements']['oppose'].length > 0)
+    [ data['endorsements']['support'], data['endorsements']['oppose'] ].each_with_index do |endorsers, idx|
+      
+      endorser_type = idx == 0 ? 'This measure is endorsed by:' : 'This measure is opposed by:' 
+      endorsement_html += "<div class='endorser_group endorsements #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><p>"
+      if endorsers.length == 0 || endorsers == [nil]
+        endorsement_html += "<span style='font-style: italic'>No endorsers yet</span>"
+      else
+        for endorsement in endorsers
+          endorsement_html += "<a href='#{endorsement['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{endorsement['title']}</a>, "
+        end
+        endorsement_html = endorsement_html[0..endorsement_html.length-3]
       end
-      endorsement_html = endorsement_html[0..endorsement_html.length-3]
+      endorsement_html += "</p></div>"
     end
-    endorsement_html += "</p></div>"
   end
 
-  [ data['editorials']['support'], data['editorials']['oppose'] ].each_with_index do |editorials, idx|
-    endorser_type = idx == 0 ? 'Supporting this measure:' : 'Opposing this measure:' 
-    editorial_html += "<div class='endorser_group editorials #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
-    if (editorials && editorials.length > 0)
-      for editorial in editorials
-        editorial_html += "<li><a href='#{editorial['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{editorial['headline']}</a><br>#{editorial['outlet']}, #{editorial['date']}</li>"
+  if (data['editorials']['support'] && data['editorials']['support'].length > 0) || (data['editorials']['oppose'] && data['editorials']['oppose'].length > 0)
+    [ data['editorials']['support'], data['editorials']['oppose'] ].each_with_index do |editorials, idx|
+      endorser_type = idx == 0 ? 'Supporting this measure:' : 'Opposing this measure:' 
+      editorial_html += "<div class='endorser_group editorials #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
+      if (editorials && editorials.length > 0)
+        for editorial in editorials
+          editorial_html += "<li><a href='#{editorial['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{editorial['headline']}</a><br>#{editorial['outlet']}, #{editorial['date']}</li>"
+        end
+      else
+        editorial_html += "<li style='font-style: italic'>None written yet</li>"
       end
-    else
-      editorial_html += "<li style='font-style: italic'>None written yet</li>"
+      editorial_html += "</ul></div>"
     end
-    editorial_html += "</ul></div>"
   end
 
-  news_html += "<ul class='news'>"
   stories = data['news']
   stories.delete 'source'
-  if data['news'].values().length > 0
+  if data['news'].values().length > 0  
+    news_html += "<ul class='news'>"
     for story in data['news'].values()
       news_html += "<li><a href='#{story['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{story['headline']}</a><br>#{story['outlet']}, #{story['date']}</li>"
     end
-  else
-    news_html += "<li style='font-style: italic'>No news items yet</li>"
+    news_html += "</ul>"
   end
-  news_html += "</ul>"
 
+  description_fields = []
 
-  description_fields = [
-    {
+  if funding_html + endorsement_html + editorial_html != ""
+    group = ({
       :group => "Who supports each side?",
-      :items => [{:label => 'Funding and endorsements', :html => "<div>#{funding_html}</div><div>#{endorsement_html}</div>"}, {:label => 'Editorials', :html => editorial_html}]
-    },
-    {
+      :items => []
+    })
+
+    if funding_html + endorsement_html != ""
+      group[:items].append({
+              :label => 'Funding and endorsements', 
+              :html => "<div>#{funding_html}</div><div>#{endorsement_html}</div>"
+            })
+    end
+
+    if editorial_html != ""
+      group[:items].append({
+              :label => 'Editorials', 
+              :html => editorial_html
+            })
+    end
+
+    description_fields.append group
+
+  end
+
+  if news_html != ''
+    description_fields.append({
       :group => "Media coverage",
       :items => [{:label => 'News stories and debates', :html => news_html}]
-    }
-  ]
+    })
+  end
 
   return [data['summary']['main_summary'], description_fields]
 
@@ -165,8 +195,6 @@ namespace :lvg do
         description += " Read the <a href='#{row['url']}' target='_blank'>full text</a>."
       end
 
-      description_fields = nil if description_fields == [] 
-
       jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
 
       category = row['category']
@@ -192,7 +220,7 @@ namespace :lvg do
         :published => true, #TODO: make configurable
 
         :cluster => cluster,
-        :description_fields => JSON.dump(description_fields),
+        :description_fields => description_fields.length > 0 ? JSON.dump(description_fields) : nil,
 
         :url1 => row.fetch('url', nil),
 
@@ -206,7 +234,6 @@ namespace :lvg do
       if !proposal
         proposal = Proposal.new measure
         proposal.save
-
         pp "Added #{row['topic']}"
       else
         measure.delete :account_id

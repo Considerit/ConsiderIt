@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
 
   def render(*args)
     return if !current_tenant
-    
+
     if Rails.cache.read("avatar-digest-#{current_tenant.id}").nil?
       Rails.cache.write("avatar-digest-#{current_tenant.id}", 0)
     end
@@ -80,8 +80,8 @@ class ApplicationController < ActionController::Base
   def mail_options
     {:host => request.host,
      :host_with_port => request.host_with_port,
-     :from => current_tenant.contact_email && current_tenant.contact_email.length > 0 ? current_tenant.contact_email : APP_CONFIG[:email],
-     :app_title => current_tenant.app_title,
+     :from => current_tenant && current_tenant.contact_email && current_tenant.contact_email.length > 0 ? current_tenant.contact_email : APP_CONFIG[:email],
+     :app_title => current_tenant ? current_tenant.app_title : '',
      :current_tenant => current_tenant
     }
   end

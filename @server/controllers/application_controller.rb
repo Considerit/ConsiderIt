@@ -4,9 +4,7 @@ class ApplicationController < ActionController::Base
   #protect_from_forgery
   set_current_tenant_through_filter
   prepend_before_action :get_current_tenant
-
   before_action :init_thread_globals
-  after_action  :pageview
 
   def render(*args)
     if !current_tenant
@@ -236,26 +234,5 @@ private
     session[:return_to] = path
   end
 
-  def pageview
-    if current_tenant && request.method == 'GET' && request.fullpath.index('/auth').nil?
-      begin
-        user = current_user ? current_user.id : nil
-        params = {
-          :account_id => current_tenant.id,
-          :user_id => user,
-          :referer => request.referrer,
-          :session => request.session_options[:id],
-          :url => request.fullpath,
-          :ip_address => request.remote_ip,
-          :user_agent => request.env["HTTP_USER_AGENT"],
-          :created_at => Time.current
-        }  
-
-        PageView.create! ActionController::Parameters.new(params).permit!
-      rescue 
-        logger.info 'Could not create PageView'
-      end
-    end
-  end
 
 end

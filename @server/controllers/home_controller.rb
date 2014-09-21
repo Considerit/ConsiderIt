@@ -5,9 +5,6 @@ class HomeController < ApplicationController
   }
 
   def index
-    # Most customers don't have a homepage. In the iterim, let's just redirect 
-    # accesses to the homepage to the latest published proposal
-    # TODO: better way of knowing if a particular customer has a homepage or not.
 
     # if someone has accessed a non-existent subdomain
     if !current_tenant
@@ -15,20 +12,26 @@ class HomeController < ApplicationController
       return
     end
 
-    session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || !!request.user_agent.match('Prerender')
+    if !session.has_key?(:search_bot)
+      session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || !!request.user_agent.match('Prerender')
+    end
 
-    if current_tenant.identifier != 'livingvotersguide' && request.path == '/' && request.query_string == ""
+    # Most customers don't have a homepage. In the iterim, let's just redirect 
+    # accesses to the homepage to the latest published proposal
+    # TODO: better way of knowing if a particular customer has a homepage or not.
+    if current_tenant.identifier != 'livingvotersguide' && request.path == '/' && request.query_string == "" && !session[:search_bot]
       proposal = current_tenant.proposals.open_to_public.active.last
       if proposal
         redirect_to "/#{proposal.long_id}"
       else
         render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
-      end      
+      end
       return
     end
 
     response.headers["Strict Transport Security"] = 'max-age=0'
     
+    # used by the layout
     @meta, @page, @title = get_meta_data()
     @is_search_bot = session[:search_bot]
 
@@ -40,7 +43,7 @@ class HomeController < ApplicationController
   end
 
   def avatars
-    if session.has_key?(:search_bot) && session[:search_bot] # don't fetch avatars for search bots
+    if session[:search_bot] # don't fetch avatars for search bots
       render :json => {}
     else 
       respond_to do |format|
@@ -53,7 +56,7 @@ class HomeController < ApplicationController
 
   #### Set meta tag info ####
   # Hardcoded for now. 
-  # TODO: store meta data in the database, on customer and proposal
+  # TODO: store customer meta data in the database
   def get_meta_data
 
     page = request.path

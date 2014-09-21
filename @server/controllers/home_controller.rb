@@ -7,11 +7,14 @@ class HomeController < ApplicationController
   }
 
   def index
+
     # if someone has accessed a non-existent subdomain
     if !current_tenant
       render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
       return
     end
+
+    raise 'NOT RETURNED'
 
     if !session.has_key?(:search_bot)
       session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || !!request.user_agent.match('Prerender')

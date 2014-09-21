@@ -65,14 +65,6 @@ class ApplicationController < ActionController::Base
 
   end
 
-  def self.find_current_tenant(rq)
-    tenant = Account.find_by_identifier(rq.session[:user_account_identifier]) 
-    if tenant.nil?
-      tenant = Account.find(1)
-    end
-    tenant
-  end
-
   def current_ability
     @current_ability ||= Ability.new(current_user, current_tenant, request.session_options[:id], session, params)
   end
@@ -97,16 +89,11 @@ class ApplicationController < ActionController::Base
 
 private
 
-  def get_current_tenant(rq = nil)
-    rq ||= request
+  def get_current_tenant
+    rq = request
     current_account = rq.subdomain.nil? || rq.subdomain.length == 0 ? Account.find(1) : Account.find_by_identifier(rq.subdomain)
 
-    #current_account = Account.find(1) if current_account.nil?
-
-    if current_account      
-      set_current_tenant(current_account)
-      session["user_account_identifier"] = current_tenant.identifier
-    end
+    set_current_tenant(current_account) if current_account
     current_account
   end
 
@@ -247,7 +234,7 @@ private
   end
 
   def pageview
-    if request.method == 'GET' && request.fullpath.index('/auth').nil?
+    if current_tenant && request.method == 'GET' && request.fullpath.index('/auth').nil?
       begin
         user = current_user ? current_user.id : nil
         params = {

@@ -1,4 +1,6 @@
 
+#TODO: probably should rename this controller "HTMLController" or something, and move the avatar stuff elsewhere
+
 class HomeController < ApplicationController
   caches_action :avatars, :cache_path => proc {|c|
     {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}-#{session[:search_bot]}"}
@@ -8,6 +10,7 @@ class HomeController < ApplicationController
 
     # if someone has accessed a non-existent subdomain
     if !current_tenant
+      raise 'TENANT NOT FOUND'
       render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
       return
     end

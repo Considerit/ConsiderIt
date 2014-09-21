@@ -10,7 +10,7 @@ class HomeController < ApplicationController
 
     # if someone has accessed a non-existent subdomain
     if !current_tenant
-      render :file => "#{Rails.root}/public/404.html", :status => :not_found
+      render :file => "public/404.html", :layout => false, :status => :not_found
       return
     end
 

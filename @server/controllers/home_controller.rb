@@ -9,6 +9,11 @@ class HomeController < ApplicationController
     # accesses to the homepage to the latest published proposal
     # TODO: better way of knowing if a particular customer has a homepage or not.
 
+    # if someone has accessed a non-existent subdomain
+    if !current_tenant
+      render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
+    end
+
     session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || !!request.user_agent.match('Prerender')
 
     if current_tenant.identifier != 'livingvotersguide' && request.path == '/' && request.query_string == ""

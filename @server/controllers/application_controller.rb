@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   after_action  :pageview
 
   def render(*args)
-    return if !current_tenant
+    super if !current_tenant
 
     if Rails.cache.read("avatar-digest-#{current_tenant.id}").nil?
       Rails.cache.write("avatar-digest-#{current_tenant.id}", 0)

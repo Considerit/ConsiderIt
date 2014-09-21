@@ -37,8 +37,29 @@ class HomeController < ApplicationController
     @meta, @page, @title = get_meta_data()
     @is_search_bot = session[:search_bot]
 
+    pageview
+
     render "layouts/application", :layout => false
   end
+
+  def pageview
+    begin
+      params = {
+        :account_id => current_tenant.id,
+        :user_id => current_user.id,
+        :referer => request.referrer,
+        :url => request.fullpath,
+        :ip_address => request.remote_ip,
+        :user_agent => request.env["HTTP_USER_AGENT"],
+        :created_at => Time.current
+      }  
+
+      PageView.create! ActionController::Parameters.new(params).permit!
+    rescue 
+      logger.info 'Could not create PageView'
+    end
+  end
+
 
   def activemike
     render "layouts/testmike", :layout => false

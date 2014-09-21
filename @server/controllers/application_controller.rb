@@ -99,10 +99,12 @@ private
     rq ||= request
     current_account = rq.subdomain.nil? || rq.subdomain.length == 0 ? Account.find(1) : Account.find_by_identifier(rq.subdomain)
 
-    current_account = Account.find(1) if current_account.nil?
-    
-    set_current_tenant(current_account)
-    session["user_account_identifier"] = current_tenant.identifier
+    #current_account = Account.find(1) if current_account.nil?
+
+    if current_account      
+      set_current_tenant(current_account)
+      session["user_account_identifier"] = current_tenant.identifier
+    end
     current_account
   end
 

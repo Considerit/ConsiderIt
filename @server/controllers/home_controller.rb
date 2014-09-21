@@ -7,9 +7,6 @@ class HomeController < ApplicationController
   }
 
   def index
-    render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
-    return
-    
     # if someone has accessed a non-existent subdomain
     if !current_tenant
       render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found

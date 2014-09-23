@@ -2261,13 +2261,13 @@ Header = ReactiveComponent
             A style: link_style, 'data-action': 'logout', onClick: @logout, 'Logout'
 
         # Now draw the About and social sharing buttons
-        if @root.page_name in ['homepage', 'about']
-          [DIV style: {position: 'absolute', top: 20, right: 32, color: 'rgb(6,169,122)', fontSize: 18},
-             [A style: {color: 'rgb(0,68,124)'}, href:'#', 'Log in'
-              '  |  '
-              A style: {color: 'rgb(0,68,124)'}, href:'/about', onClick: clickInternalLink, 'About']
-           DIV style: {position: 'absolute', top: 62, right: 29},
-             SharingButtons()]
+        # if @root.page_name in ['homepage', 'about']
+        #   [DIV style: {position: 'absolute', top: 20, right: 32, color: 'rgb(6,169,122)', fontSize: 18},
+        #      [A style: {color: 'rgb(0,68,124)'}, href:'#', 'Log in'
+        #       '  |  '
+        #       A style: {color: 'rgb(0,68,124)'}, href:'/about', onClick: clickInternalLink, 'About']
+        #    DIV style: {position: 'absolute', top: 62, right: 29},
+        #      SharingButtons()]
 
       DIV null, 
         # We'll only show the extended header on certain pages
@@ -2322,19 +2322,19 @@ Header = ReactiveComponent
                     'Living Voters Guide becomes better with your participation.'
 
                   # Join the Conversation!
-                  A href: '#',
-                    DIV
-                      style:
-                        color: beige
-                        marginLeft: 'auto'
-                        marginRight: 'auto'
-                        padding: '3px 0'
-                        marginTop: 22
-                        width: 274
-                        fontWeight: 800
-                        fontSize: 22
-                        backgroundColor: cityclub_green,
-                      'Join the conversation!'
+                  # A href: '#',
+                  #   DIV
+                  #     style:
+                  #       color: beige
+                  #       marginLeft: 'auto'
+                  #       marginRight: 'auto'
+                  #       padding: '3px 0'
+                  #       marginTop: 22
+                  #       width: 274
+                  #       fontWeight: 800
+                  #       fontSize: 22
+                  #       backgroundColor: cityclub_green,
+                  #     'Join the conversation!'
 
       DIV null,
         if @root.page_name == 'about'

@@ -1102,6 +1102,9 @@ YourPoints = ReactiveComponent
     your_points.adding_new_point = true
     save your_points
 
+    writeToLog
+      what: 'click new point'
+
   render : ->
     root = @data('root')
     included_points = @data(@proposal.your_opinion).point_inclusions

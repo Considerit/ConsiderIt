@@ -39,16 +39,14 @@ class HomeController < ApplicationController
     @is_search_bot = session[:search_bot]
 
     if !session[:search_bot]
-      Log.create!({
-        :account_id => current_tenant.id,
-        :who => current_user,
+      write_to_log({
         :what => 'landed on site',
         :where => request.fullpath,
-        :when => Time.current,
-        :details => JSON.dump({
+        :details => {
           :referrer => request.referer, 
           :ip => request.remote_ip, 
-          :user_agent => request.env["HTTP_USER_AGENT"]})
+          :user_agent => request.env["HTTP_USER_AGENT"]
+        }
       })
     end
 

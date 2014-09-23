@@ -28,12 +28,9 @@ class PageController < ApplicationController
     end
 
     if !session[:search_bot]
-      Log.create!({
-        :account_id => current_tenant.id,
-        :who => current_user,
+      write_to_log({
         :what => 'loaded page',
-        :where => key[6..key.length],
-        :when => Time.current
+        :where => key[6..key.length]
       })
     end
 

@@ -50,13 +50,14 @@ def fetchAndParseMeasureFromMaplight(measure_id)
   editorial_html = ""
   news_html = ""
 
-
-  if data['funding'] && ( data['funding']['oppose']['items'] != nil || data['funding']['support']['items'] != nil )
+  if data['funding'] && ( (data['funding']['oppose'] && data['funding']['oppose']['items'] != nil) || (data['funding']['support'] && data['funding']['support']['items'] != nil) )
     [ data['funding']['support'], data['funding']['oppose'] ].each_with_index do |funders, idx|
-      endorser_type = "Donations in #{idx == 0 ? 'Support' : 'Opposition'} <span class='total_money_raised'>#{number_to_currency(funders['grand_total'], :precision => 0)}</span>"
-      funding_html += "<div class='endorser_group funders #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
+
+      if funders && funders['items'] && funders['items'].length > 0
+
+        endorser_type = "Donations in #{idx == 0 ? 'Support' : 'Opposition'} <span class='total_money_raised'>#{number_to_currency(funders['grand_total'], :precision => 0)}</span>"
+        funding_html += "<div class='endorser_group funders #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
       
-      if funders['items'] && funders['items'].length > 0
         for funder in funders['items'][0..10]
           funding_html += "<li><span class='funder_name'>#{funder['name'].split.map(&:capitalize).join(' ').gsub('Llc', 'LLC')}</span><span class='funder_amount'>#{number_to_currency(funder['amount'], :precision => 0)}</span></li>"
         end
@@ -64,13 +65,14 @@ def fetchAndParseMeasureFromMaplight(measure_id)
           funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"
         end
       else
-        funding_html += "<li style='font-style: italic'>No funders yet</li>"
+        funding_html += "<div style='font-style: italic'>No donations in #{idx == 0 ? 'Support' : 'Opposition'} yet</div><ul>"
       end
       funding_html += "</ul></div>"
     end
   end
 
-  if (data['endorsements']['support'] != [nil] && data['endorsements']['support'].length > 0) || (data['endorsements']['oppose'] != [nil] && data['endorsements']['oppose'].length > 0)
+  
+  if data['endorsements'] && ((data['endorsements']['support'] != [nil] && data['endorsements']['support'].length > 0) || (data['endorsements']['oppose'] != [nil] && data['endorsements']['oppose'].length > 0))
     [ data['endorsements']['support'], data['endorsements']['oppose'] ].each_with_index do |endorsers, idx|
       
       endorser_type = idx == 0 ? 'This measure is endorsed by:' : 'This measure is opposed by:' 
@@ -87,7 +89,7 @@ def fetchAndParseMeasureFromMaplight(measure_id)
     end
   end
 
-  if (data['editorials']['support'] && data['editorials']['support'].length > 0) || (data['editorials']['oppose'] && data['editorials']['oppose'].length > 0)
+  if data['editorials'] && ((data['editorials']['support'] && data['editorials']['support'].length > 0) || (data['editorials']['oppose'] && data['editorials']['oppose'].length > 0))
     [ data['editorials']['support'], data['editorials']['oppose'] ].each_with_index do |editorials, idx|
       endorser_type = idx == 0 ? 'Supporting this measure:' : 'Opposing this measure:' 
       editorial_html += "<div class='endorser_group editorials #{idx == 0 ? 'support' : 'oppose'}'><div>#{endorser_type}</div><ul>"
@@ -102,16 +104,17 @@ def fetchAndParseMeasureFromMaplight(measure_id)
     end
   end
 
-  stories = data['news']
-  stories.delete 'source'
-  if data['news'].values().length > 0  
-    news_html += "<ul class='news'>"
-    for story in data['news'].values()
-      news_html += "<li><a href='#{story['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{story['headline']}</a><br>#{story['outlet']}, #{story['date']}</li>"
+  if data['news'] 
+    stories = data['news']
+    stories.delete 'source'
+    if stories.values().length > 0  
+      news_html += "<ul class='news'>"
+      for story in data['news'].values()
+        news_html += "<li><a href='#{story['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{story['headline']}</a><br>#{story['outlet']}, #{story['date']}</li>"
+      end
+      news_html += "</ul>"
     end
-    news_html += "</ul>"
   end
-
   description_fields = []
 
   if funding_html + endorsement_html + editorial_html != ""
@@ -145,17 +148,103 @@ def fetchAndParseMeasureFromMaplight(measure_id)
     })
   end
 
+
   return [data['summary']['main_summary'], description_fields]
 
 end
 
+
 namespace :lvg do
+
+  task :import_candidates => :environment do
+    account = Account.find_by_identifier('livingvotersguide')
+
+    candidates = [1051, 5136, 5222, 1020, 1228, 1173, 5220, 1005, 1094, 5215, 1185, 1227, 4878, 5138, 1273, 1191, 5206, 997, 5134, 1052] # maplight candidate ids
+
+    candidates.each do |candidate_id|
+      data = fetchFromMaplight("cvg.candidate_v1.json?candidate_id=#{candidate_id}&data_type=all")
+      jurisdiction = data['contest']['title'].gsub(' - Washington', '')
+      name = data['display_name']
+      long_id = "#{name}-washington_#{jurisdiction}".gsub(' ', '_').downcase
+
+      # pp data['summary']['summary_items'].map {|i| i.keys()}
+      #pp jurisdiction, name, long_id
+
+      contest_description = "U.S. #{data['contest']['office']['body']}"
+      gender = data['gender'] == 'F' ? 'Her' : 'His'
+
+      description = "#{name} is a #{data['party']} candidate seeking to represent Washington's #{jurisdiction} in the #{contest_description}."
+
+      description_fields = data['summary']['summary_items'].map {|item| {:label => item['title'].downcase.capitalize, :html => item['yes_text']} }
+
+      funding_html = ""
+
+      if data['funding'] &&  (data['funding']['support'] && data['funding']['support']['items'] != nil)
+        funders = data['funding']['support']
+
+        if funders && funders['items'] && funders['items'].length > 0
+
+          endorser_type = "<span style='float:none' class='total_money_raised'>#{number_to_currency(funders['grand_total'], :precision => 0)}</span>"
+          funding_html += "<div class='funders support'><div style='text-align: right'>#{endorser_type}</div><ul>"
+        
+          for funder in funders['items'][0..10]
+            funding_html += "<li><span class='funder_name'>#{funder['name'].split.map(&:capitalize).join(' ').gsub('Llc', 'LLC')}</span><span class='funder_amount'>#{number_to_currency(funder['amount'], :precision => 0)}</span></li>"
+          end
+          if funders['items'].length > 10
+            funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"
+          end
+        else
+          funding_html += "<div style='font-style: italic'>No donations in Support yet</div><ul>"
+        end
+        funding_html += "</ul></div>"
+      end
+
+      
+      if funding_html != ""
+        description_fields.append({
+                  :label => 'Donors', 
+                  :html => "<div>#{funding_html}</div>"
+                })
+      end
+
+
+      measure = {
+        :account_id => account.id,
+        :user_id => 1, 
+        :long_id => long_id,
+        :name => name,
+        :description => description,
+        :published => true, #TODO: make configurable
+
+        :cluster => jurisdiction,
+        :description_fields => description_fields.length > 0 ? JSON.dump(description_fields) : nil,
+
+        # :url1 => row.fetch('url', nil),
+
+        :seo_title => "#{name}, Candidate for Washington #{jurisdiction}",
+        :seo_description => description,
+        :seo_keywords => "washington,state,us,congressional,2014,#{name}"
+      }
+
+      #proposal = Proposal.find_by_long_id long_id
+      proposal = Proposal.find_by_long_id long_id
+      if !proposal
+        proposal = Proposal.new measure
+        proposal.save
+        pp "Added #{long_id}"
+      else
+        measure.delete :account_id
+        proposal.update_attributes measure
+        pp "Updated #{long_id}"        
+      end
+
+    end
+
+
+  end
 
   task :import_proposals => :environment do
     account = Account.find_by_identifier('livingvotersguide')
-
-    domains = {}
-    measures = []
 
     CSV.foreach("lib/tasks/lvg/#{year}/measures.csv", :headers => true) do |row|
       long_id = create_long_id row

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140922174707) do
+ActiveRecord::Schema.define(version: 20140923035805) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -381,7 +381,7 @@ ActiveRecord::Schema.define(version: 20140922174707) do
     t.text     "participants"
     t.boolean  "published",                                               default: false
     t.text     "tags"
-    t.boolean  "targettable",                                             default: false
+    t.boolean  "hide_on_homepage",                                        default: false
     t.string   "url2"
     t.string   "url3"
     t.text     "additional_description3"
@@ -392,6 +392,7 @@ ActiveRecord::Schema.define(version: 20140922174707) do
     t.string   "slider_middle"
     t.text     "description_fields",                     limit: 16777215
     t.string   "cluster"
+    t.text     "zips"
   end
 
   add_index "proposals", ["account_id", "active"], name: "select_proposal_by_active", using: :btree

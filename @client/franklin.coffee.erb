@@ -33,7 +33,16 @@ REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 4 * GRID
 MAX_HISTOGRAM_HEIGHT = 200
 DESCRIPTION_WIDTH = BODY_WIDTH
 
-
+# Colors
+cityclub_navy   = 'rgb(0,   68,  124)'
+cityclub_green  = 'rgb(165, 206, 57)'
+cityclub_blue   = 'rgb(0,   182, 236)'
+cityclub_purple = 'rgb(154, 152, 203)'
+cityclub_red    = 'rgb(241, 94,  94)'
+#cityclub_orange: 
+cityclub_beige  = 'rgb(241, 235, 211)'
+cityclub_brown  = 'rgb(77,  76,  71)'
+beige           = 'rgb(255, 254, 245)'
 
 ##
 # Helpers that should probably go elsewhere
@@ -2158,20 +2167,20 @@ Homepage = ReactiveComponent
     else
       columns = [ {heading: 'Learn', details: 'about the issues'}, {heading: 'Decide', details: 'what you think'}, {heading: 'Share', details: 'your opinion'}]
 
-    sticky_header_height = 60
+    sticky_header_height = 79
 
     DIV className: 'homepage',
       # Draw the header
       DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height} 
       DIV 
         className: "sticky_header stickable"
-        style: {height: sticky_header_height, width: '100%', backgroundColor: color.proposal_header, color: 'white', zIndex: 9999, minWidth: PAGE_WIDTH} #minwidth is for when dropping into sticky, position fixed mode
+        style: {height: sticky_header_height, width: '100%', backgroundColor: beige, color: cityclub_navy, zIndex: 9999, minWidth: PAGE_WIDTH} #minwidth is for when dropping into sticky, position fixed mode
       ,
         TABLE style: {margin: 'auto'},
           TR null,
             for col in columns
               TD style: {display: 'inline-block', width: 250},
-                DIV style: {fontWeight: 600, fontSize: 25, textAlign: 'center'}, 
+                DIV style: {fontWeight: 700, fontSize: 42, textAlign: 'center'}, 
                   col.heading
                 DIV style: {fontWeight: 300, fontSize: 18, textAlign: 'center', position: 'relative', top: -8},
                   col.details
@@ -2179,7 +2188,7 @@ Homepage = ReactiveComponent
       # Draw the proposal summaries
       if proposals.clusters
         for cluster, index in proposals.clusters
-          TABLE style: {borderLeft: '0px solid rgb(191, 192, 194)', margin: '35px auto', position: 'relative'},
+          TABLE style: {borderLeft: '0px solid rgb(191, 192, 194)', margin: '20px auto', position: 'relative'},
             if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
               TR null, 
                 TD colSpan: 4, style: {fontStyle: 'italic', fontSize: 18, paddingBottom: 25}, 
@@ -2248,10 +2257,14 @@ Header = ReactiveComponent
             Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
             A style: link_style, 'data-action': 'logout', onClick: @logout, 'Logout'
 
-        # Now draw the social sharing buttons
+        # Now draw the About and social sharing buttons
         if @root.page_name in ['homepage', 'about']
-          DIV style: {position: 'absolute', top: 46, right: 32},
-            SharingButtons()
+          [DIV style: {position: 'absolute', top: 20, right: 32, color: 'rgb(6,169,122)', fontSize: 18},
+             [A style: {color: 'rgb(0,68,124)'}, href:'#', 'Log in'
+              '  |  '
+              A style: {color: 'rgb(0,68,124)'}, href:'/about', onClick: clickInternalLink, 'About']
+           DIV style: {position: 'absolute', top: 62, right: 29},
+             SharingButtons()]
 
       DIV null, 
         # We'll only show the extended header on certain pages
@@ -2273,18 +2286,53 @@ Header = ReactiveComponent
             #       IMG className: 'logo', src: "<%= asset_path 'ihub/logo.png' %>", style: logo_style 
 
             when 'livingvotersguide'
-              logo_style = {width: 150, position: 'absolute', top: -158, left: '50%', marginLeft: -75, zIndex: 1, top: 14}
+              logo_style =
+                width: 179
+                position: 'absolute'
+                top: -158
+                left: '50%'
+                marginLeft: -75
+                zIndex: 1
+                top: 14
+
               DIV null,
-                DIV style: {backgroundColor: color.background, height: 88, width: '100%'}
-                DIV style: {textAlign: 'center', color: 'white', paddingTop: 85, paddingBottom: 26}, 
-                  A href: (if @root.page_name == 'about' then '/' else '/about'), onClick: clickInternalLink, 
+                # Top beige area
+                DIV style: {backgroundColor: color.background, height: 103, width: '100%'}
+                # Top blue area
+                DIV
+                  style:
+                    textAlign: 'center'
+                    color: beige
+                    paddingTop: 85
+                    paddingBottom: 26
+                    marginBottom: 23
+                    borderTop: "6px solid #{cityclub_green}",
+
+                  # Logo
+                  A href: (if @root.page_name == 'about' then '/' else '/about'), onClick: clickInternalLink,
                     IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.svg' %>", style: logo_style 
-                  DIV className: 'tagline', style: {fontSize: 25, fontWeight: 'bold'},
+
+                  # Online Intelligence for Washington Voters
+                  DIV style: {fontSize: 29, fontWeight: 800, marginTop: 5},
                     'Online Intelligence for Washington Voters'
-                  DIV className: 'participation_line', style: {fontSize: 18, fontWeight: 400},
-                    'This guide improves with your participation. '
-                    SPAN className: 'call_to_action', style: {color: 'white'}, 'Join the conversation'
-                    '!'
+                  DIV style: {fontSize: 21, fontWeight: 400},
+                    'Living Voters Guide becomes better with your participation.'
+
+                  # Join the Conversation!
+                  A href: '#',
+                    DIV
+                      style:
+                        color: beige
+                        marginLeft: 'auto'
+                        marginRight: 'auto'
+                        padding: '3px 0'
+                        marginTop: 22
+                        width: 274
+                        fontWeight: 800
+                        fontSize: 22
+                        backgroundColor: cityclub_green,
+                      'Join the conversation!'
+
       DIV null,
         if @root.page_name == 'about'
           # TODO: we need a way of knowing whether this subdomain has a homepage or not
@@ -2328,14 +2376,14 @@ Footer = ReactiveComponent
     DIV className: 'l_footer',  
       if customer.identifier == 'livingvotersguide'
         DIV null,
-          DIV style: {color: 'white', backgroundColor: color.header_bg, marginTop: 48, padding: 18},
+          DIV style: {color: beige, backgroundColor: color.header_bg, marginTop: 48, padding: 18},
             DIV style: {fontSize: 18, fontStyle: 'italic', textAlign: 'justify', width: 690, fontStyle: 'italic', margin: 'auto'},
               'Unlike voter guides generated by government, newspapers or advocacy organizations, Living Voters Guide is created '
               SPAN style: {fontWeight: 600}, 'by the people'
               ' and '
               SPAN style: {fontWeight: 600}, 'for the people'
               ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and share your opinions. We believe that sharing our diverse opinions leads to making wiser decisions together.'
-              A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', onClick: clickInternalLink, 'Learn more'
+              A style: {color: beige, textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', onClick: clickInternalLink, 'Learn more'
               '.'
 
             DIV style: {marginTop: 20},

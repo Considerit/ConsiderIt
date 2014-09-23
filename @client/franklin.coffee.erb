@@ -2185,13 +2185,14 @@ Homepage = ReactiveComponent
         style: {height: sticky_header_height, width: '100%', backgroundColor: cream, color: cityclub_navy, zIndex: 9999, minWidth: PAGE_WIDTH} #minwidth is for when dropping into sticky, position fixed mode
       ,
         TABLE style: {margin: 'auto'},
-          TR null,
-            for col in columns
-              TD style: {display: 'inline-block', width: 250},
-                DIV style: {fontWeight: 700, fontSize: 42, textAlign: 'center'}, 
-                  col.heading
-                DIV style: {fontWeight: 300, fontSize: 18, textAlign: 'center', position: 'relative', top: -8},
-                  col.details
+          TBODY null,
+            TR null,
+              for col in columns
+                TD style: {display: 'inline-block', width: 250},
+                  DIV style: {fontWeight: 700, fontSize: 42, textAlign: 'center'}, 
+                    col.heading
+                  DIV style: {fontWeight: 300, fontSize: 18, textAlign: 'center', position: 'relative', top: -8},
+                    col.details
 
       # Draw the proposal summaries
       if proposals.clusters

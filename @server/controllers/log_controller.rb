@@ -2,6 +2,11 @@ class LogController < ApplicationController
   respond_to :json
 
   def create
+    if session[:search_bot]
+      render :json => {}
+      return
+    end
+
     entry = {
       who: current_user, 
       what: params[:what],

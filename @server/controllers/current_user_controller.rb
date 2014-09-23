@@ -256,15 +256,11 @@ class CurrentUserController < ApplicationController
         #       handle this response
 
         if log_entry
-          Log.create!({
-            :account_id => current_tenant.id,
-            :who => current_user,
+          write_to_log({
             :what => log_entry,
             :where => request.fullpath,
-            :when => Time.current,
-            :details => JSON.dump({
-              :errors => errors
-            })})
+            :details => {:errors => errors}
+          })
         end
 
         render :json => [response]
@@ -307,16 +303,12 @@ class CurrentUserController < ApplicationController
       # Then the user registration is complete.
       replace_user current_user, user
       set_current_user(user)
-      Log.create!({
-        :account_id => current_tenant.id,
-        :who => current_user,
+
+      write_to_log({
         :what => 'logged in through 3rd party',
         :where => '/current_user',
-        :when => Time.current,
-        :details => JSON.dump({
-          :provider => user.third_party_authenticated
-        })})
-
+        :details => {:provider => user.third_party_authenticated}
+      })
 
     else
       # Then the user still needs to complete the pledge.  Let's just

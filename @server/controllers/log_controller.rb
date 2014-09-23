@@ -7,7 +7,7 @@ class LogController < ApplicationController
       what: params[:what],
       where: params[:where],
       when: Time.now,
-      details: params[:details].to_json, # this is a json object. Putting this right into the database seems like it could be a security issue.
+      details: params[:details] ? params[:details].to_json : nil, # this is a json object. Putting this right into the database seems like it could be a security issue.
       account_id: current_tenant.id
     }
 

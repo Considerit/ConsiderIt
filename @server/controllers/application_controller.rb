@@ -88,6 +88,19 @@ class ApplicationController < ActionController::Base
     Digest::MD5.hexdigest(key)
   end
 
+protected
+
+  def write_to_log(options)
+    Log.create!({
+      :account_id => current_tenant.id,
+      :who => current_user,
+      :what => options[:what],
+      :where => options[:where],
+      :when => Time.current,
+      :details => options.has_key?(:details) ? JSON.dump(options[:details]) : nil
+    })
+  end
+
 private
 
   def get_current_tenant

@@ -37,14 +37,12 @@ class PointController < ApplicationController
       point.save
     end
 
-    
     # Include into the user's opinion
     opinion.include(point)
 
     original_id = key_id(params[:key])
     result = point.as_json
     result['key'] = "/point/#{point.id}?original_id=#{original_id}"
-    pp(result)
 
     remap_key(params[:key], "/point/#{point.id}")
 
@@ -54,6 +52,12 @@ class PointController < ApplicationController
     # # when we switch accounts.  Sucks.  Need a new way to store this.
     # session[:remapped_keys] ||= {}
     # session[:remapped_keys][params[:key]] = "/point/#{point.id}"
+
+    write_to_log({
+      :what => 'wrote new point',
+      :where => request.fullpath,
+      :details => {:point => "/point/#{point.id}"}
+    })
 
     #TODO: don't know how to dirty and handle the point key in compile_dirty_objects
     render :json => [result]
@@ -75,6 +79,12 @@ class PointController < ApplicationController
     point.update_attributes! ActionController::Parameters.new(updates).permit!
 
     if point.published
+      write_to_log({
+        :what => 'edited a point',
+        :where => request.fullpath,
+        :details => {:point => "/point/#{point.id}"}
+      })
+
       ActiveSupport::Notifications.instrument("point:updated", 
         :model => point,
         :current_tenant => current_tenant,

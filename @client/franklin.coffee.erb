@@ -456,41 +456,42 @@ StickyProposalHeading = ReactiveComponent
                         DIV style: {backgroundColor: 'rgba(0,0,0,.2)', padding: '14px 0', borderRadius: '4px'},
                           
                           TABLE className: 'current_cluster', style: {width: '100%'}, 
-                            for other_proposal in this_proposal_cluster.proposals
-                              TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink,
-                                TD style: {textAlign: 'left', paddingLeft: 20},
-                                  A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == proposal.id then 700 else 400},
-                                    other_proposal.name
-                                  
-                                TD style: {position: 'relative'},
-                                  if !other_proposal.your_opinion || !@data(other_proposal.your_opinion).published
-                                    SPAN style: {fontWeight: 200, color: 'rgb(205,205,205)', fontSize: 21}, '?'
-                                  else
-                                    # make a small slider summary
-                                    opinion = @data(other_proposal.your_opinion)
-                                    face_size = 20 # height/width of the summary slider bar
-                                    eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: color.proposal_header, position: 'absolute', top: 6 }
-                                    mouth_style = {fontSize: 12, color: color.proposal_header, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
-                                    crossbrowserTransformProperty mouth_style
-                                    if opinion.stance_segment < 3
-                                      # frown!
-                                      mouth = '('
-                                    else if opinion.stance_segment == 3
-                                      # confused!
-                                      mouth = '|'
+                            TBODY null,
+                              for other_proposal in this_proposal_cluster.proposals
+                                TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink,
+                                  TD style: {textAlign: 'left', paddingLeft: 20},
+                                    A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == proposal.id then 700 else 400},
+                                      other_proposal.name
+                                    
+                                  TD style: {position: 'relative'},
+                                    if !other_proposal.your_opinion || !@data(other_proposal.your_opinion).published
+                                      SPAN style: {fontWeight: 200, color: 'rgb(205,205,205)', fontSize: 21}, '?'
                                     else
-                                      # pleased!
-                                      mouth = ')'
+                                      # make a small slider summary
+                                      opinion = @data(other_proposal.your_opinion)
+                                      face_size = 20 # height/width of the summary slider bar
+                                      eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: color.proposal_header, position: 'absolute', top: 6 }
+                                      mouth_style = {fontSize: 12, color: color.proposal_header, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
+                                      crossbrowserTransformProperty mouth_style
+                                      if opinion.stance_segment < 3
+                                        # frown!
+                                        mouth = '('
+                                      else if opinion.stance_segment == 3
+                                        # confused!
+                                        mouth = '|'
+                                      else
+                                        # pleased!
+                                        mouth = ')'
 
-                                    DIV style: {borderBottom: "1px solid white", width: 100, position: 'relative', top: 15},
+                                      DIV style: {borderBottom: "1px solid white", width: 100, position: 'relative', top: 15},
 
-                                      DIV {style: borderRadius: '50%', backgroundColor: 'white', width: face_size, height: face_size, position: 'absolute', top: -face_size / 2, marginLeft: -face_size / 2 , left: "#{100 * (-1 * opinion.stance + 1.0) / 2.0}%"},
-                                        DIV style: _.extend {}, eye_style, {left: 6} # left eye
-                                        DIV style: _.extend {}, eye_style, {left: face_size - 8} # right eye
-                                        DIV style: mouth_style, mouth
+                                        DIV {style: borderRadius: '50%', backgroundColor: 'white', width: face_size, height: face_size, position: 'absolute', top: -face_size / 2, marginLeft: -face_size / 2 , left: "#{100 * (-1 * opinion.stance + 1.0) / 2.0}%"},
+                                          DIV style: _.extend {}, eye_style, {left: 6} # left eye
+                                          DIV style: _.extend {}, eye_style, {left: face_size - 8} # right eye
+                                          DIV style: mouth_style, mouth
 
 
-                                TD style: {paddingRight: 20}
+                                  TD style: {paddingRight: 20}
 
                           DIV className: 'separator', style: {borderBottom: '1px dotted #dedede', width: '85%', margin: '28px auto 12px auto'}
 
@@ -660,39 +661,40 @@ Histogram = ReactiveComponent
       onClick: @onClickHistogram
       # onMouseLeave: @onSelectSegment
       style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
-        TR null, 
-          TD key: 'supporters', className: "histogram_segment_pole supporters", 
-            SPAN null, 'Supporters'
+        TBODY null,
+          TR null, 
+            TD key: 'supporters', className: "histogram_segment_pole supporters", 
+              SPAN null, 'Supporters'
 
-          for bar, idx in columns
-            segment = if bar.length > 0 then bar[0].stance_segment else -1
-            is_selected = selected_segment == segment
+            for bar, idx in columns
+              segment = if bar.length > 0 then bar[0].stance_segment else -1
+              is_selected = selected_segment == segment
 
-            TD 
-              key: idx 
-              className: "histogram_bar #{if is_selected then 'is_selected' else 'not_selected'}"
-              style: {width: avatar_size, opacity: (if is_selected && !selected_segment? then '1' else '1'), minHeight: (if bar.length == 0 then 75 else 0)}
-            ,
-              for opinion in bar
-                user = opinion.user
-                Avatar 
-                  tag: SPAN, 
-                  key: user
-                  user: user
-                  hide_face: @root.proposal_mode == 'crafting'
-                  'data-segment':segment
-                  style:
-                    height: avatar_size
-                    width: avatar_size
-                    opacity: if users_to_highlight && 
-                      !_.contains(users_to_highlight, opinion.user) 
-                      then '.15' 
-                      else if selected_segment == null || is_selected 
-                      then '1.0'
-                      else '.15'
+              TD 
+                key: idx 
+                className: "histogram_bar #{if is_selected then 'is_selected' else 'not_selected'}"
+                style: {width: avatar_size, opacity: (if is_selected && !selected_segment? then '1' else '1'), minHeight: (if bar.length == 0 then 75 else 0)}
+              ,
+                for opinion in bar
+                  user = opinion.user
+                  Avatar 
+                    tag: SPAN, 
+                    key: user
+                    user: user
+                    hide_face: @root.proposal_mode == 'crafting'
+                    'data-segment':segment
+                    style:
+                      height: avatar_size
+                      width: avatar_size
+                      opacity: if users_to_highlight && 
+                        !_.contains(users_to_highlight, opinion.user) 
+                        then '.15' 
+                        else if selected_segment == null || is_selected 
+                        then '1.0'
+                        else '.15'
 
-          TD key: 'opposers', className: "histogram_segment_pole opposers", 
-            SPAN null, 'Opposers'
+            TD key: 'opposers', className: "histogram_segment_pole opposers", 
+              SPAN null, 'Opposers'
 
 ##
 # Slider
@@ -1929,116 +1931,118 @@ Auth = ReactiveComponent
                 LABEL className: 'reset_password_section_label', 'Reset your password'
                 DIV style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
             TABLE className: 'auth_fields login',
-              if root.auth_mode == 'reset_password'
+              TBODY null,
+                if root.auth_mode == 'reset_password'
+                  TR null,
+                    TD null, 'We just emailed you a code. Enter it here:'
+                  TR null, 
+                    TD className: 'label_cell', 
+                      LABEL htmlFor: 'user_verification_code', 'code:'
+
+                    TD className: 'field_cell', 
+                      reset_password_token_field,
+                      DIV className: 'password_verification_explanation', "Find code in an email just sent to you."
+                else
+                  TR null,
+                    TD className: 'label_cell',
+                      LABEL htmlFor: 'user_email', 'email:'
+                    TD className: 'field_cell',
+                      email_input_field
+
                 TR null,
-                  TD null, 'We just emailed you a code. Enter it here:'
-                TR null, 
-                  TD className: 'label_cell', 
-                    LABEL htmlFor: 'user_verification_code', 'code:'
+                  TD {style: (if root.auth_mode == 'reset_password' then {width: '37%'} else {}), className: 'label_cell'},
+                    switch root.auth_mode
+                      when 'login'
+                        LABEL htmlFor: 'user_password', 'password:'
+                      when 'reset_password'
+                        LABEL htmlFor: 'user_password', 'new password:'
 
                   TD className: 'field_cell', 
-                    reset_password_token_field,
-                    DIV className: 'password_verification_explanation', "Find code in an email just sent to you."
-              else
-                TR null,
-                  TD className: 'label_cell',
-                    LABEL htmlFor: 'user_email', 'email:'
-                  TD className: 'field_cell',
-                    email_input_field
-
-              TR null,
-                TD {style: (if root.auth_mode == 'reset_password' then {width: '37%'} else {}), className: 'label_cell'},
-                  switch root.auth_mode
-                    when 'login'
-                      LABEL htmlFor: 'user_password', 'password:'
-                    when 'reset_password'
-                      LABEL htmlFor: 'user_password', 'new password:'
-
-                TD className: 'field_cell', 
-                  password_input_field,
-                  if root.auth_mode == 'login'
-                    A className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
+                    password_input_field,
+                    if root.auth_mode == 'login'
+                      A className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
 
 
         else 
           # creating new account
           TABLE className: 'auth_fields register', 
-            TR null, 
-              TD className: 'label_cell',
-                LABEL htmlFor: 'user_name', 'Hi, my name is:'
-              TD className: 'field_cell', 
-                if third_party_authenticated
-                  DIV null, current_user.name
-                else 
-                  name_input_field
-
-            if third_party_authenticated 
-              p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
+            TBODY null,
               TR null, 
-
                 TD className: 'label_cell',
-                  LABEL htmlFor: 'user_provider', 
-                    if third_party_authenticated then 'I login via:' else 'I login as:'
+                  LABEL htmlFor: 'user_name', 'Hi, my name is:'
                 TD className: 'field_cell', 
-                  BUTTON className: "third_party_option #{p}", style: {cursor: 'default'},
-                    I className: "fa fa-#{p}"
-                    SPAN null, p
+                  if third_party_authenticated
+                    DIV null, current_user.name
+                  else 
+                    name_input_field
 
-            else
+              if third_party_authenticated 
+                p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
+                TR null, 
 
-              TR null, 
+                  TD className: 'label_cell',
+                    LABEL htmlFor: 'user_provider', 
+                      if third_party_authenticated then 'I login via:' else 'I login as:'
+                  TD className: 'field_cell', 
+                    BUTTON className: "third_party_option #{p}", style: {cursor: 'default'},
+                      I className: "fa fa-#{p}"
+                      SPAN null, p
 
-                TD className: 'label_cell',
-                  LABEL htmlFor: 'user_email', 'I login as:'
-                TD className: 'field_cell', 
-                  if !Modernizr.input.placeholder
-                    LABEL htmlFor: 'user_email', 'Email:'
-                  email_input_field,
+              else
 
-                  if !Modernizr.input.placeholder
-                    LABEL htmlFor: 'user_password', 'Password:'
-                  password_input_field
+                TR null, 
 
-            # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
-            if window.FormData
+                  TD className: 'label_cell',
+                    LABEL htmlFor: 'user_email', 'I login as:'
+                  TD className: 'field_cell', 
+                    if !Modernizr.input.placeholder
+                      LABEL htmlFor: 'user_email', 'Email:'
+                    email_input_field,
 
-              TR null, 
+                    if !Modernizr.input.placeholder
+                      LABEL htmlFor: 'user_password', 'Password:'
+                    password_input_field
+
+              # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
+              if window.FormData
+
+                TR null, 
+                  TD className: 'label_cell', 
+                    LABEL htmlFor: 'user_avatar', 'I look like this:'
+                  TD className: 'field_cell',
+                    # hack for submitting file data in ActiveREST for now
+                    # we'll just submit the file form after user is signed in
+
+
+                    FORM id: 'user_avatar_form', action: Routes.current_user_path(), 
+
+                      DIV className: 'avatar_preview_enclosure',
+                        IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else null #todo: make sure that if user overrides image_url, that the new image is used
+                    
+
+
+                      INPUT id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
+                        @submit_avatar_form = true
+                        input = $('#user_avatar')[0]
+                        if input.files && input.files[0]
+                          reader = new FileReader()
+                          reader.onload = (e) ->
+                            $("#avatar_preview").attr 'src', e.target.result
+                          reader.readAsDataURL input.files[0]
+                          #current_user.avatar = input.files[0]
+                        else
+                          $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
+
+              
+              TR null,
                 TD className: 'label_cell', 
-                  LABEL htmlFor: 'user_avatar', 'I look like this:'
+                  LABEL null, 'Community pledge:'
                 TD className: 'field_cell',
-                  # hack for submitting file data in ActiveREST for now
-                  # we'll just submit the file form after user is signed in
-
-
-                  FORM id: 'user_avatar_form', action: Routes.current_user_path(), 
-
-                    DIV className: 'avatar_preview_enclosure',
-                      IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else null #todo: make sure that if user overrides image_url, that the new image is used
-                  
-
-
-                    INPUT id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
-                      @submit_avatar_form = true
-                      input = $('#user_avatar')[0]
-                      if input.files && input.files[0]
-                        reader = new FileReader()
-                        reader.onload = (e) ->
-                          $("#avatar_preview").attr 'src', e.target.result
-                        reader.readAsDataURL input.files[0]
-                        #current_user.avatar = input.files[0]
-                      else
-                        $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
-
-            
-            TR null,
-              TD className: 'label_cell', 
-                LABEL null, 'Community pledge:'
-              TD className: 'field_cell',
-                UL className: 'pledges',
-                  for pledge, idx in pledges
-                    LI className: 'pledge', 
-                      INPUT className:"pledge-input", type:'checkbox', id:"pledge-#{idx}", name:"pledge-#{idx}"
-                      LABEL htmlFor: "pledge-#{idx}", pledge
+                  UL className: 'pledges',
+                    for pledge, idx in pledges
+                      LI className: 'pledge', 
+                        INPUT className:"pledge-input", type:'checkbox', id:"pledge-#{idx}", name:"pledge-#{idx}"
+                        LABEL htmlFor: "pledge-#{idx}", pledge
 
         if current_user.errors && current_user.errors[root.auth_mode] && current_user.errors[root.auth_mode].length > 0
           DIV className: "auth_errors", 
@@ -2192,35 +2196,37 @@ Homepage = ReactiveComponent
       # Draw the proposal summaries
       if proposals.clusters
         for cluster, index in proposals.clusters
-          TABLE style: {borderLeft: '0px solid rgb(191, 192, 194)', margin: '20px auto', position: 'relative'},
-            if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
-              TR null, 
-                TD colSpan: 4, style: {fontStyle: 'italic', fontSize: 18, paddingBottom: 25}, 
-                  "2014 Congressional candidates and local ballot measures coming soon!!!"          
+          if cluster.proposals && cluster.proposals.length > 0 
+            TABLE style: {borderLeft: '0px solid rgb(191, 192, 194)', margin: '20px auto', position: 'relative'},
+              TBODY null,
+                if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
+                  TR null, 
+                    TD colSpan: 4, style: {fontStyle: 'italic', fontSize: 18, paddingBottom: 25}, 
+                      "2014 Congressional candidates and local ballot measures coming soon!!!"          
 
-            # We stick a couple funny things into TH cells, and then stick them off to the side
-            TR null,
-              TH style: {textAlign: 'right', width: 115, padding: 8, paddingTop: 9, display: 'inline-block', verticalAlign: 'top', fontSize: 16, fontWeight: 200, position: 'absolute', left: -125},
-                cluster.name
-              if index == 0
-                welcome_column
+                # We stick a couple funny things into TH cells, and then stick them off to the side
+                TR null,
+                  TH style: {textAlign: 'right', width: 115, padding: 8, paddingTop: 9, display: 'inline-block', verticalAlign: 'top', fontSize: 16, fontWeight: 200, position: 'absolute', left: -125},
+                    cluster.name
+                  if index == 0
+                    welcome_column
 
-            for proposal in cluster.proposals
-              ProposalSummary
-                key: proposal.key
-                cluster: cluster.name
+                for proposal in cluster.proposals
+                  ProposalSummary
+                    key: proposal.key
+                    cluster: cluster.name
 
-            # TODO: There are probably lots of cases where we want to add more details to
-            #       a cluster of proposals.  For example, saying that proposals in cluster
-            #       "Council meeting 6/7" will be open for discussion at the upcoming
-            #       meeting. Keep an eye on this possible generality (and eliminate this
-            #       edge case if we do generalize it)
-            if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
-              TR null,
-                TD colSpan: 4, style: {color: 'rgb(108,107,98)', fontSize: 16, paddingLeft: 30, paddingTop: 12},
-                  "* Advisory Votes are not binding. They are a consequence of "
-                  A href: "http://en.wikipedia.org/wiki/Washington_Initiative_960", style: {fontWeight: 600, color: 'rgb(108,107,98)'}, 'Initiative 960' 
-                  " passing in 2007."
+                # TODO: There are probably lots of cases where we want to add more details to
+                #       a cluster of proposals.  For example, saying that proposals in cluster
+                #       "Council meeting 6/7" will be open for discussion at the upcoming
+                #       meeting. Keep an eye on this possible generality (and eliminate this
+                #       edge case if we do generalize it)
+                if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
+                  TR null,
+                    TD colSpan: 4, style: {color: 'rgb(108,107,98)', fontSize: 16, paddingLeft: 30, paddingTop: 12},
+                      "* Advisory Votes are not binding. They are a consequence of "
+                      A href: "http://en.wikipedia.org/wiki/Washington_Initiative_960", style: {fontWeight: 600, color: 'rgb(108,107,98)'}, 'Initiative 960' 
+                      " passing in 2007."
 
 Header = ReactiveComponent
   displayName: 'Header'
@@ -2262,13 +2268,13 @@ Header = ReactiveComponent
             A style: link_style, 'data-action': 'logout', onClick: @logout, 'Logout'
 
         # Now draw the About and social sharing buttons
-        if @root.page_name in ['homepage', 'about']
-          [DIV style: {position: 'absolute', top: 20, right: 32, color: 'rgb(6,169,122)', fontSize: 18},
-             [A style: {color: 'rgb(0,68,124)'}, href:'#', 'Log in'
-              '  |  '
-              A style: {color: 'rgb(0,68,124)'}, href:'/about', onClick: clickInternalLink, 'About']
-           DIV style: {position: 'absolute', top: 62, right: 29},
-             SharingButtons()]
+        # if @root.page_name in ['homepage', 'about']
+        #   [DIV style: {position: 'absolute', top: 20, right: 32, color: 'rgb(6,169,122)', fontSize: 18},
+        #      [A style: {color: 'rgb(0,68,124)'}, href:'#', 'Log in'
+        #       '  |  '
+        #       A style: {color: 'rgb(0,68,124)'}, href:'/about', onClick: clickInternalLink, 'About']
+        #    DIV style: {position: 'absolute', top: 62, right: 29},
+        #      SharingButtons()]
 
       DIV null, 
         # We'll only show the extended header on certain pages
@@ -2292,10 +2298,10 @@ Header = ReactiveComponent
             when 'livingvotersguide'
               logo_style =
                 width: 179
+                marginLeft: -179/2
                 position: 'absolute'
                 top: -158
                 left: '50%'
-                marginLeft: -75
                 zIndex: 1
                 top: 14
 
@@ -2323,19 +2329,19 @@ Header = ReactiveComponent
                     'Living Voters Guide becomes better with your participation.'
 
                   # Join the Conversation!
-                  A href: '#',
-                    DIV
-                      style:
-                        color: cream
-                        marginLeft: 'auto'
-                        marginRight: 'auto'
-                        padding: '3px 0'
-                        marginTop: 22
-                        width: 274
-                        fontWeight: 800
-                        fontSize: 22
-                        backgroundColor: cityclub_green,
-                      'Join the conversation!'
+                  # A href: '#',
+                  #   DIV
+                  #     style:
+                  #       color: cream
+                  #       marginLeft: 'auto'
+                  #       marginRight: 'auto'
+                  #       padding: '3px 0'
+                  #       marginTop: 22
+                  #       width: 274
+                  #       fontWeight: 800
+                  #       fontSize: 22
+                  #       backgroundColor: cityclub_green,
+                  #     'Join the conversation!'
 
       DIV null,
         if @root.page_name == 'about'
@@ -2635,7 +2641,11 @@ Router = Backbone.Router.extend
     #      if its data is synced with the server. 
     root.proposal_mode = if params && params['results'] then 'results' else 'crafting'  
 
-    save(root)
+    save root
+
+    writeToLog
+      what: 'loaded page',
+      where: long_id
 
   homepage : (params) -> 
     root = fetch('root')
@@ -2646,13 +2656,21 @@ Router = Backbone.Router.extend
     #      if its data is synced with the server. 
     root.proposal_mode = null
 
-    save(root)
+    save root
+
+    writeToLog
+      what: 'loaded page',
+      where: 'homepage'
 
   about : (params) ->
     root = fetch('root')
     root.page_name = 'about'
     root.proposal_mode = null
-    save(root)
+    save root
+
+    writeToLog
+      what: 'loaded page',
+      where: 'about'
 
       
 

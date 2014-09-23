@@ -24,31 +24,32 @@ class CurrentUserController < ApplicationController
     min_pass = @min_pass = 4
     logging_out = false
     email_regexp = /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
+
+    log_entry = nil # log_entry is used for logging the action the user took during this update 
     
     def try_email_authentication(params)
       puts("Signing in by email and password")
 
-      return ['Missing email']    if !params[:email] || params[:email].length == 0
-      return ['Missing password'] if !params[:password] || params[:password].length == 0
+      return 'Missing email'    if !params[:email] || params[:email].length == 0
+      return 'Missing password' if !params[:password] || params[:password].length == 0
       
       user = User.find_by_lower_email(params[:email])
-      return ["No user exists at that email address"] if !user || !user.registration_complete
+      return "No user exists at that email address" if !user || !user.registration_complete
       # note: Returning this error message is a security risk as it
       #       reveals that a particular email address exists in the
       #       system or not.  But it's prolly the right tradeoff.
 
-      pp(params[:password])
-      if !user.authenticate(params[:password])
-        return ["Wrong password"]
-      end
+      return "Wrong password" if !user.authenticate(params[:password])
 
       replace_user(current_user, user)
       set_current_user(user)
       puts("Now current is #{current_user && current_user.id}")
-      return []
+      return nil
     end
 
     def try_password_reset_authentication(params)
+      error = nil
+
       puts("Signing in by password reset.  min_pass is #{@min_pass}")
       has_password = params[:password] && params[:password].length >= @min_pass
       if !has_password
@@ -69,14 +70,12 @@ class CurrentUserController < ApplicationController
       user = User.where(reset_password_token: encoded_token).first
       puts("We found user #{user} with a password reset token")
       
-      if !user
-        return ["Sorry, that's the wrong verification code."]
-      end
-      
+      error = "Sorry, that's the wrong verification code." if !user
+
       replace_user(current_user, user)
       set_current_user(user)
 
-      return []
+      return error
     end
 
     def validate(field, type)
@@ -103,10 +102,12 @@ class CurrentUserController < ApplicationController
     puts("Reset my password? #{params[:reset_my_password]}")
 
     # Send the reset_password token if client wants
-    if params[:reset_my_password] && params[:reset_my_password]
+    if params[:reset_my_password]
       puts("Initiating reset_password")
       errors[:reset_password].concat(send_reset_password_token(params))
       puts("Errors are #{errors[:reset_password]}")
+      log_entry = 'requested password reset'
+
     end
 
     # 0. Try logging out
@@ -115,6 +116,9 @@ class CurrentUserController < ApplicationController
       logging_out = true
       dirty_key '/page/homepage'
       new_current_user()
+      log_entry = 'logged out'
+
+
     else
       # Otherwise, we'll
       #  (1) Authenticate: "HEY WHO ARE YOU, REALLY?" ... we might switch users.
@@ -139,10 +143,15 @@ class CurrentUserController < ApplicationController
 
         # Sign in by password reset token
         if params[:reset_password_token]
-          errors[:reset_password].concat(try_password_reset_authentication(params))
+          reset_error = try_password_reset_authentication(params)
+          errors[:reset_password].append(reset_error) if reset_error
+          log_entry = 'sign in by reset password token'
+
         # Sign in by email and password
         else
-          errors[:login].concat(try_email_authentication(params))
+          auth_error = try_email_authentication(params)
+          errors[:login].append(auth_error) if auth_error
+          log_entry = 'sign in by email' if !log_entry
         end
       end
 
@@ -156,6 +165,7 @@ class CurrentUserController < ApplicationController
 
       if current_user.update_attributes(permitted) 
         puts("Updating params. #{new_params}; permitted version #{permitted}")
+        log_entry = 'updating info' if !log_entry
         if !current_user.save
           raise 'Error saving basic current_user parameters!'
         end
@@ -211,6 +221,7 @@ class CurrentUserController < ApplicationController
           if !current_user.save
             raise "Error registering this uesr"
           end
+          log_entry = 'registered account'
         # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
         else
           errors[:register].append('Name is blank') if !has_name
@@ -243,6 +254,19 @@ class CurrentUserController < ApplicationController
         dirty_key("/user/#{current_user.id}")                 # But let's get the /user
         # TODO: figure out how to let applicationcontroller#compile_dirty_objects
         #       handle this response
+
+        if log_entry
+          Log.create!({
+            :account_id => current_tenant.id,
+            :who => current_user,
+            :what => log_entry,
+            :where => request.fullpath,
+            :when => Time.current,
+            :details => JSON.dump({
+              :errors => errors
+            })})
+        end
+
         render :json => [response]
       end
 
@@ -283,6 +307,17 @@ class CurrentUserController < ApplicationController
       # Then the user registration is complete.
       replace_user current_user, user
       set_current_user(user)
+      Log.create!({
+        :account_id => current_tenant.id,
+        :who => current_user,
+        :what => 'logged in through 3rd party',
+        :where => '/current_user',
+        :when => Time.current,
+        :details => JSON.dump({
+          :provider => user.third_party_authenticated
+        })})
+
+
     else
       # Then the user still needs to complete the pledge.  Let's just
       # get some of the user's current data (we have them temporarily

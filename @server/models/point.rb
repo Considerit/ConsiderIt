@@ -83,10 +83,6 @@ class Point < ActiveRecord::Base
     result
   end
 
-  def only_public_fields
-    self.to_json :only => Point.my_public_fields
-  end  
-
   def publish()
     return if self.published
     self.published = true

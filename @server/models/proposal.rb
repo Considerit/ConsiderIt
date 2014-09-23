@@ -28,7 +28,7 @@ class Proposal < ActiveRecord::Base
   scope :public_fields, -> {select(self.my_public_fields)}
   scope :unpublished, -> {where( :published => false)}
   scope :published_web, -> {where( :published => true)}
-  scope :browsable, -> {where( :targettable => false)}
+  scope :browsable, -> {where( :hide_on_homepage => false)}
 
 
 
@@ -36,12 +36,23 @@ class Proposal < ActiveRecord::Base
         
     # if a customer wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
-    if Thread.current[:tenant].identifier == 'livingvotersguide'
-      manual_clusters = ['Statewide measures', 'Advisory votes'] 
+    current_tenant = Thread.current[:tenant]
+    if current_tenant.identifier == 'livingvotersguide'
+
+      local_jurisdictions = []   
+      
+      user_tags = current_user.tags && user_tags = JSON.load(current_user.tags)
+      if user_tags && user_tags['zip']
+        # If the user has a zipcode, we'll want to include all the jurisdictions 
+        # associated with that zipcode. We'll also want to insert them between the statewide
+        # measures and the advisory votes, since we hate the advisory votes. 
+        local_jurisdictions = ActiveRecord::Base.connection.select( "SELECT distinct(cluster) FROM proposals WHERE account_id=#{current_tenant.id} AND active=1 AND hide_on_homepage=1 AND zips like '%#{user_tags['zip']}%' ").map {|r| r['cluster']}
+      end
+      manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
     end
 
     # get all the relevant proposals
-    proposals = Thread.current[:tenant].proposals.active.open_to_public.browsable
+    proposals = current_tenant.proposals.active.open_to_public #.browsable
     if manual_clusters
       proposals = proposals.where('cluster IN (?)', manual_clusters)
     end
@@ -130,7 +141,6 @@ class Proposal < ActiveRecord::Base
     response
   end
 
-
   def as_json(options={})
     options[:only] ||= Proposal.my_public_fields
     result = super(options)
@@ -158,29 +168,6 @@ class Proposal < ActiveRecord::Base
     end
   end
 
-
-  def public?
-    publicity == 2
-  end
-
-  def only_public_fields
-    self.to_json :only => Proposal.my_public_fields
-  end
-
-
-  def format_description
-    return self.description.split('\n')
-  end
-  
-  def reference
-    return "#{category} #{designator}"
-  end
-
-  #returns the slug :long_id instead of :id when @proposal passed to e.g. proposal_path
-  # def to_param
-  #   long_id
-  # end
-
   def title(max_len = 140)
     if name && name.length > 0
       my_title = name
@@ -196,44 +183,6 @@ class Proposal < ActiveRecord::Base
       my_title
     end
     
-  end
-
-  def title_with_hashtags(max_len = 140)
-
-    def str_without_overlapping_tags(mystr, tags)
-      tags.each do |tag|
-        mystr << " #{tag}" unless mystr.index(tag)
-      end
-      mystr
-    end
-
-    def str_without_breaking_word(mystr, max_length)
-      if mystr.length <= max_length
-        mystr
-      else
-        mystr = mystr[0..max_length+1]        
-        idx = mystr.rindex(' ')
-        if idx
-          mystr[0..idx]
-        else
-          ''
-        end
-      end
-    end
-
-    if name
-      my_title = name
-    elsif description
-      my_title = description
-    else
-      raise 'Name and description nil'
-    end
-
-    tags = get_tags
-
-    candidate = str_without_breaking_word(my_title, max_len - tags.join(' ').length - 1)
-    str_without_overlapping_tags(candidate.strip, tags)  
-
   end
 
   # def notable_points
@@ -352,35 +301,35 @@ class Proposal < ActiveRecord::Base
     true
   end
 
-  def self.import_from_spreadsheet(file, attrs)
-    require 'csv'
+  # def self.import_from_spreadsheet(file, attrs)
+  #   require 'csv'
 
-    created = updated = errors = 0
+  #   created = updated = errors = 0
 
-    proposals = []
+  #   proposals = []
 
-    CSV.foreach(file.tempfile, :headers => true) do |row|
-      if !row.has_key?("long_id") || row["long_id"].length != 10
-        errors += 1
-        pp 'LONG ID NOT PRESENT OR NOT RIGHT LENGTH', row
-        next
-      end
+  #   CSV.foreach(file.tempfile, :headers => true) do |row|
+  #     if !row.has_key?("long_id") || row["long_id"].length != 10
+  #       errors += 1
+  #       pp 'LONG ID NOT PRESENT OR NOT RIGHT LENGTH', row
+  #       next
+  #     end
 
-      proposal = find_by_long_id(row["long_id"]) || new
-      if proposal.id
-        updated += 1
-      else
-        created += 1
-      end
-      proposal.attributes = row.to_hash.slice(*accessible_attributes).merge!(attrs)
-      proposals.push proposal
-      proposal.save!
-    end
+  #     proposal = find_by_long_id(row["long_id"]) || new
+  #     if proposal.id
+  #       updated += 1
+  #     else
+  #       created += 1
+  #     end
+  #     proposal.attributes = row.to_hash.slice(*accessible_attributes).merge!(attrs)
+  #     proposals.push proposal
+  #     proposal.save!
+  #   end
 
 
-    {:updated => updated, :created => created, :errors => errors, :proposals => proposals}
+  #   {:updated => updated, :created => created, :errors => errors, :proposals => proposals}
 
-  end
+  # end
 
   # only for LVG
   def self.import_jurisdictions(proposals_file, jurisdictions_file)
@@ -438,7 +387,7 @@ class Proposal < ActiveRecord::Base
         p.add_seo_keyword jurisdiction
 
         zips.each do |zip|
-          p.targettable = true
+          p.hide_on_homepage = true
           p.add_tag "zip:#{zip}"
         end
         p.save

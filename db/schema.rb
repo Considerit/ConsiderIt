@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140915155758) do
+ActiveRecord::Schema.define(version: 20140922174707) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -205,6 +205,15 @@ ActiveRecord::Schema.define(version: 20140915155758) do
   add_index "inclusions", ["account_id"], name: "index_inclusions_on_account_id", using: :btree
   add_index "inclusions", ["point_id"], name: "index_inclusions_on_point_id", using: :btree
   add_index "inclusions", ["user_id"], name: "index_inclusions_on_user_id", using: :btree
+
+  create_table "logs", force: true do |t|
+    t.integer  "account_id"
+    t.integer  "who"
+    t.string   "what"
+    t.string   "where"
+    t.datetime "when"
+    t.text     "details"
+  end
 
   create_table "moderations", force: true do |t|
     t.integer  "user_id"

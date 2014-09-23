@@ -57,6 +57,8 @@ module ConsiderIt
     config.force_ssl = false
     
     config.assets.image_optim = false
+
+    config.action_controller.permit_all_parameters = true #disable strong parameters
     
     ##################
     # for our custom rails directory structure

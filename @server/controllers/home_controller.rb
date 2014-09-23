@@ -2,6 +2,7 @@
 #TODO: probably should rename this controller "HTMLController" or something, and move the avatar stuff elsewhere
 
 class HomeController < ApplicationController
+
   caches_action :avatars, :cache_path => proc {|c|
     {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}-#{session[:search_bot]}"}
   }
@@ -37,27 +38,21 @@ class HomeController < ApplicationController
     @meta, @page, @title = get_meta_data()
     @is_search_bot = session[:search_bot]
 
-    pageview
+    if !session[:search_bot]
+      Log.create!({
+        :account_id => current_tenant.id,
+        :who => current_user,
+        :what => 'landed on site',
+        :where => request.fullpath,
+        :when => Time.current,
+        :details => JSON.dump({
+          :referrer => request.referer, 
+          :ip => request.remote_ip, 
+          :user_agent => request.env["HTTP_USER_AGENT"]})
+      })
+    end
 
     render "layouts/application", :layout => false
-  end
-
-  def pageview
-    begin
-      params = {
-        :account_id => current_tenant.id,
-        :user_id => current_user.id,
-        :referer => request.referrer,
-        :url => request.fullpath,
-        :ip_address => request.remote_ip,
-        :user_agent => request.env["HTTP_USER_AGENT"],
-        :created_at => Time.current
-      }  
-
-      PageView.create! ActionController::Parameters.new(params).permit!
-    rescue 
-      logger.info 'Could not create PageView'
-    end
   end
 
 
@@ -75,7 +70,6 @@ class HomeController < ApplicationController
       end
     end
   end
-
 
   #### Set meta tag info ####
   # Hardcoded for now. 

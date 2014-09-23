@@ -53,16 +53,11 @@ class PointController < ApplicationController
     # session[:remapped_keys] ||= {}
     # session[:remapped_keys][params[:key]] = "/point/#{point.id}"
 
-
-    Log.create!({
-      :account_id => current_tenant.id,
-      :who => current_user,
+    write_to_log({
       :what => 'wrote new point',
       :where => request.fullpath,
-      :when => Time.current,
-      :details => JSON.dump({
-        :point => "/point/#{point.id}"})
-    })        
+      :details => {:point => "/point/#{point.id}"}
+    })
 
     #TODO: don't know how to dirty and handle the point key in compile_dirty_objects
     render :json => [result]
@@ -84,14 +79,10 @@ class PointController < ApplicationController
     point.update_attributes! ActionController::Parameters.new(updates).permit!
 
     if point.published
-      Log.create!({
-        :account_id => current_tenant.id,
-        :who => current_user,
+      write_to_log({
         :what => 'edited a point',
         :where => request.fullpath,
-        :when => Time.current,
-        :details => JSON.dump({
-          :point => "/point/#{point.id}"})
+        :details => {:point => "/point/#{point.id}"}
       })
 
       ActiveSupport::Notifications.instrument("point:updated", 

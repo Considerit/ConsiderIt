@@ -100,6 +100,7 @@ class CurrentUserController < ApplicationController
     fields = ['avatar', 'bio', 'name', 'hide_name', 'tags']
     new_params = params.select{|k,v| fields.include? k}
     new_params[:name] = '' if !new_params[:name]
+    new_params[:tags] = JSON.dump(new_params[:tags]) if new_params[:tags]
 
     puts("Reset my password? #{params[:reset_my_password]}")
 

@@ -8,6 +8,7 @@ def parse(html)
   parsed = ActionController::Base.helpers.sanitize(html.encode!('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ''), tags: %w(table tr td div p br label ul li ol span strong h1 h2 h3 h4 h5), attributes: %w(id colspan) )  
   parsed = parsed.gsub('<p>&nbsp;</p>', '')
 end
+
 # constructs a long_id from a data row
 def create_long_id(proposal_data)
   long_id = proposal_data['topic'].gsub(' ', '_')
@@ -289,7 +290,7 @@ namespace :lvg do
         #p.add_tag "jurisdiction:#{jurisdiction}"
         #p.add_seo_keyword jurisdiction
 
-        p.targettable = true
+        p.hide_on_homepage = true
         zips.each do |zip|
           p.add_tag "zip:#{zip}"
         end

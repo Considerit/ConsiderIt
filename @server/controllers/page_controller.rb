@@ -27,12 +27,6 @@ class PageController < ApplicationController
       dirty_key key
     end
 
-    if !session[:search_bot]
-      write_to_log({
-        :what => 'loaded page',
-        :where => key[6..key.length]
-      })
-    end
 
     render :json => []
 

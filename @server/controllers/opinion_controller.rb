@@ -42,12 +42,11 @@ class OpinionController < ApplicationController
     if params['published'] && !opinion.published
       opinion.publish()  # This will also publish all the newly-written points
       dirty_key "/page/homepage" # you're now a recent contributor!
-      Log.create!({
-        :account_id => current_tenant.id,
-        :who => current_user,
+
+      write_to_log({
         :what => 'published opinion',
-        :where => proposal.long_id,
-        :when => Time.current })
+        :where => proposal.long_id
+      })
     end
 
     # Need to add following in somewhere else

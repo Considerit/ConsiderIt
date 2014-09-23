@@ -65,11 +65,19 @@ userOpinion = (user_key) ->
 
 _route_changed = false
 
-togglePage = (proposal_mode) -> 
+togglePage = (proposal_mode, triggered_by) -> 
   $('.histogram_segment_pole').ensureInView
     offset_buffer: 150
     callback : -> 
       root = fetch('root')
+
+      window.writeToLog
+        what: 'toggle proposal mode'
+        details: 
+          from: root.proposal_mode
+          to: proposal_mode
+          triggered_by: triggered_by 
+
       root.proposal_mode = proposal_mode
       save(root)
 
@@ -235,7 +243,15 @@ Proposal = ReactiveComponent
 
   renderDescriptionField : (field) ->
     DIV className: 'description_field', key: field.label,
-      DIV className: 'field_heading', onClick: (=> field.expanded = !field.expanded; save(@local);),
+      DIV className: 'field_heading', onClick: => 
+        field.expanded = !field.expanded
+        save(@local)
+        if field.expanded 
+          window.writeToLog
+            what: 'expand proposal description'
+            details: 
+              description_type: field.label        
+      ,
         SPAN className: 'expand_arrow', dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
         SPAN className: 'field_name', field.label
       if field.expanded
@@ -593,7 +609,7 @@ Histogram = ReactiveComponent
 
   onClickHistogram : (ev) ->
     if @root.proposal_mode == 'crafting'
-      togglePage('results')
+      togglePage('results', 'click_histogram')
 
   onSelectSegment : (ev) ->
     if @root.proposal_mode == 'results'
@@ -710,7 +726,7 @@ Slider = ReactiveComponent
     # We should also transition to crafting when we've been dragging on the results page. 
     if slider.stance == your_opinion.stance || @root.proposal_mode == 'results'
       new_page = if @root.proposal_mode == 'results' then 'crafting' else 'results'
-      togglePage new_page
+      togglePage new_page, 'click_slider'
       e.stopPropagation()
 
     # We save the slider's position to the server only on mouse-up.
@@ -719,6 +735,9 @@ Slider = ReactiveComponent
       your_opinion.stance         = slider.stance
       your_opinion.stance_segment = slider.stance_segment
       save your_opinion
+      window.writeToLog 
+        what: 'move slider'
+        details: {stance: slider.stance}
 
     # Turn off dragging
     slider.is_moving = false
@@ -870,7 +889,15 @@ OpinionFilter = ReactiveComponent
       # Select
       hist.selected_segment = segment
       hist.selected_segment_isclicked = true
-    save(hist)
+
+      window.writeToLog
+        what: 'filter results by segment'
+        details: 
+          segment: segment
+
+
+    save hist
+
 
   render : ->
     hist = @data('histogram')
@@ -927,6 +954,12 @@ DecisionBoard = ReactiveComponent
             your_opinion.point_inclusions.push(
               ui.draggable.parent().data('id'))
             save(your_opinion)
+
+            window.writeToLog
+              what: 'included point'
+              details: 
+                point: ui.draggable.parent().data('id')
+
           $el.removeClass "user_is_hovering_on_a_drop_target"
       out : (ev, ui) => 
         $el.removeClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
@@ -974,7 +1007,7 @@ DecisionBoard = ReactiveComponent
     if @data('/current_user').logged_in
       your_opinion.published = true
       save (your_opinion)
-      togglePage('results')
+      togglePage('results', 'save_button')
     else
       @root.auth_mode = 'register'
       #we'll need to publish this opinion after auth is completed
@@ -1015,7 +1048,7 @@ DecisionBoard = ReactiveComponent
 
       DIV 
         className:'decision_board_body'
-        onClick: => if root.proposal_mode == 'results' then togglePage('crafting')
+        onClick: => if root.proposal_mode == 'results' then togglePage('crafting', 'give_opinion_button')
       ,
 
         DIV null, 
@@ -1052,7 +1085,7 @@ DecisionBoard = ReactiveComponent
       if !published
         A 
           className:'cancel_opinion_button primary_cancel_button'
-          onClick: (=> togglePage('results'))
+          onClick: (=> togglePage('results', 'cancel_button'))
         , 'or just skip to the results'  
 
 
@@ -1232,7 +1265,11 @@ Point = ReactiveComponent
           your_opinion = @data(@proposal.your_opinion)
           your_opinion.point_inclusions = _.without your_opinion.point_inclusions, @props.key
           save(your_opinion)
-          console.log('Saved it.', your_opinion)
+          window.writeToLog
+            what: 'removed point'
+            details: 
+              point: @props.key
+
         valid
 
     if $point_content.hasClass "ui-draggable"
@@ -1246,6 +1283,12 @@ Point = ReactiveComponent
   showDetails : -> 
     @local.show_details = !@local.show_details
     save(@local)
+
+    window.writeToLog
+      what: 'clicked point'
+      details: 
+        point: @props.key
+
 
   deletePoint : -> 
     destroy @props.key
@@ -1617,6 +1660,10 @@ Auth = ReactiveComponent
 
   componentDidMount : -> 
     $(document).scrollTop $(@getDOMNode()).find('.auth_heading').offset().top - 10
+    window.writeToLog
+      what: 'accessed authentication'
+
+
   startThirdPartyAuth : (provider) ->
     root = @root
     new ThirdPartyAuthHandler
@@ -1737,7 +1784,7 @@ Auth = ReactiveComponent
       # @publishOpinionsAfterAuth()
 
       save(root)
-      setTimeout((() -> togglePage('results')), 700)
+      setTimeout((() -> togglePage('results', 'after_save')), 700)
       return loading_indicator
 
     focal_wrapper_style = 
@@ -2255,8 +2302,21 @@ SharingButtons = ReactiveComponent
   displayName: 'SharingButtons'
   render: ->
     SPAN null,
-      IFRAME style: {border: 'none', overflow: 'hidden', width: 90, height: 21}, src: "//www.facebook.com/plugins/like.php?href=http://www.facebook.com/pages/Living-Voters-Guide/157151824312366&send=false&layout=button_count&width=450&show_faces=false&action=like&colorscheme=light&font=lucida+grande&height=21", scrolling: "no", frameBorder: "0", allowTransparency: "true"
-      IFRAME src: "https://platform.twitter.com/widgets/tweet_button.1410542722.html#_=1410827370943&amp;count=none&amp;hashtags=lvguide&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=https%3A%2F%2Flivingvotersguide.org%2F&amp;related=lvguide&amp;size=m&amp;text=I%20flexed%20my%20civic%20muscle%20%40lvguide.&amp;url=https%3A%2F%2Flivingvotersguide.org%2F", scrolling: "no", frameBorder: "0", allowTransparency: "true", className: "twitter-share-button twitter-tweet-button twitter-share-button twitter-count-none", style: {width: 57; height: 20}
+
+      IFRAME 
+        style: {border: 'none', overflow: 'hidden', width: 90, height: 21}
+        src: "//www.facebook.com/plugins/like.php?href=http://www.facebook.com/pages/Living-Voters-Guide/157151824312366&send=false&layout=button_count&width=450&show_faces=false&action=like&colorscheme=light&font=lucida+grande&height=21"
+        scrolling: "no"
+        frameBorder: "0"
+        allowTransparency: "true"
+
+      IFRAME 
+        src: "https://platform.twitter.com/widgets/tweet_button.1410542722.html#_=1410827370943&amp;count=none&amp;hashtags=lvguide&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=https%3A%2F%2Flivingvotersguide.org%2F&amp;related=lvguide&amp;size=m&amp;text=I%20flexed%20my%20civic%20muscle%20%40lvguide.&amp;url=https%3A%2F%2Flivingvotersguide.org%2F"
+        scrolling: "no"
+        frameBorder: "0"
+        allowTransparency: "true"
+        className: "twitter-share-button twitter-tweet-button twitter-share-button twitter-count-none"
+        style: {width: 57; height: 20}
 
 
 Footer = ReactiveComponent
@@ -2561,6 +2621,13 @@ window.on_ajax_error = () ->
   save(root)
 window.on_client_error = (e) ->
   save({ key: '/new/client_error', stack: JSON.stringify(e.stack) })
+
+window.writeToLog = (entry) ->
+  _.extend entry, 
+    key: '/new/log'
+    where: fetch('root').page_name
+
+  save entry
 
 
 updateMedia = ->

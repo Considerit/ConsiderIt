@@ -203,17 +203,17 @@ class Proposal < ActiveRecord::Base
   #   end
   # end
 
-  def stance_fractions
-    distribution = Array.new(7,0)
-    opinions.published.select('COUNT(*) AS cnt, stance_segment').group(:stance_segment).each do |row|
-      distribution[row.stance_segment.to_i] = row.cnt.to_i
-    end      
-    total = distribution.inject(:+).to_f
-    if total > 0     
-      distribution.collect! { |stance_count| 100 * stance_count / total }
-    end
-    return distribution
-  end
+  # def stance_fractions
+  #   distribution = Array.new(7,0)
+  #   opinions.published.select('COUNT(*) AS cnt, stance_segment').group(:stance_segment).each do |row|
+  #     distribution[row.stance_segment.to_i] = row.cnt.to_i
+  #   end      
+  #   total = distribution.inject(:+).to_f
+  #   if total > 0     
+  #     distribution.collect! { |stance_count| 100 * stance_count / total }
+  #   end
+  #   return distribution
+  # end
 
   # def update_metrics
   #   self.num_points = points.count
@@ -277,17 +277,6 @@ class Proposal < ActiveRecord::Base
   def add_seo_keyword(keyword)
     self.seo_keywords ||= ""
     self.seo_keywords += "#{keyword}," if !self.seo_keywords.index("#{keyword},")
-  end
-
-  def add_long_id
-    self.long_id = SecureRandom.hex(5)
-    self.save
-  end
-
-  def self.add_long_id
-    Proposal.where(:long_id => nil).each do |p|
-      p.add_long_id
-    end
   end
 
   def self.update_scores

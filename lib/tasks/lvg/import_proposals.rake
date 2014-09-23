@@ -175,7 +175,7 @@ namespace :lvg do
 
       description = "#{name} is a #{data['party']} candidate seeking to represent Washington's #{jurisdiction} in the #{contest_description}."
 
-      description_fields = data['summary']['summary_items'].map {|item| {:label => item['title'].downcase.capitalize, :html => item['yes_text']} }
+      description_fields = data['summary']['summary_items'].map {|item| {:label => item['title'].downcase.capitalize, :html => item['yes_text'].gsub('Not Applicable', 'None found')} }
 
       funding_html = ""
 

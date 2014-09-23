@@ -423,8 +423,8 @@ class User < ActiveRecord::Base
       table.where(:user_id => source_user).update_all(user_id: dest_user)
     end
 
-
-
+    # log table, which doesn't use user_id
+    Log.where(:who => source_user).update_all(who: dest_user)
 
     # 3. Delete the old user
     # TODO: Enable this once we're confident everything is working.

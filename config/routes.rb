@@ -105,6 +105,7 @@ ConsiderIt::Application.routes.draw do
   resources :point_discussion, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :show]
   resources :client_error, :only => [:create]
+  post '/log' => 'log#create'
   get '/proposals' => 'proposal#index'
   get '/customer' => 'customer#show'
   match '/customer' => 'customer#update', :via => [:put]

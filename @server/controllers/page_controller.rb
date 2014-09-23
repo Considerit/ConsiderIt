@@ -25,29 +25,20 @@ class PageController < ApplicationController
 
       key = "/page/#{proposal.long_id}"
       dirty_key key
-
     end
 
-    pageview key
+    if !session[:search_bot]
+      Log.create!({
+        :account_id => current_tenant.id,
+        :who => current_user,
+        :what => 'loaded page',
+        :where => key[6..key.length],
+        :when => Time.current
+      })
+    end
 
     render :json => []
 
-  end
-
-  private 
-
-  def pageview(page)
-    begin
-      params = {
-        :account_id => current_tenant.id,
-        :user_id => current_user.id,
-        :url => request.fullpath,
-        :created_at => Time.current
-      }
-      PageView.create! ActionController::Parameters.new(params).permit!
-    rescue 
-      logger.info 'Could not create PageView'
-    end
   end
 
 end

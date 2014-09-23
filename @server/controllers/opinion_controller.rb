@@ -24,10 +24,8 @@ class OpinionController < ApplicationController
 
     # Convert point_inclusions to ids
     incs = updates['point_inclusions']
-    if incs == nil
-      # Damn rails http://guides.rubyonrails.org/security.html#unsafe-query-generation
-      incs = []
-    end
+    incs = [] if incs.nil? # Damn rails http://guides.rubyonrails.org/security.html#unsafe-query-generation
+
     incs = incs.map! {|p| key_id(p, session)}
     opinion.update_inclusions incs
     updates['point_inclusions'] = JSON.dump(incs)
@@ -44,6 +42,12 @@ class OpinionController < ApplicationController
     if params['published'] && !opinion.published
       opinion.publish()  # This will also publish all the newly-written points
       dirty_key "/page/homepage" # you're now a recent contributor!
+      Log.create!({
+        :account_id => current_tenant.id,
+        :who => current_user,
+        :what => 'published opinion',
+        :where => proposal.long_id,
+        :when => Time.current })
     end
 
     # Need to add following in somewhere else

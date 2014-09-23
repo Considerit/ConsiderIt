@@ -441,9 +441,8 @@ StickyProposalHeading = ReactiveComponent
                 , 
 
                   DIV className: 'current_proposal', style: {backgroundColor: 'rgba(0,0,0,.2)'},
-                    prefix = if proposal.designator && proposal.category then "#{proposal.category[0]}-#{proposal.designator} " else ''                    
                     SPAN null,
-                      "#{prefix}#{proposal.name}?" 
+                      "#{if proposal.designator && proposal.category then "#{proposal.category[0]}-#{proposal.designator} " else ''}#{proposal.name}?" 
                       I className: 'fa fa-caret-down', style: {paddingLeft: 8}
 
                   if @local.dropped_down
@@ -452,45 +451,46 @@ StickyProposalHeading = ReactiveComponent
                         DIV style: {backgroundColor: 'rgba(0,0,0,.2)', padding: '14px 0', borderRadius: '4px'},
                           
                           if has_other_proposals_in_cluster
-                            TABLE className: 'current_cluster', style: {width: '100%'}, 
-                              TBODY null,
-                                for other_proposal in this_proposal_cluster.proposals
-                                  TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink,
-                                    TD style: {textAlign: 'left', paddingLeft: 20},
-                                      A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == proposal.id then 700 else 400},
-                                        other_proposal.name
-                                      
-                                    TD style: {position: 'relative'},
-                                      if !other_proposal.your_opinion || !@data(other_proposal.your_opinion).published
-                                        SPAN style: {fontWeight: 200, color: 'rgb(205,205,205)', fontSize: 21}, '?'
-                                      else
-                                        # make a small slider summary
-                                        opinion = @data(other_proposal.your_opinion)
-                                        face_size = 20 # height/width of the summary slider bar
-                                        eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: color.proposal_header, position: 'absolute', top: 6 }
-                                        mouth_style = {fontSize: 12, color: color.proposal_header, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
-                                        crossbrowserTransformProperty mouth_style
-                                        if opinion.stance_segment < 3
-                                          # frown!
-                                          mouth = '('
-                                        else if opinion.stance_segment == 3
-                                          # confused!
-                                          mouth = '|'
+                            DIV null,
+                              TABLE className: 'current_cluster', style: {width: '100%'}, 
+                                TBODY null,
+                                  for other_proposal in this_proposal_cluster.proposals
+                                    TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink,
+                                      TD style: {textAlign: 'left', paddingLeft: 20},
+                                        A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == proposal.id then 700 else 400},
+                                          other_proposal.name
+                                        
+                                      TD style: {position: 'relative'},
+                                        if !other_proposal.your_opinion || !@data(other_proposal.your_opinion).published
+                                          SPAN style: {fontWeight: 200, color: 'rgb(205,205,205)', fontSize: 21}, '?'
                                         else
-                                          # pleased!
-                                          mouth = ')'
+                                          # make a small slider summary
+                                          opinion = @data(other_proposal.your_opinion)
+                                          face_size = 20 # height/width of the summary slider bar
+                                          eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: color.proposal_header, position: 'absolute', top: 6 }
+                                          mouth_style = {fontSize: 12, color: color.proposal_header, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
+                                          crossbrowserTransformProperty mouth_style
+                                          if opinion.stance_segment < 3
+                                            # frown!
+                                            mouth = '('
+                                          else if opinion.stance_segment == 3
+                                            # confused!
+                                            mouth = '|'
+                                          else
+                                            # pleased!
+                                            mouth = ')'
 
-                                        DIV style: {borderBottom: "1px solid white", width: 100, position: 'relative', top: 15},
+                                          DIV style: {borderBottom: "1px solid white", width: 100, position: 'relative', top: 15},
 
-                                          DIV {style: borderRadius: '50%', backgroundColor: 'white', width: face_size, height: face_size, position: 'absolute', top: -face_size / 2, marginLeft: -face_size / 2 , left: "#{100 * (-1 * opinion.stance + 1.0) / 2.0}%"},
-                                            DIV style: _.extend {}, eye_style, {left: 6} # left eye
-                                            DIV style: _.extend {}, eye_style, {left: face_size - 8} # right eye
-                                            DIV style: mouth_style, mouth
+                                            DIV {style: borderRadius: '50%', backgroundColor: 'white', width: face_size, height: face_size, position: 'absolute', top: -face_size / 2, marginLeft: -face_size / 2 , left: "#{100 * (-1 * opinion.stance + 1.0) / 2.0}%"},
+                                              DIV style: _.extend {}, eye_style, {left: 6} # left eye
+                                              DIV style: _.extend {}, eye_style, {left: face_size - 8} # right eye
+                                              DIV style: mouth_style, mouth
 
 
-                                    TD style: {paddingRight: 20}
+                                      TD style: {paddingRight: 20}
 
-                            DIV className: 'separator', style: {borderBottom: '1px dotted #dedede', width: '85%', margin: '28px auto 12px auto'}
+                              DIV className: 'separator', style: {borderBottom: '1px dotted #dedede', width: '85%', margin: '28px auto 12px auto'}
 
                           DIV className: 'other_clusters', 
                             for cluster in proposals.clusters

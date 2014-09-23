@@ -402,13 +402,7 @@ StickyProposalHeading = ReactiveComponent
     # If navigation bar is enabled, then we'll use a really short proposal name in the heading.
     # Otherwise we'll display the full question. This split doesn't come from
     # deep thought. Right now we'll just show the nav bar if the proposal belongs to a group
-    use_navigation_bar = proposal.cluster 
-    
-    proposal_short = (proposal) -> 
-      prefix = ""
-      if proposal.designator && proposal.category
-        prefix = "#{proposal.category[0]}-#{proposal.designator} "
-      "#{prefix}#{proposal.name}?"
+    use_navigation_bar = proposal.cluster  && proposals
     
     DIV null, 
       if use_navigation_bar
@@ -417,10 +411,12 @@ StickyProposalHeading = ReactiveComponent
 
           #extract the cluster this proposal belongs to
           this_proposal_cluster = _.findWhere proposals.clusters, {name: proposal.cluster}
+          has_other_proposals_in_cluster = this_proposal_cluster && this_proposal_cluster.proposals.length > 1
 
-          if !@local.next_proposal
+          if !@local.next_proposal && has_other_proposals_in_cluster
             # the next proposal is the next proposal in the cluster, with 
             # preference for proposals the user has yet to submit an opinion for. 
+
             other_proposals_in_cluster = _.filter this_proposal_cluster.proposals, (prop) -> prop.id != proposal.id # remove this proposal from the list
             has_not_opined = _.filter other_proposals_in_cluster, (prop) => !prop.your_opinion || !@data(prop.your_opinion).published
 
@@ -445,55 +441,56 @@ StickyProposalHeading = ReactiveComponent
                 , 
 
                   DIV className: 'current_proposal', style: {backgroundColor: 'rgba(0,0,0,.2)'},
-                    proposal_short proposal
-                    I className: 'fa fa-caret-down', style: {paddingLeft: 8}
-
-
+                    prefix = if proposal.designator && proposal.category then "#{proposal.category[0]}-#{proposal.designator} " else ''                    
+                    SPAN null,
+                      "#{prefix}#{proposal.name}?" 
+                      I className: 'fa fa-caret-down', style: {paddingLeft: 8}
 
                   if @local.dropped_down
                     DIV className: 'proposal_navigation_dropdown', style: {width: 500, position: 'absolute', top: 38, paddingTop: 5},
                       DIV style: {backgroundColor: color.header_bg, borderRadius: '4px'},
                         DIV style: {backgroundColor: 'rgba(0,0,0,.2)', padding: '14px 0', borderRadius: '4px'},
                           
-                          TABLE className: 'current_cluster', style: {width: '100%'}, 
-                            TBODY null,
-                              for other_proposal in this_proposal_cluster.proposals
-                                TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink,
-                                  TD style: {textAlign: 'left', paddingLeft: 20},
-                                    A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == proposal.id then 700 else 400},
-                                      other_proposal.name
-                                    
-                                  TD style: {position: 'relative'},
-                                    if !other_proposal.your_opinion || !@data(other_proposal.your_opinion).published
-                                      SPAN style: {fontWeight: 200, color: 'rgb(205,205,205)', fontSize: 21}, '?'
-                                    else
-                                      # make a small slider summary
-                                      opinion = @data(other_proposal.your_opinion)
-                                      face_size = 20 # height/width of the summary slider bar
-                                      eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: color.proposal_header, position: 'absolute', top: 6 }
-                                      mouth_style = {fontSize: 12, color: color.proposal_header, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
-                                      crossbrowserTransformProperty mouth_style
-                                      if opinion.stance_segment < 3
-                                        # frown!
-                                        mouth = '('
-                                      else if opinion.stance_segment == 3
-                                        # confused!
-                                        mouth = '|'
+                          if has_other_proposals_in_cluster
+                            TABLE className: 'current_cluster', style: {width: '100%'}, 
+                              TBODY null,
+                                for other_proposal in this_proposal_cluster.proposals
+                                  TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink,
+                                    TD style: {textAlign: 'left', paddingLeft: 20},
+                                      A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == proposal.id then 700 else 400},
+                                        other_proposal.name
+                                      
+                                    TD style: {position: 'relative'},
+                                      if !other_proposal.your_opinion || !@data(other_proposal.your_opinion).published
+                                        SPAN style: {fontWeight: 200, color: 'rgb(205,205,205)', fontSize: 21}, '?'
                                       else
-                                        # pleased!
-                                        mouth = ')'
+                                        # make a small slider summary
+                                        opinion = @data(other_proposal.your_opinion)
+                                        face_size = 20 # height/width of the summary slider bar
+                                        eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: color.proposal_header, position: 'absolute', top: 6 }
+                                        mouth_style = {fontSize: 12, color: color.proposal_header, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
+                                        crossbrowserTransformProperty mouth_style
+                                        if opinion.stance_segment < 3
+                                          # frown!
+                                          mouth = '('
+                                        else if opinion.stance_segment == 3
+                                          # confused!
+                                          mouth = '|'
+                                        else
+                                          # pleased!
+                                          mouth = ')'
 
-                                      DIV style: {borderBottom: "1px solid white", width: 100, position: 'relative', top: 15},
+                                        DIV style: {borderBottom: "1px solid white", width: 100, position: 'relative', top: 15},
 
-                                        DIV {style: borderRadius: '50%', backgroundColor: 'white', width: face_size, height: face_size, position: 'absolute', top: -face_size / 2, marginLeft: -face_size / 2 , left: "#{100 * (-1 * opinion.stance + 1.0) / 2.0}%"},
-                                          DIV style: _.extend {}, eye_style, {left: 6} # left eye
-                                          DIV style: _.extend {}, eye_style, {left: face_size - 8} # right eye
-                                          DIV style: mouth_style, mouth
+                                          DIV {style: borderRadius: '50%', backgroundColor: 'white', width: face_size, height: face_size, position: 'absolute', top: -face_size / 2, marginLeft: -face_size / 2 , left: "#{100 * (-1 * opinion.stance + 1.0) / 2.0}%"},
+                                            DIV style: _.extend {}, eye_style, {left: 6} # left eye
+                                            DIV style: _.extend {}, eye_style, {left: face_size - 8} # right eye
+                                            DIV style: mouth_style, mouth
 
 
-                                  TD style: {paddingRight: 20}
+                                    TD style: {paddingRight: 20}
 
-                          DIV className: 'separator', style: {borderBottom: '1px dotted #dedede', width: '85%', margin: '28px auto 12px auto'}
+                            DIV className: 'separator', style: {borderBottom: '1px dotted #dedede', width: '85%', margin: '28px auto 12px auto'}
 
                           DIV className: 'other_clusters', 
                             for cluster in proposals.clusters

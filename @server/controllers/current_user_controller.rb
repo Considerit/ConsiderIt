@@ -43,6 +43,8 @@ class CurrentUserController < ApplicationController
 
       replace_user(current_user, user)
       set_current_user(user)
+      dirty_key '/proposals'
+
       puts("Now current is #{current_user && current_user.id}")
       return nil
     end
@@ -95,7 +97,7 @@ class CurrentUserController < ApplicationController
     types.each {|field, value| validate(field, value)}
     validate(:logged_in, 'boolean')
 
-    fields = ['avatar', 'bio', 'name', 'hide_name']
+    fields = ['avatar', 'bio', 'name', 'hide_name', 'tags']
     new_params = params.select{|k,v| fields.include? k}
     new_params[:name] = '' if !new_params[:name]
 
@@ -115,6 +117,7 @@ class CurrentUserController < ApplicationController
       puts("Logging out.")
       logging_out = true
       dirty_key '/page/homepage'
+      dirty_key '/proposals'
       new_current_user()
       log_entry = 'logged out'
 
@@ -165,10 +168,12 @@ class CurrentUserController < ApplicationController
 
       if current_user.update_attributes(permitted) 
         puts("Updating params. #{new_params}; permitted version #{permitted}")
-        log_entry = 'updating info' if !log_entry
         if !current_user.save
           raise 'Error saving basic current_user parameters!'
         end
+        dirty_key '/proposals' # might have access to more proposals if user tags have been changed
+        log_entry = 'updating info' if !log_entry
+
       else
         raise 'Had trouble manipulating this user!'
       end
@@ -303,6 +308,7 @@ class CurrentUserController < ApplicationController
       # Then the user registration is complete.
       replace_user current_user, user
       set_current_user(user)
+      dirty_key '/proposals'
 
       write_to_log({
         :what => 'logged in through 3rd party',

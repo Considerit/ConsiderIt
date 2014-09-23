@@ -39,11 +39,12 @@ class HomeController < ApplicationController
     @is_search_bot = session[:search_bot]
 
     if !session[:search_bot]
+      referer = params.has_key?('z') && params['z'] == '1' ? 'from email notification' : request.referer
       write_to_log({
         :what => 'landed on site',
         :where => request.fullpath,
         :details => {
-          :referrer => request.referer, 
+          :referer => referer, 
           :ip => request.remote_ip, 
           :user_agent => request.env["HTTP_USER_AGENT"]
         }

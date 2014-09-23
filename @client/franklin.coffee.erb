@@ -2634,7 +2634,11 @@ Router = Backbone.Router.extend
     #      if its data is synced with the server. 
     root.proposal_mode = if params && params['results'] then 'results' else 'crafting'  
 
-    save(root)
+    save root
+
+    writeToLog
+      what: 'loaded page',
+      where: long_id
 
   homepage : (params) -> 
     root = fetch('root')
@@ -2645,13 +2649,21 @@ Router = Backbone.Router.extend
     #      if its data is synced with the server. 
     root.proposal_mode = null
 
-    save(root)
+    save root
+
+    writeToLog
+      what: 'loaded page',
+      where: 'homepage'
 
   about : (params) ->
     root = fetch('root')
     root.page_name = 'about'
     root.proposal_mode = null
-    save(root)
+    save root
+
+    writeToLog
+      what: 'loaded page',
+      where: 'about'
 
       
 

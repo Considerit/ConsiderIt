@@ -9,14 +9,6 @@ def parse(html)
   parsed = parsed.gsub('<p>&nbsp;</p>', '')
 end
 
-# constructs a long_id from a data row
-def create_long_id(proposal_data)
-  long_id = proposal_data['topic'].gsub(' ', '_')
-  if proposal_data['category'] && proposal_data['designator']
-    long_id = "#{proposal_data['category'][0]}-#{proposal_data['designator']}_#{long_id}"
-  end
-  pp long_id
-end
 
 # maps from considerit long_ids to maplight measure/candidate ids
 maplight_hash = {
@@ -246,8 +238,21 @@ namespace :lvg do
   task :import_proposals => :environment do
     account = Account.find_by_identifier('livingvotersguide')
 
-    CSV.foreach("lib/tasks/lvg/#{year}/measures.csv", :headers => true) do |row|
-      long_id = create_long_id row
+    CSV.foreach("lib/tasks/lvg/#{year}/measures.csv", :headers => true, :encoding => 'windows-1251:utf-8') do |row|
+      jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
+
+      long_id = row['topic']
+      if row['category'] && row['designator']
+        long_id = "#{row['category'][0]}-#{row['designator']}_#{long_id}"
+      end
+
+      if jurisdiction != 'Statewide'
+        long_id += "-#{jurisdiction}"
+      end
+
+      long_id = long_id.gsub(' ', '_').gsub(',','_').gsub('.','')
+
+      pp long_id
 
       description_fields = []    
 
@@ -285,8 +290,6 @@ namespace :lvg do
         description += " Read the <a href='#{row['url']}' target='_blank'>full text</a>."
       end
 
-      jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
-
       category = row['category']
       if jurisdiction == 'Statewide'
         if category == 'Advisory Measure'
@@ -319,12 +322,11 @@ namespace :lvg do
         :seo_keywords => row.fetch('seo_keywords', nil)
       }
 
-      #proposal = Proposal.find_by_long_id long_id
-      proposal = Proposal.where(:designator => measure[:designator], :category => category, :cluster => cluster).first
+      proposal = Proposal.find_by_long_id long_id
       if !proposal
         proposal = Proposal.new measure
         proposal.save
-        pp "Added #{row['topic']}"
+        #pp "Added #{row['topic']}: #{long_id}"
       else
         measure.delete :account_id
         proposal.update_attributes measure
@@ -337,23 +339,14 @@ namespace :lvg do
 
 
   task :add_zips_for_proposals => :environment do 
+    account = Account.find_by_identifier('livingvotersguide')
 
     jurisdiction_to_proposals = {}
 
-    CSV.foreach("lib/tasks/lvg/#{year}/measures.csv", :headers => true) do |row|
-      proposal = Proposal.find_by_long_id(create_long_id(row))
-      if !proposal
-        throw 'Could not find proposal'
-      end
-
-      jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
-
-      next if jurisdiction == 'Statewide'
-
-      if !(jurisdiction_to_proposals.has_key?(jurisdiction))
-        jurisdiction_to_proposals[jurisdiction] = []
-      end
-      jurisdiction_to_proposals[jurisdiction].push proposal
+    proposals = account.proposals.where('cluster is not null')
+    proposals.each do |p|
+      jurisdiction_to_proposals[p.cluster] = [] if !(jurisdiction_to_proposals.has_key?(p.cluster))
+      jurisdiction_to_proposals[p.cluster].append p
     end
 
     jurisdiction_to_zips = {}
@@ -362,7 +355,7 @@ namespace :lvg do
       if !jurisdiction_to_zips.has_key?(jurisdiction)
         jurisdiction_to_zips[jurisdiction] = []
       end
-      jurisdiction_to_zips[jurisdiction].push row['zip']
+      jurisdiction_to_zips[jurisdiction].push row['zip'].to_i
     end
 
     jurisdiction_to_proposals.each do |jurisdiction, proposals|
@@ -372,17 +365,12 @@ namespace :lvg do
         pp "ERROR: jurisdiction #{jurisdiction} not found!...skipping"
         next
       end
-      pp "For #{jurisdiction}, adding #{zips.length} zips to #{proposals.length} measures"
+      #pp "For #{jurisdiction}, adding #{zips.length} zips to #{proposals.length} measures"
 
       proposals.each do |p|
-        #p.add_tag "type:local"
-        #p.add_tag "jurisdiction:#{jurisdiction}"
-        #p.add_seo_keyword jurisdiction
-
         p.hide_on_homepage = true
-        zips.each do |zip|
-          p.add_tag "zip:#{zip}"
-        end
+        p.zips = JSON.dump zips
+        #pp p.zips
         p.save
       end
 

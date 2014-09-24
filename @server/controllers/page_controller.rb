@@ -8,9 +8,11 @@ class PageController < ApplicationController
       key = '/page/homepage'
       dirty_key key
 
-    when 'about'
-      # don't need anything special
+    when 'about' # don't need anything special
       key = '/page/about'
+
+    when 'proposal/new' # don't need anything special
+      key = '/page/proposal/new'
 
     else # if proposal
 

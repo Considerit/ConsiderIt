@@ -1158,7 +1158,7 @@ YourPoints = ReactiveComponent
               'or '
             SPAN className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
             A className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
-            "Express a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
+            "Write a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
         else
           EditPoint { key: "new_point_#{@props.valence}", fresh: true, valence: @props.valence, your_points_key: @props.key }
 

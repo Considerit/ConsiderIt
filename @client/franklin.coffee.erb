@@ -279,6 +279,7 @@ Proposal = ReactiveComponent
     proposal = @proposal
     your_opinion = @data(proposal.your_opinion)
     included_points = your_opinion.point_inclusions
+    current_user = @data('/current_user')
 
     description_region_style = {width: DESCRIPTION_WIDTH}
 
@@ -317,7 +318,6 @@ Proposal = ReactiveComponent
 
     color = @data('color')
 
-
     DIV className:'proposal', key:@props.long_id, 'data-page':@root.proposal_mode,
 
       StickyProposalHeading()
@@ -339,6 +339,9 @@ Proposal = ReactiveComponent
                 @renderDescriptionFieldGroup item
               else
                 @renderDescriptionField item
+
+        if current_user.is_admin
+          A style: {opacity: '.1'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
     
       #feelings
       DIV className:'feelings_region', style : { width: BODY_WIDTH },
@@ -2152,7 +2155,7 @@ Homepage = ReactiveComponent
     proposals = @data('/proposals')
 
     # The "Welcome to the community!" people
-    contributors = @page.contributors.filter((u)->console.log(u); fetch(u).avatar_file_name)
+    contributors = @page.contributors.filter((u)-> fetch(u).avatar_file_name)
     welcome_column =
       TH className: 'welcome_column',
         if contributors.length > 0
@@ -2522,6 +2525,99 @@ Footer = ReactiveComponent
           A href: "mailto:admin@consider.it", 'Email us'
 
 
+# top secret proposal creation component
+EditProposal = ReactiveComponent
+  displayName: 'EditProposal'
+
+  saveProposal : -> 
+    $el = $(@getDOMNode())
+
+    name = $el.find('#name').val()
+    description = $el.find('#description').val()
+    long_id = $el.find('#long_id').val()
+    cluster = $el.find('#cluster').val()
+    cluster = null if cluster == ""
+
+    if @props.fresh
+      proposal =
+        key : '/new/proposal'
+        name : name
+        description : description
+        cluster : cluster
+        long_id : long_id
+
+    else 
+      proposal = @data()
+      _.extend proposal, 
+        cluster: cluster
+        name: name
+        long_id: long_id
+        description: description
+      console.log '!!!', long_id, proposal
+
+    save proposal, -> window.app_router.navigate "/#{long_id}", {trigger : true}
+
+  render : ->
+    user = @data('/current_user')
+    
+    console.log 'YO', @data(), @data().long_id
+
+    return DIV null, 'Nothing to see here, move on' if !user.logged_in || !user.is_admin || (!@props.fresh && !@data().long_id )
+
+    block_style = { width: CONTENT_WIDTH, padding: '2px 8px', marginBottom: 20 }
+    input_style = {marginLeft: 18, fontSize: 18, width: CONTENT_WIDTH - 200, padding: '2px 4px'}
+    label_style = {verticalAlign: 'top', fontSize: 18, width: 150, display: 'inline-block'}
+
+    DIV style: { width: PAGE_WIDTH, margin: 'auto', padding: '5em 0' },
+      H1 style: {fontSize: 28, marginBottom: 20},
+        "Top secret create new proposal page. Shhhhh..."
+
+      DIV style: block_style,
+        LABEL htmlFor:'long_id', style: label_style, 'URL'
+        INPUT 
+          id:'long_id'
+          name:'long_id'
+          pattern:'^.{3,}'
+          placeholder:'e.g. consider.it/I_am_the_url. Just letters, numbers, underscores, dashes.'
+          required:'required'
+          defaultValue: if @props.fresh then null else @data().long_id
+          style: input_style
+
+      DIV style: block_style,
+        LABEL htmlFor:'name', style: label_style, 'Topic question'
+        INPUT 
+          id:'name'
+          name:'name'
+          pattern:'^.{3,}'
+          placeholder:'Make this super succinct with a <verb> <noun>.'
+          required:'required'
+          defaultValue: if @props.fresh then null else @data().name
+          style: input_style
+
+      DIV style: block_style,
+        LABEL htmlFor:'description', style: label_style, 'Description'
+        TEXTAREA 
+          id:'description'
+          name:'description'
+          pattern:'^.{3,}'
+          placeholder:'Make this good :)'
+          required:'required'
+          defaultValue: if @props.fresh then null else @data().description
+          style: _.extend {}, input_style, {height: 150}
+
+      DIV style: block_style,
+        LABEL htmlFor:'cluster', style: label_style, 'Group (optional)'
+        INPUT 
+          id:'cluster'
+          name:'cluster'
+          pattern:'^.{3,}'
+          placeholder:'The group to which this proposal belongs, if any.'
+          defaultValue: if @props.fresh then null else @data().cluster
+          style: input_style
+
+      DIV null,
+        INPUT className:'button primary_button', type:'submit', value:'Publish', onClick: @saveProposal
+
 
 About = ReactiveComponent
   displayName: 'About'
@@ -2614,13 +2710,17 @@ Page = ReactiveComponent
       Header()
       DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
         DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
-          switch @root.page_name
-            when 'homepage'
-              Homepage key: @page.key
-            when 'about'
-              About()
-            else 
-              Proposal key: @page.proposal.key
+          if @root.page_name == 'homepage'
+            Homepage key: @page.key
+          else if @root.page_name == 'about'
+            About()
+          else if @root.page_name == 'proposal/new'
+            EditProposal key: "new_proposal", fresh: true
+          else if @root.page_name.match(/(.+)\/edit/)
+            EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
+          else 
+            Proposal key: @page.proposal.key
+
       Footer()
 
 Computer = ReactiveComponent
@@ -2723,9 +2823,11 @@ window.root = null
 Router = Backbone.Router.extend
   
   routes :
-    ":proposal(/)": "proposal"
     "(/)" : "homepage"
     "about(/)" : "about"
+    "proposal/new(/)" : "new_proposal"
+    "proposal/:proposal/edit(/)": "edit_proposal"
+    ":proposal(/)": "proposal"    
 
   proposal : (long_id, params) ->
     root = fetch('root')
@@ -2767,7 +2869,17 @@ Router = Backbone.Router.extend
       what: 'loaded page',
       where: 'about'
 
-      
+  new_proposal : (params) ->
+    root = fetch('root')
+    root.page_name = 'proposal/new'
+    root.proposal_mode = null
+    save root
+
+  edit_proposal : (id, params) ->
+    root = fetch('root')
+    root.page_name = "proposal/#{id}/edit"
+    root.proposal_mode = null
+    save root      
 
 # Handles router navigation for links so that a page reload doesn't happen
 clickInternalLink = (event) ->

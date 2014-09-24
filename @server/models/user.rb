@@ -75,7 +75,8 @@ class User < ActiveRecord::Base
       name: name,
       reset_my_password: false,
       reset_password_token: nil,
-      b64_thumbnail: b64_thumbnail
+      b64_thumbnail: b64_thumbnail, 
+      is_admin: is_admin?
     }
 
     # temporary for legacy dashboard:

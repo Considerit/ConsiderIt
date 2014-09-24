@@ -38,7 +38,7 @@ $cityclub_brown:  rgb(77,  76,  71)
 ///////////////////////
 // HOMEPAGE proposals
 
-tr.proposal_summary
+tr.proposal_summary //, td.summary_name
   min-height: 60px
 
 td, th
@@ -55,6 +55,7 @@ td.summary_name
   display: inline-block
   font-size: 18px
   font-weight: 500
+  //border-right: 1px solid rgb(191, 192, 194)
 
 td.summary_decide
   width: 170px
@@ -84,6 +85,22 @@ td.summary_share
   
 .welcome_column .people
   padding-top: 25px
+
+
+///////////////////////
+// HOMEPAGE zip code area
+
+.ragged_top
+  background-image: url(asset-path("greytriangle_up.png"))
+  background-repeat: (repeat-x)
+  background-size: 18px 9px
+  height: 9px
+
+.ragged_bottom
+  background-image: url(asset-path("greytriangle_down.png"))
+  background-repeat: (repeat-x)
+  background-size: 18px 9px
+  height: 9px
 
 ///////////////////////
 // NAVIGATION

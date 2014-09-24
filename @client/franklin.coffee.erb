@@ -405,7 +405,7 @@ StickyProposalHeading = ReactiveComponent
     # If navigation bar is enabled, then we'll use a really short proposal name in the heading.
     # Otherwise we'll display the full question. This split doesn't come from
     # deep thought. Right now we'll just show the nav bar if the proposal belongs to a group
-    use_navigation_bar = proposal.cluster  && proposals
+    use_navigation_bar = proposal.cluster && proposals
     
     DIV null, 
       if use_navigation_bar
@@ -433,6 +433,14 @@ StickyProposalHeading = ReactiveComponent
         DIV null,
           DIV className: 'proposal_heading placeholder', style: {height: heading_height} 
           DIV className: 'proposal_heading stickable',  style : { height: heading_height, minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, textAlign: 'center' }, # minwidth is for width consistency when dropping into fixed sticky header
+            # TODO: we need a way of knowing whether this subdomain has a homepage or not
+            if customer.identifier == 'livingvotersguide'
+              A
+                className: 'homepage_link'
+                onClick: (=> window.app_router.navigate("/", {trigger: true}))
+                style: {position: 'absolute', display: 'inline-block', top: 10, left: 12},
+                I className: 'fa fa-home', style: {fontSize: 28, color: 'white'}
+
             DIV className: 'current_proposal_cluster', proposal.cluster
 
             DIV className: 'proposal_navigation_menu_wrapper', style: {width: DESCRIPTION_WIDTH}, # set the width here so we can align it perfectly with the proposal description text
@@ -529,11 +537,6 @@ StickyProposalHeading = ReactiveComponent
           DIV className: 'proposal_heading placeholder', style: heading_style,
             SPAN null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
 
-      # TODO: we need a way of knowing whether this subdomain has a homepage or not
-      if customer.identifier == 'livingvotersguide'
-        A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', marginTop: 8, marginLeft: 16, fontWeight: 600}, 
-          I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
-          SPAN style: {fontSize: 15, paddingLeft: 6, color: '#777', verticalAlign: 'text-bottom'}, 'Home'
 
 
 
@@ -2313,7 +2316,7 @@ ZipcodeBox = ReactiveComponent
               margin: 'auto'
               padding: '45px 0'
               paddingLeft: '170px'
-            'Customize this guide for' + extra_text
+            'Customize this guide for your' + extra_text
             INPUT
               type: 'text'
               key: 'zip_input'

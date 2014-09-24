@@ -2174,23 +2174,6 @@ Homepage = ReactiveComponent
 
     sticky_header_height = 79
 
-    drawZipcodeBox = () =>
-      DIV style: {margin: '55px 0'},
-        DIV className: 'ragged_top', ''
-        DIV style: {backgroundColor: '#93928E'},
-          DIV
-            style:
-              fontSize: 24
-              width: PAGE_WIDTH
-              color: cream
-              margin: 'auto'
-              padding: '45px 0'
-              paddingLeft: '170px'
-            'Customize this guide for your'
-            INPUT type: 'text', defaultValue: 'Zip Code', style: {margin: '0 0 0 12px', fontSize: 24, height: 42, width: 152, padding: '4px 20px'}
-              
-        DIV className: 'ragged_bottom', ''
-
     drawCluster = (cluster, is_first=false) =>
       if cluster.proposals?.length > 0 
         TABLE
@@ -2248,7 +2231,7 @@ Homepage = ReactiveComponent
       for cluster, index in proposals.clusters or []
         [
           if index == 1 and customer.identifier == 'livingvotersguide'
-            drawZipcodeBox()
+            ZipcodeBox()
           
           drawCluster(cluster, index == 0)
 
@@ -2270,6 +2253,73 @@ Homepage = ReactiveComponent
               A href: "http://en.wikipedia.org/wiki/Washington_Initiative_960", style: {fontWeight: 600, color: 'rgb(108,107,98)'}, 'Initiative 960' 
               " passing in 2007."
         ]
+
+ZipcodeBox = ReactiveComponent
+  displayName: 'ZipcodeBox'
+  render: ->
+    c = @data('/current_user')
+    extra_text = if Modernizr.input.placeholder then '' else ' your Zip Code'
+    onChange = (event) =>
+      if event.target.value.match(/\d\d\d\d\d/)
+        c.tags = {zip: event.target.value}
+        save(c)
+
+      else if event.target.value.length == 0
+        c.tags = null
+        @local.stay_around = true
+        save(c)
+        save(@local)
+
+    onBlur = =>
+      @local.stay_around = false
+      save(@local)
+
+    if c.tags or @local.stay_around
+      # Render the completed zip code box
+      DIV
+        className: 'filled_zip'
+        style:
+          width: PAGE_WIDTH
+          margin: 'auto'
+          paddingLeft: 458
+        DIV
+          style:
+            padding: '13px 23px'
+            backgroundColor: '#F5F4ED'
+            fontSize: 18
+            fontWeight: 400
+            width: 245
+          'Customized for:'
+          INPUT
+            type: 'text'
+            key: 'zip_input'
+            defaultValue: c.tags?.zip or ''
+            onChange: onChange
+            onBlur: onBlur
+
+    else
+      # Render the ragged input box
+      DIV style: {margin: '55px 0'},
+        DIV className: 'ragged_top', ''
+        DIV style: {backgroundColor: '#93928E'},
+          DIV
+            style:
+              fontSize: 24
+              width: PAGE_WIDTH
+              color: cream
+              margin: 'auto'
+              padding: '45px 0'
+              paddingLeft: '170px'
+            'Customize this guide for' + extra_text
+            INPUT
+              type: 'text'
+              key: 'zip_input'
+              placeholder: 'Zip Code'
+              style: {margin: '0 0 0 12px', fontSize: 24, height: 42, width: 152, padding: '4px 20px'}
+              onChange: onChange
+
+        DIV className: 'ragged_bottom', ''
+
 
 Header = ReactiveComponent
   displayName: 'Header'

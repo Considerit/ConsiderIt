@@ -92,8 +92,6 @@ class ProposalController < ApplicationController
 
 
   def update
-    # Right now, proposal can't be updated with any fields. We're only checking for 
-    # the is_following parameter, which isn't actually stored on the proposal itself
 
     proposal = Proposal.find params[:id]
 
@@ -106,11 +104,14 @@ class ProposalController < ApplicationController
       end
     end
 
-    # fields = []
-    # updates = params.select{|k,v| fields.include? k}
-    # proposal.update_attributes! ActionController::Parameters.new(updates).permit!
+    if can?(:update, proposal)
+      fields = ['long_id', 'name', 'cluster', 'description']
+      updated_fields = params.select{|k,v| fields.include? k}
+      proposal.update_attributes! updated_fields
+      dirty_key('/proposals')
+    end
 
-    dirty_key "/proposal/#{proposal.long_id}"
+    dirty_key "/proposal/#{proposal.id}"
     render :json => []
   end
 

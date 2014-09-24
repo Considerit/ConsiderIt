@@ -279,6 +279,7 @@ Proposal = ReactiveComponent
     proposal = @proposal
     your_opinion = @data(proposal.your_opinion)
     included_points = your_opinion.point_inclusions
+    current_user = @data('/current_user')
 
     description_region_style = {width: DESCRIPTION_WIDTH}
 
@@ -317,7 +318,6 @@ Proposal = ReactiveComponent
 
     color = @data('color')
 
-
     DIV className:'proposal', key:@props.long_id, 'data-page':@root.proposal_mode,
 
       StickyProposalHeading()
@@ -339,6 +339,9 @@ Proposal = ReactiveComponent
                 @renderDescriptionFieldGroup item
               else
                 @renderDescriptionField item
+
+        if current_user.is_admin
+          A style: {opacity: '.1'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
     
       #feelings
       DIV className:'feelings_region', style : { width: BODY_WIDTH },
@@ -2152,7 +2155,7 @@ Homepage = ReactiveComponent
     proposals = @data('/proposals')
 
     # The "Welcome to the community!" people
-    contributors = @page.contributors.filter((u)->console.log(u); fetch(u).avatar_file_name)
+    contributors = @page.contributors.filter((u)-> fetch(u).avatar_file_name)
     welcome_column =
       TH className: 'welcome_column',
         if contributors.length > 0
@@ -2487,20 +2490,22 @@ EditProposal = ReactiveComponent
         long_id : long_id
 
     else 
-      _.extend @data, 
+      proposal = @data()
+      _.extend proposal, 
         cluster: cluster
         name: name
         long_id: long_id
         description: description
-      proposal = @data()
+      console.log '!!!', long_id, proposal
 
     save proposal, -> window.app_router.navigate "/#{long_id}", {trigger : true}
 
   render : ->
     user = @data('/current_user')
-    proposal = @data()
     
-    return DIV null, 'Nothing to see here, move on' if !user.logged_in || !user.is_admin
+    console.log 'YO', @data(), @data().long_id
+
+    return DIV null, 'Nothing to see here, move on' if !user.logged_in || !user.is_admin || (!@props.fresh && !@data().long_id )
 
     block_style = { width: CONTENT_WIDTH, padding: '2px 8px', marginBottom: 20 }
     input_style = {marginLeft: 18, fontSize: 18, width: CONTENT_WIDTH - 200, padding: '2px 4px'}
@@ -2648,15 +2653,17 @@ Page = ReactiveComponent
       Header()
       DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
         DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
-          switch @root.page_name
-            when 'homepage'
-              Homepage key: @page.key
-            when 'about'
-              About()
-            when 'proposal/new'
-              EditProposal { key: "new_proposal", fresh: true }
-            else 
-              Proposal key: @page.proposal.key
+          if @root.page_name == 'homepage'
+            Homepage key: @page.key
+          else if @root.page_name == 'about'
+            About()
+          else if @root.page_name == 'proposal/new'
+            EditProposal key: "new_proposal", fresh: true
+          else if @root.page_name.match(/(.+)\/edit/)
+            EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
+          else 
+            Proposal key: @page.proposal.key
+
       Footer()
 
 Computer = ReactiveComponent
@@ -2759,10 +2766,11 @@ window.root = null
 Router = Backbone.Router.extend
   
   routes :
-    ":proposal(/)": "proposal"
     "(/)" : "homepage"
     "about(/)" : "about"
     "proposal/new(/)" : "new_proposal"
+    "proposal/:proposal/edit(/)": "edit_proposal"
+    ":proposal(/)": "proposal"    
 
   proposal : (long_id, params) ->
     root = fetch('root')
@@ -2810,7 +2818,11 @@ Router = Backbone.Router.extend
     root.proposal_mode = null
     save root
 
-      
+  edit_proposal : (id, params) ->
+    root = fetch('root')
+    root.page_name = "proposal/#{id}/edit"
+    root.proposal_mode = null
+    save root      
 
 # Handles router navigation for links so that a page reload doesn't happen
 clickInternalLink = (event) ->

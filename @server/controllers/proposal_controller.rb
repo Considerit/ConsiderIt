@@ -20,7 +20,41 @@ class ProposalController < ApplicationController
     render :json => []
   end
 
-  # def create
+  def create
+    fields = ['long_id', 'name', 'cluster', 'description']
+    proposal = params.select{|k,v| fields.include? k}
+
+    proposal.update({
+          :published => true,
+          :user_id => current_user.id,
+          :account_id => current_tenant.id, 
+          :active => true
+        })
+
+    proposal = Proposal.new proposal
+    authorize! :create, proposal
+
+    proposal.save
+
+    original_id = key_id(params[:key])
+    result = proposal.as_json
+    result['key'] = "/proposal/#{proposal.id}?original_id=#{original_id}"
+    remap_key(params[:key], "/proposal/#{proposal.id}")
+
+    # dirty_key "/proposal/#{proposal.id}"
+
+    write_to_log({
+      :what => 'created new proposal',
+      :where => request.fullpath,
+      :details => {:proposal => "/#{proposal.long_id}"}
+    })
+
+    render :json => [result]
+
+  end
+
+
+  # def old_create
   #   description = params[:proposal][:description] || ''
 
   #   # NOTE: default hashtags haven't been used since Occupy deployment. Purge from system.
@@ -54,6 +88,8 @@ class ProposalController < ApplicationController
   #   render :json => data
     
   # end
+
+
 
   def update
     # Right now, proposal can't be updated with any fields. We're only checking for 

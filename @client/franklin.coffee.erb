@@ -2177,12 +2177,65 @@ Homepage = ReactiveComponent
 
     sticky_header_height = 79
 
+    drawZipcodeBox = () =>
+      DIV style: {margin: '55px 0'},
+        DIV className: 'ragged_top', ''
+        DIV style: {backgroundColor: '#93928E'},
+          DIV
+            style:
+              fontSize: 24
+              width: PAGE_WIDTH
+              color: cream
+              margin: 'auto'
+              padding: '45px 0'
+              paddingLeft: '170px'
+            'Customize this guide for your'
+            INPUT type: 'text', defaultValue: 'Zip Code', style: {margin: '0 0 0 20px', fontSize: 24, height: 42, width: 152, padding: '4px 20px'}
+              
+        DIV className: 'ragged_bottom', ''
+
+    drawCluster = (cluster, is_first=false) =>
+      if cluster.proposals?.length > 0 
+        TABLE
+          style:
+            borderLeft: '0px solid rgb(191, 192, 194)'
+            margin: '20px auto'
+            position: 'relative'
+
+          TBODY null,
+            TR null,
+              # Draw the cluster name off to the side
+              TH
+                style:
+                  textAlign: 'right'
+                  width: 115
+                  padding: 8
+                  paddingTop: 9
+                  display: 'inline-block'
+                  verticalAlign: 'top'
+                  fontSize: 16
+                  fontWeight: 200
+                  position: 'absolute'
+                  left: -125
+                cluster.name
+
+              # Draw the welcome column... let's find a better place for it.
+              if is_first
+                welcome_column
+
+            # Draw each proposal summary
+            for proposal in cluster.proposals
+              ProposalSummary
+                key: proposal.key
+                cluster: cluster.name
+
+
     DIV className: 'homepage',
       # Draw the header
       DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height} 
       DIV 
         className: "sticky_header stickable"
-        style: {height: sticky_header_height, width: '100%', backgroundColor: cream, color: cityclub_navy, zIndex: 9999, minWidth: PAGE_WIDTH} #minwidth is for when dropping into sticky, position fixed mode
+        style: {height: sticky_header_height, width: '100%', backgroundColor: cream, color: cityclub_brown, zIndex: 9999, minWidth: PAGE_WIDTH} #minwidth is for when dropping into sticky, position fixed mode
       ,
         TABLE style: {margin: 'auto'},
           TBODY null,
@@ -2195,39 +2248,24 @@ Homepage = ReactiveComponent
                     col.details
 
       # Draw the proposal summaries
-      if proposals.clusters
-        for cluster, index in proposals.clusters
-          if cluster.proposals && cluster.proposals.length > 0 
-            TABLE style: {borderLeft: '0px solid rgb(191, 192, 194)', margin: '20px auto', position: 'relative'},
-              TBODY null,
-                if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
-                  TR null, 
-                    TD colSpan: 4, style: {fontStyle: 'italic', fontSize: 18, paddingBottom: 25}, 
-                      "2014 Congressional candidates and local ballot measures coming soon!!!"          
+      for cluster, index in proposals.clusters or []
+        [
+          if index == 1 and customer.identifier == 'livingvotersguide'
+            drawZipcodeBox()
+          
+          drawCluster(cluster, index == 0)
 
-                # We stick a couple funny things into TH cells, and then stick them off to the side
-                TR null,
-                  TH style: {textAlign: 'right', width: 115, padding: 8, paddingTop: 9, display: 'inline-block', verticalAlign: 'top', fontSize: 16, fontWeight: 200, position: 'absolute', left: -125},
-                    cluster.name
-                  if index == 0
-                    welcome_column
-
-                for proposal in cluster.proposals
-                  ProposalSummary
-                    key: proposal.key
-                    cluster: cluster.name
-
-                # TODO: There are probably lots of cases where we want to add more details to
-                #       a cluster of proposals.  For example, saying that proposals in cluster
-                #       "Council meeting 6/7" will be open for discussion at the upcoming
-                #       meeting. Keep an eye on this possible generality (and eliminate this
-                #       edge case if we do generalize it)
-                if customer.identifier == 'livingvotersguide' && cluster.name == 'Advisory votes'
-                  TR null,
-                    TD colSpan: 4, style: {color: 'rgb(108,107,98)', fontSize: 16, paddingLeft: 30, paddingTop: 12},
-                      "* Advisory Votes are not binding. They are a consequence of "
-                      A href: "http://en.wikipedia.org/wiki/Washington_Initiative_960", style: {fontWeight: 600, color: 'rgb(108,107,98)'}, 'Initiative 960' 
-                      " passing in 2007."
+          # TODO: There are probably lots of cases where we want to add more details to
+          #       a cluster of proposals.  For example, saying that proposals in cluster
+          #       "Council meeting 6/7" will be open for discussion at the upcoming
+          #       meeting. Keep an eye on this possible generality (and eliminate this
+          #       edge case if we do generalize it)
+          if cluster.name == 'Advisory votes' and customer.identifier == 'livingvotersguide'
+            DIV style: {color: 'rgb(108,107,98)', fontSize: 16, paddingLeft: 30, paddingTop: 12},
+              "* Advisory Votes are not binding. They are a consequence of "
+              A href: "http://en.wikipedia.org/wiki/Washington_Initiative_960", style: {fontWeight: 600, color: 'rgb(108,107,98)'}, 'Initiative 960' 
+              " passing in 2007."
+        ]
 
 Header = ReactiveComponent
   displayName: 'Header'

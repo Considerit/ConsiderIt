@@ -76,7 +76,8 @@ class User < ActiveRecord::Base
       reset_my_password: false,
       reset_password_token: nil,
       b64_thumbnail: b64_thumbnail,
-      tags: JSON.parse(tags)
+      tags: JSON.parse(tags),
+      is_admin: is_admin?
     }
 
     # temporary for legacy dashboard:

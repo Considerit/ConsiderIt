@@ -46,7 +46,7 @@ class PointController < ApplicationController
 
     remap_key(params[:key], "/point/#{point.id}")
 
-    dirty_key "/proposal/#{proposal.long_id}"
+    dirty_key "/proposal/#{proposal.id}"
 
     # # This session stuff is broken!  Because the session gets cleared
     # # when we switch accounts.  Sucks.  Need a new way to store this.

@@ -31,6 +31,19 @@ $cityclub_red:    rgb(241, 94,  94)
 $cityclub_beige:  rgb(241, 235, 211)
 $cityclub_brown:  rgb(77,  76,  71)
 
+
+
+// Mixin for mediaquery for retina screens. 
+// Adapted from https://gist.github.com/ddemaree/5470343
+=retina($ratio: 1.5)
+  $dpi: $ratio * 96
+  $opera-ratio: $ratio * 100
+ 
+  @media only screen and (-webkit-min-device-pixel-ratio: #{$ratio}), only screen and (-o-min-device-pixel-ratio: '#{$opera-ratio}/100'), only screen and (min-resolution: #{$dpi}dpi), only screen and (min-resolution: #{$ratio}dppx)
+    @content
+
+
+
 /////////////////////////////////////////////////////////////////////////////
 /// STYLES for Franklin
 /////////////////////////////////////////////////////////////////////////////
@@ -68,6 +81,20 @@ td.summary_share
   display: inline-block
   padding-left: 15px
   margin-top: -4px
+
+
+th.proposal_cluster
+  text-align: right
+  width: 115px
+  padding: 9px 8px 8px 8px
+  display: inline-block
+  vertical-align: top
+  +font-size(1)
+  position: absolute
+  left: -125px
+
+  +retina
+    font-weight: 300
 
 
 ///////////////////////
@@ -274,8 +301,9 @@ $proposer_img_size: 50px
   left: -155px
   text-align: right
   top: 10px
-  text-transform: lowercase
-  font-variant: small-caps
+
+  +retina
+    font-weight: 300
 
 .description_fields
   margin-top: 1em
@@ -404,11 +432,14 @@ $segment_color: #db004d
   width: 130px
 
 .histogram_segment_pole
-  font-weight: 300
   position: absolute
   +font-size(6)
   bottom: -20px
   pointer-events: none
+
+  font-weight: 400
+  +retina
+    font-weight: 300
 
   span
     position: absolute
@@ -593,7 +624,10 @@ $slider_handle_size: 22px
     font-style: italic
     list-style: none
     text-align: center
-    font-weight: 300
+
+    font-weight: 400
+    +retina
+      font-weight: 300
 
 ////
 // Lower level styles for reasons region...
@@ -609,17 +643,23 @@ $slider_handle_size: 22px
   color: $decision_board_text_color
 
 .points_by_community .points_heading_label
-  font-weight: 300
   position: relative
 
+  font-weight: 400
+  +retina
+    font-weight: 300
+
 .points_segment_label
-  font-weight: 300
   text-align: center
   +font-size(-2)
   position: absolute
   width: 100%
   bottom: -12px
   color: $segment_color
+
+  font-weight: 400
+  +retina
+    font-weight: 300
 
 // Mike: I wanted the headers to be centered over the ENTIRE
 // points including avatars, not just bubbles.  But the
@@ -842,12 +882,15 @@ $community_point_mouth_width: 17px
 // Point text
 .point_nutshell
   word-wrap: break-word
-  +font-size(-1)
+  +font-size(0)
 
 .point_details_tease, .point_details 
   //padding-left: 10px
-  font-weight: 300
   display: block
+
+  font-weight: 400
+  +retina
+    font-weight: 300
 
 .point_details_tease:hover
   text-decoration: underline
@@ -923,8 +966,10 @@ $point-includer-width: 22px
     padding: 0 6px
     color: $base_text_color    
   .qualifier
-    font-weight: 300
     color: $base_text_color
+    font-weight: 400
+    +retina
+      font-weight: 300
 
 // point actions
 a.edit_point, a.delete_point

@@ -473,7 +473,7 @@ StickyProposalHeading = ReactiveComponent
                                         
                                       TD style: {position: 'relative'},
                                         if !other_proposal.your_opinion || !@data(other_proposal.your_opinion).published
-                                          SPAN style: {fontWeight: 200, color: 'rgb(205,205,205)', fontSize: 21}, '?'
+                                          SPAN style: {fontWeight: 400, color: 'rgb(205,205,205)', fontSize: 21}, '?'
                                         else
                                           # make a small slider summary
                                           opinion = @data(other_proposal.your_opinion)
@@ -655,7 +655,7 @@ Histogram = ReactiveComponent
     num_columns = columns.length
     avatar_size = histogram_data.avatar_size
 
-    effective_histogram_width = num_columns * avatar_size
+    effective_histogram_width = num_columns * avatar_size + 2
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2 #- avatar_size / 4
 
 
@@ -2096,7 +2096,7 @@ ProposalSummary = ReactiveComponent
           proposal.name
       TD className: 'summary_decide',
         if !proposal.your_opinion || !@data(proposal.your_opinion).published || @data(proposal.your_opinion).stance_segment == 3
-          SPAN style: {fontWeight: 200, color: 'rgb(158,158,158)', fontSize: 21}, '?'
+          SPAN style: {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}, '?'
         else if @data(proposal.your_opinion).stance_segment < 3
           SPAN style: {position: 'relative', left: 14},
             IMG 
@@ -2191,18 +2191,7 @@ Homepage = ReactiveComponent
           TBODY null,
             TR null,
               # Draw the cluster name off to the side
-              TH
-                style:
-                  textAlign: 'right'
-                  width: 115
-                  padding: 8
-                  paddingTop: 9
-                  display: 'inline-block'
-                  verticalAlign: 'top'
-                  fontSize: 16
-                  fontWeight: 200
-                  position: 'absolute'
-                  left: -125
+              TH className: 'proposal_cluster',
                 cluster.name
 
               # Draw the welcome column... let's find a better place for it.
@@ -2264,7 +2253,7 @@ ZipcodeBox = ReactiveComponent
   displayName: 'ZipcodeBox'
   render: ->
     c = @data('/current_user')
-    extra_text = if Modernizr.input.placeholder then '' else ' your Zip Code'
+    extra_text = if Modernizr.input.placeholder then '' else ' Zip Code'
     onChange = (event) =>
       if event.target.value.match(/\d\d\d\d\d/)
         c.tags = {zip: event.target.value}

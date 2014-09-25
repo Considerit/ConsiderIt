@@ -2302,8 +2302,8 @@ ZipcodeBox = ReactiveComponent
     else
       # Render the ragged input box
       DIV style: {margin: '55px 0'},
-        DIV className: 'ragged_top', ''
-        DIV style: {backgroundColor: '#93928E'},
+        DIV className: 'ragged_top'
+        DIV className: 'ragged_middle',
           DIV
             style:
               fontSize: 24
@@ -2320,7 +2320,7 @@ ZipcodeBox = ReactiveComponent
               style: {margin: '0 0 0 12px', fontSize: 24, height: 42, width: 152, padding: '4px 20px'}
               onChange: onChange
 
-        DIV className: 'ragged_bottom', ''
+        DIV className: 'ragged_bottom'
 
 
 Header = ReactiveComponent

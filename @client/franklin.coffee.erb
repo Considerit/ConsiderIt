@@ -2285,23 +2285,19 @@ ZipcodeBox = ReactiveComponent
       DIV
         className: 'filled_zip'
         style:
-          width: PAGE_WIDTH
+          padding: '13px 23px'
+          backgroundColor: '#F5F4ED'
+          fontSize: 18
+          fontWeight: 400
+          width: 245
           margin: 'auto'
-          paddingLeft: 458
-        DIV
-          style:
-            padding: '13px 23px'
-            backgroundColor: '#F5F4ED'
-            fontSize: 18
-            fontWeight: 400
-            width: 245
-          'Customized for:'
-          INPUT
-            type: 'text'
-            key: 'zip_input'
-            defaultValue: c.tags?.zip or ''
-            onChange: onChange
-            onBlur: onBlur
+        'Customized for:'
+        INPUT
+          type: 'text'
+          key: 'zip_input'
+          defaultValue: c.tags?.zip or ''
+          onChange: onChange
+          onBlur: onBlur
 
     else
       # Render the ragged input box

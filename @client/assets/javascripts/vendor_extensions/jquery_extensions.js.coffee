@@ -134,7 +134,7 @@ do ($, window, document) ->
         max_scroll_left =       $(document).width() - window.innerWidth
         zoom_adjustment =       $(window).scrollLeft() / max_scroll_left
 
-        # BUG: this adjustment does not work on iOS devices, though it does on Desktop safari
+        # BUG: this adjustment does not work on iOS devices, though it does work on Desktop safari
 
         scroll_x = $(window).scrollLeft() - zoom_adjustment * zoom_width_difference
 
@@ -149,23 +149,23 @@ do ($, window, document) ->
       #    I haven't been able to find the right measurements to adjust it. 
       #    One thing that is interesting is that scrollTop != offset().top. Don't know if that's a red herring. 
 
-      element_top = @$el.offset().top # - @scroll_y
       element_height = @$el.height() # check element's height each scroll event because it may have changed
-      element_bottom = @$el.offset().top + element_height #container_top + element_height
-
-      viewport_bottom = viewport_top + @viewport_height
-      effective_viewport_bottom = viewport_bottom - @options.bottom_offset
-
-      is_scrolling_up = viewport_top < @last_viewport_top
       element_fits_in_viewport = element_height < (@viewport_height - @options.top_offset)
 
-      container_bottom = container_top + @options.container.height()
-
-      if element_fits_in_viewport
+      if element_fits_in_viewport #the common case, often for an empty decision board or the proposal header
         scroll_y = 0
         # console.log "OffsetY: #{@$el.offset().top}, ScrollY: #{$(window).scrollTop()}px, adjusted: #{scroll_y}"
 
-      else # if element doesn't fit in viewport
+      else # if element doesn't fit in viewport, such as if you have a really full decision board
+        element_top = @$el.offset().top
+        element_bottom = @$el.offset().top + element_height #container_top + element_height
+
+        viewport_bottom = viewport_top + @viewport_height
+        effective_viewport_bottom = viewport_bottom - @options.bottom_offset
+
+        is_scrolling_up = viewport_top < @last_viewport_top
+        container_bottom = container_top + @options.container.height()
+
         if is_scrolling_up
           if effective_viewport_top <= element_top
             scroll_y = @scroll_y + (effective_viewport_top - element_top) #adjustment is for scroll flicks

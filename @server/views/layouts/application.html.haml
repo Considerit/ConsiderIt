@@ -19,6 +19,8 @@
 
       %meta{ :http_equiv => "X-UA-Compatible", :content => "IE=edge,chrome=1" }
 
+      %meta{ :name => "viewport", :content => "width=device-width, initial-scale=1.0" }
+
       %meta{ :name => "fragment", :content => "!" }
 
       %link{ :href => "favicon.ico", :rel => "icon", :type => "image/vnd.microsoft.icon" }
@@ -53,7 +55,7 @@
           }
         }
 
-      = javascript_include_tag 'javascripts/load_everything', debug: Rails.env.development?
+      = javascript_include_tag 'javascripts/load_everything', debug: false #Rails.env.development?
 
 
     %body

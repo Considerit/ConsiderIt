@@ -2080,7 +2080,12 @@ ProposalSummary = ReactiveComponent
 
     TR 
       className: "proposal_summary " + hover_class
-      style: {cursor: 'pointer', height: '', padding: '6px 30px', display: 'block', borderLeft: "1px solid #{if @local.hovering_on then color.link_hover_color else 'rgb(191, 192, 194)'}"}
+      style:
+        cursor: 'pointer'
+        height: ''
+        padding: '6px 30px'
+        display: 'block'
+        borderLeft: "1px solid #{if @local.hovering_on then color.link_hover_color else 'rgb(191, 192, 194)'}"
       onMouseEnter: (=> @local.hovering_on = true; save(@local))
       onMouseLeave: (=> @local.hovering_on = false; save(@local))
       onClick: (=> window.app_router.navigate("/#{proposal.long_id}", {trigger: true}))              
@@ -2096,7 +2101,11 @@ ProposalSummary = ReactiveComponent
           proposal.name
       TD className: 'summary_decide',
         if !proposal.your_opinion || !@data(proposal.your_opinion).published || @data(proposal.your_opinion).stance_segment == 3
-          SPAN style: {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}, '?'
+          style = {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}
+          if @local.hovering_on
+            style.color = 'black'
+            style.fontWeight = 600
+          SPAN style: style, '?'
         else if @data(proposal.your_opinion).stance_segment < 3
           SPAN style: {position: 'relative', left: 14},
             IMG 
@@ -2163,7 +2172,8 @@ Homepage = ReactiveComponent
       TH className: 'welcome_column',
         if contributors.length > 0
           [
-            DIV className: 'message', 'We welcome these new contributors!'
+            DIV className: 'learn_decide_share1', 'Join'
+            DIV className: 'learn_decide_share2', 'the contributors'
             DIV className: 'people',
               for user in _(contributors).first(90)
                 Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
@@ -2217,9 +2227,9 @@ Homepage = ReactiveComponent
             TR null,
               for col in columns
                 TD style: {display: 'inline-block', width: 250},
-                  DIV style: {fontWeight: 700, fontSize: 42, textAlign: 'center'}, 
+                  DIV className: 'learn_decide_share1',
                     col.heading
-                  DIV style: {fontWeight: 300, fontSize: 18, textAlign: 'center', position: 'relative', top: -8},
+                  DIV className: 'learn_decide_share2',
                     col.details
 
       # Draw the proposal summaries
@@ -2256,11 +2266,11 @@ ZipcodeBox = ReactiveComponent
     extra_text = if Modernizr.input.placeholder then '' else ' Zip Code'
     onChange = (event) =>
       if event.target.value.match(/\d\d\d\d\d/)
-        c.tags = {zip: event.target.value}
+        c.tags.zip = event.target.value
         save(c)
 
       else if event.target.value.length == 0
-        c.tags = null
+        c.tags.zip = undefined
         @local.stay_around = true
         save(c)
         save(@local)
@@ -2269,7 +2279,7 @@ ZipcodeBox = ReactiveComponent
       @local.stay_around = false
       save(@local)
 
-    if c.tags or @local.stay_around
+    if c.tags.zip or @local.stay_around
       # Render the completed zip code box
       DIV
         className: 'filled_zip'
@@ -2284,7 +2294,7 @@ ZipcodeBox = ReactiveComponent
         INPUT
           type: 'text'
           key: 'zip_input'
-          defaultValue: c.tags?.zip or ''
+          defaultValue: c.tags.zip or ''
           onChange: onChange
           onBlur: onBlur
 
@@ -2308,6 +2318,7 @@ ZipcodeBox = ReactiveComponent
               placeholder: 'Zip Code'
               style: {margin: '0 0 0 12px', fontSize: 24, height: 42, width: 152, padding: '4px 20px'}
               onChange: onChange
+            #' and see your local ballot!'
 
         DIV className: 'ragged_bottom'
 

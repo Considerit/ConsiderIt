@@ -27,13 +27,15 @@ do ($, window, document) ->
       @constructor.current_id += 1
 
       @$el = $(el)
-      @scroll_y = @scroll_x = 0
+      @scroll_y = @scroll_x = -1
 
       @is_stuck = false
       @last_viewport_top = document.documentElement.scrollTop || document.body.scrollTop
 
       $(window).on "resize.plugin_stickytopbottom-#{@my_id}", => @resize()
       $(window).on "scroll.plugin_stickytopbottom-#{@my_id}", => @update()
+
+      $(document).on "touchend", => @update()
 
       @$el.on 'destroyed', $.proxy(@destroy, @) 
 
@@ -46,7 +48,7 @@ do ($, window, document) ->
 
 
 
-    resize : -> @viewport_height = $(window).height()
+    resize : -> @viewport_height = window.innerHeight
 
     # Update 
     # Updates the position of the element with respect to the viewport. 
@@ -80,7 +82,7 @@ do ($, window, document) ->
         @is_stuck = true
 
       if !should_be_stuck && @is_stuck
-        @scroll_y = 0
+        @scroll_y = @scroll_x = -1
         @$el[0].style['position'] = ''
         @$el[0].style['top'] = ''
         @$el[0].style.transform = ""        
@@ -105,56 +107,49 @@ do ($, window, document) ->
       # pinch zoom and scroll left. Under certain conditions, we have to do a complex 
       # calculation to figure out how much to offset the fixed element. 
 
-      zoom = $(window).width() / window.innerWidth
-
-      #console.log "zoom: #{zoom.toPrecision(3)}", "doc width: #{$(document).width()}", "window width: #{$(window).width()}", "window inner width: #{window.innerWidth}", "client width: #{document.documentElement.clientWidth}"
-
-      # window innerwidth is the number of pixels from the perspective of the site markup, 
-      # whereas window.width is the actual size of the window on the user's screen
-
-      # We don't have to adjust horizontally if the window is bigger than the document (even if we're pinch zoomed)
-      if $(document).width() <= window.innerWidth
-        scroll_x = 0
-
-      # If the window is smaller than the document, but we're not zoomed, we just
-      # need to adjust the element by the distance we're horizontally scrolled.
-      # Note that we could eliminate this condition entirely because 
-      # the else below will work out to the same value for no zoom. However
-      # this is a common case and the else statement incurs some performance
-      # costs in the calculations it has to do. 
-      else if zoom == 1
-        scroll_x = $(window).scrollLeft()
-
+      # If the full screen is visible, scroll_x will be 0; if the window is small, but no pinch zooming, 
+      # it will be $(window).scrollLeft(). Otherwise...
       # If the user has pinch zoomed when the window is smaller than the document, 
       # we can't just use scrollLeft directly. Instead, we need to adjust scrollLeft
       # based on the difference between the actual window width, the width of the zoomed
       # area the user sees, and the % amount of horizontal scrolling they've done. 
-      else
-        zoom_width_difference = $(window).width() - window.innerWidth
-        max_scroll_left =       $(document).width() - window.innerWidth
-        zoom_adjustment =       $(window).scrollLeft() / max_scroll_left
+      zoom_width_difference = $(window).width() - window.innerWidth
+      max_scroll_left =       $(document).width() - window.innerWidth
+      zoom_adjustment =       $(window).scrollLeft() / max_scroll_left
 
-        # BUG: this adjustment does not work on iOS devices, though it does work on Desktop safari
+      scroll_x = $(window).scrollLeft() - zoom_adjustment * zoom_width_difference
 
-        scroll_x = $(window).scrollLeft() - zoom_adjustment * zoom_width_difference
+      # (temporarily addressed) BUG: 
+      # The scroll_x adjustment above does not immediately work on iOS devices.
+      # I haven't been able to figure out exactly which values to use to make the
+      # proper adjustments cross-platform. So I'm hardcoding some values that look
+      # about right, though they are not *principled* calculations, and thus might
+      # be horribly wrong in some conditions. 
+      # TODO: test on android
+      device_specific_adjuster = 1
+      if navigator.platform.match /iPad/
+        device_specific_adjuster = .82
+      else if navigator.platform.match /iPhone/
+        if screen.width >= 375 # iPhone 6
+          device_specific_adjuster = 1.64
+        else if screen.width >= 320 #iPhone 4, 5, & 5s
+          device_specific_adjuster = 1.8
 
-        #console.log zoom, scroll_x, zoom_width_difference, max_scroll_left, zoom_adjustment,  $(window).scrollLeft()
+      scroll_x /= device_specific_adjuster
 
       ######
       # VERTICAL ADJUSTMENTS 
-
-      # BUG with vertical adjustments: 
-      #    iOS & desktop safari has position:fixed drift when pinch zoomed. 
-      #    See http://remysharp.com/2012/05/24/issues-with-position-fixed-scrolling-on-ios#position-drift. 
-      #    I haven't been able to find the right measurements to adjust it. 
-      #    One thing that is interesting is that scrollTop != offset().top. Don't know if that's a red herring. 
 
       element_height = @$el.height() # check element's height each scroll event because it may have changed
       element_fits_in_viewport = element_height < (@viewport_height - @options.top_offset)
 
       if element_fits_in_viewport #the common case, often for an empty decision board or the proposal header
         scroll_y = 0
-        # console.log "OffsetY: #{@$el.offset().top}, ScrollY: #{$(window).scrollTop()}px, adjusted: #{scroll_y}"
+        # BUG with vertical adjustments when pinch zoomed on iOS or desktop safari: 
+        #    The fixed position element slowly drifts off the page when scrolling down. 
+        #    See http://remysharp.com/2012/05/24/issues-with-position-fixed-scrolling-on-ios#position-drift. 
+        #    I haven't been able to find the right measurements to adjust it. 
+        #    One thing that is interesting is that scrollTop != offset().top. Don't know if that's a red herring.
 
       else # if element doesn't fit in viewport, such as if you have a really full decision board
         element_top = @$el.offset().top
@@ -186,6 +181,34 @@ do ($, window, document) ->
         if element_bottom + (scroll_y - @scroll_y) + @options.bottom_offset > container_bottom
           scroll_y = container_bottom - element_bottom + @scroll_y - @options.bottom_offset
 
+      # console.log ""
+      # console.log "General:"
+      # console.log "          pinch zoom ratio: #{$(window).width() / window.innerWidth}"
+      # console.log "   window.devicePixelRatio: #{window.devicePixelRatio}"
+      # console.log "        navigator.platform: #{navigator.platform}"
+      # console.log "         navigator.appName: #{navigator.appName}"
+      # console.log "       navigator.userAgent: #{navigator.userAgent}"
+      
+      # console.log ""
+      # console.log "Horizontal:"
+      # console.log "        @$el.offset().left: #{@$el.offset().left}px"
+      # console.log "    $(window).scrollLeft(): #{$(window).scrollLeft()}px"
+      # console.log "         window.innerWidth: #{window.innerWidth}px"
+      # console.log "       $(document).width(): #{$(document).width()}px"
+      # console.log "              screen.width: #{screen.width}"
+      # console.log "               *adjustment: #{scroll_x}"
+
+      # console.log ""
+      # console.log "Vertical:"
+      # console.log "        @$el.offset().top: #{@$el.offset().top}px"
+      # console.log "    $(window).scrollTop(): #{$(window).scrollTop()}px"
+      # console.log "       window.innerHeight: #{window.innerHeight}px"
+      # console.log "       $(window).height(): #{$(window).height()}px"
+      # console.log "     $(document).height(): #{$(document).height()}px"
+      # console.log "            screen.height: #{screen.height}"
+      # console.log "              *adjustment: #{scroll_y}"
+
+
       ####
       # APPLY THE ADJUSTMENTS to the fixed element
       if scroll_y != @scroll_y || scroll_x != @scroll_x
@@ -197,12 +220,13 @@ do ($, window, document) ->
         @$el[0].style['-ms-transform'] = "translate(-#{@scroll_x}px, #{@scroll_y}px)"
         @$el[0].style['-moz-transform'] = "translate(-#{@scroll_x}px, #{@scroll_y}px)"
 
-      # make sure that elements that don't scroll down past their container bottom
+      # Make sure that elements that don't scroll down past their container bottom
+      # BUG: This does not trigger in Chrome unless inspecter is open (gah!). 
+      #      It works in Safari, Firefox, and IE9. 
       if effective_viewport_top + element_height > container_bottom
         @$el[0].style['top'] = "#{container_bottom - element_height - viewport_top}px" 
       else if @$el[0].style['top'] != "#{@options.top_offset}px"
         @$el[0].style['top'] = "#{@options.top_offset}px"          
-
 
       @last_viewport_top = viewport_top
 

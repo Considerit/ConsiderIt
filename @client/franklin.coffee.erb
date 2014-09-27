@@ -685,6 +685,7 @@ Histogram = ReactiveComponent
                     key: user
                     user: user
                     hide_face: @root.proposal_mode == 'crafting'
+                    hide_name: @root.proposal_mode == 'crafting'
                     'data-segment':segment
                     style:
                       height: avatar_size
@@ -1598,7 +1599,10 @@ Avatar = ReactiveComponent
   
   render : ->
     user = @data()
-    @data(@local_key) # just to register a dependence
+
+    @local = @data @local_key,
+      show_details : false
+
     className = "avatar #{if @props.className then @props.className else ''}"
 
     id = if @props.hide_face then "avatar-hidden" else "avatar-#{user.key.split('/')[2]}"
@@ -1628,7 +1632,7 @@ Avatar = ReactiveComponent
     hide_face: false
 
   componentWillUpdate : -> 
-    if @local.show_details
+    if @local.show_details && !@props.hide_name
       @insertUserName()
 
   insertUserName : ->

@@ -322,47 +322,47 @@ Proposal = ReactiveComponent
 
       StickyProposalHeading()
 
-      #description
-
-      DIV className:'description_region', style: description_region_style, 
-
-        # DIV className: 'context',
-          
-        #   DIV className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}" 
-
-        DIV className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
-
-        if @local.description_fields
-          DIV className: 'description_fields',
-            for item in @local.description_fields
-              if item.group
-                @renderDescriptionFieldGroup item
-              else
-                @renderDescriptionField item
-
-        if current_user.is_admin
-          A style: {opacity: '.1'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
-    
-      #feelings
-      DIV className:'feelings_region', style : { width: BODY_WIDTH },
-        OpinionFilter()
-        HistogramData()
-        Histogram()
-
       if @root.auth_mode
         Auth()
-      else
-        #reasons
-        DIV 
-          className:'reasons_region'
-          style : { width: REASONS_REGION_WIDTH },
-            #community pros
-            CommunityPoints { key: 'pros' }
+      else 
+        DIV null,
+          #description
+          DIV className:'description_region', style: description_region_style, 
 
-            DecisionBoard()
+            # DIV className: 'context',
+              
+            #   DIV className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}" 
 
-            #community cons
-            CommunityPoints { key: 'cons' }
+            DIV className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
+
+            if @local.description_fields
+              DIV className: 'description_fields',
+                for item in @local.description_fields
+                  if item.group
+                    @renderDescriptionFieldGroup item
+                  else
+                    @renderDescriptionField item
+
+            if current_user.is_admin
+              A style: {opacity: '.1'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
+        
+          #feelings
+          DIV className:'feelings_region', style : { width: BODY_WIDTH },
+            OpinionFilter()
+            HistogramData()
+            Histogram()
+
+          #reasons
+          DIV 
+            className:'reasons_region'
+            style : { width: REASONS_REGION_WIDTH },
+              #community pros
+              CommunityPoints { key: 'pros' }
+
+              DecisionBoard()
+
+              #community cons
+              CommunityPoints { key: 'cons' }
 
 
 StickyProposalHeading = ReactiveComponent
@@ -1817,9 +1817,12 @@ Auth = ReactiveComponent
       return loading_indicator
 
     focal_wrapper_style = 
-      left: '50%'
+      margin: 'auto'
+      position: 'relative'
+      display: 'block'
+      #left: '50%'
       width: DECISION_BOARD_WIDTH
-      marginLeft: -DECISION_BOARD_WIDTH / 2
+      #marginLeft: -DECISION_BOARD_WIDTH / 2
 
     # Let's set up some useful helpers
     submitOnEnter = (event) =>
@@ -1889,11 +1892,10 @@ Auth = ReactiveComponent
     mouth_x =      if segment == 3 then 0 else -22
 
     bubble_mouth_props = 
-      transform: "translate(#{direction * mouth_x}px, 20px) scale(#{direction * 1.5}, 1.5)"
+      transform: "translate(#{direction * mouth_x}px, 11px) scale(#{direction * 1.5}, 1.5)"
       left: slider.clientX
     handle_props = 
-      transform: "scale(2.5)"
-      left: slider.clientX
+      left: slider.clientX - 15
 
     crossbrowserTransformProperty bubble_mouth_props
     crossbrowserTransformProperty handle_props
@@ -1903,8 +1905,10 @@ Auth = ReactiveComponent
       left: HISTOGRAM_WIDTH * -(stance-1) / 2.0
       marginLeft: -225
       width: 450
-      fontSize: '29px'
-      top: '-80px'
+      fontSize: 29
+      position: 'relative'
+
+      #top: '-80px'
 
     pledges = ['I will participate with only one account', 
                'I will speak only on behalf of myself', 
@@ -1912,8 +1916,6 @@ Auth = ReactiveComponent
 
     DIV className:'auth_region focal_wrapper', style: focal_wrapper_style,
       DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
-        DIV className: 'the_handle', style: handle_props
-        IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
         DIV className:'auth_heading', style: auth_heading_style,
           'Please Introduce Yourself' 
 
@@ -1921,6 +1923,9 @@ Auth = ReactiveComponent
             DIV className: 'switch_auth_mode', 
               SPAN null, if root.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
               A className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
+
+        DIV className: 'the_handle', style: handle_props
+        IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
 
       DIV className:'auth decision_board_body' + (if @local.submitting then ' waiting' else ''),
         if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated

@@ -81,7 +81,7 @@ do ($, window, document) ->
           @options.placeholder.style['display'] = ''
         @is_stuck = true
 
-      if !should_be_stuck && @is_stuck
+      if (!should_be_stuck && @is_stuck) || @options.conditional && !@options.conditional()
         @scroll_y = @scroll_x = -1
         @$el[0].style['position'] = ''
         @$el[0].style['top'] = ''

@@ -70,7 +70,7 @@ do ($, window, document) ->
       # Are we transitioning between being stuck and not being stuck?
       should_be_stuck = effective_viewport_top >= container_top
 
-      if should_be_stuck && !@is_stuck
+      if should_be_stuck && !@is_stuck && (!@options.conditional || @options.conditional())
         @$el[0].style['position'] = 'fixed'
         @$el[0].style['top'] = "#{@options.top_offset}px"     
         @$el[0].style["-webkit-backface-visibility"] = "hidden"
@@ -81,7 +81,7 @@ do ($, window, document) ->
           @options.placeholder.style['display'] = ''
         @is_stuck = true
 
-      if (!should_be_stuck && @is_stuck) || @options.conditional && !@options.conditional()
+      else if (!should_be_stuck && @is_stuck) || @options.conditional && !@options.conditional()
         @scroll_y = @scroll_x = -1
         @$el[0].style['position'] = ''
         @$el[0].style['top'] = ''
@@ -89,9 +89,12 @@ do ($, window, document) ->
         @$el[0].style['-webkit-transform'] = ""
         @$el[0].style['-ms-transform'] = ""
         @$el[0].style['-moz-transform'] = ""        
+  
+        if @is_stuck      
+          @options.unsticks() if @options.unsticks
+
         @is_stuck = false
 
-        @options.unsticks() if @options.unsticks
         if @options.placeholder
           @options.placeholder.style['display'] = 'none'
 

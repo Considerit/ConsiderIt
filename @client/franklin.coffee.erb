@@ -1042,10 +1042,6 @@ DecisionBoard = ReactiveComponent
     current_user = @data('/current_user')
     published = @data(@proposal.your_opinion).published
 
-    # Need to register this dependency because ActiveREST doesn't pick it up. 
-    # In results state, decision board position depends on the slider position.
-    @data('slider')  # Mike: I don't think this is needed anymore
-
     # Centering the Decisionboard
     # When the screen is too small & the board is sticky, the board can be 
     # misplaced because fixed elements are not sized wrt their parents, but
@@ -2572,15 +2568,12 @@ EditProposal = ReactiveComponent
         name: name
         long_id: long_id
         description: description
-      console.log '!!!', long_id, proposal
 
     save proposal, -> window.app_router.navigate "/#{long_id}", {trigger : true}
 
   render : ->
     user = @data('/current_user')
     
-    console.log 'YO', @data(), @data().long_id
-
     return DIV null, 'Nothing to see here, move on' if !user.logged_in || !user.is_admin || (!@props.fresh && !@data().long_id )
 
     block_style = { width: CONTENT_WIDTH, padding: '2px 8px', marginBottom: 20 }

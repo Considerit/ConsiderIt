@@ -488,7 +488,7 @@ $segment_color: #db004d
 
 // slider
 
-.slider, .auth_header
+.slider
   position: absolute
   top: -48px
   margin: auto
@@ -569,11 +569,25 @@ $slider_handle_size: 22px
   
 // The area on top of the slider that shows in crafting to let user know what their stance is
 // Also used for the auth header "Introduce yourself"
-.slider_feedback, .auth_heading
+.slider_feedback
   position: absolute
   top: -80px
-  border-radius: 10px
 
+.auth_header
+  position: relative
+  margin: auto
+  top: 5px
+
+  .bubblemouth
+    position: relative
+
+  .the_handle
+    height: $slider_handle_size * 2.5
+    width: $slider_handle_size * 2.5
+    top: 0
+
+.auth_heading, .slider_feedback
+  border-radius: 10px  
   +font-size(6)
   font-weight: 700
   color: $decision_board_text_color

@@ -60,6 +60,11 @@ do ($, window, document) ->
     #      (stick to bottom)
     update : -> 
 
+      if !@$el
+        console.error('sticky element has disappeared!!')
+        @destroy()
+        return
+
       container_top = @options.container.offset().top 
       viewport_top = (document.documentElement.scrollTop || document.body.scrollTop)
       effective_viewport_top = viewport_top + @options.top_offset
@@ -100,7 +105,6 @@ do ($, window, document) ->
 
       # Don't need to do anything if we're not actually stuck
       return if !@is_stuck
-
 
       ######
       # HORIZONTAL ADJUSTMENTS
@@ -235,7 +239,7 @@ do ($, window, document) ->
 
     destroy : -> 
       $(window).off ".plugin_stickytopbottom-#{@my_id}"
-      $.removeData @$el[0], "plugin_stickytopbottom"
+      $.removeData @$el[0], "plugin_stickytopbottom" if @$el
       @$el = null
 
 

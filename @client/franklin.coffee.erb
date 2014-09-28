@@ -2460,7 +2460,7 @@ Header = ReactiveComponent
         if @root.page_name == 'about'
           # TODO: we need a way of knowing whether this subdomain has a homepage or not
           if customer.identifier == 'livingvotersguide'
-            A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', marginTop: 8, marginLeft: 16, fontWeight: 600}, 
+            A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', zIndex: 999, marginTop: 8, marginLeft: 16, fontWeight: 600}, 
               I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
               SPAN style: {fontSize: 15, paddingLeft: 6, color: '#777', verticalAlign: 'text-bottom'}, 'Home'
 

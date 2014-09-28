@@ -12,11 +12,9 @@ every 30.minutes do
   rake 'compute_metrics'
 end
 
-every 12.hours do
+every 1.day, :at => '6:30 am' do
   rake 'alerts:check_moderation'
 end
-
-
 
 every :reboot do
   envcommand 'bundle exec bin/delayed_job restart'

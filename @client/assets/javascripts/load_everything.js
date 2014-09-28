@@ -8,8 +8,11 @@
 //= require vendor/main/jquery.ui
 //= require_tree ./vendor/main
 
-//= require_tree ./vendor_extensions
+//= require ./element_viewport_positioning
+
 //= require ../../third_party_auth
 //= require ../../activerest-m
+
+//= require ../../sticky_element
 //= require ../../franklin
 //= require ../../state_dash

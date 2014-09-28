@@ -812,13 +812,13 @@ Slider = ReactiveComponent
 
     face_left_eye_style = 
       transform: 
-        if segment in [0, 6] 
+        if false && segment in [0, 6] 
         then 'scale(.9, .8)' 
         else "scale(#{.8 + .2 * Math.abs(stance)}, #{.8 + .2 * Math.abs(stance)})"
 
     face_right_eye_style = 
       transform: 
-        if segment in [0, 6] 
+        if false && segment in [0, 6] 
         then 'scale(1.1, 1.2)' 
         else "scale(#{.8 + .2 * Math.abs(stance)}, #{.8 + .2 * Math.abs(stance)})"
 
@@ -2639,15 +2639,23 @@ About = ReactiveComponent
     @local.html = null
     @local.save
 
-  # REACT iframes don't support onLoad, so we need to figure out when 
-  #               to check the height of the loaded content ourselves
-  componentDidMount : -> @setIframeHeight() 
-  componentDidUpdate : -> @setIframeHeight()
-  setIframeHeight : -> 
+  componentDidMount : -> @handleContent()
+  componentDidUpdate : -> @handleContent()
 
+  handleContent : -> 
     $el = $(@getDOMNode())
 
-    if !@local.embed_html_directly && $el.prop('tagName').toLowerCase() == 'iframe'
+    if @local.embed_html_directly
+      # have to use appendChild rather than dangerouslysetinnerhtml
+      # because scripts in the about page html won't get executed
+      # when using dangerouslysetinnerhtml
+      if @local.html
+        $el.find('.embedded_about_html').append @local.html
+
+    else
+      # REACT iframes don't support onLoad, so we need to figure out when 
+      #               to check the height of the loaded content ourselves      
+      $el.prop('tagName').toLowerCase() == 'iframe'
       iframe = $el[0]
       _.delay ->
         try 
@@ -2657,6 +2665,7 @@ About = ReactiveComponent
           console.error 'Couldn\'t set about page iframe height because of http/https mismatch. Should work in production.'
           console.error e
       , 1000
+
 
   render : -> 
     customer = @data('/customer') 
@@ -2671,7 +2680,7 @@ About = ReactiveComponent
       else if !@local.embed_html_directly
         IFRAME src: customer.about_page_url, width: PAGE_WIDTH, style: {display: 'block', margin: 'auto'}
       else
-        DIV {dangerouslySetInnerHTML: {__html: @local.html}}
+        DIV className: 'embedded_about_html'
 
 Root = ReactiveComponent
   displayName: 'Root'

@@ -1,16 +1,39 @@
+# jQuery plugin 
+# Author: Travis Kriplean
+#
+# Implements scheme described at http://stackoverflow.com/questions/18358816/sticky-sidebar-stick-to-bottom-when-scrolling-down-top-when-scrolling-up 
+# Only works in browsers that support CSS3 transforms (i.e. IE9+)
+#
+#TODO: 
+#  - destroy event handler if element is destroyed
+#  - track all the sticky elements and give them vertical preference
+#    so that the calculation as to where they offset with each other
+#    is automatically taken care of
+#  - can we automatically insert a placeholder if needed?
+
 do ($, window, document) ->
+  $.fn.StickyElement = (options = {}) ->
+    @each ->
+      if typeof options == 'object'
+        #init
+        unless $.data @, "plugin_StickyElement"  
+          $.data @, "plugin_StickyElement", new StickyElement @, options
+      else 
+        switch options
+          when 'update'
+            $.data(@, "plugin_StickyElement").update()
+          when 'destroy'
+            plugin_obj = $.data @, "plugin_StickyElement"
+            $(@).unbind "destroyed", plugin_obj.destroy
+            plugin_obj.destroy()
+          when 'fix_initial_position'
+            # hack to get around a problem where the browser's remembered scroll position messes
+            # up the sticky location after initialization
+            $(document).scrollTop (document.documentElement.scrollTop || document.body.scrollTop) - 1
 
+  class StickyElement
 
-  class StickyTopBottom
-    # only works in browsers that support CSS3 transforms (i.e. IE9+)
-    #TODO: 
-    #  - destroy event handler if element is destroyed
-    #  - track all the sticky elements and give them vertical preference
-    #    so that the calculation as to where they offset with each other
-    #    is automatically taken care of
-    #  - can we automatically insert a placeholder if needed?
-
-    @current_id: 0 #track a unique id for each element with stickytopbottom
+    @current_id: 0 #track a unique id for each element with StickyElement
 
     constructor : (el, options) -> 
       defaults = 
@@ -32,8 +55,8 @@ do ($, window, document) ->
       @is_stuck = false
       @last_viewport_top = document.documentElement.scrollTop || document.body.scrollTop
 
-      $(window).on "resize.plugin_stickytopbottom-#{@my_id}", => @resize()
-      $(window).on "scroll.plugin_stickytopbottom-#{@my_id}", => @update()
+      $(window).on "resize.plugin_StickyElement-#{@my_id}", => @resize()
+      $(window).on "scroll.plugin_StickyElement-#{@my_id}", => @update()
 
       $(document).on "touchend", => @update()
 
@@ -238,120 +261,8 @@ do ($, window, document) ->
       @last_viewport_top = viewport_top
 
     destroy : -> 
-      $(window).off ".plugin_stickytopbottom-#{@my_id}"
-      $.removeData @$el[0], "plugin_stickytopbottom" if @$el
+      $(window).off ".plugin_StickyElement-#{@my_id}"
+      $.removeData @$el[0], "plugin_StickyElement" if @$el
       @$el = null
 
-
-  $.fn.stickyTopBottom = (options = {}) ->
-    @each ->
-      if typeof options == 'object'
-        #init
-        unless $.data @, "plugin_stickytopbottom"  
-          $.data @, "plugin_stickytopbottom", new StickyTopBottom @, options
-      else 
-        switch options
-          when 'update'
-            $.data(@, "plugin_stickytopbottom").update()
-          when 'destroy'
-            plugin_obj = $.data @, "plugin_stickytopbottom"
-            $(@).unbind "destroyed", plugin_obj.destroy
-            plugin_obj.destroy()
-          when 'fix_initial_position'
-            # hack to get around a problem where the browser's remembered scroll position messes
-            # up the sticky location after initialization
-            $(document).scrollTop (document.documentElement.scrollTop || document.body.scrollTop) - 1
-
-
-do ($, window, document) ->
-
-  $.fn.ensureInView = (options = {}) ->
-
-    _.defaults options,
-      fill_threshold: .5
-      offset_buffer: 50
-      scroll: true
-      position: 'top' 
-      speed: null
-      callback: ->
-
-    $el = $(this)
-
-    el_height = $el.height()
-    el_top = $el.offset().top
-    el_bottom = el_top + el_height
-
-    doc_height = $(window).height()
-    doc_top = $(window).scrollTop()
-    doc_bottom = doc_top + doc_height
-    is_onscreen = el_top > doc_top && el_bottom < doc_bottom
-
-    #if less than 50% of the viewport is taken up by the el...
-    bottom_inside = el_bottom < doc_bottom && (el_bottom - doc_top) > options.fill_threshold * el_height
-    top_inside = el_top > doc_top && (doc_bottom - el_top) > options.fill_threshold * el_height    
-    in_viewport = is_onscreen || top_inside || bottom_inside  
-
-    # console.log "amount: #{options.fill_threshold}"
-    # console.log "el_top: #{el_top}, el_bottom: #{el_bottom}"
-    # console.log "doc_top: #{doc_top}, doc_bottom: #{doc_bottom}"
-    # console.log "onscreen: #{is_onscreen}, top_inside: #{top_inside}, bottom_inside: #{bottom_inside}"
-
-    if !in_viewport
-      switch options.position 
-        when 'top'
-          target = el_top - options.offset_buffer
-        when 'bottom'
-          target = el_bottom - doc_height + options.offset_buffer
-        else
-          throw 'bad position for ensureInView'
-
-      if options.scroll
-        distance_to_travel = options.speed || Math.abs( doc_top - target )
-        $el.velocity 'scroll', 
-          duration: Math.min(distance_to_travel, 1500)
-          offset: -options.offset_buffer
-          complete: options.callback
-        , 'ease-in'
-
-      else 
-        $(document).scrollTop target
-        options.callback()
-    else
-      options.callback()
-
-  $.fn.moveToBottom = (offset_buffer = 50, scroll = false) ->
-    $el = $(this)
-    el_height = $el.height()
-    el_top = $el.offset().top
-    el_bottom = el_top + el_height
-
-    doc_height = $(window).height()
-    doc_top = $(window).scrollTop()
-    doc_bottom = doc_top + doc_height
-
-
-    target = el_bottom - doc_height + offset_buffer
-
-    # console.log "el_top: #{el_top}, el_bottom: #{el_bottom}"
-    # console.log "doc_top: #{doc_top}, doc_bottom: #{doc_bottom}"
-    # console.log "target: #{target}"
-
-    if scroll
-      distance_to_travel = Math.abs( doc_top - target )
-      $('body').animate {scrollTop: target}, distance_to_travel
-    else
-      $(document).scrollTop target
-
-  $.fn.moveToTop = (offset_buffer = 50, scroll = false) ->
-    $el = $(this)
-    el_top = $el.offset().top
-    el_bottom = 
-    target = el_top - offset_buffer
-    doc_top = $(window).scrollTop()
-
-    if scroll
-      distance_to_travel = Math.abs( doc_top - target )
-      $('body').animate {scrollTop: target}, distance_to_travel
-    else
-      $(document).scrollTop target
 

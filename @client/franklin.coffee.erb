@@ -378,9 +378,9 @@ StickyProposalHeading = ReactiveComponent
     $header = $el.find('.proposal_heading.stickable')
     if $header.length > 0
       if @local.sticky_initialized
-        $header.stickyTopBottom('update')
+        $header.StickyElement('update')
       else 
-        $header.stickyTopBottom
+        $header.StickyElement
           placeholder: $el.find('.proposal_heading.placeholder')[0]
           container: $el.parents('.proposal')
         @local.sticky_initialized = true
@@ -388,7 +388,7 @@ StickyProposalHeading = ReactiveComponent
 
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
-    $el.find('.proposal_heading.stickable').stickyTopBottom('destroy')
+    $el.find('.proposal_heading.stickable').StickyElement('destroy')
 
 
   mouseLeaveOtherCluster : (cluster) -> 
@@ -984,7 +984,7 @@ DecisionBoard = ReactiveComponent
 
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
-    $el.stickyTopBottom('destroy')
+    $el.StickyElement('destroy')
 
   componentDidUpdate : -> 
     $el = $(@getDOMNode())    
@@ -993,17 +993,17 @@ DecisionBoard = ReactiveComponent
     # hack to get around a problem where the browser's remembered scroll position messes
     # up the sticky location after initialization
     if !@initial_position_fixed
-      $el.stickyTopBottom('fix_initial_position')
+      $el.StickyElement('fix_initial_position')
       @initial_position_fixed = true
     else if root.proposal_mode == 'results' #fix problem where it would stay sticky moving to results page
-      $el.stickyTopBottom('update')
+      $el.StickyElement('update')
 
   setStickyHeader : ->
     $el = $(@getDOMNode())
 
     slider_region_height =  115 #$el.find('.slider .the_handle').outerHeight() + $el.find('.slider .slider_feedback').outerHeight() + 15 + 20 #15 is bubblemouth
 
-    $el.stickyTopBottom
+    $el.StickyElement
       container: $('.reasons_region')
       top_offset: $('.proposal_heading').outerHeight() + slider_region_height
       bottom_offset: 20
@@ -2161,7 +2161,7 @@ Homepage = ReactiveComponent
 
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
-    $el.find('.sticky_header.stickable').stickyTopBottom('destroy')
+    $el.find('.sticky_header.stickable').StickyElement('destroy')
 
   initOrUpdateHeader : -> 
     $el = $(@getDOMNode())
@@ -2169,9 +2169,9 @@ Homepage = ReactiveComponent
     $header = $el.find('.sticky_header.stickable')
     if $header.length > 0
       if @local.sticky_initialized
-        $header.stickyTopBottom('update')
+        $header.StickyElement('update')
       else 
-        $header.stickyTopBottom
+        $header.StickyElement
           placeholder: $el.find('.sticky_header.placeholder')[0]
           container: $el
         @local.sticky_initialized = true
@@ -2980,3 +2980,12 @@ $(document).ready ->
 
   Backbone.history.start {pushState: true}
   window.root = React.renderComponent(Root(), document.getElementById('content'))
+
+
+  # google analytics
+  ga = document.createElement('script')
+  ga.type = 'text/javascript'
+  ga.async = true
+  ga.src = (if 'https:' == document.location.protocol then 'https://ssl' else 'http://www') + '.google-analytics.com/ga.js'
+  s = document.getElementsByTagName('script')[0] 
+  s.parentNode.insertBefore(ga, s)

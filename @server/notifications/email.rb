@@ -133,6 +133,20 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
     notification_method.call data
   end
 
+  if current_tenant.enable_moderation
+    # send to all users with moderator status
+    moderators = []
+    accnt.users.where('roles_mask > 0').each do |u|
+      if u.has_any_role? :moderator #, :admin, :superadmin
+        moderators.push(u)
+      end
+    end
+    moderators.each do |user|
+      AlertMailer.content_to_moderate(user, accnt).deliver!
+    end
+  end
+  
+
 end
 
 ActiveSupport::Notifications.subscribe("proposal:published") do |*args|

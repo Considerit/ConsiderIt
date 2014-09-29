@@ -131,7 +131,7 @@
         request.onload = function () {
             delete outstanding_fetches[key]
             if (request.status === 200) {
-                console.log('Fetch returned for', key)
+                // console.log('Fetch returned for', key)
                 var result = JSON.parse(request.responseText)
                 // Warn if the server returns data for a different url than we asked it for
                 // TRAVIS: this check is bad because the result may be an array of objects, 
@@ -165,7 +165,7 @@
         request.onload = function () {
             if (request.status === 200) {
                 var result = JSON.parse(request.responseText)
-                console.log('New save result', result)
+                // console.log('New save result', result)
                 // Handle /new/stuff
                 deep_map(function (obj) {
                     match = obj.key && obj.key.match(/(.*)\?original_id=(\d+)$/)

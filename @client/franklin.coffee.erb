@@ -177,7 +177,7 @@ PageTransition =
       # The decision board will have to expand for crafting and collapse into to the Give Opinion button in results
       when 'decisionboard'
         if root.proposal_mode == 'crafting'
-          decision_board_style =  { translateX: 0, translateY: 10, width: "#{DECISION_BOARD_WIDTH}px", minHeight: "275px" }
+          decision_board_style =  { translateX: 0, translateY: 10, width: DECISION_BOARD_WIDTH, minHeight: 275 }
 
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
 
@@ -197,7 +197,7 @@ PageTransition =
           gutter = .1 * give_opinion_button_width
           opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * slider_position/HISTOGRAM_WIDTH
 
-          decision_board_style =  { translateX: opinion_region_x, translateY: -18, width: "#{give_opinion_button_width}px", minHeight: "32px", marginTop: 0}
+          decision_board_style =  { translateX: opinion_region_x, translateY: -18, width: give_opinion_button_width, minHeight: 32, marginTop: 0}
 
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
 
@@ -262,14 +262,15 @@ Proposal = ReactiveComponent
             details: 
               description_type: field.label        
       ,
-        SPAN className: 'expand_arrow', dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
+        SPAN className: "expand_arrow fa #{if field.expanded then 'fa-minus-circle' else 'fa-plus-circle'}" #, dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
         SPAN className: 'field_name', field.label
       if field.expanded
         DIV className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
 
   renderDescriptionFieldGroup : (group) -> 
-    DIV className: 'description_group',
-      LABEL className: 'description_group_name', group.group
+    DIV className: 'description_group', key: group.group,
+      DIV className: 'description_group_name', 
+        LABEL null, group.group
       for field in group.items
         @renderDescriptionField field
 
@@ -329,10 +330,6 @@ Proposal = ReactiveComponent
           #description
           DIV className:'description_region', style: description_region_style, 
 
-            # DIV className: 'context',
-              
-            #   DIV className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}" 
-
             DIV className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
 
             if @local.description_fields
@@ -378,9 +375,9 @@ StickyProposalHeading = ReactiveComponent
     $header = $el.find('.proposal_heading.stickable')
     if $header.length > 0
       if @local.sticky_initialized
-        $header.stickyTopBottom('update')
+        $header.StickyElement('update')
       else 
-        $header.stickyTopBottom
+        $header.StickyElement
           placeholder: $el.find('.proposal_heading.placeholder')[0]
           container: $el.parents('.proposal')
         @local.sticky_initialized = true
@@ -388,8 +385,7 @@ StickyProposalHeading = ReactiveComponent
 
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
-    $el.find('.proposal_heading.stickable').stickyTopBottom('destroy')
-
+    $el.find('.proposal_heading.stickable').StickyElement('destroy')
 
   mouseLeaveOtherCluster : (cluster) -> 
     if @local.show_cluster == cluster
@@ -466,7 +462,7 @@ StickyProposalHeading = ReactiveComponent
                               TABLE className: 'current_cluster', style: {width: '100%'}, 
                                 TBODY null,
                                   for other_proposal in this_proposal_cluster.proposals
-                                    TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink,
+                                    TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink, key: "tr/#{other_proposal.long_id}",
                                       TD style: {textAlign: 'left', paddingLeft: 20},
                                         A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == proposal.id then 700 else 400},
                                           other_proposal.name
@@ -517,7 +513,7 @@ StickyProposalHeading = ReactiveComponent
                                       DIV style: {width: 300, backgroundColor: color.header_bg, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
                                         UL className: 'other_proposal_list', style: {backgroundColor: 'rgba(0,0,0,.2)', borderRadius: '4px', padding: '8px 0' },
                                           for other_proposal in cluster.proposals
-                                            LI style: {listStyle: 'none'},
+                                            LI style: {listStyle: 'none'}, key: "li/#{other_proposal.long_id}",
                                               A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {display: 'block', textAlign: 'left', padding: '2px 10px'},
                                                 other_proposal.name
                         
@@ -549,8 +545,6 @@ HistogramData = ReactiveComponent
   ##
   # Split up opinions into columns based on their stance.   
   render : ->
-
-
     # We only need to recompute this data if the distribution of stances has changed. 
     opinions = @data(@proposal).opinions || []
     last_computation_hash = JSON.stringify( _.map(opinions, (o) => @data(o.key).stance) )
@@ -812,13 +806,13 @@ Slider = ReactiveComponent
 
     face_left_eye_style = 
       transform: 
-        if segment in [0, 6] 
+        if false && segment in [0, 6] 
         then 'scale(.9, .8)' 
         else "scale(#{.8 + .2 * Math.abs(stance)}, #{.8 + .2 * Math.abs(stance)})"
 
     face_right_eye_style = 
       transform: 
-        if segment in [0, 6] 
+        if false && segment in [0, 6] 
         then 'scale(1.1, 1.2)' 
         else "scale(#{.8 + .2 * Math.abs(stance)}, #{.8 + .2 * Math.abs(stance)})"
 
@@ -984,7 +978,7 @@ DecisionBoard = ReactiveComponent
 
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
-    $el.stickyTopBottom('destroy')
+    $el.StickyElement('destroy')
 
   componentDidUpdate : -> 
     $el = $(@getDOMNode())    
@@ -993,17 +987,17 @@ DecisionBoard = ReactiveComponent
     # hack to get around a problem where the browser's remembered scroll position messes
     # up the sticky location after initialization
     if !@initial_position_fixed
-      $el.stickyTopBottom('fix_initial_position')
+      $el.StickyElement('fix_initial_position')
       @initial_position_fixed = true
     else if root.proposal_mode == 'results' #fix problem where it would stay sticky moving to results page
-      $el.stickyTopBottom('update')
+      $el.StickyElement('update')
 
   setStickyHeader : ->
     $el = $(@getDOMNode())
 
     slider_region_height =  115 #$el.find('.slider .the_handle').outerHeight() + $el.find('.slider .slider_feedback').outerHeight() + 15 + 20 #15 is bubblemouth
 
-    $el.stickyTopBottom
+    $el.StickyElement
       container: $('.reasons_region')
       top_offset: $('.proposal_heading').outerHeight() + slider_region_height
       bottom_offset: 20
@@ -1019,7 +1013,7 @@ DecisionBoard = ReactiveComponent
         # Text input is bad on iOS when nested in a fixed position element. So if the user
         # is trying to edit text, we'll shut off the sticky decisionboard.
         # TODO/BUG: this is not detecting text input when editing a point, or for editing a comment. 
-        ios_fix = !is_iOS || (!@data('your_pro_points').adding_new_point && !@data('your_con_points').adding_new_point)
+        ios_fix = !@data('platform').is_iOS || (!@data('your_pro_points').adding_new_point && !@data('your_con_points').adding_new_point)
 
         @root.proposal_mode == 'crafting' && ios_fix 
 
@@ -1042,25 +1036,7 @@ DecisionBoard = ReactiveComponent
     current_user = @data('/current_user')
     published = @data(@proposal.your_opinion).published
 
-    # Centering the Decisionboard
-    # When the screen is too small & the board is sticky, the board can be 
-    # misplaced because fixed elements are not sized wrt their parents, but
-    # the viewport. So we're going to be sensitive to the width of the screen
-    # in how we center the decision board. 
-    # TODO: there is still a problem when screen is small with horizontal
-    #       scrolling
-    media = @data('media')
-    if media.width >= PAGE_WIDTH || !@data().sticky
-      opinion_region_style = 
-        left: '50%'
-        marginLeft: -DECISION_BOARD_WIDTH / 2
-    else
-      opinion_region_style = 
-        left: POINT_CONTENT_WIDTH + 2 * GRID_GUTTER + 69 #69 is the margin of the reasons_region
-
-    opinion_region_style.width = DECISION_BOARD_WIDTH
-
-    DIV className:'opinion_region focal_wrapper', style: opinion_region_style,
+    DIV className:'opinion_region focal_wrapper', style: {width: DECISION_BOARD_WIDTH},
       Slider
         width: HISTOGRAM_WIDTH
 
@@ -1116,7 +1092,7 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   handleAddPointBegin : ->
-    if is_iOS
+    if @data('platform').is_iOS
       # Text input is bad on iOS when nested in a fixed position element. So if the user
       # is trying to edit text, we'll shut off the sticky decisionboard.
       $(window).scrollTop $('.feelings_region').offset().top
@@ -1445,7 +1421,7 @@ Point = ReactiveComponent
           if point.text
             if @local.show_details or 
               (point.nutshell.length + point.text.length) < 210
-                DIV className: 'point_details', dangerouslySetInnerHTML:{__html: point.text}
+                DIV className: 'point_details', dangerouslySetInnerHTML:{__html: point.text.replace(/(\r?\n|<br>|<br\/>|<br \/>)/g, '<br /><br />').replace(/(<br \/>){4,}/g, '<br /><br />')}
             else
               SPAN className: 'point_details_tease', 
                 $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + "... [more]"
@@ -2161,7 +2137,7 @@ Homepage = ReactiveComponent
 
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
-    $el.find('.sticky_header.stickable').stickyTopBottom('destroy')
+    $el.find('.sticky_header.stickable').StickyElement('destroy')
 
   initOrUpdateHeader : -> 
     $el = $(@getDOMNode())
@@ -2169,9 +2145,9 @@ Homepage = ReactiveComponent
     $header = $el.find('.sticky_header.stickable')
     if $header.length > 0
       if @local.sticky_initialized
-        $header.stickyTopBottom('update')
+        $header.StickyElement('update')
       else 
-        $header.stickyTopBottom
+        $header.StickyElement
           placeholder: $el.find('.sticky_header.placeholder')[0]
           container: $el
         @local.sticky_initialized = true
@@ -2456,11 +2432,11 @@ Header = ReactiveComponent
                   #       backgroundColor: cityclub_green,
                   #     'Join the conversation!'
 
-      DIV null,
+      DIV null, 
         if @root.page_name == 'about'
           # TODO: we need a way of knowing whether this subdomain has a homepage or not
           if customer.identifier == 'livingvotersguide'
-            A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', marginTop: 8, marginLeft: 16, fontWeight: 600}, 
+            A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', zIndex: 999, marginTop: 8, marginLeft: 16, fontWeight: 600}, 
               I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
               SPAN style: {fontSize: 15, paddingLeft: 6, color: '#777', verticalAlign: 'text-bottom'}, 'Home'
 
@@ -2639,15 +2615,23 @@ About = ReactiveComponent
     @local.html = null
     @local.save
 
-  # REACT iframes don't support onLoad, so we need to figure out when 
-  #               to check the height of the loaded content ourselves
-  componentDidMount : -> @setIframeHeight() 
-  componentDidUpdate : -> @setIframeHeight()
-  setIframeHeight : -> 
+  componentDidMount : -> @handleContent()
+  componentDidUpdate : -> @handleContent()
 
+  handleContent : -> 
     $el = $(@getDOMNode())
 
-    if !@local.embed_html_directly && $el.prop('tagName').toLowerCase() == 'iframe'
+    if @local.embed_html_directly
+      # have to use appendChild rather than dangerouslysetinnerhtml
+      # because scripts in the about page html won't get executed
+      # when using dangerouslysetinnerhtml
+      if @local.html
+        $el.find('.embedded_about_html').append @local.html
+
+    else
+      # REACT iframes don't support onLoad, so we need to figure out when 
+      #               to check the height of the loaded content ourselves      
+      $el.prop('tagName').toLowerCase() == 'iframe'
       iframe = $el[0]
       _.delay ->
         try 
@@ -2657,6 +2641,7 @@ About = ReactiveComponent
           console.error 'Couldn\'t set about page iframe height because of http/https mismatch. Should work in production.'
           console.error e
       , 1000
+
 
   render : -> 
     customer = @data('/customer') 
@@ -2671,7 +2656,7 @@ About = ReactiveComponent
       else if !@local.embed_html_directly
         IFRAME src: customer.about_page_url, width: PAGE_WIDTH, style: {display: 'block', margin: 'auto'}
       else
-        DIV {dangerouslySetInnerHTML: {__html: @local.html}}
+        DIV className: 'embedded_about_html'
 
 Root = ReactiveComponent
   displayName: 'Root'
@@ -2719,6 +2704,7 @@ Page = ReactiveComponent
     color = @data('color')
 
     DIV style: {minWidth: PAGE_WIDTH, backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
+      Platform()
       Header()
       DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
         DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
@@ -2744,7 +2730,7 @@ Computer = ReactiveComponent
     if current_user.csrf
       arest.csrf(current_user.csrf)
 
-    console.log("Maybe we will publish: '#{@root.opinions_to_publish}' #{current_user.logged_in}")
+    #console.log("Maybe we will publish: '#{@root.opinions_to_publish}' #{current_user.logged_in}")
 
     # Publish pending opinions if we can
     while @root.opinions_to_publish.length > 0 and current_user.logged_in
@@ -2791,6 +2777,39 @@ Colors = ReactiveComponent
       save color
 
     SPAN null, ''
+
+
+# Displays warnings for some platforms
+# Stores state about the current device. 
+# Note that IE<9 users are redirected at
+# an earlier point to an MS upgrade site. 
+Platform = ReactiveComponent
+  displayName: 'Platform'
+
+  render : ->
+    platform = @data()
+    if !platform.is_iOS?
+      rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
+      platform.is_android_browser = !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
+      platform.is_opera_mini = !!navigator.userAgent.match /Opera Mini/
+      platform.is_ie9 = !!(document.documentMode && document.documentMode == 9)
+      platform.is_iOS = !!navigator.platform.match(/(iPad|iPhone)/)
+      save platform
+    
+    if platform.is_android_browser || platform.is_opera_mini
+      DIV style: {backgroundColor: 'red', padding: '10px', textAlign: 'center', color: 'white', fontSize: 24}, 
+        "This website does not work well with #{if platform.is_android_browser then 'the Android Browser' else 'Opera Mini'}. Please use "
+        A href: "https://play.google.com/store/apps/details?id=com.android.chrome&hl=en", style: {color: 'white', textDecoration: 'underline'},
+          'Chrome for Android' 
+        ' if you experience difficulty. Thanks, and sorry for the inconvenience!'
+    else 
+      # Use third party script for detecting and warning users
+      # of other outdated browsers. Sticking with
+      # third party for now because of some complexities
+      # in detecting some of these browser versions. In 
+      # the future, probably want to extract the logic. 
+      # "https://browser-update.org/update.html"
+      SCRIPT type: 'text/javascript', src: '//browser-update.org/update.js'
 
 
 ## ########################
@@ -2919,21 +2938,18 @@ window.writeToLog = (entry) ->
   save entry
 
 
-updateMedia = ->
-  media = fetch('media')
-  media.height = $(window).height()
-  media.width = $(window).width()
-  save media
-
-is_iOS = navigator.platform.match(/(iPad|iPhone)/)
-
 $(document).ready -> 
   if 'ontouchend' in document #detect touch support
     React.initializeTouchEvents(true)
 
-  # Tracks data useful for responsive layouts.
-  updateMedia()
-  $(window).on "resize", -> updateMedia()
-
   Backbone.history.start {pushState: true}
   window.root = React.renderComponent(Root(), document.getElementById('content'))
+
+
+  # google analytics
+  ga = document.createElement('script')
+  ga.type = 'text/javascript'
+  ga.async = true
+  ga.src = (if 'https:' == document.location.protocol then 'https://ssl' else 'http://www') + '.google-analytics.com/ga.js'
+  s = document.getElementsByTagName('script')[0] 
+  s.parentNode.insertBefore(ga, s)

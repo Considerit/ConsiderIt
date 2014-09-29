@@ -1013,7 +1013,7 @@ DecisionBoard = ReactiveComponent
         # Text input is bad on iOS when nested in a fixed position element. So if the user
         # is trying to edit text, we'll shut off the sticky decisionboard.
         # TODO/BUG: this is not detecting text input when editing a point, or for editing a comment. 
-        ios_fix = !@data('platform').is_iOS || (!@data('your_pro_points').adding_new_point && !@data('your_con_points').adding_new_point)
+        ios_fix = !@data('browser').is_iOS || (!@data('your_pro_points').adding_new_point && !@data('your_con_points').adding_new_point)
 
         @root.proposal_mode == 'crafting' && ios_fix 
 
@@ -1092,7 +1092,7 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   handleAddPointBegin : ->
-    if @data('platform').is_iOS
+    if @data('browser').is_iOS
       # Text input is bad on iOS when nested in a fixed position element. So if the user
       # is trying to edit text, we'll shut off the sticky decisionboard.
       $(window).scrollTop $('.feelings_region').offset().top
@@ -2704,7 +2704,7 @@ Page = ReactiveComponent
     color = @data('color')
 
     DIV style: {minWidth: PAGE_WIDTH, backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
-      Platform()
+      BrowserHacks()
       Header()
       DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
         DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
@@ -2779,26 +2779,26 @@ Colors = ReactiveComponent
     SPAN null, ''
 
 
-# Displays warnings for some platforms
+# Displays warnings for some browsers
 # Stores state about the current device. 
 # Note that IE<9 users are redirected at
 # an earlier point to an MS upgrade site. 
-Platform = ReactiveComponent
-  displayName: 'Platform'
+BrowserHacks = ReactiveComponent
+  displayName: 'BrowserHacks'
 
   render : ->
-    platform = @data()
-    if !platform.is_iOS?
+    browser = @data('browser')
+    if !browser.is_iOS?
       rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
-      platform.is_android_browser = !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
-      platform.is_opera_mini = !!navigator.userAgent.match /Opera Mini/
-      platform.is_ie9 = !!(document.documentMode && document.documentMode == 9)
-      platform.is_iOS = !!navigator.platform.match(/(iPad|iPhone)/)
-      save platform
+      browser.is_android_browser = !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
+      browser.is_opera_mini = !!navigator.userAgent.match /Opera Mini/
+      browser.is_ie9 = !!(document.documentMode && document.documentMode == 9)
+      browser.is_iOS = !!navigator.platform.match(/(iPad|iPhone)/)
+      save browser
     
-    if platform.is_android_browser || platform.is_opera_mini
+    if browser.is_android_browser || browser.is_opera_mini
       DIV style: {backgroundColor: 'red', padding: '10px', textAlign: 'center', color: 'white', fontSize: 24}, 
-        "This website does not work well with #{if platform.is_android_browser then 'the Android Browser' else 'Opera Mini'}. Please use "
+        "This website does not work well with #{if browser.is_android_browser then 'the Android Browser' else 'Opera Mini'}. Please use "
         A href: "https://play.google.com/store/apps/details?id=com.android.chrome&hl=en", style: {color: 'white', textDecoration: 'underline'},
           'Chrome for Android' 
         ' if you experience difficulty. Thanks, and sorry for the inconvenience!'

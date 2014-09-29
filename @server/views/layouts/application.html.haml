@@ -38,9 +38,11 @@
 
       /[if IE 9]
         = stylesheet_link_tag 'browser/ie9'
-      
+
       /[if lte IE 8]
-        = stylesheet_link_tag 'browser/ie'
+        %script{:type => "text/javascript"}
+          window.location = "http://windows.microsoft.com/en-us/internet-explorer/download-ie";
+
 
       :javascript
         //http://stackoverflow.com/questions/7742781/why-javascript-only-works-after-opening-developer-tools-in-ie-once
@@ -55,7 +57,7 @@
           }
         }
 
-      = javascript_include_tag 'javascripts/load_everything', debug: false #Rails.env.development?
+      = javascript_include_tag 'javascripts/load_everything', debug: Rails.env.development?
 
 
     %body
@@ -77,12 +79,5 @@
             _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
             _gaq_account.push(['_trackPageview']);
 
-        :javascript
-          var $buoop = {vs:{i:8,f:15,o:10.6,s:4,n:9}} ;
-          $buoop.ol = window.onload; 
-          try {if ($buoop.ol) $buoop.ol();}catch (e) {} 
-          var e = document.createElement("script"); 
-          e.setAttribute("type", "text/javascript"); 
-          e.setAttribute("src", "/browser-update.js"); 
-          document.body.appendChild(e); 
+
 

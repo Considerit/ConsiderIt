@@ -293,6 +293,7 @@ $proposer_img_size: 50px
     list-style: outside
   ul
     padding-left: 20px
+    margin-left: 20px
 
   a
     text-decoration: underline
@@ -307,41 +308,56 @@ $proposer_img_size: 50px
 .description_group
   position: relative
   margin-bottom: 10px
-
+  border-left: 1px solid #e1e1e1
+  padding-left: 20px
+  left: -20px
   .description_field
     padding: 0
 
 .description_group_name
   position: absolute
-  width: 130px
-  left: -155px
+  width: 200px
+  left: -217px
   text-align: right
-  top: 10px
+  top: 4px
+  // position: absolute
+  // top: 50%
+  // transform: translateY(-50%)
 
   +retina
     font-weight: 300
+
+  label
+
 
 .description_fields
   margin-top: 1em
 
 .description_field
   padding: $vertical_baseline / 4 0
-  color: #414141
+  //color: #414141
 
   .field_heading
     cursor: pointer
 
   .field_name
-    font-weight: 600
+    //font-weight: 600
+    line-height: 1.6
+    font-size: 18px
+
 
   .expand_arrow
-    font-family: "Courier New"  // monospaced so that on expansion we don't see weird jumps
+    //font-family: "Courier New"  // monospaced so that on expansion we don't see weird jumps
     padding-right: 6px
-    +font-size(4)
+    //+font-size(4)
+    opacity: .7
+    position: relative
+    left: -4px
 
   .field_body
-    padding: 6px 24px
+    padding: 10px 0
     width: 700px
+    overflow: hidden // clears floats
 
 [customer="livingvotersguide"]
   .endorser_group

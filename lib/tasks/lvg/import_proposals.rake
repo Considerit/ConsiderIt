@@ -264,7 +264,7 @@ namespace :lvg do
           :group => "Provided by state of WA",
           :items => []
         }
-        state_data = [ [explanatory_statement, 'Explanatory statement by by Office of Attorney General'], \
+        state_data = [ [explanatory_statement, 'Explanatory statement by Office of Attorney General'], \
                        [fiscal_impact, 'Fiscal Impact Statement by Office of Financial Management']]
         state_data.each do |field|
           if field[0]

@@ -262,14 +262,15 @@ Proposal = ReactiveComponent
             details: 
               description_type: field.label        
       ,
-        SPAN className: 'expand_arrow', dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
+        SPAN className: "expand_arrow fa #{if field.expanded then 'fa-minus-circle' else 'fa-plus-circle'}" #, dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
         SPAN className: 'field_name', field.label
       if field.expanded
         DIV className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
 
   renderDescriptionFieldGroup : (group) -> 
     DIV className: 'description_group', key: group.group,
-      LABEL className: 'description_group_name', group.group
+      DIV className: 'description_group_name', 
+        LABEL null, group.group
       for field in group.items
         @renderDescriptionField field
 

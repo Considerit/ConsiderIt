@@ -177,7 +177,7 @@ PageTransition =
       # The decision board will have to expand for crafting and collapse into to the Give Opinion button in results
       when 'decisionboard'
         if root.proposal_mode == 'crafting'
-          decision_board_style =  { translateX: 0, translateY: 10, width: "#{DECISION_BOARD_WIDTH}px", minHeight: "275px" }
+          decision_board_style =  { translateX: 0, translateY: 10, width: DECISION_BOARD_WIDTH, minHeight: 275 }
 
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
 
@@ -197,7 +197,7 @@ PageTransition =
           gutter = .1 * give_opinion_button_width
           opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * slider_position/HISTOGRAM_WIDTH
 
-          decision_board_style =  { translateX: opinion_region_x, translateY: -18, width: "#{give_opinion_button_width}px", minHeight: "32px", marginTop: 0}
+          decision_board_style =  { translateX: opinion_region_x, translateY: -18, width: give_opinion_button_width, minHeight: 32, marginTop: 0}
 
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
 
@@ -2456,7 +2456,7 @@ Header = ReactiveComponent
                   #       backgroundColor: cityclub_green,
                   #     'Join the conversation!'
 
-      DIV null,
+      DIV null, 
         if @root.page_name == 'about'
           # TODO: we need a way of knowing whether this subdomain has a homepage or not
           if customer.identifier == 'livingvotersguide'

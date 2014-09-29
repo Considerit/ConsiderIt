@@ -81,7 +81,7 @@
                     // This object is new.  Let's cache it.
                     cache[key] = object
                 else if (object !== cached)
-                    // Else, mutate cache to equal the object.
+                    // Else, mutate cache to match the object.
                     for (var k in object)          // Mutating in place preserves
                         cache[key][k] = object[k]  // pointers to this object
 

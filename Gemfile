@@ -30,7 +30,7 @@ gem "haml"
 gem 'paperclip' # https://github.com/thoughtbot/paperclip
 gem 'paperclip-compression'
 gem 'delayed_paperclip'
-gem 'font-awesome-rails'
+gem 'font-awesome-rails', "~> 4.2.0"
 gem "js-routes" # https://github.com/railsware/js-routes
 
 # used for parsing useragent string for logging client errors

@@ -10,6 +10,7 @@
 #    so that the calculation as to where they offset with each other
 #    is automatically taken care of
 #  - can we automatically insert a placeholder if needed?
+#  - document options
 
 do ($, window, document) ->
   $.fn.StickyElement = (options = {}) ->

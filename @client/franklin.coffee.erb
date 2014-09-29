@@ -390,7 +390,6 @@ StickyProposalHeading = ReactiveComponent
     $el = $(@getDOMNode())
     $el.find('.proposal_heading.stickable').StickyElement('destroy')
 
-
   mouseLeaveOtherCluster : (cluster) -> 
     if @local.show_cluster == cluster
       @local.show_cluster = null
@@ -549,8 +548,6 @@ HistogramData = ReactiveComponent
   ##
   # Split up opinions into columns based on their stance.   
   render : ->
-
-
     # We only need to recompute this data if the distribution of stances has changed. 
     opinions = @data(@proposal).opinions || []
     last_computation_hash = JSON.stringify( _.map(opinions, (o) => @data(o.key).stance) )
@@ -2794,13 +2791,13 @@ Platform = ReactiveComponent
 
   render : ->
     platform = @data()
-
-    if not platform.is_ios?
+    if !platform.is_iOS?
       rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
-      platform.is_android_browser = rxaosp && rxaosp[1]<537  # stock android browser (not chrome)
-      platform.is_opera_mini = navigator.userAgent.match /Opera Mini/
-      platform.is_ie9 = document.documentMode && document.documentMode == 9
-      platform.is_iOS = navigator.platform.match(/(iPad|iPhone)/)
+      platform.is_android_browser = !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
+      platform.is_opera_mini = !!navigator.userAgent.match /Opera Mini/
+      platform.is_ie9 = !!(document.documentMode && document.documentMode == 9)
+      platform.is_iOS = !!navigator.platform.match(/(iPad|iPhone)/)
+      console.log platform
       save platform
     
     if platform.is_android_browser || platform.is_opera_mini

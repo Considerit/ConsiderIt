@@ -268,7 +268,7 @@ Proposal = ReactiveComponent
         DIV className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
 
   renderDescriptionFieldGroup : (group) -> 
-    DIV className: 'description_group',
+    DIV className: 'description_group', key: group.group,
       LABEL className: 'description_group_name', group.group
       for field in group.items
         @renderDescriptionField field
@@ -1042,25 +1042,7 @@ DecisionBoard = ReactiveComponent
     current_user = @data('/current_user')
     published = @data(@proposal.your_opinion).published
 
-    # Centering the Decisionboard
-    # When the screen is too small & the board is sticky, the board can be 
-    # misplaced because fixed elements are not sized wrt their parents, but
-    # the viewport. So we're going to be sensitive to the width of the screen
-    # in how we center the decision board. 
-    # TODO: there is still a problem when screen is small with horizontal
-    #       scrolling
-    media = @data('media')
-    if media.width >= PAGE_WIDTH || !@data().sticky
-      opinion_region_style = 
-        left: '50%'
-        marginLeft: -DECISION_BOARD_WIDTH / 2
-    else
-      opinion_region_style = 
-        left: POINT_CONTENT_WIDTH + 2 * GRID_GUTTER + 69 #69 is the margin of the reasons_region
-
-    opinion_region_style.width = DECISION_BOARD_WIDTH
-
-    DIV className:'opinion_region focal_wrapper', style: opinion_region_style,
+    DIV className:'opinion_region focal_wrapper', style: {width: DECISION_BOARD_WIDTH},
       Slider
         width: HISTOGRAM_WIDTH
 
@@ -2963,20 +2945,9 @@ window.writeToLog = (entry) ->
   save entry
 
 
-updateMedia = ->
-  media = fetch('media')
-  media.height = $(window).height()
-  media.width = $(window).width()
-  save media
-
-
 $(document).ready -> 
   if 'ontouchend' in document #detect touch support
     React.initializeTouchEvents(true)
-
-  # Tracks data useful for responsive layouts.
-  updateMedia()
-  $(window).on "resize", -> updateMedia()
 
   Backbone.history.start {pushState: true}
   window.root = React.renderComponent(Root(), document.getElementById('content'))

@@ -138,17 +138,17 @@ do ($, window, document) ->
       # pinch zoom and scroll left. Under certain conditions, we have to do a complex 
       # calculation to figure out how much to offset the fixed element. 
 
-      # If the full screen is visible, scroll_x will be 0; if the window is small, but no pinch zooming, 
-      # it will be $(window).scrollLeft(). Otherwise...
+      scroll_x = $(window).scrollLeft() 
+
       # If the user has pinch zoomed when the window is smaller than the document, 
       # we can't just use scrollLeft directly. Instead, we need to adjust scrollLeft
       # based on the difference between the actual window width, the width of the zoomed
       # area the user sees, and the % amount of horizontal scrolling they've done. 
       zoom_width_difference = $(window).width() - window.innerWidth
-      max_scroll_left =       $(document).width() - window.innerWidth
-      zoom_adjustment =       $(window).scrollLeft() / max_scroll_left
-
-      scroll_x = $(window).scrollLeft() - zoom_adjustment * zoom_width_difference
+      if zoom_width_difference != 0
+        max_scroll_left =       $(document).width() - window.innerWidth
+        zoom_adjustment =       $(window).scrollLeft() / max_scroll_left
+        scroll_x -= zoom_adjustment * zoom_width_difference if zoom_width_difference > 0
 
       # (temporarily addressed) BUG: 
       # The scroll_x adjustment above does not immediately work on iOS devices.

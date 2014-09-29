@@ -329,10 +329,6 @@ Proposal = ReactiveComponent
           #description
           DIV className:'description_region', style: description_region_style, 
 
-            # DIV className: 'context',
-              
-            #   DIV className: 'proposer_name', "posted by #{if proposer then proposer.name else ''}" 
-
             DIV className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
 
             if @local.description_fields
@@ -465,7 +461,7 @@ StickyProposalHeading = ReactiveComponent
                               TABLE className: 'current_cluster', style: {width: '100%'}, 
                                 TBODY null,
                                   for other_proposal in this_proposal_cluster.proposals
-                                    TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink,
+                                    TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink, key: "tr/#{other_proposal.long_id}",
                                       TD style: {textAlign: 'left', paddingLeft: 20},
                                         A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == proposal.id then 700 else 400},
                                           other_proposal.name
@@ -516,7 +512,7 @@ StickyProposalHeading = ReactiveComponent
                                       DIV style: {width: 300, backgroundColor: color.header_bg, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
                                         UL className: 'other_proposal_list', style: {backgroundColor: 'rgba(0,0,0,.2)', borderRadius: '4px', padding: '8px 0' },
                                           for other_proposal in cluster.proposals
-                                            LI style: {listStyle: 'none'},
+                                            LI style: {listStyle: 'none'}, key: "li/#{other_proposal.long_id}",
                                               A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {display: 'block', textAlign: 'left', padding: '2px 10px'},
                                                 other_proposal.name
                         
@@ -2733,7 +2729,7 @@ Computer = ReactiveComponent
     if current_user.csrf
       arest.csrf(current_user.csrf)
 
-    console.log("Maybe we will publish: '#{@root.opinions_to_publish}' #{current_user.logged_in}")
+    #console.log("Maybe we will publish: '#{@root.opinions_to_publish}' #{current_user.logged_in}")
 
     # Publish pending opinions if we can
     while @root.opinions_to_publish.length > 0 and current_user.logged_in
@@ -2797,7 +2793,6 @@ Platform = ReactiveComponent
       platform.is_opera_mini = !!navigator.userAgent.match /Opera Mini/
       platform.is_ie9 = !!(document.documentMode && document.documentMode == 9)
       platform.is_iOS = !!navigator.platform.match(/(iPad|iPhone)/)
-      console.log platform
       save platform
     
     if platform.is_android_browser || platform.is_opera_mini

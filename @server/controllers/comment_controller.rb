@@ -9,42 +9,30 @@ class CommentController < ApplicationController
     point = Point.find params[:point_id]
     authorize! :read, point
 
-    # Getting all comments. Remember that there are multiple types of comments: straight comments and expert review comments
-    #todo: make this more efficient and natural
-    
-    response = {
-      :comments => point.comments,
-      :key => "/comments/#{point.id}"
-    }
+    dirty_key "/comments/#{point.id}"
 
-    if current_tenant.assessment_enabled
-      response.update({
-        :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
-        :verdicts => Assessable::Verdict.all,
-        :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
-        :already_requested_assessment => current_user && Assessable::Request.where(:assessable_id => point.id, :assessable_type => 'Point', :user_id => current_user.id).count > 0
-      })
-    end
-
-    respond_to do |format|
-      format.json {render :json => response}
-    end
+    render :json => []
   end
 
   def create
     authorize! :create, Comment
 
-    commentable_id = params[:comment][:commentable_id]
-    commentable_type = params[:comment][:commentable_type]
+    fields = ['body']
+    comment = params.select{|k,v| fields.include? k}
 
-    comment = Comment.where(:commentable_id => commentable_id).where(:commentable_type => commentable_type).find_by_body(params[:comment][:body])
+    comment['user_id'] = current_user && current_user.id || nil
+    comment['account_id'] = current_tenant.id
+    comment['point'] = Point.find(key_id(params['point']))
 
-    if comment.nil?
-      commentable = commentable_type.constantize.find commentable_id
-      comment = Comment.build_from(commentable, current_user.id, params[:comment][:body] )
+    # don't allow repeat comments
+    existing_comment = Comment.where(:point_id => comment['point_id']).find_by_body(comment['body'])
+
+    if existing_comment.nil?
+      point = comment['point']
+
+      comment = Comment.new comment
 
       if comment.save
-
         ActiveSupport::Notifications.instrument("comment:point:created", 
           :commentable => commentable,
           :comment => comment, 
@@ -52,21 +40,25 @@ class CommentController < ApplicationController
           :mail_options => mail_options
         )
 
-        # comment.follow!(current_user, :follow => true, :explicit => false)
+        original_id = key_id(params[:key])
+        result = comment.as_json
+        result['key'] = "/comment/#{comment.id}?original_id=#{original_id}"
+        remap_key(params[:key], "/comment/#{comment.id}")
+        dirty_key "/comments/#{point.id}"
 
-        if commentable.respond_to? :follow!
-          commentable.follow!(current_user, :follow => true, :explicit => false)
-        end
+        point.follow!(current_user, :follow => true, :explicit => false)
 
-        if commentable.respond_to? :comment_count 
-          commentable.comment_count = commentable.comments.count
-          commentable.save
-        end
-
+        point.comment_count = commentable.comments.count
+        point.save
+      else 
+        result = {errors: ['could not save comment']}
       end
 
+    else 
+      result = existing_comment
     end
-    render :json => comment     
+
+    render :json => [result]     
 
   end
 
@@ -74,11 +66,11 @@ class CommentController < ApplicationController
     comment = Comment.find(params[:id])
     authorize! :update, Comment
 
-    update_attributes = {
-      :body => params[:comment][:body]
-    }
+    fields = ['body']
+    comment = params.select{|k,v| fields.include? k}
 
-    comment.update_attributes! ActionController::Parameters.new(update_attributes).permit(:body)
+    comment.update_attributes! comment
+
 
     ActiveSupport::Notifications.instrument("comment:point:updated", 
       :model => comment, 
@@ -86,7 +78,8 @@ class CommentController < ApplicationController
       :mail_options => mail_options
     )
 
-    render :json => comment
+    dirty_key "/comment/#{comment.id}"
+    render :json => []
 
   end
 

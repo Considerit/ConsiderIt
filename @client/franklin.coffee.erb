@@ -1418,7 +1418,7 @@ Point = ReactiveComponent
     point_content_style = { width: POINT_CONTENT_WIDTH }
     if is_selected
       _.extend point_content_style, 
-        border: "2px solid #{considerit_blue}"
+        border: "3px solid #{considerit_blue}"
         left: -2
         top: -2
 
@@ -1486,25 +1486,32 @@ Discussion = ReactiveComponent
     comments = @data().comments
     discussion_style =
       width: DECISION_BOARD_WIDTH
-      border: "2px solid #{considerit_blue}"
+      border: "3px solid #{considerit_blue}"
       position: 'absolute'
       zIndex: 100
       padding: '20px 40px'
       borderRadius: 16
       backgroundColor: 'white'
 
-    DIV style: discussion_style,
+    side = if @props.is_pro then 'left' else 'right'
+    if @props.in_wings
+      discussion_style[side] = 215
+      discussion_style['top'] = 44
+    else
+      discussion_style[side] = if @props.is_pro then -30 else -23
+
+    DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
       H1
         style:
           textAlign: 'center'
           fontSize: 41
           color: considerit_blue
+          marginBottom: 5
         'Discussion'
-      DIV className: 'FILLER_TO_BE_REMOVED', style: {height: 100}
       
       DIV className: 'comments',
         for comment in comments
-          DIV null,
+          DIV style: {marginTop: 40},
 
             # Comment author name
             DIV
@@ -1512,7 +1519,7 @@ Discussion = ReactiveComponent
                 position: 'absolute'
                 marginTop: -20
                 fontWeight: 'bold'
-              @data(comment.user).name
+              @data(comment.user).name + ':'
 
             # Comment author icon
             Avatar
@@ -1529,6 +1536,36 @@ Discussion = ReactiveComponent
               style:
                 marginLeft: 60
               comment.body
+
+      # Write a new comment
+      DIV style: {marginTop: 40},
+
+        # Comment author name
+        DIV
+          style:
+            position: 'absolute'
+            marginTop: -20
+            fontWeight: 'bold'
+          (@data('/current_user').name or 'You') + ':'
+
+        # Icon
+        Avatar
+          style:
+            position: 'absolute'
+            width: 50
+            height: 50
+          tag: DIV
+          key: @data('/current_user').user
+          hide_name: true
+
+        AutoGrowTextArea
+          placeholder: 'Write a new comment'
+          style:
+            marginLeft: 60
+            width: 390
+            height: 60
+            lineHeight: 1.4
+            fontSize: 16
 
 
 ##
@@ -2494,13 +2531,13 @@ Header = ReactiveComponent
                 # Blue + green areas
                 DIV
                   style:
-                    backgroundColor: cityclub_green
+                    backgroundColor: cityclub_green # We will layer blue onto this green backdrop
                     color: cream
                     height: 128
                     marginBottom: 23
                     clear: 'both'
 
-                  # Online Intelligence for Washington Voters
+                  # Blue area
                   DIV
                     style:
                       fontSize: 32
@@ -2512,6 +2549,7 @@ Header = ReactiveComponent
                     SPAN style:{fontWeight: 'bold'}, 'Created by the people '
                     'and for the people of Washington state'
 
+                  # Green area
                   DIV
                     style:
                       fontSize: 18

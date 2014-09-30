@@ -20,22 +20,22 @@
 %p 
   The new comment: 
   .object
-    &ldquo;#{link_to strip_tags(@comment.body.gsub('</p><p>','\n').gsub('<br>', '\n')) , point_url(@point, :anchor => "comment_#{@comment.id}", :host => @host)}&rdquo;
+    &ldquo;#{strip_tags(@comment.body.gsub('</p><p>','\n').gsub('<br>', '\n'))}&rdquo;
 
 %p 
   The #{@point.is_pro ? 'pro' : 'con'} point:
   .object
-    &ldquo;#{link_to @point.nutshell, point_url(@point, :host => @host)}&rdquo;
+    &ldquo;#{link_to @point.nutshell, "#{@host}/#{@proposal.long_id}/?selected=%2Fpoint%2F#{@point.id}&z=1")}&rdquo;
 
 %p 
-  The proposal: 
+  The issue: 
   .object
-    &ldquo;#{link_to @proposal.title, "#{@host}/#{@proposal.long_id}"}&rdquo;
+    &ldquo;#{link_to @proposal.name, "#{@host}/#{@proposal.long_id}"}&rdquo;
 
 .action_call
   .rest
     .call
-      = link_to 'Read and discuss further', point_url(@point, :anchor => "comment_#{@comment.id}", :host => @host)
+      = link_to 'Read and discuss further', "#{@host}/#{@proposal.long_id}/?selected=%2Fpoint%2F#{@point.id}&z=1"
 
 = content_for :footer do
 

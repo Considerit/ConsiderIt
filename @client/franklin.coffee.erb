@@ -1169,6 +1169,42 @@ YourPoints = ReactiveComponent
 CommunityPoints = ReactiveComponent
   displayName: 'CommunityPoints'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
+  render : ->
+    selected_segment = @data('histogram').selected_segment
+
+    #filter to pros or cons & down to points that haven't been included
+    points = @buildPointsList() #todo: memoize
+    newpoint_threshold = @buildNewPointThreshold() #todo: memoize
+    label = capitalize @props.key
+    pro_is_selected = @root.selected_point and @data(@root.selected_point).is_pro
+
+    # TODO: The minheight below is not a principled or complete solution to two sizing issues: 
+    #           1) resizing the reasons region when the height of the decision board 
+    #              (which is absolutely positioned) grows taller the wing points
+    #           2) when filtering the points on result page to a segment without many inclusions,
+    #              the document height can jarringly fluctuate
+    DIV
+      className: "points_by_community #{@props.key}_by_community"
+      style:
+        width: POINT_CONTENT_WIDTH
+        minHeight: (if @proposal.points.length > 4 then jQuery(window).height() else 400)
+        zIndex: if pro_is_selected and @props.key == 'pros'
+                  '6'
+    ,
+      DIV className:'points_heading_label',
+        if @data('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
+        P className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
+          if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
+
+      UL null,
+        if points.length > 0
+          for point in points
+            Point
+              key: point.key,
+              is_new: Date.parse(point.created_at) > newpoint_threshold
+              location_class : 'community_point'
+        else
+          LI className: 'empty_point', "No #{label} listed"
 
   buildNewPointThreshold : ->
     # Grab the 10th percentile
@@ -1215,38 +1251,6 @@ CommunityPoints = ReactiveComponent
         _.sortBy points, (pnt) => - if is_results then pnt.score else pnt.last_inclusion
 
     points
-
-  render : ->
-    selected_segment = @data('histogram').selected_segment
-
-    #filter to pros or cons & down to points that haven't been included
-    points = @buildPointsList() #todo: memoize
-    newpoint_threshold = @buildNewPointThreshold() #todo: memoize
-    label = capitalize @props.key
-
-    # TODO: The minheight below is not a principled or complete solution to two sizing issues: 
-    #           1) resizing the reasons region when the height of the decision board 
-    #              (which is absolutely positioned) grows taller the wing points
-    #           2) when filtering the points on result page to a segment without many inclusions,
-    #              the document height can jarringly fluctuate
-    DIV 
-      className:"points_by_community #{@props.key}_by_community"
-      style: { width: POINT_CONTENT_WIDTH, minHeight: (if @proposal.points.length > 4 then jQuery(window).height() else 400) }
-    , 
-      DIV className:'points_heading_label', 
-        if @data('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
-        P className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
-          if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
-
-      UL null, 
-        if points.length > 0
-          for point in points
-            Point 
-              key: point.key, 
-              is_new: Date.parse(point.created_at) > newpoint_threshold
-              location_class : 'community_point'
-        else
-          LI className: 'empty_point', "No #{label} listed"
 
 
 

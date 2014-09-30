@@ -3,7 +3,7 @@
   class Entities.Proposal extends App.Entities.Model
     name: 'proposal'
     fetched: false
-    idAttribute : 'long_id'
+    #idAttribute : 'long_id'
     defaults : 
       participants : '[]'
       active : true
@@ -314,6 +314,9 @@
   # provides this API
   App.reqres.setHandler "proposal:get", (long_id, fetch = false) ->
     API.getProposal long_id, fetch
+
+  App.reqres.setHandler "proposal:get_by_id", (id, fetch = false) ->
+    API.getProposalById id, fetch
 
   App.reqres.setHandler "proposal:bootstrap", (proposal_attrs) ->
     API.bootstrapProposal proposal_attrs

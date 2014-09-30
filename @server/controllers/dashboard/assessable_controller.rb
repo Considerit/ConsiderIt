@@ -125,6 +125,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
       assessment.update_verdict()
       assessment.published_at = Time.now.utc      
       assessment.save
+
       ActiveSupport::Notifications.instrument("assessment_completed", 
         :assessment => assessment,
         :current_tenant => current_tenant,
@@ -233,7 +234,7 @@ ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
       notification_type = 'included point'
     end
 
-    EventMailer.point_new_assessment(follow.user, assessable, assessment, mail_options, notification_type).deliver!
+    EventMailer.new_assessment(follow.user, assessable, assessment, mail_options, notification_type).deliver!
 
   end
 

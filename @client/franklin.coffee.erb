@@ -454,7 +454,7 @@ StickyProposalHeading = ReactiveComponent
 
                   if @local.dropped_down
                     DIV className: 'proposal_navigation_dropdown', style: {width: 500, position: 'absolute', top: 38, paddingTop: 5},
-                      DIV style: {backgroundColor: color.header_bg, borderRadius: '4px'},
+                      DIV style: {backgroundColor: color.proposal_header, borderRadius: '4px'},
                         DIV style: {backgroundColor: 'rgba(0,0,0,.2)', padding: '14px 0', borderRadius: '4px'},
                           
                           if has_other_proposals_in_cluster
@@ -510,7 +510,7 @@ StickyProposalHeading = ReactiveComponent
                                     DIV style: {clear: 'both'}
 
                                     if @local.show_cluster == cluster.name
-                                      DIV style: {width: 300, backgroundColor: color.header_bg, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
+                                      DIV style: {width: 300, backgroundColor: color.proposal_header, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
                                         UL className: 'other_proposal_list', style: {backgroundColor: 'rgba(0,0,0,.2)', borderRadius: '4px', padding: '8px 0' },
                                           for other_proposal in cluster.proposals
                                             LI style: {listStyle: 'none'}, key: "li/#{other_proposal.long_id}",

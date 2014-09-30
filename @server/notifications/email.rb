@@ -68,7 +68,7 @@ notify_point = Proc.new do |data|
 
     end
 
-    EventMailer.proposal_new_point(u, point, mail_options, notification_type).deliver!
+    EventMailer.new_point(u, point, mail_options, notification_type).deliver!
 
   end
 
@@ -112,7 +112,7 @@ notify_comment = Proc.new do |args|
       notification_type = 'lurker'
     end
 
-    EventMailer.point_new_comment(follow.user, point, comment, mail_options, notification_type).deliver!
+    EventMailer.new_comment(follow.user, point, comment, mail_options, notification_type).deliver!
   end
 
 end

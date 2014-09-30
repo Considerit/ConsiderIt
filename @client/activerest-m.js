@@ -133,11 +133,8 @@
             if (request.status === 200) {
                 // console.log('Fetch returned for', key)
                 var result = JSON.parse(request.responseText)
-                // Warn if the server returns data for a different url than we asked it for
-                // TRAVIS: this check is bad because the result may be an array of objects, 
-                //         one of which may be the requested object. Disabling for now.
-                // console.assert(result.key && result.key === key,
-                //                'Server returned data with unexpected key', result, 'for key', key)
+                if (window.arest.trans_in)
+                    result = arest.trans_in(result)
                 update_cache(result)
             }
             else if (request.status === 500)
@@ -481,6 +478,9 @@
         return obj
     }
     function deep_map(func, object) {
+        // This function isn't actually a full "deep map" yet.
+        // Limitations: It only applies func to OBJECTS (not arrays or
+        // atoms), and doesn't return anything.
         if (Array.isArray(object))
             for (var i=0; i < object.length; i++)
                 deep_map(func, object[i])
@@ -508,7 +508,7 @@
     window.destroy = destroy
 
     // Make the private methods accessible under "window.arest"
-    vars = 'cache fetch save server_fetch serverFetch server_save serverSave update_cache updateCache csrf keys_4_component components_4_key components execution_context One_To_Many clone dirty_components affected_keys clear_matching_objects'.split(' ')
+    vars = 'cache fetch save server_fetch serverFetch server_save serverSave update_cache updateCache csrf keys_4_component components_4_key components execution_context One_To_Many clone dirty_components affected_keys clear_matching_objects deep_map'.split(' ')
     window.arest = {}
     for (var i=0; i<vars.length; i++)
         window.arest[vars[i]] = eval(vars[i])

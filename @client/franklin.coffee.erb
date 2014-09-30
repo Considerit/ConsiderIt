@@ -34,6 +34,8 @@ MAX_HISTOGRAM_HEIGHT = 200
 DESCRIPTION_WIDTH = BODY_WIDTH
 
 # Colors
+considerit_blue = '#2478CC'
+
 cityclub_navy   = 'rgb(0,   68,  124)'
 cityclub_green  = 'rgb(165, 206, 57)'
 cityclub_blue   = 'rgb(0,   182, 236)'
@@ -89,7 +91,8 @@ togglePage = (proposal_mode, triggered_by) ->
           triggered_by: triggered_by 
 
       root.proposal_mode = proposal_mode
-      save(root)
+      root.selected_point = null
+      save root
 
       # Kludge for tracking when the page changes
       _route_changed = true
@@ -826,18 +829,6 @@ Slider = ReactiveComponent
     crossbrowserTransformProperty sty for sty in [
       face_left_eye_style, face_right_eye_style, face_mouth_style]
 
-
-    # slider triangles are the edge of the slider that extend sharply to the arbitrary sized extreme segments
-    # slider_triangle_width = @data('histogramdata').segments[0].length * @data('histogramdata').avatar_size
-    # triangle_width = 
-    #   if sticky
-    #   then 0 
-    #   else slider_triangle_width
-
-    # slider_base_triangle_style = 
-    #   borderLeft: "#{triangle_width}px solid transparent"
-    #   borderRight: "#{triangle_width}px solid transparent"
-
     # Keep feedback centered over handle, but keep within the bounds of the slider region 
     # when the slider is in an extreme position. 
     feedback_left = @props.width * -(stance-1) / 2.0 
@@ -858,20 +849,27 @@ Slider = ReactiveComponent
       fontSize: if sticky then '18px' else '29px'
       top: if sticky then '-65px' else '-80px'
 
+    selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
+    selected_wing_point =  selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
+
+    slider_base_style = {width: @props.width}
+    handle_style = {left: slider.clientX}
+    bubblemouth_style = {left: slider.clientX}
+
+    if selected_point
+      handle_style.backgroundColor = "#ccc"
+      handle_style.boxShadow = "0px 1px 0px #aaa"
+      slider_base_style.backgroundColor = "#ddd"
+      bubblemouth_style.visibility = 'hidden' # TODO: use grayscale filter when !selected_wing_point instead of hidding
+
     DIV className: 'slider', style : { left: - (@props.width - DECISION_BOARD_WIDTH) / 2 },
-      DIV className:'slider_base', style : {width: @props.width}, 
-        # DIV 
-        #   className: 'slider_base_triangle_left'
-        #   style: _.extend({}, slider_base_triangle_style, {left: -triangle_width})
-        # DIV 
-        #   className: 'slider_base_triangle_right'
-        #   style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
+      DIV className:'slider_base', style : slider_base_style, 
         DIV 
           className:'slider_feedback'
           style: slider_feedback_style
         , if !slider.has_moved then 'Give Your Overall Opinion' else "You #{stance_names[segment]}"
 
-        DIV className: 'the_handle', style: {left: slider.clientX}, onMouseUp: @handleMouseUp, onMouseDown: @handleMouseDown, onTouchStart: @handleMouseDown, onTouchMove: @handleMouseMove, onTouchEnd: @handleMouseUp, onTouchCancel: @handleMouseUp,
+        DIV className: 'the_handle', style: handle_style, onMouseUp: @handleMouseUp, onMouseDown: @handleMouseDown, onTouchStart: @handleMouseDown, onTouchMove: @handleMouseMove, onTouchEnd: @handleMouseUp, onTouchCancel: @handleMouseUp,
           if page == 'crafting'
             DIV className: 'face',            
               DIV className: 'face_mouth face_part', style: face_mouth_style
@@ -880,7 +878,7 @@ Slider = ReactiveComponent
           # DIV className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved
           # DIV className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved
 
-        IMG className:'bubblemouth', src: bubblemouth_src, style: {left: slider.clientX}
+        IMG className:'bubblemouth', src: bubblemouth_src, style: bubblemouth_style
     
 
 ##
@@ -1034,14 +1032,27 @@ DecisionBoard = ReactiveComponent
   render : ->
     root = @root
     current_user = @data('/current_user')
-    published = @data(@proposal.your_opinion).published
+    
+    your_opinion = @data(@proposal.your_opinion)
+    published = your_opinion.published
 
-    DIV className:'opinion_region focal_wrapper', style: {width: DECISION_BOARD_WIDTH},
+    selected_point = @root.selected_point && root.proposal_mode == 'crafting'
+    selected_wing_point = selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
+    
+    opinion_region_style = {width: DECISION_BOARD_WIDTH}
+    decisionboard_style = decision_board_footer_style = {}
+    if selected_wing_point
+      decisionboard_style.visibility = decision_board_footer_style.visibility = 'hidden'
+    else if selected_point
+      decisionboard_style.borderColor = "#ccc"
+
+    DIV className:'opinion_region focal_wrapper', style: opinion_region_style,
       Slider
         width: HISTOGRAM_WIDTH
 
       DIV 
         className:'decision_board_body'
+        style: decisionboard_style
         onClick: => if root.proposal_mode == 'results' then togglePage('crafting', 'give_opinion_button')
       ,
 
@@ -1059,28 +1070,29 @@ DecisionBoard = ReactiveComponent
             className:'give_opinion_button primary_button'
           , if published then 'Update your Opinion' else 'Give your Opinion'
 
-      DIV 
-        className:'save_opinion_button primary_button'
-        onClick: @saveYourOpinion
-      , if published then 'See the results' else 'Save your opinion and see results'
+      DIV className: 'decision_board_footer', style: decision_board_footer_style, 
+        DIV 
+          className:'save_opinion_button primary_button'
+          onClick: @saveYourOpinion
+        , if published then 'See the results' else 'Save your opinion and see results'
 
-      if root.proposal_mode == 'crafting'
-        A className:'follow_proposal',
-          INPUT
-            type:      'checkbox'
-            id:        "follow_proposal"
-            name:      "follow_proposal"
-            checked:   @proposal.is_following
-            onChange: =>
-              @proposal.is_following = !@proposal.is_following
-              save @proposal
-          LABEL htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
+        if root.proposal_mode == 'crafting'
+          A className:'follow_proposal',
+            INPUT
+              type:      'checkbox'
+              id:        "follow_proposal"
+              name:      "follow_proposal"
+              checked:   @proposal.is_following
+              onChange: =>
+                @proposal.is_following = !@proposal.is_following
+                save @proposal
+            LABEL htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
 
-      if !published
-        A 
-          className:'cancel_opinion_button primary_cancel_button'
-          onClick: (=> togglePage('results', 'cancel_button'))
-        , 'or just skip to the results'  
+        if !published
+          A 
+            className:'cancel_opinion_button primary_cancel_button'
+            onClick: (=> togglePage('results', 'cancel_button'))
+          , 'or just skip to the results'  
 
 
 ##
@@ -1283,11 +1295,17 @@ Point = ReactiveComponent
 
 
   showDetails : -> 
-    @local.show_details = !@local.show_details
-    save(@local)
+    if @root.selected_point == @props.key # deselect
+      @root.selected_point = null
+      what = 'deselected a point'
+    else
+      what = 'selected a point'
+      @root.selected_point = @props.key
+
+    save @root
 
     window.writeToLog
-      what: 'clicked point'
+      what: what
       details: 
         point: @props.key
 
@@ -1389,9 +1407,19 @@ Point = ReactiveComponent
   render : -> 
     point = @data()
 
+    is_selected = @root.selected_point == @props.key
+
     selected_segment = @data('histogram').selected_segment
     author_opinion = @data(userOpinion(point.user))
     current_user = @data('/current_user')
+
+    point_content_style = { width: POINT_CONTENT_WIDTH }
+    if is_selected
+      _.extend point_content_style, 
+        border: "2px solid #{considerit_blue}"
+        left: -2
+        top: -2
+
 
     LI 
       className: "point closed_point #{@props.location_class} 
@@ -1410,16 +1438,16 @@ Point = ReactiveComponent
         if !selected_segment || ( author_opinion && author_opinion.stance_segment == selected_segment )
           Avatar tag: SPAN, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
 
-      DIV className:'point_content', style : { width: POINT_CONTENT_WIDTH },
+      DIV className:'point_content', style : point_content_style,
         if @props.location_class == 'community_point'
           IMG 
             className: 'community_point_mouth'
-            src: "<%= asset_path 'community_point_mouth.png' %>"
+            src: if is_selected then "<%= asset_path 'community_point_mouth_selected.png' %>" else "<%= asset_path 'community_point_mouth.png' %>"
 
         DIV className:'point_nutshell',
           point.nutshell
           if point.text
-            if @local.show_details or 
+            if is_selected or 
               (point.nutshell.length + point.text.length) < 210
                 DIV className: 'point_details', dangerouslySetInnerHTML:{__html: point.text.replace(/(\r?\n|<br>|<br\/>|<br \/>)/g, '<br /><br />').replace(/(<br \/>){4,}/g, '<br /><br />')}
             else
@@ -1439,6 +1467,27 @@ Point = ReactiveComponent
           if point.includers.length == 0 || (point.includers.length == 1 && point.includers[0] == current_user.user)
             A className: 'delete_point', onClick: @deletePoint, 
               SPAN null, 'delete'
+
+      if is_selected
+        Discussion key:"/point_discussion/#{@data().id}" #TODO: probably need to pass in some other props
+
+
+Discussion = ReactiveComponent
+  displayName: 'Discussion'
+
+  render : -> 
+    # TODO: put a bubble mouth on here in the right place
+    comments = @data().comments
+    discussion_style = { width: DECISION_BOARD_WIDTH, border: "2px solid #{considerit_blue}", position: 'absolute', zIndex: 100, padding: '40px', borderRadius: 16, color: considerit_blue, backgroundColor: 'white' }
+    DIV style: discussion_style,
+      H1 style: {textAlign: 'center', fontSize: 24}, 
+        'Discussion'
+      DIV className: 'FILLER_TO_BE_REMOVED', style: {height: 100}
+      
+      UL className: 'comments', 
+        for comment in comments
+          LI null, 
+            comment.body
 
 
 ##
@@ -2667,11 +2716,12 @@ Root = ReactiveComponent
     ######
     # Handle application routing, derived from client state.
     query_parameters = Backbone.history.getQueryParameters()
+    query_parameters = {}
 
     if @root.proposal_mode == 'results'
       query_parameters['results'] = true #the only query parameter we support now is ?results=true for proposal pages
-    else 
-      query_parameters = {}
+    if @root.selected_point
+      query_parameters['selected'] = @root.selected_point
 
     # Second, construct the proper url
     if root.page_name == 'homepage' 
@@ -2867,8 +2917,11 @@ Router = Backbone.Router.extend
     #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
     #      Right now activeREST doesn't allow wide consumption of a component's client state
     #      if its data is synced with the server. 
-    root.proposal_mode = if params && params['results'] then 'results' else 'crafting'  
-
+    root.proposal_mode = 'crafting'
+    root.selected_point = null
+    if params 
+      root.proposal_mode = 'results' if params['results']
+      root.selected_point = params['selected'] if params['selected']
     save root
 
     writeToLog
@@ -2883,7 +2936,7 @@ Router = Backbone.Router.extend
     #      Right now activeREST doesn't allow wide consumption of a component's client state
     #      if its data is synced with the server. 
     root.proposal_mode = null
-
+    root.selected_point = null
     save root
 
     writeToLog
@@ -2894,6 +2947,7 @@ Router = Backbone.Router.extend
     root = fetch('root')
     root.page_name = 'about'
     root.proposal_mode = null
+    root.selected_point = null
     save root
 
     writeToLog
@@ -2903,13 +2957,15 @@ Router = Backbone.Router.extend
   new_proposal : (params) ->
     root = fetch('root')
     root.page_name = 'proposal/new'
-    root.proposal_mode = null
+    root.proposal_mode = null    
+    root.selected_point = null
     save root
 
   edit_proposal : (id, params) ->
     root = fetch('root')
     root.page_name = "proposal/#{id}/edit"
     root.proposal_mode = null
+    root.selected_point = null
     save root      
 
 # Handles router navigation for links so that a page reload doesn't happen

@@ -927,12 +927,14 @@ $community_point_mouth_width: 17px
   top: 8px
   z-index: 1
 
-.pro .community_point_mouth
+.community_point.pro .community_point_mouth
   left: -$community_point_mouth_width
-.con .community_point_mouth
+.community_point.con .community_point_mouth
   right: -$community_point_mouth_width
   +transform(scaleX(-1))
 
+.decision_board_point .community_point_mouth
+  left: -$community_point_mouth_width
 
 // Point text
 .point_nutshell

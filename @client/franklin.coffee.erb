@@ -1042,7 +1042,9 @@ DecisionBoard = ReactiveComponent
     opinion_region_style = {width: DECISION_BOARD_WIDTH}
     decisionboard_style = decision_board_footer_style = {}
     if selected_wing_point
-      decisionboard_style.visibility = decision_board_footer_style.visibility = 'hidden'
+      decisionboard_style.filter = 'grayscale(1)'
+      decisionboard_style['-webkit-filter'] = 'grayscale(1)'
+      decisionboard_style.opacity = '.4'
     else if selected_point
       decisionboard_style.borderColor = "#ccc"
 
@@ -1469,7 +1471,11 @@ Point = ReactiveComponent
               SPAN null, 'delete'
 
       if is_selected
-        Discussion key:"/point_discussion/#{@data().id}" #TODO: probably need to pass in some other props
+        point_included = _.contains(@data(@proposal.your_opinion).point_inclusions, point.key)
+        Discussion
+          key:"/point_discussion/#{point.id}"
+          is_pro: point.is_pro
+          in_wings: @root.proposal_mode == 'crafting' and not point_included
 
 
 Discussion = ReactiveComponent
@@ -1478,16 +1484,51 @@ Discussion = ReactiveComponent
   render : -> 
     # TODO: put a bubble mouth on here in the right place
     comments = @data().comments
-    discussion_style = { width: DECISION_BOARD_WIDTH, border: "2px solid #{considerit_blue}", position: 'absolute', zIndex: 100, padding: '40px', borderRadius: 16, color: considerit_blue, backgroundColor: 'white' }
+    discussion_style =
+      width: DECISION_BOARD_WIDTH
+      border: "2px solid #{considerit_blue}"
+      position: 'absolute'
+      zIndex: 100
+      padding: '20px 40px'
+      borderRadius: 16
+      backgroundColor: 'white'
+
     DIV style: discussion_style,
-      H1 style: {textAlign: 'center', fontSize: 24}, 
+      H1
+        style:
+          textAlign: 'center'
+          fontSize: 41
+          color: considerit_blue
         'Discussion'
       DIV className: 'FILLER_TO_BE_REMOVED', style: {height: 100}
       
-      UL className: 'comments', 
+      DIV className: 'comments',
         for comment in comments
-          LI null, 
-            comment.body
+          DIV null,
+
+            # Comment author name
+            DIV
+              style:
+                position: 'absolute'
+                marginTop: -20
+                fontWeight: 'bold'
+              @data(comment.user).name
+
+            # Comment author icon
+            Avatar
+              style:
+                position: 'absolute'
+                width: 50
+                height: 50
+              tag: DIV
+              key: comment.user
+              hide_name: true
+
+            # Comment body
+            DIV
+              style:
+                marginLeft: 60
+              comment.body
 
 
 ##
@@ -1643,7 +1684,7 @@ Avatar = ReactiveComponent
       onMouseLeave: @hideDetails
 
     attrs.src = filename if filename
-    
+
     @transferPropsTo @props.tag attrs
 
   getDefaultProps : ->
@@ -2995,6 +3036,18 @@ window.writeToLog = (entry) ->
 
   save entry
 
+window.arest.trans_in = (object) ->
+  fix_comments = (o) ->
+    if o.key?.match(/\/point_discussion\//)
+      o.comments = for comment in o.comments
+        comment.key = "/comment/#{comment.id}"
+        comment.user = "/user/#{comment.user_id}"
+        delete comment.id
+        delete comment.user_id
+        comment
+
+  arest.deep_map(fix_comments, object)
+  return object
 
 $(document).ready -> 
   if 'ontouchend' in document #detect touch support

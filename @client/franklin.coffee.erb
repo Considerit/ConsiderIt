@@ -1461,6 +1461,7 @@ Point = ReactiveComponent
           if point.text
             if is_selected or 
               (point.nutshell.length + point.text.length) < 210
+                # Split the point details into paragraphs
                 paragraphs = point.text.split(/(\r?\n|<br>|<br\/>|<br \/>|<p>)/g)
                 DIV className: 'point_details',
                   for para in paragraphs

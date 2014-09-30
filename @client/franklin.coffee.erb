@@ -1011,7 +1011,7 @@ DecisionBoard = ReactiveComponent
         # Text input is bad on iOS when nested in a fixed position element. So if the user
         # is trying to edit text, we'll shut off the sticky decisionboard.
         # TODO/BUG: this is not detecting text input when editing a point, or for editing a comment. 
-        ios_fix = !@data('platform').is_iOS || (!@data('your_pro_points').adding_new_point && !@data('your_con_points').adding_new_point)
+        ios_fix = !@data('browser').is_iOS || (!@data('your_pro_points').adding_new_point && !@data('your_con_points').adding_new_point)
 
         @root.proposal_mode == 'crafting' && ios_fix 
 
@@ -1104,7 +1104,7 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   handleAddPointBegin : ->
-    if @data('platform').is_iOS
+    if @data('browser').is_iOS
       # Text input is bad on iOS when nested in a fixed position element. So if the user
       # is trying to edit text, we'll shut off the sticky decisionboard.
       $(window).scrollTop $('.feelings_region').offset().top
@@ -2403,15 +2403,6 @@ Header = ReactiveComponent
             Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
             A style: link_style, 'data-action': 'logout', onClick: @logout, 'Logout'
 
-        # Now draw the About and social sharing buttons
-        if @root.page_name in ['homepage', 'about']
-          # [DIV style: {position: 'absolute', top: 20, right: 32, color: 'rgb(6,169,122)', fontSize: 18},
-          #    [A style: {color: 'rgb(0,68,124)'}, href:'#', 'Log in'
-          #     '  |  '
-          #     A style: {color: 'rgb(0,68,124)'}, href:'/about', onClick: clickInternalLink, 'About']
-          DIV style: {position: 'absolute', top: 62, right: 29},
-            SharingButtons()
-
       DIV null, 
         # We'll only show the extended header on certain pages
         if @root.page_name in ['homepage', 'about'] || customer.identifier in ['cityoftigard', 'ihub']
@@ -2433,54 +2424,65 @@ Header = ReactiveComponent
 
             when 'livingvotersguide'
               logo_style =
-                width: 179
-                marginLeft: -179/2
                 position: 'absolute'
-                top: -158
-                left: '50%'
+                left: 86
+                top: 19
+                width: 222
                 zIndex: 1
-                top: 14
 
               DIV null,
                 # Top cream area
-                DIV style: {backgroundColor: color.background, height: 103, width: '100%'}
-                # Top blue area
                 DIV
                   style:
-                    textAlign: 'center'
-                    color: cream
-                    paddingTop: 85
-                    paddingBottom: 26
-                    marginBottom: 23
-                    borderTop: "6px solid #{cityclub_green}",
+                    height: 69
+                    width: '100%'
+                    textAlign: 'right'
+                    backgroundColor: cream
+                    paddingRight: 80
+                    fontSize: 21
+                    paddingTop: 13
+                    color: cityclub_navy
 
-                  # Logo
-                  A href: (if @root.page_name == 'about' then '/' else '/about'), onClick: clickInternalLink,
-                    IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.svg' %>", style: logo_style 
+                  A style: {color: cityclub_navy}, href: '#', onClick: clickInternalLink, 'Log in'
+                  ' | '
+                  A style: {color: cityclub_navy}, href:'/about', onClick: clickInternalLink, 'About'
+
+                # Logo
+                IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.svg' %>", style: logo_style
+
+                # Blue + green areas
+                DIV
+                  style:
+                    backgroundColor: cityclub_green
+                    color: cream
+                    height: 128
+                    marginBottom: 23
+                    clear: 'both'
 
                   # Online Intelligence for Washington Voters
-                  DIV style: {fontSize: 29, fontWeight: 800, marginTop: 5},
-                    'Online Intelligence for Washington Voters'
-                  DIV style: {fontSize: 21, fontWeight: 400},
-                    'Living Voters Guide becomes better with your participation.'
-                    BR null
-                    'Browse the guide and join the conversation!'
+                  DIV
+                    style:
+                      fontSize: 32
+                      padding: '20px 40px 0 325px'
+                      backgroundColor: cityclub_blue
+                      width: 838
+                      height: '100%'
+                      float: 'left'
+                    SPAN style:{fontWeight: 'bold'}, 'Created by the people '
+                    'and for the people of Washington state'
 
-                  # Join the Conversation!
-                  # A href: '#',
-                  #   DIV
-                  #     style:
-                  #       color: cream
-                  #       marginLeft: 'auto'
-                  #       marginRight: 'auto'
-                  #       padding: '3px 0'
-                  #       marginTop: 22
-                  #       width: 274
-                  #       fontWeight: 800
-                  #       fontSize: 22
-                  #       backgroundColor: cityclub_green,
-                  #     'Join the conversation!'
-
+                  DIV
+                    style:
+                      fontSize: 18
+                      padding: '14px 40px 0 26px'
+                      float: 'left'
+                      width: 280
+                      height: '100%'
+                    DIV null, 'Hosted by',
+                    DIV null, B(style:{fontWeight:'bold'}, 'Seattle CityClub')
+                    DIV null, 'with fact-checks from'
+                    DIV null, B(style:{fontWeight:'bold'}, 'The Seattle Public Library')
+                  
       DIV null, 
         if @root.page_name == 'about'
           # TODO: we need a way of knowing whether this subdomain has a homepage or not
@@ -2530,7 +2532,7 @@ Footer = ReactiveComponent
               SPAN style: {fontWeight: 600}, 'by the people'
               ' and '
               SPAN style: {fontWeight: 600}, 'for the people'
-              ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and share your opinions. We believe that sharing our diverse opinions leads to making wiser decisions together.'
+              ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and express your ideas. We believe that sharing our diverse opinions leads to making wiser decisions together.'
               A style: {color: cream, textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', onClick: clickInternalLink, 'Learn more'
               '.'
 
@@ -2754,7 +2756,7 @@ Page = ReactiveComponent
     color = @data('color')
 
     DIV style: {minWidth: PAGE_WIDTH, backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
-      Platform()
+      BrowserHacks()
       Header()
       DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
         DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
@@ -2829,26 +2831,26 @@ Colors = ReactiveComponent
     SPAN null, ''
 
 
-# Displays warnings for some platforms
+# Displays warnings for some browsers
 # Stores state about the current device. 
 # Note that IE<9 users are redirected at
 # an earlier point to an MS upgrade site. 
-Platform = ReactiveComponent
-  displayName: 'Platform'
+BrowserHacks = ReactiveComponent
+  displayName: 'BrowserHacks'
 
   render : ->
-    platform = @data()
-    if !platform.is_iOS?
+    browser = @data('browser')
+    if !browser.is_iOS?
       rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
-      platform.is_android_browser = !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
-      platform.is_opera_mini = !!navigator.userAgent.match /Opera Mini/
-      platform.is_ie9 = !!(document.documentMode && document.documentMode == 9)
-      platform.is_iOS = !!navigator.platform.match(/(iPad|iPhone)/)
-      save platform
+      browser.is_android_browser = !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
+      browser.is_opera_mini = !!navigator.userAgent.match /Opera Mini/
+      browser.is_ie9 = !!(document.documentMode && document.documentMode == 9)
+      browser.is_iOS = !!navigator.platform.match(/(iPad|iPhone)/)
+      save browser
     
-    if platform.is_android_browser || platform.is_opera_mini
+    if browser.is_android_browser || browser.is_opera_mini
       DIV style: {backgroundColor: 'red', padding: '10px', textAlign: 'center', color: 'white', fontSize: 24}, 
-        "This website does not work well with #{if platform.is_android_browser then 'the Android Browser' else 'Opera Mini'}. Please use "
+        "This website does not work well with #{if browser.is_android_browser then 'the Android Browser' else 'Opera Mini'}. Please use "
         A href: "https://play.google.com/store/apps/details?id=com.android.chrome&hl=en", style: {color: 'white', textDecoration: 'underline'},
           'Chrome for Android' 
         ' if you experience difficulty. Thanks, and sorry for the inconvenience!'

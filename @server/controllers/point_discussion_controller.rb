@@ -12,6 +12,7 @@ class PointDiscussionController < ApplicationController
     
     response = {
       :comments => comments.public_fields,
+      :key => "/point_discussion/#{point.id}"
     }
 
     if current_tenant.assessment_enabled

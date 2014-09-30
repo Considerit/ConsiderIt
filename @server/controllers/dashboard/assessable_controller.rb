@@ -125,6 +125,8 @@ class Dashboard::AssessableController < Dashboard::DashboardController
       assessment.update_verdict()
       assessment.published_at = Time.now.utc      
       assessment.save
+
+      pp 'ASSESSMENT COMPLETED'
       ActiveSupport::Notifications.instrument("assessment_completed", 
         :assessment => assessment,
         :current_tenant => current_tenant,

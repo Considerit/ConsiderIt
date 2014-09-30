@@ -234,7 +234,7 @@ ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
       notification_type = 'included point'
     end
 
-    EventMailer.point_new_assessment(follow.user, assessable, assessment, mail_options, notification_type).deliver!
+    EventMailer.new_assessment(follow.user, assessable, assessment, mail_options, notification_type).deliver!
 
   end
 

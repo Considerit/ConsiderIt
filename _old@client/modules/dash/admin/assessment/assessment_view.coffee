@@ -66,6 +66,7 @@
         verdict : @model.getVerdict()
         is_creator : @model.getCreator().id == App.request('user:current').id
         is_answered : !!@model.get('verdict_id') && !!@model.get('result')
+        notes: null
       params
 
 

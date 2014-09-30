@@ -42,12 +42,12 @@ namespace :test do
 
       point = proposal.points.published.sample
       pp "****************"
-      pp "proposal_new_point"
+      pp "new_point"
       pp "Proposal: #{proposal.id}"
       pp "Point: #{point.id}" 
       pp "Notification_type: #{nt}"     
       if proposal && point
-        email = EventMailer.proposal_new_point(user, point, mail_options, nt).deliver!
+        email = EventMailer.new_point(user, point, mail_options, nt).deliver!
       end
     end
 
@@ -59,12 +59,12 @@ namespace :test do
 
       point = comment.point
       pp "****************"
-      pp "point_new_comment"
+      pp "new_comment"
       pp "Comment: #{comment.id}"
       pp "Point: #{point.id}"
       pp "Notification_type: #{nt}"
       if comment && point
-        email = EventMailer.point_new_comment(user, point, comment, mail_options, nt).deliver!
+        email = EventMailer.new_comment(user, point, comment, mail_options, nt).deliver!
       end
     end
 

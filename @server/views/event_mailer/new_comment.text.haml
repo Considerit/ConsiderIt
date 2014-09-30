@@ -18,13 +18,10 @@ Hi #{@user.first_name},
 = "\r\n"
 "#{@comment.body}"
 = "\r\n"
-Read and discuss further at #{point_url(@point, :anchor => "comment_#{@comment.id}", :host => @host)}
+Read and discuss further at #{@host}/#{@proposal.long_id}/?selected=%2Fpoint%2F#{@point.id}&z=1
 
 = "\r\n"
 \----
 
 
 = render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this point'}
-
-= "\r\n"
-#{@options[:app_title]} is powered by http://consider.it

@@ -2089,7 +2089,7 @@ ProposalSummary = ReactiveComponent
             A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
               "#{proposal.category[0]}-#{proposal.designator}"
 
-      TD className: 'summary_name',
+      TD className: 'summary_name', style: {width: (if customer.identifier == 'livingvotersguide' then 270 else 320)},
         A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
           proposal.name
       TD className: 'summary_decide', style: {borderLeft: cell_border, borderRight: cell_border},
@@ -2159,14 +2159,19 @@ Homepage = ReactiveComponent
     color = @data('color')
     proposals = @data('/proposals')
 
+    learn_decide_share_style = {backgroundColor: color.proposal_header, color: 'white'}
+    if customer.identifier == 'livingvotersguide'
+      learn_decide_share_style.backgroundColor = cream
+      learn_decide_share_style.color = cityclub_brown
+
     # The "Welcome to the community!" people
     contributors = @page.contributors.filter((u)-> fetch(u).avatar_file_name)
     welcome_column =
       TH className: 'welcome_column',
         if contributors.length > 0
           [
-            DIV className: 'learn_decide_share1', 'Join'
-            DIV className: 'learn_decide_share2', 'the contributors'
+            DIV className: 'learn_decide_share1', style: learn_decide_share_style, 'Join'
+            DIV className: 'learn_decide_share2', style: learn_decide_share_style, 'the contributors'
             DIV className: 'people',
               for user in _(contributors).first(90)
                 Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
@@ -2210,19 +2215,19 @@ Homepage = ReactiveComponent
 
     DIV className: 'homepage',
       # Draw the header
-      DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height} 
+      DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height}
       DIV 
         className: "sticky_header stickable"
-        style: {height: sticky_header_height, width: '100%', backgroundColor: cream, color: cityclub_brown, zIndex: 9999, minWidth: PAGE_WIDTH} #minwidth is for when dropping into sticky, position fixed mode
+        style: _.extend({}, learn_decide_share_style, {height: sticky_header_height, width: '100%', zIndex: 9999, minWidth: PAGE_WIDTH}) #minwidth is for when dropping into sticky, position fixed mode
       ,
         TABLE style: {margin: 'auto'},
           TBODY null,
             TR null,
               for col in columns
                 TD style: {display: 'inline-block', width: 250},
-                  DIV className: 'learn_decide_share1',
+                  DIV className: 'learn_decide_share1', style: learn_decide_share_style,
                     col.heading
-                  DIV className: 'learn_decide_share2',
+                  DIV className: 'learn_decide_share2', style: learn_decide_share_style,
                     col.details
 
       # Draw the proposal summaries
@@ -2351,7 +2356,10 @@ LogoutButton = ReactiveComponent
     #       if @root.page_name not in ['homepage', 'about']
     #         userbar_style = { top: 51, right: 2, left: 'auto' }
     #         link_style = { color: '#777', fontWeight: 600, fontSize: 15 }
-    SPAN className: 'userbar', style: {},
+    link_style = {}
+    if customer.identifier != 'livingvotersguide'
+      link_style = {position: 'absolute', right: 20, top: 4}
+    SPAN className: 'userbar', style: link_style,
       #Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
       A style: {}, 'data-action': 'logout', onClick: @logout, 'Logout'
 
@@ -2363,7 +2371,7 @@ Header = ReactiveComponent
     customer = @data('/customer')
     color = @data('color')
 
-    DIV className: 'l_header', style: {backgroundColor: color.header_bg},
+    DIV className: 'l_header', style: {backgroundColor: color.header_bg, minWidth: PAGE_WIDTH},
       if customer.identifier != "livingvotersguide"
         LogoutButton()
 
@@ -2375,9 +2383,23 @@ Header = ReactiveComponent
             logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
             DIV null,
               DIV style: {height: 38},
-                A href: 'http://www.tigard-or.gov/', style: {position: 'absolute', top:0, zIndex: 999999},
+                A href: '/', onClick: @clickInternalLink, style: {position: 'absolute', top:0, zIndex: 999999},
                   IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
-                
+                # SPAN style: {color: 'white', fontSize: 28, display: 'inline-block', margin: '20px 0 0 110px'}, 
+                #   'Engage with the '
+                #   A href: 'http://www.tigard-or.gov', style: {color: 'white', fontWeight: 600}, 'City of Tigard'
+              # DIV style: {backgroundColor: color.proposal_header, width: '100%', height: 50}
+          when 'tigard'
+            logo_style = {height: 60}
+            DIV null,
+              A href: '/', onClick: @clickInternalLink, style: {padding: 12, display: 'inline-block'},
+                IMG className: 'logo', src: "<%= asset_path 'tigard/logo.jpg' %>", style: logo_style 
+              SPAN style: {color: '#707070', fontSize: 24, display: 'inline-block', margin: '20px 0 0 50px', fontWeight: 800, textTransform: 'uppercase', position: 'relative', top: -20}, 
+                'Help plan '
+                A href: 'http://riverterracetigard.com/', style: {color: '#78d18b', fontWeight: 600}, 'River Terrace'
+                ', Tigard\'s newest neighborhood' 
+
+
           # when 'ihub'
           #   logo_style = {height: 42, position: 'absolute', bottom: 4, zIndex: 999999, left: 8}
           #   DIV style: {height: 50},
@@ -2791,7 +2813,10 @@ Colors = ReactiveComponent
           color.link_hover_color = 'rgb(118,148,41)'
         when 'cityoftigard'
           color.header_bg =  '#253967'
-          color.proposal_header = '#46A046'
+          color.proposal_header = '#46A046'          
+        when 'tigard'          
+          color.header_bg =  'white'
+          color.proposal_header = '#78d18b'
         when 'ihub'
           color.header_bg =  color.proposal_header = "rgb(150,150,150)"
 

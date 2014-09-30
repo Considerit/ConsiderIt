@@ -1296,7 +1296,8 @@ Point = ReactiveComponent
         disabled: disable
 
 
-  showDetails : -> 
+  selectPoint: (e) ->
+    e.stopPropagation()
     if @root.selected_point == @props.key # deselect
       @root.selected_point = null
       what = 'deselected a point'
@@ -1429,7 +1430,7 @@ Point = ReactiveComponent
       className: "point closed_point #{@props.location_class} 
         #{if point.is_pro then 'pro' else 'con'}"
       'data-id':@props.key
-      onClick: @showDetails
+      onClick: @selectPoint
     ,
   
       if @props.location_class == 'community_point' && @props.is_new
@@ -1528,16 +1529,10 @@ Discussion = ReactiveComponent
         '-webkit-transform':  trans_func
         '-o-transform':       trans_func
 
-    if @props.in_wings
-      flip_bubmouth = @props.is_pro
-      console.log('barf', @props.is_pro)
-    else
-      console.log('farb', @props.is_pro)
-      flip_bubmouth = @props.is_pro
     DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
       IMG
         src: "<%= asset_path 'bubblemouth-discussions.png' %>"
-        className: if flip_bubmouth then 'flipped' else ''
+        className: if @props.is_pro then 'flipped' else ''
         style: bubble_mouth_style
 
       H1
@@ -1550,7 +1545,7 @@ Discussion = ReactiveComponent
       
       DIV className: 'comments',
         for comment in comments
-          DIV style: {marginTop: 40},
+          DIV style: {marginTop: 40, minHeight: 60},
 
             # Comment author name
             DIV
@@ -1575,6 +1570,7 @@ Discussion = ReactiveComponent
             DIV
               style:
                 marginLeft: 60
+                wordWrap: 'break-word'
               comment.body
 
       # Write a new comment
@@ -2831,6 +2827,17 @@ About = ReactiveComponent
 
 Root = ReactiveComponent
   displayName: 'Root'
+  resetSelection: (e) ->
+    if @root.selected_point
+      console.log('Got a click on',e.target)
+      window.writeToLog
+        what: 'deselected a point'
+        details:
+          point: @root.selected_point
+
+      @root.selected_point = null
+      save @root
+
 
   render : -> 
     root = @data()
@@ -2859,7 +2866,7 @@ Root = ReactiveComponent
     ####
 
     # Now let's render
-    DIV null,
+    DIV onClick: @resetSelection,
       StateDash(),
       Page(key: "/page/#{root.page_name}"),
       Computer() # Doesn't actually render anything

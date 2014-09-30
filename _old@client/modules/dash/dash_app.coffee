@@ -164,7 +164,6 @@
         App.request 'meta:change:default'
 
     moderate : ->
-      console.log 'moderate'
       $(document).scrollTop(0)
       
       @current_controller.close() if @current_controller      

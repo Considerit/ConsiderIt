@@ -54,10 +54,10 @@ namespace :test do
     ###### Point level ######
     notification_types = ['your point', 'participant', 'included point', 'lurker']
     notification_types.each do |nt|
-      comment = account.comments.where('commentable_type' => 'Point').sample
+      comment = account.comments.sample
       next if comment.nil?
 
-      point = comment.root_object
+      point = comment.point
       pp "****************"
       pp "point_new_comment"
       pp "Comment: #{comment.id}"

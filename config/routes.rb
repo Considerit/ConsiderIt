@@ -102,9 +102,12 @@ ConsiderIt::Application.routes.draw do
   resources :user, :only => [:show]
   resources :proposal
   resources :point, :only => [:create, :update, :destroy, :show]
-  resources :point_discussion, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :show]
   resources :client_error, :only => [:create]
+
+  resources :comment, :only => [:create, :update]
+  get '/comments/:point_id' => 'comment#index'
+
   post '/log' => 'log#create'
   get '/proposals' => 'proposal#index'
   get '/customer' => 'customer#show'
@@ -118,16 +121,6 @@ ConsiderIt::Application.routes.draw do
 
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]
-
-
-  ######
-  ## concerns routes
-  concern :commentable do 
-    resources :commentable, :only => [:create, :update]
-  end
-
-  concerns :commentable
-  #################
 
 
 end

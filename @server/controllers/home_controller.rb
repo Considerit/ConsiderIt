@@ -19,10 +19,10 @@ class HomeController < ApplicationController
       session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || !!request.user_agent.match('Prerender')
     end
 
-    # Most customers don't have a homepage. In the iterim, let's just redirect 
+    # Some customers don't have a homepage. In the iterim, let's just redirect 
     # accesses to the homepage to the latest published proposal
     # TODO: better way of knowing if a particular customer has a homepage or not.
-    if current_tenant.identifier != 'livingvotersguide' && request.path == '/' && request.query_string == "" && !session[:search_bot]
+    if current_tenant.identifier == 'cityoftigard' && request.path == '/' && request.query_string == "" && !session[:search_bot]
       proposal = current_tenant.proposals.open_to_public.active.last
       if proposal
         redirect_to "/#{proposal.long_id}"

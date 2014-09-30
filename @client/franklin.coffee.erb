@@ -431,7 +431,7 @@ StickyProposalHeading = ReactiveComponent
         heading_height = 50
         DIV null,
           DIV className: 'proposal_heading placeholder', style: {height: heading_height} 
-          DIV className: 'proposal_heading stickable',  style : { height: heading_height, minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, textAlign: 'center' }, # minwidth is for width consistency when dropping into fixed sticky header
+          DIV id: 'proposal_heading', className: 'proposal_heading stickable',  style : { height: heading_height, minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, textAlign: 'center' }, # minwidth is for width consistency when dropping into fixed sticky header
             # TODO: we need a way of knowing whether this subdomain has a homepage or not
             if customer.identifier == 'livingvotersguide'
               A
@@ -457,7 +457,7 @@ StickyProposalHeading = ReactiveComponent
 
                   if @local.dropped_down
                     DIV className: 'proposal_navigation_dropdown', style: {width: 500, position: 'absolute', top: 38, paddingTop: 5},
-                      DIV style: {backgroundColor: color.header_bg, borderRadius: '4px'},
+                      DIV style: {backgroundColor: color.proposal_header, borderRadius: '4px'},
                         DIV style: {backgroundColor: 'rgba(0,0,0,.2)', padding: '14px 0', borderRadius: '4px'},
                           
                           if has_other_proposals_in_cluster
@@ -513,7 +513,7 @@ StickyProposalHeading = ReactiveComponent
                                     DIV style: {clear: 'both'}
 
                                     if @local.show_cluster == cluster.name
-                                      DIV style: {width: 300, backgroundColor: color.header_bg, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
+                                      DIV style: {width: 300, backgroundColor: color.proposal_header, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
                                         UL className: 'other_proposal_list', style: {backgroundColor: 'rgba(0,0,0,.2)', borderRadius: '4px', padding: '8px 0' },
                                           for other_proposal in cluster.proposals
                                             LI style: {listStyle: 'none'}, key: "li/#{other_proposal.long_id}",
@@ -2238,14 +2238,15 @@ ProposalSummary = ReactiveComponent
     proposal = @data()
     hover_class = if @local.hovering_on == proposal.id then 'hovering' else ''
 
+    cell_border = "1px solid #{if @local.hovering_on then color.link_hover_color else 'rgb(191, 192, 194)'}"
     TR 
       className: "proposal_summary " + hover_class
       style:
         cursor: 'pointer'
         height: ''
-        padding: '6px 30px'
+        padding: '0 30px'
         display: 'block'
-        borderLeft: "1px solid #{if @local.hovering_on then color.link_hover_color else 'rgb(191, 192, 194)'}"
+        borderLeft: cell_border
       onMouseEnter: (=> @local.hovering_on = true; save(@local))
       onMouseLeave: (=> @local.hovering_on = false; save(@local))
       onClick: (=> window.app_router.navigate("/#{proposal.long_id}", {trigger: true}))              
@@ -2256,10 +2257,10 @@ ProposalSummary = ReactiveComponent
             A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
               "#{proposal.category[0]}-#{proposal.designator}"
 
-      TD className: 'summary_name',
+      TD className: 'summary_name', style: {width: (if customer.identifier == 'livingvotersguide' then 270 else 320)},
         A onClick: clickInternalLink, href: "/#{proposal.long_id}", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
           proposal.name
-      TD className: 'summary_decide',
+      TD className: 'summary_decide', style: {borderLeft: cell_border, borderRight: cell_border},
         if !proposal.your_opinion || !@data(proposal.your_opinion).published || @data(proposal.your_opinion).stance_segment == 3
           style = {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}
           if @local.hovering_on
@@ -2326,14 +2327,19 @@ Homepage = ReactiveComponent
     color = @data('color')
     proposals = @data('/proposals')
 
+    learn_decide_share_style = {backgroundColor: color.proposal_header, color: 'white'}
+    if customer.identifier == 'livingvotersguide'
+      learn_decide_share_style.backgroundColor = cream
+      learn_decide_share_style.color = cityclub_brown
+
     # The "Welcome to the community!" people
     contributors = @page.contributors.filter((u)-> fetch(u).avatar_file_name)
     welcome_column =
       TH className: 'welcome_column',
         if contributors.length > 0
           [
-            DIV className: 'learn_decide_share1', 'Join'
-            DIV className: 'learn_decide_share2', 'the contributors'
+            DIV className: 'learn_decide_share1', style: learn_decide_share_style, 'Join'
+            DIV className: 'learn_decide_share2', style: learn_decide_share_style, 'the contributors'
             DIV className: 'people',
               for user in _(contributors).first(90)
                 Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
@@ -2377,19 +2383,19 @@ Homepage = ReactiveComponent
 
     DIV className: 'homepage',
       # Draw the header
-      DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height} 
+      DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height}
       DIV 
         className: "sticky_header stickable"
-        style: {height: sticky_header_height, width: '100%', backgroundColor: cream, color: cityclub_brown, zIndex: 9999, minWidth: PAGE_WIDTH} #minwidth is for when dropping into sticky, position fixed mode
+        style: _.extend({}, learn_decide_share_style, {height: sticky_header_height, width: '100%', zIndex: 9999, minWidth: PAGE_WIDTH}) #minwidth is for when dropping into sticky, position fixed mode
       ,
         TABLE style: {margin: 'auto'},
           TBODY null,
             TR null,
               for col in columns
                 TD style: {display: 'inline-block', width: 250},
-                  DIV className: 'learn_decide_share1',
+                  DIV className: 'learn_decide_share1', style: learn_decide_share_style,
                     col.heading
-                  DIV className: 'learn_decide_share2',
+                  DIV className: 'learn_decide_share2', style: learn_decide_share_style,
                     col.details
 
       # Draw the proposal summaries
@@ -2469,7 +2475,7 @@ ZipcodeBox = ReactiveComponent
               width: PAGE_WIDTH
               color: cream
               margin: 'auto'
-              padding: '45px 0'
+              padding: '35px 0'
               paddingLeft: '170px'
             'Customize this guide for your' + extra_text
             INPUT
@@ -2478,13 +2484,15 @@ ZipcodeBox = ReactiveComponent
               placeholder: 'Zip Code'
               style: {margin: '0 0 0 12px', fontSize: 24, height: 42, width: 152, padding: '4px 20px'}
               onChange: onChange
-            #' and see your local ballot!'
+            BR null
+            SPAN style: {fontSize: 18}, 'Your local congressional race and measures will be revealed!'
 
         DIV className: 'ragged_bottom'
 
 
-Header = ReactiveComponent
-  displayName: 'Header'
+LogoutButton = ReactiveComponent
+  displayName: 'LogoutButton'
+
   logout : -> 
     current_user = @data('/current_user')
     current_user.logged_in = false
@@ -2501,107 +2509,139 @@ Header = ReactiveComponent
 
     save @root
 
+  render : -> 
+    current_user = @data('/current_user')
+    customer = @data('/customer')
+    color = @data('color')
+
+    # DIV null,
+    #   if current_user.logged_in
+    #     userbar_style = {}
+    #     link_style = {}
+    #     if customer.identifier == 'livingvotersguide' #to deal with the weird cream header for LVG
+    #       userbar_style = {backgroundColor: color.background}
+
+    #       if @root.page_name not in ['homepage', 'about']
+    #         userbar_style = { top: 51, right: 2, left: 'auto' }
+    #         link_style = { color: '#777', fontWeight: 600, fontSize: 15 }
+    link_style = {}
+    if customer.identifier != 'livingvotersguide'
+      link_style = {position: 'absolute', right: 20, top: 4}
+    SPAN className: 'userbar', style: link_style,
+      #Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
+      A style: {}, 'data-action': 'logout', onClick: @logout, 'Logout'
+
+Header = ReactiveComponent
+  displayName: 'Header'
 
   render : ->
     current_user = @data('/current_user')
     customer = @data('/customer')
     color = @data('color')
 
-    DIV className: 'l_header', style: {backgroundColor: color.header_bg},
-      DIV null,
-        if current_user.logged_in
-          userbar_style = {}
-          link_style = {}
-          if customer.identifier == 'livingvotersguide' #to deal with the weird cream header for LVG
-            userbar_style = {backgroundColor: color.background}
-
-            if @root.page_name not in ['homepage', 'about']
-              userbar_style = { top: 51, right: 2, left: 'auto' }
-              link_style = { color: '#777', fontWeight: 600, fontSize: 15 }
-          DIV className: 'userbar', style: userbar_style,
-            Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
-            A style: link_style, 'data-action': 'logout', onClick: @logout, 'Logout'
+    DIV className: 'l_header', style: {backgroundColor: color.header_bg, minWidth: PAGE_WIDTH},
+      if customer.identifier != "livingvotersguide"
+        LogoutButton()
 
       DIV null, 
-        # We'll only show the extended header on certain pages
-        if @root.page_name in ['homepage', 'about'] || customer.identifier in ['cityoftigard', 'ihub']
-          # Define all the customer-specific styles for non-repeated elements directly. 
-          # This lets us iterate quicker and minimize where customer specific code lives.
-          switch customer.identifier
-            when 'cityoftigard'
-              logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
-              DIV null,
-                DIV style: {height: 38},
-                  A href: 'http://www.tigard-or.gov/', style: {position: 'absolute', top:0, zIndex: 999999},
-                    IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
-                  
-            # when 'ihub'
-            #   logo_style = {height: 42, position: 'absolute', bottom: 4, zIndex: 999999, left: 8}
-            #   DIV style: {height: 50},
-            #     A href: 'http://disruptingmedicine.org/about-the-innovation-hub/',
-            #       IMG className: 'logo', src: "<%= asset_path 'ihub/logo.png' %>", style: logo_style 
+        # Define all the customer-specific styles for non-repeated elements directly. 
+        # This lets us iterate quicker and minimize where customer specific code lives.
+        switch customer.identifier
+          when 'cityoftigard'
+            logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
+            DIV null,
+              DIV style: {height: 38},
+                A href: '/', onClick: @clickInternalLink, style: {position: 'absolute', top:0, zIndex: 999999},
+                  IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
+                # SPAN style: {color: 'white', fontSize: 28, display: 'inline-block', margin: '20px 0 0 110px'}, 
+                #   'Engage with the '
+                #   A href: 'http://www.tigard-or.gov', style: {color: 'white', fontWeight: 600}, 'City of Tigard'
+              # DIV style: {backgroundColor: color.proposal_header, width: '100%', height: 50}
+          when 'tigard'
+            logo_style = {height: 60}
+            DIV null,
+              A href: '/', onClick: @clickInternalLink, style: {padding: 12, display: 'inline-block'},
+                IMG className: 'logo', src: "<%= asset_path 'tigard/logo.jpg' %>", style: logo_style 
+              SPAN style: {color: '#707070', fontSize: 24, display: 'inline-block', margin: '20px 0 0 50px', fontWeight: 800, textTransform: 'uppercase', position: 'relative', top: -20}, 
+                'Help plan '
+                A href: 'http://riverterracetigard.com/', style: {color: '#78d18b', fontWeight: 600}, 'River Terrace'
+                ', Tigard\'s newest neighborhood' 
 
-            when 'livingvotersguide'
-              logo_style =
-                position: 'absolute'
-                left: 86
-                top: 19
-                width: 222
-                zIndex: 1
 
-              DIV null,
-                # Top cream area
-                DIV
-                  style:
-                    height: 69
-                    width: '100%'
-                    textAlign: 'right'
-                    backgroundColor: cream
-                    paddingRight: 80
-                    fontSize: 21
-                    paddingTop: 13
-                    color: cityclub_navy
+          # when 'ihub'
+          #   logo_style = {height: 42, position: 'absolute', bottom: 4, zIndex: 999999, left: 8}
+          #   DIV style: {height: 50},
+          #     A href: 'http://disruptingmedicine.org/about-the-innovation-hub/',
+          #       IMG className: 'logo', src: "<%= asset_path 'ihub/logo.png' %>", style: logo_style 
 
-                  A style: {color: cityclub_navy}, href: '#', onClick: clickInternalLink, 'Log in'
-                  ' | '
-                  A style: {color: cityclub_navy}, href:'/about', onClick: clickInternalLink, 'About'
+          when 'livingvotersguide'
+            show_full = @root.page_name in ['homepage', 'about']
 
-                # Logo
+            logo_style =
+              position: 'absolute'
+              left: 86
+              top: 19
+              width: if show_full then 222 else 180
+              zIndex: 1
+
+            DIV null,
+              # Top cream area
+              DIV
+                style:
+                  height: 69
+                  width: '100%'
+                  textAlign: 'right'
+                  backgroundColor: cream
+                  paddingRight: 80
+                  fontSize: 21
+                  paddingTop: 20
+                  color: cityclub_navy
+
+                DIV null,
+                  A style: {}, href:'/about', onClick: clickInternalLink, 'About'
+                  if @data('/current_user').logged_in
+                    SPAN null,
+                      ' | '
+                      LogoutButton()
+                  # else 
+                  #   A style: {}, href: '#', onClick: clickInternalLink, 'Log in'
+
+              # Logo
+              A href: (if @root.page_name == 'homepage' then '/about' else '/'), onClick: clickInternalLink,
                 IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.svg' %>", style: logo_style
 
-                # Blue + green areas
+              # Blue + green areas
+              DIV
+                style:
+                  backgroundColor: if show_full then cityclub_green else cityclub_blue
+                  color: cream
+                  height: 137
+                  marginBottom: if show_full then 23 else 0
+                  clear: 'both'
+
+                # Online Intelligence for Washington Voters
                 DIV
                   style:
-                    backgroundColor: cityclub_green # We will layer blue onto this green backdrop
-                    color: cream
-                    height: 128
-                    marginBottom: 23
-                    clear: 'both'
+                    fontSize: 32
+                    padding: '22px 40px 0 332px'
+                    backgroundColor: cityclub_blue
+                    width: 838
+                    height: '100%'
+                    float: 'left'
+                  SPAN style:{fontWeight: 400}, 'Created by the people '
+                  'and for the people of Washington state'
 
-                  # Blue area
-                  DIV
-                    style:
-                      fontSize: 32
-                      padding: '20px 40px 0 325px'
-                      backgroundColor: cityclub_blue
-                      width: 838
-                      height: '100%'
-                      float: 'left'
-                    SPAN style:{fontWeight: 'bold'}, 'Created by the people '
-                    'and for the people of Washington state'
-
-                  # Green area
-                  DIV
-                    style:
-                      fontSize: 18
-                      padding: '14px 40px 0 26px'
-                      float: 'left'
-                      width: 280
-                      height: '100%'
-                    DIV null, 'Hosted by',
-                    DIV null, B(style:{fontWeight:'bold'}, 'Seattle CityClub')
-                    DIV null, 'with fact-checks from'
-                    DIV null, B(style:{fontWeight:'bold'}, 'The Seattle Public Library')
+                DIV
+                  style:
+                    fontSize: 18
+                    padding: '14px 40px 0 26px'
+                    float: 'left'
+                    width: 280
+                    height: '100%'
+                  DIV null, 'Hosted by'
+                  A {href: 'http://seattlecityclub.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'Seattle CityClub')
+                  DIV style: {marginTop: 8}, 'with fact-checks from'
+                  A {href: 'http://spl.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'The Seattle Public Library')
                   
       DIV null, 
         if @root.page_name == 'about'
@@ -2646,13 +2686,13 @@ Footer = ReactiveComponent
     DIV className: 'l_footer',  
       if customer.identifier == 'livingvotersguide'
         DIV null,
-          DIV style: {color: cream, backgroundColor: color.header_bg, marginTop: 48, padding: 18},
-            DIV style: {fontSize: 18, fontStyle: 'italic', textAlign: 'justify', width: 690, fontStyle: 'italic', margin: 'auto'},
+          DIV style: {color: cream, backgroundColor: cityclub_blue, marginTop: 48, padding: 18},
+            DIV style: {fontSize: 18, fontStyle: 'italic', textAlign: 'left', width: 690, fontStyle: 'italic', margin: 'auto'},
               'Unlike voter guides generated by government, newspapers or advocacy organizations, Living Voters Guide is created '
               SPAN style: {fontWeight: 600}, 'by the people'
               ' and '
               SPAN style: {fontWeight: 600}, 'for the people'
-              ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and express your ideas. We believe that sharing our diverse opinions leads to making wiser decisions together.'
+              ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and express your ideas. We believe that sharing our diverse opinions leads to making wiser decisions together. '
               A style: {color: cream, textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', onClick: clickInternalLink, 'Learn more'
               '.'
 
@@ -2666,17 +2706,17 @@ Footer = ReactiveComponent
 
           DIV style: {paddingBottom: 18},
 
-            DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
-              A href: "http://seattlecityclub.org", style: {position: 'relative', top: 3, fontWeight: 400},
-                IMG src: "<%= asset_path 'livingvotersguide/cityclub.svg' %>"
+            # DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
+            #   A href: "http://seattlecityclub.org", style: {position: 'relative', top: 3, fontWeight: 400},
+            #     IMG src: "<%= asset_path 'livingvotersguide/cityclub.svg' %>"
 
             DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
               "Technology by "
-              A href: 'http://consider.it', style: {textDecoration: 'none', color: 'rgb(131,131,131)', display: 'block', fontWeight: 600}, target: '_blank', 'Considerit'
+              A href: 'http://consider.it', style: {textDecoration: 'none', color: 'rgb(131,131,131)', fontWeight: 600}, target: '_blank', 'Considerit'
 
-            DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
-              "Fact-checking by "
-              A href: 'http://spl.org', style: {textDecoration: 'none', color: 'rgb(131,131,131)', display: 'block', fontWeight: 600}, target: '_blank', 'The Seattle Public Library'
+            # DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
+            #   "Fact-checking by "
+            #   A href: 'http://spl.org', style: {textDecoration: 'none', color: 'rgb(131,131,131)', display: 'block', fontWeight: 600}, target: '_blank', 'The Seattle Public Library'
 
       else
         DIV null,
@@ -2948,12 +2988,15 @@ Colors = ReactiveComponent
       # Define colors for different customers. 
       switch customer.identifier
         when 'livingvotersguide'
-          color.header_bg = color.proposal_header = 'rgb(0,182,236)'
+          color.header_bg = color.proposal_header = cityclub_green #'rgb(0,182,236)'
           color.background = cream
           color.link_hover_color = 'rgb(118,148,41)'
         when 'cityoftigard'
           color.header_bg =  '#253967'
-          color.proposal_header = '#46A046'
+          color.proposal_header = '#46A046'          
+        when 'tigard'          
+          color.header_bg =  'white'
+          color.proposal_header = '#78d18b'
         when 'ihub'
           color.header_bg =  color.proposal_header = "rgb(150,150,150)"
 

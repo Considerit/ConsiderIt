@@ -1461,7 +1461,10 @@ Point = ReactiveComponent
           if point.text
             if is_selected or 
               (point.nutshell.length + point.text.length) < 210
-                DIV className: 'point_details', dangerouslySetInnerHTML:{__html: point.text.replace(/(\r?\n|<br>|<br\/>|<br \/>)/g, '<br /><br />').replace(/(<br \/>){4,}/g, '<br /><br />')}
+                paragraphs = point.text.split(/(\r?\n|<br>|<br\/>|<br \/>|<p>)/g)
+                DIV className: 'point_details',
+                  for para in paragraphs
+                    P null, para
             else
               SPAN className: 'point_details_tease', 
                 $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + "... [more]"

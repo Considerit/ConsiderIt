@@ -1425,9 +1425,13 @@ Point = ReactiveComponent
         width: point_content_style.width + 6
         backgroundColor: 'white'
         marginBottom: 2
+        padding: 8
+        borderRadius: 8
+        marginTop: -8
+        marginLeft: -8
 
     LI 
-      className: "point closed_point #{@props.location_class} 
+      className: "point closed_point #{@props.location_class}
         #{if point.is_pro then 'pro' else 'con'}"
       'data-id':@props.key
       onClick: @selectPoint
@@ -1444,7 +1448,7 @@ Point = ReactiveComponent
           Avatar tag: SPAN, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
 
       DIV className:'point_content', style : point_content_style,
-        if @props.location_class == 'community_point'
+        if @props.location_class == 'community_point' or is_selected
           IMG 
             className: 'community_point_mouth'
             src: if is_selected then "<%= asset_path 'community_point_mouth_selected.png' %>" else "<%= asset_path 'community_point_mouth.png' %>"

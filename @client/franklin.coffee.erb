@@ -1425,6 +1425,9 @@ Point = ReactiveComponent
         width: point_content_style.width + 6
         backgroundColor: 'white'
         marginBottom: 2
+
+    if is_selected and @props.location_class == 'decision_board_point'
+      _.extend point_content_style, 
         padding: 8
         borderRadius: 8
         marginTop: -8

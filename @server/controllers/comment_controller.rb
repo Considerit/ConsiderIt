@@ -34,7 +34,6 @@ class CommentController < ApplicationController
 
       if comment.save
         ActiveSupport::Notifications.instrument("comment:point:created", 
-          :commentable => commentable,
           :comment => comment, 
           :current_tenant => current_tenant,
           :mail_options => mail_options

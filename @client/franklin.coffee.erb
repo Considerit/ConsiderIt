@@ -1419,9 +1419,11 @@ Point = ReactiveComponent
     if is_selected
       _.extend point_content_style, 
         border: "3px solid #{considerit_blue}"
-        left: -2
-        top: -2
-
+        left: -3
+        top: -3
+        width: point_content_style.width + 6
+        backgroundColor: 'white'
+        marginBottom: 2
 
     LI 
       className: "point closed_point #{@props.location_class} 
@@ -1482,8 +1484,8 @@ Discussion = ReactiveComponent
   displayName: 'Discussion'
 
   render : -> 
-    # TODO: put a bubble mouth on here in the right place
     comments = @data().comments
+
     discussion_style =
       width: DECISION_BOARD_WIDTH
       border: "3px solid #{considerit_blue}"
@@ -1493,21 +1495,58 @@ Discussion = ReactiveComponent
       borderRadius: 16
       backgroundColor: 'white'
 
+    bubble_mouth_style =
+      position: 'absolute'
+      top: 14
+      width: 27
+      height: 63
+
+    # Reconfigure discussion board position
     side = if @props.is_pro then 'left' else 'right'
     if @props.in_wings
       discussion_style[side] = 215
       discussion_style['top'] = 44
     else
       discussion_style[side] = if @props.is_pro then -30 else -23
+      discussion_style['marginTop'] = 13
 
+    # Reconfigure bubble mouth position
+    if @props.in_wings
+      bubble_mouth_style.right = if @props.is_pro then undefined else -27
+      bubble_mouth_style.left  = if @props.is_pro then -27       else undefined
+    else
+      trans_func = 'rotate(270deg)'
+      if not @props.is_pro
+        trans_func += ' scaleY(-1)'
+
+      _.extend bubble_mouth_style,
+        left: if @props.is_pro then 100 else 335
+        top: -45
+        transform:            trans_func
+        '-ms-transform':      trans_func
+        '-moz-transform':     trans_func
+        '-webkit-transform':  trans_func
+        '-o-transform':       trans_func
+
+    if @props.in_wings
+      flip_bubmouth = @props.is_pro
+      console.log('barf', @props.is_pro)
+    else
+      console.log('farb', @props.is_pro)
+      flip_bubmouth = @props.is_pro
     DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
+      IMG
+        src: "<%= asset_path 'bubblemouth-discussions.png' %>"
+        className: if flip_bubmouth then 'flipped' else ''
+        style: bubble_mouth_style
+
       H1
         style:
           textAlign: 'center'
           fontSize: 41
           color: considerit_blue
           marginBottom: 5
-        'Discussion'
+        'Discuss this Point'
       
       DIV className: 'comments',
         for comment in comments
@@ -1519,6 +1558,7 @@ Discussion = ReactiveComponent
                 position: 'absolute'
                 marginTop: -20
                 fontWeight: 'bold'
+                color: '#666'
               @data(comment.user).name + ':'
 
             # Comment author icon
@@ -1546,6 +1586,7 @@ Discussion = ReactiveComponent
             position: 'absolute'
             marginTop: -20
             fontWeight: 'bold'
+            color: '#666'
           (@data('/current_user').name or 'You') + ':'
 
         # Icon

@@ -93,9 +93,8 @@ namespace :alerts do
         existing_moderations[class_name] = {}
 
         if mc == Comment
-          # Assumes Commentable_type is Point!!!
           # select all comments of points of active proposals
-          qry = "SELECT c.id, c.user_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.commentable_id=pnt.id"
+          qry = "SELECT c.id, c.user_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
         elsif mc == Proposal
           qry = "SELECT id, user_id, name from proposals where account_id=#{accnt.id}"
         elsif mc == Point

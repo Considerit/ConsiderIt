@@ -1,8 +1,35 @@
 
-class CommentableController < ApplicationController
+class CommentController < ApplicationController
   protect_from_forgery
 
   respond_to :json
+
+  def index
+
+    point = Point.find params[:point_id]
+    authorize! :read, point
+
+    # Getting all comments. Remember that there are multiple types of comments: straight comments and expert review comments
+    #todo: make this more efficient and natural
+    
+    response = {
+      :comments => point.comments,
+      :key => "/comments/#{point.id}"
+    }
+
+    if current_tenant.assessment_enabled
+      response.update({
+        :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
+        :verdicts => Assessable::Verdict.all,
+        :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
+        :already_requested_assessment => current_user && Assessable::Request.where(:assessable_id => point.id, :assessable_type => 'Point', :user_id => current_user.id).count > 0
+      })
+    end
+
+    respond_to do |format|
+      format.json {render :json => response}
+    end
+  end
 
   def create
     authorize! :create, Comment
@@ -18,7 +45,7 @@ class CommentableController < ApplicationController
 
       if comment.save
 
-        ActiveSupport::Notifications.instrument("comment:#{commentable_type.downcase}:created", 
+        ActiveSupport::Notifications.instrument("comment:point:created", 
           :commentable => commentable,
           :comment => comment, 
           :current_tenant => current_tenant,
@@ -53,9 +80,7 @@ class CommentableController < ApplicationController
 
     comment.update_attributes! ActionController::Parameters.new(update_attributes).permit(:body)
 
-    commentable = comment.root_object
-
-    ActiveSupport::Notifications.instrument("comment:#{comment.commentable_type}:updated", 
+    ActiveSupport::Notifications.instrument("comment:point:updated", 
       :model => comment, 
       :current_tenant => current_tenant,
       :mail_options => mail_options
@@ -65,8 +90,5 @@ class CommentableController < ApplicationController
 
   end
 
-
-
-
-
 end
+

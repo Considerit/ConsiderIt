@@ -1487,7 +1487,7 @@ Point = ReactiveComponent
       if is_selected
         point_included = _.contains(@data(@proposal.your_opinion).point_inclusions, point.key)
         Discussion
-          key:"/point_discussion/#{point.id}"
+          key:"/comments/#{point.id}"
           is_pro: point.is_pro
           in_wings: @root.proposal_mode == 'crafting' and not point_included
 
@@ -3178,7 +3178,7 @@ window.writeToLog = (entry) ->
 
 window.arest.trans_in = (object) ->
   fix_comments = (o) ->
-    if o.key?.match(/\/point_discussion\//)
+    if o.key?.match(/\/comments\//)
       o.comments = for comment in o.comments
         comment.key = "/comment/#{comment.id}"
         comment.user = "/user/#{comment.user_id}"
@@ -3186,7 +3186,7 @@ window.arest.trans_in = (object) ->
         delete comment.user_id
         comment
 
-  arest.deep_map(fix_comments, object)
+  #arest.deep_map(fix_comments, object)
   return object
 
 $(document).ready -> 

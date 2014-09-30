@@ -13,7 +13,7 @@ class EventMailer < Mailer
 
     recipient = message.addressedTo()
 
-    return if !@valid_email(recipient)
+    return unless valid_email(recipient)
 
     # reply_to = format_email @message.sender, @message.senderName()
     to = format_email recipient.email, recipient.name
@@ -67,7 +67,7 @@ class EventMailer < Mailer
     @proposal = @point.proposal
     @options = options
 
-    return if !@valid_email(user)
+    return unless valid_email(user)
 
     to = format_email user.email, user.name    
     from = format_email(options[:from], options[:app_title])
@@ -96,7 +96,7 @@ class EventMailer < Mailer
 
   #   to = format_email user.email, user.name
   #   from = format_email(options[:from], options[:app_title])
-  #   return if !@valid_email(user)
+  #   return unless valid_email(user)
 
   #   if notification_type == 'your point'
   #     subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote"
@@ -127,7 +127,7 @@ class EventMailer < Mailer
   #     subject = "a point you follow has been fact checked"
   #   end
 
-  #   return if !@valid_email(user)
+  #   return unless valid_email(user)
 
   #   to = format_email user.email, user.name
 

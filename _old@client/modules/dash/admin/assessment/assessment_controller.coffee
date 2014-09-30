@@ -154,9 +154,10 @@
 
 
     getNewClaimView : (assessment) ->
+      long_id = assessment.getRoot().get('long_id')
       new Assessment.ClaimForm
         assessment: assessment
-        all_claims: App.request 'claims:get:proposal', assessment.getRoot().id
+        all_claims: App.request 'claims:get:proposal', long_id
 
     getEditClaimView : (model) ->
       new Assessment.EditClaimForm

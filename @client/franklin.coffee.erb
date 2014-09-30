@@ -1262,6 +1262,91 @@ CommunityPoints = ReactiveComponent
 Point = ReactiveComponent
   displayName: 'Point'
 
+  render : ->
+    point = @data()
+
+    is_selected = @root.selected_point == @props.key
+
+    selected_segment = @data('histogram').selected_segment
+    author_opinion = @data(userOpinion(point.user))
+    current_user = @data('/current_user')
+
+    point_content_style = { width: POINT_CONTENT_WIDTH }
+    if is_selected
+      _.extend point_content_style,
+        border: "3px solid #{considerit_blue}"
+        left: -3
+        top: -3
+        width: point_content_style.width + 6
+        backgroundColor: 'white'
+        marginBottom: 2
+
+    if is_selected and @props.location_class == 'decision_board_point'
+      _.extend point_content_style,
+        padding: 8
+        borderRadius: 8
+        marginTop: -8
+        marginLeft: -8
+        width: point_content_style.width + 16
+
+    LI
+      className: "point closed_point #{@props.location_class}
+        #{if point.is_pro then 'pro' else 'con'}"
+      'data-id':@props.key
+      onClick: @selectPoint
+    ,
+    
+      if @props.location_class == 'community_point' && @props.is_new
+        @renderNewIndicator()
+
+      DIV className:'includers', onMouseEnter: @highlightIncluders, onMouseLeave: @unHighlightIncluders, 
+        if @props.location_class == 'community_point'
+          @renderIncluders()
+
+        if !selected_segment || ( author_opinion && author_opinion.stance_segment == selected_segment )
+          Avatar tag: SPAN, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
+
+      DIV className:'point_content', style : point_content_style,
+        if @props.location_class == 'community_point' or is_selected
+          IMG
+            className: 'community_point_mouth'
+            src: if is_selected then "<%= asset_path 'community_point_mouth_selected.png' %>" else "<%= asset_path 'community_point_mouth.png' %>"
+
+        DIV className:'point_nutshell',
+          point.nutshell
+          if point.text
+            if is_selected or
+              (point.nutshell.length + point.text.length) < 210
+                # Split the point details into paragraphs
+                paragraphs = point.text.split(/(\r?\n|<br>|<br\/>|<br \/>|<p>)/g)
+                DIV className: 'point_details',
+                  for para in paragraphs
+                    P null, para
+            else
+              SPAN className: 'point_details_tease',
+                $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + "... [more]"
+
+      if current_user.user == point.user && @props.location_class == 'decision_board_point'
+        DIV null,
+          # Should we only allow editing of a point before it is published?
+          # Is an author allowed to edit a point after someone else has included it?
+          A className: 'edit_point', onClick: (=> points = @data(@props.your_points_key); points.editing_points.push(@props.key); save(points)), 
+            SPAN null, 'edit'
+
+          # Allow the point author to delete this point before it is published.
+          # After it gets published, however, it can influence other people, so the author shouldn't be able to delete.
+          # Later they can just remove it from their list if they don't believe it anymore. 
+          if point.includers.length == 0 || (point.includers.length == 1 && point.includers[0] == current_user.user)
+            A className: 'delete_point', onClick: @deletePoint,
+              SPAN null, 'delete'
+
+      if is_selected
+        point_included = _.contains(@data(@proposal.your_opinion).point_inclusions, point.key)
+        Discussion
+          key:"/comments/#{point.id}"
+          is_pro: point.is_pro
+          in_wings: @root.proposal_mode == 'crafting' and not point_included
+
   componentDidMount : ->
     @setDraggability()
 
@@ -1411,98 +1496,14 @@ Point = ReactiveComponent
       style[left_right] = "#{-side_offset}"
       SPAN {style: style}, '-new-'
 
-  render : -> 
-    point = @data()
-
-    is_selected = @root.selected_point == @props.key
-
-    selected_segment = @data('histogram').selected_segment
-    author_opinion = @data(userOpinion(point.user))
-    current_user = @data('/current_user')
-
-    point_content_style = { width: POINT_CONTENT_WIDTH }
-    if is_selected
-      _.extend point_content_style, 
-        border: "3px solid #{considerit_blue}"
-        left: -3
-        top: -3
-        width: point_content_style.width + 6
-        backgroundColor: 'white'
-        marginBottom: 2
-
-    if is_selected and @props.location_class == 'decision_board_point'
-      _.extend point_content_style, 
-        padding: 8
-        borderRadius: 8
-        marginTop: -8
-        marginLeft: -8
-        width: point_content_style.width + 16
-
-    LI 
-      className: "point closed_point #{@props.location_class}
-        #{if point.is_pro then 'pro' else 'con'}"
-      'data-id':@props.key
-      onClick: @selectPoint
-    ,
-  
-      if @props.location_class == 'community_point' && @props.is_new
-        @renderNewIndicator()
-
-      DIV className:'includers', onMouseEnter: @highlightIncluders, onMouseLeave: @unHighlightIncluders, 
-        if @props.location_class == 'community_point'
-          @renderIncluders()
-
-        if !selected_segment || ( author_opinion && author_opinion.stance_segment == selected_segment )
-          Avatar tag: SPAN, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
-
-      DIV className:'point_content', style : point_content_style,
-        if @props.location_class == 'community_point' or is_selected
-          IMG 
-            className: 'community_point_mouth'
-            src: if is_selected then "<%= asset_path 'community_point_mouth_selected.png' %>" else "<%= asset_path 'community_point_mouth.png' %>"
-
-        DIV className:'point_nutshell',
-          point.nutshell
-          if point.text
-            if is_selected or 
-              (point.nutshell.length + point.text.length) < 210
-                # Split the point details into paragraphs
-                paragraphs = point.text.split(/(\r?\n|<br>|<br\/>|<br \/>|<p>)/g)
-                DIV className: 'point_details',
-                  for para in paragraphs
-                    P null, para
-            else
-              SPAN className: 'point_details_tease', 
-                $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + "... [more]"
-
-      if current_user.user == point.user && @props.location_class == 'decision_board_point'
-        DIV null,
-          # Should we only allow editing of a point before it is published? 
-          # Is an author allowed to edit a point after someone else has included it?
-          A className: 'edit_point', onClick: (=> points = @data(@props.your_points_key); points.editing_points.push(@props.key); save(points)), 
-            SPAN null, 'edit'
-
-          # Allow the point author to delete this point before it is published.
-          # After it gets published, however, it can influence other people, so the author shouldn't be able to delete.
-          # Later they can just remove it from their list if they don't believe it anymore. 
-          if point.includers.length == 0 || (point.includers.length == 1 && point.includers[0] == current_user.user)
-            A className: 'delete_point', onClick: @deletePoint, 
-              SPAN null, 'delete'
-
-      if is_selected
-        point_included = _.contains(@data(@proposal.your_opinion).point_inclusions, point.key)
-        Discussion
-          key:"/comments/#{point.id}"
-          is_pro: point.is_pro
-          in_wings: @root.proposal_mode == 'crafting' and not point_included
 
 
 Discussion = ReactiveComponent
   displayName: 'Discussion'
 
   render : -> 
-    comments = @data().comments
-
+    logged_in = fetch('/current_user').logged_in
+    
     discussion_style =
       width: DECISION_BOARD_WIDTH
       border: "3px solid #{considerit_blue}"
@@ -1560,17 +1561,17 @@ Discussion = ReactiveComponent
         'Discuss this Point'
       
       DIV className: 'comments',
-        for comment in comments
-          DIV style: {marginTop: 40, minHeight: 60},
+        for comment in @discussion.comments
+          DIV style: {marginTop: 45, minHeight: 60},
 
             # Comment author name
             DIV
               style:
                 position: 'absolute'
-                marginTop: -20
+                marginTop: -25
                 fontWeight: 'bold'
                 color: '#666'
-              @data(comment.user).name + ':'
+              fetch(comment.user).name + ':'
 
             # Comment author icon
             Avatar
@@ -1590,35 +1591,54 @@ Discussion = ReactiveComponent
               comment.body
 
       # Write a new comment
-      DIV style: {marginTop: 40},
+      if logged_in
+        DIV style: {marginTop: 45},
 
-        # Comment author name
-        DIV
-          style:
-            position: 'absolute'
-            marginTop: -20
-            fontWeight: 'bold'
-            color: '#666'
-          (@data('/current_user').name or 'You') + ':'
+          # Comment author name
+          DIV
+            style:
+              position: 'absolute'
+              marginTop: -25
+              fontWeight: 'bold'
+              color: '#666'
+            (fetch('/current_user').name or 'You') + ':'
 
-        # Icon
-        Avatar
-          style:
-            position: 'absolute'
-            width: 50
-            height: 50
-          tag: DIV
-          key: @data('/current_user').user
-          hide_name: true
+          # Icon
+          Avatar
+            style:
+              position: 'absolute'
+              width: 50
+              height: 50
+              backgroundColor: if not logged_in then 'transparent'
+              border:          if not logged_in then '1px dashed grey'
 
-        AutoGrowTextArea
-          placeholder: 'Write a new comment'
-          style:
-            marginLeft: 60
-            width: 390
-            height: 60
-            lineHeight: 1.4
-            fontSize: 16
+            tag: DIV
+            key: fetch('/current_user').user
+            hide_name: true
+
+          if not logged_in
+            SPAN
+              onClick: =>
+                @root.auth_mode = 'register'
+                save(@root)
+              style:
+                position: 'absolute'
+                margin: '14px 0 0 70px'
+                textDecoration: 'underline'
+                color: cityclub_navy
+               'Log in to write a comment'
+
+
+          AutoGrowTextArea
+            placeholder: (logged_in and 'Write a new comment') or ''
+            disabled: not logged_in
+            style:
+              marginLeft: 60
+              width: 390
+              height: 60
+              lineHeight: 1.4
+              fontSize: 16
+              border: if not logged_in then 'dashed 1px'
 
 
 ##
@@ -1627,62 +1647,6 @@ Discussion = ReactiveComponent
 # edits their point. 
 EditPoint = ReactiveComponent
   displayName: 'EditPoint'
-
-  componentDidMount : ->
-    $el = $(@getDOMNode())
-    $el.find('#nutshell').focus()
-    $el.find('.newpoint-cancel').ensureInView {scroll: false, position: 'bottom'}
-
-  handleToggleDetails : (ev) -> 
-    @local.add_details = !@local.add_details
-    save(@local)
-
-  done : -> 
-    your_points = @data @props.your_points_key
-    if @props.fresh
-      your_points.adding_new_point = false
-    else
-      your_points.editing_points = _.without your_points.editing_points, @props.key
-    save your_points
-
-  savePoint : (ev) ->
-    $form = $(@getDOMNode())
-    root = @data('root')
-
-    nutshell = $form.find('#nutshell').val()
-    text = $form.find('#text').val()
-    hide_name = !$form.find("#sign_name-#{@props.valence}").is(':checked')
-
-    if !@props.fresh
-      # If we're updating an existing point, we just have to update 
-      # some of the fields from the form
-      point = @data()
-      point.nutshell = nutshell
-      point.text = text
-      point.hide_name = hide_name
-    else 
-      current_user = @data('/current_user').user
-      point =
-        key : '/new/point'
-        is_pro : @props.valence == 'pros'
-        user : current_user
-        comment_count : 0 
-        includers : [current_user]
-        proposal : @proposal.key
-        nutshell : nutshell
-        text : text
-        hide_name : hide_name
-
-    save point
-
-    @done()
-
-    # This is a kludge cause activerest sucks for pre-rendering
-    # changes before the server returns them
-    @data(@proposal.your_opinion).point_inclusions.push(point.key)
-    re_render([@proposal.your_opinion])
-
-  handleAddPointCancel : (ev) -> @done()
 
   render : ->
     @local = @data @local_key,
@@ -1738,7 +1702,61 @@ EditPoint = ReactiveComponent
         A className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
           'cancel'  
 
+  componentDidMount : ->
+    $el = $(@getDOMNode())
+    $el.find('#nutshell').focus()
+    $el.find('.newpoint-cancel').ensureInView {scroll: false, position: 'bottom'}
 
+  handleToggleDetails : (ev) ->
+    @local.add_details = !@local.add_details
+    save(@local)
+
+  done : ->
+    your_points = @data @props.your_points_key
+    if @props.fresh
+      your_points.adding_new_point = false
+    else
+      your_points.editing_points = _.without your_points.editing_points, @props.key
+    save your_points
+
+  savePoint : (ev) ->
+    $form = $(@getDOMNode())
+    root = @data('root')
+
+    nutshell = $form.find('#nutshell').val()
+    text = $form.find('#text').val()
+    hide_name = !$form.find("#sign_name-#{@props.valence}").is(':checked')
+
+    if !@props.fresh
+      # If we're updating an existing point, we just have to update
+      # some of the fields from the form
+      point = @data()
+      point.nutshell = nutshell
+      point.text = text
+      point.hide_name = hide_name
+    else
+      current_user = @data('/current_user').user
+      point =
+        key : '/new/point'
+        is_pro : @props.valence == 'pros'
+        user : current_user
+        comment_count : 0
+        includers : [current_user]
+        proposal : @proposal.key
+        nutshell : nutshell
+        text : text
+        hide_name : hide_name
+
+    save point
+
+    @done()
+
+    # This is a kludge cause activerest sucks for pre-rendering
+    # changes before the server returns them
+    @data(@proposal.your_opinion).point_inclusions.push(point.key)
+    re_render([@proposal.your_opinion])
+
+  handleAddPointCancel : (ev) -> @done()
 
 
 ##

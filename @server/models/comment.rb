@@ -27,19 +27,6 @@ class Comment < ActiveRecord::Base
     Comment.where('id > -1') #tacked on this where in order to enable chaining
   }
 
-  # Helper class method that allows you to build a comment
-  # by passing a commentable object, a user_id, and comment text
-  # example in readme
-  def self.build_from(obj, user_id, comment)
-    c = self.new
-    c.commentable_id = obj.id 
-    c.commentable_type = obj.class.name 
-    c.point_id = obj.id
-    c.body = comment 
-    c.user_id = user_id
-    c
-  end
-
   def as_json(options={})
     options[:only] ||= Comment.my_public_fields
     result = super(options)
@@ -49,8 +36,29 @@ class Comment < ActiveRecord::Base
     result
   end
 
-  def text(max_len = 140)
-    body.length > max_len ? "#{body[(0..max_len)]}..." : body
+
+  # Fetches all comments associated with this Point. 
+  # Because we generally render fact-checks in the comment stream, we also return
+  # fact-checks for this point  
+  def self.comments_for_point(point)
+    current_tenant = Thread.current[:tenant]
+
+    comments = {
+      :comments => point.comments,
+      :key => "/comments/#{point.id}"
+    }
+
+    if current_tenant.assessment_enabled
+      comments.update({
+        :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
+        :verdicts => Assessable::Verdict.all,
+        :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
+        :already_requested_assessment => current_user && Assessable::Request.where(:assessable_id => point.id, :assessable_type => 'Point', :user_id => current_user.id).count > 0
+      })
+    end
+
+    comments
+
   end
 
 end

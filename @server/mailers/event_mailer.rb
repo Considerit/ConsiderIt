@@ -111,28 +111,28 @@ class EventMailer < Mailer
   #   mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
   # end
 
-  # def point_new_assessment(user, pnt, assessment, options, notification_type)
-  #   @notification_type = notification_type
-  #   @user = user
-  #   @point = pnt
-  #   @assessment = assessment
-  #   @proposal = @point.proposal
-  #   @host = options[:host]
-  #   @options = options
-  #   from = format_email(options[:from], options[:app_title])
+  def point_new_assessment(user, pnt, assessment, options, notification_type)
+    @notification_type = notification_type
+    @user = user
+    @point = pnt
+    @assessment = assessment
+    @proposal = @point.proposal
+    @host = options[:host]
+    @options = options
+    from = format_email(options[:from], options[:app_title])
 
-  #   if notification_type == 'your point'
-  #     subject = "a point you wrote has been fact checked"
-  #   else
-  #     subject = "a point you follow has been fact checked"
-  #   end
+    if notification_type == 'your point'
+      subject = "a point you wrote has been fact checked"
+    else
+      subject = "a point you follow has been fact checked"
+    end
 
-  #   return unless valid_email(user)
+    return unless valid_email(user)
 
-  #   to = format_email user.email, user.name
+    to = format_email user.email, user.name
 
-  #   mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
-  # end
+    mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
+  end
 
 
 end

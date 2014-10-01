@@ -157,81 +157,82 @@ class CurrentUserController < ApplicationController
           errors[:login].append(auth_error) if auth_error
           log_entry = 'sign in by email' if !log_entry
         end
-      end
-
-      # 2. Now we know the user's account.  Let them manipulate themself:
-      #   • Update their name, bio, photo...
-      #   • Update their email (if it doesn't already exist)
-      #   • Get registered if they filled everything out
-
-      # Update their name, bio, photo, and anonymity.
-      permitted = ActionController::Parameters.new(new_params).permit!
-
-      if current_user.update_attributes(permitted) 
-        puts("Updating params. #{new_params}; permitted version #{permitted}")
-        if !current_user.save
-          raise 'Error saving basic current_user parameters!'
-        end
-        dirty_key '/proposals' # might have access to more proposals if user tags have been changed
-        log_entry = 'updating info' if !log_entry
-
       else
-        raise 'Had trouble manipulating this user!'
-      end
 
-      # Update their email address.  First, check if they gave us a new address
-      email = params[:email]
-      user = User.find_by_email(email)
-      if !email || email.length == 0
-        errors[:register].append 'No email address specified'
-      # And if it's not taken
-      elsif user && (user != current_user)
-        errors[:register].append 'There is already an account with that email'
-      # And that it's valid
-      elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
-        errors[:register].append 'Bad email address'
-      else
-        puts("Updating email from #{current_user.email} to #{params[:email]}")
-        # Okay, here comes a new email address!
-        current_user.update_attributes({:email => email})
-        if !current_user.save
-          raise "Error saving this user's email"
-        end
-      end
+        # 2. Now we know the user's account.  Let them manipulate themself:
+        #   • Update their name, bio, photo...
+        #   • Update their email (if it doesn't already exist)
+        #   • Get registered if they filled everything out
 
-      # Update their password
-      if !params[:password] || params[:password].length == 0
-        errors[:register].append 'No password specified'
-      elsif params[:password].length < min_pass
-        errors[:register].append 'Password is too short'
-      else
-        puts("Changing user's password.")
-        current_user.password = params[:password]
-        if !current_user.save
-          raise "Error saving this user's password"
-        end
-      end
+        # Update their name, bio, photo, and anonymity.
+        permitted = ActionController::Parameters.new(new_params).permit!
 
-      # Register the account
-      if !current_user.registration_complete
-        third_party_authenticated = current_user.twitter_uid || current_user.facebook_uid\
-                                    || current_user.google_uid
-        has_name = current_user.name && current_user.name.length > 0
-        can_login = ((current_user.email && current_user.email.length > 0)\
-                     || third_party_authenticated)
-        signed_pledge = params[:signed_pledge]
-        ok_password = third_party_authenticated || (params[:password] && params[:password].length >= min_pass)
-
-        if has_name && can_login && signed_pledge && ok_password
-          current_user.registration_complete = true
+        if current_user.update_attributes(permitted) 
+          puts("Updating params. #{new_params}; permitted version #{permitted}")
           if !current_user.save
-            raise "Error registering this uesr"
+            raise 'Error saving basic current_user parameters!'
           end
-          log_entry = 'registered account'
-        # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
+          dirty_key '/proposals' # might have access to more proposals if user tags have been changed
+          log_entry = 'updating info' if !log_entry
+
         else
-          errors[:register].append('Name is blank') if !has_name
-          errors[:register].append('Community pledge required') if !signed_pledge
+          raise 'Had trouble manipulating this user!'
+        end
+
+        # Update their email address.  First, check if they gave us a new address
+        email = params[:email]
+        user = User.find_by_email(email)
+        if !email || email.length == 0
+          errors[:register].append 'No email address specified'
+        # And if it's not taken
+        elsif user && (user != current_user)
+          errors[:register].append 'There is already an account with that email'
+        # And that it's valid
+        elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
+          errors[:register].append 'Bad email address'
+        else
+          puts("Updating email from #{current_user.email} to #{params[:email]}")
+          # Okay, here comes a new email address!
+          current_user.update_attributes({:email => email})
+          if !current_user.save
+            raise "Error saving this user's email"
+          end
+        end
+
+        # Update their password
+        if !params[:password] || params[:password].length == 0
+          errors[:register].append 'No password specified'
+        elsif params[:password].length < min_pass
+          errors[:register].append 'Password is too short'
+        else
+          puts("Changing user's password.")
+          current_user.password = params[:password]
+          if !current_user.save
+            raise "Error saving this user's password"
+          end
+        end
+
+        # Register the account
+        if !current_user.registration_complete
+          third_party_authenticated = current_user.twitter_uid || current_user.facebook_uid\
+                                      || current_user.google_uid
+          has_name = current_user.name && current_user.name.length > 0
+          can_login = ((current_user.email && current_user.email.length > 0)\
+                       || third_party_authenticated)
+          signed_pledge = params[:signed_pledge]
+          ok_password = third_party_authenticated || (params[:password] && params[:password].length >= min_pass)
+
+          if has_name && can_login && signed_pledge && ok_password
+            current_user.registration_complete = true
+            if !current_user.save
+              raise "Error registering this uesr"
+            end
+            log_entry = 'registered account'
+          # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
+          else
+            errors[:register].append('Name is blank') if !has_name
+            errors[:register].append('Community pledge required') if !signed_pledge
+          end
         end
       end
     end

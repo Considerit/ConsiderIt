@@ -46,11 +46,14 @@ ConsiderIt::Application.routes.draw do
     end
 
     concern :assessable do 
-      resources :assessment, :path => "dashboard/assessment", :controller => "assessable", :only => [:index, :create, :edit, :update] do 
+      resources :assessment, :path => "dashboard/assessment", :controller => "assessable", :only => [:index, :edit, :update] do 
         match "/dashboard/claims" => 'assessable#create_claim', :via => :post, :as => 'create_claim'
         match "/dashboard/claim/:id" => 'assessable#update_claim', :via => :put, :as => 'update_claim'
         match "/dashboard/claim/:id" => 'assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'
       end
+    
+      resources :request, :only => [:create], :controller => "assessable"
+
     end
 
     concerns :moderatable

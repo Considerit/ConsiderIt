@@ -6,6 +6,7 @@ class Proposal < ActiveRecord::Base
 
   has_many :assessments, :through => :points, :dependent => :destroy
   has_many :claims, :through => :assessments, :dependent => :destroy
+  has_many :requests, :through => :assessments, :dependent => :destroy
 
   belongs_to :user
 

@@ -1574,6 +1574,23 @@ Discussion = ReactiveComponent
         for comment in @discussion.comments
           DIV style: {marginTop: 45, minHeight: 60},
 
+            # Delete button
+            if comment.user == fetch('/current_user').user
+              DIV
+                className: 'hover_pointer'
+                style:
+                  position: 'absolute'
+                  right: 26
+                  marginTop: -25
+                  color: '#444'
+                  textDecoration: 'underline'
+                onClick: do (key = comment.key) => (e) =>
+                  e.stopPropagation()
+                  if (confirm('Delete this comment?'))
+                    destroy(key)
+
+                'delete'
+
             # Comment author name
             DIV
               style:
@@ -1653,6 +1670,7 @@ Discussion = ReactiveComponent
 
           DIV style: {textAlign: 'right'},
             DIV
+              className: 'hover_pointer'
               style:
                 backgroundColor: considerit_blue
                 borderRadius: 8

@@ -1690,6 +1690,19 @@ Discussion = ReactiveComponent
               save(comment)
               $(@getDOMNode()).find('.new_comment').val(''))
 
+  # HACK! Set the height of the body so that it accommodates the 
+  # overlaid point
+  componentDidUpdate : -> @fixBodyHeight()
+  componentDidMount : -> @fixBodyHeight()
+  componentWillUnmount : -> @fixBodyHeight()
+  fixBodyHeight : -> 
+    $body = $('#body')
+    $body.find('#discussion_placeholder').remove()
+    if @root.selected_point
+      height_of_discussion = $(@getDOMNode()).height()
+      $body.append("<div id='discussion_placeholder' style='height: #{height_of_discussion}px'></div>")
+
+
 Button = (props, text, callback) ->
   style =
     backgroundColor: considerit_blue

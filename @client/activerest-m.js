@@ -420,7 +420,10 @@
 
         // Then we sweep through and update them
         for (var comp_key in dirty_components)
-            if (dirty_components[comp_key]) // Since one component might update another
+            // the check on both dirty_components and components is a PATCH
+            // for a possible inconsistency between dirty_components and components
+            // that occurs if a component has a componentWillUnmount method.
+            if (dirty_components[comp_key] && components[comp_key]) // Since one component might update another
                 components[comp_key].forceUpdate()
     }
     function record_component_dependence(key) {

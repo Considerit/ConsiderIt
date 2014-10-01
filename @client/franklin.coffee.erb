@@ -1266,9 +1266,6 @@ CommunityPoints = ReactiveComponent
     points
 
 
-
-
-
 ##
 # Point
 # A single point in a list. 
@@ -1365,9 +1362,19 @@ Point = ReactiveComponent
 
   componentDidMount : ->
     @setDraggability()
+    @ensureDiscussionIsInViewPort()
 
   componentDidUpdate : -> 
     @setDraggability()
+    @ensureDiscussionIsInViewPort()
+
+  # Hack that fixes a couple problems:
+  #   - Scroll to the point when following a link from an email notification to a point
+  #   - Scroll to new point when scrolled down to bottom of long discussion & click 
+  #     a new point below it
+  ensureDiscussionIsInViewPort : ->
+    if @root.selected_point == @props.key
+      $(@getDOMNode()).ensureInView()
 
   setDraggability : ->
     # Ability to drag include this point if a community point, 
@@ -3357,7 +3364,8 @@ Router = Backbone.Router.extend
     root.selected_point = null
     if params 
       root.proposal_mode = 'results' if params['results']
-      root.selected_point = params['selected'] if params['selected']
+      root.selected_point = params['selected'] if params['selected'] 
+
     save root
 
     writeToLog

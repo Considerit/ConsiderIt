@@ -16,7 +16,12 @@ class Assessable::Assessment < ActiveRecord::Base
 
   acts_as_tenant :account
 
-  scope :public_fields, -> {select('assessments.id, assessments.verdict_id, assessments.created_at, assessments.updated_at, assessments.published_at, assessments.assessable_id, assessments.assessable_type, assessments.complete, assessments.notes')}
+  def as_json(options={})
+    result = super(options)
+    result['key'] = "assessment/#{id}"
+    result['point'] = "/point/#{assessable_id}"        
+    result
+  end
 
   def self.build_from(obj, user_id, status)
     c = self.new
@@ -39,16 +44,5 @@ class Assessable::Assessment < ActiveRecord::Base
 
   end
 
-  def public_fields
-    {
-      :id => self.id,
-      :verdict_id => self.verdict_id,
-      :created_at => self.created_at,
-      :updated_at => self.updated_at,
-      :published_at => self.published_at,
-      :assessable_type => self.assessable_type,
-      :assessable_id => self.assessable_id
-    }
-  end
 
 end

@@ -159,6 +159,8 @@
     claims_by_proposal : {}
 
     createClaim : (attrs, options) ->
+      options.success = (model, response) =>
+        model.set response
       claim = @all_claims.create attrs, options
       claim
 

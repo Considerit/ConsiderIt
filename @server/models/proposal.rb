@@ -145,12 +145,25 @@ class Proposal < ActiveRecord::Base
     options[:only] ||= Proposal.my_public_fields
     result = super(options)
 
+
     make_key(result, 'proposal')
     stubify_field(result, 'user')
     follows = get_explicit_follow(current_user) 
     result["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 
+    result['assessment_enabled'] = assessment_enabled?
     result
+  end
+
+  def assessment_enabled?
+    current_tenant = Thread.current[:tenant]
+
+    enabled = current_tenant.assessment_enabled
+    if current_tenant.identifier == 'livingvotersguide'
+      # only some issues in LVG are fact-checkable
+      enabled = ['I-1351_Modify_K-12_funding', 'I-591_Match_state_gun_regulation_to_national_standards', 'I-594_Increase_background_checks_on_gun_purchases'].include? long_id
+    end
+    enabled && active
   end
 
   # def self.content_for_user(user)

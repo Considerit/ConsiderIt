@@ -1641,6 +1641,7 @@ Discussion = ReactiveComponent
             className: 'new_comment'
             placeholder: (logged_in and 'Write a new comment') or ''
             disabled: not logged_in
+            value: @local.new_comment
             onChange: (e) => @local.new_comment = e.target.value; save(@local)
             style:
               marginLeft: 60
@@ -1668,7 +1669,10 @@ Discussion = ReactiveComponent
                   body: @local.new_comment
                   user: fetch('/current_user').user
                   point: "/point/#{arest.key_id(@props.key)}"
-                save comment
+                save(comment)
+
+                @local.new_comment = ''
+                save(@local)
                 
               'Save comment'
 
@@ -1877,7 +1881,10 @@ AutoGrowTextArea = ReactiveComponent
     if !@local.height
       @local.height = @props.min_height
 
-    @transferPropsTo TEXTAREA onChange: @onChange, style: {height: @local.height} 
+    @transferPropsTo TEXTAREA
+      value: @props.value
+      onChange: @onChange
+      style: {height: @local.height}
 
 
 CharacterCountTextInput = ReactiveComponent

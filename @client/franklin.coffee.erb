@@ -1694,13 +1694,16 @@ Discussion = ReactiveComponent
   # overlaid point
   componentDidUpdate : -> @fixBodyHeight()
   componentDidMount : -> @fixBodyHeight()
-  componentWillUnmount : -> @fixBodyHeight()
-  fixBodyHeight : -> 
+  componentWillUnmount : -> @clear_placeholder()
+  clear_placeholder : -> 
     $body = $('#body')
     $body.find('#discussion_placeholder').remove()
-    if @root.selected_point
-      height_of_discussion = $(@getDOMNode()).height()
-      $body.append("<div id='discussion_placeholder' style='height: #{height_of_discussion}px'></div>")
+  fixBodyHeight : -> 
+    @clear_placeholder()
+
+    $body = $('#body')
+    height_of_discussion = $(@getDOMNode()).height()
+    $body.append("<div id='discussion_placeholder' style='height: #{height_of_discussion}px'></div>")
 
 
 Button = (props, text, callback) ->

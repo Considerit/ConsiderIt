@@ -1340,7 +1340,13 @@ Point = ReactiveComponent
         DIV null,
           # Should we only allow editing of a point before it is published?
           # Is an author allowed to edit a point after someone else has included it?
-          A className: 'edit_point', onClick: (=> points = @data(@props.your_points_key); points.editing_points.push(@props.key); save(points)), 
+          A
+            className: 'edit_point'
+            onClick: ((e) =>
+              e.stopPropagation()
+              points = @data(@props.your_points_key)
+              points.editing_points.push(@props.key)
+              save(points))
             SPAN null, 'edit'
 
           # Allow the point author to delete this point before it is published.
@@ -1412,7 +1418,8 @@ Point = ReactiveComponent
         point: @props.key
 
 
-  deletePoint : -> 
+  deletePoint :(e) ->
+    e.stopPropagation()
     destroy @props.key
 
   ## ##

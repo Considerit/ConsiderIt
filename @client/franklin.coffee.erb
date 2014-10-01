@@ -1330,7 +1330,7 @@ Point = ReactiveComponent
           if point.text
             if is_selected or
               (point.nutshell.length + point.text.length) < 210
-                DIV className: 'point_details',
+                DIV className: 'point_details', style: {marginTop: '1em'},
                   split_paragraphs(point.text)
             else
               SPAN className: 'point_details_tease',
@@ -1563,7 +1563,7 @@ Discussion = ReactiveComponent
         '-o-transform':       trans_func
 
     comment_style =
-      marginTop: 45
+      marginBottom: 45
       minHeight: 60
 
     DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
@@ -1574,10 +1574,13 @@ Discussion = ReactiveComponent
 
       H1
         style:
-          textAlign: 'center'
-          fontSize: 41
+          textAlign: 'left'
+          fontSize: 38
           color: considerit_blue
-          marginBottom: 5
+          marginLeft: 60
+          marginBottom: 25
+          marginTop: 24
+          fontWeight: 600
         'Discuss this Point'
       
       if logged_in
@@ -1594,7 +1597,6 @@ Discussion = ReactiveComponent
                 style:
                   position: 'absolute'
                   right: 26
-                  marginTop: -25
                   color: '#444'
                   textDecoration: 'underline'
                 onClick: do (key = comment.key) => (e) =>
@@ -1607,8 +1609,6 @@ Discussion = ReactiveComponent
             # Comment author name
             DIV
               style:
-                position: 'absolute'
-                marginTop: -25
                 fontWeight: 'bold'
                 color: '#666'
               fetch(comment.user).name + ':'
@@ -1637,8 +1637,6 @@ Discussion = ReactiveComponent
           # Comment author name
           DIV
             style:
-              position: 'absolute'
-              marginTop: -25
               fontWeight: 'bold'
               color: '#666'
             (fetch('/current_user').name or 'You') + ':'

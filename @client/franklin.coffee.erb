@@ -1732,7 +1732,10 @@ SubmitFactCheck = ReactiveComponent
             marginBottom: -1
           className: 'hover_pointer'
           onClick: (=>
-            @local.state = 'clicked'
+            if @local.state == 'blank slate'
+              @local.state = 'clicked'
+            else if @local.state == 'clicked'
+              @local.state = 'blank slate'
             save(@local))
           'Request a Fact Check'
         DIV null,

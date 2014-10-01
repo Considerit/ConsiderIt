@@ -131,7 +131,6 @@
         request.onload = function () {
             delete outstanding_fetches[key]
             if (request.status === 200) {
-                console.log('Fetch returned for', key)
                 var result = JSON.parse(request.responseText)
                 if (window.arest.trans_in)
                     result = arest.trans_in(result)

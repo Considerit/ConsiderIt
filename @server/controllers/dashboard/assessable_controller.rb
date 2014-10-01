@@ -160,8 +160,8 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     if !assessment
       create_attrs = {
         :account_id => current_tenant.id, 
-        :assessable_type => assessable_type, 
-        :assessable_id => assessable_id }
+        :assessable_type => request['assessable_type'],
+        :assessable_id => request['assessable_id'] }
         
       assessment = Assessable::Assessment.create! create_attrs
 

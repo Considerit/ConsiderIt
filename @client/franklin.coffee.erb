@@ -2441,6 +2441,9 @@ Auth = ReactiveComponent
     # Therefore, we'll wait until the image is available and then make it available
     # in the avatar cache.  
     ensureCurrentUserAvatar = (attempts = 0) ->
+      registration_successful = !current_user.errors || current_user.errors['register'].length > 0
+      return unless registration_successful
+      
       if current_user.b64_thumbnail
         $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{current_user.b64_thumbnail}');}</style>")
       else if attempts < 20

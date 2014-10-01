@@ -1584,7 +1584,7 @@ Discussion = ReactiveComponent
         'Discuss this Point'
       
       if logged_in
-        SubmitFactCheck style: comment_style, key: @props.key
+        SubmitFactCheck style: comment_style
 
       DIV className: 'comments',
         for comment in @discussion.comments
@@ -1706,9 +1706,16 @@ Discussion = ReactiveComponent
 SubmitFactCheck = ReactiveComponent
   displayName: 'SubmitFactCheck'
 
+  # States
+  # - Blank
+  # - Clicked request
+  # - Contains request from you already
+  # - Contains a verdict
+
   render: ->
     logged_in = fetch('/current_user').logged_in
-    draw_1 = =>
+
+    request_a_fact_check = =>
       [
         DIV null,
           'You can'
@@ -1721,12 +1728,25 @@ SubmitFactCheck = ReactiveComponent
             marginTop: -4
             marginBottom: -1
           className: 'hover_pointer'
+          onClick: (=>
+            console.log('hello time to change from', @local.state)
+            @local.state = 'clicked'
+            save(@local))
           'Request a Fact Check'
         DIV null,
           'from The Seattle Public Library'
       ]
 
-    draw_2 = =>
+    a_librarian_will_respond =
+      DIV style: {fontSize: 14},
+        'A ',
+        A
+          style: {textDecoration: 'underline'}
+          href: '/about/#fact_check'
+          'librarian will respond'
+        ' to your request within 48 hours'
+
+    give_a_claim = =>
       [
         DIV style: {marginTop: 12},
           'What factual claim do you want researched?'
@@ -1741,14 +1761,35 @@ SubmitFactCheck = ReactiveComponent
           onChange: (e) =>
             @local.research_question = e.target.value
             save(@local)
-        DIV style: {fontSize: 14},
-          'A ',
-          A
-            style: {textDecoration: 'underline'}
-            href: '/about/#fact_check'
-            'librarian will respond'
-          ' to your request within 48 hours'
+        a_librarian_will_respond
       ]
+
+    request_in_progress = =>
+      DIV null,
+        'You have requested a Fact Check from The Seattle Public Library'
+      a_librarian_will_respond
+          
+    request_completed = =>
+      DIV null,
+        'This point has been Fact-Checked by The Seattle Public Library'
+      DIV null,
+        'They found _________'
+      DIV style: {fontSize: 14},
+        A style: {textDecoration: 'underline'},
+          "See the details"
+        "of the librarians' research below."
+
+
+    # Determine our current state
+    @local.state = @local.state or 'blank slate'
+    your_requests = (r for r in @discussion.requests or [] \
+                     when r.user == fetch('/current_user').user)
+    fact_check_completed = @discussion.claims?.length > 0
+    if fact_check_completed
+      @local.state = 'verdict'
+    else if your_requests.length > 0
+      @local.state = 'requested'
+
 
     # Now let's draw
     DIV @props,
@@ -1769,8 +1810,17 @@ SubmitFactCheck = ReactiveComponent
       DIV
         style:
           marginLeft: 60
-        draw_1()
-        draw_2()
+        switch @local.state
+          when 'blank slate'
+            request_a_fact_check()
+          when 'clicked'
+            [request_a_fact_check()
+            give_a_claim()]
+          when 'requested'
+            request_in_progress()
+          when 'verdict'
+            request_completed()
+
 ##
 # EditPoint
 # Form for editing or creating a point. Used by NewPoint component & when someone

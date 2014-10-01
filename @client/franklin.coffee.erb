@@ -1637,64 +1637,63 @@ Discussion = ReactiveComponent
               split_paragraphs(comment.body)
 
       # Write a new comment
-      if logged_in
-        DIV style: comment_style,
+      DIV style: comment_style,
 
-          # Comment author name
-          DIV
-            style:
-              fontWeight: 'bold'
-              color: '#666'
-            (fetch('/current_user').name or 'You') + ':'
+        # Comment author name
+        DIV
+          style:
+            fontWeight: 'bold'
+            color: '#666'
+          (fetch('/current_user').name or 'You') + ':'
 
-          # Icon
-          Avatar
+        # Icon
+        Avatar
+          style:
+            position: 'absolute'
+            width: 50
+            height: 50
+            backgroundColor: if not logged_in then 'transparent'
+            border:          if not logged_in then '1px dashed grey'
+
+          tag: DIV
+          key: fetch('/current_user').user
+          hide_name: true
+
+        if not logged_in
+          SPAN
+            onClick: =>
+              @root.auth_mode = 'login'
+              save(@root)
             style:
               position: 'absolute'
-              width: 50
-              height: 50
-              backgroundColor: if not logged_in then 'transparent'
-              border:          if not logged_in then '1px dashed grey'
+              margin: '14px 0 0 70px'
+              textDecoration: 'underline'
+              color: cityclub_navy
+             'Log in to write a comment'
 
-            tag: DIV
-            key: fetch('/current_user').user
-            hide_name: true
+        AutoGrowTextArea
+          className: 'new_comment'
+          placeholder: (logged_in and 'Write a new comment') or ''
+          disabled: not logged_in
+          onChange: (e) => @local.new_comment = e.target.value; save(@local)
+          style:
+            marginLeft: 60
+            width: 390
+            height: 60
+            lineHeight: 1.4
+            fontSize: 16
+            border: if not logged_in then 'dashed 1px'
 
-          if not logged_in
-            SPAN
-              onClick: =>
-                @root.auth_mode = 'login'
-                save(@root)
-              style:
-                position: 'absolute'
-                margin: '14px 0 0 70px'
-                textDecoration: 'underline'
-                color: cityclub_navy
-               'Log in to write a comment'
-
-          AutoGrowTextArea
-            className: 'new_comment'
-            placeholder: (logged_in and 'Write a new comment') or ''
-            disabled: not logged_in
-            onChange: (e) => @local.new_comment = e.target.value; save(@local)
-            style:
-              marginLeft: 60
-              width: 390
-              height: 60
-              lineHeight: 1.4
-              fontSize: 16
-              border: if not logged_in then 'dashed 1px'
-
-          DIV style: {textAlign: 'right'},
-            Button({style: {marginLeft: 314}}, 'Save comment', (e) =>
-              e.stopPropagation()
-              comment =
-                key: '/new/comment'
-                body: @local.new_comment
-                user: fetch('/current_user').user
-                point: "/point/#{arest.key_id(@props.key)}"
-              save(comment)
-              $(@getDOMNode()).find('.new_comment').val(''))
+        DIV style: {textAlign: 'right'},
+          Button({style: {marginLeft: 314}}, 'Save comment', (e) =>
+            e.stopPropagation()
+            comment =
+              key: '/new/comment'
+              body: @local.new_comment
+              user: fetch('/current_user').user
+              point: "/point/#{arest.key_id(@props.key)}"
+            save(comment)
+            $(@getDOMNode()).find('.new_comment').val(''))
 
   # HACK! Set the height of the body so that it accommodates the 
   # overlaid point
@@ -2214,7 +2213,10 @@ Auth = ReactiveComponent
                'I will speak only on behalf of myself', 
                'I will not attack or mock others']
 
-    DIV className:'auth_region focal_wrapper', style: focal_wrapper_style,
+    DIV
+      className:'auth_region focal_wrapper'
+      style: focal_wrapper_style
+      onClick: (e) => e.stopPropagation()
       DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
         DIV className:'auth_heading', style: auth_heading_style,
           'Introduce Yourself' 

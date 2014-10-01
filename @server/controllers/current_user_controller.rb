@@ -186,7 +186,7 @@ class CurrentUserController < ApplicationController
         errors[:register].append 'No email address specified'
       # And if it's not taken
       elsif user && (user != current_user)
-        errors[:register].append 'That email is not available'
+        errors[:register].append 'There is already an account with that email'
       # And that it's valid
       elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
         errors[:register].append 'Bad email address'

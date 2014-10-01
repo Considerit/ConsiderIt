@@ -24,11 +24,11 @@
 
 
 =link_style($color, $reference, $amount)
-  color: $color
+  //color: $color
   &:hover
     // Determine whether the hover should darken or lighten the color
     @if lightness($reference) > 50% 
       // if the background is light, make the link darker on hover
-      color: darken($color, $amount)
+      //color: darken($color, $amount)
     @else
-      color: lighten($color, $amount)
+      //color: lighten($color, $amount)

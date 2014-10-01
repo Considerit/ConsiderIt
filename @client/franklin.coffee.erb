@@ -2739,28 +2739,31 @@ ProfileLink = ReactiveComponent
       SPAN
         style:
           position: 'relative'
-        onMouseEnter: (=> console.log('who');@local.menu = true; save(@local))
+        onMouseEnter: => @local.menu = true; save(@local)
         onMouseLeave: => @local.menu = false; save(@local)
         DIV
           style:
             position: 'absolute'
             display: if not @local.menu then 'none'
-            height: 70
-            width: 110
+            height: 80
+            width: 125
             marginTop: -8
             marginLeft: -8
             padding: 8
             backgroundColor: '#eee'
           A
             style:
+              color: cityclub_navy
               position: 'absolute'
-              bottom: 0
+              bottom: 8
+              paddingLeft: 27,
               display: 'block'
             'data-action': 'logout'
             onClick: @logout
             'Log out'
         SPAN style: {position: 'relative'},
-          'Profile v'
+          Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
+          'Profile'
     else
       A
         'data-action': 'login'
@@ -2858,7 +2861,7 @@ Header = ReactiveComponent
                 DIV null,
                   ProfileLink()
                   SPAN null, '   |   '
-                  A href:'/about', onClick: clickInternalLink, className: 'hover_pointer',
+                  A style: {color: cityclub_navy}, href:'/about', onClick: clickInternalLink, className: 'hover_pointer',
                     'About'
 
               # Logo

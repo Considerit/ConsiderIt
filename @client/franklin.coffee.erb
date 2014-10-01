@@ -1373,7 +1373,7 @@ Point = ReactiveComponent
   #     a new point below it
   ensureDiscussionIsInViewPort : ->
     if @root.selected_point == @props.key
-      $(@getDOMNode()).ensureInView()
+      $(@getDOMNode()).ensureInView {scroll: false}
 
   setDraggability : ->
     # Ability to drag include this point if a community point, 
@@ -1589,8 +1589,7 @@ Discussion = ReactiveComponent
           fontWeight: 600
         'Discuss this Point'
       
-      if logged_in
-        SubmitFactCheck()
+      SubmitFactCheck()
 
       DIV className: 'comments',
         for comment in @discussion.comments
@@ -1773,33 +1772,46 @@ SubmitFactCheck = ReactiveComponent
         ' to your request within 48 hours'
 
     give_a_claim = =>
-      [
-        DIV style: {marginTop: 12},
-          'What factual claim do you want researched?'
-        AutoGrowTextArea
-          className: 'new_request'
+      if logged_in
+        [
+          DIV style: {marginTop: 12},
+            'What factual claim do you want researched?'
+          AutoGrowTextArea
+            className: 'new_request'
+            style:
+              width: 390
+              height: 60
+              lineHeight: 1.4
+              fontSize: 16
+            placeholder: (logged_in and 'Your research question') or ''
+            disabled: not logged_in
+            onChange: (e) =>
+              @local.research_question = e.target.value
+              save(@local)
+          Button({style: {left: 423, position: 'absolute'}},
+            'submit'
+            (e) =>
+              e.stopPropagation()
+              request =
+                key: '/new/request'
+                suggestion: @local.research_question
+                point: "/point/#{arest.key_id(@discussion.key)}"
+              save(request)
+              $(@getDOMNode()).find('.new_request').val(''))
+          a_librarian_will_respond(255)
+        ]
+      else
+        DIV
+          onClick: =>
+            @root.auth_mode = 'login'
+            save(@root)
           style:
-            width: 390
-            height: 60
-            lineHeight: 1.4
-            fontSize: 16
-          placeholder: (logged_in and 'Your research question') or ''
-          disabled: not logged_in
-          onChange: (e) =>
-            @local.research_question = e.target.value
-            save(@local)
-        Button({style: {left: 423, position: 'absolute'}},
-          'submit'
-          (e) =>
-            e.stopPropagation()
-            request =
-              key: '/new/request'
-              suggestion: @local.research_question
-              point: "/point/#{arest.key_id(@discussion.key)}"
-            save(request)
-            $(@getDOMNode()).find('.new_request').val(''))
-        a_librarian_will_respond(255)
-      ]
+            marginTop: 14
+            textDecoration: 'underline'
+            color: cityclub_navy
+            cursor: 'pointer'
+          'Log in to request a fact check'
+
 
     top_message_style = {maxWidth: 274, marginBottom: 10}
     request_in_progress = =>

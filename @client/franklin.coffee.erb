@@ -340,43 +340,40 @@ Proposal = ReactiveComponent
 
       StickyProposalHeading()
 
-      if @root.auth_mode
-        Auth()
-      else 
-        DIV null,
-          #description
-          DIV className:'description_region', style: description_region_style, 
+      DIV null,
+        #description
+        DIV className:'description_region', style: description_region_style, 
 
-            DIV className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
+          DIV className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
 
-            if @local.description_fields
-              DIV className: 'description_fields',
-                for item in @local.description_fields
-                  if item.group
-                    @renderDescriptionFieldGroup item
-                  else
-                    @renderDescriptionField item
+          if @local.description_fields
+            DIV className: 'description_fields',
+              for item in @local.description_fields
+                if item.group
+                  @renderDescriptionFieldGroup item
+                else
+                  @renderDescriptionField item
 
-            if current_user.is_admin
-              A style: {opacity: '.1'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
-        
-          #feelings
-          DIV className:'feelings_region', style : { width: BODY_WIDTH },
-            OpinionFilter()
-            HistogramData()
-            Histogram()
+          if current_user.is_admin
+            A style: {opacity: '.1'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
 
-          #reasons
-          DIV 
-            className:'reasons_region'
-            style : { width: REASONS_REGION_WIDTH },
-              #community pros
-              CommunityPoints { key: 'pros' }
+        #feelings
+        DIV className:'feelings_region', style : { width: BODY_WIDTH },
+          OpinionFilter()
+          HistogramData()
+          Histogram()
 
-              DecisionBoard()
+        #reasons
+        DIV 
+          className:'reasons_region'
+          style : { width: REASONS_REGION_WIDTH },
+            #community pros
+            CommunityPoints { key: 'pros' }
 
-              #community cons
-              CommunityPoints { key: 'cons' }
+            DecisionBoard()
+
+            #community cons
+            CommunityPoints { key: 'cons' }
 
 
 StickyProposalHeading = ReactiveComponent
@@ -1105,7 +1102,7 @@ DecisionBoard = ReactiveComponent
       save (your_opinion)
       togglePage('results', 'save_button')
     else
-      @root.auth_mode = 'register'
+      @root.auth_mode = 'login'
       #we'll need to publish this opinion after auth is completed
       @root.opinions_to_publish.push(@proposal.your_opinion)
       save(@root)
@@ -1657,7 +1654,7 @@ Discussion = ReactiveComponent
           if not logged_in
             SPAN
               onClick: =>
-                @root.auth_mode = 'register'
+                @root.auth_mode = 'login'
                 save(@root)
               style:
                 position: 'absolute'
@@ -2066,115 +2063,6 @@ CharacterCountTextInput = ReactiveComponent
 Auth = ReactiveComponent
   displayName: 'Auth'
 
-  componentDidMount : -> 
-    $(document).scrollTop $(@getDOMNode()).find('.auth_heading').offset().top - 10
-    window.writeToLog
-      what: 'accessed authentication'
-
-
-  startThirdPartyAuth : (provider) ->
-    root = @root
-    new ThirdPartyAuthHandler
-      provider : provider
-      callback : (new_data) => 
-        # Yay we got a new current_user object!  But this hasn't gone
-        # through the normal arest channel, so we gotta save it in
-        # sneakily with updateCache()
-        arest.updateCache(new_data)
-
-        # We know that the user has authenticated, but we don't know
-        # whether they've completed OUR registration process including
-        # the pledge.  The server tells us this via the existence of a
-        # `user' object in current_user.
-
-        current_user = @data('/current_user')
-        if current_user.logged_in
-          # We are logged in!  The user has completed registration.
-          # Let's transition to results.
-          root.proposal_mode = 'results'
-          root.auth_mode = null
-          if current_user.csrf
-            arest.csrf(current_user.csrf)
-
-          # @publishOpinionsAfterAuth()
-          save(root)
-        else 
-          # We still need to show the pledge!
-          root.auth_mode = 'register'
-          save(root)
-
-  submitAuth : (ev) -> 
-    ev.preventDefault()
-    current_user = @data('/current_user')
-
-    $el = $(@getDOMNode())
-    current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
-    local = @local
-    local.submitting = true
-    save(local)
-
-    # It is important that a user that just submitted a user picture see the picture
-    # on the results and in the header. However, this is a bit tricky because the avatars
-    # are cached on the server and the image is processed in a background task. 
-    # Therefore, we'll wait until the image is available and then make it available
-    # in the avatar cache.  
-    ensureCurrentUserAvatar = (attempts = 0) ->
-      if current_user.b64_thumbnail
-        $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{current_user.b64_thumbnail}');}</style>")
-      else if attempts < 20
-        # Ugly: wait a little while for offline avatar processing
-        # to complete, then refetch
-        arest.serverFetch('/current_user')
-        _.delay -> 
-          ensureCurrentUserAvatar(attempts + 1)
-        , 1000
-
-    # hack for submitting file data in ActiveREST for now
-    # we'll just submit the file form after user is signed in
-    # TODO: investigate alternatives for submitting form data
-    if @submit_avatar_form
-      save(current_user)
-      $('#user_avatar_form').ajaxSubmit
-        type: 'PUT'
-        data: 
-          authenticity_token: current_user.csrf
-        success: (current_user_data, status, xhr) -> 
-          current_user.errors = current_user_data.errors or []
-          current_user.csrf = current_user_data.csrf
-          save current_user, =>
-            local.submitting = false
-            save(local)
-            ensureCurrentUserAvatar()
-    else
-      save(current_user, =>
-        local.submitting = false
-        save(local))
-
-      if current_user.avatar_remote_url
-        ensureCurrentUserAvatar()
-
-
-  sendResetPassword : -> 
-
-    # Tell the server to email us a token
-    (current_user = @data('/current_user')).reset_my_password = true
-    save(current_user, =>
-      if not (current_user.errors?.reset_password?.length > 0)
-        # Switch to reset_password mode
-        @root.auth_mode = 'reset_password'
-        save(@root)
-      else
-        # Tell the login screen to show the reset_password errors
-        current_user.errors.login = current_user.errors.reset_password
-        # console.log("Waiting for user to fix errors #{current_user.errors?.reset_password}")
-        arest.updateCache(current_user)
-      )
-  toggleAuthMode : -> 
-    current_user = @data('/current_user')
-    @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
-    current_user.errors = {}
-    save(@root)
-
   render: -> 
     current_user = @data('/current_user')
     root = @data('root')
@@ -2254,11 +2142,10 @@ Auth = ReactiveComponent
 
     third_party_authenticated = current_user.facebook_uid || current_user.twitter_uid || current_user.google_uid
 
-    ## We'll be displaying the Auth header using the position and styling of the slider
-    root = @data('root')
-    slider = @data('slider')
-    stance =  slider.stance
-    segment = slider.stance_segment
+    # We used to display the Auth header using the position and
+    # styling of the slider.  Now it's just neutral.
+    stance =  0
+    segment = 3
 
     # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
     # also why this file is ERB
@@ -2272,9 +2159,9 @@ Auth = ReactiveComponent
 
     bubble_mouth_props = 
       transform: "translate(#{direction * mouth_x}px, 11px) scale(#{direction * 1.5}, 1.5)"
-      left: slider.clientX
+      left: 270
     handle_props = 
-      left: slider.clientX - 15
+      left: 270 - 15
 
     crossbrowserTransformProperty bubble_mouth_props
     crossbrowserTransformProperty handle_props
@@ -2284,7 +2171,7 @@ Auth = ReactiveComponent
       left: HISTOGRAM_WIDTH * -(stance-1) / 2.0
       marginLeft: -225
       width: 450
-      fontSize: 29
+      fontSize: 50
       position: 'relative'
 
       #top: '-80px'
@@ -2296,12 +2183,7 @@ Auth = ReactiveComponent
     DIV className:'auth_region focal_wrapper', style: focal_wrapper_style,
       DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
         DIV className:'auth_heading', style: auth_heading_style,
-          'Please Introduce Yourself' 
-
-          if root.auth_mode in ['login', 'register']
-            DIV className: 'switch_auth_mode', 
-              SPAN null, if root.auth_mode == 'register' then 'If you already have an account, ' else 'If you don\'t have an account, '
-              A className: 'toggle_auth', onClick: @toggleAuthMode, if root.auth_mode == 'register' then 'Log In' else 'Create an Account'
+          'Introduce Yourself' 
 
         DIV className: 'the_handle', style: handle_props
         IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
@@ -2447,6 +2329,16 @@ Auth = ReactiveComponent
             I className: 'fa fa-exclamation-circle'
             SPAN null, "#{current_user.errors[root.auth_mode].join(', ')}"
 
+        if root.auth_mode in ['login', 'register']
+          button = A className: 'toggle_auth', onClick: @toggleAuthMode,
+              if root.auth_mode == 'register' then 'Use an Existing Account' else 'Create an Account'
+
+          DIV className: 'switch_auth_mode',
+            SPAN null,
+              if root.auth_mode == 'register'
+                ['Or ', button, ' if you have one already']
+              else
+                ['Or ', button, ' if you need one']
 
       DIV null, 
         DIV 
@@ -2461,6 +2353,116 @@ Auth = ReactiveComponent
             root.publish_this_opinion = null
             save(root))
         , 'cancel log in'
+
+  componentDidMount : -> 
+    $(document).scrollTop $(@getDOMNode()).find('.auth_heading').offset().top - 10
+    window.writeToLog
+      what: 'accessed authentication'
+
+
+  startThirdPartyAuth : (provider) ->
+    root = @root
+    new ThirdPartyAuthHandler
+      provider : provider
+      callback : (new_data) => 
+        # Yay we got a new current_user object!  But this hasn't gone
+        # through the normal arest channel, so we gotta save it in
+        # sneakily with updateCache()
+        arest.updateCache(new_data)
+
+        # We know that the user has authenticated, but we don't know
+        # whether they've completed OUR registration process including
+        # the pledge.  The server tells us this via the existence of a
+        # `user' object in current_user.
+
+        current_user = @data('/current_user')
+        if current_user.logged_in
+          # We are logged in!  The user has completed registration.
+          # Let's transition to results.
+          root.proposal_mode = 'results'
+          root.auth_mode = null
+          if current_user.csrf
+            arest.csrf(current_user.csrf)
+
+          # @publishOpinionsAfterAuth()
+          save(root)
+        else 
+          # We still need to show the pledge!
+          root.auth_mode = 'register'
+          save(root)
+
+  submitAuth : (ev) -> 
+    ev.preventDefault()
+    current_user = @data('/current_user')
+
+    $el = $(@getDOMNode())
+    current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
+    local = @local
+    local.submitting = true
+    save(local)
+
+    # It is important that a user that just submitted a user picture see the picture
+    # on the results and in the header. However, this is a bit tricky because the avatars
+    # are cached on the server and the image is processed in a background task. 
+    # Therefore, we'll wait until the image is available and then make it available
+    # in the avatar cache.  
+    ensureCurrentUserAvatar = (attempts = 0) ->
+      if current_user.b64_thumbnail
+        $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{current_user.b64_thumbnail}');}</style>")
+      else if attempts < 20
+        # Ugly: wait a little while for offline avatar processing
+        # to complete, then refetch
+        arest.serverFetch('/current_user')
+        _.delay -> 
+          ensureCurrentUserAvatar(attempts + 1)
+        , 1000
+
+    # hack for submitting file data in ActiveREST for now
+    # we'll just submit the file form after user is signed in
+    # TODO: investigate alternatives for submitting form data
+    if @submit_avatar_form
+      save(current_user)
+      $('#user_avatar_form').ajaxSubmit
+        type: 'PUT'
+        data: 
+          authenticity_token: current_user.csrf
+        success: (current_user_data, status, xhr) -> 
+          current_user.errors = current_user_data.errors or []
+          current_user.csrf = current_user_data.csrf
+          save current_user, =>
+            local.submitting = false
+            save(local)
+            ensureCurrentUserAvatar()
+    else
+      save(current_user, =>
+        local.submitting = false
+        save(local))
+
+      if current_user.avatar_remote_url
+        ensureCurrentUserAvatar()
+
+
+  sendResetPassword : -> 
+
+    # Tell the server to email us a token
+    (current_user = @data('/current_user')).reset_my_password = true
+    save(current_user, =>
+      if not (current_user.errors?.reset_password?.length > 0)
+        # Switch to reset_password mode
+        @root.auth_mode = 'reset_password'
+        save(@root)
+      else
+        # Tell the login screen to show the reset_password errors
+        current_user.errors.login = current_user.errors.reset_password
+        # console.log("Waiting for user to fix errors #{current_user.errors?.reset_password}")
+        arest.updateCache(current_user)
+      )
+  toggleAuthMode : -> 
+    current_user = @data('/current_user')
+    @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
+    current_user.errors = {}
+    save(@root)
+
 
 
 ProposalSummary = ReactiveComponent
@@ -2725,8 +2727,50 @@ ZipcodeBox = ReactiveComponent
         DIV className: 'ragged_bottom'
 
 
-LogoutButton = ReactiveComponent
-  displayName: 'LogoutButton'
+ProfileLink = ReactiveComponent
+  displayName: 'ProfileLink'
+
+  render : -> 
+    current_user = @data('/current_user')
+    customer = @data('/customer')
+    color = @data('color')
+
+    if current_user.logged_in
+      SPAN
+        style:
+          position: 'relative'
+        onMouseEnter: (=> console.log('who');@local.menu = true; save(@local))
+        onMouseLeave: => @local.menu = false; save(@local)
+        DIV
+          style:
+            position: 'absolute'
+            display: if not @local.menu then 'none'
+            height: 70
+            width: 110
+            marginTop: -8
+            marginLeft: -8
+            padding: 8
+            backgroundColor: '#eee'
+          A
+            style:
+              position: 'absolute'
+              bottom: 0
+              display: 'block'
+            'data-action': 'logout'
+            onClick: @logout
+            'Log out'
+        SPAN style: {position: 'relative'},
+          'Profile v'
+    else
+      A
+        'data-action': 'login'
+        onClick: ((e) =>
+          @root.auth_mode = 'login'
+          save(@root)),
+        'Log in'
+
+      #Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
+
 
   logout : -> 
     current_user = @data('/current_user')
@@ -2744,27 +2788,6 @@ LogoutButton = ReactiveComponent
 
     save @root
 
-  render : -> 
-    current_user = @data('/current_user')
-    customer = @data('/customer')
-    color = @data('color')
-
-    # DIV null,
-    #   if current_user.logged_in
-    #     userbar_style = {}
-    #     link_style = {}
-    #     if customer.identifier == 'livingvotersguide' #to deal with the weird cream header for LVG
-    #       userbar_style = {backgroundColor: color.background}
-
-    #       if @root.page_name not in ['homepage', 'about']
-    #         userbar_style = { top: 51, right: 2, left: 'auto' }
-    #         link_style = { color: '#777', fontWeight: 600, fontSize: 15 }
-    link_style = {}
-    if customer.identifier != 'livingvotersguide'
-      link_style = {position: 'absolute', right: 20, top: 4}
-    SPAN className: 'userbar', style: link_style,
-      #Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
-      A style: {}, 'data-action': 'logout', onClick: @logout, 'Logout'
 
 Header = ReactiveComponent
   displayName: 'Header'
@@ -2776,7 +2799,7 @@ Header = ReactiveComponent
 
     DIV className: 'l_header', style: {backgroundColor: color.header_bg, minWidth: PAGE_WIDTH},
       if customer.identifier != "livingvotersguide"
-        LogoutButton()
+        ProfileLink()
 
       DIV null, 
         # Define all the customer-specific styles for non-repeated elements directly. 
@@ -2833,13 +2856,10 @@ Header = ReactiveComponent
                   color: cityclub_navy
 
                 DIV null,
-                  A style: {}, href:'/about', onClick: clickInternalLink, 'About'
-                  if @data('/current_user').logged_in
-                    SPAN null,
-                      ' | '
-                      LogoutButton()
-                  # else 
-                  #   A style: {}, href: '#', onClick: clickInternalLink, 'Log in'
+                  ProfileLink()
+                  SPAN null, '   |   '
+                  A href:'/about', onClick: clickInternalLink, className: 'hover_pointer',
+                    'About'
 
               # Logo
               A href: (if @root.page_name == 'homepage' then '/about' else '/'), onClick: clickInternalLink,
@@ -3163,12 +3183,17 @@ Page = ReactiveComponent
 
     color = @data('color')
 
+    if @root.auth_mode
+      return Auth()
+
     DIV style: {minWidth: PAGE_WIDTH, backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
       BrowserHacks()
       Header()
       DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
         DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
-          if @root.page_name == 'homepage'
+          if @root.auth_mode
+            Auth()
+          else if @root.page_name == 'homepage'
             Homepage key: @page.key
           else if @root.page_name == 'about'
             About()

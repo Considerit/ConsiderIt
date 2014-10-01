@@ -1588,7 +1588,7 @@ Discussion = ReactiveComponent
 
       DIV className: 'comments',
         for comment in @discussion.comments
-          DIV style: comment_style,
+          DIV style: comment_style, key: comment.key,
 
             # Delete button
             if comment.user == fetch('/current_user').user
@@ -1788,15 +1788,15 @@ SubmitFactCheck = ReactiveComponent
         a_librarian_will_respond()
           
     request_completed = =>
-      [DIV style: top_message_style,
-        'This point has been Fact-Checked by The Seattle Public Library'
-      DIV style: {marginBottom: 10},
-        'They found _________'
-      DIV null,
-        A
-          #style: {textDecoration: 'underline'}
-          "See the details"
-        " of the librarians' research below."
+      [
+        DIV style: top_message_style,
+          'This point has been Fact-Checked by The Seattle Public Library'
+        DIV style: {marginBottom: 10},
+          'The report will be posted shortly.'
+        # DIV null,
+        #   A style: {textDecoration: 'underline'},
+        #     "See the details"
+        #   " of the librarians' research below."
       ]
 
 

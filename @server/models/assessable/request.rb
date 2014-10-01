@@ -9,5 +9,12 @@ class Assessable::Request < ActiveRecord::Base
     self.suggestion = self.suggestion.sanitize if self.suggestion
   end
 
+  def as_json(options={})
+    result = super(options)
+    make_key(result, 'request')
+    result['user'] = "/user/#{user_id}"
+    result['point'] = "/point/#{assessable_id}"
+    result
+  end
 
 end

@@ -1724,7 +1724,7 @@ SubmitFactCheck = ReactiveComponent
           'You can'
         DIV
           style:
-            fontSize: 26
+            fontSize: 22
             fontWeight: 600
             textDecoration: 'underline'
             color: '#474747'
@@ -1732,7 +1732,6 @@ SubmitFactCheck = ReactiveComponent
             marginBottom: -1
           className: 'hover_pointer'
           onClick: (=>
-            console.log('hello time to change from', @local.state)
             @local.state = 'clicked'
             save(@local))
           'Request a Fact Check'

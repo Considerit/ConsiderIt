@@ -1660,6 +1660,7 @@ Discussion = ReactiveComponent
 
         if not logged_in
           SPAN
+            className: 'hover_pointer'
             onClick: =>
               @root.auth_mode = 'login'
               save(@root)

@@ -2182,8 +2182,8 @@ Auth = ReactiveComponent
         onChange: (event) => current_user.reset_password_token = event.target.value
 
     providers = ['facebook', 'google']
-    if root.auth_mode in ['login', 'reset_password']
-      providers.push('twitter')
+    # if root.auth_mode in ['login', 'reset_password']
+    #   providers.push('twitter')
 
     third_party_authenticated = current_user.facebook_uid || current_user.twitter_uid || current_user.google_uid
 

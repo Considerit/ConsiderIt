@@ -133,7 +133,7 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
     notification_method.call data
   end
 
-  if current_tenant.enable_moderation
+  if data[:current_tenant].enable_moderation
     # send to all users with moderator status
     moderators = []
     accnt.users.where('roles_mask > 0').each do |u|

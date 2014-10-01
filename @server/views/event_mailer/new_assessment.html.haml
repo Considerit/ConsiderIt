@@ -1,0 +1,40 @@
+
+
+%p.head
+  Hi #{@user.first_name}, 
+
+  - if @notification_type == 'your point'
+    One or more participants requested that your #{@point.is_pro ? 'pro' : 'con'} point be researched further by a librarian. The Seattle Public Library has now completed the research. We hope that the additional information is helpful!
+
+  - elsif @notification_type == 'requested by you'
+    At your request, a #{@point.is_pro ? 'pro' : 'con'} point has been researched by The Seattle Public Library. 
+
+  - else
+    A #{@point.is_pro ? 'pro' : 'con'} point that you follow has been investigated by The Seattle Public Library. 
+
+//TODO: add text version of this mail
+
+%p
+  The result of the research:
+  %ul
+    - @assessment.claims.each do |clm|
+      %li
+        Claim: "#{clm.claim_restatement}"; Conclusion: #{clm.verdict.formatVerdict()}.
+
+%p 
+  The #{@point.is_pro ? 'pro' : 'con'} point:
+  .object
+    &ldquo;#{link_to @point.nutshell, point_url(@point, :host => @host)}&rdquo;
+
+%p 
+  The issue: 
+  .object
+    &ldquo;#{link_to @proposal.name, "#{@host}/#{@proposal.long_id}/?z=1"}&rdquo;
+
+.action_call
+  .rest
+    .call
+      = link_to 'Read and discuss further', "#{@host}/#{@proposal.long_id}/?selected=%2Fpoint%2F#{@point.id}&z=1"
+
+= content_for :footer do
+  = render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this point'}

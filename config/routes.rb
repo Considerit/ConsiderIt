@@ -46,11 +46,14 @@ ConsiderIt::Application.routes.draw do
     end
 
     concern :assessable do 
-      resources :assessment, :path => "dashboard/assessment", :controller => "assessable", :only => [:index, :create, :edit, :update] do 
+      resources :assessment, :path => "dashboard/assessment", :controller => "assessable", :only => [:index, :edit, :update] do 
         match "/dashboard/claims" => 'assessable#create_claim', :via => :post, :as => 'create_claim'
         match "/dashboard/claim/:id" => 'assessable#update_claim', :via => :put, :as => 'update_claim'
         match "/dashboard/claim/:id" => 'assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'
       end
+    
+      resources :request, :only => [:create], :controller => "assessable"
+
     end
 
     concerns :moderatable
@@ -102,9 +105,12 @@ ConsiderIt::Application.routes.draw do
   resources :user, :only => [:show]
   resources :proposal
   resources :point, :only => [:create, :update, :destroy, :show]
-  resources :point_discussion, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :show]
   resources :client_error, :only => [:create]
+
+  resources :comment, :only => [:create, :update, :destroy]
+  get '/comments/:point_id' => 'comment#index'
+
   post '/log' => 'log#create'
   get '/proposals' => 'proposal#index'
   get '/customer' => 'customer#show'
@@ -118,16 +124,6 @@ ConsiderIt::Application.routes.draw do
 
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]
-
-
-  ######
-  ## concerns routes
-  concern :commentable do 
-    resources :commentable, :only => [:create, :update]
-  end
-
-  concerns :commentable
-  #################
 
 
 end

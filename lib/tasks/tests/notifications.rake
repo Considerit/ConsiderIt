@@ -42,29 +42,29 @@ namespace :test do
 
       point = proposal.points.published.sample
       pp "****************"
-      pp "proposal_new_point"
+      pp "new_point"
       pp "Proposal: #{proposal.id}"
       pp "Point: #{point.id}" 
       pp "Notification_type: #{nt}"     
       if proposal && point
-        email = EventMailer.proposal_new_point(user, point, mail_options, nt).deliver!
+        email = EventMailer.new_point(user, point, mail_options, nt).deliver!
       end
     end
 
     ###### Point level ######
     notification_types = ['your point', 'participant', 'included point', 'lurker']
     notification_types.each do |nt|
-      comment = account.comments.where('commentable_type' => 'Point').sample
+      comment = account.comments.sample
       next if comment.nil?
 
-      point = comment.root_object
+      point = comment.point
       pp "****************"
-      pp "point_new_comment"
+      pp "new_comment"
       pp "Comment: #{comment.id}"
       pp "Point: #{point.id}"
       pp "Notification_type: #{nt}"
       if comment && point
-        email = EventMailer.point_new_comment(user, point, comment, mail_options, nt).deliver!
+        email = EventMailer.new_comment(user, point, comment, mail_options, nt).deliver!
       end
     end
 

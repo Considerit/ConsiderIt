@@ -18,7 +18,7 @@
 %p 
   The new point:
   .object
-    &ldquo;#{link_to @point.nutshell, "#{@host}/#{@proposal.long_id}/?z=1"}&rdquo;
+    &ldquo;#{link_to @point.nutshell, "#{@host}/#{@proposal.long_id}/?selected=%2Fpoint%2F#{@point.id}&z=1"}&rdquo;
 
 %p 
   The proposal: 
@@ -29,7 +29,7 @@
 .action_call
   .rest
     .call
-      = link_to 'Read and discuss further', "#{@host}/#{@proposal.long_id}/?z=1"
+      = link_to 'Read and discuss further', "#{@host}/#{@proposal.long_id}/?selected=%2Fpoint%2F#{@point.id}&z=1"
 
 = content_for :footer do
   = render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this proposal'}

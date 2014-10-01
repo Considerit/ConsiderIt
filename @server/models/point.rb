@@ -1,11 +1,12 @@
 # coding: utf-8
 class Point < ActiveRecord::Base
   
-  include Followable, Commentable, Moderatable, Assessable
+  include Followable, Moderatable, Assessable
     
   belongs_to :user
   belongs_to :proposal
   has_many :inclusions, :dependent => :destroy
+  has_many :comments, :dependent=>:destroy  
   
   validates :nutshell, :presence => true, :length => { :maximum => 141 }
 

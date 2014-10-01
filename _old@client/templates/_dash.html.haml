@@ -57,13 +57,13 @@
         Moderate content
     (( } ))
 
-    (( if( false && (is_evaluator ) && tenant.get('assessment_enabled') ) { ))
+    (( if( is_evaluator && tenant.get('assessment_enabled') ) { ))
     %li
       %a.sidebar_link{:href => "{{Routes.assessment_index_path()}}", :'action' => 'assess'}
         Assess claims
     (( } ))
 
-    (( if(  is_analyst ) { ))
+    (( if( false && is_analyst ) { ))
     %li
       %a.sidebar_link{:href => "{{Routes.analytics_path()}}", :'action' => 'analyze'}
         Analytics

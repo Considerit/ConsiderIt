@@ -82,7 +82,7 @@ userOpinion = (user_key) ->
 
 _route_changed = false
 
-togglePage = (proposal_mode, triggered_by) -> 
+togglePage = (proposal_mode, triggered_by) ->
   $('.histogram_segment_pole').ensureInView
     offset_buffer: 150
     callback : -> 
@@ -1103,8 +1103,10 @@ DecisionBoard = ReactiveComponent
       togglePage('results', 'save_button')
     else
       @root.auth_mode = 'login'
-      #we'll need to publish this opinion after auth is completed
+      # We'll need to publish this opinion after auth is completed
       @root.opinions_to_publish.push(@proposal.your_opinion)
+      # And we'll want to switch to results when it's done
+      @root.saving_opinion = true
       save(@root)
 
 ##
@@ -2079,8 +2081,10 @@ Auth = ReactiveComponent
       root.auth_mode = null
       # @publishOpinionsAfterAuth()
 
+      if root.saving_opinion
+        setTimeout((() -> togglePage('results', 'after_save')), 700)
+        root.saving_opinion = false
       save(root)
-      setTimeout((() -> togglePage('results', 'after_save')), 700)
       return loading_indicator
 
     focal_wrapper_style = 

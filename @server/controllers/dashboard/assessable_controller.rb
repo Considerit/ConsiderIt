@@ -80,7 +80,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
     params[:claim].delete :account_id
     params[:claim].delete :id
-
+    params[:claim].delete :key
     params[:claim].delete :verdict_id if params[:claim].has_key?(:verdict_id) && params[:claim][:verdict_id].nil?
 
     # TODO: explicitly grab params  
@@ -114,6 +114,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
     params[:assessment].delete :id
     params[:assessment].delete :account_id
+    params[:assessment].delete :key
 
     if assessment.complete
       assessment.update_verdict()

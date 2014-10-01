@@ -294,8 +294,8 @@
                     execution_context = []
                     if (e instanceof TypeError) {
                         if (this.is_waiting()) return loading_indicator
-                        else { error(e); return error_indicator(e.message) }
-                    } else { error(e) }
+                        else { error(e, this.name); return error_indicator(e.message) }
+                    } else { error(e, this.name) }
                 }
                 execution_context = []
                 after && after.apply(this, arguments)
@@ -490,11 +490,12 @@
                 deep_map(func, object[k])
         }
     }
-    function error(e) {
-        console.error('In', this.name + ':', e.stack)
+    function error(e, name) {
+        console.error('In', name + ':', e.stack)
         if (window.on_client_error)
             window.on_client_error(e)
     }
+
     function key_id(string) {
         return string.match(/\/[^\/]+\/(\d+)/)[1]
     }

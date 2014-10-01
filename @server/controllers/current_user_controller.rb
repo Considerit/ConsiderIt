@@ -285,7 +285,7 @@ class CurrentUserController < ApplicationController
             render :json => response
           end
         else
-          @errors = errors
+          @errors = errors.values().flatten
           @not_logged_in = true
           render :template => "old/login", :layout => 'dash' 
         end

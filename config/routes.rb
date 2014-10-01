@@ -105,7 +105,7 @@ ConsiderIt::Application.routes.draw do
   resources :opinion, :only => [:update, :show]
   resources :client_error, :only => [:create]
 
-  resources :comment, :only => [:create, :update]
+  resources :comment, :only => [:create, :update, :destroy]
   get '/comments/:point_id' => 'comment#index'
 
   post '/log' => 'log#create'

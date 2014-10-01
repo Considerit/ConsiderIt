@@ -1663,7 +1663,13 @@ Discussion = ReactiveComponent
                 marginLeft: 314
               onClick: (e) =>
                 e.stopPropagation()
-                console.log('Gonna add comment', @local.new_comment)
+                comment =
+                  key: '/new/comment'
+                  body: @local.new_comment
+                  user: fetch('/current_user').user
+                  point: "/point/#{arest.key_id(@props.key)}"
+                save comment
+                
               'Save comment'
 
 ##
@@ -2931,7 +2937,6 @@ Root = ReactiveComponent
   displayName: 'Root'
   resetSelection: (e) ->
     if @root.selected_point
-      console.log('Got a click on',e.target)
       window.writeToLog
         what: 'deselected a point'
         details:

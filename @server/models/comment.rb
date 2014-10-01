@@ -53,7 +53,7 @@ class Comment < ActiveRecord::Base
         :assessment => point.assessment && point.assessment.complete ? point.assessment : nil,
         :verdicts => Assessable::Verdict.all,
         :claims => point.assessment && point.assessment.complete ? point.assessment.claims : nil,
-        :already_requested_assessment => current_user && Assessable::Request.where(:assessable_id => point.id, :assessable_type => 'Point', :user_id => current_user.id).count > 0
+        :requests => point.assessment ? point.assessment.requests : nil
       })
     end
 

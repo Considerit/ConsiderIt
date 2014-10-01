@@ -228,8 +228,7 @@ private
           clean.update({
             :assessments => proposal.assessments.completed,
             :claims => proposal.assessments.completed.map {|a| a.claims}.compact.flatten,
-            :verdicts => Assessable::Verdict.all,
-            :requests => proposal.requests
+            :verdicts => Assessable::Verdict.all
           })
         end
 

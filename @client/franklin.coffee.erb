@@ -2770,17 +2770,20 @@ Footer = ReactiveComponent
 
           DIV style: {paddingBottom: 18},
 
-            # DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
-            #   A href: "http://seattlecityclub.org", style: {position: 'relative', top: 3, fontWeight: 400},
-            #     IMG src: "<%= asset_path 'livingvotersguide/cityclub.svg' %>"
-
             DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
-              "Technology by "
-              A href: 'http://consider.it', style: {textDecoration: 'none', color: 'rgb(131,131,131)', fontWeight: 600}, target: '_blank', 'Considerit'
+              A href: "http://seattlecityclub.org", style: {position: 'relative', top: 3, fontWeight: 400},
+                IMG src: "<%= asset_path 'livingvotersguide/cityclub.svg' %>"
 
-            # DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
-            #   "Fact-checking by "
-            #   A href: 'http://spl.org', style: {textDecoration: 'none', color: 'rgb(131,131,131)', display: 'block', fontWeight: 600}, target: '_blank', 'The Seattle Public Library'
+            DIV style: {textAlign: 'left', padding: '0 12px', display: 'inline-block', fontSize: 11, position: 'relative', top: -5},
+              #"Fact-checking by "
+              A href: 'http://spl.org', style: {textTransform: 'uppercase', textDecoration: 'none', color: cityclub_navy, display: 'block', fontWeight: 600, width: 100}, target: '_blank', 
+                'The Seattle Public Library'
+
+          DIV style: {padding: 9},
+
+            DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 20},
+              "Technology by "
+              A href: 'http://consider.it', style: {textDecoration: 'none', color: '#B03B42', fontWeight: 600}, target: '_blank', 'Considerit'
 
       else
         DIV null,

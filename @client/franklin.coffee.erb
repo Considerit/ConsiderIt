@@ -1563,6 +1563,10 @@ Discussion = ReactiveComponent
         '-webkit-transform':  trans_func
         '-o-transform':       trans_func
 
+    comment_style =
+      marginTop: 45
+      minHeight: 60
+
     DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
       IMG
         src: "<%= asset_path 'bubblemouth-discussions.png' %>"
@@ -1577,9 +1581,12 @@ Discussion = ReactiveComponent
           marginBottom: 5
         'Discuss this Point'
       
+      if logged_in
+        SubmitFactCheck style: comment_style
+
       DIV className: 'comments',
         for comment in @discussion.comments
-          DIV style: {marginTop: 45, minHeight: 60},
+          DIV style: comment_style,
 
             # Delete button
             if comment.user == fetch('/current_user').user
@@ -1626,7 +1633,7 @@ Discussion = ReactiveComponent
 
       # Write a new comment
       if logged_in
-        DIV style: {marginTop: 45},
+        DIV style: comment_style,
 
           # Comment author name
           DIV
@@ -1698,6 +1705,40 @@ Discussion = ReactiveComponent
                 $(@getDOMNode()).find('.new_comment').val('')
                 
               'Save comment'
+
+SubmitFactCheck = ReactiveComponent
+  displayName: 'SubmitFactCheck'
+
+  render: ->
+    DIV @props,
+      DIV
+        style:
+          position: 'absolute'
+          width: 50
+          height: 50
+          fontSize: 50
+          marginTop: -2
+          color: '#888'
+        I
+          className: 'fa fa-search'
+      DIV
+        style:
+          marginLeft: 60
+        DIV null,
+          'You can'
+        DIV
+          style:
+            fontSize: 26
+            fontWeight: 600
+            textDecoration: 'underline'
+            color: '#474747'
+            marginTop: -7
+            marginBottom: -1
+          className: 'hover_pointer'
+          'Request a Fact Check'
+        DIV null,
+          'from The Seattle Public Library'
+
 
 ##
 # EditPoint

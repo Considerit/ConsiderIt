@@ -1584,7 +1584,7 @@ Discussion = ReactiveComponent
         'Discuss this Point'
       
       if logged_in
-        SubmitFactCheck style: comment_style
+        SubmitFactCheck()
 
       DIV className: 'comments',
         for comment in @discussion.comments
@@ -1827,20 +1827,26 @@ SubmitFactCheck = ReactiveComponent
       @local.state = 'requested'
 
 
+    show_request = @proposal.assessment_enabled || @local.state != 'blank slate'
+    
+    request_style = if show_request then { marginBottom: 45, minHeight: 60 } else {}
+
     # Now let's draw
-    DIV @props,
+    DIV style: request_style,
 
       # Magnifying glass
-      DIV
-        style:
-          position: 'absolute'
-          width: 50
-          height: 50
-          fontSize: 50
-          marginTop: -2
-          color: '#888'
-        I
-          className: 'fa fa-search'
+      if show_request
+
+        DIV
+          style:
+            position: 'absolute'
+            width: 50
+            height: 50
+            fontSize: 50
+            marginTop: -2
+            color: '#888'
+          I
+            className: 'fa fa-search'
 
       # Text to the right
       DIV
@@ -1848,7 +1854,8 @@ SubmitFactCheck = ReactiveComponent
           marginLeft: 60
         switch @local.state
           when 'blank slate'
-            request_a_fact_check()
+            if @proposal.assessment_enabled
+              request_a_fact_check()
           when 'clicked'
             [request_a_fact_check()
             give_a_claim()]

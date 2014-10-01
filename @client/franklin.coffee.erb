@@ -1680,28 +1680,31 @@ Discussion = ReactiveComponent
               border: if not logged_in then 'dashed 1px'
 
           DIV style: {textAlign: 'right'},
-            DIV
-              className: 'hover_pointer'
-              style:
-                backgroundColor: considerit_blue
-                borderRadius: 8
-                color: 'white'
-                width: 138
-                padding: '3px 10px'
-                fontWeight: 600
-                textAlign: 'center'
-                marginLeft: 314
-              onClick: (e) =>
-                e.stopPropagation()
-                comment =
-                  key: '/new/comment'
-                  body: @local.new_comment
-                  user: fetch('/current_user').user
-                  point: "/point/#{arest.key_id(@props.key)}"
-                save(comment)
-                $(@getDOMNode()).find('.new_comment').val('')
-                
-              'Save comment'
+            Button({style: {marginLeft: 314}}, 'Save comment', (e) =>
+              e.stopPropagation()
+              comment =
+                key: '/new/comment'
+                body: @local.new_comment
+                user: fetch('/current_user').user
+                point: "/point/#{arest.key_id(@props.key)}"
+              save(comment)
+              $(@getDOMNode()).find('.new_comment').val(''))
+
+Button = (props, text, callback) ->
+  style =
+    backgroundColor: considerit_blue
+    borderRadius: 8
+    color: 'white'
+    display: 'table'
+    padding: '3px 10px'
+    fontWeight: 600
+    textAlign: 'center'
+  props.style = _.extend(style, (props.style or {}))
+  props.className = 'hover_pointer'
+  props.onClick = callback
+
+  DIV props, text
+
 
 SubmitFactCheck = ReactiveComponent
   displayName: 'SubmitFactCheck'
@@ -1737,8 +1740,8 @@ SubmitFactCheck = ReactiveComponent
           'from The Seattle Public Library'
       ]
 
-    a_librarian_will_respond =
-      DIV style: {fontSize: 14},
+    a_librarian_will_respond = (width) =>
+      DIV style: {maxWidth: width},
         'A ',
         A
           style: {textDecoration: 'underline'}
@@ -1751,6 +1754,7 @@ SubmitFactCheck = ReactiveComponent
         DIV style: {marginTop: 12},
           'What factual claim do you want researched?'
         AutoGrowTextArea
+          className: 'new_request'
           style:
             width: 390
             height: 60
@@ -1761,23 +1765,36 @@ SubmitFactCheck = ReactiveComponent
           onChange: (e) =>
             @local.research_question = e.target.value
             save(@local)
-        a_librarian_will_respond
+        Button({style: {left: 423, position: 'absolute'}},
+          'submit'
+          (e) =>
+            e.stopPropagation()
+            request =
+              key: '/new/request'
+              suggestion: @local.research_question
+              point: "/point/#{arest.key_id(@discussion.key)}"
+            save(request)
+            $(@getDOMNode()).find('.new_request').val(''))
+        a_librarian_will_respond(255)
       ]
 
+    top_message_style = {maxWidth: 274, marginBottom: 10}
     request_in_progress = =>
       DIV null,
-        'You have requested a Fact Check from The Seattle Public Library'
-      a_librarian_will_respond
+        DIV style: top_message_style,
+          'You have requested a Fact Check from The Seattle Public Library'
+        a_librarian_will_respond()
           
     request_completed = =>
-      DIV null,
+      [DIV style: top_message_style,
         'This point has been Fact-Checked by The Seattle Public Library'
-      DIV null,
+      DIV style: {marginBottom: 10},
         'They found _________'
-      DIV style: {fontSize: 14},
+      DIV null,
         A style: {textDecoration: 'underline'},
           "See the details"
-        "of the librarians' research below."
+        " of the librarians' research below."
+      ]
 
 
     # Determine our current state

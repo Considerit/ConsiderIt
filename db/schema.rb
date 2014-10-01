@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140923035805) do
+ActiveRecord::Schema.define(version: 20140930175613) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -142,6 +142,7 @@ ActiveRecord::Schema.define(version: 20140923035805) do
     t.datetime "followable_last_notification"
     t.integer  "moderation_status"
     t.integer  "thanks_count",                           default: 0
+    t.integer  "point_id"
   end
 
   add_index "comments", ["account_id", "commentable_id", "commentable_type", "moderation_status"], name: "select_comments", using: :btree

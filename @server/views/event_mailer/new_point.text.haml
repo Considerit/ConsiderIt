@@ -19,13 +19,10 @@ Hi #{@user.first_name},
 "#{@point.nutshell}"
 = "\r\n"
 
-Read and discuss further: #{@host}/#{@proposal.long_id}/?z=1
+Read and discuss further: #{@host}/#{@proposal.long_id}/?selected=%2Fpoint%2F#{@point.id}&z=1
+
 = "\r\n"
 
 \----
 
 = render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this proposal'}
-
-
-= "\r\n"
-#{@options[:app_title]} is powered by http://consider.it

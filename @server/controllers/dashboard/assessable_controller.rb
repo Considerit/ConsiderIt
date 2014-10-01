@@ -184,6 +184,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     result['key'] = "/request/#{request.id}?original_id=#{original_id}"
     remap_key(params[:key], "/request/#{request.id}")
 
+    dirty_key "/comments/#{point.id}"
     render :json => [result, assessment] 
   end
 

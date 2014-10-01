@@ -180,7 +180,11 @@ PageTransition =
       # The decision board will have to expand for crafting and collapse into to the Give Opinion button in results
       when 'decisionboard'
         if root.proposal_mode == 'crafting'
-          decision_board_style =  { translateX: 0, translateY: 10, width: DECISION_BOARD_WIDTH, minHeight: 275 }
+          decision_board_style =
+            translateX: 0
+            translateY: 10
+            width: DECISION_BOARD_WIDTH
+            minHeight: 275
 
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
 
@@ -200,7 +204,12 @@ PageTransition =
           gutter = .1 * give_opinion_button_width
           opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * slider_position/HISTOGRAM_WIDTH
 
-          decision_board_style =  { translateX: opinion_region_x, translateY: -18, width: give_opinion_button_width, minHeight: 32, marginTop: 0}
+          decision_board_style =
+            translateX: opinion_region_x
+            translateY: -18
+            width: give_opinion_button_width
+            minHeight: 32
+            marginTop: 0
 
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
 
@@ -948,6 +957,74 @@ DecisionBoard = ReactiveComponent
   displayName: 'DecisionBoard'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
+  render : ->
+    root = @root
+    current_user = @data('/current_user')
+    
+    your_opinion = @data(@proposal.your_opinion)
+    published = your_opinion.published
+
+    selected_point = @root.selected_point && root.proposal_mode == 'crafting'
+    selected_wing_point = selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
+    
+    opinion_region_style = {width: DECISION_BOARD_WIDTH}
+    decision_board_style = {}
+    if selected_wing_point
+      decision_board_style.filter = 'grayscale(1)'
+      decision_board_style['-webkit-filter'] = 'grayscale(1)'
+      decision_board_style.opacity = '.4'
+    else if selected_point
+      decision_board_style.borderColor = "#ccc"
+
+    DIV className:'opinion_region focal_wrapper', style: opinion_region_style,
+      Slider
+        width: HISTOGRAM_WIDTH
+
+      DIV 
+        className:'decision_board_body'
+        style: decision_board_style
+        onClick: => if root.proposal_mode == 'results' then togglePage('crafting', 'give_opinion_button')
+      ,
+
+        DIV null, 
+          # only shown during crafting, but needs to be present always for animation
+          DIV className: 'your_points',
+            # your pros
+            YourPoints { key: 'your_pro_points', valence: 'pros' }
+
+            # your cons
+            YourPoints { key: 'your_con_points', valence: 'cons' }
+
+          # only shown during results, but needs to be present always for animation
+          A 
+            className:'give_opinion_button primary_button'
+          , if published then 'Update your Opinion' else 'Give your Opinion'
+
+      DIV className: 'decision_board_footer', style: decision_board_style, 
+        DIV 
+          className:'save_opinion_button primary_button'
+          onClick: @saveYourOpinion
+        , if published then 'See the results' else 'Save your opinion and see results'
+
+        if root.proposal_mode == 'crafting'
+          A className:'follow_proposal',
+            INPUT
+              type:      'checkbox'
+              id:        "follow_proposal"
+              name:      "follow_proposal"
+              checked:   @proposal.is_following
+              onChange: =>
+                @proposal.is_following = !@proposal.is_following
+                save @proposal
+            LABEL htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
+
+        if !published
+          A 
+            className:'cancel_opinion_button primary_cancel_button'
+            onClick: (=> togglePage('results', 'cancel_button'))
+          , 'or just skip to the results'  
+
+
   componentDidMount : ->
     @setStickyHeader()
 
@@ -1027,75 +1104,6 @@ DecisionBoard = ReactiveComponent
       #we'll need to publish this opinion after auth is completed
       @root.opinions_to_publish.push(@proposal.your_opinion)
       save(@root)
-
-
-  render : ->
-    root = @root
-    current_user = @data('/current_user')
-    
-    your_opinion = @data(@proposal.your_opinion)
-    published = your_opinion.published
-
-    selected_point = @root.selected_point && root.proposal_mode == 'crafting'
-    selected_wing_point = selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
-    
-    opinion_region_style = {width: DECISION_BOARD_WIDTH}
-    decisionboard_style = decision_board_footer_style = {}
-    if selected_wing_point
-      decisionboard_style.filter = 'grayscale(1)'
-      decisionboard_style['-webkit-filter'] = 'grayscale(1)'
-      decisionboard_style.opacity = '.4'
-    else if selected_point
-      decisionboard_style.borderColor = "#ccc"
-
-    DIV className:'opinion_region focal_wrapper', style: opinion_region_style,
-      Slider
-        width: HISTOGRAM_WIDTH
-
-      DIV 
-        className:'decision_board_body'
-        style: decisionboard_style
-        onClick: => if root.proposal_mode == 'results' then togglePage('crafting', 'give_opinion_button')
-      ,
-
-        DIV null, 
-          # only shown during crafting, but needs to be present always for animation
-          DIV className: 'your_points',
-            # your pros
-            YourPoints { key: 'your_pro_points', valence: 'pros' }
-
-            # your cons
-            YourPoints { key: 'your_con_points', valence: 'cons' }
-
-          # only shown during results, but needs to be present always for animation
-          A 
-            className:'give_opinion_button primary_button'
-          , if published then 'Update your Opinion' else 'Give your Opinion'
-
-      DIV className: 'decision_board_footer', style: decision_board_footer_style, 
-        DIV 
-          className:'save_opinion_button primary_button'
-          onClick: @saveYourOpinion
-        , if published then 'See the results' else 'Save your opinion and see results'
-
-        if root.proposal_mode == 'crafting'
-          A className:'follow_proposal',
-            INPUT
-              type:      'checkbox'
-              id:        "follow_proposal"
-              name:      "follow_proposal"
-              checked:   @proposal.is_following
-              onChange: =>
-                @proposal.is_following = !@proposal.is_following
-                save @proposal
-            LABEL htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
-
-        if !published
-          A 
-            className:'cancel_opinion_button primary_cancel_button'
-            onClick: (=> togglePage('results', 'cancel_button'))
-          , 'or just skip to the results'  
-
 
 ##
 # YourPoints
@@ -1630,8 +1638,10 @@ Discussion = ReactiveComponent
 
 
           AutoGrowTextArea
+            className: 'new_comment'
             placeholder: (logged_in and 'Write a new comment') or ''
             disabled: not logged_in
+            onChange: (e) => @local.new_comment = e.target.value; save(@local)
             style:
               marginLeft: 60
               width: 390
@@ -1640,6 +1650,21 @@ Discussion = ReactiveComponent
               fontSize: 16
               border: if not logged_in then 'dashed 1px'
 
+          DIV style: {textAlign: 'right'},
+            DIV
+              style:
+                backgroundColor: considerit_blue
+                borderRadius: 8
+                color: 'white'
+                width: 138
+                padding: '3px 10px'
+                fontWeight: 600
+                textAlign: 'center'
+                marginLeft: 314
+              onClick: (e) =>
+                e.stopPropagation()
+                console.log('Gonna add comment', @local.new_comment)
+              'Save comment'
 
 ##
 # EditPoint
@@ -1833,7 +1858,10 @@ Avatar = ReactiveComponent
 AutoGrowTextArea = ReactiveComponent
   displayName: 'AutoGrowTextArea'  
 
-  autoGrow : -> 
+  # You can pass an onChange() handler in to props that will get
+  # called
+  onChange: (e) ->
+    @props.onChange?(e)
     scroll_height = @getDOMNode().scrollHeight
     if scroll_height > @getDOMNode().clientHeight
       @local.height = scroll_height + 5
@@ -1843,7 +1871,7 @@ AutoGrowTextArea = ReactiveComponent
     if !@local.height
       @local.height = @props.min_height
 
-    @transferPropsTo TEXTAREA onKeyUp: @autoGrow, style: {height: @local.height} 
+    @transferPropsTo TEXTAREA onChange: @onChange, style: {height: @local.height} 
 
 
 CharacterCountTextInput = ReactiveComponent

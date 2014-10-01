@@ -282,7 +282,7 @@ class CurrentUserController < ApplicationController
             redirect_to path
             return
           else 
-            render :json => response
+            render :json => [response]
           end
         else
           @errors = errors.values().flatten

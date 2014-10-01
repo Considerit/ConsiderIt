@@ -2,16 +2,19 @@ class Comment < ActiveRecord::Base
   #is_reflectable
   include Moderatable #, Followable
 
-  scope :public_fields, -> {select('id, body, user_id, commentable_type, created_at, commentable_id, moderation_status')}
+  class_attribute :my_public_fields
+  self.my_public_fields = [:id, :body, :user_id, :created_at, :point_id, :moderation_status ]
+
+  scope :public_fields, -> {select(self.my_public_fields)}
+
   
   # has_paper_trail :only => [:title, :body, :subject, :user_id]  
   
-  #acts_as_nested_set :scope => [:commentable_id, :commentable_type]
   validates_presence_of :body
   validates_presence_of :user
     
   belongs_to :user
-  belongs_to :commentable, :polymorphic=>true, :touch => true
+  belongs_to :point
 
   acts_as_tenant :account
 
@@ -24,28 +27,38 @@ class Comment < ActiveRecord::Base
     Comment.where('id > -1') #tacked on this where in order to enable chaining
   }
 
-  # Helper class method that allows you to build a comment
-  # by passing a commentable object, a user_id, and comment text
-  # example in readme
-  def self.build_from(obj, user_id, comment)
-    c = self.new
-    c.commentable_id = obj.id 
-    c.commentable_type = obj.class.name 
-    c.body = comment 
-    c.user_id = user_id
-    c
+  def as_json(options={})
+    options[:only] ||= Comment.my_public_fields
+    result = super(options)
+    make_key(result, 'comment')
+    stubify_field(result, 'user')
+    stubify_field(result, 'point')
+    result
   end
 
-  def violation
-    false
-  end
 
-  def root_object
-    commentable_type.constantize.find(commentable_id)
-  end
+  # Fetches all comments associated with this Point. 
+  # Because we generally render fact-checks in the comment stream, we also return
+  # fact-checks for this point  
+  def self.comments_for_point(point)
+    current_tenant = Thread.current[:tenant]
 
-  def text(max_len = 140)
-    body.length > max_len ? "#{body[(0..max_len)]}..." : body
+    comments = {
+      :comments => point.comments,
+      :key => "/comments/#{point.id}"
+    }
+
+    if current_tenant.assessment_enabled
+      comments.update({
+        :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
+        :verdicts => Assessable::Verdict.all,
+        :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
+        :already_requested_assessment => current_user && Assessable::Request.where(:assessable_id => point.id, :assessable_type => 'Point', :user_id => current_user.id).count > 0
+      })
+    end
+
+    comments
+
   end
 
 end

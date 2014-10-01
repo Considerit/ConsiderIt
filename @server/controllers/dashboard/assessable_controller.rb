@@ -125,6 +125,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
       assessment.update_verdict()
       assessment.published_at = Time.now.utc      
       assessment.save
+
       ActiveSupport::Notifications.instrument("assessment_completed", 
         :assessment => assessment,
         :current_tenant => current_tenant,
@@ -137,43 +138,53 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
   ### User facing
   # create a new assessment request
+  # "/request_assessment/:point_id"
+
   def create
     authorize! :create, Assessable::Request
 
-    params[:request][:user_id] = current_user.id
-    params[:request][:account_id] = current_tenant.id
+    point = Point.find(key_id(params['point']))
 
-    assessable_type = params[:request][:assessable_type]
-    assessable_id = params[:request][:assessable_id]
+    request = {
+      'suggestion' => params['suggestion'],
+      'user_id' => current_user && current_user.id || nil,
+      'account_id' => current_tenant.id,
+      'assessable_type' => 'Point',
+      'assessable_id' => point.id
+    }
 
-    request = Assessable::Request.new params[:request].permit!
+    request = Assessable::Request.new request
 
-    assessment = Assessable::Assessment.where(:assessable_type => assessable_type, :assessable_id => assessable_id).first
+    assessment = Assessable::Assessment.where(:assessable_type => request['assessable_type'], :assessable_id => request['assessable_id']).first
     if !assessment
       create_attrs = {
         :account_id => current_tenant.id, 
         :assessable_type => assessable_type, 
         :assessable_id => assessable_id }
         
-      assessment = Assessable::Assessment.create! ActionController::Parameters.new(create_attrs).permit!
+      assessment = Assessable::Assessment.create! create_attrs
 
       ActiveSupport::Notifications.instrument("new_assessment_request", 
         :assessment => assessment,
         :current_tenant => current_tenant,
         :mail_options => mail_options
       )
-
     end
 
     request.assessment = assessment
     request.save
 
-    begin      
+    begin
       assessment.root_object.follow!(current_user, :follow => true, :explicit => false)
     rescue
     end
 
-    render :json => {:request => request, :assessment => assessment}
+    original_id = key_id(params[:key])
+    result = request.as_json
+    result['key'] = "/request/#{request.id}?original_id=#{original_id}"
+    remap_key(params[:key], "/request/#{request.id}")
+
+    render :json => [result, assessment] 
   end
 
 
@@ -233,7 +244,7 @@ ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
       notification_type = 'included point'
     end
 
-    EventMailer.point_new_assessment(follow.user, assessable, assessment, mail_options, notification_type).deliver!
+    EventMailer.new_assessment(follow.user, assessable, assessment, mail_options, notification_type).deliver!
 
   end
 

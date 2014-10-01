@@ -122,6 +122,7 @@
       @comments
 
     firstName : ->
+      console.log 'NAME', @get('name'), @attributes
       @get('name').split(' ')[0]
 
   class Entities.OperatingUser extends Entities.User
@@ -214,6 +215,7 @@
     getUser : (user_id) ->
       user = @all_users.get user_id
       if !user
+        console.log user_id
         user = new Entities.User {name : '<removed>'}
       user
 

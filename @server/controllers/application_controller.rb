@@ -183,12 +183,15 @@ private
         end
       end
 
-      # Grab dirtied proposals
       if key.match "/proposal/"
         id = key[10..key.length]
         proposal = Proposal.find_by_id(id) || Proposal.find_by_long_id(id)
         response.append proposal.proposal_data
 
+      elsif key.match "/comments/"
+        point = Point.find(key[10..key.length])
+        response.append Comment.comments_for_point(point)
+      
       elsif key == '/customer'
         response.append current_tenant.as_json
 
@@ -223,9 +226,10 @@ private
 
         if current_tenant.assessment_enabled
           clean.update({
-            :assessments => proposal.assessments.completed.public_fields,
-            :claims => proposal.assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
-            :verdicts => jsonify_objects(Assessable::Verdict.all, 'verdict')
+            :assessments => proposal.assessments.completed,
+            :claims => proposal.assessments.completed.map {|a| a.claims}.compact.flatten,
+            :verdicts => Assessable::Verdict.all,
+            :requests => proposal.requests
           })
         end
 

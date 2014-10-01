@@ -911,18 +911,6 @@ button.primary_button, input[type="submit"]
 
 $community_point_mouth_width: 17px
 .community_point
-  .community_point_mouth
-    position: absolute
-    width: $community_point_mouth_width
-    top: 8px
-    z-index: 1
-
-  &.pro .community_point_mouth
-    left: -$community_point_mouth_width
-  &.con .community_point_mouth
-    right: -$community_point_mouth_width
-    +transform(scaleX(-1))
-
   .point_content
     border-radius: 16px
     padding: $vertical_baseline / 2 $grid_gutter / 2 
@@ -932,6 +920,21 @@ $community_point_mouth_width: 17px
     box-shadow: #B5B5B5 0 1px 1px 0px
     min-height: 34px
     
+
+.community_point_mouth
+  position: absolute
+  width: $community_point_mouth_width
+  top: 8px
+  z-index: 1
+
+.community_point.pro .community_point_mouth
+  left: -$community_point_mouth_width
+.community_point.con .community_point_mouth
+  right: -$community_point_mouth_width
+  +transform(scaleX(-1))
+
+.decision_board_point .community_point_mouth
+  left: -$community_point_mouth_width
 
 // Point text
 .point_nutshell
@@ -952,6 +955,9 @@ $community_point_mouth_width: 17px
 .point_details_tease:hover
   text-decoration: underline
   cursor: pointer
+
+.point_details p, .comments p
+  margin-top: 1em
 
 // .point_details 
   // +font-size(-2)
@@ -1341,3 +1347,17 @@ $avatar_preview_size: 60px
   .l_header a
     color: #707070
     font-weight: 600
+
+
+///// GENERAL
+
+.flipped
+  -moz-transform: scaleX(-1)
+  -o-transform: scaleX(-1)
+  -webkit-transform: scaleX(-1)
+  transform: scaleX(-1)
+  filter: FlipH
+  -ms-filter: "FlipH"
+
+.hover_pointer
+  cursor: pointer

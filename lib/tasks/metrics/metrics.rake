@@ -296,7 +296,7 @@ namespace :metrics do
       inclusions_all = Inclusion.where("proposal_id in (?) and point_id not in (?)", proposals, points)
 
       all_points = Point.where("proposal_id in (?)", proposals)
-      comments_all = Comment.where("commentable_id in (?) and commentable_id not in (?)", all_points.map {|p| p.id}.compact, points)
+      comments_all = Comment.where("point_id in (?) and point_id not in (?)", all_points.map {|p| p.id}.compact, points)
 
       all_views = PointListing.where("point_id in (?) and point_id not in (?)", all_points.map {|p| p.id}.compact, points)
 
@@ -311,7 +311,7 @@ namespace :metrics do
     else
       inclusions_all = Inclusion.where("point_id in (?)", points)
 
-      comments_all = Comment.where("commentable_id in (?)", points)
+      comments_all = Comment.where("point_id in (?)", points)
 
       all_views = PointListing.where("point_id in (?)", points)
 
@@ -518,13 +518,13 @@ namespace :metrics do
     nf_all_points.each do |p|
       is_pros[p.id] = p
     end
-    nf_comments_all = Comment.where("commentable_id in (?) and commentable_id not in (?) AND created_at < (?)", all_points.map {|p| p.id}.compact, points, election_date)
+    nf_comments_all = Comment.where("point_id in (?) and point_id not in (?) AND created_at < (?)", all_points.map {|p| p.id}.compact, points, election_date)
 
     nf_all_views = PointListing.where("point_id in (?) and point_id not in (?) and created_at is not null  AND created_at < (?)", all_points.map {|p| p.id}.compact, points, election_date)
 
     fc_inclusions_all = Inclusion.where("point_id in (?) AND created_at < (?)", points, election_date)
 
-    fc_comments_all = Comment.where("commentable_id in (?) AND created_at < (?)", points, election_date)
+    fc_comments_all = Comment.where("point_id in (?) AND created_at < (?)", points, election_date)
 
     fc_all_views = PointListing.where("point_id in (?) and created_at is not null AND created_at < (?)", points, election_date)
 
@@ -622,7 +622,7 @@ namespace :metrics do
           # date of fact check
           row.push was_checked || simulate_fact_check ? assessment.updated_at : nil
 
-          comments = Comment.where(:commentable_id => view.point_id, :user_id => view.user_id)
+          comments = Comment.where(:point_id => view.point_id, :user_id => view.user_id)
           # An indicator for whether or not this viewer made a comment
           row.push comments.count > 0
 

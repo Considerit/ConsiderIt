@@ -42,7 +42,7 @@ class Proposal < ActiveRecord::Base
 
       local_jurisdictions = []   
       
-      user_tags = current_user.tags && user_tags = JSON.load(current_user.tags)
+      user_tags = current_user.tags && user_tags ? JSON.load(current_user.tags) : nil
       if user_tags && user_tags['zip']
         # If the user has a zipcode, we'll want to include all the jurisdictions 
         # associated with that zipcode. We'll also want to insert them between the statewide

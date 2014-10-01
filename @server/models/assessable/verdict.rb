@@ -21,4 +21,12 @@ class Assessable::Verdict < ActiveRecord::Base
     end
   end
 
+
+  def as_json(options={})
+    result = super(options)
+    result['key'] = "verdict/#{id}"
+    result
+  end
+
+
 end

@@ -18,21 +18,21 @@ class AlertMailer < Mailer
 
   end
 
-  # def content_to_assess(assessment, user, tenant)
-  #   @user = user
-  #   @host = tenant.host_with_port
-  #   @url = assessment_index_url(:host => @host)
-  #   @assessment = assessment
-  #   @tenant = tenant
+  def content_to_assess(assessment, user, tenant)
+    @user = user
+    @host = tenant.host_with_port
+    @url = assessment_index_url(:host => @host)
+    @assessment = assessment
+    @tenant = tenant
 
-  #   subject = "A new fact check request"
+    subject = "A new fact check request"
 
-  #   to = format_email user.email, user.name    
-  #   from = format_email(from_email(tenant), tenant.app_title)
+    to = format_email user.email, user.name    
+    from = format_email(from_email(tenant), tenant.app_title)
 
-  #   mail(:from => from, :to => to, :subject => "[#{tenant.app_title}] #{subject}")
+    mail(:from => from, :to => to, :subject => "[#{tenant.app_title}] #{subject}")
 
-  # end
+  end
 
   private
 

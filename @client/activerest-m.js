@@ -495,7 +495,9 @@
         if (window.on_client_error)
             window.on_client_error(e)
     }
-
+    function key_id(string) {
+        return string.match(/\/[^\/]+\/(\d+)/)[1]
+    }
 
     // Camelcased API options
     var updateCache=update_cache, serverFetch=server_fetch,
@@ -508,7 +510,7 @@
     window.destroy = destroy
 
     // Make the private methods accessible under "window.arest"
-    vars = 'cache fetch save server_fetch serverFetch server_save serverSave update_cache updateCache csrf keys_4_component components_4_key components execution_context One_To_Many clone dirty_components affected_keys clear_matching_objects deep_map'.split(' ')
+    vars = 'cache fetch save server_fetch serverFetch server_save serverSave update_cache updateCache csrf keys_4_component components_4_key components execution_context One_To_Many clone dirty_components affected_keys clear_matching_objects deep_map key_id'.split(' ')
     window.arest = {}
     for (var i=0; i<vars.length; i++)
         window.arest[vars[i]] = eval(vars[i])

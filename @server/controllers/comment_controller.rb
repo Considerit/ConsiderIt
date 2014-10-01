@@ -47,7 +47,7 @@ class CommentController < ApplicationController
 
         point.follow!(current_user, :follow => true, :explicit => false)
 
-        point.comment_count = commentable.comments.count
+        point.comment_count = point.comments.count
         point.save
       else 
         result = {errors: ['could not save comment']}
@@ -82,5 +82,14 @@ class CommentController < ApplicationController
 
   end
 
-end
+  def destroy
+    comment = Comment.find params[:id]
+    authorize! :destroy, comment
 
+    dirty_key("/comments/#{comment.point_id}")
+    comment.destroy
+
+    render :json => []
+  end
+
+end

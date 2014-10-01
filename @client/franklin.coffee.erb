@@ -52,6 +52,11 @@ cream           = 'rgb(255, 254, 245)'
 
 capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
 L = loading_indicator = DIV null, 'Loading...'
+split_paragraphs = (string) ->
+  paragraphs = string.split(/(\r?\n|<br>|<br\/>|<br \/>|<p>)/g)
+  for para in paragraphs
+    P null, para
+
 
 # safari only respects -webkit-transform
 crossbrowserTransformProperty = (props) -> _.extend props,
@@ -1325,11 +1330,8 @@ Point = ReactiveComponent
           if point.text
             if is_selected or
               (point.nutshell.length + point.text.length) < 210
-                # Split the point details into paragraphs
-                paragraphs = point.text.split(/(\r?\n|<br>|<br\/>|<br \/>|<p>)/g)
                 DIV className: 'point_details',
-                  for para in paragraphs
-                    P null, para
+                  split_paragraphs(point.text)
             else
               SPAN className: 'point_details_tease',
                 $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + "... [more]"
@@ -1596,7 +1598,7 @@ Discussion = ReactiveComponent
               style:
                 marginLeft: 60
                 wordWrap: 'break-word'
-              comment.body
+              split_paragraphs(comment.body)
 
       # Write a new comment
       if logged_in
@@ -1636,12 +1638,10 @@ Discussion = ReactiveComponent
                 color: cityclub_navy
                'Log in to write a comment'
 
-
           AutoGrowTextArea
             className: 'new_comment'
             placeholder: (logged_in and 'Write a new comment') or ''
             disabled: not logged_in
-            value: @local.new_comment
             onChange: (e) => @local.new_comment = e.target.value; save(@local)
             style:
               marginLeft: 60
@@ -1670,9 +1670,7 @@ Discussion = ReactiveComponent
                   user: fetch('/current_user').user
                   point: "/point/#{arest.key_id(@props.key)}"
                 save(comment)
-
-                @local.new_comment = ''
-                save(@local)
+                $(@getDOMNode()).find('.new_comment').val('')
                 
               'Save comment'
 
@@ -1882,7 +1880,6 @@ AutoGrowTextArea = ReactiveComponent
       @local.height = @props.min_height
 
     @transferPropsTo TEXTAREA
-      value: @props.value
       onChange: @onChange
       style: {height: @local.height}
 

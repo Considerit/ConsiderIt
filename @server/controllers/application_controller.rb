@@ -226,9 +226,10 @@ private
 
         if current_tenant.assessment_enabled
           clean.update({
-            :assessments => proposal.assessments.completed.public_fields,
-            :claims => proposal.assessments.completed.map {|a| a.claims.public_fields}.compact.flatten,
-            :verdicts => jsonify_objects(Assessable::Verdict.all, 'verdict')
+            :assessments => proposal.assessments.completed,
+            :claims => proposal.assessments.completed.map {|a| a.claims}.compact.flatten,
+            :verdicts => Assessable::Verdict.all,
+            :requests => proposal.requests
           })
         end
 

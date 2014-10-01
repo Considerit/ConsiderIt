@@ -23,10 +23,13 @@ class CurrentUserController < ApplicationController
     errors = {:login => [], :register => [], :reset_password => []}
     min_pass = @min_pass = 4
     logging_out = false
+    signing_in = false
     email_regexp = /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
 
-    log_entry = nil # log_entry is used for logging the action the user took during this update 
-    
+    def log (what)
+      write_to_log({:what => what, :where => request.fullpath, :details => nil})
+    end
+
     def try_email_authentication(params)
       puts("Signing in by email and password")
 
@@ -109,7 +112,7 @@ class CurrentUserController < ApplicationController
       puts("Initiating reset_password")
       errors[:reset_password].concat(send_reset_password_token(params))
       puts("Errors are #{errors[:reset_password]}")
-      log_entry = 'requested password reset'
+      log('requested password reset')
 
     end
 
@@ -120,8 +123,7 @@ class CurrentUserController < ApplicationController
       dirty_key '/page/homepage'
       dirty_key '/proposals'
       new_current_user()
-      log_entry = 'logged out'
-
+      log('logged out')
 
     else
       # Otherwise, we'll
@@ -147,18 +149,27 @@ class CurrentUserController < ApplicationController
 
         # Sign in by password reset token
         if params[:reset_password_token]
-          reset_error = try_password_reset_authentication(params)
-          errors[:reset_password].append(reset_error) if reset_error
-          log_entry = 'sign in by reset password token'
+          error_msg = try_password_reset_authentication(params)
+          if error_msg
+            errors[:reset_password].append(error_msg)
+          else
+            log('sign in by reset password token')
+            signing_in = true
+          end
 
         # Sign in by email and password
         else
-          auth_error = try_email_authentication(params)
-          errors[:login].append(auth_error) if auth_error
-          log_entry = 'sign in by email' if !log_entry
+          error_msg = try_email_authentication(params)
+          if error_msg
+            errors[:login].append(error_msg)
+          else
+            signing_in = true
+            log('sign in by email')
+          end
         end
-      else
+      end
 
+      if !signing_in
         # 2. Now we know the user's account.  Let them manipulate themself:
         #   • Update their name, bio, photo...
         #   • Update their email (if it doesn't already exist)
@@ -167,7 +178,7 @@ class CurrentUserController < ApplicationController
         # Update their name, bio, photo, and anonymity.
         permitted = ActionController::Parameters.new(new_params).permit!
 
-        if current_user.update_attributes(permitted) 
+        if current_user.update_attributes(permitted)
           puts("Updating params. #{new_params}; permitted version #{permitted}")
           if !current_user.save
             raise 'Error saving basic current_user parameters!'

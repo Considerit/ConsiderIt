@@ -34,6 +34,8 @@ MAX_HISTOGRAM_HEIGHT = 200
 DESCRIPTION_WIDTH = BODY_WIDTH
 
 # Colors
+considerit_blue = '#2478CC'
+
 cityclub_navy   = 'rgb(0,   68,  124)'
 cityclub_green  = 'rgb(165, 206, 57)'
 cityclub_blue   = 'rgb(0,   182, 236)'
@@ -50,6 +52,11 @@ cream           = 'rgb(255, 254, 245)'
 
 capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
 L = loading_indicator = DIV null, 'Loading...'
+split_paragraphs = (string) ->
+  paragraphs = string.split(/(\r?\n|<br>|<br\/>|<br \/>|<p>)/g)
+  for para in paragraphs
+    P null, para
+
 
 # safari only respects -webkit-transform
 crossbrowserTransformProperty = (props) -> _.extend props,
@@ -89,7 +96,8 @@ togglePage = (proposal_mode, triggered_by) ->
           triggered_by: triggered_by 
 
       root.proposal_mode = proposal_mode
-      save(root)
+      root.selected_point = null
+      save root
 
       # Kludge for tracking when the page changes
       _route_changed = true
@@ -177,7 +185,11 @@ PageTransition =
       # The decision board will have to expand for crafting and collapse into to the Give Opinion button in results
       when 'decisionboard'
         if root.proposal_mode == 'crafting'
-          decision_board_style =  { translateX: 0, translateY: 10, width: DECISION_BOARD_WIDTH, minHeight: 275 }
+          decision_board_style =
+            translateX: 0
+            translateY: 10
+            width: DECISION_BOARD_WIDTH
+            minHeight: 275
 
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
 
@@ -197,7 +209,12 @@ PageTransition =
           gutter = .1 * give_opinion_button_width
           opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * slider_position/HISTOGRAM_WIDTH
 
-          decision_board_style =  { translateX: opinion_region_x, translateY: -18, width: give_opinion_button_width, minHeight: 32, marginTop: 0}
+          decision_board_style =
+            translateX: opinion_region_x
+            translateY: -18
+            width: give_opinion_button_width
+            minHeight: 32
+            marginTop: 0
 
           $el.find('.decision_board_body').velocity decision_board_style, {duration}
 
@@ -826,18 +843,6 @@ Slider = ReactiveComponent
     crossbrowserTransformProperty sty for sty in [
       face_left_eye_style, face_right_eye_style, face_mouth_style]
 
-
-    # slider triangles are the edge of the slider that extend sharply to the arbitrary sized extreme segments
-    # slider_triangle_width = @data('histogramdata').segments[0].length * @data('histogramdata').avatar_size
-    # triangle_width = 
-    #   if sticky
-    #   then 0 
-    #   else slider_triangle_width
-
-    # slider_base_triangle_style = 
-    #   borderLeft: "#{triangle_width}px solid transparent"
-    #   borderRight: "#{triangle_width}px solid transparent"
-
     # Keep feedback centered over handle, but keep within the bounds of the slider region 
     # when the slider is in an extreme position. 
     feedback_left = @props.width * -(stance-1) / 2.0 
@@ -858,20 +863,27 @@ Slider = ReactiveComponent
       fontSize: if sticky then '18px' else '29px'
       top: if sticky then '-65px' else '-80px'
 
+    selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
+    selected_wing_point =  selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
+
+    slider_base_style = {width: @props.width}
+    handle_style = {left: slider.clientX}
+    bubblemouth_style = {left: slider.clientX}
+
+    if selected_point
+      handle_style.backgroundColor = "#ccc"
+      handle_style.boxShadow = "0px 1px 0px #aaa"
+      slider_base_style.backgroundColor = "#ddd"
+      bubblemouth_style.visibility = 'hidden' # TODO: use grayscale filter when !selected_wing_point instead of hidding
+
     DIV className: 'slider', style : { left: - (@props.width - DECISION_BOARD_WIDTH) / 2 },
-      DIV className:'slider_base', style : {width: @props.width}, 
-        # DIV 
-        #   className: 'slider_base_triangle_left'
-        #   style: _.extend({}, slider_base_triangle_style, {left: -triangle_width})
-        # DIV 
-        #   className: 'slider_base_triangle_right'
-        #   style: _.extend({}, slider_base_triangle_style, {right: -triangle_width})
+      DIV className:'slider_base', style : slider_base_style, 
         DIV 
           className:'slider_feedback'
           style: slider_feedback_style
         , if !slider.has_moved then 'Give Your Overall Opinion' else "You #{stance_names[segment]}"
 
-        DIV className: 'the_handle', style: {left: slider.clientX}, onMouseUp: @handleMouseUp, onMouseDown: @handleMouseDown, onTouchStart: @handleMouseDown, onTouchMove: @handleMouseMove, onTouchEnd: @handleMouseUp, onTouchCancel: @handleMouseUp,
+        DIV className: 'the_handle', style: handle_style, onMouseUp: @handleMouseUp, onMouseDown: @handleMouseDown, onTouchStart: @handleMouseDown, onTouchMove: @handleMouseMove, onTouchEnd: @handleMouseUp, onTouchCancel: @handleMouseUp,
           if page == 'crafting'
             DIV className: 'face',            
               DIV className: 'face_mouth face_part', style: face_mouth_style
@@ -880,7 +892,7 @@ Slider = ReactiveComponent
           # DIV className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved
           # DIV className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved
 
-        IMG className:'bubblemouth', src: bubblemouth_src, style: {left: slider.clientX}
+        IMG className:'bubblemouth', src: bubblemouth_src, style: bubblemouth_style
     
 
 ##
@@ -949,6 +961,74 @@ OpinionFilter = ReactiveComponent
 DecisionBoard = ReactiveComponent
   displayName: 'DecisionBoard'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
+
+  render : ->
+    root = @root
+    current_user = @data('/current_user')
+    
+    your_opinion = @data(@proposal.your_opinion)
+    published = your_opinion.published
+
+    selected_point = @root.selected_point && root.proposal_mode == 'crafting'
+    selected_wing_point = selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
+    
+    opinion_region_style = {width: DECISION_BOARD_WIDTH}
+    decision_board_style = {}
+    if selected_wing_point
+      decision_board_style.filter = 'grayscale(1)'
+      decision_board_style['-webkit-filter'] = 'grayscale(1)'
+      decision_board_style.opacity = '.4'
+    else if selected_point
+      decision_board_style.borderColor = "#ccc"
+
+    DIV className:'opinion_region focal_wrapper', style: opinion_region_style,
+      Slider
+        width: HISTOGRAM_WIDTH
+
+      DIV 
+        className:'decision_board_body'
+        style: decision_board_style
+        onClick: => if root.proposal_mode == 'results' then togglePage('crafting', 'give_opinion_button')
+      ,
+
+        DIV null, 
+          # only shown during crafting, but needs to be present always for animation
+          DIV className: 'your_points',
+            # your pros
+            YourPoints { key: 'your_pro_points', valence: 'pros' }
+
+            # your cons
+            YourPoints { key: 'your_con_points', valence: 'cons' }
+
+          # only shown during results, but needs to be present always for animation
+          A 
+            className:'give_opinion_button primary_button'
+          , if published then 'Update your Opinion' else 'Give your Opinion'
+
+      DIV className: 'decision_board_footer', style: decision_board_style, 
+        DIV 
+          className:'save_opinion_button primary_button'
+          onClick: @saveYourOpinion
+        , if published then 'See the results' else 'Save your opinion and see results'
+
+        if root.proposal_mode == 'crafting'
+          A className:'follow_proposal',
+            INPUT
+              type:      'checkbox'
+              id:        "follow_proposal"
+              name:      "follow_proposal"
+              checked:   @proposal.is_following
+              onChange: =>
+                @proposal.is_following = !@proposal.is_following
+                save @proposal
+            LABEL htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
+
+        if !published
+          A 
+            className:'cancel_opinion_button primary_cancel_button'
+            onClick: (=> togglePage('results', 'cancel_button'))
+          , 'or just skip to the results'  
+
 
   componentDidMount : ->
     @setStickyHeader()
@@ -1030,59 +1110,6 @@ DecisionBoard = ReactiveComponent
       @root.opinions_to_publish.push(@proposal.your_opinion)
       save(@root)
 
-
-  render : ->
-    root = @root
-    current_user = @data('/current_user')
-    published = @data(@proposal.your_opinion).published
-
-    DIV className:'opinion_region focal_wrapper', style: {width: DECISION_BOARD_WIDTH},
-      Slider
-        width: HISTOGRAM_WIDTH
-
-      DIV 
-        className:'decision_board_body'
-        onClick: => if root.proposal_mode == 'results' then togglePage('crafting', 'give_opinion_button')
-      ,
-
-        DIV null, 
-          # only shown during crafting, but needs to be present always for animation
-          DIV className: 'your_points',
-            # your pros
-            YourPoints { key: 'your_pro_points', valence: 'pros' }
-
-            # your cons
-            YourPoints { key: 'your_con_points', valence: 'cons' }
-
-          # only shown during results, but needs to be present always for animation
-          A 
-            className:'give_opinion_button primary_button'
-          , if published then 'Update your Opinion' else 'Give your Opinion'
-
-      DIV 
-        className:'save_opinion_button primary_button'
-        onClick: @saveYourOpinion
-      , if published then 'Explore the results' else 'Save your opinion and see results'
-
-      if root.proposal_mode == 'crafting'
-        A className:'follow_proposal',
-          INPUT
-            type:      'checkbox'
-            id:        "follow_proposal"
-            name:      "follow_proposal"
-            checked:   @proposal.is_following
-            onChange: =>
-              @proposal.is_following = !@proposal.is_following
-              save @proposal
-          LABEL htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
-
-      if !published
-        A 
-          className:'cancel_opinion_button primary_cancel_button'
-          onClick: (=> togglePage('results', 'cancel_button'))
-        , 'or just skip to the results'  
-
-
 ##
 # YourPoints
 # List of important points for the active user. 
@@ -1155,6 +1182,42 @@ YourPoints = ReactiveComponent
 CommunityPoints = ReactiveComponent
   displayName: 'CommunityPoints'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
+  render : ->
+    selected_segment = @data('histogram').selected_segment
+
+    #filter to pros or cons & down to points that haven't been included
+    points = @buildPointsList() #todo: memoize
+    newpoint_threshold = @buildNewPointThreshold() #todo: memoize
+    label = capitalize @props.key
+    pro_is_selected = @root.selected_point and @data(@root.selected_point).is_pro
+
+    # TODO: The minheight below is not a principled or complete solution to two sizing issues: 
+    #           1) resizing the reasons region when the height of the decision board 
+    #              (which is absolutely positioned) grows taller the wing points
+    #           2) when filtering the points on result page to a segment without many inclusions,
+    #              the document height can jarringly fluctuate
+    DIV
+      className: "points_by_community #{@props.key}_by_community"
+      style:
+        width: POINT_CONTENT_WIDTH
+        minHeight: (if @proposal.points.length > 4 then jQuery(window).height() else 400)
+        zIndex: if pro_is_selected and @props.key == 'pros'
+                  '6'
+    ,
+      DIV className:'points_heading_label',
+        if @data('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
+        P className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
+          if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
+
+      UL null,
+        if points.length > 0
+          for point in points
+            Point
+              key: point.key,
+              is_new: Date.parse(point.created_at) > newpoint_threshold
+              location_class : 'community_point'
+        else
+          LI className: 'empty_point', "No #{label} listed"
 
   buildNewPointThreshold : ->
     # Grab the 10th percentile
@@ -1202,38 +1265,6 @@ CommunityPoints = ReactiveComponent
 
     points
 
-  render : ->
-    selected_segment = @data('histogram').selected_segment
-
-    #filter to pros or cons & down to points that haven't been included
-    points = @buildPointsList() #todo: memoize
-    newpoint_threshold = @buildNewPointThreshold() #todo: memoize
-    label = capitalize @props.key
-
-    # TODO: The minheight below is not a principled or complete solution to two sizing issues: 
-    #           1) resizing the reasons region when the height of the decision board 
-    #              (which is absolutely positioned) grows taller the wing points
-    #           2) when filtering the points on result page to a segment without many inclusions,
-    #              the document height can jarringly fluctuate
-    DIV 
-      className:"points_by_community #{@props.key}_by_community"
-      style: { width: POINT_CONTENT_WIDTH, minHeight: (if @proposal.points.length > 4 then jQuery(window).height() else 400) }
-    , 
-      DIV className:'points_heading_label', 
-        if @data('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
-        P className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
-          if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
-
-      UL null, 
-        if points.length > 0
-          for point in points
-            Point 
-              key: point.key, 
-              is_new: Date.parse(point.created_at) > newpoint_threshold
-              location_class : 'community_point'
-        else
-          LI className: 'empty_point', "No #{label} listed"
-
 
 
 
@@ -1243,6 +1274,94 @@ CommunityPoints = ReactiveComponent
 # A single point in a list. 
 Point = ReactiveComponent
   displayName: 'Point'
+
+  render : ->
+    point = @data()
+
+    is_selected = @root.selected_point == @props.key
+
+    selected_segment = @data('histogram').selected_segment
+    author_opinion = @data(userOpinion(point.user))
+    current_user = @data('/current_user')
+
+    point_content_style = { width: POINT_CONTENT_WIDTH }
+    if is_selected
+      _.extend point_content_style,
+        border: "3px solid #{considerit_blue}"
+        left: -3
+        top: -3
+        width: point_content_style.width + 6
+        backgroundColor: 'white'
+        marginBottom: 2
+
+    if is_selected and @props.location_class == 'decision_board_point'
+      _.extend point_content_style,
+        padding: 8
+        borderRadius: 8
+        marginTop: -8
+        marginLeft: -8
+        width: point_content_style.width + 16
+
+    LI
+      className: "point closed_point #{@props.location_class}
+        #{if point.is_pro then 'pro' else 'con'}"
+      'data-id':@props.key
+      onClick: @selectPoint
+    ,
+    
+      if @props.location_class == 'community_point' && @props.is_new
+        @renderNewIndicator()
+
+      DIV className:'includers', onMouseEnter: @highlightIncluders, onMouseLeave: @unHighlightIncluders, 
+        if @props.location_class == 'community_point'
+          @renderIncluders()
+
+        if !selected_segment || ( author_opinion && author_opinion.stance_segment == selected_segment )
+          Avatar tag: SPAN, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
+
+      DIV className:'point_content', style : point_content_style,
+        if @props.location_class == 'community_point' or is_selected
+          IMG
+            className: 'community_point_mouth'
+            src: if is_selected then "<%= asset_path 'community_point_mouth_selected.png' %>" else "<%= asset_path 'community_point_mouth.png' %>"
+
+        DIV className:'point_nutshell',
+          point.nutshell
+          if point.text
+            if is_selected or
+              (point.nutshell.length + point.text.length) < 210
+                DIV className: 'point_details',
+                  split_paragraphs(point.text)
+            else
+              SPAN className: 'point_details_tease',
+                $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + "... [more]"
+
+      if current_user.user == point.user && @props.location_class == 'decision_board_point'
+        DIV null,
+          # Should we only allow editing of a point before it is published?
+          # Is an author allowed to edit a point after someone else has included it?
+          A
+            className: 'edit_point'
+            onClick: ((e) =>
+              e.stopPropagation()
+              points = @data(@props.your_points_key)
+              points.editing_points.push(@props.key)
+              save(points))
+            SPAN null, 'edit'
+
+          # Allow the point author to delete this point before it is published.
+          # After it gets published, however, it can influence other people, so the author shouldn't be able to delete.
+          # Later they can just remove it from their list if they don't believe it anymore. 
+          if point.includers.length == 0 || (point.includers.length == 1 && point.includers[0] == current_user.user)
+            A className: 'delete_point', onClick: @deletePoint,
+              SPAN null, 'delete'
+
+      if is_selected
+        point_included = _.contains(@data(@proposal.your_opinion).point_inclusions, point.key)
+        Discussion
+          key:"/comments/#{point.id}"
+          is_pro: point.is_pro
+          in_wings: @root.proposal_mode == 'crafting' and not point_included
 
   componentDidMount : ->
     @setDraggability()
@@ -1282,17 +1401,25 @@ Point = ReactiveComponent
         disabled: disable
 
 
-  showDetails : -> 
-    @local.show_details = !@local.show_details
-    save(@local)
+  selectPoint: (e) ->
+    e.stopPropagation()
+    if @root.selected_point == @props.key # deselect
+      @root.selected_point = null
+      what = 'deselected a point'
+    else
+      what = 'selected a point'
+      @root.selected_point = @props.key
+
+    save @root
 
     window.writeToLog
-      what: 'clicked point'
+      what: what
       details: 
         point: @props.key
 
 
-  deletePoint : -> 
+  deletePoint :(e) ->
+    e.stopPropagation()
     destroy @props.key
 
   ## ##
@@ -1386,60 +1513,191 @@ Point = ReactiveComponent
       style[left_right] = "#{-side_offset}"
       SPAN {style: style}, '-new-'
 
+
+
+Discussion = ReactiveComponent
+  displayName: 'Discussion'
+
   render : -> 
-    point = @data()
+    logged_in = fetch('/current_user').logged_in
+    
+    discussion_style =
+      width: DECISION_BOARD_WIDTH
+      border: "3px solid #{considerit_blue}"
+      position: 'absolute'
+      zIndex: 100
+      padding: '20px 40px'
+      borderRadius: 16
+      backgroundColor: 'white'
 
-    selected_segment = @data('histogram').selected_segment
-    author_opinion = @data(userOpinion(point.user))
-    current_user = @data('/current_user')
+    bubble_mouth_style =
+      position: 'absolute'
+      top: 14
+      width: 27
+      height: 63
 
-    LI 
-      className: "point closed_point #{@props.location_class} 
-        #{if point.is_pro then 'pro' else 'con'}"
-      'data-id':@props.key
-      onClick: @showDetails
-    ,
-  
-      if @props.location_class == 'community_point' && @props.is_new
-        @renderNewIndicator()
+    # Reconfigure discussion board position
+    side = if @props.is_pro then 'left' else 'right'
+    if @props.in_wings
+      discussion_style[side] = 215
+      discussion_style['top'] = 44
+    else
+      discussion_style[side] = if @props.is_pro then -30 else -23
+      discussion_style['marginTop'] = 13
 
-      DIV className:'includers', onMouseEnter: @highlightIncluders, onMouseLeave: @unHighlightIncluders, 
-        if @props.location_class == 'community_point'
-          @renderIncluders()
+    # Reconfigure bubble mouth position
+    if @props.in_wings
+      bubble_mouth_style.right = if @props.is_pro then undefined else -27
+      bubble_mouth_style.left  = if @props.is_pro then -27       else undefined
+    else
+      trans_func = 'rotate(270deg)'
+      if not @props.is_pro
+        trans_func += ' scaleY(-1)'
 
-        if !selected_segment || ( author_opinion && author_opinion.stance_segment == selected_segment )
-          Avatar tag: SPAN, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
+      _.extend bubble_mouth_style,
+        left: if @props.is_pro then 100 else 335
+        top: -45
+        transform:            trans_func
+        '-ms-transform':      trans_func
+        '-moz-transform':     trans_func
+        '-webkit-transform':  trans_func
+        '-o-transform':       trans_func
 
-      DIV className:'point_content', style : { width: POINT_CONTENT_WIDTH },
-        if @props.location_class == 'community_point'
-          IMG 
-            className: 'community_point_mouth'
-            src: "<%= asset_path 'community_point_mouth.png' %>"
+    DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
+      IMG
+        src: "<%= asset_path 'bubblemouth-discussions.png' %>"
+        className: if @props.is_pro then 'flipped' else ''
+        style: bubble_mouth_style
 
-        DIV className:'point_nutshell',
-          point.nutshell
-          if point.text
-            if @local.show_details or 
-              (point.nutshell.length + point.text.length) < 210
-                DIV className: 'point_details', dangerouslySetInnerHTML:{__html: point.text.replace(/(\r?\n|<br>|<br\/>|<br \/>)/g, '<br /><br />').replace(/(<br \/>){4,}/g, '<br /><br />')}
-            else
-              SPAN className: 'point_details_tease', 
-                $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + "... [more]"
+      H1
+        style:
+          textAlign: 'center'
+          fontSize: 41
+          color: considerit_blue
+          marginBottom: 5
+        'Discuss this Point'
+      
+      DIV className: 'comments',
+        for comment in @discussion.comments
+          DIV style: {marginTop: 45, minHeight: 60},
 
-      if current_user.user == point.user && @props.location_class == 'decision_board_point'
-        DIV null,
-          # Should we only allow editing of a point before it is published? 
-          # Is an author allowed to edit a point after someone else has included it?
-          A className: 'edit_point', onClick: (=> points = @data(@props.your_points_key); points.editing_points.push(@props.key); save(points)), 
-            SPAN null, 'edit'
+            # Delete button
+            if comment.user == fetch('/current_user').user
+              DIV
+                className: 'hover_pointer'
+                style:
+                  position: 'absolute'
+                  right: 26
+                  marginTop: -25
+                  color: '#444'
+                  textDecoration: 'underline'
+                onClick: do (key = comment.key) => (e) =>
+                  e.stopPropagation()
+                  if (confirm('Delete this comment?'))
+                    destroy(key)
 
-          # Allow the point author to delete this point before it is published.
-          # After it gets published, however, it can influence other people, so the author shouldn't be able to delete.
-          # Later they can just remove it from their list if they don't believe it anymore. 
-          if point.includers.length == 0 || (point.includers.length == 1 && point.includers[0] == current_user.user)
-            A className: 'delete_point', onClick: @deletePoint, 
-              SPAN null, 'delete'
+                'delete'
 
+            # Comment author name
+            DIV
+              style:
+                position: 'absolute'
+                marginTop: -25
+                fontWeight: 'bold'
+                color: '#666'
+              fetch(comment.user).name + ':'
+
+            # Comment author icon
+            Avatar
+              style:
+                position: 'absolute'
+                width: 50
+                height: 50
+              tag: DIV
+              key: comment.user
+              hide_name: true
+
+            # Comment body
+            DIV
+              style:
+                marginLeft: 60
+                wordWrap: 'break-word'
+              split_paragraphs(comment.body)
+
+      # Write a new comment
+      if logged_in
+        DIV style: {marginTop: 45},
+
+          # Comment author name
+          DIV
+            style:
+              position: 'absolute'
+              marginTop: -25
+              fontWeight: 'bold'
+              color: '#666'
+            (fetch('/current_user').name or 'You') + ':'
+
+          # Icon
+          Avatar
+            style:
+              position: 'absolute'
+              width: 50
+              height: 50
+              backgroundColor: if not logged_in then 'transparent'
+              border:          if not logged_in then '1px dashed grey'
+
+            tag: DIV
+            key: fetch('/current_user').user
+            hide_name: true
+
+          if not logged_in
+            SPAN
+              onClick: =>
+                @root.auth_mode = 'register'
+                save(@root)
+              style:
+                position: 'absolute'
+                margin: '14px 0 0 70px'
+                textDecoration: 'underline'
+                color: cityclub_navy
+               'Log in to write a comment'
+
+          AutoGrowTextArea
+            className: 'new_comment'
+            placeholder: (logged_in and 'Write a new comment') or ''
+            disabled: not logged_in
+            onChange: (e) => @local.new_comment = e.target.value; save(@local)
+            style:
+              marginLeft: 60
+              width: 390
+              height: 60
+              lineHeight: 1.4
+              fontSize: 16
+              border: if not logged_in then 'dashed 1px'
+
+          DIV style: {textAlign: 'right'},
+            DIV
+              className: 'hover_pointer'
+              style:
+                backgroundColor: considerit_blue
+                borderRadius: 8
+                color: 'white'
+                width: 138
+                padding: '3px 10px'
+                fontWeight: 600
+                textAlign: 'center'
+                marginLeft: 314
+              onClick: (e) =>
+                e.stopPropagation()
+                comment =
+                  key: '/new/comment'
+                  body: @local.new_comment
+                  user: fetch('/current_user').user
+                  point: "/point/#{arest.key_id(@props.key)}"
+                save(comment)
+                $(@getDOMNode()).find('.new_comment').val('')
+                
+              'Save comment'
 
 ##
 # EditPoint
@@ -1447,62 +1705,6 @@ Point = ReactiveComponent
 # edits their point. 
 EditPoint = ReactiveComponent
   displayName: 'EditPoint'
-
-  componentDidMount : ->
-    $el = $(@getDOMNode())
-    $el.find('#nutshell').focus()
-    $el.find('.newpoint-cancel').ensureInView {scroll: false, position: 'bottom'}
-
-  handleToggleDetails : (ev) -> 
-    @local.add_details = !@local.add_details
-    save(@local)
-
-  done : -> 
-    your_points = @data @props.your_points_key
-    if @props.fresh
-      your_points.adding_new_point = false
-    else
-      your_points.editing_points = _.without your_points.editing_points, @props.key
-    save your_points
-
-  savePoint : (ev) ->
-    $form = $(@getDOMNode())
-    root = @data('root')
-
-    nutshell = $form.find('#nutshell').val()
-    text = $form.find('#text').val()
-    hide_name = !$form.find("#sign_name-#{@props.valence}").is(':checked')
-
-    if !@props.fresh
-      # If we're updating an existing point, we just have to update 
-      # some of the fields from the form
-      point = @data()
-      point.nutshell = nutshell
-      point.text = text
-      point.hide_name = hide_name
-    else 
-      current_user = @data('/current_user').user
-      point =
-        key : '/new/point'
-        is_pro : @props.valence == 'pros'
-        user : current_user
-        comment_count : 0 
-        includers : [current_user]
-        proposal : @proposal.key
-        nutshell : nutshell
-        text : text
-        hide_name : hide_name
-
-    save point
-
-    @done()
-
-    # This is a kludge cause activerest sucks for pre-rendering
-    # changes before the server returns them
-    @data(@proposal.your_opinion).point_inclusions.push(point.key)
-    re_render([@proposal.your_opinion])
-
-  handleAddPointCancel : (ev) -> @done()
 
   render : ->
     @local = @data @local_key,
@@ -1558,7 +1760,61 @@ EditPoint = ReactiveComponent
         A className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
           'cancel'  
 
+  componentDidMount : ->
+    $el = $(@getDOMNode())
+    $el.find('#nutshell').focus()
+    $el.find('.newpoint-cancel').ensureInView {scroll: false, position: 'bottom'}
 
+  handleToggleDetails : (ev) ->
+    @local.add_details = !@local.add_details
+    save(@local)
+
+  done : ->
+    your_points = @data @props.your_points_key
+    if @props.fresh
+      your_points.adding_new_point = false
+    else
+      your_points.editing_points = _.without your_points.editing_points, @props.key
+    save your_points
+
+  savePoint : (ev) ->
+    $form = $(@getDOMNode())
+    root = @data('root')
+
+    nutshell = $form.find('#nutshell').val()
+    text = $form.find('#text').val()
+    hide_name = !$form.find("#sign_name-#{@props.valence}").is(':checked')
+
+    if !@props.fresh
+      # If we're updating an existing point, we just have to update
+      # some of the fields from the form
+      point = @data()
+      point.nutshell = nutshell
+      point.text = text
+      point.hide_name = hide_name
+    else
+      current_user = @data('/current_user').user
+      point =
+        key : '/new/point'
+        is_pro : @props.valence == 'pros'
+        user : current_user
+        comment_count : 0
+        includers : [current_user]
+        proposal : @proposal.key
+        nutshell : nutshell
+        text : text
+        hide_name : hide_name
+
+    save point
+
+    @done()
+
+    # This is a kludge cause activerest sucks for pre-rendering
+    # changes before the server returns them
+    @data(@proposal.your_opinion).point_inclusions.push(point.key)
+    re_render([@proposal.your_opinion])
+
+  handleAddPointCancel : (ev) -> @done()
 
 
 ##
@@ -1594,7 +1850,7 @@ Avatar = ReactiveComponent
       onMouseLeave: @hideDetails
 
     attrs.src = filename if filename
-    
+
     @transferPropsTo @props.tag attrs
 
   getDefaultProps : ->
@@ -1635,7 +1891,10 @@ Avatar = ReactiveComponent
 AutoGrowTextArea = ReactiveComponent
   displayName: 'AutoGrowTextArea'  
 
-  autoGrow : -> 
+  # You can pass an onChange() handler in to props that will get
+  # called
+  onChange: (e) ->
+    @props.onChange?(e)
     scroll_height = @getDOMNode().scrollHeight
     if scroll_height > @getDOMNode().clientHeight
       @local.height = scroll_height + 5
@@ -1645,7 +1904,9 @@ AutoGrowTextArea = ReactiveComponent
     if !@local.height
       @local.height = @props.min_height
 
-    @transferPropsTo TEXTAREA onKeyUp: @autoGrow, style: {height: @local.height} 
+    @transferPropsTo TEXTAREA
+      onChange: @onChange
+      style: {height: @local.height}
 
 
 CharacterCountTextInput = ReactiveComponent
@@ -2411,9 +2672,9 @@ Header = ReactiveComponent
 
             logo_style =
               position: 'absolute'
-              left: 86
-              top: 19
-              width: if show_full then 222 else 180
+              left: if show_full then 62 else 154
+              top: if show_full then 27 else 73
+              width: if show_full then 222 else 130
               zIndex: 1
 
             DIV null,
@@ -2538,17 +2799,20 @@ Footer = ReactiveComponent
 
           DIV style: {paddingBottom: 18},
 
-            # DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
-            #   A href: "http://seattlecityclub.org", style: {position: 'relative', top: 3, fontWeight: 400},
-            #     IMG src: "<%= asset_path 'livingvotersguide/cityclub.svg' %>"
-
             DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
-              "Technology by "
-              A href: 'http://consider.it', style: {textDecoration: 'none', color: 'rgb(131,131,131)', fontWeight: 600}, target: '_blank', 'Considerit'
+              A href: "http://seattlecityclub.org", style: {position: 'relative', top: 3, fontWeight: 400},
+                IMG src: "<%= asset_path 'livingvotersguide/cityclub.svg' %>"
 
-            # DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
-            #   "Fact-checking by "
-            #   A href: 'http://spl.org', style: {textDecoration: 'none', color: 'rgb(131,131,131)', display: 'block', fontWeight: 600}, target: '_blank', 'The Seattle Public Library'
+            DIV style: {textAlign: 'left', padding: '0 12px', display: 'inline-block', fontSize: 11, position: 'relative', top: -5},
+              #"Fact-checking by "
+              A href: 'http://spl.org', style: {textTransform: 'uppercase', textDecoration: 'none', color: cityclub_navy, display: 'block', fontWeight: 600, width: 100}, target: '_blank', 
+                'The Seattle Public Library'
+
+          DIV style: {padding: 9},
+
+            DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 20},
+              "Technology by "
+              A href: 'http://consider.it', style: {textDecoration: 'none', color: '#B03B42', fontWeight: 600}, target: '_blank', 'Considerit'
 
       else
         DIV null,
@@ -2703,6 +2967,16 @@ About = ReactiveComponent
 
 Root = ReactiveComponent
   displayName: 'Root'
+  resetSelection: (e) ->
+    if @root.selected_point
+      window.writeToLog
+        what: 'deselected a point'
+        details:
+          point: @root.selected_point
+
+      @root.selected_point = null
+      save @root
+
 
   render : -> 
     root = @data()
@@ -2710,11 +2984,12 @@ Root = ReactiveComponent
     ######
     # Handle application routing, derived from client state.
     query_parameters = Backbone.history.getQueryParameters()
+    query_parameters = {}
 
     if @root.proposal_mode == 'results'
       query_parameters['results'] = true #the only query parameter we support now is ?results=true for proposal pages
-    else 
-      query_parameters = {}
+    if @root.selected_point
+      query_parameters['selected'] = @root.selected_point
 
     # Second, construct the proper url
     if root.page_name == 'homepage' 
@@ -2730,7 +3005,7 @@ Root = ReactiveComponent
     ####
 
     # Now let's render
-    DIV null,
+    DIV onClick: @resetSelection,
       StateDash(),
       Page(key: "/page/#{root.page_name}"),
       Computer() # Doesn't actually render anything
@@ -2913,8 +3188,11 @@ Router = Backbone.Router.extend
     #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
     #      Right now activeREST doesn't allow wide consumption of a component's client state
     #      if its data is synced with the server. 
-    root.proposal_mode = if params && params['results'] then 'results' else 'crafting'  
-
+    root.proposal_mode = 'crafting'
+    root.selected_point = null
+    if params 
+      root.proposal_mode = 'results' if params['results']
+      root.selected_point = params['selected'] if params['selected']
     save root
 
     writeToLog
@@ -2929,7 +3207,7 @@ Router = Backbone.Router.extend
     #      Right now activeREST doesn't allow wide consumption of a component's client state
     #      if its data is synced with the server. 
     root.proposal_mode = null
-
+    root.selected_point = null
     save root
 
     writeToLog
@@ -2940,6 +3218,7 @@ Router = Backbone.Router.extend
     root = fetch('root')
     root.page_name = 'about'
     root.proposal_mode = null
+    root.selected_point = null
     save root
 
     writeToLog
@@ -2949,13 +3228,15 @@ Router = Backbone.Router.extend
   new_proposal : (params) ->
     root = fetch('root')
     root.page_name = 'proposal/new'
-    root.proposal_mode = null
+    root.proposal_mode = null    
+    root.selected_point = null
     save root
 
   edit_proposal : (id, params) ->
     root = fetch('root')
     root.page_name = "proposal/#{id}/edit"
     root.proposal_mode = null
+    root.selected_point = null
     save root      
 
 # Handles router navigation for links so that a page reload doesn't happen
@@ -2983,6 +3264,18 @@ window.writeToLog = (entry) ->
 
   save entry
 
+window.arest.trans_in = (object) ->
+  fix_comments = (o) ->
+    if o.key?.match(/\/comments\//)
+      o.comments = for comment in o.comments
+        comment.key = "/comment/#{comment.id}"
+        comment.user = "/user/#{comment.user_id}"
+        delete comment.id
+        delete comment.user_id
+        comment
+
+  #arest.deep_map(fix_comments, object)
+  return object
 
 $(document).ready -> 
   if 'ontouchend' in document #detect touch support

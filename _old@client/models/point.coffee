@@ -72,11 +72,13 @@
 
     #relations
     getUser : ->
-      App.request 'user', @get 'user_id'
+      console.log @attributes
+      App.request 'user', @get('user').substring(6, @get('user').length)
 
     getProposal : ->
       if !@proposal
-        @proposal = App.request 'proposal:get', @get('id') 
+        proposal_id = @get('proposal').substring(10, @get('proposal').length)
+        @proposal = App.request 'proposal:get_by_id', parseInt(proposal_id)
       @proposal
 
     getComments : ->

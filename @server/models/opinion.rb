@@ -2,7 +2,7 @@ class Opinion < ActiveRecord::Base
   belongs_to :user
   belongs_to :proposal, :touch => true 
   
-  include Followable, Commentable
+  include Followable
 
   acts_as_tenant(:account)
 

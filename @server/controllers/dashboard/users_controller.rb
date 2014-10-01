@@ -44,8 +44,8 @@ class Dashboard::UsersController < Dashboard::DashboardController
     end
 
     user.comments.each do |comment|      
-      if !referenced_points.has_key? comment.commentable_id
-        pnt = comment.root_object
+      if !referenced_points.has_key? comment.point_id
+        pnt = comment.point
         proposal = Proposal.find(pnt.proposal_id) 
 
         if pnt.published && can?(:read, proposal)

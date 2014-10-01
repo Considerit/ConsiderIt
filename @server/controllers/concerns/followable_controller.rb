@@ -11,7 +11,7 @@ class FollowableController < ApplicationController
         case followable_type
         when 'Point'
           following = target_user.inclusions.map {|i| i.point} + \
-                   target_user.comments.where(:commentable_type => 'Point').map {|c| c.root_object() } + \
+                   target_user.comments.map {|c| c.point } + \
                    target_user.follows.where(:follow => true, :followable_type => 'Point').map {|f| f.root_object() }
 
         when 'Proposal'

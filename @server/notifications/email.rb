@@ -68,7 +68,7 @@ notify_point = Proc.new do |data|
 
     end
 
-    EventMailer.proposal_new_point(u, point, mail_options, notification_type).deliver!
+    EventMailer.new_point(u, point, mail_options, notification_type).deliver!
 
   end
 
@@ -78,14 +78,14 @@ end
 notify_comment = Proc.new do |args|
   #params: comment, current_tenant, mail_options
   comment = args[:model] || args[:comment]
-  commentable = comment.root_object
+  point = comment.point
   current_tenant = args[:current_tenant]
   mail_options = args[:mail_options]
 
-  commenters = commentable.comments.select(:user_id).uniq.map {|x| x.user_id }
-  includers = commentable.inclusions.select(:user_id).uniq.map {|x| x.user_id }
+  commenters = point.comments.select(:user_id).uniq.map {|x| x.user_id }
+  includers = point.inclusions.select(:user_id).uniq.map {|x| x.user_id }
 
-  commentable.follows.where(:follow => true).each do |follow|
+  point.follows.where(:follow => true).each do |follow|
 
     # if follower's action triggered event, skip...
     if follow.user_id == comment.user_id 
@@ -95,8 +95,8 @@ notify_comment = Proc.new do |args|
     elsif !follow.user || !follow.user.email || follow.user.email.length == 0
       next
 
-    # if follower is author of commentable
-    elsif follow.user_id == commentable.user_id
+    # if follower is author of point
+    elsif follow.user_id == point.user_id
       notification_type = 'your point'
 
     # if follower is a participant in the discussion
@@ -112,7 +112,7 @@ notify_comment = Proc.new do |args|
       notification_type = 'lurker'
     end
 
-    EventMailer.point_new_comment(follow.user, commentable, comment, mail_options, notification_type).deliver!
+    EventMailer.new_comment(follow.user, point, comment, mail_options, notification_type).deliver!
   end
 
 end
@@ -133,7 +133,7 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
     notification_method.call data
   end
 
-  if current_tenant.enable_moderation
+  if data[:current_tenant].enable_moderation
     # send to all users with moderator status
     moderators = []
     accnt.users.where('roles_mask > 0').each do |u|

@@ -31,6 +31,13 @@ class PointController < ApplicationController
     opinion = Opinion.where(:user_id => current_user.id,
                             :proposal => proposal).first
 
+    if !proposal
+      raise "Error! No proposal matching '#{point['proposal']}'"
+    end
+    if !opinion
+      raise "Error! No opinion for user #{current_user.id} and proposal #{proposal}"
+    end
+
     if opinion.published
       point.publish
     else

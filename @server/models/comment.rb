@@ -50,9 +50,9 @@ class Comment < ActiveRecord::Base
 
     if current_tenant.assessment_enabled
       comments.update({
-        :assessment => point.assessment && point.assessment.complete ? point.assessment.public_fields : nil,
+        :assessment => point.assessment && point.assessment.complete ? point.assessment : nil,
         :verdicts => Assessable::Verdict.all,
-        :claims => point.assessment && point.assessment.complete ? point.assessment.claims.public_fields : nil,
+        :claims => point.assessment && point.assessment.complete ? point.assessment.claims : nil,
         :already_requested_assessment => current_user && Assessable::Request.where(:assessable_id => point.id, :assessable_type => 'Point', :user_id => current_user.id).count > 0
       })
     end

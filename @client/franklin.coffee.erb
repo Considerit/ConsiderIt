@@ -1514,7 +1514,6 @@ Point = ReactiveComponent
       SPAN {style: style}, '-new-'
 
 
-
 Discussion = ReactiveComponent
   displayName: 'Discussion'
 
@@ -1582,7 +1581,7 @@ Discussion = ReactiveComponent
         'Discuss this Point'
       
       if logged_in
-        SubmitFactCheck style: comment_style
+        SubmitFactCheck style: comment_style, key: @props.key
 
       DIV className: 'comments',
         for comment in @discussion.comments
@@ -1710,7 +1709,53 @@ SubmitFactCheck = ReactiveComponent
   displayName: 'SubmitFactCheck'
 
   render: ->
+    logged_in = fetch('/current_user').logged_in
+    draw_1 = =>
+      [
+        DIV null,
+          'You can'
+        DIV
+          style:
+            fontSize: 26
+            fontWeight: 600
+            textDecoration: 'underline'
+            color: '#474747'
+            marginTop: -4
+            marginBottom: -1
+          className: 'hover_pointer'
+          'Request a Fact Check'
+        DIV null,
+          'from The Seattle Public Library'
+      ]
+
+    draw_2 = =>
+      [
+        DIV style: {marginTop: 12},
+          'What factual claim do you want researched?'
+        AutoGrowTextArea
+          style:
+            width: 390
+            height: 60
+            lineHeight: 1.4
+            fontSize: 16
+          placeholder: (logged_in and 'Your research question') or ''
+          disabled: not logged_in
+          onChange: (e) =>
+            @local.research_question = e.target.value
+            save(@local)
+        DIV style: {fontSize: 14},
+          'A ',
+          A
+            style: {textDecoration: 'underline'}
+            href: '/about/#fact_check'
+            'librarian will respond'
+          ' to your request within 48 hours'
+      ]
+
+    # Now let's draw
     DIV @props,
+
+      # Magnifying glass
       DIV
         style:
           position: 'absolute'
@@ -1721,25 +1766,13 @@ SubmitFactCheck = ReactiveComponent
           color: '#888'
         I
           className: 'fa fa-search'
+
+      # Text to the right
       DIV
         style:
           marginLeft: 60
-        DIV null,
-          'You can'
-        DIV
-          style:
-            fontSize: 26
-            fontWeight: 600
-            textDecoration: 'underline'
-            color: '#474747'
-            marginTop: -7
-            marginBottom: -1
-          className: 'hover_pointer'
-          'Request a Fact Check'
-        DIV null,
-          'from The Seattle Public Library'
-
-
+        draw_1()
+        draw_2()
 ##
 # EditPoint
 # Form for editing or creating a point. Used by NewPoint component & when someone

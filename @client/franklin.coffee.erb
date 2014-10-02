@@ -2390,10 +2390,11 @@ Auth = ReactiveComponent
                 ['Or ', button, ' if you need one']
 
       DIV null, 
-        DIV 
+        DIV
           className:'auth_button primary_button' + (if @local.submitting then ' disabled' else '')
           onClick: @submitAuth
-        , if root.auth_mode == 'register' then 'Create account and save your opinion' else 'Login and save your opinion'
+          if root.auth_mode == 'register' then 'Create account' else 'Login'
+          if root.saving_opinion then ' and save your opinion'
 
         A 
           className:'cancel_auth_button primary_cancel_button'

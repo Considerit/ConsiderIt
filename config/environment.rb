@@ -60,6 +60,7 @@ def current_user
   return nil if !Thread.current[:current_user_id2]
 
   if !Thread.current[:current_user2]
+    # Well then, time to load the user OBJECT from the database for this id.
     Thread.current[:current_user2] = User.find_by_id(Thread.current[:current_user_id2])
   end
   Thread.current[:current_user2]

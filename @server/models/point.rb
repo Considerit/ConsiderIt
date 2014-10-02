@@ -81,6 +81,11 @@ class Point < ActiveRecord::Base
     stubify_field(result, 'opinion')
     stubify_field(result, 'user')
 
+    if Thread.current[:tenant].assessment_enabled
+      assessment = proposal.assessments.where(:assessable_type => 'Point', :assessable_id => id).first
+      result['assessment'] = assessment ? "assessment/#{assessment.id}" : nil
+    end
+
     result
   end
 

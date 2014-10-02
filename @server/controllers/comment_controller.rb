@@ -84,11 +84,13 @@ class CommentController < ApplicationController
 
   def destroy
     comment = Comment.find params[:id]
-    authorize! :destroy, comment
-
-    dirty_key("/comments/#{comment.point_id}")
-    comment.destroy
-
+    if current_user.id == comment.user_id
+      dirty_key("/comments/#{comment.point_id}")
+      comment.destroy
+    else
+      raise 'No permission to delete that comment (how do I implement this with can can?)'
+    end
+    
     render :json => []
   end
 

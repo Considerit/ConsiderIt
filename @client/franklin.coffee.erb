@@ -1298,12 +1298,24 @@ Point = ReactiveComponent
         marginLeft: -8
         width: point_content_style.width + 16
 
-    select_enticement = ''
+
+    factcheck_indicator = I(className: 'fa fa-search mini_magnifying_glass', title: 'Click to read a fact-check of this point')
+
     if point.comment_count == 0
       if point.text && (point.nutshell.length + point.text.length) > 210
-        select_enticement = SPAN style: {whiteSpace: 'nowrap'}, '... (more)'
+        select_enticement = SPAN style: {whiteSpace: 'nowrap'}, 
+          '... (more)'
+          if point.assessment
+            factcheck_indicator 
+      else 
+        select_enticement = SPAN null,
+          if point.assessment
+            factcheck_indicator 
     else
-      select_enticement = SPAN style: {whiteSpace: 'nowrap'}, "(#{point.comment_count} comment#{if point.comment_count > 1 then 's' else ''})"
+      select_enticement = SPAN style: {whiteSpace: 'nowrap'}, 
+        "(#{point.comment_count} comment#{if point.comment_count > 1 then 's' else ''})"
+        if point.assessment
+          factcheck_indicator 
 
 
     LI
@@ -1349,6 +1361,7 @@ Point = ReactiveComponent
           else 
             SPAN className: 'point_details_tease',
               select_enticement
+
 
       if current_user.user == point.user && @props.location_class == 'decision_board_point'
         DIV null,
@@ -1910,7 +1923,7 @@ SubmitFactCheck = ReactiveComponent
             when 3
               "They found the claims to be consistent with reliable sources."
             when 4
-              "Unfortunately, the claims made are outside the scope of the fact-checking service to answer conclusively."
+              "Unfortunately, the claims made are outside the research scope of the fact-checking service."
 
         DIV {marginBottom: 10},
           A style: {textDecoration: 'underline'},

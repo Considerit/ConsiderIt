@@ -1346,6 +1346,9 @@ Point = ReactiveComponent
                 $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
                 ' '
                 select_enticement
+          else 
+            SPAN className: 'point_details_tease',
+              select_enticement
 
       if current_user.user == point.user && @props.location_class == 'decision_board_point'
         DIV null,
@@ -1595,9 +1598,10 @@ FactCheck = ReactiveComponent
       DIV className: 'comment_entry_body',
         DIV style: {margin: '10px 0 20px 0'},
           "A citizen requested research into the claims made by this point. "
-          A href: '/about#fact_check', onClick: @clickInternalLink, style: {fontWeight: 600, fontSize: 12},
-            'Learn more'
-          ' about the service.'
+          SPAN style: {fontWeight: 600, fontSize: 12},
+            A href: '/about#fact_check', onClick: @clickInternalLink,
+              'Learn more'
+            ' about the service.'
 
         for claim_key in assessment.claims
           claim = @data(claim_key)

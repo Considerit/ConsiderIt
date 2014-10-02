@@ -454,9 +454,9 @@ class User < ActiveRecord::Base
 
     # Now we'll store an encoded version of the token on the user table
     encoded_token = OpenSSL::HMAC.hexdigest('SHA256', 'reset_password_token', raw_token)
-    reset_password_token   = encoded_token
-    reset_password_sent_at = Time.now.utc
-    save(:validate => false)
+    self.reset_password_token   = encoded_token
+    self.reset_password_sent_at = Time.now.utc
+    self.save(:validate => false)
     
     UserMailer.reset_password_instructions(self, raw_token, Thread.current[:mail_options]).deliver!
 

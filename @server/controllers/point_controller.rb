@@ -35,7 +35,7 @@ class PointController < ApplicationController
       raise "Error! No proposal matching '#{point['proposal']}'"
     end
     if !opinion
-      raise "Error! No opinion for user #{current_user.id} and proposal #{proposal}"
+      raise "Error! No opinion for user #{current_user.id} and proposal #{proposal.id}"
     end
 
     if opinion.published

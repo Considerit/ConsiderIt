@@ -26,18 +26,17 @@ class UserMailer < Mailer
 
   # end
 
-  def reset_password_instructions(user, token, options)
-    #generate_reset_password_token!(user) #if (user.reset_password_token.nil? || !user.reset_password_period_valid?)    
-
+  def reset_password_instructions(user, token)
+    current_tenant = user.account
+    app_title = current_tenant ? current_tenant.app_title : ''
+    from = current_tenant && current_tenant.contact_email && current_tenant.contact_email.length > 0 ? current_tenant.contact_email : APP_CONFIG[:email]
     @user = user
-    @host = options[:host]
-    @options = options
     @token = token 
     subject = "password reset instructions"
 
     to = format_email @user.email, @user.name
-    from = format_email(options[:from], options[:app_title])
-    mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
+    from = format_email(from, app_title)
+    mail(:from => from, :to => to, :subject => "[#{app_title}] #{subject}")
   end
 
   # def invitation(email, proposal, notification_type, options )

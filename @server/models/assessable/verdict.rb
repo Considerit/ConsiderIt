@@ -25,6 +25,7 @@ class Assessable::Verdict < ActiveRecord::Base
   def as_json(options={})
     result = super(options)
     result['key'] = "verdict/#{id}"
+    result['icon'] = "/system/icons/#{id}/#{icon_file_name}"
     result
   end
 

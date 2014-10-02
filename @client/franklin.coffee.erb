@@ -878,7 +878,7 @@ Slider = ReactiveComponent
         DIV 
           className:'slider_feedback'
           style: slider_feedback_style
-        , if !slider.has_moved then 'Give Your Overall Opinion' else "You #{stance_names[segment]}"
+        , if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stance_names[segment]}"
 
         DIV className: 'the_handle', style: handle_style, onMouseUp: @handleMouseUp, onMouseDown: @handleMouseDown, onTouchStart: @handleMouseDown, onTouchMove: @handleMouseMove, onTouchEnd: @handleMouseUp, onTouchCancel: @handleMouseUp,
           if page == 'crafting'
@@ -886,8 +886,8 @@ Slider = ReactiveComponent
               DIV className: 'face_mouth face_part', style: face_mouth_style
               DIV className: 'face_left_eye face_eye face_part', style: face_left_eye_style
               DIV className: 'face_right_eye face_eye face_part', style: face_right_eye_style
-          # DIV className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved
-          # DIV className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved
+          DIV className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved
+          DIV className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved
 
         IMG className:'bubblemouth', src: bubblemouth_src, style: bubblemouth_style
     

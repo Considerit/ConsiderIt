@@ -125,7 +125,7 @@ class Opinion < ActiveRecord::Base
     user = User.find(self.user_id)
 
     if user.inclusions.where( :point_id => point.id ).count > 0
-      raise "Including a point (#{point_id}) for user #{self.user_id} twice!'"
+      raise "Including a point (#{point.id}) for user #{self.user_id} twice!'"
     end
     
     attrs = { 
@@ -134,7 +134,7 @@ class Opinion < ActiveRecord::Base
       :proposal_id => self.proposal_id,
       :account_id => Thread.current[:tenant].id
     }
-    Inclusion.create! ActionController::Parameters.new(attrs).permit!
+    Inclusion.create! attrs
 
     point.follow! user, :follow => true, :explicit => false
     point.recache

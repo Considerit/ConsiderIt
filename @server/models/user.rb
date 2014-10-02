@@ -436,7 +436,8 @@ class User < ActiveRecord::Base
 
   end
 
-
+  # keep reset password logic here so that we can generate password reminders for users
+  # that email us.
   def reset_password
 
     # This algorithm is copied/extracted from devise

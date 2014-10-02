@@ -126,6 +126,7 @@ class Ability
       if !user.id.nil?
         can :create, Comment
         can :update, Comment, :user_id => user.id
+        can :destroy, Comment, :user_id => user.id
       end
 
       can :create, ClientError

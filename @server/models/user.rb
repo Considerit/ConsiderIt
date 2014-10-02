@@ -436,6 +436,31 @@ class User < ActiveRecord::Base
 
   end
 
+
+  def reset_password
+
+    # This algorithm is copied/extracted from devise
+
+    # Generate a token that nobody's using
+    raw_token = loop do
+      raw_token = SecureRandom.urlsafe_base64(15)
+      raw_token = raw_token.tr('lIO0', 'sxyz') # Remove hard-to-distinguish characters
+      # Now we have a raw token... let's see if anyone's using it
+      break raw_token unless User.where(reset_password_token: raw_token).first
+    end
+
+    puts("\nYO YO the raw token to login is #{raw_token}\n")
+
+    # Now we'll store an encoded version of the token on the user table
+    encoded_token = OpenSSL::HMAC.hexdigest('SHA256', 'reset_password_token', raw_token)
+    reset_password_token   = encoded_token
+    reset_password_sent_at = Time.now.utc
+    save(:validate => false)
+    
+    UserMailer.reset_password_instructions(self, raw_token, Thread.current[:mail_options]).deliver!
+
+  end
+
   def self.purge
     users = User.all.map {|u| u.id}
     missing_users = []

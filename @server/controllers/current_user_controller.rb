@@ -75,10 +75,12 @@ class CurrentUserController < ApplicationController
       user = User.where(reset_password_token: encoded_token).first
       puts("We found user #{user} with a password reset token")
       
-      error = "Sorry, that's the wrong verification code." if !user
-
-      replace_user(current_user, user)
-      set_current_user(user)
+      if user
+        replace_user(current_user, user)
+        set_current_user(user)
+      else
+        error = "Sorry, that's the wrong verification code."
+      end
 
       return error
     end

@@ -1298,6 +1298,14 @@ Point = ReactiveComponent
         marginLeft: -8
         width: point_content_style.width + 16
 
+    select_enticement = ''
+    if point.comment_count == 0
+      if point.text && (point.nutshell.length + point.text.length) > 210
+        select_enticement = SPAN style: {whiteSpace: 'nowrap'}, '... (more)'
+    else
+      select_enticement = SPAN style: {whiteSpace: 'nowrap'}, "(#{point.comment_count} comment#{if point.comment_count > 1 then 's' else ''})"
+
+
     LI
       className: "point closed_point #{@props.location_class}
         #{if point.is_pro then 'pro' else 'con'}"
@@ -1324,13 +1332,20 @@ Point = ReactiveComponent
         DIV className:'point_nutshell',
           point.nutshell
           if point.text
-            if is_selected or
-              (point.nutshell.length + point.text.length) < 210
-                DIV className: 'point_details', style: {marginTop: '1em'},
-                  split_paragraphs(point.text)
+            if is_selected
+              DIV className: 'point_details', style: {marginTop: '1em'},
+                split_paragraphs(point.text)
+
+            else if (point.nutshell.length + point.text.length) < 210
+              DIV className: 'point_details_tease', style: {marginTop: '1em'},
+                split_paragraphs(point.text)
+                ' '
+                select_enticement
             else
               SPAN className: 'point_details_tease',
-                $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text() + "... [more]"
+                $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
+                ' '
+                select_enticement
 
       if current_user.user == point.user && @props.location_class == 'decision_board_point'
         DIV null,

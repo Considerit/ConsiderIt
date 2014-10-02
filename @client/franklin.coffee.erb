@@ -1520,11 +1520,157 @@ Point = ReactiveComponent
       SPAN {style: style}, '-new-'
 
 
+Comment = ReactiveComponent
+  displayName: 'Comment'
+
+  render: -> 
+    comment = @data()
+
+    DIV className: 'comment_entry',
+
+      # Delete button
+      if comment.user == fetch('/current_user').user
+        DIV
+          className: 'hover_pointer'
+          style:
+            position: 'absolute'
+            right: 26
+            color: '#444'
+            textDecoration: 'underline'
+          onClick: do (key = comment.key) => (e) =>
+            e.stopPropagation()
+            if (confirm('Delete this comment?'))
+              destroy(key)
+
+          'delete'
+
+      # Comment author name
+      DIV className: 'comment_entry_name',
+        fetch(comment.user).name + ':'
+
+      # Comment author icon
+      Avatar
+        className: 'comment_entry_avatar'
+        tag: DIV
+        key: comment.user
+        hide_name: true
+
+      # Comment body
+      DIV className: 'comment_entry_body',
+        split_paragraphs(comment.body)
+
+
+FactCheck = ReactiveComponent
+  displayName: 'FactCheck'
+
+  render : -> 
+    assessment = @data()
+    DIV className: 'comment_entry',
+
+      # Comment author name
+      DIV className: 'comment_entry_name',
+        'Seattle Public Library Fact check:'
+
+      # Comment author icon
+      DIV className: 'magnifying_glass',
+        I
+          className: 'fa fa-search'
+
+      # Comment body
+      DIV className: 'comment_entry_body',
+        DIV style: {margin: '10px 0 20px 0'},
+          "A citizen requested research into the claims made by this point. "
+          A href: '/about#fact_check', onClick: @clickInternalLink, style: {fontWeight: 600, fontSize: 12},
+            'Learn more'
+          ' about the service.'
+
+        for claim_key in assessment.claims
+          claim = @data(claim_key)
+          verdict = @data(claim.verdict)
+
+          [DIV style: {margin: '10px 0'}, 
+            IMG style: {position: 'absolute', width: 25, left: -40}, src: verdict.icon
+            'Claim: '
+            SPAN style: {fontWeight: 600}, claim.claim_restatement
+          DIV null, 
+            SPAN style: {},
+              'Rating: '
+              SPAN style: {fontStyle: 'italic'}, verdict.name
+              SPAN style: {marginLeft: 20, fontSize: 12, textDecoration: 'underline', cursor: 'help'}, title: verdict.desc,  'help'
+          DIV style: {margin: '10px 0'}, dangerouslySetInnerHTML:{__html: claim.result}]
+
+
+
+NewComment = ReactiveComponent
+  displayName: 'NewComment'
+
+  render : -> 
+    logged_in = fetch('/current_user').logged_in
+
+    DIV className: 'comment_entry',
+
+      # Comment author name
+      DIV
+        style:
+          fontWeight: 'bold'
+          color: '#666'
+        (fetch('/current_user').name or 'You') + ':'
+
+      # Icon
+      Avatar
+        style:
+          position: 'absolute'
+          width: 50
+          height: 50
+          backgroundColor: if not logged_in then 'transparent'
+          border:          if not logged_in then '1px dashed grey'
+
+        tag: DIV
+        key: fetch('/current_user').user
+        hide_name: true
+
+      if not logged_in
+        SPAN
+          className: 'hover_pointer'
+          onClick: =>
+            @root.auth_mode = 'login'
+            save(@root)
+          style:
+            position: 'absolute'
+            margin: '14px 0 0 70px'
+            textDecoration: 'underline'
+            color: cityclub_navy
+           'Log in to write a comment'
+
+      AutoGrowTextArea
+        className: 'new_comment'
+        placeholder: (logged_in and 'Write a new comment') or ''
+        disabled: not logged_in
+        onChange: (e) => @local.new_comment = e.target.value; save(@local)
+        style:
+          marginLeft: 60
+          width: 390
+          height: 60
+          lineHeight: 1.4
+          fontSize: 16
+          border: if not logged_in then 'dashed 1px'
+
+      DIV style: {textAlign: 'right'},
+        Button({style: {marginLeft: 314}}, 'Save comment', (e) =>
+          e.stopPropagation()
+          comment =
+            key: '/new/comment'
+            body: @local.new_comment
+            user: fetch('/current_user').user
+            point: "/point/#{arest.key_id(@props.key)}"
+          save(comment)
+          $(@getDOMNode()).find('.new_comment').val(''))
+
+
 Discussion = ReactiveComponent
   displayName: 'Discussion'
 
   render : -> 
-    logged_in = fetch('/current_user').logged_in
     
     discussion_style =
       width: DECISION_BOARD_WIDTH
@@ -1567,10 +1713,13 @@ Discussion = ReactiveComponent
         '-moz-transform':     trans_func
         '-webkit-transform':  trans_func
         '-o-transform':       trans_func
+      
 
-    comment_style =
-      marginBottom: 45
-      minHeight: 60
+    comments = @discussion.comments
+    if @discussion.assessment
+      comments = comments.slice()
+      comments.push @discussion.assessment
+      comments.sort (a,b) -> a.created_at < b.created_at
 
     DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
       IMG
@@ -1592,108 +1741,14 @@ Discussion = ReactiveComponent
       SubmitFactCheck()
 
       DIV className: 'comments',
-        for comment in @discussion.comments
-          DIV style: comment_style, key: comment.key,
-
-            # Delete button
-            if comment.user == fetch('/current_user').user
-              DIV
-                className: 'hover_pointer'
-                style:
-                  position: 'absolute'
-                  right: 26
-                  color: '#444'
-                  textDecoration: 'underline'
-                onClick: do (key = comment.key) => (e) =>
-                  e.stopPropagation()
-                  if (confirm('Delete this comment?'))
-                    destroy(key)
-
-                'delete'
-
-            # Comment author name
-            DIV
-              style:
-                fontWeight: 'bold'
-                color: '#666'
-              fetch(comment.user).name + ':'
-
-            # Comment author icon
-            Avatar
-              style:
-                position: 'absolute'
-                width: 50
-                height: 50
-              tag: DIV
-              key: comment.user
-              hide_name: true
-
-            # Comment body
-            DIV
-              style:
-                marginLeft: 60
-                wordWrap: 'break-word'
-              split_paragraphs(comment.body)
+        for comment in comments
+          if comment.key.match /(comment)/
+            Comment key: comment.key
+          else 
+            FactCheck key: comment.key
 
       # Write a new comment
-      DIV style: comment_style,
-
-        # Comment author name
-        DIV
-          style:
-            fontWeight: 'bold'
-            color: '#666'
-          (fetch('/current_user').name or 'You') + ':'
-
-        # Icon
-        Avatar
-          style:
-            position: 'absolute'
-            width: 50
-            height: 50
-            backgroundColor: if not logged_in then 'transparent'
-            border:          if not logged_in then '1px dashed grey'
-
-          tag: DIV
-          key: fetch('/current_user').user
-          hide_name: true
-
-        if not logged_in
-          SPAN
-            className: 'hover_pointer'
-            onClick: =>
-              @root.auth_mode = 'login'
-              save(@root)
-            style:
-              position: 'absolute'
-              margin: '14px 0 0 70px'
-              textDecoration: 'underline'
-              color: cityclub_navy
-             'Log in to write a comment'
-
-        AutoGrowTextArea
-          className: 'new_comment'
-          placeholder: (logged_in and 'Write a new comment') or ''
-          disabled: not logged_in
-          onChange: (e) => @local.new_comment = e.target.value; save(@local)
-          style:
-            marginLeft: 60
-            width: 390
-            height: 60
-            lineHeight: 1.4
-            fontSize: 16
-            border: if not logged_in then 'dashed 1px'
-
-        DIV style: {textAlign: 'right'},
-          Button({style: {marginLeft: 314}}, 'Save comment', (e) =>
-            e.stopPropagation()
-            comment =
-              key: '/new/comment'
-              body: @local.new_comment
-              user: fetch('/current_user').user
-              point: "/point/#{arest.key_id(@props.key)}"
-            save(comment)
-            $(@getDOMNode()).find('.new_comment').val(''))
+      NewComment()
 
   # HACK! Set the height of the body so that it accommodates the 
   # overlaid point
@@ -1822,15 +1877,27 @@ SubmitFactCheck = ReactiveComponent
         a_librarian_will_respond()
           
     request_completed = =>
+      overall_verdict = @data(@discussion.assessment.verdict)
+
       [
         DIV style: top_message_style,
           'This point has been Fact-Checked by The Seattle Public Library'
         DIV style: {marginBottom: 10},
-          'The report will be posted shortly.'
-        # DIV null,
-        #   A style: {textDecoration: 'underline'},
-        #     "See the details"
-        #   " of the librarians' research below."
+          switch overall_verdict.id
+            when 1
+              "They found some claims inconsistent with reliable sources."
+            when 2
+              "They found some sources that agreed with claims and some that didn't."
+            when 3
+              "They found the claims to be consistent with reliable sources."
+            when 4
+              "Unfortunately, the claims made are outside the scope of the fact-checking service to answer conclusively."
+
+        DIV {marginBottom: 10},
+          A style: {textDecoration: 'underline'},
+            ''
+          "See the details"
+          " of the librarians' research below."
       ]
 
 
@@ -1855,14 +1922,7 @@ SubmitFactCheck = ReactiveComponent
       # Magnifying glass
       if show_request
 
-        DIV
-          style:
-            position: 'absolute'
-            width: 50
-            height: 50
-            fontSize: 50
-            marginTop: -2
-            color: '#888'
+        DIV className: 'magnifying_glass',
           I
             className: 'fa fa-search'
 

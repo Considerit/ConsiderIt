@@ -15,6 +15,7 @@ class Assessable::Claim < ActiveRecord::Base
     result = super(options)
     result['key'] = "claim/#{id}"
     result['point'] = "/point/#{assessment.assessable_id}"    
+    result['verdict'] = "verdict/#{verdict_id}"    
     result
   end
 

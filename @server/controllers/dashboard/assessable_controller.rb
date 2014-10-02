@@ -56,6 +56,9 @@ class Dashboard::AssessableController < Dashboard::DashboardController
 
     assessment = Assessable::Assessment.find(params[:assessment_id])
 
+    params[:claim].delete :verdict if params[:claim].has_key?(:verdict)
+    params[:claim].delete :point if params[:claim].has_key?(:point)
+
     if params[:claim].has_key?(:copy) && params[:claim][:copy]
       copyable_attributes = Assessable::Claim.find(params[:claim][:copy_id]).attributes
       copyable_attributes[:assessment_id] = assessment.id
@@ -83,6 +86,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     params[:claim].delete :key
     params[:claim].delete :verdict_id if params[:claim].has_key?(:verdict_id) && params[:claim][:verdict_id].nil?
     params[:claim].delete :point
+    params[:claim].delete :verdict if params[:claim].has_key?(:verdict)
 
     # TODO: explicitly grab params  
     claim.update_attributes params[:claim].permit!
@@ -117,6 +121,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     params[:assessment].delete :account_id
     params[:assessment].delete :point
     params[:assessment].delete :key
+    params[:assessment].delete :verdict
 
     if assessment.complete
       assessment.update_verdict()

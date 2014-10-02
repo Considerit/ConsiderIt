@@ -67,17 +67,70 @@
       - if !@is_search_bot
         - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
           :javascript
-            var _gaq = _gaq || [];
-            _gaq.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-            _gaq.push(['_setDomainName', ".#{get_root_domain}"]);
-            _gaq.push(['_trackPageview']);
+
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', '#{APP_CONFIG[:analytics][:google]}', 'auto', {'name': 'considerit'});
+            ga('considerit.send', 'pageview');
 
 
         - if current_tenant.analytics_google && current_tenant.analytics_google != ''
+
           :javascript
-            var _gaq_account = _gaq_account || [];
-            _gaq_account.push(['_setAccount', "#{current_tenant.analytics_google}"]);
-            _gaq_account.push(['_trackPageview']);
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', '#{current_tenant.analytics_google}', 'auto', {'name': 'customer'});
+            ga('customer.send', 'pageview');
+
+        - if current_tenant.identifier == 'livingvotersguide'
+          :javascript
+
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-55292532-1', 'auto');
+            ga('require', 'displayfeatures');
+            ga('send', 'pageview');
+
+          :javascript
+            /* <![CDATA[ */
+            var google_conversion_id = 974184862;
+            var google_custom_params = window.google_tag_params;
+            var google_remarketing_only = true;
+            /* ]]> */
+
+          %script{type: 'text/javascript', src: "//www.googleadservices.com/pagead/conversion.js"}
+
+          %noscript
+            %div{ style: "display:inline;"}
+            %img{ height: "1", width: "1", style: "border-style:none;", alt: "", src:"//googleads.g.doubleclick.net/pagead/viewthroughconversion/974184862/?value=0&amp;guid=ON&amp;script=0"}
+
+          :javascript
+            adroll_adv_id = "AAYAF2U5MBE2PKELIGQCFT";
+            adroll_pix_id = "OLOX6EGV5VF4HMGFWK56XE";
+            (function () {
+            var oldonload = window.onload;
+            window.onload = function(){
+               __adroll_loaded=true;
+               var scr = document.createElement("script");
+               var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+               scr.setAttribute('async', 'true');
+               scr.type = "text/javascript";
+               scr.src = host + "/j/roundtrip.js";
+               ((document.getElementsByTagName('head') || [null])[0] ||
+                document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+               if(oldonload){oldonload()}};
+            }());
+
+
 
 
 

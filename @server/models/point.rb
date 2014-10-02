@@ -16,7 +16,7 @@ class Point < ActiveRecord::Base
     #self.text = self.text.sanitize
 
     if self.nutshell.length > 140 
-      text << self.nutshell[139..-1]
+      self.text = self.text ? "#{self.nutshell[139..-1]} #{self.text}" : self.nutshell[139..-1]
       self.nutshell = self.nutshell[0..139]
     end
 

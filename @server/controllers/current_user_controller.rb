@@ -378,25 +378,7 @@ class CurrentUserController < ApplicationController
       return ["We have no account for that email address."]
     end
 
-    # This algorithm is copied/extracted from devise
-
-    # Generate a token that nobody's using
-    raw_token = loop do
-      raw_token = SecureRandom.urlsafe_base64(15)
-      raw_token = raw_token.tr('lIO0', 'sxyz') # Remove hard-to-distinguish characters
-      # Now we have a raw token... let's see if anyone's using it
-      break raw_token unless User.where(reset_password_token: raw_token).first
-    end
-
-    puts("\nYO YO the raw token to login is #{raw_token}\n")
-
-    # Now we'll store an encoded version of the token on the user table
-    encoded_token = OpenSSL::HMAC.hexdigest('SHA256', 'reset_password_token', raw_token)
-    user.reset_password_token   = encoded_token
-    user.reset_password_sent_at = Time.now.utc
-    user.save(:validate => false)
-    
-    UserMailer.reset_password_instructions(user, raw_token, mail_options).deliver!
+    user.reset_password()
 
     return []
   end

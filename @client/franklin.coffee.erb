@@ -2895,17 +2895,40 @@ ProfileLink = ReactiveComponent
           style:
             position: 'absolute'
             display: if not @local.menu then 'none'
-            height: 80
-            width: 125
+            #height: 80
+            width: 150
             marginTop: -8
             marginLeft: -8
             padding: 8
+            paddingTop: 50 
             backgroundColor: '#eee'
             left: 0
+            textAlign: 'left'
+          if current_user.is_moderator
+            A
+              style:
+                color: cityclub_navy
+                position: 'relative'
+                bottom: 8
+                paddingLeft: 27,
+                display: 'block'
+              href: '/dashboard/moderate'
+              'Moderate'
+          if current_user.is_assessor
+            A
+              style:
+                color: cityclub_navy
+                position: 'relative'
+                bottom: 8
+                paddingLeft: 27,
+                display: 'block'
+              href: '/dashboard/assessment'
+              'Fact-check'
+
           A
             style:
               color: cityclub_navy
-              position: 'absolute'
+              position: 'relative'
               bottom: 8
               paddingLeft: 27,
               display: 'block'

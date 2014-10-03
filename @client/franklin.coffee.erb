@@ -1694,7 +1694,7 @@ NewComment = ReactiveComponent
             key: '/new/comment'
             body: @local.new_comment
             user: fetch('/current_user').user
-            point: "/point/#{arest.key_id(@props.key)}"
+            point: "/point/#{@props.point}"
           save(comment)
           $(@getDOMNode()).find('.new_comment').val(''))
 
@@ -1780,7 +1780,7 @@ Discussion = ReactiveComponent
             FactCheck key: comment.key
 
       # Write a new comment
-      NewComment()
+      NewComment point: arest.key_id(@props.key)
 
   # HACK! Set the height of the body so that it accommodates the 
   # overlaid point

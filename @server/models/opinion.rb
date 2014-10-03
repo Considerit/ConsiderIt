@@ -189,7 +189,7 @@ class Opinion < ActiveRecord::Base
     # (Picking the older one because of a bug where if you
     # login on a proposal page, it will replace your old opinion
     # with the new neutral one)
-    if opinion.updated_at < updated_at
+    if opinion.updated_at < updated_at && opinion.published
       self.stance = opinion.stance
       self.stance_segment = opinion.stance_segment
     end

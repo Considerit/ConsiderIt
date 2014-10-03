@@ -185,8 +185,11 @@ class Opinion < ActiveRecord::Base
 
     puts("Absorbing opinion #{opinion.id} into #{self.id}")
 
-    # Copy the stance of the opinion if the opinion is newer
-    if opinion.updated_at > updated_at
+    # Copy the stance of the opinion if the opinion is older
+    # (Picking the older one because of a bug where if you
+    # login on a proposal page, it will replace your old opinion
+    # with the new neutral one)
+    if opinion.updated_at < updated_at
       self.stance = opinion.stance
       self.stance_segment = opinion.stance_segment
     end

@@ -201,6 +201,14 @@ class User < ActiveRecord::Base
     params = {
       'name' => access_token.info.name
     }
+
+    if !encrypted_password
+      # this prevents a bcrypt hashing problem in the scenario where 
+      # a user creates an account via third party, forgets, and tries
+      # to enter an email and password. In that case, password
+      # can't be null.
+      params['password'] = SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] 
+    end
             
     case access_token.provider
 
@@ -233,7 +241,6 @@ class User < ActiveRecord::Base
     end
 
     params.update third_party_params
-    params = ActionController::Parameters.new(params).permit!
     self.update_attributes! params
 
   end

@@ -42,8 +42,14 @@ class CurrentUserController < ApplicationController
       #       reveals that a particular email address exists in the
       #       system or not.  But it's prolly the right tradeoff.
 
-      return "Wrong password" if !user.authenticate(params[:password])
-
+      if !user.authenticate(params[:password])
+        provider = user.third_party_authenticated()
+        if provider
+          return "Wrong password. Previously you used the #{provider} button."
+        else 
+          return "Wrong password"
+        end
+      end
       replace_user(current_user, user)
       set_current_user(user)
       dirty_key '/proposals'

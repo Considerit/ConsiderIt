@@ -450,7 +450,15 @@ StickyProposalHeading = ReactiveComponent
     heading_height = 50
     DIV null, 
       DIV className: 'proposal_heading placeholder', style: {height: heading_height} 
-      DIV id: 'proposal_heading', className: 'proposal_heading stickable',  style : { height: heading_height, minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, textAlign: 'center' }, # minwidth is for width consistency when dropping into fixed sticky header
+      DIV
+        id: 'proposal_heading'
+        className: 'proposal_heading stickable'
+        style:
+          height: heading_height
+          minWidth: PAGE_WIDTH # for width consistency when dropping into fixed sticky header
+          backgroundColor: color.proposal_header
+          textAlign: 'center'
+
         # TODO: we need a way of knowing whether this subdomain has a homepage or not
         if customer.identifier == 'livingvotersguide'
           A
@@ -461,13 +469,15 @@ StickyProposalHeading = ReactiveComponent
 
         DIV className: 'current_proposal_cluster', @proposal.cluster
 
-        DIV className: 'proposal_navigation_menu_wrapper', style: {width: DESCRIPTION_WIDTH}, # set the width here so we can align it perfectly with the proposal description text
+        DIV
+          className: 'proposal_navigation_menu_wrapper'
+          # Set the width here so we can align it perfectly with the proposal description text:
+          style: {width: DESCRIPTION_WIDTH}
           DIV style: {width: PAGE_WIDTH}, # ...but let the stuff inside be big
             DIV
-                className: 'proposal_navigation_menu'
-                onMouseEnter: (=> @local.dropped_down = true; save(@local))
-                onMouseLeave: (=> @local.dropped_down = false; save(@local))
-            ,
+              className: 'proposal_navigation_menu'
+              onMouseEnter: (=> @local.dropped_down = true; save(@local))
+              onMouseLeave: (=> @local.dropped_down = false; save(@local))
 
               DIV className: 'current_proposal', style: {backgroundColor: 'rgba(0,0,0,.2)'},
                 SPAN null,

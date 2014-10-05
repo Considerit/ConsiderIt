@@ -415,10 +415,26 @@ StickyProposalHeading = ReactiveComponent
     # Otherwise we'll display the full question. This split doesn't come from
     # deep thought. Right now we'll just show the nav bar if the proposal belongs to a group
     use_navigation_bar = @proposal.cluster && proposals
-    
-    DIV null, 
-      if use_navigation_bar
 
+    if not use_navigation_bar
+      heading_style =
+        textAlign: 'center'
+        minWidth: PAGE_WIDTH # for width consistency when dropping into fixed sticky header
+        backgroundColor: color.proposal_header
+        fontSize: 26
+        padding: '4px 90px'
+
+      heading_prefix = if @proposal.category and @proposal.designator
+                         @proposal.category + ' ' + @proposal.designator
+      heading_text = (heading_prefix or '') + ': ' + @proposal.name
+      return DIV null,
+               DIV className: 'proposal_heading stickable',   style: heading_style,
+                 SPAN null, heading_text
+               DIV className: 'proposal_heading placeholder', style: heading_style,
+                 SPAN null, heading_text
+    
+    heading_height = 50
+    DIV null, 
         if proposals.clusters #don't want to error out if /proposals isn't loaded yet
 
           #extract the cluster this proposal belongs to
@@ -438,7 +454,6 @@ StickyProposalHeading = ReactiveComponent
               @local.next_proposal = _.sample other_proposals_in_cluster
             save @local #save next_proposal so it doesn't change each rerender
 
-        heading_height = 50
         DIV null,
           DIV className: 'proposal_heading placeholder', style: {height: heading_height} 
           DIV id: 'proposal_heading', className: 'proposal_heading stickable',  style : { height: heading_height, minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, textAlign: 'center' }, # minwidth is for width consistency when dropping into fixed sticky header
@@ -536,16 +551,6 @@ StickyProposalHeading = ReactiveComponent
                       "Next: "
                       A onClick: (=> window.app_router.navigate("/#{@local.next_proposal.long_id}", {trigger: true})),
                         @local.next_proposal.name
-
-      else 
-        heading_style = { textAlign: 'center', minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, fontSize: 26, padding: '4px 90px' } # minwidth is for width consistency when dropping into fixed sticky header
-        DIV null,
-          DIV className: 'proposal_heading stickable',  style : heading_style,
-            SPAN null,"#{if @proposal.category && @proposal.designator then @proposal.category + ' ' + @proposal.designator + ':' else ''}#{@proposal.name}"
-
-          DIV className: 'proposal_heading placeholder', style: heading_style,
-            SPAN null,"#{if @proposal.category && @proposal.designator then @proposal.category + ' ' + @proposal.designator + ':' else ''}#{@proposal.name}"
-
 
 
 

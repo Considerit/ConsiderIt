@@ -42,7 +42,7 @@ server {
   rewrite ^/(.*)/results /$1 permanent;
   rewrite ^/(.*)/points /$1 permanent;
   
-  location ~ \.(myadmin|aspx|php|jsp|cgi|zip)$ {
+  location ~ \.(myadmin|aspx|php|jsp|cgi|zip|browserconfig.xml)$ {
     return 410;
   }
 

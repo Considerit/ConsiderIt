@@ -407,7 +407,6 @@ StickyProposalHeading = ReactiveComponent
       save(@local)
 
   render : ->
-    proposal = @proposal
     color = @data('color')
     customer = @data('/customer')
     proposals = @data('/proposals')
@@ -415,7 +414,7 @@ StickyProposalHeading = ReactiveComponent
     # If navigation bar is enabled, then we'll use a really short proposal name in the heading.
     # Otherwise we'll display the full question. This split doesn't come from
     # deep thought. Right now we'll just show the nav bar if the proposal belongs to a group
-    use_navigation_bar = proposal.cluster && proposals
+    use_navigation_bar = @proposal.cluster && proposals
     
     DIV null, 
       if use_navigation_bar
@@ -423,14 +422,14 @@ StickyProposalHeading = ReactiveComponent
         if proposals.clusters #don't want to error out if /proposals isn't loaded yet
 
           #extract the cluster this proposal belongs to
-          this_proposal_cluster = _.findWhere proposals.clusters, {name: proposal.cluster}
-          has_other_proposals_in_cluster = this_proposal_cluster && this_proposal_cluster.proposals.length > 1
+          this_proposal_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
+          has_other_proposals_in_cluster = this_proposal_cluster?.proposals.length > 1
 
           if !@local.next_proposal && has_other_proposals_in_cluster
             # the next proposal is the next proposal in the cluster, with 
             # preference for proposals the user has yet to submit an opinion for. 
 
-            other_proposals_in_cluster = _.filter this_proposal_cluster.proposals, (prop) -> prop.id != proposal.id # remove this proposal from the list
+            other_proposals_in_cluster = _.filter this_proposal_cluster.proposals, (prop) => prop.id != @proposal.id # remove this proposal from the list
             has_not_opined = _.filter other_proposals_in_cluster, (prop) => !prop.your_opinion || !@data(prop.your_opinion).published
 
             if has_not_opined.length > 0
@@ -451,7 +450,7 @@ StickyProposalHeading = ReactiveComponent
                 style: {position: 'absolute', display: 'inline-block', top: 10, left: 12},
                 I className: 'fa fa-home', style: {fontSize: 28, color: 'white'}
 
-            DIV className: 'current_proposal_cluster', proposal.cluster
+            DIV className: 'current_proposal_cluster', @proposal.cluster
 
             DIV className: 'proposal_navigation_menu_wrapper', style: {width: DESCRIPTION_WIDTH}, # set the width here so we can align it perfectly with the proposal description text
               DIV style: {width: PAGE_WIDTH}, # ...but let the stuff inside be big
@@ -463,7 +462,7 @@ StickyProposalHeading = ReactiveComponent
 
                   DIV className: 'current_proposal', style: {backgroundColor: 'rgba(0,0,0,.2)'},
                     SPAN null,
-                      "#{if proposal.designator && proposal.category then "#{proposal.category[0]}-#{proposal.designator} " else ''}#{proposal.name}?" 
+                      "#{if @proposal.designator && @proposal.category then "#{@proposal.category[0]}-#{@proposal.designator} " else ''}#{@proposal.name}?" 
                       I className: 'fa fa-caret-down', style: {paddingLeft: 8}
 
                   if @local.dropped_down
@@ -478,7 +477,7 @@ StickyProposalHeading = ReactiveComponent
                                   for other_proposal in this_proposal_cluster.proposals
                                     TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink, key: "tr/#{other_proposal.long_id}",
                                       TD style: {textAlign: 'left', paddingLeft: 20},
-                                        A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == proposal.id then 700 else 400},
+                                        A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == @proposal.id then 700 else 400},
                                           other_proposal.name
                                         
                                       TD style: {position: 'relative'},
@@ -515,7 +514,7 @@ StickyProposalHeading = ReactiveComponent
 
                           DIV className: 'other_clusters', 
                             for cluster in proposals.clusters
-                              if proposal.cluster != cluster.name && cluster.proposals.length > 0
+                              if @proposal.cluster != cluster.name && cluster.proposals.length > 0
                                 do (cluster) =>
                                   DIV className: 'another_cluster', style: {padding: '0 50px', width: '100%', position: 'relative'}, onMouseEnter: (=> @local.show_cluster = cluster.name; save(@local)), onMouseLeave: (=> @mouseLeaveOtherCluster(cluster.name) ),
                                     SPAN style: {float: 'left', fontSize: 18, fontWeight: 400},
@@ -542,10 +541,10 @@ StickyProposalHeading = ReactiveComponent
         heading_style = { textAlign: 'center', minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, fontSize: 26, padding: '4px 90px' } # minwidth is for width consistency when dropping into fixed sticky header
         DIV null,
           DIV className: 'proposal_heading stickable',  style : heading_style,
-            SPAN null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
+            SPAN null,"#{if @proposal.category && @proposal.designator then @proposal.category + ' ' + @proposal.designator + ':' else ''}#{@proposal.name}"
 
           DIV className: 'proposal_heading placeholder', style: heading_style,
-            SPAN null,"#{if proposal.category && proposal.designator then proposal.category + ' ' + proposal.designator + ':' else ''}#{proposal.name}"
+            SPAN null,"#{if @proposal.category && @proposal.designator then @proposal.category + ' ' + @proposal.designator + ':' else ''}#{@proposal.name}"
 
 
 

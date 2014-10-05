@@ -433,28 +433,22 @@ StickyProposalHeading = ReactiveComponent
                DIV className: 'proposal_heading placeholder', style: heading_style,
                  SPAN null, heading_text
     
+    # Now we know that we are drawing the navigation bar
+
+    # Determine the next proposal
+    next_proposal =
+      if proposals.clusters  # In case /proposals isn't loaded
+        curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
+        if curr_cluster?.proposals.length > 1
+          # Now find the current proposal in the cluster, and return the next one
+          for proposal, index in curr_cluster.proposals
+            if @proposal == proposal
+              break
+          next_index = (index + 1) % curr_cluster.proposals.length
+          curr_cluster.proposals[next_index]
+
     heading_height = 50
     DIV null, 
-        if proposals.clusters #don't want to error out if /proposals isn't loaded yet
-
-          #extract the cluster this proposal belongs to
-          this_proposal_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
-          has_other_proposals_in_cluster = this_proposal_cluster?.proposals.length > 1
-
-          if !@local.next_proposal && has_other_proposals_in_cluster
-            # the next proposal is the next proposal in the cluster, with 
-            # preference for proposals the user has yet to submit an opinion for. 
-
-            other_proposals_in_cluster = _.filter this_proposal_cluster.proposals, (prop) => prop.id != @proposal.id # remove this proposal from the list
-            has_not_opined = _.filter other_proposals_in_cluster, (prop) => !prop.your_opinion || !@data(prop.your_opinion).published
-
-            if has_not_opined.length > 0
-              @local.next_proposal = _.sample has_not_opined
-            else 
-              @local.next_proposal = _.sample other_proposals_in_cluster
-            save @local #save next_proposal so it doesn't change each rerender
-
-        DIV null,
           DIV className: 'proposal_heading placeholder', style: {height: heading_height} 
           DIV id: 'proposal_heading', className: 'proposal_heading stickable',  style : { height: heading_height, minWidth: PAGE_WIDTH, backgroundColor: color.proposal_header, textAlign: 'center' }, # minwidth is for width consistency when dropping into fixed sticky header
             # TODO: we need a way of knowing whether this subdomain has a homepage or not
@@ -485,11 +479,11 @@ StickyProposalHeading = ReactiveComponent
                       DIV style: {backgroundColor: color.proposal_header, borderRadius: '4px'},
                         DIV style: {backgroundColor: 'rgba(0,0,0,.2)', padding: '14px 0', borderRadius: '4px'},
                           
-                          if has_other_proposals_in_cluster
+                          if curr_cluster?.proposals.length > 1
                             DIV null,
                               TABLE className: 'current_cluster', style: {width: '100%'}, 
                                 TBODY null,
-                                  for other_proposal in this_proposal_cluster.proposals
+                                  for other_proposal in curr_cluster.proposals
                                     TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink, key: "tr/#{other_proposal.long_id}",
                                       TD style: {textAlign: 'left', paddingLeft: 20},
                                         A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == @proposal.id then 700 else 400},
@@ -546,11 +540,13 @@ StickyProposalHeading = ReactiveComponent
                                                 other_proposal.name
                         
                                     
-                  if @local.next_proposal
+                  if next_proposal
                     DIV className: 'next_proposal', 
                       "Next: "
-                      A onClick: (=> window.app_router.navigate("/#{@local.next_proposal.long_id}", {trigger: true})),
-                        @local.next_proposal.name
+                        A
+                          onClick: do (url = '/' + next_proposal.long_id) =>
+                            => window.app_router.navigate(url, {trigger: true})
+                          next_proposal.name
 
 
 

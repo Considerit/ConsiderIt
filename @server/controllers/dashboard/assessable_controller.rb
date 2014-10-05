@@ -122,6 +122,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     params[:assessment].delete :point
     params[:assessment].delete :key
     params[:assessment].delete :verdict
+    params[:assessment].delete :claims
 
     if assessment.complete
       assessment.update_verdict()

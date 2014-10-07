@@ -2920,6 +2920,7 @@ ProfileLink = ReactiveComponent
             backgroundColor: '#eee'
             left: 0
             textAlign: 'left'
+            zIndex: 10
           if current_user.is_moderator
             A
               style:
@@ -2951,7 +2952,7 @@ ProfileLink = ReactiveComponent
             'data-action': 'logout'
             onClick: @logout
             'Log out'
-        SPAN style: {position: 'relative'},
+        SPAN style: {position: 'relative', zIndex: 11},
           Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
           'Profile'
     else
@@ -2992,7 +2993,8 @@ Header = ReactiveComponent
 
     DIV className: 'l_header', style: {backgroundColor: color.header_bg, minWidth: PAGE_WIDTH},
       if customer.identifier != "livingvotersguide"
-        ProfileLink()
+        DIV className: 'profile_navigation',
+          ProfileLink()
 
       DIV null, 
         # Define all the customer-specific styles for non-repeated elements directly. 
@@ -3040,19 +3042,14 @@ Header = ReactiveComponent
               DIV
                 style:
                   height: 69
-                  width: '100%'
-                  textAlign: 'right'
                   backgroundColor: cream
-                  paddingRight: 80
-                  fontSize: 21
-                  paddingTop: 20
                   color: cityclub_navy
+                className: 'profile_navigation'
 
-                DIV null,
-                  ProfileLink()
-                  SPAN null, '   |   '
-                  A style: {color: cityclub_navy}, href:'/about', onClick: clickInternalLink, className: 'hover_pointer',
-                    'About'
+                ProfileLink()
+                SPAN null, '   |   '
+                A style: {color: cityclub_navy}, href:'/about', onClick: clickInternalLink, className: 'hover_pointer',
+                  'About'
 
               # Logo
               A href: (if @root.page_name == 'homepage' then '/about' else '/'), onClick: clickInternalLink,

@@ -724,7 +724,9 @@ Histogram = ReactiveComponent
           'Thanks! Invite others: '
           DIV null,
             FBShare()
-            Tweet()
+            Tweet
+              text: "Flex your civic muscle on #{@proposal.category.substring(0,1)}-#{@proposal.designator}! Learn about the issue and decide here: "
+              url: "https://livingvotersguide.org/#{@proposal.long_id}"
 
 ##
 # Slider
@@ -3137,13 +3139,13 @@ Tweet = ReactiveComponent
   displayName: 'Tweet'
 
   render: ->
-    hashtags = 'lvguide'
-    referer = 'https%3A%2F%2Flivingvotersguide.org%2F'
-    related = 'lvguide'
-    text = 'I%20flexed%20my%20civic%20muscle%20%40lvguide.'
-    url = 'https%3A%2F%2Flivingvotersguide.org%2F'
+    url = "https://platform.twitter.com/widgets/tweet_button.1410542722.html#?_=1410827370943&count=none&id=twitter-widget-0&lang=en&size=m"
+    for url_param in ['hashtags', 'original_referer', 'related', 'text', 'url']
+      if @props[url_param]
+        url += "&#{url_param}=#{@props[url_param]}"
+
     IFRAME 
-      src: "https://platform.twitter.com/widgets/tweet_button.1410542722.html#_=1410827370943&amp;count=none&amp;hashtags=#{hashtags}&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=#{referer}&amp;related=#{related}&amp;size=m&amp;text=#{text}&amp;url=#{url}"
+      src: url
       scrolling: "no"
       frameBorder: "0"
       allowTransparency: "true"
@@ -3172,7 +3174,13 @@ Footer = ReactiveComponent
 
             DIV style: {marginTop: 20},
               FBLike()
-              Tweet()
+              Tweet
+                hashtags: 'lvguide'
+                referer: 'https%3A%2F%2Flivingvotersguide.org%2F'
+                related: 'lvguide'
+                text: 'I%20flexed%20my%20civic%20muscle%20%40lvguide.'
+                url: 'https%3A%2F%2Flivingvotersguide.org%2F'
+
 
           DIV style: {paddingTop: 24, paddingBottom: 12, fontSize: 18, fontWeight: 500, color: 'rgb(77,76,71)'},
             'Bug to report? Have a comment? Confused? '

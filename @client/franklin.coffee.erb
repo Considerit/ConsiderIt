@@ -298,6 +298,7 @@ Proposal = ReactiveComponent
     your_opinion = @data(proposal.your_opinion)
     included_points = your_opinion.point_inclusions
     current_user = @data('/current_user')
+    customer = @data('/customer')
 
     description_region_style = {width: DESCRIPTION_WIDTH}
 
@@ -374,6 +375,17 @@ Proposal = ReactiveComponent
 
             #community cons
             CommunityPoints { key: 'cons' }
+
+
+      if @root.proposal_mode == 'results' && your_opinion.published && customer.identifier == 'livingvotersguide'
+        DIV className: 'opinion_thanks_and_invite',
+          'Thanks for your opinion! Invite friends and family: '
+          SPAN style: {position: 'relative', top: 5, marginLeft: 5},
+            FBShare()
+            Tweet
+              text: "Flex your civic muscle on #{@proposal.category.substring(0,1)}-#{@proposal.designator}! Learn about the issue and decide here: "
+              url: "https://livingvotersguide.org/#{@proposal.long_id}"
+
 
 
 StickyProposalHeading = ReactiveComponent
@@ -665,7 +677,6 @@ Histogram = ReactiveComponent
     selected_segment = @data('histogram').selected_segment
     users_to_highlight = @data('histogram').highlighted_users
 
-    customer = @data('/customer')
 
     histogram_data = @data('histogramdata')
     columns = histogram_data.columns
@@ -674,8 +685,6 @@ Histogram = ReactiveComponent
 
     effective_histogram_width = num_columns * avatar_size + 2
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2 #- avatar_size / 4
-
-    your_opinion = @data(@proposal.your_opinion)
 
     DIV null,
       TABLE 
@@ -719,14 +728,6 @@ Histogram = ReactiveComponent
               TD key: 'opposers', className: "histogram_segment_pole opposers", 
                 SPAN null, 'Opposers'
 
-      if @root.proposal_mode == 'results' && your_opinion.published && customer.identifier == 'livingvotersguide'
-        DIV className: 'opinion_thanks_and_invite',
-          'Thanks! Invite others: '
-          DIV null,
-            FBShare()
-            Tweet
-              text: "Flex your civic muscle on #{@proposal.category.substring(0,1)}-#{@proposal.designator}! Learn about the issue and decide here: "
-              url: "https://livingvotersguide.org/#{@proposal.long_id}"
 
 ##
 # Slider

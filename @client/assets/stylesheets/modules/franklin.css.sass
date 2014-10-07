@@ -505,16 +505,11 @@ $segment_color: #db004d
     +transform(rotate(180deg))
     -ms-transform: rotate(0)
 
-  //////////
-  // When there are multiple colums in a bar, need to prevent putting the row with least faces at the bottom
-  //  xxx        x
-  //  xxx   =>  xxx 
-  //   x        xxx
-  // &.extreme_or_neutral
-  //   +transform(rotate(180deg))    
-  //   .avatar
-  //     +transform(rotate(180deg))
 
+.opinion_thanks_and_invite
+  position: absolute
+  right: -194px
+  bottom: 50px
 
 // slider
 
@@ -1291,7 +1286,6 @@ a.edit_point, a.delete_point
       font-weight: normal
     input
       +font-size(3)
-
 
 
 .auth .forgot_password

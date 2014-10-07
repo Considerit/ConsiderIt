@@ -665,6 +665,8 @@ Histogram = ReactiveComponent
     selected_segment = @data('histogram').selected_segment
     users_to_highlight = @data('histogram').highlighted_users
 
+    customer = @data('/customer')
+
     histogram_data = @data('histogramdata')
     columns = histogram_data.columns
     num_columns = columns.length
@@ -673,47 +675,56 @@ Histogram = ReactiveComponent
     effective_histogram_width = num_columns * avatar_size + 2
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2 #- avatar_size / 4
 
+    your_opinion = @data(@proposal.your_opinion)
 
-    TABLE 
-      className: 'histogram'
-      onClick: @onClickHistogram
-      # onMouseLeave: @onSelectSegment
-      style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
-        TBODY null,
-          TR null, 
-            TD key: 'supporters', className: "histogram_segment_pole supporters", 
-              SPAN null, 'Supporters'
+    DIV null,
+      TABLE 
+        className: 'histogram'
+        onClick: @onClickHistogram
+        # onMouseLeave: @onSelectSegment
+        style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
+          TBODY null,
+            TR null, 
+              TD key: 'supporters', className: "histogram_segment_pole supporters", 
+                SPAN null, 'Supporters'
 
-            for bar, idx in columns
-              segment = if bar.length > 0 then bar[0].stance_segment else -1
-              is_selected = selected_segment == segment
+              for bar, idx in columns
+                segment = if bar.length > 0 then bar[0].stance_segment else -1
+                is_selected = selected_segment == segment
 
-              TD 
-                key: idx 
-                className: "histogram_bar #{if is_selected then 'is_selected' else 'not_selected'}"
-                style: {width: avatar_size, opacity: (if is_selected && !selected_segment? then '1' else '1'), minHeight: (if bar.length == 0 then 75 else 0)}
-              ,
-                for opinion in bar
-                  user = opinion.user
-                  Avatar 
-                    tag: SPAN, 
-                    key: user
-                    user: user
-                    hide_face: @root.proposal_mode == 'crafting'
-                    hide_name: @root.proposal_mode == 'crafting'
-                    'data-segment':segment
-                    style:
-                      height: avatar_size
-                      width: avatar_size
-                      opacity: if users_to_highlight && 
-                        !_.contains(users_to_highlight, opinion.user) 
-                        then '.15' 
-                        else if selected_segment == null || is_selected 
-                        then '1.0'
-                        else '.15'
+                TD 
+                  key: idx 
+                  className: "histogram_bar #{if is_selected then 'is_selected' else 'not_selected'}"
+                  style: {width: avatar_size, opacity: (if is_selected && !selected_segment? then '1' else '1'), minHeight: (if bar.length == 0 then 75 else 0)}
+                ,
+                  for opinion in bar
+                    user = opinion.user
+                    Avatar 
+                      tag: SPAN, 
+                      key: user
+                      user: user
+                      hide_face: @root.proposal_mode == 'crafting'
+                      hide_name: @root.proposal_mode == 'crafting'
+                      'data-segment':segment
+                      style:
+                        height: avatar_size
+                        width: avatar_size
+                        opacity: if users_to_highlight && 
+                          !_.contains(users_to_highlight, opinion.user) 
+                          then '.15' 
+                          else if selected_segment == null || is_selected 
+                          then '1.0'
+                          else '.15'
 
-            TD key: 'opposers', className: "histogram_segment_pole opposers", 
-              SPAN null, 'Opposers'
+              TD key: 'opposers', className: "histogram_segment_pole opposers", 
+                SPAN null, 'Opposers'
+
+      if @root.proposal_mode == 'results' && your_opinion.published && customer.identifier == 'livingvotersguide'
+        DIV className: 'opinion_thanks_and_invite',
+          'Thanks! Invite others: '
+          DIV null,
+            FBShare()
+            Tweet()
 
 ##
 # Slider
@@ -967,13 +978,13 @@ DecisionBoard = ReactiveComponent
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   render : ->
-    root = @root
     current_user = @data('/current_user')
+    customer = @data('/customer')
     
     your_opinion = @data(@proposal.your_opinion)
     published = your_opinion.published
 
-    selected_point = @root.selected_point && root.proposal_mode == 'crafting'
+    selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
     selected_wing_point = selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
     
     opinion_region_style = {width: DECISION_BOARD_WIDTH}
@@ -992,7 +1003,7 @@ DecisionBoard = ReactiveComponent
       DIV 
         className:'decision_board_body'
         style: decision_board_style
-        onClick: => if root.proposal_mode == 'results' then togglePage('crafting', 'give_opinion_button')
+        onClick: => if @root.proposal_mode == 'results' then togglePage('crafting', 'give_opinion_button')
       ,
 
         DIV null, 
@@ -1015,7 +1026,7 @@ DecisionBoard = ReactiveComponent
           onClick: @saveYourOpinion
         , if published then 'See the results' else 'Save your opinion and see results'
 
-        if root.proposal_mode == 'crafting'
+        if @root.proposal_mode == 'crafting'
           A className:'follow_proposal',
             INPUT
               type:      'checkbox'
@@ -3098,25 +3109,45 @@ Header = ReactiveComponent
         'Warning: there was a server error!'
 
 
-SharingButtons = ReactiveComponent
-  displayName: 'SharingButtons'
+FBShare = ReactiveComponent
+  displayName: 'FBShare'
+
+  componentDidMount: ->
+    FB.XFBML.parse document
+
+  render: -> 
+    SPAN 
+      style: {display: 'inline-block', marginRight: 5, position: 'relative', top: -8}
+      dangerouslySetInnerHTML: { __html: "<fb:share-button></fb:share-button>"}
+    
+
+FBLike = ReactiveComponent
+  displayName: 'FBLike'
+  render : -> 
+    page = 'http://www.facebook.com/pages/Living-Voters-Guide/157151824312366'
+    IFRAME 
+      style: {border: 'none', overflow: 'hidden', width: 90, height: 21}
+      src: "//www.facebook.com/plugins/like.php?href=#{page}&send=false&layout=button_count&width=450&show_faces=false&action=like&colorscheme=light&font=lucida+grande&height=21"
+      scrolling: "no"
+      frameBorder: "0"
+      allowTransparency: "true"
+
+Tweet = ReactiveComponent
+  displayName: 'Tweet'
+
   render: ->
-    SPAN null,
-
-      IFRAME 
-        style: {border: 'none', overflow: 'hidden', width: 90, height: 21}
-        src: "//www.facebook.com/plugins/like.php?href=http://www.facebook.com/pages/Living-Voters-Guide/157151824312366&send=false&layout=button_count&width=450&show_faces=false&action=like&colorscheme=light&font=lucida+grande&height=21"
-        scrolling: "no"
-        frameBorder: "0"
-        allowTransparency: "true"
-
-      IFRAME 
-        src: "https://platform.twitter.com/widgets/tweet_button.1410542722.html#_=1410827370943&amp;count=none&amp;hashtags=lvguide&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=https%3A%2F%2Flivingvotersguide.org%2F&amp;related=lvguide&amp;size=m&amp;text=I%20flexed%20my%20civic%20muscle%20%40lvguide.&amp;url=https%3A%2F%2Flivingvotersguide.org%2F"
-        scrolling: "no"
-        frameBorder: "0"
-        allowTransparency: "true"
-        className: "twitter-share-button twitter-tweet-button twitter-share-button twitter-count-none"
-        style: {width: 57; height: 20}
+    hashtags = 'lvguide'
+    referer = 'https%3A%2F%2Flivingvotersguide.org%2F'
+    related = 'lvguide'
+    text = 'I%20flexed%20my%20civic%20muscle%20%40lvguide.'
+    url = 'https%3A%2F%2Flivingvotersguide.org%2F'
+    IFRAME 
+      src: "https://platform.twitter.com/widgets/tweet_button.1410542722.html#_=1410827370943&amp;count=none&amp;hashtags=#{hashtags}&amp;id=twitter-widget-0&amp;lang=en&amp;original_referer=#{referer}&amp;related=#{related}&amp;size=m&amp;text=#{text}&amp;url=#{url}"
+      scrolling: "no"
+      frameBorder: "0"
+      allowTransparency: "true"
+      className: "twitter-share-button twitter-tweet-button twitter-share-button twitter-count-none"
+      style: {width: 57; height: 20}
 
 
 Footer = ReactiveComponent
@@ -3139,7 +3170,8 @@ Footer = ReactiveComponent
               '.'
 
             DIV style: {marginTop: 20},
-              SharingButtons()
+              FBLike()
+              Tweet()
 
           DIV style: {paddingTop: 24, paddingBottom: 12, fontSize: 18, fontWeight: 500, color: 'rgb(77,76,71)'},
             'Bug to report? Have a comment? Confused? '

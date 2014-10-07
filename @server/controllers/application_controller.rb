@@ -202,7 +202,7 @@ private
         response.append Proposal.summaries
 
       elsif key.match '/page/homepage'
-        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE u.account_id=#{current_tenant.id} AND u.registration_complete=true AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
+        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions, proposals p WHERE u.account_id=#{current_tenant.id} AND u.registration_complete=true AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}' AND p.id = opinions.proposal_id AND p.active=1")      
 
         clean = {
           users: get_all_user_data(),

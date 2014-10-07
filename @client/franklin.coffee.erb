@@ -2917,7 +2917,7 @@ ProfileLink = ReactiveComponent
             backgroundColor: '#eee'
             left: 0
             textAlign: 'left'
-            zIndex: 10
+            zIndex: 999999999
           if current_user.is_moderator
             A
               style:
@@ -2949,7 +2949,7 @@ ProfileLink = ReactiveComponent
             'data-action': 'logout'
             onClick: @logout
             'Log out'
-        SPAN style: {position: 'relative', zIndex: 11},
+        SPAN style: {position: 'relative', zIndex: 9999999999},
           Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
           'Profile'
     else
@@ -3000,7 +3000,7 @@ Header = ReactiveComponent
           when 'cityoftigard'
             logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
             DIV null,
-              DIV style: {height: 38},
+              DIV style: {height: 24},
                 A href: '/', onClick: @clickInternalLink, style: {position: 'absolute', top:0, zIndex: 999999},
                   IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
                 # SPAN style: {color: 'white', fontSize: 28, display: 'inline-block', margin: '20px 0 0 110px'}, 

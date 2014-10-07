@@ -64,6 +64,19 @@
 
       #content.content{ customer: current_tenant.identifier, theme: current_tenant.theme }
 
+
+
+      // for Facebook social buttons
+      #fb-root
+      :javascript
+        (function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=206466936144360&version=v2.0";
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
       - if !@is_search_bot && Rails.env.production?
         - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
           :javascript

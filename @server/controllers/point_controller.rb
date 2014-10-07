@@ -28,8 +28,7 @@ class PointController < ApplicationController
     #TODO: look into cancan to figure out how we can move this earlier in the method
     authorize! :create, point
 
-    opinion = Opinion.where(:user_id => current_user.id,
-                            :proposal => proposal).first
+    opinion = Opinion.get_or_make(proposal, current_user)
 
     if !proposal
       raise "Error! No proposal matching '#{point['proposal']}'"

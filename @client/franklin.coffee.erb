@@ -3116,9 +3116,10 @@ FBShare = ReactiveComponent
     FB.XFBML.parse document
 
   render: -> 
+    layout = 'button'
     SPAN 
-      style: {display: 'inline-block', marginRight: 5, position: 'relative', top: -8}
-      dangerouslySetInnerHTML: { __html: "<fb:share-button></fb:share-button>"}
+      style: {display: 'inline-block', marginRight: 5, position: 'relative', top: -6}
+      dangerouslySetInnerHTML: { __html: "<fb:share-button data-layout='#{layout}'></fb:share-button>"}
     
 
 FBLike = ReactiveComponent

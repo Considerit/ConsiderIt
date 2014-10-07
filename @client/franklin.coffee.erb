@@ -1290,6 +1290,57 @@ Point = ReactiveComponent
     author_opinion = @data(userOpinion(point.user))
     current_user = @data('/current_user')
 
+
+    renderIncluders = =>
+
+      if @data().includers
+
+        includers = @buildIncluders()
+
+        s = #includers_style
+          rows: 8
+          dx: 2
+          dy: 5
+          col_gap: 8
+          side_offset: 32 + 14 + 1
+
+        # Now we'll go through the list from back to front
+        i = includers.length
+
+        for includer in includers
+          i -= 1
+          curr_column = Math.floor(i / s.rows)
+          side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
+          top_offset = (i % s.rows) * s.dy 
+          left_right = if @data().is_pro then 'left' else 'right'
+          style = { top: top_offset }
+          style[left_right] = -side_offset
+
+          # Finally draw the guys
+          Avatar
+            key: includer
+            tag: SPAN
+            className: "point_includer_avatar"
+            style: style
+
+    renderNewIndicator = =>
+      if @data().includers
+        side_offset = 48
+        left_right = if @data().is_pro then 'left' else 'right'
+        style = 
+          position: 'absolute'
+          color: 'rgb(255,22,3)'
+          fontSize: '11px'
+          top: -14
+          #backgroundColor: 'white'
+          zIndex: 5
+          fontVariant: 'small-caps'
+          fontWeight: 'bold'
+
+        style[left_right] = "#{-side_offset}"
+        SPAN {style: style}, '-new-'
+
+
     point_content_style = { width: POINT_CONTENT_WIDTH }
     if is_selected
       _.extend point_content_style,
@@ -1336,13 +1387,13 @@ Point = ReactiveComponent
     ,
     
       if @props.location_class == 'community_point' && @props.is_new
-        @renderNewIndicator()
+        renderNewIndicator()
 
       DIV className:'includers', onMouseEnter: @highlightIncluders, onMouseLeave: @unHighlightIncluders, 
         if @props.location_class == 'community_point'
-          @renderIncluders()
+          renderIncluders()
 
-        if !selected_segment || ( author_opinion && author_opinion.stance_segment == selected_segment )
+        else if !selected_segment || ( author_opinion && author_opinion.stance_segment == selected_segment )
           Avatar tag: SPAN, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
 
       DIV className:'point_content', style : point_content_style,
@@ -1497,6 +1548,7 @@ Point = ReactiveComponent
 
   buildIncluders : -> 
     point = @data()
+    author_has_included = _.contains point.includers, point.user
     to_remove = [point.user]
 
     # only show includers from this stance segment if a segment is selected
@@ -1508,57 +1560,11 @@ Point = ReactiveComponent
         if stance_segment && stance_segment != selected_segment
           to_remove.push(includer)
 
-    _.difference point.includers, to_remove
-
+    includers = _.difference point.includers, to_remove
+    if author_has_included 
+      includers.push point.user
+    includers
         
-  renderIncluders : ->
-
-    if @data().includers
-
-      includers = @buildIncluders()
-
-      s = #includers_style
-        rows: 8
-        dx: 2
-        dy: 5
-        col_gap: 8
-        side_offset: 32 + 14 + 1
-
-      # Now we'll go through the list from back to front
-      i = includers.length
-
-      for includer in includers
-        i -= 1
-        curr_column = Math.floor(i / s.rows)
-        side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
-        top_offset = (i % s.rows) * s.dy + 4
-        left_right = if @data().is_pro then 'left' else 'right'
-        style = { top: top_offset }
-        style[left_right] = -side_offset
-
-        # Finally draw the guys
-        Avatar
-          key: includer
-          tag: SPAN
-          className: "point_includer_avatar"
-          style: style
-
-  renderNewIndicator : ->
-    if @data().includers
-      side_offset = 48
-      left_right = if @data().is_pro then 'left' else 'right'
-      style = 
-        position: 'absolute'
-        color: 'rgb(255,22,3)'
-        fontSize: '11px'
-        top: -14
-        #backgroundColor: 'white'
-        zIndex: 5
-        fontVariant: 'small-caps'
-        fontWeight: 'bold'
-
-      style[left_right] = "#{-side_offset}"
-      SPAN {style: style}, '-new-'
 
 
 Comment = ReactiveComponent

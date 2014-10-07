@@ -64,7 +64,7 @@
 
       #content.content{ customer: current_tenant.identifier, theme: current_tenant.theme }
 
-      - if !@is_search_bot
+      - if !@is_search_bot && Rails.env.production?
         - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
           :javascript
 

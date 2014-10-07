@@ -16,7 +16,10 @@ class HomeController < ApplicationController
     end
 
     if !session.has_key?(:search_bot)
-      session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || (request.user_agent && !!request.user_agent.match('Prerender'))
+      session[:search_bot] =    !!request.fullpath.match('_escaped_fragment_')  \
+                             || !request.user_agent \
+                             || !!request.user_agent.match('Prerender') \
+                             || request.user_agent.match(/\(.*https?:\/\/.*\)/) #http://stackoverflow.com/questions/5882264/ruby-on-rails-how-to-determine-if-a-request-was-made-by-a-robot-or-search-engin
     end
 
     # Some customers don't have a homepage. In the iterim, let's just redirect 

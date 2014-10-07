@@ -11,7 +11,7 @@ public/images/old
 *.bk
 .vagrant
 restart.txt
-Backup
+/Backup
 *.crt
 *.sql
 

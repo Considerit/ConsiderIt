@@ -424,14 +424,11 @@ StickyProposalHeading = ReactiveComponent
         fontSize: 26
         padding: '4px 90px'
 
-      heading_prefix = if @proposal.category and @proposal.designator
-                         @proposal.category + ' ' + @proposal.designator
-      heading_text = (heading_prefix or '') + ': ' + @proposal.name
       return DIV null,
                DIV className: 'proposal_heading stickable',   style: heading_style,
-                 SPAN null, heading_text
+                 SPAN null, @proposal.name
                DIV className: 'proposal_heading placeholder', style: heading_style,
-                 SPAN null, heading_text
+                 SPAN null, @proposal.name
     
     # Now we know that we are drawing the navigation bar
 

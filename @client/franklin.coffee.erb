@@ -406,6 +406,8 @@ StickyProposalHeading = ReactiveComponent
         $header.StickyElement
           placeholder: $el.find('.proposal_heading.placeholder')[0]
           container: $el.parents('.proposal')
+          stick_on_zoomed_screens: false
+
         @local.sticky_initialized = true
         save @local
 
@@ -1108,12 +1110,7 @@ DecisionBoard = ReactiveComponent
         d.sticky = true
         save(d)
       conditional: => 
-        # Text input is bad on iOS when nested in a fixed position element. So if the user
-        # is trying to edit text, we'll shut off the sticky decisionboard.
-        # TODO/BUG: this is not detecting text input when editing a point, or for editing a comment. 
-        ios_fix = !@data('browser').is_iOS || (!@data('your_pro_points').adding_new_point && !@data('your_con_points').adding_new_point)
-
-        @root.proposal_mode == 'crafting' && ios_fix 
+        @root.proposal_mode == 'crafting'
 
   # When user clicks the big bold button at the bottom of the crafting page
   saveYourOpinion : -> 
@@ -1139,11 +1136,6 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   handleAddPointBegin : ->
-    if @data('browser').is_iOS
-      # Text input is bad on iOS when nested in a fixed position element. So if the user
-      # is trying to edit text, we'll shut off the sticky decisionboard.
-      $(window).scrollTop $('.feelings_region').offset().top
-
     your_points = @data()
     your_points.adding_new_point = true
     save your_points
@@ -2729,6 +2721,8 @@ Homepage = ReactiveComponent
         $header.StickyElement
           placeholder: $el.find('.sticky_header.placeholder')[0]
           container: $el
+          stick_on_zoomed_screens: false
+
         @local.sticky_initialized = true
         save @local
 
@@ -3514,7 +3508,7 @@ BrowserHacks = ReactiveComponent
       browser.touch_enabled = Modernizr.touch
       save browser
     
-    if browser.is_android_browser || browser.is_opera_mini
+    if  browser.is_opera_mini #|| browser.is_android_browser
       DIV style: {backgroundColor: 'red', padding: '10px', textAlign: 'center', color: 'white', fontSize: 24}, 
         "This website does not work well with #{if browser.is_android_browser then 'the Android Browser' else 'Opera Mini'}. Please use "
         A href: "https://play.google.com/store/apps/details?id=com.android.chrome&hl=en", style: {color: 'white', textDecoration: 'underline'},

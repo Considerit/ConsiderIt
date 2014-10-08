@@ -352,6 +352,10 @@ class CurrentUserController < ApplicationController
     response.concat(compile_dirty_objects())
 
     render :inline =>
+      "<div style='font-weight:600; font-size: 36px; color: #414141'>Please close this window</div>" +
+      "<div style='font-size: 24px'><div>You've logged in successfully!</div>" + 
+      "<div>Unfortunately, a bug in the iPad & iPhone prevents this window from closing automatically." +
+      "<div>Sorry for the inconvenience.</div></div>" +
       "<script type=\"text/javascript\">" +
       "  window.current_user_hash = #{response.to_json};  " +
       "</script>"

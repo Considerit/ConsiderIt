@@ -3511,6 +3511,7 @@ BrowserHacks = ReactiveComponent
       browser.is_opera_mini = !!navigator.userAgent.match /Opera Mini/
       browser.is_ie9 = !!(document.documentMode && document.documentMode == 9)
       browser.is_iOS = !!navigator.platform.match(/(iPad|iPhone)/)
+      browser.touch_enabled = Modernizr.touch
       save browser
     
     if browser.is_android_browser || browser.is_opera_mini

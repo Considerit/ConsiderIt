@@ -15,12 +15,9 @@ class ThirdPartyAuthHandler
     @callback = callback
     @popup = @openPopupWindow(url)
 
-  handleOpenIdResponse : (parameters) ->  
-    @callback parameters
-
   pollLoginPopup : ->
     if @popup? && @popup.location && window.location && window.location.origin == @popup.location.origin && @popup.current_user_hash?
-      @handleOpenIdResponse(@popup.current_user_hash)
+      @callback @popup.current_user_hash
       @popup.close()
       @popup = null
       clearInterval(@polling_interval)

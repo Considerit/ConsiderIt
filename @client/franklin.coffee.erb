@@ -1578,38 +1578,54 @@ Comment = ReactiveComponent
   render: -> 
     comment = @data()
 
-    DIV className: 'comment_entry',
+    if comment.editing
+      # Sharing keys, with some non-persisted client data getting saved...
+      EditComment fresh: false, point: comment.point, key: comment.key
 
-      # Delete button
-      if comment.user == fetch('/current_user').user
-        DIV
-          className: 'hover_pointer'
-          style:
-            position: 'absolute'
-            right: 26
+    else
+
+      DIV className: 'comment_entry',
+
+
+
+        # Comment author name
+        DIV className: 'comment_entry_name',
+          fetch(comment.user).name + ':'
+
+        # Comment author icon
+        Avatar
+          className: 'comment_entry_avatar'
+          tag: DIV
+          key: comment.user
+          hide_name: true
+
+        # Comment body
+        DIV className: 'comment_entry_body',
+          split_paragraphs(comment.body)
+
+        # Delete/edit button
+        if comment.user == fetch('/current_user').user
+          comment_action_style = 
             color: '#444'
             textDecoration: 'underline'
-          onClick: do (key = comment.key) => (e) =>
-            e.stopPropagation()
-            if (confirm('Delete this comment?'))
-              destroy(key)
+            cursor: 'pointer',
+            paddingRight: 10
+          DIV style: { marginLeft: 60}, 
+            SPAN
+              style: comment_action_style
+              onClick: do (key = comment.key) => (e) =>
+                e.stopPropagation()
+                if (confirm('Delete this comment?'))
+                  destroy(key)
+              'delete'
 
-          'delete'
-
-      # Comment author name
-      DIV className: 'comment_entry_name',
-        fetch(comment.user).name + ':'
-
-      # Comment author icon
-      Avatar
-        className: 'comment_entry_avatar'
-        tag: DIV
-        key: comment.user
-        hide_name: true
-
-      # Comment body
-      DIV className: 'comment_entry_body',
-        split_paragraphs(comment.body)
+            SPAN
+              style: comment_action_style
+              onClick: do (key = comment.key) => (e) =>
+                e.stopPropagation()
+                comment.editing = true
+                save comment
+              'edit'          
 
 
 FactCheck = ReactiveComponent
@@ -1654,8 +1670,8 @@ FactCheck = ReactiveComponent
 
 
 
-NewComment = ReactiveComponent
-  displayName: 'NewComment'
+EditComment = ReactiveComponent
+  displayName: 'EditComment'
 
   render : -> 
     logged_in = fetch('/current_user').logged_in
@@ -1700,6 +1716,8 @@ NewComment = ReactiveComponent
         placeholder: (logged_in and 'Write a new comment') or ''
         disabled: not logged_in
         onChange: (e) => @local.new_comment = e.target.value; save(@local)
+        defaultValue: if @props.fresh then null else @data().body
+
         style:
           marginLeft: 60
           width: 390
@@ -1711,11 +1729,17 @@ NewComment = ReactiveComponent
       DIV style: {textAlign: 'right'},
         Button({style: {marginLeft: 314}}, 'Save comment', (e) =>
           e.stopPropagation()
-          comment =
-            key: '/new/comment'
-            body: @local.new_comment
-            user: fetch('/current_user').user
-            point: "/point/#{@props.point}"
+          if @props.fresh
+            comment =
+              key: '/new/comment'
+              body: @local.new_comment
+              user: fetch('/current_user').user
+              point: "/point/#{@props.point}"
+          else
+            comment = @data()
+            comment.body = @local.new_comment
+            comment.editing = false
+
           save(comment)
           $(@getDOMNode()).find('.new_comment').val(''))
 
@@ -1801,7 +1825,7 @@ Discussion = ReactiveComponent
             FactCheck key: comment.key
 
       # Write a new comment
-      NewComment point: arest.key_id(@props.key)
+      EditComment fresh: true, point: arest.key_id(@props.key)
 
   # HACK! Set the height of the body so that it accommodates the 
   # overlaid point. And if it is a point on the decision board,

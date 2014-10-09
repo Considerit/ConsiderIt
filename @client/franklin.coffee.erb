@@ -1382,6 +1382,7 @@ Point = ReactiveComponent
         #{if point.is_pro then 'pro' else 'con'}"
       'data-id':@props.key
       onClick: @selectPoint
+      onTouchEnd: @selectPoint
     ,
     
       if @props.location_class == 'community_point' && @props.is_new
@@ -1498,7 +1499,13 @@ Point = ReactiveComponent
 
 
   selectPoint: (e) ->
+    # android browser needs to respond to this via a touch event;
+    # all other browsers via click event. iOS fails to select 
+    # a point if both touch and click are handled...sigh...
+    return unless fetch('browser').is_android_browser || e.type == 'click'
+
     e.stopPropagation()
+
     if @root.selected_point == @props.key # deselect
       @root.selected_point = null
       what = 'deselected a point'

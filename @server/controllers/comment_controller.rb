@@ -66,9 +66,9 @@ class CommentController < ApplicationController
     authorize! :update, Comment
 
     fields = ['body']
-    comment = params.select{|k,v| fields.include? k}
+    comment_vals = params.select{|k,v| fields.include? k}
 
-    comment.update_attributes! comment
+    comment.update_attributes! comment_vals
 
 
     ActiveSupport::Notifications.instrument("comment:point:updated", 

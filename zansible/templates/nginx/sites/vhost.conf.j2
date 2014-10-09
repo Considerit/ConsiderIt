@@ -42,10 +42,12 @@ server {
   rewrite ^/(.*)/results /$1 permanent;
   rewrite ^/(.*)/points /$1 permanent;
   
-  location ~ \.(myadmin|aspx|php|jsp|cgi|zip|browserconfig.xml)$ {
+  location ~ \.(myadmin|aspx|php|jsp|cgi|zip)$ {
     return 410;
   }
-
+  location ~ (browserconfig.xml)$ {
+    return 410;
+  }
   location ~ ^/(assets|images|javascripts|stylesheets|system)/ {
     gzip_static on;
     expires     max;

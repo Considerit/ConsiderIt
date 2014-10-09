@@ -118,7 +118,7 @@ do ($, window, document) ->
       ######
       # DETERMINE OUR STICKY STATE
       # Are we transitioning between being stuck and not being stuck?
-      should_be_stuck = effective_viewport_top >= container_top && (@options.stick_on_zoomed_screens || (!is_zoomed && screen.width > 400) ) && (!@options.conditional || @options.conditional())
+      should_be_stuck = effective_viewport_top >= container_top && (@options.stick_on_zoomed_screens || (!is_zoomed && screen.width > 700) ) && (!@options.conditional || @options.conditional())
 
       if should_be_stuck && !@is_stuck
         @$el[0].style['position'] = if @use_fixed_positioning then 'fixed' else 'absolute'

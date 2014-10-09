@@ -65,11 +65,6 @@ crossbrowserTransformProperty = (props) -> _.extend props,
   '-moz-transform' : props.transform
 
 
-# Returns the top level Proposal component key. Components use this to grab data
-# from its Proposal. This is a hack. Shadowing parent state would solve the problem.
-# window.current_proposal = () ->
-#         long_id = fetch('root')?.url.split('/')[1]
-#         fetch('/page/' + long_id).proposal
 getStanceSegment = (value) ->
   for i in [0..5]
     if value < stance_segment_boundaries[i + 1]
@@ -1802,20 +1797,25 @@ Discussion = ReactiveComponent
       NewComment point: arest.key_id(@props.key)
 
   # HACK! Set the height of the body so that it accommodates the 
-  # overlaid point
+  # overlaid point. And if it is a point on the decision board,
+  # also add the space to the decision board (so that scrolling
+  # to bottom of discussion can occur)
   componentDidUpdate : -> @fixBodyHeight()
   componentDidMount : -> @fixBodyHeight()
   componentWillUnmount : -> @clear_placeholder()
   clear_placeholder : -> 
     $body = $('#body')
-    $body.find('#discussion_placeholder').remove()
+    $body.find('.discussion_placeholder').remove()
+
   fixBodyHeight : -> 
     @clear_placeholder()
 
     $body = $('#body')
     height_of_discussion = $(@getDOMNode()).height()
-    $body.append("<div id='discussion_placeholder' style='height: #{height_of_discussion}px'></div>")
-
+    placeholder = "<div class='discussion_placeholder' style='height: #{height_of_discussion}px'></div>"
+    $body.append(placeholder)
+    if $(@getDOMNode()).parents('.opinion_region').length > 0
+      $('.decision_board_body').append placeholder
 
 Button = (props, text, callback) ->
   style =

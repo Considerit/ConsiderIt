@@ -1387,7 +1387,7 @@ Point = ReactiveComponent
     if point.comment_count > 0 || needs_expansion_to_see_details || point.assessment
       select_enticement = []
       if needs_expansion_to_see_details
-        select_enticement.push SPAN style: {whiteSpace: 'nowrap'},
+        select_enticement.push SPAN null,
             SPAN dangerouslySetInnerHTML: {__html: '&hellip;'}
             ' (read more)'
 
@@ -1398,7 +1398,7 @@ Point = ReactiveComponent
 
       if point.assessment
         select_enticement.push ' '
-        select_enticement.push SPAN style: {whiteSpace: 'nowrap'},
+        select_enticement.push SPAN null,
           I(className: 'fa fa-search mini_magnifying_glass', title: 'Click to read a fact-check of this point')
 
     else 

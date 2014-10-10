@@ -396,12 +396,16 @@ Proposal = ReactiveComponent
 
 
       if @root.proposal_mode == 'results' && your_opinion.published && customer.identifier == 'livingvotersguide'
+        if @proposal.category && @proposal.designator
+          tweet = "Flex your civic muscle on #{@proposal.category.substring(0,1)}-#{@proposal.designator}! Learn about the issue and decide here: "
+        else 
+          tweet = "Learn and decide whether you will support \'#{proposal.name}\' on your Washington ballot here:"
         DIV className: 'opinion_thanks_and_invite',
           'Thanks for your opinion! Invite your friends and family: '
           SPAN style: {position: 'relative', top: 5, marginLeft: 5},
             FBShare()
             Tweet
-              text: "Flex your civic muscle on #{@proposal.category.substring(0,1)}-#{@proposal.designator}! Learn about the issue and decide here: "
+              text: tweet
               url: "https://livingvotersguide.org/#{@proposal.long_id}"
 
 

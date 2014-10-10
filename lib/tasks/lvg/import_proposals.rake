@@ -151,7 +151,7 @@ namespace :lvg do
   task :import_candidates => :environment do
     account = Account.find_by_identifier('livingvotersguide')
 
-    candidates = [1051, 5136, 5222, 1020, 1228, 1173, 5220, 1005, 1094, 5215, 1185, 1227, 4878, 5138, 1273, 1191, 5206, 997, 5134, 1052] # maplight candidate ids
+    candidates = [11555, 11537, 11535, 11551, 11512, 11589, 11588, 11644, 11499, 11514, 11639, 11572, 11605, 11536, 11573, 11635, 11538, 11566, 11587, 11513]
 
     candidates.each do |candidate_id|
       data = fetchFromMaplight("cvg.candidate_v1.json?candidate_id=#{candidate_id}&data_type=all")

@@ -1381,23 +1381,28 @@ Point = ReactiveComponent
         width: point_content_style.width + 16
 
 
-    factcheck_indicator = I(className: 'fa fa-search mini_magnifying_glass', title: 'Click to read a fact-check of this point')
 
-    if point.comment_count == 0
-      if point.text && (point.nutshell.length + point.text.length) > 210
-        select_enticement = SPAN style: {whiteSpace: 'nowrap'}, 
-          '... (more)'
-          if point.assessment
-            factcheck_indicator 
-      else 
-        select_enticement = SPAN null,
-          if point.assessment
-            factcheck_indicator 
-    else
-      select_enticement = SPAN style: {whiteSpace: 'nowrap'}, 
-        "(#{point.comment_count} comment#{if point.comment_count > 1 then 's' else ''})"
-        if point.assessment
-          factcheck_indicator 
+    needs_expansion_to_see_details = point.text && (point.nutshell.length + point.text.length) > 210
+
+    if point.comment_count > 0 || needs_expansion_to_see_details || point.assessment
+      select_enticement = []
+      if needs_expansion_to_see_details
+        select_enticement.push SPAN style: {whiteSpace: 'nowrap'},
+            SPAN dangerouslySetInnerHTML: {__html: '&hellip;'}
+            ' (read more)'
+
+      if point.comment_count > 0
+        select_enticement.push ' '
+        select_enticement.push SPAN style: {whiteSpace: 'nowrap'},
+          "(#{point.comment_count} comment#{if point.comment_count > 1 then 's' else ''})"
+
+      if point.assessment
+        select_enticement.push ' '
+        select_enticement.push SPAN style: {whiteSpace: 'nowrap'},
+          I(className: 'fa fa-search mini_magnifying_glass', title: 'Click to read a fact-check of this point')
+
+    else 
+      select_enticement = null
 
 
     LI
@@ -1426,23 +1431,15 @@ Point = ReactiveComponent
 
         DIV className:'point_nutshell',
           splitParagraphs point.nutshell
-          if point.text
-            if is_selected
-              DIV className: 'point_details', style: {marginTop: '1em'},
-                splitParagraphs(point.text)
 
-            else if (point.nutshell.length + point.text.length) < 210
-              DIV className: 'point_details_tease', style: {marginTop: '1em'},
-                splitParagraphs(point.text)
-                ' '
-                select_enticement
-            else
-              SPAN className: 'point_details_tease',
-                $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
-                ' '
-                select_enticement
-          else 
-            SPAN className: 'point_details_tease',
+        if point.text && point.text.length > 0
+          DIV className: "point_details#{if is_selected then '' else '_tease'}", style: {marginTop: '1em'},
+            if is_selected || !needs_expansion_to_see_details
+              splitParagraphs(point.text)
+            else 
+              $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
+
+            if !is_selected && select_enticement 
               select_enticement
 
 

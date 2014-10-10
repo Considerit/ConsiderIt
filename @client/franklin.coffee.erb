@@ -3602,6 +3602,13 @@ fetch 'root',
 
 fetch('/current_user')
 
+# Fetch current user every 2 minutes so that if the user gets
+# logged out (e.g. by server deploy after letting a browser window stay open), 
+# their browser will accurately reflect reality. 
+# TODO: Remove this after we have true realtime updates
+setInterval -> 
+  arest.serverFetch('/current_user')
+, 2 * 60 * 1000
 
 ##
 # load users' pictures
@@ -3733,3 +3740,5 @@ $(document).ready ->
 
   Backbone.history.start {pushState: true}
   window.root = React.renderComponent(Root(), document.getElementById('content'))
+
+

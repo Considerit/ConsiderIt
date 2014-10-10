@@ -51,12 +51,35 @@ cream           = 'rgb(255, 254, 245)'
 # Helpers that should probably go elsewhere
 
 capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
-L = loading_indicator = DIV null, 'Loading...'
-split_paragraphs = (string) ->
-  paragraphs = string.split(/(\r?\n|<br>|<br\/>|<br \/>|<p>)/g)
-  for para in paragraphs
-    P null, para
 
+L = loading_indicator = DIV null, 'Loading...'
+
+splitParagraphs = (user_content) ->
+  user_content = user_content.replace(/(<li>|<br\s?\/?>|<p>)/g, '\n') #add newlines
+  user_content = user_content.replace(/(<([^>]+)>)/ig, "") #strips all tags
+
+  # autolink. We'll insert a delimiter ('(*-&)') to use for splitting later.
+  # regex adapted from https://github.com/bryanwoods/autolink-js, MIT license, author Bryan Woods
+  hyperlink_pattern = ///
+    (^|[\s\n]) # Capture the beginning of string or line or leading whitespace
+    (
+      (?:https?):// # Look for a valid URL protocol (non-captured)
+      [\-A-Z0-9+\u0026\u2019@#/%?=()~_|!:,.;]* # Valid URL characters (any number of times)
+      [\-A-Z0-9+\u0026@#/%=~()_|] # String must end in a valid URL character
+    )
+  ///gi
+  user_content = user_content.replace(hyperlink_pattern, "$1(*-&)link:$2(*-&)")
+  paragraphs = user_content.split(/(?:\r?\n)/g)
+
+  for para in paragraphs    
+    P null, 
+      # now split around all links
+      for text in para.split '(*-&)'
+        if text.substring(0,5) == 'link:'
+          A href: text.substring(5, text.length), target: '_blank',
+            text.substring(5, text.length)
+        else
+          SPAN null, text
 
 # safari only respects -webkit-transform
 crossbrowserTransformProperty = (props) -> _.extend props,
@@ -1378,7 +1401,7 @@ Point = ReactiveComponent
 
 
     LI
-      className: "point closed_point #{@props.location_class}
+      className: "point #{@props.location_class}
         #{if point.is_pro then 'pro' else 'con'}"
       'data-id':@props.key
       onClick: @selectPoint
@@ -1402,15 +1425,15 @@ Point = ReactiveComponent
             src: if is_selected then "<%= asset_path 'community_point_mouth_selected.png' %>" else "<%= asset_path 'community_point_mouth.png' %>"
 
         DIV className:'point_nutshell',
-          point.nutshell
+          splitParagraphs point.nutshell
           if point.text
             if is_selected
               DIV className: 'point_details', style: {marginTop: '1em'},
-                split_paragraphs(point.text)
+                splitParagraphs(point.text)
 
             else if (point.nutshell.length + point.text.length) < 210
               DIV className: 'point_details_tease', style: {marginTop: '1em'},
-                split_paragraphs(point.text)
+                splitParagraphs(point.text)
                 ' '
                 select_enticement
             else
@@ -1601,7 +1624,7 @@ Comment = ReactiveComponent
 
         # Comment body
         DIV className: 'comment_entry_body',
-          split_paragraphs(comment.body)
+          splitParagraphs(comment.body)
 
         # Delete/edit button
         if comment.user == fetch('/current_user').user
@@ -2775,8 +2798,8 @@ Homepage = ReactiveComponent
       TH className: 'welcome_column',
         if contributors.length > 0
           [
-            DIV className: 'learn_decide_share1', style: learn_decide_share_style, 'Join'
-            DIV className: 'learn_decide_share2', style: learn_decide_share_style, 'the contributors'
+            DIV className: 'learn_decide_share1', 'Join'
+            DIV className: 'learn_decide_share2', 'the contributors'
             DIV className: 'people',
               for user in _(contributors).first(90)
                 Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
@@ -2832,9 +2855,9 @@ Homepage = ReactiveComponent
             TR null,
               for col in columns
                 TD style: {display: 'inline-block', width: 250},
-                  DIV className: 'learn_decide_share1', style: learn_decide_share_style,
+                  DIV className: 'learn_decide_share1',
                     col.heading
-                  DIV className: 'learn_decide_share2', style: learn_decide_share_style,
+                  DIV className: 'learn_decide_share2',
                     col.details
 
       # Draw the proposal summaries
@@ -3687,6 +3710,7 @@ window.writeToLog = (entry) ->
 
   save entry
 
+
 window.arest.trans_in = (object) ->
   fix_comments = (o) ->
     if o.key?.match(/\/comments\//)
@@ -3699,6 +3723,8 @@ window.arest.trans_in = (object) ->
 
   #arest.deep_map(fix_comments, object)
   return object
+
+
 
 $(document).ready -> 
   if 'ontouchend' in document #detect touch support

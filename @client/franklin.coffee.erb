@@ -2799,8 +2799,8 @@ Homepage = ReactiveComponent
       TH className: 'welcome_column',
         if contributors.length > 0
           [
-            DIV className: 'learn_decide_share1', 'Join'
-            DIV className: 'learn_decide_share2', 'the contributors'
+            DIV className: 'learn_decide_share1', style: learn_decide_share_style, 'Join'
+            DIV className: 'learn_decide_share2', style: learn_decide_share_style, 'the contributors'
             DIV className: 'people',
               for user in _(contributors).first(90)
                 Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}

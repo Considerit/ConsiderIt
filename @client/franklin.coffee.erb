@@ -493,7 +493,7 @@ StickyProposalHeading = ReactiveComponent
           textAlign: 'center'
 
         # TODO: we need a way of knowing whether this subdomain has a homepage or not
-        if customer.identifier == 'livingvotersguide'
+        if customer.identifier == 'livingvotersguide' || customer.identifier == 'tigard'
           A
             className: 'homepage_link'
             onClick: (=> window.app_router.navigate("/", {trigger: true}))

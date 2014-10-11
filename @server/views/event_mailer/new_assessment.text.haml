@@ -18,7 +18,10 @@ The result of the research:
 
 The original #{@point.is_pro ? 'pro' : 'con'} point says:
 = "\r\n"
-"#{@point.nutshell + @point.text}"
+"#{@point.nutshell}"
+= "\r\n"
+- if @point.text
+  "#{@point.text}"
 
 = "\r\n"
 Read and discuss further at #{@host}/#{@proposal.long_id}/?selected=%2Fpoint%2F#{@point.id}&z=1

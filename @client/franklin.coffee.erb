@@ -1673,7 +1673,7 @@ FactCheck = ReactiveComponent
         DIV style: {margin: '10px 0 20px 0'},
           "A citizen requested research into the claims made by this point. "
           SPAN style: {fontSize: 12},
-            A style: {fontWeight: 700}, href: '/about#fact_check', onClick: @clickInternalLink,
+            A style: {fontWeight: 700}, href: '/about#fact_check', onClick: clickInternalLink,
               'Learn more'
             ' about the service.'
 
@@ -3000,6 +3000,7 @@ ProfileLink = ReactiveComponent
                 paddingLeft: 27,
                 display: 'block'
               href: '/dashboard/assessment'
+              onClick: clickInternalLink
               'Fact-check'
 
           A
@@ -3064,7 +3065,7 @@ Header = ReactiveComponent
             logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
             DIV null,
               DIV style: {height: 24},
-                A href: '/', onClick: @clickInternalLink, style: {position: 'absolute', top:0, zIndex: 999999},
+                A href: '/', onClick: clickInternalLink, style: {position: 'absolute', top:0, zIndex: 999999},
                   IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
                 # SPAN style: {color: 'white', fontSize: 28, display: 'inline-block', margin: '20px 0 0 110px'}, 
                 #   'Engage with the '
@@ -3073,7 +3074,7 @@ Header = ReactiveComponent
           when 'tigard'
             logo_style = {height: 60}
             DIV null,
-              A href: '/', onClick: @clickInternalLink, style: {padding: 12, display: 'inline-block'},
+              A href: '/', onClick: clickInternalLink, style: {padding: 12, display: 'inline-block'},
                 IMG className: 'logo', src: "<%= asset_path 'tigard/logo.jpg' %>", style: logo_style 
               SPAN style: {color: '#707070', fontSize: 24, display: 'inline-block', margin: '20px 0 0 50px', fontWeight: 800, textTransform: 'uppercase', position: 'relative', top: -20}, 
                 'Help plan '

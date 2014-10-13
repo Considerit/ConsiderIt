@@ -15,4 +15,5 @@
 
 //= require ../../sticky_element
 //= require ../../franklin
+//= require ../../admin
 //= require ../../state_dash

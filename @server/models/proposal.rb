@@ -105,6 +105,7 @@ class Proposal < ActiveRecord::Base
   end
 
   def proposal_data
+    # Full complement of data for a proposal. 
     # TODO: figure out how this method relates to proposal#as_json & proposal#proposal_summary
 
     # Compute points

@@ -114,12 +114,23 @@ FactcheckPoint = ReactiveComponent
         # point area
         DIV style: section_style, 
           UL style: {marginLeft: 73}, 
-            DIV style:{fontSize: 12, marginLeft: 0},
-              fetch(point.user).name
-
             Point key: point, rendered_as: 'under_review'
-            # TODO: email author
-            # TODO: read point in context
+
+          DIV style:{fontSize: 12, marginLeft: 73}, 
+            "by #{fetch(point.user).name}"
+            SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
+            A 
+              target: '_blank'
+              href: "/#{proposal.long_id}/?selected=#{point.key}"
+              style: {textDecoration: 'underline'}
+              'Read point in context'
+              # TODO: email author
+              # TODO: read point in context
+            SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
+            A
+              style: {textDecoration: 'underline'}
+              onClick: (=> @local.messaging = point; save(@local)),
+              'Message author'
 
         # requests area
         DIV style: section_style, 
@@ -127,9 +138,6 @@ FactcheckPoint = ReactiveComponent
           DIV style: {}, 
             for request in assessment.requests
               DIV className: 'comment_entry',
-
-                DIV style:{fontSize: 12, marginLeft: 73},
-                  fetch(request.user).name
 
                 Avatar
                   className: 'comment_entry_avatar'
@@ -140,7 +148,13 @@ FactcheckPoint = ReactiveComponent
                 DIV style: {marginLeft: 73},
                   splitParagraphs(request.suggestion)
 
-              # TODO: email requester
+                DIV style:{fontSize: 12, marginLeft: 73}, 
+                  "by #{fetch(request.user).name}"
+                  SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
+                  A
+                    style: {textDecoration: 'underline'}
+                    onClick: (=> @local.messaging = request; save(@local)),
+                    'Message requester'
 
         # claims area
         DIV style: section_style, 
@@ -211,6 +225,10 @@ FactcheckPoint = ReactiveComponent
               else if all_claims_answered
                 'This fact-check is awaiting publication'
 
+      if @local.messaging
+        EmailMessage to: @local.messaging.user, parent: @local
+
+
   deleteClaim : (claim) -> destroy claim.key
 
   toggleClaimApproval : (claim) -> 
@@ -247,6 +265,54 @@ FactcheckPoint = ReactiveComponent
       assessment.user = current_user.user
 
     save assessment
+
+EmailMessage = ReactiveComponent
+  displayName: 'EmailMessage'
+
+  componentDidMount : -> 
+    $(@getDOMNode()).moveToTop()
+
+  render : -> 
+    text_style = 
+      width: 550
+      fontSize: 14
+      display: 'block'
+
+    DIV style: {zIndex: 99999, padding: '15px 20px', position: 'absolute', top: 0, backgroundColor: 'white', width: 600, border: '#999', boxShadow: "0 1px 2px rgba(0,0,0,.2)"}, 
+      DIV style: {marginBottom: 8},
+        LABEL null, 'To: ', @data(@props.to).name
+
+      DIV style: {marginBottom: 8},
+        LABEL null, 'Subject'
+        AutoGrowTextArea
+          className: 'message_subject'
+          placeholder: 'Subject line'
+          min_height: 25
+          style: text_style
+
+      DIV style: {marginBottom: 8},
+        LABEL null, 'Body'
+        AutoGrowTextArea
+          className: 'message_body'
+          placeholder: 'Email message'
+          min_height: 75
+          style: text_style
+
+      Button {}, 'Send', @submitMessage
+      A style: {marginLeft: 8}, onClick: (=> @props.parent.messaging = null; save @props.parent), 'cancel'
+
+  submitMessage : -> 
+    # TODO: convert to using arest create method; waiting on full dash porting
+    $el = $(@getDOMNode())
+    attrs = 
+      recipient: @props.to
+      subject: $el.find('.message_subject').val()
+      body: $el.find('.message_body').val()
+      sender: 'factchecker'
+
+    $.ajax '/dashboard/message', data: attrs, type: 'POST', success: => 
+      @props.parent.messaging = null
+      save @props.parent
 
 EditClaim = ReactiveComponent
   displayName: 'EditClaim'

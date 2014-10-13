@@ -5,9 +5,6 @@ class EventMailer < Mailer
   def send_message(message, current_user, options = {})
     @message = message
 
-    # domain = options[:host].end_with?('consider.it') ? 'consider.it' : options[:host]
-    #message.sender = message.sender.gsub '{{domain}}', domain
-
     # from e.g. Moderator <hank@cityclub.org>
     from = format_email current_user.email, message.sender
 

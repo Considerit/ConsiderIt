@@ -186,7 +186,7 @@ private
       if key.match "/proposal/"
         id = key[10..key.length]
         proposal = Proposal.find_by_id(id) || Proposal.find_by_long_id(id)
-        response.append proposal.proposal_data
+        response.append proposal.as_json  #proposal_data
 
       elsif key.match "/comments/"
         point = Point.find(key[10..key.length])
@@ -233,7 +233,12 @@ private
         end
 
         response.append clean
-
+      elsif key.match '/assessment/'
+        assessment = Assessable::Assessment.find(key[12..key.length])
+        response.append assessment.as_json
+      elsif key.match '/claim/'
+        claim = Assessable::Claim.find(key[7..key.length])
+        response.append claim.as_json
       end
     end
 

@@ -908,7 +908,7 @@ button.primary_button, input[type="submit"]
 
 
 $community_point_mouth_width: 17px
-.community_point
+.community_point, .under_review
   .point_content
     border-radius: 16px
     padding: $vertical_baseline / 2 $grid_gutter / 2 
@@ -925,11 +925,13 @@ $community_point_mouth_width: 17px
   top: 8px
   z-index: 1
 
-.community_point.pro .community_point_mouth
-  left: -$community_point_mouth_width
-.community_point.con .community_point_mouth
-  right: -$community_point_mouth_width
-  +transform(scaleX(-1))
+.community_point.pro, .under_review
+  .community_point_mouth
+    left: -$community_point_mouth_width
+.community_point.con
+  .community_point_mouth
+    right: -$community_point_mouth_width
+    +transform(scaleX(-1))
 
 .decision_board_point .community_point_mouth
   left: -$community_point_mouth_width
@@ -992,6 +994,13 @@ $community_point_mouth_width: 17px
   width: 22px
   height: 22px
 
+.under_review .point_author_avatar
+  top: 0px
+  width: 50px
+  height: 50px
+  left: -73px
+  box-shadow: -1px 2px 0 0 #eee
+
 $point-avatar-width: 22px
 $point-includer-width: 22px
 
@@ -999,23 +1008,27 @@ $point-includer-width: 22px
   width: $point-includer-width
   height: $point-includer-width
 
-.community_point .point_author_avatar
-  top: 0
-  width: $point-avatar-width
-  height: $point-avatar-width
+.community_point
+  .point_author_avatar
+    top: 0
+    width: $point-avatar-width
+    height: $point-avatar-width
 
-.community_point.pro .point_includer_avatar
-  box-shadow: -1px 2px 0 0 #eee
-.community_point.con .point_includer_avatar
-  box-shadow: 1px 2px 0 0 #eee
+.community_point.pro
+  .point_author_avatar
+    left: -$point-avatar-width - 23
+    box-shadow: -1px 2px 0 0 #eee
 
+  .point_includer_avatar
+    box-shadow: -1px 2px 0 0 #eee    
 
-.community_point.pro .point_author_avatar
-  left: -$point-avatar-width - 23
-  box-shadow: -1px 2px 0 0 #eee
-.community_point.con .point_author_avatar
-  right: -$point-avatar-width - 23
-  box-shadow: 1px 2px 0 0 #eee
+.community_point.con
+  .point_author_avatar
+    right: -$point-avatar-width - 23
+    box-shadow: 1px 2px 0 0 #eee
+
+  .point_includer_avatar
+    box-shadow: 1px 2px 0 0 #eee
 
 .decision_board_point .point_author_avatar
   left: -10px

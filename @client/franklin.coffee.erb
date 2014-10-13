@@ -19,19 +19,19 @@ TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vic
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
 
 # layout constants
-GRID_MINOR = 30
-GRID_GUTTER = 18
-GRID_MAJOR = GRID_MINOR + GRID_GUTTER #golden ratio
-PAGE_WIDTH = 24 * GRID_MAJOR
-CONTENT_WIDTH = PAGE_WIDTH - 4 * GRID_MAJOR
-BODY_WIDTH = CONTENT_WIDTH - 8 * GRID_MAJOR - 2 * GRID_GUTTER
-POINT_WIDTH = BODY_WIDTH / 2 - 20
-POINT_CONTENT_WIDTH = POINT_WIDTH - 35 - GRID_GUTTER
-HISTOGRAM_WIDTH = BODY_WIDTH    # Width of the slider / histogram base 
-DECISION_BOARD_WIDTH = BODY_WIDTH + 4 # the four is for the border
-REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 4 * GRID_GUTTER + 4
-MAX_HISTOGRAM_HEIGHT = 200
-DESCRIPTION_WIDTH = BODY_WIDTH
+window.GRID_MINOR = 30
+window.GRID_GUTTER = 18
+window.GRID_MAJOR = GRID_MINOR + GRID_GUTTER #golden ratio
+window.PAGE_WIDTH = 24 * GRID_MAJOR
+window.CONTENT_WIDTH = PAGE_WIDTH - 4 * GRID_MAJOR
+window.BODY_WIDTH = CONTENT_WIDTH - 8 * GRID_MAJOR - 2 * GRID_GUTTER
+window.POINT_WIDTH = BODY_WIDTH / 2 - 20
+window.POINT_CONTENT_WIDTH = POINT_WIDTH - 35 - GRID_GUTTER
+window.HISTOGRAM_WIDTH = BODY_WIDTH    # Width of the slider / histogram base 
+window.DECISION_BOARD_WIDTH = BODY_WIDTH + 4 # the four is for the border
+window.REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 4 * GRID_GUTTER + 4
+window.MAX_HISTOGRAM_HEIGHT = 200
+window.DESCRIPTION_WIDTH = BODY_WIDTH
 
 # Colors
 considerit_blue = '#2478CC'
@@ -330,7 +330,6 @@ Proposal = ReactiveComponent
 
     proposer = @data(proposal.user)
 
-    # New approach to Proposal description fields. 
     # Description fields are the expandable details that help people drill
     # into the proposal. They are very specific to the type of proposal (e.g. for
     # an LVG ballot measure, one of the fields might be "fiscal impact statement").  
@@ -338,9 +337,6 @@ Proposal = ReactiveComponent
     # as a serialized JSON object of one of the following structures:
     #       [ {"label": "field one", "html": "<p>some details</p>"}, ... ] 
     #       [ {"group": "group name", "items": [ {"label": "field one", "html": "<p>some details</p>"}, ... ]}, ...]
-    # If we choose to use this more flexible approach, we can migrate all the old 
-    # data to this format, rename the column, and get rid of a bunch of columns on 
-    # Proposal that will be made obsolete. 
     if !@local.description_fields
       # Deserialize the description fields. 
       # It would be nice if ActiveREST recognized that a field is a serialized data object!
@@ -1187,7 +1183,7 @@ YourPoints = ReactiveComponent
             if point in your_points.editing_points
               EditPoint { key: point, fresh: false, valence: @props.valence, your_points_key: @props.key }
             else
-              Point { key: point, location_class: 'decision_board_point', your_points_key: @props.key }
+              Point { key: point, rendered_as: 'decision_board_point', your_points_key: @props.key }
 
         DIV className:'add_point_drop_target',
           DIV className: "drop_target_circle_#{left_or_right}"
@@ -1249,7 +1245,7 @@ CommunityPoints = ReactiveComponent
             Point
               key: point.key,
               is_new: Date.parse(point.created_at) > newpoint_threshold
-              location_class : 'community_point'
+              rendered_as : 'community_point'
         else
           LI className: 'empty_point', "No #{label} listed"
 
@@ -1312,7 +1308,6 @@ Point = ReactiveComponent
     is_selected = @root.selected_point == @props.key
 
     selected_segment = @data('histogram').selected_segment
-    author_opinion = @data(userOpinion(point.user))
     current_user = @data('/current_user')
 
 
@@ -1376,14 +1371,16 @@ Point = ReactiveComponent
         backgroundColor: 'white'
         marginBottom: 2
 
-    if is_selected and @props.location_class == 'decision_board_point'
-      _.extend point_content_style,
-        padding: 8
-        borderRadius: 8
-        marginTop: -8
-        marginLeft: -8
-        width: point_content_style.width + 16
+      if @props.rendered_as == 'decision_board_point'
+        _.extend point_content_style,
+          padding: 8
+          borderRadius: 8
+          marginTop: -8
+          marginLeft: -8
+          width: point_content_style.width + 16
 
+    if @props.rendered_as == 'under_review'
+      _.extend point_content_style, {width: 500}
 
 
     needs_expansion_to_see_details = point.text && (point.nutshell.length + point.text.length) > 210
@@ -1410,25 +1407,30 @@ Point = ReactiveComponent
 
 
     LI
-      className: "point #{@props.location_class}
+      className: "point #{@props.rendered_as}
         #{if point.is_pro then 'pro' else 'con'}"
       'data-id':@props.key
       onClick: @selectPoint
       onTouchEnd: @selectPoint
     ,
     
-      if @props.location_class == 'community_point' && @props.is_new
+      if @props.rendered_as == 'community_point' && @props.is_new
         renderNewIndicator()
 
       DIV className:'includers', onMouseEnter: @highlightIncluders, onMouseLeave: @unHighlightIncluders, 
-        if @props.location_class == 'community_point'
+        if @props.rendered_as == 'community_point'
           renderIncluders()
 
-        else if !selected_segment || ( author_opinion && author_opinion.stance_segment == selected_segment )
-          Avatar tag: SPAN, key: point.user, className:"point_author_avatar", hide_face: point.hide_name
+        else if !selected_segment || ( author_opinion = @data(userOpinion(point.user)) && author_opinion.stance_segment == selected_segment )
+          Avatar 
+            tag: SPAN
+            key: point.user
+            className:"point_author_avatar"
+            hide_face: point.hide_name
+            hide_name: @props.rendered_as == 'under_review'
 
       DIV className:'point_content', style : point_content_style,
-        if @props.location_class == 'community_point' or is_selected
+        if @props.rendered_as == 'community_point' || @props.rendered_as == 'under_review' || is_selected
           IMG
             className: 'community_point_mouth'
             src: if is_selected then "<%= asset_path 'community_point_mouth_selected.png' %>" else "<%= asset_path 'community_point_mouth.png' %>"
@@ -1437,17 +1439,17 @@ Point = ReactiveComponent
           splitParagraphs point.nutshell
 
         if point.text && point.text.length > 0
-          DIV className: "point_details#{if is_selected then '' else '_tease'}", style: {marginTop: '1em'},
-            if is_selected || !needs_expansion_to_see_details
+          DIV className: "point_details#{if is_selected || @props.rendered_as == 'under_review' then '' else '_tease'}", style: {marginTop: '1em'},
+            if is_selected || !needs_expansion_to_see_details || @props.rendered_as == 'under_review'
               splitParagraphs(point.text)
             else 
               $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
 
-            if !is_selected && select_enticement 
+            if !is_selected && select_enticement && !@props.rendered_as == 'under_review'
               select_enticement
 
 
-      if current_user.user == point.user && @props.location_class == 'decision_board_point'
+      if current_user.user == point.user && @props.rendered_as == 'decision_board_point'
         DIV null,
           # Should we only allow editing of a point before it is published?
           # Is an author allowed to edit a point after someone else has included it?
@@ -1495,12 +1497,13 @@ Point = ReactiveComponent
     # or drag remove for point on decision board
     # also: disable for results page
 
+    return if @props.rendered_as == 'under_review'
 
     disable = @data('root').proposal_mode == 'results'
 
     $point_content = $(@getDOMNode()).find('.point_content')
     revert = 
-      if @props.location_class == 'community_point' 
+      if @props.rendered_as == 'community_point' 
       then 'invalid' 
       else (valid) =>
         if !valid
@@ -1527,6 +1530,8 @@ Point = ReactiveComponent
     # all other browsers via click event. iOS fails to select 
     # a point if both touch and click are handled...sigh...
     return unless fetch('browser').is_android_browser || e.type == 'click'
+
+    return if @props.rendered_as == 'under_review'
 
     e.stopPropagation()
 
@@ -1741,11 +1746,10 @@ EditComment = ReactiveComponent
         disabled: not logged_in
         onChange: (e) => @local.new_comment = e.target.value; save(@local)
         defaultValue: if @props.fresh then null else @data().body
-
+        min_height: 60
         style:
           marginLeft: 60
           width: 390
-          height: 60
           lineHeight: 1.4
           fontSize: 16
           border: if not logged_in then 'dashed 1px'
@@ -1877,8 +1881,8 @@ Button = (props, text, callback) ->
     backgroundColor: considerit_blue
     borderRadius: 8
     color: 'white'
-    display: 'table'
     padding: '3px 10px'
+    display: 'inline-block'
     fontWeight: 600
     textAlign: 'center'
   props.style = _.extend(style, (props.style or {}))
@@ -2244,6 +2248,12 @@ AutoGrowTextArea = ReactiveComponent
   # called
   onChange: (e) ->
     @props.onChange?(e)
+    @checkAndSetHeight()
+
+  componentDidMount : -> @checkAndSetHeight()
+  componentDidUpdate : -> @checkAndSetHeight()
+
+  checkAndSetHeight : ->
     scroll_height = @getDOMNode().scrollHeight
     if scroll_height > @getDOMNode().clientHeight
       @local.height = scroll_height + 5
@@ -2571,7 +2581,9 @@ Auth = ReactiveComponent
         , 'cancel log in'
 
   componentDidMount : -> 
-    $(document).scrollTop $(@getDOMNode()).find('.auth_heading').offset().top - 10
+    if $(@getDOMNode()).find('.auth_heading').length > 0
+      $(document).scrollTop $(@getDOMNode()).find('.auth_heading').offset().top - 10
+
     window.writeToLog
       what: 'accessed authentication'
 
@@ -3455,8 +3467,7 @@ Root = ReactiveComponent
 Page = ReactiveComponent
   displayName: 'Page'
 
-  componentDidMount : ->
-    fetchAvatars()
+  componentDidMount : -> fetchAvatars()
 
   render: ->
 
@@ -3480,6 +3491,9 @@ Page = ReactiveComponent
             EditProposal key: "new_proposal", fresh: true
           else if @root.page_name.match(/(.+)\/edit/)
             EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
+          else if @root.page_name == 'dashboard/assessment'
+            AccessControlled permitted: ['admin', 'assessor'],
+              FactcheckDash key: "/dashboard/assessment"
           else 
             Proposal key: @page.proposal.key
 
@@ -3634,6 +3648,7 @@ Router = Backbone.Router.extend
     "proposal/new(/)" : "new_proposal"
     "proposal/:proposal/edit(/)": "edit_proposal"
     ":proposal(/)": "proposal"    
+    "dashboard/assessment(/)": 'dashboard_factcheck'
 
   proposal : (long_id, params) ->
     root = fetch('root')
@@ -3661,8 +3676,7 @@ Router = Backbone.Router.extend
     #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
     #      Right now activeREST doesn't allow wide consumption of a component's client state
     #      if its data is synced with the server. 
-    root.proposal_mode = null
-    root.selected_point = null
+    clearRootForNonProposalRoute(root)
     save root
 
     writeToLog
@@ -3672,8 +3686,7 @@ Router = Backbone.Router.extend
   about : (params) ->
     root = fetch('root')
     root.page_name = 'about'
-    root.proposal_mode = null
-    root.selected_point = null
+    clearRootForNonProposalRoute(root)
     save root
 
     writeToLog
@@ -3683,16 +3696,29 @@ Router = Backbone.Router.extend
   new_proposal : (params) ->
     root = fetch('root')
     root.page_name = 'proposal/new'
-    root.proposal_mode = null    
-    root.selected_point = null
+    clearRootForNonProposalRoute(root)
     save root
 
   edit_proposal : (id, params) ->
     root = fetch('root')
     root.page_name = "proposal/#{id}/edit"
-    root.proposal_mode = null
-    root.selected_point = null
+    clearRootForNonProposalRoute(root)
     save root      
+
+  dashboard_factcheck : (params) -> 
+    root = fetch('root')
+    root.page_name = 'dashboard/assessment'    
+    clearRootForNonProposalRoute(root)
+    save root
+
+
+
+# Temporary method for handling resetting root state when switching between
+# routes. Remove once we have a better activeREST answer. 
+clearRootForNonProposalRoute = (root) ->
+  root.proposal_mode = null    
+  root.selected_point = null
+
 
 # Handles router navigation for links so that a page reload doesn't happen
 clickInternalLink = (event) ->
@@ -3734,7 +3760,6 @@ window.arest.trans_in = (object) ->
   return object
 
 
-
 $(document).ready -> 
   if 'ontouchend' in document #detect touch support
     React.initializeTouchEvents(true)
@@ -3742,4 +3767,10 @@ $(document).ready ->
   Backbone.history.start {pushState: true}
   window.root = React.renderComponent(Root(), document.getElementById('content'))
 
-
+# exports...
+window.splitParagraphs = splitParagraphs
+window.Point = Point
+window.Avatar = Avatar
+window.Button = Button
+window.AutoGrowTextArea = AutoGrowTextArea
+window.considerit_blue = considerit_blue

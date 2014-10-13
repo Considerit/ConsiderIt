@@ -4,7 +4,7 @@ class Message
   include ActiveModel::Conversion
   extend ActiveModel::Naming
 
-  attr_accessor :sendername, :sender, :recipient, :subject, :body
+  attr_accessor :sender, :recipient, :subject, :body
 
   validates :recipient, :sender, :subject, :body, :presence => true
   
@@ -16,11 +16,6 @@ class Message
 
   def persisted?
     false
-  end
-
-  def senderName
-    @sender if @sendername.nil?
-    @sendername 
   end
 
   def addressedTo

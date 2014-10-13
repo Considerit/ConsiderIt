@@ -21,7 +21,7 @@ class AlertMailer < Mailer
   def content_to_assess(assessment, user, tenant)
     @user = user
     @host = tenant.host_with_port
-    @url = assessment_index_url(:host => @host)
+    @url = dashboard_assessment_url(:host => @host)
     @assessment = assessment
     @tenant = tenant
 

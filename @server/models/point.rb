@@ -68,10 +68,7 @@ class Point < ActiveRecord::Base
 
     # super slow!
     # result['last_inclusion'] = inclusions.count > 0 ? inclusions.order(:created_at).last.created_at.to_i : -1
-    
-    #pp self.last_inclusion
-    #result['last_inclusion'] = self.last_inclusion
-    
+        
     # result['is_following'] = following current_user
 
     make_key(result, 'point')

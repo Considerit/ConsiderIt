@@ -599,7 +599,7 @@ HistogramData = ReactiveComponent
   # Split up opinions into columns based on their stance.   
   render : ->
     # We only need to recompute this data if the distribution of stances has changed. 
-    opinions = @data(@proposal).opinions || []
+    opinions = @page.opinions || []
     last_computation_hash = JSON.stringify( _.map(opinions, (o) => @data(o.key).stance) )
 
     if @local.last_computation_hash != last_computation_hash

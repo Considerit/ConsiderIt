@@ -1314,7 +1314,7 @@ $avatar_preview_size: 60px
 .avatar_preview_enclosure
   height: $avatar_preview_size
   width: $avatar_preview_size
-  margin-top: -10px
+  //margin-top: -10px
   border-radius: 50%
   background-color: lighten($default_avatar_in_histogram_color, 30%)
   overflow: hidden
@@ -1325,8 +1325,9 @@ $avatar_preview_size: 60px
     width: $avatar_preview_size
 
 #user_avatar_form input 
-  position: relative
-  top: -24px
+  margin-top: 24px
+  vertical-align: top
+
 
 .auth_errors
   text-align: center

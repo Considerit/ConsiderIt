@@ -1445,7 +1445,7 @@ Point = ReactiveComponent
             else 
               $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
 
-            if !is_selected && select_enticement && !@props.rendered_as == 'under_review'
+            if !is_selected && select_enticement && @props.rendered_as != 'under_review'
               select_enticement
 
 
@@ -1855,7 +1855,7 @@ Discussion = ReactiveComponent
       # Write a new comment
       EditComment fresh: true, point: arest.key_id(@props.key)
 
-  # HACK! Set the height of the body so that it accommodates the 
+  # HACK! Insert a placeholder to add enough height to accommodate the 
   # overlaid point. And if it is a point on the decision board,
   # also add the space to the decision board (so that scrolling
   # to bottom of discussion can occur)
@@ -1863,13 +1863,13 @@ Discussion = ReactiveComponent
   componentDidMount : -> @fixBodyHeight()
   componentWillUnmount : -> @clear_placeholder()
   clear_placeholder : -> 
-    $body = $('#body')
+    $body = $('.reasons_region')
     $body.find('.discussion_placeholder').remove()
 
   fixBodyHeight : -> 
     @clear_placeholder()
 
-    $body = $('#body')
+    $body = $('.reasons_region')
     height_of_discussion = $(@getDOMNode()).height()
     placeholder = "<div class='discussion_placeholder' style='height: #{height_of_discussion}px'></div>"
     $body.append(placeholder)
@@ -1954,7 +1954,7 @@ SubmitFactCheck = ReactiveComponent
             onChange: (e) =>
               @local.research_question = e.target.value
               save(@local)
-          Button({style: {left: 423, position: 'absolute'}},
+          Button({style: {float: 'right'}},
             'submit'
             (e) =>
               e.stopPropagation()

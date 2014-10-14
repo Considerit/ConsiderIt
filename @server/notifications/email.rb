@@ -94,7 +94,6 @@ notify_comment = Proc.new do |args|
     # if follower's action triggered event, skip...
     if follow.user_id == comment.user_id  || !valid_email(follow.user)
       next
-
     # if follower doesn't have an email address, skip...
     elsif !follow.user || !follow.user.email || follow.user.email.length == 0
       next
@@ -115,8 +114,6 @@ notify_comment = Proc.new do |args|
     else
       notification_type = 'lurker'
     end
-
-    if !follow.user.match 
 
     EventMailer.new_comment(follow.user, point, comment, mail_options, notification_type).deliver!
   end

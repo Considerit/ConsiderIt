@@ -313,7 +313,7 @@ Proposal = ReactiveComponent
   # Make this thing!
   render : ->
     proposal = @proposal
-    your_opinion = @data(proposal.your_opinion)
+    your_opinion = @data(@proposal.your_opinion)
     included_points = your_opinion.point_inclusions
     current_user = @data('/current_user')
     customer = @data('/customer')
@@ -325,7 +325,7 @@ Proposal = ReactiveComponent
     #  - The user_opinions hash (maps users to their opinions in this proposal)
     #  - The current user's opinion: your_opinion
     window.user_opinions = {}
-    for opinion in proposal.opinions
+    for opinion in @page.opinions
       window.user_opinions[opinion.user] = opinion
 
     proposer = @data(proposal.user)
@@ -1163,6 +1163,7 @@ YourPoints = ReactiveComponent
 
   render : ->
     root = @data('root')
+    console.log @proposal
     included_points = @data(@proposal.your_opinion).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
@@ -1230,7 +1231,7 @@ CommunityPoints = ReactiveComponent
       className: "points_by_community #{@props.key}_by_community"
       style:
         width: POINT_CONTENT_WIDTH
-        minHeight: (if @proposal.points.length > 4 then jQuery(window).height() else 400)
+        minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
         zIndex: if pro_is_selected and @props.key == 'pros'
                   '6'
     ,
@@ -1251,7 +1252,7 @@ CommunityPoints = ReactiveComponent
 
   buildNewPointThreshold : ->
     # Grab the 10th percentile
-    points = @proposal.points || []
+    points = @page.points || []
     newpoint_threshold = 
       (_.sortBy points, (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
 
@@ -1262,8 +1263,8 @@ CommunityPoints = ReactiveComponent
     is_results = @data('root').proposal_mode == 'results'
     selected_segment = @data('histogram').selected_segment
     included_points = @data(@proposal.your_opinion).point_inclusions
-    points = @proposal.points
-    opinions = @proposal.opinions
+    points = @page.points
+    opinions = @page.opinions
 
     points =
       _.filter points, (pnt) =>
@@ -3051,7 +3052,7 @@ ProfileLink = ReactiveComponent
 
       # TODO: the server should dirty keys on the client when the
       # current_user logs out
-      arest.clear_matching_objects((key) -> key.match( /\/proposal\// ))
+      arest.clear_matching_objects((key) -> key.match( /\/page\// ))
 
     save @root
 

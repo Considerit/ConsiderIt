@@ -25,10 +25,13 @@ class ClaimController < ApplicationController
     attrs.update({
           :assessment_id => key_id(params['assessment']),
           :account_id => current_tenant.id,
-          :creator => current_user.id,
-          :verdict_id => key_id(params['verdict'])
+          :creator => current_user.id
         })
 
+    if params['verdict']
+      attrs['verdict_id'] = key_id(params['verdict'])
+    end
+    
     claim = Assessable::Claim.create! attrs
 
     original_id = key_id(params[:key])
@@ -45,12 +48,12 @@ class ClaimController < ApplicationController
     claim = Assessable::Claim.find(params[:id])
 
     fields = ["claim_restatement", "result"]
-
     attrs = params.select{|k,v| fields.include? k}
-    attrs.update({
-          'assessment_id' => key_id(params['assessment']),
-          'verdict_id' => key_id(params['verdict'])
-        })
+    attrs['assessment_id'] = key_id(params['assessment'])
+
+    if params['verdict']
+      attrs['verdict_id'] = key_id(params['verdict'])
+    end
 
     if params.has_key?('approver')
       if params['approver']

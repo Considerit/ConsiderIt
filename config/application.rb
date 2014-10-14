@@ -80,7 +80,7 @@ module ConsiderIt
     config.paths["lib/tasks"] << "test"
 
     #suspiciously, Rails apparently already loads @server/notifications...
-    #config.paths["config/initializers"] << "@server/notifications"
+    config.paths["config/initializers"] << "@server/notifications"
 
     asset_paths = ["@client", "@client/assets", "_old@client/assets/fonts", "_old@client", "_old@client/assets"]
     for asset_path in asset_paths

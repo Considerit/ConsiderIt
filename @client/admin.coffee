@@ -126,11 +126,12 @@ FactcheckPoint = ReactiveComponent
               'Read point in context'
               # TODO: email author
               # TODO: read point in context
-            SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
-            A
-              style: {textDecoration: 'underline'}
-              onClick: (=> @local.messaging = point; save(@local)),
-              'Message author'
+            if !point.hide_name
+              [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
+              A
+                style: {textDecoration: 'underline'}
+                onClick: (=> @local.messaging = point; save(@local)),
+                'Message author']
 
         # requests area
         DIV style: section_style, 

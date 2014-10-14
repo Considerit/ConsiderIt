@@ -13,8 +13,6 @@ class AlertMailer < Mailer
 
     subject = "Pending content to moderate"
 
-
-
     to = format_email user.email, user.name
     from = format_email(from_email(tenant), tenant.app_title)
 

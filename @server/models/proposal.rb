@@ -127,6 +127,8 @@ class Proposal < ActiveRecord::Base
   #   user.proposals.public_fields.to_a + Proposal.privately_shared.where("LOWER(CONVERT(access_list USING utf8)) like '%#{user.email}%' ").public_fields.to_a
   # end
 
+
+
   # The user is subscribed to proposal notifications _implicitly_ if:
   #   • they have an opinion (published or not)
   def following(follower)
@@ -137,6 +139,19 @@ class Proposal < ActiveRecord::Base
       return opinions.where(:user_id => follower.id, :published => true).count > 0
     end
   end
+  
+  def followers
+    explicit = Follow.where(:followable_type => self.class.name, :followable_id => self.id, :explicit => true)
+    explicit_no = explicit.all.select {|f| !f.follow}.map {|f| f.user_id}
+    explicit_yes = explicit.all.select {|f| f.follow}.map {|f| f.user}
+
+    implicit_yes = opinions.where(:published => true).where("user_id NOT IN (?)", explicit_no).all.map {|o| o.user}
+
+    all_followers = explicit_yes + implicit_yes
+
+    all_followers.uniq
+  end
+
 
   def title(max_len = 140)
     if name && name.length > 0

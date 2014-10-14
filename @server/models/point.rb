@@ -112,6 +112,21 @@ class Point < ActiveRecord::Base
     end
   end
 
+  def followers
+    explicit = Follow.where(:followable_type => self.class.name, :followable_id => self.id, :explicit => true)
+    explicit_no = explicit.all.select {|f| !f.follow}.map {|f| f.user_id}
+    explicit_yes = explicit.all.select {|f| f.follow}.map {|f| f.user}
+
+    candidates = (JSON.parse(includers || '[]') + comments.map {|c| c.user_id}).uniq
+
+    implicit_yes = candidates.select {|u| !explicit_no.include?(u)}.map {|uid| User.find(uid)}
+
+    all_followers = explicit_yes + implicit_yes
+
+    all_followers.uniq
+  end
+
+
   def category
     is_pro ? 'pro' : 'con'
   end

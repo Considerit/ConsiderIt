@@ -90,7 +90,8 @@ class Point < ActiveRecord::Base
   def publish
     return if self.published
     self.published = true
-    self.save
+    recache
+    self.save if changed?
 
     ActiveSupport::Notifications.instrument("point:published", 
       :point => self,

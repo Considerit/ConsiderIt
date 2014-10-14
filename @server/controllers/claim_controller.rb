@@ -56,7 +56,7 @@ class ClaimController < ApplicationController
       if params['approver']
         attrs['approver'] = key_id params['approver']
       else
-        attrs['appover'] = nil
+        attrs['approver'] = nil
       end
     end
 

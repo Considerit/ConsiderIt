@@ -29,7 +29,8 @@
 .action_call
   .rest
     .call
-      = link_to 'Read and discuss further', "#{@host}/#{@proposal.long_id}/?selected=%2Fpoint%2F#{@point.id}&z=1"
+      %a{:href => "#{@host}/#{@proposal.long_id}/?selected=%2Fpoint%2F#{@point.id}&z=1"}
+        Read and discuss further
 
 = content_for :footer do
   = render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this proposal'}

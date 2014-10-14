@@ -65,7 +65,8 @@ class Opinion < ActiveRecord::Base
     return if self.published
 
     self.published = true
-    self.save
+    recache
+    self.save if changed?
 
     # When we publish an opinion, all the points the user wrote on
     # this opinion/proposal become published too

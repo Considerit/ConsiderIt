@@ -47,7 +47,7 @@ notify_point = Proc.new do |data|
   voters = proposal.opinions.published.select(:user_id).uniq.map {|x| x.user_id }
 
   proposal.followers.each do |u|
-    next !valid_email(u)
+    next if !valid_email(u)
 
     # if follower's action triggered event, skip...
     if u.id == point.user_id 

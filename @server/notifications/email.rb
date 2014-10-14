@@ -47,8 +47,9 @@ notify_point = Proc.new do |data|
   voters = proposal.opinions.published.select(:user_id).uniq.map {|x| x.user_id }
 
   current_tenant.users.each do |u|
-
-    next if !proposal.following(u) || !valid_email(u)
+    next !valid_email(u)
+    
+    next if !proposal.following(u)
 
     # if follower's action triggered event, skip...
     if u.id == point.user_id 
@@ -78,7 +79,7 @@ notify_point = Proc.new do |data|
 
 end
 
-#### notify_comment is NOT MIGRATED / TESTED!!!!######
+
 notify_comment = Proc.new do |args|
   #params: comment, current_tenant, mail_options
   comment = args[:model] || args[:comment]

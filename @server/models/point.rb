@@ -87,7 +87,7 @@ class Point < ActiveRecord::Base
     result
   end
 
-  def publish()
+  def publish
     return if self.published
     self.published = true
     self.save

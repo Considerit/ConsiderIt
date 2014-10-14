@@ -4,6 +4,10 @@
 ########
 
 
+def valid_email(user)
+  return !!(user.email && !user.email.match('\.ghost'))
+end
+
 ##################################################
 ############ Notifications for moderatable models
 
@@ -44,7 +48,7 @@ notify_point = Proc.new do |data|
 
   current_tenant.users.each do |u|
 
-    next if !proposal.following(u)
+    next if !proposal.following(u) || !valid_email(u)
 
     # if follower's action triggered event, skip...
     if u.id == point.user_id 
@@ -88,7 +92,7 @@ notify_comment = Proc.new do |args|
   point.follows.where(:follow => true).each do |follow|
 
     # if follower's action triggered event, skip...
-    if follow.user_id == comment.user_id 
+    if follow.user_id == comment.user_id  || !valid_email(follow.user)
       next
 
     # if follower doesn't have an email address, skip...
@@ -111,6 +115,8 @@ notify_comment = Proc.new do |args|
     else
       notification_type = 'lurker'
     end
+
+    if !follow.user.match 
 
     EventMailer.new_comment(follow.user, point, comment, mail_options, notification_type).deliver!
   end

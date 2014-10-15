@@ -40,7 +40,7 @@ gem 'useragent' # https://github.com/josh/useragent
 #############
 # PURE PERFORMANCE
 # Rails JSON encoding is super slow, oj makes it faster
-gem 'oj'
+gem 'oj', "2.10.2" #temp restriction on version until https://github.com/ohler55/oj/issues/190 solved
 gem 'oj_mimic_json' # we need this for Rails 4.1.x
 
 #############

@@ -57,11 +57,6 @@
         Moderate content
     (( } ))
 
-    (( if( is_evaluator && tenant.get('assessment_enabled') ) { ))
-    %li
-      %a.sidebar_link{:href => "{{Routes.assessment_index_path()}}", :'action' => 'assess'}
-        Assess claims
-    (( } ))
 
     (( if( false && is_analyst ) { ))
     %li

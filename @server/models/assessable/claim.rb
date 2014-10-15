@@ -13,10 +13,18 @@ class Assessable::Claim < ActiveRecord::Base
 
   def as_json(options={})
     result = super(options)
-    result['key'] = "claim/#{id}"
+    make_key(result, 'claim')
+    stubify_field(result, 'assessment')
+
     result['point'] = "/point/#{assessment.assessable_id}"    
-    result['verdict'] = "verdict/#{verdict_id}"    
+    result['verdict'] = "verdict/#{verdict_id}"
+    result['creator'] = "/user/#{creator}"
+    if approver
+      result['approver'] = "/user/#{approver}"
+    end
+
     result
+
   end
 
 

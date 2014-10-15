@@ -18,10 +18,14 @@ class Assessable::Assessment < ActiveRecord::Base
 
   def as_json(options={})
     result = super(options)
-    result['key'] = "assessment/#{id}"
+    make_key(result, 'assessment')
+
+
     result['point'] = "/point/#{assessable_id}"
     result['verdict'] = "verdict/#{verdict_id}"
-    result['claims'] = claims.map {|c| "claim/#{c.id}"}
+    result['requests'] = requests
+    result['claims'] = claims
+    stubify_field(result, 'user')
     result
   end
 

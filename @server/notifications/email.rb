@@ -3,6 +3,9 @@
 # http://api.rubyonrails.org/classes/ActiveSupport/Notifications.html
 ########
 
+def valid_email(user)
+  return !!(user.email && user.email.length > 0 && !user.email.match('\.ghost'))
+end
 
 ##################################################
 ############ Notifications for moderatable models
@@ -42,9 +45,8 @@ notify_point = Proc.new do |data|
 
   voters = proposal.opinions.published.select(:user_id).uniq.map {|x| x.user_id }
 
-  current_tenant.users.each do |u|
-
-    next if !proposal.following(u)
+  proposal.followers.each do |u|
+    next if !valid_email(u)
 
     # if follower's action triggered event, skip...
     if u.id == point.user_id 
@@ -74,7 +76,7 @@ notify_point = Proc.new do |data|
 
 end
 
-#### notify_comment is NOT MIGRATED / TESTED!!!!######
+
 notify_comment = Proc.new do |args|
   #params: comment, current_tenant, mail_options
   comment = args[:model] || args[:comment]
@@ -85,26 +87,23 @@ notify_comment = Proc.new do |args|
   commenters = point.comments.select(:user_id).uniq.map {|x| x.user_id }
   includers = point.inclusions.select(:user_id).uniq.map {|x| x.user_id }
 
-  point.follows.where(:follow => true).each do |follow|
+  point.followers.each do |u|
+    next if !valid_email(u)
 
     # if follower's action triggered event, skip...
-    if follow.user_id == comment.user_id 
-      next
-
-    # if follower doesn't have an email address, skip...
-    elsif !follow.user || !follow.user.email || follow.user.email.length == 0
+    if u.id == comment.user_id 
       next
 
     # if follower is author of point
-    elsif follow.user_id == point.user_id
+    elsif u.id == point.user_id
       notification_type = 'your point'
 
     # if follower is a participant in the discussion
-    elsif commenters.include? follow.user_id
+    elsif commenters.include? u.id
       notification_type = 'participant'
 
     # if follower included the point
-    elsif includers.include? follow.user_id
+    elsif includers.include? u.id
       notification_type = 'included point'
 
     # lurker 
@@ -112,7 +111,7 @@ notify_comment = Proc.new do |args|
       notification_type = 'lurker'
     end
 
-    EventMailer.new_comment(follow.user, point, comment, mail_options, notification_type).deliver!
+    EventMailer.new_comment(u, point, comment, mail_options, notification_type).deliver!
   end
 
 end

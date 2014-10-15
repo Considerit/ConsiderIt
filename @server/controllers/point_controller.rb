@@ -1,5 +1,6 @@
 class PointController < ApplicationController
   protect_from_forgery
+  respond_to :json
 
   def show
     point = Point.find params[:id]
@@ -52,7 +53,7 @@ class PointController < ApplicationController
 
     remap_key(params[:key], "/point/#{point.id}")
 
-    dirty_key "/proposal/#{proposal.id}"
+    dirty_key "/page/#{proposal.long_id}"
 
     # # This session stuff is broken!  Because the session gets cleared
     # # when we switch accounts.  Sucks.  Need a new way to store this.
@@ -114,7 +115,7 @@ class PointController < ApplicationController
       dirty_key "/opinion/#{o.id}"
     end
 
-    dirty_key("/proposal/#{proposal.id}") #because /points is changed...
+    dirty_key("/page/#{proposal.long_id}") #because /points is changed...
 
     render :json => []
   end

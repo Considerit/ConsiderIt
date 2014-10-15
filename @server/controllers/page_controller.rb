@@ -17,6 +17,9 @@ class PageController < ApplicationController
     else # if proposal
 
       proposal = Proposal.find_by_long_id(params[:id])
+      # Ensure an existing opinion for this user
+      your_opinion = Opinion.get_or_make(proposal, current_user)
+
       if !proposal 
         render :status => :not_found, :json => {:result => 'Not found'}
         return

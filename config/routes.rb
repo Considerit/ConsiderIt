@@ -45,19 +45,19 @@ ConsiderIt::Application.routes.draw do
       get "/dashboard/moderate" => 'moderatable#index'
     end
 
-    concern :assessable do 
-      resources :assessment, :path => "dashboard/assessment", :controller => "assessable", :only => [:index, :edit, :update] do 
-        match "/dashboard/claims" => 'assessable#create_claim', :via => :post, :as => 'create_claim'
-        match "/dashboard/claim/:id" => 'assessable#update_claim', :via => :put, :as => 'update_claim'
-        match "/dashboard/claim/:id" => 'assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'
-      end
+    # concern :assessable do 
+    #   resources :assessment, :path => "dashboard/assessment", :controller => "assessable", :only => [:index, :edit, :update] do 
+    #     match "/dashboard/claims" => 'assessable#create_claim', :via => :post, :as => 'create_claim'
+    #     match "/dashboard/claim/:id" => 'assessable#update_claim', :via => :put, :as => 'update_claim'
+    #     match "/dashboard/claim/:id" => 'assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'
+    #   end
     
-      resources :request, :only => [:create], :controller => "assessable"
+    #   resources :request, :only => [:create], :controller => "assessable"
 
-    end
+    # end
 
     concerns :moderatable
-    concerns :assessable
+    # concerns :assessable
 
   end
 
@@ -125,5 +125,9 @@ ConsiderIt::Application.routes.draw do
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]
 
-
+  # New admin functionality
+  get 'dashboard/assessment' => 'assessment#index'
+  resources :assessment, :only => [:show, :update]
+  resources :claim, :only => [:show, :create, :update, :destroy]
+  resources :request, :only => [:create], :controller => "assessment"
 end

@@ -61,12 +61,6 @@ server {
   # Dealing with search indexing using prerender.io
   # from https://gist.github.com/thoop/8165802
 
-  index  index.html;
-
-  location / {
-      try_files $uri @prerender;
-  }
-
   location @prerender {
       proxy_set_header X-Prerender-Token {{ config.prerenderio }};
       

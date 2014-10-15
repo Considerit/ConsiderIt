@@ -68,10 +68,7 @@ class Point < ActiveRecord::Base
 
     # super slow!
     # result['last_inclusion'] = inclusions.count > 0 ? inclusions.order(:created_at).last.created_at.to_i : -1
-    
-    #pp self.last_inclusion
-    #result['last_inclusion'] = self.last_inclusion
-    
+        
     # result['is_following'] = following current_user
 
     make_key(result, 'point')
@@ -90,10 +87,11 @@ class Point < ActiveRecord::Base
     result
   end
 
-  def publish()
+  def publish
     return if self.published
     self.published = true
-    self.save
+    recache
+    self.save if changed?
 
     ActiveSupport::Notifications.instrument("point:published", 
       :point => self,
@@ -114,6 +112,21 @@ class Point < ActiveRecord::Base
              || comments.map {|c| c.user_id}.include?(follower.id)
     end
   end
+
+  def followers
+    explicit = Follow.where(:followable_type => self.class.name, :followable_id => self.id, :explicit => true)
+    explicit_no = explicit.all.select {|f| !f.follow}.map {|f| f.user_id}
+    explicit_yes = explicit.all.select {|f| f.follow}.map {|f| f.user}
+
+    candidates = (JSON.parse(includers || '[]') + comments.map {|c| c.user_id}).uniq
+
+    implicit_yes = candidates.select {|u| !explicit_no.include?(u)}.map {|uid| User.find(uid)}
+
+    all_followers = explicit_yes + implicit_yes
+
+    all_followers.uniq
+  end
+
 
   def category
     is_pro ? 'pro' : 'con'

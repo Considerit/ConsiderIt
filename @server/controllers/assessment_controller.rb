@@ -1,137 +1,65 @@
-class Dashboard::AssessableController < Dashboard::DashboardController
+class AssessmentController < ApplicationController  
+  respond_to :json
+
+  rescue_from CanCan::AccessDenied do |exception|
+    result = {
+      :errors => [current_user.nil? ? 'not logged in' : 'not authorized']
+    }
+    render :json => result 
+    return
+  end
 
   # list all the objects to be moderated; allow seeing the existing moderations
   def index
     authorize! :index, Assessable::Assessment
 
-    assessments = Assessable::Assessment.order(:complete)
-    assessable_ids = assessments.map{ |assessment| assessment.assessable_id }.compact
-    assessable_objects = Point.where("id in (?)", assessable_ids).public_fields.to_a
-    root_objects_ids = assessable_objects.map{ |assessed| assessed.proposal_id }.compact
-    root_objects = Proposal.where("id in (?)", root_objects_ids).public_fields.to_a
+    assessments = Assessable::Assessment.all.each do |assessment|
+      dirty_key "/point/#{assessment.assessable_id}"
+      dirty_key "/proposal/#{assessment.root_object().proposal_id}"
+    end
 
     result = { 
-      :verdicts => Assessable::Verdict.all,
-      :assessments => assessments,
-      :assessable_objects => assessable_objects,
-      :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,
-      :root_objects => root_objects
+      :key => '/dashboard/assessment',
+      :assessments => Assessable::Assessment.all,
+      :verdicts => Assessable::Verdict.all
     }
 
-    if request.xhr?
-      render :json => result 
-    else
-      render "layouts/dash", :layout => false 
-    end
+    render :json => [result]
 
   end
 
-  def edit
+  def show
     authorize! :index, Assessable::Assessment
 
     assessment = Assessable::Assessment.find(params[:id])
-    root_object = assessment.proposal 
-    
-    result = {
-      :verdicts => Assessable::Verdict.all,
-      :assessment => assessment,
-      :requests => assessment.requests,
-      :claims => assessment.claims,
-      :all_claims => root_object.claims,
-      :assessable_obj => assessment.root_object, 
-      :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil,      
-      :root_object => root_object
-    }
+    #TODO: authorize against this specific assessment?
 
-    if request.xhr?
-      render :json => result 
-    else
-      render "layouts/dash", :layout => false 
-    end
-
-  end
-
-  def create_claim
-    authorize! :index, Assessable::Assessment
-
-    assessment = Assessable::Assessment.find(params[:assessment_id])
-
-    params[:claim].delete :verdict if params[:claim].has_key?(:verdict)
-    params[:claim].delete :point if params[:claim].has_key?(:point)
-
-    if params[:claim].has_key?(:copy) && params[:claim][:copy]
-      copyable_attributes = Assessable::Claim.find(params[:claim][:copy_id]).attributes
-      copyable_attributes[:assessment_id] = assessment.id
-      attrs = copyable_attributes
-    else
-      params[:claim][:account_id] = current_tenant.id
-      params[:claim][:assessment_id] = params[:assessment_id]
-      attrs = params[:claim]
-    end
-
-    attrs[:creator] = current_user.id
-    claim = Assessable::Claim.create! ActionController::Parameters.new(attrs).permit!
-
-    render :json => claim
-
-  end
-
-  def update_claim
-    authorize! :index, Assessable::Assessment
-
-    claim = Assessable::Claim.find(params[:id])
-
-    params[:claim].delete :account_id
-    params[:claim].delete :id
-    params[:claim].delete :key
-    params[:claim].delete :verdict_id if params[:claim].has_key?(:verdict_id) && params[:claim][:verdict_id].nil?
-    params[:claim].delete :point
-    params[:claim].delete :verdict if params[:claim].has_key?(:verdict)
-
-    # TODO: explicitly grab params  
-    claim.update_attributes params[:claim].permit!
-
-    if claim.assessment.complete
-      claim.assessment.update_verdict
-      claim.assessment.save
-    end
-
-    render :json => claim
-
-  end
-
-  def destroy_claim
-    authorize! :index, Assessable::Assessment
-
-    claim = Assessable::Claim.find(params[:id])
-
-    claim.destroy
-
-    render :json => {:id => params[:id]}
+    dirty_key "/assessment/#{params[:id]}"
+    render :json => []
   end
 
   def update
     authorize! :index, Assessable::Assessment
     
-    # TODO: explicitly grab params    
-    assessment = Assessable::Assessment.find(params[:assessment][:id])
-    complete = assessment.complete
+    fields = ["complete", "reviewable", "notes"]
+    updates = params.select{|k,v| fields.include? k}
 
-    params[:assessment].delete :id
-    params[:assessment].delete :account_id
-    params[:assessment].delete :point
-    params[:assessment].delete :key
-    params[:assessment].delete :verdict
-    params[:assessment].delete :claims
+    assessment = Assessable::Assessment.find(params[:id])
+    already_published = assessment.complete
+
+    if params.has_key?('user') && !params['user']
+      assessment.user_id = nil
+    else
+      assessment.user_id = key_id(params['user'])
+    end
+
+    assessment.update_attributes! updates
 
     if assessment.complete
       assessment.update_verdict()
     end
-    assessment.update_attributes params[:assessment].permit!
-    assessment.save
 
-    if !complete && assessment.complete
-      assessment.update_verdict()
+    if !already_published && assessment.complete
       assessment.published_at = Time.now.utc      
       assessment.save
 
@@ -140,9 +68,12 @@ class Dashboard::AssessableController < Dashboard::DashboardController
         :current_tenant => current_tenant,
         :mail_options => mail_options
       )
+    else 
+      assessment.save
     end
 
-    render :json => assessment
+    dirty_key "/assessment/#{params[:id]}"
+    render :json => []
   end
 
   ### User facing
@@ -194,6 +125,7 @@ class Dashboard::AssessableController < Dashboard::DashboardController
     remap_key(params[:key], "/request/#{request.id}")
 
     dirty_key "/comments/#{point.id}"
+
     render :json => [result, assessment] 
   end
 

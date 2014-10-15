@@ -64,7 +64,7 @@ class Proposal < ActiveRecord::Base
 
     proposals.each do |proposal|        
       clustered_proposals[proposal.cluster] = [] if !clustered_proposals.has_key? proposal.cluster
-      clustered_proposals[proposal.cluster].append proposal.proposal_summary()
+      clustered_proposals[proposal.cluster].append proposal.as_json
     end
 
     # now order the clusters
@@ -85,67 +85,16 @@ class Proposal < ActiveRecord::Base
 
   end
 
-  def proposal_summary
-    response = self.as_json
-
-    # Find an existing published opinion for this user
-    your_opinion = Opinion.where(:proposal_id => self.id, :user => current_user, :published => true).first
-
-    top_point = self.points.published.order(:score).last
-
-    response.update({:top_point => top_point})
-
-    if your_opinion
-      response.update({
-        :your_opinion => "/opinion/#{your_opinion.id}"
-      })
-    end
-
-    response
-  end
-
-  def proposal_data
-    # TODO: figure out how this method relates to proposal#as_json & proposal#proposal_summary
-
-    # Compute points
-    pointz = points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
-    pointz = pointz.public_fields.map do |p|
-      p.as_json
-    end
-
-    # Find an existing opinion for this user
-    your_opinion = Opinion.get_or_make(self, current_user)
-
-    # Compute opinions
-    published_opinions = opinions.published
-    ops = published_opinions.public_fields.map {|x| x.as_json}
-
-    if published_opinions.where(:user_id => nil).count > 0
-      throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
-    end
-
-    # Put them together
-    response = self.as_json
-    response.update({
-      :points => pointz,
-      :opinions => ops,
-      :top_point => self.points.published.order(:score).last, # otherwise top points get rewritten on homepage
-      :your_opinion => "/opinion/#{your_opinion.id}"
-    })
-
-    # if can?(:manage, proposal) && self.publicity < 2
-    #   response.update({
-    #     :access_list => self.access_list
-    #   })
-    # end
-
-    response
-  end
 
   def as_json(options={})
     options[:only] ||= Proposal.my_public_fields
     result = super(options)
 
+    # Find an existing opinion for this user
+    your_opinion = Opinion.where(:proposal_id => self.id, :user => current_user).first
+    result['your_opinion'] = "/opinion/#{your_opinion.id}" if your_opinion
+
+    result['top_point'] = self.points.published.order(:score).last
 
     make_key(result, 'proposal')
     stubify_field(result, 'user')
@@ -153,6 +102,13 @@ class Proposal < ActiveRecord::Base
     result["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 
     result['assessment_enabled'] = assessment_enabled?
+
+    # if can?(:manage, proposal) && self.publicity < 2
+    #   response.update({
+    #     :access_list => self.access_list
+    #   })
+    # end
+
     result
   end
 
@@ -171,6 +127,8 @@ class Proposal < ActiveRecord::Base
   #   user.proposals.public_fields.to_a + Proposal.privately_shared.where("LOWER(CONVERT(access_list USING utf8)) like '%#{user.email}%' ").public_fields.to_a
   # end
 
+
+
   # The user is subscribed to proposal notifications _implicitly_ if:
   #   • they have an opinion (published or not)
   def following(follower)
@@ -181,6 +139,19 @@ class Proposal < ActiveRecord::Base
       return opinions.where(:user_id => follower.id, :published => true).count > 0
     end
   end
+  
+  def followers
+    explicit = Follow.where(:followable_type => self.class.name, :followable_id => self.id, :explicit => true)
+    explicit_no = explicit.all.select {|f| !f.follow}.map {|f| f.user_id}
+    explicit_yes = explicit.all.select {|f| f.follow}.map {|f| f.user}
+
+    implicit_yes = opinions.where(:published => true).where("user_id NOT IN (?)", explicit_no).all.map {|o| o.user}
+
+    all_followers = explicit_yes + implicit_yes
+
+    all_followers.uniq
+  end
+
 
   def title(max_len = 140)
     if name && name.length > 0

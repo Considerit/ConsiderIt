@@ -31,6 +31,7 @@ deps:
   - pngcrush
   - python-apt
   - python-mysqldb # for Ansible mysql module
+  - redis-server
   - unattended-upgrades
   - unzip
   - zlib1g 

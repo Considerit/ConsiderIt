@@ -84,7 +84,7 @@ end
 
 group :production do
   gem 'exception_notification'
-  gem "aws-ses", "~> 0.5.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
+  gem "aws-ses", "~> 0.6.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
   gem 'aws-sdk'
   gem 'dalli' # memcaching: https://github.com/mperham/dalli/
 end

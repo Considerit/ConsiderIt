@@ -186,7 +186,7 @@ private
       if key.match "/proposal/"
         id = key[10..key.length]
         proposal = Proposal.find_by_id(id) || Proposal.find_by_long_id(id)
-        response.append proposal.proposal_data
+        response.append proposal.as_json  #proposal_data
 
       elsif key.match "/comments/"
         point = Point.find(key[10..key.length])
@@ -217,11 +217,24 @@ private
         long_id = key[6..key.length]
         proposal = Proposal.find_by_long_id long_id
 
+        pointz = proposal.points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
+        pointz = pointz.public_fields.map {|p| p.as_json}
+
+        published_opinions = proposal.opinions.published
+        ops = published_opinions.public_fields.map {|x| x.as_json}
+
+        if published_opinions.where(:user_id => nil).count > 0
+          throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
+        end
+
+
         clean = { 
-          proposal: proposal.proposal_data(),
           users: get_all_user_data(),
           your_opinions: current_user.opinions.map {|o| o.as_json},
-          key: key
+          key: key,
+          proposal: proposal.as_json,
+          points: pointz,
+          opinions: ops
         }
 
         if current_tenant.assessment_enabled
@@ -233,7 +246,12 @@ private
         end
 
         response.append clean
-
+      elsif key.match '/assessment/'
+        assessment = Assessable::Assessment.find(key[12..key.length])
+        response.append assessment.as_json
+      elsif key.match '/claim/'
+        claim = Assessable::Claim.find(key[7..key.length])
+        response.append claim.as_json
       end
     end
 

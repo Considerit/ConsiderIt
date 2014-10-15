@@ -9,6 +9,8 @@ class AlertMailer < Mailer
     @url = dashboard_moderate_url(:host => @host)
     @tenant = tenant
 
+    return unless valid_email(user)
+
     subject = "Pending content to moderate"
 
     to = format_email user.email, user.name
@@ -21,9 +23,11 @@ class AlertMailer < Mailer
   def content_to_assess(assessment, user, tenant)
     @user = user
     @host = tenant.host_with_port
-    @url = assessment_index_url(:host => @host)
+    @url = dashboard_assessment_url(:host => @host)
     @assessment = assessment
     @tenant = tenant
+
+    return unless valid_email(user)
 
     subject = "A new fact check request"
 

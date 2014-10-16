@@ -2983,54 +2983,29 @@ ProfileLink = ReactiveComponent
           position: 'relative'
         onMouseEnter: => @local.menu = true; save(@local)
         onMouseLeave: => @local.menu = false; save(@local)
-        DIV
-          style:
-            position: 'absolute'
-            display: if not @local.menu then 'none'
-            #height: 80
-            width: 150
-            marginTop: -8
-            marginLeft: -8
-            padding: 8
-            paddingTop: 50 
-            backgroundColor: '#eee'
-            left: 0
-            textAlign: 'left'
-            zIndex: 999999999
+        DIV className: 'profile_menu', style: {display: (if not @local.menu then 'none')},
           if current_user.is_moderator
-            A
-              style:
-                color: cityclub_navy
-                position: 'relative'
-                bottom: 8
-                paddingLeft: 27,
-                display: 'block'
+            A 
+              className: 'menu_link'
+              style: {color: cityclub_navy}
               href: '/dashboard/moderate'
               'Moderate'
           if current_user.is_assessor
-            A
-              style:
-                color: cityclub_navy
-                position: 'relative'
-                bottom: 8
-                paddingLeft: 27,
-                display: 'block'
+            A 
+              className: 'menu_link'
+              style: {color: cityclub_navy},
               href: '/dashboard/assessment'
               onClick: clickInternalLink
               'Fact-check'
 
-          A
-            style:
-              color: cityclub_navy
-              position: 'relative'
-              bottom: 8
-              paddingLeft: 27,
-              display: 'block'
+          A 
+            className: 'menu_link'
+            style: {color: cityclub_navy}
             'data-action': 'logout'
             onClick: @logout
             'Log out'
         SPAN style: {position: 'relative', zIndex: 9999999999},
-          Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
+          Avatar key: current_user.user, tag: SPAN, hide_name: true, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
           'Profile'
     else
       A

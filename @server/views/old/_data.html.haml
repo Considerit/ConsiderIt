@@ -3,40 +3,16 @@
 
     ConsiderIt.public_root = "#{@public_root}"
 
-    // ConsiderIt.proposals = #{@proposals.to_json};
-
-    // ConsiderIt.opinions = #{@opinions.to_json};
-
-    // ConsiderIt.current_proposal = #{ @current_proposal ? @current_proposal : 'null' };
-
-    // ConsiderIt.current_point = #{ @current_point ? @current_point : 'null' };
-
     ConsiderIt.inaccessible_proposal = #{ @inaccessible_proposal ? @inaccessible_proposal.to_json : 'null' };
 
     ConsiderIt.current_tenant_data = #{current_tenant.to_json};
 
-    //var users = { User.select("id, name, avatar_file_name").to_json };
     ConsiderIt.users = #{@users};
 
     // CURRENT USER
     ConsiderIt.current_user = #{current_user ? current_user.id : 'null'};
 
     #{!current_user ? '' : "ConsiderIt.current_user_data = #{current_user.current_user_hash(form_authenticity_token, true).to_json}"}
-
-    //.update( {follows: current_user.follows.load.to_json})}"}
-
-    // LIMITED USER
-
-    //var limited_user_data = #{@limited_user_email ? "{email: '#{@limited_user_email}'}" : 'null'};
-
-    //ConsiderIt.limited_user_data = #{@limited_user ? "{ id: #{@limited_user.id}, email: '#{@limited_user_email}', google_uid: '#{@limited_user.google_uid}', facebook_uid: '#{@limited_user.facebook_uid}', twitter_uid: '#{@limited_user.twitter_uid}'}" : 'limited_user_data'};
-
-    //ConsiderIt.limited_user_follows = #{@limited_user ? @limited_user_follows.to_json : 'null'};
-
-
-    // AUTH
-    // ConsiderIt.password_reset_token = #{@reset_password_token ? "'#{@reset_password_token}'" : 'null'};  
-
 
     ConsiderIt.dash_data = #{@dash_data.to_json};
 

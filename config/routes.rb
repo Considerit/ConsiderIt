@@ -130,4 +130,9 @@ ConsiderIt::Application.routes.draw do
   resources :assessment, :only => [:show, :update]
   resources :claim, :only => [:show, :create, :update, :destroy]
   resources :request, :only => [:create], :controller => "assessment"
+
+
+  get 'user_avatar_hack' => 'current_user#user_avatar_hack'
+  match 'update_user_avatar_hack' => 'current_user#update_user_avatar_hack', :via => [:put]
+
 end

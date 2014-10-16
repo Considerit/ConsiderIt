@@ -2358,7 +2358,7 @@ Auth = ReactiveComponent
         onChange: (event) => current_user.reset_password_token = event.target.value
 
     providers = ['facebook', 'google']
-    # if root.auth_mode in ['login', 'reset_password']
+    # if root.auth_mode in ['login', 'login_via_reset_password_token']
     #   providers.push('twitter')
 
     third_party_authenticated = current_user.facebook_uid || current_user.twitter_uid || current_user.google_uid
@@ -2424,7 +2424,7 @@ Auth = ReactiveComponent
 
             DIV className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 
-        if root.auth_mode in ['login', 'reset_password']
+        if root.auth_mode in ['login', 'login_via_reset_password_token']
           # logging in or resetting password
 
           DIV null, 
@@ -2436,7 +2436,7 @@ Auth = ReactiveComponent
                 DIV style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
             TABLE className: 'auth_fields login',
               TBODY null,
-                if root.auth_mode == 'reset_password'
+                if root.auth_mode == 'login_via_reset_password_token'
                   TR null,
                     TD null, 'We just emailed you a code. Enter it here:'
                   TR null, 
@@ -2454,11 +2454,11 @@ Auth = ReactiveComponent
                       email_input_field
 
                 TR null,
-                  TD {style: (if root.auth_mode == 'reset_password' then {width: '37%'} else {}), className: 'label_cell'},
+                  TD {style: (if root.auth_mode == 'login_via_reset_password_token' then {width: '37%'} else {}), className: 'label_cell'},
                     switch root.auth_mode
                       when 'login'
                         LABEL htmlFor: 'user_password', 'password:'
-                      when 'reset_password'
+                      when 'login_via_reset_password_token'
                         LABEL htmlFor: 'user_password', 'new password:'
 
                   TD className: 'field_cell', 
@@ -2518,7 +2518,7 @@ Auth = ReactiveComponent
                     # we'll just submit the file form after user is signed in
 
 
-                    FORM id: 'user_avatar_form', action: Routes.current_user_path(), 
+                    FORM id: 'user_avatar_form', action: '/update_user_avatar_hack', 
 
                       DIV className: 'avatar_preview_enclosure',
                         IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else null #todo: make sure that if user overrides image_url, that the new image is used
@@ -2625,45 +2625,30 @@ Auth = ReactiveComponent
 
     $el = $(@getDOMNode())
     current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
+    
+    console.log "TRYING TO #{@root.auth_mode}"
+    current_user.trying_to = @root.auth_mode
     local = @local
     local.submitting = true
     save(local)
 
-    # It is important that a user that just submitted a user picture see the picture
-    # on the results and in the header. However, this is a bit tricky because the avatars
-    # are cached on the server and the image is processed in a background task. 
-    # Therefore, we'll wait until the image is available and then make it available
-    # in the avatar cache.  
-    ensureCurrentUserAvatar = (attempts = 0) ->
-      registration_successful = !current_user.errors || current_user.errors['register'].length > 0
-      return unless registration_successful
-      
-      if current_user.b64_thumbnail
-        $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{current_user.b64_thumbnail}');}</style>")
-      else if attempts < 20
-        # Ugly: wait a little while for offline avatar processing
-        # to complete, then refetch
-        arest.serverFetch('/current_user')
-        _.delay -> 
-          ensureCurrentUserAvatar(attempts + 1)
-        , 1000
 
     # hack for submitting file data in ActiveREST for now
     # we'll just submit the file form after user is signed in
     # TODO: investigate alternatives for submitting form data
     if @submit_avatar_form
-      save(current_user)
+
+      save current_user, => 
+        local.submitting = false
+        save(local)
+        ensureCurrentUserAvatar()
+
       $('#user_avatar_form').ajaxSubmit
         type: 'PUT'
         data: 
           authenticity_token: current_user.csrf
-        success: (current_user_data, status, xhr) -> 
-          current_user.errors = current_user_data.errors or []
-          current_user.csrf = current_user_data.csrf
-          save current_user, =>
-            local.submitting = false
-            save(local)
-            ensureCurrentUserAvatar()
+          trying_to: 'update_avatar_hack'
+
     else
       save(current_user, =>
         local.submitting = false
@@ -2676,11 +2661,12 @@ Auth = ReactiveComponent
   sendResetPassword : -> 
 
     # Tell the server to email us a token
-    (current_user = @data('/current_user')).reset_my_password = true
+    current_user = @data('/current_user')
+    current_user.trying_to = 'send_password_reset_token'
     save(current_user, =>
       if not (current_user.errors?.reset_password?.length > 0)
         # Switch to reset_password mode
-        @root.auth_mode = 'reset_password'
+        @root.auth_mode = 'login_via_reset_password_token'
         save(@root)
       else
         # Tell the login screen to show the reset_password errors
@@ -2950,6 +2936,7 @@ ProfileLink = ReactiveComponent
   logout : -> 
     current_user = @data('/current_user')
     current_user.logged_in = false
+    current_user.trying_to = 'logout'
 
     @root.auth_mode = null
 
@@ -3403,9 +3390,13 @@ fetch('/current_user')
 # Fetch current user every 2 minutes so that if the user gets
 # logged out (e.g. by server deploy after letting a browser window stay open), 
 # their browser will accurately reflect reality. 
+# Only do this if user is already logged in, so that we don't 
+# accidently interfere with a login process.
 # TODO: Remove this after we have true realtime updates
 setInterval -> 
-  arest.serverFetch('/current_user')
+  current_user = fetch '/current_user'
+  if current_user.logged_in
+    arest.serverFetch('/current_user')
 , 2 * 60 * 1000
 
 ##
@@ -3417,6 +3408,24 @@ fetchAvatars = ->
       $('#b64-avatars').remove()
     if data
       $('head').append data
+
+# It is important that a user that just submitted a user picture see the picture
+# on the results and in the header. However, this is a bit tricky because the avatars
+# are cached on the server and the image is processed in a background task. 
+# Therefore, we'll wait until the image is available and then make it available
+# in the avatar cache.  
+ensureCurrentUserAvatar = (attempts = 0) ->
+  
+  $.getJSON '/user_avatar_hack', (response) =>
+    if response.b64_thumbnail          
+      current_user = fetch '/current_user'
+      $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{response.b64_thumbnail}');}</style>")
+    
+    else if attempts < 20
+      # Ugly: wait a little while for offline avatar processing to complete, then refetch
+      _.delay -> 
+        ensureCurrentUserAvatar(attempts + 1)
+      , 1000
 
 
 ##

@@ -1159,7 +1159,6 @@ YourPoints = ReactiveComponent
 
   render : ->
     root = @data('root')
-    console.log @proposal
     included_points = @data(@proposal.your_opinion).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
@@ -2900,61 +2899,6 @@ Homepage = ReactiveComponent
               " passing in 2007."
         ]
 
-ZipcodeBox = ReactiveComponent
-  displayName: 'ZipcodeBox'
-  render: ->
-    c = @data('/current_user')
-    extra_text = if Modernizr.input.placeholder then '' else ' Zip Code'
-    onChange = (event) =>
-      if event.target.value.match(/\d\d\d\d\d/)
-        c.tags.zip = event.target.value
-        save(c)
-
-      else if event.target.value.length == 0
-        c.tags.zip = undefined
-        @local.stay_around = true
-        save(c)
-        save(@local)
-
-    onBlur = =>
-      @local.stay_around = false
-      save(@local)
-
-    if c.tags.zip or @local.stay_around
-      # Render the completed zip code box
-      DIV className: 'filled_zip',
-        'Customized for:'
-        INPUT
-          type: 'text'
-          key: 'zip_input'
-          defaultValue: c.tags.zip or ''
-          onChange: onChange
-          onBlur: onBlur
-
-    else
-      # Render the ragged input box
-      DIV style: {margin: '55px 0'},
-        DIV className: 'ragged_top'
-        DIV className: 'ragged_middle',
-          DIV
-            style:
-              fontSize: 24
-              width: PAGE_WIDTH
-              color: cityclub_white
-              margin: 'auto'
-              padding: '35px 0'
-              paddingLeft: '170px'
-            'Customize this guide for your' + extra_text
-            INPUT
-              type: 'text'
-              key: 'zip_input'
-              placeholder: 'Zip Code'
-              style: {margin: '0 0 0 12px', fontSize: 24, height: 42, width: 152, padding: '4px 20px'}
-              onChange: onChange
-            BR null
-            SPAN style: {fontSize: 18}, 'Your local congressional race and measures will be revealed!'
-
-        DIV className: 'ragged_bottom'
 
 
 ProfileLink = ReactiveComponent
@@ -3033,97 +2977,9 @@ Header = ReactiveComponent
         DIV className: 'profile_navigation',
           ProfileLink()
 
-      DIV null, 
-        # Define all the customer-specific styles for non-repeated elements directly. 
-        # This lets us iterate quicker and minimize where customer specific code lives.
-        switch customer.identifier
-          when 'cityoftigard'
-            logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
-            DIV null,
-              DIV style: {height: 24},
-                A href: '/', onClick: clickInternalLink, style: {position: 'absolute', top:0, zIndex: 999999},
-                  IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
-                # SPAN style: {color: 'white', fontSize: 28, display: 'inline-block', margin: '20px 0 0 110px'}, 
-                #   'Engage with the '
-                #   A href: 'http://www.tigard-or.gov', style: {color: 'white', fontWeight: 600}, 'City of Tigard'
-              # DIV style: {backgroundColor: color.proposal_header, width: '100%', height: 50}
-          when 'tigard'
-            logo_style = {height: 60}
-            DIV null,
-              A href: '/', onClick: clickInternalLink, style: {padding: 12, display: 'inline-block'},
-                IMG className: 'logo', src: "<%= asset_path 'tigard/logo.jpg' %>", style: logo_style 
-              SPAN style: {color: '#707070', fontSize: 24, display: 'inline-block', margin: '20px 0 0 50px', fontWeight: 800, textTransform: 'uppercase', position: 'relative', top: -20}, 
-                'Help plan '
-                A href: 'http://riverterracetigard.com/', style: {color: '#78d18b', fontWeight: 600}, 'River Terrace'
-                ', Tigard\'s newest neighborhood' 
+      if window["#{customer.identifier}Header"]
+        window["#{customer.identifier}Header"]()
 
-
-          # when 'ihub'
-          #   logo_style = {height: 42, position: 'absolute', bottom: 4, zIndex: 999999, left: 8}
-          #   DIV style: {height: 50},
-          #     A href: 'http://disruptingmedicine.org/about-the-innovation-hub/',
-          #       IMG className: 'logo', src: "<%= asset_path 'ihub/logo.png' %>", style: logo_style 
-
-          when 'livingvotersguide'
-            show_full = @root.page_name in ['homepage', 'about']
-
-            logo_style =
-              position: 'absolute'
-              left: if show_full then 62 else 154
-              top: if show_full then 27 else 73
-              width: if show_full then 222 else 130
-              zIndex: 1
-
-            DIV null,
-              # Top cream area
-              DIV
-                style:
-                  height: 69
-                  backgroundColor: cityclub_white
-                className: 'profile_navigation'
-
-                ProfileLink()
-                SPAN null, '   |   '
-                A href:'/about', onClick: clickInternalLink, className: 'hover_pointer',
-                  'About'
-
-              # Logo
-              A href: (if @root.page_name == 'homepage' then '/about' else '/'), onClick: clickInternalLink,
-                IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.svg' %>", style: logo_style
-
-              # Blue + green areas
-              DIV
-                style:
-                  backgroundColor: if show_full then cityclub_green else cityclub_blue
-                  color: cityclub_white
-                  height: 137
-                  marginBottom: if show_full then 23 else 0
-                  clear: 'both'
-
-                # Online Intelligence for Washington Voters
-                DIV
-                  style:
-                    fontSize: 32
-                    padding: '22px 40px 0 332px'
-                    backgroundColor: cityclub_blue
-                    width: 838
-                    height: '100%'
-                    float: 'left'
-                  SPAN style:{fontWeight: 400}, 'Created by the people '
-                  'and for the people of Washington state'
-
-                DIV
-                  style:
-                    fontSize: 18
-                    padding: '14px 40px 0 26px'
-                    float: 'left'
-                    width: 280
-                    height: '100%'
-                  DIV null, 'Hosted by'
-                  A {href: 'http://seattlecityclub.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'Seattle CityClub')
-                  DIV style: {marginTop: 8}, 'with fact-checks from'
-                  A {href: 'http://spl.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'The Seattle Public Library')
-                  
       DIV null, 
         if @root.page_name == 'about'
           # TODO: we need a way of knowing whether this subdomain has a homepage or not
@@ -3186,58 +3042,22 @@ Footer = ReactiveComponent
     color = @data('color')
 
     DIV className: 'l_footer',  
-      if customer.identifier == 'livingvotersguide'
-        DIV null,
-          DIV style: {color: cityclub_white, backgroundColor: cityclub_blue, marginTop: 48, padding: 18},
-            DIV style: {fontSize: 18, fontStyle: 'italic', textAlign: 'left', width: 690, fontStyle: 'italic', margin: 'auto'},
-              'Unlike voter guides generated by government, newspapers or advocacy organizations, Living Voters Guide is created '
-              SPAN style: {fontWeight: 600}, 'by the people'
-              ' and '
-              SPAN style: {fontWeight: 600}, 'for the people'
-              ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and express your ideas. We believe that sharing our diverse opinions leads to making wiser decisions together. '
-              A style: {color: cityclub_white, textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', onClick: clickInternalLink, 'Learn more'
-              '.'
-
-            DIV style: {marginTop: 20},
-              FBLike()
-              Tweet
-                hashtags: 'lvguide'
-                referer: 'https%3A%2F%2Flivingvotersguide.org%2F'
-                related: 'lvguide'
-                text: 'I%20flexed%20my%20civic%20muscle%20%40lvguide.'
-                url: 'https%3A%2F%2Flivingvotersguide.org%2F'
-
-
-          DIV style: {paddingTop: 24, paddingBottom: 12, fontSize: 18, fontWeight: 500, color: 'rgb(77,76,71)'},
-            'Bug to report? Have a comment? Confused? '
-            A href: "mailto:admin@livingvotersguide.org", style: {color: 'rgb(77,76,71)'},
-              'Email us'
-
-          DIV style: {paddingBottom: 18},
-
-            DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
-              A href: "http://seattlecityclub.org", style: {position: 'relative', top: 3, fontWeight: 400},
-                IMG src: "<%= asset_path 'livingvotersguide/cityclub.svg' %>"
-
-            DIV style: {textAlign: 'left', padding: '0 12px', display: 'inline-block', fontSize: 11, position: 'relative', top: -5},
-              #"Fact-checking by "
-              A href: 'http://spl.org', style: {textTransform: 'uppercase', textDecoration: 'none', color: cityclub_navy, display: 'block', fontWeight: 600, width: 100}, target: '_blank', 
-                'The Seattle Public Library'
-
-          DIV style: {padding: 9},
-
-            DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 20},
-              "Technology by "
-              A href: 'http://consider.it', style: {textDecoration: 'none', color: '#B03B42', fontWeight: 600}, target: '_blank', 'Considerit'
+      if window["#{customer.identifier}Footer"]
+        window["#{customer.identifier}Footer"]()
 
       else
         DIV null,
-          "Technology by "
-          A href: 'http://consider.it', target: '_blank', 'Considerit'
-          SPAN className: 'separator', '•'
-          'Bug to report? '
-          A href: "mailto:admin@consider.it", 'Email us'
+          TechnologyByConsiderit()
+          DIV style: {color: 'rgb(131,131,131)', marginTop: 5},
+            'Bug to report? Want to use this technology in your organization? '
+            A style: {textDecoration: 'none', fontWeight: 700}, href: "mailto:admin@consider.it", 'Email us'
 
+TechnologyByConsiderit = ReactiveComponent
+  displayName: 'TechnologyByConsiderit'
+  render : -> 
+    DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 20},
+      "Technology by "
+      A href: 'http://consider.it', style: {textDecoration: 'none', color: '#B03B42', fontWeight: 600}, target: '_blank', 'Considerit'
 
 # top secret proposal creation component
 EditProposal = ReactiveComponent
@@ -3708,7 +3528,6 @@ window.writeToLog = (entry) ->
 
   save entry
 
-
 window.arest.trans_in = (object) ->
   fix_comments = (o) ->
     if o.key?.match(/\/comments\//)
@@ -3738,3 +3557,10 @@ window.Button = Button
 window.AutoGrowTextArea = AutoGrowTextArea
 window.considerit_blue = considerit_blue
 window.clickInternalLink = clickInternalLink
+window.ProfileLink = ProfileLink
+window.TechnologyByConsiderit = TechnologyByConsiderit
+window.FBLike = FBLike
+window.FBShare = FBShare
+window.Tweet = Tweet
+
+

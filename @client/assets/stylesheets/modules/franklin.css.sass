@@ -946,7 +946,7 @@ $community_point_mouth_width: 17px
   +font-size(0)
 
 .point_details_tease, .point_details 
-  //padding-left: 10px
+  margin-top: .5em
   +font-size(0)
   word-wrap: break-word
   
@@ -961,9 +961,13 @@ $community_point_mouth_width: 17px
 .point_details
   display: block
 
-.point_details_tease:hover
-  text-decoration: underline
+.point_details_tease
   cursor: pointer
+
+  a.select_point
+    text-decoration: none
+    &:hover
+      text-decoration: underline
 
 .point_details p, .comments p
   margin-bottom: 1em

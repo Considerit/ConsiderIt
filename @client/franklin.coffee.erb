@@ -1386,25 +1386,28 @@ Point = ReactiveComponent
 
     needs_expansion_to_see_details = point.text && (point.nutshell.length + point.text.length) > 210
 
-    if point.comment_count > 0 || needs_expansion_to_see_details || point.assessment
-      select_enticement = []
-      if needs_expansion_to_see_details
-        select_enticement.push SPAN null,
-            SPAN dangerouslySetInnerHTML: {__html: '&hellip;'}
-            ' (read more)'
+    select_enticement = []
 
-      if point.comment_count > 0
-        select_enticement.push ' '
-        select_enticement.push SPAN style: {whiteSpace: 'nowrap'},
-          "(#{point.comment_count} comment#{if point.comment_count > 1 then 's' else ''})"
+    if needs_expansion_to_see_details
+      select_enticement.push SPAN null,
+        SPAN dangerouslySetInnerHTML: {__html: '&hellip;'}
+        ' ('
+        A className: 'select_point',
+          'read more'
+        ')'
 
-      if point.assessment
-        select_enticement.push ' '
-        select_enticement.push SPAN null,
-          I(className: 'fa fa-search mini_magnifying_glass', title: 'Click to read a fact-check of this point')
+    if point.comment_count > 0 || !needs_expansion_to_see_details
+      select_enticement.push ' '
+      select_enticement.push SPAN style: {whiteSpace: 'nowrap'},
+        " ("
+        A className: 'select_point',
+          "#{point.comment_count} comment#{if point.comment_count != 1 then 's' else ''}"
+        ")"
 
-    else 
-      select_enticement = null
+    if point.assessment
+      select_enticement.push ' '
+      select_enticement.push SPAN null,
+        I(className: 'fa fa-search mini_magnifying_glass', title: 'Click to read a fact-check of this point')
 
 
     LI
@@ -1439,12 +1442,12 @@ Point = ReactiveComponent
         DIV className:'point_nutshell',
           splitParagraphs point.nutshell
 
-        if point.text && point.text.length > 0
-          DIV className: "point_details#{if is_selected || @props.rendered_as == 'under_review' then '' else '_tease'}", style: {marginTop: '1em'},
-            if is_selected || !needs_expansion_to_see_details || @props.rendered_as == 'under_review'
-              splitParagraphs(point.text)
-            else 
-              $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
+          DIV className: "point_details#{if is_selected || @props.rendered_as == 'under_review' then '' else '_tease'}",
+            if point.text && point.text.length > 0
+              if is_selected || !needs_expansion_to_see_details || @props.rendered_as == 'under_review'
+                splitParagraphs(point.text)
+              else 
+                $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
 
             if !is_selected && select_enticement && @props.rendered_as != 'under_review'
               select_enticement

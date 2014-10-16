@@ -174,8 +174,6 @@ class CurrentUserController < ApplicationController
         Thread.current[:dirtied_keys].delete('/current_user') # Because we're adding our own
         dirty_key("/user/#{current_user.id}")                 # But let's get the /user
 
-        # TODO: figure out how to let applicationcontroller#compile_dirty_objects
-        #       handle this response
         render :json => [response]
       end
 

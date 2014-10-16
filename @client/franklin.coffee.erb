@@ -412,7 +412,8 @@ StickyProposalHeading = ReactiveComponent
     $el = $(@getDOMNode())
 
     $header = $el.find('.proposal_heading.stickable')
-    if $header.length > 0
+
+    if $header.length > 0 && !@is_waiting()
       if @local.sticky_initialized
         $header.StickyElement('update')
       else 

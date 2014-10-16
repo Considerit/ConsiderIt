@@ -13,6 +13,9 @@ class CurrentUserController < ApplicationController
 
   # handles auth (login, new accounts, and login via reset password token) and updating user info
   def update
+    # TODO: Refactor. This method is not understandable. Its 300 lines, with so many pathways through it. 
+    #       Everytime I have to fix something in it, I spend a ton of time re-reading it, yet still 
+    #       cringe at whatever other pathways I might be breaking that I hadn't fully loaded into my brain. 
 
     puts("")
     puts("--------------------------------")
@@ -163,6 +166,26 @@ class CurrentUserController < ApplicationController
           else
             log('sign in by reset password token')
             signing_in = true
+
+            ##########
+            # TEMP HACK
+            # copied this code from below, which gets skipped over
+            # if signing in via reset password
+            # TODO: figure this out at a higher level. 
+            # Update their password
+            if !params[:password] || params[:password].length == 0
+              errors[:register].append 'No password specified'
+            elsif params[:password].length < min_pass
+              errors[:register].append 'Password is too short'
+            else
+              puts("Changing user's password.")
+              current_user.password = params[:password]
+              if !current_user.save
+                raise "Error saving this user's password"
+              end
+            end
+            ######################
+
           end
 
         # Sign in by email and password
@@ -269,17 +292,10 @@ class CurrentUserController < ApplicationController
       response[:email] = params[:email] if params[:email]
     end
 
-    #HACKY! supports local measures w/ zipcodes
-    # if user && (session.has_key? :tags) && session[:tags]
-    #   user.addTags session[:tags]
-    # end
-
     respond_to do |format|
       format.json do 
         Thread.current[:dirtied_keys].delete('/current_user') # Because we're adding our own
         dirty_key("/user/#{current_user.id}")                 # But let's get the /user
-        # TODO: figure out how to let applicationcontroller#compile_dirty_objects
-        #       handle this response
 
         if log_entry
           write_to_log({
@@ -289,6 +305,8 @@ class CurrentUserController < ApplicationController
           })
         end
 
+        # TODO: figure out how to let applicationcontroller#compile_dirty_objects
+        #       handle this response
         render :json => [response]
       end
 

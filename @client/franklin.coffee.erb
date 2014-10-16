@@ -2626,7 +2626,6 @@ Auth = ReactiveComponent
     $el = $(@getDOMNode())
     current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
     
-    console.log "TRYING TO #{@root.auth_mode}"
     current_user.trying_to = @root.auth_mode
     local = @local
     local.submitting = true

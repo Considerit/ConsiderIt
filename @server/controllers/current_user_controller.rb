@@ -13,248 +13,29 @@ class CurrentUserController < ApplicationController
 
   # handles auth (login, new accounts, and login via reset password token) and updating user info
   def update
-    # TODO: Refactor. This method is not understandable. Its 300 lines, with so many pathways through it. 
-    #       Everytime I have to fix something in it, I spend a ton of time re-reading it, yet still 
-    #       cringe at whatever other pathways I might be breaking that I hadn't fully loaded into my brain. 
+
+    errors = {:login => [], :register => [], :reset_password => []}
+    @min_pass = 4
+
+
+    if !params.has_key?(:trying_to) || params[:trying_to] == 'update_avatar_hack'
+      trying_to = 'update'    
+    else
+      trying_to = params[:trying_to]
+    end
 
     puts("")
     puts("--------------------------------")
     puts("----Start UPDATE CURRENT USER---")
     puts("  with current_user=#{current_user.id}")
+    puts("  trying to #{params[:trying_to]}")
     puts("")
 
-    errors = {:login => [], :register => [], :reset_password => []}
-    min_pass = @min_pass = 4
-    logging_out = false
-    signing_in = false
-    email_regexp = /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i
 
-    def log (what)
-      write_to_log({:what => what, :where => request.fullpath, :details => nil})
-    end
+    case trying_to
 
-    def try_email_authentication(params)
-      puts("Signing in by email and password")
-
-      return 'Missing email'    if !params[:email] || params[:email].length == 0
-      return 'Missing password' if !params[:password] || params[:password].length == 0
-      
-      user = User.find_by_lower_email(params[:email])
-      return "No user exists at that email address" if !user || !user.registration_complete
-      # note: Returning this error message is a security risk as it
-      #       reveals that a particular email address exists in the
-      #       system or not.  But it's prolly the right tradeoff.
-
-      if !user.authenticate(params[:password])
-        provider = user.third_party_authenticated()
-        if provider
-          return "Wrong password. Previously you used the #{provider} button."
-        else 
-          return "Wrong password"
-        end
-      end
-      replace_user(current_user, user)
-      set_current_user(user)
-      dirty_key '/proposals'
-
-      puts("Now current is #{current_user && current_user.id}")
-      return nil
-    end
-
-    def try_password_reset_authentication(params)
-      error = nil
-
-      puts("Signing in by password reset.  min_pass is #{@min_pass}")
-      has_password = params[:password] && params[:password].length >= @min_pass
-      if !has_password
-        puts("They need to provide a longer password. Bailing.")
-        return ["Please make a new password at least #{@min_pass} letters long"]
-      end
-      
-      # What's this next line?  I'm guessing this next line is for
-      # when you create an account and click a link in a confirmation
-      # email, but I'm not sure. -mike
-      params[:password_confirmation] = params[:password] if !params.has_key? :password_confirmation
-
-      # Now let's take that raw reset_password_token, and compute the
-      # digest and see if it matches any users
-      encoded_token = OpenSSL::HMAC.hexdigest('SHA256',
-                                              'reset_password_token',
-                                              params[:reset_password_token])
-      user = User.where(reset_password_token: encoded_token).first
-      puts("We found user #{user} with a password reset token")
-      
-      if user
-        replace_user(current_user, user)
-        set_current_user(user)
-      else
-        error = "Sorry, that's the wrong verification code."
-      end
-
-      return error
-    end
-
-    def validate(field, type)
-      value = params[field]
-      error = "Field #{field} is wrong type #{value.class}"
-      if type == 'boolean'
-        raise error if value && !(!!value == value)
-      else
-        raise error if value && value.class != type
-      end
-    end
-
-    # Validate input
-    types = {:avatar => ActionDispatch::Http::UploadedFile, :bio => String, :name => String,
-             :hide_name => 'boolean',
-             :email => String, :password => String}
-    types.each {|field, value| validate(field, value)}
-    validate(:logged_in, 'boolean')
-
-    fields = ['avatar', 'bio', 'name', 'hide_name', 'tags']
-    new_params = params.select{|k,v| fields.include? k}
-    new_params[:name] = '' if !new_params[:name]
-    new_params[:tags] = JSON.dump(new_params[:tags]) if new_params[:tags]
-
-    puts("Reset my password? #{params[:reset_my_password]}")
-
-    # Send the reset_password token if client wants
-    if params[:reset_my_password]
-      puts("Initiating reset_password")
-      errors[:reset_password].concat(send_reset_password_token(params))
-      puts("Errors are #{errors[:reset_password]}")
-      log('requested password reset')
-
-    end
-
-    # 0. Try logging out
-    if current_user && current_user.logged_in? && params[:logged_in] == false
-      puts("Logging out.")
-      logging_out = true
-      dirty_key '/page/homepage'
-      dirty_key '/proposals'
-      new_current_user()
-      log('logged out')
-
-    else
-      # Otherwise, we'll
-      #  (1) Authenticate: "HEY WHO ARE YOU, REALLY?" ... we might switch users.
-      #  (2) Update:       "Ok, tell me more about you."
-      #  (3) Test Registration-Complete  "Do you deserve your badge of power yet?"
-
-      # 1. Authenticate.  Log in.  Switch Users.
-      # 
-      # The user can log in with:
-      #  • A password reset token
-      #  • Or the email address that has been passed into this method
-      #
-      # There's also third-party auth (fb/twit/goog) but that
-      # happens in other functions.
-      if !current_user || !current_user.logged_in?
-        # This can return the following errors:
-        #  errors.reset_password = bad password
-        #  errors.reset_password = bad verification code
-        #  errors.login = bad password
-
-        puts("Trying to log in.")
-
-        # Sign in by password reset token
-        if params[:reset_password_token]
-          error_msg = try_password_reset_authentication(params)
-          if error_msg
-            errors[:reset_password].append(error_msg)
-          else
-            log('sign in by reset password token')
-            signing_in = true
-
-            ##########
-            # TEMP HACK
-            # copied this code from below, which gets skipped over
-            # if signing in via reset password
-            # TODO: figure this out at a higher level. 
-            # Update their password
-            if !params[:password] || params[:password].length == 0
-              errors[:register].append 'No password specified'
-            elsif params[:password].length < min_pass
-              errors[:register].append 'Password is too short'
-            else
-              puts("Changing user's password.")
-              current_user.password = params[:password]
-              if !current_user.save
-                raise "Error saving this user's password"
-              end
-            end
-            ######################
-
-          end
-
-        # Sign in by email and password
-        else
-          error_msg = try_email_authentication(params)
-          if error_msg
-            errors[:login].append(error_msg)
-          else
-            signing_in = true
-            log('sign in by email')
-          end
-        end
-      end
-
-      if !signing_in
-        # 2. Now we know the user's account.  Let them manipulate themself:
-        #   • Update their name, bio, photo...
-        #   • Update their email (if it doesn't already exist)
-        #   • Get registered if they filled everything out
-
-        # Update their name, bio, photo, and anonymity.
-        permitted = ActionController::Parameters.new(new_params).permit!
-
-        if current_user.update_attributes(permitted)
-          puts("Updating params. #{new_params}; permitted version #{permitted}")
-          if !current_user.save
-            raise 'Error saving basic current_user parameters!'
-          end
-          dirty_key '/proposals' # might have access to more proposals if user tags have been changed
-          log_entry = 'updating info' if !log_entry
-
-        else
-          raise 'Had trouble manipulating this user!'
-        end
-
-        # Update their email address.  First, check if they gave us a new address
-        email = params[:email]
-        user = User.find_by_email(email)
-        if !email || email.length == 0
-          errors[:register].append 'No email address specified'
-        # And if it's not taken
-        elsif user && (user != current_user)
-          errors[:register].append 'There is already an account with that email'
-        # And that it's valid
-        elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
-          errors[:register].append 'Bad email address'
-        else
-          puts("Updating email from #{current_user.email} to #{params[:email]}")
-          # Okay, here comes a new email address!
-          current_user.update_attributes({:email => email})
-          if !current_user.save
-            raise "Error saving this user's email"
-          end
-        end
-
-        # Update their password
-        if !params[:password] || params[:password].length == 0
-          errors[:register].append 'No password specified'
-        elsif params[:password].length < min_pass
-          errors[:register].append 'Password is too short'
-        else
-          puts("Changing user's password.")
-          current_user.password = params[:password]
-          if !current_user.save
-            raise "Error saving this user's password"
-          end
-        end
-
-        # Register the account
+      when 'register'
+        update_user_attrs errors
         if !current_user.registration_complete
           third_party_authenticated = current_user.twitter_uid || current_user.facebook_uid\
                                       || current_user.google_uid
@@ -262,48 +43,136 @@ class CurrentUserController < ApplicationController
           can_login = ((current_user.email && current_user.email.length > 0)\
                        || third_party_authenticated)
           signed_pledge = params[:signed_pledge]
-          ok_password = third_party_authenticated || (params[:password] && params[:password].length >= min_pass)
+          ok_password = third_party_authenticated || (params[:password] && params[:password].length >= @min_pass)
 
           if has_name && can_login && signed_pledge && ok_password
             current_user.registration_complete = true
             if !current_user.save
               raise "Error registering this uesr"
             end
-            log_entry = 'registered account'
-          # user.skip_confirmation! #TODO: make email confirmations actually work... (disabling here because users with accounts that never confirmed their accounts can't login after 7 days...)
+            log('registered account')
+
           else
+            errors[:register].append("Password needs to be at least #{@min_pass} letters") if !ok_password
             errors[:register].append('Name is blank') if !has_name
             errors[:register].append('Community pledge required') if !signed_pledge
           end
         end
-      end
+
+      when 'login'
+        puts("Signing in by email and password")
+
+        if !params[:email] || params[:email].length == 0
+          errors[:login].append 'Missing email'
+        elsif !params[:password] || params[:password].length == 0
+          errors[:login].append 'Missing password'
+        else
+
+          user = User.find_by_lower_email(params[:email])
+
+          if !user || !user.registration_complete
+            # note: Returning this error message is a security risk as it
+            #       reveals that a particular email address exists in the
+            #       system or not.  But it's prolly the right tradeoff.
+            errors[:login].append "No user exists at that email address" 
+
+          elsif !user.authenticate(params[:password])
+            provider = user.third_party_authenticated()
+            errors[:login].append "Wrong password.#{provider ? ' Previously you used the ' + provider + ' button.' : ''}"
+          else 
+
+            replace_user(current_user, user)
+            set_current_user(user)
+            dirty_key '/proposals'
+
+            puts("Now current is #{current_user && current_user.id}")
+            log('sign in by email')
+          end
+        end
+      when 'login_via_reset_password_token'
+
+        puts("Signing in by password reset.  min_pass is #{@min_pass}")
+        has_password = params[:password] && params[:password].length >= @min_pass
+        if !has_password
+          puts("They need to provide a longer password. Bailing.")
+          errors[:reset_password].append "Please make a new password at least #{@min_pass} letters long"
+
+        else 
+        
+          # Now let's take that raw reset_password_token, and compute the
+          # digest and see if it matches any users
+          encoded_token = OpenSSL::HMAC.hexdigest('SHA256',
+                                                  'reset_password_token',
+                                                  params[:reset_password_token])
+          user = User.where(reset_password_token: encoded_token).first
+          puts("We found user #{user} with a password reset token")
+          
+          if user
+            replace_user(current_user, user)
+            set_current_user(user)
+            update_user_attrs errors
+          else
+            errors[:reset_password].append "Sorry, that's the wrong verification code."
+          end  
+                  
+        end
+
+
+      when 'send_password_reset_token' 
+        puts("Initiating reset_password")
+        has_email = params[:email] && params[:email].strip.length > 0
+        user = has_email && User.find_by_lower_email(params[:email])
+        
+        if !user
+          # note: returning this is a security risk as it reveals that a
+          #       particular email address exists in the system or not.
+          #       But it's prolly the right tradeoff.
+          errors[:reset_password].append "We have no account for that email address."
+          puts("Errors are #{errors[:reset_password]}")
+        else 
+          user.reset_password()
+          log('requested password reset')
+        end
+
+      when 'logout'
+        if current_user && current_user.logged_in? && params[:logged_in] == false
+          puts("Logging out.")
+          dirty_key '/page/homepage'
+          dirty_key '/proposals'
+          new_current_user()
+          log('logged out')
+        end
+
+      when 'update'
+        update_user_attrs errors
+        log('updating info')
+
     end
-    
-    # 4. Now wrap everything up
+
+    # Wrap everything up
     response = current_user.current_user_hash(form_authenticity_token)
     response[:errors] = errors
 
-    if response[:logged_in] || logging_out
-      response[:password] = nil
-    else
-      # Keep these parameters around while the user re-types them in
-      response[:reset_password_token] = params[:reset_password_token]
-      response[:password] = params[:password]
+    # Don't overwrite these fields in the case of errors. Let the user edit them again.
+    # TODO: can we use errors variable here for a more precise conditional?
+    if !response[:logged_in] 
+      response[:reset_password_token] = params[:reset_password_token] if params[:reset_password_token]
+      response[:password] = params[:password] if params[:password]
       response[:email] = params[:email] if params[:email]
+    end
+
+    if errors.values.flatten.length > 0
+      write_to_log({
+        :what => "Errors trying to #{trying_to} user",
+        :where => request.fullpath,
+        :details => {:errors => errors}
+      })
     end
 
     respond_to do |format|
       format.json do 
         Thread.current[:dirtied_keys].delete('/current_user') # Because we're adding our own
         dirty_key("/user/#{current_user.id}")                 # But let's get the /user
-
-        if log_entry
-          write_to_log({
-            :what => log_entry,
-            :where => request.fullpath,
-            :details => {:errors => errors}
-          })
-        end
 
         # TODO: figure out how to let applicationcontroller#compile_dirty_objects
         #       handle this response
@@ -337,6 +206,88 @@ class CurrentUserController < ApplicationController
     puts("------------------------------")
 
   end
+
+  #####
+  # See @submit_avatar_form in franklin.coffee
+  def user_avatar_hack
+    render :json => { :b64_thumbnail => current_user.b64_thumbnail }
+  end
+  def update_user_avatar_hack
+    current_user.update_attributes({:avatar => params['avatar']})
+    render :json => []
+  end
+  #######
+
+
+  def update_user_attrs(errors)
+    types = {:avatar => ActionDispatch::Http::UploadedFile, :bio => String, :name => String,
+             :hide_name => 'boolean',
+             :email => String, :password => String}
+    types.each do |field, type| 
+      value = params[field]
+      error = "Field #{field} is wrong type #{value.class}"
+      if type == 'boolean'
+        raise error if value && !(!!value == value)
+      else
+        raise error if value && value.class != type
+      end
+    end
+
+    fields = ['avatar', 'bio', 'name', 'hide_name', 'tags']
+    new_params = params.select{|k,v| fields.include? k}
+    new_params[:name] = '' if !new_params[:name]
+    new_params[:tags] = JSON.dump(new_params[:tags]) if new_params[:tags]
+
+    if current_user.update_attributes(new_params)
+      puts("Updating params. #{new_params}")
+      if !current_user.save
+        raise 'Error saving basic current_user parameters!'
+      end
+      dirty_key '/proposals' # might have access to more proposals if user tags have been changed
+
+    else
+      raise 'Had trouble manipulating this user!'
+    end
+
+    # Update their email address.  First, check if they gave us a new address
+    email = params[:email]
+    user = User.find_by_email(email)
+    if !email || email.length == 0
+      errors[:register].append 'No email address specified'
+    # And if it's not taken
+    elsif user && (user != current_user)
+      errors[:register].append 'There is already an account with that email'
+    # And that it's valid
+    elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
+      errors[:register].append 'Bad email address'
+    else
+      puts("Updating email from #{current_user.email} to #{params[:email]}")
+      # Okay, here comes a new email address!
+      current_user.update_attributes({:email => email})
+      if !current_user.save
+        raise "Error saving this user's email"
+      end
+    end
+
+    # Update their password
+    if !params[:password] || params[:password].length == 0
+      errors[:register].append 'No password specified'
+    elsif params[:password].length < @min_pass
+      errors[:register].append 'Password is too short'
+    else
+      puts("Changing user's password.")
+      current_user.password = params[:password]
+      if !current_user.save
+        raise "Error saving this user's password"
+      end
+    end
+
+  end
+
+  def log (what)
+    write_to_log({:what => what, :where => request.fullpath, :details => nil})
+  end
+
 
   def update_via_third_party
     access_token = env["omniauth.auth"]
@@ -379,7 +330,6 @@ class CurrentUserController < ApplicationController
       "</script>"
   end
 
-
   def replace_user(old_user, new_user)
     return if old_user.id == new_user.id
 
@@ -395,22 +345,6 @@ class CurrentUserController < ApplicationController
     old_user.destroy()
 
     puts("Done replacing. current_user=#{current_user}")
-  end
-
-  def send_reset_password_token(params)
-    has_email = params[:email] && params[:email].strip.length > 0
-    user = has_email && User.find_by_lower_email(params[:email])
-    
-    if !user
-      # note: returning this is a security risk as it reveals that a
-      #       particular email address exists in the system or not.
-      #       But it's prolly the right tradeoff.
-      return ["We have no account for that email address."]
-    end
-
-    user.reset_password()
-
-    return []
   end
 
   # Omniauth oauth handlers
@@ -430,7 +364,6 @@ class CurrentUserController < ApplicationController
     render status: 404, text: "Not found. Oauth authentication passthru."
   end
 
-
   # when something goes wrong in an oauth transation, this method gets called
   def failure
     # TODO: handle this gracefully for the user
@@ -439,12 +372,12 @@ class CurrentUserController < ApplicationController
 
   private
 
-
-
   # this won't be needed after old dash is replaced
   def file_uploaded
     params[:remotipart_submitted].present? && params[:remotipart_submitted] == "true"
   end
+
+
 
 end
 

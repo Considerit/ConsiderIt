@@ -79,7 +79,8 @@ class User < ActiveRecord::Base
       tags: JSON.parse(tags) || {},
       is_admin: is_admin?,
       is_moderator: has_any_role?(:admin, :superadmin, :moderator),
-      is_assessor: has_any_role?(:admin, :superadmin, :evaluator)
+      is_assessor: has_any_role?(:admin, :superadmin, :evaluator),
+      trying_to: nil
     }
 
     # temporary for legacy dashboard:

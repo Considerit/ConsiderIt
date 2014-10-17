@@ -39,6 +39,16 @@ OAUTH_SETUP_PROC = lambda do |env|
   env['omniauth.strategy'].options[key] = settings[:consumer_key]
   env['omniauth.strategy'].options[secret] = settings[:consumer_secret]
 
+  # In order to support wildcard subdomains without manually 
+  # entering all valid subdomains into google dev console, 
+  # we have an auth tenant that simply acts as a recipient
+  # of google auth requests, redirecting to the proper 
+  # subdomain. 
+
+  if env['omniauth.strategy'].name() == 'google_oauth2' && Rails.env.production?
+    env['omniauth.strategy'].options['state'] = request.host.split('.')[0]
+    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}"
+  end
 end
 
 

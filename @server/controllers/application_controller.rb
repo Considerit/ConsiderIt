@@ -110,13 +110,13 @@ private
   def get_current_tenant
     rq = request
 
-    if rq.subdomain == 'googleoauth'
+    if params[:state]
       current_acount = Account.find_by_identifier(params[:state])
     else
       current_account = rq.subdomain.nil? || rq.subdomain.length == 0 ? Account.find(1) : Account.find_by_identifier(rq.subdomain)
     end
 
-    Rails.logger.info(rq)
+    Rails.logger.info(rq.subdomain)
 
     Rails.logger.info(current_account)
 

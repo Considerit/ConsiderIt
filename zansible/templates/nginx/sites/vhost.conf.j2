@@ -16,12 +16,12 @@ server {
 server {
   listen 80;
   server_name   googleoauth.{{ server.name }};
-  rewrite ^ http://$arg_state.{{ server.name }};
+  rewrite ^ http://$arg_state.{{ server.name }}/auth/google_oauth2/callback;
 }
 server {
   listen 443 ssl;
   server_name   googleoauth.{{ server.name }};
-  rewrite ^ https://$arg_state.{{ server.name }};
+  rewrite ^ https://$arg_state.{{ server.name }}/auth/google_oauth2/callback;
 }
 
 

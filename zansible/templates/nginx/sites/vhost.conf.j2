@@ -12,6 +12,19 @@ server {
 }
 {% endif %}
 
+# for handling wildcard google oauth
+server {
+  listen 80;
+  server_name   googleoauth.{{ server.name }};
+  rewrite ^ http://$arg_state.{{ server.name }};
+}
+server {
+  listen 443 ssl;
+  server_name   googleoauth.{{ server.name }};
+  rewrite ^ https://$arg_state.{{ server.name }};
+}
+
+
 server {
   {% if server.ssl %}
     listen 443 ssl;
@@ -57,6 +70,8 @@ server {
     break;
   }  
 
+
+
   ####
   # Dealing with search indexing using prerender.io
   # from https://gist.github.com/thoop/8165802
@@ -87,44 +102,6 @@ server {
       }
   }
   ###############
-
-  # set $redirect_as_bot 0;
-  # if ($http_user_agent ~ "crawl|Googlebot|Slurp|spider|bingbot|tracker|click|parser|spider") {
-  #     set $redirect_as_bot 1;
-  # }
-  # if ($uri ~ "sitemaps"){
-  #     set $redirect_as_bot 0;
-  # }
-  # if ($redirect_as_bot = 1){
-  #     rewrite ^ /ajaxcrawlable;
-  # }
-
-  # location /ajaxcrawlable {
-  #   # Send the original URI before any modifications.
-  #   # This is needed because error_page changes the URI.
-  #   proxy_set_header X-Request-URI   $request_uri;
-  #   # Set client's IP address
-  #   proxy_set_header X-Real-IP       $remote_addr;
-  #   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  #   # Set original host name
-  #   proxy_set_header X-Forwarded-Host            $host;
-  #   proxy_set_header Host $http_host;
-
-  #   # Set original port
-  #   proxy_set_header Port            $server_port;
-    
-  #   # Redirect to the Node.js server(s).
-  #   # NOTE: This cannot end with a trailing slash.
-  #   {% if server.ssl %}
-  #     proxy_set_header X-Forwarded-Proto https; 
-  #   {% else %}
-  #     proxy_set_header X-Forwarded-Proto http; 
-  #   {% endif %}
-
-  #   proxy_pass http://nodejs;
-  #   proxy_redirect off;
-  # }
-
 
 
   location = /favicon.ico {

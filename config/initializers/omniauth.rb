@@ -56,6 +56,7 @@ OAUTH_SETUP_PROC = lambda do |env|
   if env['omniauth.strategy'].name() == 'google_oauth2' && Rails.env.production? && subdomain
     env['omniauth.strategy'].options['state'] = subdomain
     env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
+    env['omniauth.strategy'].options['client_options']['connection_opts'] = {:host => 'googleoauth.#{host}'}
   end
 end
 
@@ -68,6 +69,11 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :provider_ignores_state => true, :client_options => { :access_type => "offline", :approval_prompt => "", :scope => 'email,profile'}
 end
 
+Omniauth.config do |config|
+  config.on_failure do
+    env['omniauth.error.type']
+  end
+end
 
 
 

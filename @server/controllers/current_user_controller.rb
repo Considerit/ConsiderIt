@@ -375,7 +375,7 @@ class CurrentUserController < ApplicationController
       "<div>Unfortunately, a bug in the iPad & iPhone prevents this window from closing automatically." +
       "<div>Sorry for the inconvenience.</div></div>" +
       "<script type=\"text/javascript\">" +
-      (request.subdomain == 'googleoauth' ? "  document.domain = '#{params[:state]}.#{request.domain}'" : '') + 
+      (request.subdomain == 'googleoauth' ? "  document.domain = '#{params[:state]}.#{request.domain}';" : '') + 
       "  window.current_user_hash = #{response.to_json};  " +
       "</script>"
   end

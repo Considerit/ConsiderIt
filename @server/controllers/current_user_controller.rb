@@ -339,6 +339,11 @@ class CurrentUserController < ApplicationController
   end
 
   def update_via_third_party
+    if request.subdomain == 'googleoauth'
+
+      return
+    end
+
     access_token = env["omniauth.auth"]
     user = User.find_by_third_party_token access_token
 
@@ -375,7 +380,7 @@ class CurrentUserController < ApplicationController
       "<div>Unfortunately, a bug in the iPad & iPhone prevents this window from closing automatically." +
       "<div>Sorry for the inconvenience.</div></div>" +
       "<script type=\"text/javascript\">" +
-      (request.subdomain == 'googleoauth' ? "  document.domain = '#{params[:state]}.#{request.domain}';" : '') + 
+      (request.subdomain == 'googleoauth' ? "  document.domain = '#{params[:state]}.#{request.domain}';\n" : '') + 
       "  window.current_user_hash = #{response.to_json};  " +
       "</script>"
   end
@@ -435,7 +440,7 @@ class CurrentUserController < ApplicationController
   # when something goes wrong in an oauth transaction, this method gets called
   def failure
     # TODO: handle this gracefully for the user
-    raise "Something went wrong in authenticating your account"
+    raise env['omniauth.error.type']
   end
 
   private

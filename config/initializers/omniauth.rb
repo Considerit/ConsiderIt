@@ -1,6 +1,6 @@
 require "omniauth-google-oauth2"
 require "omniauth-facebook" 
-require "omniauth-twitter" 
+# require "omniauth-twitter" 
 
 
 OAUTH_SETUP_PROC = lambda do |env|
@@ -64,10 +64,10 @@ end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :facebook, :setup => OAUTH_SETUP_PROC, :scope => 'email', :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
-  provider :twitter, :setup => OAUTH_SETUP_PROC
+  # provider :twitter, :setup => OAUTH_SETUP_PROC
 
 
-  provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :client_options => { :provider_ignores_state => true, :access_type => "offline", :approval_prompt => "", :scope => 'email,profile'}
+  provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :provider_ignores_state => true, :client_options => { :access_type => "offline", :approval_prompt => "", :scope => 'email,profile'}
 end
 
 

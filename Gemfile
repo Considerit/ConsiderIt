@@ -9,9 +9,8 @@ gem 'redis-rails' #session storage
 #############
 # AUTHENTICATION
 gem "bcrypt"
-gem "omniauth" # this gem may no longer be necessary
 gem 'omniauth-oauth2'
-gem 'omniauth-twitter' 
+# gem 'omniauth-twitter' 
 gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
 

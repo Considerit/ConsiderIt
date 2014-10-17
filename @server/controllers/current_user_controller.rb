@@ -431,7 +431,7 @@ class CurrentUserController < ApplicationController
   end
 
 
-  # when something goes wrong in an oauth transation, this method gets called
+  # when something goes wrong in an oauth transaction, this method gets called
   def failure
     # TODO: handle this gracefully for the user
     raise "Something went wrong in authenticating your account"

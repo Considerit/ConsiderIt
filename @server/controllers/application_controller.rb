@@ -116,7 +116,7 @@ private
       current_account = rq.subdomain.nil? || rq.subdomain.length == 0 ? Account.find(1) : Account.find_by_identifier(rq.subdomain)
     end
 
-    Rails.logger.info(rq)
+    Rails.logger.info(rq.subdomain)
 
     Rails.logger.info(current_account)
 

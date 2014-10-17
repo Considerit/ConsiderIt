@@ -13,7 +13,7 @@ Hi #{@user.first_name},
 The result of the research:
 - @assessment.claims.each do |clm|
   
-  * Claim: "#{clm.claim_restatement}"; Conclusion: #{clm.verdict.formatVerdict()}.
+  * Claim: "#{clm.claim_restatement}"; Conclusion: #{Assessable::Claim.find(clm.verdict_id).formatVerdict()}.
   = "\r\n"
 
 The original #{@point.is_pro ? 'pro' : 'con'} point says:

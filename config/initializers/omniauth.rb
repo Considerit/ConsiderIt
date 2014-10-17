@@ -69,13 +69,5 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :provider_ignores_state => true, :client_options => { :access_type => "offline", :approval_prompt => "", :scope => 'email,profile'}
 end
 
-Omniauth.config do |config|
-  config.on_failure do
-    env['omniauth.error.type']
-  end
-end
-
-
-
 
 

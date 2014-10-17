@@ -19,7 +19,7 @@
   %ul
     - @assessment.claims.each do |clm|
       %li
-        Claim: "#{clm.claim_restatement}"; Conclusion: #{clm.verdict.formatVerdict()}.
+        Claim: "#{clm.claim_restatement}"; Conclusion: #{Assessable::Claim.find(clm.verdict_id).formatVerdict()}.
 
 %p 
   The #{@point.is_pro ? 'pro' : 'con'} point:

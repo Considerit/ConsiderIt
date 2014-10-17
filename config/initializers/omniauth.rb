@@ -24,7 +24,9 @@ OAUTH_SETUP_PROC = lambda do |env|
 
   request = Rack::Request.new(env)
   host = request.host.split('.')
+  subdomain = nil
   if host.length > 2
+    subdomain = host[0]
     host = host[host.length-2..host.length-1]
   end
   host = host.join('.').intern
@@ -52,10 +54,10 @@ OAUTH_SETUP_PROC = lambda do |env|
   #   - https://github.com/intridea/omniauth-oauth2/pull/18/files; https://github.com/zquestz/omniauth-google-oauth2/issues/31#issuecomment-8922362
   #   - https://github.com/intridea/omniauth-oauth2/issues/32
 
-  # if env['omniauth.strategy'].name() == 'google_oauth2' #&& Rails.env.production? && host != 'livingvotersguide.org'
-  #   env['omniauth.strategy'].options['state'] = request.host.split('.')[0]
-  #   env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}"
-  # end
+  if env['omniauth.strategy'].name() == 'google_oauth2' && Rails.env.production? && subdomain
+    env['omniauth.strategy'].options['state'] = subdomain
+    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}"
+  end
 end
 
 

@@ -339,10 +339,6 @@ class CurrentUserController < ApplicationController
   end
 
   def update_via_third_party
-    if request.subdomain == 'googleoauth'
-
-      return
-    end
 
     access_token = env["omniauth.auth"]
     user = User.find_by_third_party_token access_token

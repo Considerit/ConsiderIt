@@ -118,8 +118,6 @@ private
 
     Rails.logger.info(rq.subdomain)
 
-    Rails.logger.info(current_account)
-
     set_current_tenant(current_account) if current_account
     current_account
   end

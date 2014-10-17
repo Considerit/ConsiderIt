@@ -45,10 +45,17 @@ OAUTH_SETUP_PROC = lambda do |env|
   # of google auth requests, redirecting to the proper 
   # subdomain. 
 
-  if env['omniauth.strategy'].name() == 'google_oauth2' #&& Rails.env.production? && host != 'livingvotersguide.org'
-    env['omniauth.strategy'].options['state'] = request.host.split('.')[0]
-    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}"
-  end
+  # Note that the provider_ignores_state option is insecure, leaving open the possibility of a CSRF attack. 
+  # We use it because OmniAuth uses the state param to roundtrip a CSRF token, but we need to use the state variable for
+  # roundtripping the origin subdomain
+  # Some relevant discussions:
+  #   - https://github.com/intridea/omniauth-oauth2/pull/18/files; https://github.com/zquestz/omniauth-google-oauth2/issues/31#issuecomment-8922362
+  #   - https://github.com/intridea/omniauth-oauth2/issues/32
+
+  # if env['omniauth.strategy'].name() == 'google_oauth2' #&& Rails.env.production? && host != 'livingvotersguide.org'
+  #   env['omniauth.strategy'].options['state'] = request.host.split('.')[0]
+  #   env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}"
+  # end
 end
 
 
@@ -57,12 +64,6 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :facebook, :setup => OAUTH_SETUP_PROC, :scope => 'email', :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
   provider :twitter, :setup => OAUTH_SETUP_PROC
 
-  # Note that the provider_ignores_state option is insecure, leaving open the possibility of a CSRF attack. 
-  # We use it because OmniAuth uses the state param to roundtrip a CSRF token, but we need to use the state variable for
-  # roundtripping the origin subdomain
-  # Some relevant discussions:
-  #   - https://github.com/intridea/omniauth-oauth2/pull/18/files; https://github.com/zquestz/omniauth-google-oauth2/issues/31#issuecomment-8922362
-  #   - https://github.com/intridea/omniauth-oauth2/issues/32
 
   provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :client_options => { :access_type => "offline", :approval_prompt => "", :scope => 'email,profile'}
 end

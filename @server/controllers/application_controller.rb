@@ -91,14 +91,18 @@ class ApplicationController < ActionController::Base
 protected
 
   def write_to_log(options)
-    Log.create!({
-      :account_id => current_tenant.id,
-      :who => current_user,
-      :what => options[:what],
-      :where => options[:where],
-      :when => Time.current,
-      :details => options.has_key?(:details) ? JSON.dump(options[:details]) : nil
-    })
+    begin
+      Log.create!({
+        :account_id => current_tenant.id,
+        :who => current_user,
+        :what => options[:what],
+        :where => options[:where],
+        :when => Time.current,
+        :details => options.has_key?(:details) ? JSON.dump(options[:details]) : nil
+      })
+    rescue => e
+      ExceptionNotifier.notify_exception(e)      
+    end
   end
 
 private

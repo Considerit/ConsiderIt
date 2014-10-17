@@ -43,13 +43,12 @@ OAUTH_SETUP_PROC = lambda do |env|
 
   # In order to support wildcard subdomains without manually 
   # entering all valid subdomains into google dev console, 
-  # we have an auth tenant that simply acts as a recipient
-  # of google auth requests, redirecting to the proper 
-  # subdomain. 
+  # we have a reverse proxied subdomain (googleoauth) that simply acts as a recipient
+  # of google auth requests. 
 
-  # Note that the provider_ignores_state option is insecure, leaving open the possibility of a CSRF attack. 
+  # Note that the provider_ignores_state option below is insecure, leaving open the possibility of a CSRF attack. 
   # We use it because OmniAuth uses the state param to roundtrip a CSRF token, but we need to use the state variable for
-  # roundtripping the origin subdomain
+  # roundtripping the origin subdomain.
   # Some relevant discussions:
   #   - https://github.com/intridea/omniauth-oauth2/pull/18/files; https://github.com/zquestz/omniauth-google-oauth2/issues/31#issuecomment-8922362
   #   - https://github.com/intridea/omniauth-oauth2/issues/32
@@ -65,7 +64,6 @@ end
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :facebook, :setup => OAUTH_SETUP_PROC, :scope => 'email', :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
   # provider :twitter, :setup => OAUTH_SETUP_PROC
-
 
   provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :provider_ignores_state => true, :client_options => { :access_type => "offline", :approval_prompt => "", :scope => 'email,profile'}
 end

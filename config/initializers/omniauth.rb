@@ -47,7 +47,7 @@ OAUTH_SETUP_PROC = lambda do |env|
 
   if env['omniauth.strategy'].name() == 'google_oauth2' #&& Rails.env.production? && host != 'livingvotersguide.org'
     env['omniauth.strategy'].options['state'] = request.host.split('.')[0]
-    #env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}"
+    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}"
   end
 end
 

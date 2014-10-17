@@ -67,7 +67,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :twitter, :setup => OAUTH_SETUP_PROC
 
 
-  provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :client_options => { :access_type => "offline", :approval_prompt => "", :scope => 'email,profile'}
+  provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :client_options => { :provider_ignores_state => true, :access_type => "offline", :approval_prompt => "", :scope => 'email,profile'}
 end
 
 

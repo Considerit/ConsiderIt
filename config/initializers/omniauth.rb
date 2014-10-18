@@ -59,7 +59,7 @@ OAUTH_SETUP_PROC = lambda do |env|
   #   env['omniauth.strategy'].options[:state] = subdomain
   #   env['omniauth.strategy'].options[:redirect_uri] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
     env['omniauth.strategy'].options['state'] = subdomain
-  #   env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
+    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
   #   env['omniauth.strategy'].options['client_options'][:state] = subdomain
   #   env['omniauth.strategy'].options['client_options'][:redirect_uri] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
   #   env['omniauth.strategy'].options['client_options']['state'] = subdomain
@@ -93,7 +93,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :facebook, :setup => OAUTH_SETUP_PROC, :scope => 'email', :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
   # provider :twitter, :setup => OAUTH_SETUP_PROC
 
-  provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :provider_ignores_state => true, :client_options => { :access_type => "offline", :prompt => "", :scope => 'email,profile', :redirect_uri => 'http://googleoauth.chlk.it/auth/google_oauth2/callback'}
+  provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :provider_ignores_state => true, :client_options => { :access_type => "offline", :prompt => "", :scope => 'email,profile'}
 end
 
 OmniAuth.config.logger = Rails.logger

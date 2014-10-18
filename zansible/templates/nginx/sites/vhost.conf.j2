@@ -14,14 +14,14 @@ server {
 
   location /auth/google_oauth2/callback {
     resolver 8.8.8.8;
-    # proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-Server $host;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
 
     proxy_pass https://$arg_state.{{ server.name }};
-    proxy_redirect https://$arg_state.{{ server.name }}/auth/google_oauth2/callback https://googleauth.{{ server.name }}/auth/google_oauth2/callback;
+    proxy_redirect off; #https://$arg_state.{{ server.name }}/auth/google_oauth2/callback https://googleauth.{{ server.name }}/auth/google_oauth2/callback;
     proxy_read_timeout  90;
 
     access_log  /var/log/nginx/access.log upstreamlog;
@@ -40,14 +40,14 @@ server {
 
   location /auth/google_oauth2/callback {
     resolver 8.8.8.8;
-    # proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-Server $host;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
 
-    proxy_pass http://$arg_state.{{ server.name }};
-    proxy_redirect http://$arg_state.{{ server.name }}/auth/google_oauth2/callback http://googleauth.{{ server.name }}/auth/google_oauth2/callback;
+    proxy_pass https://$arg_state.{{ server.name }};
+    proxy_redirect off; #https://$arg_state.{{ server.name }}/auth/google_oauth2/callback https://googleauth.{{ server.name }}/auth/google_oauth2/callback;
     proxy_read_timeout  90;
 
     access_log  /var/log/nginx/access.log upstreamlog;

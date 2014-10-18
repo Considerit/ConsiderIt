@@ -35,7 +35,9 @@ http {
  
     access_log /var/log/nginx/access.log;
     error_log /var/log/nginx/error.log;
- 
+
+    log_format upstreamlog '[$time_local] $remote_addr - $remote_user - $server_name to: $upstream_addr: $request upstream_response_time $upstream_response_time msec $msec request_time $request_time';
+
     ##
     # Gzip Settings
     ##

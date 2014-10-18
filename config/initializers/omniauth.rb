@@ -56,19 +56,8 @@ OAUTH_SETUP_PROC = lambda do |env|
   #   - https://github.com/intridea/omniauth-oauth2/issues/32
 
   if env['omniauth.strategy'].name() == 'google_oauth2' && Rails.env.production? && subdomain
-  #   env['omniauth.strategy'].options[:state] = subdomain
-  #   env['omniauth.strategy'].options[:redirect_uri] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
     env['omniauth.strategy'].options['state'] = subdomain
     env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
-  #   env['omniauth.strategy'].options['client_options'][:state] = subdomain
-  #   env['omniauth.strategy'].options['client_options'][:redirect_uri] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
-  #   env['omniauth.strategy'].options['client_options']['state'] = subdomain
-  #   env['omniauth.strategy'].options['client_options']['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
-  #   env['omniauth.strategy'].options[:client_options][:state] = subdomain
-  #   env['omniauth.strategy'].options[:client_options][:redirect_uri] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
-  #   env['omniauth.strategy'].options[:client_options]['state'] = subdomain
-  #   env['omniauth.strategy'].options[:client_options]['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
-
   end
 end
 

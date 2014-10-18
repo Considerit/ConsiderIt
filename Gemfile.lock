@@ -272,23 +272,6 @@ GEM
     rb-fsevent (0.9.4)
     rb-inotify (0.9.5)
       ffi (>= 0.5.0)
-    redis (3.1.0)
-    redis-actionpack (4.0.0)
-      actionpack (~> 4)
-      redis-rack (~> 1.5.0)
-      redis-store (~> 1.1.0)
-    redis-activesupport (4.0.0)
-      activesupport (~> 4)
-      redis-store (~> 1.1.0)
-    redis-rack (1.5.0)
-      rack (~> 1.5)
-      redis-store (~> 1.1.0)
-    redis-rails (4.0.0)
-      redis-actionpack (~> 4)
-      redis-activesupport (~> 4)
-      redis-store (~> 1.1.0)
-    redis-store (1.1.4)
-      redis (>= 2.2)
     ref (1.0.5)
     request_store (1.1.0)
     role_model (0.8.1)
@@ -378,7 +361,6 @@ DEPENDENCIES
   rack-livereload
   rails (~> 4)
   rb-fsevent
-  redis-rails
   role_model
   sass-rails (~> 4.0.3)
   sitemap_generator

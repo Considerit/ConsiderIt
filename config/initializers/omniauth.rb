@@ -26,8 +26,10 @@ OAUTH_SETUP_PROC = lambda do |env|
   host = request.host.split('.')
   subdomain = nil
   if host.length > 2
-    subdomain = host[0]
     host = host[host.length-2..host.length-1]
+  end
+  if host.length > 1
+    subdomain = host[0]
   end
   host = host.join('.').intern
 

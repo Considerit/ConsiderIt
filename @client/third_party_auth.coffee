@@ -5,6 +5,7 @@ class ThirdPartyAuthHandler
 
     if provider == 'google'
       provider = 'google_oauth2'
+      document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1') if location.host.indexOf(':') < 0
 
     if provider == 'twitter'
       url = Routes.user_omniauth_authorize_path provider,

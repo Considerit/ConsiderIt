@@ -4,7 +4,7 @@ source 'http://rubygems.org'
 # CORE
 gem 'rails', '~>4'
 gem 'actionpack-action_caching' # Required for caches_action on Avatars
-gem 'redis-rails' #session storage
+#gem 'redis-rails' #session storage
 
 #############
 # AUTHENTICATION

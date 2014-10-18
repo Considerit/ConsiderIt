@@ -54,9 +54,8 @@ OAUTH_SETUP_PROC = lambda do |env|
   #   - https://github.com/intridea/omniauth-oauth2/issues/32
 
   if env['omniauth.strategy'].name() == 'google_oauth2' && Rails.env.production? && subdomain
-    env['omniauth.strategy'].options['state'] = subdomain
-    env['omniauth.strategy'].options['redirect_uri'] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
-    #env['omniauth.strategy'].options['client_options']['connection_opts'] = {:proxy => "#{request.scheme}://googleoauth.chlk.it"}
+    env['omniauth.strategy'].options[:client_options][:state] = subdomain
+    env['omniauth.strategy'].options[:client_options][:redirect_uri] = "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
   end
 end
 
@@ -66,8 +65,8 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :facebook, :setup => OAUTH_SETUP_PROC, :scope => 'email', :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
   # provider :twitter, :setup => OAUTH_SETUP_PROC
 
-  provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :provider_ignores_state => true, :client_options => { :access_type => "offline", :approval_prompt => "", :scope => 'email,profile'}
+  provider :google_oauth2, :setup => OAUTH_SETUP_PROC, :provider_ignores_state => true, :client_options => { :access_type => "offline", :prompt => "", :scope => 'email,profile'}
 end
 
-
+OmniAuth.config.logger = Rails.logger
 

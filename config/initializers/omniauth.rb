@@ -25,11 +25,11 @@ OAUTH_SETUP_PROC = lambda do |env|
   request = Rack::Request.new(env)
   host = request.host.split('.')
   subdomain = nil
-  if host.length > 2
-    host = host[host.length-2..host.length-1]
-  end
   if host.length > 1
     subdomain = host[0]
+  end
+  if host.length > 2
+    host = host[host.length-2..host.length-1]
   end
   host = host.join('.').intern
 
@@ -80,6 +80,10 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
   if host.length > 1
     subdomain = host[0]
   end
+  if host.length > 2
+    host = host[host.length-2..host.length-1]
+  end
+  host = host.join('.').intern
 
   if env['omniauth.strategy'].name() == 'google_oauth2' && Rails.env.production? && subdomain
     "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"

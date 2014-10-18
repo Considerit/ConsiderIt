@@ -86,7 +86,7 @@ OMNIAUTH_SETUP_PROC = lambda do |env|
   host = host.join('.').intern
 
   if env['omniauth.strategy'].name() == 'google_oauth2' && Rails.env.production? && subdomain
-    "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
+    "#{request.scheme}://googleoauth.#{host}"
   else 
     nil
   end

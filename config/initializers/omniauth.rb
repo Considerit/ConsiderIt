@@ -72,7 +72,22 @@ OAUTH_SETUP_PROC = lambda do |env|
   end
 end
 
+OMNIAUTH_SETUP_PROC = lambda do |env|
 
+  request = Rack::Request.new(env)
+  host = request.host.split('.')
+  subdomain = nil
+  if host.length > 1
+    subdomain = host[0]
+  end
+
+  if env['omniauth.strategy'].name() == 'google_oauth2' && Rails.env.production? && subdomain
+    "#{request.scheme}://googleoauth.#{host}/auth/google_oauth2/callback"
+  else 
+    nil
+  end
+
+end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
   provider :facebook, :setup => OAUTH_SETUP_PROC, :scope => 'email', :client_options => {:ssl => {:ca_path => '/etc/ssl/certs'}}
@@ -82,4 +97,4 @@ Rails.application.config.middleware.use OmniAuth::Builder do
 end
 
 OmniAuth.config.logger = Rails.logger
-
+OmniAuth.config.full_host = OMNIAUTH_SETUP_PROC

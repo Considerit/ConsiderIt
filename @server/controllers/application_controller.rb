@@ -116,8 +116,6 @@ private
       current_account = rq.subdomain.nil? || rq.subdomain.length == 0 ? Account.find(1) : Account.find_by_identifier(rq.subdomain)
     end
 
-    Rails.logger.info(rq.subdomain)
-
     set_current_tenant(current_account) if current_account
     current_account
   end

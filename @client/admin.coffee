@@ -91,6 +91,7 @@ FactcheckPoint = ReactiveComponent
     section_style = {margin: '10px 0px 20px 0px', position: 'relative'}
 
     DIV style: {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor: '#F4F0E9', position: 'absolute', left: CONTENT_WIDTH/4, top: -35, borderRadius: 8},
+      STYLE null, '.claim_result a{font-decoration: underline;}'
       
       # status area
       DIV style: {padding: '4px 30px', fontSize: 24, borderRadius: '8px 8px 0 0', height: 35, backgroundColor: 'rgba(0,0,55,.1)'},
@@ -177,6 +178,7 @@ FactcheckPoint = ReactiveComponent
                   DIV style: {fontSize: 12}, verdict.name
                   
                   DIV 
+                    className: 'claim_result'
                     style: {marginTop: 10, fontSize: 14}
                     dangerouslySetInnerHTML: {__html: claim.result }
                   

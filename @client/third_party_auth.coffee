@@ -17,7 +17,7 @@ class ThirdPartyAuthHandler
     @popup = @openPopupWindow(url)
 
   pollLoginPopup : ->
-    if @popup? && @popup.current_user_hash?
+    if @popup? && @popup.document && window.document && window.document.domain == @popup.document.domain && @popup.current_user_hash?
       @callback @popup.current_user_hash
       @popup.close()
       @popup = null

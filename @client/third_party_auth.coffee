@@ -17,11 +17,14 @@ class ThirdPartyAuthHandler
     @popup = @openPopupWindow(url)
 
   pollLoginPopup : ->
-    if @popup? && @popup.document && window.document && window.document.domain == @popup.document.domain && @popup.current_user_hash?
-      @callback @popup.current_user_hash
-      @popup.close()
-      @popup = null
-      clearInterval(@polling_interval)
+    try
+      if @popup? && @popup.document && window.document && window.document.domain == @popup.document.domain && @popup.current_user_hash?
+        @callback @popup.current_user_hash
+        @popup.close()
+        @popup = null
+        clearInterval(@polling_interval)
+    catch e
+      console.error error
 
   openPopupWindow : (url) ->
     openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')

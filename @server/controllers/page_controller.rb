@@ -17,8 +17,6 @@ class PageController < ApplicationController
     else # if proposal
 
       proposal = Proposal.find_by_long_id(params[:id])
-      # Ensure an existing opinion for this user
-      your_opinion = Opinion.get_or_make(proposal, current_user)
 
       if !proposal 
         render :status => :not_found, :json => {:result => 'Not found'}
@@ -27,6 +25,9 @@ class PageController < ApplicationController
         render :status => :forbidden, :json => {:result => 'Permission denied'}
         return
       end
+
+      # Ensure an existing opinion for this user
+      your_opinion = Opinion.get_or_make(proposal, current_user)
 
       key = "/page/#{proposal.long_id}"
       dirty_key key

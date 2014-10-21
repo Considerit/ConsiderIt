@@ -241,7 +241,7 @@ GEM
     premailer-rails (1.8.0)
       actionmailer (>= 3, < 5)
       premailer (~> 1.7, >= 1.7.9)
-    prerender_rails (1.1.0)
+    prerender_rails (1.1.1)
       activesupport
       rack
     pry (0.10.1)
@@ -357,7 +357,7 @@ DEPENDENCIES
   paperclip
   paperclip-compression
   premailer-rails
-  prerender_rails (= 1.1.0)
+  prerender_rails
   rack-livereload
   rails (~> 4)
   rb-fsevent

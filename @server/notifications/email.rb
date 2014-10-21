@@ -52,10 +52,6 @@ notify_point = Proc.new do |data|
     if u.id == point.user_id 
       next
 
-    # if follower doesn't have an email address, skip...
-    elsif !u.email || u.email.length == 0
-      next
-
     # if follower is the proposal author
     elsif u.id == proposal.user_id
       notification_type = 'your proposal' 
@@ -67,7 +63,6 @@ notify_point = Proc.new do |data|
     # lurker 
     else
       notification_type = 'lurker'
-
     end
 
     EventMailer.new_point(u, point, mail_options, notification_type).deliver!

@@ -370,7 +370,7 @@ class CurrentUserController < ApplicationController
     response = [current_user.current_user_hash(form_authenticity_token)]
     response.concat(compile_dirty_objects())
 
-    is_not_vanity_url = request.host.split('.').length == 3
+    vanity_url = request.host.split('.').length == 2
 
     render :inline =>
       "<div style='font-weight:600; font-size: 36px; color: #414141'>Please close this window</div>" +
@@ -378,7 +378,7 @@ class CurrentUserController < ApplicationController
       "<div>Unfortunately, a bug in the iPad & iPhone prevents this window from closing automatically." +
       "<div>Sorry for the inconvenience.</div></div>" +
       "<script type=\"text/javascript\">" +
-      (request.subdomain == 'googleoauth' && is_not_vanity_url ? "document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1');\n" : '') + 
+      (request.subdomain == 'googleoauth' && !vanity_url ? "document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1');\n" : '') + 
       "  window.current_user_hash = #{response.to_json};  " +
       "</script>"
   end

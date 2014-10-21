@@ -59,7 +59,7 @@ notify_point = Proc.new do |data|
     # if follower has submitted a opinion on this proposal
     elsif voters.include? u.id
       notification_type = 'opinion submitter'
-      next
+      next if current_tenant.identifier == 'livingvotersguide' # disable until we have digests
     # lurker 
     else
       notification_type = 'lurker'

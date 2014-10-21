@@ -5,7 +5,8 @@ class ThirdPartyAuthHandler
 
     if provider == 'google'
       provider = 'google_oauth2'
-      document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1') if location.host.indexOf(':') < 0
+      not_vanity_domain = location.host.split('.').length != 3
+      document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1') if location.host.indexOf(':') < 0 && not_vanity_domain
 
     if provider == 'twitter'
       url = Routes.user_omniauth_authorize_path provider,
@@ -24,7 +25,7 @@ class ThirdPartyAuthHandler
         @popup = null
         clearInterval(@polling_interval)
     catch e
-      console.error error
+      console.error e
 
   openPopupWindow : (url) ->
     openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')

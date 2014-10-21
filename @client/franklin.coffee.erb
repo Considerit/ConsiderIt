@@ -2175,8 +2175,12 @@ Avatar = ReactiveComponent
   render : ->
     user = @data()
 
-    @local = @data @local_key,
-      show_details : false
+    # setting @local fails in strict mode, which is a problem for phantomjs rendering for google search results
+    try 
+      @local = @data @local_key,
+        show_details : false
+    catch e
+      noop = 1
 
     className = "avatar #{if @props.className then @props.className else ''}"
 

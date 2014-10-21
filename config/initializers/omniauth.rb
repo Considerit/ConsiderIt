@@ -25,7 +25,7 @@ OAUTH_SETUP_PROC = lambda do |env|
   request = Rack::Request.new(env)
   host = request.host.split('.')
   subdomain = nil
-  if host.length > 1
+  if host.length == 3
     subdomain = host[0]
   end
   if host.length > 2

@@ -370,7 +370,11 @@ class CurrentUserController < ApplicationController
     response = [current_user.current_user_hash(form_authenticity_token)]
     response.concat(compile_dirty_objects())
 
-    vanity_url = request.host.split('.').length == 2
+    document_domain = nil
+    if access_token['provider'] == 'google_oauth2'
+      vanity_url = request.host.split('.').length == 1
+      document_domain = vanity_url ? "document.domain" : "location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1')"
+    end
 
     render :inline =>
       "<div style='font-weight:600; font-size: 36px; color: #414141'>Please close this window</div>" +
@@ -378,7 +382,7 @@ class CurrentUserController < ApplicationController
       "<div>Unfortunately, a bug in the iPad & iPhone prevents this window from closing automatically." +
       "<div>Sorry for the inconvenience.</div></div>" +
       "<script type=\"text/javascript\">" +
-      (request.subdomain == 'googleoauth' && !vanity_url ? "document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1');\n" : '') + 
+      (document_domain ? "document.domain = #{document_domain};\n" : '') + 
       "  window.current_user_hash = #{response.to_json};  " +
       "</script>"
   end

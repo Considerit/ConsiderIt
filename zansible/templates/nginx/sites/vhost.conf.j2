@@ -58,23 +58,6 @@ server {
 
 
 server {
-  listen 80;
-  server_name   googleoauth.{{ server.name }};
-
-  location / {
-    proxy_set_header X-Forwarded-Host $host;
-    proxy_set_header X-Forwarded-Server $host;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; 
-    proxy_pass http://$arg_state.{{ server.name }};    
-    proxy_redirect off;
-  }
-
-}
-
-
-
-
-server {
   {% if server.ssl %}
     listen 443 ssl;
     ssl_certificate /etc/ssl/certs/{{ app_name }}.crt;
@@ -125,6 +108,9 @@ server {
   }  
 
 
+  #location / {
+  #    try_files $uri @prerender;
+  #}
 
   ####
   # Dealing with search indexing using prerender.io
@@ -134,7 +120,7 @@ server {
       proxy_set_header X-Prerender-Token {{ config.prerenderio }};
       
       set $prerender 0;
-      if ($http_user_agent ~* "baiduspider|twitterbot|facebookexternalhit|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest") {
+      if ($http_user_agent ~* "baiduspider|twitterbot|facebookexternalhit|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|slackbot") {
           set $prerender 1;
       }
       if ($args ~ "_escaped_fragment_") {
@@ -148,8 +134,10 @@ server {
       }
 
       if ($prerender = 1) {
+          resolver 8.8.8.8;
+          set $prerender "service.prerender.io";
           rewrite .* /$scheme://$host$request_uri? break;
-          proxy_pass http://service.prerender.io;
+          proxy_pass http://$prerender;
       }
       if ($prerender = 0) {
          rewrite .* /index.html break;

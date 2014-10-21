@@ -725,7 +725,6 @@ Histogram = ReactiveComponent
                   for opinion in bar
                     user = opinion.user
                     Avatar 
-                      tag: SPAN, 
                       key: user
                       user: user
                       hide_face: @root.proposal_mode == 'crafting'
@@ -1335,7 +1334,6 @@ Point = ReactiveComponent
           # Finally draw the guys
           Avatar
             key: includer
-            tag: SPAN
             className: "point_includer_avatar"
             style: style
 
@@ -1422,7 +1420,6 @@ Point = ReactiveComponent
 
         else if !selected_segment || ( author_opinion = @data(userOpinion(point.user)) && author_opinion.stance_segment == selected_segment )
           Avatar 
-            tag: SPAN
             key: point.user
             className:"point_author_avatar"
             hide_face: point.hide_name
@@ -1623,7 +1620,6 @@ Comment = ReactiveComponent
         # Comment author icon
         Avatar
           className: 'comment_entry_avatar'
-          tag: DIV
           key: comment.user
           hide_name: true
 
@@ -1722,7 +1718,6 @@ EditComment = ReactiveComponent
           backgroundColor: if not logged_in then 'transparent'
           border:          if not logged_in then '1px dashed grey'
 
-        tag: DIV
         key: fetch('/current_user').user
         hide_name: true
 
@@ -2187,21 +2182,14 @@ Avatar = ReactiveComponent
 
     id = if @props.hide_face then "avatar-hidden" else "avatar-#{user.key.split('/')[2]}"
 
-    if @props.img_style && user.key != -1
-      avatar_file_name = user.avatar_file_name
-
-      console.log("Mike hasn't made this avatar's image work yet!  Fix the file line below:")
-      if avatar_file_name
-        filename = "/system/avatars/#{@props.key}/#{@props.img_style}/#{avatar_file_name}"
-
     attrs =
       className: className
       id: id
-      'data-id': @props.key
       onMouseEnter: @showDetails
       onMouseLeave: @hideDetails
 
-    attrs.src = filename if filename
+    if @props.img_style && user.key != -1 && user.avatar_file_name
+      attrs.src = "/system/avatars/#{@props.key}/#{@props.img_style}/#{avatar_file_name}"
 
     @transferPropsTo @props.tag attrs
 
@@ -2754,7 +2742,7 @@ ProposalSummary = ReactiveComponent
       TD className: 'summary_share',
         if proposal.top_point
           DIV className: 'top_point community_point con', style : { width: 270, position: 'relative' },
-            # Avatar tag: SPAN, key: proposal.top_point.user, className:"point_author_avatar", hide_face: proposal.top_point.hide_name
+            # Avatar key: proposal.top_point.user, className:"point_author_avatar", hide_face: proposal.top_point.hide_name
 
             DIV className:'point_content', style : { },
               IMG 
@@ -2814,7 +2802,7 @@ Homepage = ReactiveComponent
             DIV className: 'learn_decide_share2', style: learn_decide_share_style, 'the contributors'
             DIV className: 'people',
               for user in _(contributors).first(90)
-                Avatar key: user, tag: SPAN, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
+                Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
               if contributors_without_avatar_count > 0
                 DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} others"
           ]
@@ -2934,7 +2922,7 @@ ProfileLink = ReactiveComponent
             onClick: @logout
             'Log out'
         SPAN className: 'profile_anchor',
-          Avatar key: current_user.user, tag: SPAN, hide_name: true, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
+          Avatar key: current_user.user, hide_name: true, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
           'Profile'
     else
       A
@@ -2944,7 +2932,7 @@ ProfileLink = ReactiveComponent
           save(@root)),
         'Log in'
 
-      #Avatar key: current_user.user, tag: SPAN, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
+      #Avatar key: current_user.user, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
 
 
   logout : -> 

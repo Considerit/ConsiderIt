@@ -2808,7 +2808,7 @@ Homepage = ReactiveComponent
               for user in _(contributors).first(90)
                 Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
               if contributors_without_avatar_count > 0
-                DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} others"
+                DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} other#{if contributors_without_avatar_count != 1 then 's'}"
           ]
         else
           ''

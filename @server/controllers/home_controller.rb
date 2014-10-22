@@ -87,7 +87,7 @@ class HomeController < ApplicationController
     # customer defaults
     case current_tenant.identifier
     when 'livingvotersguide'
-      title = '2014 Washington Voters Guide for the Primary Election'
+      title = 'Washington Voters Guide for the 2014 Election'
       image = view_context.image_url 'livingvotersguide/logo.png'
       description = "Washington's Citizen-powered Voters Guide. Decide for yourself about the issues on your 2014 ballot, with a little help from your neighbors."
       keywords = "voting,voters guide,online voters guide,2014,ballot,washington,washington state,election,pamphlet,voters pamphlet,ballot measures,citizen,initiatives,propositions,wa,seattle,tacoma,spokane,yakima,vancouver"

@@ -104,6 +104,11 @@
       %button.button
         Email content author
 
+      %a.button{:href => "{{url}}", :target => "_blank", :style => "text-decoration: underline"}
+        View in context
+      
+
+
 %script{ :type => "text/template", :id => 'tpl_dashboard_moderation_settings'}
   = form_for :account, :url => account_path, :remote => true, :method => :put, :html => { :class => 'dashboard-edit-account'} do |f|
 

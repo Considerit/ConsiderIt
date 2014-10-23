@@ -44,7 +44,7 @@ class Comment < ActiveRecord::Base
     current_tenant = Thread.current[:tenant]
 
     comments = {
-      :comments => point.comments,
+      :comments => point.comments.where('moderation_status = 1 or moderation_status IS NULL'),
       :key => "/comments/#{point.id}"
     }
 

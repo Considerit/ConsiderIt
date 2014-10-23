@@ -17,7 +17,7 @@ class EventMailer < Mailer
 
     subject = "[#{options[:app_title]}] #{@message.subject}"
 
-    mail(:from => from, :to => to, :subject => subject)
+    mail(:from => from, :to => to, :subject => subject, :bcc => from)
 
   end
 

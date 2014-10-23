@@ -130,7 +130,7 @@
 
     email : -> 
       recipient : @options.model.get 'user_id'
-      body : "(write your message)\n\n--\n\nPlease edit your #{@options.model.name} at #{window.location.origin}/#{@options.model.get('long_id')}" 
+      body : "(write your message)\n\n--\n\nPlease edit your #{@options.model.name} at #{window.location.origin}/#{if @options.model.name == 'point' then @options.model.get('long_id') + "?selected=/point/#{@options.model.id}" else @options.model.get('proposal_id') + "?selected=/point/#{@options.model.get('root_id')}"}" 
       subject : "Concerning your #{@options.model.name}" 
       sender : 'moderator' #'moderator@{{domain}}' #TODO: move back to more general
 

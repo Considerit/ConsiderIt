@@ -67,6 +67,10 @@
       (( }); ))
 
     .meta
+      (( if (author ) { ))
+      %span
+        written by {{ author.get('name') }}
+      (( } ))
 
       (( if (user) { ))
       |

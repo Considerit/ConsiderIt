@@ -62,10 +62,10 @@
 
     serializeData : ->
       obj = @model.getRootObject()
+      author = App.request('user', obj.get('user_id'))
       switch @model.get 'moderatable_type'
         when 'Point'
           proposal = App.request "proposal:get_by_id", obj.get('proposal_id')
-          console.log obj, proposal
           url = "/#{proposal.id}?selected=/point/#{obj.id}"
           anchor = 'View this Point'
         when 'Comment'
@@ -79,6 +79,7 @@
         user : if @model.user_id then App.request('user', @model.user_id) else null
         # anchor : anchor
         url : url
+        author: author
         prior_moderation : @model.get 'status'
         evaluation_options : [
           {label: 'Fail', val: 0},

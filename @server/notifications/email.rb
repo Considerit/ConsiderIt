@@ -130,14 +130,17 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
   current_tenant = data[:current_tenant]
   if current_tenant.enable_moderation
     # send to all users with moderator status
-    moderators = []
-    current_tenant.users.where('roles_mask > 0').each do |u|
-      if u.has_any_role? :moderator #, :admin, :superadmin
-        moderators.push(u)
+    roles = current_tenant.user_roles()
+    moderators = roles.has_key?(:moderator) ? roles[:moderator] : []
+
+    moderators.each do |key|
+      begin
+        user = User.find(key_id(key))
+      rescue
       end
-    end
-    moderators.each do |user|
-      AlertMailer.content_to_moderate(user, current_tenant).deliver!
+      if user
+        AlertMailer.content_to_moderate(user, current_tenant).deliver!
+      end
     end
   end
   

@@ -116,7 +116,7 @@ namespace :migrations do
       update_role(user, user)
     end
 
-    User.find_each do |user|
+    User.where(:registration_complete => true).find_each do |user|
       update_active_in user, user
     end
 

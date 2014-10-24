@@ -12,14 +12,12 @@
   - else
     A #{@point.is_pro ? 'pro' : 'con'} point that you follow has been investigated by The Seattle Public Library. 
 
-//TODO: add text version of this mail
-
 %p
   The result of the research:
   %ul
     - @assessment.claims.each do |clm|
       %li
-        Claim: "#{clm.claim_restatement}"; Conclusion: #{Assessable::Claim.find(clm.verdict_id).formatVerdict()}.
+        Claim: "#{clm.claim_restatement}"; Conclusion: #{Assessable::Verdict.find(clm.verdict_id).formatVerdict()}.
 
 %p 
   The #{@point.is_pro ? 'pro' : 'con'} point:

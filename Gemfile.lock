@@ -274,7 +274,6 @@ GEM
       ffi (>= 0.5.0)
     ref (1.0.5)
     request_store (1.1.0)
-    role_model (0.8.1)
     ruby-imagespec (0.3.1)
     sass (3.2.19)
     sass-rails (4.0.3)
@@ -361,7 +360,6 @@ DEPENDENCIES
   rack-livereload
   rails (~> 4)
   rb-fsevent
-  role_model
   sass-rails (~> 4.0.3)
   sitemap_generator
   sprockets

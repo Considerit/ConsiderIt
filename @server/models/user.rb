@@ -143,6 +143,15 @@ class User < ActiveRecord::Base
       active_tenants.push "#{current_tenant.id}"
       self.active_in = JSON.dump active_tenants
       self.save
+
+      # if we're logging in to a subdomain that we didn't originally register, we'll have to 
+      # regenerate the avatars file. Note that there is still a bug where the avatar won't be there 
+      # on initial login to the new subdomain.
+      if self.avatar_file_name && active_tenants.length > 1
+        account_id = Thread.current[:tenant].id
+        current = Rails.cache.read("avatar-digest-#{account_id}") || 0
+        Rails.cache.write("avatar-digest-#{account_id}", current + 1)   
+      end
     end
 
   end

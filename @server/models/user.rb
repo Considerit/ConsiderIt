@@ -135,13 +135,17 @@ class User < ActiveRecord::Base
     self.follows.update_all( {:explicit => true, :follow => false} )
   end
 
+  def add_to_active_in
+    current_tenant = Thread.current[:tenant]
+    active_tenants = JSON.parse(self.active_in) || []
 
-  # def password_digest=(what)
-  #     encrypted_password = what
-  # end
-  # def password_digest
-  #   encrypted_password
-  # end
+    if !active_tenants.include?("#{current_tenant.id}")
+      active_tenants.push "#{current_tenant.id}"
+      self.active_in = JSON.dump active_tenants
+      self.save
+    end
+
+  end
 
   # legacy...
   def role_list
@@ -151,6 +155,7 @@ class User < ActiveRecord::Base
       roles.map {|role| role.to_s}.join(', ').gsub(':', '')
     end
   end
+  ######
 
   def third_party_authenticated
     if !!self.facebook_uid

@@ -122,14 +122,17 @@ namespace :alerts do
 
       if content_to_moderate > 0
         # send to all users with moderator status
-        moderators = []
-        accnt.users.where('roles_mask > 0').each do |u|
-          if u.has_any_role? :moderator #, :admin, :superadmin
-            moderators.push(u)
+        roles = current_tenant.user_roles()
+        moderators = roles.has_key?(:moderator) ? roles[:moderator] : []
+
+        moderators.each do |key|
+          begin
+            user = User.find(key_id(key))
+          rescue
           end
-        end
-        moderators.each do |user|
-          AlertMailer.content_to_moderate(user, accnt).deliver!
+          if user
+            AlertMailer.content_to_moderate(user, accnt).deliver!
+          end
         end
       end
     end

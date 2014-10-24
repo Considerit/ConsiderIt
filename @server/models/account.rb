@@ -40,6 +40,14 @@ class Account < ActiveRecord::Base
     host_with_port.split('.')[-2, 2].join('.')
   end
 
+  def user_roles
+    JSON.parse(roles || "{}")
+  end
+
+  def set_roles(new_roles)
+    self.roles = JSON.dump(new_roles)
+    self.save
+  end
 
   def self.all_themes
     Dir['app/assets/themes/*/'].map { |a| File.basename(a) }

@@ -1,8 +1,8 @@
 require 'open-uri'
-require 'role_model'
+#require 'role_model'
 
 class User < ActiveRecord::Base
-  include RoleModel
+  #include RoleModel
 
   has_secure_password validations: false
   alias_attribute :password_digest, :encrypted_password
@@ -15,9 +15,9 @@ class User < ActiveRecord::Base
   has_many :follows, :dependent => :destroy, :class_name => 'Follow'
   has_many :page_views, :dependent => :destroy
 
-  acts_as_tenant :account
+  #acts_as_tenant :account
 
-  roles :superadmin, :admin, :analyst, :moderator, :manager, :evaluator, :developer
+  #roles :superadmin, :admin, :analyst, :moderator, :manager, :evaluator, :developer
 
 
   attr_accessor :avatar_url, :downloaded
@@ -48,8 +48,10 @@ class User < ActiveRecord::Base
     data = Base64.encode64(img_data)
     self.b64_thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
     
-    current = Rails.cache.read("avatar-digest-#{self.account_id}") || 0
-    Rails.cache.write("avatar-digest-#{self.account_id}", current + 1)   
+    JSON.parse(self.active_in).each do |account_id|
+      current = Rails.cache.read("avatar-digest-#{account_id}") || 0
+      Rails.cache.write("avatar-digest-#{account_id}", current + 1)   
+    end
   end
 
   validates_attachment_content_type :avatar, :content_type => %w(image/jpeg image/jpg image/png image/gif)
@@ -78,8 +80,9 @@ class User < ActiveRecord::Base
       b64_thumbnail: b64_thumbnail,
       tags: JSON.parse(tags) || {},
       is_admin: is_admin?,
-      is_moderator: has_any_role?(:admin, :superadmin, :moderator),
-      is_assessor: has_any_role?(:admin, :superadmin, :evaluator)
+      is_moderator: has_any_role?([:admin, :superadmin, :moderator]),
+      is_assessor: has_any_role?([:admin, :superadmin, :evaluator]),
+      trying_to: nil
     }
 
     # temporary for legacy dashboard:
@@ -103,6 +106,26 @@ class User < ActiveRecord::Base
              'avatar_file_name' => avatar_file_name }
   end
 
+  def is_admin?
+    has_any_role? [:admin, :superadmin]
+  end
+
+  def has_role?(role)
+    if role.to_s == 'superadmin'
+      return self.super_admin
+    else
+      roles = JSON.parse(Thread.current[:tenant].roles || "{}")
+      return roles.has_key?(role) && roles[role].include?("/user/#{id}")
+    end
+  end
+
+  def has_any_role?(roles)
+    roles.each do |role|
+      return true if has_role?(role)
+    end
+    return false
+  end
+
   def logged_in?
     # Logged-in now means that the current user account is registered
     self.registration_complete
@@ -112,17 +135,19 @@ class User < ActiveRecord::Base
     self.follows.update_all( {:explicit => true, :follow => false} )
   end
 
-  def is_admin?
-    has_any_role? :admin, :superadmin
+  def add_to_active_in
+    current_tenant = Thread.current[:tenant]
+    active_tenants = JSON.parse(self.active_in) || []
+
+    if !active_tenants.include?("#{current_tenant.id}")
+      active_tenants.push "#{current_tenant.id}"
+      self.active_in = JSON.dump active_tenants
+      self.save
+    end
+
   end
 
-  # def password_digest=(what)
-  #     encrypted_password = what
-  # end
-  # def password_digest
-  #   encrypted_password
-  # end
-
+  # legacy...
   def role_list
     if roles_mask == 0
       return '-'
@@ -130,6 +155,7 @@ class User < ActiveRecord::Base
       roles.map {|role| role.to_s}.join(', ').gsub(':', '')
     end
   end
+  ######
 
   def third_party_authenticated
     if !!self.facebook_uid

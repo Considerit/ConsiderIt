@@ -211,7 +211,7 @@ private
         response.append Proposal.summaries
 
       elsif key.match '/page/homepage'
-        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions, proposals p WHERE u.account_id=#{current_tenant.id} AND u.registration_complete=true AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}' AND p.id = opinions.proposal_id AND p.active=1")      
+        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions, proposals p WHERE opinions.account_id=#{current_tenant.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}' AND p.id = opinions.proposal_id AND p.active=1")      
 
         clean = {
           users: get_all_user_data(),
@@ -268,7 +268,7 @@ private
   end
 
   def get_all_user_data
-    users = ActiveRecord::Base.connection.select( "SELECT id,name,avatar_file_name FROM users WHERE account_id=#{current_tenant.id} AND (registration_complete=true OR id=#{current_user.id})")
+    users = ActiveRecord::Base.connection.select( "SELECT users.id,users.name,users.avatar_file_name FROM users WHERE id IN (SELECT user_id FROM opinions where opinions.account_id=#{current_tenant.id} AND opinions.published=1)")
     users = users.as_json
     jsonify_objects(users, 'user')
   end

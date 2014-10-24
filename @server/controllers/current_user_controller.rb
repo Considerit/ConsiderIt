@@ -35,7 +35,8 @@ class CurrentUserController < ApplicationController
     case trying_to
 
       when 'register'
-        update_user_attrs errors
+
+        update_user_attrs errors        
         if !current_user.registration_complete
           third_party_authenticated = current_user.twitter_uid || current_user.facebook_uid\
                                       || current_user.google_uid
@@ -50,7 +51,9 @@ class CurrentUserController < ApplicationController
             if !current_user.save
               raise "Error registering this uesr"
             end
+            current_user.add_to_active_in
             log('registered account')
+
 
           else
             errors[:register].append("Password needs to be at least #{@min_pass} letters") if !ok_password
@@ -80,7 +83,7 @@ class CurrentUserController < ApplicationController
             provider = user.third_party_authenticated()
             errors[:login].append "Wrong password.#{provider ? ' Previously you used the ' + provider + ' button.' : ''}"
           else 
-
+            current_user.add_to_active_in
             replace_user(current_user, user)
             set_current_user(user)
             dirty_key '/proposals'
@@ -111,6 +114,7 @@ class CurrentUserController < ApplicationController
             replace_user(current_user, user)
             set_current_user(user)
             update_user_attrs errors
+            current_user.add_to_active_in            
           else
             errors[:reset_password].append "Sorry, that's the wrong verification code."
           end  
@@ -297,6 +301,9 @@ class CurrentUserController < ApplicationController
       # Then the user registration is complete.
       replace_user current_user, user
       set_current_user(user)
+
+      current_user.add_to_active_in
+
       dirty_key '/proposals'
 
       write_to_log({
@@ -312,6 +319,8 @@ class CurrentUserController < ApplicationController
       if user
         replace_user current_user, user
         set_current_user(user)
+        current_user.add_to_active_in
+
       end      
       current_user.update_from_third_party_data(access_token)
     end

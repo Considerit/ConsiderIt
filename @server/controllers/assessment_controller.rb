@@ -139,15 +139,18 @@ ActiveSupport::Notifications.subscribe("new_assessment_request") do |*args|
   mail_options = data[:mail_options]
   assessable = assessment.root_object
 
-  # send to all users with moderator status
-  evaluators = []
-  current_tenant.users.where('roles_mask > 0').each do |u|
-    if u.has_any_role? :evaluator, :superadmin
-      evaluators.push(u)
+  # send to all factcheckers
+  roles = current_tenant.user_roles()
+  evaluators = roles.has_key?(:evaluator) ? roles[:evaluator] : []
+
+  evaluators.each do |key|
+    begin
+      user = User.find(key_id(key))
+    rescue
     end
-  end
-  evaluators.each do |user|
-    AlertMailer.content_to_assess(assessment, user, current_tenant).deliver!
+    if user
+      AlertMailer.content_to_assess(assessment, user, current_tenant).deliver!
+    end
   end
 
 end

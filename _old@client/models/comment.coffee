@@ -20,7 +20,7 @@
     # relations
     getRoot : ->
       if !@root 
-        @root = App.request "#{@get('commentable_type').toLowerCase()}:get", @get('commentable_id')
+        @root = App.request "point:get", @get('root_id')
       @root
       
     getUser : ->

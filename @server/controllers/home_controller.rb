@@ -67,6 +67,7 @@ class HomeController < ApplicationController
     if session[:search_bot] # don't fetch avatars for search bots
       render :json => {}
     else 
+      @user = User
       respond_to do |format|
         format.html { render :partial => './avatars' } 
         format.json { render :partial => './avatars' }

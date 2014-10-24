@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140930175613) do
+ActiveRecord::Schema.define(version: 20141024051410) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -67,6 +67,7 @@ ActiveRecord::Schema.define(version: 20140930175613) do
     t.boolean  "enable_sharing",                           default: false
     t.string   "hibernation_message"
     t.string   "about_page_url"
+    t.text     "roles"
   end
 
   add_index "accounts", ["identifier"], name: "by_identifier", length: {"identifier"=>10}, using: :btree
@@ -215,6 +216,8 @@ ActiveRecord::Schema.define(version: 20140930175613) do
     t.datetime "when"
     t.text     "details"
   end
+
+  add_index "logs", ["who"], name: "who_index", using: :btree
 
   create_table "moderations", force: true do |t|
     t.integer  "user_id"
@@ -490,6 +493,8 @@ ActiveRecord::Schema.define(version: 20140930175613) do
     t.integer  "metric_opinions"
     t.text     "b64_thumbnail"
     t.text     "tags"
+    t.text     "active_in"
+    t.boolean  "super_admin",                        default: false
   end
 
   add_index "users", ["account_id", "avatar_file_name"], name: "select_user_by_avatar_name", length: {"account_id"=>nil, "avatar_file_name"=>3}, using: :btree

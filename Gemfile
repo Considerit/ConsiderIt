@@ -17,7 +17,7 @@ gem 'omniauth-google-oauth2'
 #############
 # AUTHORIZATION
 gem 'cancan' #https://github.com/ryanb/cancan
-gem 'role_model' #http://rubydoc.info/gems/role_model/0.7.1/frames
+# gem 'role_model' #http://rubydoc.info/gems/role_model/0.7.1/frames
 
 #############
 # DATABASE & DATABASE MIDDLEWARE

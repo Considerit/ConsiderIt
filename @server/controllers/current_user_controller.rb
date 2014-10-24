@@ -18,12 +18,13 @@ class CurrentUserController < ApplicationController
     @min_pass = 4
 
 
-    if !params.has_key?(:trying_to) || params[:trying_to] == 'update_avatar_hack'
+    if !params.has_key?(:trying_to) || !params[:trying_to] || params[:trying_to] == 'update_avatar_hack'
       trying_to = 'update'    
     else
       trying_to = params[:trying_to]
     end
 
+    pp params, trying_to
     puts("")
     puts("--------------------------------")
     puts("----Start UPDATE CURRENT USER---")

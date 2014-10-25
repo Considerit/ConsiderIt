@@ -26,8 +26,7 @@ class UserMailer < Mailer
 
   # end
 
-  def reset_password_instructions(user, token)
-    current_tenant = user.account
+  def reset_password_instructions(user, token, current_tenant)
     app_title = current_tenant ? current_tenant.app_title : ''
     from = current_tenant && current_tenant.contact_email && current_tenant.contact_email.length > 0 ? current_tenant.contact_email : APP_CONFIG[:email]
     @user = user

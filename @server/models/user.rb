@@ -502,7 +502,7 @@ class User < ActiveRecord::Base
     self.reset_password_sent_at = Time.now.utc
     self.save(:validate => false)
     
-    UserMailer.reset_password_instructions(self, raw_token).deliver!
+    UserMailer.reset_password_instructions(self, raw_token, Thread.current[:tenant]).deliver!
 
   end
 

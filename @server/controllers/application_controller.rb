@@ -1,12 +1,13 @@
 require 'digest/md5'
 
 class ApplicationController < ActionController::Base
-  #protect_from_forgery
+  protect_from_forgery
+  skip_before_action :verify_authenticity_token, if: :csrf_skippable?
+
   set_current_tenant_through_filter
   prepend_before_action :get_current_tenant
   before_action :init_thread_globals
 
-  skip_before_action :verify_authenticity_token, if: :csrf_skippable?
 
   def render(*args)
     if !current_tenant
@@ -92,8 +93,8 @@ class ApplicationController < ActionController::Base
 
 protected
   def csrf_skippable?
-    Rails.logger.error "csrf_skippable? #{request.format.json?} #{request.content_type != "text/plain"} #{request.xhr?}"
-    request.format.json? && request.content_type != "text/plain" && request.xhr?
+    Rails.logger.error "csrf_skippable? #{request.format.json?} #{request.content_type != "text/plain"} #{!!request.xml_http_request?}"
+    request.format.json? && request.content_type != "text/plain" && (!!request.xml_http_request?)
   end
 
   def write_to_log(options)

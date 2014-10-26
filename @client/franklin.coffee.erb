@@ -2886,40 +2886,45 @@ ProfileLink = ReactiveComponent
     customer = @data('/customer')
     color = @data('color')
 
-    if current_user.logged_in
-      SPAN
-        style:
-          position: 'relative'
-        onMouseEnter: => @local.menu = true; save(@local)
-        onMouseLeave: => @local.menu = false; save(@local)
-        DIV className: 'profile_menu', style: {display: (if not @local.menu then 'none')},
-          if current_user.is_moderator
-            A 
-              className: 'menu_link'
-              href: '/dashboard/moderate'
-              'Moderate'
-          if current_user.is_assessor
-            A 
-              className: 'menu_link'
-              href: '/dashboard/assessment'
-              onClick: clickInternalLink
-              'Fact-check'
+    DIV style: {display: 'inline-block'}, 
+      STYLE null,
+        ".profile_anchor { color: #{color.profile_anchor_color} }"
 
-          A 
-            className: 'menu_link'
-            'data-action': 'logout'
-            onClick: @logout
-            'Log out'
-        SPAN className: 'profile_anchor',
-          Avatar key: current_user.user, hide_name: true, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
-          'Profile'
-    else
-      A
-        'data-action': 'login'
-        onClick: ((e) =>
-          @root.auth_mode = 'login'
-          save(@root)),
-        'Log in'
+      if current_user.logged_in
+        SPAN
+          style:
+            position: 'relative'
+          onMouseEnter: => @local.menu = true; save(@local)
+          onMouseLeave: => @local.menu = false; save(@local)
+          DIV className: 'profile_menu', style: {display: (if not @local.menu then 'none')},
+            if current_user.is_moderator
+              A 
+                className: 'menu_link'
+                href: '/dashboard/moderate'
+                'Moderate'
+            if current_user.is_assessor
+              A 
+                className: 'menu_link'
+                href: '/dashboard/assessment'
+                onClick: clickInternalLink
+                'Fact-check'
+
+            A 
+              className: 'menu_link'
+              'data-action': 'logout'
+              onClick: @logout
+              'Log out'
+          SPAN className: 'profile_anchor',
+            Avatar key: current_user.user, hide_name: true, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
+            'Profile'
+      else
+        A
+          'className': 'profile_anchor'
+          'data-action': 'login'
+          onClick: ((e) =>
+            @root.auth_mode = 'login'
+            save(@root)),
+          'Log in'
 
       #Avatar key: current_user.user, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
 
@@ -2951,12 +2956,12 @@ Header = ReactiveComponent
     color = @data('color')
 
     DIV className: 'l_header', style: {backgroundColor: color.header_bg, minWidth: PAGE_WIDTH},
-      if customer.identifier != "livingvotersguide"
-        DIV className: 'profile_navigation',
-          ProfileLink()
 
       if window["#{customer.identifier}Header"]
         window["#{customer.identifier}Header"]()
+      else
+        DIV className: 'profile_navigation',
+          ProfileLink()
 
       DIV null, 
         if @root.page_name == 'about'
@@ -3300,6 +3305,7 @@ Colors = ReactiveComponent
         proposal_header: '#E37765'
         header_bg: '#E37765'
         link_hover_color: 'black'
+        profile_anchor_color: 'black'
 
       # Define colors for different customers. 
       switch customer.identifier
@@ -3309,12 +3315,17 @@ Colors = ReactiveComponent
           color.link_hover_color = 'rgb(118,148,41)'
         when 'cityoftigard'
           color.header_bg =  '#253967'
-          color.proposal_header = '#46A046'          
+          color.proposal_header = '#46A046'
+          color.profile_anchor_color = 'white'     
         when 'tigard'          
           color.header_bg =  'white'
           color.proposal_header = '#78d18b'
+          color.profile_anchor_color = '#707070'
         when 'ihub'
           color.header_bg =  color.proposal_header = "rgb(150,150,150)"
+        when 'ecastonline'
+          color.header_bg = color.proposal_header = 'rgb(36, 35, 31)'
+          color.profile_anchor_color = 'white'
 
       save color
 

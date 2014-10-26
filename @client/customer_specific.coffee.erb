@@ -1,3 +1,40 @@
+######################
+# ecastonline
+
+ecast_text_color = 'white' #'#ede6d3'
+
+window.ecastonlineHeader = ReactiveComponent
+  displayName: 'ecastonlineHeader'
+
+  render: ->
+    logo_style = {height: 60}
+    DIV style: {textAlign: 'center', height: 230, backgroundSize: '1600px auto', background: 'url(<%= asset_path 'ecastonline/banner.jpg' %>) no-repeat scroll top'},
+      DIV className: 'profile_navigation',
+        ProfileLink()
+
+      SPAN style: {color: ecast_text_color, margin: 'auto', fontSize: 60, display: 'inline-block', fontWeight: 700, position: 'relative', top: 0}, 
+        A href: 'http://ecastonline.org/', target: '_blank',
+          'Informing NASA\'s Asteroid Initiative' 
+
+window.ecastonlineFooter = ReactiveComponent
+  displayName: 'ecastOnlineFooter'
+  render: ->
+    DIV null,
+      DIV style: {margin: '20px 0'},
+        FBShare()
+        Tweet
+          hashtags: 'asteroids, NASA'
+          referer: 'https%3A%2F%2Fecastonline.consider.it%2F'
+          text: 'Think about NASA\'s Asteroid Initiative.'
+          url: 'https%3A%2F%2Fecastonline.consider.it%2F'
+
+      A href: 'http://ecastonline.org/', target: '_blank', style: {display: 'inline-block', margin: 'auto'},
+        IMG src: "<%= asset_path 'ecastonline/logo.png' %>", style: {width: 300}
+
+      DIV style: {padding: 9, fontSize: '70%'},
+        TechnologyByConsiderit()
+
+
 
 #####################
 # Tigard
@@ -7,6 +44,9 @@ window.tigardHeader = ReactiveComponent
   render: ->
     logo_style = {height: 60}
     DIV null,
+      DIV className: 'profile_navigation',
+        ProfileLink()
+
       A href: '/', onClick: clickInternalLink, style: {padding: 12, display: 'inline-block'},
         IMG className: 'logo', src: "<%= asset_path 'tigard/logo.jpg' %>", style: logo_style 
       SPAN style: {color: '#707070', fontSize: 24, display: 'inline-block', margin: '20px 0 0 50px', fontWeight: 800, textTransform: 'uppercase', position: 'relative', top: -20}, 
@@ -24,6 +64,9 @@ window.cityoftigardHeader = ReactiveComponent
   render: -> 
     logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
     DIV null,
+      DIV className: 'profile_navigation',
+        ProfileLink()
+
       DIV style: {height: 24},
         A href: '/', onClick: clickInternalLink, style: {position: 'absolute', top:0, zIndex: 999999},
           IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 

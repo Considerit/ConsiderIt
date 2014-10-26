@@ -114,7 +114,7 @@ class User < ActiveRecord::Base
     if role.to_s == 'superadmin'
       return self.super_admin
     else
-      roles = Thread.current[:tenant].roles ? JSON.parse(Thread.current[:tenant].roles) : "{}"
+      roles = Thread.current[:tenant].roles ? JSON.parse(Thread.current[:tenant].roles) : {}
       return roles.has_key?(role.to_s) && roles[role.to_s].include?("/user/#{id}")
     end
   end

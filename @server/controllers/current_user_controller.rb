@@ -2,7 +2,7 @@
 
 class CurrentUserController < ApplicationController
   protect_from_forgery :except => :update, with: :exception
-  skip_before_filter :verify_authenticity_token, :if => :file_uploaded
+  skip_before_action :verify_authenticity_token, :if => :file_uploaded
 
   # Gets the current user data
   def show

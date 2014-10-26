@@ -1,7 +1,7 @@
 # coding: utf-8
 
 class CurrentUserController < ApplicationController
-  protect_from_forgery :except => :update, with: :exception
+  #protect_from_forgery :except => :update, with: :exception
   skip_before_action :verify_authenticity_token, :if => :file_uploaded
 
   # Gets the current user data

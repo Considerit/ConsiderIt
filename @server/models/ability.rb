@@ -76,11 +76,11 @@ class Ability
       end
 
       can [:read, :update], Proposal do |proposal|
-        (!user.id.nil? && user.id == proposal.user_id) || (session_id == proposal.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == proposal.admin_id)
+        (!user.id.nil? && user.id == proposal.user_id) || (params.has_key?(:admin_id) && params[:admin_id] == proposal.admin_id)
       end
 
       can [:destroy], Proposal do |proposal|
-        ((!user.id.nil? && user.id == proposal.user_id) || (session_id == proposal.session_id) || (params.has_key?(:admin_id) && params[:admin_id] == proposal.admin_id)) && \
+        ((!user.id.nil? && user.id == proposal.user_id) || (params.has_key?(:admin_id) && params[:admin_id] == proposal.admin_id)) && \
           (proposal.opinions.published.count == 0 || (proposal.opinions.published.count == 1 && proposal.opinions.published.first.user_id == user.id))
       end
 

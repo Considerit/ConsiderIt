@@ -26,7 +26,7 @@ class OpinionController < ApplicationController
     incs = updates['point_inclusions']
     incs = [] if incs.nil? # Damn rails http://guides.rubyonrails.org/security.html#unsafe-query-generation
 
-    incs = incs.map! {|p| key_id(p, session)}
+    incs = incs.map! {|p| key_id(p)}
     opinion.update_inclusions incs
     updates['point_inclusions'] = JSON.dump(incs)
 

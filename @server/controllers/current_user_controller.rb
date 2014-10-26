@@ -160,6 +160,12 @@ class CurrentUserController < ApplicationController
 
     # Don't overwrite these fields in the case of errors. Let the user edit them again.
     # TODO: can we use errors variable here for a more precise conditional?
+    #
+    # MIKE:
+    #       Good catch.  I thought about it, and the current behavior
+    #       will cause a bug when users can edit their profiles.  They
+    #       will be logged in, but their password will disappear each
+    #       time they submit an update.
     if !response[:logged_in] 
       response[:reset_password_token] = params[:reset_password_token] if params[:reset_password_token]
       response[:password] = params[:password] if params[:password]

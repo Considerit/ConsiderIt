@@ -96,7 +96,7 @@ protected
     Rails.logger.error "csrf_skippable? #{request.format.json?} #{request.content_type != "text/plain"} #{!!request.xml_http_request?}"
 
     if request.format.json? && !request.xml_http_request?
-      Rails.logger.error request
+      Rails.logger.error "#{request.inspect}"
     end
     request.format.json? && request.content_type != "text/plain" && (!!request.xml_http_request?)
   end

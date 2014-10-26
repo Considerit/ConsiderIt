@@ -92,6 +92,7 @@ class ApplicationController < ActionController::Base
 
 protected
   def csrf_skippable?
+    Rails.logger.error "csrf_skippable? #{request.format.json?} #{request.content_type != "text/plain"} #{request.xhr?}"
     request.format.json? && request.content_type != "text/plain" && request.xhr?
   end
 

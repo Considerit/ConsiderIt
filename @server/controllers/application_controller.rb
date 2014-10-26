@@ -6,6 +6,8 @@ class ApplicationController < ActionController::Base
   prepend_before_action :get_current_tenant
   before_action :init_thread_globals
 
+  skip_before_action :verify_authenticity_token, if: :csrf_skippable?
+
   def render(*args)
     if !current_tenant
       super 
@@ -89,6 +91,9 @@ class ApplicationController < ActionController::Base
   end
 
 protected
+  def csrf_skippable?
+    request.format.json? && request.content_type != "text/plain" && request.xhr?
+  end
 
   def write_to_log(options)
     begin

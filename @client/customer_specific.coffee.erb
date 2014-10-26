@@ -42,17 +42,35 @@ window.tigardHeader = ReactiveComponent
   displayName: 'tigardHeader'
 
   render: ->
-    logo_style = {height: 60}
-    DIV null,
+    DIV style: {textAlign: 'center'},
+      STYLE null, 
+        '.banner_link {color: #78d18b; font-weight: 600; text-decoration: underline;}'
+
       DIV className: 'profile_navigation',
         ProfileLink()
-
-      A href: '/', onClick: clickInternalLink, style: {padding: 12, display: 'inline-block'},
-        IMG className: 'logo', src: "<%= asset_path 'tigard/logo.jpg' %>", style: logo_style 
-      SPAN style: {color: '#707070', fontSize: 24, display: 'inline-block', margin: '20px 0 0 50px', fontWeight: 800, textTransform: 'uppercase', position: 'relative', top: -20}, 
+        
+      DIV style: {color: '#707070', fontSize: 32, margin: '20px auto 0 auto', fontWeight: 800, textTransform: 'uppercase', position: 'relative', top: -20}, 
         'Help plan '
-        A href: 'http://riverterracetigard.com/', style: {color: '#78d18b', fontWeight: 600}, 'River Terrace'
+        A className: 'banner_link', href: 'http://riverterracetigard.com/', 'River Terrace'
         ', Tigard\'s newest neighborhood' 
+
+window.tigardFooter = ReactiveComponent
+  displayName: 'tigardFooter'
+  render: ->
+    DIV style: {marginTop: 20},
+      A href: 'http://riverterracetigard.com/', target: '_blank', style: {display: 'inline-block', margin: 'auto'},
+        IMG className: 'logo', src: "<%= asset_path 'tigard/logo.jpg' %>", style: {height: 80}         
+
+      DIV style: {margin: '20px 0'},
+        FBShare()
+        Tweet
+          hashtags: 'RiverTerrace'
+          referer: 'https%3A%2F%2Ftigard.consider.it%2F'
+          text: 'Help plan River Terrace.'
+          url: 'https%3A%2F%2Ftigard.consider.it%2F'        
+
+      DIV style: {padding: 9, fontSize: '70%'},
+        TechnologyByConsiderit()
 
 
 

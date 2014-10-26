@@ -29,7 +29,7 @@ def jsonify_objects(objects, name, reference_names=[], delete_names=[], parse_na
   }
 end
 
-def key_id(object_or_key, session=nil)
+def key_id(object_or_key)
   # puts("Key_id called for #{object_or_key}")
 
   # Make it into a key

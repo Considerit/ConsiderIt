@@ -1,6 +1,6 @@
 class LogController < ApplicationController
   respond_to :json
-
+  
   def create
     if session[:search_bot]
       render :json => {}

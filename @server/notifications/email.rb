@@ -131,7 +131,7 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
   if current_tenant.enable_moderation
     # send to all users with moderator status
     roles = current_tenant.user_roles()
-    moderators = roles.has_key?(:moderator) ? roles[:moderator] : []
+    moderators = roles.has_key?('moderator') ? roles['moderator'] : []
 
     moderators.each do |key|
       begin

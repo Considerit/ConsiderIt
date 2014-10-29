@@ -3,8 +3,6 @@
 
 # Checks if current user has proper credentials to view this component. 
 # If not, shows Auth. 
-
-
 AccessControlled = ReactiveComponent
   displayName: 'AccessControlled'
 

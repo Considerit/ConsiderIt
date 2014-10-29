@@ -155,7 +155,7 @@ namespace :lvg do
 
     candidates.each do |candidate_id|
       data = fetchFromMaplight("cvg.candidate_v1.json?candidate_id=#{candidate_id}&data_type=all")
-      jurisdiction = data['contest']['title'].gsub(' - Washington', '').gsub('u.s._representative', 'congressional')
+      jurisdiction = data['contest']['title'].gsub(' - Washington', '').gsub('U.S. Representative', 'Congressional')
       name = data['display_name']
       long_id = "#{name}-washington_#{jurisdiction}".gsub(' ', '_').downcase
 

@@ -12,44 +12,43 @@ class ModerationController < ApplicationController
   def index
     authorize! :index, Moderation
 
-    # if !current_tenant.enable_moderation
-    #   redirect_to root_path, :notice => "Moderation is disabled for this application."
-    #   return
-    # end
-
-    classes_to_moderate = current_tenant.classes_to_moderate   
-
     moderations = []
 
-    classes_to_moderate.each do |moderation_class|
+    current_tenant.classes_to_moderate.each do |moderation_class|
 
       if moderation_class == Comment
         # select all comments of points of active proposals
-        qry = "SELECT c.id, c.user_id, c.body AS body, pnt.id AS root_id, prop.long_id AS proposal_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
-      elsif moderation_class == Proposal
-        qry = "SELECT id, long_id, user_id, name, description, additional_description1, additional_description2 from proposals where account_id=#{current_tenant.id}"
+        qry = "SELECT c.id, c.user_id, prop.id as proposal_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
       elsif moderation_class == Point
-        qry = "SELECT pnt.id, pnt.long_id, pnt.user_id, pnt.nutshell AS nutshell, pnt.text AS text, prop.long_id AS proposal_id FROM points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
+        qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
+      elsif moderation_class == Proposal
+        qry = "SELECT id, long_id, user_id, name, description from proposals where account_id=#{current_tenant.id}"
       end
 
       objects = ActiveRecord::Base.connection.select(qry)
 
       if objects.count > 0
 
+        existing_moderations = Moderation.where("moderatable_type='#{moderation_class.name}' AND moderatable_id in (?)", objects.map {|o| o['id']})
+        if existing_moderations.count > 0
+          existing_moderations = Hash[existing_moderations.collect { |v| [v.moderatable_id, v] }]
+        else 
+          existing_moderations = {}
+        end
+
+
         objects.each do |obj|
           dirty_key "/#{moderation_class.name.downcase}/#{obj['id']}"
           if obj.has_key? 'proposal_id'
-            pp "/proposal/#{obj['proposal_id']}"
             dirty_key "/proposal/#{obj['proposal_id']}"
           end
 
           dirty_key "/user/#{obj['user_id']}"
 
-          moderation = Moderation.where( :moderatable_type => moderation_class.name, :moderatable_id => obj['id']).first
-
-          # Don't assume that we have a moderation object for each object that needs to be moderated. 
-          # We'll create one for each that doesn't yet exist.           
-          if !moderation
+          if existing_moderations.has_key? obj['id']
+            moderation = existing_moderations[obj['id']]
+          else 
+            # Create a moderation for each that doesn't yet exist.           
             moderation = Moderation.create! :moderatable_type => moderation_class.name, :moderatable_id => obj['id'], :account_id => current_tenant.id
           end
 

@@ -113,7 +113,7 @@ end
 
 # Checks whether now is an appropriate time to send a notification
 def send_notification_on_create(moderatable_type, current_tenant)
-  return true if !current_tenant.enable_moderation || [0,3].include?(current_tenant.send("moderate_#{moderatable_type}s_mode"))
+  return [nil, 0, 3].include?(current_tenant.send("moderate_#{moderatable_type}s_mode"))
 end
 
 ########
@@ -128,7 +128,7 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
   end
   
   current_tenant = data[:current_tenant]
-  if current_tenant.enable_moderation
+  if current_tenant.classes_to_moderate.length > 0
     # send to all users with moderator status
     roles = current_tenant.user_roles()
     moderators = roles.has_key?('moderator') ? roles['moderator'] : []

@@ -30,53 +30,86 @@ AccessControlled = ReactiveComponent
       SPAN null
 
 
-
-AdminDash = ReactiveComponent
-  displayName: 'AdminDash'
+AdminTaskList = ReactiveComponent
+  displayName: 'AdminTaskList'
 
   render : -> 
+
+    dash = @data()
+
     # We assume an ordering of the task categories that where the earlier
     # categories are more urgent & shown higher up in the list than later categories.
-
-    if !@local.selected_task && @props.items.length > 0
+    if !dash.selected_task && @props.items.length > 0
       # Prefer to select a higher urgency task by default
 
       for [category, items] in @props.items
         if items.length > 0
-          @local.selected_task = items[0].key
-          save @local
+          dash.selected_task = items[0].key
+          save dash
           break
 
-    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
-      STYLE null, '.admindash_tab:hover{background-color: #f1f1f1 }'
-      H1 style: {fontSize: 28, marginTop: 20}, @props.dash_name
+    # After a moderation is saved, that item will alert the dash
+    # that we should move to the next moderation.
+    # Need state history to handle this more elegantly
+    if dash.transition
+      @selectNext()
 
-      DIV style: {}, 
-        for [category, items] in @props.items
-          if items.length > 0
-            DIV style: {marginTop: 20}, key: category,
-              H1 style: {fontSize: 22}, category
-              UL style: {},
-                for item in items
-                  background_color = if item.key == @local.selected_task then '#F4F0E9' else ''
-                  LI 
-                    key: item.key
-                    className: 'admindash_tab'
-                    style: {zIndex: 1, position: 'relative', width: CONTENT_WIDTH / 4, cursor: 'pointer', padding: '10px', margin: '5px 0', listStyle: 'none', borderRadius: '8px 0 0 8px', backgroundColor: background_color}
+    DIV null, 
+      STYLE null, '.task_tab:hover{background-color: #f1f1f1 }'
+
+      for [category, items] in @props.items
+        if items.length > 0
+          DIV style: {marginTop: 20}, key: category,
+            H1 style: {fontSize: 22}, category
+            UL style: {},
+              for item in items
+                background_color = if item.key == dash.selected_task then '#F4F0E9' else ''
+                LI key: item.key, style: {position: 'relative', listStyle: 'none', width: CONTENT_WIDTH / 4},
+
+                  DIV 
+                    className: 'task_tab',
+                    style: {zIndex: 1, cursor: 'pointer', padding: '10px', margin: '5px 0', borderRadius: '8px 0 0 8px', backgroundColor: background_color},
                     onClick: do (item) => => 
-                      @local.selected_task = item.key
-                      save @local
+                      dash.selected_task = item.key
+                      save dash
 
                     @props.renderTab item
 
-                    if @local.selected_task == item.key
-                      @props.renderTask item   
+                  if dash.selected_task == item.key
+                    @props.renderTask item
 
+
+  # select a different task in the list relative to data.selected_task
+  selectNext: -> @_select(false)
+  selectPrev: -> @_select(true)
+  _select: (reverse) -> 
+    data = @data()
+    get_next = false
+    all_items = if !reverse then @props.items else @props.items.slice().reverse()
+
+    for [category, items] in all_items
+      tasks = if !reverse then items else items.slice().reverse()
+      for item in tasks
+        if get_next
+          data.selected_task = item.key
+          data.transition = null
+          save data
+          return
+        else if item.key == data.selected_task
+          get_next = true
+
+  componentDidMount: ->
+    $(document).on 'keyup.dash', (e) =>
+      @selectNext() if e.keyCode == 40 # down
+      @selectPrev() if e.keyCode == 38 # up
+
+        
 ModerationDash = ReactiveComponent
   displayName: 'ModerationDash'
 
   render : -> 
     moderations = @data().moderations.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
+    customer = fetch '/customer'
 
     # Separate moderations by status
     passed = []
@@ -85,7 +118,10 @@ ModerationDash = ReactiveComponent
     failed = []
 
     for i in moderations
-      if !i.status || i.updated_since_last_evaluation
+      # register a data dependency, else resort doesn't happen when an item changes
+      fetch i.key
+
+      if !i.status? || i.updated_since_last_evaluation
         reviewable.push i
       else if i.status == 1
         passed.push i
@@ -95,28 +131,79 @@ ModerationDash = ReactiveComponent
         quarantined.push i
 
     items = [['Pending review', reviewable], ['Quarantined', quarantined], ['Failed', failed], ['Passed', passed]]
-    AdminDash 
-      items: items
-      dash_name: 'Moderation Interface'
-      renderTab : (item) =>
-        class_name = item.moderatable_type
-        moderatable = @data(item.moderatable)
-        if class_name == 'Point'
-          proposal = @data(moderatable.proposal)
-        else if class_name == 'Comment'
-          point = @data(moderatable.point)
-          proposal = @data(point.proposal)
 
-        DIV className: 'tab',
-          DIV style: {fontSize: 14, fontWeight: 600}, "Moderate #{class_name} #{item.moderatable_id}"
-          DIV style: {fontSize: 12}, "By #{@data(moderatable.user).name}"
-          DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
-          DIV style: {fontSize: 12}, "Added on #{new Date(moderatable.created_at).toDateString()}"
-          if item.updated_since_last_evaluation
-            DIV style: {fontSize: 12}, "* updated by user"
 
-      renderTask: (item) => 
-        ModerateItem key: item.key
+    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
+      H1 style: {fontSize: 28, marginTop: 20}, 'Moderation Interface'
+
+      DIV className: 'moderation_settings',
+        if customer.moderated_classes.length == 0 || @local.edit_settings
+          DIV null,             
+            for model in ['points', 'comments'] #, 'proposals']
+              # The order of the options is important for the database records
+              moderation_options = [
+                "Do not moderate #{model}", 
+                "Do not publicly post #{model} until moderation", 
+                "Post #{model} immediately, but withhold email notifications until moderation", 
+                "Post #{model} immediately, catch bad ones afterwards"]
+
+              FIELDSET style: {marginBottom: 12},
+                LEGEND style: {fontSize: 24},
+                  capitalize model
+
+                for field, idx in moderation_options
+                  DIV 
+                    style: {marginLeft: 18, fontSize: 18, cursor: 'pointer'}
+                    onClick: do (idx, model) => => 
+                      customer["moderate_#{model}_mode"] = idx-1
+                      save customer
+
+                      #saving the customer shouldn't always dirty moderations (which is expensive), so just doing it manually here
+                      arest.serverFetch('/dashboard/moderate')  
+
+                    INPUT style: {cursor: 'pointer'}, type: 'radio', name: "moderate_#{model}_mode", id: "moderate_#{model}_mode_#{idx-1}", defaultChecked: customer["moderate_#{model}_mode"] == idx-1
+                    LABEL style: {cursor: 'pointer', paddingLeft: 8 }, htmlFor: "moderate_#{model}_mode_#{idx-1}", field
+
+            BUTTON 
+              onClick: => 
+                @local.edit_settings = false
+                save @local
+              'Done'
+
+        else 
+          A 
+            style: {textDecoration: 'underline'}
+            onClick: => 
+              @local.edit_settings = true
+              save @local
+            'Edit moderation settings'
+
+      AdminTaskList 
+        key: 'moderation_dash'
+        items: items
+        renderTab : (item) =>
+          class_name = item.moderatable_type
+          moderatable = @data(item.moderatable)
+          if class_name == 'Point'
+            proposal = @data(moderatable.proposal)
+            tease = "#{moderatable.nutshell.substring(0, 30)}..."
+          else if class_name == 'Comment'
+            point = @data(moderatable.point)
+            proposal = @data(point.proposal)
+            tease = "#{moderatable.body.substring(0, 30)}..."
+
+          DIV className: 'tab',
+            DIV style: {fontSize: 14, fontWeight: 600}, "Moderate #{class_name} #{item.moderatable_id}"
+            DIV style: {fontSize: 12, fontStyle: 'italic'}, tease      
+            DIV style: {fontSize: 12, paddingLeft: 12}, "- #{@data(moderatable.user).name}"
+            #DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
+            #DIV style: {fontSize: 12}, "Added on #{new Date(moderatable.created_at).toDateString()}"
+            if item.updated_since_last_evaluation
+              DIV style: {fontSize: 12}, "* revised"
+
+        renderTask: (item) => 
+          ModerateItem key: item.key
+
 
 
 # TODO: respect point.hide_name
@@ -137,12 +224,14 @@ ModerateItem = ReactiveComponent
       proposal = @data(point.proposal)
 
     current_user = @data('/current_user')
-
+    
     DIV style: task_area_style,
       
       # status area
       DIV style: task_area_bar,
-        if item.status == 1
+        if item.updated_since_last_evaluation
+          SPAN style: {}, "Updated since last moderation"
+        else if item.status == 1
           SPAN style: {}, "Passed moderation #{new Date(item.updated_at).toDateString()}"
         else if item.status == 2
           SPAN style: {}, "Sitting in quarantine"
@@ -166,38 +255,92 @@ ModerateItem = ReactiveComponent
 
           DIV style:{fontSize: 12, marginLeft: 73}, 
             "by #{author.name}"
-            SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
-            A 
-              target: '_blank'
-              href: "/#{proposal.long_id}/?selected=#{point.key}"
-              style: {textDecoration: 'underline'}
-              'Read in context'
 
-            if !moderatable.hide_name
+            if (item.status != 0 && item.status != 2) || item.moderatable_type == 'Comment'
+              [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
+              A 
+                target: '_blank'
+                href: "/#{proposal.long_id}/?selected=#{point.key}"
+                style: {textDecoration: 'underline'}
+                'Read in context']
+
+            if !moderatable.hide_name && !@local.messaging
               [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
               A
                 style: {textDecoration: 'underline'}
                 onClick: (=> @local.messaging = moderatable; save(@local)),
                 'Message author']
+            else if @local.messaging
+              EmailMessage to: @local.messaging.user, parent: @local
+
+
 
         # moderation area
-        # DIV style: task_area_section_style, 
+        DIV style: task_area_section_style, 
+          STYLE null, 
+            """
+            .moderation { padding: 6px 8px; display: inline-block; }
+            .moderation:hover { background-color: rgba(255,255,255, .5); cursor: pointer; border-radius: 8px; }                         
+            .moderation label, .moderation input { font-size: 24px; }
+            .moderation label:hover, .moderation input:hover { font-size: 24px; cursor: pointer; }
+            """
 
-        #   if claim.result && claim.verdict && !claim.approver #&& current_user.id != claim.creator
-        #     BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @toggleClaimApproval(claim)), 'Approve'
-        #   else if claim.approver
-        #     BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @toggleClaimApproval(claim)), 'Unapprove'
+          DIV 
+            className: 'moderation',
+            onClick: ->
+              # this has to happen first otherwise the dash won't 
+              # know what the next item is when it transitions
+              dash = fetch 'moderation_dash'
+              dash.transition = item.key #need state transitions 
+              save dash
 
-        #   BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @local.editing = claim.key; save(@local)), 'Edit'
-        #   BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @deleteClaim(claim)), 'Delete'
+              item.status = 1
+              save item
 
-      if @local.messaging
-        EmailMessage to: @local.messaging.user, parent: @local
+            INPUT 
+              name: 'moderation'
+              type: 'radio'
+              id: 'pass'
+              defaultChecked: item.status == 1
 
+            LABEL htmlFor: 'pass', 'Pass'
+          DIV 
+            className: 'moderation',
+            onClick: ->
+              # this has to happen first otherwise the dash won't 
+              # know what the next item is when it transitions
+              dash = fetch 'moderation_dash'
+              dash.transition = item.key #need state transitions 
+              save dash
 
+              item.status = 2
+              save item
 
+            INPUT 
+              name: 'moderation'
+              type: 'radio'
+              id: 'quar'
+              defaultChecked: item.status == 2
+            LABEL htmlFor: 'quar', 'Quarantine'
+          DIV 
+            className: 'moderation',
+            onClick: ->
+              # this has to happen first otherwise the dash won't 
+              # know what the next item is when it transitions
+              dash = fetch 'moderation_dash'
+              dash.transition = item.key #need state transitions 
+              save dash
 
+              item.status = 0
+              save item
 
+            INPUT 
+              name: 'moderation'
+              type: 'radio'
+              id: 'fail'
+              defaultChecked: item.status == 0
+
+            LABEL htmlFor: 'fail', 'Fail'
 
 
 FactcheckDash = ReactiveComponent
@@ -207,26 +350,40 @@ FactcheckDash = ReactiveComponent
     assessments = @data().assessments.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
 
     # Separate assessments by status
-    completed = (a for a in assessments when a.complete)
-    reviewable = (a for a in assessments when !a.complete && a.reviewable)
-    todo = (a for a in assessments when !a.complete && !a.reviewable)
+    completed = []
+    reviewable = []
+    todo = []
+    for a in assessments
+      # register a data dependency, else resort doesn't happen when an item changes
+      fetch a.key
+
+      if a.complete 
+        completed.push a
+      else if a.reviewable
+        reviewable.push a
+      else
+        todo.push a
 
     items = [['Pending review', reviewable], ['Incomplete', todo], ['Complete', completed]]
-    AdminDash 
-      items: items
-      dash_name: 'Fact Checking Interface'
 
-      renderTab : (item) =>
-        point = @data(item.point)
-        proposal = @data(point.proposal)
+    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
+      H1 style: {fontSize: 28, marginTop: 20}, 'Fact Checking Interface'
 
-        DIV className: 'tab',
-          DIV style: {fontSize: 14, fontWeight: 600}, "Fact check point #{point.id}"
-          DIV style: {fontSize: 12}, "Requested on #{new Date(item.requests[0].created_at).toDateString()}"
-          DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
-      
-      renderTask : (item) => 
-        FactcheckPoint key: item.key
+      AdminTaskList 
+        items: items
+        key: 'factcheck_dash'
+
+        renderTab : (item) =>
+          point = @data(item.point)
+          proposal = @data(point.proposal)
+
+          DIV className: 'tab',
+            DIV style: {fontSize: 14, fontWeight: 600}, "Fact check point #{point.id}"
+            DIV style: {fontSize: 12}, "Requested on #{new Date(item.requests[0].created_at).toDateString()}"
+            DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
+        
+        renderTask : (item) => 
+          FactcheckPoint key: item.key
 
 
 FactcheckPoint = ReactiveComponent
@@ -281,14 +438,16 @@ FactcheckPoint = ReactiveComponent
               href: "/#{proposal.long_id}/?selected=#{point.key}"
               style: {textDecoration: 'underline'}
               'Read point in context'
-              # TODO: email author
-              # TODO: read point in context
-            if !point.hide_name
+
+            if !point.hide_name && @local.messaging != point
               [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
               A
                 style: {textDecoration: 'underline'}
                 onClick: (=> @local.messaging = point; save(@local)),
                 'Message author']
+            else if @local.messaging == point
+              EmailMessage to: @local.messaging.user, parent: @local
+
 
         # requests area
         DIV style: task_area_section_style, 
@@ -308,11 +467,14 @@ FactcheckPoint = ReactiveComponent
 
                 DIV style:{fontSize: 12, marginLeft: 73}, 
                   "by #{fetch(request.user).name}"
-                  SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
-                  A
-                    style: {textDecoration: 'underline'}
-                    onClick: (=> @local.messaging = request; save(@local)),
-                    'Message requester'
+                  if @local.messaging != request
+                    [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
+                    A
+                      style: {textDecoration: 'underline'}
+                      onClick: (=> @local.messaging = request; save(@local)),
+                      'Message requester']
+                  else if @local.messaging == request
+                    EmailMessage to: @local.messaging.user, parent: @local
 
         # claims area
         DIV style: task_area_section_style, 
@@ -384,8 +546,6 @@ FactcheckPoint = ReactiveComponent
               else if all_claims_answered
                 'This fact-check is awaiting publication'
 
-      if @local.messaging
-        EmailMessage to: @local.messaging.user, parent: @local
 
 
   deleteClaim : (claim) -> destroy claim.key
@@ -428,16 +588,13 @@ FactcheckPoint = ReactiveComponent
 EmailMessage = ReactiveComponent
   displayName: 'EmailMessage'
 
-  componentDidMount : -> 
-    $(@getDOMNode()).moveToTop()
-
   render : -> 
     text_style = 
-      width: 550
+      width: 500
       fontSize: 14
       display: 'block'
 
-    DIV style: {zIndex: 99999, padding: '15px 20px', position: 'absolute', top: 0, backgroundColor: 'white', width: 600, border: '#999', boxShadow: "0 1px 2px rgba(0,0,0,.2)"}, 
+    DIV style: {marginTop: 18, padding: '15px 20px', backgroundColor: 'white', width: 550, border: '#999', boxShadow: "0 1px 2px rgba(0,0,0,.2)"}, 
       DIV style: {marginBottom: 8},
         LABEL null, 'To: ', @data(@props.to).name
 

@@ -196,7 +196,7 @@ private
     for key in Thread.current[:dirtied_keys].keys
 
       # Grab dirtied points, opinions, and users
-      for type in [Point, Opinion, User]
+      for type in [Point, Opinion, User, Comment, Moderation]
         if key.match "/#{type.name.downcase}/"
           response.append type.find(key_id(key)).as_json
           next

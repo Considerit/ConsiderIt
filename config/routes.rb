@@ -19,11 +19,6 @@ ConsiderIt::Application.routes.draw do
     match "/report_client_error" => "client_errors#create", :via => :post, :as => :report_client_error
     get "/dashboard/client_errors" => "client_errors#index", :as => :client_error
 
-    resource :account, :only => [:show, :update]
-
-    get '/dashboard/application' => "accounts#show"
-    post '/dashboard/application' => "accounts#update"
-
     get '/dashboard/admin_template' => "admin#admin_template", :as => :admin_template
     #match '/dashboard/application' => "admin#application", :via => :get, :as => :application_settings
     get '/dashboard/analytics' => "admin#analytics", :as => :analytics
@@ -115,6 +110,7 @@ ConsiderIt::Application.routes.draw do
   get '/proposals' => 'proposal#index'
   get '/customer' => 'customer#show'
   match '/customer' => 'customer#update', :via => [:put]
+
 
   # These next ones are done with "match" because "resources" was
   # being all "I need an id like "/current_user/234" and I don't know

@@ -35,7 +35,7 @@ class Ability
     end
 
     if user.has_role? :moderator
-      can [:index, :create], Moderation
+      can [:index, :update], Moderation
     end
  
     if user.has_role? :manager

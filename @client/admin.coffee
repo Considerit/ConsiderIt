@@ -1,5 +1,12 @@
 # Admin components, like moderation and factchecking backend
 
+# Experimenting with sharing css styles between components via js objects
+task_area_header_style = {fontSize: 24, fontWeight: 400, margin: '10px 0'}
+task_area_bar = {padding: '4px 30px', fontSize: 24, borderRadius: '8px 8px 0 0', height: 35, backgroundColor: 'rgba(0,0,55,.1)'}
+task_area_section_style = {margin: '10px 0px 20px 0px', position: 'relative'}
+task_area_style = {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor: '#F4F0E9', position: 'absolute', left: CONTENT_WIDTH/4, top: -35, borderRadius: 8}
+
+
 
 # Checks if current user has proper credentials to view this component. 
 # If not, shows Auth. 
@@ -22,6 +29,177 @@ AccessControlled = ReactiveComponent
       save @root
       SPAN null
 
+
+
+AdminDash = ReactiveComponent
+  displayName: 'AdminDash'
+
+  render : -> 
+    # We assume an ordering of the task categories that where the earlier
+    # categories are more urgent & shown higher up in the list than later categories.
+
+    if !@local.selected_task && @props.items.length > 0
+      # Prefer to select a higher urgency task by default
+
+      for [category, items] in @props.items
+        if items.length > 0
+          @local.selected_task = items[0].key
+          save @local
+          break
+
+    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
+      STYLE null, '.admindash_tab:hover{background-color: #f1f1f1 }'
+      H1 style: {fontSize: 28, marginTop: 20}, @props.dash_name
+
+      DIV style: {}, 
+        for [category, items] in @props.items
+          if items.length > 0
+            DIV style: {marginTop: 20}, key: category,
+              H1 style: {fontSize: 22}, category
+              UL style: {},
+                for item in items
+                  background_color = if item.key == @local.selected_task then '#F4F0E9' else ''
+                  LI 
+                    key: item.key
+                    className: 'admindash_tab'
+                    style: {zIndex: 1, position: 'relative', width: CONTENT_WIDTH / 4, cursor: 'pointer', padding: '10px', margin: '5px 0', listStyle: 'none', borderRadius: '8px 0 0 8px', backgroundColor: background_color}
+                    onClick: do (item) => => 
+                      @local.selected_task = item.key
+                      save @local
+
+                    @props.renderTab item
+
+                    if @local.selected_task == item.key
+                      @props.renderTask item   
+
+ModerationDash = ReactiveComponent
+  displayName: 'ModerationDash'
+
+  render : -> 
+    moderations = @data().moderations.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
+
+    # Separate moderations by status
+    passed = []
+    reviewable = []
+    quarantined = []
+    failed = []
+
+    for i in moderations
+      if !i.status || i.updated_since_last_evaluation
+        reviewable.push i
+      else if i.status == 1
+        passed.push i
+      else if i.status == 0
+        failed.push i
+      else if i.status == 2
+        quarantined.push i
+
+    items = [['Pending review', reviewable], ['Quarantined', quarantined], ['Failed', failed], ['Passed', passed]]
+    AdminDash 
+      items: items
+      dash_name: 'Moderation Interface'
+      renderTab : (item) =>
+        class_name = item.moderatable_type
+        moderatable = @data(item.moderatable)
+        if class_name == 'Point'
+          proposal = @data(moderatable.proposal)
+        else if class_name == 'Comment'
+          point = @data(moderatable.point)
+          proposal = @data(point.proposal)
+
+        DIV className: 'tab',
+          DIV style: {fontSize: 14, fontWeight: 600}, "Moderate #{class_name} #{item.moderatable_id}"
+          DIV style: {fontSize: 12}, "By #{@data(moderatable.user).name}"
+          DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
+          DIV style: {fontSize: 12}, "Added on #{new Date(moderatable.created_at).toDateString()}"
+          if item.updated_since_last_evaluation
+            DIV style: {fontSize: 12}, "* updated by user"
+
+      renderTask: (item) => 
+        ModerateItem key: item.key
+
+
+# TODO: respect point.hide_name
+ModerateItem = ReactiveComponent
+  displayName: 'ModerateItem'
+
+  render : ->
+    item = @data()
+
+    class_name = item.moderatable_type
+    moderatable = fetch(item.moderatable)
+    author = fetch(moderatable.user)
+    if class_name == 'Point'
+      point = moderatable
+      proposal = @data(moderatable.proposal)
+    else if class_name == 'Comment'
+      point = @data(moderatable.point)
+      proposal = @data(point.proposal)
+
+    current_user = @data('/current_user')
+
+    DIV style: task_area_style,
+      
+      # status area
+      DIV style: task_area_bar,
+        if item.status == 1
+          SPAN style: {}, "Passed moderation #{new Date(item.updated_at).toDateString()}"
+        else if item.status == 2
+          SPAN style: {}, "Sitting in quarantine"
+        else if item.status == 0
+          SPAN style: {}, "Failed moderation"
+        else 
+          SPAN style: {}, "Is this #{item.moderatable_type} ok?"
+
+        if item.user
+          SPAN style: {float: 'right', fontSize: 18, verticalAlign: 'bottom'},
+            "Moderated by #{@data(item.user).name}"
+
+      DIV style: {padding: '10px 30px'},
+        # content area
+        DIV style: task_area_section_style, 
+          if item.moderatable_type == 'Point'
+            UL style: {marginLeft: 73}, 
+              Point key: point, rendered_as: 'under_review'
+          else if item.moderatable_type == 'Comment'
+            Comment key: moderatable
+
+          DIV style:{fontSize: 12, marginLeft: 73}, 
+            "by #{author.name}"
+            SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
+            A 
+              target: '_blank'
+              href: "/#{proposal.long_id}/?selected=#{point.key}"
+              style: {textDecoration: 'underline'}
+              'Read in context'
+
+            if !moderatable.hide_name
+              [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
+              A
+                style: {textDecoration: 'underline'}
+                onClick: (=> @local.messaging = moderatable; save(@local)),
+                'Message author']
+
+        # moderation area
+        # DIV style: task_area_section_style, 
+
+        #   if claim.result && claim.verdict && !claim.approver #&& current_user.id != claim.creator
+        #     BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @toggleClaimApproval(claim)), 'Approve'
+        #   else if claim.approver
+        #     BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @toggleClaimApproval(claim)), 'Unapprove'
+
+        #   BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @local.editing = claim.key; save(@local)), 'Edit'
+        #   BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @deleteClaim(claim)), 'Delete'
+
+      if @local.messaging
+        EmailMessage to: @local.messaging.user, parent: @local
+
+
+
+
+
+
+
 FactcheckDash = ReactiveComponent
   displayName: 'FactcheckDash'
 
@@ -33,39 +211,22 @@ FactcheckDash = ReactiveComponent
     reviewable = (a for a in assessments when !a.complete && a.reviewable)
     todo = (a for a in assessments when !a.complete && !a.reviewable)
 
-    if !@local.selected_factcheck && @data().assessments.length > 0
-      @local.selected_factcheck = if reviewable.length > 0 then reviewable[0].key else if todo.length > 0 then todo[0].key else completed[0].key
-      save @local
+    items = [['Pending review', reviewable], ['Incomplete', todo], ['Complete', completed]]
+    AdminDash 
+      items: items
+      dash_name: 'Fact Checking Interface'
 
+      renderTab : (item) =>
+        point = @data(item.point)
+        proposal = @data(point.proposal)
 
-    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
-      STYLE null, '.factcheck_tab:hover{background-color: #f1f1f1 }'
-      H1 style: {fontSize: 28, marginTop: 20}, 'Fact Checking Interface'
-
-      DIV style: {}, 
-        for assessments in [['Pending review', reviewable], ['Incomplete', todo], ['Complete', completed]]
-          if assessments[1].length > 0
-            DIV style: {marginTop: 20}, key: assessments[0],
-              H1 style: {fontSize: 22}, assessments[0]
-              UL style: {},
-                for assessment in assessments[1]
-                  point = @data(assessment.point)
-                  proposal = @data(point.proposal)
-                  background_color = if assessment.key == @local.selected_factcheck then '#F4F0E9' else ''
-                  LI 
-                    key: assessment.key
-                    className: 'factcheck_tab'
-                    style: {zIndex: 1, position: 'relative', width: CONTENT_WIDTH / 4, cursor: 'pointer', padding: '10px', margin: '5px 0', listStyle: 'none', borderRadius: '8px 0 0 8px', backgroundColor: background_color}
-                    onClick: do (assessment) => => 
-                      @local.selected_factcheck = assessment.key
-                      save @local
-
-                    DIV style: {fontSize: 14, fontWeight: 600}, "Fact check point #{point.id}"
-                    DIV style: {fontSize: 12}, "Requested on #{new Date(assessment.requests[0].created_at).toDateString()}"
-                    DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
-
-                    if @local.selected_factcheck == assessment.key
-                      FactcheckPoint key: assessment.key
+        DIV className: 'tab',
+          DIV style: {fontSize: 14, fontWeight: 600}, "Fact check point #{point.id}"
+          DIV style: {fontSize: 12}, "Requested on #{new Date(item.requests[0].created_at).toDateString()}"
+          DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
+      
+      renderTask : (item) => 
+        FactcheckPoint key: item.key
 
 
 FactcheckPoint = ReactiveComponent
@@ -85,14 +246,11 @@ FactcheckPoint = ReactiveComponent
       if !claim.approver
         all_claims_approved = false
 
-    header_style = {fontSize: 24, fontWeight: 400, margin: '10px 0'}
-    section_style = {margin: '10px 0px 20px 0px', position: 'relative'}
-
-    DIV style: {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor: '#F4F0E9', position: 'absolute', left: CONTENT_WIDTH/4, top: -35, borderRadius: 8},
+    DIV style: task_area_style,
       STYLE null, '.claim_result a{text-decoration: underline;}'
       
       # status area
-      DIV style: {padding: '4px 30px', fontSize: 24, borderRadius: '8px 8px 0 0', height: 35, backgroundColor: 'rgba(0,0,55,.1)'},
+      DIV style: task_area_bar,
         if assessment.complete
           SPAN style: {}, "Published #{new Date(assessment.published_at).toDateString()}"
         else if assessment.reviewable
@@ -111,7 +269,7 @@ FactcheckPoint = ReactiveComponent
 
       DIV style: {padding: '10px 30px'},
         # point area
-        DIV style: section_style, 
+        DIV style: task_area_section_style, 
           UL style: {marginLeft: 73}, 
             Point key: point, rendered_as: 'under_review'
 
@@ -133,8 +291,8 @@ FactcheckPoint = ReactiveComponent
                 'Message author']
 
         # requests area
-        DIV style: section_style, 
-          H1 style: header_style, 'Fact check requests'
+        DIV style: task_area_section_style, 
+          H1 style: task_area_header_style, 'Fact check requests'
           DIV style: {}, 
             for request in assessment.requests
               DIV className: 'comment_entry',
@@ -157,8 +315,8 @@ FactcheckPoint = ReactiveComponent
                     'Message requester'
 
         # claims area
-        DIV style: section_style, 
-          H1 style: header_style, 'Claims under review'
+        DIV style: task_area_section_style, 
+          H1 style: task_area_header_style, 'Claims under review'
 
 
           DIV style: {}, 
@@ -201,8 +359,8 @@ FactcheckPoint = ReactiveComponent
             else if !@local.editing
               Button {style: {marginLeft: 73, marginTop: 15}}, '+ Add new claim', => @local.editing = 'new'; save(@local)
 
-        DIV style: section_style,
-          H1 style: header_style, 'Private notes'
+        DIV style: task_area_section_style,
+          H1 style: task_area_header_style, 'Private notes'
           AutoGrowTextArea
             className: 'assessment_notes'
             placeholder: 'Private notes about this fact check'
@@ -215,7 +373,7 @@ FactcheckPoint = ReactiveComponent
 
           BUTTON style: {fontSize: 14}, onClick: @saveNotes, 'Save notes'
 
-          DIV style: header_style,
+          DIV style: task_area_header_style,
             if assessment.complete
               'Congrats, this one is finished.'
             else if all_claims_answered && !assessment.reviewable
@@ -376,4 +534,5 @@ EditClaim = ReactiveComponent
 
 ## Export...
 window.FactcheckDash = FactcheckDash
+window.ModerationDash = ModerationDash
 window.AccessControlled = AccessControlled

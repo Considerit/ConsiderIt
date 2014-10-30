@@ -123,7 +123,7 @@ namespace :alerts do
       if content_to_moderate > 0
         # send to all users with moderator status
         roles = current_tenant.user_roles()
-        moderators = roles.has_key?(:moderator) ? roles[:moderator] : []
+        moderators = roles.has_key?('moderator') ? roles['moderator'] : []
 
         moderators.each do |key|
           begin

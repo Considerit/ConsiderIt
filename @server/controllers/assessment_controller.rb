@@ -141,7 +141,7 @@ ActiveSupport::Notifications.subscribe("new_assessment_request") do |*args|
 
   # send to all factcheckers
   roles = current_tenant.user_roles()
-  evaluators = roles.has_key?(:evaluator) ? roles[:evaluator] : []
+  evaluators = roles.has_key?('evaluator') ? roles['evaluator'] : []
 
   evaluators.each do |key|
     begin

@@ -2901,8 +2901,9 @@ ProfileLink = ReactiveComponent
               A 
                 className: 'menu_link'
                 href: '/dashboard/moderate'
+                onClick: clickInternalLink                
                 'Moderate'
-            if current_user.is_assessor
+            if current_user.is_evaluator
               A 
                 className: 'menu_link'
                 href: '/dashboard/assessment'
@@ -3258,8 +3259,11 @@ Page = ReactiveComponent
           else if @root.page_name.match(/(.+)\/edit/)
             EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
           else if @root.page_name == 'dashboard/assessment'
-            AccessControlled permitted: ['admin', 'assessor'],
+            AccessControlled permitted: ['admin', 'evaluator'],
               FactcheckDash key: "/dashboard/assessment"
+          else if @root.page_name == 'dashboard/moderate'
+            AccessControlled permitted: ['admin', 'moderator'],
+              ModerationDash key: "/dashboard/moderate"
           else 
             Proposal key: @page.proposal.key
 
@@ -3442,7 +3446,7 @@ Router = Backbone.Router.extend
     "proposal/new(/)" : "new_proposal"
     "proposal/:proposal/edit(/)": "edit_proposal"
     ":proposal(/)": "proposal"    
-    "dashboard/assessment(/)": 'dashboard_factcheck'
+    "dashboard/:dash(/)": 'dashboard'
 
   proposal : (long_id, params) ->
     root = fetch('root')
@@ -3499,9 +3503,9 @@ Router = Backbone.Router.extend
     clearRootForNonProposalRoute(root)
     save root      
 
-  dashboard_factcheck : (params) -> 
+  dashboard : (dash, params) -> 
     root = fetch('root')
-    root.page_name = 'dashboard/assessment'    
+    root.page_name = "dashboard/#{dash}"    
     clearRootForNonProposalRoute(root)
     save root
 
@@ -3563,6 +3567,7 @@ $(document).ready ->
 # exports...
 window.splitParagraphs = splitParagraphs
 window.Point = Point
+window.Comment = Comment
 window.Avatar = Avatar
 window.Button = Button
 window.AutoGrowTextArea = AutoGrowTextArea

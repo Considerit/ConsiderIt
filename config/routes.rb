@@ -40,10 +40,10 @@ ConsiderIt::Application.routes.draw do
 
     match '/dashboard/message' => 'message#create', :as => 'message', :via => :post
 
-    concern :moderatable do 
-      match "/dashboard/moderate/create" => 'moderatable#create', :via => :post
-      get "/dashboard/moderate" => 'moderatable#index'
-    end
+    # concern :moderatable do 
+    #   match "/dashboard/moderate/create" => 'moderatable#create', :via => :post
+    #   get "/dashboard/moderate" => 'moderatable#index'
+    # end
 
     # concern :assessable do 
     #   resources :assessment, :path => "dashboard/assessment", :controller => "assessable", :only => [:index, :edit, :update] do 
@@ -56,7 +56,7 @@ ConsiderIt::Application.routes.draw do
 
     # end
 
-    concerns :moderatable
+    #concerns :moderatable
     # concerns :assessable
 
   end
@@ -108,7 +108,7 @@ ConsiderIt::Application.routes.draw do
   resources :opinion, :only => [:update, :show]
   resources :client_error, :only => [:create]
 
-  resources :comment, :only => [:create, :update, :destroy]
+  resources :comment, :only => [:create, :show, :update, :destroy]
   get '/comments/:point_id' => 'comment#index'
 
   post '/log' => 'log#create'
@@ -130,6 +130,9 @@ ConsiderIt::Application.routes.draw do
   resources :assessment, :only => [:show, :update]
   resources :claim, :only => [:show, :create, :update, :destroy]
   resources :request, :only => [:create], :controller => "assessment"
+
+  get "/dashboard/moderate" => 'moderation#index'
+  match "/moderation/:id" => 'moderation#update', :via => :put
 
 
   get 'user_avatar_hack' => 'current_user#user_avatar_hack'

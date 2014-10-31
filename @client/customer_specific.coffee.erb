@@ -112,9 +112,9 @@ window.livingvotersguideHeader = ReactiveComponent
 
     logo_style =
       position: 'absolute'
-      left: if show_full then 62 else 154
+      left: if show_full then 20 else 124
       top: if show_full then 27 else 73
-      width: if show_full then 222 else 130
+      width: if show_full then 300 else 180
       zIndex: 1
 
     DIV null,
@@ -132,7 +132,7 @@ window.livingvotersguideHeader = ReactiveComponent
 
       # Logo
       A href: (if @root.page_name == 'homepage' then '/about' else '/'), onClick: clickInternalLink,
-        IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.svg' %>", style: logo_style
+        IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.png' %>", style: logo_style
 
       # Blue + green areas
       DIV

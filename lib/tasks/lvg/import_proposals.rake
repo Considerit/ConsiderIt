@@ -72,7 +72,12 @@ def fetchAndParseMeasureFromMaplight(measure_id)
         endorsement_html += "<span style='font-style: italic'>No endorsers yet</span>"
       else
         for endorsement in endorsers
-          endorsement_html += "<a href='#{endorsement['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{endorsement['title']}</a>, "
+          if endorsement['url'] && endorsement['url'].length > 0
+            endorsement_html += "<a href='#{endorsement['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{endorsement['title']}</a>, "
+          else
+            endorsement_html += "<span>#{endorsement['title']}</span>, "
+          end
+
         end
         endorsement_html = endorsement_html[0..endorsement_html.length-3]
       end

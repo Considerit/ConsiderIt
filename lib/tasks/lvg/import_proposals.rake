@@ -186,7 +186,7 @@ namespace :lvg do
             funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"
           end
         else
-          funding_html += "<div style='font-style: italic'>No donations in Support yet</div><ul>"
+          funding_html += "<div style='font-style: italic'>No donations in Support yet<ul>"
         end
         funding_html += "</ul></div>"
       end

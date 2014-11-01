@@ -57,13 +57,12 @@ def fetchAndParseMeasureFromMaplight(measure_id)
           funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"
         end
       else
-        funding_html += "<div style='font-style: italic'>No donations in #{idx == 0 ? 'Support' : 'Opposition'} yet</div><ul>"
+        funding_html += "<div style='font-style: italic'>No donations in #{idx == 0 ? 'Support' : 'Opposition'} yet<ul>"
       end
       funding_html += "</ul></div>"
     end
   end
 
-  
   if data['endorsements'] && ((data['endorsements']['support'] != [nil] && data['endorsements']['support'].length > 0) || (data['endorsements']['oppose'] != [nil] && data['endorsements']['oppose'].length > 0))
     [ data['endorsements']['support'], data['endorsements']['oppose'] ].each_with_index do |endorsers, idx|
       
@@ -78,6 +77,7 @@ def fetchAndParseMeasureFromMaplight(measure_id)
         endorsement_html = endorsement_html[0..endorsement_html.length-3]
       end
       endorsement_html += "</p></div>"
+
     end
   end
 

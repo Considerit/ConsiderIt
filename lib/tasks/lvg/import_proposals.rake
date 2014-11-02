@@ -57,13 +57,12 @@ def fetchAndParseMeasureFromMaplight(measure_id)
           funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"
         end
       else
-        funding_html += "<div style='font-style: italic'>No donations in #{idx == 0 ? 'Support' : 'Opposition'} yet</div><ul>"
+        funding_html += "<div style='font-style: italic'>No donations in #{idx == 0 ? 'Support' : 'Opposition'} yet<ul>"
       end
       funding_html += "</ul></div>"
     end
   end
 
-  
   if data['endorsements'] && ((data['endorsements']['support'] != [nil] && data['endorsements']['support'].length > 0) || (data['endorsements']['oppose'] != [nil] && data['endorsements']['oppose'].length > 0))
     [ data['endorsements']['support'], data['endorsements']['oppose'] ].each_with_index do |endorsers, idx|
       
@@ -73,11 +72,17 @@ def fetchAndParseMeasureFromMaplight(measure_id)
         endorsement_html += "<span style='font-style: italic'>No endorsers yet</span>"
       else
         for endorsement in endorsers
-          endorsement_html += "<a href='#{endorsement['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{endorsement['title']}</a>, "
+          if endorsement['url'] && endorsement['url'].length > 0
+            endorsement_html += "<a href='#{endorsement['url']}' rel='nofollow' target='_blank' style='text-decoration:underline'>#{endorsement['title']}</a>, "
+          else
+            endorsement_html += "<span>#{endorsement['title']}</span>, "
+          end
+
         end
         endorsement_html = endorsement_html[0..endorsement_html.length-3]
       end
       endorsement_html += "</p></div>"
+
     end
   end
 
@@ -186,7 +191,7 @@ namespace :lvg do
             funding_html += "<li class='other_donors'>...#{funders['items'].length - 10} other donors</li>"
           end
         else
-          funding_html += "<div style='font-style: italic'>No donations in Support yet</div><ul>"
+          funding_html += "<div style='font-style: italic'>No donations in Support yet<ul>"
         end
         funding_html += "</ul></div>"
       end

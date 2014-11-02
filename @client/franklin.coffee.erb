@@ -50,6 +50,9 @@ capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
 L = loading_indicator = DIV null, 'Loading...'
 
 splitParagraphs = (user_content) ->
+  if !user_content
+    return SPAN null
+    
   user_content = user_content.replace(/(<li>|<br\s?\/?>|<p>)/g, '\n') #add newlines
   user_content = user_content.replace(/(<([^>]+)>)/ig, "") #strips all tags
 

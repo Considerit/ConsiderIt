@@ -116,8 +116,6 @@ protected
     end
   end
 
-private
-
   def get_current_tenant
     rq = request
 
@@ -213,6 +211,7 @@ private
         response.append Comment.comments_for_point(point)
       
       elsif key == '/customer'
+        pp current_tenant.contact_email
         response.append current_tenant.as_json
 
       elsif key == '/current_user'
@@ -221,11 +220,13 @@ private
       elsif key == '/proposals'
         response.append Proposal.summaries
 
+      elsif key == '/users'
+        response.append User.all_for_customer
+
       elsif key.match '/page/homepage'
         recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions, proposals p WHERE opinions.account_id=#{current_tenant.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}' AND p.id = opinions.proposal_id AND p.active=1")      
 
         clean = {
-          users: get_all_user_data(),
           contributors: recent_contributors.map {|u| "/user/#{u['id']}"},
           your_opinions: current_user.opinions.map {|o| o.as_json},
           key: key
@@ -249,7 +250,6 @@ private
 
 
         clean = { 
-          users: get_all_user_data(),
           your_opinions: current_user.opinions.map {|o| o.as_json},
           key: key,
           proposal: proposal.as_json,
@@ -276,12 +276,6 @@ private
     end
 
     return response
-  end
-
-  def get_all_user_data
-    users = ActiveRecord::Base.connection.select( "SELECT users.id,users.name,users.avatar_file_name FROM users WHERE id IN (SELECT user_id FROM opinions where opinions.account_id=#{current_tenant.id} AND opinions.published=1)")
-    users = users.as_json
-    jsonify_objects(users, 'user')
   end
 
   def store_location(path)

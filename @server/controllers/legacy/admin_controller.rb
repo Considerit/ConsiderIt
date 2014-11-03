@@ -3,67 +3,6 @@ require 'date'
 class Dashboard::AdminController < Dashboard::DashboardController
   #respond_to :json
   
-  def admin_template
-    render :json => { 
-      :admin_template => self.process_admin_template() }
-  end
-
-  def proposals
-    # if !(current_user.is_admin? || current_user.has_role?(:manager))
-    #   redirect_to root_path, :notice => "You need to be an admin to do that."
-    #   return
-    # end
-  end
-
-  def roles
-
-    if current_user.nil? || !(current_user.is_admin? || current_user.has_role?(:manager))
-      result = {
-        :result => 'failed',
-        :reason => current_user.nil? ? 'not logged in' : 'not authorized'
-      }
-    else
-      result = { 
-        :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil}
-    end
-
-    if request.xhr?
-      render :json => result 
-    else
-      render "layouts/dash", :layout => false 
-    end
-  end
-
-  def update_role
-
-    if current_user.nil? || !(current_user.is_admin? || current_user.has_role?(:manager))
-      result = {
-        :result => 'failed',
-        :reason => current_user.nil? ? 'not logged in' : 'not authorized'
-      }
-    else
-
-      user = User.find(params[:user_id])
-
-      if params[:user][:role] == 'admin'
-        user.roles = :admin
-      elsif params[:user][:role] == 'user'
-        user.roles = nil
-      else
-        [:moderator, :evaluator, :manager, :analyst].each do |role|
-          user.roles.delete(role)
-          if params[:user][role] == '1'
-            user.roles << role
-          end
-        end
-      end
-
-      user.save
-      result = { :roles_mask => user.roles_mask, :role_list => user.role_list } 
-    end
-
-    render :json => result
-  end
 
   def analytics
 

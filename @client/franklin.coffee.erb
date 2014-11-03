@@ -313,7 +313,7 @@ Proposal = ReactiveComponent
     proposal = @proposal
     your_opinion = @data(@proposal.your_opinion)
     included_points = your_opinion.point_inclusions
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     customer = @data('/customer')
 
     description_region_style = {width: DESCRIPTION_WIDTH}
@@ -999,7 +999,7 @@ DecisionBoard = ReactiveComponent
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   render : ->
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     customer = @data('/customer')
     
     your_opinion = @data(@proposal.your_opinion)
@@ -1098,7 +1098,7 @@ DecisionBoard = ReactiveComponent
 
   componentDidUpdate : -> 
     $el = $(@getDOMNode())    
-    root = @data('root')
+    root = fetch('root')
 
     # hack to get around a problem where the browser's remembered scroll position messes
     # up the sticky location after initialization
@@ -1131,7 +1131,7 @@ DecisionBoard = ReactiveComponent
   # When user clicks the big bold button at the bottom of the crafting page
   saveYourOpinion : -> 
     your_opinion = @data (@proposal.your_opinion)
-    if @data('/current_user').logged_in
+    if fetch('/current_user').logged_in
       your_opinion.published = true
       save (your_opinion)
       togglePage('results', 'save_button')
@@ -1160,7 +1160,7 @@ YourPoints = ReactiveComponent
       what: 'click new point'
 
   render : ->
-    root = @data('root')
+    root = fetch('root')
     included_points = @data(@proposal.your_opinion).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
@@ -1233,7 +1233,7 @@ CommunityPoints = ReactiveComponent
                   '6'
     ,
       DIV className:'points_heading_label',
-        if @data('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
+        if fetch('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
         P className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
           if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
 
@@ -1257,7 +1257,7 @@ CommunityPoints = ReactiveComponent
       new Date()
 
   buildPointsList : ->
-    is_results = @data('root').proposal_mode == 'results'
+    is_results = fetch('root').proposal_mode == 'results'
     selected_segment = @data('histogram').selected_segment
     included_points = @data(@proposal.your_opinion).point_inclusions
     points = @page.points
@@ -1306,7 +1306,7 @@ Point = ReactiveComponent
     is_selected = @root.selected_point == @props.key
 
     selected_segment = @data('histogram').selected_segment
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
 
 
     renderIncluders = =>
@@ -1498,7 +1498,7 @@ Point = ReactiveComponent
 
     return if @props.rendered_as == 'under_review'
 
-    disable = @data('root').proposal_mode == 'results'
+    disable = fetch('root').proposal_mode == 'results'
 
     $point_content = $(@getDOMNode()).find('.point_content')
     revert = 
@@ -1557,7 +1557,7 @@ Point = ReactiveComponent
   # On hovering over a point, highlight the people who included this 
   # point in the Histogram.
   highlightIncluders : -> 
-    if @data('root').proposal_mode == 'results'
+    if fetch('root').proposal_mode == 'results'
       includers = @data().includers
       point = @data()
 
@@ -1573,7 +1573,7 @@ Point = ReactiveComponent
         save(hist)
 
   unHighlightIncluders : -> 
-    if @data('root').proposal_mode == 'results'
+    if fetch('root').proposal_mode == 'results'
       hist = @data('histogram')
       hist.highlighted_users = null
       save(hist)
@@ -2129,7 +2129,7 @@ EditPoint = ReactiveComponent
 
   savePoint : (ev) ->
     $form = $(@getDOMNode())
-    root = @data('root')
+    root = fetch('root')
 
     nutshell = $form.find('#nutshell').val()
     text = $form.find('#text').val()
@@ -2143,7 +2143,7 @@ EditPoint = ReactiveComponent
       point.text = text
       point.hide_name = hide_name
     else
-      current_user = @data('/current_user').user
+      current_user = fetch('/current_user').user
       point =
         key : '/new/point'
         is_pro : @props.valence == 'pros'
@@ -2278,8 +2278,9 @@ Auth = ReactiveComponent
   displayName: 'Auth'
 
   render: -> 
-    current_user = @data('/current_user')
-    root = @data('root')
+    current_user = fetch('/current_user')
+    customer = fetch('/customer')
+    root = fetch('root')
 
     # When we switch to new auth_mode screens, wipe out all the old
     # errors, cause we're startin' fresh!
@@ -2392,9 +2393,14 @@ Auth = ReactiveComponent
 
       #top: '-80px'
 
-    pledges = ['I will participate with only one account', 
-               'I will speak only on behalf of myself', 
-               'I will not attack or mock others']
+    if !customer.requires_civility_pledge_on_registration
+      pledges = []
+    else
+      pledges = ['I will participate with only one account', 
+                 'I will speak only on behalf of myself', 
+                 'I will not attack or mock others']
+
+
 
     DIV
       className:'auth_region focal_wrapper'
@@ -2597,7 +2603,7 @@ Auth = ReactiveComponent
         # the pledge.  The server tells us this via the existence of a
         # `user' object in current_user.
 
-        current_user = @data('/current_user')
+        current_user = fetch('/current_user')
         if current_user.logged_in
           # We are logged in!  The user has completed registration.
 
@@ -2616,7 +2622,7 @@ Auth = ReactiveComponent
 
   submitAuth : (ev) -> 
     ev.preventDefault()
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
 
     $el = $(@getDOMNode())
     current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
@@ -2655,7 +2661,7 @@ Auth = ReactiveComponent
   sendResetPassword : -> 
 
     # Tell the server to email us a token
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     current_user.trying_to = 'send_password_reset_token'
     save(current_user, =>
       if not (current_user.errors?.reset_password?.length > 0)
@@ -2669,7 +2675,7 @@ Auth = ReactiveComponent
         arest.updateCache(current_user)
       )
   toggleAuthMode : -> 
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
     current_user.errors = {}
     save(@root)
@@ -2885,7 +2891,7 @@ ProfileLink = ReactiveComponent
   displayName: 'ProfileLink'
 
   render : -> 
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     customer = @data('/customer')
     color = @data('color')
 
@@ -2900,6 +2906,18 @@ ProfileLink = ReactiveComponent
           onMouseEnter: => @local.menu = true; save(@local)
           onMouseLeave: => @local.menu = false; save(@local)
           DIV className: 'profile_menu', style: {display: (if not @local.menu then 'none')},
+            if current_user.is_admin
+              A 
+                className: 'menu_link'
+                href: '/dashboard/application'
+                onClick: clickInternalLink                
+                'App Settings'
+              A 
+                className: 'menu_link'
+                href: '/dashboard/roles'
+                onClick: clickInternalLink                
+                'User Roles'
+
             if current_user.is_moderator
               A 
                 className: 'menu_link'
@@ -2934,7 +2952,7 @@ ProfileLink = ReactiveComponent
 
 
   logout : -> 
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     current_user.logged_in = false
     current_user.trying_to = 'logout'
 
@@ -2955,7 +2973,7 @@ Header = ReactiveComponent
   displayName: 'Header'
 
   render : ->
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     customer = @data('/customer')
     color = @data('color')
 
@@ -3078,7 +3096,7 @@ EditProposal = ReactiveComponent
     save proposal, -> window.app_router.navigate "/#{long_id}", {trigger : true}
 
   render : ->
-    user = @data('/current_user')
+    user = fetch('/current_user')
     
     return DIV null, 'Nothing to see here, move on' if !user.logged_in || !user.is_admin || (!@props.fresh && !@data().long_id )
 
@@ -3267,6 +3285,12 @@ Page = ReactiveComponent
           else if @root.page_name == 'dashboard/moderate'
             AccessControlled permitted: ['admin', 'moderator'],
               ModerationDash key: "/dashboard/moderate"
+          else if @root.page_name == 'dashboard/application'
+            AccessControlled permitted: ['admin'],
+              AppSettingsDash key: "/customer"
+          else if @root.page_name == 'dashboard/roles'
+            AccessControlled permitted: ['admin'],
+              RolesDash key: "/customer"
           else 
             Proposal key: @page.proposal.key
 
@@ -3277,7 +3301,7 @@ Computer = ReactiveComponent
   # changes to current_user for CSRF and logging in and out.
   displayName: 'Computer'
   render : ->
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     if current_user.csrf
       arest.csrf(current_user.csrf)
 

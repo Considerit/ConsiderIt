@@ -128,6 +128,7 @@ PermissionBlock = ReactiveComponent
 
   render : -> 
     customer = fetch '/customer'
+    users = fetch '/users'
     role = @props.key
 
     DIV null,
@@ -140,29 +141,37 @@ PermissionBlock = ReactiveComponent
             customer.roles[role] = _.without customer.roles[role], user_key
             save customer
       
-      if !@local.add
-        DIV null, 
-          A style: {textDecoration: 'underline'}, onClick: (=> @local.add = true; save @local),
-            "Add #{role}"    
-      else
-        users = fetch '/users'
-        DIV style: {position: 'relative'}, 
-          INPUT 
-            id: 'filter'
-            type: 'text'
-            style: {fontSize: 18, width: 500}
-            autocomplete: 'off'
-            placeholder: 'Filter users. Click a user to add them.'
-            onChange: => @local.filtered = $('#filter').val(); save @local
-          A style: {textDecoration: 'underline'}, onClick: (=> @local.add = false; save @local), "done"    
+      DIV style: {position: 'relative'}, 
+        INPUT 
+          id: 'filter'
+          type: 'text'
+          style: {fontSize: 18, width: 500}
+          autocomplete: 'off'
+          placeholder: 'Add users to role'
+          onChange: (=> @local.filtered = $(@getDOMNode()).find('#filter').val(); save(@local);)
+          onFocus: (e) => 
+            @local.add = true
+            save(@local)
+            e.stopPropagation()
+            $(document).on 'click.roles', (e) =>
+              if e.target.id != 'filter'
+                @local.add = false
+                @local.filtered = null
+                $(@getDOMNode()).find('#filter').val('')
+                save(@local)
+                $(document).off('click.roles')
+            return false
+
+        if @local.add
           UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
             for user in _.filter(users.users, (u) => customer.roles[role].indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
               LI 
                 style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
-                onClick: do(user) => => 
+                onClick: do(user) => (e) => 
                   # add role
                   customer.roles[role].push user.key
                   save customer
+                  e.stopPropagation()
 
                 "#{user.name} <#{user.email}>"
 
@@ -351,6 +360,7 @@ ModerateItem = ReactiveComponent
   render : ->
     item = @data()
 
+
     class_name = item.moderatable_type
     moderatable = fetch(item.moderatable)
     author = fetch(moderatable.user)
@@ -360,6 +370,7 @@ ModerateItem = ReactiveComponent
     else if class_name == 'Comment'
       point = @data(moderatable.point)
       proposal = @data(point.proposal)
+      comments = @data("/comments/#{point.id}")
 
     current_user = @data('/current_user')
     
@@ -385,11 +396,33 @@ ModerateItem = ReactiveComponent
       DIV style: {padding: '10px 30px'},
         # content area
         DIV style: task_area_section_style, 
+
           if item.moderatable_type == 'Point'
             UL style: {marginLeft: 73}, 
               Point key: point, rendered_as: 'under_review'
           else if item.moderatable_type == 'Comment'
-            Comment key: moderatable
+            if !@local.show_conversation
+              DIV null,
+                A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = true; save(@local)),
+                  'Show full conversation'
+                Comment key: moderatable
+
+            else
+              DIV null,
+                A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = false; save(@local)),
+                  'Hide full conversation'
+
+                UL style: {opacity: .5, marginLeft: 73}, 
+                  Point key: point, rendered_as: 'under_review'
+                for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key))
+
+                  if comment != moderatable.key
+                    DIV style: {opacity: .5},
+                      Comment key: comment
+                  else 
+                    Comment key: moderatable
+
+
 
           DIV style:{fontSize: 12, marginLeft: 73}, 
             "by #{author.name}"

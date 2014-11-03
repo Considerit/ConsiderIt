@@ -100,6 +100,20 @@ class User < ActiveRecord::Base
     
   end
 
+  def self.all_for_customer
+    current_tenant = Thread.current[:tenant]
+    fields = "CONCAT('\/user\/',id) as 'key',users.name,users.avatar_file_name"
+    if current_user.is_admin?
+      fields += ",email"
+    end
+    users = ActiveRecord::Base.connection.select( "SELECT #{fields} FROM users WHERE registration_complete=1 AND active_in like '%\"#{current_tenant.id}\"%'")
+    users = users.as_json
+    jsonify_objects(users, 'user')
+
+    {key: '/users', users: users}
+
+  end
+
   def as_json(options={})
     return { 'key' => "/user/#{id}",
              'name' => name,

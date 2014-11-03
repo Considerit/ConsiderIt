@@ -29,6 +29,144 @@ AccessControlled = ReactiveComponent
       save @root
       SPAN null
 
+AppSettingsDash = ReactiveComponent
+  displayName: 'AppSettingsDash'
+
+  render : -> 
+    customer = @data()
+
+    DIV className: 'app_settings_dash',
+      STYLE null, 
+        """
+        .app_settings_dash { font-size: 18px; width: #{CONTENT_WIDTH}px; margin: 20px auto; }
+        .app_settings_dash label { display: block; }
+        .app_settings_dash input { display: block; width: 600px; font-size: 18px; padding: 4px 8px; } 
+        .app_settings_dash .input_group { margin-bottom: 12px; }
+        """
+
+      H1 style: {fontSize: 28, margin: '20px 0'}, 'Application Settings'
+
+
+      if customer.identifier
+        DIV null, 
+          DIV className: 'input_group',
+            LABEL htmlFor: 'about_page_url', 'About Page URL'
+            INPUT 
+              id: 'about_page_url'
+              type: 'text'
+              name: 'about_page_url'
+              defaultValue: customer.about_page_url
+              placeholder: 'The about page will then contain a window to this url.'
+
+          DIV className: 'input_group',
+            LABEL htmlFor: 'contact_email', 'Contact email'
+            INPUT 
+              id: 'contact_email'
+              type: 'text'
+              name: 'contact_email'
+              defaultValue: customer.contact_email
+              placeholder: 'Sender email address for notification emails. Default is admin@consider.it.'
+
+          DIV className: 'input_group',
+            LABEL htmlFor: 'app_title', 'The name of this application'
+            INPUT 
+              id: 'app_title'
+              type: 'text'
+              name: 'app_title'
+              defaultValue: customer.app_title
+              placeholder: 'Shows in email subject lines and in the window title.'
+
+          DIV className: 'input_group',
+            LABEL htmlFor: 'project_url', 'Project url'
+            INPUT 
+              id: 'project_url'
+              type: 'text'
+              name: 'project_url'
+              defaultValue: customer.project_url
+              placeholder: 'A link to the main project\'s homepage, if any.'
+
+          DIV className: 'input_group',
+            BUTTON className: 'button', onClick: @submit, 'Save'
+
+  submit : -> 
+    customer = @data()
+
+    fields = ['about_page_url', 'contact_email', 'app_title', 'project_url']
+
+    for f in fields
+      customer[f] = $(@getDOMNode()).find("##{f}").val()
+
+    save customer
+
+
+RolesDash = ReactiveComponent
+  displayName: 'RolesDash'
+
+  render : -> 
+    customer = @data()
+
+    roles = [ 
+      ['admin', 'Admins can access everything.'], 
+      ['moderator', 'Moderators can review user content; they get email notifications when content needs review.'], 
+      ['evaluator', 'Evaluators review factual claims in pro/con points.']
+    ]
+
+    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
+
+      H1 style: {fontSize: 28, margin: '20px 0'}, 'User Roles'
+
+      for role in roles
+        DIV style: {marginTop: 12},
+          H1 style: {fontSize: 18}, capitalize(role[0])
+          SPAN style: {fontSize: 14}, role[1]
+
+          PermissionBlock key: role[0]
+
+
+PermissionBlock = ReactiveComponent
+  displayName: 'PermissionBlock'
+
+  render : -> 
+    customer = fetch '/customer'
+    role = @props.key
+
+    DIV null,
+      for user_key in customer.roles[role]
+        user = fetch user_key
+        SPAN style: {display: 'inline-block', padding: '4px 8px', fontWeight: 600, fontSize: 15, backgroundColor: considerit_blue, color: 'white', borderRadius: 16, margin: '4px'}, 
+          if user.name then user.name else user.email
+          I style: {cursor: 'pointer', marginLeft: 8}, className: 'fa fa-close', onClick: do (user_key, role) => =>
+            # remove role
+            customer.roles[role] = _.without customer.roles[role], user_key
+            save customer
+      
+      if !@local.add
+        DIV null, 
+          A style: {textDecoration: 'underline'}, onClick: (=> @local.add = true; save @local),
+            "Add #{role}"    
+      else
+        users = fetch '/users'
+        DIV style: {position: 'relative'}, 
+          INPUT 
+            id: 'filter'
+            type: 'text'
+            style: {fontSize: 18, width: 500}
+            autocomplete: 'off'
+            placeholder: 'Filter users. Click a user to add them.'
+            onChange: => @local.filtered = $('#filter').val(); save @local
+          A style: {textDecoration: 'underline'}, onClick: (=> @local.add = false; save @local), "done"    
+          UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
+            for user in _.filter(users.users, (u) => customer.roles[role].indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
+              LI 
+                style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
+                onClick: do(user) => => 
+                  # add role
+                  customer.roles[role].push user.key
+                  save customer
+
+                "#{user.name} <#{user.email}>"
+
+
 
 AdminTaskList = ReactiveComponent
   displayName: 'AdminTaskList'
@@ -692,4 +830,6 @@ EditClaim = ReactiveComponent
 ## Export...
 window.FactcheckDash = FactcheckDash
 window.ModerationDash = ModerationDash
+window.AppSettingsDash = AppSettingsDash
+window.RolesDash = RolesDash
 window.AccessControlled = AccessControlled

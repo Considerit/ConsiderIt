@@ -13,15 +13,6 @@ ConsiderIt::Application.routes.draw do
   ## This is my test controller for nonactiverest
   get '/activemike' => 'home#activemike'
 
-  get '/avatars' => "home#avatars", :as => :get_avatars
-
-  concern :followable do 
-    get "followable_index" => 'followable#index', :as => 'followable_index'
-    match "follow" => 'followable#follow', :via => :post
-    match "unfollow" => 'followable#unfollow', :via => :post
-  end
-  concerns :followable
-
   # MIKE SAYS: not sure where to put this.  Is it JSON or what?
   # TRAVIS SAYS: The only routes generated here regard third party oauth. It is important
   #              to put this before the home controller non-AJAX catch all because 
@@ -57,16 +48,18 @@ ConsiderIt::Application.routes.draw do
   resources :comment, :only => [:create, :show, :update, :destroy]
   get '/comments/:point_id' => 'comment#index'
 
-  post '/log' => 'log#create'
   get '/customer' => 'customer#show'
   match '/customer' => 'customer#update', :via => [:put]
 
+  post '/log' => 'log#create'
 
   # These next ones are done with "match" because "resources" was
   # being all "I need an id like "/current_user/234" and I don't know
   # how to tell it to be like "/current_user"
   get 'current_user' => 'current_user#show'
   match 'current_user' => 'current_user#update', :via => [:put]
+
+  get '/avatars' => "home#avatars", :as => :get_avatars
 
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]
@@ -83,5 +76,9 @@ ConsiderIt::Application.routes.draw do
 
   get 'user_avatar_hack' => 'current_user#user_avatar_hack'
   match 'update_user_avatar_hack' => 'current_user#update_user_avatar_hack', :via => [:put]
+
+  get "followable_index" => 'followable#index', :as => 'followable_index'
+  post "follow" => 'followable#follow'
+  post "unfollow" => 'followable#unfollow'
 
 end

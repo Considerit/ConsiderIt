@@ -524,7 +524,7 @@ StickyProposalHeading = ReactiveComponent
                               for other_proposal in curr_cluster.proposals
                                 TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink, key: "tr/#{other_proposal.long_id}",
                                   TD style: {textAlign: 'left', paddingLeft: 20},
-                                    A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == @proposal.id then 700 else 400},
+                                    A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.key == @proposal.key then 700 else 400},
                                       other_proposal.name
 
                                   TD style: {position: 'relative'},

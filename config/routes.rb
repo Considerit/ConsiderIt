@@ -59,7 +59,7 @@ ConsiderIt::Application.routes.draw do
   get 'current_user' => 'current_user#show'
   match 'current_user' => 'current_user#update', :via => [:put]
 
-  get '/avatars' => "home#avatars", :as => :get_avatars
+  get '/avatars' => "home#avatars"
 
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]

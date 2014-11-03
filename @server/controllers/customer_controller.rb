@@ -22,9 +22,14 @@ class CustomerController < ApplicationController
       raise new CanCan::AccessDenied
     end
 
-    fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode']
+    fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'contact_email', 'app_title', 'project_url', 'requires_civility_pledge_on_registration']
     attrs = params.select{|k,v| fields.include? k}
-    account.update_attributes attrs
+
+    if params.has_key? 'roles'
+      attrs['roles'] = JSON.dump params['roles']
+    end
+
+    current_tenant.update_attributes! attrs
 
     # if current_tenant.enable_hibernation && params[:account].has_key?('enable_hibernation')
     #   current_tenant.proposals.open_to_public.active.update_all(active: false)      

@@ -26,41 +26,16 @@ ConsiderIt::Application.routes.draw do
     match '/dashboard/import_data' => "admin#import_data_create", :via => :put, :as => :import_data_create
 
     #match '/dashboard/proposals' => "admin#proposals", :via => :get, :as => :manage_proposals
-    get '/dashboard/roles' => "admin#roles", :as => :manage_roles
-    match '/dashboard/roles/users/:user_id' => "admin#update_role", :via => :post, :as => :update_role
+    # get '/dashboard/roles' => "admin#roles", :as => :manage_roles
+    # match '/dashboard/roles/users/:user_id' => "admin#update_role", :via => :post, :as => :update_role
     get '/dashboard/users/:id/profile' => "users#show", :as => :profile
     get '/dashboard/users/:id/profile/edit' => "users#edit", :as => :edit_profile
     get '/dashboard/users/:id/profile/edit/account' => "users#edit_account", :as => :edit_account
     get '/dashboard/users/:id/profile/edit/notifications' => "users#edit_notifications", :as => :edit_notifications
 
-    match '/dashboard/message' => 'message#create', :as => 'message', :via => :post
-
-    # concern :moderatable do 
-    #   match "/dashboard/moderate/create" => 'moderatable#create', :via => :post
-    #   get "/dashboard/moderate" => 'moderatable#index'
-    # end
-
-    # concern :assessable do 
-    #   resources :assessment, :path => "dashboard/assessment", :controller => "assessable", :only => [:index, :edit, :update] do 
-    #     match "/dashboard/claims" => 'assessable#create_claim', :via => :post, :as => 'create_claim'
-    #     match "/dashboard/claim/:id" => 'assessable#update_claim', :via => :put, :as => 'update_claim'
-    #     match "/dashboard/claim/:id" => 'assessable#destroy_claim', :via => :delete, :as => 'destroy_claim'
-    #   end
-    
-    #   resources :request, :only => [:create], :controller => "assessable"
-
-    # end
-
-    #concerns :moderatable
-    # concerns :assessable
-
   end
 
   get '/avatars' => "home#avatars", :as => :get_avatars
-
-  #match '/home/study/:category' => "home#study", :via => :post  
-
-  #get '/:admin_id' => 'proposals#show', :admin_id => /[a-z]\d{12}/
 
   concern :followable do 
     get "followable_index" => 'followable#index', :as => 'followable_index'
@@ -93,12 +68,12 @@ ConsiderIt::Application.routes.draw do
   # html page, and then the required data will be fetched afterward in JSON
   get '(*url)' => 'home#index', :constraints => NotJSON.new
 
-  # mount RailsAdmin::Engine => '/dashboard/database', :as => 'rails_admin'
-
   # Here's the entire JSON API:
   resources :page, :only => [:show]
   resources :user, :only => [:show]
+  get '/users' => 'user#index'
   resources :proposal
+  get '/proposals' => 'proposal#index'
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :show]
   resources :client_error, :only => [:create]
@@ -107,7 +82,6 @@ ConsiderIt::Application.routes.draw do
   get '/comments/:point_id' => 'comment#index'
 
   post '/log' => 'log#create'
-  get '/proposals' => 'proposal#index'
   get '/customer' => 'customer#show'
   match '/customer' => 'customer#update', :via => [:put]
 
@@ -129,7 +103,7 @@ ConsiderIt::Application.routes.draw do
 
   get "/dashboard/moderate" => 'moderation#index'
   match "/moderation/:id" => 'moderation#update', :via => :put
-
+  post '/dashboard/message' => 'message#create', :as => 'message'
 
   get 'user_avatar_hack' => 'current_user#user_avatar_hack'
   match 'update_user_avatar_hack' => 'current_user#update_user_avatar_hack', :via => [:put]

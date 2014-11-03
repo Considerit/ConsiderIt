@@ -134,7 +134,7 @@ PermissionBlock = ReactiveComponent
     DIV null,
       for user_key in customer.roles[role]
         user = fetch user_key
-        SPAN style: {display: 'inline-block', padding: '4px 8px', fontWeight: 600, fontSize: 15, backgroundColor: considerit_blue, color: 'white', borderRadius: 16, margin: '4px'}, 
+        SPAN style: {display: 'inline-block', padding: '4px 8px', fontWeight: 400, fontSize: 15, backgroundColor: '#e1e1e1', color: 'black', borderRadius: 16, margin: '4px'}, 
           if user.name then user.name else user.email
           I style: {cursor: 'pointer', marginLeft: 8}, className: 'fa fa-close', onClick: do (user_key, role) => =>
             # remove role
@@ -147,7 +147,7 @@ PermissionBlock = ReactiveComponent
           type: 'text'
           style: {fontSize: 18, width: 500}
           autocomplete: 'off'
-          placeholder: 'Add users to role'
+          placeholder: "Add #{role}"
           onChange: (=> @local.filtered = $(@getDOMNode()).find('#filter').val(); save(@local);)
           onFocus: (e) => 
             @local.add = true

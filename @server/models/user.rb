@@ -59,7 +59,7 @@ class User < ActiveRecord::Base
 
   # This will output the data for this user _as if this user is currently logged in_
   # So make sure to only send this data to the client if the client is authorized. 
-  def current_user_hash(form_authenticity_token, legacy = false)
+  def current_user_hash(form_authenticity_token)
     data = {
       id: id, #leave the id in for now for backwards compatability with Dash
       key: '/current_user',
@@ -84,17 +84,6 @@ class User < ActiveRecord::Base
       is_evaluator: has_any_role?([:admin, :superadmin, :evaluator]),
       trying_to: nil
     }
-
-    # temporary for legacy dashboard:
-
-    if legacy
-      data.merge! ({
-              :third_party_authenticated => third_party_authenticated, 
-              :follows => follows,
-              :roles_mask => roles_mask,
-              :avatar_file_name => avatar_file_name
-            })
-    end
 
     data
     
@@ -171,16 +160,6 @@ class User < ActiveRecord::Base
     end
 
   end
-
-  # legacy...
-  def role_list
-    if roles_mask == 0
-      return '-'
-    else
-      roles.map {|role| role.to_s}.join(', ').gsub(':', '')
-    end
-  end
-  ######
 
   def third_party_authenticated
     if !!self.facebook_uid

@@ -2,11 +2,11 @@
 //= require ./vendor/jquery
 //= require ./vendor/underscore
 //= require ./vendor/backbone
+//= require ./vendor/jquery.ui
 
 //= require js-routes
 
-//= require vendor/main/jquery.ui
-//= require_tree ./vendor/main
+//= require_tree ./vendor
 
 //= require ./element_viewport_positioning
 

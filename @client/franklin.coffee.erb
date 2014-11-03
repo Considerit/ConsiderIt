@@ -2907,16 +2907,16 @@ ProfileLink = ReactiveComponent
           onMouseLeave: => @local.menu = false; save(@local)
           DIV className: 'profile_menu', style: {display: (if not @local.menu then 'none')},
             if current_user.is_admin
-              A 
+              [A 
                 className: 'menu_link'
                 href: '/dashboard/application'
                 onClick: clickInternalLink                
-                'App Settings'
+                'Settings'
               A 
                 className: 'menu_link'
                 href: '/dashboard/roles'
                 onClick: clickInternalLink                
-                'User Roles'
+                'User Roles']
 
             if current_user.is_moderator
               A 

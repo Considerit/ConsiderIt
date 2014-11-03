@@ -181,35 +181,10 @@ class CurrentUserController < ApplicationController
       })
     end
 
-    respond_to do |format|
-      format.json do 
-        Thread.current[:dirtied_keys].delete('/current_user') # Because we're adding our own
-        dirty_key("/user/#{current_user.id}")                 # But let's get the /user
+    Thread.current[:dirtied_keys].delete('/current_user') # Because we're adding our own
+    dirty_key("/user/#{current_user.id}")                 # But let's get the /user
 
-        render :json => [response]
-      end
-
-      format.html do
-        # non-ajax method is used for legacy support for dash
-        if current_user.registration_complete
-          # redirect here
-          if session.has_key? :redirect_after_login
-            path = session[:redirect_after_login]
-            session.delete :redirect_after_login
-            redirect_to path
-            return
-          else 
-            render :json => [response]
-          end
-        else
-          @errors = errors.values().flatten
-          @not_logged_in = true
-          render :template => "old/login", :layout => 'dash' 
-        end
-
-      end
-
-    end
+    render :json => [response]
 
     puts("")
     puts("----End UPDATE CURRENT USER---")

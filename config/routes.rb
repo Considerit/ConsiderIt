@@ -13,28 +13,6 @@ ConsiderIt::Application.routes.draw do
   ## This is my test controller for nonactiverest
   get '/activemike' => 'home#activemike'
 
-  ## This stuff at the top is all special cases until we make
-  ## EVERYTHING client-side via the home controller's index!
-  scope :module => "dashboard" do
-    match "/report_client_error" => "client_errors#create", :via => :post, :as => :report_client_error
-    get "/dashboard/client_errors" => "client_errors#index", :as => :client_error
-
-    get '/dashboard/admin_template' => "admin#admin_template", :as => :admin_template
-    #match '/dashboard/application' => "admin#application", :via => :get, :as => :application_settings
-    get '/dashboard/analytics' => "admin#analytics", :as => :analytics
-    get '/dashboard/import_data' => "admin#import_data", :as => :import_data
-    match '/dashboard/import_data' => "admin#import_data_create", :via => :put, :as => :import_data_create
-
-    #match '/dashboard/proposals' => "admin#proposals", :via => :get, :as => :manage_proposals
-    # get '/dashboard/roles' => "admin#roles", :as => :manage_roles
-    # match '/dashboard/roles/users/:user_id' => "admin#update_role", :via => :post, :as => :update_role
-    get '/dashboard/users/:id/profile' => "users#show", :as => :profile
-    get '/dashboard/users/:id/profile/edit' => "users#edit", :as => :edit_profile
-    get '/dashboard/users/:id/profile/edit/account' => "users#edit_account", :as => :edit_account
-    get '/dashboard/users/:id/profile/edit/notifications' => "users#edit_notifications", :as => :edit_notifications
-
-  end
-
   get '/avatars' => "home#avatars", :as => :get_avatars
 
   concern :followable do 
@@ -44,13 +22,11 @@ ConsiderIt::Application.routes.draw do
   end
   concerns :followable
 
-
   # MIKE SAYS: not sure where to put this.  Is it JSON or what?
   # TRAVIS SAYS: The only routes generated here regard third party oauth. It is important
   #              to put this before the home controller non-AJAX catch all because 
-  #              OAUTH stipulates that the third party submit a non-ajax
-  #              GET back to the server with the user data. This must be handled by
-  #              CurrentUserController#third_party_callback.
+  #              OAUTH submits a non-ajax GET back to the server with the user data. 
+  #              This must be handled by CurrentUserController#third_party_callback.
 
   match "/auth/:provider",
     constraints: { provider: /google_oauth2|facebook|twitter/},

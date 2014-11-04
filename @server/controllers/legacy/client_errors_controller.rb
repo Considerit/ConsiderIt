@@ -1,4 +1,4 @@
-class Dashboard::ClientErrorsController < Dashboard::DashboardController
+class Legacy::ClientErrorsController < ApplicationController
   respond_to :json
 
   def index

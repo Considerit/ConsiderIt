@@ -1,6 +1,6 @@
 require 'date'
 
-class Dashboard::AdminController < Dashboard::DashboardController
+class Legacy::AdminController < ApplicationController
   #respond_to :json
   
 

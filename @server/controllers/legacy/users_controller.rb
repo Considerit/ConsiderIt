@@ -1,4 +1,4 @@
-class Dashboard::UsersController < Dashboard::DashboardController
+class Legacy::UsersController < ApplicationController
   def show
     # only output data regarding publicly available data
     # TODO: filter data output to fields only strictly necessary - lots of redundant data here

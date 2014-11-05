@@ -101,7 +101,7 @@ class Proposal < ActiveRecord::Base
     follows = get_explicit_follow(current_user) 
     result["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 
-    result['assessment_enabled'] = assessment_enabled?
+    result['assessment_enabled'] = fact_check_request_enabled?
 
     # if can?(:manage, proposal) && self.publicity < 2
     #   response.update({
@@ -112,7 +112,10 @@ class Proposal < ActiveRecord::Base
     result
   end
 
-  def assessment_enabled?
+  # 
+  def fact_check_request_enabled?
+    return false # nothing can be requested to be fact-checked currently
+
     current_tenant = Thread.current[:tenant]
 
     enabled = current_tenant.assessment_enabled

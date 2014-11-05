@@ -107,9 +107,12 @@ RolesDash = ReactiveComponent
 
     roles = [ 
       ['admin', 'Admins can access everything.'], 
-      ['moderator', 'Moderators can review user content; they get email notifications when content needs review.'], 
-      ['evaluator', 'Evaluators review factual claims in pro/con points.']
+      ['moderator', 'Moderators can review user content; they get email notifications when content needs review.']
     ]
+
+    if customer.assessment_enabled
+      roles.push ['evaluator', 'Evaluators review factual claims in pro/con points.']
+
 
     DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
 

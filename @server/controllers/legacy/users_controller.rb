@@ -99,36 +99,4 @@ class Legacy::UsersController < ApplicationController
     end
 
   end
-
-  def edit
-    if request.xhr?
-      render :json => {} 
-    else
-      render "layouts/dash", :layout => false 
-    end
-
-    #TODO: authorize for edit profile
-  end
-
-  def edit_account
-    #TODO: authorize for edit profile
-    if request.xhr?
-      render :json => {} 
-    else
-      render "layouts/dash", :layout => false 
-    end
-
-  end
-
-  def edit_notifications
-    #TODO: authorize for edit profile
-    if request.xhr?
-      render :json => {} 
-    else
-      render "layouts/dash", :layout => false 
-    end
-
-  end
-
-
 end

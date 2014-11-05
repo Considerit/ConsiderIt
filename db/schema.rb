@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141024051410) do
+ActiveRecord::Schema.define(version: 20141104052210) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -495,6 +495,7 @@ ActiveRecord::Schema.define(version: 20141024051410) do
     t.text     "tags"
     t.text     "active_in"
     t.boolean  "super_admin",                        default: false
+    t.boolean  "no_email_notifications",             default: false
   end
 
   add_index "users", ["account_id", "avatar_file_name"], name: "select_user_by_avatar_name", length: {"account_id"=>nil, "avatar_file_name"=>3}, using: :btree

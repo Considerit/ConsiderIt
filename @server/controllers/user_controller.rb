@@ -1,8 +1,12 @@
 class UserController < ApplicationController
   respond_to :json
-  def show
-    puts("Show(#{params[:id]})")
 
+  def index
+    dirty_key "/users"
+    render :json => []
+  end
+
+  def show
     if params[:id] == '-1'
       render :json => [{
                'key' => '/user/-1',

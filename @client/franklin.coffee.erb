@@ -2930,7 +2930,7 @@ ProfileLink = ReactiveComponent
                 href: '/dashboard/moderate'
                 onClick: clickInternalLink                
                 'Moderate'
-            if current_user.is_evaluator
+            if customer.assessment_enabled && current_user.is_evaluator
               A 
                 className: 'menu_link'
                 href: '/dashboard/assessment'

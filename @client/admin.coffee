@@ -132,14 +132,15 @@ PermissionBlock = ReactiveComponent
     role = @props.key
 
     DIV null,
-      for user_key in customer.roles[role]
-        user = fetch user_key
-        SPAN style: {display: 'inline-block', padding: '4px 8px', fontWeight: 400, fontSize: 15, backgroundColor: '#e1e1e1', color: 'black', borderRadius: 16, margin: '4px'}, 
-          if user.name then user.name else user.email
-          I style: {cursor: 'pointer', marginLeft: 8}, className: 'fa fa-close', onClick: do (user_key, role) => =>
-            # remove role
-            customer.roles[role] = _.without customer.roles[role], user_key
-            save customer
+      if customer.roles[role]
+        for user_key in customer.roles[role]
+          user = fetch user_key
+          SPAN style: {display: 'inline-block', padding: '4px 8px', fontWeight: 400, fontSize: 15, backgroundColor: '#e1e1e1', color: 'black', borderRadius: 16, margin: '4px'}, 
+            if user.name then user.name else user.email
+            I style: {cursor: 'pointer', marginLeft: 8}, className: 'fa fa-close', onClick: do (user_key, role) => =>
+              # remove role
+              customer.roles[role] = _.without customer.roles[role], user_key
+              save customer
       
       DIV style: {position: 'relative'}, 
         INPUT 

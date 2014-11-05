@@ -2,7 +2,8 @@
 
 class CurrentUserController < ApplicationController
   #protect_from_forgery :except => :update, with: :exception
-  skip_before_action :verify_authenticity_token, :if => :file_uploaded
+  # skip_before_action :verify_authenticity_token, :if => :file_uploaded
+  skip_before_action :verify_authenticity_token, :only => :update_user_avatar_hack
 
   # Gets the current user data
   def show
@@ -180,35 +181,10 @@ class CurrentUserController < ApplicationController
       })
     end
 
-    respond_to do |format|
-      format.json do 
-        Thread.current[:dirtied_keys].delete('/current_user') # Because we're adding our own
-        dirty_key("/user/#{current_user.id}")                 # But let's get the /user
+    Thread.current[:dirtied_keys].delete('/current_user') # Because we're adding our own
+    dirty_key("/user/#{current_user.id}")                 # But let's get the /user
 
-        render :json => [response]
-      end
-
-      format.html do
-        # non-ajax method is used for legacy support for dash
-        if current_user.registration_complete
-          # redirect here
-          if session.has_key? :redirect_after_login
-            path = session[:redirect_after_login]
-            session.delete :redirect_after_login
-            redirect_to path
-            return
-          else 
-            render :json => [response]
-          end
-        else
-          @errors = errors.values().flatten
-          @not_logged_in = true
-          render :template => "old/login", :layout => 'dash' 
-        end
-
-      end
-
-    end
+    render :json => [response]
 
     puts("")
     puts("----End UPDATE CURRENT USER---")
@@ -231,7 +207,7 @@ class CurrentUserController < ApplicationController
   def update_user_attrs(errors)
     types = {:avatar => ActionDispatch::Http::UploadedFile, :bio => String, :name => String,
              :hide_name => 'boolean',
-             :email => String, :password => String}
+             :email => String, :password => String, :no_email_notifications => 'boolean'}
     types.each do |field, type| 
       value = params[field]
       error = "Field #{field} is wrong type #{value.class}"
@@ -242,7 +218,7 @@ class CurrentUserController < ApplicationController
       end
     end
 
-    fields = ['avatar', 'bio', 'name', 'hide_name', 'tags']
+    fields = ['avatar', 'bio', 'name', 'hide_name', 'tags', 'no_email_notifications']
     new_params = params.select{|k,v| fields.include? k}
     new_params[:name] = '' if !new_params[:name]
     new_params[:tags] = JSON.dump(new_params[:tags]) if new_params[:tags]
@@ -320,16 +296,56 @@ class CurrentUserController < ApplicationController
       })
 
     else
-      # Then the user still needs to complete the pledge.  Let's just
-      # get some of the user's current data (we have them temporarily
-      # referenced via the access_token)
+      # Then the user still needs to complete the pledge.  
       if user
         replace_user current_user, user
         set_current_user(user)
         current_user.add_to_active_in
-
       end      
-      current_user.update_from_third_party_data(access_token)
+      
+      # We'll use the oauth access_token to fill in some of the user's data
+      case access_token.provider
+
+        when 'google_oauth2'
+          third_party_params = {
+            'google_uid' => access_token.uid,
+            'email' => access_token.info.email,
+            'avatar_url' => access_token.info.image,
+          }        
+
+        when 'facebook'
+          third_party_params = {
+            'facebook_uid' => access_token.uid,
+            'email' => access_token.info.email,
+            #'url' => access_token.info.urls.Website ? access_token.info.urls.Website : nil, #TODO: fix this for facebook
+            'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large'
+          }
+
+        when 'twitter'
+          third_party_params = {
+            'twitter_uid' => access_token.uid,
+            'bio' => access_token.info.description,
+            'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
+            # 'twitter_handle' => access_token.info.nickname,
+            'avatar_url' => access_token.info.image.gsub('_normal', ''), #'_reasonably_small'),
+          }
+
+        else
+          raise 'Unsupported provider'
+      end
+
+      third_party_params['name'] = access_token.info.name
+
+      if !current_user.encrypted_password
+        # this prevents a bcrypt hashing problem in the scenario where 
+        # a user creates an account via third party, forgets, and tries
+        # to enter an email and password. In that case, password
+        # can't be null.
+        third_party_params['password'] = SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] 
+      end
+
+      current_user.update_attributes! params
+
     end
 
     response = [current_user.current_user_hash(form_authenticity_token)]

@@ -7,6 +7,7 @@ class PageController < ApplicationController
     when 'homepage'
       key = '/page/homepage'
       dirty_key key
+      dirty_key '/users'
 
     when 'about' # don't need anything special
       key = '/page/about'
@@ -31,6 +32,7 @@ class PageController < ApplicationController
 
       key = "/page/#{proposal.long_id}"
       dirty_key key
+      dirty_key '/users'
     end
 
 

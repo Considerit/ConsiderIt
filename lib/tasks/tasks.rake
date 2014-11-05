@@ -77,52 +77,40 @@ task :compute_metrics => ["cache:points"]
 
 namespace :alerts do
   task :check_moderation => :environment do
-    Account.where(:enable_moderation => true).each do |accnt|
-
-      #ApplicationController.set_current_tenant_to(accnt)
+    Account.all.each do |accnt| 
+      next if accnt.classes_to_moderate.length == 0 
 
       # Find out how many objects need to be moderated
-      # this section is horribly coded and inefficient ... TODO fix
-      content_to_moderate = 0
-      existing_moderations = {}
-      objs_to_moderate = {}
+      # TODO: this section is copied from moderation_controller#index ... refactor
+      content_to_moderate = false
 
-      accnt.classes_to_moderate.each do |mc|
+      accnt.classes_to_moderate.each do |moderation_class|
 
-        class_name = mc.name.split('::')[-1]
-        existing_moderations[class_name] = {}
-
-        if mc == Comment
+        if moderation_class == Comment
           # select all comments of points of active proposals
-          qry = "SELECT c.id, c.user_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
-        elsif mc == Proposal
-          qry = "SELECT id, user_id, name from proposals where account_id=#{accnt.id}"
-        elsif mc == Point
-          qry = "SELECT pnt.id, pnt.user_id FROM points pnt, proposals prop WHERE prop.account_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
+          qry = "SELECT c.id, c.user_id, prop.id as proposal_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
+        elsif moderation_class == Point
+          qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.account_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
+        elsif moderation_class == Proposal
+          qry = "SELECT id, long_id, user_id, name, description from proposals where account_id=#{accnt.id}"
         end
+
         objects = ActiveRecord::Base.connection.select(qry)
 
-        objs_to_moderate[class_name] = objects
-        objs = objs_to_moderate[class_name].map{|x| x["id"]}.compact
+        existing_moderations = Moderation.where("moderatable_type='#{moderation_class.name}' AND moderatable_id in (?)", objects.map {|o| o['id']})
 
-        records = Moderation.where(:moderatable_type => mc.name, :account_id => accnt.id)
-        if objs.length > 0
-          records = records.where("moderatable_id in (#{objs.join(',')})")
-          records.select([:id, :moderatable_id]).each do |mod|
-            existing_moderations[class_name][mod.moderatable_id] = mod
-          end
+        if existing_moderations.count < objects.count || existing_moderations.where('status IS NULL OR updated_since_last_evaluation=1').count > 0
+          content_to_moderate = true
+          break
         end
-
-        existing_moderations[class_name] = existing_moderations[class_name].values
-        content_to_moderate += objs_to_moderate[class_name].count - existing_moderations[class_name].count
 
       end
 
       #######
 
-      if content_to_moderate > 0
+      if content_to_moderate
         # send to all users with moderator status
-        roles = current_tenant.user_roles()
+        roles = accnt.user_roles()
         moderators = roles.has_key?('moderator') ? roles['moderator'] : []
 
         moderators.each do |key|

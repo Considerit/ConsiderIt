@@ -82,13 +82,15 @@ class User < ActiveRecord::Base
       is_admin: is_admin?,
       is_moderator: has_any_role?([:admin, :superadmin, :moderator]),
       is_evaluator: has_any_role?([:admin, :superadmin, :evaluator]),
-      trying_to: nil
+      trying_to: nil,
+      no_email_notifications: no_email_notifications
     }
 
     data
     
   end
 
+  # Gets all of the users active for this customer
   def self.all_for_customer
     current_tenant = Thread.current[:tenant]
     fields = "CONCAT('\/user\/',id) as 'key',users.name,users.avatar_file_name"
@@ -136,10 +138,6 @@ class User < ActiveRecord::Base
     self.registration_complete
   end
 
-  def unsubscribe!
-    self.follows.update_all( {:explicit => true, :follow => false} )
-  end
-
   def add_to_active_in
     current_tenant = Thread.current[:tenant]
     active_tenants = JSON.parse(self.active_in) || []
@@ -160,6 +158,39 @@ class User < ActiveRecord::Base
     end
 
   end
+
+  # get all the items this user gets notifications for
+  def notifications
+    current_tenant = Thread.current[:tenant]
+
+    followable_objects = {
+      'Proposal' => {},
+      'Point' => {}
+    }
+
+    for followable_type in followable_objects.keys
+
+      if followable_type == 'Point'
+        following = self.inclusions.map {|i| "/point/#{i.point_id}"} + \
+                 self.comments.map {|c| "/point/#{c.point_id}" } 
+      elsif followable_type == 'Proposal'
+        following = self.opinions.published.map {|o| "/proposal/#{o.proposal_id}"}
+      end
+
+      following += self.follows.where(:follow => true, :followable_type => followable_type, :account_id => current_tenant.id).map {|f| "/#{f.followable_type.downcase}/#{f.followable_id}" }
+
+      followable_objects[followable_type] = following.uniq.compact #remove dupes and nils
+
+      # remove objs that have been explicitly unfollowed already
+      self.follows.where(:follow => false, :followable_type => followable_type).each do |f|
+        followable_objects[f.followable_type].delete("/#{f.followable_type.downcase}/#{f.followable_id}")
+      end
+
+    end
+
+    followable_objects
+  end
+
 
   def third_party_authenticated
     if !!self.facebook_uid
@@ -227,54 +258,6 @@ class User < ActiveRecord::Base
 
   end
 
-  def update_from_third_party_data(access_token)
-    params = {
-      'name' => access_token.info.name
-    }
-
-    if !encrypted_password
-      # this prevents a bcrypt hashing problem in the scenario where 
-      # a user creates an account via third party, forgets, and tries
-      # to enter an email and password. In that case, password
-      # can't be null.
-      params['password'] = SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] 
-    end
-            
-    case access_token.provider
-
-      when 'google_oauth2'
-        third_party_params = {
-          'google_uid' => access_token.uid,
-          'email' => access_token.info.email,
-          'avatar_url' => access_token.info.image,
-        }        
-
-      when 'facebook'
-        third_party_params = {
-          'facebook_uid' => access_token.uid,
-          'email' => access_token.info.email,
-          #'url' => access_token.info.urls.Website ? access_token.info.urls.Website : nil, #TODO: fix this for facebook
-          'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large'
-        }
-
-      when 'twitter'
-        third_party_params = {
-          'twitter_uid' => access_token.uid,
-          'bio' => access_token.info.description,
-          'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
-          # 'twitter_handle' => access_token.info.nickname,
-          'avatar_url' => access_token.info.image.gsub('_normal', ''), #'_reasonably_small'),
-        }
-
-      else
-        raise 'Unsupported provider'
-    end
-
-    params.update third_party_params
-    self.update_attributes! params
-
-  end
-
   def key
     "/user/#{self.id}"
   end
@@ -298,25 +281,6 @@ class User < ActiveRecord::Base
     end
     return split[0]  
   end
-
-  def addTags(new_tags, overwrite_type = false)
-    self.tags ||= ''
-    existing_tags = getTags()
-
-    if overwrite_type
-      types = new_tags.map{|t| t.split(':')[0]}
-      existing_tags.delete_if {|t| types.include?(t.split(':')[0])}
-    end
-
-    self.tags = (existing_tags | new_tags).join(';')
-    self.save
-  end
-
-  def getTags
-    tags = self.tags ||= ''
-    tags.split(';')
-  end
-
 
 
   def add_token

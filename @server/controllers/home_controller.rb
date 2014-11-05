@@ -8,6 +8,11 @@ class HomeController < ApplicationController
   }
 
   def index
+    
+    # Store query parameters important for access control for email notifications
+    if params.has_key? 'u'
+      session[:notifications_user] = {'u' => params['u'], 't' => params['t']}
+    end
 
     # if someone has accessed a non-existent subdomain
     if !current_tenant

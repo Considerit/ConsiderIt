@@ -13,12 +13,11 @@ ConsiderIt::Application.routes.draw do
   ## This is my test controller for nonactiverest
   get '/activemike' => 'home#activemike'
 
-  # MIKE SAYS: not sure where to put this.  Is it JSON or what?
-  # TRAVIS SAYS: The only routes generated here regard third party oauth. It is important
-  #              to put this before the home controller non-AJAX catch all because 
-  #              OAUTH submits a non-ajax GET back to the server with the user data. 
-  #              This must be handled by CurrentUserController#third_party_callback.
-
+  # Third party oauth routes. These go before 
+  # the home controller non-json catch all because 
+  # oauth submits an HTML GET request back to the server 
+  # with the user data, which is handled by 
+  # CurrentUserController#third_party_callback.
   match "/auth/:provider",
     constraints: { provider: /google_oauth2|facebook|twitter/},
     to: "current_user#passthru",
@@ -30,6 +29,7 @@ ConsiderIt::Application.routes.draw do
     to: "current_user#update_via_third_party",
     as: :user_omniauth_callback,
     via: [:get, :post]
+
 
   # All user-visible URLs go to the "home" controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
@@ -77,7 +77,7 @@ ConsiderIt::Application.routes.draw do
   get 'user_avatar_hack' => 'current_user#user_avatar_hack'
   match 'update_user_avatar_hack' => 'current_user#update_user_avatar_hack', :via => [:put]
 
-  get "followable_index" => 'followable#index', :as => 'followable_index'
+  get "/dashboard/email_notifications" => 'followable#index'
   post "follow" => 'followable#follow'
   post "unfollow" => 'followable#unfollow'
 

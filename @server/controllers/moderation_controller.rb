@@ -103,9 +103,9 @@ end
 
 
 def handle_moderatable_model_update(model)
-  model.moderations.each do |mod|
-    mod.updated_since_last_evaluation = true
-    mod.save
+  if model.moderation
+    model.moderation.updated_since_last_evaluation = true
+    model.moderation.save
   end
 end
 

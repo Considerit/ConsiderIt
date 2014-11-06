@@ -38,7 +38,6 @@ class FollowableController < CurrentUserController
     encrypted = ApplicationController.arbitrary_token("#{u}#{target_user.unique_token}#{current_tenant.identifier}")
     
     encrypted == t
-    
   end
   
 end

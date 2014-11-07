@@ -23,9 +23,8 @@ class PointController < ApplicationController
     point['published'] = false
     point['user_id'] = current_user && current_user.id || nil
 
-    point = Point.new ActionController::Parameters.new(point).permit!
+    point = Point.new point
 
-    #TODO: look into cancan to figure out how we can move this earlier in the method
     authorize! :create, point
 
     opinion = Opinion.get_or_make(proposal, current_user)

@@ -29,6 +29,88 @@ AccessControlled = ReactiveComponent
       save @root
       SPAN null
 
+ImportDataDash = ReactiveComponent
+  displayName: 'ImportDataDash'
+
+  render : ->
+    customer = fetch '/customer'
+    current_user = fetch '/current_user'
+
+    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
+      STYLE null, 
+        """
+        """
+
+      H1 style: {fontSize: 28, margin: '20px 0'}, 'Import Data'
+      P style: {fontWeight: 300, marginBottom: 6}, 
+        "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
+      P style: {fontWeight: 300, marginBottom: 6}, 
+        "To refer to a User, use their email address. For example, if you’re uploading points, in the user column, refer to the author via their email address. "
+      P style: {fontWeight: 300, marginBottom: 6}, 
+        "To refer to a Proposal, refer to its url. "
+      P style: {fontWeight: 300, marginBottom: 6}, 
+        "To refer to a Point, make up an id for it and use that."
+      P style: {fontWeight: 300, marginBottom: 6}, 
+        "You do not have to upload every file, just what you need to. Importing the same spreadsheet multiple times is ok."
+
+      FORM action: '/dashboard/import_data',
+        TABLE null,
+          for table in ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
+            TR null,
+              TD style: {paddingTop: 20, textAlign: 'right'}, 
+                LABEL htmlFor: "#{table}-file", "#{table} (.csv)"
+              TD style: {padding: '20px 0 0 20px'}, 
+                INPUT id: "#{table}-file", name: "#{table.toLowerCase()}-file", type:'file', style: {backgroundColor: considerit_blue, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
+        
+          TR null,
+            TD null
+            TD style: {padding: '20px 0 0 20px'}, 
+              A 
+                id: 'submit_import'
+                style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
+                onClick: => 
+                  $('html, #submit_import').css('cursor', 'wait')
+                  $(@getDOMNode()).find('form').ajaxSubmit
+                    type: 'POST'
+                    data: 
+                      authenticity_token: current_user.csrf
+                      trying_to: 'update_avatar_hack'   
+                    success: (data) => 
+                      if data[0].errors
+                        @local.successes = null
+                        @local.errors = data[0].errors
+                        save @local
+                      else
+                        $('html, #submit_import').css('cursor', '')
+                        # clear out statebus 
+                        arest.clear_matching_objects((key) -> key.match( /\/page\// ))
+                        @local.errors = null
+                        @local.successes = data[0]
+                        save @local
+                    error: (result) => 
+                      $('html, #submit_import').css('cursor', '')
+                      @local.successes = null                      
+                      @local.errors = ['Unknown error parsing the files. Email tkriplean@gmail.com.']
+                      save @local
+                      
+
+                'Done. Upload!'
+      if @local.errors
+        DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFE2E2'}, 
+          H1 style: {fontSize: 18}, 'Ooops! There are errors in the uploaded files:'
+          for error in @local.errors
+            DIV style: {marginTop: 10}, error
+
+      if @local.successes
+        DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#E2FFE2'}, 
+          H1 style: {fontSize: 18}, 'Success! Here\'s what happened:'
+          for table in ['proposals', 'points', 'comments', 'opinions', 'users']
+            if @local.successes[table]
+              DIV null,
+                H1 style: {fontSize: 15, fontWeight: 300}, capitalize(table)
+                for success in @local.successes[table]
+                  DIV style: {marginTop: 10}, success
+
 AppSettingsDash = ReactiveComponent
   displayName: 'AppSettingsDash'
 
@@ -869,4 +951,5 @@ window.FactcheckDash = FactcheckDash
 window.ModerationDash = ModerationDash
 window.AppSettingsDash = AppSettingsDash
 window.RolesDash = RolesDash
+window.ImportDataDash = ImportDataDash
 window.AccessControlled = AccessControlled

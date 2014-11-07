@@ -81,4 +81,6 @@ ConsiderIt::Application.routes.draw do
   post "follow" => 'followable#follow'
   post "unfollow" => 'followable#unfollow'
 
+  post "/dashboard/import_data" => 'import_data#create'
+
 end

@@ -79,6 +79,7 @@ class User < ActiveRecord::Base
       reset_password_token: nil,
       b64_thumbnail: b64_thumbnail,
       tags: JSON.parse(tags) || {},
+      is_super_admin: self.super_admin,
       is_admin: is_admin?,
       is_moderator: has_any_role?([:admin, :superadmin, :moderator]),
       is_evaluator: has_any_role?([:admin, :superadmin, :evaluator]),

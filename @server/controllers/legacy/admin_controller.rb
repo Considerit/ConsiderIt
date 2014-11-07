@@ -27,25 +27,6 @@ class Legacy::AdminController < ApplicationController
 
   end
 
-  def import_data
-    if current_user.nil? || !(current_user.is_admin? || current_user.has_role?(:analyst))
-      result = {
-        :result => 'failed',
-        :reason => current_user.nil? ? 'not logged in' : 'not authorized'
-      }
-    else
-      result = { 
-        :admin_template => params["admin_template_needed"] == 'true' ? self.process_admin_template() : nil}
-    end
-
-    if request.xhr?
-      render :json => result 
-    else
-      render "layouts/dash", :layout => false 
-    end    
-
-  end
-
   def import_data_create
     result = Proposal.import_from_spreadsheet params[:account][:csv], {
       :published => params[:account]["published"],

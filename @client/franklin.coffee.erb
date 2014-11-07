@@ -2523,8 +2523,6 @@ Auth = ReactiveComponent
 
                       DIV className: 'avatar_preview_enclosure',
                         IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else null #todo: make sure that if user overrides image_url, that the new image is used
-                    
-
 
                       INPUT id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
                         @submit_avatar_form = true
@@ -2912,6 +2910,13 @@ ProfileLink = ReactiveComponent
               onClick: clickInternalLink
               'Notifications'
 
+            if current_user.is_super_admin
+              A 
+                className: 'menu_link'
+                href: '/dashboard/import_data'
+                onClick: clickInternalLink                
+                'Import Data'
+
             if current_user.is_admin
               [A 
                 className: 'menu_link'
@@ -2930,6 +2935,7 @@ ProfileLink = ReactiveComponent
                 href: '/dashboard/moderate'
                 onClick: clickInternalLink                
                 'Moderate'
+
             if customer.assessment_enabled && current_user.is_evaluator
               A 
                 className: 'menu_link'
@@ -3342,6 +3348,9 @@ Page = ReactiveComponent
           else if @root.page_name == 'dashboard/assessment'
             AccessControlled permitted: ['admin', 'evaluator'],
               FactcheckDash key: "/dashboard/assessment"
+          else if @root.page_name == 'dashboard/import_data'
+            AccessControlled permitted: ['super_admin'],
+              ImportDataDash key: "dashboard/import_data"
           else if @root.page_name == 'dashboard/moderate'
             AccessControlled permitted: ['admin', 'moderator'],
               ModerationDash key: "/dashboard/moderate"

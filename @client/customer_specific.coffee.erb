@@ -102,12 +102,18 @@ window['bitcoin-demoHeader'] = ReactiveComponent
 
 
     DIV className: 'bitcoin-header', 
-      STYLE null, 
-        """
-        .bitcoin-header { padding: 75px 0; height: 250px; background-image: url(<%= asset_path 'bitcoin/bg.jpg' %>); background-position: center; background-size: cover; }
-        .bitcoin-logo { display: block; margin: auto;}
-        """
-      IMG className: 'bitcoin-logo', src: "<%= asset_path 'bitcoin/logo.svg' %>", style: {height: 100}
+      DIV className: 'profile_navigation',
+        ProfileLink()
+
+      DIV style: {padding: '75px 0'}, 
+
+
+        STYLE null, 
+          """
+          .bitcoin-header { margin-bottom: 20px; height: 250px; background-image: url(<%= asset_path 'bitcoin/bg.jpg' %>); background-position: center; background-size: cover; }
+          .bitcoin-logo { display: block; margin: auto;}
+          """
+        IMG className: 'bitcoin-logo', src: "<%= asset_path 'bitcoin/logo.svg' %>", style: {height: 100}
 
 
 

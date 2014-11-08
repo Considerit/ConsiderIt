@@ -66,10 +66,16 @@ ImportDataDash = ReactiveComponent
           if current_user.is_super_admin
             TR null,
               TD null
-              TD style: {padding: '20px 0 0 20px'}, 
+              TD style: {padding: '20px 0 20px 20px'}, 
                 INPUT type: 'checkbox', name: 'generate_inclusions', id: 'generate_inclusions'
-                LABEL htmlFor: 'generate_inclusions', 'Generate random inclusions of points and opinions? (only good for demos) [requires proposal file]'
-          
+                LABEL htmlFor: 'generate_inclusions', 
+                  """
+                  Generate opinions & inclusions of points?
+                  It requires a proposal file; for each proposal in the file, this option will increase by 
+                  2x the number of existing opinions. Each simulated opinion will include two points. 
+                  Stances and inclusions will not be assigned randomly, but rather following a 
+                  rich-get-richer model. You can use this option multiple times. This option is only good for demos.
+                  """
           TR null,
             TD null
             TD style: {padding: '20px 0 0 20px'}, 

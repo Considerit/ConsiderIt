@@ -25,6 +25,7 @@ class ImportDataController < ApplicationController
     modified = {}
 
     points = {}
+    proposals = []
 
     configuration = {
       'users' => {
@@ -164,11 +165,13 @@ class ImportDataController < ApplicationController
               attrs['account_id'] = current_tenant.id
               proposal = Proposal.new attrs
               proposal.save
-              modified[table].push "Created Proposal '#{proposal.name}'"
+              modified[table].push "Created Proposal '#{proposal.long_id}'"
             else
               proposal.update_attributes attrs
-              modified[table].push "Updated Proposal '#{proposal.name}'"              
+              modified[table].push "Updated Proposal '#{proposal.long_id}'"              
             end
+
+            proposals.push proposal
 
 
 
@@ -256,10 +259,82 @@ class ImportDataController < ApplicationController
         raise ActiveRecord::Rollback
       end
 
-      if params[:generate_inclusions]
-        # for each proposal...
-           # create some opinions (not entirely randomly)
-           # create some inclusions (not entirely randomly)
+      if params[:generate_inclusions] && proposals.length > 0
+        ['users', 'opinions'].each do |t|
+          if !modified.include? t
+            modified[t] = []
+          end
+        end
+        proposals.each do |proposal|
+          # Get all into a distribution of stances. We'll generate opinions 
+          # in a way roughly consistent with the existing 
+          # distribution shape. 
+          opinions = proposal.opinions.published.map {|o| o.stance}
+
+          included_pros = proposal.inclusions.map {|i| i.point.is_pro && i.point.published ? i.point_id : nil}.compact
+          included_cons = proposal.inclusions.map {|i| !i.point.is_pro && i.point.published ? i.point_id : nil}.compact
+
+
+          # We'll double the number of opinions, basing the new
+          # opinion around an existing opinion. 
+          opinions.each do |target_stance| 
+
+            ####
+            # Create a fake user for this opinion
+            new_id = User.last.id + 1
+            attrs = {
+              'name' => "Fake User #{new_id}",
+              'email' => "#{new_id}@ghost.dev",
+              'password' => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20],
+              'registration_complete' => true,
+              'avatar_url' => "https://dl.dropboxusercontent.com/u/3403211/demofaces/#{Random.rand(1..120)}.jpg"
+            }
+            user = User.create! attrs
+            user.add_to_active_in
+            modified['users'].push "Created User '#{user.name}'"
+
+            ####
+            # Generate a stance for this user, based around the target_stance (+/- .1)
+            new_stance = target_stance + Random.rand(-1.0..1.0) * 0.2
+            if new_stance < -1
+              new_stance = -1
+            elsif new_stance > 1
+              new_stance = 1
+            end
+
+            opinion = Opinion.create!({
+              :account_id => current_tenant.id,
+              :proposal_id => proposal.id,
+              :user_id => user.id,
+              :stance => new_stance,
+              :published => true
+              })
+
+            ###
+            # Generate two point inclusions for this user, biased toward their stance
+            if included_pros.length > 0 && included_cons.length > 0
+              inclusions = []
+              [0,1].each do |iter|
+                if Random.rand(-3.0..3.0) + new_stance > 0
+                  # select a pro (already biased toward most included points)
+                  list = included_pros
+                else
+                  list = included_cons
+                end
+
+                point = list.sample
+                inclusions.push point
+                list.push point
+              end
+
+              opinion.update_inclusions inclusions
+              opinion.point_inclusions = JSON.dump(inclusions)
+              opinion.save
+            end
+            modified['opinions'].push "Created Opinion by #{user.name} on '#{proposal.name}'"
+          end
+        end
+
 
       end
     end
@@ -267,7 +342,7 @@ class ImportDataController < ApplicationController
     if errors.length > 0
       render :json => [{'errors' => errors.uniq}]
     else
-      Point.delay.update_scores
+      # Point.delay.update_scores
       render :json => [modified]
     end
 

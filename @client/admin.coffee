@@ -61,7 +61,15 @@ ImportDataDash = ReactiveComponent
                 LABEL htmlFor: "#{table}-file", "#{table} (.csv)"
               TD style: {padding: '20px 0 0 20px'}, 
                 INPUT id: "#{table}-file", name: "#{table.toLowerCase()}-file", type:'file', style: {backgroundColor: considerit_blue, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
-        
+          
+
+          if current_user.is_super_admin
+            TR null,
+              TD null
+              TD style: {padding: '20px 0 0 20px'}, 
+                INPUT type: 'checkbox', name: 'generate_inclusions', id: 'generate_inclusions'
+                LABEL htmlFor: 'generate_inclusions', 'Generate random inclusions of points and opinions? (only good for demos) [requires proposal file]'
+          
           TR null,
             TD null
             TD style: {padding: '20px 0 0 20px'}, 
@@ -95,6 +103,8 @@ ImportDataDash = ReactiveComponent
                       
 
                 'Done. Upload!'
+
+
       if @local.errors
         DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFE2E2'}, 
           H1 style: {fontSize: 18}, 'Ooops! There are errors in the uploaded files:'

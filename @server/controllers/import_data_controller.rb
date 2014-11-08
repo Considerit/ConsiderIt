@@ -255,6 +255,13 @@ class ImportDataController < ApplicationController
       if errors.length > 0
         raise ActiveRecord::Rollback
       end
+
+      if params[:generate_inclusions]
+        # for each proposal...
+           # create some opinions (not entirely randomly)
+           # create some inclusions (not entirely randomly)
+
+      end
     end
 
     if errors.length > 0

@@ -488,7 +488,7 @@ StickyProposalHeading = ReactiveComponent
           textAlign: 'center'
 
         # TODO: we need a way of knowing whether this subdomain has a homepage or not
-        if customer.identifier == 'livingvotersguide' || customer.identifier == 'tigard'
+        if customer.identifier != 'cityoftigard'
           A
             className: 'homepage_link'
             onClick: (=> window.app_router.navigate("/", {trigger: true}))
@@ -2785,6 +2785,10 @@ Homepage = ReactiveComponent
     if customer.identifier == 'livingvotersguide'
       learn_decide_share_style.backgroundColor = cityclub_white
       learn_decide_share_style.color = 'rgb(76,76,76)'
+    else if customer.identifier == 'bitcoin-demo'
+      learn_decide_share_style.backgroundColor = 'white'
+      learn_decide_share_style.color = '#676766'
+
 
     # The "Welcome to the community!" people
     contributors = @page.contributors.filter((u)-> !!fetch(u).avatar_file_name)
@@ -3405,7 +3409,7 @@ Colors = ReactiveComponent
         proposal_header: '#E37765'
         header_bg: '#E37765'
         link_hover_color: 'black'
-        profile_anchor_color: 'black'
+        profile_anchor_color: 'white'
 
       # Define colors for different customers. 
       switch customer.identifier
@@ -3426,6 +3430,10 @@ Colors = ReactiveComponent
         when 'ecastonline'
           color.header_bg = color.proposal_header = 'rgb(36, 35, 31)'
           color.profile_anchor_color = 'white'
+        when 'bitcoin-demo'
+          color.header_bg = 'white'
+          color.proposal_header = '#676766' #'rgb(52,93,146)'
+          color.profile_anchor_color = 'black'
 
       save color
 

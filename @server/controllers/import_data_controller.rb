@@ -138,6 +138,8 @@ class ImportDataController < ApplicationController
 
             if row.has_key? 'avatar'
               attrs['avatar_url'] = row['avatar']
+            elsif params[:assign_pics]
+              attrs['avatar_url'] = "https://dl.dropboxusercontent.com/u/3403211/demofaces/#{Random.rand(1..120)}.jpg"
             end
 
             if !user

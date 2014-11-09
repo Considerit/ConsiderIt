@@ -43,7 +43,13 @@ class Account < ActiveRecord::Base
   end
 
   def user_roles
-    JSON.parse(roles || "{}")
+    r = JSON.parse(roles || "{}")
+    ['admin', 'moderator', 'evaluator'].each do |role|
+      if !r.has_key?(role) || !r[role]
+        r[role] = []
+      end
+    end
+    r
   end
 
   def set_roles(new_roles)

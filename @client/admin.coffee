@@ -58,13 +58,14 @@ ImportDataDash = ReactiveComponent
           for table in ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
             TR null,
               TD style: {paddingTop: 20, textAlign: 'right'}, 
-                LABEL htmlFor: "#{table}-file", "#{table} (.csv)"
+                LABEL style: {whiteSpace: 'nowrap'}, htmlFor: "#{table}-file", "#{table} (.csv)"
+                DIV null, A style: {textDecoration: 'underline', fontSize: 12}, href: "/example_import_csvs/#{table.toLowerCase()}.csv", 'Example'
               TD style: {padding: '20px 0 0 20px'}, 
                 INPUT id: "#{table}-file", name: "#{table.toLowerCase()}-file", type:'file', style: {backgroundColor: considerit_blue, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
           
 
           if current_user.is_super_admin
-            TR null,
+            [TR null,
               TD null
               TD style: {padding: '20px 0 20px 20px'}, 
                 INPUT type: 'checkbox', name: 'generate_inclusions', id: 'generate_inclusions'
@@ -76,6 +77,16 @@ ImportDataDash = ReactiveComponent
                   Stances and inclusions will not be assigned randomly, but rather following a 
                   rich-get-richer model. You can use this option multiple times. This option is only good for demos.
                   """
+
+            TR null,
+              TD null
+              TD style: {padding: '20px 0 20px 20px'}, 
+                INPUT type: 'checkbox', name: 'assign_pics', id: 'assign_pics'
+                LABEL htmlFor: 'assign_pics', 
+                  """
+                  Assign a random profile picture for users without an avatar url
+                  """]
+
           TR null,
             TD null
             TD style: {padding: '20px 0 0 20px'}, 

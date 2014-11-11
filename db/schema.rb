@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141111032724) do
+ActiveRecord::Schema.define(version: 20141111034942) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -497,10 +497,7 @@ ActiveRecord::Schema.define(version: 20141111032724) do
     t.boolean  "no_email_notifications",             default: false
   end
 
-  add_index "users", ["account_id", "avatar_file_name"], name: "select_user_by_avatar_name", length: {"account_id"=>nil, "avatar_file_name"=>3}, using: :btree
-  add_index "users", ["account_id", "id"], name: "select_user_by_account_and_id", using: :btree
-  add_index "users", ["account_id"], name: "account_id", using: :btree
-  add_index "users", ["account_id"], name: "select_user_by_account", using: :btree
+  add_index "users", ["avatar_file_name"], name: "index_users_on_avatar_file_name", using: :btree
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
 
   create_table "verdicts", force: true do |t|

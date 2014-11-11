@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141104052210) do
+ActiveRecord::Schema.define(version: 20141111032724) do
 
   create_table "accounts", force: true do |t|
     t.string   "identifier"
@@ -403,7 +403,6 @@ ActiveRecord::Schema.define(version: 20141104052210) do
   add_index "proposals", ["account_id", "id"], name: "select_proposal", using: :btree
   add_index "proposals", ["account_id", "long_id"], name: "select_proposal_by_long_id", using: :btree
   add_index "proposals", ["account_id"], name: "index_proposals_on_account_id", using: :btree
-  add_index "proposals", ["long_id"], name: "index_proposals_on_long_id", unique: true, using: :btree
 
   create_table "rails_admin_histories", force: true do |t|
     t.string   "message"

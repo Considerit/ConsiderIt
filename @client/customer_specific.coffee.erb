@@ -130,13 +130,11 @@ window.livingvotersguideHeader = ReactiveComponent
   displayName: 'livingvotersguideHeader'
 
   render: ->
-    show_full = true #@root.page_name in ['homepage', 'about']
-
     logo_style =
       position: 'absolute'
-      left: if show_full then 40 else 154
-      top: if show_full then 11 else 73
-      width: if show_full then 252 else 130
+      left: 40
+      top: 11
+      width: 252
       zIndex: 1
 
     DIV className: 'header', 
@@ -162,13 +160,11 @@ window.livingvotersguideHeader = ReactiveComponent
       A href: (if @root.page_name == 'homepage' then '/about' else '/'), onClick: clickInternalLink,
         IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.png' %>", style: logo_style
 
-      # Blue + green areas
       DIV
         style:
-          #backgroundColor: if show_full then cityclub_green else cityclub_blue
-          color: cityclub_white
+          color: 'white'
           height: 137
-          marginBottom: if show_full then 23 else 0
+          marginBottom: 23
           clear: 'both'
 
         # Online Intelligence for Washington Voters
@@ -176,7 +172,6 @@ window.livingvotersguideHeader = ReactiveComponent
           style:
             fontSize: 32
             padding: '22px 40px 0 332px'
-            #backgroundColor: cityclub_blue
             width: 838
             height: '100%'
             float: 'left'
@@ -196,15 +191,14 @@ window.livingvotersguideHeader = ReactiveComponent
           DIV style: {marginTop: 8}, 'with fact-checks from'
           A {href: 'http://spl.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'The Seattle Public Library')
 
-      if show_full
-        DIV
-          style: 
-            fontStyle: 'italic'
-            marginLeft: 332
-            marginBottom: 15
-            fontSize: 18
-            color: 'white'
-          "Washington, thanks for your contributions, we'll see you again in 2015!"
+      DIV
+        style: 
+          fontStyle: 'italic'
+          marginLeft: 332
+          marginBottom: 15
+          fontSize: 18
+          color: 'white'
+        "Thanks Washington! We'll see you again in 2015!"
 
 window.ZipcodeBox = ReactiveComponent
   displayName: 'ZipcodeBox'

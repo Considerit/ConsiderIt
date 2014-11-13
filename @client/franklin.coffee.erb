@@ -2810,73 +2810,73 @@ Homepage = ReactiveComponent
                   DIV className: 'learn_decide_share2',
                     col.details
 
-      if contributors.length > 0
-        DIV 
-          style: 
-            width: PAGE_WIDTH
-            position: 'relative'
-            margin: 'auto'
+      DIV style: {marginTop: 30},
+        if contributors.length > 0
           DIV 
-            style:
-              top: 25
-              left: 1005
-              position: 'absolute'
-              width: 165
-              textAlign: 'left'
-              zIndex: 1
-
-            for user in _(contributors).first(90)
-              Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
-            if contributors_without_avatar_count > 0
-              DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} other#{if contributors_without_avatar_count != 1 then 's'}"
-
-      # Draw the proposal summaries
-      for cluster, index in proposals.clusters or []
-        DIV null,
-          if index == 1 and customer.identifier == 'livingvotersguide'
-            ZipcodeBox()
-
-          if cluster.proposals?.length > 0 
-            TABLE
+            style: 
+              width: PAGE_WIDTH
+              position: 'relative'
+              margin: 'auto'
+            DIV 
               style:
-                borderLeft: '0px solid rgb(191, 192, 194)'
-                margin: '20px auto'
-                position: 'relative'
+                left: 1005
+                position: 'absolute'
+                width: 165
+                textAlign: 'left'
+                zIndex: 1
 
-              TBODY null,
-                TR null,
-                  # Draw the cluster name off to the side
-                  TH className: 'proposal_cluster',
-                    cluster.name                
+              for user in _(contributors).first(90)
+                Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
+              if contributors_without_avatar_count > 0
+                DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} other#{if contributors_without_avatar_count != 1 then 's'}"
 
-                # Draw each proposal summary
-                for proposal in cluster.proposals
-                  ProposalSummary
-                    key: proposal.key
-                    cluster: cluster.name
-          
-          # TODO: There are probably lots of cases where we want to add more details to
-          #       a cluster of proposals.  For example, saying that proposals in cluster
-          #       "Council meeting 6/7" will be open for discussion at the upcoming
-          #       meeting. Keep an eye on this possible generality (and eliminate this
-          #       edge case if we do generalize it)
-          if cluster.name == 'Advisory votes' and customer.identifier == 'livingvotersguide'
-            DIV
-              style:
-                color: 'rgb(108,107,98)'
-                fontSize: 16
-                paddingLeft: 164
-                paddingTop: 12
-                margin: 'auto'
-                width: PAGE_WIDTH
-              "* Advisory Votes are not binding. They are a consequence of "
-              A
-                href: "http://en.wikipedia.org/wiki/Washington_Initiative_960"
+        # Draw the proposal summaries
+        for cluster, index in proposals.clusters or []
+          DIV null,
+            if index == 1 and customer.identifier == 'livingvotersguide'
+              ZipcodeBox()
+
+            if cluster.proposals?.length > 0 
+              TABLE
                 style:
-                  fontWeight: 600
+                  borderLeft: '0px solid rgb(191, 192, 194)'
+                  margin: '20px auto'
+                  position: 'relative'
+
+                TBODY null,
+                  TR null,
+                    # Draw the cluster name off to the side
+                    TH className: 'proposal_cluster',
+                      cluster.name                
+
+                  # Draw each proposal summary
+                  for proposal in cluster.proposals
+                    ProposalSummary
+                      key: proposal.key
+                      cluster: cluster.name
+            
+            # TODO: There are probably lots of cases where we want to add more details to
+            #       a cluster of proposals.  For example, saying that proposals in cluster
+            #       "Council meeting 6/7" will be open for discussion at the upcoming
+            #       meeting. Keep an eye on this possible generality (and eliminate this
+            #       edge case if we do generalize it)
+            if cluster.name == 'Advisory votes' and customer.identifier == 'livingvotersguide'
+              DIV
+                style:
                   color: 'rgb(108,107,98)'
-                'Initiative 960' 
-              " passing in 2007."
+                  fontSize: 16
+                  paddingLeft: 164
+                  paddingTop: 12
+                  margin: 'auto'
+                  width: PAGE_WIDTH
+                "* Advisory Votes are not binding. They are a consequence of "
+                A
+                  href: "http://en.wikipedia.org/wiki/Washington_Initiative_960"
+                  style:
+                    fontWeight: 600
+                    color: 'rgb(108,107,98)'
+                  'Initiative 960' 
+                " passing in 2007."
 
 
 

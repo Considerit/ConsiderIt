@@ -2781,76 +2781,32 @@ Homepage = ReactiveComponent
     color = @data('color')
     proposals = @data('/proposals')
 
-    learn_decide_share_style = {backgroundColor: color.proposal_header, color: 'white'}
-    # if customer.identifier == 'livingvotersguide'
-    #   learn_decide_share_style.backgroundColor = cityclub_white
-    #   learn_decide_share_style.color = 'rgb(76,76,76)'
-    # if customer.identifier == 'bitcoin-demo'
-    #   learn_decide_share_style.backgroundColor = 'white'
-    #   learn_decide_share_style.color = '#676766'
-
-
     # The "Welcome to the community!" people
     contributors = @page.contributors.filter((u)-> !!fetch(u).avatar_file_name)
     contributors_without_avatar_count = @page.contributors.filter((u)-> !fetch(u).avatar_file_name).length
 
-    welcome_column =
-      TH className: 'welcome_column',
-        if contributors.length > 0
-          [
-            DIV className: 'learn_decide_share1', style: learn_decide_share_style, 'Join'
-            DIV className: 'learn_decide_share2', style: learn_decide_share_style, 'the contributors'
-            DIV className: 'people',
-              for user in _(contributors).first(90)
-                Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
-              if contributors_without_avatar_count > 0
-                DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} other#{if contributors_without_avatar_count != 1 then 's'}"
-          ]
-        else
-          ''
-
-
     # Columns of the sticky header for the proposal list.
     if customer.identifier == 'livingvotersguide'
-      columns = [ {heading: 'Learn', details: 'about your ballot'}, {heading: 'Decide', details: 'how you\'ll vote'}, {heading: 'Share', details: 'your opinion'}]
+      columns = [ {heading: 'Learn', details: 'about your ballot'}, {heading: 'Decide', details: 'how you\'ll vote'}, {heading: 'Share', details: 'your opinion'}, {heading: 'Join', details: 'the contributors'}]
     else
-      columns = [ {heading: 'Learn', details: 'about the issues'}, {heading: 'Decide', details: 'what you think'}, {heading: 'Share', details: 'your opinion'}]
+      columns = [ {heading: 'Learn', details: 'about the issues'}, {heading: 'Decide', details: 'what you think'}, {heading: 'Share', details: 'your opinion'}, {heading: 'Join', details: 'the contributors'}]
 
     sticky_header_height = 79
-
-    drawCluster = (cluster, is_first=false) =>
-      if cluster.proposals?.length > 0 
-        TABLE
-          style:
-            borderLeft: '0px solid rgb(191, 192, 194)'
-            margin: '20px auto'
-            position: 'relative'
-
-          TBODY null,
-            TR null,
-              # Draw the cluster name off to the side
-              TH className: 'proposal_cluster',
-                cluster.name
-
-              # Draw the welcome column... let's find a better place for it.
-              if is_first
-                welcome_column
-
-            # Draw each proposal summary
-            for proposal in cluster.proposals
-              ProposalSummary
-                key: proposal.key
-                cluster: cluster.name
-
 
     DIV className: 'homepage',
       # Draw the header
       DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height}
       DIV 
         className: "sticky_header stickable"
-        style: _.extend({}, learn_decide_share_style, {height: sticky_header_height, width: '100%', zIndex: 9999, minWidth: PAGE_WIDTH}) #minwidth is for when dropping into sticky, position fixed mode
-      ,
-        TABLE style: {margin: 'auto'},
+        style: 
+          backgroundColor: color.proposal_header
+          color: 'white'
+          height: sticky_header_height
+          width: '100%'
+          zIndex: 9999
+          minWidth: PAGE_WIDTH #minwidth is for when dropping into sticky, position fixed mode
+
+        TABLE style: {margin: 'auto', paddingLeft: 242},
           TBODY null,
             TR null,
               for col in columns
@@ -2860,14 +2816,51 @@ Homepage = ReactiveComponent
                   DIV className: 'learn_decide_share2',
                     col.details
 
+      if contributors.length > 0
+        DIV 
+          style: 
+            width: PAGE_WIDTH
+            position: 'relative'
+            margin: 'auto'
+          DIV 
+            style:
+              top: 25
+              left: 1005
+              position: 'absolute'
+              width: 165
+              textAlign: 'left'
+              zIndex: 1
+
+            for user in _(contributors).first(90)
+              Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
+            if contributors_without_avatar_count > 0
+              DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} other#{if contributors_without_avatar_count != 1 then 's'}"
+
       # Draw the proposal summaries
       for cluster, index in proposals.clusters or []
-        [
+        DIV null,
           if index == 1 and customer.identifier == 'livingvotersguide'
             ZipcodeBox()
-          
-          drawCluster(cluster, index == 0)
 
+          if cluster.proposals?.length > 0 
+            TABLE
+              style:
+                borderLeft: '0px solid rgb(191, 192, 194)'
+                margin: '20px auto'
+                position: 'relative'
+
+              TBODY null,
+                TR null,
+                  # Draw the cluster name off to the side
+                  TH className: 'proposal_cluster',
+                    cluster.name                
+
+                # Draw each proposal summary
+                for proposal in cluster.proposals
+                  ProposalSummary
+                    key: proposal.key
+                    cluster: cluster.name
+          
           # TODO: There are probably lots of cases where we want to add more details to
           #       a cluster of proposals.  For example, saying that proposals in cluster
           #       "Council meeting 6/7" will be open for discussion at the upcoming
@@ -2890,7 +2883,6 @@ Homepage = ReactiveComponent
                   color: 'rgb(108,107,98)'
                 'Initiative 960' 
               " passing in 2007."
-        ]
 
 
 

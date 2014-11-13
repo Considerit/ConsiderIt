@@ -23,7 +23,7 @@ window.StateDash = ReactiveComponent
   render: ->
     dash = @fetch('state_dash')
     
-    if dash.filter?.match(/idfa/) or dash.filter?.match(/idmap/)
+    if dash.filter?.match(/idkfa/) or dash.filter?.match(/idmap/)
       dash.on = false
       dash.filter = ''
       save(dash)
@@ -65,17 +65,24 @@ window.StateDash = ReactiveComponent
           return key
       return null
 
-    dash.curr_obj = first_key(search_results.key_matches) or \
-                    first_key(search_results.data_matches)
+    best_guess = first_key(search_results.key_matches) or \
+                 first_key(search_results.data_matches)
 
-    DIV className: 'state_dash',
+    cluster_rows = (keys) ->
+      clusters = {}
+      for key in keys
+        fields = JSON.stringify(Object.keys(cache[key]))
+        clusters[fields] = clusters[fields] or []
+        clusters[fields].push(key)
+      return clusters
+
+    DIV className: 'state_dash', style: this.props.style,
       STYLE null,
         """
         .state_dash {
           position: absolute;
           margin: 20px;
           z-index: 10000;
-          max-width: 100%;
         }
         .state_dash .left, .state_dash .right, .state_dash .top {
           background-color: #eee;
@@ -84,7 +91,7 @@ window.StateDash = ReactiveComponent
           vertical-align: top;
         }
         .state_dash .left  { min-width:   40px; display: inline-block; }
-        .state_dash .right { margin-left: 30px; display: inline-block; max-width: 70%; }
+        .state_dash .right { margin-left: 30px; display: inline-block; }
         .state_dash .top   { max-width:   100%; margin: 20px 0; }
 
         .string { color: green; }
@@ -92,6 +99,17 @@ window.StateDash = ReactiveComponent
         .boolean { color: blue; }
         .null { color: magenta; }
         .key { color: red; }
+
+        .cell {
+          width: 150px;
+          border: 1px solid grey;
+          padding: 2px;
+          display: inline-block;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: clip;
+          margin: 0;
+        }
         """
 
       # Render the top (name) menu
@@ -108,8 +126,81 @@ window.StateDash = ReactiveComponent
                   prefix + name
 
       # Render the object
-      PRE className: 'right', ref: 'json_preview',
-        JSON.stringify(arest.cache[dash.curr_obj], undefined, 3)
+      # PRE className: 'right', ref: 'json_preview',
+      #   JSON.stringify(arest.cache[best_guess], undefined, 3)
+      DIV className: 'right',
+        # Next: go through the list, cluster those that fit the same
+        # schema, and display a table for each.
+        if dash.selected.name
+          selected_keys = (key for key of cache when parse_key(key).name == dash.selected.name)
+          clusters = cluster_rows(selected_keys)
+          for fieldset of clusters
+            # Print each table
+            DIV null,
+              # Print the table header
+              for field in JSON.parse(fieldset)
+                DIV
+                  key: field
+                  style: {fontWeight: 'bold', borderColor: '#eee'}
+                  className: 'cell'
+                  field
+
+              # Print the table body
+              for key in clusters[fieldset]
+                row = cache[key]
+                DIV key: key,
+                  for field of row
+                    DIV
+                      className: 'cell'
+                      key: field
+                      onClick: do (key, field) => (evt) =>
+                        @local.editing = {key_:key, field:field}
+                        save(@local)
+                        setTimeout(=> @refs.dash_input.getDOMNode().focus())
+                      if (@local.editing \
+                          and @local.editing.key_ == key \
+                          and @local.editing.field == field)
+                        SPAN null,
+                          TEXTAREA
+                            key: field
+                            type: 'text'
+                            ref: 'dash_input'
+                            defaultValue: JSON.stringify(row[field])
+                            onChange: (event) =>
+                              try
+                                val = JSON.parse(@refs.dash_input.getDOMNode().value)
+                                cache[@local.editing.key_][@local.editing.field] = val
+                                save(cache[@local.editing.key_])
+                                event.stopPropagation()
+
+                                delete @local.editing.error; save(@local)
+                              catch e
+                                @local.editing.error = true; save(@local)
+                            onBlur: (event) =>
+                              delete @local.editing; save(@local)
+                            style:
+                              position: 'absolute'
+                              backgroundColor: '#faa' if @local.editing.error
+                          # INPUT
+                          #   type: 'submit'
+                          #   onClick: (event) =>
+                          #     try
+                          #       val = JSON.parse(@refs.dash_input.getDOMNode().value)
+                          #       cache[@local.editing.key_][@local.editing.field] = val
+                          #       save(cache[@local.editing.key_])
+                          #       c = fetch('component/1')
+                          #       delete c.editing
+                          #       save(c)
+                          #       event.stopPropagation()
+                          #     catch e
+                          #       @local.editing.error = true
+                          #       save(@local)
+                          #   style:
+                          #     position: 'absolute'
+                          #     marginTop: 30
+
+                      JSON.stringify(row[field])
+
 
   # Other methods
   search_results: () ->
@@ -142,11 +233,9 @@ window.StateDash = ReactiveComponent
     save(dash)
     true
 
-  componentDidUpdate: () ->
-    dash = fetch('state_dash')
-    el = @refs.json_preview?.getDOMNode()
-    if el?.innerHTML.length < 50000
-      el.innerHTML = rainbows(JSON.stringify(arest.cache[dash.curr_obj], undefined, 3))
+  # componentDidUpdate: () ->
+  #   el = @refs.json_preview.getDOMNode()
+  #   el.innerHTML = rainbows(el.innerHTML)
 reset_selection = () ->
   dash = fetch('state_dash')
   dash.selected = {owner: null, name: null, number: null}
@@ -179,8 +268,9 @@ document.onkeypress = (e) ->
   key = (e and e.keyCode) or event.keyCode
   recent_keys.push(key)
   recent_keys = recent_keys.slice(1)
-  if key==4 or "#{recent_keys}" == "#{[105, 100, 109, 97, 112]}" \   # idmap
-            or "#{recent_keys.slice(1)}" == "#{[105, 100, 102, 97]}" # idfa
+
+  if key==4 or "#{recent_keys}" == "#{[105, 100, 109, 97, 112]}" \ # idmap
+            or "#{recent_keys}" == "#{[105, 100, 107, 102, 97]}"   # idkfa
     dash = fetch('state_dash')
     if dash.on
       dash.on = false
@@ -188,3 +278,4 @@ document.onkeypress = (e) ->
       dash.on = true
     save(dash)
     setTimeout(->$('.state_dash input').focus())
+

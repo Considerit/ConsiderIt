@@ -36,12 +36,6 @@ window.DESCRIPTION_WIDTH = BODY_WIDTH
 # Colors
 considerit_blue = '#2478CC'
 
-cityclub_navy   = 'rgb(0,   68,  124)'
-cityclub_green  = '#a5ce3a'
-cityclub_blue   = 'rgb(0,   182, 236)'
-cityclub_white  = 'white' #'rgb(255, 254, 245)'
-
-
 ##
 # Helpers that should probably go elsewhere
 
@@ -509,7 +503,7 @@ StickyProposalHeading = ReactiveComponent
 
               DIV className: 'current_proposal', style: {backgroundColor: 'rgba(0,0,0,.2)'},
                 SPAN null,
-                  "#{if @proposal.designator && @proposal.category then "#{@proposal.category[0]}-#{@proposal.designator} " else ''}#{@proposal.name}?" 
+                  "#{if @proposal.designator && @proposal.category then "#{@proposal.category[0]}-#{@proposal.designator} " else ''}#{@proposal.name}" 
                   I className: 'fa fa-caret-down', style: {paddingLeft: 8}
 
               if @local.dropped_down
@@ -2781,76 +2775,32 @@ Homepage = ReactiveComponent
     color = @data('color')
     proposals = @data('/proposals')
 
-    learn_decide_share_style = {backgroundColor: color.proposal_header, color: 'white'}
-    # if customer.identifier == 'livingvotersguide'
-    #   learn_decide_share_style.backgroundColor = cityclub_white
-    #   learn_decide_share_style.color = 'rgb(76,76,76)'
-    # if customer.identifier == 'bitcoin-demo'
-    #   learn_decide_share_style.backgroundColor = 'white'
-    #   learn_decide_share_style.color = '#676766'
-
-
     # The "Welcome to the community!" people
     contributors = @page.contributors.filter((u)-> !!fetch(u).avatar_file_name)
     contributors_without_avatar_count = @page.contributors.filter((u)-> !fetch(u).avatar_file_name).length
 
-    welcome_column =
-      TH className: 'welcome_column',
-        if contributors.length > 0
-          [
-            DIV className: 'learn_decide_share1', style: learn_decide_share_style, 'Join'
-            DIV className: 'learn_decide_share2', style: learn_decide_share_style, 'the contributors'
-            DIV className: 'people',
-              for user in _(contributors).first(90)
-                Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
-              if contributors_without_avatar_count > 0
-                DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} other#{if contributors_without_avatar_count != 1 then 's'}"
-          ]
-        else
-          ''
-
-
     # Columns of the sticky header for the proposal list.
     if customer.identifier == 'livingvotersguide'
-      columns = [ {heading: 'Learn', details: 'about your ballot'}, {heading: 'Decide', details: 'how you\'ll vote'}, {heading: 'Share', details: 'your opinion'}]
+      columns = [ {heading: 'Learn', details: 'about your ballot'}, {heading: 'Decide', details: 'how you\'ll vote'}, {heading: 'Share', details: 'your opinion'}, {heading: 'Join', details: 'the contributors'}]
     else
-      columns = [ {heading: 'Learn', details: 'about the issues'}, {heading: 'Decide', details: 'what you think'}, {heading: 'Share', details: 'your opinion'}]
+      columns = [ {heading: 'Learn', details: 'about the issues'}, {heading: 'Decide', details: 'what you think'}, {heading: 'Share', details: 'your opinion'}, {heading: 'Join', details: 'the contributors'}]
 
     sticky_header_height = 79
-
-    drawCluster = (cluster, is_first=false) =>
-      if cluster.proposals?.length > 0 
-        TABLE
-          style:
-            borderLeft: '0px solid rgb(191, 192, 194)'
-            margin: '20px auto'
-            position: 'relative'
-
-          TBODY null,
-            TR null,
-              # Draw the cluster name off to the side
-              TH className: 'proposal_cluster',
-                cluster.name
-
-              # Draw the welcome column... let's find a better place for it.
-              if is_first
-                welcome_column
-
-            # Draw each proposal summary
-            for proposal in cluster.proposals
-              ProposalSummary
-                key: proposal.key
-                cluster: cluster.name
-
 
     DIV className: 'homepage',
       # Draw the header
       DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height}
       DIV 
         className: "sticky_header stickable"
-        style: _.extend({}, learn_decide_share_style, {height: sticky_header_height, width: '100%', zIndex: 9999, minWidth: PAGE_WIDTH}) #minwidth is for when dropping into sticky, position fixed mode
-      ,
-        TABLE style: {margin: 'auto'},
+        style: 
+          backgroundColor: color.proposal_header
+          color: 'white'
+          height: sticky_header_height
+          width: '100%'
+          zIndex: 9999
+          minWidth: PAGE_WIDTH #minwidth is for when dropping into sticky, position fixed mode
+
+        TABLE style: {margin: 'auto', paddingLeft: 242},
           TBODY null,
             TR null,
               for col in columns
@@ -2860,37 +2810,73 @@ Homepage = ReactiveComponent
                   DIV className: 'learn_decide_share2',
                     col.details
 
-      # Draw the proposal summaries
-      for cluster, index in proposals.clusters or []
-        [
-          if index == 1 and customer.identifier == 'livingvotersguide'
-            ZipcodeBox()
-          
-          drawCluster(cluster, index == 0)
-
-          # TODO: There are probably lots of cases where we want to add more details to
-          #       a cluster of proposals.  For example, saying that proposals in cluster
-          #       "Council meeting 6/7" will be open for discussion at the upcoming
-          #       meeting. Keep an eye on this possible generality (and eliminate this
-          #       edge case if we do generalize it)
-          if cluster.name == 'Advisory votes' and customer.identifier == 'livingvotersguide'
-            DIV
+      DIV style: {marginTop: 30},
+        if contributors.length > 0
+          DIV 
+            style: 
+              width: PAGE_WIDTH
+              position: 'relative'
+              margin: 'auto'
+            DIV 
               style:
-                color: 'rgb(108,107,98)'
-                fontSize: 16
-                paddingLeft: 164
-                paddingTop: 12
-                margin: 'auto'
-                width: PAGE_WIDTH
-              "* Advisory Votes are not binding. They are a consequence of "
-              A
-                href: "http://en.wikipedia.org/wiki/Washington_Initiative_960"
+                left: 1005
+                position: 'absolute'
+                width: 165
+                textAlign: 'left'
+                zIndex: 1
+
+              for user in _(contributors).first(90)
+                Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
+              if contributors_without_avatar_count > 0
+                DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} other#{if contributors_without_avatar_count != 1 then 's'}"
+
+        # Draw the proposal summaries
+        for cluster, index in proposals.clusters or []
+          DIV null,
+            if index == 1 and customer.identifier == 'livingvotersguide'
+              ZipcodeBox()
+
+            if cluster.proposals?.length > 0 
+              TABLE
                 style:
-                  fontWeight: 600
+                  borderLeft: '0px solid rgb(191, 192, 194)'
+                  margin: '20px auto'
+                  position: 'relative'
+
+                TBODY null,
+                  TR null,
+                    # Draw the cluster name off to the side
+                    TH className: 'proposal_cluster',
+                      cluster.name                
+
+                  # Draw each proposal summary
+                  for proposal in cluster.proposals
+                    ProposalSummary
+                      key: proposal.key
+                      cluster: cluster.name
+            
+            # TODO: There are probably lots of cases where we want to add more details to
+            #       a cluster of proposals.  For example, saying that proposals in cluster
+            #       "Council meeting 6/7" will be open for discussion at the upcoming
+            #       meeting. Keep an eye on this possible generality (and eliminate this
+            #       edge case if we do generalize it)
+            if cluster.name == 'Advisory votes' and customer.identifier == 'livingvotersguide'
+              DIV
+                style:
                   color: 'rgb(108,107,98)'
-                'Initiative 960' 
-              " passing in 2007."
-        ]
+                  fontSize: 16
+                  paddingLeft: 164
+                  paddingTop: 12
+                  margin: 'auto'
+                  width: PAGE_WIDTH
+                "* Advisory Votes are not binding. They are a consequence of "
+                A
+                  href: "http://en.wikipedia.org/wiki/Washington_Initiative_960"
+                  style:
+                    fontWeight: 600
+                    color: 'rgb(108,107,98)'
+                  'Initiative 960' 
+                " passing in 2007."
 
 
 
@@ -3420,8 +3406,8 @@ Colors = ReactiveComponent
       # Define colors for different customers. 
       switch customer.identifier
         when 'livingvotersguide'
-          color.header_bg = color.proposal_header = cityclub_green #'rgb(0,182,236)'
-          color.background = cityclub_white
+          color.header_bg = color.proposal_header = '#a5ce3a'
+          color.background = 'white'
           color.link_hover_color = 'rgb(118,148,41)'
           color.profile_anchor_color = 'white'               
         when 'cityoftigard'

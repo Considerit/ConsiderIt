@@ -36,12 +36,6 @@ window.DESCRIPTION_WIDTH = BODY_WIDTH
 # Colors
 considerit_blue = '#2478CC'
 
-cityclub_navy   = 'rgb(0,   68,  124)'
-cityclub_green  = '#a5ce3a'
-cityclub_blue   = 'rgb(0,   182, 236)'
-cityclub_white  = 'white' #'rgb(255, 254, 245)'
-
-
 ##
 # Helpers that should probably go elsewhere
 
@@ -3412,8 +3406,8 @@ Colors = ReactiveComponent
       # Define colors for different customers. 
       switch customer.identifier
         when 'livingvotersguide'
-          color.header_bg = color.proposal_header = cityclub_green #'rgb(0,182,236)'
-          color.background = cityclub_white
+          color.header_bg = color.proposal_header = '#a5ce3a'
+          color.background = 'white'
           color.link_hover_color = 'rgb(118,148,41)'
           color.profile_anchor_color = 'white'               
         when 'cityoftigard'

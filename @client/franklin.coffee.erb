@@ -503,7 +503,7 @@ StickyProposalHeading = ReactiveComponent
 
               DIV className: 'current_proposal', style: {backgroundColor: 'rgba(0,0,0,.2)'},
                 SPAN null,
-                  "#{if @proposal.designator && @proposal.category then "#{@proposal.category[0]}-#{@proposal.designator} " else ''}#{@proposal.name}?" 
+                  "#{if @proposal.designator && @proposal.category then "#{@proposal.category[0]}-#{@proposal.designator} " else ''}#{@proposal.name}" 
                   I className: 'fa fa-caret-down', style: {paddingLeft: 8}
 
               if @local.dropped_down

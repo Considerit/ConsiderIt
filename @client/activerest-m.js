@@ -15,14 +15,11 @@
         if (url[0] === '/')
             server_fetch(url)
 
-        return cache[url] = extend({key: url}, defaults)
+        update_cache(extend({key: url}, defaults))
+        return cache[url]
     }
 
-    /*  Can be called as save(object) or save([object1, object2]).
-     *  For each object:
-     *  - Update cache
-     *  - Saves to server
-     *
+    /*  Updates cache and saves to server.
      *  You can pass a callback that will run when the saves have finished.
      */
     function save(object, continuation) {
@@ -35,10 +32,8 @@
             if (continuation) continuation()
     }
 
-    /*  Can be called as destroy(object).
-     *  For each object:
-     *  - Delete from server (if server-managed)
-     *  - Remove key from cache
+    /*  Deletes from server (if it's there) and removes from cache
+     *  You can pass a callback that will run when the delete has finished.
      */
     function destroy(key, continuation) {
         if (!key) return
@@ -150,7 +145,16 @@
         request.send(null)
     }
 
+    var pending_saves = {} // Stores xmlhttprequest of any key being saved
+                           // (Note: This shim will fail in many situations...)
     function server_save(object, continuation) {
+        console.log('pending saves', pending_saves[object.key])
+        if (pending_saves[object.key]) {
+            console.log('Yo foo, aborting')
+            pending_saves[object.key].abort()
+            delete pending_saves[object.key]
+        }
+
         var original_key = object.key
         
         // Special case for /new.  Grab the pieces of the URL.
@@ -161,6 +165,9 @@
         // Build request
         var request = new XMLHttpRequest()
         request.onload = function () {
+            // No longer pending
+            delete pending_saves[original_key]
+
             if (request.status === 200) {
                 var result = JSON.parse(request.responseText)
                 // console.log('New save result', result)
@@ -171,7 +178,7 @@
                         // Let's map the old and new together
                         var new_key = match[1]                // It's got a fresh key
                         cache[new_key] = cache[original_key]  // Point them at the same thing
-                        obj.key = new_key                     // And it's no longer new
+                        obj.key = new_key                     // And it's no longer "/new/*"
                     }
                 },
                         result)
@@ -193,6 +200,9 @@
         request.setRequestHeader('X-CSRF-Token', csrf())
         request.setRequestHeader('X-Requested-With','XMLHttpRequest')
         request.send(JSON.stringify(object))
+
+        // Remember it
+        pending_saves[original_key] = request
     }
 
     function server_destroy(key, continuation) {
@@ -399,11 +409,15 @@
         // Now create the actual React class with this definition, and
         // return it.
         var react_class = React.createClass(component)
-        return function (props, children) {
+        var result = function (props, children) {
             props = props || {}
             props.parents = execution_context.slice()
             return react_class(props, children)
         }
+        // Give it the same prototype as the original class so that it
+        // passes React.isValidClass() inspection
+        result.prototype = react_class.prototype
+        return result
     }
 
 

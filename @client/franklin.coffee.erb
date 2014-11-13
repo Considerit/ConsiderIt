@@ -50,6 +50,9 @@ capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
 L = loading_indicator = DIV null, 'Loading...'
 
 splitParagraphs = (user_content) ->
+  if !user_content
+    return SPAN null
+    
   user_content = user_content.replace(/(<li>|<br\s?\/?>|<p>)/g, '\n') #add newlines
   user_content = user_content.replace(/(<([^>]+)>)/ig, "") #strips all tags
 
@@ -310,7 +313,7 @@ Proposal = ReactiveComponent
     proposal = @proposal
     your_opinion = @data(@proposal.your_opinion)
     included_points = your_opinion.point_inclusions
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     customer = @data('/customer')
 
     description_region_style = {width: DESCRIPTION_WIDTH}
@@ -485,7 +488,7 @@ StickyProposalHeading = ReactiveComponent
           textAlign: 'center'
 
         # TODO: we need a way of knowing whether this subdomain has a homepage or not
-        if customer.identifier == 'livingvotersguide' || customer.identifier == 'tigard'
+        if customer.identifier != 'cityoftigard'
           A
             className: 'homepage_link'
             onClick: (=> window.app_router.navigate("/", {trigger: true}))
@@ -521,7 +524,7 @@ StickyProposalHeading = ReactiveComponent
                               for other_proposal in curr_cluster.proposals
                                 TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink, key: "tr/#{other_proposal.long_id}",
                                   TD style: {textAlign: 'left', paddingLeft: 20},
-                                    A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.id == @proposal.id then 700 else 400},
+                                    A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.key == @proposal.key then 700 else 400},
                                       other_proposal.name
 
                                   TD style: {position: 'relative'},
@@ -996,7 +999,7 @@ DecisionBoard = ReactiveComponent
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   render : ->
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     customer = @data('/customer')
     
     your_opinion = @data(@proposal.your_opinion)
@@ -1095,7 +1098,7 @@ DecisionBoard = ReactiveComponent
 
   componentDidUpdate : -> 
     $el = $(@getDOMNode())    
-    root = @data('root')
+    root = fetch('root')
 
     # hack to get around a problem where the browser's remembered scroll position messes
     # up the sticky location after initialization
@@ -1128,7 +1131,7 @@ DecisionBoard = ReactiveComponent
   # When user clicks the big bold button at the bottom of the crafting page
   saveYourOpinion : -> 
     your_opinion = @data (@proposal.your_opinion)
-    if @data('/current_user').logged_in
+    if fetch('/current_user').logged_in
       your_opinion.published = true
       save (your_opinion)
       togglePage('results', 'save_button')
@@ -1157,7 +1160,7 @@ YourPoints = ReactiveComponent
       what: 'click new point'
 
   render : ->
-    root = @data('root')
+    root = fetch('root')
     included_points = @data(@proposal.your_opinion).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
@@ -1230,7 +1233,7 @@ CommunityPoints = ReactiveComponent
                   '6'
     ,
       DIV className:'points_heading_label',
-        if @data('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
+        if fetch('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
         P className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
           if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
 
@@ -1254,7 +1257,7 @@ CommunityPoints = ReactiveComponent
       new Date()
 
   buildPointsList : ->
-    is_results = @data('root').proposal_mode == 'results'
+    is_results = fetch('root').proposal_mode == 'results'
     selected_segment = @data('histogram').selected_segment
     included_points = @data(@proposal.your_opinion).point_inclusions
     points = @page.points
@@ -1303,7 +1306,7 @@ Point = ReactiveComponent
     is_selected = @root.selected_point == @props.key
 
     selected_segment = @data('histogram').selected_segment
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
 
 
     renderIncluders = =>
@@ -1495,7 +1498,7 @@ Point = ReactiveComponent
 
     return if @props.rendered_as == 'under_review'
 
-    disable = @data('root').proposal_mode == 'results'
+    disable = fetch('root').proposal_mode == 'results'
 
     $point_content = $(@getDOMNode()).find('.point_content')
     revert = 
@@ -1554,7 +1557,7 @@ Point = ReactiveComponent
   # On hovering over a point, highlight the people who included this 
   # point in the Histogram.
   highlightIncluders : -> 
-    if @data('root').proposal_mode == 'results'
+    if fetch('root').proposal_mode == 'results'
       includers = @data().includers
       point = @data()
 
@@ -1570,7 +1573,7 @@ Point = ReactiveComponent
         save(hist)
 
   unHighlightIncluders : -> 
-    if @data('root').proposal_mode == 'results'
+    if fetch('root').proposal_mode == 'results'
       hist = @data('histogram')
       hist.highlighted_users = null
       save(hist)
@@ -2126,7 +2129,7 @@ EditPoint = ReactiveComponent
 
   savePoint : (ev) ->
     $form = $(@getDOMNode())
-    root = @data('root')
+    root = fetch('root')
 
     nutshell = $form.find('#nutshell').val()
     text = $form.find('#text').val()
@@ -2140,7 +2143,7 @@ EditPoint = ReactiveComponent
       point.text = text
       point.hide_name = hide_name
     else
-      current_user = @data('/current_user').user
+      current_user = fetch('/current_user').user
       point =
         key : '/new/point'
         is_pro : @props.valence == 'pros'
@@ -2275,8 +2278,9 @@ Auth = ReactiveComponent
   displayName: 'Auth'
 
   render: -> 
-    current_user = @data('/current_user')
-    root = @data('root')
+    current_user = fetch('/current_user')
+    customer = fetch('/customer')
+    root = fetch('root')
 
     # When we switch to new auth_mode screens, wipe out all the old
     # errors, cause we're startin' fresh!
@@ -2389,9 +2393,14 @@ Auth = ReactiveComponent
 
       #top: '-80px'
 
-    pledges = ['I will participate with only one account', 
-               'I will speak only on behalf of myself', 
-               'I will not attack or mock others']
+    if !customer.requires_civility_pledge_on_registration
+      pledges = []
+    else
+      pledges = ['I will participate with only one account', 
+                 'I will speak only on behalf of myself', 
+                 'I will not attack or mock others']
+
+
 
     DIV
       className:'auth_region focal_wrapper'
@@ -2514,8 +2523,6 @@ Auth = ReactiveComponent
 
                       DIV className: 'avatar_preview_enclosure',
                         IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else null #todo: make sure that if user overrides image_url, that the new image is used
-                    
-
 
                       INPUT id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
                         @submit_avatar_form = true
@@ -2594,7 +2601,7 @@ Auth = ReactiveComponent
         # the pledge.  The server tells us this via the existence of a
         # `user' object in current_user.
 
-        current_user = @data('/current_user')
+        current_user = fetch('/current_user')
         if current_user.logged_in
           # We are logged in!  The user has completed registration.
 
@@ -2613,7 +2620,7 @@ Auth = ReactiveComponent
 
   submitAuth : (ev) -> 
     ev.preventDefault()
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
 
     $el = $(@getDOMNode())
     current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
@@ -2652,7 +2659,7 @@ Auth = ReactiveComponent
   sendResetPassword : -> 
 
     # Tell the server to email us a token
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     current_user.trying_to = 'send_password_reset_token'
     save(current_user, =>
       if not (current_user.errors?.reset_password?.length > 0)
@@ -2666,7 +2673,7 @@ Auth = ReactiveComponent
         arest.updateCache(current_user)
       )
   toggleAuthMode : -> 
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
     current_user.errors = {}
     save(@root)
@@ -2778,6 +2785,10 @@ Homepage = ReactiveComponent
     if customer.identifier == 'livingvotersguide'
       learn_decide_share_style.backgroundColor = cityclub_white
       learn_decide_share_style.color = 'rgb(76,76,76)'
+    else if customer.identifier == 'bitcoin-demo'
+      learn_decide_share_style.backgroundColor = 'white'
+      learn_decide_share_style.color = '#676766'
+
 
     # The "Welcome to the community!" people
     contributors = @page.contributors.filter((u)-> !!fetch(u).avatar_file_name)
@@ -2887,7 +2898,7 @@ ProfileLink = ReactiveComponent
   displayName: 'ProfileLink'
 
   render : -> 
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     customer = @data('/customer')
     color = @data('color')
 
@@ -2902,12 +2913,39 @@ ProfileLink = ReactiveComponent
           onMouseEnter: => @local.menu = true; save(@local)
           onMouseLeave: => @local.menu = false; save(@local)
           DIV className: 'profile_menu', style: {display: (if not @local.menu then 'none')},
+            A 
+              className: 'menu_link'
+              href: '/dashboard/email_notifications'                
+              onClick: clickInternalLink
+              'Notifications'
+
+            if current_user.is_super_admin
+              A 
+                className: 'menu_link'
+                href: '/dashboard/import_data'
+                onClick: clickInternalLink                
+                'Import Data'
+
+            if current_user.is_admin
+              [A 
+                className: 'menu_link'
+                href: '/dashboard/application'
+                onClick: clickInternalLink                
+                'App Settings'
+              A 
+                className: 'menu_link'
+                href: '/dashboard/roles'
+                onClick: clickInternalLink                
+                'User Roles']
+
             if current_user.is_moderator
               A 
                 className: 'menu_link'
                 href: '/dashboard/moderate'
+                onClick: clickInternalLink                
                 'Moderate'
-            if current_user.is_assessor
+
+            if customer.assessment_enabled && current_user.is_evaluator
               A 
                 className: 'menu_link'
                 href: '/dashboard/assessment'
@@ -2935,7 +2973,7 @@ ProfileLink = ReactiveComponent
 
 
   logout : -> 
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     current_user.logged_in = false
     current_user.trying_to = 'logout'
 
@@ -2956,7 +2994,7 @@ Header = ReactiveComponent
   displayName: 'Header'
 
   render : ->
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     customer = @data('/customer')
     color = @data('color')
 
@@ -3034,7 +3072,7 @@ Footer = ReactiveComponent
         window["#{customer.identifier}Footer"]()
 
       else
-        DIV null,
+        DIV style: {marginTop: 30},
           TechnologyByConsiderit()
           DIV style: {color: 'rgb(131,131,131)', marginTop: 5},
             'Bug to report? Want to use this technology in your organization? '
@@ -3045,7 +3083,7 @@ TechnologyByConsiderit = ReactiveComponent
   render : -> 
     DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 20},
       "Technology by "
-      A href: 'http://consider.it', style: {textDecoration: 'none', color: '#B03B42', fontWeight: 600}, target: '_blank', 'Considerit'
+      A href: 'http://consider.it', style: {textDecoration: 'underline', color: '#B03B42', fontWeight: 600}, target: '_blank', 'Considerit'
 
 # top secret proposal creation component
 EditProposal = ReactiveComponent
@@ -3079,7 +3117,7 @@ EditProposal = ReactiveComponent
     save proposal, -> window.app_router.navigate "/#{long_id}", {trigger : true}
 
   render : ->
-    user = @data('/current_user')
+    user = fetch('/current_user')
     
     return DIV null, 'Nothing to see here, move on' if !user.logged_in || !user.is_admin || (!@props.fresh && !@data().long_id )
 
@@ -3189,6 +3227,56 @@ About = ReactiveComponent
       else
         DIV className: 'embedded_about_html'
 
+
+EmailNotificationSettings = ReactiveComponent
+  displayName: 'EmailNotificationSettings'
+
+  render : -> 
+    data = @data()
+    current_user = fetch('/current_user')
+
+    # TODO: listing each followable and making it unfollowable
+    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
+      H1 style: {fontSize: 28, marginTop: 20}, 'Email Notification Settings'
+
+      DIV null,
+        INPUT 
+          id: 'no_email_notifications'
+          name: 'no_email_notifications'
+          type: 'checkbox'
+          defaultChecked: !current_user.no_email_notifications
+          onChange: (e) => 
+            current_user.no_email_notifications = !$('#no_email_notifications').is(':checked')
+            save current_user
+        LABEL htmlFor: 'no_email_notifications', 'Receive email notifications'
+
+      if !current_user.no_email_notifications
+        if _.flatten(_.values(data.follows)).length == 0
+          DIV null, 'You\'re not currently receiving any email notifications'
+        else
+          DIV null,
+            H1 style: {fontSize: 24, margin: '10px 0'}, "This is what you receive email notifications about:"
+
+            for followable_type in ['Point', 'Proposal']
+              if data.follows[followable_type].length > 0
+                DIV null,
+                  H1 style: {fontSize: 18, margin: '10px 0'}, "#{followable_type}s"
+                  for follow in data.follows[followable_type]
+                    followable = fetch(follow)
+                    DIV style: {margin: '20px 0'}, 
+                      if followable_type == 'Point'
+                        Point key: followable, rendered_as: 'under_review'
+                      else 
+                        BLOCKQUOTE null,
+                          followable.name
+                      BUTTON 
+                        style: {fontSize: 18}
+                        onClick: do(followable) => => 
+                          followable.is_following = false
+                          save followable
+                          arest.serverFetch '/dashboard/email_notifications' # don't want to have to dirty this key whenever a point or proposal is updated
+                        'unsubscribe'
+
 Root = ReactiveComponent
   displayName: 'Root'
   resetSelection: (e) ->
@@ -3238,16 +3326,18 @@ Root = ReactiveComponent
 Page = ReactiveComponent
   displayName: 'Page'
 
-  componentDidMount : -> fetchAvatars()
-
   render: ->
 
     color = @data('color')
+    avatars = fetch('/avatars')
 
     if @root.auth_mode
       return Auth()
 
     DIV style: {minWidth: PAGE_WIDTH, backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
+      if avatars.avatars
+        STYLE type: 'text/css', id: 'b64-avatars', dangerouslySetInnerHTML: {__html: avatars.avatars}
+      
       BrowserHacks()
       Header()
       DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
@@ -3262,9 +3352,23 @@ Page = ReactiveComponent
             EditProposal key: "new_proposal", fresh: true
           else if @root.page_name.match(/(.+)\/edit/)
             EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
+          else if @root.page_name == 'dashboard/email_notifications'
+            EmailNotificationSettings key: '/dashboard/email_notifications'
           else if @root.page_name == 'dashboard/assessment'
-            AccessControlled permitted: ['admin', 'assessor'],
+            AccessControlled permitted: ['admin', 'evaluator'],
               FactcheckDash key: "/dashboard/assessment"
+          else if @root.page_name == 'dashboard/import_data'
+            AccessControlled permitted: ['super_admin'],
+              ImportDataDash key: "dashboard/import_data"
+          else if @root.page_name == 'dashboard/moderate'
+            AccessControlled permitted: ['admin', 'moderator'],
+              ModerationDash key: "/dashboard/moderate"
+          else if @root.page_name == 'dashboard/application'
+            AccessControlled permitted: ['admin'],
+              AppSettingsDash key: "/customer"
+          else if @root.page_name == 'dashboard/roles'
+            AccessControlled permitted: ['admin'],
+              RolesDash key: "/customer"
           else 
             Proposal key: @page.proposal.key
 
@@ -3275,7 +3379,7 @@ Computer = ReactiveComponent
   # changes to current_user for CSRF and logging in and out.
   displayName: 'Computer'
   render : ->
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     if current_user.csrf
       arest.csrf(current_user.csrf)
 
@@ -3310,7 +3414,7 @@ Colors = ReactiveComponent
         proposal_header: '#E37765'
         header_bg: '#E37765'
         link_hover_color: 'black'
-        profile_anchor_color: 'black'
+        profile_anchor_color: 'white'
 
       # Define colors for different customers. 
       switch customer.identifier
@@ -3330,6 +3434,10 @@ Colors = ReactiveComponent
           color.header_bg =  color.proposal_header = "rgb(150,150,150)"
         when 'ecastonline'
           color.header_bg = color.proposal_header = 'rgb(36, 35, 31)'
+          color.profile_anchor_color = 'white'
+        when 'bitcoin-demo'
+          color.header_bg = 'white'
+          color.proposal_header = '#676766' #'rgb(52,93,146)'
           color.profile_anchor_color = 'white'
 
       save color
@@ -3406,15 +3514,6 @@ setInterval ->
     arest.serverFetch('/current_user')
 , 2 * 60 * 1000
 
-##
-# load users' pictures
-
-fetchAvatars = ->
-  $.get Routes.get_avatars_path(), (data) -> 
-    if $('#b64-avatars').length > 0
-      $('#b64-avatars').remove()
-    if data
-      $('head').append data
 
 # It is important that a user that just submitted a user picture see the picture
 # on the results and in the header. However, this is a bit tricky because the avatars
@@ -3447,7 +3546,7 @@ Router = Backbone.Router.extend
     "proposal/new(/)" : "new_proposal"
     "proposal/:proposal/edit(/)": "edit_proposal"
     ":proposal(/)": "proposal"    
-    "dashboard/assessment(/)": 'dashboard_factcheck'
+    "dashboard/:dash(/)": 'dashboard'
 
   proposal : (long_id, params) ->
     root = fetch('root')
@@ -3460,7 +3559,7 @@ Router = Backbone.Router.extend
     root.selected_point = null
     if params 
       root.proposal_mode = 'results' if params['results']
-      root.selected_point = params['selected'] if params['selected'] 
+      root.selected_point = params['selected'] if params['selected']
 
     save root
 
@@ -3504,9 +3603,9 @@ Router = Backbone.Router.extend
     clearRootForNonProposalRoute(root)
     save root      
 
-  dashboard_factcheck : (params) -> 
+  dashboard : (dash, params) -> 
     root = fetch('root')
-    root.page_name = 'dashboard/assessment'    
+    root.page_name = "dashboard/#{dash}"    
     clearRootForNonProposalRoute(root)
     save root
 
@@ -3568,6 +3667,7 @@ $(document).ready ->
 # exports...
 window.splitParagraphs = splitParagraphs
 window.Point = Point
+window.Comment = Comment
 window.Avatar = Avatar
 window.Button = Button
 window.AutoGrowTextArea = AutoGrowTextArea
@@ -3578,5 +3678,5 @@ window.TechnologyByConsiderit = TechnologyByConsiderit
 window.FBLike = FBLike
 window.FBShare = FBShare
 window.Tweet = Tweet
-
+window.capitalize = capitalize
 

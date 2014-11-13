@@ -7,7 +7,9 @@ class Follow < ActiveRecord::Base
 
   def as_json(options={})
     options[:only] ||= [:followable_id, :followable_type, :follow, :explicit]
-    super(options)
+    result = super(options)
+    result['key'] = "follow/#{id}"
+    result
   end
 
   def notify?

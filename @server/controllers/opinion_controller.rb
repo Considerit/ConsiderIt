@@ -13,7 +13,7 @@ class OpinionController < ApplicationController
     opinion = Opinion.find key_id(params)
     authorize! :update, opinion
 
-    fields = ['proposal', 'explanation', 'stance', 'point_inclusions']
+    fields = ['proposal', 'stance', 'point_inclusions']
     updates = params.select{|k,v| fields.include? k}
 
     # Convert proposal key to id
@@ -33,7 +33,7 @@ class OpinionController < ApplicationController
     updates['long_id'] = proposal.long_id  # Remove this soon
     
     # Update the normal fields
-    opinion.update_attributes ActionController::Parameters.new(updates).permit!
+    opinion.update_attributes updates
     opinion.save
 
     # Update published

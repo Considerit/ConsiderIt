@@ -8,6 +8,11 @@ class HomeController < ApplicationController
   }
 
   def index
+    
+    # Store query parameters important for access control for email notifications
+    if params.has_key? 'u'
+      session[:notifications_user] = {'u' => params['u'], 't' => params['t']}
+    end
 
     # if someone has accessed a non-existent subdomain
     if !current_tenant
@@ -64,14 +69,16 @@ class HomeController < ApplicationController
   end
 
   def avatars
-    if session[:search_bot] # don't fetch avatars for search bots
-      render :json => {}
-    else 
+    # don't fetch avatars for search bots
+    respond_to do |format|
       @user = User
-      respond_to do |format|
-        format.html { render :partial => './avatars' } 
-        format.json { render :partial => './avatars' }
-      end
+      avatars = session[:search_bot] ? '' : render_to_string(:partial => 'home/avatars') 
+      format.json { 
+        render :json => {
+          key: '/avatars',
+          avatars: avatars
+        }
+      }
     end
   end
 

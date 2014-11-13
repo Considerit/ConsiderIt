@@ -37,9 +37,9 @@ window.DESCRIPTION_WIDTH = BODY_WIDTH
 considerit_blue = '#2478CC'
 
 cityclub_navy   = 'rgb(0,   68,  124)'
-cityclub_green  = 'rgb(165, 206, 57)'
+cityclub_green  = '#a5ce3a'
 cityclub_blue   = 'rgb(0,   182, 236)'
-cityclub_white  = 'rgb(255, 254, 245)'
+cityclub_white  = 'white' #'rgb(255, 254, 245)'
 
 
 ##
@@ -2782,12 +2782,12 @@ Homepage = ReactiveComponent
     proposals = @data('/proposals')
 
     learn_decide_share_style = {backgroundColor: color.proposal_header, color: 'white'}
-    if customer.identifier == 'livingvotersguide'
-      learn_decide_share_style.backgroundColor = cityclub_white
-      learn_decide_share_style.color = 'rgb(76,76,76)'
-    else if customer.identifier == 'bitcoin-demo'
-      learn_decide_share_style.backgroundColor = 'white'
-      learn_decide_share_style.color = '#676766'
+    # if customer.identifier == 'livingvotersguide'
+    #   learn_decide_share_style.backgroundColor = cityclub_white
+    #   learn_decide_share_style.color = 'rgb(76,76,76)'
+    # if customer.identifier == 'bitcoin-demo'
+    #   learn_decide_share_style.backgroundColor = 'white'
+    #   learn_decide_share_style.color = '#676766'
 
 
     # The "Welcome to the community!" people
@@ -2908,6 +2908,7 @@ ProfileLink = ReactiveComponent
 
       if current_user.logged_in
         SPAN
+          className: 'profile_menu_wrap'
           style:
             position: 'relative'
           onMouseEnter: => @local.menu = true; save(@local)
@@ -3009,7 +3010,7 @@ Header = ReactiveComponent
       DIV null, 
         if @root.page_name == 'about'
           # TODO: we need a way of knowing whether this subdomain has a homepage or not
-          if customer.identifier == 'livingvotersguide'
+          if customer.identifier != 'cityoftigard'
             A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', zIndex: 999, marginTop: 8, marginLeft: 16, fontWeight: 600}, 
               I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
               SPAN style: {fontSize: 15, paddingLeft: 6, color: '#777', verticalAlign: 'text-bottom'}, 'Home'
@@ -3422,6 +3423,7 @@ Colors = ReactiveComponent
           color.header_bg = color.proposal_header = cityclub_green #'rgb(0,182,236)'
           color.background = cityclub_white
           color.link_hover_color = 'rgb(118,148,41)'
+          color.profile_anchor_color = 'white'               
         when 'cityoftigard'
           color.header_bg =  '#253967'
           color.proposal_header = '#46A046'

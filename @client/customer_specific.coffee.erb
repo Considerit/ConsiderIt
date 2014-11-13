@@ -107,13 +107,13 @@ window['bitcoin-demoHeader'] = ReactiveComponent
 
       DIV style: {padding: '45px 0'}, 
 
-
         STYLE null, 
           """
           .bitcoin-header { height: 250px; background-image: url(<%= asset_path 'bitcoin/bg.jpg' %>); background-position: center; background-size: cover; }
           .bitcoin-logo { display: block; margin: auto;}
           """
         IMG className: 'bitcoin-logo', src: "<%= asset_path 'bitcoin/logo.svg' %>", style: {height: 100}
+        DIV style: {textAlign: 'center', fontWeight: 600, margin: 'auto', fontSize: 24, color: 'white', padding: "10px 0px 0px 60px"}, 'demo'
 
 
 
@@ -139,7 +139,7 @@ window.livingvotersguideHeader = ReactiveComponent
       width: if show_full then 222 else 130
       zIndex: 1
 
-    DIV null,
+    DIV style: {backgroundColor: cityclub_white},
       # Top cream area
       DIV
         style:
@@ -189,7 +189,14 @@ window.livingvotersguideHeader = ReactiveComponent
           DIV style: {marginTop: 8}, 'with fact-checks from'
           A {href: 'http://spl.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'The Seattle Public Library')
 
-
+      DIV
+        style: 
+          fontStyle: 'italic'
+          backgroundColor: cityclub_white
+          marginLeft: 332
+          marginBottom: 15
+          fontSize: 18
+        "Washington, thanks for your contributions, we'll see you again in 2015!"
 
 window.ZipcodeBox = ReactiveComponent
   displayName: 'ZipcodeBox'

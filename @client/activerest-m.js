@@ -191,7 +191,7 @@
         request.setRequestHeader('Accept','application/json')
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         request.setRequestHeader('X-CSRF-Token', csrf())
-        request.setRequestHeader('X-Requested-With','XMLHttpRequest')        
+        request.setRequestHeader('X-Requested-With','XMLHttpRequest')
         request.send(JSON.stringify(object))
     }
 
@@ -222,7 +222,7 @@
         request.setRequestHeader('Accept','application/json')
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         request.setRequestHeader('X-CSRF-Token', csrf())
-        request.setRequestHeader('X-Requested-With','XMLHttpRequest')        
+        request.setRequestHeader('X-Requested-With','XMLHttpRequest')
         request.send(JSON.stringify(payload))
     }
 

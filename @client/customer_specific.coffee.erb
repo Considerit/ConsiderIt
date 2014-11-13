@@ -189,14 +189,15 @@ window.livingvotersguideHeader = ReactiveComponent
           DIV style: {marginTop: 8}, 'with fact-checks from'
           A {href: 'http://spl.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'The Seattle Public Library')
 
-      DIV
-        style: 
-          fontStyle: 'italic'
-          backgroundColor: cityclub_white
-          marginLeft: 332
-          marginBottom: 15
-          fontSize: 18
-        "Washington, thanks for your contributions, we'll see you again in 2015!"
+      if show_full
+        DIV
+          style: 
+            fontStyle: 'italic'
+            backgroundColor: cityclub_white
+            marginLeft: 332
+            marginBottom: 15
+            fontSize: 18
+          "Washington, thanks for your contributions, we'll see you again in 2015!"
 
 window.ZipcodeBox = ReactiveComponent
   displayName: 'ZipcodeBox'

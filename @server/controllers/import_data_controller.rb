@@ -34,7 +34,7 @@ class ImportDataController < ApplicationController
       },
       'proposals' => {
         required_fields: ['url', 'topic', 'user'],
-        directly_extractable: ['description', 'cluster', 'seo_title', 'seo_description', 'seo_keywords']
+        directly_extractable: ['description', 'cluster', 'seo_title', 'seo_description', 'seo_keywords', 'description_fields']
       },
       'opinions' => {
         required_fields: ['user', 'proposal', 'stance'],
@@ -54,6 +54,7 @@ class ImportDataController < ApplicationController
     # wrap everything in a transaction so that we can rollback _everything_ in the case of errors
     ActiveRecord::Base.transaction do
 
+
       # Now loop back through to create objects
       # The order of the tables matters
       for table in ['users', 'proposals', 'opinions', 'points', 'comments']
@@ -65,7 +66,15 @@ class ImportDataController < ApplicationController
         config = configuration[table]
         checked_required_fields = false
 
-        CSV.foreach(file.tempfile, :headers => true, :encoding => 'windows-1251:utf-8') do |row|
+        begin
+          CSV.read(file.tempfile)
+          encoding = 'utf-8'
+        rescue
+          encoding = 'windows-1251:utf-8'
+        end
+
+
+        CSV.foreach(file.tempfile, :headers => true, :encoding => encoding) do |row|
           error = false
 
           # Make sure that this file has all the required columns           
@@ -206,7 +215,12 @@ class ImportDataController < ApplicationController
 
             opinion = Opinion.where(:user_id => user.id, :proposal_id => proposal.id).first
             if !opinion
-              error.push "A Point written by #{user.email} does not have an associated Opinion. Please add an Opinion for this user to the Opinions file!"
+              errors.push "A Point written by #{user.email} does not have an associated Opinion. Please add an Opinion for this user to the Opinions file!"
+              next
+            end
+
+            if !row['is_pro']
+              errors.push "A Point written by #{user.email} isn't specified as a pro or con."
               next
             end
 

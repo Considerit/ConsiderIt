@@ -1,0 +1,1 @@
+cluster,topic,url,description,user"If this proposal is related to other proposals, the name those proposals share. Optional.",Required Short topic description,the_url_at_which_the_proposal_will_be_hosted__required,The description of the proposal. Required. Can contain HTML. ,email_of_proposer@ghost.dev

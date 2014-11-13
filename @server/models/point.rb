@@ -175,7 +175,7 @@ class Point < ActiveRecord::Base
   end
         
   def self.update_scores
-    Point.all.each {|pnt| pnt.recache }
+    Point.published.each {|pnt| pnt.recache }
   end
 
 end

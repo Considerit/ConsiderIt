@@ -3,8 +3,8 @@
 # http://api.rubyonrails.org/classes/ActiveSupport/Notifications.html
 ########
 
-def valid_email(user)
-  return !!(user.email && user.email.length > 0 && !user.email.match('\.ghost'))
+def send_email_to_user(user)
+  return !!(user.email && user.email.length > 0 && !user.email.match('\.ghost') && !user.no_email_notifications)
 end
 
 ##################################################
@@ -12,27 +12,27 @@ end
 
 
 #### notify_proposal is NOT MIGRATED / TESTED!!!!######
-notify_proposal = Proc.new do |data|
-  #params : proposal, current_tenant, mail_options
-  proposal = data[:proposal] || data[:model]
-  current_tenant = data[:current_tenant]
-  mail_options = data[:mail_options]
+# notify_proposal = Proc.new do |data|
+#   #params : proposal, current_tenant, mail_options
+#   proposal = data[:proposal] || data[:model]
+#   current_tenant = data[:current_tenant]
+#   mail_options = data[:mail_options]
 
-  current_tenant.follows.where(:follow => true).each do |follow|
-    # if follower's action triggered event, skip...
-    if follow
-      if follow.user_id == proposal.user_id 
-        next
-      # if follower doesn't have an email address, skip...
-      elsif !follow.user.email || follow.user.email.length == 0
-        next
-      else 
-        EventMailer.discussion_new_proposal(follow.user, proposal, mail_options, '').deliver!
-      end
-    end
-  end
+#   current_tenant.follows.where(:follow => true).each do |follow|
+#     # if follower's action triggered event, skip...
+#     if follow
+#       if follow.user_id == proposal.user_id 
+#         next
+#       # if follower doesn't have an email address, skip...
+#       elsif !follow.user.email || follow.user.email.length == 0
+#         next
+#       else 
+#         EventMailer.discussion_new_proposal(follow.user, proposal, mail_options, '').deliver!
+#       end
+#     end
+#   end
 
-end
+# end
 
 notify_point = Proc.new do |data|
   #params : point, current_tenant, mail_options
@@ -46,7 +46,7 @@ notify_point = Proc.new do |data|
   voters = proposal.opinions.published.select(:user_id).uniq.map {|x| x.user_id }
 
   proposal.followers.each do |u|
-    next if !valid_email(u)
+    next if !send_email_to_user(u)
 
     # if follower's action triggered event, skip...
     if u.id == point.user_id 
@@ -83,7 +83,7 @@ notify_comment = Proc.new do |args|
   includers = point.inclusions.select(:user_id).uniq.map {|x| x.user_id }
 
   point.followers.each do |u|
-    next if !valid_email(u)
+    next if !send_email_to_user(u)
 
     # if follower's action triggered event, skip...
     if u.id == comment.user_id 
@@ -113,7 +113,7 @@ end
 
 # Checks whether now is an appropriate time to send a notification
 def send_notification_on_create(moderatable_type, current_tenant)
-  return true if !current_tenant.enable_moderation || [0,3].include?(current_tenant.send("moderate_#{moderatable_type}s_mode"))
+  return [nil, 0, 3].include?(current_tenant.send("moderate_#{moderatable_type}s_mode"))
 end
 
 ########
@@ -128,10 +128,10 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
   end
   
   current_tenant = data[:current_tenant]
-  if current_tenant.enable_moderation
+  if current_tenant.classes_to_moderate.length > 0
     # send to all users with moderator status
     roles = current_tenant.user_roles()
-    moderators = roles.has_key?(:moderator) ? roles[:moderator] : []
+    moderators = roles.has_key?('moderator') ? roles['moderator'] : []
 
     moderators.each do |key|
       begin

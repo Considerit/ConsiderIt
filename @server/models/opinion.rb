@@ -126,7 +126,8 @@ class Opinion < ActiveRecord::Base
     user = User.find(self.user_id)
 
     if user.inclusions.where( :point_id => point.id ).count > 0
-      raise "Including a point (#{point.id}) for user #{self.user_id} twice!'"
+      Rails.logger.error "Including a point (#{point.id}) for user #{self.user_id} twice!'"
+      return
     end
     
     attrs = { 

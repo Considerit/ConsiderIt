@@ -17,7 +17,7 @@ namespace :metrics do
 
     WASHINGTON = true
     if WASHINGTON
-      years = [2010,2011,2012,2013]
+      years = [2010,2011,2012,2013,2014]
       accnt_id = 1
     else
       years = [2012]
@@ -28,7 +28,7 @@ namespace :metrics do
     puts "Year\tusers\topinions\tinclusions\tpoints\tcomments"
     years.each do |year|
       opinions = Opinion.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')
-      users = User.where(:account_id => accnt_id).where("YEAR(created_at)=#{year} OR YEAR(last_sign_in_at)=#{year}").where('MONTH(created_at)>8')
+      users = User.where('active_in like \'%"1"%\'').where("YEAR(created_at)=#{year} OR YEAR(last_sign_in_at)=#{year}").where('MONTH(created_at)>8')
       points = Point.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')      
       inclusions = Inclusion.where(:account_id => accnt_id).where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins('INNER JOIN opinions ON inclusions.user_id=opinions.user_id AND inclusions.proposal_id=opinions.proposal_id').where('opinions.published = 1')
       comments = Comment.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')
@@ -38,11 +38,18 @@ namespace :metrics do
 
     end
 
+    # (note that for 2014+, users.last_sign_in_at isn't updated...)
+    # other users
+    additional_users = User.where('active_in like \'%"1"%\'').where("YEAR(created_at)!=2014").where("id in (SELECT user_id from opinions where user_id is not NULL and YEAR(opinions.created_at)=2014)") 
+
+    pp "Additional users for 2014: #{additional_users.count}"       
+
+
     puts "Distinct users engaging in each activity"
     puts "Year\tusers\topinions\tinclusions\tpoints\tcomments"
     years.each do |year|
       opinions = Opinion.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').group(:user_id)
-      users = User.where(:account_id => accnt_id).where("YEAR(created_at)=#{year} OR YEAR(last_sign_in_at)=#{year}").where('MONTH(created_at)>8')
+      users = User.where('active_in like \'%"1"%\'').where("YEAR(created_at)=#{year} OR YEAR(last_sign_in_at)=#{year}").where('MONTH(created_at)>8')
       points = Point.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').group(:user_id)
       inclusions = Inclusion.where(:account_id => accnt_id).where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins('INNER JOIN opinions ON inclusions.user_id=opinions.user_id AND inclusions.proposal_id=opinions.proposal_id').where('opinions.published = 1').group("inclusions.user_id")
       comments = Comment.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').group(:user_id)
@@ -54,14 +61,13 @@ namespace :metrics do
           inclusions.count.keys.length, 
           points.count.keys.length, 
           comments.count.keys.length)
-
     end
 
     puts "Advanced metrics"
     puts "Year\tInclusions per point\tinclusions per opinion\tcomments per point\topinions per user"
     years.each do |year|
       opinions = Opinion.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')
-      users = User.where(:account_id => accnt_id).where("YEAR(created_at)=#{year} OR YEAR(last_sign_in_at)=#{year}").where('MONTH(created_at)>8')
+      users = User.where('active_in like \'%"1"%\'').where("YEAR(created_at)=#{year} OR YEAR(last_sign_in_at)=#{year}").where('MONTH(created_at)>8')
       points = Point.published.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')      
       inclusions = Inclusion.where(:account_id => accnt_id).where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins('INNER JOIN opinions ON inclusions.user_id=opinions.user_id AND inclusions.proposal_id=opinions.proposal_id').where('opinions.published = 1')
       comments = Comment.where(:account_id => accnt_id).where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8')
@@ -76,21 +82,11 @@ namespace :metrics do
     end
   end
 
-  task :fill_opinion_holes => :environment do 
-    Point.published.where(:opinion_id => nil).each do |pnt|
-      pnt.opinion = Opinion.where(:user_id => pnt.user_id).where(:proposal_id => pnt.proposal_id).last
-      pnt.save
-    end
-    Inclusion.where(:opinion_id => nil).each do |inc|
-      inc.opinion = Opinion.published.where(:user_id => inc.user_id).where(:proposal_id => inc.proposal_id).last
-      inc.save
-    end
-  end
 
   task :normative_inclusion_overall => :environment do
     WASHINGTON = true
     if WASHINGTON
-      years = [2010,2011,2012,2013]
+      years = [2010,2011,2012,2013,2014]
       accnt_id = 1
     else
       years = [2012]
@@ -115,19 +111,22 @@ namespace :metrics do
 
       opinions.each do |pos|
         if pos.inclusions.count >= THRESH
-          inc_points = pos.inclusions.joins(:point)
+
+          #inc_points = pos.inclusions.joins(:point)
+          inc_points = Point.where('id in (?)', JSON.parse(pos.point_inclusions || '[]'))
           conviction += pos.stance.abs
-          if inc_points.where('points.is_pro=1').count > 0 && inc_points.where('points.is_pro=0').count > 0
+          if inc_points.where('is_pro=1').count > 0 && inc_points.where('is_pro=0').count > 0
             pro_and_con += 1
           else  
             not_pro_and_con += 1
           end
 
           if pos.stance > 0
-            inc_yr_side += inc_points.where('points.is_pro=1').count
-            inc_other_side += inc_points.where('points.is_pro=0').count
-            inc_points.each do |inc|
-              otheropinion = inc.point.user.opinions.published.where("proposal_id=#{pos.proposal_id}").count > 0 ? inc.point.user.opinions.published.find_by_proposal_id(pos.proposal_id) : nil
+            inc_yr_side += inc_points.where('is_pro=1').count
+            inc_other_side += inc_points.where('is_pro=0').count
+            inc_points.each do |point|
+              next if !point.user
+              otheropinion = point.user.opinions.published.where("proposal_id=#{pos.proposal_id}").count > 0 ? point.user.opinions.published.find_by_proposal_id(pos.proposal_id) : nil
               if otheropinion && otheropinion.stance < 0 
                 inc_enemy[pos.id] = 1
                 break
@@ -135,11 +134,12 @@ namespace :metrics do
             end
 
           elsif pos.stance < 0
-            inc_yr_side += inc_points.where('points.is_pro=0').count
-            inc_other_side += inc_points.where('points.is_pro=1').count
+            inc_yr_side += inc_points.where('is_pro=0').count
+            inc_other_side += inc_points.where('is_pro=1').count
 
-            inc_points.each do |inc|
-              otheropinion = inc.point.user.opinions.published.where("proposal_id=#{pos.proposal_id}").count > 0 ? inc.point.user.opinions.published.find_by_proposal_id(pos.proposal_id) : nil
+            inc_points.each do |point|
+              next if !point.user
+              otheropinion = point.user.opinions.published.where("proposal_id=#{pos.proposal_id}").count > 0 ? point.user.opinions.published.find_by_proposal_id(pos.proposal_id) : nil
               if otheropinion && otheropinion.stance > 0 
                 inc_enemy[pos.id] = 1
                 break
@@ -767,15 +767,16 @@ namespace :metrics do
 
   task :referer => :environment do 
     puts "User referals"
-    year = 2012
-    users = User.where(:account_id => 1).where("YEAR(created_at)=#{year} OR YEAR(last_sign_in_at)=#{year}").where('MONTH(created_at)>8')
+    year = 2014
 
+    logs = Log.where('what=\'landed on site\' and details not like \'%bot%\'').where(:account_id => 1)
     domains = {}
 
-    users.each do |user|
+    logs.each do |log|
       begin
-        domain = URI.parse(user.referer).host
-        if user.referer.index('aclk')
+        details = JSON.parse log.details
+        domain = URI.parse(details['referer']).host
+        if domain.index('aclk')
           domain = 'google.ads.com'
         end
       rescue
@@ -784,23 +785,32 @@ namespace :metrics do
 
 
       if !domains.has_key?(domain)
-        domains[domain] = {:users => 0, :opinions => 0, :points => 0, :inclusions => 0}
+        domains[domain] = {:users => {}, :visits => 0, :opinions => 0, :points => 0, :inclusions => 0}
       end
-      domains[domain][:users] += 1 
-      domains[domain][:opinions] += user.opinions.published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count
-      domains[domain][:points] += user.points.published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count      
-      domains[domain][:inclusions] += user.inclusions.where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins('INNER JOIN opinions ON inclusions.user_id=opinions.user_id AND inclusions.proposal_id=opinions.proposal_id').where('opinions.published = 1').count
-      #domains[domain][:comments] += user.comments.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count      
+      user = log.user
+
+      next if !user
+
+      domains[domain][:visits] += 1 
+      if user.registration_complete && !domains[domain][:users].has_key?(user.id)
+        domains[domain][:users][user.id] = 1
+
+        domains[domain][:opinions] += user.opinions.published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count
+        domains[domain][:points] += user.points.published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count      
+        domains[domain][:inclusions] += user.inclusions.where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins('INNER JOIN opinions ON inclusions.user_id=opinions.user_id AND inclusions.proposal_id=opinions.proposal_id').where('opinions.published = 1').count
+        #domains[domain][:comments] += user.comments.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count      
+      end
     end
 
     as_array = []; domains.each {|k,vs| as_array.push([k,vs]) }  
 
     puts( "Domain\tusers\topinions\tinclusions\tpoints")
-    as_array.sort{|x,y| x[1][:users]<=>y[1][:users]}.each do |domain|
-        printf("%s\t%i\t%i\t%i\t%i\n",
+    as_array.sort{|x,y| y[1][:visits]<=>x[1][:visits]}.each do |domain|
+        printf("%s\t%i\t%i\t%i\t%i\t%i\n",
 
         domain[0], 
-        domain[1][:users],
+        domain[1][:visits],
+        domain[1][:users].keys().length,
         domain[1][:opinions],
         domain[1][:inclusions],
         domain[1][:points]
@@ -808,18 +818,6 @@ namespace :metrics do
       )
     end
   end
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

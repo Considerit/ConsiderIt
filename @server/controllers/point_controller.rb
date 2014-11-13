@@ -23,9 +23,8 @@ class PointController < ApplicationController
     point['published'] = false
     point['user_id'] = current_user && current_user.id || nil
 
-    point = Point.new ActionController::Parameters.new(point).permit!
+    point = Point.new point
 
-    #TODO: look into cancan to figure out how we can move this earlier in the method
     authorize! :create, point
 
     opinion = Opinion.get_or_make(proposal, current_user)
@@ -73,11 +72,11 @@ class PointController < ApplicationController
     point = Point.find params[:id]
     #authorize! :update, point
 
-    # if params.has_key?(:is_following) && params[:is_following] != point.following(current_user)
-    #   # if is following has changed, that means the user has explicitly expressed 
-    #   # whether they want to be subscribed or not
-    #   point.follow! current_user, {:follow => params[:is_following], :explicit => true}
-    # end
+    if params.has_key?(:is_following) && params[:is_following] != point.following(current_user)
+      # if is following has changed, that means the user has explicitly expressed 
+      # whether they want to be subscribed or not
+      point.follow! current_user, {:follow => params[:is_following], :explicit => true}
+    end
 
     fields = ["nutshell", "text", "hide_name"]
     updates = params.select{|k,v| fields.include? k}

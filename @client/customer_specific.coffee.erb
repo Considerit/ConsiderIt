@@ -93,6 +93,28 @@ window.cityoftigardHeader = ReactiveComponent
         #   A href: 'http://www.tigard-or.gov', style: {color: 'white', fontWeight: 600}, 'City of Tigard'
       # DIV style: {backgroundColor: color.proposal_header, width: '100%', height: 50}
 
+####################
+# Bitcoin
+window['bitcoin-demoHeader'] = ReactiveComponent
+  displayName: 'bitcoin-demoHeader'
+
+  render: -> 
+
+
+    DIV className: 'bitcoin-header', 
+      DIV className: 'profile_navigation',
+        ProfileLink()
+
+      DIV style: {padding: '45px 0'}, 
+
+
+        STYLE null, 
+          """
+          .bitcoin-header { height: 250px; background-image: url(<%= asset_path 'bitcoin/bg.jpg' %>); background-position: center; background-size: cover; }
+          .bitcoin-logo { display: block; margin: auto;}
+          """
+        IMG className: 'bitcoin-logo', src: "<%= asset_path 'bitcoin/logo.svg' %>", style: {height: 100}
+
 
 
 #####################

@@ -1,6 +1,6 @@
 /*
-*= require_tree ./vendor/main
+*= require_tree ./vendor
 *= require font-awesome
 *= require reset
-*= require ./modules/franklin
+*= require franklin
 */

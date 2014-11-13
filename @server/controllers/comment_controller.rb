@@ -12,6 +12,15 @@ class CommentController < ApplicationController
     render :json => []
   end
 
+  def show
+    comment = Comment.find params[:id]
+    authorize! :read, comment
+
+    dirty_key "/comment/#{comment.id}"
+    render :json => []
+    
+  end
+
   def create
     authorize! :create, Comment
 

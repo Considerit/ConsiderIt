@@ -101,7 +101,7 @@ class Proposal < ActiveRecord::Base
     follows = get_explicit_follow(current_user) 
     result["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 
-    result['assessment_enabled'] = assessment_enabled?
+    result['assessment_enabled'] = fact_check_request_enabled?
 
     # if can?(:manage, proposal) && self.publicity < 2
     #   response.update({
@@ -112,7 +112,10 @@ class Proposal < ActiveRecord::Base
     result
   end
 
-  def assessment_enabled?
+  # 
+  def fact_check_request_enabled?
+    return false # nothing can be requested to be fact-checked currently
+
     current_tenant = Thread.current[:tenant]
 
     enabled = current_tenant.assessment_enabled
@@ -275,107 +278,6 @@ class Proposal < ActiveRecord::Base
     true
   end
 
-  # def self.import_from_spreadsheet(file, attrs)
-  #   require 'csv'
 
-  #   created = updated = errors = 0
-
-  #   proposals = []
-
-  #   CSV.foreach(file.tempfile, :headers => true) do |row|
-  #     if !row.has_key?("long_id") || row["long_id"].length != 10
-  #       errors += 1
-  #       pp 'LONG ID NOT PRESENT OR NOT RIGHT LENGTH', row
-  #       next
-  #     end
-
-  #     proposal = find_by_long_id(row["long_id"]) || new
-  #     if proposal.id
-  #       updated += 1
-  #     else
-  #       created += 1
-  #     end
-  #     proposal.attributes = row.to_hash.slice(*accessible_attributes).merge!(attrs)
-  #     proposals.push proposal
-  #     proposal.save!
-  #   end
-
-
-  #   {:updated => updated, :created => created, :errors => errors, :proposals => proposals}
-
-  # end
-
-  # only for LVG
-  def self.import_jurisdictions(proposals_file, jurisdictions_file)
-    jurisdiction_to_proposals = {}
-    errors = []
-
-    CSV.foreach(proposals_file.tempfile, :headers => true) do |row|
-      proposal = Proposal.find_by_long_id(row['long_id'])
-      if !proposal
-        errors.push "Could not find proposal #{row['long_id']}"
-        next
-      end
-      jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
-      if jurisdiction == 'Statewide'
-        proposal.add_tag 'type:statewide'
-        proposal.add_tag "jurisdiction:State of Washington"
-        proposal.add_seo_keyword 'Statewide'
-        proposal.save
-        next
-      end
-
-      if !(jurisdiction_to_proposals.has_key?(jurisdiction))
-        jurisdiction_to_proposals[jurisdiction] = []
-      end
-
-      jurisdiction_to_proposals[jurisdiction].push proposal
-    end
-
-    jurisdiction_to_zips = {}
-    CSV.foreach(jurisdictions_file.tempfile, :headers => true) do |row|
-      jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
-      if !jurisdiction_to_zips.has_key?(jurisdiction)
-        jurisdiction_to_zips[jurisdiction] = []
-      end
-      jurisdiction_to_zips[jurisdiction].push row['zip']
-    end
-
-    zips_count = 0
-    prop_count = 0
-    jurisdiction_to_proposals.each do |jurisdiction, proposals|
-      jurisdiction = jurisdiction.split.map(&:capitalize).join(' ')
-      zips = jurisdiction_to_zips[jurisdiction]
-      if !jurisdiction_to_zips.has_key?(jurisdiction)
-        errors.push "ERROR: jurisdiction #{jurisdiction} not found!...skipping"
-        next
-      end
-      pp "For #{jurisdiction}, adding #{zips.length} zips to #{proposals.length} measures"
-      zips_count += zips.length
-      prop_count += proposals.length
-      # tags = zips.map{|z|"zip:#{z}"}.join(';')
-
-      proposals.each do |p|
-        p.add_tag "type:local"
-        p.add_tag "jurisdiction:#{jurisdiction}"
-        p.add_seo_keyword jurisdiction
-
-        zips.each do |zip|
-          p.hide_on_homepage = true
-          p.add_tag "zip:#{zip}"
-        end
-        p.save
-
-      end
-    end
-
-    result = {
-      :jurisdiction_errors => errors,
-      :jurisdictions => "Processed #{jurisdiction_to_proposals.length} jurisdictions, adding #{zips_count} zip codes across #{prop_count} measures"
-    }
-    result
-
-
-  end
 
 end

@@ -1,4 +1,4 @@
-- link = edit_notifications_url(@user.id, :host => @host, :u => @user.email, :t => ApplicationController.arbitrary_token("#{@user.email}#{@user.unique_token}#{@options[:current_tenant].identifier}" ) )
+- link = dashboard_email_notifications_url(:host => @host, :u => @user.email, :t => ApplicationController.arbitrary_token("#{@user.email}#{@user.unique_token}#{@options[:current_tenant].identifier}" ) )
 
 = link_to 'Unsubscribe', link
 

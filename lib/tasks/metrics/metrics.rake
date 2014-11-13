@@ -164,6 +164,45 @@ namespace :metrics do
 
   end
 
+
+  task :proposal_information => :environment do
+    pages = ['I-594_Increase_background_checks_on_gun_purchases', 'I-1351_Modify_K-12_funding', 'I-591_Match_state_gun_regulation_to_national_standards']
+    loaded = Log.where(:what => 'loaded page').where('logs.where in (?)', pages).where('logs.who != 1701')
+    pp loaded.count
+    expanded = Log.where(:what => 'expand proposal description').where('logs.where in (?)', pages).where('logs.who != 1701')
+    pp expanded.count
+    exps = {}
+    expanded.each do |exp|
+      details = JSON.parse exp.details
+      if !exps.has_key?(details['description_type'])
+        exps[details['description_type']] = 0
+      end
+      exps[details['description_type']] += 1
+    end
+
+    pp exps
+
+    loaded = Log.where(:what => 'loaded page').where('logs.where like "%congressional_district%"').where('logs.who != 1701')
+    pp loaded.count
+    expanded = Log.where(:what => 'expand proposal description').where('logs.where like "%congressional_district%"').where('logs.who != 1701')
+    pp expanded.count
+    exps = {}
+    expanded.each do |exp|
+      details = JSON.parse exp.details
+      if !exps.has_key?(details['description_type'])
+        exps[details['description_type']] = 0
+      end
+      exps[details['description_type']] += 1
+    end
+
+    pp exps
+
+
+
+
+  end
+
+
   task :normative_inclusion_by_proposal => :environment do
     years = [2010,2011,2012,2013]
     puts "Normative metrics"

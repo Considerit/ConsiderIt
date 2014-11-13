@@ -7,5 +7,5 @@
 
 class Log < ActiveRecord::Base
   belongs_to :account
-  belongs_to :who, :foreign_key => 'who', :class_name => 'User'
+  belongs_to :user, :foreign_key => 'who', :class_name => 'User'
 end

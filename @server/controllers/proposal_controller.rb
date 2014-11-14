@@ -19,7 +19,7 @@ class ProposalController < ApplicationController
   end
 
   def create
-    fields = ['long_id', 'name', 'cluster', 'description']
+    fields = ['long_id', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
     proposal = params.select{|k,v| fields.include? k}
 
     proposal.update({
@@ -103,7 +103,7 @@ class ProposalController < ApplicationController
     end
 
     if can?(:update, proposal)
-      fields = ['long_id', 'name', 'cluster', 'description']
+      fields = ['long_id', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
       updated_fields = params.select{|k,v| fields.include? k}
       proposal.update_attributes! updated_fields
       dirty_key('/proposals')

@@ -36,6 +36,11 @@ ImportDataDash = ReactiveComponent
     customer = fetch '/customer'
     current_user = fetch '/current_user'
 
+    if customer.identifier == 'livingvotersguide'
+      tables = ['Measures', 'Candidates', 'Jurisdictions']
+    else 
+      tables = ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
+
     DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
       STYLE null, 
         """
@@ -44,18 +49,24 @@ ImportDataDash = ReactiveComponent
       H1 style: {fontSize: 28, margin: '20px 0'}, 'Import Data'
       P style: {fontWeight: 300, marginBottom: 6}, 
         "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
-      P style: {fontWeight: 300, marginBottom: 6}, 
-        "To refer to a User, use their email address. For example, if you’re uploading points, in the user column, refer to the author via their email address. "
-      P style: {fontWeight: 300, marginBottom: 6}, 
-        "To refer to a Proposal, refer to its url. "
-      P style: {fontWeight: 300, marginBottom: 6}, 
-        "To refer to a Point, make up an id for it and use that."
-      P style: {fontWeight: 300, marginBottom: 6}, 
-        "You do not have to upload every file, just what you need to. Importing the same spreadsheet multiple times is ok."
+
+      if customer.identifier != 'livingvotersguide'
+
+        DIV null,
+          P style: {fontWeight: 300, marginBottom: 6}, 
+            "To refer to a User, use their email address. For example, if you’re uploading points, in the user column, refer to the author via their email address. "
+          P style: {fontWeight: 300, marginBottom: 6}, 
+            "To refer to a Proposal, refer to its url. "
+          P style: {fontWeight: 300, marginBottom: 6}, 
+            "To refer to a Point, make up an id for it and use that."
+          P style: {fontWeight: 300, marginBottom: 6}, 
+            "You do not have to upload every file, just what you need to. Importing the same spreadsheet multiple times is ok."
+
+
 
       FORM action: '/dashboard/import_data',
-        TABLE null,
-          for table in ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
+        TABLE null, TBODY null,
+          for table in tables
             TR null,
               TD style: {paddingTop: 20, textAlign: 'right'}, 
                 LABEL style: {whiteSpace: 'nowrap'}, htmlFor: "#{table}-file", "#{table} (.csv)"
@@ -131,11 +142,11 @@ ImportDataDash = ReactiveComponent
       if @local.successes
         DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#E2FFE2'}, 
           H1 style: {fontSize: 18}, 'Success! Here\'s what happened:'
-          for table in ['proposals', 'points', 'comments', 'opinions', 'users']
-            if @local.successes[table]
+          for table in tables
+            if @local.successes[table.toLowerCase()]
               DIV null,
-                H1 style: {fontSize: 15, fontWeight: 300}, capitalize(table)
-                for success in @local.successes[table]
+                H1 style: {fontSize: 15, fontWeight: 300}, table
+                for success in @local.successes[table.toLowerCase()]
                   DIV style: {marginTop: 10}, success
 
 AppSettingsDash = ReactiveComponent

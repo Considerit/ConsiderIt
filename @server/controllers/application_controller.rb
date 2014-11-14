@@ -120,8 +120,8 @@ protected
     rq = request
 
     # when to display a considerit homepage
-    can_display_homepage = Rails.env.production?
-    if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage
+    can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it'))
+    if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
       set_current_tenant Account.find_by_identifier('homepage')
       return current_tenant
     end

@@ -119,6 +119,13 @@ protected
   def get_current_tenant
     rq = request
 
+    # when to display a considerit homepage
+    can_display_homepage = Rails.env.production?
+    if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage
+      set_current_tenant Account.find_by_identifier('homepage')
+      return current_tenant
+    end
+
     if rq.subdomain == 'googleoauth'
       current_account = Account.find_by_identifier(params['state'])
     else

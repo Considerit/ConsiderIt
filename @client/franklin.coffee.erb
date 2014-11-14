@@ -42,6 +42,13 @@ considerit_blue = '#2478CC'
 capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
 
 L = loading_indicator = DIV null, 'Loading...'
+proposal_url = (proposal) =>
+  # The special thing about this function is that it only links to
+  # "?results=true" if the proposal has an opinion.
+  result = '/' + proposal.long_id
+  if proposal.top_point
+    result += '?results=true'
+  return result
 
 splitParagraphs = (user_content) ->
   if !user_content
@@ -265,44 +272,6 @@ PageTransition =
 # Has proposal description, feelings area (slider + histogram), and reasons area
 Proposal = ReactiveComponent
   displayName: 'Proposal'
-
-  componentDidUpdate : ->
-    $el = $(@getDOMNode())
-
-    # Resizing the reasons region to solve a layout error when 
-    # the height of the decision board (which is absolutely positioned) 
-    # is taller than either of the wing point columns
-    $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height()} 
-
-    # $el.find('.description_region').css
-    #   top: $el.find('.proposal_heading').height() + 24
-
-
-  renderDescriptionField : (field) ->
-    DIV className: 'description_field', key: field.label,
-      DIV className: 'field_heading', onClick: => 
-        field.expanded = !field.expanded
-        save(@local)
-        if field.expanded 
-          window.writeToLog
-            what: 'expand proposal description'
-            details: 
-              description_type: field.label        
-      ,
-        SPAN className: "expand_arrow fa #{if field.expanded then 'fa-minus-circle' else 'fa-plus-circle'}" #, dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
-        SPAN className: 'field_name', field.label
-      if field.expanded
-        DIV className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
-
-  renderDescriptionFieldGroup : (group) -> 
-    DIV className: 'description_group', key: group.group,
-      DIV className: 'description_group_name', 
-        LABEL null, group.group
-      for field in group.items
-        @renderDescriptionField field
-
-  ##
-  # Make this thing!
   render : ->
     proposal = @proposal
     your_opinion = @data(@proposal.your_opinion)
@@ -394,43 +363,46 @@ Proposal = ReactiveComponent
             FBShare()
             Tweet
               text: tweet
-              url: "https://livingvotersguide.org/#{@proposal.long_id}"
+              url: "https://livingvotersguide.org/#{@proposal.long_id}?results=true"
 
+  componentDidUpdate : ->
+    $el = $(@getDOMNode())
+
+    # Resizing the reasons region to solve a layout error when 
+    # the height of the decision board (which is absolutely positioned) 
+    # is taller than either of the wing point columns
+    $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height()} 
+
+    # $el.find('.description_region').css
+    #   top: $el.find('.proposal_heading').height() + 24
+
+
+  renderDescriptionField : (field) ->
+    DIV className: 'description_field', key: field.label,
+      DIV className: 'field_heading', onClick: => 
+        field.expanded = !field.expanded
+        save(@local)
+        if field.expanded 
+          window.writeToLog
+            what: 'expand proposal description'
+            details: 
+              description_type: field.label        
+      ,
+        SPAN className: "expand_arrow fa #{if field.expanded then 'fa-minus-circle' else 'fa-plus-circle'}" #, dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
+        SPAN className: 'field_name', field.label
+      if field.expanded
+        DIV className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
+
+  renderDescriptionFieldGroup : (group) -> 
+    DIV className: 'description_group', key: group.group,
+      DIV className: 'description_group_name', 
+        LABEL null, group.group
+      for field in group.items
+        @renderDescriptionField field
 
 
 StickyProposalHeading = ReactiveComponent
   displayName: 'StickyProposalHeading'
-
-  componentDidMount : -> @initOrUpdateHeader()
-
-  componentDidUpdate : -> @initOrUpdateHeader()
-
-  initOrUpdateHeader : -> 
-    $el = $(@getDOMNode())
-
-    $header = $el.find('.proposal_heading.stickable')
-
-    if $header.length > 0 && !@is_waiting()
-      if @local.sticky_initialized
-        $header.StickyElement('update')
-      else 
-        $header.StickyElement
-          placeholder: $el.find('.proposal_heading.placeholder')[0]
-          container: $el.parents('.proposal')
-          stick_on_zoomed_screens: false
-
-        @local.sticky_initialized = true
-        save @local
-
-  componentWillUnmount : -> 
-    $el = $(@getDOMNode())
-    $el.find('.proposal_heading.stickable').StickyElement('destroy')
-
-  mouseLeaveOtherCluster : (cluster) -> 
-    if @local.show_cluster == cluster
-      @local.show_cluster = null
-      save(@local)
-
   render : ->
     color = @data('color')
     customer = @data('/customer')
@@ -516,9 +488,9 @@ StickyProposalHeading = ReactiveComponent
                           TABLE className: 'current_cluster', style: {width: '100%'},
                             TBODY null,
                               for other_proposal in curr_cluster.proposals
-                                TR href: "/#{other_proposal.long_id}", onClick: clickInternalLink, key: "tr/#{other_proposal.long_id}",
+                                TR href: proposal_url(other_proposal), onClick: clickInternalLink, key: "tr/#{other_proposal.long_id}",
                                   TD style: {textAlign: 'left', paddingLeft: 20},
-                                    A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {fontWeight: if other_proposal.key == @proposal.key then 700 else 400},
+                                    A href: proposal_url(other_proposal), onClick: clickInternalLink, style: {fontWeight: if other_proposal.key == @proposal.key then 700 else 400},
                                       other_proposal.name
 
                                   TD style: {position: 'relative'},
@@ -568,7 +540,7 @@ StickyProposalHeading = ReactiveComponent
                                     UL className: 'other_proposal_list', style: {backgroundColor: 'rgba(0,0,0,.2)', borderRadius: '4px', padding: '8px 0' },
                                       for other_proposal in cluster.proposals
                                         LI style: {listStyle: 'none'}, key: "li/#{other_proposal.long_id}",
-                                          A href: "/#{other_proposal.long_id}", onClick: clickInternalLink, style: {display: 'block', textAlign: 'left', padding: '2px 10px'},
+                                          A href: proposal_url(other_proposal), onClick: clickInternalLink, style: {display: 'block', textAlign: 'left', padding: '2px 10px'},
                                             other_proposal.name
 
 
@@ -576,9 +548,36 @@ StickyProposalHeading = ReactiveComponent
                 DIV className: 'next_proposal',
                   "Next: "
                     A
-                      onClick: do (url = '/' + next_proposal.long_id) =>
+                      onClick: do (url = proposal_url(next_proposal)) =>
                         => window.app_router.navigate(url, {trigger: true})
                       next_proposal.name
+
+
+  componentDidMount : -> @initOrUpdateHeader()
+  componentDidUpdate : -> @initOrUpdateHeader()
+  initOrUpdateHeader : -> 
+    $el = $(@getDOMNode())
+
+    $header = $el.find('.proposal_heading.stickable')
+
+    if $header.length > 0 && !@is_waiting()
+      if @local.sticky_initialized
+        $header.StickyElement('update')
+      else 
+        $header.StickyElement
+          placeholder: $el.find('.proposal_heading.placeholder')[0]
+          container: $el.parents('.proposal')
+          stick_on_zoomed_screens: false
+
+        @local.sticky_initialized = true
+        save @local
+  componentWillUnmount : -> 
+    $el = $(@getDOMNode())
+    $el.find('.proposal_heading.stickable').StickyElement('destroy')
+  mouseLeaveOtherCluster : (cluster) -> 
+    if @local.show_cluster == cluster
+      @local.show_cluster = null
+      save(@local)
 
 
 
@@ -2698,11 +2697,11 @@ ProposalSummary = ReactiveComponent
       if customer.identifier == 'livingvotersguide'
         TD className: 'summary_measure_designator',
           if proposal.category && proposal.designator
-            A onClick: clickInternalLink, href: "/#{proposal.long_id}?results=true", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+            A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
               "#{proposal.category[0]}-#{proposal.designator}"
 
       TD className: 'summary_name', style: {width: (if customer.identifier == 'livingvotersguide' then 270 else 320)},
-        A onClick: clickInternalLink, href: "/#{proposal.long_id}?results=true", style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+        A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
           proposal.name
       TD
         className: 'summary_decide'
@@ -2734,7 +2733,7 @@ ProposalSummary = ReactiveComponent
       TD
         className: 'summary_share'
         style: {cursor: 'pointer'}
-        onClick: (=> window.app_router.navigate("/#{proposal.long_id}?results=true", {trigger: true}))
+        onClick: (=> window.app_router.navigate(proposal_url(proposal), {trigger: true}))
         if proposal.top_point
           DIV className: 'top_point community_point con', style : { width: 270, position: 'relative' },
             # Avatar key: proposal.top_point.user, className:"point_author_avatar", hide_face: proposal.top_point.hide_name

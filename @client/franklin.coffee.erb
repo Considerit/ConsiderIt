@@ -320,6 +320,11 @@ Proposal = ReactiveComponent
         #description
         DIV className:'description_region', style: description_region_style, 
 
+          if !proposal.active
+            SPAN style: {display: 'inline-block', backgroundColor: 'rgb(255, 163, 73)', color: 'white', padding: '4px 8px', marginTop: 10},
+              I className: 'fa fa-info-circle', style: {paddingRight: 7} 
+              'This proposal is closed to new contributions at this time.'
+
           DIV className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
 
           if @local.description_fields
@@ -1730,10 +1735,13 @@ EditComment = ReactiveComponent
             color: considerit_blue
            'Log in to write a comment'
 
+      if !@proposal.active
+        SPAN style: {position: 'absolute', margin: '14px 0 0 70px'}, 'Comments closed at this time'        
+
       AutoGrowTextArea
         className: 'new_comment'
-        placeholder: (logged_in and 'Write a new comment') or ''
-        disabled: not logged_in
+        placeholder: (logged_in and @proposal.active and 'Write a new comment') or ''
+        disabled: !logged_in || !@proposal.active
         onChange: (e) => @local.new_comment = e.target.value; save(@local)
         defaultValue: if @props.fresh then null else @data().body
         min_height: 60
@@ -1742,7 +1750,7 @@ EditComment = ReactiveComponent
           width: 390
           lineHeight: 1.4
           fontSize: 16
-          border: if not logged_in then 'dashed 1px'
+          border: if !logged_in || !@proposal.active then 'dashed 1px'
 
       DIV style: {textAlign: 'right'},
         Button({style: {marginLeft: 314}}, 'Save comment', (e) =>
@@ -2085,20 +2093,24 @@ EditPoint = ReactiveComponent
               defaultValue: if @props.fresh then null else @data().text
 
 
-      DIV className:'newpoint_hide_name',
-        INPUT
-          className: 'newpoint-anonymous'
-          type:      'checkbox'
-          id:        "sign_name-#{@props.valence}"
-          name:      "sign_name-#{@props.valence}"
-          checked:   @local.sign_name
-          onChange: =>
-            @local.sign_name = !@local.sign_name
-            save(@local)
-        LABEL htmlFor: "sign_name-#{@props.valence}", title:'Signing your name lends your point more weight with other participants.', 'Sign your name'
-      
+      if @proposal.active
+        DIV className:'newpoint_hide_name',
+          INPUT
+            className: 'newpoint-anonymous'
+            type:      'checkbox'
+            id:        "sign_name-#{@props.valence}"
+            name:      "sign_name-#{@props.valence}"
+            checked:   @local.sign_name
+            onChange: =>
+              @local.sign_name = !@local.sign_name
+              save(@local)
+          LABEL htmlFor: "sign_name-#{@props.valence}", title:'Signing your name lends your point more weight with other participants.', 'Sign your name'
+        
       DIV className:'newpoint-submit',
-        INPUT className:'button primary_button', action:'submit-point', type:'submit', value:'Done', onClick: @savePoint
+        if !@proposal.active
+          DIV style: {color: '#777', fontSize: 12}, 'New points disabled for this proposal'
+        else
+          INPUT className:'button primary_button', action:'submit-point', type:'submit', value:'Done', onClick: @savePoint
 
         A className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
           'cancel'  
@@ -3088,6 +3100,9 @@ EditProposal = ReactiveComponent
     long_id = $el.find('#long_id').val()
     cluster = $el.find('#cluster').val()
     cluster = null if cluster == ""
+    active = $el.find('#open_for_discussion:checked').length > 0
+    hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0
+
 
     if @props.fresh
       proposal =
@@ -3096,6 +3111,8 @@ EditProposal = ReactiveComponent
         description : description
         cluster : cluster
         long_id : long_id
+        active: active
+        hide_on_homepage: hide_on_homepage
 
     else 
       proposal = @data()
@@ -3104,6 +3121,8 @@ EditProposal = ReactiveComponent
         name: name
         long_id: long_id
         description: description
+        active: active
+        hide_on_homepage: hide_on_homepage
 
     save proposal, -> window.app_router.navigate "/#{long_id}", {trigger : true}
 
@@ -3163,8 +3182,24 @@ EditProposal = ReactiveComponent
           defaultValue: if @props.fresh then null else @data().cluster
           style: input_style
 
+      DIV style: block_style,
+        INPUT 
+          id: 'listed_on_homepage'
+          name: 'listed_on_homepage'
+          type: 'checkbox'
+          defaultChecked: if @props.fresh then true else !@data().hide_on_homepage
+        LABEL htmlFor: 'listed_on_homepage', 'List on homepage'
+
+      DIV style: block_style,
+        INPUT 
+          id: 'open_for_discussion'
+          name: 'open_for_discussion'
+          type: 'checkbox'
+          defaultChecked: if @props.fresh then true else @data().active
+        LABEL htmlFor: 'open_for_discussion', 'Open for discussion'
+
       DIV null,
-        INPUT className:'button primary_button', type:'submit', value:'Publish', onClick: @saveProposal
+        INPUT className:'button primary_button', type:'submit', value:"#{if @props.fresh then 'Publish' else 'Update'}", onClick: @saveProposal
 
 
 About = ReactiveComponent

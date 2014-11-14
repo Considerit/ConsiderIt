@@ -18,7 +18,6 @@ class CommentController < ApplicationController
 
     dirty_key "/comment/#{comment.id}"
     render :json => []
-    
   end
 
   def create

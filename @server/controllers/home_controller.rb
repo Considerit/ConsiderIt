@@ -60,7 +60,11 @@ class HomeController < ApplicationController
       })
     end
 
-    render "layouts/application", :layout => false
+    if current_tenant.identifier == 'homepage'
+      render "layouts/homepage", :layout => false
+    else
+      render "layouts/application", :layout => false
+    end
   end
 
 

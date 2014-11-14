@@ -20,7 +20,7 @@ class Proposal < ActiveRecord::Base
   #before_save :extract_tags
 
   class_attribute :my_public_fields, :my_summary_fields
-  self.my_public_fields = [:id, :long_id, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description]
+  self.my_public_fields = [:id, :long_id, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description]
 
   scope :active, -> {where( :active => true, :published => true )}
   scope :inactive, -> {where( :active => false, :published => true )}
@@ -39,7 +39,7 @@ class Proposal < ActiveRecord::Base
     manual_clusters = nil
     current_tenant = Thread.current[:tenant]
     if current_tenant.identifier == 'livingvotersguide'
-
+      year = 2014
       local_jurisdictions = []   
       
       user_tags = current_user.tags ? JSON.load(current_user.tags) : nil
@@ -50,12 +50,9 @@ class Proposal < ActiveRecord::Base
         local_jurisdictions = ActiveRecord::Base.connection.select( "SELECT distinct(cluster) FROM proposals WHERE account_id=#{current_tenant.id} AND active=1 AND hide_on_homepage=1 AND zips like '%#{user_tags['zip']}%' ").map {|r| r['cluster']}
       end
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
-    end
-
-    # get all the relevant proposals
-    proposals = current_tenant.proposals.active.open_to_public #.browsable
-    if manual_clusters
-      proposals = proposals.where('cluster IN (?)', manual_clusters)
+      proposals = current_tenant.proposals.open_to_public.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
+    else 
+      proposals = current_tenant.proposals.open_to_public.browsable
     end
 
     clustered_proposals = {}

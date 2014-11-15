@@ -62,15 +62,11 @@ module ConsiderIt
     
     ##################
     # for our custom rails directory structure
-    config.paths['app'] << "@server"
+    #config.paths['app'] << "@server"
     config.paths["app/controllers"] << "@server/controllers"
     config.paths["app/models"] << "@server/models"
     config.paths["app/views"] << "@server/views"
-
-
     config.paths["app/views"] << "_old@client/templates"
-
-
     config.paths["app/mailers"] << "@server/mailers"
     config.paths["app/helpers"] << "@server/helpers"
 
@@ -79,10 +75,9 @@ module ConsiderIt
 
     config.paths["lib/tasks"] << "test"
 
-    #suspiciously, Rails apparently already loads @server/notifications...
     config.paths["config/initializers"] << "@server/notifications"
 
-    asset_paths = ["@client", "@client/assets", "_old@client/assets/fonts", "_old@client", "_old@client/assets"]
+    asset_paths = ["@client", "@client/assets"]
     for asset_path in asset_paths
         config.paths["app/assets"] << asset_path
         config.assets.paths << Rails.root.join(asset_path)

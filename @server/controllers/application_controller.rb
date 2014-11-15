@@ -233,7 +233,7 @@ protected
         response.append User.all_for_customer
 
       elsif key.match '/page/homepage'
-        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions, proposals p WHERE opinions.account_id=#{current_tenant.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}' AND p.id = opinions.proposal_id AND p.active=1")      
+        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE opinions.account_id=#{current_tenant.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
 
         clean = {
           contributors: recent_contributors.map {|u| "/user/#{u['id']}"},

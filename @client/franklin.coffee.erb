@@ -565,16 +565,12 @@ StickyProposalHeading = ReactiveComponent
     $header = $el.find('.proposal_heading.stickable')
 
     if $header.length > 0 && !@is_waiting()
-      if @local.sticky_initialized
-        $header.StickyElement('update')
-      else 
-        $header.StickyElement
-          placeholder: $el.find('.proposal_heading.placeholder')[0]
-          container: $el.parents('.proposal')
-          stick_on_zoomed_screens: false
+      $header.StickyElement
+        placeholder: $el.find('.proposal_heading.placeholder')[0]
+        container: $el.parents('.proposal')
+        stick_on_zoomed_screens: false
 
-        @local.sticky_initialized = true
-        save @local
+
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
     $el.find('.proposal_heading.stickable').StickyElement('destroy')
@@ -2774,16 +2770,10 @@ Homepage = ReactiveComponent
 
     $header = $el.find('.sticky_header.stickable')
     if $header.length > 0
-      if @local.sticky_initialized
-        $header.StickyElement('update')
-      else 
-        $header.StickyElement
-          placeholder: $el.find('.sticky_header.placeholder')[0]
-          container: $el
-          stick_on_zoomed_screens: false
-
-        @local.sticky_initialized = true
-        save @local
+      $header.StickyElement
+        placeholder: $el.find('.sticky_header.placeholder')[0]
+        container: $el
+        stick_on_zoomed_screens: false
 
   render : ->
     customer = @data('/customer')

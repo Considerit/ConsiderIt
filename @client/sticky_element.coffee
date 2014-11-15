@@ -18,8 +18,10 @@ do ($, window, document) ->
   $.fn.StickyElement = (options = {}) ->
     @each ->
       if typeof options == 'object'
-        #init
-        unless $.data @, "plugin_StickyElement"  
+        if $.data @, "plugin_StickyElement"  
+          $.data(@, "plugin_StickyElement").update()
+        else
+          # init
           $.data @, "plugin_StickyElement", new StickyElement @, options
       else 
         switch options

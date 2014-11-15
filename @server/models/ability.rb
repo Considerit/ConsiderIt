@@ -52,12 +52,14 @@ class Ability
       can [:index, :create, :update, :show], ClientError
     end
 
-    if !user.id.nil?
+    if user.registration_complete
       can :create, Assessable::Request do |req|
         assessment = req.assessment
         assessment.requests.where(:user_id => req.user_id).count < 2
-      end     
+      end
+      can :create, Account
     end
+
 
     if user.is_admin?
       can :manage, user_facing_models
@@ -65,7 +67,7 @@ class Ability
     else
       #Proposal
       can :read, Proposal do |proposal|
-        proposal.publicity != 0 || (!user.id.nil? && proposal.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
+        proposal.publicity != 0 || (user.registration_complete && proposal.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
       end
 
       can :create, Proposal do |proposal|
@@ -73,11 +75,11 @@ class Ability
       end
 
       can [:read, :update], Proposal do |proposal|
-        (!user.id.nil? && user.id == proposal.user_id) || (params.has_key?(:admin_id) && params[:admin_id] == proposal.admin_id)
+        (user.registration_complete && user.id == proposal.user_id) || (params.has_key?(:admin_id) && params[:admin_id] == proposal.admin_id)
       end
 
       can [:destroy], Proposal do |proposal|
-        ((!user.id.nil? && user.id == proposal.user_id) || (params.has_key?(:admin_id) && params[:admin_id] == proposal.admin_id)) && \
+        ((user.registration_complete && user.id == proposal.user_id) || (params.has_key?(:admin_id) && params[:admin_id] == proposal.admin_id)) && \
           (proposal.opinions.published.count == 0 || (proposal.opinions.published.count == 1 && proposal.opinions.published.first.user_id == user.id))
       end
 
@@ -85,14 +87,14 @@ class Ability
       can [:read], Opinion do |opinion|
         proposal = opinion.proposal
         #TODO: can we just say "authorize :read, proposal"?
-        user_has_access_to_proposal = proposal.publicity != 0 || (!user.id.nil? && proposal.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
+        user_has_access_to_proposal = proposal.publicity != 0 || (user.registration_complete && proposal.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
         user_has_access_to_proposal
       end
 
       can [:create, :update], Opinion do |opinion|
         proposal = opinion.proposal
-        user_is_prepped = !user.id.nil? #&& user.registration_complete
-        user_has_access_to_proposal = proposal.publicity != 0 || (!user.id.nil? && proposal.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
+        user_is_prepped = user.registration_complete #&& user.registration_complete
+        user_has_access_to_proposal = proposal.publicity != 0 || (user.registration_complete && proposal.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
         (user_is_prepped || opinion.user_id.nil?) && user_has_access_to_proposal
 
         #TODO: get this to work! Need to make sure only the original opinion creator can update the opinion
@@ -120,7 +122,7 @@ class Ability
       end
 
       #Comment
-      if !user.id.nil?
+      if user.registration_complete
         can :create, Comment
         can :update, Comment, :user_id => user.id
         can :destroy, Comment, :user_id => user.id

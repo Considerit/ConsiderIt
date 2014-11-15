@@ -19,6 +19,8 @@ class ProposalController < ApplicationController
   end
 
   def create
+    # TODO: long_id should be validated as a legit url
+    
     fields = ['long_id', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
     proposal = params.select{|k,v| fields.include? k}
 

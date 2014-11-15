@@ -24,14 +24,18 @@
 /* CONTAINERS */
 
 #content
-  min-height: 500px
-  position: relative
-  font-size: $base-font-size
 
 .content
+  position: relative
+  font-size: $base-font-size
   color: $base_text_color
+  min-height: 500px
+
   a
     +link_style(emphasize($base_text_color, 10%, $reference: $base_background_color), $base_background_color, 25%)
+
+#body
+  min-height: 200px
 
 .l_header, #l_content, .l_footer
   position: relative

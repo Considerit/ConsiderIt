@@ -2536,16 +2536,16 @@ Auth = ReactiveComponent
                         else
                           $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
 
-              
-              TR null,
-                TD className: 'label_cell', 
-                  LABEL null, 'Community pledge:'
-                TD className: 'field_cell',
-                  UL className: 'pledges',
-                    for pledge, idx in pledges
-                      LI className: 'pledge', 
-                        INPUT className:"pledge-input", type:'checkbox', id:"pledge-#{idx}", name:"pledge-#{idx}"
-                        LABEL htmlFor: "pledge-#{idx}", pledge
+              if customer.requires_civility_pledge_on_registration
+                TR null,
+                  TD className: 'label_cell', 
+                    LABEL null, 'Community pledge:'
+                  TD className: 'field_cell',
+                    UL className: 'pledges',
+                      for pledge, idx in pledges
+                        LI className: 'pledge', 
+                          INPUT className:"pledge-input", type:'checkbox', id:"pledge-#{idx}", name:"pledge-#{idx}"
+                          LABEL htmlFor: "pledge-#{idx}", pledge
 
         if current_user.errors && current_user.errors[root.auth_mode] && current_user.errors[root.auth_mode].length > 0
           DIV className: "auth_errors", 

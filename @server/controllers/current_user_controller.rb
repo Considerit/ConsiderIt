@@ -344,7 +344,7 @@ class CurrentUserController < ApplicationController
         third_party_params['password'] = SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] 
       end
 
-      current_user.update_attributes! params
+      current_user.update_attributes! third_party_params
 
     end
 

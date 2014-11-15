@@ -60,8 +60,8 @@ class HomeController < ApplicationController
       })
     end
 
-    if current_tenant.identifier == 'homepage'
-      render "layouts/homepage", :layout => false
+    if current_tenant.identifier == 'homepage' && request.path == '/'
+      render "home/homepage", :layout => false
     else
       render "layouts/application", :layout => false
     end

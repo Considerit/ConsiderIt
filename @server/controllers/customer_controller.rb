@@ -9,6 +9,36 @@ class CustomerController < ApplicationController
     return
   end
 
+  def new
+    render :json => []
+  end
+
+  def create
+    authorize! :create, Account
+
+    errors = []
+
+    # TODO: sanitize / make sure has url-able characters
+    subdomain = params[:subdomain]
+
+    existing = Account.find_by_identifier(subdomain)
+    if existing
+      errors.push "The #{subdomain} subdomain already exists. Contact us for more information."
+    else
+      new_customer = Account.new :identifier => subdomain
+      roles = new_customer.user_roles
+      roles['admin'].push "/user/#{current_user.id}"
+      new_customer.roles = JSON.dump roles
+      new_customer.save
+    end
+
+    if errors.length > 0
+      render :json => [{errors: errors}]
+    else
+      render :json => [{identifier: new_customer.identifier}]
+    end
+  end
+
   def show
     dirty_key '/customer'
     render :json => []

@@ -434,14 +434,14 @@ ModerationDash = ReactiveComponent
                   DIV 
                     style: {marginLeft: 18, fontSize: 18, cursor: 'pointer'}
                     onClick: do (idx, model) => => 
-                      customer["moderate_#{model}_mode"] = idx-1
+                      customer["moderate_#{model}_mode"] = idx
                       save customer
 
                       #saving the customer shouldn't always dirty moderations (which is expensive), so just doing it manually here
                       arest.serverFetch('/dashboard/moderate')  
 
-                    INPUT style: {cursor: 'pointer'}, type: 'radio', name: "moderate_#{model}_mode", id: "moderate_#{model}_mode_#{idx-1}", defaultChecked: customer["moderate_#{model}_mode"] == idx-1
-                    LABEL style: {cursor: 'pointer', paddingLeft: 8 }, htmlFor: "moderate_#{model}_mode_#{idx-1}", field
+                    INPUT style: {cursor: 'pointer'}, type: 'radio', name: "moderate_#{model}_mode", id: "moderate_#{model}_mode_#{idx}", defaultChecked: customer["moderate_#{model}_mode"] == idx
+                    LABEL style: {cursor: 'pointer', paddingLeft: 8 }, htmlFor: "moderate_#{model}_mode_#{idx}", field
 
             BUTTON 
               onClick: => 

@@ -1,5 +1,7 @@
 require 'digest/md5'
 
+ENABLE_HOMEPAGE_IN_DEV = false
+
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   skip_before_action :verify_authenticity_token, if: :csrf_skippable?
@@ -120,7 +122,7 @@ protected
     rq = request
 
     # when to display a considerit homepage
-    can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it'))
+    can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || ENABLE_HOMEPAGE_IN_DEV
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
       set_current_tenant Account.find_by_identifier('homepage')
       return current_tenant

@@ -18,7 +18,7 @@ AccessControlled = ReactiveComponent
 
     is_permitted = false
     for role in @props.permitted
-      if current_user["is_#{role}"]
+      if (role == 'user' && current_user.logged_in) ||  current_user["is_#{role}"]
         is_permitted = true
         break
 
@@ -28,6 +28,7 @@ AccessControlled = ReactiveComponent
       @root.auth_mode = 'login'
       save @root
       SPAN null
+
 
 ImportDataDash = ReactiveComponent
   displayName: 'ImportDataDash'
@@ -61,8 +62,6 @@ ImportDataDash = ReactiveComponent
             "To refer to a Point, make up an id for it and use that."
           P style: {fontWeight: 300, marginBottom: 6}, 
             "You do not have to upload every file, just what you need to. Importing the same spreadsheet multiple times is ok."
-
-
 
       FORM action: '/dashboard/import_data',
         TABLE null, TBODY null,
@@ -133,7 +132,7 @@ ImportDataDash = ReactiveComponent
                 'Done. Upload!'
 
 
-      if @local.errors
+      if @local.errors && @local.errors.length > 0
         DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFE2E2'}, 
           H1 style: {fontSize: 18}, 'Ooops! There are errors in the uploaded files:'
           for error in @local.errors
@@ -984,6 +983,58 @@ EditClaim = ReactiveComponent
     save @props.parent
 
 
+# Creates a new customer / subdomain. This is meant to only be accessed from 
+# the considerit homepage, but will work from any subdomain.
+CreateSubdomain = ReactiveComponent
+  displayName: 'CreateSubdomain'
+
+  render : -> 
+    current_user = fetch('/current_user')
+
+    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
+      H1 style: {fontSize: 28, marginTop: 20}, 'Create new subdomain (secret, you so special!!!)'
+
+      DIV style: {marginTop: 20},
+        LABEL htmlFor: 'subdomain', 
+          'Name of the new subdomain'
+        INPUT id: 'subdomain', name: 'subdomain', type: 'text', style: {fontSize: 28, padding: '8px 12px', width: CONTENT_WIDTH}, placeholder: 'Don\'t be silly with weird characters'
+
+        DIV style: {fontSize: 14}, 
+          "You will be redirected to the new subdomain where you can configure the application. You will automatically be added as an administrator."
+
+        BUTTON 
+          className: 'button primary_button' 
+          onClick: => 
+            $.ajax '/customer', 
+              data: 
+                subdomain: $(@getDOMNode()).find('#subdomain').val()
+                authenticity_token: current_user.csrf
+              type: 'POST'
+              success: (data) => 
+                if data[0].errors
+                  @local.errors = data[0].errors
+                else
+                  @local.successful = data[0].identifier
+                save @local
+          'Create'
+
+        if @local.errors && @local.errors.length > 0
+          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFE2E2'}, 
+            H1 style: {fontSize: 18}, 'Ooops! There were errors:'
+            for error in @local.errors
+              DIV style: {marginTop: 10}, error
+
+        if @local.successful
+          parts = location.hostname.split('.')
+          subdomain = parts.shift()
+          domain = parts.join('.')
+
+          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#E2FFE2', fontSize: 20}, 
+            "Success! "
+            A style: {textDecoration: 'underline'}, href: "https://#{@local.successful}.#{domain}/dashboard/application", "Configure your shiny new subdomain"
+
+
+
 ## Export...
 window.FactcheckDash = FactcheckDash
 window.ModerationDash = ModerationDash
@@ -991,3 +1042,4 @@ window.AppSettingsDash = AppSettingsDash
 window.RolesDash = RolesDash
 window.ImportDataDash = ImportDataDash
 window.AccessControlled = AccessControlled
+window.CreateSubdomain = CreateSubdomain

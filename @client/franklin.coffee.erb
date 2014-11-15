@@ -459,12 +459,11 @@ StickyProposalHeading = ReactiveComponent
           textAlign: 'center'
 
         # TODO: we need a way of knowing whether this subdomain has a homepage or not
-        if customer.identifier != 'cityoftigard'
-          A
-            className: 'homepage_link'
-            onClick: (=> window.app_router.navigate("/", {trigger: true}))
-            style: {position: 'absolute', display: 'inline-block', top: 10, left: 12},
-            I className: 'fa fa-home', style: {fontSize: 28, color: 'white'}
+        A
+          className: 'homepage_link'
+          onClick: (=> window.app_router.navigate("/", {trigger: true}))
+          style: {position: 'absolute', display: 'inline-block', top: 10, left: 12},
+          I className: 'fa fa-home', style: {fontSize: 28, color: 'white'}
 
         DIV className: 'current_proposal_cluster', @proposal.cluster
 
@@ -3012,10 +3011,9 @@ Header = ReactiveComponent
       DIV null, 
         if @root.page_name == 'about'
           # TODO: we need a way of knowing whether this subdomain has a homepage or not
-          if customer.identifier != 'cityoftigard'
-            A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', zIndex: 999, marginTop: 8, marginLeft: 16, fontWeight: 600}, 
-              I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
-              SPAN style: {fontSize: 15, paddingLeft: 6, color: '#777', verticalAlign: 'text-bottom'}, 'Home'
+          A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', zIndex: 999, marginTop: 8, marginLeft: 16, fontWeight: 600}, 
+            I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
+            SPAN style: {fontSize: 15, paddingLeft: 6, color: '#777', verticalAlign: 'text-bottom'}, 'Home'
 
 
       DIV style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if @root.server_error then 'block' else 'none'},
@@ -3356,49 +3354,58 @@ Page = ReactiveComponent
 
     color = @data('color')
     avatars = fetch('/avatars')
+    customer = fetch('/customer')
 
     if @root.auth_mode
       return Auth()
 
-    DIV style: {minWidth: PAGE_WIDTH, backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
-      if avatars.avatars
-        STYLE type: 'text/css', id: 'b64-avatars', dangerouslySetInnerHTML: {__html: avatars.avatars}
-      
-      BrowserHacks()
-      Header()
-      DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
-        DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
-          if @root.auth_mode
-            Auth()
-          else if @root.page_name == 'homepage'
-            Homepage key: @page.key
-          else if @root.page_name == 'about'
-            About()
-          else if @root.page_name == 'proposal/new'
-            EditProposal key: "new_proposal", fresh: true
-          else if @root.page_name.match(/(.+)\/edit/)
-            EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
-          else if @root.page_name == 'dashboard/email_notifications'
-            EmailNotificationSettings key: '/dashboard/email_notifications'
-          else if @root.page_name == 'dashboard/assessment'
-            AccessControlled permitted: ['admin', 'evaluator'],
-              FactcheckDash key: "/dashboard/assessment"
-          else if @root.page_name == 'dashboard/import_data'
-            AccessControlled permitted: ['super_admin'],
-              ImportDataDash key: "dashboard/import_data"
-          else if @root.page_name == 'dashboard/moderate'
-            AccessControlled permitted: ['admin', 'moderator'],
-              ModerationDash key: "/dashboard/moderate"
-          else if @root.page_name == 'dashboard/application'
-            AccessControlled permitted: ['admin'],
-              AppSettingsDash key: "/customer"
-          else if @root.page_name == 'dashboard/roles'
-            AccessControlled permitted: ['admin'],
-              RolesDash key: "/customer"
-          else 
-            Proposal key: @page.proposal.key
+    if customer.identifier == 'homepage' && @root.page_name == 'homepage'
+      SPAN null, ''
+    else if !customer.identifier
+      L
+    else
+      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
+        if avatars.avatars
+          STYLE type: 'text/css', id: 'b64-avatars', dangerouslySetInnerHTML: {__html: avatars.avatars}
+        
+        BrowserHacks()
+        Header()
+        DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
+          DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
+            if @root.auth_mode
+              Auth()
+            else if @root.page_name == 'homepage'
+              Homepage key: @page.key
+            else if @root.page_name == 'about'
+              About()
+            else if @root.page_name == 'proposal/new'
+              EditProposal key: "new_proposal", fresh: true
+            else if @root.page_name.match(/(.+)\/edit/)
+              EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
+            else if @root.page_name == 'dashboard/email_notifications'
+              EmailNotificationSettings key: '/dashboard/email_notifications'
+            else if @root.page_name == 'dashboard/assessment'
+              AccessControlled permitted: ['admin', 'evaluator'],
+                FactcheckDash key: "/dashboard/assessment"
+            else if @root.page_name == 'dashboard/create_subdomain'
+              AccessControlled permitted: ['user'],
+                CreateSubdomain key: "create_subdomain"                
+            else if @root.page_name == 'dashboard/import_data'
+              AccessControlled permitted: ['super_admin'],
+                ImportDataDash key: "dashboard/import_data"
+            else if @root.page_name == 'dashboard/moderate'
+              AccessControlled permitted: ['admin', 'moderator'],
+                ModerationDash key: "/dashboard/moderate"
+            else if @root.page_name == 'dashboard/application'
+              AccessControlled permitted: ['admin'],
+                AppSettingsDash key: "/customer"
+            else if @root.page_name == 'dashboard/roles'
+              AccessControlled permitted: ['admin'],
+                RolesDash key: "/customer"
+            else 
+              Proposal key: @page.proposal.key
 
-      Footer()
+        Footer()
 
 Computer = ReactiveComponent
   # This doesn't actually render anything.  It just processes state
@@ -3686,11 +3693,14 @@ window.arest.trans_in = (object) ->
 
 
 $(document).ready -> 
-  if 'ontouchend' in document #detect touch support
-    React.initializeTouchEvents(true)
 
-  Backbone.history.start {pushState: true}
-  window.root = React.renderComponent(Root(), document.getElementById('content'))
+  #static consider.it homepage doesn't want this stuff by default
+  if document.getElementById('content') 
+    if 'ontouchend' in document #detect touch support
+      React.initializeTouchEvents(true)
+
+    Backbone.history.start {pushState: true}
+    window.root = React.renderComponent(Root(), document.getElementById('content'))
 
 # exports...
 window.splitParagraphs = splitParagraphs

@@ -49,7 +49,9 @@ ConsiderIt::Application.routes.draw do
   get '/comments/:point_id' => 'comment#index'
 
   get '/customer' => 'customer#show'
+  post '/customer' => 'customer#create'
   match '/customer' => 'customer#update', :via => [:put]
+  get '/dashboard/create_subdomain' => 'customer#new'
 
   post '/log' => 'log#create'
 

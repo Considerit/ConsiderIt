@@ -89,6 +89,7 @@ class CurrentUserController < ApplicationController
             replace_user(current_user, user)
             set_current_user(user)
             dirty_key '/proposals'
+            dirty_key '/customer'
 
             puts("Now current is #{current_user && current_user.id}")
             log('sign in by email')
@@ -288,6 +289,7 @@ class CurrentUserController < ApplicationController
       current_user.add_to_active_in
 
       dirty_key '/proposals'
+      dirty_key '/customer'
 
       write_to_log({
         :what => 'logged in through 3rd party',

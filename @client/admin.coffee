@@ -29,6 +29,15 @@ AccessControlled = ReactiveComponent
       save @root
       SPAN null
 
+DashHeader = (name) ->
+  DIV style: {position: 'relative'},
+    A
+      className: 'homepage_link'
+      onClick: (=> window.app_router.navigate("/", {trigger: true}))
+      style: {position: 'absolute', display: 'inline-block', top: 5, left: -40},
+      I className: 'fa fa-home', style: {fontSize: 28, color: 'black'}
+    
+    H1 style: {fontSize: 28, margin: '20px 0'}, name   
 
 ImportDataDash = ReactiveComponent
   displayName: 'ImportDataDash'
@@ -47,7 +56,7 @@ ImportDataDash = ReactiveComponent
         """
         """
 
-      H1 style: {fontSize: 28, margin: '20px 0'}, 'Import Data'
+      DashHeader 'Import Data'
       P style: {fontWeight: 300, marginBottom: 6}, 
         "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
 
@@ -163,7 +172,7 @@ AppSettingsDash = ReactiveComponent
         .app_settings_dash .input_group { margin-bottom: 12px; }
         """
 
-      H1 style: {fontSize: 28, margin: '20px 0'}, 'Application Settings'
+      DashHeader 'Application Settings'
 
 
       if customer.identifier
@@ -235,7 +244,7 @@ RolesDash = ReactiveComponent
 
     DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
 
-      H1 style: {fontSize: 28, margin: '20px 0'}, 'User Roles'
+      DashHeader 'User Roles'
 
       for role in roles
         DIV style: {marginTop: 12},
@@ -404,7 +413,7 @@ ModerationDash = ReactiveComponent
 
 
     DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
-      H1 style: {fontSize: 28, marginTop: 20}, 'Moderation Interface'
+      DashHeader 'Moderation Interface'
 
       DIV className: 'moderation_settings',
         if customer.moderated_classes.length == 0 || @local.edit_settings
@@ -661,7 +670,7 @@ FactcheckDash = ReactiveComponent
     items = [['Pending review', reviewable], ['Incomplete', todo], ['Complete', completed]]
 
     DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
-      H1 style: {fontSize: 28, marginTop: 20}, 'Fact Checking Interface'
+      DashHeader 'Fact Checking Interface'
 
       AdminTaskList 
         items: items
@@ -992,7 +1001,7 @@ CreateSubdomain = ReactiveComponent
     current_user = fetch('/current_user')
 
     DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
-      H1 style: {fontSize: 28, marginTop: 20}, 'Create new subdomain (secret, you so special!!!)'
+      DashHeader 'Create new subdomain (secret, you so special!!!)'
 
       DIV style: {marginTop: 20},
         LABEL htmlFor: 'subdomain', 
@@ -1039,3 +1048,4 @@ window.RolesDash = RolesDash
 window.ImportDataDash = ImportDataDash
 window.AccessControlled = AccessControlled
 window.CreateSubdomain = CreateSubdomain
+window.DashHeader = DashHeader

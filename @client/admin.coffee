@@ -1025,13 +1025,9 @@ CreateSubdomain = ReactiveComponent
               DIV style: {marginTop: 10}, error
 
         if @local.successful
-          parts = location.hostname.split('.')
-          subdomain = parts.shift()
-          domain = parts.join('.')
-
           DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#E2FFE2', fontSize: 20}, 
             "Success! "
-            A style: {textDecoration: 'underline'}, href: "https://#{@local.successful}.#{domain}/dashboard/application", "Configure your shiny new subdomain"
+            A style: {textDecoration: 'underline'}, href: "#{location.protocol}//#{@local.successful}.#{location.hostname}/dashboard/application", "Configure your shiny new subdomain"
 
 
 

@@ -12,8 +12,6 @@ ConsiderIt::Application.configure do
   # Compress JavaScripts and CSS
   #config.assets.compress = true
   config.assets.js_compressor = :uglifier
-
-  config.eager_load = true
   
   # Choose the compressors to use
   # config.assets.js_compressor  = :uglifier
@@ -21,7 +19,9 @@ ConsiderIt::Application.configure do
    
   # Don't fallback to assets pipeline if a precompiled asset is missed
   config.assets.compile = false
-   
+
+  config.eager_load = true
+
   # Generate digests for assets URLs.
   config.assets.digest = true
    
@@ -30,7 +30,7 @@ ConsiderIt::Application.configure do
    
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   
-  config.assets.precompile += %w( browser/ie.css browser/ie9.css javascripts/load_everything.js dash.js admin/admin.css *.svg *.eot *.woff *.ttf *.jpg *.png *.jpeg *.gif)
+  config.assets.precompile += %w( javascripts/load_everything.js *.svg *.eot *.woff *.ttf *.jpg *.png *.jpeg *.gif)
 
   # Specifies the header that your server uses for sending files
   # config.action_dispatch.x_sendfile_header = "X-Sendfile"
@@ -49,6 +49,8 @@ ConsiderIt::Application.configure do
 
   # Use a different cache store in production
   config.cache_store = :dalli_store, { :expires_in => 1.day, :compress => true }
+
+  config.force_ssl = false
 
   # Disable Rails's static asset server
   # In production, Apache or nginx will already do this

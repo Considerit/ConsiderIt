@@ -24,6 +24,9 @@ AccessControlled = ReactiveComponent
 
     if is_permitted
       @props.children
+    else if current_user.logged_in
+      window.app_router.navigate("/", {trigger: true})
+      SPAN null
     else
       @root.auth_mode = 'login'
       save @root

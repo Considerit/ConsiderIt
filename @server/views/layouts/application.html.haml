@@ -58,6 +58,16 @@
 
 
     %body
+      - if Rails.env.development?
+        #development_bar
+          .change
+            Change Customer
+          %ul#customers
+            - Account.all.each do |customer|
+              - next if customer.identifier == 'homepage'
+              %li
+                %a{:href => change_customer_path(customer)}
+                  = customer.identifier
 
       #content.content{ customer: current_tenant.identifier, theme: current_tenant.theme }
 

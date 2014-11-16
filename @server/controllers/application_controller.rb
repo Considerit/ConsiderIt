@@ -131,7 +131,8 @@ protected
     if rq.subdomain == 'googleoauth'
       current_account = Account.find_by_identifier(params['state'])
     else
-      current_account = rq.subdomain.nil? || rq.subdomain.length == 0 ? Account.find(1) : Account.find_by_identifier(rq.subdomain)
+      default_customer = session.has_key?(:default_customer) ? session[:default_customer] : 1
+      current_account = rq.subdomain.nil? || rq.subdomain.length == 0 ? Account.find(default_customer) : Account.find_by_identifier(rq.subdomain)
     end
 
     set_current_tenant(current_account) if current_account

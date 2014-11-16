@@ -10,8 +10,14 @@ end
 
 ConsiderIt::Application.routes.draw do
 
-  ## This is my test controller for nonactiverest
-  get '/activemike' => 'home#activemike'
+  if Rails.env.development?
+
+    ## Test controller for nonactiverest
+    get '/activemike' => 'home#activemike'
+
+    ## Development dashboard; right now it lets you easily switch between customers
+    get '/change_customer/:id' => 'developer#change_default_customer', :as => 'change_customer'
+  end
 
   # Third party oauth routes. These go before 
   # the home controller non-json catch all because 

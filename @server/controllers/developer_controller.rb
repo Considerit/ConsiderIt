@@ -8,7 +8,7 @@ class DeveloperController < ApplicationController
     end
 
 
-    redirect_to :back
+    redirect_to '/'
 
   end
 end

@@ -31,15 +31,15 @@ class HomeController < ApplicationController
     # Some customers don't have a homepage. In the iterim, let's just redirect 
     # accesses to the homepage to the latest published proposal
     # TODO: better way of knowing if a particular customer has a homepage or not.
-    if current_tenant.identifier == 'cityoftigard' && request.path == '/' && request.query_string == "" && !session[:search_bot]
-      proposal = current_tenant.proposals.open_to_public.active.last
-      if proposal
-        redirect_to "/#{proposal.long_id}"
-      else
-        render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
-      end
-      return
-    end
+    # if current_tenant.identifier == 'cityoftigard' && request.path == '/' && request.query_string == "" && !session[:search_bot]
+    #   proposal = current_tenant.proposals.open_to_public.active.last
+    #   if proposal
+    #     redirect_to "/#{proposal.long_id}"
+    #   else
+    #     render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
+    #   end
+    #   return
+    # end
 
     response.headers["Strict Transport Security"] = 'max-age=0'
     

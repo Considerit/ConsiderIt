@@ -7,7 +7,7 @@ class Opinion < ActiveRecord::Base
   acts_as_tenant(:account)
 
   scope :published, -> {where( :published => true )}
-  scope :public_fields, -> {select( [:long_id, :created_at, :updated_at, :id, :proposal_id, :stance, :stance_segment, :user_id, :point_inclusions, :published] )}
+  scope :public_fields, -> {select( [:created_at, :updated_at, :id, :proposal_id, :stance, :stance_segment, :user_id, :point_inclusions, :published] )}
 
   before_save do 
     self.explanation = self.explanation.sanitize if self.explanation
@@ -15,7 +15,7 @@ class Opinion < ActiveRecord::Base
   end 
 
   def as_json(options={})
-    pubs = ['long_id', 'created_at', 'updated_at', 'id', 'point_inclusions',
+    pubs = ['created_at', 'updated_at', 'id', 'point_inclusions',
             'proposal_id', 'stance', 'stance_segment', 'user_id', 'explanation',
             'published']
 
@@ -27,7 +27,6 @@ class Opinion < ActiveRecord::Base
     stubify_field(result, 'proposal')
     result['point_inclusions'] = JSON.parse (result['point_inclusions'] || '[]')
     result['point_inclusions'].map! {|p| "/point/#{p}"}
-    result.delete('long_id')
     result
   end
 
@@ -50,7 +49,6 @@ class Opinion < ActiveRecord::Base
     if your_opinion.nil?
       your_opinion = Opinion.create(:proposal_id => proposal.id,
                                     :user => user ? user : nil,
-                                    :long_id => proposal.long_id,
                                     :account_id => Thread.current[:tenant].id,
                                     :published => false,
                                     :stance => 0,

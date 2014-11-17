@@ -1,6 +1,6 @@
 SitemapGenerator::Sitemap.sitemaps_host = "http:consider.it"
 
-Account.find_each do |accnt|
+Subdomain.find_each do |accnt|
 
   indexability = APP_CONFIG[:indexability]
   indexed = indexability.has_key?(accnt.identifier.intern) ? indexability[accnt.identifier.intern] : indexability[:default]  

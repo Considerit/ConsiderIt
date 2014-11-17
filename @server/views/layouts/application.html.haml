@@ -61,15 +61,15 @@
       - if Rails.env.development?
         #development_bar
           .change
-            Change Customer
-          %ul#customers
-            - Account.all.each do |customer|
-              - next if customer.identifier == 'homepage'
+            Change Subdomain
+          %ul#subdomains
+            - Subdomain.all.each do |subdomain|
+              - next if subdomain.identifier == 'homepage'
               %li
-                %a{:href => change_customer_path(customer)}
-                  = customer.identifier
+                %a{:href => change_subdomain_path(subdomain)}
+                  = subdomain.identifier
 
-      #content.content{ customer: current_tenant.identifier }
+      #content.content{ subdomain: current_tenant.identifier }
 
 
 

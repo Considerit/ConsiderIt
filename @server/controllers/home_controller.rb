@@ -4,7 +4,7 @@
 class HomeController < ApplicationController
 
   caches_action :avatars, :cache_path => proc {|c|
-    {:tag => "avatars-#{current_tenant.id}-#{Rails.cache.read("avatar-digest-#{current_tenant.id}")}-#{session[:search_bot]}"}
+    {:tag => "avatars-#{current_subdomain.id}-#{Rails.cache.read("avatar-digest-#{current_subdomain.id}")}-#{session[:search_bot]}"}
   }
 
   def index
@@ -15,7 +15,7 @@ class HomeController < ApplicationController
     end
 
     # if someone has accessed a non-existent subdomain or is requesting a non-existent image
-    if !current_tenant || request.format.to_s.include?('image')
+    if !current_subdomain || request.format.to_s.include?('image')
       render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
       return
     end
@@ -31,8 +31,8 @@ class HomeController < ApplicationController
     # Some subdomains don't have a homepage. In the iterim, let's just redirect 
     # accesses to the homepage to the latest published proposal
     # TODO: better way of knowing if a particular subdomain has a homepage or not.
-    # if current_tenant.identifier == 'cityoftigard' && request.path == '/' && request.query_string == "" && !session[:search_bot]
-    #   proposal = current_tenant.proposals.open_to_public.active.last
+    # if current_subdomain.identifier == 'cityoftigard' && request.path == '/' && request.query_string == "" && !session[:search_bot]
+    #   proposal = current_subdomain.proposals.open_to_public.active.last
     #   if proposal
     #     redirect_to "/#{proposal.long_id}"
     #   else
@@ -60,7 +60,7 @@ class HomeController < ApplicationController
       })
     end
 
-    if current_tenant.identifier == 'homepage' && request.path == '/'
+    if current_subdomain.identifier == 'homepage' && request.path == '/'
       render "home/homepage", :layout => false
     else
       render "layouts/application", :layout => false
@@ -97,7 +97,7 @@ class HomeController < ApplicationController
     keywords = title = nil
 
     # subdomain defaults
-    case current_tenant.identifier
+    case current_subdomain.identifier
     when 'livingvotersguide'
       title = 'Washington Voters Guide for the 2014 Election'
       image = view_context.asset_path 'livingvotersguide/logo.png'
@@ -109,7 +109,7 @@ class HomeController < ApplicationController
       image = view_context.asset_path 'cityoftigard/logo.png'
       description = "Dialogue about City of Tigard"
     else
-      title = current_tenant.app_title or "#{current_tenant.identifier} discussion"
+      title = current_subdomain.app_title or "#{current_subdomain.identifier} discussion"
       image = nil
       description = "Help think through these issues being considered."
     end
@@ -142,7 +142,7 @@ class HomeController < ApplicationController
       { :property => 'og:image', :content => image },
 
       { :property => 'og:type', :content => 'website' },
-      { :property => 'og:site_name', :content => (current_tenant.app_title or "#{current_tenant.identifier} discussion") },
+      { :property => 'og:site_name', :content => (current_subdomain.app_title or "#{current_subdomain.identifier} discussion") },
 
       { :name => 'twitter:card', :content => 'summary' },
       { :property => 'fb:app_id', :content => fb_app_id }

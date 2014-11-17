@@ -13,12 +13,12 @@ end
 
 #### notify_proposal is NOT MIGRATED / TESTED!!!!######
 # notify_proposal = Proc.new do |data|
-#   #params : proposal, current_tenant, mail_options
+#   #params : proposal, current_subdomain, mail_options
 #   proposal = data[:proposal] || data[:model]
-#   current_tenant = data[:current_tenant]
+#   current_subdomain = data[:current_subdomain]
 #   mail_options = data[:mail_options]
 
-#   current_tenant.follows.where(:follow => true).each do |follow|
+#   current_subdomain.follows.where(:follow => true).each do |follow|
 #     # if follower's action triggered event, skip...
 #     if follow
 #       if follow.user_id == proposal.user_id 
@@ -35,12 +35,12 @@ end
 # end
 
 notify_point = Proc.new do |data|
-  #params : point, current_tenant, mail_options
+  #params : point, current_subdomain, mail_options
 
   point = data[:point] || data[:model]
 
   proposal = point.proposal
-  current_tenant = data[:current_tenant]
+  current_subdomain = data[:current_subdomain]
   mail_options = data[:mail_options]
 
   voters = proposal.opinions.published.select(:user_id).uniq.map {|x| x.user_id }
@@ -59,7 +59,7 @@ notify_point = Proc.new do |data|
     # if follower has submitted a opinion on this proposal
     elsif voters.include? u.id
       notification_type = 'opinion submitter'
-      next if current_tenant.identifier == 'livingvotersguide' # disable until we have digests
+      next if current_subdomain.identifier == 'livingvotersguide' # disable until we have digests
     # lurker 
     else
       notification_type = 'lurker'
@@ -73,10 +73,10 @@ end
 
 
 notify_comment = Proc.new do |args|
-  #params: comment, current_tenant, mail_options
+  #params: comment, current_subdomain, mail_options
   comment = args[:model] || args[:comment]
   point = comment.point
-  current_tenant = args[:current_tenant]
+  current_subdomain = args[:current_subdomain]
   mail_options = args[:mail_options]
 
   commenters = point.comments.select(:user_id).uniq.map {|x| x.user_id }
@@ -112,8 +112,8 @@ notify_comment = Proc.new do |args|
 end
 
 # Checks whether now is an appropriate time to send a notification
-def send_notification_on_create(moderatable_type, current_tenant)
-  return [nil, 0, 3].include?(current_tenant.send("moderate_#{moderatable_type}s_mode"))
+def send_notification_on_create(moderatable_type, current_subdomain)
+  return [nil, 0, 3].include?(current_subdomain.send("moderate_#{moderatable_type}s_mode"))
 end
 
 ########
@@ -123,14 +123,14 @@ end
 def handle_moderatable_creation_event(moderatable_type, notification_method, args)
   data = args.last
 
-  if send_notification_on_create(moderatable_type, data[:current_tenant])
+  if send_notification_on_create(moderatable_type, data[:current_subdomain])
     notification_method.call data
   end
   
-  current_tenant = data[:current_tenant]
-  if current_tenant.classes_to_moderate.length > 0
+  current_subdomain = data[:current_subdomain]
+  if current_subdomain.classes_to_moderate.length > 0
     # send to all users with moderator status
-    roles = current_tenant.user_roles()
+    roles = current_subdomain.user_roles()
     moderators = roles.has_key?('moderator') ? roles['moderator'] : []
 
     moderators.each do |key|
@@ -139,7 +139,7 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
       rescue
       end
       if user
-        AlertMailer.content_to_moderate(user, current_tenant).deliver!
+        AlertMailer.content_to_moderate(user, current_subdomain).deliver!
       end
     end
   end
@@ -163,7 +163,7 @@ end
 def handle_moderation_pass_event(moderatable_type, notification_method, args)
   data = args.last
 
-  if !send_notification_on_create(moderatable_type, data[:current_tenant])
+  if !send_notification_on_create(moderatable_type, data[:current_subdomain])
     notification_method.call data
   end
 
@@ -199,7 +199,7 @@ ActiveSupport::Notifications.subscribe("alert_proposal_publicity_changed") do |*
   users = data[:users]
   inviter = data[:inviter]
   proposal = data[:proposal]
-  current_tenant = data[:current_tenant]
+  current_subdomain = data[:current_subdomain]
   mail_options = data[:mail_options]
 
   users.delete(inviter.email) if inviter #don't email inviter twice if they specified themselves in the list
@@ -239,7 +239,7 @@ ActiveSupport::Notifications.subscribe("published_new_opinion") do |*args|
   data = args.last
   opinion = data[:opinion]
 
-  current_tenant = data[:current_tenant]
+  current_subdomain = data[:current_subdomain]
   mail_options = data[:mail_options]  
   proposal = opinion.proposal
 

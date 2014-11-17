@@ -1,5 +1,5 @@
 
-- cache ['application_layout', @page, @is_search_bot, current_tenant] do 
+- cache ['application_layout', @page, @is_search_bot, current_subdomain] do 
 
   !!! RDFa
   %html{:lang => "en-US", :'xml:lang' => "en-US", :xmlns => "http://www.w3.org/1999/xhtml", :'xmlns:og' => "http://ogp.me/ns#", :'xmlns:fb' => "https://www.facebook.com/2008/fbml"}
@@ -69,7 +69,7 @@
                 %a{:href => change_subdomain_path(subdomain)}
                   = subdomain.identifier
 
-      #content.content{ subdomain: current_tenant.identifier }
+      #content.content{ subdomain: current_subdomain.identifier }
 
 
 
@@ -97,8 +97,8 @@
             ga('considerit.send', 'pageview');
 
 
-        - if current_tenant.analytics_google && current_tenant.analytics_google != ''
+        - if current_subdomain.analytics_google && current_subdomain.analytics_google != ''
 
           :javascript
-            ga('create', '#{current_tenant.analytics_google}', 'auto', {'name': 'customer'});
+            ga('create', '#{current_subdomain.analytics_google}', 'auto', {'name': 'customer'});
             ga('customer.send', 'pageview');

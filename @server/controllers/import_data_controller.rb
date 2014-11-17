@@ -25,7 +25,7 @@ class ImportDataController < ApplicationController
     errors = []
     modified = {}
 
-    if current_tenant.identifier == 'livingvotersguide'
+    if current_subdomain.identifier == 'livingvotersguide'
       import_for_LVG(errors, modified)
     else
       points = {}
@@ -177,7 +177,7 @@ class ImportDataController < ApplicationController
 
               proposal = Proposal.find_by_long_id attrs['long_id']
               if !proposal
-                attrs['subdomain_id'] = current_tenant.id
+                attrs['subdomain_id'] = current_subdomain.id
                 proposal = Proposal.new attrs
                 proposal.save
                 modified[table].push "Created Proposal '#{proposal.long_id}'"
@@ -205,7 +205,7 @@ class ImportDataController < ApplicationController
               end
 
               if !opinion
-                attrs['subdomain_id'] = current_tenant.id
+                attrs['subdomain_id'] = current_subdomain.id
                 opinion = Opinion.new attrs
                 opinion.publish
                 modified[table].push "Created Opinion by #{user.name} on '#{proposal.name}'"
@@ -236,7 +236,7 @@ class ImportDataController < ApplicationController
                         })
               point = Point.find_by_nutshell(attrs['nutshell'])
               if !point
-                attrs['subdomain_id'] = current_tenant.id
+                attrs['subdomain_id'] = current_subdomain.id
                 point = Point.new attrs
                 point.save
                 modified[table].push "Created Point '#{point.nutshell}'"
@@ -260,7 +260,7 @@ class ImportDataController < ApplicationController
 
               comment = Comment.where(:point_id => point.id, :user_id => user.id, :body => attrs['body'] ).first
               if !comment
-                attrs['subdomain_id'] = current_tenant.id
+                attrs['subdomain_id'] = current_subdomain.id
                 comment = Comment.new attrs
                 comment.save
                 modified[table].push "Created Comment '#{comment.body}'"
@@ -323,7 +323,7 @@ class ImportDataController < ApplicationController
               end
 
               opinion = Opinion.create!({
-                :subdomain_id => current_tenant.id,
+                :subdomain_id => current_subdomain.id,
                 :proposal_id => proposal.id,
                 :user_id => user.id,
                 :stance => new_stance,

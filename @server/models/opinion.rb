@@ -49,7 +49,7 @@ class Opinion < ActiveRecord::Base
     if your_opinion.nil?
       your_opinion = Opinion.create(:proposal_id => proposal.id,
                                     :user => user ? user : nil,
-                                    :subdomain_id => Thread.current[:tenant].id,
+                                    :subdomain_id => Thread.current[:subdomain].id,
                                     :published => false,
                                     :stance => 0,
                                     :point_inclusions => '[]',
@@ -77,14 +77,14 @@ class Opinion < ActiveRecord::Base
 
     # ActiveSupport::Notifications.instrument("published_new_opinion", 
     #                                         :opinion => self,
-    #                                         :current_tenant => Thread.current[:tenant],
+    #                                         :current_subdomain => Thread.current[:subdomain],
     #                                         :mail_options => Thread.current[:mail_options])
     # send out confirmation email if user is not yet confirmed
     # if !current_user.confirmed? && current_user.opinions.published.count == 1
     #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
     #     :user => current_user,
     #     :proposal => proposal,
-    #     :current_tenant => current_tenant,
+    #     :current_subdomain => current_subdomain,
     #     :mail_options => mail_options
     #   )
     # end
@@ -132,7 +132,7 @@ class Opinion < ActiveRecord::Base
       :point_id => point.id,
       :user_id => self.user_id,
       :proposal_id => self.proposal_id,
-      :subdomain_id => Thread.current[:tenant].id
+      :subdomain_id => Thread.current[:subdomain].id
     }
     Inclusion.create! attrs
 

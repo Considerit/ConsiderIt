@@ -47,8 +47,8 @@ class SubdomainController < ApplicationController
   def update
     subdomain = Subdomain.find(params[:id])
     authorize! :update, Subdomain
-    if subdomain.id != current_tenant.id #&& !current_user.super_admin
-      # for now, don't allow modifying non-current tenant
+    if subdomain.id != current_subdomain.id #&& !current_user.super_admin
+      # for now, don't allow modifying non-current subdomain
       raise new CanCan::AccessDenied
     end
 
@@ -59,7 +59,7 @@ class SubdomainController < ApplicationController
       attrs['roles'] = JSON.dump params['roles']
     end
 
-    current_tenant.update_attributes! attrs
+    current_subdomain.update_attributes! attrs
 
     dirty_key '/subdomain'
     render :json => []

@@ -27,7 +27,7 @@ class CommentController < ApplicationController
     comment = params.select{|k,v| fields.include? k}
 
     comment['user_id'] = current_user && current_user.id || nil
-    comment['subdomain_id'] = current_tenant.id
+    comment['subdomain_id'] = current_subdomain.id
     comment['point'] = Point.find(key_id(params['point']))
 
     # don't allow repeat comments
@@ -41,7 +41,7 @@ class CommentController < ApplicationController
       if comment.save
         ActiveSupport::Notifications.instrument("comment:point:created", 
           :comment => comment, 
-          :current_tenant => current_tenant,
+          :current_subdomain => current_subdomain,
           :mail_options => mail_options
         )
 
@@ -79,7 +79,7 @@ class CommentController < ApplicationController
 
     ActiveSupport::Notifications.instrument("comment:point:updated", 
       :model => comment, 
-      :current_tenant => current_tenant,
+      :current_subdomain => current_subdomain,
       :mail_options => mail_options
     )
 

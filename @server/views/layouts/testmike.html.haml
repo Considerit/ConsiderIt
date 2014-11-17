@@ -4,9 +4,9 @@
   %head{ profile: "http://gmpg.org/xfn/1" }
     = csrf_meta_tags
 
-    - cache ['indexable data', current_tenant, @page] do 
+    - cache ['indexable data', current_subdomain, @page] do 
       %title
-        = @title && @title != '' ? @title : current_tenant.app_title
+        = @title && @title != '' ? @title : current_subdomain.app_title
       
       %meta{ :name => 'keywords', :content => "#{@keywords ? @keywords : ''}"}
 
@@ -33,9 +33,9 @@
 
   %body
 
-    - cache ['main_body', current_tenant] do
+    - cache ['main_body', current_subdomain] do
 
-      #content.content{ subdomain: current_tenant.identifier }
+      #content.content{ subdomain: current_subdomain.identifier }
 
 
     :javascript

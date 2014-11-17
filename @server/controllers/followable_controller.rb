@@ -36,7 +36,7 @@ class FollowableController < CurrentUserController
     u = session[:notifications_user]['u']
     t = session[:notifications_user]['t']
 
-    encrypted = ApplicationController.arbitrary_token("#{u}#{target_user.unique_token}#{current_tenant.identifier}")
+    encrypted = ApplicationController.arbitrary_token("#{u}#{target_user.unique_token}#{current_subdomain.identifier}")
     
     encrypted == t
   end

@@ -27,7 +27,7 @@ class ProposalController < ApplicationController
     proposal.update({
           :published => true,
           :user_id => current_user.id,
-          :subdomain_id => current_tenant.id, 
+          :subdomain_id => current_subdomain.id, 
           :active => true
         })
 
@@ -58,15 +58,15 @@ class ProposalController < ApplicationController
   #   description = params[:proposal][:description] || ''
 
   #   # NOTE: default hashtags haven't been used since Occupy deployment. Purge from system.
-  #   if current_tenant.default_hashtags && description.index('#').nil?
-  #     description += " #{current_tenant.default_hashtags}"
+  #   if current_subdomain.default_hashtags && description.index('#').nil?
+  #     description += " #{current_subdomain.default_hashtags}"
   #   end
 
   #   # TODO: handle remote possibility of name collisions?
   #   # TODO: explicitly grab parameters
   #   params[:proposal].update({
   #     :long_id => SecureRandom.hex(5),
-  #     :subdomain_id => current_tenant.id, 
+  #     :subdomain_id => current_subdomain.id, 
   #     :admin_id => SecureRandom.hex(6),  #NOTE: admin_id never used, should be purged from system
   #     :user_id => current_user ? current_user.id : nil,
   #     :description => description,
@@ -79,7 +79,7 @@ class ProposalController < ApplicationController
   #   proposal.save
 
   #   # why do we subscribe the creator to email notifications for new proposals by other people?
-  #   current_tenant.follow!(current_user, :follow => true, :explicit => false)
+  #   current_subdomain.follow!(current_user, :follow => true, :explicit => false)
 
   #   proposal.follow!(current_user, :follow => true, :explicit => false)
 
@@ -157,7 +157,7 @@ class ProposalController < ApplicationController
         :proposal => proposal,
         :users => users,
         :inviter => inviter,
-        :current_tenant => current_tenant,
+        :current_subdomain => current_subdomain,
         :mail_options => mail_options
       )
     end
@@ -165,13 +165,13 @@ class ProposalController < ApplicationController
     if published_now
       ActiveSupport::Notifications.instrument("proposal:published", 
         :proposal => proposal,
-        :current_tenant => current_tenant,
+        :current_subdomain => current_subdomain,
         :mail_options => mail_options
       )
     elsif !published_now && proposal.published
       ActiveSupport::Notifications.instrument("proposal:updated", 
         :model => proposal,
-        :current_tenant => current_tenant,
+        :current_subdomain => current_subdomain,
         :mail_options => mail_options
       )      
     end

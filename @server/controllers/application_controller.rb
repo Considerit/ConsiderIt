@@ -7,18 +7,17 @@ class ApplicationController < ActionController::Base
   skip_before_action :verify_authenticity_token, if: :csrf_skippable?
 
   set_current_tenant_through_filter
-  prepend_before_action :get_current_tenant
+  prepend_before_action :get_current_subdomain
   before_action :init_thread_globals
 
-
   def render(*args)
-    if !current_tenant
+    if !current_subdomain
       super 
       return
     end
 
-    if Rails.cache.read("avatar-digest-#{current_tenant.id}").nil?
-      Rails.cache.write("avatar-digest-#{current_tenant.id}", 0)
+    if Rails.cache.read("avatar-digest-#{current_subdomain.id}").nil?
+      Rails.cache.write("avatar-digest-#{current_subdomain.id}", 0)
     end
     
 
@@ -26,13 +25,13 @@ class ApplicationController < ActionController::Base
       user = User.find_by_lower_email(params[:u])
 
       # for testing private discussions
-      # pp ApplicationController.arbitrary_token("#{user.email}#{user.unique_token}#{current_tenant.identifier}") if !user.nil?
-      # pp ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") if user.nil?
+      # pp ApplicationController.arbitrary_token("#{user.email}#{user.unique_token}#{current_subdomain.identifier}") if !user.nil?
+      # pp ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.identifier}") if user.nil?
 
 
       # is it a security problem to allow users to continue to sign in through the tokenized email after they've created an account?
-      permission =   (ApplicationController.arbitrary_token("#{params[:u]}#{current_tenant.identifier}") == params[:t]) \
-                  ||(!user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{user.unique_token}#{current_tenant.identifier}") == params[:t]) # this user already exists, want to have a harder auth method; still not secure if user forwards their email
+      permission =   (ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.identifier}") == params[:t]) \
+                  ||(!user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{user.unique_token}#{current_subdomain.identifier}") == params[:t]) # this user already exists, want to have a harder auth method; still not secure if user forwards their email
 
       if permission
         session[:limited_user] = user ? user.id : nil
@@ -47,10 +46,10 @@ class ApplicationController < ActionController::Base
     end
 
 
-    if current_tenant.host.nil?
-      current_tenant.host = request.host
-      current_tenant.host_with_port = request.host_with_port
-      current_tenant.save
+    if current_subdomain.host.nil?
+      current_subdomain.host = request.host
+      current_subdomain.host_with_port = request.host_with_port
+      current_subdomain.save
     end
 
     # if there are dirtied keys, we'll append the corresponding data to the response
@@ -72,15 +71,15 @@ class ApplicationController < ActionController::Base
   end
 
   def current_ability
-    @current_ability ||= Ability.new(current_user, current_tenant, request.session_options[:id], session, params)
+    @current_ability ||= Ability.new(current_user, current_subdomain, request.session_options[:id], session, params)
   end
 
   def mail_options
     {:host => request.host,
      :host_with_port => request.host_with_port,
-     :from => current_tenant && current_tenant.contact_email && current_tenant.contact_email.length > 0 ? current_tenant.contact_email : APP_CONFIG[:email],
-     :app_title => current_tenant ? current_tenant.app_title : '',
-     :current_tenant => current_tenant
+     :from => current_subdomain && current_subdomain.contact_email && current_subdomain.contact_email.length > 0 ? current_subdomain.contact_email : APP_CONFIG[:email],
+     :app_title => current_subdomain ? current_subdomain.app_title : '',
+     :current_subdomain => current_subdomain
     }
   end
 
@@ -106,7 +105,7 @@ protected
   def write_to_log(options)
     begin
       Log.create!({
-        :subdomain_id => current_tenant.id,
+        :subdomain_id => current_subdomain.id,
         :who => current_user,
         :what => options[:what],
         :where => options[:where],
@@ -118,14 +117,14 @@ protected
     end
   end
 
-  def get_current_tenant
+  def get_current_subdomain
     rq = request
 
     # when to display a considerit homepage
     can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || ENABLE_HOMEPAGE_IN_DEV
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
       set_current_tenant Subdomain.find_by_identifier('homepage')
-      return current_tenant
+      return current_subdomain
     end
 
     if rq.subdomain == 'googleoauth'
@@ -142,7 +141,7 @@ protected
   def init_thread_globals
     # Make things to remember changes
     Thread.current[:dirtied_keys] = {}
-    Thread.current[:tenant] = current_tenant
+    Thread.current[:subdomain] = current_subdomain
     Thread.current[:mail_options] = mail_options
 
     puts("In before: is there a current user? '#{session[:current_user_id2]}'")
@@ -219,8 +218,8 @@ protected
         response.append Comment.comments_for_point(point)
       
       elsif key == '/subdomain'
-        pp current_tenant.contact_email
-        response.append current_tenant.as_json
+        pp current_subdomain.contact_email
+        response.append current_subdomain.as_json
 
       elsif key == '/current_user'
         response.append current_user.current_user_hash(form_authenticity_token)
@@ -232,7 +231,7 @@ protected
         response.append User.all_for_subdomain
 
       elsif key.match '/page/homepage'
-        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE opinions.subdomain_id=#{current_tenant.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
+        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE opinions.subdomain_id=#{current_subdomain.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
 
         clean = {
           contributors: recent_contributors.map {|u| "/user/#{u['id']}"},
@@ -265,7 +264,7 @@ protected
           opinions: ops
         }
 
-        if current_tenant.assessment_enabled
+        if current_subdomain.assessment_enabled
           clean.update({
             :assessments => proposal.assessments.completed,
             :claims => proposal.assessments.completed.map {|a| a.claims}.compact.flatten,
@@ -290,8 +289,10 @@ protected
     session[:return_to] = path
   end
 
-  # def current_tenant
-  #   ActsAsTenant.current_tenant
-  # end
+  # aliasing current_tenant from acts_as_tenant gem so we can be consistent with subdomain
+  helper_method :current_subdomain
+  def current_subdomain
+    ActsAsTenant.current_tenant
+  end
 
 end

@@ -19,7 +19,6 @@ class PointController < ApplicationController
     # Set private values
     point['proposal'] = proposal = Proposal.find(key_id(point['proposal']))
     point['comment_count'] = 0
-    point['long_id'] = point['proposal'].long_id
     point['published'] = false
     point['user_id'] = current_user && current_user.id || nil
 
@@ -51,7 +50,7 @@ class PointController < ApplicationController
 
     remap_key(params[:key], "/point/#{point.id}")
 
-    dirty_key "/page/#{proposal.long_id}"
+    dirty_key "/page/#{proposal.slug}"
 
     # # This session stuff is broken!  Because the session gets cleared
     # # when we switch accounts.  Sucks.  Need a new way to store this.
@@ -113,7 +112,7 @@ class PointController < ApplicationController
       dirty_key "/opinion/#{o.id}"
     end
 
-    dirty_key("/page/#{proposal.long_id}") #because /points is changed...
+    dirty_key("/page/#{proposal.slug}") #because /points is changed...
 
     render :json => []
   end

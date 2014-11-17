@@ -8,20 +8,20 @@ class ProposalController < ApplicationController
   end
 
   def show
-    proposal = Proposal.find_by_id(params[:id]) || Proposal.find_by_long_id(params[:id])
+    proposal = Proposal.find_by_id(params[:id]) || Proposal.find_by_slug(params[:id])
     if !proposal || cannot?(:read, proposal)
       render :json => { errors: ["not found"] }, :status => :not_found
       return 
     end
 
-    dirty_key "/proposal/#{proposal.long_id}"
+    dirty_key "/proposal/#{proposal.slug}"
     render :json => []
   end
 
   def create
-    # TODO: long_id should be validated as a legit url
+    # TODO: slug should be validated as a legit url
     
-    fields = ['long_id', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
+    fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
     proposal = params.select{|k,v| fields.include? k}
 
     proposal.update({
@@ -46,7 +46,7 @@ class ProposalController < ApplicationController
     write_to_log({
       :what => 'created new proposal',
       :where => request.fullpath,
-      :details => {:proposal => "/#{proposal.long_id}"}
+      :details => {:proposal => "/#{proposal.slug}"}
     })
 
     render :json => [result]
@@ -65,7 +65,7 @@ class ProposalController < ApplicationController
   #   # TODO: handle remote possibility of name collisions?
   #   # TODO: explicitly grab parameters
   #   params[:proposal].update({
-  #     :long_id => SecureRandom.hex(5),
+  #     :slug => SecureRandom.hex(5),
   #     :subdomain_id => current_subdomain.id, 
   #     :admin_id => SecureRandom.hex(6),  #NOTE: admin_id never used, should be purged from system
   #     :user_id => current_user ? current_user.id : nil,
@@ -105,7 +105,7 @@ class ProposalController < ApplicationController
     end
 
     if can?(:update, proposal)
-      fields = ['long_id', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
+      fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
       updated_fields = params.select{|k,v| fields.include? k}
       proposal.update_attributes! updated_fields
       dirty_key('/proposals')
@@ -118,7 +118,7 @@ class ProposalController < ApplicationController
 
   def old_update
     # ASSUMPTION: a proposal cannot become unpublished after it has been published
-    proposal = Proposal.find_by_long_id(params[:long_id])
+    proposal = Proposal.find_by_slug(params[:slug])
     authorize! :update, proposal
 
     private_discussion = (params.has_key?(:publicity) && params[:publicity] == '0') || proposal.publicity == 0
@@ -143,7 +143,7 @@ class ProposalController < ApplicationController
       inviter = nil
 
       if existing_access_list.nil? || existing_access_list == '' 
-        if !current_user.nil? && current_user.registration_complete
+        if !current_user.nil? && current_user.registered
           inviter = current_user
         end
         users = proposal.access_list.gsub(' ', '').split(',')
@@ -188,7 +188,7 @@ class ProposalController < ApplicationController
   end
 
   def destroy
-    proposal = Proposal.find_by_long_id(params[:long_id])
+    proposal = Proposal.find_by_slug(params[:slug])
     authorize! :destroy, proposal
     proposal.destroy
     render :json => {:success => true}

@@ -39,7 +39,7 @@ class CurrentUserController < ApplicationController
       when 'register'
 
         update_user_attrs errors        
-        if !current_user.registration_complete
+        if !current_user.registered
           third_party_authenticated = current_user.twitter_uid || current_user.facebook_uid\
                                       || current_user.google_uid
           has_name = current_user.name && current_user.name.length > 0
@@ -49,7 +49,7 @@ class CurrentUserController < ApplicationController
           ok_password = third_party_authenticated || (params[:password] && params[:password].length >= @min_pass)
 
           if has_name && can_login && signed_pledge && ok_password
-            current_user.registration_complete = true
+            current_user.registered = true
             if !current_user.save
               raise "Error registering this uesr"
             end
@@ -75,7 +75,7 @@ class CurrentUserController < ApplicationController
 
           user = User.find_by_lower_email(params[:email])
 
-          if !user || !user.registration_complete
+          if !user || !user.registered
             # note: Returning this error message is a security risk as it
             #       reveals that a particular email address exists in the
             #       system or not.  But it's prolly the right tradeoff.
@@ -285,7 +285,7 @@ class CurrentUserController < ApplicationController
     user = User.find_by_third_party_token access_token
 
     # If a registered user is associated with this third party, just log them in
-    if user && user.registration_complete
+    if user && user.registered
       # Then the user registration is complete.
       replace_user current_user, user
       set_current_user(user)

@@ -31,11 +31,11 @@ namespace :cache do
     size = 'small'
     #TODO: do not automatically replace each file ... check hash at end for equality
     begin
-      Subdomain.find_each do |accnt|
+      Subdomain.find_each do |subdomain|
         internal = Rails.application.config.action_controller.asset_host.nil?
-        File.open("public/system/cache/#{accnt.identifier}.css", 'w') do |f|
+        File.open("public/system/cache/#{subdomain.name}.css", 'w') do |f|
 
-          accnt.users.select([:id,:avatar_file_name]).where('avatar_file_name IS NOT NULL').each do |user|
+          subdomain.users.select([:id,:avatar_file_name]).where('avatar_file_name IS NOT NULL').each do |user|
             #data = [File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}")].pack('m')
             begin
 
@@ -77,22 +77,22 @@ task :compute_metrics => ["cache:points"]
 
 namespace :alerts do
   task :check_moderation => :environment do
-    Subdomain.all.each do |accnt| 
-      next if accnt.classes_to_moderate.length == 0 
+    Subdomain.all.each do |subdomain| 
+      next if subdomain.classes_to_moderate.length == 0 
 
       # Find out how many objects need to be moderated
       # TODO: this section is copied from moderation_controller#index ... refactor
       content_to_moderate = false
 
-      accnt.classes_to_moderate.each do |moderation_class|
+      subdomain.classes_to_moderate.each do |moderation_class|
 
         if moderation_class == Comment
           # select all comments of points of active proposals
-          qry = "SELECT c.id, c.user_id, prop.id as proposal_id FROM comments c, points pnt, proposals prop WHERE prop.subdomain_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
+          qry = "SELECT c.id, c.user_id, prop.id as proposal_id FROM comments c, points pnt, proposals prop WHERE prop.subdomain_id=#{subdomain.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
         elsif moderation_class == Point
-          qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.subdomain_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
+          qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.subdomain_id=#{subdomain.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
         elsif moderation_class == Proposal
-          qry = "SELECT id, long_id, user_id, name, description from proposals where subdomain_id=#{accnt.id}"
+          qry = "SELECT id, slug, user_id, name, description from proposals where subdomain_id=#{subdomain.id}"
         end
 
         objects = ActiveRecord::Base.connection.select(qry)
@@ -110,7 +110,7 @@ namespace :alerts do
 
       if content_to_moderate
         # send to all users with moderator status
-        roles = accnt.user_roles()
+        roles = subdomain.user_roles()
         moderators = roles.has_key?('moderator') ? roles['moderator'] : []
 
         moderators.each do |key|
@@ -119,7 +119,7 @@ namespace :alerts do
           rescue
           end
           if user
-            AlertMailer.content_to_moderate(user, accnt).deliver!
+            AlertMailer.content_to_moderate(user, subdomain).deliver!
           end
         end
       end

@@ -42,7 +42,7 @@ class OpinionController < ApplicationController
 
       write_to_log({
         :what => 'published opinion',
-        :where => proposal.long_id
+        :where => proposal.slug
       })
     end
 

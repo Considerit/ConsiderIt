@@ -18,7 +18,7 @@ class Proposal < ActiveRecord::Base
   self.moderatable_objects = lambda { Proposal.published_web }
 
   class_attribute :my_public_fields, :my_summary_fields
-  self.my_public_fields = [:id, :long_id, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :publicity, :published, :seo_keywords, :seo_title, :seo_description]
+  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :publicity, :published, :seo_keywords, :seo_title, :seo_description]
 
   scope :active, -> {where( :active => true, :published => true )}
   scope :inactive, -> {where( :active => false, :published => true )}
@@ -36,7 +36,7 @@ class Proposal < ActiveRecord::Base
     # if a subdomain wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
     current_subdomain = Thread.current[:subdomain]
-    if current_subdomain.identifier == 'livingvotersguide'
+    if current_subdomain.name == 'livingvotersguide'
       year = 2014
       local_jurisdictions = []   
       
@@ -114,9 +114,9 @@ class Proposal < ActiveRecord::Base
     current_subdomain = Thread.current[:subdomain]
 
     enabled = current_subdomain.assessment_enabled
-    if current_subdomain.identifier == 'livingvotersguide'
+    if current_subdomain.name == 'livingvotersguide'
       # only some issues in LVG are fact-checkable
-      enabled = ['I-1351_Modify_K-12_funding', 'I-591_Match_state_gun_regulation_to_national_standards', 'I-594_Increase_background_checks_on_gun_purchases'].include? long_id
+      enabled = ['I-1351_Modify_K-12_funding', 'I-591_Match_state_gun_regulation_to_national_standards', 'I-594_Increase_background_checks_on_gun_purchases'].include? slug
     end
     enabled && active
   end
@@ -184,18 +184,6 @@ class Proposal < ActiveRecord::Base
   #   else
   #     nil
   #   end
-  # end
-
-  # def stance_fractions
-  #   distribution = Array.new(7,0)
-  #   opinions.published.select('COUNT(*) AS cnt, stance_segment').group(:stance_segment).each do |row|
-  #     distribution[row.stance_segment.to_i] = row.cnt.to_i
-  #   end      
-  #   total = distribution.inject(:+).to_f
-  #   if total > 0     
-  #     distribution.collect! { |stance_count| 100 * stance_count / total }
-  #   end
-  #   return distribution
   # end
 
   # def update_metrics

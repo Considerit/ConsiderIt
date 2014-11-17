@@ -1,14 +1,14 @@
 SitemapGenerator::Sitemap.sitemaps_host = "http:consider.it"
 
-Subdomain.find_each do |accnt|
+Subdomain.find_each do |subdomain|
 
   indexability = APP_CONFIG[:indexability]
-  indexed = indexability.has_key?(accnt.identifier.intern) ? indexability[accnt.identifier.intern] : indexability[:default]  
+  indexed = indexability.has_key?(subdomain.name.intern) ? indexability[subdomain.name.intern] : indexability[:default]  
   next if !indexed
 
-  subdomain = accnt.identifier  
+  subdomain = subdomain.name  
   # Set the host name for URL creation
-  SitemapGenerator::Sitemap.default_host = "https://#{accnt.host}"
+  SitemapGenerator::Sitemap.default_host = "https://#{subdomain.host}"
 
   SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain}"
 
@@ -24,26 +24,26 @@ Subdomain.find_each do |accnt|
     # Defaults: :priority => 0.5, :changefreq => 'weekly',
     #           :lastmod => Time.now, :host => default_host
     #
-    accnt.proposals.active.open_to_public.each do |prop|
+    subdomain.proposals.active.open_to_public.each do |prop|
       begin
-        add prop.long_id, {:priority => 1.0, :changefreq => 'daily'}
+        add prop.slug, {:priority => 1.0, :changefreq => 'daily'}
       rescue
-        pp "#{prop.long_id} failed"
+        pp "#{prop.slug} failed"
       end
     end
 
-    accnt.proposals.inactive.open_to_public.each do |prop|
+    subdomain.proposals.inactive.open_to_public.each do |prop|
       next if prop.opinions.published.count == 0
       
       begin
-        add prop.long_id, {:priority => 0.2, :changefreq => 'monthly'}
-        #add proposal_path(prop.long_id), {:priority => 0.7, :changefreq => 'weekly'}
+        add prop.slug, {:priority => 0.2, :changefreq => 'monthly'}
+        #add proposal_path(prop.slug), {:priority => 0.7, :changefreq => 'weekly'}
       rescue
-        pp "#{prop.long_id} failed"
+        pp "#{prop.slug} failed"
       end
     end
 
-    if accnt.about_page_url
+    if subdomain.about_page_url
       add "about", {:priority => 0.8, :changefreq => 'monthly'}
     end
 

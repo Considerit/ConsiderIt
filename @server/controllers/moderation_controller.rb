@@ -22,7 +22,7 @@ class ModerationController < ApplicationController
       elsif moderation_class == Point
         qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.subdomain_id=#{current_subdomain.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
       elsif moderation_class == Proposal
-        qry = "SELECT id, long_id, user_id, name, description from proposals where subdomain_id=#{current_subdomain.id}"
+        qry = "SELECT id, slug, user_id, name, description from proposals where subdomain_id=#{current_subdomain.id}"
       end
 
       objects = ActiveRecord::Base.connection.select(qry)

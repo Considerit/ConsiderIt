@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117042504) do
+ActiveRecord::Schema.define(version: 20141117053949) do
 
   create_table "assessments", force: true do |t|
     t.integer  "user_id"
@@ -187,7 +187,6 @@ ActiveRecord::Schema.define(version: 20141117042504) do
     t.integer  "comment_count",                default: 0
     t.text     "includers"
     t.integer  "moderation_status"
-    t.string   "long_id"
     t.integer  "last_inclusion",               default: 0
   end
 
@@ -207,7 +206,7 @@ ActiveRecord::Schema.define(version: 20141117042504) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "subdomain_id"
-    t.string   "long_id"
+    t.string   "slug"
     t.integer  "user_id"
     t.float    "trending",                               limit: 24
     t.float    "activity",                               limit: 24
@@ -239,7 +238,7 @@ ActiveRecord::Schema.define(version: 20141117042504) do
 
   add_index "proposals", ["subdomain_id", "active"], name: "select_proposal_by_active", using: :btree
   add_index "proposals", ["subdomain_id", "id"], name: "select_proposal", using: :btree
-  add_index "proposals", ["subdomain_id", "long_id"], name: "select_proposal_by_long_id", using: :btree
+  add_index "proposals", ["subdomain_id", "slug"], name: "select_proposal_by_long_id", using: :btree
   add_index "proposals", ["subdomain_id"], name: "index_proposals_on_subdomain_id", using: :btree
 
   create_table "requests", force: true do |t|
@@ -254,31 +253,30 @@ ActiveRecord::Schema.define(version: 20141117042504) do
   end
 
   create_table "subdomains", force: true do |t|
-    t.string   "identifier"
-    t.datetime "created_at",                                               null: false
-    t.datetime "updated_at",                                               null: false
+    t.string   "name"
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
     t.string   "app_title"
-    t.string   "contact_email"
-    t.string   "analytics_google"
-    t.boolean  "requires_civility_pledge_on_registration", default: false
+    t.string   "notifications_sender_email"
+    t.string   "google_analytics_code"
+    t.boolean  "has_civility_pledge",           default: false
     t.string   "host"
     t.string   "host_with_port"
-    t.boolean  "assessment_enabled",                       default: false
-    t.boolean  "enable_user_conversations",                default: false
-    t.integer  "moderate_points_mode",                     default: 0
-    t.integer  "moderate_comments_mode",                   default: 0
-    t.integer  "moderate_proposals_mode",                  default: 0
+    t.boolean  "assessment_enabled",            default: false
+    t.integer  "moderate_points_mode",          default: 0
+    t.integer  "moderate_comments_mode",        default: 0
+    t.integer  "moderate_proposals_mode",       default: 0
     t.string   "homepage_pic_file_name"
     t.string   "homepage_pic_content_type"
     t.integer  "homepage_pic_file_size"
     t.datetime "homepage_pic_updated_at"
     t.string   "homepage_pic_remote_url"
-    t.string   "project_url"
+    t.string   "external_external_project_url"
     t.string   "about_page_url"
     t.text     "roles"
   end
 
-  add_index "subdomains", ["identifier"], name: "by_identifier", length: {"identifier"=>10}, using: :btree
+  add_index "subdomains", ["name"], name: "by_identifier", length: {"name"=>10}, using: :btree
 
   create_table "users", force: true do |t|
     t.string   "unique_token"
@@ -300,7 +298,7 @@ ActiveRecord::Schema.define(version: 20141117042504) do
     t.string   "openid_uid"
     t.string   "twitter_uid"
     t.string   "twitter_handle"
-    t.boolean  "registration_complete",              default: false
+    t.boolean  "registered",                         default: false
     t.datetime "reset_password_sent_at"
     t.text     "b64_thumbnail"
     t.text     "tags"

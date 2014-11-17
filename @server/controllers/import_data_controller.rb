@@ -25,7 +25,7 @@ class ImportDataController < ApplicationController
     errors = []
     modified = {}
 
-    if current_subdomain.identifier == 'livingvotersguide'
+    if current_subdomain.name == 'livingvotersguide'
       import_for_LVG(errors, modified)
     else
       points = {}
@@ -120,7 +120,7 @@ class ImportDataController < ApplicationController
             end
 
             if config[:required_fields].include? 'proposal'
-              proposal = Proposal.find_by_long_id(row['proposal'].gsub(' ', '_').gsub(',','_').gsub('.','').downcase)
+              proposal = Proposal.find_by_slug(row['proposal'].gsub(' ', '_').gsub(',','_').gsub('.','').downcase)
               if !proposal
                 errors.append "#{table} file: could not find a Proposal associated with #{row['proposal']}. Did you forget to add #{row['proposal']} to the Proposal file?"
                 error = true
@@ -169,21 +169,21 @@ class ImportDataController < ApplicationController
             when 'proposals'
 
               attrs.update({
-                'long_id' => row['url'].gsub(' ', '_').gsub(',','_').gsub('.','').downcase,
+                'slug' => row['url'].gsub(' ', '_').gsub(',','_').gsub('.','').downcase,
                 'user_id' => user.id,
                 'name' => row['topic'],
                 'published' => true
               })
 
-              proposal = Proposal.find_by_long_id attrs['long_id']
+              proposal = Proposal.find_by_slug attrs['slug']
               if !proposal
                 attrs['subdomain_id'] = current_subdomain.id
                 proposal = Proposal.new attrs
                 proposal.save
-                modified[table].push "Created Proposal '#{proposal.long_id}'"
+                modified[table].push "Created Proposal '#{proposal.slug}'"
               else
                 proposal.update_attributes attrs
-                modified[table].push "Updated Proposal '#{proposal.long_id}'"              
+                modified[table].push "Updated Proposal '#{proposal.slug}'"              
               end
 
               proposals.push proposal
@@ -199,8 +199,8 @@ class ImportDataController < ApplicationController
 
               # we'll assume that if we're creating an opinion for a user that the user should 
               # be registered
-              if !user.registration_complete
-                user.registration_complete = true
+              if !user.registered
+                user.registered = true
                 user.save
               end
 
@@ -306,7 +306,7 @@ class ImportDataController < ApplicationController
                 'name' => "Fake User #{new_id}",
                 'email' => "#{new_id}@ghost.dev",
                 'password' => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20],
-                'registration_complete' => true,
+                'registered' => true,
                 'avatar_url' => "https://dl.dropboxusercontent.com/u/3403211/demofaces/#{Random.rand(1..120)}.jpg"
               }
               user = User.create! attrs
@@ -378,7 +378,7 @@ class ImportDataController < ApplicationController
   # These are LVG-specific data imports. Unfortunately we have to maintain them!
   def import_for_LVG(errors, modified)
 
-    subdomain = Subdomain.find_by_identifier('livingvotersguide')
+    subdomain = Subdomain.find_by_name('livingvotersguide')
 
     #########################
     # Import ballot measures
@@ -397,18 +397,18 @@ class ImportDataController < ApplicationController
       CSV.foreach(file.tempfile, :headers => true, :encoding => encoding) do |row|
         jurisdiction = row['jurisdiction'].split.map(&:capitalize).join(' ')
 
-        long_id = row['topic']
+        slug = row['topic']
         if row['category'] && row['designator']
-          long_id = "#{row['category'][0]}-#{row['designator']}_#{long_id}"
+          slug = "#{row['category'][0]}-#{row['designator']}_#{slug}"
         end
 
         if jurisdiction != 'Statewide'
-          long_id += "-#{jurisdiction}"
+          slug += "-#{jurisdiction}"
         end
 
-        long_id = long_id.gsub(' ', '_').gsub(',','_').gsub('.','')
+        slug = slug.gsub(' ', '_').gsub(',','_').gsub('.','')
 
-        pp long_id
+        pp slug
 
         description_fields = []    
 
@@ -461,7 +461,7 @@ class ImportDataController < ApplicationController
         measure = {
           :subdomain_id => subdomain.id,
           :user_id => 1, 
-          :long_id => long_id,
+          :slug => slug,
           :name => row['topic'],
           :category => category,
           :designator => row['designator'],
@@ -474,17 +474,17 @@ class ImportDataController < ApplicationController
           :seo_keywords => row.fetch('seo_keywords', nil)
         }
 
-        proposal = Proposal.find_by_long_id long_id
+        proposal = Proposal.find_by_slug slug
         if !proposal
           proposal = Proposal.new measure
           proposal.save
-          #pp "Added #{row['topic']}: #{long_id}"
-          modified['measures'].push "Created Measure '#{proposal.long_id}'"
+          #pp "Added #{row['topic']}: #{slug}"
+          modified['measures'].push "Created Measure '#{proposal.slug}'"
 
         else
           measure.delete :subdomain_id
           proposal.update_attributes measure
-          modified['measures'].push "Updated Measure '#{proposal.long_id}'"
+          modified['measures'].push "Updated Measure '#{proposal.slug}'"
         end
 
       end
@@ -509,10 +509,10 @@ class ImportDataController < ApplicationController
         data = fetchFromMaplight("cvg.candidate_v1.json?candidate_id=#{candidate_id}&data_type=all")
         jurisdiction = data['contest']['title'].gsub(' - Washington', '').gsub('U.S. Representative', 'Congressional')
         name = data['display_name']
-        long_id = "#{name}-washington_#{jurisdiction}".gsub(' ', '_').downcase
+        slug = "#{name}-washington_#{jurisdiction}".gsub(' ', '_').downcase
 
         # pp data['summary']['summary_items'].map {|i| i.keys()}
-        #pp jurisdiction, name, long_id
+        #pp jurisdiction, name, slug
 
         contest_description = "U.S. #{data['contest']['office']['body']}"
         gender = data['gender'] == 'F' ? 'Her' : 'His'
@@ -554,7 +554,7 @@ class ImportDataController < ApplicationController
         measure = {
           :subdomain_id => subdomain.id,
           :user_id => 1, 
-          :long_id => long_id,
+          :slug => slug,
           :name => name,
           :description => description,
           :published => true,
@@ -565,8 +565,8 @@ class ImportDataController < ApplicationController
           :seo_keywords => "washington,state,us,congressional,2014,#{name}"
         }
 
-        #proposal = Proposal.find_by_long_id long_id
-        proposal = Proposal.find_by_long_id long_id
+        #proposal = Proposal.find_by_slug slug
+        proposal = Proposal.find_by_slug slug
         if !proposal
           proposal = Proposal.new measure
           proposal.save

@@ -21,11 +21,11 @@ class SubdomainController < ApplicationController
     # TODO: sanitize / make sure has url-able characters
     subdomain = params[:subdomain]
 
-    existing = Subdomain.find_by_identifier(subdomain)
+    existing = Subdomain.find_by_name(subdomain)
     if existing
       errors.push "The #{subdomain} subdomain already exists. Contact us for more information."
     else
-      new_subdomain = Subdomain.new :identifier => subdomain
+      new_subdomain = Subdomain.new :name => subdomain
       roles = new_subdomain.user_roles
       roles['admin'].push "/user/#{current_user.id}"
       new_subdomain.roles = JSON.dump roles
@@ -35,7 +35,7 @@ class SubdomainController < ApplicationController
     if errors.length > 0
       render :json => [{errors: errors}]
     else
-      render :json => [{identifier: new_subdomain.identifier}]
+      render :json => [{name: new_subdomain.name}]
     end
   end
 
@@ -52,7 +52,7 @@ class SubdomainController < ApplicationController
       raise new CanCan::AccessDenied
     end
 
-    fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'contact_email', 'app_title', 'project_url', 'requires_civility_pledge_on_registration']
+    fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'has_civility_pledge']
     attrs = params.select{|k,v| fields.include? k}
 
     if params.has_key? 'roles'

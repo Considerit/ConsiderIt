@@ -31,10 +31,10 @@ class HomeController < ApplicationController
     # Some subdomains don't have a homepage. In the iterim, let's just redirect 
     # accesses to the homepage to the latest published proposal
     # TODO: better way of knowing if a particular subdomain has a homepage or not.
-    # if current_subdomain.identifier == 'cityoftigard' && request.path == '/' && request.query_string == "" && !session[:search_bot]
+    # if current_subdomain.name == 'cityoftigard' && request.path == '/' && request.query_string == "" && !session[:search_bot]
     #   proposal = current_subdomain.proposals.open_to_public.active.last
     #   if proposal
-    #     redirect_to "/#{proposal.long_id}"
+    #     redirect_to "/#{proposal.slug}"
     #   else
     #     render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
     #   end
@@ -60,7 +60,7 @@ class HomeController < ApplicationController
       })
     end
 
-    if current_subdomain.identifier == 'homepage' && request.path == '/'
+    if current_subdomain.name == 'homepage' && request.path == '/'
       render "home/homepage", :layout => false
     else
       render "layouts/application", :layout => false
@@ -97,7 +97,7 @@ class HomeController < ApplicationController
     keywords = title = nil
 
     # subdomain defaults
-    case current_subdomain.identifier
+    case current_subdomain.name
     when 'livingvotersguide'
       title = 'Washington Voters Guide for the 2014 Election'
       image = view_context.asset_path 'livingvotersguide/logo.png'
@@ -109,13 +109,13 @@ class HomeController < ApplicationController
       image = view_context.asset_path 'cityoftigard/logo.png'
       description = "Dialogue about City of Tigard"
     else
-      title = current_subdomain.app_title or "#{current_subdomain.identifier} discussion"
+      title = current_subdomain.app_title or "#{current_subdomain.name} discussion"
       image = nil
       description = "Help think through these issues being considered."
     end
 
     # proposal overrides, if the current page is a proposal
-    proposal = Proposal.find_by_long_id page[1..page.length] if page != '/' && page != '/about'
+    proposal = Proposal.find_by_slug page[1..page.length] if page != '/' && page != '/about'
     if proposal 
       title = proposal.name
       if proposal.category && proposal.designator
@@ -142,7 +142,7 @@ class HomeController < ApplicationController
       { :property => 'og:image', :content => image },
 
       { :property => 'og:type', :content => 'website' },
-      { :property => 'og:site_name', :content => (current_subdomain.app_title or "#{current_subdomain.identifier} discussion") },
+      { :property => 'og:site_name', :content => (current_subdomain.app_title or "#{current_subdomain.name} discussion") },
 
       { :name => 'twitter:card', :content => 'summary' },
       { :property => 'fb:app_id', :content => fb_app_id }

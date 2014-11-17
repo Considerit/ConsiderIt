@@ -26,7 +26,7 @@ class FollowableController < CurrentUserController
   private
 
   def user
-    return current_user if current_user.registration_complete
+    return current_user if current_user.registered
     return false if !session[:notifications_user]
     u = session[:notifications_user]['u']
     return User.find_by_email(u)
@@ -36,7 +36,7 @@ class FollowableController < CurrentUserController
     u = session[:notifications_user]['u']
     t = session[:notifications_user]['t']
 
-    encrypted = ApplicationController.arbitrary_token("#{u}#{target_user.unique_token}#{current_subdomain.identifier}")
+    encrypted = ApplicationController.arbitrary_token("#{u}#{target_user.unique_token}#{current_subdomain.name}")
     
     encrypted == t
   end

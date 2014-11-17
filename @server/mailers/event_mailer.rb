@@ -28,7 +28,7 @@ class EventMailer < Mailer
   #   @proposal = proposal
   #   @host = options[:host]
   #   @options = options
-  #   @url = "#{@host}/#{@proposal.long_id}"
+  #   @url = "#{@host}/#{@proposal.slug}"
 
   #   subject = "new proposal \"#{@proposal.title}\""
 

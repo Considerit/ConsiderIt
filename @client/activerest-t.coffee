@@ -82,8 +82,8 @@ class ActiveRESTCache
     exists = key of @_cache
 
     if exists && key == 'application' && @fetch('application').page != value.page
-      long_id = @fetch('application').route.split('/')[1]
-      route = "/#{long_id}#{if value.page == 'results' then '/results' else ''}"
+      slug = @fetch('application').route.split('/')[1]
+      route = "/#{slug}#{if value.page == 'results' then '/results' else ''}"
       app_router.navigate route, {trigger : true}
       @_cache['_route_changed'] = true #nasty, eliminate need for this
 

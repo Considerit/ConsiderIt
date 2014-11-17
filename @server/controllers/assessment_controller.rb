@@ -88,7 +88,7 @@ class AssessmentController < ApplicationController
     request = {
       'suggestion' => params['suggestion'],
       'user_id' => current_user && current_user.id || nil,
-      'account_id' => current_tenant.id,
+      'subdomain_id' => current_tenant.id,
       'assessable_type' => 'Point',
       'assessable_id' => point.id
     }
@@ -98,7 +98,7 @@ class AssessmentController < ApplicationController
     assessment = Assessable::Assessment.where(:assessable_type => request['assessable_type'], :assessable_id => request['assessable_id']).first
     if !assessment
       create_attrs = {
-        :account_id => current_tenant.id, 
+        :subdomain_id => current_tenant.id, 
         :assessable_type => request['assessable_type'],
         :assessable_id => request['assessable_id'] }
         

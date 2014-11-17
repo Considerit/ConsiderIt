@@ -27,7 +27,7 @@ class Point < ActiveRecord::Base
 
   end
 
-  acts_as_tenant(:account)
+  acts_as_tenant :subdomain
 
   self.moderatable_fields = [:nutshell, :text]
   self.moderatable_objects = lambda {

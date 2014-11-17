@@ -15,8 +15,8 @@ ConsiderIt::Application.routes.draw do
     ## Test controller for nonactiverest
     get '/activemike' => 'home#activemike'
 
-    ## Development dashboard; right now it lets you easily switch between customers
-    get '/change_customer/:id' => 'developer#change_default_customer', :as => 'change_customer'
+    ## Development dashboard; right now it lets you easily switch between subdomains
+    get '/change_subdomain/:id' => 'developer#change_default_subdomain', :as => 'change_subdomain'
   end
 
   # Third party oauth routes. These go before 
@@ -54,10 +54,10 @@ ConsiderIt::Application.routes.draw do
   resources :comment, :only => [:create, :show, :update, :destroy]
   get '/comments/:point_id' => 'comment#index'
 
-  get '/customer' => 'customer#show'
-  post '/customer' => 'customer#create'
-  match '/customer' => 'customer#update', :via => [:put]
-  get '/dashboard/create_subdomain' => 'customer#new'
+  get '/subdomain' => 'subdomain#show'
+  post '/subdomain' => 'subdomain#create'
+  match '/subdomain' => 'subdomain#update', :via => [:put]
+  get '/dashboard/create_subdomain' => 'subdomain#new'
 
   post '/log' => 'log#create'
 

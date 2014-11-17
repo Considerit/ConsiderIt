@@ -6,6 +6,6 @@
 # :details # additional information
 
 class Log < ActiveRecord::Base
-  belongs_to :account
+  belongs_to :subdomain
   belongs_to :user, :foreign_key => 'who', :class_name => 'User'
 end

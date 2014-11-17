@@ -11,38 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117030021) do
-
-  create_table "accounts", force: true do |t|
-    t.string   "identifier"
-    t.datetime "created_at",                                               null: false
-    t.datetime "updated_at",                                               null: false
-    t.string   "app_title"
-    t.string   "contact_email"
-    t.string   "analytics_google"
-    t.boolean  "requires_civility_pledge_on_registration", default: false
-    t.string   "host"
-    t.string   "host_with_port"
-    t.boolean  "assessment_enabled",                       default: false
-    t.boolean  "enable_user_conversations",                default: false
-    t.integer  "moderate_points_mode",                     default: 0
-    t.integer  "moderate_comments_mode",                   default: 0
-    t.integer  "moderate_proposals_mode",                  default: 0
-    t.string   "homepage_pic_file_name"
-    t.string   "homepage_pic_content_type"
-    t.integer  "homepage_pic_file_size"
-    t.datetime "homepage_pic_updated_at"
-    t.string   "homepage_pic_remote_url"
-    t.string   "project_url"
-    t.string   "about_page_url"
-    t.text     "roles"
-  end
-
-  add_index "accounts", ["identifier"], name: "by_identifier", length: {"identifier"=>10}, using: :btree
+ActiveRecord::Schema.define(version: 20141117042504) do
 
   create_table "assessments", force: true do |t|
     t.integer  "user_id"
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
     t.integer  "assessable_id"
     t.string   "assessable_type"
     t.integer  "verdict_id"
@@ -56,7 +29,7 @@ ActiveRecord::Schema.define(version: 20141117030021) do
 
   create_table "claims", force: true do |t|
     t.integer  "assessment_id"
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
     t.text     "result"
     t.text     "claim_restatement"
     t.integer  "verdict_id"
@@ -90,15 +63,15 @@ ActiveRecord::Schema.define(version: 20141117030021) do
     t.integer  "user_id",           default: 0, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
     t.integer  "moderation_status"
     t.integer  "point_id"
   end
 
-  add_index "comments", ["account_id", "commentable_id", "commentable_type", "moderation_status"], name: "select_comments", using: :btree
-  add_index "comments", ["account_id", "commentable_id", "commentable_type"], name: "select_comments_on_commentable", using: :btree
-  add_index "comments", ["account_id"], name: "index_comments_on_account_id", using: :btree
   add_index "comments", ["commentable_id"], name: "index_comments_on_commentable_id", using: :btree
+  add_index "comments", ["subdomain_id", "commentable_id", "commentable_type", "moderation_status"], name: "select_comments", using: :btree
+  add_index "comments", ["subdomain_id", "commentable_id", "commentable_type"], name: "select_comments_on_commentable", using: :btree
+  add_index "comments", ["subdomain_id"], name: "index_comments_on_subdomain_id", using: :btree
   add_index "comments", ["user_id"], name: "index_comments_on_user_id", using: :btree
 
   create_table "delayed_jobs", force: true do |t|
@@ -136,7 +109,7 @@ ActiveRecord::Schema.define(version: 20141117030021) do
     t.string   "followable_type"
     t.boolean  "follow",          default: true
     t.boolean  "explicit",        default: false
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
     t.datetime "created_at",                      null: false
     t.datetime "updated_at",                      null: false
   end
@@ -147,15 +120,15 @@ ActiveRecord::Schema.define(version: 20141117030021) do
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
   end
 
-  add_index "inclusions", ["account_id"], name: "index_inclusions_on_account_id", using: :btree
   add_index "inclusions", ["point_id"], name: "index_inclusions_on_point_id", using: :btree
+  add_index "inclusions", ["subdomain_id"], name: "index_inclusions_on_subdomain_id", using: :btree
   add_index "inclusions", ["user_id"], name: "index_inclusions_on_user_id", using: :btree
 
   create_table "logs", force: true do |t|
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
     t.integer  "who"
     t.string   "what"
     t.string   "where"
@@ -172,7 +145,7 @@ ActiveRecord::Schema.define(version: 20141117030021) do
     t.integer  "status"
     t.datetime "created_at",                                    null: false
     t.datetime "updated_at",                                    null: false
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
     t.boolean  "updated_since_last_evaluation", default: false
     t.boolean  "notification_sent",             default: false
   end
@@ -186,15 +159,15 @@ ActiveRecord::Schema.define(version: 20141117030021) do
     t.boolean  "published",                   default: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
     t.text     "point_inclusions"
   end
 
-  add_index "opinions", ["account_id", "proposal_id", "published"], name: "index_opinions_on_account_id_and_proposal_id_and_published", using: :btree
-  add_index "opinions", ["account_id"], name: "index_opinions_on_account_id", using: :btree
   add_index "opinions", ["proposal_id"], name: "index_positions_on_option_id", using: :btree
   add_index "opinions", ["published"], name: "index_opinions_on_published", using: :btree
   add_index "opinions", ["stance_segment"], name: "index_opinions_on_stance_segment", using: :btree
+  add_index "opinions", ["subdomain_id", "proposal_id", "published"], name: "index_opinions_on_subdomain_id_and_proposal_id_and_published", using: :btree
+  add_index "opinions", ["subdomain_id"], name: "index_opinions_on_subdomain_id", using: :btree
   add_index "opinions", ["user_id"], name: "index_opinions_on_user_id", using: :btree
 
   create_table "points", force: true do |t|
@@ -210,7 +183,7 @@ ActiveRecord::Schema.define(version: 20141117030021) do
     t.float    "appeal",            limit: 24
     t.boolean  "published",                    default: true
     t.boolean  "hide_name",                    default: false
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
     t.integer  "comment_count",                default: 0
     t.text     "includers"
     t.integer  "moderation_status"
@@ -218,13 +191,13 @@ ActiveRecord::Schema.define(version: 20141117030021) do
     t.integer  "last_inclusion",               default: 0
   end
 
-  add_index "points", ["account_id", "proposal_id", "id", "is_pro"], name: "select_included_points", using: :btree
-  add_index "points", ["account_id", "proposal_id", "published", "id", "is_pro"], name: "select_published_included_points", using: :btree
-  add_index "points", ["account_id", "proposal_id", "published", "is_pro"], name: "select_published_pros_or_cons", using: :btree
-  add_index "points", ["account_id", "proposal_id", "published", "moderation_status", "is_pro"], name: "select_acceptable_pros_or_cons", using: :btree
-  add_index "points", ["account_id"], name: "index_points_on_account_id", using: :btree
   add_index "points", ["is_pro"], name: "index_points_on_is_pro", using: :btree
   add_index "points", ["proposal_id"], name: "index_points_on_option_id", using: :btree
+  add_index "points", ["subdomain_id", "proposal_id", "id", "is_pro"], name: "select_included_points", using: :btree
+  add_index "points", ["subdomain_id", "proposal_id", "published", "id", "is_pro"], name: "select_published_included_points", using: :btree
+  add_index "points", ["subdomain_id", "proposal_id", "published", "is_pro"], name: "select_published_pros_or_cons", using: :btree
+  add_index "points", ["subdomain_id", "proposal_id", "published", "moderation_status", "is_pro"], name: "select_acceptable_pros_or_cons", using: :btree
+  add_index "points", ["subdomain_id"], name: "index_points_on_subdomain_id", using: :btree
 
   create_table "proposals", force: true do |t|
     t.string   "designator"
@@ -233,7 +206,7 @@ ActiveRecord::Schema.define(version: 20141117030021) do
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
     t.string   "long_id"
     t.integer  "user_id"
     t.float    "trending",                               limit: 24
@@ -264,15 +237,15 @@ ActiveRecord::Schema.define(version: 20141117030021) do
     t.text     "zips"
   end
 
-  add_index "proposals", ["account_id", "active"], name: "select_proposal_by_active", using: :btree
-  add_index "proposals", ["account_id", "id"], name: "select_proposal", using: :btree
-  add_index "proposals", ["account_id", "long_id"], name: "select_proposal_by_long_id", using: :btree
-  add_index "proposals", ["account_id"], name: "index_proposals_on_account_id", using: :btree
+  add_index "proposals", ["subdomain_id", "active"], name: "select_proposal_by_active", using: :btree
+  add_index "proposals", ["subdomain_id", "id"], name: "select_proposal", using: :btree
+  add_index "proposals", ["subdomain_id", "long_id"], name: "select_proposal_by_long_id", using: :btree
+  add_index "proposals", ["subdomain_id"], name: "index_proposals_on_subdomain_id", using: :btree
 
   create_table "requests", force: true do |t|
     t.integer  "user_id"
     t.integer  "assessment_id"
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
     t.text     "suggestion"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
@@ -280,8 +253,34 @@ ActiveRecord::Schema.define(version: 20141117030021) do
     t.string   "assessable_type"
   end
 
+  create_table "subdomains", force: true do |t|
+    t.string   "identifier"
+    t.datetime "created_at",                                               null: false
+    t.datetime "updated_at",                                               null: false
+    t.string   "app_title"
+    t.string   "contact_email"
+    t.string   "analytics_google"
+    t.boolean  "requires_civility_pledge_on_registration", default: false
+    t.string   "host"
+    t.string   "host_with_port"
+    t.boolean  "assessment_enabled",                       default: false
+    t.boolean  "enable_user_conversations",                default: false
+    t.integer  "moderate_points_mode",                     default: 0
+    t.integer  "moderate_comments_mode",                   default: 0
+    t.integer  "moderate_proposals_mode",                  default: 0
+    t.string   "homepage_pic_file_name"
+    t.string   "homepage_pic_content_type"
+    t.integer  "homepage_pic_file_size"
+    t.datetime "homepage_pic_updated_at"
+    t.string   "homepage_pic_remote_url"
+    t.string   "project_url"
+    t.string   "about_page_url"
+    t.text     "roles"
+  end
+
+  add_index "subdomains", ["identifier"], name: "by_identifier", length: {"identifier"=>10}, using: :btree
+
   create_table "users", force: true do |t|
-    t.integer  "account_id"
     t.string   "unique_token"
     t.string   "email"
     t.string   "encrypted_password",     limit: 128, default: ""
@@ -323,7 +322,7 @@ ActiveRecord::Schema.define(version: 20141117030021) do
     t.string   "icon_content_type"
     t.integer  "icon_file_size"
     t.datetime "icon_updated_at"
-    t.integer  "account_id"
+    t.integer  "subdomain_id"
   end
 
 end

@@ -27,7 +27,7 @@ class ProposalController < ApplicationController
     proposal.update({
           :published => true,
           :user_id => current_user.id,
-          :account_id => current_tenant.id, 
+          :subdomain_id => current_tenant.id, 
           :active => true
         })
 
@@ -66,7 +66,7 @@ class ProposalController < ApplicationController
   #   # TODO: explicitly grab parameters
   #   params[:proposal].update({
   #     :long_id => SecureRandom.hex(5),
-  #     :account_id => current_tenant.id, 
+  #     :subdomain_id => current_tenant.id, 
   #     :admin_id => SecureRandom.hex(6),  #NOTE: admin_id never used, should be purged from system
   #     :user_id => current_user ? current_user.id : nil,
   #     :description => description,

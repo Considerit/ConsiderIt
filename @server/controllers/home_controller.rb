@@ -28,9 +28,9 @@ class HomeController < ApplicationController
       #session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || (request.user_agent && !!request.user_agent.match('Prerender'))
     end
 
-    # Some customers don't have a homepage. In the iterim, let's just redirect 
+    # Some subdomains don't have a homepage. In the iterim, let's just redirect 
     # accesses to the homepage to the latest published proposal
-    # TODO: better way of knowing if a particular customer has a homepage or not.
+    # TODO: better way of knowing if a particular subdomain has a homepage or not.
     # if current_tenant.identifier == 'cityoftigard' && request.path == '/' && request.query_string == "" && !session[:search_bot]
     #   proposal = current_tenant.proposals.open_to_public.active.last
     #   if proposal
@@ -88,7 +88,7 @@ class HomeController < ApplicationController
 
   #### Set meta tag info ####
   # Hardcoded for now. 
-  # TODO: store customer meta data in the database
+  # TODO: store subdomain meta data in the database
   def get_meta_data
 
     page = request.path
@@ -96,7 +96,7 @@ class HomeController < ApplicationController
     proposal = nil
     keywords = title = nil
 
-    # customer defaults
+    # subdomain defaults
     case current_tenant.identifier
     when 'livingvotersguide'
       title = 'Washington Voters Guide for the 2014 Election'

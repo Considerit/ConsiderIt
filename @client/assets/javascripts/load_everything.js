@@ -15,6 +15,6 @@
 
 //= require ../../sticky_element
 //= require ../../franklin
-//= require ../../customer_specific
+//= require ../../subdomain_specific
 //= require ../../admin
 //= require ../../state_dash

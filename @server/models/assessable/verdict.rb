@@ -3,7 +3,7 @@ class Assessable::Verdict < ActiveRecord::Base
   has_many :assessments
   has_many :claims
 
-  acts_as_tenant :account
+  acts_as_tenant :subdomain
 
   has_attached_file :icon, 
     :styles => { 

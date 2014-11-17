@@ -277,7 +277,7 @@ Proposal = ReactiveComponent
     your_opinion = @data(@proposal.your_opinion)
     included_points = your_opinion.point_inclusions
     current_user = fetch('/current_user')
-    customer = @data('/customer')
+    subdomain = @data('/subdomain')
 
     description_region_style = {width: DESCRIPTION_WIDTH}
 
@@ -357,7 +357,7 @@ Proposal = ReactiveComponent
             CommunityPoints { key: 'cons' }
 
 
-      if @root.proposal_mode == 'results' && your_opinion.published && customer.identifier == 'livingvotersguide'
+      if @root.proposal_mode == 'results' && your_opinion.published && subdomain.identifier == 'livingvotersguide'
         if @proposal.category && @proposal.designator
           tweet = "Flex your civic muscle on #{@proposal.category.substring(0,1)}-#{@proposal.designator}! Learn about the issue and decide here: "
         else 
@@ -410,7 +410,7 @@ StickyProposalHeading = ReactiveComponent
   displayName: 'StickyProposalHeading'
   render : ->
     color = @data('color')
-    customer = @data('/customer')
+    subdomain = @data('/subdomain')
     proposals = @data('/proposals')
 
     # If navigation bar is enabled, then we'll use a really short proposal name in the heading.
@@ -993,7 +993,7 @@ DecisionBoard = ReactiveComponent
 
   render : ->
     current_user = fetch('/current_user')
-    customer = @data('/customer')
+    subdomain = @data('/subdomain')
     
     your_opinion = @data(@proposal.your_opinion)
     published = your_opinion.published
@@ -2279,7 +2279,7 @@ Auth = ReactiveComponent
 
   render: -> 
     current_user = fetch('/current_user')
-    customer = fetch('/customer')
+    subdomain = fetch('/subdomain')
     root = fetch('root')
 
     # When we switch to new auth_mode screens, wipe out all the old
@@ -2393,7 +2393,7 @@ Auth = ReactiveComponent
 
       #top: '-80px'
 
-    if !customer.requires_civility_pledge_on_registration
+    if !subdomain.requires_civility_pledge_on_registration
       pledges = []
     else
       pledges = ['I will participate with only one account', 
@@ -2536,7 +2536,7 @@ Auth = ReactiveComponent
                         else
                           $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
 
-              if customer.requires_civility_pledge_on_registration
+              if subdomain.requires_civility_pledge_on_registration
                 TR null,
                   TD className: 'label_cell', 
                     LABEL null, 'Community pledge:'
@@ -2684,7 +2684,7 @@ ProposalSummary = ReactiveComponent
   displayName: 'ProposalSummary'
 
   render : ->
-    customer = @data('/customer')
+    subdomain = @data('/subdomain')
     color = @data('color')
 
     proposal = @data()
@@ -2701,13 +2701,13 @@ ProposalSummary = ReactiveComponent
       onMouseEnter: (=> @local.hovering_on = true; save(@local))
       onMouseLeave: (=> @local.hovering_on = false; save(@local))
     ,
-      if customer.identifier == 'livingvotersguide'
+      if subdomain.identifier == 'livingvotersguide'
         TD className: 'summary_measure_designator',
           if proposal.category && proposal.designator
             A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
               "#{proposal.category[0]}-#{proposal.designator}"
 
-      TD className: 'summary_name', style: {width: (if customer.identifier == 'livingvotersguide' then 270 else 320)},
+      TD className: 'summary_name', style: {width: (if subdomain.identifier == 'livingvotersguide' then 270 else 320)},
         A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
           proposal.name
       TD
@@ -2776,7 +2776,7 @@ Homepage = ReactiveComponent
         stick_on_zoomed_screens: false
 
   render : ->
-    customer = @data('/customer')
+    subdomain = @data('/subdomain')
     color = @data('color')
     proposals = @data('/proposals')
 
@@ -2785,7 +2785,7 @@ Homepage = ReactiveComponent
     contributors_without_avatar_count = @page.contributors.filter((u)-> !fetch(u).avatar_file_name).length
 
     # Columns of the sticky header for the proposal list.
-    if customer.identifier == 'livingvotersguide'
+    if subdomain.identifier == 'livingvotersguide'
       columns = [ {heading: 'Learn', details: 'about your ballot'}, {heading: 'Decide', details: 'how you\'ll vote'}, {heading: 'Share', details: 'your opinion'}, {heading: 'Join', details: 'the contributors'}]
     else
       columns = [ {heading: 'Learn', details: 'about the issues'}, {heading: 'Decide', details: 'what you think'}, {heading: 'Share', details: 'your opinion'}, {heading: 'Join', details: 'the contributors'}]
@@ -2838,7 +2838,7 @@ Homepage = ReactiveComponent
         # Draw the proposal summaries
         for cluster, index in proposals.clusters or []
           DIV null,
-            if index == 1 and customer.identifier == 'livingvotersguide'
+            if index == 1 and subdomain.identifier == 'livingvotersguide'
               ZipcodeBox()
 
             if cluster.proposals?.length > 0 
@@ -2865,7 +2865,7 @@ Homepage = ReactiveComponent
             #       "Council meeting 6/7" will be open for discussion at the upcoming
             #       meeting. Keep an eye on this possible generality (and eliminate this
             #       edge case if we do generalize it)
-            if cluster.name == 'Advisory votes' and customer.identifier == 'livingvotersguide'
+            if cluster.name == 'Advisory votes' and subdomain.identifier == 'livingvotersguide'
               DIV
                 style:
                   color: 'rgb(108,107,98)'
@@ -2890,7 +2890,7 @@ ProfileLink = ReactiveComponent
 
   render : -> 
     current_user = fetch('/current_user')
-    customer = @data('/customer')
+    subdomain = @data('/subdomain')
     color = @data('color')
 
     DIV style: {display: 'inline-block'}, 
@@ -2937,7 +2937,7 @@ ProfileLink = ReactiveComponent
                 onClick: clickInternalLink                
                 'Moderate'
 
-            if customer.assessment_enabled && current_user.is_evaluator
+            if subdomain.assessment_enabled && current_user.is_evaluator
               A 
                 className: 'menu_link'
                 href: '/dashboard/assessment'
@@ -2987,13 +2987,13 @@ Header = ReactiveComponent
 
   render : ->
     current_user = fetch('/current_user')
-    customer = @data('/customer')
+    subdomain = @data('/subdomain')
     color = @data('color')
 
     DIV className: 'l_header', style: {backgroundColor: color.header_bg, minWidth: PAGE_WIDTH},
 
-      if window["#{customer.identifier}Header"]
-        window["#{customer.identifier}Header"]()
+      if window["#{subdomain.identifier}Header"]
+        window["#{subdomain.identifier}Header"]()
       else
         DIV className: 'profile_navigation',
           ProfileLink()
@@ -3055,12 +3055,12 @@ Tweet = ReactiveComponent
 Footer = ReactiveComponent
   displayName: 'Footer'
   render : -> 
-    customer = @data('/customer')
+    subdomain = @data('/subdomain')
     color = @data('color')
 
     DIV className: 'l_footer',  
-      if window["#{customer.identifier}Footer"]
-        window["#{customer.identifier}Footer"]()
+      if window["#{subdomain.identifier}Footer"]
+        window["#{subdomain.identifier}Footer"]()
 
       else
         DIV style: {marginTop: 30},
@@ -3227,17 +3227,17 @@ About = ReactiveComponent
 
 
   render : -> 
-    customer = @data('/customer') 
+    subdomain = @data('/subdomain') 
 
-    if @local.embed_html_directly && !@local.html && customer.about_page_url
+    if @local.embed_html_directly && !@local.html && subdomain.about_page_url
       # fetch the about page HTML directly
-      $.get customer.about_page_url, (response) => @local.html = response; save @local
+      $.get subdomain.about_page_url, (response) => @local.html = response; save @local
 
     DIV style: {marginTop: 20},
-      if !customer.about_page_url
+      if !subdomain.about_page_url
         DIV null, 'No about page defined'
       else if !@local.embed_html_directly
-        IFRAME src: customer.about_page_url, width: PAGE_WIDTH, style: {display: 'block', margin: 'auto'}
+        IFRAME src: subdomain.about_page_url, width: PAGE_WIDTH, style: {display: 'block', margin: 'auto'}
       else
         DIV className: 'embedded_about_html'
 
@@ -3344,14 +3344,14 @@ Page = ReactiveComponent
 
     color = @data('color')
     avatars = fetch('/avatars')
-    customer = fetch('/customer')
+    subdomain = fetch('/subdomain')
 
     if @root.auth_mode
       return Auth()
 
-    if customer.identifier == 'homepage' && @root.page_name == 'homepage'
+    if subdomain.identifier == 'homepage' && @root.page_name == 'homepage'
       SPAN null, ''
-    else if !customer.identifier
+    else if !subdomain.identifier
       L
     else
       DIV style: {minWidth: PAGE_WIDTH, backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
@@ -3388,10 +3388,10 @@ Page = ReactiveComponent
                 ModerationDash key: "/dashboard/moderate"
             else if @root.page_name == 'dashboard/application'
               AccessControlled permitted: ['admin'],
-                AppSettingsDash key: "/customer"
+                AppSettingsDash key: "/subdomain"
             else if @root.page_name == 'dashboard/roles'
               AccessControlled permitted: ['admin'],
-                RolesDash key: "/customer"
+                RolesDash key: "/subdomain"
             else 
               Proposal key: @page.proposal.key
 
@@ -3420,15 +3420,15 @@ Computer = ReactiveComponent
     return SPAN null, ''
 
 
-# Non-rendering component that makes customer-specific colors available for use
+# Non-rendering component that makes subdomain-specific colors available for use
 Colors = ReactiveComponent
   displayName: 'Color'
   render : ->
-    customer = @data('/customer')
+    subdomain = @data('/subdomain')
     color = @data('color')
 
     # initialize colors if they haven't already been set
-    if !color.background && customer.identifier
+    if !color.background && subdomain.identifier
       # default colors
       # I didn't want to put these in the defaults section below because 
       # it would be annoying to refer back and forth to them here.
@@ -3439,8 +3439,8 @@ Colors = ReactiveComponent
         link_hover_color: 'black'
         profile_anchor_color: 'white'
 
-      # Define colors for different customers. 
-      switch customer.identifier
+      # Define colors for different subdomains. 
+      switch subdomain.identifier
         when 'livingvotersguide'
           color.header_bg = 'rgb(11, 60, 103)'
           color.proposal_header = '#a5ce3a'

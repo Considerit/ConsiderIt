@@ -78,7 +78,7 @@ class Point < ActiveRecord::Base
     stubify_field(result, 'opinion')
     stubify_field(result, 'user')
 
-    if Thread.current[:tenant].assessment_enabled
+    if Thread.current[:subdomain].assessment_enabled
 
       assessment = proposal.assessments.completed.where(:assessable_type => 'Point', :assessable_id => id).first
       result['assessment'] = assessment ? "assessment/#{assessment.id}" : nil
@@ -95,7 +95,7 @@ class Point < ActiveRecord::Base
 
     ActiveSupport::Notifications.instrument("point:published", 
       :point => self,
-      :current_tenant => Thread.current[:tenant],
+      :current_subdomain => Thread.current[:subdomain],
       :mail_options => Thread.current[:mail_options]
     )
   end

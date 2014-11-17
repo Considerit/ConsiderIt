@@ -14,7 +14,7 @@ class LogController < ApplicationController
       where: params[:where],
       when: Time.now,
       details: params[:details] ? params[:details].to_json : nil, # this is a json object. Putting this right into the database seems like it could be a security issue.
-      subdomain_id: current_tenant.id
+      subdomain_id: current_subdomain.id
     }
 
     Log.create! entry

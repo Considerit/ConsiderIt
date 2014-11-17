@@ -33,7 +33,7 @@ class Legacy::AdminController < ApplicationController
       :user_id => params[:account]["user_id"],
     }
 
-    if current_tenant.identifier == 'livingvotersguide' && params[:account].has_key?(:csv_local) && params[:account][:csv_local]
+    if current_subdomain.identifier == 'livingvotersguide' && params[:account].has_key?(:csv_local) && params[:account][:csv_local]
       result.update Proposal.import_jurisdictions params[:account][:csv], params[:account][:csv_local]
     end
 
@@ -98,7 +98,7 @@ class Legacy::AdminController < ApplicationController
 
     visitation = {}
 
-    visits = current_tenant.page_views
+    visits = current_subdomain.page_views
 
     sessions_for_user = Hash.new {|h,k| h[k] = Set.new }
     sessions_for_ip = Hash.new {|h,k| h[k] = Set.new }

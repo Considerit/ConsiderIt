@@ -37,14 +37,14 @@ class Comment < ActiveRecord::Base
   # Because we generally render fact-checks in the comment stream, we also return
   # fact-checks for this point  
   def self.comments_for_point(point)
-    current_tenant = Thread.current[:tenant]
+    current_subdomain = Thread.current[:subdomain]
 
     comments = {
       :comments => point.comments.where('moderation_status = 1 or moderation_status IS NULL'),
       :key => "/comments/#{point.id}"
     }
 
-    if current_tenant.assessment_enabled
+    if current_subdomain.assessment_enabled
       comments.update({
         :assessment => point.assessment && point.assessment.complete ? point.assessment : nil,
         :verdicts => Assessable::Verdict.all,

@@ -1,2 +1,2 @@
-- @user.where("registration_complete=1 AND b64_thumbnail IS NOT NULL AND INSTR(active_in, '\"#{current_tenant.id}\"')").select([:id,:b64_thumbnail]).each do |user|
+- @user.where("registration_complete=1 AND b64_thumbnail IS NOT NULL AND INSTR(active_in, '\"#{current_subdomain.id}\"')").select([:id,:b64_thumbnail]).each do |user|
   \#avatar-#{user.id} { background-image: url("#{user.b64_thumbnail}");}  

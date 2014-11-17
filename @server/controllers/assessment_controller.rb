@@ -65,7 +65,7 @@ class AssessmentController < ApplicationController
 
       ActiveSupport::Notifications.instrument("assessment_completed", 
         :assessment => assessment,
-        :current_tenant => current_tenant,
+        :current_subdomain => current_subdomain,
         :mail_options => mail_options
       )
     else 
@@ -88,7 +88,7 @@ class AssessmentController < ApplicationController
     request = {
       'suggestion' => params['suggestion'],
       'user_id' => current_user && current_user.id || nil,
-      'subdomain_id' => current_tenant.id,
+      'subdomain_id' => current_subdomain.id,
       'assessable_type' => 'Point',
       'assessable_id' => point.id
     }
@@ -98,7 +98,7 @@ class AssessmentController < ApplicationController
     assessment = Assessable::Assessment.where(:assessable_type => request['assessable_type'], :assessable_id => request['assessable_id']).first
     if !assessment
       create_attrs = {
-        :subdomain_id => current_tenant.id, 
+        :subdomain_id => current_subdomain.id, 
         :assessable_type => request['assessable_type'],
         :assessable_id => request['assessable_id'] }
         
@@ -106,7 +106,7 @@ class AssessmentController < ApplicationController
 
       ActiveSupport::Notifications.instrument("new_assessment_request", 
         :assessment => assessment,
-        :current_tenant => current_tenant,
+        :current_subdomain => current_subdomain,
         :mail_options => mail_options
       )
     end
@@ -135,12 +135,12 @@ end
 ActiveSupport::Notifications.subscribe("new_assessment_request") do |*args|
   data = args.last
   assessment = data[:assessment]
-  current_tenant = data[:current_tenant]
+  current_subdomain = data[:current_subdomain]
   mail_options = data[:mail_options]
   assessable = assessment.root_object
 
   # send to all factcheckers
-  roles = current_tenant.user_roles()
+  roles = current_subdomain.user_roles()
   evaluators = roles.has_key?('evaluator') ? roles['evaluator'] : []
 
   evaluators.each do |key|
@@ -149,7 +149,7 @@ ActiveSupport::Notifications.subscribe("new_assessment_request") do |*args|
     rescue
     end
     if user
-      AlertMailer.content_to_assess(assessment, user, current_tenant).deliver!
+      AlertMailer.content_to_assess(assessment, user, current_subdomain).deliver!
     end
   end
 
@@ -158,7 +158,7 @@ end
 ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
   data = args.last
   assessment = data[:assessment]
-  current_tenant = data[:current_tenant]
+  current_subdomain = data[:current_subdomain]
   mail_options = data[:mail_options]
 
   assessable = assessment.root_object

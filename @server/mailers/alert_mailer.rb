@@ -3,45 +3,45 @@ require 'mail'
 class AlertMailer < Mailer
 
   #### MODERATION ####
-  def content_to_moderate(user, tenant)
+  def content_to_moderate(user, subdomain)
     @user = user
-    @host = tenant.host_with_port
+    @host = subdomain.host_with_port
     @url = dashboard_moderate_url(:host => @host)
-    @tenant = tenant
+    @subdomain = subdomain
 
     return unless valid_email(user)
 
     subject = "Pending content to moderate"
 
     to = format_email user.email, user.name
-    from = format_email(from_email(tenant), tenant.app_title)
+    from = format_email(from_email(subdomain), subdomain.app_title)
 
-    mail(:from => from, :to => to, :subject => "[#{tenant.app_title}] #{subject}")
+    mail(:from => from, :to => to, :subject => "[#{subdomain.app_title}] #{subject}")
 
   end
 
-  def content_to_assess(assessment, user, tenant)
+  def content_to_assess(assessment, user, subdomain)
     @user = user
-    @host = tenant.host_with_port
+    @host = subdomain.host_with_port
     @url = dashboard_assessment_url(:host => @host)
     @assessment = assessment
-    @tenant = tenant
+    @subdomain = subdomain
 
     return unless valid_email(user)
 
     subject = "A new fact check request"
 
     to = format_email user.email, user.name    
-    from = format_email(from_email(tenant), tenant.app_title)
+    from = format_email(from_email(subdomain), subdomain.app_title)
 
-    mail(:from => from, :to => to, :subject => "[#{tenant.app_title}] #{subject}")
+    mail(:from => from, :to => to, :subject => "[#{subdomain.app_title}] #{subject}")
 
   end
 
   private
 
-    def from_email(tenant)
-      tenant.contact_email && tenant.contact_email.length > 0 ? tenant.contact_email : APP_CONFIG[:email]
+    def from_email(subdomain)
+      subdomain.contact_email && subdomain.contact_email.length > 0 ? subdomain.contact_email : APP_CONFIG[:email]
     end
 
 

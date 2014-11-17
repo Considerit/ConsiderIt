@@ -92,7 +92,7 @@ class PointController < ApplicationController
 
       ActiveSupport::Notifications.instrument("point:updated", 
         :model => point,
-        :current_tenant => current_tenant,
+        :current_subdomain => current_subdomain,
         :mail_options => mail_options
       )
     end

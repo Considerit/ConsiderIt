@@ -1,7 +1,7 @@
 class Ability
   include CanCan::Ability
 
-  def initialize(user, current_tenant=nil, session_id=nil, session = nil, params=nil)
+  def initialize(user, current_subdomain=nil, session_id=nil, session = nil, params=nil)
     # Define abilities for the passed in user here. For example:
     #
     #   user ||= User.new # guest user (not logged in)
@@ -71,7 +71,7 @@ class Ability
       end
 
       can :create, Proposal do |proposal|
-        current_tenant.enable_user_conversations || user.has_role?(:manager)
+        current_subdomain.enable_user_conversations || user.has_role?(:manager)
       end
 
       can [:read, :update], Proposal do |proposal|

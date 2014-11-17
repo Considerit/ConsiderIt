@@ -24,7 +24,7 @@ class ClaimController < ApplicationController
     attrs = params.select{|k,v| fields.include? k}
     attrs.update({
           :assessment_id => key_id(params['assessment']),
-          :subdomain_id => current_tenant.id,
+          :subdomain_id => current_subdomain.id,
           :creator => current_user.id
         })
 

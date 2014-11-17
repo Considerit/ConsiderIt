@@ -15,7 +15,7 @@ namespace :test do
     host = args[:host] || "#{subdomain.identifier}.testing.dev"
     app_title = subdomain.app_title
 
-    mail_options = {:host => host, :from => from, :app_title => app_title, :current_tenant => subdomain}
+    mail_options = {:host => host, :from => from, :app_title => app_title, :current_subdomain => subdomain}
 
     ###### Discussion level ######
     proposal = get_proposal_with_no_opinions(subdomain)

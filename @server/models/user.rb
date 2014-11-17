@@ -85,12 +85,12 @@ class User < ActiveRecord::Base
 
   # Gets all of the users active for this subdomain
   def self.all_for_subdomain
-    current_tenant = Thread.current[:tenant]
+    current_subdomain = Thread.current[:subdomain]
     fields = "CONCAT('\/user\/',id) as 'key',users.name,users.avatar_file_name"
     if current_user.is_admin?
       fields += ",email"
     end
-    users = ActiveRecord::Base.connection.select( "SELECT #{fields} FROM users WHERE registration_complete=1 AND active_in like '%\"#{current_tenant.id}\"%'")
+    users = ActiveRecord::Base.connection.select( "SELECT #{fields} FROM users WHERE registration_complete=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
     users = users.as_json
     jsonify_objects(users, 'user')
 
@@ -114,7 +114,7 @@ class User < ActiveRecord::Base
     if role == 'superadmin'
       return self.super_admin
     else
-      roles = Thread.current[:tenant].roles ? JSON.parse(Thread.current[:tenant].roles) : {}
+      roles = Thread.current[:subdomain].roles ? JSON.parse(Thread.current[:subdomain].roles) : {}
       return roles.has_key?(role) && roles[role] && roles[role].include?("/user/#{id}")
     end
   end
@@ -132,19 +132,19 @@ class User < ActiveRecord::Base
   end
 
   def add_to_active_in
-    current_tenant = Thread.current[:tenant]
-    active_tenants = JSON.parse(self.active_in) || []
+    current_subdomain = Thread.current[:subdomain]
+    active_subdomains = JSON.parse(self.active_in) || []
 
-    if !active_tenants.include?("#{current_tenant.id}")
-      active_tenants.push "#{current_tenant.id}"
-      self.active_in = JSON.dump active_tenants
+    if !active_subdomains.include?("#{current_subdomain.id}")
+      active_subdomains.push "#{current_subdomain.id}"
+      self.active_in = JSON.dump active_subdomains
       self.save
 
       # if we're logging in to a subdomain that we didn't originally register, we'll have to 
       # regenerate the avatars file. Note that there is still a bug where the avatar won't be there 
       # on initial login to the new subdomain.
-      if self.avatar_file_name && active_tenants.length > 1
-        subdomain_id = Thread.current[:tenant].id
+      if self.avatar_file_name && active_subdomains.length > 1
+        subdomain_id = Thread.current[:subdomain].id
         current = Rails.cache.read("avatar-digest-#{subdomain_id}") || 0
         Rails.cache.write("avatar-digest-#{subdomain_id}", current + 1)   
       end
@@ -154,7 +154,7 @@ class User < ActiveRecord::Base
 
   # get all the items this user gets notifications for
   def notifications
-    current_tenant = Thread.current[:tenant]
+    current_subdomain = Thread.current[:subdomain]
 
     followable_objects = {
       'Proposal' => {},
@@ -170,7 +170,7 @@ class User < ActiveRecord::Base
         following = self.opinions.published.map {|o| "/proposal/#{o.proposal_id}"}
       end
 
-      following += self.follows.where(:follow => true, :followable_type => followable_type, :subdomain_id => current_tenant.id).map {|f| "/#{f.followable_type.downcase}/#{f.followable_id}" }
+      following += self.follows.where(:follow => true, :followable_type => followable_type, :subdomain_id => current_subdomain.id).map {|f| "/#{f.followable_type.downcase}/#{f.followable_id}" }
 
       followable_objects[followable_type] = following.uniq.compact #remove dupes and nils
 
@@ -454,7 +454,7 @@ class User < ActiveRecord::Base
     self.reset_password_sent_at = Time.now.utc
     self.save(:validate => false)
     
-    UserMailer.reset_password_instructions(self, raw_token, Thread.current[:tenant]).deliver!
+    UserMailer.reset_password_instructions(self, raw_token, Thread.current[:subdomain]).deliver!
 
   end
 

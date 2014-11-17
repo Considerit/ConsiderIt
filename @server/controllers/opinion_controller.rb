@@ -30,7 +30,6 @@ class OpinionController < ApplicationController
 
     # Grab the proposal
     proposal = Proposal.find(updates['proposal_id'])
-    updates['long_id'] = proposal.long_id  # Remove this soon
     
     # Update the normal fields
     opinion.update_attributes updates

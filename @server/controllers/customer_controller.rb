@@ -61,10 +61,6 @@ class CustomerController < ApplicationController
 
     current_tenant.update_attributes! attrs
 
-    # if current_tenant.enable_hibernation && params[:account].has_key?('enable_hibernation')
-    #   current_tenant.proposals.open_to_public.active.update_all(active: false)      
-    # end
-
     dirty_key '/customer'
     render :json => []
 

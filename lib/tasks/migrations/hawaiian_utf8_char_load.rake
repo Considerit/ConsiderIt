@@ -5,7 +5,7 @@ require 'pp'
 namespace :encodings do
   desc ""  
   task :hawaii => :environment do  
-    Subdomain.where(:identifier => 'oha').each do |a|
+    Subdomain.where(:name => 'oha').each do |a|
       a.pro_label = "Kakoʻo"
       a.con_label = "Kūʻē"
       a.slider_prompt = "He aha kao mana‘o?"

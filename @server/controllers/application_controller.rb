@@ -19,19 +19,18 @@ class ApplicationController < ActionController::Base
     if Rails.cache.read("avatar-digest-#{current_subdomain.id}").nil?
       Rails.cache.write("avatar-digest-#{current_subdomain.id}", 0)
     end
-    
 
     if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
       user = User.find_by_lower_email(params[:u])
 
       # for testing private discussions
-      # pp ApplicationController.arbitrary_token("#{user.email}#{user.unique_token}#{current_subdomain.identifier}") if !user.nil?
-      # pp ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.identifier}") if user.nil?
+      # pp ApplicationController.arbitrary_token("#{user.email}#{user.unique_token}#{current_subdomain.name}") if !user.nil?
+      # pp ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.name}") if user.nil?
 
 
       # is it a security problem to allow users to continue to sign in through the tokenized email after they've created an account?
-      permission =   (ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.identifier}") == params[:t]) \
-                  ||(!user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{user.unique_token}#{current_subdomain.identifier}") == params[:t]) # this user already exists, want to have a harder auth method; still not secure if user forwards their email
+      permission =   (ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.name}") == params[:t]) \
+                  ||(!user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{user.unique_token}#{current_subdomain.name}") == params[:t]) # this user already exists, want to have a harder auth method; still not secure if user forwards their email
 
       if permission
         session[:limited_user] = user ? user.id : nil
@@ -77,7 +76,7 @@ class ApplicationController < ActionController::Base
   def mail_options
     {:host => request.host,
      :host_with_port => request.host_with_port,
-     :from => current_subdomain && current_subdomain.contact_email && current_subdomain.contact_email.length > 0 ? current_subdomain.contact_email : APP_CONFIG[:email],
+     :from => current_subdomain && current_subdomain.notifications_sender_email && current_subdomain.notifications_sender_email.length > 0 ? current_subdomain.notifications_sender_email : APP_CONFIG[:email],
      :app_title => current_subdomain ? current_subdomain.app_title : '',
      :current_subdomain => current_subdomain
     }
@@ -94,11 +93,6 @@ class ApplicationController < ActionController::Base
 
 protected
   def csrf_skippable?
-    Rails.logger.error "csrf_skippable? #{request.format.json?} #{request.content_type != "text/plain"} #{!!request.xml_http_request?}"
-
-    if request.format.json? && !request.xml_http_request?
-      Rails.logger.error "#{request.inspect}"
-    end
     request.format.json? && request.content_type != "text/plain" && (!!request.xml_http_request?)
   end
 
@@ -123,15 +117,15 @@ protected
     # when to display a considerit homepage
     can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || ENABLE_HOMEPAGE_IN_DEV
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
-      set_current_tenant Subdomain.find_by_identifier('homepage')
+      set_current_tenant Subdomain.find_by_name('homepage')
       return current_subdomain
     end
 
     if rq.subdomain == 'googleoauth'
-      candidate_subdomain = Subdomain.find_by_identifier(params['state'])
+      candidate_subdomain = Subdomain.find_by_name(params['state'])
     else
       default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
-      candidate_subdomain = rq.subdomain.nil? || rq.subdomain.length == 0 ? Subdomain.find(default_subdomain) : Subdomain.find_by_identifier(rq.subdomain)
+      candidate_subdomain = rq.subdomain.nil? || rq.subdomain.length == 0 ? Subdomain.find(default_subdomain) : Subdomain.find_by_name(rq.subdomain)
     end
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain
@@ -210,7 +204,7 @@ protected
 
       if key.match "/proposal/"
         id = key[10..key.length]
-        proposal = Proposal.find_by_id(id) || Proposal.find_by_long_id(id)
+        proposal = Proposal.find_by_id(id) || Proposal.find_by_slug(id)
         response.append proposal.as_json  #proposal_data
 
       elsif key.match "/comments/"
@@ -218,7 +212,7 @@ protected
         response.append Comment.comments_for_point(point)
       
       elsif key == '/subdomain'
-        pp current_subdomain.contact_email
+        pp current_subdomain.notifications_sender_email
         response.append current_subdomain.as_json
 
       elsif key == '/current_user'
@@ -242,8 +236,8 @@ protected
 
       elsif key.match "/page/"
         # default to proposal 
-        long_id = key[6..key.length]
-        proposal = Proposal.find_by_long_id long_id
+        slug = key[6..key.length]
+        proposal = Proposal.find_by_slug slug
 
         pointz = proposal.points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
         pointz = pointz.public_fields.map {|p| p.as_json}
@@ -289,6 +283,7 @@ protected
     session[:return_to] = path
   end
 
+  #####
   # aliasing current_tenant from acts_as_tenant gem so we can be consistent with subdomain
   helper_method :current_subdomain
   def current_subdomain

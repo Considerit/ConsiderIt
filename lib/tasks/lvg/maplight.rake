@@ -105,13 +105,13 @@ namespace :lvg do
 
   def loadMeasureData(data)
 
-    long_id = "#{data['identifier']}_#{data['topic'].gsub(' ', '_')}"
-    p = Proposal.where(:long_id => long_id).first
+    slug = "#{data['identifier']}_#{data['topic'].gsub(' ', '_')}"
+    p = Proposal.where(:slug => slug).first
     if p.nil?
       p = Proposal.new({
               :user_id => 1,
               :subdomain_id => 1,
-              :long_id => long_id,
+              :slug => slug,
               :name => data['maplight_title'],
               :description => data['summary']['main_summary'],
               :publicity => 1
@@ -179,7 +179,7 @@ namespace :lvg do
 
     p.description_fields = JSON.dump description_fields
 
-    pp long_id
+    pp slug
     p.save
 
   end

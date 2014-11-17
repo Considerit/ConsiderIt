@@ -56,7 +56,7 @@ class User < ActiveRecord::Base
       id: id, #leave the id in for now for backwards compatability with Dash
       key: '/current_user',
       user: "/user/#{id}",
-      logged_in: registration_complete,
+      logged_in: registered,
       email: email,
       password: nil,
       csrf: form_authenticity_token,
@@ -90,7 +90,7 @@ class User < ActiveRecord::Base
     if current_user.is_admin?
       fields += ",email"
     end
-    users = ActiveRecord::Base.connection.select( "SELECT #{fields} FROM users WHERE registration_complete=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
+    users = ActiveRecord::Base.connection.select( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
     users = users.as_json
     jsonify_objects(users, 'user')
 
@@ -128,7 +128,7 @@ class User < ActiveRecord::Base
 
   def logged_in?
     # Logged-in now means that the current user account is registered
-    self.registration_complete
+    self.registered
   end
 
   def add_to_active_in
@@ -335,9 +335,9 @@ class User < ActiveRecord::Base
   # end
 
   # def self.update_user_metrics
-  #   Account.all.each do |accnt|
+  #   Account.all.each do |subdomain|
 
-  #     accnt.users.each do |user|
+  #     subdomain.users.each do |user|
   #       begin
   #         user.update_metrics()
   #       rescue

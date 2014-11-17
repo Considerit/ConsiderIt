@@ -11,8 +11,8 @@ namespace :test do
     subdomain = Subdomain.find(args[:subdomain_id])
     user = User.find(args[:user_id])
 
-    from = args[:from] || subdomain.contact_email
-    host = args[:host] || "#{subdomain.identifier}.testing.dev"
+    from = args[:from] || subdomain.notifications_sender_email
+    host = args[:host] || "#{subdomain.name}.testing.dev"
     app_title = subdomain.app_title
 
     mail_options = {:host => host, :from => from, :app_title => app_title, :current_subdomain => subdomain}

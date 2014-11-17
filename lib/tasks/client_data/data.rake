@@ -108,11 +108,11 @@ task :export_gsacrd_data => :environment do
   #subdomains = ['livingvotersguide']
   subdomains = ['gsacrd', 'gsacrd-staff', 'gsacrd-students']
 
-  subdomains.each do |identifier|
+  subdomains.each do |name|
 
-    subdomain = Subdomain.find_by_identifier identifier
+    subdomain = Subdomain.find_by_name name
 
-    CSV.open("lib/tasks/client_data/export/#{identifier}-users.csv", "w") do |csv|
+    CSV.open("lib/tasks/client_data/export/#{name}-users.csv", "w") do |csv|
       csv << ["username", "email", "date joined", "#points", '#comments', '#opinions']
 
       subdomain.users.each do |user|
@@ -120,17 +120,17 @@ task :export_gsacrd_data => :environment do
       end
     end
 
-    CSV.open("lib/tasks/client_data/export/#{identifier}-points.csv", "w") do |csv|
+    CSV.open("lib/tasks/client_data/export/#{name}-points.csv", "w") do |csv|
       csv << ['proposal', 'type', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
 
       subdomain.points.published.order(:proposal_id).each do |pnt|
-        opinion = pnt.user.opinions.find_by_long_id(pnt.proposal.long_id)
-        csv << [pnt.proposal.long_id, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
+        opinion = pnt.user.opinions.find_by_slug(pnt.proposal.slug)
+        csv << [pnt.proposal.slug, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
 
         pnt.comments.each do |comment|
-          opinion = comment.user.opinions.find_by_long_id(pnt.proposal.long_id)
+          opinion = comment.user.opinions.find_by_slug(pnt.proposal.slug)
 
-          csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? stance_name(opinion.stance_segment) : '-', '', '']
+          csv << [pnt.proposal.slug, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? stance_name(opinion.stance_segment) : '-', '', '']
         end
       end
     end
@@ -140,17 +140,17 @@ end
 
 
 task :export_proposal_data => :environment do
-  long_id = '21457d22da'
+  slug = '21457d22da'
   proposal_alias = 'signalize'
 
-  proposal = Proposal.find_by_long_id long_id
+  proposal = Proposal.find_by_slug slug
 
   CSV.open("lib/tasks/client_data/export/#{proposal_alias}-users.csv", "w") do |csv|
     csv << ["username", "email", "date joined", "opinion", "#points"]
 
     proposal.opinions.published.each do |opinion|
       user = opinion.user
-      csv << [user.name, user.email, user.created_at, stance_name(opinion.stance_segment), user.points.where(:long_id => long_id).count]
+      csv << [user.name, user.email, user.created_at, stance_name(opinion.stance_segment), user.points.where(:slug => slug).count]
     end
   end
 
@@ -158,13 +158,13 @@ task :export_proposal_data => :environment do
     csv << ['proposal', 'type', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
 
     proposal.points.published.each do |pnt|
-      opinion = pnt.user.opinions.find_by_long_id(pnt.proposal.long_id)
-      csv << [pnt.proposal.long_id, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
+      opinion = pnt.user.opinions.find_by_slug(pnt.proposal.slug)
+      csv << [pnt.proposal.slug, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
 
       pnt.comments.each do |comment|
-        opinion = comment.user.opinions.find_by_long_id(pnt.proposal.long_id)
+        opinion = comment.user.opinions.find_by_slug(pnt.proposal.slug)
 
-        csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? stance_name(opinion.stance_segment) : '-', '', '']
+        csv << [pnt.proposal.slug, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? stance_name(opinion.stance_segment) : '-', '', '']
       end
     end
   end
@@ -173,17 +173,17 @@ end
 
 
 task :export_proposal_data => :environment do
-  long_id = '21457d22da'
+  slug = '21457d22da'
   proposal_alias = 'signalize'
 
-  proposal = Proposal.find_by_long_id long_id
+  proposal = Proposal.find_by_slug slug
 
   CSV.open("lib/tasks/client_data/export/#{proposal_alias}-users.csv", "w") do |csv|
     csv << ["username", "email", "date joined", "opinion", "#points"]
 
     proposal.opinions.published.each do |opinion|
       user = opinion.user
-      csv << [user.name, user.email, user.created_at, stance_name(opinion.stance_segment), user.points.where(:long_id => long_id).count]
+      csv << [user.name, user.email, user.created_at, stance_name(opinion.stance_segment), user.points.where(:slug => slug).count]
     end
   end
 
@@ -191,13 +191,13 @@ task :export_proposal_data => :environment do
     csv << ['proposal', 'type', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
 
     proposal.points.published.each do |pnt|
-      opinion = pnt.user.opinions.find_by_long_id(pnt.proposal.long_id)
-      csv << [pnt.proposal.long_id, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
+      opinion = pnt.user.opinions.find_by_slug(pnt.proposal.slug)
+      csv << [pnt.proposal.slug, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email, pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
 
       pnt.comments.each do |comment|
-        opinion = comment.user.opinions.find_by_long_id(pnt.proposal.long_id)
+        opinion = comment.user.opinions.find_by_slug(pnt.proposal.slug)
 
-        csv << [pnt.proposal.long_id, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? stance_name(opinion.stance_segment) : '-', '', '']
+        csv << [pnt.proposal.slug, 'COMMENT', comment.user.email, "", comment.body, '', opinion ? stance_name(opinion.stance_segment) : '-', '', '']
       end
     end
   end

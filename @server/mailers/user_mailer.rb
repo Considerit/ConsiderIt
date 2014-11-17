@@ -28,7 +28,7 @@ class UserMailer < Mailer
 
   def reset_password_instructions(user, token, current_subdomain)
     app_title = current_subdomain ? current_subdomain.app_title : ''
-    from = current_subdomain && current_subdomain.contact_email && current_subdomain.contact_email.length > 0 ? current_subdomain.contact_email : APP_CONFIG[:email]
+    from = current_subdomain && current_subdomain.notifications_sender_email && current_subdomain.notifications_sender_email.length > 0 ? current_subdomain.notifications_sender_email : APP_CONFIG[:email]
     @user = user
     @token = token 
     subject = "password reset instructions"

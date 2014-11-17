@@ -64,12 +64,12 @@
             Change Subdomain
           %ul#subdomains
             - Subdomain.all.each do |subdomain|
-              - next if subdomain.identifier == 'homepage'
+              - next if subdomain.name == 'homepage'
               %li
                 %a{:href => change_subdomain_path(subdomain)}
-                  = subdomain.identifier
+                  = subdomain.name
 
-      #content.content{ subdomain: current_subdomain.identifier }
+      #content.content{ subdomain: current_subdomain.name }
 
 
 
@@ -97,8 +97,8 @@
             ga('considerit.send', 'pageview');
 
 
-        - if current_subdomain.analytics_google && current_subdomain.analytics_google != ''
+        - if current_subdomain.google_analytics_code && current_subdomain.google_analytics_code != ''
 
           :javascript
-            ga('create', '#{current_subdomain.analytics_google}', 'auto', {'name': 'customer'});
+            ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
             ga('customer.send', 'pageview');

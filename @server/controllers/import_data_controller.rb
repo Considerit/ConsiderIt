@@ -469,7 +469,6 @@ class ImportDataController < ApplicationController
           :published => true, 
           :cluster => cluster,
           :description_fields => description_fields.length > 0 ? JSON.dump(description_fields) : nil,
-          :url1 => row.fetch('url', nil),
           :seo_title => row.fetch('seo_title', nil),
           :seo_description => row.fetch('seo_description', nil),
           :seo_keywords => row.fetch('seo_keywords', nil)

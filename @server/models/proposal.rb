@@ -17,10 +17,8 @@ class Proposal < ActiveRecord::Base
   self.moderatable_fields = [:name, :description, :long_description]
   self.moderatable_objects = lambda { Proposal.published_web }
 
-  #before_save :extract_tags
-
   class_attribute :my_public_fields, :my_summary_fields
-  self.my_public_fields = [:id, :long_id, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :publicity, :published, :slider_right, :slider_left, :slider_middle, :considerations_prompt, :slider_prompt, :tags, :seo_keywords, :seo_title, :seo_description]
+  self.my_public_fields = [:id, :long_id, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :publicity, :published, :seo_keywords, :seo_title, :seo_description]
 
   scope :active, -> {where( :active => true, :published => true )}
   scope :inactive, -> {where( :active => false, :published => true )}
@@ -241,23 +239,6 @@ class Proposal < ActiveRecord::Base
 
   # end
 
-  # def get_tags
-  #   description.split.find_all{|word| /^#.+/.match word}
-  # end
-
-  # def extract_tags
-  #   self.tags += get_tags
-  # end
-
-
-  def has_tag(tag)
-    self.tags && self.tags.index("#{tag};")
-  end
-
-  def add_tag(tag)
-    self.tags ||= ""
-    self.tags += "#{tag};" if !has_tag(tag)
-  end
 
   def add_seo_keyword(keyword)
     self.seo_keywords ||= ""

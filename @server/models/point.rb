@@ -40,7 +40,7 @@ class Point < ActiveRecord::Base
   }
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:comment_count, :created_at, :id, :includers, :is_pro, :moderation_status, :nutshell, :opinion_id, :proposal_id, :published, :score, :text, :user_id, :hide_name, :last_inclusion]
+  self.my_public_fields = [:comment_count, :created_at, :id, :includers, :is_pro, :moderation_status, :nutshell, :proposal_id, :published, :score, :text, :user_id, :hide_name, :last_inclusion]
 
   scope :public_fields, -> {select(self.my_public_fields)}
 

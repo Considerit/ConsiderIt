@@ -31,7 +31,7 @@ namespace :cache do
     size = 'small'
     #TODO: do not automatically replace each file ... check hash at end for equality
     begin
-      Account.find_each do |accnt|
+      Subdomain.find_each do |accnt|
         internal = Rails.application.config.action_controller.asset_host.nil?
         File.open("public/system/cache/#{accnt.identifier}.css", 'w') do |f|
 
@@ -77,7 +77,7 @@ task :compute_metrics => ["cache:points"]
 
 namespace :alerts do
   task :check_moderation => :environment do
-    Account.all.each do |accnt| 
+    Subdomain.all.each do |accnt| 
       next if accnt.classes_to_moderate.length == 0 
 
       # Find out how many objects need to be moderated
@@ -88,11 +88,11 @@ namespace :alerts do
 
         if moderation_class == Comment
           # select all comments of points of active proposals
-          qry = "SELECT c.id, c.user_id, prop.id as proposal_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
+          qry = "SELECT c.id, c.user_id, prop.id as proposal_id FROM comments c, points pnt, proposals prop WHERE prop.subdomain_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
         elsif moderation_class == Point
-          qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.account_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
+          qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.subdomain_id=#{accnt.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
         elsif moderation_class == Proposal
-          qry = "SELECT id, long_id, user_id, name, description from proposals where account_id=#{accnt.id}"
+          qry = "SELECT id, long_id, user_id, name, description from proposals where subdomain_id=#{accnt.id}"
         end
 
         objects = ActiveRecord::Base.connection.select(qry)

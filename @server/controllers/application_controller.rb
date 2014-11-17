@@ -106,7 +106,7 @@ protected
   def write_to_log(options)
     begin
       Log.create!({
-        :account_id => current_tenant.id,
+        :subdomain_id => current_tenant.id,
         :who => current_user,
         :what => options[:what],
         :where => options[:where],
@@ -124,19 +124,19 @@ protected
     # when to display a considerit homepage
     can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || ENABLE_HOMEPAGE_IN_DEV
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
-      set_current_tenant Account.find_by_identifier('homepage')
+      set_current_tenant Subdomain.find_by_identifier('homepage')
       return current_tenant
     end
 
     if rq.subdomain == 'googleoauth'
-      current_account = Account.find_by_identifier(params['state'])
+      candidate_subdomain = Subdomain.find_by_identifier(params['state'])
     else
-      default_customer = session.has_key?(:default_customer) ? session[:default_customer] : 1
-      current_account = rq.subdomain.nil? || rq.subdomain.length == 0 ? Account.find(default_customer) : Account.find_by_identifier(rq.subdomain)
+      default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
+      candidate_subdomain = rq.subdomain.nil? || rq.subdomain.length == 0 ? Subdomain.find(default_subdomain) : Subdomain.find_by_identifier(rq.subdomain)
     end
 
-    set_current_tenant(current_account) if current_account
-    current_account
+    set_current_tenant(candidate_subdomain) if candidate_subdomain
+    candidate_subdomain
   end
 
   def init_thread_globals
@@ -218,7 +218,7 @@ protected
         point = Point.find(key[10..key.length])
         response.append Comment.comments_for_point(point)
       
-      elsif key == '/customer'
+      elsif key == '/subdomain'
         pp current_tenant.contact_email
         response.append current_tenant.as_json
 
@@ -229,10 +229,10 @@ protected
         response.append Proposal.summaries
 
       elsif key == '/users'
-        response.append User.all_for_customer
+        response.append User.all_for_subdomain
 
       elsif key.match '/page/homepage'
-        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE opinions.account_id=#{current_tenant.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
+        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE opinions.subdomain_id=#{current_tenant.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
 
         clean = {
           contributors: recent_contributors.map {|u| "/user/#{u['id']}"},
@@ -290,5 +290,8 @@ protected
     session[:return_to] = path
   end
 
+  # def current_tenant
+  #   ActsAsTenant.current_tenant
+  # end
 
 end

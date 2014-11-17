@@ -4,7 +4,7 @@ class Opinion < ActiveRecord::Base
   
   include Followable
 
-  acts_as_tenant(:account)
+  acts_as_tenant :subdomain
 
   scope :published, -> {where( :published => true )}
   scope :public_fields, -> {select( [:created_at, :updated_at, :id, :proposal_id, :stance, :stance_segment, :user_id, :point_inclusions, :published] )}
@@ -49,7 +49,7 @@ class Opinion < ActiveRecord::Base
     if your_opinion.nil?
       your_opinion = Opinion.create(:proposal_id => proposal.id,
                                     :user => user ? user : nil,
-                                    :account_id => Thread.current[:tenant].id,
+                                    :subdomain_id => Thread.current[:tenant].id,
                                     :published => false,
                                     :stance => 0,
                                     :point_inclusions => '[]',
@@ -132,7 +132,7 @@ class Opinion < ActiveRecord::Base
       :point_id => point.id,
       :user_id => self.user_id,
       :proposal_id => self.proposal_id,
-      :account_id => Thread.current[:tenant].id
+      :subdomain_id => Thread.current[:tenant].id
     }
     Inclusion.create! attrs
 

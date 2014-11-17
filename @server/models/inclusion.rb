@@ -3,7 +3,7 @@ class Inclusion < ActiveRecord::Base
   belongs_to :user
   belongs_to :proposal
 
-  acts_as_tenant(:account)
+  acts_as_tenant :subdomain
     
   after_save :check_dupes
 

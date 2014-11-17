@@ -46,10 +46,10 @@ ImportDataDash = ReactiveComponent
   displayName: 'ImportDataDash'
 
   render : ->
-    customer = fetch '/customer'
+    subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    if customer.identifier == 'livingvotersguide'
+    if subdomain.identifier == 'livingvotersguide'
       tables = ['Measures', 'Candidates', 'Jurisdictions']
     else 
       tables = ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
@@ -63,7 +63,7 @@ ImportDataDash = ReactiveComponent
       P style: {fontWeight: 300, marginBottom: 6}, 
         "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
 
-      if customer.identifier != 'livingvotersguide'
+      if subdomain.identifier != 'livingvotersguide'
 
         DIV null,
           P style: {fontWeight: 300, marginBottom: 6}, 
@@ -164,7 +164,7 @@ AppSettingsDash = ReactiveComponent
   displayName: 'AppSettingsDash'
 
   render : -> 
-    customer = @data()
+    subdomain = @data()
 
     DIV className: 'app_settings_dash',
       STYLE null, 
@@ -178,7 +178,7 @@ AppSettingsDash = ReactiveComponent
       DashHeader 'Application Settings'
 
 
-      if customer.identifier
+      if subdomain.identifier
         DIV null, 
           DIV className: 'input_group',
             LABEL htmlFor: 'about_page_url', 'About Page URL'
@@ -186,7 +186,7 @@ AppSettingsDash = ReactiveComponent
               id: 'about_page_url'
               type: 'text'
               name: 'about_page_url'
-              defaultValue: customer.about_page_url
+              defaultValue: subdomain.about_page_url
               placeholder: 'The about page will then contain a window to this url.'
 
           DIV className: 'input_group',
@@ -195,7 +195,7 @@ AppSettingsDash = ReactiveComponent
               id: 'contact_email'
               type: 'text'
               name: 'contact_email'
-              defaultValue: customer.contact_email
+              defaultValue: subdomain.contact_email
               placeholder: 'Sender email address for notification emails. Default is admin@consider.it.'
 
           DIV className: 'input_group',
@@ -204,7 +204,7 @@ AppSettingsDash = ReactiveComponent
               id: 'app_title'
               type: 'text'
               name: 'app_title'
-              defaultValue: customer.app_title
+              defaultValue: subdomain.app_title
               placeholder: 'Shows in email subject lines and in the window title.'
 
           DIV className: 'input_group',
@@ -213,35 +213,35 @@ AppSettingsDash = ReactiveComponent
               id: 'project_url'
               type: 'text'
               name: 'project_url'
-              defaultValue: customer.project_url
+              defaultValue: subdomain.project_url
               placeholder: 'A link to the main project\'s homepage, if any.'
 
           DIV className: 'input_group',
             BUTTON className: 'button', onClick: @submit, 'Save'
 
   submit : -> 
-    customer = @data()
+    subdomain = @data()
 
     fields = ['about_page_url', 'contact_email', 'app_title', 'project_url']
 
     for f in fields
-      customer[f] = $(@getDOMNode()).find("##{f}").val()
+      subdomain[f] = $(@getDOMNode()).find("##{f}").val()
 
-    save customer
+    save subdomain
 
 
 RolesDash = ReactiveComponent
   displayName: 'RolesDash'
 
   render : -> 
-    customer = @data()
+    subdomain = @data()
 
     roles = [ 
       ['admin', 'Admins can access everything.'], 
       ['moderator', 'Moderators can review user content; they get email notifications when content needs review.']
     ]
 
-    if customer.assessment_enabled
+    if subdomain.assessment_enabled
       roles.push ['evaluator', 'Evaluators review factual claims in pro/con points.']
 
 
@@ -261,20 +261,20 @@ PermissionBlock = ReactiveComponent
   displayName: 'PermissionBlock'
 
   render : -> 
-    customer = fetch '/customer'
+    subdomain = fetch '/subdomain'
     users = fetch '/users'
     role = @props.key
 
     DIV null,
-      if customer.roles[role]
-        for user_key in customer.roles[role]
+      if subdomain.roles[role]
+        for user_key in subdomain.roles[role]
           user = fetch user_key
           SPAN style: {display: 'inline-block', padding: '4px 8px', fontWeight: 400, fontSize: 15, backgroundColor: '#e1e1e1', color: 'black', borderRadius: 16, margin: '4px'}, 
             if user.name then user.name else user.email
             I style: {cursor: 'pointer', marginLeft: 8}, className: 'fa fa-close', onClick: do (user_key, role) => =>
               # remove role
-              customer.roles[role] = _.without customer.roles[role], user_key
-              save customer
+              subdomain.roles[role] = _.without subdomain.roles[role], user_key
+              save subdomain
       
       DIV style: {position: 'relative'}, 
         INPUT 
@@ -299,13 +299,13 @@ PermissionBlock = ReactiveComponent
 
         if @local.add
           UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
-            for user in _.filter(users.users, (u) => customer.roles[role].indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
+            for user in _.filter(users.users, (u) => subdomain.roles[role].indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
               LI 
                 style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
                 onClick: do(user) => (e) => 
                   # add role
-                  customer.roles[role].push user.key
-                  save customer
+                  subdomain.roles[role].push user.key
+                  save subdomain
                   e.stopPropagation()
 
                 "#{user.name} <#{user.email}>"
@@ -391,7 +391,7 @@ ModerationDash = ReactiveComponent
 
   render : -> 
     moderations = @data().moderations.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
-    customer = fetch '/customer'
+    subdomain = fetch '/subdomain'
 
     # Separate moderations by status
     passed = []
@@ -419,7 +419,7 @@ ModerationDash = ReactiveComponent
       DashHeader 'Moderation Interface'
 
       DIV className: 'moderation_settings',
-        if customer.moderated_classes.length == 0 || @local.edit_settings
+        if subdomain.moderated_classes.length == 0 || @local.edit_settings
           DIV null,             
             for model in ['points', 'comments'] #, 'proposals']
               # The order of the options is important for the database records
@@ -437,13 +437,13 @@ ModerationDash = ReactiveComponent
                   DIV 
                     style: {marginLeft: 18, fontSize: 18, cursor: 'pointer'}
                     onClick: do (idx, model) => => 
-                      customer["moderate_#{model}_mode"] = idx
-                      save customer
+                      subdomain["moderate_#{model}_mode"] = idx
+                      save subdomain
 
-                      #saving the customer shouldn't always dirty moderations (which is expensive), so just doing it manually here
+                      #saving the subdomain shouldn't always dirty moderations (which is expensive), so just doing it manually here
                       arest.serverFetch('/dashboard/moderate')  
 
-                    INPUT style: {cursor: 'pointer'}, type: 'radio', name: "moderate_#{model}_mode", id: "moderate_#{model}_mode_#{idx}", defaultChecked: customer["moderate_#{model}_mode"] == idx
+                    INPUT style: {cursor: 'pointer'}, type: 'radio', name: "moderate_#{model}_mode", id: "moderate_#{model}_mode_#{idx}", defaultChecked: subdomain["moderate_#{model}_mode"] == idx
                     LABEL style: {cursor: 'pointer', paddingLeft: 8 }, htmlFor: "moderate_#{model}_mode_#{idx}", field
 
             BUTTON 
@@ -995,7 +995,7 @@ EditClaim = ReactiveComponent
     save @props.parent
 
 
-# Creates a new customer / subdomain. This is meant to only be accessed from 
+# Creates a new subdomain / subdomain. This is meant to only be accessed from 
 # the considerit homepage, but will work from any subdomain.
 CreateSubdomain = ReactiveComponent
   displayName: 'CreateSubdomain'
@@ -1017,7 +1017,7 @@ CreateSubdomain = ReactiveComponent
         BUTTON 
           className: 'button primary_button' 
           onClick: => 
-            $.ajax '/customer', 
+            $.ajax '/subdomain', 
               data: 
                 subdomain: $(@getDOMNode()).find('#subdomain').val()
                 authenticity_token: current_user.csrf

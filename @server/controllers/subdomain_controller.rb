@@ -1,4 +1,4 @@
-class CustomerController < ApplicationController
+class SubdomainController < ApplicationController
   respond_to :json
 
   rescue_from CanCan::AccessDenied do |exception|
@@ -14,40 +14,40 @@ class CustomerController < ApplicationController
   end
 
   def create
-    authorize! :create, Account
+    authorize! :create, Subdomain
 
     errors = []
 
     # TODO: sanitize / make sure has url-able characters
     subdomain = params[:subdomain]
 
-    existing = Account.find_by_identifier(subdomain)
+    existing = Subdomain.find_by_identifier(subdomain)
     if existing
       errors.push "The #{subdomain} subdomain already exists. Contact us for more information."
     else
-      new_customer = Account.new :identifier => subdomain
-      roles = new_customer.user_roles
+      new_subdomain = Subdomain.new :identifier => subdomain
+      roles = new_subdomain.user_roles
       roles['admin'].push "/user/#{current_user.id}"
-      new_customer.roles = JSON.dump roles
-      new_customer.save
+      new_subdomain.roles = JSON.dump roles
+      new_subdomain.save
     end
 
     if errors.length > 0
       render :json => [{errors: errors}]
     else
-      render :json => [{identifier: new_customer.identifier}]
+      render :json => [{identifier: new_subdomain.identifier}]
     end
   end
 
   def show
-    dirty_key '/customer'
+    dirty_key '/subdomain'
     render :json => []
   end
 
   def update
-    account = Account.find(params[:id])
-    authorize! :update, Account
-    if account.id != current_tenant.id #&& !current_user.super_admin
+    subdomain = Subdomain.find(params[:id])
+    authorize! :update, Subdomain
+    if subdomain.id != current_tenant.id #&& !current_user.super_admin
       # for now, don't allow modifying non-current tenant
       raise new CanCan::AccessDenied
     end
@@ -61,7 +61,7 @@ class CustomerController < ApplicationController
 
     current_tenant.update_attributes! attrs
 
-    dirty_key '/customer'
+    dirty_key '/subdomain'
     render :json => []
 
   end

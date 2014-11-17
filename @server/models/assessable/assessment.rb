@@ -14,7 +14,7 @@ class Assessable::Assessment < ActiveRecord::Base
   
   scope :completed, -> {where( :complete => true )}
 
-  acts_as_tenant :account
+  acts_as_tenant :subdomain
 
   def as_json(options={})
     result = super(options)

@@ -27,7 +27,7 @@ class CommentController < ApplicationController
     comment = params.select{|k,v| fields.include? k}
 
     comment['user_id'] = current_user && current_user.id || nil
-    comment['account_id'] = current_tenant.id
+    comment['subdomain_id'] = current_tenant.id
     comment['point'] = Point.find(key_id(params['point']))
 
     # don't allow repeat comments

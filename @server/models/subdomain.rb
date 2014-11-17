@@ -1,11 +1,9 @@
-class Account < ActiveRecord::Base
+class Subdomain < ActiveRecord::Base
   has_many :proposals, :dependent => :destroy
   has_many :points, :dependent => :destroy
   has_many :opinions, :dependent => :destroy
   has_many :users, :dependent => :destroy
   has_many :comments, :dependent => :destroy
-
-  # belongs_to :managing_account, :class_name => 'User'
 
   # has_attached_file :homepage_pic, 
   #     :styles => { 
@@ -21,10 +19,10 @@ class Account < ActiveRecord::Base
   scope :public_fields, -> { select(self.my_public_fields) }
 
   def as_json(options={})
-    options[:only] ||= Account.my_public_fields
+    options[:only] ||= Subdomain.my_public_fields
     json = super(options)
     json['moderated_classes'] = classes_to_moderate().map {|c| c.name}
-    json['key'] = '/customer'
+    json['key'] = '/subdomain'
     if current_user.is_admin?
       json['roles'] = self.user_roles
     end

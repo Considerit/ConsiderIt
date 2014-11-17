@@ -177,7 +177,7 @@ class ImportDataController < ApplicationController
 
               proposal = Proposal.find_by_long_id attrs['long_id']
               if !proposal
-                attrs['account_id'] = current_tenant.id
+                attrs['subdomain_id'] = current_tenant.id
                 proposal = Proposal.new attrs
                 proposal.save
                 modified[table].push "Created Proposal '#{proposal.long_id}'"
@@ -205,7 +205,7 @@ class ImportDataController < ApplicationController
               end
 
               if !opinion
-                attrs['account_id'] = current_tenant.id
+                attrs['subdomain_id'] = current_tenant.id
                 opinion = Opinion.new attrs
                 opinion.publish
                 modified[table].push "Created Opinion by #{user.name} on '#{proposal.name}'"
@@ -236,7 +236,7 @@ class ImportDataController < ApplicationController
                         })
               point = Point.find_by_nutshell(attrs['nutshell'])
               if !point
-                attrs['account_id'] = current_tenant.id
+                attrs['subdomain_id'] = current_tenant.id
                 point = Point.new attrs
                 point.save
                 modified[table].push "Created Point '#{point.nutshell}'"
@@ -260,7 +260,7 @@ class ImportDataController < ApplicationController
 
               comment = Comment.where(:point_id => point.id, :user_id => user.id, :body => attrs['body'] ).first
               if !comment
-                attrs['account_id'] = current_tenant.id
+                attrs['subdomain_id'] = current_tenant.id
                 comment = Comment.new attrs
                 comment.save
                 modified[table].push "Created Comment '#{comment.body}'"
@@ -323,7 +323,7 @@ class ImportDataController < ApplicationController
               end
 
               opinion = Opinion.create!({
-                :account_id => current_tenant.id,
+                :subdomain_id => current_tenant.id,
                 :proposal_id => proposal.id,
                 :user_id => user.id,
                 :stance => new_stance,
@@ -378,7 +378,7 @@ class ImportDataController < ApplicationController
   # These are LVG-specific data imports. Unfortunately we have to maintain them!
   def import_for_LVG(errors, modified)
 
-    account = Account.find_by_identifier('livingvotersguide')
+    subdomain = Subdomain.find_by_identifier('livingvotersguide')
 
     #########################
     # Import ballot measures
@@ -459,7 +459,7 @@ class ImportDataController < ApplicationController
         end
 
         measure = {
-          :account_id => account.id,
+          :subdomain_id => subdomain.id,
           :user_id => 1, 
           :long_id => long_id,
           :name => row['topic'],
@@ -482,7 +482,7 @@ class ImportDataController < ApplicationController
           modified['measures'].push "Created Measure '#{proposal.long_id}'"
 
         else
-          measure.delete :account_id
+          measure.delete :subdomain_id
           proposal.update_attributes measure
           modified['measures'].push "Updated Measure '#{proposal.long_id}'"
         end
@@ -552,7 +552,7 @@ class ImportDataController < ApplicationController
         end
 
         measure = {
-          :account_id => account.id,
+          :subdomain_id => subdomain.id,
           :user_id => 1, 
           :long_id => long_id,
           :name => name,
@@ -572,7 +572,7 @@ class ImportDataController < ApplicationController
           proposal.save
           modified['candidates'].push "Created Candidate '#{proposal.name}'"
         else
-          measure.delete :account_id
+          measure.delete :subdomain_id
           proposal.update_attributes measure
           modified['candidates'].push "Updated Candidate '#{proposal.name}'"
         end
@@ -594,7 +594,7 @@ class ImportDataController < ApplicationController
 
       jurisdiction_to_proposals = {}
 
-      proposals = account.proposals.where('cluster is not null')
+      proposals = subdomain.proposals.where('cluster is not null')
       proposals.each do |p|
         jurisdiction_to_proposals[p.cluster] = [] if !(jurisdiction_to_proposals.has_key?(p.cluster))
         jurisdiction_to_proposals[p.cluster].append p

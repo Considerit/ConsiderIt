@@ -18,11 +18,11 @@ class ModerationController < ApplicationController
 
       if moderation_class == Comment
         # select all comments of points of active proposals
-        qry = "SELECT c.id, c.user_id, prop.id as proposal_id FROM comments c, points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
+        qry = "SELECT c.id, c.user_id, prop.id as proposal_id FROM comments c, points pnt, proposals prop WHERE prop.subdomain_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
       elsif moderation_class == Point
-        qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.account_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
+        qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.subdomain_id=#{current_tenant.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
       elsif moderation_class == Proposal
-        qry = "SELECT id, long_id, user_id, name, description from proposals where account_id=#{current_tenant.id}"
+        qry = "SELECT id, long_id, user_id, name, description from proposals where subdomain_id=#{current_tenant.id}"
       end
 
       objects = ActiveRecord::Base.connection.select(qry)
@@ -49,7 +49,7 @@ class ModerationController < ApplicationController
             moderation = existing_moderations[obj['id']]
           else 
             # Create a moderation for each that doesn't yet exist.           
-            moderation = Moderation.create! :moderatable_type => moderation_class.name, :moderatable_id => obj['id'], :account_id => current_tenant.id
+            moderation = Moderation.create! :moderatable_type => moderation_class.name, :moderatable_id => obj['id'], :subdomain_id => current_tenant.id
           end
 
           moderations.push moderation

@@ -91,7 +91,7 @@ class CurrentUserController < ApplicationController
             dirty_key '/proposals'
 
             if user.is_admin?
-              dirty_key '/customer'
+              dirty_key '/subdomain'
               dirty_key '/users'
             end
 
@@ -294,7 +294,7 @@ class CurrentUserController < ApplicationController
 
       dirty_key '/proposals'
       if user.is_admin?
-        dirty_key '/customer'
+        dirty_key '/subdomain'
         dirty_key '/users'
       end
 

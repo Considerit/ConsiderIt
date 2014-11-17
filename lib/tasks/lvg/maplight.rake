@@ -110,7 +110,7 @@ namespace :lvg do
     if p.nil?
       p = Proposal.new({
               :user_id => 1,
-              :account_id => 1,
+              :subdomain_id => 1,
               :long_id => long_id,
               :name => data['maplight_title'],
               :description => data['summary']['main_summary'],

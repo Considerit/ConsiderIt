@@ -1,10 +1,10 @@
 class DeveloperController < ApplicationController  
   respond_to :html
 
-  def change_default_customer
+  def change_default_subdomain
 
     if Rails.env.development?
-      session[:default_customer] = params['id']
+      session[:default_subdomain] = params['id']
     end
 
 

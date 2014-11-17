@@ -10,7 +10,7 @@ class Proposal < ActiveRecord::Base
 
   belongs_to :user
 
-  acts_as_tenant(:account)
+  acts_as_tenant :subdomain
 
   include Followable, Moderatable
   
@@ -33,7 +33,7 @@ class Proposal < ActiveRecord::Base
 
   def self.summaries
         
-    # if a customer wants only specific clusters, ordered in a particular way, specify here
+    # if a subdomain wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
     current_tenant = Thread.current[:tenant]
     if current_tenant.identifier == 'livingvotersguide'
@@ -45,7 +45,7 @@ class Proposal < ActiveRecord::Base
         # If the user has a zipcode, we'll want to include all the jurisdictions 
         # associated with that zipcode. We'll also want to insert them between the statewide
         # measures and the advisory votes, since we hate the advisory votes. 
-        local_jurisdictions = ActiveRecord::Base.connection.select( "SELECT distinct(cluster) FROM proposals WHERE account_id=#{current_tenant.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip']}%' ").map {|r| r['cluster']}
+        local_jurisdictions = ActiveRecord::Base.connection.select( "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{current_tenant.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip']}%' ").map {|r| r['cluster']}
       end
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
       proposals = current_tenant.proposals.open_to_public.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)

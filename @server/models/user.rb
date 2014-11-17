@@ -2,8 +2,6 @@ require 'open-uri'
 #require 'role_model'
 
 class User < ActiveRecord::Base
-  #include RoleModel
-
   has_secure_password validations: false
   alias_attribute :password_digest, :encrypted_password
 
@@ -13,12 +11,6 @@ class User < ActiveRecord::Base
   has_many :comments, :dependent => :destroy
   has_many :proposals
   has_many :follows, :dependent => :destroy, :class_name => 'Follow'
-  has_many :page_views, :dependent => :destroy
-
-  #acts_as_tenant :account
-
-  #roles :superadmin, :admin, :analyst, :moderator, :manager, :evaluator, :developer
-
 
   attr_accessor :avatar_url, :downloaded
 
@@ -422,7 +414,7 @@ class User < ActiveRecord::Base
 
     # Bulk updates...
     for table in [Point, Proposal, Comment, Assessable::Assessment, Assessable::Request, \
-                  Follow, Moderation, PageView ] 
+                  Follow, Moderation ] 
 
       # First, remember what we're dirtying
       table.where(:user_id => source_user).each{|x| dirty_key("/#{table.name.downcase}/#{x.id}")}

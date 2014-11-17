@@ -41,7 +41,7 @@ class AlertMailer < Mailer
   private
 
     def from_email(subdomain)
-      subdomain.contact_email && subdomain.contact_email.length > 0 ? subdomain.contact_email : APP_CONFIG[:email]
+      subdomain.notifications_sender_email && subdomain.notifications_sender_email.length > 0 ? subdomain.notifications_sender_email : APP_CONFIG[:email]
     end
 
 

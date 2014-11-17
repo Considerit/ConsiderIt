@@ -49,7 +49,7 @@ ImportDataDash = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    if subdomain.identifier == 'livingvotersguide'
+    if subdomain.name == 'livingvotersguide'
       tables = ['Measures', 'Candidates', 'Jurisdictions']
     else 
       tables = ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
@@ -63,7 +63,7 @@ ImportDataDash = ReactiveComponent
       P style: {fontWeight: 300, marginBottom: 6}, 
         "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
 
-      if subdomain.identifier != 'livingvotersguide'
+      if subdomain.name != 'livingvotersguide'
 
         DIV null,
           P style: {fontWeight: 300, marginBottom: 6}, 
@@ -178,7 +178,7 @@ AppSettingsDash = ReactiveComponent
       DashHeader 'Application Settings'
 
 
-      if subdomain.identifier
+      if subdomain.name
         DIV null, 
           DIV className: 'input_group',
             LABEL htmlFor: 'about_page_url', 'About Page URL'
@@ -190,12 +190,12 @@ AppSettingsDash = ReactiveComponent
               placeholder: 'The about page will then contain a window to this url.'
 
           DIV className: 'input_group',
-            LABEL htmlFor: 'contact_email', 'Contact email'
+            LABEL htmlFor: 'notifications_sender_email', 'Contact email'
             INPUT 
-              id: 'contact_email'
+              id: 'notifications_sender_email'
               type: 'text'
-              name: 'contact_email'
-              defaultValue: subdomain.contact_email
+              name: 'notifications_sender_email'
+              defaultValue: subdomain.notifications_sender_email
               placeholder: 'Sender email address for notification emails. Default is admin@consider.it.'
 
           DIV className: 'input_group',
@@ -208,12 +208,12 @@ AppSettingsDash = ReactiveComponent
               placeholder: 'Shows in email subject lines and in the window title.'
 
           DIV className: 'input_group',
-            LABEL htmlFor: 'project_url', 'Project url'
+            LABEL htmlFor: 'external_project_url', 'Project url'
             INPUT 
-              id: 'project_url'
+              id: 'external_project_url'
               type: 'text'
-              name: 'project_url'
-              defaultValue: subdomain.project_url
+              name: 'external_project_url'
+              defaultValue: subdomain.external_project_url
               placeholder: 'A link to the main project\'s homepage, if any.'
 
           DIV className: 'input_group',
@@ -222,7 +222,7 @@ AppSettingsDash = ReactiveComponent
   submit : -> 
     subdomain = @data()
 
-    fields = ['about_page_url', 'contact_email', 'app_title', 'project_url']
+    fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url']
 
     for f in fields
       subdomain[f] = $(@getDOMNode()).find("##{f}").val()
@@ -566,7 +566,7 @@ ModerateItem = ReactiveComponent
               [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
               A 
                 target: '_blank'
-                href: "/#{proposal.long_id}/?selected=#{point.key}"
+                href: "/#{proposal.slug}/?selected=#{point.key}"
                 style: {textDecoration: 'underline'}
                 'Read in context']
 
@@ -741,7 +741,7 @@ FactcheckPoint = ReactiveComponent
             SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
             A 
               target: '_blank'
-              href: "/#{proposal.long_id}/?selected=#{point.key}"
+              href: "/#{proposal.slug}/?selected=#{point.key}"
               style: {textDecoration: 'underline'}
               'Read point in context'
 
@@ -1026,7 +1026,7 @@ CreateSubdomain = ReactiveComponent
                 if data[0].errors
                   @local.errors = data[0].errors
                 else
-                  @local.successful = data[0].identifier
+                  @local.successful = data[0].name
                 save @local
           'Create'
 

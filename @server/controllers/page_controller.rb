@@ -17,7 +17,7 @@ class PageController < ApplicationController
 
     else # if proposal
 
-      proposal = Proposal.find_by_long_id(params[:id])
+      proposal = Proposal.find_by_slug(params[:id])
 
       if !proposal 
         render :status => :not_found, :json => {:result => 'Not found'}
@@ -30,7 +30,7 @@ class PageController < ApplicationController
       # Ensure an existing opinion for this user
       your_opinion = Opinion.get_or_make(proposal, current_user)
 
-      key = "/page/#{proposal.long_id}"
+      key = "/page/#{proposal.slug}"
       dirty_key key
       dirty_key '/users'
     end

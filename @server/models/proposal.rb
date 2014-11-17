@@ -35,8 +35,8 @@ class Proposal < ActiveRecord::Base
         
     # if a subdomain wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
-    current_tenant = Thread.current[:tenant]
-    if current_tenant.identifier == 'livingvotersguide'
+    current_subdomain = Thread.current[:subdomain]
+    if current_subdomain.identifier == 'livingvotersguide'
       year = 2014
       local_jurisdictions = []   
       
@@ -45,12 +45,12 @@ class Proposal < ActiveRecord::Base
         # If the user has a zipcode, we'll want to include all the jurisdictions 
         # associated with that zipcode. We'll also want to insert them between the statewide
         # measures and the advisory votes, since we hate the advisory votes. 
-        local_jurisdictions = ActiveRecord::Base.connection.select( "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{current_tenant.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip']}%' ").map {|r| r['cluster']}
+        local_jurisdictions = ActiveRecord::Base.connection.select( "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{current_subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip']}%' ").map {|r| r['cluster']}
       end
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
-      proposals = current_tenant.proposals.open_to_public.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
+      proposals = current_subdomain.proposals.open_to_public.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
     else 
-      proposals = current_tenant.proposals.open_to_public.browsable
+      proposals = current_subdomain.proposals.open_to_public.browsable
     end
 
     clustered_proposals = {}
@@ -111,10 +111,10 @@ class Proposal < ActiveRecord::Base
   def fact_check_request_enabled?
     return false # nothing can be requested to be fact-checked currently
 
-    current_tenant = Thread.current[:tenant]
+    current_subdomain = Thread.current[:subdomain]
 
-    enabled = current_tenant.assessment_enabled
-    if current_tenant.identifier == 'livingvotersguide'
+    enabled = current_subdomain.assessment_enabled
+    if current_subdomain.identifier == 'livingvotersguide'
       # only some issues in LVG are fact-checkable
       enabled = ['I-1351_Modify_K-12_funding', 'I-591_Match_state_gun_regulation_to_national_standards', 'I-594_Increase_background_checks_on_gun_purchases'].include? long_id
     end

@@ -12,7 +12,7 @@ class Comment < ActiveRecord::Base
   belongs_to :user
   belongs_to :point
 
-  acts_as_tenant :account
+  acts_as_tenant :subdomain
 
   before_save do 
     self.body = self.body.sanitize

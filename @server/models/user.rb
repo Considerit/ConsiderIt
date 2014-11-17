@@ -40,9 +40,9 @@ class User < ActiveRecord::Base
     data = Base64.encode64(img_data)
     self.b64_thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
     
-    JSON.parse(self.active_in).each do |account_id|
-      current = Rails.cache.read("avatar-digest-#{account_id}") || 0
-      Rails.cache.write("avatar-digest-#{account_id}", current + 1)   
+    JSON.parse(self.active_in).each do |subdomain_id|
+      current = Rails.cache.read("avatar-digest-#{subdomain_id}") || 0
+      Rails.cache.write("avatar-digest-#{subdomain_id}", current + 1)   
     end
   end
 
@@ -83,8 +83,8 @@ class User < ActiveRecord::Base
     
   end
 
-  # Gets all of the users active for this customer
-  def self.all_for_customer
+  # Gets all of the users active for this subdomain
+  def self.all_for_subdomain
     current_tenant = Thread.current[:tenant]
     fields = "CONCAT('\/user\/',id) as 'key',users.name,users.avatar_file_name"
     if current_user.is_admin?
@@ -144,9 +144,9 @@ class User < ActiveRecord::Base
       # regenerate the avatars file. Note that there is still a bug where the avatar won't be there 
       # on initial login to the new subdomain.
       if self.avatar_file_name && active_tenants.length > 1
-        account_id = Thread.current[:tenant].id
-        current = Rails.cache.read("avatar-digest-#{account_id}") || 0
-        Rails.cache.write("avatar-digest-#{account_id}", current + 1)   
+        subdomain_id = Thread.current[:tenant].id
+        current = Rails.cache.read("avatar-digest-#{subdomain_id}") || 0
+        Rails.cache.write("avatar-digest-#{subdomain_id}", current + 1)   
       end
     end
 
@@ -170,7 +170,7 @@ class User < ActiveRecord::Base
         following = self.opinions.published.map {|o| "/proposal/#{o.proposal_id}"}
       end
 
-      following += self.follows.where(:follow => true, :followable_type => followable_type, :account_id => current_tenant.id).map {|f| "/#{f.followable_type.downcase}/#{f.followable_id}" }
+      following += self.follows.where(:follow => true, :followable_type => followable_type, :subdomain_id => current_tenant.id).map {|f| "/#{f.followable_type.downcase}/#{f.followable_id}" }
 
       followable_objects[followable_type] = following.uniq.compact #remove dupes and nils
 
@@ -260,7 +260,7 @@ class User < ActiveRecord::Base
       name
       : email ? 
         email.split('@')[0]
-        : "#{account.app_title} participant"
+        : "#{subdomain.app_title} participant"
   end
   
   def first_name

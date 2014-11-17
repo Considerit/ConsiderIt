@@ -2,31 +2,31 @@ source_host = "localhost"
 source_user = 'root'
 source_database = "chalkboardit_production"
 source_password = "root"
-dest_account_identifier = 2026
+dest_subdomain_identifier = 2026
 
 # NOTE: This only works if the source and dest databases are hosted in same place
 # NOTE: This does not import user pictures
 namespace :import do
   desc "Based on existing data, initialize the activities table"
 
-  # Imports an account, copying all data and handling updating of IDs
+  # Imports an subdomain, copying all data and handling updating of IDs
   # Make that db schema of source and dest are the same!
   task :initialize_from_data => :environment do
     to_update = [ 
-      ['accounts', {
-        :max_id => Account.last.id + 1000,
+      ['subdomains', {
+        :max_id => Subdomain.last.id + 1000,
         :fks => [
-          ['proposals', 'account_id'],
-          ['points', 'account_id'],
-          ['opinions', 'account_id'],
-          ['comments', 'account_id'],
-          ['assessments', 'account_id'],
-          ['claims', 'account_id'],
-          ['follows', 'account_id'],
-          ['inclusions', 'account_id'],
-          ['moderations', 'account_id'],
-          ['requests', 'account_id'],
-          ['users', 'account_id']
+          ['proposals', 'subdomain_id'],
+          ['points', 'subdomain_id'],
+          ['opinions', 'subdomain_id'],
+          ['comments', 'subdomain_id'],
+          ['assessments', 'subdomain_id'],
+          ['claims', 'subdomain_id'],
+          ['follows', 'subdomain_id'],
+          ['inclusions', 'subdomain_id'],
+          ['moderations', 'subdomain_id'],
+          ['requests', 'subdomain_id'],
+          ['users', 'subdomain_id']
         ]
       }],
       ['users', {
@@ -142,7 +142,7 @@ namespace :import do
         qry = "UPDATE #{table_name} SET id=id+#{max_id}"
         pp qry
         source_db.connection.execute qry
-        dest_account_identifier += max_id if table_name == 'accounts'
+        dest_subdomain_identifier += max_id if table_name == 'subdomains'
 
         data[:fks].each do |relation|
           ftable = relation[0]
@@ -159,7 +159,7 @@ namespace :import do
         end
       end
     else
-      dest_account_identifier = 1
+      dest_subdomain_identifier = 1
     end
 
     base_db = ActiveRecord::Base.establish_connection :development
@@ -169,7 +169,7 @@ namespace :import do
       table_name, data = model_with_assoc
       col_qry = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '#{table_name}' AND TABLE_SCHEMA='#{source_database}'"    
       cols = base_db.connection.execute(col_qry).map {|r| r}
-      qry = "INSERT INTO #{table_name} (#{cols.join(',')}) SELECT #{cols.join(',')} FROM #{source_database}.#{table_name} WHERE #{table_name=='accounts' ? '' : 'account_'}id=#{dest_account_identifier} ORDER BY id"
+      qry = "INSERT INTO #{table_name} (#{cols.join(',')}) SELECT #{cols.join(',')} FROM #{source_database}.#{table_name} WHERE #{table_name=='subdomains' ? '' : 'subdomain_'}id=#{dest_subdomain_identifier} ORDER BY id"
       pp qry
       base_db.connection.execute qry
     end

@@ -57,7 +57,7 @@ class Ability
         assessment = req.assessment
         assessment.requests.where(:user_id => req.user_id).count < 2
       end
-      can :create, Account
+      can :create, Subdomain
     end
 
 

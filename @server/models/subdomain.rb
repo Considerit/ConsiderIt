@@ -5,13 +5,11 @@ class Subdomain < ActiveRecord::Base
   has_many :users, :dependent => :destroy
   has_many :comments, :dependent => :destroy
 
-  # has_attached_file :homepage_pic, 
-  #     :styles => { 
-  #       :large => "x100>",
-  #     },
-  #     :processors => [:thumbnail, :compression]
+  has_attached_file :logo, :processors => [:thumbnail, :compression]
+  has_attached_file :masthead, :processors => [:thumbnail, :compression]
 
-  # validates_attachment_content_type :homepage_pic, :content_type => %w(image/jpeg image/jpg image/png image/gif)
+  validates_attachment_content_type :masthead, :content_type => %w(image/jpeg image/jpg image/png image/gif)
+  validates_attachment_content_type :logo, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
   class_attribute :my_public_fields
   self.my_public_fields = [:id, :name, :about_page_url, :notifications_sender_email, :app_title, :external_project_url, :assessment_enabled, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode, :has_civility_pledge]
@@ -26,6 +24,9 @@ class Subdomain < ActiveRecord::Base
     if current_user.is_admin?
       json['roles'] = self.user_roles
     end
+    json['branding'] = JSON.parse(self.branding || "{}")
+    json['masthead'] = self.masthead_file_name ? self.masthead.url : nil
+    json['logo'] = self.logo_file_name ? self.logo.url : nil
     json
   end
 

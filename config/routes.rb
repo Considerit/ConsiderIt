@@ -58,6 +58,7 @@ ConsiderIt::Application.routes.draw do
   post '/subdomain' => 'subdomain#create'
   match '/subdomain' => 'subdomain#update', :via => [:put]
   get '/dashboard/create_subdomain' => 'subdomain#new'
+  match 'update_images_hack' => 'subdomain#update_images_hack', :via => [:put]
 
   post '/log' => 'log#create'
 

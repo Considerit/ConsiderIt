@@ -180,23 +180,6 @@ AppSettingsDash = ReactiveComponent
 
       if subdomain.name
         DIV null, 
-          DIV className: 'input_group',
-            LABEL htmlFor: 'about_page_url', 'About Page URL'
-            INPUT 
-              id: 'about_page_url'
-              type: 'text'
-              name: 'about_page_url'
-              defaultValue: subdomain.about_page_url
-              placeholder: 'The about page will then contain a window to this url.'
-
-          DIV className: 'input_group',
-            LABEL htmlFor: 'notifications_sender_email', 'Contact email'
-            INPUT 
-              id: 'notifications_sender_email'
-              type: 'text'
-              name: 'notifications_sender_email'
-              defaultValue: subdomain.notifications_sender_email
-              placeholder: 'Sender email address for notification emails. Default is admin@consider.it.'
 
           DIV className: 'input_group',
             LABEL htmlFor: 'app_title', 'The name of this application'
@@ -217,9 +200,73 @@ AppSettingsDash = ReactiveComponent
               placeholder: 'A link to the main project\'s homepage, if any.'
 
           DIV className: 'input_group',
-            BUTTON className: 'button', onClick: @submit, 'Save'
+            LABEL htmlFor: 'notifications_sender_email', 'Contact email'
+            INPUT 
+              id: 'notifications_sender_email'
+              type: 'text'
+              name: 'notifications_sender_email'
+              defaultValue: subdomain.notifications_sender_email
+              placeholder: 'Sender email address for notification emails. Default is admin@consider.it.'
+
+          DIV className: 'input_group',
+            LABEL htmlFor: 'about_page_url', 'About Page URL'
+            INPUT 
+              id: 'about_page_url'
+              type: 'text'
+              name: 'about_page_url'
+              defaultValue: subdomain.about_page_url
+              placeholder: 'The about page will then contain a window to this url.'
+
+          DIV className: 'input_group',
+            LABEL htmlFor: 'masthead_header_text', 'Masthead header text'
+            INPUT 
+              id: 'masthead_header_text'
+              type: 'text'
+              name: 'masthead_header_text'
+              defaultValue: subdomain.branding.masthead_header_text
+              placeholder: 'This will be shown in bold white text across the top of the header.'
+
+          DIV className: 'input_group',
+            LABEL htmlFor: 'primary_color', 'Primary color (CSS format)'
+            INPUT 
+              id: 'primary_color'
+              type: 'text'
+              name: 'primary_color'
+              defaultValue: subdomain.branding.primary_color
+              placeholder: 'The primary brand color. Needs to be dark.'
+
+          FORM id: 'subdomain_files', action: '/update_images_hack',
+            DIV className: 'input_group',
+              LABEL htmlFor: 'masthead', 'Masthead background image. Should be pretty large.'
+              INPUT 
+                id: 'masthead'
+                type: 'file'
+                name: 'masthead'
+                onChange: (ev) =>
+                  @submit_masthead = true
+
+            DIV className: 'input_group',
+              LABEL htmlFor: 'logo', 'Organization\'s logo'
+              INPUT 
+                id: 'logo'
+                type: 'file'
+                name: 'logo'
+                onChange: (ev) =>
+                  @submit_logo = true
+
+          DIV className: 'input_group',
+            BUTTON className: 'primary_button button', onClick: @submit, 'Save'
+
+          if @local.save_complete
+            DIV style: {color: 'green'}, 'Saved.'
+
+          if @local.errors
+            DIV style: {color: 'red'}, 'Error uploading files!'
+
 
   submit : -> 
+    submitting_files = @submit_logo || @submit_masthead
+
     subdomain = @data()
 
     fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url']
@@ -227,7 +274,29 @@ AppSettingsDash = ReactiveComponent
     for f in fields
       subdomain[f] = $(@getDOMNode()).find("##{f}").val()
 
-    save subdomain
+    subdomain.branding =
+      primary_color: $('#primary_color').val()
+      masthead_header_text: $('#masthead_header_text').val()
+
+    @local.save_complete = @local.errors = false
+    save @local
+
+    save subdomain, => 
+
+      @local.save_complete = true if !submitting_files
+      save @local
+
+      if submitting_files
+        current_user = fetch '/current_user'
+        $('#subdomain_files').ajaxSubmit
+          type: 'PUT'
+          data: 
+            authenticity_token: current_user.csrf
+          success: =>
+            location.reload()
+          error: => 
+            @local.errors = true
+            save @local
 
 
 RolesDash = ReactiveComponent

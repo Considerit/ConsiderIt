@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141117053949) do
+ActiveRecord::Schema.define(version: 20141118044218) do
 
   create_table "assessments", force: true do |t|
     t.integer  "user_id"
@@ -254,26 +254,32 @@ ActiveRecord::Schema.define(version: 20141117053949) do
 
   create_table "subdomains", force: true do |t|
     t.string   "name"
-    t.datetime "created_at",                                    null: false
-    t.datetime "updated_at",                                    null: false
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
     t.string   "app_title"
     t.string   "notifications_sender_email"
     t.string   "google_analytics_code"
-    t.boolean  "has_civility_pledge",           default: false
+    t.boolean  "has_civility_pledge",        default: false
     t.string   "host"
     t.string   "host_with_port"
-    t.boolean  "assessment_enabled",            default: false
-    t.integer  "moderate_points_mode",          default: 0
-    t.integer  "moderate_comments_mode",        default: 0
-    t.integer  "moderate_proposals_mode",       default: 0
-    t.string   "homepage_pic_file_name"
-    t.string   "homepage_pic_content_type"
-    t.integer  "homepage_pic_file_size"
-    t.datetime "homepage_pic_updated_at"
-    t.string   "homepage_pic_remote_url"
-    t.string   "external_external_project_url"
+    t.boolean  "assessment_enabled",         default: false
+    t.integer  "moderate_points_mode",       default: 0
+    t.integer  "moderate_comments_mode",     default: 0
+    t.integer  "moderate_proposals_mode",    default: 0
+    t.string   "external_project_url"
     t.string   "about_page_url"
     t.text     "roles"
+    t.string   "masthead_file_name"
+    t.string   "masthead_content_type"
+    t.integer  "masthead_file_size"
+    t.datetime "masthead_updated_at"
+    t.string   "masthead_remote_url"
+    t.string   "logo_file_name"
+    t.string   "logo_content_type"
+    t.integer  "logo_file_size"
+    t.datetime "logo_updated_at"
+    t.string   "logo_remote_url"
+    t.text     "branding"
   end
 
   add_index "subdomains", ["name"], name: "by_identifier", length: {"name"=>10}, using: :btree

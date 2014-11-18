@@ -276,6 +276,7 @@ class ImportDataController < ApplicationController
         end
 
         if errors.length > 0
+          Thread.current[:dirtied_keys] = {}
           raise ActiveRecord::Rollback
         end
 

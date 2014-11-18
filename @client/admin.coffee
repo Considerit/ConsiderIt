@@ -165,6 +165,7 @@ AppSettingsDash = ReactiveComponent
 
   render : -> 
     subdomain = @data()
+    current_user = fetch '/current_user'
 
     DIV className: 'app_settings_dash',
       STYLE null, 
@@ -217,42 +218,44 @@ AppSettingsDash = ReactiveComponent
               defaultValue: subdomain.about_page_url
               placeholder: 'The about page will then contain a window to this url.'
 
-          DIV className: 'input_group',
-            LABEL htmlFor: 'masthead_header_text', 'Masthead header text'
-            INPUT 
-              id: 'masthead_header_text'
-              type: 'text'
-              name: 'masthead_header_text'
-              defaultValue: subdomain.branding.masthead_header_text
-              placeholder: 'This will be shown in bold white text across the top of the header.'
+          if current_user.is_super_admin
+            DIV null,
+              DIV className: 'input_group',
+                LABEL htmlFor: 'masthead_header_text', 'Masthead header text'
+                INPUT 
+                  id: 'masthead_header_text'
+                  type: 'text'
+                  name: 'masthead_header_text'
+                  defaultValue: subdomain.branding.masthead_header_text
+                  placeholder: 'This will be shown in bold white text across the top of the header.'
 
-          DIV className: 'input_group',
-            LABEL htmlFor: 'primary_color', 'Primary color (CSS format)'
-            INPUT 
-              id: 'primary_color'
-              type: 'text'
-              name: 'primary_color'
-              defaultValue: subdomain.branding.primary_color
-              placeholder: 'The primary brand color. Needs to be dark.'
+              DIV className: 'input_group',
+                LABEL htmlFor: 'primary_color', 'Primary color (CSS format)'
+                INPUT 
+                  id: 'primary_color'
+                  type: 'text'
+                  name: 'primary_color'
+                  defaultValue: subdomain.branding.primary_color
+                  placeholder: 'The primary brand color. Needs to be dark.'
 
-          FORM id: 'subdomain_files', action: '/update_images_hack',
-            DIV className: 'input_group',
-              LABEL htmlFor: 'masthead', 'Masthead background image. Should be pretty large.'
-              INPUT 
-                id: 'masthead'
-                type: 'file'
-                name: 'masthead'
-                onChange: (ev) =>
-                  @submit_masthead = true
+              FORM id: 'subdomain_files', action: '/update_images_hack',
+                DIV className: 'input_group',
+                  LABEL htmlFor: 'masthead', 'Masthead background image. Should be pretty large.'
+                  INPUT 
+                    id: 'masthead'
+                    type: 'file'
+                    name: 'masthead'
+                    onChange: (ev) =>
+                      @submit_masthead = true
 
-            DIV className: 'input_group',
-              LABEL htmlFor: 'logo', 'Organization\'s logo'
-              INPUT 
-                id: 'logo'
-                type: 'file'
-                name: 'logo'
-                onChange: (ev) =>
-                  @submit_logo = true
+                DIV className: 'input_group',
+                  LABEL htmlFor: 'logo', 'Organization\'s logo'
+                  INPUT 
+                    id: 'logo'
+                    type: 'file'
+                    name: 'logo'
+                    onChange: (ev) =>
+                      @submit_logo = true
 
           DIV className: 'input_group',
             BUTTON className: 'primary_button button', onClick: @submit, 'Save'

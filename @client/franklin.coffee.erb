@@ -2995,8 +2995,7 @@ Header = ReactiveComponent
       if window["#{subdomain.name}Header"]
         window["#{subdomain.name}Header"]()
       else
-        DIV className: 'profile_navigation',
-          ProfileLink()
+        DefaultHeader()
 
       DIV null, 
         if @root.page_name == 'about'
@@ -3061,13 +3060,8 @@ Footer = ReactiveComponent
     DIV className: 'l_footer',  
       if window["#{subdomain.name}Footer"]
         window["#{subdomain.name}Footer"]()
-
       else
-        DIV style: {marginTop: 30},
-          TechnologyByConsiderit()
-          DIV style: {color: 'rgb(131,131,131)', marginTop: 5},
-            'Bug to report? Want to use this technology in your organization? '
-            A style: {textDecoration: 'none', fontWeight: 700}, href: "mailto:admin@consider.it", 'Email us'
+        DefaultFooter()
 
 TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'
@@ -3427,8 +3421,8 @@ Colors = ReactiveComponent
     subdomain = @data('/subdomain')
     color = @data('color')
 
-    # initialize colors if they haven't already been set
-    if !color.background && subdomain.name
+    # initialize colors
+    if subdomain.name
       # default colors
       # I didn't want to put these in the defaults section below because 
       # it would be annoying to refer back and forth to them here.
@@ -3464,6 +3458,9 @@ Colors = ReactiveComponent
           color.header_bg = 'white'
           color.proposal_header = '#676766' #'rgb(52,93,146)'
           color.profile_anchor_color = 'white'
+
+      if subdomain.branding.primary_color
+        color.proposal_header = color.header_bg = subdomain.branding.primary_color
 
       save color
 

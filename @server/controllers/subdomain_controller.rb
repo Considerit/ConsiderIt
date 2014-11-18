@@ -1,5 +1,6 @@
 class SubdomainController < ApplicationController
   respond_to :json
+  skip_before_action :verify_authenticity_token, :only => :update_images_hack
 
   rescue_from CanCan::AccessDenied do |exception|
     result = {
@@ -55,15 +56,33 @@ class SubdomainController < ApplicationController
     fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'has_civility_pledge']
     attrs = params.select{|k,v| fields.include? k}
 
-    if params.has_key? 'roles'
-      attrs['roles'] = JSON.dump params['roles']
+    serialized_fields = ['roles', 'branding']
+    for field in serialized_fields
+      if params.has_key? field
+        attrs[field] = JSON.dump params[field]
+      end
     end
+
 
     current_subdomain.update_attributes! attrs
 
     dirty_key '/subdomain'
     render :json => []
 
+  end
+
+  def update_images_hack
+    attrs = {}
+    if params['masthead']
+      attrs['masthead'] = params['masthead']
+    end
+    if params['logo']
+      attrs['logo'] = params['logo']
+    end
+
+    current_tenant.update_attributes attrs
+    dirty_key '/subdomain'
+    render :json => []
   end
 
 end

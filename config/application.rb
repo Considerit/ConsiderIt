@@ -89,8 +89,8 @@ module ConsiderIt
     # Enable FS storage for Paperclip
     Paperclip::Attachment.default_options.merge!({
       :path => ":rails_root/public/system/:attachment/:id/:style/:filename",
-      :url => "/system/:attachment/:id/:style/:filename",   
-      :default_url => "#{ENV['RAILS_RELATIVE_URL_ROOT'] || ''}/system/default_avatar/:style_default-profile-pic.png",
+      :url => "/system/:attachment/:id/:style/:filename"   
+      #:default_url => "#{ENV['RAILS_RELATIVE_URL_ROOT'] || ''}/system/default_avatar/:style_default-profile-pic.png",
     })    
   end
 end

@@ -1716,7 +1716,7 @@ EditComment = ReactiveComponent
         key: fetch('/current_user').user
         hide_name: true
 
-      if not logged_in
+      if not logged_in && @proposal.active
         SPAN
           className: 'hover_pointer'
           onClick: =>

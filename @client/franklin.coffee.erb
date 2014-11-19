@@ -35,6 +35,10 @@ window.DESCRIPTION_WIDTH = BODY_WIDTH
 
 # Colors
 considerit_blue = '#2478CC'
+# Colors are primarily stored in the database (to allow customers & Kev to self-brand).
+# See @server/models/subdomain#branding_info for hardcoding color values
+# when doing development. 
+
 
 ##
 # Helpers that should probably go elsewhere
@@ -95,7 +99,6 @@ getStanceSegment = (value) ->
 
 userOpinion = (user_key) ->
   window.user_opinions[user_key]
-
 
 _route_changed = false
 
@@ -309,9 +312,6 @@ Proposal = ReactiveComponent
       catch
         @local.description_fields = null
 
-
-    color = @data('color')
-
     DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
 
       StickyProposalHeading()
@@ -409,7 +409,6 @@ Proposal = ReactiveComponent
 StickyProposalHeading = ReactiveComponent
   displayName: 'StickyProposalHeading'
   render : ->
-    color = @data('color')
     subdomain = @data('/subdomain')
     proposals = @data('/proposals')
 
@@ -422,7 +421,7 @@ StickyProposalHeading = ReactiveComponent
       heading_style =
         textAlign: 'center'
         minWidth: PAGE_WIDTH # for width consistency when dropping into fixed sticky header
-        backgroundColor: color.proposal_header
+        backgroundColor: subdomain.branding.primary_color
         fontSize: 26
         padding: '4px 90px'
 
@@ -455,7 +454,7 @@ StickyProposalHeading = ReactiveComponent
         style:
           height: heading_height
           minWidth: PAGE_WIDTH # for width consistency when dropping into fixed sticky header
-          backgroundColor: color.proposal_header
+          backgroundColor: subdomain.branding.primary_color
           textAlign: 'center'
 
         # TODO: we need a way of knowing whether this subdomain has a homepage or not
@@ -484,7 +483,7 @@ StickyProposalHeading = ReactiveComponent
 
               if @local.dropped_down
                 DIV className: 'proposal_navigation_dropdown', style: {width: 500, position: 'absolute', top: 38, paddingTop: 5},
-                  DIV style: {backgroundColor: color.proposal_header, borderRadius: '4px'},
+                  DIV style: {backgroundColor: subdomain.branding.primary_color, borderRadius: '4px'},
                     DIV style: {backgroundColor: 'rgba(0,0,0,.2)', padding: '14px 0', borderRadius: '4px'},
 
                       if curr_cluster?.proposals.length > 1
@@ -504,8 +503,8 @@ StickyProposalHeading = ReactiveComponent
                                       # make a small slider summary
                                       opinion = @data(other_proposal.your_opinion)
                                       face_size = 20 # height/width of the summary slider bar
-                                      eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: color.proposal_header, position: 'absolute', top: 6 }
-                                      mouth_style = {fontSize: 12, color: color.proposal_header, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
+                                      eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: subdomain.branding.primary_color, position: 'absolute', top: 6 }
+                                      mouth_style = {fontSize: 12, color: subdomain.branding.primary_color, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
                                       crossbrowserTransformProperty mouth_style
                                       if opinion.stance_segment < 3
                                         # frown!
@@ -540,7 +539,7 @@ StickyProposalHeading = ReactiveComponent
                                 DIV style: {clear: 'both'}
 
                                 if @local.show_cluster == cluster.name
-                                  DIV style: {width: 300, backgroundColor: color.proposal_header, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
+                                  DIV style: {width: 300, backgroundColor: subdomain.branding.primary_color, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
                                     UL className: 'other_proposal_list', style: {backgroundColor: 'rgba(0,0,0,.2)', borderRadius: '4px', padding: '8px 0' },
                                       for other_proposal in cluster.proposals
                                         LI style: {listStyle: 'none'}, key: "li/#{other_proposal.slug}",
@@ -2685,12 +2684,12 @@ ProposalSummary = ReactiveComponent
 
   render : ->
     subdomain = @data('/subdomain')
-    color = @data('color')
 
     proposal = @data()
     hover_class = if @local.hovering_on == proposal.id then 'hovering' else ''
 
-    cell_border = "1px solid #{if @local.hovering_on then color.link_hover_color else 'rgb(191, 192, 194)'}"
+    link_hover_color = considerit_blue
+    cell_border = "1px solid #{if @local.hovering_on then link_hover_color else 'rgb(191, 192, 194)'}"
     TR 
       className: "proposal_summary " + hover_class
       style:
@@ -2704,11 +2703,11 @@ ProposalSummary = ReactiveComponent
       if subdomain.name == 'livingvotersguide'
         TD className: 'summary_measure_designator',
           if proposal.category && proposal.designator
-            A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+            A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then link_hover_color else ''}"},
               "#{proposal.category[0]}-#{proposal.designator}"
 
       TD className: 'summary_name', style: {width: (if subdomain.name == 'livingvotersguide' then 270 else 320)},
-        A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+        A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then link_hover_color else ''}"},
           proposal.name
       TD
         className: 'summary_decide'
@@ -2777,7 +2776,6 @@ Homepage = ReactiveComponent
 
   render : ->
     subdomain = @data('/subdomain')
-    color = @data('color')
     proposals = @data('/proposals')
 
     # The "Welcome to the community!" people
@@ -2798,7 +2796,7 @@ Homepage = ReactiveComponent
       DIV 
         className: "sticky_header stickable"
         style: 
-          backgroundColor: color.proposal_header
+          backgroundColor: subdomain.branding.primary_color
           color: 'white'
           height: sticky_header_height
           width: '100%'
@@ -2891,11 +2889,10 @@ ProfileLink = ReactiveComponent
   render : -> 
     current_user = fetch('/current_user')
     subdomain = @data('/subdomain')
-    color = @data('color')
 
     DIV style: {display: 'inline-block'}, 
       STYLE null,
-        ".profile_anchor { color: #{color.profile_anchor_color} }"
+        ".profile_anchor { color: #{subdomain.branding.header_text_color} }"
 
       if current_user.logged_in
         SPAN
@@ -2987,9 +2984,8 @@ Header = ReactiveComponent
   render : ->
     current_user = fetch('/current_user')
     subdomain = @data('/subdomain')
-    color = @data('color')
 
-    DIV className: 'l_header', style: {backgroundColor: color.header_bg, minWidth: PAGE_WIDTH},
+    DIV className: 'l_header', style: {backgroundColor: 'white', minWidth: PAGE_WIDTH},
 
       if window["#{subdomain.name}Header"]
         window["#{subdomain.name}Header"]()
@@ -3054,7 +3050,6 @@ Footer = ReactiveComponent
   displayName: 'Footer'
   render : -> 
     subdomain = @data('/subdomain')
-    color = @data('color')
 
     DIV className: 'l_footer',  
       if window["#{subdomain.name}Footer"]
@@ -3328,14 +3323,12 @@ Root = ReactiveComponent
       StateDash(),
       Page(key: "/page/#{root.page_name}"),
       Computer() # Doesn't actually render anything
-      Colors() # Doesn't actually render anything
 
 Page = ReactiveComponent
   displayName: 'Page'
 
   render: ->
 
-    color = @data('color')
     avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
 
@@ -3347,7 +3340,7 @@ Page = ReactiveComponent
     else if !subdomain.name
       L
     else
-      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
+      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: 'white'}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
         if avatars.avatars
           STYLE type: 'text/css', id: 'b64-avatars', dangerouslySetInnerHTML: {__html: avatars.avatars}
         
@@ -3411,60 +3404,6 @@ Computer = ReactiveComponent
       save(opinion)
 
     return SPAN null, ''
-
-
-# Non-rendering component that makes subdomain-specific colors available for use
-Colors = ReactiveComponent
-  displayName: 'Color'
-  render : ->
-    subdomain = @data('/subdomain')
-    color = @data('color')
-
-    # initialize colors
-    if subdomain.name
-      # default colors
-      # I didn't want to put these in the defaults section below because 
-      # it would be annoying to refer back and forth to them here.
-      _.extend color,
-        background: 'white'
-        proposal_header: '#E37765'
-        header_bg: '#E37765'
-        link_hover_color: 'black'
-        profile_anchor_color: 'white'
-
-      # Define colors for different subdomains. 
-      switch subdomain.name
-        when 'livingvotersguide'
-          color.header_bg = 'rgb(11, 60, 103)'
-          color.proposal_header = '#a5ce3a'
-          color.background = 'white'
-          color.link_hover_color = 'rgb(118,148,41)'
-          color.profile_anchor_color = 'white'               
-        when 'cityoftigard'
-          color.header_bg =  '#253967'
-          color.proposal_header = '#46A046'
-          color.profile_anchor_color = 'white'     
-        when 'tigard'          
-          color.header_bg =  'white'
-          color.proposal_header = '#78d18b'
-          color.profile_anchor_color = '#707070'
-        when 'ihub'
-          color.header_bg =  color.proposal_header = "rgb(150,150,150)"
-        # when 'ecastonline'
-        #   color.header_bg = color.proposal_header = 'rgb(36, 35, 31)'
-        #   color.profile_anchor_color = 'white'
-        when 'bitcoin-demo'
-          color.header_bg = 'white'
-          color.proposal_header = '#676766' #'rgb(52,93,146)'
-          color.profile_anchor_color = 'white'
-
-      if subdomain.branding.primary_color
-        color.proposal_header = color.header_bg = subdomain.branding.primary_color
-
-      save color
-
-    SPAN null, ''
-
 
 # Displays warnings for some browsers
 # Stores state about the current device. 

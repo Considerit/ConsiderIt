@@ -14,8 +14,8 @@ class HomeController < ApplicationController
       session[:notifications_user] = {'u' => params['u'], 't' => params['t']}
     end
 
-    # if someone has accessed a non-existent subdomain or is requesting a non-existent image
-    if !current_subdomain || request.format.to_s.include?('image')
+    # if someone has accessed a non-existent subdomain or the mime type isn't HTML (must be accessing a nonexistent file)
+    if !current_subdomain || request.format.to_s != 'text/html'
       render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
       return
     end

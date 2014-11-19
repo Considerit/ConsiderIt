@@ -168,16 +168,15 @@ AppSettingsDash = ReactiveComponent
     current_user = fetch '/current_user'
 
     DIV className: 'app_settings_dash',
-      STYLE null, 
+
+      STYLE dangerouslySetInnerHTML: __html: #dangerously set html is so that the type="text" doesn't get escaped
         """
         .app_settings_dash { font-size: 18px; width: #{CONTENT_WIDTH}px; margin: 20px auto; }
-        .app_settings_dash label { display: block; }
-        .app_settings_dash input { display: block; width: 600px; font-size: 18px; padding: 4px 8px; } 
+        .app_settings_dash input[type="text"] { display: block; width: 600px; font-size: 18px; padding: 4px 8px; } 
         .app_settings_dash .input_group { margin-bottom: 12px; }
         """
 
       DashHeader 'Application Settings'
-
 
       if subdomain.name
         DIV null, 
@@ -240,7 +239,7 @@ AppSettingsDash = ReactiveComponent
 
               FORM id: 'subdomain_files', action: '/update_images_hack',
                 DIV className: 'input_group',
-                  LABEL htmlFor: 'masthead', 'Masthead background image. Should be pretty large.'
+                  DIV null, LABEL htmlFor: 'masthead', 'Masthead background image. Should be pretty large.'
                   INPUT 
                     id: 'masthead'
                     type: 'file'
@@ -249,13 +248,19 @@ AppSettingsDash = ReactiveComponent
                       @submit_masthead = true
 
                 DIV className: 'input_group',
-                  LABEL htmlFor: 'logo', 'Organization\'s logo'
+                  DIV null, LABEL htmlFor: 'logo', 'Organization\'s logo'
                   INPUT 
                     id: 'logo'
                     type: 'file'
                     name: 'logo'
                     onChange: (ev) =>
                       @submit_logo = true
+
+              DIV className: 'input_group',
+                INPUT type: 'checkbox', name: 'light_masthead', id: 'light_masthead', defaultChecked: subdomain.branding.light_masthead
+                LABEL htmlFor: 'light_masthead', 
+                  "Is the masthead image a light color (if not specified, is the primary color light)?"
+
 
           DIV className: 'input_group',
             BUTTON className: 'primary_button button', onClick: @submit, 'Save'
@@ -280,7 +285,7 @@ AppSettingsDash = ReactiveComponent
     subdomain.branding =
       primary_color: $('#primary_color').val()
       masthead_header_text: $('#masthead_header_text').val()
-
+      light_masthead: $('#light_masthead:checked').length > 0
     @local.save_complete = @local.errors = false
     save @local
 

@@ -24,14 +24,63 @@ class Subdomain < ActiveRecord::Base
     if current_user.is_admin?
       json['roles'] = self.user_roles
     end
-    json['branding'] = JSON.parse(self.branding || "{}")
-    json['masthead'] = self.masthead_file_name ? self.masthead.url : nil
-    json['logo'] = self.logo_file_name ? self.logo.url : nil
+    json['branding'] = self.branding_info
     json
   end
 
   def host_without_subdomain
     host_with_port.split('.')[-2, 2].join('.')
+  end
+
+  # Subdomain-specific info
+  # Assembled from a couple image fields and a serialized "branding" field.
+  # 
+  # This can be a bit annoying during development. Hardcode colors here
+  # for different subdomains during development. 
+  #
+  # The serialized branding object can contain: 
+  #   masthead_header_text
+  #      This is bolded, white text in the header of the page.
+  #   primary_color
+  #      This is the sticky proposal header / header background. Should be dark.
+  #   masthead_background_image
+  #      If this is set, the image is applied as a height = 300px background 
+  #      image covering the area
+  #   logo
+  #      A customer's logo. Shown in the footer if set. Isn't sized, just puts in whatever is uploaded. 
+  #   light_masthead
+  #      If the background image is dark or light; used to determine the header_text_color 
+  def branding_info
+    brands = JSON.parse(self.branding || "{}")
+
+    case name
+    when 'livingvotersguide'
+      brands['primary_color'] = '#a5ce3a'
+    when 'cityoftigard'
+      brands['primary_color'] = '#46A046'
+    when 'tigard'
+      brands['primary_color'] = '#78d18b'
+    when 'ihub'
+      brands['primary_color'] = "rgb(150,150,150)"
+    when 'bitcoin-demo'
+      brands['primary_color'] = '#676766'
+    end
+
+    if !brands.has_key?('primary_color') || brands['primary_color'] == ''
+      brands['primary_color'] = '#E37765'
+    end
+
+    if brands.has_key?('light_masthead') && brands['light_masthead'] || !brands.has_key?('primary_color')
+      brands['header_text_color'] = 'black'
+    else
+      brands['header_text_color'] = 'white'
+    end
+
+    brands['masthead'] = self.masthead_file_name ? self.masthead.url : nil
+    brands['logo'] = self.logo_file_name ? self.logo.url : nil
+
+    pp brands
+    brands
   end
 
   def user_roles

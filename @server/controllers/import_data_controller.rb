@@ -373,7 +373,7 @@ class ImportDataController < ApplicationController
   private
 
   def access
-    return current_user.super_admin
+    return current_user.is_admin?
   end
 
   # These are LVG-specific data imports. Unfortunately we have to maintain them!

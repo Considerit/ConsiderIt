@@ -91,11 +91,10 @@ class Ability
         user_has_access_to_proposal
       end
 
-      can [:create, :update], Opinion do |opinion|
+      can [:update], Opinion do |opinion|
         proposal = opinion.proposal
-        user_is_prepped = user.registered #&& user.registered
         user_has_access_to_proposal = proposal.publicity != 0 || (user.registered && proposal.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
-        (user_is_prepped || opinion.user_id.nil?) && user_has_access_to_proposal
+        (user.id == opinion.user_id) && user_has_access_to_proposal
 
         #TODO: get this to work! Need to make sure only the original opinion creator can update the opinion
         #(!opinion.published && user.id.nil? && opinion.user_id.nil?) || (user.id == opinion.user_id)

@@ -2515,7 +2515,7 @@ Auth = ReactiveComponent
                         else
                           $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
 
-              if subdomain.has_civility_pledge
+              if subdomain.has_civility_pledge && root.auth_mode != 'update'
                 TR null,
                   TD className: 'label_cell', 
                     LABEL null, 'Community pledge:'

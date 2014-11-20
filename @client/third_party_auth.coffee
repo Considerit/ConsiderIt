@@ -5,11 +5,12 @@ class ThirdPartyAuthHandler
 
     if provider == 'google'
       provider = 'google_oauth2'
-      vanity_url = location.host.split('.').length == 1
-      if !vanity_url
-        document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1') 
-      else 
-        document.domain = document.domain # make sure it is explitly set
+      
+    vanity_url = location.host.split('.').length == 1
+    if !vanity_url
+      document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1') 
+    else 
+      document.domain = document.domain # make sure it is explitly set
 
 
     if provider == 'twitter'

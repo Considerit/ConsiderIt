@@ -361,10 +361,8 @@ class CurrentUserController < ApplicationController
     response.concat(compile_dirty_objects())
 
     document_domain = nil
-    if access_token['provider'] == 'google_oauth2'
-      vanity_url = request.host.split('.').length == 1
-      document_domain = vanity_url ? "document.domain" : "location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1')"
-    end
+    vanity_url = request.host.split('.').length == 1
+    document_domain = vanity_url ? "document.domain" : "location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1')"
 
     render :inline =>
       "<div style='font-weight:600; font-size: 36px; color: #414141'>Please close this window</div>" +

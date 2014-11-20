@@ -1129,11 +1129,12 @@ DecisionBoard = ReactiveComponent
       togglePage('results', 'save_button')
     else
       @root.auth_mode = 'login'
+      @root.auth_reason = 'Save your Opinion'
+
       # We'll need to publish this opinion after auth is completed
       @root.opinions_to_publish.push(@proposal.your_opinion)
-      # And we'll want to switch to results when it's done
-      @root.saving_opinion = true
-      save(@root)
+
+      save @root
 
 ##
 # YourPoints
@@ -1721,6 +1722,7 @@ EditComment = ReactiveComponent
           className: 'hover_pointer'
           onClick: =>
             @root.auth_mode = 'login'
+            @root.auth_reason = 'Write a Comment'
             save(@root)
           style:
             position: 'absolute'
@@ -1962,6 +1964,7 @@ SubmitFactCheck = ReactiveComponent
         DIV
           onClick: =>
             @root.auth_mode = 'login'
+            @root.auth_reason = 'Request a Fact Check'
             save(@root)
           style:
             marginTop: 14
@@ -2285,27 +2288,8 @@ Auth = ReactiveComponent
     # errors, cause we're startin' fresh!
     if not @local.last_auth_mode or @local.last_auth_mode != root.auth_mode
       @local.last_auth_mode = root.auth_mode
-      for error_type in (current_user.errors or {})
-        current_user.errors[error_type] = []
+      current_user.errors = []
 
-    # Once the user logs in, we will stop showing the log-in screen
-    if current_user.logged_in
-      root.auth_mode = null
-      # @publishOpinionsAfterAuth()
-
-      if root.saving_opinion
-        setTimeout((() -> togglePage('results', 'after_save')), 700)
-        root.saving_opinion = false
-      save(root)
-      return loading_indicator
-
-    focal_wrapper_style = 
-      margin: 'auto'
-      position: 'relative'
-      display: 'block'
-      #left: '50%'
-      width: DECISION_BOARD_WIDTH
-      #marginLeft: -DECISION_BOARD_WIDTH / 2
 
     # Let's set up some useful helpers
     submitOnEnter = (event) =>
@@ -2313,14 +2297,23 @@ Auth = ReactiveComponent
         event.preventDefault()
         @submitAuth(event)
 
-    input_box = (name, placeholder, type, onChange, pattern) ->
+    input_box = (name, placeholder, type, onChange, pattern) =>
+      if @local[name] != current_user[name]
+        @local[name] = current_user[name]
+        save @local
+
+      # There is a react bug where input cursor will jump to end for 
+      # controlled components. http://searler.github.io/react.js/2014/04/11/React-controlled-text.html
+      # This makes it annoying to edit text. I've contained this issue to edit_profile only
+      # by only setting value in the Input component when in edit_profile mode
       type = type || 'text'
       onChange = onChange || (event) => 
-        current_user[name] = event.target.value
+        @local[name] = current_user[name] = event.target.value
+        save @local
 
       INPUT
         id: 'user_' + name
-        defaultValue: current_user[name]
+        value: if @root.auth_mode == 'update' then @local[name] else null
         name: "user[#{name}]"
         key: "#{name}_input_box"
         placeholder: placeholder
@@ -2353,44 +2346,20 @@ Auth = ReactiveComponent
         onChange: (event) => current_user.reset_password_token = event.target.value
 
     providers = ['facebook', 'google']
-    # if root.auth_mode in ['login', 'login_via_reset_password_token']
-    #   providers.push('twitter')
 
     third_party_authenticated = current_user.facebook_uid || current_user.twitter_uid || current_user.google_uid
 
+    #####
     # We used to display the Auth header using the position and
     # styling of the slider.  Now it's just neutral.
-    stance =  0
-    segment = 3
 
-    # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
-    # also why this file is ERB
-    if segment == 3
-      bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
-    else
-      bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
-
-    direction = if segment > 3 then -1 else 1
-    mouth_x =      if segment == 3 then 0 else -22
+    # Asset fingerprinting. This is why this file is ERB
+    bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
 
     bubble_mouth_props = 
-      transform: "translate(#{direction * mouth_x}px, 11px) scale(#{direction * 1.5}, 1.5)"
+      transform: "translate(0px, 11px) scale(1.5, 1.5)"
       left: 270
-    handle_props = 
-      left: 270 - 15
-
     crossbrowserTransformProperty bubble_mouth_props
-    crossbrowserTransformProperty handle_props
-
-    auth_heading_style = 
-      visibility: 'visible'
-      left: HISTOGRAM_WIDTH * -(stance-1) / 2.0
-      marginLeft: -225
-      width: 450
-      fontSize: 50
-      position: 'relative'
-
-      #top: '-80px'
 
     if !subdomain.has_civility_pledge
       pledges = []
@@ -2399,20 +2368,40 @@ Auth = ReactiveComponent
                  'I will speak only on behalf of myself', 
                  'I will not attack or mock others']
 
-
-
     DIV
       className:'auth_region focal_wrapper'
-      style: focal_wrapper_style
+      style: 
+        margin: 'auto'
+        position: 'relative'
+        display: 'block'
+        #left: '50%'
+        width: DECISION_BOARD_WIDTH
+        #marginLeft: -DECISION_BOARD_WIDTH / 2        
       onClick: (e) => e.stopPropagation()
-      DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
-        DIV className:'auth_heading', style: auth_heading_style,
-          'Introduce Yourself' 
 
-        DIV className: 'the_handle', style: handle_props
-        IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
+      if @root.auth_mode == 'update'
+        DashHeader 'Edit Profile'
+      else
+        DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
+          DIV 
+            className:'auth_heading'
+            style: 
+              visibility: 'visible'
+              left: HISTOGRAM_WIDTH / 2.0
+              marginLeft: -225
+              width: 450
+              fontSize: 50
+              position: 'relative'
 
-      DIV className:'auth decision_board_body' + (if @local.submitting then ' waiting' else ''),
+            'Introduce Yourself' 
+            if @root.auth_reason
+              DIV style: {fontSize: 18, margin: '-8px 0 15px 0'},
+                "To #{@root.auth_reason}"
+
+          DIV className: 'the_handle', style: {left: 255}
+          IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
+
+      DIV className:"auth" + (if @root.auth_mode != 'update' then ' decision_board_body' else '') + (if @local.submitting then ' waiting' else ''),
         if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
           DIV className: 'third_party_auth',
             LABEL className: 'third_party_call', 'Instantly:'
@@ -2425,8 +2414,6 @@ Auth = ReactiveComponent
             DIV className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 
         if root.auth_mode in ['login', 'login_via_reset_password_token']
-          # logging in or resetting password
-
           DIV null, 
             if root.auth_mode == 'login'
               LABEL className: 'auth_section_label', 'By email address:'
@@ -2455,11 +2442,7 @@ Auth = ReactiveComponent
 
                 TR null,
                   TD {style: (if root.auth_mode == 'login_via_reset_password_token' then {width: '37%'} else {}), className: 'label_cell'},
-                    switch root.auth_mode
-                      when 'login'
-                        LABEL htmlFor: 'user_password', 'password:'
-                      when 'login_via_reset_password_token'
-                        LABEL htmlFor: 'user_password', 'new password:'
+                    LABEL htmlFor: 'user_password', "#{if root.auth_mode == 'login_via_reset_password_token' then 'new ' else ''}password:"
 
                   TD className: 'field_cell', 
                     password_input_field,
@@ -2475,10 +2458,7 @@ Auth = ReactiveComponent
                 TD className: 'label_cell',
                   LABEL htmlFor: 'user_name', 'Hi, my name is:'
                 TD className: 'field_cell', 
-                  if third_party_authenticated
-                    DIV null, current_user.name
-                  else 
-                    name_input_field
+                  name_input_field
 
               if third_party_authenticated 
                 p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
@@ -2521,7 +2501,7 @@ Auth = ReactiveComponent
                     FORM id: 'user_avatar_form', action: '/update_user_avatar_hack', 
 
                       DIV className: 'avatar_preview_enclosure',
-                        IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else null #todo: make sure that if user overrides image_url, that the new image is used
+                        IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else if current_user.b64_thumbnail then current_user.b64_thumbnail else null
 
                       INPUT id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
                         @submit_avatar_form = true
@@ -2546,14 +2526,23 @@ Auth = ReactiveComponent
                           INPUT className:"pledge-input", type:'checkbox', id:"pledge-#{idx}", name:"pledge-#{idx}"
                           LABEL htmlFor: "pledge-#{idx}", pledge
 
-        if current_user.errors && current_user.errors[root.auth_mode] && current_user.errors[root.auth_mode].length > 0
+        if current_user.errors && current_user.errors.length > 0
           DIV className: "auth_errors", 
             I className: 'fa fa-exclamation-circle'
-            SPAN null, "#{current_user.errors[root.auth_mode].join(', ')}"
+            SPAN null, "#{current_user.errors.join(', ')}"
 
         if root.auth_mode in ['login', 'register']
-          button = A className: 'toggle_auth', onClick: @toggleAuthMode,
-              if root.auth_mode == 'register' then 'Use an Existing Account' else 'Create an Account'
+          button = A 
+                    className: 'toggle_auth'
+                    onClick: => 
+                      current_user = fetch('/current_user')
+                      @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
+                      current_user.errors = []
+                      save(@root)                      
+                    if root.auth_mode == 'register'
+                      'Use an Existing Account' 
+                    else 
+                      'Create an Account'
 
           DIV className: 'switch_auth_mode',
             SPAN null,
@@ -2566,16 +2555,26 @@ Auth = ReactiveComponent
         DIV
           className:'auth_button primary_button' + (if @local.submitting then ' disabled' else '')
           onClick: @submitAuth
-          if root.auth_mode == 'register' then 'Create account' else 'Login'
-          if root.saving_opinion then ' and save your opinion'
+          if root.auth_mode == 'register'
+            'Create account' 
+          else if root.auth_mode == 'update'
+            'Update'
+          else 
+            'Login'
+          if root.auth_reason == 'Save your Opinion' then ' and save your opinion'
 
-        A 
-          className:'cancel_auth_button primary_cancel_button'
-          onClick: (=>
-            root.auth_mode = null
-            root.publish_this_opinion = null
-            save(root))
-        , 'cancel log in'
+        if root.auth_mode == 'update'
+          if @local.saved_successfully
+            SPAN style: {color: 'green'}, "Updated successfully"
+        else
+          A 
+            className:'cancel_auth_button primary_cancel_button'
+            onClick: (=>
+              root.auth_mode = null
+              root.publish_this_opinion = null
+              save(root))
+          , 'cancel log in'
+
 
   componentDidMount : -> 
     if $(@getDOMNode()).find('.auth_heading').length > 0
@@ -2600,18 +2599,11 @@ Auth = ReactiveComponent
         # the pledge.  The server tells us this via the existence of a
         # `user' object in current_user.
 
-        current_user = fetch('/current_user')
+        current_user = fetch '/current_user'
         if current_user.logged_in
           # We are logged in!  The user has completed registration.
+          @authCompleted()
 
-          if current_user.csrf
-            arest.csrf(current_user.csrf)  # Is this still needed?
-
-          if root.saving_opinion
-            setTimeout((() -> togglePage('results', 'after_save')), 700)
-            root.saving_opinion = false
-            root.auth_mode = null
-            save(root)
         else 
           # We still need to show the pledge!
           root.auth_mode = 'register'
@@ -2619,26 +2611,34 @@ Auth = ReactiveComponent
 
   submitAuth : (ev) -> 
     ev.preventDefault()
+    $el = $(@getDOMNode())
+
+    @local.submitting = true
+    save @local
+
     current_user = fetch('/current_user')
 
-    $el = $(@getDOMNode())
     current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
-    
     current_user.trying_to = @root.auth_mode
-    local = @local
-    local.submitting = true
-    save(local)
+    
+    save current_user, => 
+      if @root.auth_mode in ['register', 'update']
+        ensureCurrentUserAvatar()
 
+      if @root.auth_mode == 'update'
+        @local.saved_successfully = current_user.errors.length == 0        
+
+      # Once the user logs in, we will stop showing the log-in screen
+      else if current_user.logged_in
+        @authCompleted()
+
+      @local.submitting = false
+      save @local
 
     # hack for submitting file data in ActiveREST for now
     # we'll just submit the file form after user is signed in
     # TODO: investigate alternatives for submitting form data
     if @submit_avatar_form
-
-      save current_user, => 
-        local.submitting = false
-        save(local)
-        ensureCurrentUserAvatar()
 
       $('#user_avatar_form').ajaxSubmit
         type: 'PUT'
@@ -2646,37 +2646,29 @@ Auth = ReactiveComponent
           authenticity_token: current_user.csrf
           trying_to: 'update_avatar_hack'
 
-    else
-      save(current_user, =>
-        local.submitting = false
-        save(local))
-
-      if current_user.avatar_remote_url
-        ensureCurrentUserAvatar()
-
 
   sendResetPassword : -> 
 
     # Tell the server to email us a token
     current_user = fetch('/current_user')
     current_user.trying_to = 'send_password_reset_token'
-    save(current_user, =>
-      if not (current_user.errors?.reset_password?.length > 0)
+    save current_user, =>
+      if not (current_user.errors?.length > 0)
         # Switch to reset_password mode
         @root.auth_mode = 'login_via_reset_password_token'
         save(@root)
       else
-        # Tell the login screen to show the reset_password errors
-        current_user.errors.login = current_user.errors.reset_password
-        # console.log("Waiting for user to fix errors #{current_user.errors?.reset_password}")
+        # console.log("Waiting for user to fix errors #{current_user.errors?}")
         arest.updateCache(current_user)
-      )
-  toggleAuthMode : -> 
-    current_user = fetch('/current_user')
-    @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
-    current_user.errors = {}
-    save(@root)
+      
+  authCompleted : -> 
 
+    if @root.auth_reason == 'Save your Opinion'
+      setTimeout((() -> togglePage('results', 'after_save')), 700)
+
+    @root.auth_mode = @root.auth_reason = null
+
+    save @root
 
 
 ProposalSummary = ReactiveComponent
@@ -2895,6 +2887,7 @@ ProfileLink = ReactiveComponent
         ".profile_anchor { color: #{subdomain.branding.header_text_color} }"
 
       if current_user.logged_in
+        anchor_style = if !@local.menu then {backgroundColor: 'rgba(255,255,255, .1)', boxShadow: '0px 1px 1px rgba(0,0,0,.1)', borderRadius: 8, padding: '3px 4px'} else {padding: '3px 4px'}
         SPAN
           className: 'profile_menu_wrap'
           style:
@@ -2902,6 +2895,12 @@ ProfileLink = ReactiveComponent
           onMouseEnter: => @local.menu = true; save(@local)
           onMouseLeave: => @local.menu = false; save(@local)
           DIV className: 'profile_menu', style: {display: (if not @local.menu then 'none')},
+            A 
+              className: 'menu_link'
+              href: '/edit_profile'                
+              onClick: clickInternalLink
+              'Edit Profile'
+
             A 
               className: 'menu_link'
               href: '/dashboard/email_notifications'                
@@ -2945,16 +2944,18 @@ ProfileLink = ReactiveComponent
               'data-action': 'logout'
               onClick: @logout
               'Log out'
-          SPAN className: 'profile_anchor',
+
+          SPAN className: 'profile_anchor', style: anchor_style,
             Avatar key: current_user.user, hide_name: true, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
-            'Profile'
+            I className: 'fa fa-caret-down', style: {visibility: if @local.menu then 'hidden' else 'visible'}
       else
         A
           'className': 'profile_anchor'
           'data-action': 'login'
-          onClick: ((e) =>
+          onClick: (e) =>
             @root.auth_mode = 'login'
-            save(@root)),
+            @root.auth_reason = null            
+            save @root
           'Log in'
 
       #Avatar key: current_user.user, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
@@ -2964,6 +2965,9 @@ ProfileLink = ReactiveComponent
     current_user = fetch('/current_user')
     current_user.logged_in = false
     current_user.trying_to = 'logout'
+
+    if @root.auth_mode == 'update'
+      @root.page_name = 'homepage'
 
     @root.auth_mode = null
 
@@ -3332,7 +3336,7 @@ Page = ReactiveComponent
     avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
 
-    if @root.auth_mode
+    if @root.auth_mode && @root.auth_mode != 'update'
       return Auth()
 
     if subdomain.name == 'homepage' && @root.page_name == 'homepage'
@@ -3358,6 +3362,8 @@ Page = ReactiveComponent
               EditProposal key: "new_proposal", fresh: true
             else if @root.page_name.match(/(.+)\/edit/)
               EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
+            else if @root.page_name == 'edit_profile'
+              Auth()
             else if @root.page_name == 'dashboard/email_notifications'
               EmailNotificationSettings key: '/dashboard/email_notifications'
             else if @root.page_name == 'dashboard/assessment'
@@ -3503,13 +3509,16 @@ Router = Backbone.Router.extend
   routes :
     "(/)" : "homepage"
     "about(/)" : "about"
+    "edit_profile(/)" : "edit_profile"
     "proposal/new(/)" : "new_proposal"
     "proposal/:proposal/edit(/)": "edit_proposal"
     ":proposal(/)": "proposal"    
-    "dashboard/:dash(/)": 'dashboard'
+    "dashboard/:dash(/)": "dashboard"
 
   proposal : (slug, params) ->
     root = fetch('root')
+    resetState(root)
+
     root.page_name = slug
 
     #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
@@ -3529,12 +3538,8 @@ Router = Backbone.Router.extend
 
   homepage : (params) -> 
     root = fetch('root')
+    resetState(root)
     root.page_name = 'homepage'
-
-    #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
-    #      Right now activeREST doesn't allow wide consumption of a component's client state
-    #      if its data is synced with the server. 
-    clearRootForNonProposalRoute(root)
     save root
 
     writeToLog
@@ -3543,8 +3548,8 @@ Router = Backbone.Router.extend
 
   about : (params) ->
     root = fetch('root')
+    resetState(root)
     root.page_name = 'about'
-    clearRootForNonProposalRoute(root)
     save root
 
     writeToLog
@@ -3553,27 +3558,41 @@ Router = Backbone.Router.extend
 
   new_proposal : (params) ->
     root = fetch('root')
+    resetState(root)
     root.page_name = 'proposal/new'
-    clearRootForNonProposalRoute(root)
     save root
 
   edit_proposal : (id, params) ->
     root = fetch('root')
+    resetState(root)
     root.page_name = "proposal/#{id}/edit"
-    clearRootForNonProposalRoute(root)
     save root      
 
   dashboard : (dash, params) -> 
     root = fetch('root')
+    resetState(root)
     root.page_name = "dashboard/#{dash}"    
-    clearRootForNonProposalRoute(root)
     save root
 
+  edit_profile : (params) -> 
+    root = fetch('root')
+    resetState(root)
+
+    root.page_name = 'edit_profile'
+    root.auth_mode = 'update'
+    root.auth_reason = null
+
+    save root
 
 
 # Temporary method for handling resetting root state when switching between
 # routes. Remove once we have a better activeREST answer. 
-clearRootForNonProposalRoute = (root) ->
+resetState = (root) ->
+  root.auth_mode = null
+
+  #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
+  #      Right now activeREST doesn't allow wide consumption of a component's client state
+  #      if its data is synced with the server. 
   root.proposal_mode = null    
   root.selected_point = null
 

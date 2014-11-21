@@ -63,7 +63,7 @@ class SubdomainController < ApplicationController
       end
     end
 
-
+    current_user.add_to_active_in
     current_subdomain.update_attributes! attrs
 
     dirty_key '/subdomain'

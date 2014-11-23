@@ -174,9 +174,6 @@ GEM
     i18n (0.6.11)
     inflecto (0.0.2)
     ipaddress (0.8.0)
-    js-routes (0.9.9)
-      railties (>= 3.2)
-      sprockets-rails
     json (1.8.1)
     jwt (1.0.0)
     libv8 (3.16.14.7)
@@ -313,7 +310,6 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.6)
-    useragent (0.10.0)
     whenever (0.9.3)
       chronic (>= 0.6.3)
     xml-simple (1.1.4)
@@ -344,7 +340,6 @@ DEPENDENCIES
   guard (>= 2.2.2)
   guard-livereload
   haml
-  js-routes
   mailhopper
   mysql2
   newrelic_rpm
@@ -367,5 +362,4 @@ DEPENDENCIES
   therubyracer
   thin
   uglifier
-  useragent
   whenever

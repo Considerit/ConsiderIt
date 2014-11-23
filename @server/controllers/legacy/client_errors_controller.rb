@@ -23,6 +23,7 @@ class Legacy::ClientErrorsController < ApplicationController
 
     error_params = params['error']
 
+    # https://github.com/josh/useragent
     ua = UserAgent.parse(request.user_agent)
     more_params = {
       :session_id => request.session_options[:id],

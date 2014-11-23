@@ -15,20 +15,14 @@ class Proposal < ActiveRecord::Base
   include Followable, Moderatable
   
   self.moderatable_fields = [:name, :description, :long_description]
-  self.moderatable_objects = lambda { Proposal.published_web }
+  self.moderatable_objects = lambda { Proposal.where( :published => true) }
 
   class_attribute :my_public_fields, :my_summary_fields
   self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :publicity, :published, :seo_keywords, :seo_title, :seo_description]
 
   scope :active, -> {where( :active => true, :published => true )}
-  scope :inactive, -> {where( :active => false, :published => true )}
   scope :open_to_public, -> {where( :publicity => 2, :published => true )}
   scope :privately_shared, -> {where( 'publicity < 2')}
-  scope :public_fields, -> {select(self.my_public_fields)}
-  scope :unpublished, -> {where( :published => false)}
-  scope :published_web, -> {where( :published => true)}
-  scope :browsable, -> {where( :hide_on_homepage => false)}
-
 
 
   def self.summaries
@@ -50,7 +44,7 @@ class Proposal < ActiveRecord::Base
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
       proposals = current_subdomain.proposals.open_to_public.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
     else 
-      proposals = current_subdomain.proposals.open_to_public.browsable
+      proposals = current_subdomain.proposals.open_to_public.where(:hide_on_homepage => false)
     end
 
     clustered_proposals = {}

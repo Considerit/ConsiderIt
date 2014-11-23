@@ -10,7 +10,6 @@ gem 'actionpack-action_caching' # Required for caches_action on Avatars
 # AUTHENTICATION
 gem "bcrypt"
 gem 'omniauth-oauth2'
-# gem 'omniauth-twitter' 
 gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
 
@@ -31,10 +30,6 @@ gem 'paperclip' # https://github.com/thoughtbot/paperclip
 gem 'paperclip-compression'
 gem 'delayed_paperclip'
 gem 'font-awesome-rails', "~> 4.2.0"
-gem "js-routes" # https://github.com/railsware/js-routes
-
-# used for parsing useragent string for logging client errors
-gem 'useragent' # https://github.com/josh/useragent
 
 #############
 # PURE PERFORMANCE

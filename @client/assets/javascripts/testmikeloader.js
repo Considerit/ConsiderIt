@@ -6,8 +6,6 @@
 //= require vendor/underscore
 //= require vendor/backbone
 
-//= require js-routes
-
 //= require vendor/main/jquery.ui
 //= require_tree ./vendor/main
 

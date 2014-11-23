@@ -32,7 +32,7 @@ Subdomain.find_each do |subdomain|
       end
     end
 
-    subdomain.proposals.inactive.open_to_public.each do |prop|
+    subdomain.proposals.where( :active => false, :published => true ).open_to_public.each do |prop|
       next if prop.opinions.published.count == 0
       
       begin

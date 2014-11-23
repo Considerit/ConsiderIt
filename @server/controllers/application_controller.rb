@@ -239,7 +239,13 @@ protected
         slug = key[6..key.length]
         proposal = Proposal.find_by_slug slug
 
-        pointz = proposal.points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
+        if current_subdomain.moderate_points_mode == 1
+          moderation_status_check = 'moderation_status=1'
+        else 
+          moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+        end
+
+        pointz = proposal.points.where("(published=1 AND #{moderation_status_check}) OR user_id=#{current_user.id}")
         pointz = pointz.public_fields.map {|p| p.as_json}
 
         published_opinions = proposal.opinions.published
@@ -248,7 +254,6 @@ protected
         if published_opinions.where(:user_id => nil).count > 0
           throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
         end
-
 
         clean = { 
           your_opinions: current_user.opinions.map {|o| o.as_json},

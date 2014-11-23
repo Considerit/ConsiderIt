@@ -152,7 +152,9 @@ do ($, window, document) ->
           @options.placeholder.style['display'] = 'none'
 
       # Don't need to do anything if we're not actually stuck
-      return if !@is_stuck
+      if !@is_stuck
+        @last_viewport_top = viewport_top
+        return
 
       ######
       # HORIZONTAL ADJUSTMENTS
@@ -167,12 +169,18 @@ do ($, window, document) ->
       element_height = @$el.height() # check element's height each scroll event because it may have changed
       element_fits_in_viewport = element_height < (@viewport_height - @options.top_offset)
       element_bottom = @$el.offset().top + element_height #container_top + element_height
-      container_bottom = container_top + @options.container.height()
 
       if element_fits_in_viewport #the common case, often for an empty decision board or the proposal header
         translate_y = if @use_fixed_positioning then 0 else $(window).scrollTop() - @$el.offsetParent().offset().top
 
       else # if element doesn't fit in viewport, such as if you have a really full decision board
+
+        # The sticky positioning will be off if the sticky element is bigger than its container
+        # So we'll make the container bigger in that case. Note that this solution might not generalize.
+        
+        if element_height > @options.container.height()
+          @options.container.css('height', element_height)
+
         element_top = @$el.offset().top
 
         viewport_bottom = viewport_top + @viewport_height
@@ -190,16 +198,17 @@ do ($, window, document) ->
         # When scrolling down, simulate sticking to the bottom of the screen. 
         else           
           # if scrolled past the element bottom, we want to stick here
-          if effective_viewport_bottom >= element_bottom            
+          if effective_viewport_bottom >= element_bottom  
             translate_y = @translate_y + (effective_viewport_bottom - element_bottom) #adjustment is for scroll flicks
 
           # otherwise, we'll simulate scrolling down through this element with negative Y translation
           else 
             translate_y = @translate_y + (@last_viewport_top - viewport_top) #- (effective_viewport_top - container_top)
 
+      container_bottom = container_top + @options.container.height()
       # make sure that inertial scroll didn't force us to scroll past the bottom of the container
-      if element_bottom + (translate_y - @translate_y) + @options.bottom_offset > container_bottom
-        translate_y = container_bottom - element_bottom + @translate_y - @options.bottom_offset
+      if element_bottom + (translate_y - @translate_y) > container_bottom
+        translate_y = container_bottom - element_bottom + @translate_y
 
 
       # console.log ""

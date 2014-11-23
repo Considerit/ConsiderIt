@@ -39,8 +39,14 @@ class Comment < ActiveRecord::Base
   def self.comments_for_point(point)
     current_subdomain = Thread.current[:subdomain]
 
+    if current_subdomain.moderate_comments_mode == 1
+      moderation_status_check = 'moderation_status=1'
+    else 
+      moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+    end
+    
     comments = {
-      :comments => point.comments.where('moderation_status = 1 or moderation_status IS NULL'),
+      :comments => point.comments.where("#{moderation_status_check} OR user_id=#{current_user.id}"),
       :key => "/comments/#{point.id}"
     }
 

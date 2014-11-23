@@ -12,15 +12,8 @@ class ThirdPartyAuthHandler
     else 
       document.domain = document.domain # make sure it is explitly set
 
-
-    if provider == 'twitter'
-      url = Routes.user_omniauth_authorize_path provider,
-        x_auth_access_type : 'read'
-    else
-      url = Routes.user_omniauth_authorize_path provider
-
     @callback = callback
-    @popup = @openPopupWindow(url)
+    @popup = @openPopupWindow "/auth/#{provider}"
 
   pollLoginPopup : ->
     # try

@@ -330,7 +330,6 @@ class User < ActiveRecord::Base
 
     return if dest_user == source_user
     
-    remap_key("/user/#{source_user}", "/user/#{dest_user}")
     dirty_key("/current_user") # in case absorb gets called outside 
                                # of CurrentUserController
 

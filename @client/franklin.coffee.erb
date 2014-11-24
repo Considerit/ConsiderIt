@@ -2328,7 +2328,7 @@ Auth = ReactiveComponent
 
     password_input_field =
       input_box('password',
-                 if root.auth_mode == 'login' then "password" else "choose a new password",
+                 if root.auth_mode == 'login' then "password" else if root.auth_mode == 'register' then 'choose a password' else "choose a new password",
                  'password',
                  null,
                  if root.auth_mode == 'register' then ".{5,}" else '')

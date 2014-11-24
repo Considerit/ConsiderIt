@@ -39,7 +39,6 @@ class ProposalController < ApplicationController
     original_id = key_id(params[:key])
     result = proposal.as_json
     result['key'] = "/proposal/#{proposal.id}?original_id=#{original_id}"
-    remap_key(params[:key], "/proposal/#{proposal.id}")
 
     # dirty_key "/proposal/#{proposal.id}"
 

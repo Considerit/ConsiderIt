@@ -44,7 +44,6 @@ notify_point = Proc.new do |data|
   mail_options = data[:mail_options]
 
   voters = proposal.opinions.published.select(:user_id).uniq.map {|x| x.user_id }
-
   proposal.followers.each do |u|
     next if !send_email_to_user(u)
 
@@ -65,6 +64,7 @@ notify_point = Proc.new do |data|
       notification_type = 'lurker'
     end
 
+    pp 'Emailing: ', u.email
     EventMailer.new_point(u, point, mail_options, notification_type).deliver!
 
   end

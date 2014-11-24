@@ -1,11 +1,5 @@
-
-#TODO: probably should rename this controller "HTMLController" or something, and move the avatar stuff elsewhere
-
-class HomeController < ApplicationController
-
-  caches_action :avatars, :cache_path => proc {|c|
-    {:tag => "avatars-#{current_subdomain.id}-#{Rails.cache.read("avatar-digest-#{current_subdomain.id}")}-#{session[:search_bot]}"}
-  }
+class HtmlController < ApplicationController
+  respond_to :html
 
   def index
     
@@ -61,7 +55,7 @@ class HomeController < ApplicationController
     end
 
     if current_subdomain.name == 'homepage' && request.path == '/'
-      render "home/homepage", :layout => false
+      render "layouts/homepage", :layout => false
     else
       render "layouts/application", :layout => false
     end
@@ -72,22 +66,9 @@ class HomeController < ApplicationController
     render "layouts/testmike", :layout => false
   end
 
-  def avatars
-    # don't fetch avatars for search bots
-    respond_to do |format|
-      @user = User
-      avatars = session[:search_bot] ? '' : render_to_string(:partial => 'home/avatars') 
-      format.json { 
-        render :json => {
-          key: '/avatars',
-          avatars: avatars
-        }
-      }
-    end
-  end
 
   private
-  
+
   #### Set meta tag info ####
   # Hardcoded for now. 
   # TODO: store subdomain meta data in the database

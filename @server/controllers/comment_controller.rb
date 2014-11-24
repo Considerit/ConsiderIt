@@ -48,7 +48,6 @@ class CommentController < ApplicationController
         original_id = key_id(params[:key])
         result = comment.as_json
         result['key'] = "/comment/#{comment.id}?original_id=#{original_id}"
-        remap_key(params[:key], "/comment/#{comment.id}")
         dirty_key "/comments/#{point.id}"
 
         point.follow!(current_user, :follow => true, :explicit => false)

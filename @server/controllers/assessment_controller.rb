@@ -122,7 +122,6 @@ class AssessmentController < ApplicationController
     original_id = key_id(params[:key])
     result = request.as_json
     result['key'] = "/request/#{request.id}?original_id=#{original_id}"
-    remap_key(params[:key], "/request/#{request.id}")
 
     dirty_key "/comments/#{point.id}"
 

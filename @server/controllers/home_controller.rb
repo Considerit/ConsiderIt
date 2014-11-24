@@ -86,6 +86,8 @@ class HomeController < ApplicationController
     end
   end
 
+  private
+  
   #### Set meta tag info ####
   # Hardcoded for now. 
   # TODO: store subdomain meta data in the database

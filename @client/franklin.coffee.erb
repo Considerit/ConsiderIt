@@ -2368,212 +2368,214 @@ Auth = ReactiveComponent
                  'I will speak only on behalf of myself', 
                  'I will not attack or mock others']
 
-    DIV
-      className:'auth_region focal_wrapper'
-      style: 
-        margin: 'auto'
-        position: 'relative'
-        display: 'block'
-        #left: '50%'
-        width: DECISION_BOARD_WIDTH
-        #marginLeft: -DECISION_BOARD_WIDTH / 2        
-      onClick: (e) => e.stopPropagation()
-
+    DIV null,
       if @root.auth_mode == 'update'
-        DashHeader 'Edit Profile'
-      else
-        DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
-          DIV 
-            className:'auth_heading'
-            style: 
-              visibility: 'visible'
-              left: HISTOGRAM_WIDTH / 2.0
-              marginLeft: -225
-              width: 450
-              fontSize: 50
-              position: 'relative'
+        DashHeader name: 'Edit Profile'
 
-            'Introduce Yourself' 
-            if @root.auth_reason
-              DIV style: {fontSize: 18, margin: '-8px 0 15px 0'},
-                "To #{@root.auth_reason}"
+      DIV
+        className:'auth_region focal_wrapper'
+        style: 
+          margin: 'auto'
+          position: 'relative'
+          display: 'block'
+          #left: '50%'
+          width: DECISION_BOARD_WIDTH
+          #marginLeft: -DECISION_BOARD_WIDTH / 2        
+        onClick: (e) => e.stopPropagation()
 
-          DIV className: 'the_handle', style: {left: 255}
-          IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
+        if @root.auth_mode != 'update'
+          DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
+            DIV 
+              className:'auth_heading'
+              style: 
+                visibility: 'visible'
+                left: HISTOGRAM_WIDTH / 2.0
+                marginLeft: -225
+                width: 450
+                fontSize: 50
+                position: 'relative'
 
-      DIV className:"auth" + (if @root.auth_mode != 'update' then ' decision_board_body' else '') + (if @local.submitting then ' waiting' else ''),
-        if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
-          DIV className: 'third_party_auth',
-            LABEL className: 'third_party_call', 'Instantly:'
-            for provider in providers
-              do (provider) =>
-                BUTTON className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
-                  I className: "fa fa-#{provider}"
-                  SPAN null, provider
+              'Introduce Yourself' 
+              if @root.auth_reason
+                DIV style: {fontSize: 18, margin: '-8px 0 15px 0'},
+                  "To #{@root.auth_reason}"
 
-            DIV className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
+            DIV className: 'the_handle', style: {left: 255}
+            IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
 
-        if root.auth_mode in ['login', 'login_via_reset_password_token']
-          DIV null, 
-            if root.auth_mode == 'login'
-              LABEL className: 'auth_section_label', 'By email address:'
-            else
-              DIV null,
-                LABEL className: 'reset_password_section_label', 'Reset your password'
-                DIV style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
-            TABLE className: 'auth_fields login',
-              TBODY null,
-                if root.auth_mode == 'login_via_reset_password_token'
+        DIV className:"auth" + (if @root.auth_mode != 'update' then ' decision_board_body' else '') + (if @local.submitting then ' waiting' else ''),
+          if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
+            DIV className: 'third_party_auth',
+              LABEL className: 'third_party_call', 'Instantly:'
+              for provider in providers
+                do (provider) =>
+                  BUTTON className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
+                    I className: "fa fa-#{provider}"
+                    SPAN null, provider
+
+              DIV className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
+
+          if root.auth_mode in ['login', 'login_via_reset_password_token']
+            DIV null, 
+              if root.auth_mode == 'login'
+                LABEL className: 'auth_section_label', 'By email address:'
+              else
+                DIV null,
+                  LABEL className: 'reset_password_section_label', 'Reset your password'
+                  DIV style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
+              TABLE className: 'auth_fields login',
+                TBODY null,
+                  if root.auth_mode == 'login_via_reset_password_token'
+                    TR null,
+                      TD null, 'We just emailed you a code. Enter it here:'
+                    TR null, 
+                      TD className: 'label_cell', 
+                        LABEL htmlFor: 'user_verification_code', 'code:'
+
+                      TD className: 'field_cell', 
+                        reset_password_token_field,
+                        DIV className: 'password_verification_explanation', "Find code in an email just sent to you."
+                  else
+                    TR null,
+                      TD className: 'label_cell',
+                        LABEL htmlFor: 'user_email', 'email:'
+                      TD className: 'field_cell',
+                        email_input_field
+
                   TR null,
-                    TD null, 'We just emailed you a code. Enter it here:'
-                  TR null, 
-                    TD className: 'label_cell', 
-                      LABEL htmlFor: 'user_verification_code', 'code:'
+                    TD {style: (if root.auth_mode == 'login_via_reset_password_token' then {width: '37%'} else {}), className: 'label_cell'},
+                      LABEL htmlFor: 'user_password', "#{if root.auth_mode == 'login_via_reset_password_token' then 'new ' else ''}password:"
 
                     TD className: 'field_cell', 
-                      reset_password_token_field,
-                      DIV className: 'password_verification_explanation', "Find code in an email just sent to you."
-                else
-                  TR null,
-                    TD className: 'label_cell',
-                      LABEL htmlFor: 'user_email', 'email:'
-                    TD className: 'field_cell',
-                      email_input_field
-
-                TR null,
-                  TD {style: (if root.auth_mode == 'login_via_reset_password_token' then {width: '37%'} else {}), className: 'label_cell'},
-                    LABEL htmlFor: 'user_password', "#{if root.auth_mode == 'login_via_reset_password_token' then 'new ' else ''}password:"
-
-                  TD className: 'field_cell', 
-                    password_input_field,
-                    if root.auth_mode == 'login'
-                      A className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
+                      password_input_field,
+                      if root.auth_mode == 'login'
+                        A className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
 
 
-        else 
-          # creating new account
-          TABLE className: 'auth_fields register', 
-            TBODY null,
-              TR null, 
-                TD className: 'label_cell',
-                  LABEL htmlFor: 'user_name', 'Hi, my name is:'
-                TD className: 'field_cell', 
-                  name_input_field
-
-              if third_party_authenticated 
-                p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
-                TR null, 
-
-                  TD className: 'label_cell',
-                    LABEL htmlFor: 'user_provider', 
-                      if third_party_authenticated then 'I login via:' else 'I login as:'
-                  TD className: 'field_cell', 
-                    BUTTON className: "third_party_option #{p}", style: {cursor: 'default'},
-                      I className: "fa fa-#{p}"
-                      SPAN null, p
-
-              else
-
-                TR null, 
-
-                  TD className: 'label_cell',
-                    LABEL htmlFor: 'user_email', 'I login as:'
-                  TD className: 'field_cell', 
-                    if !Modernizr.input.placeholder
-                      LABEL htmlFor: 'user_email', 'Email:'
-                    email_input_field,
-
-                    if !Modernizr.input.placeholder
-                      LABEL htmlFor: 'user_password', 'Password:'
-                    password_input_field
-
-              # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
-              if window.FormData
-
-                TR null, 
-                  TD className: 'label_cell', 
-                    LABEL htmlFor: 'user_avatar', 'I look like this:'
-                  TD className: 'field_cell',
-                    # hack for submitting file data in ActiveREST for now
-                    # we'll just submit the file form after user is signed in
-
-
-                    FORM id: 'user_avatar_form', action: '/update_user_avatar_hack', 
-
-                      DIV className: 'avatar_preview_enclosure',
-                        IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else if current_user.b64_thumbnail then current_user.b64_thumbnail else null
-
-                      INPUT id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
-                        @submit_avatar_form = true
-                        input = $('#user_avatar')[0]
-                        if input.files && input.files[0]
-                          reader = new FileReader()
-                          reader.onload = (e) ->
-                            $("#avatar_preview").attr 'src', e.target.result
-                          reader.readAsDataURL input.files[0]
-                          #current_user.avatar = input.files[0]
-                        else
-                          $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
-
-              if subdomain.has_civility_pledge && root.auth_mode != 'update'
-                TR null,
-                  TD className: 'label_cell', 
-                    LABEL null, 'Community pledge:'
-                  TD className: 'field_cell',
-                    UL className: 'pledges',
-                      for pledge, idx in pledges
-                        LI className: 'pledge', 
-                          INPUT className:"pledge-input", type:'checkbox', id:"pledge-#{idx}", name:"pledge-#{idx}"
-                          LABEL htmlFor: "pledge-#{idx}", pledge
-
-        if current_user.errors && current_user.errors.length > 0
-          DIV className: "auth_errors", 
-            I className: 'fa fa-exclamation-circle'
-            SPAN null, "#{current_user.errors.join(', ')}"
-
-        if root.auth_mode in ['login', 'register']
-          button = A 
-                    className: 'toggle_auth'
-                    onClick: => 
-                      current_user = fetch('/current_user')
-                      @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
-                      current_user.errors = []
-                      save(@root)                      
-                    if root.auth_mode == 'register'
-                      'Use an Existing Account' 
-                    else 
-                      'Create an Account'
-
-          DIV className: 'switch_auth_mode',
-            SPAN null,
-              if root.auth_mode == 'register'
-                ['Or ', button, ' if you have one already']
-              else
-                ['Or ', button, ' if you need one']
-
-      DIV null, 
-        DIV
-          className:'auth_button primary_button' + (if @local.submitting then ' disabled' else '')
-          onClick: @submitAuth
-          if root.auth_mode == 'register'
-            'Create account' 
-          else if root.auth_mode == 'update'
-            'Update'
           else 
-            'Login'
-          if root.auth_reason == 'Save your Opinion' then ' and save your opinion'
+            # creating new account
+            TABLE className: 'auth_fields register', 
+              TBODY null,
+                TR null, 
+                  TD className: 'label_cell',
+                    LABEL htmlFor: 'user_name', 'Hi, my name is:'
+                  TD className: 'field_cell', 
+                    name_input_field
 
-        if root.auth_mode == 'update'
-          if @local.saved_successfully
-            SPAN style: {color: 'green'}, "Updated successfully"
-        else
-          A 
-            className:'cancel_auth_button primary_cancel_button'
-            onClick: (=>
-              root.auth_mode = null
-              root.publish_this_opinion = null
-              save(root))
-          , 'cancel log in'
+                if third_party_authenticated 
+                  p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
+                  TR null, 
+
+                    TD className: 'label_cell',
+                      LABEL htmlFor: 'user_provider', 
+                        if third_party_authenticated then 'I login via:' else 'I login as:'
+                    TD className: 'field_cell', 
+                      BUTTON className: "third_party_option #{p}", style: {cursor: 'default'},
+                        I className: "fa fa-#{p}"
+                        SPAN null, p
+
+                else
+
+                  TR null, 
+
+                    TD className: 'label_cell',
+                      LABEL htmlFor: 'user_email', 'I login as:'
+                    TD className: 'field_cell', 
+                      if !Modernizr.input.placeholder
+                        LABEL htmlFor: 'user_email', 'Email:'
+                      email_input_field,
+
+                      if !Modernizr.input.placeholder
+                        LABEL htmlFor: 'user_password', 'Password:'
+                      password_input_field
+
+                # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
+                if window.FormData
+
+                  TR null, 
+                    TD className: 'label_cell', 
+                      LABEL htmlFor: 'user_avatar', 'I look like this:'
+                    TD className: 'field_cell',
+                      # hack for submitting file data in ActiveREST for now
+                      # we'll just submit the file form after user is signed in
+
+
+                      FORM id: 'user_avatar_form', action: '/update_user_avatar_hack', 
+
+                        DIV className: 'avatar_preview_enclosure',
+                          IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else if current_user.b64_thumbnail then current_user.b64_thumbnail else null
+
+                        INPUT id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
+                          @submit_avatar_form = true
+                          input = $('#user_avatar')[0]
+                          if input.files && input.files[0]
+                            reader = new FileReader()
+                            reader.onload = (e) ->
+                              $("#avatar_preview").attr 'src', e.target.result
+                            reader.readAsDataURL input.files[0]
+                            #current_user.avatar = input.files[0]
+                          else
+                            $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
+
+                if subdomain.has_civility_pledge && root.auth_mode != 'update'
+                  TR null,
+                    TD className: 'label_cell', 
+                      LABEL null, 'Community pledge:'
+                    TD className: 'field_cell',
+                      UL className: 'pledges',
+                        for pledge, idx in pledges
+                          LI className: 'pledge', 
+                            INPUT className:"pledge-input", type:'checkbox', id:"pledge-#{idx}", name:"pledge-#{idx}"
+                            LABEL htmlFor: "pledge-#{idx}", pledge
+
+          if current_user.errors && current_user.errors.length > 0
+            DIV className: "auth_errors", 
+              I className: 'fa fa-exclamation-circle'
+              SPAN null, "#{current_user.errors.join(', ')}"
+
+          if root.auth_mode in ['login', 'register']
+            button = A 
+                      className: 'toggle_auth'
+                      onClick: => 
+                        current_user = fetch('/current_user')
+                        @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
+                        current_user.errors = []
+                        save(@root)                      
+                      if root.auth_mode == 'register'
+                        'Use an Existing Account' 
+                      else 
+                        'Create an Account'
+
+            DIV className: 'switch_auth_mode',
+              SPAN null,
+                if root.auth_mode == 'register'
+                  ['Or ', button, ' if you have one already']
+                else
+                  ['Or ', button, ' if you need one']
+
+        DIV null, 
+          DIV
+            className:'auth_button primary_button' + (if @local.submitting then ' disabled' else '')
+            onClick: @submitAuth
+            if root.auth_mode == 'register'
+              'Create account' 
+            else if root.auth_mode == 'update'
+              'Update'
+            else 
+              'Login'
+            if root.auth_reason == 'Save your Opinion' then ' and save your opinion'
+
+          if root.auth_mode == 'update'
+            if @local.saved_successfully
+              SPAN style: {color: 'green'}, "Updated successfully"
+          else
+            A 
+              className:'cancel_auth_button primary_cancel_button'
+              onClick: (=>
+                root.auth_mode = null
+                root.publish_this_opinion = null
+                save(root))
+            , 'cancel log in'
 
 
   componentDidMount : -> 
@@ -3242,46 +3244,47 @@ EmailNotificationSettings = ReactiveComponent
     current_user = fetch('/current_user')
 
     # TODO: listing each followable and making it unfollowable
-    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
-      DashHeader 'Email Notification Settings'
+    DIV null,
+      DashHeader name: 'Email Notification Settings'
+      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'}, 
 
-      DIV null,
-        INPUT 
-          id: 'no_email_notifications'
-          name: 'no_email_notifications'
-          type: 'checkbox'
-          defaultChecked: !current_user.no_email_notifications
-          onChange: (e) => 
-            current_user.no_email_notifications = !$('#no_email_notifications').is(':checked')
-            save current_user
-        LABEL htmlFor: 'no_email_notifications', 'Receive email notifications'
+        DIV null,
+          INPUT 
+            id: 'no_email_notifications'
+            name: 'no_email_notifications'
+            type: 'checkbox'
+            defaultChecked: !current_user.no_email_notifications
+            onChange: (e) => 
+              current_user.no_email_notifications = !$('#no_email_notifications').is(':checked')
+              save current_user
+          LABEL htmlFor: 'no_email_notifications', 'Receive email notifications'
 
-      if !current_user.no_email_notifications
-        if _.flatten(_.values(data.follows)).length == 0
-          DIV null, 'You\'re not currently receiving any email notifications'
-        else
-          DIV null,
-            H1 style: {fontSize: 24, margin: '10px 0'}, "This is what you receive email notifications about:"
+        if !current_user.no_email_notifications
+          if _.flatten(_.values(data.follows)).length == 0
+            DIV null, 'You\'re not currently receiving any email notifications'
+          else
+            DIV null,
+              H1 style: {fontSize: 24, margin: '10px 0'}, "This is what you receive email notifications about:"
 
-            for followable_type in ['Point', 'Proposal']
-              if data.follows[followable_type].length > 0
-                DIV null,
-                  H1 style: {fontSize: 18, margin: '10px 0'}, "#{followable_type}s"
-                  for follow in data.follows[followable_type]
-                    followable = fetch(follow)
-                    DIV style: {margin: '20px 0'}, 
-                      if followable_type == 'Point'
-                        Point key: followable, rendered_as: 'under_review'
-                      else 
-                        BLOCKQUOTE null,
-                          followable.name
-                      BUTTON 
-                        style: {fontSize: 18}
-                        onClick: do(followable) => => 
-                          followable.is_following = false
-                          save followable
-                          arest.serverFetch '/dashboard/email_notifications' # don't want to have to dirty this key whenever a point or proposal is updated
-                        'unsubscribe'
+              for followable_type in ['Point', 'Proposal']
+                if data.follows[followable_type].length > 0
+                  DIV null,
+                    H1 style: {fontSize: 18, margin: '10px 0'}, "#{followable_type}s"
+                    for follow in data.follows[followable_type]
+                      followable = fetch(follow)
+                      DIV style: {margin: '20px 0'}, 
+                        if followable_type == 'Point'
+                          Point key: followable, rendered_as: 'under_review'
+                        else 
+                          BLOCKQUOTE null,
+                            followable.name
+                        BUTTON 
+                          style: {fontSize: 18}
+                          onClick: do(followable) => => 
+                            followable.is_following = false
+                            save followable
+                            arest.serverFetch '/dashboard/email_notifications' # don't want to have to dirty this key whenever a point or proposal is updated
+                          'unsubscribe'
 
 Root = ReactiveComponent
   displayName: 'Root'

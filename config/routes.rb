@@ -13,14 +13,14 @@ ConsiderIt::Application.routes.draw do
   if Rails.env.development?
 
     ## Test controller for nonactiverest
-    get '/activemike' => 'home#activemike'
+    get '/activemike' => 'html#activemike'
 
     ## Development dashboard; right now it lets you easily switch between subdomains
     get '/change_subdomain/:id' => 'developer#change_default_subdomain', :as => 'change_subdomain'
   end
 
   # Third party oauth routes. These go before 
-  # the home controller non-json catch all because 
+  # the html controller non-json catch all because 
   # oauth submits an HTML GET request back to the server 
   # with the user data, which is handled by 
   # CurrentUserController#third_party_callback.
@@ -37,9 +37,9 @@ ConsiderIt::Application.routes.draw do
     via: [:get, :post]
 
 
-  # All user-visible URLs go to the "home" controller, which serves an
+  # All user-visible URLs go to the html controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
-  get '(*url)' => 'home#index', :constraints => NotJSON.new
+  get '(*url)' => 'html#index', :constraints => NotJSON.new
 
   # Here's the entire JSON API:
   resources :page, :only => [:show]
@@ -68,7 +68,7 @@ ConsiderIt::Application.routes.draw do
   get 'current_user' => 'current_user#show'
   match 'current_user' => 'current_user#update', :via => [:put]
 
-  get '/avatars' => "home#avatars"
+  get '/avatars' => "user#avatars"
 
   # This is for the special /opinion/current_user/234:
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]

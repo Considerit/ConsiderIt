@@ -4,7 +4,6 @@ source 'http://rubygems.org'
 # CORE
 gem 'rails', '~>4'
 gem 'actionpack-action_caching' # Required for caches_action on Avatars
-#gem 'redis-rails' #session storage
 
 #############
 # AUTHENTICATION
@@ -16,7 +15,6 @@ gem 'omniauth-google-oauth2'
 #############
 # AUTHORIZATION
 gem 'cancan' #https://github.com/ryanb/cancan
-# gem 'role_model' #http://rubydoc.info/gems/role_model/0.7.1/frames
 
 #############
 # DATABASE & DATABASE MIDDLEWARE
@@ -54,17 +52,11 @@ gem 'backup' #https://github.com/meskyanichi/backup
 gem 'sprockets'
 gem 'sprockets-rails', :require => 'sprockets/railtie'
 gem "therubyracer", :require => 'v8' #coffeescript dependency that gives Ruby interface to v8 javascript engine 
-gem 'coffee-rails' #, "~> 3.2.2"
+gem 'coffee-rails'
 gem 'uglifier'
 gem 'sass-rails', "~> 4.0.3"
 gem 'bourbon'
 gem "asset_sync"
-
-
-##############
-# SEO
-gem 'sitemap_generator' # creates sitemaps for you. Defined in config/sitemap.rb
-gem 'prerender_rails' # takes html snapshots of pages and serves them to search bots
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
@@ -83,4 +75,10 @@ group :production do
   gem "aws-ses", "~> 0.6.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
   gem 'aws-sdk'
   gem 'dalli' # memcaching: https://github.com/mperham/dalli/
+
+  ##############
+  # SEO
+  gem 'sitemap_generator' # creates sitemaps for you. Defined in config/sitemap.rb
+  gem 'prerender_rails' # takes html snapshots of pages and serves them to search bots
+
 end

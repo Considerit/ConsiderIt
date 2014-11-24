@@ -137,13 +137,16 @@ class Proposal < ActiveRecord::Base
     explicit_no = explicit.all.select {|f| !f.follow}.map {|f| f.user_id}
     explicit_yes = explicit.all.select {|f| f.follow}.map {|f| f.user}
 
-    implicit_yes = opinions.where(:published => true).where("user_id NOT IN (?)", explicit_no).all.map {|o| o.user}
+    implicit_yes = opinions.where(:published => true)
+    if explicit_no.count > 0 
+      implicit_yes = implicit_yes.where("user_id NOT IN (?)", explicit_no).all.map {|o| o.user}
+    end
+    implicit_yes = implicit_yes.map {|o| o.user}
 
     all_followers = explicit_yes + implicit_yes
 
     all_followers.uniq
   end
-
 
   def title(max_len = 140)
     if name && name.length > 0

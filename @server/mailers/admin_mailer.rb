@@ -1,6 +1,6 @@
 require 'mail'
 
-class AlertMailer < Mailer
+class AdminMailer < Mailer
 
   #### MODERATION ####
   def content_to_moderate(user, subdomain)
@@ -8,8 +8,6 @@ class AlertMailer < Mailer
     @host = subdomain.host_with_port
     @url = dashboard_moderate_url(:host => @host)
     @subdomain = subdomain
-
-    return unless valid_email(user)
 
     subject = "Pending content to moderate"
 
@@ -26,8 +24,6 @@ class AlertMailer < Mailer
     @url = dashboard_assessment_url(:host => @host)
     @assessment = assessment
     @subdomain = subdomain
-
-    return unless valid_email(user)
 
     subject = "A new fact check request"
 

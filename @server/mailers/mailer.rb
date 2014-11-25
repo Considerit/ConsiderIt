@@ -2,12 +2,6 @@ class Mailer < ActionMailer::Base
   ActionMailer::Base.delivery_method = :mailhopper  
   layout 'email'
 
-  protected
-
-    def valid_email(user)
-      return !!(user.email && !user.email.match('\.ghost'))
-    end
-
   private
 
     def format_email(addr, name = nil)

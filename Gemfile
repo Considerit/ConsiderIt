@@ -44,7 +44,6 @@ gem "daemons"
 gem 'mailhopper' # https://github.com/cerebris/mailhopper
 gem 'delayed_mailhopper' # https://github.com/cerebris/delayed_mailhopper
 gem 'actionmailer-with-request' # https://github.com/weppos/actionmailer_with_request
-gem 'premailer-rails' # https://github.com/fphilipe/premailer-rails
 gem 'backup' #https://github.com/meskyanichi/backup
 
 #############

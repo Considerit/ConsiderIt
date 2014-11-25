@@ -17,6 +17,9 @@ ConsiderIt::Application.routes.draw do
 
     ## Development dashboard; right now it lets you easily switch between subdomains
     get '/change_subdomain/:id' => 'developer#change_default_subdomain', :as => 'change_subdomain'
+  
+    get '/rails/mailers' => "rails/mailers#index"
+    get '/rails/mailers/*path'   => "rails/mailers#preview"
   end
 
   # Third party oauth routes. These go before 
@@ -81,7 +84,7 @@ ConsiderIt::Application.routes.draw do
 
   get "/dashboard/moderate" => 'moderation#index'
   match "/moderation/:id" => 'moderation#update', :via => :put
-  post '/dashboard/message' => 'message#create', :as => 'message'
+  post '/dashboard/message' => 'direct_message#create', :as => 'message'
 
   get 'user_avatar_hack' => 'current_user#user_avatar_hack'
   match 'update_user_avatar_hack' => 'current_user#update_user_avatar_hack', :via => [:put]

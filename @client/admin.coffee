@@ -665,7 +665,7 @@ ModerateItem = ReactiveComponent
                 onClick: (=> @local.messaging = moderatable; save(@local)),
                 'Message author']
             else if @local.messaging
-              EmailMessage to: @local.messaging.user, parent: @local
+              DirectMessage to: @local.messaging.user, parent: @local
 
 
 
@@ -841,7 +841,7 @@ FactcheckPoint = ReactiveComponent
                 onClick: (=> @local.messaging = point; save(@local)),
                 'Message author']
             else if @local.messaging == point
-              EmailMessage to: @local.messaging.user, parent: @local
+              DirectMessage to: @local.messaging.user, parent: @local
 
 
         # requests area
@@ -869,7 +869,7 @@ FactcheckPoint = ReactiveComponent
                       onClick: (=> @local.messaging = request; save(@local)),
                       'Message requester']
                   else if @local.messaging == request
-                    EmailMessage to: @local.messaging.user, parent: @local
+                    DirectMessage to: @local.messaging.user, parent: @local
 
         # claims area
         DIV style: task_area_section_style, 
@@ -980,8 +980,8 @@ FactcheckPoint = ReactiveComponent
 
     save assessment
 
-EmailMessage = ReactiveComponent
-  displayName: 'EmailMessage'
+DirectMessage = ReactiveComponent
+  displayName: 'DirectMessage'
 
   render : -> 
     text_style = 

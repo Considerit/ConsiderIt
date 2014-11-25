@@ -6,8 +6,8 @@
   %head{ :profile => "http://gmpg.org/xfn/1" }
 
   %body
-    #content{style: "font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; background-color: #{branding['primary_color']}; color: white; text-align: center; padding: 20px 0"}
-      %h1{style: 'font-weight: 600'}
+    #content{style: "font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; background-color: #{branding['primary_color']}; color: white; text-align: center; padding: 10px 0"}
+      %h1{style: 'font-weight: 600; margin: 0; padding: 0'}
         %a{href: @subdomain.host_with_port, style: 'color: white'}
           = @subdomain.app_title
 

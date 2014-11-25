@@ -1551,8 +1551,8 @@ Point = ReactiveComponent
   # point in the Histogram.
   highlightIncluders : -> 
     if fetch('root').proposal_mode == 'results'
-      includers = @data().includers
       point = @data()
+      includers = point.includers
 
       # For point authors who chose not to sign their points, remove them from 
       # the users to highlight. This is particularly important if the author 
@@ -1560,14 +1560,14 @@ Point = ReactiveComponent
       # anyone to discover who wrote this point. 
       if point.hide_name
         includers = _.without includers, point.user
-      hist = @data('histogram')
+      hist = fetch 'histogram'
       if hist.highlighted_users != includers
         hist.highlighted_users = includers
         save(hist)
 
   unHighlightIncluders : -> 
     if fetch('root').proposal_mode == 'results'
-      hist = @data('histogram')
+      hist = fetch 'histogram'
       hist.highlighted_users = null
       save(hist)
 
@@ -1578,10 +1578,10 @@ Point = ReactiveComponent
     to_remove = [point.user]
 
     # only show includers from this stance segment if a segment is selected
-    selected_segment = @data('histogram').selected_segment
+    selected_segment = fetch('histogram').selected_segment
     if selected_segment?
       for includer in point.includers
-        stance_segment = @data(userOpinion(includer)).stance_segment
+        stance_segment = fetch(userOpinion(includer)).stance_segment
 
         if stance_segment && stance_segment != selected_segment
           to_remove.push(includer)
@@ -1674,8 +1674,8 @@ FactCheck = ReactiveComponent
             ' about the service.'
 
         for claim_key in assessment.claims
-          claim = @data(claim_key)
-          verdict = @data(claim.verdict)
+          claim = fetch(claim_key)
+          verdict = fetch(claim.verdict)
 
           [DIV style: {margin: '10px 0'}, 
             IMG style: {position: 'absolute', width: 25, left: -40}, src: verdict.icon
@@ -1982,7 +1982,7 @@ SubmitFactCheck = ReactiveComponent
         a_librarian_will_respond()
           
     request_completed = =>
-      overall_verdict = @data(@discussion.assessment.verdict)
+      overall_verdict = fetch(@discussion.assessment.verdict)
 
       [
         DIV style: top_message_style,
@@ -2163,7 +2163,7 @@ EditPoint = ReactiveComponent
 
     # This is a kludge cause activerest sucks for pre-rendering
     # changes before the server returns them
-    @data(@proposal.your_opinion).point_inclusions.push(point.key)
+    fetch(@proposal.your_opinion).point_inclusions.push(point.key)
     re_render([@proposal.your_opinion])
 
   handleAddPointCancel : (ev) -> @done()
@@ -2266,7 +2266,7 @@ AutoGrowTextArea = ReactiveComponent
 
 CharacterCountTextInput = ReactiveComponent
   displayName: 'CharacterCountTextInput'
-  componentWillMount : -> @data(@local_key).count = 0
+  componentWillMount : -> fetch(@local_key).count = 0
   render : -> 
     class_name = "is_counted"
     DIV style: {position: 'relative'}, 
@@ -2677,7 +2677,7 @@ ProposalSummary = ReactiveComponent
   displayName: 'ProposalSummary'
 
   render : ->
-    subdomain = @data('/subdomain')
+    subdomain = fetch('/subdomain')
 
     proposal = @data()
     hover_class = if @local.hovering_on == proposal.id then 'hovering' else ''

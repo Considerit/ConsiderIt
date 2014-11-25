@@ -1,41 +1,34 @@
 
 
-%p.head
-  #{@user.first_name}, 
-
+%p
   - if @notification_type == 'your point'
-    #{@comment.user.name} commented on your #{@point.is_pro ? 'pro' : 'con'} point. 
+    #{@comment.user.name} commented on 
+    = succeed ':' do
+      %a{href: "#{@host}/#{@proposal.slug}/?selected=%2Fpoint%2F#{@point.id}&z=1", style: 'font-weight: 700; color: #468EE5;'} your point
 
   - elsif @notification_type == 'participant'
-    #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you also commented on. 
+    #{@comment.user.name} commented on 
+    %a{href: "#{@host}/#{@proposal.slug}/?selected=%2Fpoint%2F#{@point.id}&z=1", style: 'font-weight: 700; color: #468EE5;'} a point
+    that you also commented:
 
-  - elsif @notification_type == 'included point'
-
-    #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you follow.
-
-  - elsif @notification_type == 'lurker'
-
-    #{@comment.user.name} commented on a #{@point.is_pro ? 'pro' : 'con'} point that you follow.
-
-%p 
-  The new comment: 
-  .object
-    &ldquo;#{strip_tags(@comment.body.gsub('</p><p>','\n').gsub('<br>', '\n'))}&rdquo;
+  - elsif ['included point', 'lurker'].include?(@notification_type)
+    #{@comment.user.name} commented on 
+    %a{href: "#{@host}/#{@proposal.slug}/?selected=%2Fpoint%2F#{@point.id}&z=1", style: 'font-weight: 700; color: #468EE5;'} a point
+    that you follow:
 
 %p 
-  The #{@point.is_pro ? 'pro' : 'con'} point:
-  .object
-    &ldquo;#{link_to @point.nutshell, "#{@host}/#{@proposal.slug}/?selected=%2Fpoint%2F#{@point.id}&z=1"}&rdquo;
+  %i{style: 'padding-left: 20px; display: block; border-left: 1px solid #eaeaea'}
+    = strip_tags(@comment.body.gsub('</p><p>','\n').gsub('<br>', '\n'))
+  
 
 %p 
-  The issue: 
-  .object
-    &ldquo;#{link_to @proposal.name, "#{@host}/#{@proposal.slug}"}&rdquo;
+  The issue being discussed is 
+  %a{href: "#{@host}/#{@proposal.slug}", style: 'font-weight: 700; color: #468EE5;'}
+    = @proposal.name
 
-.action_call
-  .rest
-    .call
-      = link_to 'Read and discuss further', "#{@host}/#{@proposal.slug}/?selected=%2Fpoint%2F#{@point.id}&z=1"
+
+%a{href: "#{@host}/#{@proposal.slug}/?selected=%2Fpoint%2F#{@point.id}&z=1", style: 'font-weight: 700; color: #468EE5;'}
+  Read and discuss this comment
 
 = content_for :footer do
 

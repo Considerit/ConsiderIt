@@ -26,14 +26,6 @@ namespace :test do
       email = EventMailer.discussion_new_proposal(user, proposal, mail_options, '').deliver!
     end
 
-    ###### Proposal level ######
-    proposal = get_proposal_with_opinions(subdomain)
-    pp "****************"
-    pp "proposal_milestone_reached"
-    pp "Proposal: #{proposal.id}"
-    if proposal
-      email = EventMailer.proposal_milestone_reached(user, proposal, 100, mail_options).deliver!
-    end
 
     notification_types = ['your proposal', 'opinion submitter', 'lurker']
     notification_types.each do |nt|

@@ -82,6 +82,8 @@ module ConsiderIt
         config.paths["app/assets"] << asset_path
         config.assets.paths << Rails.root.join(asset_path)
     end
+
+    config.action_mailer.preview_path = "#{Rails.root}/@server/mailers/previews"
     ########################################
 
 

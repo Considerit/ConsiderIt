@@ -19,9 +19,3 @@ Mailhopper::Base.setup do |config|
   end
 end
 
-Premailer::Rails.config.merge!(
-  :preserve_styles => false,
-  :remove_ids      => true,
-  :remove_classes => true)
-
-

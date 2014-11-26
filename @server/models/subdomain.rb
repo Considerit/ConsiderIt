@@ -53,19 +53,6 @@ class Subdomain < ActiveRecord::Base
   def branding_info
     brands = JSON.parse(self.branding || "{}")
 
-    case name
-    when 'livingvotersguide'
-      brands['primary_color'] = '#a5ce3a'
-    when 'cityoftigard'
-      brands['primary_color'] = '#46A046'
-    when 'tigard'
-      brands['primary_color'] = '#78d18b'
-    when 'ihub'
-      brands['primary_color'] = "rgb(150,150,150)"
-    when 'bitcoin-demo'
-      brands['primary_color'] = '#676766'
-    end
-
     if !brands.has_key?('primary_color') || brands['primary_color'] == ''
       brands['primary_color'] = '#E37765'
     end

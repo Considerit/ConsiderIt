@@ -2,15 +2,15 @@ require 'mail'
 
 class EventMailer < Mailer
 
+
   def send_message(message, current_user, options = {})
     @message = message
+    @subdomain = options[:current_subdomain]
 
     # from e.g. Moderator <hank@cityclub.org>
     from = format_email current_user.email, message.sender
 
     recipient = message.addressedTo()
-
-    return unless valid_email(recipient)
 
     # reply_to = format_email @message.sender, @message.senderName()
     to = format_email recipient.email, recipient.name
@@ -21,41 +21,6 @@ class EventMailer < Mailer
 
   end
 
-  #### DISCUSSION LEVEL ####
-  # def discussion_new_proposal(user, proposal, options, notification_type = '')
-  #   @notification_type = notification_type
-  #   @user = user
-  #   @proposal = proposal
-  #   @host = options[:host]
-  #   @options = options
-  #   @url = "#{@host}/#{@proposal.slug}"
-
-  #   subject = "new proposal \"#{@proposal.title}\""
-
-  #   from = format_email(options[:from], options[:app_title])
-  #   to = format_email user.email, user.name
-
-  #   mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
-
-  # end
-
-  #### PROPOSAL LEVEL ####
-
-  # def proposal_milestone_reached(user, proposal, next_aggregate, options )
-  #   @user = user
-  #   @proposal = proposal
-  #   @next_aggregate = next_aggregate
-  #   @host = options[:host]
-  #   @options = options
-
-  #   from = format_email(options[:from], options[:app_title])
-  #   to = format_email user.email, user.name
-
-  #   subject = "update on \"#{@proposal.title}\""
-  #   mail(from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
-
-  # end
-
   def new_point(user, pnt, options, notification_type)
     @notification_type = notification_type
     @user = user
@@ -63,12 +28,10 @@ class EventMailer < Mailer
     @host = options[:host]
     @proposal = @point.proposal
     @options = options
-
-    return unless valid_email(user)
+    @subdomain = options[:current_subdomain]
 
     to = format_email user.email, user.name    
     from = format_email(options[:from], options[:app_title])
-
 
     if notification_type == 'your proposal'
       subject = "new #{@point.is_pro ? 'pro' : 'con'} point for your proposal \"#{@point.proposal.title}\""
@@ -79,8 +42,6 @@ class EventMailer < Mailer
     mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
   end
 
-  #### POINT LEVEL ####
-
   def new_comment(user, pnt, comment, options, notification_type)
     @notification_type = notification_type
     @user = user
@@ -89,11 +50,10 @@ class EventMailer < Mailer
     @proposal = @point.proposal
     @host = options[:host]
     @options = options
-
+    @subdomain = options[:current_subdomain]
 
     to = format_email user.email, user.name
     from = format_email(options[:from], options[:app_title])
-    return unless valid_email(user)
 
     if notification_type == 'your point'
       subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote"
@@ -116,6 +76,8 @@ class EventMailer < Mailer
     @proposal = @point.proposal
     @host = options[:host]
     @options = options
+    @subdomain = options[:current_subdomain]
+
     from = format_email(options[:from], options[:app_title])
 
     if notification_type == 'your point'
@@ -124,8 +86,6 @@ class EventMailer < Mailer
       subject = "a point you follow has been fact checked"
     end
 
-    return unless valid_email(user)
-
     to = format_email user.email, user.name
 
     mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
@@ -133,3 +93,4 @@ class EventMailer < Mailer
 
 
 end
+

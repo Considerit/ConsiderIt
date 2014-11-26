@@ -1,4 +1,4 @@
-class Message
+class DirectMessage
 
   include ActiveModel::Validations
   include ActiveModel::Conversion

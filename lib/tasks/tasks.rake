@@ -118,8 +118,8 @@ namespace :alerts do
             user = User.find(key_id(key))
           rescue
           end
-          if user
-            AlertMailer.content_to_moderate(user, subdomain).deliver!
+          if user && !!(user.email && user.email.length > 0 && !user.email.match('\.ghost') && !user.no_email_notifications)
+            AdminMailer.content_to_moderate(user, subdomain).deliver!
           end
         end
       end

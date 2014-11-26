@@ -35,6 +35,10 @@ window.DESCRIPTION_WIDTH = BODY_WIDTH
 
 # Colors
 considerit_blue = '#2478CC'
+# Colors are primarily stored in the database (to allow customers & Kev to self-brand).
+# See @server/models/subdomain#branding_info for hardcoding color values
+# when doing development. 
+
 
 ##
 # Helpers that should probably go elsewhere
@@ -95,7 +99,6 @@ getStanceSegment = (value) ->
 
 userOpinion = (user_key) ->
   window.user_opinions[user_key]
-
 
 _route_changed = false
 
@@ -309,9 +312,6 @@ Proposal = ReactiveComponent
       catch
         @local.description_fields = null
 
-
-    color = @data('color')
-
     DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
 
       StickyProposalHeading()
@@ -323,7 +323,7 @@ Proposal = ReactiveComponent
           if !proposal.active
             SPAN style: {display: 'inline-block', backgroundColor: 'rgb(255, 163, 73)', color: 'white', padding: '4px 8px', marginTop: 10},
               I className: 'fa fa-info-circle', style: {paddingRight: 7} 
-              'This proposal is closed to new contributions at this time.'
+              'Closed to new contributions at this time.'
 
           DIV className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
 
@@ -409,7 +409,6 @@ Proposal = ReactiveComponent
 StickyProposalHeading = ReactiveComponent
   displayName: 'StickyProposalHeading'
   render : ->
-    color = @data('color')
     subdomain = @data('/subdomain')
     proposals = @data('/proposals')
 
@@ -422,7 +421,7 @@ StickyProposalHeading = ReactiveComponent
       heading_style =
         textAlign: 'center'
         minWidth: PAGE_WIDTH # for width consistency when dropping into fixed sticky header
-        backgroundColor: color.proposal_header
+        backgroundColor: subdomain.branding.primary_color
         fontSize: 26
         padding: '4px 90px'
 
@@ -455,7 +454,7 @@ StickyProposalHeading = ReactiveComponent
         style:
           height: heading_height
           minWidth: PAGE_WIDTH # for width consistency when dropping into fixed sticky header
-          backgroundColor: color.proposal_header
+          backgroundColor: subdomain.branding.primary_color
           textAlign: 'center'
 
         # TODO: we need a way of knowing whether this subdomain has a homepage or not
@@ -484,7 +483,7 @@ StickyProposalHeading = ReactiveComponent
 
               if @local.dropped_down
                 DIV className: 'proposal_navigation_dropdown', style: {width: 500, position: 'absolute', top: 38, paddingTop: 5},
-                  DIV style: {backgroundColor: color.proposal_header, borderRadius: '4px'},
+                  DIV style: {backgroundColor: subdomain.branding.primary_color, borderRadius: '4px'},
                     DIV style: {backgroundColor: 'rgba(0,0,0,.2)', padding: '14px 0', borderRadius: '4px'},
 
                       if curr_cluster?.proposals.length > 1
@@ -504,8 +503,8 @@ StickyProposalHeading = ReactiveComponent
                                       # make a small slider summary
                                       opinion = @data(other_proposal.your_opinion)
                                       face_size = 20 # height/width of the summary slider bar
-                                      eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: color.proposal_header, position: 'absolute', top: 6 }
-                                      mouth_style = {fontSize: 12, color: color.proposal_header, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
+                                      eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: subdomain.branding.primary_color, position: 'absolute', top: 6 }
+                                      mouth_style = {fontSize: 12, color: subdomain.branding.primary_color, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
                                       crossbrowserTransformProperty mouth_style
                                       if opinion.stance_segment < 3
                                         # frown!
@@ -540,7 +539,7 @@ StickyProposalHeading = ReactiveComponent
                                 DIV style: {clear: 'both'}
 
                                 if @local.show_cluster == cluster.name
-                                  DIV style: {width: 300, backgroundColor: color.proposal_header, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
+                                  DIV style: {width: 300, backgroundColor: subdomain.branding.primary_color, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
                                     UL className: 'other_proposal_list', style: {backgroundColor: 'rgba(0,0,0,.2)', borderRadius: '4px', padding: '8px 0' },
                                       for other_proposal in cluster.proposals
                                         LI style: {listStyle: 'none'}, key: "li/#{other_proposal.slug}",
@@ -1130,11 +1129,12 @@ DecisionBoard = ReactiveComponent
       togglePage('results', 'save_button')
     else
       @root.auth_mode = 'login'
+      @root.auth_reason = 'Save your Opinion'
+
       # We'll need to publish this opinion after auth is completed
       @root.opinions_to_publish.push(@proposal.your_opinion)
-      # And we'll want to switch to results when it's done
-      @root.saving_opinion = true
-      save(@root)
+
+      save @root
 
 ##
 # YourPoints
@@ -1551,8 +1551,8 @@ Point = ReactiveComponent
   # point in the Histogram.
   highlightIncluders : -> 
     if fetch('root').proposal_mode == 'results'
-      includers = @data().includers
       point = @data()
+      includers = point.includers
 
       # For point authors who chose not to sign their points, remove them from 
       # the users to highlight. This is particularly important if the author 
@@ -1560,14 +1560,14 @@ Point = ReactiveComponent
       # anyone to discover who wrote this point. 
       if point.hide_name
         includers = _.without includers, point.user
-      hist = @data('histogram')
+      hist = fetch 'histogram'
       if hist.highlighted_users != includers
         hist.highlighted_users = includers
         save(hist)
 
   unHighlightIncluders : -> 
     if fetch('root').proposal_mode == 'results'
-      hist = @data('histogram')
+      hist = fetch 'histogram'
       hist.highlighted_users = null
       save(hist)
 
@@ -1578,10 +1578,10 @@ Point = ReactiveComponent
     to_remove = [point.user]
 
     # only show includers from this stance segment if a segment is selected
-    selected_segment = @data('histogram').selected_segment
+    selected_segment = fetch('histogram').selected_segment
     if selected_segment?
       for includer in point.includers
-        stance_segment = @data(userOpinion(includer)).stance_segment
+        stance_segment = fetch(userOpinion(includer)).stance_segment
 
         if stance_segment && stance_segment != selected_segment
           to_remove.push(includer)
@@ -1674,8 +1674,8 @@ FactCheck = ReactiveComponent
             ' about the service.'
 
         for claim_key in assessment.claims
-          claim = @data(claim_key)
-          verdict = @data(claim.verdict)
+          claim = fetch(claim_key)
+          verdict = fetch(claim.verdict)
 
           [DIV style: {margin: '10px 0'}, 
             IMG style: {position: 'absolute', width: 25, left: -40}, src: verdict.icon
@@ -1717,11 +1717,12 @@ EditComment = ReactiveComponent
         key: fetch('/current_user').user
         hide_name: true
 
-      if not logged_in
+      if not logged_in && @proposal.active
         SPAN
           className: 'hover_pointer'
           onClick: =>
             @root.auth_mode = 'login'
+            @root.auth_reason = 'Write a Comment'
             save(@root)
           style:
             position: 'absolute'
@@ -1963,6 +1964,7 @@ SubmitFactCheck = ReactiveComponent
         DIV
           onClick: =>
             @root.auth_mode = 'login'
+            @root.auth_reason = 'Request a Fact Check'
             save(@root)
           style:
             marginTop: 14
@@ -1980,7 +1982,7 @@ SubmitFactCheck = ReactiveComponent
         a_librarian_will_respond()
           
     request_completed = =>
-      overall_verdict = @data(@discussion.assessment.verdict)
+      overall_verdict = fetch(@discussion.assessment.verdict)
 
       [
         DIV style: top_message_style,
@@ -2161,7 +2163,7 @@ EditPoint = ReactiveComponent
 
     # This is a kludge cause activerest sucks for pre-rendering
     # changes before the server returns them
-    @data(@proposal.your_opinion).point_inclusions.push(point.key)
+    fetch(@proposal.your_opinion).point_inclusions.push(point.key)
     re_render([@proposal.your_opinion])
 
   handleAddPointCancel : (ev) -> @done()
@@ -2264,7 +2266,7 @@ AutoGrowTextArea = ReactiveComponent
 
 CharacterCountTextInput = ReactiveComponent
   displayName: 'CharacterCountTextInput'
-  componentWillMount : -> @data(@local_key).count = 0
+  componentWillMount : -> fetch(@local_key).count = 0
   render : -> 
     class_name = "is_counted"
     DIV style: {position: 'relative'}, 
@@ -2286,27 +2288,8 @@ Auth = ReactiveComponent
     # errors, cause we're startin' fresh!
     if not @local.last_auth_mode or @local.last_auth_mode != root.auth_mode
       @local.last_auth_mode = root.auth_mode
-      for error_type in (current_user.errors or {})
-        current_user.errors[error_type] = []
+      current_user.errors = []
 
-    # Once the user logs in, we will stop showing the log-in screen
-    if current_user.logged_in
-      root.auth_mode = null
-      # @publishOpinionsAfterAuth()
-
-      if root.saving_opinion
-        setTimeout((() -> togglePage('results', 'after_save')), 700)
-        root.saving_opinion = false
-      save(root)
-      return loading_indicator
-
-    focal_wrapper_style = 
-      margin: 'auto'
-      position: 'relative'
-      display: 'block'
-      #left: '50%'
-      width: DECISION_BOARD_WIDTH
-      #marginLeft: -DECISION_BOARD_WIDTH / 2
 
     # Let's set up some useful helpers
     submitOnEnter = (event) =>
@@ -2314,14 +2297,23 @@ Auth = ReactiveComponent
         event.preventDefault()
         @submitAuth(event)
 
-    input_box = (name, placeholder, type, onChange, pattern) ->
+    input_box = (name, placeholder, type, onChange, pattern) =>
+      if @local[name] != current_user[name]
+        @local[name] = current_user[name]
+        save @local
+
+      # There is a react bug where input cursor will jump to end for 
+      # controlled components. http://searler.github.io/react.js/2014/04/11/React-controlled-text.html
+      # This makes it annoying to edit text. I've contained this issue to edit_profile only
+      # by only setting value in the Input component when in edit_profile mode
       type = type || 'text'
       onChange = onChange || (event) => 
-        current_user[name] = event.target.value
+        @local[name] = current_user[name] = event.target.value
+        save @local
 
       INPUT
         id: 'user_' + name
-        defaultValue: current_user[name]
+        value: if @root.auth_mode == 'update' then @local[name] else null
         name: "user[#{name}]"
         key: "#{name}_input_box"
         placeholder: placeholder
@@ -2336,7 +2328,7 @@ Auth = ReactiveComponent
 
     password_input_field =
       input_box('password',
-                 if root.auth_mode == 'login' then "password" else "choose a new password",
+                 if root.auth_mode == 'login' then "password" else if root.auth_mode == 'register' then 'choose a password' else "choose a new password",
                  'password',
                  null,
                  if root.auth_mode == 'register' then ".{5,}" else '')
@@ -2354,44 +2346,20 @@ Auth = ReactiveComponent
         onChange: (event) => current_user.reset_password_token = event.target.value
 
     providers = ['facebook', 'google']
-    # if root.auth_mode in ['login', 'login_via_reset_password_token']
-    #   providers.push('twitter')
 
     third_party_authenticated = current_user.facebook_uid || current_user.twitter_uid || current_user.google_uid
 
+    #####
     # We used to display the Auth header using the position and
     # styling of the slider.  Now it's just neutral.
-    stance =  0
-    segment = 3
 
-    # Can't be dynamically set b/c of integration with asset fingerprinting. This is 
-    # also why this file is ERB
-    if segment == 3
-      bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
-    else
-      bubblemouth_src = "<%= asset_path 'bubblemouth-crafting.png' %>"
-
-    direction = if segment > 3 then -1 else 1
-    mouth_x =      if segment == 3 then 0 else -22
+    # Asset fingerprinting. This is why this file is ERB
+    bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
 
     bubble_mouth_props = 
-      transform: "translate(#{direction * mouth_x}px, 11px) scale(#{direction * 1.5}, 1.5)"
+      transform: "translate(0px, 11px) scale(1.5, 1.5)"
       left: 270
-    handle_props = 
-      left: 270 - 15
-
     crossbrowserTransformProperty bubble_mouth_props
-    crossbrowserTransformProperty handle_props
-
-    auth_heading_style = 
-      visibility: 'visible'
-      left: HISTOGRAM_WIDTH * -(stance-1) / 2.0
-      marginLeft: -225
-      width: 450
-      fontSize: 50
-      position: 'relative'
-
-      #top: '-80px'
 
     if !subdomain.has_civility_pledge
       pledges = []
@@ -2400,183 +2368,215 @@ Auth = ReactiveComponent
                  'I will speak only on behalf of myself', 
                  'I will not attack or mock others']
 
+    DIV null,
+      if @root.auth_mode == 'update'
+        DashHeader name: 'Edit Profile'
 
+      DIV
+        className:'auth_region focal_wrapper'
+        style: 
+          margin: 'auto'
+          position: 'relative'
+          display: 'block'
+          #left: '50%'
+          width: DECISION_BOARD_WIDTH
+          #marginLeft: -DECISION_BOARD_WIDTH / 2        
+        onClick: (e) => e.stopPropagation()
 
-    DIV
-      className:'auth_region focal_wrapper'
-      style: focal_wrapper_style
-      onClick: (e) => e.stopPropagation()
-      DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
-        DIV className:'auth_heading', style: auth_heading_style,
-          'Introduce Yourself' 
+        if @root.auth_mode != 'update'
+          DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
+            DIV 
+              className:'auth_heading'
+              style: 
+                visibility: 'visible'
+                left: HISTOGRAM_WIDTH / 2.0
+                marginLeft: -225
+                width: 450
+                fontSize: 50
+                position: 'relative'
 
-        DIV className: 'the_handle', style: handle_props
-        IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
+              'Introduce Yourself' 
+              if @root.auth_reason
+                DIV style: {fontSize: 18, margin: '-8px 0 15px 0'},
+                  "To #{@root.auth_reason}"
 
-      DIV className:'auth decision_board_body' + (if @local.submitting then ' waiting' else ''),
-        if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
-          DIV className: 'third_party_auth',
-            LABEL className: 'third_party_call', 'Instantly:'
-            for provider in providers
-              do (provider) =>
-                BUTTON className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
-                  I className: "fa fa-#{provider}"
-                  SPAN null, provider
+            DIV className: 'the_handle', style: {left: 255}
+            IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
 
-            DIV className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
+        DIV className:"auth" + (if @root.auth_mode != 'update' then ' decision_board_body' else '') + (if @local.submitting then ' waiting' else ''),
+          if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
+            DIV className: 'third_party_auth',
+              LABEL className: 'third_party_call', 'Instantly:'
+              for provider in providers
+                do (provider) =>
+                  BUTTON className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
+                    I className: "fa fa-#{provider}"
+                    SPAN null, provider
 
-        if root.auth_mode in ['login', 'login_via_reset_password_token']
-          # logging in or resetting password
+              DIV className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 
-          DIV null, 
-            if root.auth_mode == 'login'
-              LABEL className: 'auth_section_label', 'By email address:'
-            else
-              DIV null,
-                LABEL className: 'reset_password_section_label', 'Reset your password'
-                DIV style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
-            TABLE className: 'auth_fields login',
-              TBODY null,
-                if root.auth_mode == 'login_via_reset_password_token'
+          if root.auth_mode in ['login', 'login_via_reset_password_token']
+            DIV null, 
+              if root.auth_mode == 'login'
+                LABEL className: 'auth_section_label', 'By email address:'
+              else
+                DIV null,
+                  LABEL className: 'reset_password_section_label', 'Reset your password'
+                  DIV style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
+              TABLE className: 'auth_fields login',
+                TBODY null,
+                  if root.auth_mode == 'login_via_reset_password_token'
+                    TR null,
+                      TD null, 'We just emailed you a code. Enter it here:'
+                    TR null, 
+                      TD className: 'label_cell', 
+                        LABEL htmlFor: 'user_verification_code', 'code:'
+
+                      TD className: 'field_cell', 
+                        reset_password_token_field,
+                        DIV className: 'password_verification_explanation', "Find code in an email just sent to you."
+                  else
+                    TR null,
+                      TD className: 'label_cell',
+                        LABEL htmlFor: 'user_email', 'email:'
+                      TD className: 'field_cell',
+                        email_input_field
+
                   TR null,
-                    TD null, 'We just emailed you a code. Enter it here:'
-                  TR null, 
-                    TD className: 'label_cell', 
-                      LABEL htmlFor: 'user_verification_code', 'code:'
+                    TD {style: (if root.auth_mode == 'login_via_reset_password_token' then {width: '37%'} else {}), className: 'label_cell'},
+                      LABEL htmlFor: 'user_password', "#{if root.auth_mode == 'login_via_reset_password_token' then 'new ' else ''}password:"
 
                     TD className: 'field_cell', 
-                      reset_password_token_field,
-                      DIV className: 'password_verification_explanation', "Find code in an email just sent to you."
-                else
-                  TR null,
-                    TD className: 'label_cell',
-                      LABEL htmlFor: 'user_email', 'email:'
-                    TD className: 'field_cell',
-                      email_input_field
+                      password_input_field,
+                      if root.auth_mode == 'login'
+                        A className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
 
-                TR null,
-                  TD {style: (if root.auth_mode == 'login_via_reset_password_token' then {width: '37%'} else {}), className: 'label_cell'},
-                    switch root.auth_mode
-                      when 'login'
-                        LABEL htmlFor: 'user_password', 'password:'
-                      when 'login_via_reset_password_token'
-                        LABEL htmlFor: 'user_password', 'new password:'
 
+          else 
+            # creating new account
+            TABLE className: 'auth_fields register', 
+              TBODY null,
+                TR null, 
+                  TD className: 'label_cell',
+                    LABEL htmlFor: 'user_name', 'Hi, my name is:'
                   TD className: 'field_cell', 
-                    password_input_field,
-                    if root.auth_mode == 'login'
-                      A className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
-
-
-        else 
-          # creating new account
-          TABLE className: 'auth_fields register', 
-            TBODY null,
-              TR null, 
-                TD className: 'label_cell',
-                  LABEL htmlFor: 'user_name', 'Hi, my name is:'
-                TD className: 'field_cell', 
-                  if third_party_authenticated
-                    DIV null, current_user.name
-                  else 
                     name_input_field
 
-              if third_party_authenticated 
-                p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
-                TR null, 
+                if third_party_authenticated 
+                  p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
+                  TR null, 
 
-                  TD className: 'label_cell',
-                    LABEL htmlFor: 'user_provider', 
-                      if third_party_authenticated then 'I login via:' else 'I login as:'
-                  TD className: 'field_cell', 
-                    BUTTON className: "third_party_option #{p}", style: {cursor: 'default'},
-                      I className: "fa fa-#{p}"
-                      SPAN null, p
+                    TD className: 'label_cell',
+                      LABEL htmlFor: 'user_provider', 
+                        if third_party_authenticated then 'I login via:' else 'I login as:'
+                    TD className: 'field_cell', 
+                      BUTTON className: "third_party_option #{p}", style: {cursor: 'default'},
+                        I className: "fa fa-#{p}"
+                        SPAN null, p
 
-              else
+                else
 
-                TR null, 
+                  TR null, 
 
-                  TD className: 'label_cell',
-                    LABEL htmlFor: 'user_email', 'I login as:'
-                  TD className: 'field_cell', 
-                    if !Modernizr.input.placeholder
-                      LABEL htmlFor: 'user_email', 'Email:'
-                    email_input_field,
+                    TD className: 'label_cell',
+                      LABEL htmlFor: 'user_email', 'I login as:'
+                    TD className: 'field_cell', 
+                      if !Modernizr.input.placeholder
+                        LABEL htmlFor: 'user_email', 'Email:'
+                      email_input_field,
 
-                    if !Modernizr.input.placeholder
-                      LABEL htmlFor: 'user_password', 'Password:'
-                    password_input_field
+                      if !Modernizr.input.placeholder
+                        LABEL htmlFor: 'user_password', 'Password:'
+                      password_input_field
 
-              # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
-              if window.FormData
+                # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
+                if window.FormData
 
-                TR null, 
-                  TD className: 'label_cell', 
-                    LABEL htmlFor: 'user_avatar', 'I look like this:'
-                  TD className: 'field_cell',
-                    # hack for submitting file data in ActiveREST for now
-                    # we'll just submit the file form after user is signed in
+                  TR null, 
+                    TD className: 'label_cell', 
+                      LABEL htmlFor: 'user_avatar', 'I look like this:'
+                    TD className: 'field_cell',
+                      # hack for submitting file data in ActiveREST for now
+                      # we'll just submit the file form after user is signed in
 
 
-                    FORM id: 'user_avatar_form', action: '/update_user_avatar_hack', 
+                      FORM id: 'user_avatar_form', action: '/update_user_avatar_hack', 
 
-                      DIV className: 'avatar_preview_enclosure',
-                        IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else null #todo: make sure that if user overrides image_url, that the new image is used
+                        DIV className: 'avatar_preview_enclosure',
+                          IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else if current_user.b64_thumbnail then current_user.b64_thumbnail else null
 
-                      INPUT id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
-                        @submit_avatar_form = true
-                        input = $('#user_avatar')[0]
-                        if input.files && input.files[0]
-                          reader = new FileReader()
-                          reader.onload = (e) ->
-                            $("#avatar_preview").attr 'src', e.target.result
-                          reader.readAsDataURL input.files[0]
-                          #current_user.avatar = input.files[0]
-                        else
-                          $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
+                        INPUT id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
+                          @submit_avatar_form = true
+                          input = $('#user_avatar')[0]
+                          if input.files && input.files[0]
+                            reader = new FileReader()
+                            reader.onload = (e) ->
+                              $("#avatar_preview").attr 'src', e.target.result
+                            reader.readAsDataURL input.files[0]
+                            #current_user.avatar = input.files[0]
+                          else
+                            $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
 
-              if subdomain.has_civility_pledge
-                TR null,
-                  TD className: 'label_cell', 
-                    LABEL null, 'Community pledge:'
-                  TD className: 'field_cell',
-                    UL className: 'pledges',
-                      for pledge, idx in pledges
-                        LI className: 'pledge', 
-                          INPUT className:"pledge-input", type:'checkbox', id:"pledge-#{idx}", name:"pledge-#{idx}"
-                          LABEL htmlFor: "pledge-#{idx}", pledge
+                if subdomain.has_civility_pledge && root.auth_mode != 'update'
+                  TR null,
+                    TD className: 'label_cell', 
+                      LABEL null, 'Community pledge:'
+                    TD className: 'field_cell',
+                      UL className: 'pledges',
+                        for pledge, idx in pledges
+                          LI className: 'pledge', 
+                            INPUT className:"pledge-input", type:'checkbox', id:"pledge-#{idx}", name:"pledge-#{idx}"
+                            LABEL htmlFor: "pledge-#{idx}", pledge
 
-        if current_user.errors && current_user.errors[root.auth_mode] && current_user.errors[root.auth_mode].length > 0
-          DIV className: "auth_errors", 
-            I className: 'fa fa-exclamation-circle'
-            SPAN null, "#{current_user.errors[root.auth_mode].join(', ')}"
+          if current_user.errors && current_user.errors.length > 0
+            DIV className: "auth_errors", 
+              I className: 'fa fa-exclamation-circle'
+              SPAN null, "#{current_user.errors.join(', ')}"
 
-        if root.auth_mode in ['login', 'register']
-          button = A className: 'toggle_auth', onClick: @toggleAuthMode,
-              if root.auth_mode == 'register' then 'Use an Existing Account' else 'Create an Account'
+          if root.auth_mode in ['login', 'register']
+            button = A 
+                      className: 'toggle_auth'
+                      onClick: => 
+                        current_user = fetch('/current_user')
+                        @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
+                        current_user.errors = []
+                        save(@root)                      
+                      if root.auth_mode == 'register'
+                        'Use an Existing Account' 
+                      else 
+                        'Create an Account'
 
-          DIV className: 'switch_auth_mode',
-            SPAN null,
-              if root.auth_mode == 'register'
-                ['Or ', button, ' if you have one already']
-              else
-                ['Or ', button, ' if you need one']
+            DIV className: 'switch_auth_mode',
+              SPAN null,
+                if root.auth_mode == 'register'
+                  ['Or ', button, ' if you have one already']
+                else
+                  ['Or ', button, ' if you need one']
 
-      DIV null, 
-        DIV
-          className:'auth_button primary_button' + (if @local.submitting then ' disabled' else '')
-          onClick: @submitAuth
-          if root.auth_mode == 'register' then 'Create account' else 'Login'
-          if root.saving_opinion then ' and save your opinion'
+        DIV null, 
+          DIV
+            className:'auth_button primary_button' + (if @local.submitting then ' disabled' else '')
+            onClick: @submitAuth
+            if root.auth_mode == 'register'
+              'Create account' 
+            else if root.auth_mode == 'update'
+              'Update'
+            else 
+              'Login'
+            if root.auth_reason == 'Save your Opinion' then ' and save your opinion'
 
-        A 
-          className:'cancel_auth_button primary_cancel_button'
-          onClick: (=>
-            root.auth_mode = null
-            root.publish_this_opinion = null
-            save(root))
-        , 'cancel log in'
+          if root.auth_mode == 'update'
+            if @local.saved_successfully
+              SPAN style: {color: 'green'}, "Updated successfully"
+          else
+            A 
+              className:'cancel_auth_button primary_cancel_button'
+              onClick: (=>
+                root.auth_mode = null
+                root.publish_this_opinion = null
+                save(root))
+            , 'cancel log in'
+
 
   componentDidMount : -> 
     if $(@getDOMNode()).find('.auth_heading').length > 0
@@ -2601,18 +2601,11 @@ Auth = ReactiveComponent
         # the pledge.  The server tells us this via the existence of a
         # `user' object in current_user.
 
-        current_user = fetch('/current_user')
+        current_user = fetch '/current_user'
         if current_user.logged_in
           # We are logged in!  The user has completed registration.
+          @authCompleted()
 
-          if current_user.csrf
-            arest.csrf(current_user.csrf)  # Is this still needed?
-
-          if root.saving_opinion
-            setTimeout((() -> togglePage('results', 'after_save')), 700)
-            root.saving_opinion = false
-            root.auth_mode = null
-            save(root)
         else 
           # We still need to show the pledge!
           root.auth_mode = 'register'
@@ -2620,26 +2613,34 @@ Auth = ReactiveComponent
 
   submitAuth : (ev) -> 
     ev.preventDefault()
+    $el = $(@getDOMNode())
+
+    @local.submitting = true
+    save @local
+
     current_user = fetch('/current_user')
 
-    $el = $(@getDOMNode())
     current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
-    
     current_user.trying_to = @root.auth_mode
-    local = @local
-    local.submitting = true
-    save(local)
+    
+    save current_user, => 
+      if @root.auth_mode in ['register', 'update']
+        ensureCurrentUserAvatar()
 
+      if @root.auth_mode == 'update'
+        @local.saved_successfully = current_user.errors.length == 0        
+
+      # Once the user logs in, we will stop showing the log-in screen
+      else if current_user.logged_in
+        @authCompleted()
+
+      @local.submitting = false
+      save @local
 
     # hack for submitting file data in ActiveREST for now
     # we'll just submit the file form after user is signed in
     # TODO: investigate alternatives for submitting form data
     if @submit_avatar_form
-
-      save current_user, => 
-        local.submitting = false
-        save(local)
-        ensureCurrentUserAvatar()
 
       $('#user_avatar_form').ajaxSubmit
         type: 'PUT'
@@ -2647,50 +2648,42 @@ Auth = ReactiveComponent
           authenticity_token: current_user.csrf
           trying_to: 'update_avatar_hack'
 
-    else
-      save(current_user, =>
-        local.submitting = false
-        save(local))
-
-      if current_user.avatar_remote_url
-        ensureCurrentUserAvatar()
-
 
   sendResetPassword : -> 
 
     # Tell the server to email us a token
     current_user = fetch('/current_user')
     current_user.trying_to = 'send_password_reset_token'
-    save(current_user, =>
-      if not (current_user.errors?.reset_password?.length > 0)
+    save current_user, =>
+      if not (current_user.errors?.length > 0)
         # Switch to reset_password mode
         @root.auth_mode = 'login_via_reset_password_token'
         save(@root)
       else
-        # Tell the login screen to show the reset_password errors
-        current_user.errors.login = current_user.errors.reset_password
-        # console.log("Waiting for user to fix errors #{current_user.errors?.reset_password}")
+        # console.log("Waiting for user to fix errors #{current_user.errors?}")
         arest.updateCache(current_user)
-      )
-  toggleAuthMode : -> 
-    current_user = fetch('/current_user')
-    @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
-    current_user.errors = {}
-    save(@root)
+      
+  authCompleted : -> 
 
+    if @root.auth_reason == 'Save your Opinion'
+      setTimeout((() -> togglePage('results', 'after_save')), 700)
+
+    @root.auth_mode = @root.auth_reason = null
+
+    save @root
 
 
 ProposalSummary = ReactiveComponent
   displayName: 'ProposalSummary'
 
   render : ->
-    subdomain = @data('/subdomain')
-    color = @data('color')
+    subdomain = fetch('/subdomain')
 
     proposal = @data()
     hover_class = if @local.hovering_on == proposal.id then 'hovering' else ''
 
-    cell_border = "1px solid #{if @local.hovering_on then color.link_hover_color else 'rgb(191, 192, 194)'}"
+    link_hover_color = considerit_blue
+    cell_border = "1px solid #{if @local.hovering_on then link_hover_color else 'rgb(191, 192, 194)'}"
     TR 
       className: "proposal_summary " + hover_class
       style:
@@ -2704,11 +2697,11 @@ ProposalSummary = ReactiveComponent
       if subdomain.name == 'livingvotersguide'
         TD className: 'summary_measure_designator',
           if proposal.category && proposal.designator
-            A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+            A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then link_hover_color else ''}"},
               "#{proposal.category[0]}-#{proposal.designator}"
 
       TD className: 'summary_name', style: {width: (if subdomain.name == 'livingvotersguide' then 270 else 320)},
-        A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then color.link_hover_color else ''}"},
+        A onClick: clickInternalLink, href: proposal_url(proposal), style: {color: "#{if @local.hovering_on then link_hover_color else ''}"},
           proposal.name
       TD
         className: 'summary_decide'
@@ -2777,7 +2770,6 @@ Homepage = ReactiveComponent
 
   render : ->
     subdomain = @data('/subdomain')
-    color = @data('color')
     proposals = @data('/proposals')
 
     # The "Welcome to the community!" people
@@ -2798,7 +2790,7 @@ Homepage = ReactiveComponent
       DIV 
         className: "sticky_header stickable"
         style: 
-          backgroundColor: color.proposal_header
+          backgroundColor: subdomain.branding.primary_color
           color: 'white'
           height: sticky_header_height
           width: '100%'
@@ -2891,13 +2883,13 @@ ProfileLink = ReactiveComponent
   render : -> 
     current_user = fetch('/current_user')
     subdomain = @data('/subdomain')
-    color = @data('color')
 
     DIV style: {display: 'inline-block'}, 
       STYLE null,
-        ".profile_anchor { color: #{color.profile_anchor_color} }"
+        ".profile_anchor { color: #{subdomain.branding.header_text_color} }"
 
       if current_user.logged_in
+        anchor_style = if !@local.menu then {backgroundColor: 'rgba(255,255,255, .1)', boxShadow: '0px 1px 1px rgba(0,0,0,.1)', borderRadius: 8, padding: '3px 4px'} else {padding: '3px 4px'}
         SPAN
           className: 'profile_menu_wrap'
           style:
@@ -2907,19 +2899,24 @@ ProfileLink = ReactiveComponent
           DIV className: 'profile_menu', style: {display: (if not @local.menu then 'none')},
             A 
               className: 'menu_link'
+              href: '/edit_profile'                
+              onClick: clickInternalLink
+              'Edit Profile'
+
+            A 
+              className: 'menu_link'
               href: '/dashboard/email_notifications'                
               onClick: clickInternalLink
               'Notifications'
 
-            if current_user.is_super_admin
-              A 
+            if current_user.is_admin
+              [A 
                 className: 'menu_link'
                 href: '/dashboard/import_data'
                 onClick: clickInternalLink                
                 'Import Data'
 
-            if current_user.is_admin
-              [A 
+              A 
                 className: 'menu_link'
                 href: '/dashboard/application'
                 onClick: clickInternalLink                
@@ -2949,16 +2946,18 @@ ProfileLink = ReactiveComponent
               'data-action': 'logout'
               onClick: @logout
               'Log out'
-          SPAN className: 'profile_anchor',
+
+          SPAN className: 'profile_anchor', style: anchor_style,
             Avatar key: current_user.user, hide_name: true, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
-            'Profile'
+            I className: 'fa fa-caret-down', style: {visibility: if @local.menu then 'hidden' else 'visible'}
       else
         A
           'className': 'profile_anchor'
           'data-action': 'login'
-          onClick: ((e) =>
+          onClick: (e) =>
             @root.auth_mode = 'login'
-            save(@root)),
+            @root.auth_reason = null            
+            save @root
           'Log in'
 
       #Avatar key: current_user.user, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
@@ -2968,6 +2967,9 @@ ProfileLink = ReactiveComponent
     current_user = fetch('/current_user')
     current_user.logged_in = false
     current_user.trying_to = 'logout'
+
+    if @root.auth_mode == 'update'
+      @root.page_name = 'homepage'
 
     @root.auth_mode = null
 
@@ -2988,15 +2990,13 @@ Header = ReactiveComponent
   render : ->
     current_user = fetch('/current_user')
     subdomain = @data('/subdomain')
-    color = @data('color')
 
-    DIV className: 'l_header', style: {backgroundColor: color.header_bg, minWidth: PAGE_WIDTH},
+    DIV className: 'l_header', style: {backgroundColor: 'white', minWidth: PAGE_WIDTH},
 
       if window["#{subdomain.name}Header"]
         window["#{subdomain.name}Header"]()
       else
-        DIV className: 'profile_navigation',
-          ProfileLink()
+        DefaultHeader()
 
       DIV null, 
         if @root.page_name == 'about'
@@ -3056,18 +3056,12 @@ Footer = ReactiveComponent
   displayName: 'Footer'
   render : -> 
     subdomain = @data('/subdomain')
-    color = @data('color')
 
     DIV className: 'l_footer',  
       if window["#{subdomain.name}Footer"]
         window["#{subdomain.name}Footer"]()
-
       else
-        DIV style: {marginTop: 30},
-          TechnologyByConsiderit()
-          DIV style: {color: 'rgb(131,131,131)', marginTop: 5},
-            'Bug to report? Want to use this technology in your organization? '
-            A style: {textDecoration: 'none', fontWeight: 700}, href: "mailto:admin@consider.it", 'Email us'
+        DefaultFooter()
 
 TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'
@@ -3250,46 +3244,47 @@ EmailNotificationSettings = ReactiveComponent
     current_user = fetch('/current_user')
 
     # TODO: listing each followable and making it unfollowable
-    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
-      DashHeader 'Email Notification Settings'
+    DIV null,
+      DashHeader name: 'Email Notification Settings'
+      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'}, 
 
-      DIV null,
-        INPUT 
-          id: 'no_email_notifications'
-          name: 'no_email_notifications'
-          type: 'checkbox'
-          defaultChecked: !current_user.no_email_notifications
-          onChange: (e) => 
-            current_user.no_email_notifications = !$('#no_email_notifications').is(':checked')
-            save current_user
-        LABEL htmlFor: 'no_email_notifications', 'Receive email notifications'
+        DIV null,
+          INPUT 
+            id: 'no_email_notifications'
+            name: 'no_email_notifications'
+            type: 'checkbox'
+            defaultChecked: !current_user.no_email_notifications
+            onChange: (e) => 
+              current_user.no_email_notifications = !$('#no_email_notifications').is(':checked')
+              save current_user
+          LABEL htmlFor: 'no_email_notifications', 'Receive email notifications'
 
-      if !current_user.no_email_notifications
-        if _.flatten(_.values(data.follows)).length == 0
-          DIV null, 'You\'re not currently receiving any email notifications'
-        else
-          DIV null,
-            H1 style: {fontSize: 24, margin: '10px 0'}, "This is what you receive email notifications about:"
+        if !current_user.no_email_notifications
+          if _.flatten(_.values(data.follows)).length == 0
+            DIV null, 'You\'re not currently receiving any email notifications'
+          else
+            DIV null,
+              H1 style: {fontSize: 24, margin: '10px 0'}, "This is what you receive email notifications about:"
 
-            for followable_type in ['Point', 'Proposal']
-              if data.follows[followable_type].length > 0
-                DIV null,
-                  H1 style: {fontSize: 18, margin: '10px 0'}, "#{followable_type}s"
-                  for follow in data.follows[followable_type]
-                    followable = fetch(follow)
-                    DIV style: {margin: '20px 0'}, 
-                      if followable_type == 'Point'
-                        Point key: followable, rendered_as: 'under_review'
-                      else 
-                        BLOCKQUOTE null,
-                          followable.name
-                      BUTTON 
-                        style: {fontSize: 18}
-                        onClick: do(followable) => => 
-                          followable.is_following = false
-                          save followable
-                          arest.serverFetch '/dashboard/email_notifications' # don't want to have to dirty this key whenever a point or proposal is updated
-                        'unsubscribe'
+              for followable_type in ['Point', 'Proposal']
+                if data.follows[followable_type].length > 0
+                  DIV null,
+                    H1 style: {fontSize: 18, margin: '10px 0'}, "#{followable_type}s"
+                    for follow in data.follows[followable_type]
+                      followable = fetch(follow)
+                      DIV style: {margin: '20px 0'}, 
+                        if followable_type == 'Point'
+                          Point key: followable, rendered_as: 'under_review'
+                        else 
+                          BLOCKQUOTE null,
+                            followable.name
+                        BUTTON 
+                          style: {fontSize: 18}
+                          onClick: do(followable) => => 
+                            followable.is_following = false
+                            save followable
+                            arest.serverFetch '/dashboard/email_notifications' # don't want to have to dirty this key whenever a point or proposal is updated
+                          'unsubscribe'
 
 Root = ReactiveComponent
   displayName: 'Root'
@@ -3335,18 +3330,16 @@ Root = ReactiveComponent
       StateDash(),
       Page(key: "/page/#{root.page_name}"),
       Computer() # Doesn't actually render anything
-      Colors() # Doesn't actually render anything
 
 Page = ReactiveComponent
   displayName: 'Page'
 
   render: ->
 
-    color = @data('color')
     avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
 
-    if @root.auth_mode
+    if @root.auth_mode && @root.auth_mode != 'update'
       return Auth()
 
     if subdomain.name == 'homepage' && @root.page_name == 'homepage'
@@ -3354,7 +3347,7 @@ Page = ReactiveComponent
     else if !subdomain.name
       L
     else
-      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: color.background}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
+      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: 'white'}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
         if avatars.avatars
           STYLE type: 'text/css', id: 'b64-avatars', dangerouslySetInnerHTML: {__html: avatars.avatars}
         
@@ -3372,6 +3365,8 @@ Page = ReactiveComponent
               EditProposal key: "new_proposal", fresh: true
             else if @root.page_name.match(/(.+)\/edit/)
               EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
+            else if @root.page_name == 'edit_profile'
+              Auth()
             else if @root.page_name == 'dashboard/email_notifications'
               EmailNotificationSettings key: '/dashboard/email_notifications'
             else if @root.page_name == 'dashboard/assessment'
@@ -3418,57 +3413,6 @@ Computer = ReactiveComponent
       save(opinion)
 
     return SPAN null, ''
-
-
-# Non-rendering component that makes subdomain-specific colors available for use
-Colors = ReactiveComponent
-  displayName: 'Color'
-  render : ->
-    subdomain = @data('/subdomain')
-    color = @data('color')
-
-    # initialize colors if they haven't already been set
-    if !color.background && subdomain.name
-      # default colors
-      # I didn't want to put these in the defaults section below because 
-      # it would be annoying to refer back and forth to them here.
-      _.extend color,
-        background: 'white'
-        proposal_header: '#E37765'
-        header_bg: '#E37765'
-        link_hover_color: 'black'
-        profile_anchor_color: 'white'
-
-      # Define colors for different subdomains. 
-      switch subdomain.name
-        when 'livingvotersguide'
-          color.header_bg = 'rgb(11, 60, 103)'
-          color.proposal_header = '#a5ce3a'
-          color.background = 'white'
-          color.link_hover_color = 'rgb(118,148,41)'
-          color.profile_anchor_color = 'white'               
-        when 'cityoftigard'
-          color.header_bg =  '#253967'
-          color.proposal_header = '#46A046'
-          color.profile_anchor_color = 'white'     
-        when 'tigard'          
-          color.header_bg =  'white'
-          color.proposal_header = '#78d18b'
-          color.profile_anchor_color = '#707070'
-        when 'ihub'
-          color.header_bg =  color.proposal_header = "rgb(150,150,150)"
-        when 'ecastonline'
-          color.header_bg = color.proposal_header = 'rgb(36, 35, 31)'
-          color.profile_anchor_color = 'white'
-        when 'bitcoin-demo'
-          color.header_bg = 'white'
-          color.proposal_header = '#676766' #'rgb(52,93,146)'
-          color.profile_anchor_color = 'white'
-
-      save color
-
-    SPAN null, ''
-
 
 # Displays warnings for some browsers
 # Stores state about the current device. 
@@ -3568,13 +3512,16 @@ Router = Backbone.Router.extend
   routes :
     "(/)" : "homepage"
     "about(/)" : "about"
+    "edit_profile(/)" : "edit_profile"
     "proposal/new(/)" : "new_proposal"
     "proposal/:proposal/edit(/)": "edit_proposal"
     ":proposal(/)": "proposal"    
-    "dashboard/:dash(/)": 'dashboard'
+    "dashboard/:dash(/)": "dashboard"
 
   proposal : (slug, params) ->
     root = fetch('root')
+    resetState(root)
+
     root.page_name = slug
 
     #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
@@ -3594,12 +3541,8 @@ Router = Backbone.Router.extend
 
   homepage : (params) -> 
     root = fetch('root')
+    resetState(root)
     root.page_name = 'homepage'
-
-    #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
-    #      Right now activeREST doesn't allow wide consumption of a component's client state
-    #      if its data is synced with the server. 
-    clearRootForNonProposalRoute(root)
     save root
 
     writeToLog
@@ -3608,8 +3551,8 @@ Router = Backbone.Router.extend
 
   about : (params) ->
     root = fetch('root')
+    resetState(root)
     root.page_name = 'about'
-    clearRootForNonProposalRoute(root)
     save root
 
     writeToLog
@@ -3618,27 +3561,41 @@ Router = Backbone.Router.extend
 
   new_proposal : (params) ->
     root = fetch('root')
+    resetState(root)
     root.page_name = 'proposal/new'
-    clearRootForNonProposalRoute(root)
     save root
 
   edit_proposal : (id, params) ->
     root = fetch('root')
+    resetState(root)
     root.page_name = "proposal/#{id}/edit"
-    clearRootForNonProposalRoute(root)
     save root      
 
   dashboard : (dash, params) -> 
     root = fetch('root')
+    resetState(root)
     root.page_name = "dashboard/#{dash}"    
-    clearRootForNonProposalRoute(root)
     save root
 
+  edit_profile : (params) -> 
+    root = fetch('root')
+    resetState(root)
+
+    root.page_name = 'edit_profile'
+    root.auth_mode = 'update'
+    root.auth_reason = null
+
+    save root
 
 
 # Temporary method for handling resetting root state when switching between
 # routes. Remove once we have a better activeREST answer. 
-clearRootForNonProposalRoute = (root) ->
+resetState = (root) ->
+  root.auth_mode = null
+
+  #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
+  #      Right now activeREST doesn't allow wide consumption of a component's client state
+  #      if its data is synced with the server. 
   root.proposal_mode = null    
   root.selected_point = null
 

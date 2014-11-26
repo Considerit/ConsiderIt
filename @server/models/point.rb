@@ -40,13 +40,12 @@ class Point < ActiveRecord::Base
   }
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:comment_count, :created_at, :id, :includers, :is_pro, :moderation_status, :nutshell, :proposal_id, :published, :score, :text, :user_id, :hide_name, :last_inclusion]
+  self.my_public_fields = [:comment_count, :created_at, :id, :includers, :is_pro, :nutshell, :proposal_id, :published, :score, :text, :user_id, :hide_name, :last_inclusion]
 
   scope :public_fields, -> {select(self.my_public_fields)}
 
   scope :named, -> {where( :hide_name => false )}
   scope :published, -> {where( :published => true )}
-  scope :viewable, -> {where( 'published=1 AND (moderation_status IS NULL OR moderation_status=1)')}
   
   scope :pros, -> {where( :is_pro => true )}
   scope :cons, -> {where( :is_pro => false )}

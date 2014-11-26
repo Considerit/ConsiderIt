@@ -5,21 +5,15 @@ class ThirdPartyAuthHandler
 
     if provider == 'google'
       provider = 'google_oauth2'
-      vanity_url = location.host.split('.').length == 1
-      if !vanity_url
-        document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1') 
-      else 
-        document.domain = document.domain # make sure it is explitly set
-
-
-    if provider == 'twitter'
-      url = Routes.user_omniauth_authorize_path provider,
-        x_auth_access_type : 'read'
-    else
-      url = Routes.user_omniauth_authorize_path provider
+      
+    vanity_url = location.host.split('.').length == 1
+    if !vanity_url
+      document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1') 
+    else 
+      document.domain = document.domain # make sure it is explitly set
 
     @callback = callback
-    @popup = @openPopupWindow(url)
+    @popup = @openPopupWindow "/auth/#{provider}"
 
   pollLoginPopup : ->
     # try

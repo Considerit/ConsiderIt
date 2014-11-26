@@ -4,8 +4,6 @@
 //= require ./vendor/backbone
 //= require ./vendor/jquery.ui
 
-//= require js-routes
-
 //= require_tree ./vendor
 
 //= require ./element_viewport_positioning

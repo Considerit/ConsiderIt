@@ -187,7 +187,7 @@ class ProposalController < ApplicationController
   end
 
   def destroy
-    proposal = Proposal.find_by_slug(params[:slug])
+    proposal = Proposal.find(params[:id])
     authorize! :destroy, proposal
     proposal.destroy
     render :json => {:success => true}

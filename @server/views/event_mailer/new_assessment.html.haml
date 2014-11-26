@@ -1,10 +1,15 @@
 
 
-%p.head
+%p
   Hi #{@user.first_name}, 
 
+%p
   - if @notification_type == 'your point'
-    One or more participants requested that your #{@point.is_pro ? 'pro' : 'con'} point be researched further by a librarian. The Seattle Public Library has now completed the research. We hope that the additional information is helpful!
+    Someone requested a librarian to research your 
+    = succeed '.' do
+      %a{href: "#{@host}/#{@proposal.slug}/?selected=%2Fpoint%2F#{@point.id}&z=1", style: 'font-weight: 700; color: #468EE5;'} 
+        #{@point.is_pro ? 'pro' : 'con'} point
+    The Seattle Public Library has now completed the research. We hope the additional information is helpful!
 
   - elsif @notification_type == 'requested by you'
     At your request, a #{@point.is_pro ? 'pro' : 'con'} point has been researched by The Seattle Public Library. 
@@ -16,23 +21,15 @@
   The result of the research:
   %ul
     - @assessment.claims.each do |clm|
-      %li
-        Claim: "#{clm.claim_restatement}"; Conclusion: #{Assessable::Verdict.find(clm.verdict_id).formatVerdict()}.
+      %li{style: "margin-bottom: 15px"}
+        Claim: 
+        %i
+          = clm.claim_restatement
+        %br
+        Conclusion: #{Assessable::Verdict.find(clm.verdict_id).formatVerdict()}.
 
-%p 
-  The #{@point.is_pro ? 'pro' : 'con'} point:
-  .object
-    &ldquo;#{link_to @point.nutshell, "#{@host}/#{@proposal.slug}/?selected=%2Fpoint%2F#{@point.id}&z=1"}&rdquo;
-
-%p 
-  The issue: 
-  .object
-    &ldquo;#{link_to @proposal.name, "#{@host}/#{@proposal.slug}/?z=1"}&rdquo;
-
-.action_call
-  .rest
-    .call
-      = link_to 'Read and discuss further', "#{@host}/#{@proposal.slug}/?selected=%2Fpoint%2F#{@point.id}&z=1"
+%a{href: "#{@host}/#{@proposal.slug}/?selected=%2Fpoint%2F#{@point.id}&z=1", style: 'font-weight: 700; color: #468EE5;'}
+  Read the full report
 
 = content_for :footer do
   = render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this point'}

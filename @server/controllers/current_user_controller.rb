@@ -15,7 +15,7 @@ class CurrentUserController < ApplicationController
   # handles auth (login, new accounts, and login via reset password token) and updating user info
   def update
 
-    errors = {:login => [], :register => [], :reset_password => []}
+    errors = []
     @min_pass = 4
 
 
@@ -38,7 +38,8 @@ class CurrentUserController < ApplicationController
 
       when 'register'
 
-        update_user_attrs errors        
+        update_user_attrs 'register', errors
+        try_update_password 'register', errors 
         if !current_user.registered
           third_party_authenticated = current_user.twitter_uid || current_user.facebook_uid\
                                       || current_user.google_uid
@@ -58,9 +59,9 @@ class CurrentUserController < ApplicationController
 
 
           else
-            errors[:register].append("Password needs to be at least #{@min_pass} letters") if !ok_password
-            errors[:register].append('Name is blank') if !has_name
-            errors[:register].append('Community pledge required') if !signed_pledge
+            errors.append("Password needs to be at least #{@min_pass} letters") if !ok_password
+            errors.append('Name is blank') if !has_name
+            errors.append('Community pledge required') if !signed_pledge
           end
         end
 
@@ -68,9 +69,9 @@ class CurrentUserController < ApplicationController
         puts("Signing in by email and password")
 
         if !params[:email] || params[:email].length == 0
-          errors[:login].append 'Missing email'
+          errors.append 'Missing email'
         elsif !params[:password] || params[:password].length == 0
-          errors[:login].append 'Missing password'
+          errors.append 'Missing password'
         else
 
           user = User.find_by_lower_email(params[:email])
@@ -79,11 +80,11 @@ class CurrentUserController < ApplicationController
             # note: Returning this error message is a security risk as it
             #       reveals that a particular email address exists in the
             #       system or not.  But it's prolly the right tradeoff.
-            errors[:login].append "No user exists at that email address" 
+            errors.append "No user exists at that email address" 
 
           elsif !user.authenticate(params[:password])
             provider = user.third_party_authenticated()
-            errors[:login].append "Wrong password.#{provider ? ' Previously you used the ' + provider + ' button.' : ''}"
+            errors.append "Wrong password.#{provider ? ' Previously you used the ' + provider + ' button.' : ''}"
           else 
             current_user.add_to_active_in
             replace_user(current_user, user)
@@ -105,7 +106,7 @@ class CurrentUserController < ApplicationController
         has_password = params[:password] && params[:password].length >= @min_pass
         if !has_password
           puts("They need to provide a longer password. Bailing.")
-          errors[:reset_password].append "Please make a new password at least #{@min_pass} letters long"
+          errors.append "Please make a new password at least #{@min_pass} letters long"
 
         else 
         
@@ -120,14 +121,13 @@ class CurrentUserController < ApplicationController
           if user
             replace_user(current_user, user)
             set_current_user(user)
-            update_user_attrs errors
-            current_user.add_to_active_in            
+            try_update_password 'login_via_reset_password_token', errors
+            current_user.add_to_active_in
           else
-            errors[:reset_password].append "Sorry, that's the wrong verification code."
+            errors.append "Sorry, that's the wrong verification code."
           end  
                   
         end
-
 
       when 'send_password_reset_token' 
         puts("Initiating reset_password")
@@ -138,10 +138,29 @@ class CurrentUserController < ApplicationController
           # note: returning this is a security risk as it reveals that a
           #       particular email address exists in the system or not.
           #       But it's prolly the right tradeoff.
-          errors[:reset_password].append "We have no account for that email address."
-          puts("Errors are #{errors[:reset_password]}")
+          errors.append "We have no account for that email address."
+          puts("Errors are #{errors}")
         else 
-          user.reset_password()
+          # This algorithm is adapted from devise
+
+          # Generate a token that nobody's using
+          raw_token = loop do
+            raw_token = SecureRandom.urlsafe_base64(15)
+            raw_token = raw_token.tr('lIO0', 'sxyz') # Remove hard-to-distinguish characters
+            # Now we have a raw token... let's see if anyone's using it
+            break raw_token unless User.where(reset_password_token: raw_token).first
+          end
+
+          puts("\nYO YO the raw token to login is #{raw_token}\n")
+
+          # Now we'll store an encoded version of the token on the user table
+          encoded_token = OpenSSL::HMAC.hexdigest('SHA256', 'reset_password_token', raw_token)
+          user.reset_password_token   = encoded_token
+          user.reset_password_sent_at = Time.now.utc
+          user.save(:validate => false)
+          
+          UserMailer.reset_password_instructions(user, raw_token, Thread.current[:subdomain]).deliver!
+
           log('requested password reset')
         end
 
@@ -155,7 +174,8 @@ class CurrentUserController < ApplicationController
         end
 
       when 'update'
-        update_user_attrs errors
+        update_user_attrs 'update', errors
+        try_update_password 'update', errors
         log('updating info')
 
     end
@@ -178,7 +198,7 @@ class CurrentUserController < ApplicationController
       response[:email] = params[:email] if params[:email]
     end
 
-    if errors.values.flatten.length > 0
+    if errors.length > 0
       write_to_log({
         :what => "Errors trying to #{trying_to} user",
         :where => request.fullpath,
@@ -209,10 +229,10 @@ class CurrentUserController < ApplicationController
   #######
 
 
-  def update_user_attrs(errors)
+  def update_user_attrs(trying_to, errors)
     types = {:avatar => ActionDispatch::Http::UploadedFile, :bio => String, :name => String,
              :hide_name => 'boolean',
-             :email => String, :password => String, :no_email_notifications => 'boolean'}
+             :email => String, :no_email_notifications => 'boolean'}
     types.each do |field, type| 
       value = params[field]
       error = "Field #{field} is wrong type #{value.class}"
@@ -243,13 +263,15 @@ class CurrentUserController < ApplicationController
     email = params[:email]
     user = User.find_by_email(email)
     if !email || email.length == 0
-      errors[:register].append 'No email address specified'
+      if trying_to == 'register'
+        errors.append 'No email address specified' 
+      end
     # And if it's not taken
     elsif user && (user != current_user)
-      errors[:register].append 'There is already an account with that email'
+      errors.append 'There is already an account with that email'
     # And that it's valid
     elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
-      errors[:register].append 'Bad email address'
+      errors.append 'Bad email address'
     else
       puts("Updating email from #{current_user.email} to #{params[:email]}")
       # Okay, here comes a new email address!
@@ -258,12 +280,16 @@ class CurrentUserController < ApplicationController
         raise "Error saving this user's email"
       end
     end
+  end
 
+  def try_update_password(trying_to, errors)
     # Update their password
     if !params[:password] || params[:password].length == 0
-      errors[:register].append 'No password specified'
+      if trying_to == 'register' || trying_to == 'login_via_reset_password_token'
+        errors.append 'No password specified'
+      end
     elsif params[:password].length < @min_pass
-      errors[:register].append 'Password is too short'
+      errors.append 'Password is too short'
     else
       puts("Changing user's password.")
       current_user.password = params[:password]
@@ -282,7 +308,31 @@ class CurrentUserController < ApplicationController
   def update_via_third_party
 
     access_token = env["omniauth.auth"]
-    user = User.find_by_third_party_token access_token
+
+    ######
+    # Try to find an existing user that matches the credentials 
+    # provided in the access token
+    case access_token.provider
+      when 'facebook'
+        user = User.find_by_facebook_uid(access_token.uid)
+      when 'google_oauth2'
+        user = User.find_by_google_uid(access_token.uid)
+    end
+
+    # If we didn't find a user by the uid, perhaps they already have a user
+    # registered by the given email address, but just haven't authenticated 
+    # yet by this particular third party. For example, say I register by 
+    # email/password with me@gmail.com, but then later I try to authenticate
+    # via google oauth. We'll want to match with the existing user and 
+    # set the proper google uid. 
+    if !user && access_token.info.email
+      user = User.find_by_lower_email(access_token.info.email)
+      if user
+        user["#{access_token.provider}_uid".intern] = access_token.uid
+        user.save
+      end
+    end
+
 
     # If a registered user is associated with this third party, just log them in
     if user && user.registered
@@ -361,10 +411,8 @@ class CurrentUserController < ApplicationController
     response.concat(compile_dirty_objects())
 
     document_domain = nil
-    if access_token['provider'] == 'google_oauth2'
-      vanity_url = request.host.split('.').length == 1
-      document_domain = vanity_url ? "document.domain" : "location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1')"
-    end
+    vanity_url = request.host.split('.').length == 1
+    document_domain = vanity_url ? "document.domain" : "location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1')"
 
     render :inline =>
       "<div style='font-weight:600; font-size: 36px; color: #414141'>Please close this window</div>" +

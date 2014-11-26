@@ -44,7 +44,6 @@ notify_point = Proc.new do |data|
   mail_options = data[:mail_options]
 
   voters = proposal.opinions.published.select(:user_id).uniq.map {|x| x.user_id }
-
   proposal.followers.each do |u|
     next if !send_email_to_user(u)
 
@@ -59,12 +58,13 @@ notify_point = Proc.new do |data|
     # if follower has submitted a opinion on this proposal
     elsif voters.include? u.id
       notification_type = 'opinion submitter'
-      next if current_subdomain.name == 'livingvotersguide' # disable until we have digests
+
     # lurker 
     else
       notification_type = 'lurker'
     end
 
+    pp 'Emailing: ', u.email
     EventMailer.new_point(u, point, mail_options, notification_type).deliver!
 
   end
@@ -139,7 +139,7 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
       rescue
       end
       if user
-        AlertMailer.content_to_moderate(user, current_subdomain).deliver!
+        AdminMailer.content_to_moderate(user, current_subdomain).deliver!
       end
     end
   end
@@ -184,7 +184,70 @@ end
 
 ##################################################
 ########## Misc Notifications
+ActiveSupport::Notifications.subscribe("new_assessment_request") do |*args|
+  data = args.last
+  assessment = data[:assessment]
+  current_subdomain = data[:current_subdomain]
+  mail_options = data[:mail_options]
+  assessable = assessment.root_object
 
+  # send to all factcheckers
+  roles = current_subdomain.user_roles()
+  evaluators = roles.has_key?('evaluator') ? roles['evaluator'] : []
+
+  evaluators.each do |key|
+    begin
+      user = User.find(key_id(key))
+    rescue
+    end
+    if user && send_email_to_user(user)
+      AdminMailer.content_to_assess(assessment, user, current_subdomain).deliver!
+    end
+  end
+
+end
+
+ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
+  data = args.last
+  assessment = data[:assessment]
+  current_subdomain = data[:current_subdomain]
+  mail_options = data[:mail_options]
+
+  assessable = assessment.root_object
+
+  commenters = assessable.comments.select(:user_id).uniq.map {|x| x.user_id }
+  includers = assessable.inclusions.select(:user_id).uniq.map {|x| x.user_id }
+  requesters = assessment.requests.select(:user_id).uniq.map {|x| x.user_id }
+
+  assessable.follows.where(:follow => true).each do |follow|
+
+    if !follow.user || !follow.user.email || follow.user.email.length == 0
+      next
+
+    # if follower is author of point
+    elsif follow.user_id == assessable.user_id
+      notification_type = 'your point'
+
+    # if follower requested the check
+    elsif requesters.include?(follow.user_id)
+      notification_type = 'requested by you'
+    
+    # if follower is a participant in the discussion
+    elsif commenters.include? assessable.user_id
+      notification_type = 'participant'
+
+    # if follower included the point
+    elsif includers.include? follow.user_id
+      notification_type = 'included point'
+    end
+
+    next if !send_email_to_user(follow.user)
+
+    EventMailer.new_assessment(follow.user, assessable, assessment, mail_options, notification_type).deliver!
+
+  end
+
+end
 
 
 
@@ -219,54 +282,54 @@ end
 #### published_new_opinion is NOT MIGRATED / TESTED!!!!######
 ActiveSupport::Notifications.subscribe("published_new_opinion") do |*args|
 
-  def fib(n)
-    curr = 0; succ = 1
-    n.times do |i|
-      curr, succ = succ, curr + succ
-    end
-    curr
-  end
+  # def fib(n)
+  #   curr = 0; succ = 1
+  #   n.times do |i|
+  #     curr, succ = succ, curr + succ
+  #   end
+  #   curr
+  # end
 
-  def milestone_greater_than(n)
-    curr = 0;succ = 1;milestone = 0
-    until curr > n do
-      curr, succ = succ, curr + succ
-      milestone += 1
-    end
-    milestone
-  end
+  # def milestone_greater_than(n)
+  #   curr = 0;succ = 1;milestone = 0
+  #   until curr > n do
+  #     curr, succ = succ, curr + succ
+  #     milestone += 1
+  #   end
+  #   milestone
+  # end
 
-  data = args.last
-  opinion = data[:opinion]
+  # data = args.last
+  # opinion = data[:opinion]
 
-  current_subdomain = data[:current_subdomain]
-  mail_options = data[:mail_options]  
-  proposal = opinion.proposal
+  # current_subdomain = data[:current_subdomain]
+  # mail_options = data[:mail_options]  
+  # proposal = opinion.proposal
 
-  # do not send summary mail if one was already sent today
-  if proposal.followable_last_notification === DateTime.now
-    return
-  end
+  # # do not send summary mail if one was already sent today
+  # if proposal.followable_last_notification === DateTime.now
+  #   return
+  # end
 
-  proposal.followable_last_notification_milestone ||= 0 
-  threshhold_for_next_notification = fib(proposal.followable_last_notification_milestone + 1)
-  opinions = proposal.opinions.published
-  if proposal.user_id
-    opinions = opinions.where("user_id != #{proposal.user_id}")
-  end
+  # proposal.followable_last_notification_milestone ||= 0 
+  # threshhold_for_next_notification = fib(proposal.followable_last_notification_milestone + 1)
+  # opinions = proposal.opinions.published
+  # if proposal.user_id
+  #   opinions = opinions.where("user_id != #{proposal.user_id}")
+  # end
 
-  if opinions.count >= threshhold_for_next_notification 
-    next_milestone = milestone_greater_than(opinions.count)
+  # if opinions.count >= threshhold_for_next_notification 
+  #   next_milestone = milestone_greater_than(opinions.count)
 
-    pp "Notification for Proposal '#{proposal.title}', because #{opinions.count} >= #{threshhold_for_next_notification}. Setting next milestone for #{next_milestone} (#{fib(next_milestone)})}"
+  #   pp "Notification for Proposal '#{proposal.title}', because #{opinions.count} >= #{threshhold_for_next_notification}. Setting next milestone for #{next_milestone} (#{fib(next_milestone)})}"
 
-    proposal.follows.where(:follow => true).where("user_id != #{opinion.user_id}").each do |follow|
-      pp "\t Notifying #{follow.user.name}"
-      EventMailer.proposal_milestone_reached(follow.user, proposal, fib(next_milestone), mail_options).deliver!
-    end
-    proposal.followable_last_notification_milestone = next_milestone
-    proposal.followable_last_notification = DateTime.now
-    proposal.save
+  #   proposal.follows.where(:follow => true).where("user_id != #{opinion.user_id}").each do |follow|
+  #     pp "\t Notifying #{follow.user.name}"
+  #     EventMailer.proposal_milestone_reached(follow.user, proposal, fib(next_milestone), mail_options).deliver!
+  #   end
+  #   proposal.followable_last_notification_milestone = next_milestone
+  #   proposal.followable_last_notification = DateTime.now
+  #   proposal.save
 
-  end
+  # end
 end

@@ -1,38 +1,87 @@
 ######################
-# ecastonline
-
-ecast_text_color = 'white' #'#ede6d3'
-
-window.ecastonlineHeader = ReactiveComponent
-  displayName: 'ecastonlineHeader'
+# Default
+window.DefaultHeader = ReactiveComponent
+  displayName: 'DefaultHeader'
 
   render: ->
-    logo_style = {height: 60}
-    DIV style: {textAlign: 'center', height: 230, backgroundSize: '1600px auto', background: 'url(<%= asset_path 'ecastonline/banner.jpg' %>) no-repeat scroll top'},
+    subdomain = fetch '/subdomain'   
+
+    masthead_style =  {textAlign: 'center', backgroundColor: subdomain.branding.primary_color}
+    if subdomain.branding.masthead
+      _.extend masthead_style, 
+        height: 300
+        backgroundPosition: 'center'
+        backgroundSize: 'cover'
+        backgroundImage: "url(#{subdomain.branding.masthead})"   
+           
+    DIV style: masthead_style,
       DIV className: 'profile_navigation',
         ProfileLink()
 
-      SPAN style: {color: ecast_text_color, margin: 'auto', fontSize: 60, display: 'inline-block', fontWeight: 700, position: 'relative', top: 0}, 
-        A href: 'http://ecastonline.org/', target: '_blank',
-          'Informing NASA\'s Asteroid Initiative' 
+      if subdomain.branding.masthead_header_text
+        DIV style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
+          if subdomain.external_project_url
+            A href: "#{subdomain.external_project_url}", target: '_blank',
+              subdomain.branding.masthead_header_text
+          else
+            subdomain.branding.masthead_header_text
 
-window.ecastonlineFooter = ReactiveComponent
-  displayName: 'ecastOnlineFooter'
+window.DefaultFooter = ReactiveComponent
+  displayName: 'DefaultFooter'
   render: ->
+    subdomain = fetch '/subdomain'
     DIV null,
-      DIV style: {margin: '20px 0'},
-        FBShare()
-        Tweet
-          hashtags: 'asteroids, NASA'
-          referer: 'https%3A%2F%2Fecastonline.consider.it%2F'
-          text: 'Think about NASA\'s Asteroid Initiative.'
-          url: 'https%3A%2F%2Fecastonline.consider.it%2F'
+      # DIV style: {margin: '20px 0'},
+      #   FBShare()
+      #   Tweet
+      #     hashtags: 'asteroids, NASA'
+      #     referer: 'https%3A%2F%2Fecastonline.consider.it%2F'
+      #     text: 'Think about NASA\'s Asteroid Initiative.'
+      #     url: 'https%3A%2F%2Fecastonline.consider.it%2F'
 
-      A href: 'http://ecastonline.org/', target: '_blank', style: {display: 'inline-block', margin: 'auto'},
-        IMG src: "<%= asset_path 'ecastonline/logo.png' %>", style: {width: 300}
+      A href: "#{subdomain.external_project_url}", target: '_blank', style: {display: 'inline-block', margin: 'auto'},
+        if subdomain.branding.logo
+          IMG src: "#{subdomain.branding.logo}", style: {width: 300}
 
-      DIV style: {padding: 9, fontSize: '70%'},
+      DIV style: {marginTop: 30, fontSize: '70%'},
         TechnologyByConsiderit()
+        DIV style: {color: 'rgb(131,131,131)', marginTop: 5},
+          'Bug to report? Want to use this technology in your organization? '
+          A style: {textDecoration: 'none', fontWeight: 700}, href: "mailto:admin@consider.it", 'Email us'
+
+
+######################
+# ecastonline
+
+# window.ecastonlineHeader = ReactiveComponent
+#   displayName: 'ecastonlineHeader'
+
+#   render: ->
+#     DIV style: {textAlign: 'center', height: 230, backgroundSize: '1600px auto', background: 'url(<%= asset_path 'ecastonline/banner.jpg' %>) no-repeat scroll top'},
+#       DIV className: 'profile_navigation',
+#         ProfileLink()
+
+#       SPAN style: {color: 'white', margin: 'auto', fontSize: 60, display: 'inline-block', fontWeight: 700, position: 'relative', top: 0}, 
+#         A href: 'http://ecastonline.org/', target: '_blank',
+#           'Informing NASA\'s Asteroid Initiative' 
+
+# window.ecastonlineFooter = ReactiveComponent
+#   displayName: 'ecastOnlineFooter'
+#   render: ->
+#     DIV null,
+#       DIV style: {margin: '20px 0'},
+#         FBShare()
+#         Tweet
+#           hashtags: 'asteroids, NASA'
+#           referer: 'https%3A%2F%2Fecastonline.consider.it%2F'
+#           text: 'Think about NASA\'s Asteroid Initiative.'
+#           url: 'https%3A%2F%2Fecastonline.consider.it%2F'
+
+#       A href: 'http://ecastonline.org/', target: '_blank', style: {display: 'inline-block', margin: 'auto'},
+#         IMG src: "<%= asset_path 'ecastonline/logo.png' %>", style: {width: 300}
+
+#       DIV style: {padding: 9, fontSize: '70%'},
+#         TechnologyByConsiderit()
 
 
 
@@ -81,7 +130,7 @@ window.cityoftigardHeader = ReactiveComponent
 
   render: -> 
     logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
-    DIV null,
+    DIV style: {backgroundColor: '#253967'},
       DIV className: 'profile_navigation',
         ProfileLink()
 
@@ -187,7 +236,7 @@ window.livingvotersguideHeader = ReactiveComponent
           marginBottom: 15
           fontSize: 18
           color: 'white'
-        "Thanks Washington! We'll see you again in 2015!"
+        "Thanks Washington! We'll see you again in 2015."
 
 window.ZipcodeBox = ReactiveComponent
   displayName: 'ZipcodeBox'

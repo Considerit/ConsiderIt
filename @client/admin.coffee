@@ -32,15 +32,25 @@ AccessControlled = ReactiveComponent
       save @root
       SPAN null
 
-DashHeader = (name) ->
-  DIV style: {position: 'relative'},
-    A
-      className: 'homepage_link'
-      onClick: (=> window.app_router.navigate("/", {trigger: true}))
-      style: {position: 'absolute', display: 'inline-block', top: 5, left: -40},
-      I className: 'fa fa-home', style: {fontSize: 28, color: 'black'}
-    
-    H1 style: {fontSize: 28, margin: '20px 0'}, name   
+DashHeader = ReactiveComponent
+  displayName: 'DashHeader'
+
+  render : ->
+    subdomain = fetch '/subdomain'
+    DIV 
+      style: 
+        position: 'relative'
+        backgroundColor: subdomain.branding.primary_color
+        color: 'white'
+
+      DIV style: {width: CONTENT_WIDTH, margin: 'auto', position: 'relative'},
+        A
+          className: 'homepage_link'
+          onClick: (=> window.app_router.navigate("/", {trigger: true}))
+          style: {position: 'absolute', display: 'inline-block', top: 25, left: -40},
+          I className: 'fa fa-home', style: {fontSize: 28}
+        
+        H1 style: {fontSize: 28, padding: '20px 0', color: 'white'}, @props.name   
 
 ImportDataDash = ReactiveComponent
   displayName: 'ImportDataDash'
@@ -54,149 +64,131 @@ ImportDataDash = ReactiveComponent
     else 
       tables = ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
 
-    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
-      STYLE null, 
-        """
-        """
+    DIV null, 
 
-      DashHeader 'Import Data'
-      P style: {fontWeight: 300, marginBottom: 6}, 
-        "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
+      DashHeader name: 'Import Data'
 
-      if subdomain.name != 'livingvotersguide'
+      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'},
+        P style: {marginBottom: 6}, 
+          "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
 
-        DIV null,
-          P style: {fontWeight: 300, marginBottom: 6}, 
-            "To refer to a User, use their email address. For example, if you’re uploading points, in the user column, refer to the author via their email address. "
-          P style: {fontWeight: 300, marginBottom: 6}, 
-            "To refer to a Proposal, refer to its url. "
-          P style: {fontWeight: 300, marginBottom: 6}, 
-            "To refer to a Point, make up an id for it and use that."
-          P style: {fontWeight: 300, marginBottom: 6}, 
-            "You do not have to upload every file, just what you need to. Importing the same spreadsheet multiple times is ok."
+        if subdomain.name != 'livingvotersguide'
 
-      FORM action: '/dashboard/import_data',
-        TABLE null, TBODY null,
-          for table in tables
+          DIV null,
+            P style: {marginBottom: 6}, 
+              "To refer to a User, use their email address. For example, if you’re uploading points, in the user column, refer to the author via their email address. "
+            P style: {marginBottom: 6}, 
+              "To refer to a Proposal, refer to its url. "
+            P style: {marginBottom: 6}, 
+              "To refer to a Point, make up an id for it and use that."
+            P style: {marginBottom: 6}, 
+              "You do not have to upload every file, just what you need to. Importing the same spreadsheet multiple times is ok."
+
+        FORM action: '/dashboard/import_data',
+          TABLE null, TBODY null,
+            for table in tables
+              TR null,
+                TD style: {paddingTop: 20, textAlign: 'right'}, 
+                  LABEL style: {whiteSpace: 'nowrap'}, htmlFor: "#{table}-file", "#{table} (.csv)"
+                  DIV null, A style: {textDecoration: 'underline', fontSize: 12}, href: "/example_import_csvs/#{table.toLowerCase()}.csv", 'Example'
+                TD style: {padding: '20px 0 0 20px'}, 
+                  INPUT id: "#{table}-file", name: "#{table.toLowerCase()}-file", type:'file', style: {backgroundColor: considerit_blue, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
+            
+
+            if current_user.is_super_admin
+              [TR null,
+                TD null
+                TD style: {padding: '20px 0 20px 20px'}, 
+                  INPUT type: 'checkbox', name: 'generate_inclusions', id: 'generate_inclusions'
+                  LABEL htmlFor: 'generate_inclusions', 
+                    """
+                    Generate opinions & inclusions of points?
+                    It requires a proposal file; for each proposal in the file, this option will increase by 
+                    2x the number of existing opinions. Each simulated opinion will include two points. 
+                    Stances and inclusions will not be assigned randomly, but rather following a 
+                    rich-get-richer model. You can use this option multiple times. This option is only good for demos.
+                    """
+
+              TR null,
+                TD null
+                TD style: {padding: '20px 0 20px 20px'}, 
+                  INPUT type: 'checkbox', name: 'assign_pics', id: 'assign_pics'
+                  LABEL htmlFor: 'assign_pics', 
+                    """
+                    Assign a random profile picture for users without an avatar url
+                    """]
+
             TR null,
-              TD style: {paddingTop: 20, textAlign: 'right'}, 
-                LABEL style: {whiteSpace: 'nowrap'}, htmlFor: "#{table}-file", "#{table} (.csv)"
-                DIV null, A style: {textDecoration: 'underline', fontSize: 12}, href: "/example_import_csvs/#{table.toLowerCase()}.csv", 'Example'
+              TD null
               TD style: {padding: '20px 0 0 20px'}, 
-                INPUT id: "#{table}-file", name: "#{table.toLowerCase()}-file", type:'file', style: {backgroundColor: considerit_blue, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
-          
-
-          if current_user.is_super_admin
-            [TR null,
-              TD null
-              TD style: {padding: '20px 0 20px 20px'}, 
-                INPUT type: 'checkbox', name: 'generate_inclusions', id: 'generate_inclusions'
-                LABEL htmlFor: 'generate_inclusions', 
-                  """
-                  Generate opinions & inclusions of points?
-                  It requires a proposal file; for each proposal in the file, this option will increase by 
-                  2x the number of existing opinions. Each simulated opinion will include two points. 
-                  Stances and inclusions will not be assigned randomly, but rather following a 
-                  rich-get-richer model. You can use this option multiple times. This option is only good for demos.
-                  """
-
-            TR null,
-              TD null
-              TD style: {padding: '20px 0 20px 20px'}, 
-                INPUT type: 'checkbox', name: 'assign_pics', id: 'assign_pics'
-                LABEL htmlFor: 'assign_pics', 
-                  """
-                  Assign a random profile picture for users without an avatar url
-                  """]
-
-          TR null,
-            TD null
-            TD style: {padding: '20px 0 0 20px'}, 
-              A 
-                id: 'submit_import'
-                style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
-                onClick: => 
-                  $('html, #submit_import').css('cursor', 'wait')
-                  $(@getDOMNode()).find('form').ajaxSubmit
-                    type: 'POST'
-                    data: 
-                      authenticity_token: current_user.csrf
-                      trying_to: 'update_avatar_hack'   
-                    success: (data) => 
-                      if data[0].errors
-                        @local.successes = null
-                        @local.errors = data[0].errors
-                        save @local
-                      else
+                A 
+                  id: 'submit_import'
+                  style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
+                  onClick: => 
+                    $('html, #submit_import').css('cursor', 'wait')
+                    $(@getDOMNode()).find('form').ajaxSubmit
+                      type: 'POST'
+                      data: 
+                        authenticity_token: current_user.csrf
+                        trying_to: 'update_avatar_hack'   
+                      success: (data) => 
+                        if data[0].errors
+                          @local.successes = null
+                          @local.errors = data[0].errors
+                          save @local
+                        else
+                          $('html, #submit_import').css('cursor', '')
+                          # clear out statebus 
+                          arest.clear_matching_objects((key) -> key.match( /\/page\// ))
+                          @local.errors = null
+                          @local.successes = data[0]
+                          save @local
+                      error: (result) => 
                         $('html, #submit_import').css('cursor', '')
-                        # clear out statebus 
-                        arest.clear_matching_objects((key) -> key.match( /\/page\// ))
-                        @local.errors = null
-                        @local.successes = data[0]
+                        @local.successes = null                      
+                        @local.errors = ['Unknown error parsing the files. Email tkriplean@gmail.com.']
                         save @local
-                    error: (result) => 
-                      $('html, #submit_import').css('cursor', '')
-                      @local.successes = null                      
-                      @local.errors = ['Unknown error parsing the files. Email tkriplean@gmail.com.']
-                      save @local
-                      
+                        
 
-                'Done. Upload!'
+                  'Done. Upload!'
 
 
-      if @local.errors && @local.errors.length > 0
-        DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFE2E2'}, 
-          H1 style: {fontSize: 18}, 'Ooops! There are errors in the uploaded files:'
-          for error in @local.errors
-            DIV style: {marginTop: 10}, error
+        if @local.errors && @local.errors.length > 0
+          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFE2E2'}, 
+            H1 style: {fontSize: 18}, 'Ooops! There are errors in the uploaded files:'
+            for error in @local.errors
+              DIV style: {marginTop: 10}, error
 
-      if @local.successes
-        DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#E2FFE2'}, 
-          H1 style: {fontSize: 18}, 'Success! Here\'s what happened:'
-          for table in tables
-            if @local.successes[table.toLowerCase()]
-              DIV null,
-                H1 style: {fontSize: 15, fontWeight: 300}, table
-                for success in @local.successes[table.toLowerCase()]
-                  DIV style: {marginTop: 10}, success
+        if @local.successes
+          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#E2FFE2'}, 
+            H1 style: {fontSize: 18}, 'Success! Here\'s what happened:'
+            for table in tables
+              if @local.successes[table.toLowerCase()]
+                DIV null,
+                  H1 style: {fontSize: 15, fontWeight: 300}, table
+                  for success in @local.successes[table.toLowerCase()]
+                    DIV style: {marginTop: 10}, success
 
 AppSettingsDash = ReactiveComponent
   displayName: 'AppSettingsDash'
 
   render : -> 
     subdomain = @data()
+    current_user = fetch '/current_user'
 
     DIV className: 'app_settings_dash',
-      STYLE null, 
+
+      STYLE dangerouslySetInnerHTML: __html: #dangerously set html is so that the type="text" doesn't get escaped
         """
-        .app_settings_dash { font-size: 18px; width: #{CONTENT_WIDTH}px; margin: 20px auto; }
-        .app_settings_dash label { display: block; }
-        .app_settings_dash input { display: block; width: 600px; font-size: 18px; padding: 4px 8px; } 
+        .app_settings_dash { font-size: 18px }
+        .app_settings_dash input[type="text"] { display: block; width: 600px; font-size: 18px; padding: 4px 8px; } 
         .app_settings_dash .input_group { margin-bottom: 12px; }
         """
 
-      DashHeader 'Application Settings'
-
+      DashHeader name: 'Application Settings'
 
       if subdomain.name
-        DIV null, 
-          DIV className: 'input_group',
-            LABEL htmlFor: 'about_page_url', 'About Page URL'
-            INPUT 
-              id: 'about_page_url'
-              type: 'text'
-              name: 'about_page_url'
-              defaultValue: subdomain.about_page_url
-              placeholder: 'The about page will then contain a window to this url.'
-
-          DIV className: 'input_group',
-            LABEL htmlFor: 'notifications_sender_email', 'Contact email'
-            INPUT 
-              id: 'notifications_sender_email'
-              type: 'text'
-              name: 'notifications_sender_email'
-              defaultValue: subdomain.notifications_sender_email
-              placeholder: 'Sender email address for notification emails. Default is admin@consider.it.'
+        DIV style: {width: CONTENT_WIDTH, margin: '20px auto'}, 
 
           DIV className: 'input_group',
             LABEL htmlFor: 'app_title', 'The name of this application'
@@ -217,9 +209,81 @@ AppSettingsDash = ReactiveComponent
               placeholder: 'A link to the main project\'s homepage, if any.'
 
           DIV className: 'input_group',
-            BUTTON className: 'button', onClick: @submit, 'Save'
+            LABEL htmlFor: 'notifications_sender_email', 'Contact email'
+            INPUT 
+              id: 'notifications_sender_email'
+              type: 'text'
+              name: 'notifications_sender_email'
+              defaultValue: subdomain.notifications_sender_email
+              placeholder: 'Sender email address for notification emails. Default is admin@consider.it.'
+
+          DIV className: 'input_group',
+            LABEL htmlFor: 'about_page_url', 'About Page URL'
+            INPUT 
+              id: 'about_page_url'
+              type: 'text'
+              name: 'about_page_url'
+              defaultValue: subdomain.about_page_url
+              placeholder: 'The about page will then contain a window to this url.'
+
+          if current_user.is_super_admin
+            DIV null,
+              DIV className: 'input_group',
+                LABEL htmlFor: 'masthead_header_text', 'Masthead header text'
+                INPUT 
+                  id: 'masthead_header_text'
+                  type: 'text'
+                  name: 'masthead_header_text'
+                  defaultValue: subdomain.branding.masthead_header_text
+                  placeholder: 'This will be shown in bold white text across the top of the header.'
+
+              DIV className: 'input_group',
+                LABEL htmlFor: 'primary_color', 'Primary color (CSS format)'
+                INPUT 
+                  id: 'primary_color'
+                  type: 'text'
+                  name: 'primary_color'
+                  defaultValue: subdomain.branding.primary_color
+                  placeholder: 'The primary brand color. Needs to be dark.'
+
+              FORM id: 'subdomain_files', action: '/update_images_hack',
+                DIV className: 'input_group',
+                  DIV null, LABEL htmlFor: 'masthead', 'Masthead background image. Should be pretty large.'
+                  INPUT 
+                    id: 'masthead'
+                    type: 'file'
+                    name: 'masthead'
+                    onChange: (ev) =>
+                      @submit_masthead = true
+
+                DIV className: 'input_group',
+                  DIV null, LABEL htmlFor: 'logo', 'Organization\'s logo'
+                  INPUT 
+                    id: 'logo'
+                    type: 'file'
+                    name: 'logo'
+                    onChange: (ev) =>
+                      @submit_logo = true
+
+              DIV className: 'input_group',
+                INPUT type: 'checkbox', name: 'light_masthead', id: 'light_masthead', defaultChecked: subdomain.branding.light_masthead
+                LABEL htmlFor: 'light_masthead', 
+                  "Is the masthead image a light color (if not specified, is the primary color light)?"
+
+
+          DIV className: 'input_group',
+            BUTTON className: 'primary_button button', onClick: @submit, 'Save'
+
+          if @local.save_complete
+            DIV style: {color: 'green'}, 'Saved.'
+
+          if @local.errors
+            DIV style: {color: 'red'}, 'Error uploading files!'
+
 
   submit : -> 
+    submitting_files = @submit_logo || @submit_masthead
+
     subdomain = @data()
 
     fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url']
@@ -227,7 +291,29 @@ AppSettingsDash = ReactiveComponent
     for f in fields
       subdomain[f] = $(@getDOMNode()).find("##{f}").val()
 
-    save subdomain
+    subdomain.branding =
+      primary_color: $('#primary_color').val()
+      masthead_header_text: $('#masthead_header_text').val()
+      light_masthead: $('#light_masthead:checked').length > 0
+    @local.save_complete = @local.errors = false
+    save @local
+
+    save subdomain, => 
+
+      @local.save_complete = true if !submitting_files
+      save @local
+
+      if submitting_files
+        current_user = fetch '/current_user'
+        $('#subdomain_files').ajaxSubmit
+          type: 'PUT'
+          data: 
+            authenticity_token: current_user.csrf
+          success: =>
+            location.reload()
+          error: => 
+            @local.errors = true
+            save @local
 
 
 RolesDash = ReactiveComponent
@@ -245,16 +331,17 @@ RolesDash = ReactiveComponent
       roles.push ['evaluator', 'Evaluators review factual claims in pro/con points.']
 
 
-    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
+    DIV null, 
 
-      DashHeader 'User Roles'
+      DashHeader name: 'User Roles'
 
-      for role in roles
-        DIV style: {marginTop: 12},
-          H1 style: {fontSize: 18}, capitalize(role[0])
-          SPAN style: {fontSize: 14}, role[1]
+      DIV style: {width: CONTENT_WIDTH, margin: 'auto'},
+        for role in roles
+          DIV style: {marginTop: 12},
+            H1 style: {fontSize: 18}, capitalize(role[0])
+            SPAN style: {fontSize: 14}, role[1]
 
-          PermissionBlock key: role[0]
+            PermissionBlock key: role[0]
 
 
 PermissionBlock = ReactiveComponent
@@ -415,76 +502,77 @@ ModerationDash = ReactiveComponent
     items = [['Pending review', reviewable], ['Quarantined', quarantined], ['Failed', failed], ['Passed', passed]]
 
 
-    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
-      DashHeader 'Moderation Interface'
+    DIV null,
+      DashHeader name: 'Moderate user contributions'
 
-      DIV className: 'moderation_settings',
-        if subdomain.moderated_classes.length == 0 || @local.edit_settings
-          DIV null,             
-            for model in ['points', 'comments'] #, 'proposals']
-              # The order of the options is important for the database records
-              moderation_options = [
-                "Do not moderate #{model}", 
-                "Do not publicly post #{model} until moderation", 
-                "Post #{model} immediately, but withhold email notifications until moderation", 
-                "Post #{model} immediately, catch bad ones afterwards"]
+      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'}, 
+        DIV className: 'moderation_settings',
+          if subdomain.moderated_classes.length == 0 || @local.edit_settings
+            DIV null,             
+              for model in ['points', 'comments'] #, 'proposals']
+                # The order of the options is important for the database records
+                moderation_options = [
+                  "Do not moderate #{model}", 
+                  "Do not publicly post #{model} until moderation", 
+                  "Post #{model} immediately, but withhold email notifications until moderation", 
+                  "Post #{model} immediately, catch bad ones afterwards"]
 
-              FIELDSET style: {marginBottom: 12},
-                LEGEND style: {fontSize: 24},
-                  capitalize model
+                FIELDSET style: {marginBottom: 12},
+                  LEGEND style: {fontSize: 24},
+                    capitalize model
 
-                for field, idx in moderation_options
-                  DIV 
-                    style: {marginLeft: 18, fontSize: 18, cursor: 'pointer'}
-                    onClick: do (idx, model) => => 
-                      subdomain["moderate_#{model}_mode"] = idx
-                      save subdomain
+                  for field, idx in moderation_options
+                    DIV 
+                      style: {marginLeft: 18, fontSize: 18, cursor: 'pointer'}
+                      onClick: do (idx, model) => => 
+                        subdomain["moderate_#{model}_mode"] = idx
+                        save subdomain
 
-                      #saving the subdomain shouldn't always dirty moderations (which is expensive), so just doing it manually here
-                      arest.serverFetch('/dashboard/moderate')  
+                        #saving the subdomain shouldn't always dirty moderations (which is expensive), so just doing it manually here
+                        arest.serverFetch('/dashboard/moderate')  
 
-                    INPUT style: {cursor: 'pointer'}, type: 'radio', name: "moderate_#{model}_mode", id: "moderate_#{model}_mode_#{idx}", defaultChecked: subdomain["moderate_#{model}_mode"] == idx
-                    LABEL style: {cursor: 'pointer', paddingLeft: 8 }, htmlFor: "moderate_#{model}_mode_#{idx}", field
+                      INPUT style: {cursor: 'pointer'}, type: 'radio', name: "moderate_#{model}_mode", id: "moderate_#{model}_mode_#{idx}", defaultChecked: subdomain["moderate_#{model}_mode"] == idx
+                      LABEL style: {cursor: 'pointer', paddingLeft: 8 }, htmlFor: "moderate_#{model}_mode_#{idx}", field
 
-            BUTTON 
+              BUTTON 
+                onClick: => 
+                  @local.edit_settings = false
+                  save @local
+                'Done'
+
+          else 
+            A 
+              style: {textDecoration: 'underline'}
               onClick: => 
-                @local.edit_settings = false
+                @local.edit_settings = true
                 save @local
-              'Done'
+              'Edit moderation settings'
 
-        else 
-          A 
-            style: {textDecoration: 'underline'}
-            onClick: => 
-              @local.edit_settings = true
-              save @local
-            'Edit moderation settings'
+        AdminTaskList 
+          key: 'moderation_dash'
+          items: items
+          renderTab : (item) =>
+            class_name = item.moderatable_type
+            moderatable = @data(item.moderatable)
+            if class_name == 'Point'
+              proposal = @data(moderatable.proposal)
+              tease = "#{moderatable.nutshell.substring(0, 30)}..."
+            else if class_name == 'Comment'
+              point = @data(moderatable.point)
+              proposal = @data(point.proposal)
+              tease = "#{moderatable.body.substring(0, 30)}..."
 
-      AdminTaskList 
-        key: 'moderation_dash'
-        items: items
-        renderTab : (item) =>
-          class_name = item.moderatable_type
-          moderatable = @data(item.moderatable)
-          if class_name == 'Point'
-            proposal = @data(moderatable.proposal)
-            tease = "#{moderatable.nutshell.substring(0, 30)}..."
-          else if class_name == 'Comment'
-            point = @data(moderatable.point)
-            proposal = @data(point.proposal)
-            tease = "#{moderatable.body.substring(0, 30)}..."
+            DIV className: 'tab',
+              DIV style: {fontSize: 14, fontWeight: 600}, "Moderate #{class_name} #{item.moderatable_id}"
+              DIV style: {fontSize: 12, fontStyle: 'italic'}, tease      
+              DIV style: {fontSize: 12, paddingLeft: 12}, "- #{@data(moderatable.user).name}"
+              #DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
+              #DIV style: {fontSize: 12}, "Added on #{new Date(moderatable.created_at).toDateString()}"
+              if item.updated_since_last_evaluation
+                DIV style: {fontSize: 12}, "* revised"
 
-          DIV className: 'tab',
-            DIV style: {fontSize: 14, fontWeight: 600}, "Moderate #{class_name} #{item.moderatable_id}"
-            DIV style: {fontSize: 12, fontStyle: 'italic'}, tease      
-            DIV style: {fontSize: 12, paddingLeft: 12}, "- #{@data(moderatable.user).name}"
-            #DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
-            #DIV style: {fontSize: 12}, "Added on #{new Date(moderatable.created_at).toDateString()}"
-            if item.updated_since_last_evaluation
-              DIV style: {fontSize: 12}, "* revised"
-
-        renderTask: (item) => 
-          ModerateItem key: item.key
+          renderTask: (item) => 
+            ModerateItem key: item.key
 
 
 
@@ -577,7 +665,7 @@ ModerateItem = ReactiveComponent
                 onClick: (=> @local.messaging = moderatable; save(@local)),
                 'Message author']
             else if @local.messaging
-              EmailMessage to: @local.messaging.user, parent: @local
+              DirectMessage to: @local.messaging.user, parent: @local
 
 
 
@@ -672,24 +760,25 @@ FactcheckDash = ReactiveComponent
 
     items = [['Pending review', reviewable], ['Incomplete', todo], ['Complete', completed]]
 
-    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
-      DashHeader 'Fact Checking Interface'
+    DIV null,
+      DashHeader name: 'Fact check user contributions'
 
-      AdminTaskList 
-        items: items
-        key: 'factcheck_dash'
+      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'}, 
+        AdminTaskList 
+          items: items
+          key: 'factcheck_dash'
 
-        renderTab : (item) =>
-          point = @data(item.point)
-          proposal = @data(point.proposal)
+          renderTab : (item) =>
+            point = @data(item.point)
+            proposal = @data(point.proposal)
 
-          DIV className: 'tab',
-            DIV style: {fontSize: 14, fontWeight: 600}, "Fact check point #{point.id}"
-            DIV style: {fontSize: 12}, "Requested on #{new Date(item.requests[0].created_at).toDateString()}"
-            DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
-        
-        renderTask : (item) => 
-          FactcheckPoint key: item.key
+            DIV className: 'tab',
+              DIV style: {fontSize: 14, fontWeight: 600}, "Fact check point #{point.id}"
+              DIV style: {fontSize: 12}, "Requested on #{new Date(item.requests[0].created_at).toDateString()}"
+              DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
+          
+          renderTask : (item) => 
+            FactcheckPoint key: item.key
 
 
 FactcheckPoint = ReactiveComponent
@@ -752,7 +841,7 @@ FactcheckPoint = ReactiveComponent
                 onClick: (=> @local.messaging = point; save(@local)),
                 'Message author']
             else if @local.messaging == point
-              EmailMessage to: @local.messaging.user, parent: @local
+              DirectMessage to: @local.messaging.user, parent: @local
 
 
         # requests area
@@ -780,7 +869,7 @@ FactcheckPoint = ReactiveComponent
                       onClick: (=> @local.messaging = request; save(@local)),
                       'Message requester']
                   else if @local.messaging == request
-                    EmailMessage to: @local.messaging.user, parent: @local
+                    DirectMessage to: @local.messaging.user, parent: @local
 
         # claims area
         DIV style: task_area_section_style, 
@@ -891,8 +980,8 @@ FactcheckPoint = ReactiveComponent
 
     save assessment
 
-EmailMessage = ReactiveComponent
-  displayName: 'EmailMessage'
+DirectMessage = ReactiveComponent
+  displayName: 'DirectMessage'
 
   render : -> 
     text_style = 
@@ -1004,7 +1093,7 @@ CreateSubdomain = ReactiveComponent
     current_user = fetch('/current_user')
 
     DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
-      DashHeader 'Create new subdomain (secret, you so special!!!)'
+      DashHeader name: 'Create new subdomain (secret, you so special!!!)'
 
       DIV style: {marginTop: 20},
         LABEL htmlFor: 'subdomain', 

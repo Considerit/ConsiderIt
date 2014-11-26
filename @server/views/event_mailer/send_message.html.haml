@@ -1,1 +1,12 @@
-= simple_format(@message.body)
+%p
+  Hi #{User.find(@message.recipient).first_name},
+
+%p
+  #{@message.sender} has sent you a direct message:
+
+%p
+  %i{style: 'padding-left: 20px; display: block; border-left: 1px solid #eaeaea'}
+    = simple_format(@message.body)
+
+%p
+  Reply to this email to respond to #{@message.sender}.

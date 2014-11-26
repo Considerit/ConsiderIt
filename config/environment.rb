@@ -31,11 +31,6 @@ def key_id(object_or_key)
 
   # Make it into a key
   key = object_or_key.is_a?(Hash) ? object_or_key['key'] : object_or_key
-
-  # # Translate from '/new/', and similar things
-  # if session and session[:remapped_keys] and session[:remapped_keys][key]
-  #   key = session[:remapped_keys][key]
-  # end
   
   # Grab the id out
   result = key.split('/')[-1].to_i
@@ -47,10 +42,6 @@ def dirty_key(key)
   if Thread.current[:dirtied_keys]
     Thread.current[:dirtied_keys][key] = 1
   end
-end
-
-def remap_key(old_key, new_key)
-#   Thread.current[:remapped_keys][old_key] = new_key
 end
 
 def current_user

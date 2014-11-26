@@ -159,9 +159,8 @@ class Opinion < ActiveRecord::Base
   
   def absorb( opinion, absorb_user = false)
 
-    # First record everything we're dirtying and remapping
+    # First record everything we're dirtying
     dirty_key("/opinion/#{id}")
-    remap_key("/opinion/#{opinion.id}", "/opinion/#{id}")
     dirty_key("/page/#{Proposal.find(proposal_id).slug}")    
 
     # If we're absorbing the Opinion's user as well

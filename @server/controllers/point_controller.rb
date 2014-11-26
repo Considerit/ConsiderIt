@@ -48,14 +48,7 @@ class PointController < ApplicationController
     result = point.as_json
     result['key'] = "/point/#{point.id}?original_id=#{original_id}"
 
-    remap_key(params[:key], "/point/#{point.id}")
-
     dirty_key "/page/#{proposal.slug}"
-
-    # # This session stuff is broken!  Because the session gets cleared
-    # # when we switch accounts.  Sucks.  Need a new way to store this.
-    # session[:remapped_keys] ||= {}
-    # session[:remapped_keys][params[:key]] = "/point/#{point.id}"
 
     write_to_log({
       :what => 'wrote new point',

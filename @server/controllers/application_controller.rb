@@ -1,5 +1,7 @@
 require 'digest/md5'
 
+
+
 ENABLE_HOMEPAGE_IN_DEV = false
 
 class ApplicationController < ActionController::Base
@@ -56,11 +58,9 @@ class ApplicationController < ActionController::Base
       for arg in args
         if arg.is_a?(::Hash) && arg.has_key?(:json)
           if arg[:json].is_a?(::Hash)
-            # This constraint is not principled, just how it works right now
-            raise "JSON response must be an array if there are dirty objects"
-          else 
-            arg[:json] += compile_dirty_objects()
+            arg[:json] = [arg[:json]]
           end
+          arg[:json] += compile_dirty_objects()
         end
       end
     end
@@ -117,19 +117,20 @@ protected
     # when to display a considerit homepage
     can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || ENABLE_HOMEPAGE_IN_DEV
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
-      set_current_tenant Subdomain.find_by_name('homepage')
-      return current_subdomain
-    end
+      candidate_subdomain = Subdomain.find_by_name('homepage')
 
-    if rq.subdomain == 'googleoauth'
+    elsif rq.subdomain == 'googleoauth'
+      # This is for the reverse proxy for handling the response from google after oauth. 
+      # Part of the scheme for enabling google auth via wildcard subdomains
       candidate_subdomain = Subdomain.find_by_name(params['state'])
+
     else
       default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
       candidate_subdomain = rq.subdomain.nil? || rq.subdomain.length == 0 ? Subdomain.find(default_subdomain) : Subdomain.find_by_name(rq.subdomain)
     end
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain
-    candidate_subdomain
+    current_subdomain
   end
 
   def init_thread_globals
@@ -150,12 +151,6 @@ protected
       new_current_user
     end
 
-    # Remap crap:
-    # Thread.current[:remapped_keys] = {}
-    # # Remember remapped keys (but it turns out this doesn't work,
-    # # cause session dies on sign_out!)
-    # puts("Session remapped keys is #{session[:remapped_keys]}")
-    # session[:remapped_keys] ||= {}
   end
   
   def new_current_user
@@ -239,7 +234,13 @@ protected
         slug = key[6..key.length]
         proposal = Proposal.find_by_slug slug
 
-        pointz = proposal.points.where("((published=1 AND (moderation_status IS NULL OR moderation_status=1)) OR user_id=#{current_user ? current_user.id : -10})")
+        if current_subdomain.moderate_points_mode == 1
+          moderation_status_check = 'moderation_status=1'
+        else 
+          moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+        end
+
+        pointz = proposal.points.where("(published=1 AND #{moderation_status_check}) OR user_id=#{current_user.id}")
         pointz = pointz.public_fields.map {|p| p.as_json}
 
         published_opinions = proposal.opinions.published
@@ -248,7 +249,6 @@ protected
         if published_opinions.where(:user_id => nil).count > 0
           throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
         end
-
 
         clean = { 
           your_opinions: current_user.opinions.map {|o| o.as_json},
@@ -279,9 +279,6 @@ protected
     return response
   end
 
-  def store_location(path)
-    session[:return_to] = path
-  end
 
   #####
   # aliasing current_tenant from acts_as_tenant gem so we can be consistent with subdomain

@@ -241,7 +241,7 @@ window.livingvotersguideHeader = ReactiveComponent
 window.ZipcodeBox = ReactiveComponent
   displayName: 'ZipcodeBox'
   render: ->
-    c = @data('/current_user')
+    c = fetch('/current_user')
     extra_text = if Modernizr.input.placeholder then '' else ' Zip Code'
     onChange = (event) =>
       if event.target.value.match(/\d\d\d\d\d/)

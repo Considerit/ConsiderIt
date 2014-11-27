@@ -553,19 +553,19 @@ ModerationDash = ReactiveComponent
           items: items
           renderTab : (item) =>
             class_name = item.moderatable_type
-            moderatable = @data(item.moderatable)
+            moderatable = fetch(item.moderatable)
             if class_name == 'Point'
-              proposal = @data(moderatable.proposal)
+              proposal = fetch(moderatable.proposal)
               tease = "#{moderatable.nutshell.substring(0, 30)}..."
             else if class_name == 'Comment'
-              point = @data(moderatable.point)
-              proposal = @data(point.proposal)
+              point = fetch(moderatable.point)
+              proposal = fetch(point.proposal)
               tease = "#{moderatable.body.substring(0, 30)}..."
 
             DIV className: 'tab',
               DIV style: {fontSize: 14, fontWeight: 600}, "Moderate #{class_name} #{item.moderatable_id}"
               DIV style: {fontSize: 12, fontStyle: 'italic'}, tease      
-              DIV style: {fontSize: 12, paddingLeft: 12}, "- #{@data(moderatable.user).name}"
+              DIV style: {fontSize: 12, paddingLeft: 12}, "- #{fetch(moderatable.user).name}"
               #DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
               #DIV style: {fontSize: 12}, "Added on #{new Date(moderatable.created_at).toDateString()}"
               if item.updated_since_last_evaluation
@@ -589,13 +589,13 @@ ModerateItem = ReactiveComponent
     author = fetch(moderatable.user)
     if class_name == 'Point'
       point = moderatable
-      proposal = @data(moderatable.proposal)
+      proposal = fetch(moderatable.proposal)
     else if class_name == 'Comment'
-      point = @data(moderatable.point)
-      proposal = @data(point.proposal)
-      comments = @data("/comments/#{point.id}")
+      point = fetch(moderatable.point)
+      proposal = fetch(point.proposal)
+      comments = fetch("/comments/#{point.id}")
 
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
     
     DIV style: task_area_style,
       
@@ -614,7 +614,7 @@ ModerateItem = ReactiveComponent
 
         if item.user
           SPAN style: {float: 'right', fontSize: 18, verticalAlign: 'bottom'},
-            "Moderated by #{@data(item.user).name}"
+            "Moderated by #{fetch(item.user).name}"
 
       DIV style: {padding: '10px 30px'},
         # content area
@@ -769,8 +769,8 @@ FactcheckDash = ReactiveComponent
           key: 'factcheck_dash'
 
           renderTab : (item) =>
-            point = @data(item.point)
-            proposal = @data(point.proposal)
+            point = fetch(item.point)
+            proposal = fetch(point.proposal)
 
             DIV className: 'tab',
               DIV style: {fontSize: 14, fontWeight: 600}, "Fact check point #{point.id}"
@@ -786,9 +786,9 @@ FactcheckPoint = ReactiveComponent
 
   render : ->
     assessment = @data()
-    point = @data(assessment.point)
-    proposal = @data(point.proposal)
-    current_user = @data('/current_user')
+    point = fetch(assessment.point)
+    proposal = fetch(point.proposal)
+    current_user = fetch('/current_user')
 
     all_claims_answered = assessment.claims.length > 0
     all_claims_approved = assessment.claims.length > 0
@@ -812,7 +812,7 @@ FactcheckPoint = ReactiveComponent
 
         SPAN style: {float: 'right', fontSize: 18, verticalAlign: 'bottom'},
           if assessment.user 
-            ["Responsible: #{@data(assessment.user).name}"
+            ["Responsible: #{fetch(assessment.user).name}"
             if assessment.user == current_user.user && !assessment.reviewable && !assessment.complete
               BUTTON style: {marginLeft: 8, fontSize: 14}, onClick: @toggleResponsibility, "I won't do it"]
           else 
@@ -878,12 +878,12 @@ FactcheckPoint = ReactiveComponent
 
           DIV style: {}, 
             for claim in assessment.claims
-              claim = @data(claim)
+              claim = fetch(claim)
               if @local.editing == claim.key
                 EditClaim fresh: false, key: claim.key, parent: @local, assessment: @data()
               else 
 
-                verdict = @data(claim.verdict)
+                verdict = fetch(claim.verdict)
                 DIV style: {marginLeft: 73, marginBottom: 18, position: 'relative'}, 
                   IMG style: {position: 'absolute', width: 50, left: -73}, src: verdict.icon
 
@@ -898,9 +898,9 @@ FactcheckPoint = ReactiveComponent
                   DIV style: {marginTop: 10, position: 'relative'},
 
                     DIV style: {fontSize: 12, marginTop: 10}, 
-                      DIV null, "Created by #{@data(claim.creator).name}"
+                      DIV null, "Created by #{fetch(claim.creator).name}"
                       if claim.approver
-                        DIV null, "Approved by #{@data(claim.approver).name}"
+                        DIV null, "Approved by #{fetch(claim.approver).name}"
 
                     DIV style: {fontSize: 14},
                       if claim.result && claim.verdict && !claim.approver #&& current_user.id != claim.creator
@@ -949,7 +949,7 @@ FactcheckPoint = ReactiveComponent
     if claim.approver
       claim.approver = null
     else
-      claim.approver = @data('/current_user').user
+      claim.approver = fetch('/current_user').user
     save(claim)
 
   saveNotes: -> 
@@ -966,12 +966,12 @@ FactcheckPoint = ReactiveComponent
     assessment = @data()
     assessment.reviewable = true
     if !assessment.user
-      assessment.user = @data("/current_user").user
+      assessment.user = fetch("/current_user").user
     save(assessment)
 
   toggleResponsibility : ->
     assessment = @data()
-    current_user = @data('/current_user')
+    current_user = fetch('/current_user')
 
     if assessment.user == current_user.user
       assessment.user = null
@@ -991,7 +991,7 @@ DirectMessage = ReactiveComponent
 
     DIV style: {marginTop: 18, padding: '15px 20px', backgroundColor: 'white', width: 550, border: '#999', boxShadow: "0 1px 2px rgba(0,0,0,.2)"}, 
       DIV style: {marginBottom: 8},
-        LABEL null, 'To: ', @data(@props.to).name
+        LABEL null, 'To: ', fetch(@props.to).name
 
       DIV style: {marginBottom: 8},
         LABEL null, 'Subject'
@@ -1049,7 +1049,7 @@ EditClaim = ReactiveComponent
         SELECT
           defaultValue: if @props.fresh then null else @data().verdict
           className: 'claim_verdict'
-          for verdict in @data('/dashboard/assessment').verdicts
+          for verdict in fetch('/dashboard/assessment').verdicts
             OPTION key: verdict.key, value: verdict.key, verdict.name
 
 

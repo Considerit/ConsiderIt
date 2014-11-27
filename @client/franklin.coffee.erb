@@ -185,7 +185,7 @@ PageTransition =
 
       # The slider handle and mouth will change size and location when moving between crafting and results
       when 'slider'
-        slider = @data('slider')
+        slider = fetch 'slider'
 
         direction = if slider.stance_segment >  3 then -1 else 1
         mouth_x      = if slider.stance_segment == 3 then  0 else -22
@@ -221,7 +221,7 @@ PageTransition =
           , duration
 
         else 
-          slider = @data('slider')
+          slider = fetch 'slider'
           slider_position = slider.clientX
 
           give_opinion_button_width = 200
@@ -277,10 +277,10 @@ Proposal = ReactiveComponent
   displayName: 'Proposal'
   render : ->
     proposal = @proposal
-    your_opinion = @data(@proposal.your_opinion)
+    your_opinion = fetch @proposal.your_opinion
     included_points = your_opinion.point_inclusions
     current_user = fetch('/current_user')
-    subdomain = @data('/subdomain')
+    subdomain = fetch '/subdomain'
 
     description_region_style = {width: DESCRIPTION_WIDTH}
 
@@ -292,7 +292,7 @@ Proposal = ReactiveComponent
     for opinion in @page.opinions
       window.user_opinions[opinion.user] = opinion
 
-    proposer = @data(proposal.user)
+    proposer = fetch(proposal.user)
 
     # Description fields are the expandable details that help people drill
     # into the proposal. They are very specific to the type of proposal (e.g. for
@@ -409,8 +409,8 @@ Proposal = ReactiveComponent
 StickyProposalHeading = ReactiveComponent
   displayName: 'StickyProposalHeading'
   render : ->
-    subdomain = @data('/subdomain')
-    proposals = @data('/proposals')
+    subdomain = fetch('/subdomain')
+    proposals = fetch('/proposals')
 
     # If navigation bar is enabled, then we'll use a really short proposal name in the heading.
     # Otherwise we'll display the full question. This split doesn't come from
@@ -497,11 +497,11 @@ StickyProposalHeading = ReactiveComponent
                                       other_proposal.name
 
                                   TD style: {position: 'relative'},
-                                    if !other_proposal.your_opinion || !@data(other_proposal.your_opinion).published
+                                    if !other_proposal.your_opinion || !fetch(other_proposal.your_opinion).published
                                       SPAN style: {fontWeight: 400, color: 'rgb(205,205,205)', fontSize: 21}, '?'
                                     else
                                       # make a small slider summary
-                                      opinion = @data(other_proposal.your_opinion)
+                                      opinion = fetch(other_proposal.your_opinion)
                                       face_size = 20 # height/width of the summary slider bar
                                       eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: subdomain.branding.primary_color, position: 'absolute', top: 6 }
                                       mouth_style = {fontSize: 12, color: subdomain.branding.primary_color, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
@@ -591,7 +591,7 @@ HistogramData = ReactiveComponent
   render : ->
     # We only need to recompute this data if the distribution of stances has changed. 
     opinions = @page.opinions || []
-    last_computation_hash = JSON.stringify( _.map(opinions, (o) => @data(o.key).stance) )
+    last_computation_hash = JSON.stringify( _.map(opinions, (o) => fetch(o.key).stance) )
 
     if @local.last_computation_hash != last_computation_hash
 
@@ -612,7 +612,7 @@ HistogramData = ReactiveComponent
 
       # Assign each Opinion to a column
       for opinion in opinions
-        opinion = @data(opinion.key)
+        opinion = fetch(opinion.key)
          
         round_method = if opinion.stance_segment < 3 then Math.floor else Math.ceil
 
@@ -666,7 +666,7 @@ Histogram = ReactiveComponent
   onSelectSegment : (ev) ->
     if @root.proposal_mode == 'results'
       segment = $(ev.currentTarget).data('segment')
-      hist = @data('histogram')
+      hist = fetch('histogram')
 
       selected_segment = hist.selected_segment
 
@@ -685,11 +685,11 @@ Histogram = ReactiveComponent
       ev.stopPropagation()
 
   render : ->
-    selected_segment = @data('histogram').selected_segment
-    users_to_highlight = @data('histogram').highlighted_users
+    selected_segment = fetch('histogram').selected_segment
+    users_to_highlight = fetch('histogram').highlighted_users
 
 
-    histogram_data = @data('histogramdata')
+    histogram_data = fetch('histogramdata')
     columns = histogram_data.columns
     num_columns = columns.length
     avatar_size = histogram_data.avatar_size
@@ -755,7 +755,7 @@ Slider = ReactiveComponent
     e.preventDefault()
 
     # Initiate dragging
-    slider = @data('slider')
+    slider = fetch('slider')
     slider.is_moving = true
     slider.offsetX = e.clientX or e.touches[0].clientX
 
@@ -769,13 +769,13 @@ Slider = ReactiveComponent
   handleMouseUp: (e) ->
     # Don't do anything if we're not actually dragging. We only hit this logic
     # if there is some delay in removing the event handlers.
-    slider = @data 'slider'
+    slider = fetch 'slider'
 
     return if !slider.is_moving
 
     e.preventDefault()
 
-    your_opinion = @data(@proposal.your_opinion)
+    your_opinion = fetch(@proposal.your_opinion)
     
     # Clicking on the slider handle should transition us between crafting <=> results. 
     # We should also transition to crafting when we've been dragging on the results page. 
@@ -804,7 +804,7 @@ Slider = ReactiveComponent
   handleMouseMove: (e) ->
     e.preventDefault() # prevents text selection of surrounding elements
 
-    slider = @data('slider')
+    slider = fetch('slider')
 
     clientX = e.clientX or e.touches[0].clientX
 
@@ -822,10 +822,10 @@ Slider = ReactiveComponent
 
 
   render : ->
-    slider = @data('slider')
+    slider = fetch('slider')
 
     # Update the slider position when the server gets back to us
-    your_opinion = @data(@proposal.your_opinion)
+    your_opinion = fetch(@proposal.your_opinion)
 
     if slider.stance != your_opinion.stance and !slider.is_moving
       slider.stance = your_opinion.stance
@@ -837,7 +837,7 @@ Slider = ReactiveComponent
 
 
     page = @root.proposal_mode
-    sticky = @data('decisionboard').sticky
+    sticky = fetch('decisionboard').sticky
     stance = slider.stance
     segment = slider.stance_segment
 
@@ -930,7 +930,7 @@ OpinionFilter = ReactiveComponent
   displayName: 'OpinionFilter'
 
   onSelectSegment : (segment) ->
-    hist = @data('histogram')
+    hist = fetch('histogram')
     if !segment? || hist.selected_segment == segment
       # Deselect
       hist.selected_segment = null
@@ -950,7 +950,7 @@ OpinionFilter = ReactiveComponent
 
 
   render : ->
-    hist = @data('histogram')
+    hist = fetch('histogram')
 
     # Remove filter when on crafting page
     if @root.proposal_mode == 'crafting'
@@ -992,9 +992,9 @@ DecisionBoard = ReactiveComponent
 
   render : ->
     current_user = fetch('/current_user')
-    subdomain = @data('/subdomain')
+    subdomain = fetch('/subdomain')
     
-    your_opinion = @data(@proposal.your_opinion)
+    your_opinion = fetch(@proposal.your_opinion)
     published = your_opinion.published
 
     selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
@@ -1067,7 +1067,7 @@ DecisionBoard = ReactiveComponent
       accept: ".point_content"
       drop : (ev, ui) =>
         if ui.draggable.parent().is('.community_point')
-          your_opinion = @data(@proposal.your_opinion)
+          your_opinion = fetch(@proposal.your_opinion)
           ui.draggable.parent().velocity 'fadeOut', 200, -> 
             your_opinion.point_inclusions.push(
               ui.draggable.parent().data('id'))
@@ -1122,7 +1122,7 @@ DecisionBoard = ReactiveComponent
 
   # When user clicks the big bold button at the bottom of the crafting page
   saveYourOpinion : -> 
-    your_opinion = @data (@proposal.your_opinion)
+    your_opinion = fetch(@proposal.your_opinion)
     if fetch('/current_user').logged_in
       your_opinion.published = true
       save (your_opinion)
@@ -1154,7 +1154,7 @@ YourPoints = ReactiveComponent
 
   render : ->
     root = fetch('root')
-    included_points = @data(@proposal.your_opinion).point_inclusions
+    included_points = fetch(@proposal.your_opinion).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
     your_points = @data @props.key,
@@ -1170,7 +1170,7 @@ YourPoints = ReactiveComponent
 
       UL null,
         for point in included_points
-          if @data(point).is_pro == (@props.valence == 'pros')
+          if fetch(point).is_pro == (@props.valence == 'pros')
             if point in your_points.editing_points
               EditPoint { key: point, fresh: false, valence: @props.valence, your_points_key: @props.key }
             else
@@ -1204,13 +1204,13 @@ CommunityPoints = ReactiveComponent
   displayName: 'CommunityPoints'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
   render : ->
-    selected_segment = @data('histogram').selected_segment
+    selected_segment = fetch('histogram').selected_segment
 
     #filter to pros or cons & down to points that haven't been included
     points = @buildPointsList() #todo: memoize
     newpoint_threshold = @buildNewPointThreshold() #todo: memoize
     label = capitalize @props.key
-    pro_is_selected = @root.selected_point and @data(@root.selected_point).is_pro
+    pro_is_selected = @root.selected_point and fetch(@root.selected_point).is_pro
 
     # TODO: The minheight below is not a principled or complete solution to two sizing issues: 
     #           1) resizing the reasons region when the height of the decision board 
@@ -1251,8 +1251,8 @@ CommunityPoints = ReactiveComponent
 
   buildPointsList : ->
     is_results = fetch('root').proposal_mode == 'results'
-    selected_segment = @data('histogram').selected_segment
-    included_points = @data(@proposal.your_opinion).point_inclusions
+    selected_segment = fetch('histogram').selected_segment
+    included_points = fetch(@proposal.your_opinion).point_inclusions
     points = @page.points
     opinions = @page.opinions
 
@@ -1298,7 +1298,7 @@ Point = ReactiveComponent
 
     is_selected = @root.selected_point == @props.key
 
-    selected_segment = @data('histogram').selected_segment
+    selected_segment = fetch('histogram').selected_segment
     current_user = fetch('/current_user')
 
 
@@ -1414,7 +1414,7 @@ Point = ReactiveComponent
         if @props.rendered_as == 'community_point'
           renderIncluders()
 
-        else if !selected_segment || ( author_opinion = @data(userOpinion(point.user)) && author_opinion.stance_segment == selected_segment )
+        else if !selected_segment || ( author_opinion = fetch(userOpinion(point.user)) && author_opinion.stance_segment == selected_segment )
           Avatar 
             key: point.user
             className:"point_author_avatar"
@@ -1449,7 +1449,7 @@ Point = ReactiveComponent
             className: 'edit_point'
             onClick: ((e) =>
               e.stopPropagation()
-              points = @data(@props.your_points_key)
+              points = fetch(@props.your_points_key)
               points.editing_points.push(@props.key)
               save(points))
             SPAN null, 'edit'
@@ -1462,7 +1462,7 @@ Point = ReactiveComponent
               SPAN null, 'delete'
 
       if is_selected
-        point_included = _.contains(@data(@proposal.your_opinion).point_inclusions, point.key)
+        point_included = _.contains(fetch(@proposal.your_opinion).point_inclusions, point.key)
         Discussion
           key:"/comments/#{point.id}"
           is_pro: point.is_pro
@@ -1499,7 +1499,7 @@ Point = ReactiveComponent
       then 'invalid' 
       else (valid) =>
         if !valid
-          your_opinion = @data(@proposal.your_opinion)
+          your_opinion = fetch(@proposal.your_opinion)
           your_opinion.point_inclusions = _.without your_opinion.point_inclusions, @props.key
           save(your_opinion)
           window.writeToLog
@@ -1673,8 +1673,8 @@ FactCheck = ReactiveComponent
               'Learn more'
             ' about the service.'
 
-        for claim_key in assessment.claims
-          claim = fetch(claim_key)
+        for claim in assessment.claims
+          claim = fetch(claim.key)
           verdict = fetch(claim.verdict)
 
           [DIV style: {margin: '10px 0'}, 
@@ -2122,7 +2122,7 @@ EditPoint = ReactiveComponent
     save(@local)
 
   done : ->
-    your_points = @data @props.your_points_key
+    your_points = fetch @props.your_points_key
     if @props.fresh
       your_points.adding_new_point = false
     else
@@ -2182,7 +2182,7 @@ Avatar = ReactiveComponent
 
     # setting @local fails in strict mode, which is a problem for phantomjs rendering for google search results
     try 
-      @local = @data @local_key,
+      @local = fetch @local_key,
         show_details : false
     catch e
       noop = 1
@@ -2707,14 +2707,14 @@ ProposalSummary = ReactiveComponent
         className: 'summary_decide'
         style: {borderLeft: cell_border, borderRight: cell_border, cursor: 'pointer'},
         onClick: (=> window.app_router.navigate("/#{proposal.slug}", {trigger: true}))
-        if !proposal.your_opinion || !@data(proposal.your_opinion).published \
-           || @data(proposal.your_opinion).stance_segment == 3
+        if !proposal.your_opinion || !fetch(proposal.your_opinion).published \
+           || fetch(proposal.your_opinion).stance_segment == 3
           style = {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}
           if @local.hovering_on
             style.color = 'black'
             style.fontWeight = 600
           SPAN style: style, '?'
-        else if @data(proposal.your_opinion).stance_segment < 3
+        else if fetch(proposal.your_opinion).stance_segment < 3
           SPAN style: {position: 'relative', left: 14},
             IMG 
               className: 'summary_opinion_marker'
@@ -2769,8 +2769,8 @@ Homepage = ReactiveComponent
         stick_on_zoomed_screens: false
 
   render : ->
-    subdomain = @data('/subdomain')
-    proposals = @data('/proposals')
+    subdomain = fetch('/subdomain')
+    proposals = fetch('/proposals')
 
     # The "Welcome to the community!" people
     contributors = @page.contributors.filter((u)-> !!fetch(u).avatar_file_name)
@@ -2883,7 +2883,7 @@ ProfileLink = ReactiveComponent
 
   render : -> 
     current_user = fetch('/current_user')
-    subdomain = @data('/subdomain')
+    subdomain = fetch('/subdomain')
 
     DIV style: {display: 'inline-block'}, 
       STYLE null,
@@ -2990,7 +2990,7 @@ Header = ReactiveComponent
 
   render : ->
     current_user = fetch('/current_user')
-    subdomain = @data('/subdomain')
+    subdomain = fetch('/subdomain')
 
     DIV className: 'l_header', style: {backgroundColor: 'white', minWidth: PAGE_WIDTH},
 
@@ -3056,7 +3056,7 @@ Tweet = ReactiveComponent
 Footer = ReactiveComponent
   displayName: 'Footer'
   render : -> 
-    subdomain = @data('/subdomain')
+    subdomain = fetch('/subdomain')
 
     DIV className: 'l_footer',  
       if window["#{subdomain.name}Footer"]
@@ -3222,7 +3222,7 @@ About = ReactiveComponent
 
 
   render : -> 
-    subdomain = @data('/subdomain') 
+    subdomain = fetch('/subdomain') 
 
     if @local.embed_html_directly && !@local.html && subdomain.about_page_url
       # fetch the about page HTML directly
@@ -3406,7 +3406,7 @@ Computer = ReactiveComponent
 
     # Publish pending opinions if we can
     while @root.opinions_to_publish.length > 0 and current_user.logged_in
-      opinion = @data(@root.opinions_to_publish.pop()); save(@root)
+      opinion = fetch(@root.opinions_to_publish.pop()); save(@root)
       if opinion.published
         break
       console.log("Publishing the opinion. It's", opinion)
@@ -3423,7 +3423,7 @@ BrowserHacks = ReactiveComponent
   displayName: 'BrowserHacks'
 
   render : ->
-    browser = @data('browser')
+    browser = fetch('browser')
     if !browser.is_iOS?
       rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
       browser.is_android_browser = !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)

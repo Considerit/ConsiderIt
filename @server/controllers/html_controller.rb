@@ -8,6 +8,33 @@ class HtmlController < ApplicationController
       session[:notifications_user] = {'u' => params['u'], 't' => params['t']}
     end
 
+
+    # if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
+    #   user = User.find_by_lower_email(params[:u])
+
+    #   # for testing private discussions
+    #   # pp ApplicationController.arbitrary_token("#{user.email}#{user.unique_token}#{current_subdomain.name}") if !user.nil?
+    #   # pp ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.name}") if user.nil?
+
+
+    #   # is it a security problem to allow users to continue to sign in through the tokenized email after they've created an account?
+    #   permission =   (ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.name}") == params[:t]) \
+    #               ||(!user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{user.unique_token}#{current_subdomain.name}") == params[:t]) # this user already exists, want to have a harder auth method; still not secure if user forwards their email
+
+    #   if permission
+    #     session[:limited_user] = user ? user.id : nil
+    #     @limited_user_follows = user ? user.follows.to_a : []
+    #     @limited_user = user
+    #     @limited_user_email = params[:u]
+    #   end
+    # elsif session.has_key?(:limited_user ) && !session[:limited_user].nil?
+    #   @limited_user = User.find(session[:limited_user])
+    #   @limited_user_follows = @limited_user.follows.to_a
+    #   @limited_user_email = @limited_user.email
+    # end
+
+
+
     # if someone has accessed a non-existent subdomain or the mime type isn't HTML (must be accessing a nonexistent file)
     if !current_subdomain || request.format.to_s != 'text/html' || request.fullpath.include?('data:image')
       render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
@@ -40,6 +67,15 @@ class HtmlController < ApplicationController
     # used by the layout
     @meta, @page, @title = get_meta_data()
     @is_search_bot = session[:search_bot]
+
+
+    # Storing the full host name, for use in emails.
+    # This is ugly, would be nice to eliminate this. 
+    if current_subdomain.host.nil?
+      current_subdomain.host = request.host
+      current_subdomain.host_with_port = request.host_with_port
+      current_subdomain.save
+    end
 
     if !session[:search_bot]
       referer = params.has_key?('z') && params['z'] == '1' ? 'from email notification' : request.referer

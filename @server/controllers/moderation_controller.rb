@@ -81,8 +81,7 @@ class ModerationController < ApplicationController
     if !moderation.notification_sent && moderation.status == 1
       ActiveSupport::Notifications.instrument("moderation:#{moderation.moderatable_type.downcase}:passed", 
         :model => moderation.root_object,
-        :current_subdomain => current_subdomain,
-        :mail_options => mail_options
+        :current_subdomain => current_subdomain
       )      
 
       moderation.notification_sent = true

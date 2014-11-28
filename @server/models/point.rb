@@ -94,8 +94,7 @@ class Point < ActiveRecord::Base
 
     ActiveSupport::Notifications.instrument("point:published", 
       :point => self,
-      :current_subdomain => Thread.current[:subdomain],
-      :mail_options => Thread.current[:mail_options]
+      :current_subdomain => Thread.current[:subdomain]
     )
   end
 

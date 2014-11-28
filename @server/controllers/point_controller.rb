@@ -84,8 +84,7 @@ class PointController < ApplicationController
 
       ActiveSupport::Notifications.instrument("point:updated", 
         :model => point,
-        :current_subdomain => current_subdomain,
-        :mail_options => mail_options
+        :current_subdomain => current_subdomain
       )
     end
 

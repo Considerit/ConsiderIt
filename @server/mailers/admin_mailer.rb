@@ -5,8 +5,7 @@ class AdminMailer < Mailer
   #### MODERATION ####
   def content_to_moderate(user, subdomain)
     @user = user
-    @host = subdomain.host_with_port
-    @url = dashboard_moderate_url(:host => @host)
+    @url = dashboard_moderate_url(:host => subdomain.host_with_port)
     @subdomain = subdomain
 
     subject = "Pending content to moderate"
@@ -20,8 +19,7 @@ class AdminMailer < Mailer
 
   def content_to_assess(assessment, user, subdomain)
     @user = user
-    @host = subdomain.host_with_port
-    @url = dashboard_assessment_url(:host => @host)
+    @url = dashboard_assessment_url(:host => subdomain.host_with_port)
     @assessment = assessment
     @subdomain = subdomain
 

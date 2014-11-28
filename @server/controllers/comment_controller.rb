@@ -41,8 +41,7 @@ class CommentController < ApplicationController
       if comment.save
         ActiveSupport::Notifications.instrument("comment:point:created", 
           :comment => comment, 
-          :current_subdomain => current_subdomain,
-          :mail_options => mail_options
+          :current_subdomain => current_subdomain
         )
 
         original_id = key_id(params[:key])
@@ -78,8 +77,7 @@ class CommentController < ApplicationController
 
     ActiveSupport::Notifications.instrument("comment:point:updated", 
       :model => comment, 
-      :current_subdomain => current_subdomain,
-      :mail_options => mail_options
+      :current_subdomain => current_subdomain
     )
 
     dirty_key "/comment/#{comment.id}"

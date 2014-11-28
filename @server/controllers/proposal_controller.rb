@@ -156,22 +156,19 @@ class ProposalController < ApplicationController
         :proposal => proposal,
         :users => users,
         :inviter => inviter,
-        :current_subdomain => current_subdomain,
-        :mail_options => mail_options
+        :current_subdomain => current_subdomain
       )
     end
 
     if published_now
       ActiveSupport::Notifications.instrument("proposal:published", 
         :proposal => proposal,
-        :current_subdomain => current_subdomain,
-        :mail_options => mail_options
+        :current_subdomain => current_subdomain
       )
     elsif !published_now && proposal.published
       ActiveSupport::Notifications.instrument("proposal:updated", 
         :model => proposal,
-        :current_subdomain => current_subdomain,
-        :mail_options => mail_options
+        :current_subdomain => current_subdomain
       )      
     end
 

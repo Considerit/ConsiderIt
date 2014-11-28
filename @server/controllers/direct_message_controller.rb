@@ -11,7 +11,7 @@ class DirectMessageController < ApplicationController
     @message = DirectMessage.new(attrs)
 
     if @message.valid?
-      EventMailer.send_message(@message, current_user, mail_options()).deliver
+      EventMailer.send_message(@message, current_user, current_subdomain).deliver
       render :json => {:result => 'success'}
 
     else

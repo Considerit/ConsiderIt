@@ -1,5 +1,5 @@
 
-- url = new_opinion_proposal_url(@proposal.slug, :host => @host, :u => @email, :t => ApplicationController.arbitrary_token("#{@email}#{@unique_token}#{@options[:current_subdomain].name}"))
+- url = new_opinion_proposal_url(@proposal.slug, :host => @subdomain.host_with_port, :u => @email, :t => ApplicationController.arbitrary_token("#{@email}#{@unique_token}#{@subdomain.name}"))
 
 %p.head
 

@@ -13,10 +13,9 @@ end
 
 #### notify_proposal is NOT MIGRATED / TESTED!!!!######
 # notify_proposal = Proc.new do |data|
-#   #params : proposal, current_subdomain, mail_options
+#   #params : proposal, current_subdomain
 #   proposal = data[:proposal] || data[:model]
 #   current_subdomain = data[:current_subdomain]
-#   mail_options = data[:mail_options]
 
 #   current_subdomain.follows.where(:follow => true).each do |follow|
 #     # if follower's action triggered event, skip...
@@ -27,7 +26,7 @@ end
 #       elsif !follow.user.email || follow.user.email.length == 0
 #         next
 #       else 
-#         EventMailer.discussion_new_proposal(follow.user, proposal, mail_options, '').deliver!
+#         EventMailer.discussion_new_proposal(follow.user, proposal, current_subdomain '').deliver!
 #       end
 #     end
 #   end
@@ -35,13 +34,12 @@ end
 # end
 
 notify_point = Proc.new do |data|
-  #params : point, current_subdomain, mail_options
+  #params : point, current_subdomain
 
   point = data[:point] || data[:model]
 
   proposal = point.proposal
   current_subdomain = data[:current_subdomain]
-  mail_options = data[:mail_options]
 
   voters = proposal.opinions.published.select(:user_id).uniq.map {|x| x.user_id }
   proposal.followers.each do |u|
@@ -65,7 +63,7 @@ notify_point = Proc.new do |data|
     end
 
     pp 'Emailing: ', u.email
-    EventMailer.new_point(u, point, mail_options, notification_type).deliver!
+    EventMailer.new_point(u, point, current_subdomain, notification_type).deliver!
 
   end
 
@@ -73,11 +71,10 @@ end
 
 
 notify_comment = Proc.new do |args|
-  #params: comment, current_subdomain, mail_options
+  #params: comment, current_subdomain
   comment = args[:model] || args[:comment]
   point = comment.point
   current_subdomain = args[:current_subdomain]
-  mail_options = args[:mail_options]
 
   commenters = point.comments.select(:user_id).uniq.map {|x| x.user_id }
   includers = point.inclusions.select(:user_id).uniq.map {|x| x.user_id }
@@ -106,7 +103,7 @@ notify_comment = Proc.new do |args|
       notification_type = 'lurker'
     end
 
-    EventMailer.new_comment(u, point, comment, mail_options, notification_type).deliver!
+    EventMailer.new_comment(u, point, comment, current_subdomain, notification_type).deliver!
   end
 
 end
@@ -188,7 +185,6 @@ ActiveSupport::Notifications.subscribe("new_assessment_request") do |*args|
   data = args.last
   assessment = data[:assessment]
   current_subdomain = data[:current_subdomain]
-  mail_options = data[:mail_options]
   assessable = assessment.root_object
 
   # send to all factcheckers
@@ -211,7 +207,6 @@ ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
   data = args.last
   assessment = data[:assessment]
   current_subdomain = data[:current_subdomain]
-  mail_options = data[:mail_options]
 
   assessable = assessment.root_object
 
@@ -243,7 +238,7 @@ ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
 
     next if !send_email_to_user(follow.user)
 
-    EventMailer.new_assessment(follow.user, assessable, assessment, mail_options, notification_type).deliver!
+    EventMailer.new_assessment(follow.user, assessable, assessment, current_subdomain, notification_type).deliver!
 
   end
 
@@ -263,17 +258,16 @@ ActiveSupport::Notifications.subscribe("alert_proposal_publicity_changed") do |*
   inviter = data[:inviter]
   proposal = data[:proposal]
   current_subdomain = data[:current_subdomain]
-  mail_options = data[:mail_options]
 
   users.delete(inviter.email) if inviter #don't email inviter twice if they specified themselves in the list
 
   users.each do |user|
     if user.length > 0
-      UserMailer.invitation(user, proposal, 'invitee', mail_options).deliver!
+      UserMailer.invitation(user, proposal, 'invitee').deliver!
     end
   end
   if inviter && !inviter.email.nil? && inviter.email.length > 0
-    UserMailer.invitation(inviter.email, proposal, 'your proposal', mail_options).deliver!
+    UserMailer.invitation(inviter.email, proposal, 'your proposal').deliver!
   end
 
 end
@@ -303,7 +297,6 @@ ActiveSupport::Notifications.subscribe("published_new_opinion") do |*args|
   # opinion = data[:opinion]
 
   # current_subdomain = data[:current_subdomain]
-  # mail_options = data[:mail_options]  
   # proposal = opinion.proposal
 
   # # do not send summary mail if one was already sent today
@@ -325,7 +318,7 @@ ActiveSupport::Notifications.subscribe("published_new_opinion") do |*args|
 
   #   proposal.follows.where(:follow => true).where("user_id != #{opinion.user_id}").each do |follow|
   #     pp "\t Notifying #{follow.user.name}"
-  #     EventMailer.proposal_milestone_reached(follow.user, proposal, fib(next_milestone), mail_options).deliver!
+  #     EventMailer.proposal_milestone_reached(follow.user, proposal, fib(next_milestone)).deliver!
   #   end
   #   proposal.followable_last_notification_milestone = next_milestone
   #   proposal.followable_last_notification = DateTime.now

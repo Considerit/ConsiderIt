@@ -66,7 +66,6 @@ class AssessmentController < ApplicationController
       ActiveSupport::Notifications.instrument("assessment_completed", 
         :assessment => assessment,
         :current_subdomain => current_subdomain,
-        :mail_options => mail_options
       )
     else 
       assessment.save
@@ -106,8 +105,7 @@ class AssessmentController < ApplicationController
 
       ActiveSupport::Notifications.instrument("new_assessment_request", 
         :assessment => assessment,
-        :current_subdomain => current_subdomain,
-        :mail_options => mail_options
+        :current_subdomain => current_subdomain
       )
     end
 

@@ -3,9 +3,9 @@ require 'mail'
 class EventMailer < Mailer
 
 
-  def send_message(message, current_user, options = {})
+  def send_message(message, current_user, current_subdomain)
     @message = message
-    @subdomain = options[:current_subdomain]
+    @subdomain = current_subdomain
 
     # from e.g. Moderator <hank@cityclub.org>
     from = format_email current_user.email, message.sender
@@ -15,23 +15,21 @@ class EventMailer < Mailer
     # reply_to = format_email @message.sender, @message.senderName()
     to = format_email recipient.email, recipient.name
 
-    subject = "[#{options[:app_title]}] #{@message.subject}"
+    subject = "[#{current_subdomain.app_title}] #{@message.subject}"
 
     mail(:from => from, :to => to, :subject => subject, :bcc => from)
 
   end
 
-  def new_point(user, pnt, options, notification_type)
+  def new_point(user, pnt, current_subdomain, notification_type)
     @notification_type = notification_type
     @user = user
     @point = pnt
-    @host = options[:host]
     @proposal = @point.proposal
-    @options = options
-    @subdomain = options[:current_subdomain]
+    @subdomain = current_subdomain
 
     to = format_email user.email, user.name    
-    from = format_email(options[:from], options[:app_title])
+    from = format_email(default_sender(current_subdomain), current_subdomain.app_title)
 
     if notification_type == 'your proposal'
       subject = "new #{@point.is_pro ? 'pro' : 'con'} point for your proposal \"#{@point.proposal.title}\""
@@ -39,21 +37,19 @@ class EventMailer < Mailer
       subject = "new #{@point.is_pro ? 'pro' : 'con'} point for \"#{@point.proposal.title}\""
     end
 
-    mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => to, :subject => "[#{current_subdomain.app_title}] #{subject}")
   end
 
-  def new_comment(user, pnt, comment, options, notification_type)
+  def new_comment(user, pnt, comment, current_subdomain, notification_type)
     @notification_type = notification_type
     @user = user
     @point = pnt
     @comment = comment
     @proposal = @point.proposal
-    @host = options[:host]
-    @options = options
-    @subdomain = options[:current_subdomain]
+    @subdomain = current_subdomain
 
     to = format_email user.email, user.name
-    from = format_email(options[:from], options[:app_title])
+    from = format_email(default_sender(current_subdomain), current_subdomain.app_title)
 
     if notification_type == 'your point'
       subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote"
@@ -65,20 +61,18 @@ class EventMailer < Mailer
       subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you follow"
     end
 
-    mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => to, :subject => "[#{current_subdomain.app_title}] #{subject}")
   end
 
-  def new_assessment(user, pnt, assessment, options, notification_type)
+  def new_assessment(user, pnt, assessment, current_subdomain, notification_type)
     @notification_type = notification_type
     @user = user
     @point = pnt
     @assessment = assessment
     @proposal = @point.proposal
-    @host = options[:host]
-    @options = options
-    @subdomain = options[:current_subdomain]
+    @subdomain = current_subdomain
 
-    from = format_email(options[:from], options[:app_title])
+    from = format_email(default_sender(current_subdomain), current_subdomain.app_title)
 
     if notification_type == 'your point'
       subject = "a point you wrote has been fact checked"
@@ -88,7 +82,13 @@ class EventMailer < Mailer
 
     to = format_email user.email, user.name
 
-    mail(:from => from, :to => to, :subject => "[#{options[:app_title]}] #{subject}")
+    mail(:from => from, :to => to, :subject => "[#{current_subdomain.app_title}] #{subject}")
+  end
+
+  private
+
+  def default_sender(current_subdomain)
+    current_subdomain && current_subdomain.notifications_sender_email && current_subdomain.notifications_sender_email.length > 0 ? current_subdomain.notifications_sender_email : APP_CONFIG[:email]
   end
 
 

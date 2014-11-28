@@ -18,41 +18,6 @@ class ApplicationController < ActionController::Base
       return
     end
 
-    if Rails.cache.read("avatar-digest-#{current_subdomain.id}").nil?
-      Rails.cache.write("avatar-digest-#{current_subdomain.id}", 0)
-    end
-
-    if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
-      user = User.find_by_lower_email(params[:u])
-
-      # for testing private discussions
-      # pp ApplicationController.arbitrary_token("#{user.email}#{user.unique_token}#{current_subdomain.name}") if !user.nil?
-      # pp ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.name}") if user.nil?
-
-
-      # is it a security problem to allow users to continue to sign in through the tokenized email after they've created an account?
-      permission =   (ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.name}") == params[:t]) \
-                  ||(!user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{user.unique_token}#{current_subdomain.name}") == params[:t]) # this user already exists, want to have a harder auth method; still not secure if user forwards their email
-
-      if permission
-        session[:limited_user] = user ? user.id : nil
-        @limited_user_follows = user ? user.follows.to_a : []
-        @limited_user = user
-        @limited_user_email = params[:u]
-      end
-    elsif session.has_key?(:limited_user ) && !session[:limited_user].nil?
-      @limited_user = User.find(session[:limited_user])
-      @limited_user_follows = @limited_user.follows.to_a
-      @limited_user_email = @limited_user.email
-    end
-
-
-    if current_subdomain.host.nil?
-      current_subdomain.host = request.host
-      current_subdomain.host_with_port = request.host_with_port
-      current_subdomain.save
-    end
-
     # if there are dirtied keys, we'll append the corresponding data to the response
     if Thread.current[:dirtied_keys].keys.length > 0
       for arg in args
@@ -207,7 +172,6 @@ protected
         response.append Comment.comments_for_point(point)
       
       elsif key == '/subdomain'
-        pp current_subdomain.notifications_sender_email
         response.append current_subdomain.as_json
 
       elsif key == '/current_user'

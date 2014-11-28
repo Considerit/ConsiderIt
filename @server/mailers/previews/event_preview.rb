@@ -2,22 +2,19 @@ class EventPreview < ActionMailer::Preview
   def new_point
     subdomain = Subdomain.first
     point = subdomain.points.published.last
-    options = {app_title: 'test', from:'test@test.dev', host: 'localhost', current_subdomain: subdomain}
-    EventMailer.new_point(User.where('registered').last, point, options, 'opinion submitter')
+    EventMailer.new_point(User.where('registered').last, point, subdomain, 'opinion submitter')
   end
 
   def new_assessment
     assessment = Assessable::Assessment.completed.last
 
-    options = {app_title: 'test', from:'test@test.dev', host: 'localhost', current_subdomain: assessment.subdomain}
-    EventMailer.new_assessment(assessment.point.user, assessment.point, assessment, options, 'your point')
+    EventMailer.new_assessment(assessment.point.user, assessment.point, assessment, assessment.subdomain, 'your point')
   end
 
   def new_comment
     subdomain = Subdomain.first
     comment = subdomain.comments.last
-    options = {app_title: 'test', from:'test@test.dev', host: 'localhost', current_subdomain: subdomain}
-    EventMailer.new_comment(comment.point.user, comment.point, comment, options, 'your point')
+    EventMailer.new_comment(comment.point.user, comment.point, comment, subdomain, 'your point')
   end
 
   def send_message
@@ -31,8 +28,7 @@ class EventPreview < ActionMailer::Preview
     }
     message = DirectMessage.new(attrs)
 
-    options = {app_title: 'test', from:'test@test.dev', host: 'localhost', current_subdomain: subdomain}
-    EventMailer.send_message(message, User.where('registered').last, options)
+    EventMailer.send_message(message, User.where('registered').last, subdomain)
   end
 
 end

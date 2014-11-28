@@ -77,15 +77,13 @@ class Opinion < ActiveRecord::Base
 
     # ActiveSupport::Notifications.instrument("published_new_opinion", 
     #                                         :opinion => self,
-    #                                         :current_subdomain => Thread.current[:subdomain],
-    #                                         :mail_options => Thread.current[:mail_options])
+    #                                         :current_subdomain => Thread.current[:subdomain])
     # send out confirmation email if user is not yet confirmed
     # if !current_user.confirmed? && current_user.opinions.published.count == 1
     #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
     #     :user => current_user,
     #     :proposal => proposal,
-    #     :current_subdomain => current_subdomain,
-    #     :mail_options => mail_options
+    #     :current_subdomain => current_subdomain
     #   )
     # end
   end

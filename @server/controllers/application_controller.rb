@@ -38,15 +38,6 @@ class ApplicationController < ActionController::Base
     @current_ability ||= Ability.new(current_user, current_subdomain, request.session_options[:id], session, params)
   end
 
-  def mail_options
-    {:host => request.host,
-     :host_with_port => request.host_with_port,
-     :from => current_subdomain && current_subdomain.notifications_sender_email && current_subdomain.notifications_sender_email.length > 0 ? current_subdomain.notifications_sender_email : APP_CONFIG[:email],
-     :app_title => current_subdomain ? current_subdomain.app_title : '',
-     :current_subdomain => current_subdomain
-    }
-  end
-
   def self.token_for_action(user_id, object, action)
     user = User.find(user_id.to_i)
     Digest::MD5.hexdigest("#{user.unique_token}#{object.id}#{object.class.name}#{action}")
@@ -102,7 +93,6 @@ protected
     # Make things to remember changes
     Thread.current[:dirtied_keys] = {}
     Thread.current[:subdomain] = current_subdomain
-    Thread.current[:mail_options] = mail_options
 
     puts("In before: is there a current user? '#{session[:current_user_id2]}'")
     # First, reset the thread's current_user values from the session

@@ -2,38 +2,6 @@ class HtmlController < ApplicationController
   respond_to :html
 
   def index
-    
-    # Store query parameters important for access control for email notifications
-    if params.has_key? 'u'
-      session[:notifications_user] = {'u' => params['u'], 't' => params['t']}
-    end
-
-
-    # if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
-    #   user = User.find_by_lower_email(params[:u])
-
-    #   # for testing private discussions
-    #   # pp ApplicationController.arbitrary_token("#{user.email}#{user.unique_token}#{current_subdomain.name}") if !user.nil?
-    #   # pp ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.name}") if user.nil?
-
-
-    #   # is it a security problem to allow users to continue to sign in through the tokenized email after they've created an account?
-    #   permission =   (ApplicationController.arbitrary_token("#{params[:u]}#{current_subdomain.name}") == params[:t]) \
-    #               ||(!user.nil? && ApplicationController.arbitrary_token("#{params[:u]}#{user.unique_token}#{current_subdomain.name}") == params[:t]) # this user already exists, want to have a harder auth method; still not secure if user forwards their email
-
-    #   if permission
-    #     session[:limited_user] = user ? user.id : nil
-    #     @limited_user_follows = user ? user.follows.to_a : []
-    #     @limited_user = user
-    #     @limited_user_email = params[:u]
-    #   end
-    # elsif session.has_key?(:limited_user ) && !session[:limited_user].nil?
-    #   @limited_user = User.find(session[:limited_user])
-    #   @limited_user_follows = @limited_user.follows.to_a
-    #   @limited_user_email = @limited_user.email
-    # end
-
-
 
     # if someone has accessed a non-existent subdomain or the mime type isn't HTML (must be accessing a nonexistent file)
     if !current_subdomain || request.format.to_s != 'text/html' || request.fullpath.include?('data:image')
@@ -41,12 +9,31 @@ class HtmlController < ApplicationController
       return
     end
 
+    # Storing the full host name on the subdomain object.
+    # This is needed because we don't have a request
+    # when sending emails out at later points. 
+    # This is ugly, would be nice to eliminate this. 
+    if current_subdomain.host.nil?
+      current_subdomain.host = request.host
+      current_subdomain.host_with_port = request.host_with_port
+      current_subdomain.save
+    end
+
+    # Query parameters from an email link.    
+    # Store query parameters important for access control for email notifications
+    if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
+      session[:email_token_user] = {'u' => params['u'], 't' => params['t']}
+      
+      # Verify whether this user controls this account
+      verify_user_email_if_possible
+    end
+
     if !session.has_key?(:search_bot)
-      session[:search_bot] =    !!request.fullpath.match('_escaped_fragment_')  \
+      #session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || (request.user_agent && !!request.user_agent.match('Prerender'))
+      session[:search_bot] = !!request.fullpath.match('_escaped_fragment_')  \
                              || !request.user_agent #\
                              #|| !!request.user_agent.match('Prerender') \
                              #|| !!request.user_agent.match(/\(.*https?:\/\/.*\)/) #http://stackoverflow.com/questions/5882264/ruby-on-rails-how-to-determine-if-a-request-was-made-by-a-robot-or-search-engin
-      #session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || (request.user_agent && !!request.user_agent.match('Prerender'))
     end
 
     # Some subdomains don't have a homepage. In the iterim, let's just redirect 
@@ -61,24 +48,14 @@ class HtmlController < ApplicationController
     #   end
     #   return
     # end
-
-    response.headers["Strict Transport Security"] = 'max-age=0'
     
     # used by the layout
     @meta, @page, @title = get_meta_data()
     @is_search_bot = session[:search_bot]
 
 
-    # Storing the full host name, for use in emails.
-    # This is ugly, would be nice to eliminate this. 
-    if current_subdomain.host.nil?
-      current_subdomain.host = request.host
-      current_subdomain.host_with_port = request.host_with_port
-      current_subdomain.save
-    end
-
     if !session[:search_bot]
-      referer = params.has_key?('z') && params['z'] == '1' ? 'from email notification' : request.referer
+      referer = session.has_key?(:email_token_user) ? 'from email notification' : request.referer
       write_to_log({
         :what => 'landed on site',
         :where => request.fullpath,
@@ -89,6 +66,8 @@ class HtmlController < ApplicationController
         }
       })
     end
+
+    response.headers["Strict Transport Security"] = 'max-age=0'
 
     if current_subdomain.name == 'homepage' && request.path == '/'
       render "layouts/homepage", :layout => false

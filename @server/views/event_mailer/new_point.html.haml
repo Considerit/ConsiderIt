@@ -1,17 +1,12 @@
 
 
 %p
+  #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point
   - if @notification_type == 'your proposal'
+    for your proposal:
 
-    #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for your proposal:
-
-  - elsif @notification_type == 'opinion submitter'
-
-    #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point on a proposal you follow:
-
-  - elsif @notification_type == 'lurker'
-
-    #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point on a proposal you follow:
+  - elsif ['opinion submitter', 'lurker'].include?(@notification_type)
+    on a proposal you follow:
 
 %p 
   %i{style: 'padding-left: 20px; display: block; border-left: 1px solid #eaeaea'}
@@ -20,11 +15,11 @@
 
 %p 
   The issue being discussed is 
-  %a{href: "#{@subdomain.host_with_port}/#{@proposal.slug}", style: 'font-weight: 700; color: #468EE5;'}
+  %a{href: full_link(@proposal.slug), style: 'font-weight: 700; color: #468EE5;'}
     = @proposal.name
 
 
-%a{href: "#{@subdomain.host_with_port}/#{@proposal.slug}/?selected=%2Fpoint%2F#{@point.id}&z=1", style: 'font-weight: 700; color: #468EE5;'}
+%a{href: full_link(@proposal.slug, {selected: "%2Fpoint%2F#{@point.id}"}), style: 'font-weight: 700; color: #468EE5;'}
   Read and discuss this point
 
 

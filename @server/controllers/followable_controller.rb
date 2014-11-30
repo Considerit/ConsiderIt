@@ -1,6 +1,6 @@
 class FollowableController < CurrentUserController
   def index
-    target_user = user()
+    target_user = user_via_token()
 
     authorized = target_user && target_user.id == current_user.id
 
@@ -8,7 +8,7 @@ class FollowableController < CurrentUserController
     #       Need to change this. Options: 
     #          - Make all unsubscription requests from the notifications dash come through this controller
     #          - Make the token valid only for a day or two
-    if !authorized && target_user && is_valid_token(target_user)
+    if !authorized && target_user && is_valid_token()
       authorized = true
       replace_user(current_user, target_user)
       set_current_user(target_user)
@@ -25,20 +25,6 @@ class FollowableController < CurrentUserController
 
   private
 
-  def user
-    return current_user if current_user.registered
-    return false if !session[:notifications_user]
-    u = session[:notifications_user]['u']
-    return User.find_by_email(u)
-  end
 
-  def is_valid_token(target_user)
-    u = session[:notifications_user]['u']
-    t = session[:notifications_user]['t']
-
-    encrypted = ApplicationController.arbitrary_token("#{u}#{target_user.unique_token}#{current_subdomain.name}")
-    
-    encrypted == t
-  end
   
 end

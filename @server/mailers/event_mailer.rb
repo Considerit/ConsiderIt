@@ -48,6 +48,7 @@ class EventMailer < Mailer
     @proposal = @point.proposal
     @subdomain = current_subdomain
 
+
     to = format_email user.email, user.name
     from = format_email(default_sender(current_subdomain), current_subdomain.app_title)
 
@@ -85,11 +86,6 @@ class EventMailer < Mailer
     mail(:from => from, :to => to, :subject => "[#{current_subdomain.app_title}] #{subject}")
   end
 
-  private
-
-  def default_sender(current_subdomain)
-    current_subdomain && current_subdomain.notifications_sender_email && current_subdomain.notifications_sender_email.length > 0 ? current_subdomain.notifications_sender_email : APP_CONFIG[:email]
-  end
 
 
 end

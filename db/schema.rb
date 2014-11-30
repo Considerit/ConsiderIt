@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141118044218) do
+ActiveRecord::Schema.define(version: 20141128235652) do
 
   create_table "assessments", force: true do |t|
     t.integer  "user_id"
@@ -311,6 +311,7 @@ ActiveRecord::Schema.define(version: 20141118044218) do
     t.text     "active_in"
     t.boolean  "super_admin",                        default: false
     t.boolean  "no_email_notifications",             default: false
+    t.boolean  "verified",                           default: false
   end
 
   add_index "users", ["avatar_file_name"], name: "index_users_on_avatar_file_name", using: :btree

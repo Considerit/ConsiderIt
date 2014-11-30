@@ -5,13 +5,12 @@ class AdminMailer < Mailer
   #### MODERATION ####
   def content_to_moderate(user, subdomain)
     @user = user
-    @url = dashboard_moderate_url(:host => subdomain.host_with_port)
     @subdomain = subdomain
 
     subject = "Pending content to moderate"
 
     to = format_email user.email, user.name
-    from = format_email(from_email(subdomain), subdomain.app_title)
+    from = format_email(default_sender(subdomain), subdomain.app_title)
 
     mail(:from => from, :to => to, :subject => "[#{subdomain.app_title}] #{subject}")
 
@@ -19,24 +18,16 @@ class AdminMailer < Mailer
 
   def content_to_assess(assessment, user, subdomain)
     @user = user
-    @url = dashboard_assessment_url(:host => subdomain.host_with_port)
     @assessment = assessment
     @subdomain = subdomain
 
     subject = "A new fact check request"
 
     to = format_email user.email, user.name    
-    from = format_email(from_email(subdomain), subdomain.app_title)
+    from = format_email(default_sender(subdomain), subdomain.app_title)
 
     mail(:from => from, :to => to, :subject => "[#{subdomain.app_title}] #{subject}")
 
   end
-
-  private
-
-    def from_email(subdomain)
-      subdomain.notifications_sender_email && subdomain.notifications_sender_email.length > 0 ? subdomain.notifications_sender_email : APP_CONFIG[:email]
-    end
-
 
 end

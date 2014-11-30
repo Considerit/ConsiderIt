@@ -76,7 +76,8 @@ class User < ActiveRecord::Base
       is_moderator: has_any_role?([:admin, :superadmin, :moderator]),
       is_evaluator: has_any_role?([:admin, :superadmin, :evaluator]),
       trying_to: nil,
-      no_email_notifications: no_email_notifications
+      no_email_notifications: no_email_notifications,
+      verified: verified
     }
 
     data

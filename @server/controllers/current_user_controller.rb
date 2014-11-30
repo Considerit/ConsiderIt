@@ -1,8 +1,6 @@
 # coding: utf-8
 
 class CurrentUserController < ApplicationController
-  #protect_from_forgery :except => :update, with: :exception
-  # skip_before_action :verify_authenticity_token, :if => :file_uploaded
   skip_before_action :verify_authenticity_token, :only => :update_user_avatar_hack
 
   # Gets the current user data
@@ -25,7 +23,6 @@ class CurrentUserController < ApplicationController
       trying_to = params[:trying_to]
     end
 
-    pp params, trying_to
     puts("")
     puts("--------------------------------")
     puts("----Start UPDATE CURRENT USER---")
@@ -114,7 +111,7 @@ class CurrentUserController < ApplicationController
           # digest and see if it matches any users
           encoded_token = OpenSSL::HMAC.hexdigest('SHA256',
                                                   'reset_password_token',
-                                                  params[:reset_password_token])
+                                                  params[:verification_code])
           user = User.where(reset_password_token: encoded_token).first
           puts("We found user #{user} with a password reset token")
           
@@ -178,7 +175,13 @@ class CurrentUserController < ApplicationController
         try_update_password 'update', errors
         log('updating info')
 
+      when 'verify'
+        # this will get used below in verify_user_email_if_possible
+        session[:email_token_user] = {'u' => current_user.email, 't' => params[:verification_code]}
+        log('verifying email')
     end
+
+    verify_user_email_if_possible
 
     # Wrap everything up
     response = current_user.current_user_hash(form_authenticity_token)
@@ -272,10 +275,10 @@ class CurrentUserController < ApplicationController
     # And that it's valid
     elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
       errors.append 'Bad email address'
-    else
+    elsif current_user.email != email
       puts("Updating email from #{current_user.email} to #{params[:email]}")
       # Okay, here comes a new email address!
-      current_user.update_attributes({:email => email})
+      current_user.update_attributes({:email => email, :verified => false})
       if !current_user.save
         raise "Error saving this user's email"
       end
@@ -348,6 +351,12 @@ class CurrentUserController < ApplicationController
         dirty_key '/users'
       end
 
+      # third party user's emails are automatically verified
+      if !current_user.verified 
+        current_user.verified = true
+        current_user.save
+      end
+
       write_to_log({
         :what => 'logged in through 3rd party',
         :where => '/current_user',
@@ -380,15 +389,6 @@ class CurrentUserController < ApplicationController
             'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large'
           }
 
-        when 'twitter'
-          third_party_params = {
-            'twitter_uid' => access_token.uid,
-            'bio' => access_token.info.description,
-            'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
-            # 'twitter_handle' => access_token.info.nickname,
-            'avatar_url' => access_token.info.image.gsub('_normal', ''), #'_reasonably_small'),
-          }
-
         else
           raise 'Unsupported provider'
       end
@@ -401,6 +401,12 @@ class CurrentUserController < ApplicationController
         # to enter an email and password. In that case, password
         # can't be null.
         third_party_params['password'] = SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] 
+      end
+
+
+      # third party user's emails are automatically verified
+      if !current_user.verified 
+        third_party_params['verified'] = true
       end
 
       current_user.update_attributes! third_party_params

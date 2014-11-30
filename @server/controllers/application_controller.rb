@@ -1,7 +1,7 @@
 require 'digest/md5'
 
-
-
+# When developing, set to true if you want to see the 
+# http://consider.it homepage. 
 ENABLE_HOMEPAGE_IN_DEV = false
 
 class ApplicationController < ActionController::Base
@@ -36,15 +36,6 @@ class ApplicationController < ActionController::Base
 
   def current_ability
     @current_ability ||= Ability.new(current_user, current_subdomain, request.session_options[:id], session, params)
-  end
-
-  def self.token_for_action(user_id, object, action)
-    user = User.find(user_id.to_i)
-    Digest::MD5.hexdigest("#{user.unique_token}#{object.id}#{object.class.name}#{action}")
-  end
-
-  def self.arbitrary_token(key)
-    Digest::MD5.hexdigest(key)
   end
 
 protected
@@ -233,6 +224,41 @@ protected
     return response
   end
 
+
+  # Checks whether the tokens match from an email notification link
+  # and a target user. This is used for verifying a user's control of 
+  # an email address & for modifying email notification settings 
+  # via an email. 
+  def is_valid_token
+    target_user = user_via_token()
+    return false if !target_user || !session.has_key?(:email_token_user)
+
+    u = session[:email_token_user]['u']
+    t = session[:email_token_user]['t']
+
+    encrypted = ApplicationController.MD5_hexdigest("#{u}#{target_user.unique_token}#{current_subdomain.name}")    
+    encrypted == t
+  end
+
+  def user_via_token
+    return current_user if current_user.registered
+    return false if !session[:email_token_user]
+    u = session[:email_token_user]['u']
+    return User.find_by_email(u)
+  end
+
+  # Checks if we have enough information to verify that this user
+  # controls their account
+  def verify_user_email_if_possible 
+    if !current_user.verified && is_valid_token && current_user.email == session[:email_token_user]['u']
+      current_user.verified = true
+      current_user.save
+    end
+  end
+
+  def self.MD5_hexdigest(key)
+    Digest::MD5.hexdigest(key)
+  end
 
   #####
   # aliasing current_tenant from acts_as_tenant gem so we can be consistent with subdomain

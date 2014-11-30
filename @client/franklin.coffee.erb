@@ -2333,18 +2333,6 @@ Auth = ReactiveComponent
                  null,
                  if root.auth_mode == 'register' then ".{5,}" else '')
 
-    reset_password_token_field =
-      INPUT
-        id: "reset_password_token"
-        name: "reset_password_token"
-        key: "reset_password_token_input_box"
-        placeholder: "verification code"
-        required: "required"
-        type: "text"
-        defaultValue: current_user.reset_password_token
-        onKeyPress: submitOnEnter
-        onChange: (event) => current_user.reset_password_token = event.target.value
-
     providers = ['facebook', 'google']
 
     third_party_authenticated = current_user.facebook_uid || current_user.twitter_uid || current_user.google_uid
@@ -2415,26 +2403,42 @@ Auth = ReactiveComponent
 
               DIV className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 
-          if root.auth_mode in ['login', 'login_via_reset_password_token']
+          if root.auth_mode in ['login', 'login_via_reset_password_token', 'verify']
             DIV null, 
               if root.auth_mode == 'login'
                 LABEL className: 'auth_section_label', 'By email address:'
-              else
+              else if root.auth_mode == 'login_via_reset_password_token'
                 DIV null,
                   LABEL className: 'reset_password_section_label', 'Reset your password'
                   DIV style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
+              else if root.auth_mode == 'verify'
+                DIV null,
+                  LABEL className: 'reset_password_section_label', 'Confirm your email address'
+                  DIV style: {'margin-bottom': 16}, 
+                    "Hi! For additional security, we require users to prove that they control the email address with which they’re accessing this private area." 
+                  DIV style: {'margin-bottom': 16},
+                    "We just sent a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
+
+
               TABLE className: 'auth_fields login',
                 TBODY null,
-                  if root.auth_mode == 'login_via_reset_password_token'
-                    TR null,
-                      TD null, 'We just emailed you a code. Enter it here:'
+                  if root.auth_mode in ['login_via_reset_password_token', 'verify']
                     TR null, 
                       TD className: 'label_cell', 
                         LABEL htmlFor: 'user_verification_code', 'code:'
 
                       TD className: 'field_cell', 
-                        reset_password_token_field,
-                        DIV className: 'password_verification_explanation', "Find code in an email just sent to you."
+                        INPUT
+                          id: "verification_code"
+                          name: "verification_code"
+                          key: "reset_password_token_input_box"
+                          placeholder: "verification code"
+                          required: "required"
+                          type: "text"
+                          onKeyPress: submitOnEnter
+                          onChange: (event) => current_user.verification_code = event.target.value
+                        DIV className: 'verification_code_explanation', "Find code in an email just sent to you."
+
                   else
                     TR null,
                       TD className: 'label_cell',
@@ -2442,14 +2446,15 @@ Auth = ReactiveComponent
                       TD className: 'field_cell',
                         email_input_field
 
-                  TR null,
-                    TD {style: (if root.auth_mode == 'login_via_reset_password_token' then {width: '37%'} else {}), className: 'label_cell'},
-                      LABEL htmlFor: 'user_password', "#{if root.auth_mode == 'login_via_reset_password_token' then 'new ' else ''}password:"
+                  if root.auth_mode in ['login_via_reset_password_token', 'login']
+                    TR null,
+                      TD {style: (if root.auth_mode == 'login_via_reset_password_token' then {width: '37%'} else {}), className: 'label_cell'},
+                        LABEL htmlFor: 'user_password', "#{if root.auth_mode == 'login_via_reset_password_token' then 'new ' else ''}password:"
 
-                    TD className: 'field_cell', 
-                      password_input_field,
-                      if root.auth_mode == 'login'
-                        A className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
+                      TD className: 'field_cell', 
+                        password_input_field,
+                        if root.auth_mode == 'login'
+                          A className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
 
 
           else 
@@ -3339,6 +3344,14 @@ Page = ReactiveComponent
 
     avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
+
+    # FOR TESTING
+    # current_user = fetch('/current_user')
+    # if !current_user.verified && current_user.logged_in
+    #   @root.auth_mode = 'verify'
+    #   @root.auth_reason = 'access this proposal'
+    #   save @root
+    ####
 
     if @root.auth_mode && @root.auth_mode != 'update'
       return Auth()

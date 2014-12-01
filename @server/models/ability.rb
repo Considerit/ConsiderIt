@@ -43,7 +43,7 @@ class Ability
     end
 
     if user.has_role? :evaluator
-      can [:index, :create, :update], Assessable::Assessment
+      can [:index, :create, :update], Assessment
       can [:index, :create, :update], Assessable::Claim
       can [:index, :create, :update], Assessable::Request      
     end

@@ -8,63 +8,6 @@ class ModerationController < ApplicationController
     return
   end
 
-  # list all the objects to be moderated; allow seeing the existing moderations
-  def index
-    authorize! :index, Moderation
-
-    moderations = []
-
-    current_subdomain.classes_to_moderate.each do |moderation_class|
-
-      if moderation_class == Comment
-        # select all comments of points of active proposals
-        qry = "SELECT c.id, c.user_id, prop.id as proposal_id FROM comments c, points pnt, proposals prop WHERE prop.subdomain_id=#{current_subdomain.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
-      elsif moderation_class == Point
-        qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.subdomain_id=#{current_subdomain.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
-      elsif moderation_class == Proposal
-        qry = "SELECT id, slug, user_id, name, description from proposals where subdomain_id=#{current_subdomain.id}"
-      end
-
-      objects = ActiveRecord::Base.connection.select(qry)
-
-      if objects.count > 0
-
-        existing_moderations = Moderation.where("moderatable_type='#{moderation_class.name}' AND moderatable_id in (?)", objects.map {|o| o['id']})
-        if existing_moderations.count > 0
-          existing_moderations = Hash[existing_moderations.collect { |v| [v.moderatable_id, v] }]
-        else 
-          existing_moderations = {}
-        end
-
-
-        objects.each do |obj|
-          dirty_key "/#{moderation_class.name.downcase}/#{obj['id']}"
-          if obj.has_key? 'proposal_id'
-            dirty_key "/proposal/#{obj['proposal_id']}"
-          end
-
-          dirty_key "/user/#{obj['user_id']}"
-
-          if existing_moderations.has_key? obj['id']
-            moderation = existing_moderations[obj['id']]
-          else 
-            # Create a moderation for each that doesn't yet exist.           
-            moderation = Moderation.create! :moderatable_type => moderation_class.name, :moderatable_id => obj['id'], :subdomain_id => current_subdomain.id
-          end
-
-          moderations.push moderation
-        end
-      end
-
-    end
-    result = {
-      key: '/dashboard/moderate',
-      moderations: moderations
-    }
-    render :json => [result]
-
-  end
-
   def update
     authorize! :update, Moderation
 

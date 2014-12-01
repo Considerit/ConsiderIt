@@ -1414,7 +1414,7 @@ Point = ReactiveComponent
         if @props.rendered_as == 'community_point'
           renderIncluders()
 
-        else if !selected_segment || ( author_opinion = fetch(userOpinion(point.user)) && author_opinion.stance_segment == selected_segment )
+        else if !selected_segment || (userOpinion(point.user) && author_opinion = fetch(userOpinion(point.user)) && author_opinion.stance_segment == selected_segment )
           Avatar 
             key: point.user
             className:"point_author_avatar"
@@ -1581,10 +1581,13 @@ Point = ReactiveComponent
     selected_segment = fetch('histogram').selected_segment
     if selected_segment?
       for includer in point.includers
-        stance_segment = fetch(userOpinion(includer)).stance_segment
+        if userOpinion(includer)
+          stance_segment = fetch(userOpinion(includer)).stance_segment
 
-        if stance_segment && stance_segment != selected_segment
-          to_remove.push(includer)
+          if stance_segment && stance_segment != selected_segment
+            to_remove.push includer
+        else 
+          to_remove.push includer
 
     includers = _.difference point.includers, to_remove
     if author_has_included 

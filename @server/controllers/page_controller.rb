@@ -2,18 +2,16 @@ class PageController < ApplicationController
   respond_to :json
 
   def show
-    case params[:id]
-
-    when 'homepage'
+    if params[:id] == 'homepage'
       key = '/page/homepage'
       dirty_key key
       dirty_key '/users'
 
-    when 'about' # don't need anything special
-      key = '/page/about'
-
-    when 'proposal/new' # don't need anything special
+    elsif params[:id] == 'proposal/new' # don't need anything special
       key = '/page/proposal/new'
+
+    elsif params[:id] == 'about' || params[:id].match('dashboard/') # don't need anything special
+      key = "/page/#{params[:id]}"
 
     else # if proposal
 

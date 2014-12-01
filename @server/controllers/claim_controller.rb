@@ -15,9 +15,9 @@ class ClaimController < ApplicationController
   end
 
   def create
-    authorize! :index, Assessable::Assessment
+    authorize! :index, Assessment
 
-    assessment = Assessable::Assessment.find key_id(params['assessment'])
+    assessment = Assessment.find key_id(params['assessment'])
 
     fields = ["claim_restatement", "result"]
 
@@ -43,7 +43,7 @@ class ClaimController < ApplicationController
   end
 
   def update
-    authorize! :index, Assessable::Assessment
+    authorize! :index, Assessment
 
     claim = Assessable::Claim.find(params[:id])
 
@@ -78,7 +78,7 @@ class ClaimController < ApplicationController
 
 
   def destroy
-    authorize! :index, Assessable::Assessment
+    authorize! :index, Assessment
 
     claim = Assessable::Claim.find(params[:id])
 

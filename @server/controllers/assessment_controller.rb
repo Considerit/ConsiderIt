@@ -9,29 +9,10 @@ class AssessmentController < ApplicationController
     return
   end
 
-  # list all the objects to be moderated; allow seeing the existing moderations
-  def index
-    authorize! :index, Assessable::Assessment
-
-    assessments = Assessable::Assessment.all.each do |assessment|
-      dirty_key "/point/#{assessment.assessable_id}"
-      dirty_key "/proposal/#{assessment.root_object().proposal_id}"
-    end
-
-    result = { 
-      :key => '/dashboard/assessment',
-      :assessments => Assessable::Assessment.all,
-      :verdicts => Assessable::Verdict.all
-    }
-
-    render :json => [result]
-
-  end
-
   def show
-    authorize! :index, Assessable::Assessment
+    authorize! :index, Assessment
 
-    assessment = Assessable::Assessment.find(params[:id])
+    assessment = Assessment.find(params[:id])
     #TODO: authorize against this specific assessment?
 
     dirty_key "/assessment/#{params[:id]}"
@@ -39,12 +20,12 @@ class AssessmentController < ApplicationController
   end
 
   def update
-    authorize! :index, Assessable::Assessment
+    authorize! :index, Assessment
     
     fields = ["complete", "reviewable", "notes"]
     updates = params.select{|k,v| fields.include? k}
 
-    assessment = Assessable::Assessment.find(params[:id])
+    assessment = Assessment.find(params[:id])
     already_published = assessment.complete
 
     if params.has_key?('user') && !params['user']
@@ -94,14 +75,14 @@ class AssessmentController < ApplicationController
 
     request = Assessable::Request.new request
 
-    assessment = Assessable::Assessment.where(:assessable_type => request['assessable_type'], :assessable_id => request['assessable_id']).first
+    assessment = Assessment.where(:assessable_type => request['assessable_type'], :assessable_id => request['assessable_id']).first
     if !assessment
       create_attrs = {
         :subdomain_id => current_subdomain.id, 
         :assessable_type => request['assessable_type'],
         :assessable_id => request['assessable_id'] }
         
-      assessment = Assessable::Assessment.create! create_attrs
+      assessment = Assessment.create! create_attrs
 
       ActiveSupport::Notifications.instrument("new_assessment_request", 
         :assessment => assessment,

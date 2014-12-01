@@ -3348,40 +3348,34 @@ Page = ReactiveComponent
         Header()
         DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
           DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
-            if @root.auth_mode
+            if @root.auth_mode || @root.page_name == 'edit_profile'
               Auth()
-            else if @root.page_name == 'homepage'
-              Homepage key: @page.key
-            else if @root.page_name == 'about'
-              About()
-            else if @root.page_name == 'proposal/new'
-              EditProposal key: "new_proposal", fresh: true
             else if @root.page_name.match(/(.+)\/edit/)
               EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
-            else if @root.page_name == 'edit_profile'
-              Auth()
-            else if @root.page_name == 'dashboard/email_notifications'
-              EmailNotificationSettings key: '/dashboard/email_notifications'
-            else if @root.page_name == 'dashboard/assessment'
-              AccessControlled permitted: ['admin', 'evaluator'],
-                FactcheckDash key: "/dashboard/assessment"
-            else if @root.page_name == 'dashboard/create_subdomain'
-              AccessControlled permitted: ['user'],
-                CreateSubdomain key: "create_subdomain"                
-            else if @root.page_name == 'dashboard/import_data'
-              AccessControlled permitted: ['super_admin'],
-                ImportDataDash key: "dashboard/import_data"
-            else if @root.page_name == 'dashboard/moderate'
-              AccessControlled permitted: ['admin', 'moderator'],
-                ModerationDash key: "/dashboard/moderate"
-            else if @root.page_name == 'dashboard/application'
-              AccessControlled permitted: ['admin'],
-                AppSettingsDash key: "/subdomain"
-            else if @root.page_name == 'dashboard/roles'
-              AccessControlled permitted: ['admin'],
-                RolesDash key: "/subdomain"
-            else 
-              Proposal key: @page.proposal.key
+            else
+              switch @root.page_name
+                when 'homepage'
+                  Homepage key: @page.key
+                when 'about'
+                  About()
+                when 'proposal/new'
+                  EditProposal key: "new_proposal", fresh: true              
+                when 'dashboard/email_notifications'
+                  EmailNotificationSettings key: '/dashboard/email_notifications'
+                when 'dashboard/assessment'
+                  FactcheckDash key: "/page/dashboard/assessment"
+                when 'dashboard/create_subdomain'
+                  CreateSubdomain key: "/page/dashboard/create_subdomain"
+                when 'dashboard/import_data'
+                  ImportDataDash key: "/page/dashboard/import_data"
+                when 'dashboard/moderate'
+                  ModerationDash key: "/page/dashboard/moderate"
+                when 'dashboard/application'
+                  AppSettingsDash key: "/page/dashboard/application"
+                when 'dashboard/roles'
+                  RolesDash key: "/page/subdomain"
+                else 
+                  Proposal key: @page.proposal.key
 
         Footer()
 
@@ -3468,11 +3462,26 @@ BrowserHacks = ReactiveComponent
 ## ########################
 ## Initialize defaults for client data
 
+fetch 'histogram',
+  highlighted_users : null
+  selected_segment : null
+  selected_segment_isclicked : null
+
+fetch 'slider',
+  has_moved : false
+  is_moving : false
+  stance : null
+  stance_segment : null
+
+fetch 'decisionboard',
+  sticky : false
+  
 fetch 'root',
   auth_mode : null
   opinions_to_publish : []
 
 fetch '/current_user'
+
 # Fetch current user every 2 minutes so that if the user gets
 # logged out (e.g. by server deploy after letting a browser window stay open), 
 # their browser will accurately reflect reality. 

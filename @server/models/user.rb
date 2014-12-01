@@ -386,7 +386,7 @@ class User < ActiveRecord::Base
     end
 
     # Bulk updates...
-    for table in [Point, Proposal, Comment, Assessable::Assessment, Assessable::Request, \
+    for table in [Point, Proposal, Comment, Assessment, Assessable::Request, \
                   Follow, Moderation ] 
 
       # First, remember what we're dirtying

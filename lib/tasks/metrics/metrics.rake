@@ -309,14 +309,14 @@ namespace :metrics do
   task :fact_checking_rates => :environment do 
     puts "Computing average commenting rate and inclusion rate"
 
-    Assessable::Assessment.find_each do |ass|
+    Assessment.find_each do |ass|
       #pp "Created at: #{ass.created_at}, Updated at: #{ass.updated_at}"
       #pp "requested at: #{ass.requests.first.created_at}"
     end
-    average_date = Assessable::Assessment.select('FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(created_at) + (UNIX_TIMESTAMP(updated_at) - UNIX_TIMESTAMP(created_at))/2 )) as updated_at')
+    average_date = Assessment.select('FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(created_at) + (UNIX_TIMESTAMP(updated_at) - UNIX_TIMESTAMP(created_at))/2 )) as updated_at')
     average_date = average_date[0].updated_at
 
-    points = Assessable::Assessment.select('distinct(assessable_id)').map {|a| a.assessable_id }.compact
+    points = Assessment.select('distinct(assessable_id)').map {|a| a.assessable_id }.compact
 
     proposals = points.map {|p| Point.find(p).proposal_id}.compact.uniq
 
@@ -382,7 +382,7 @@ namespace :metrics do
       puts "For points with an overall " + verdict.to_s + " verdict"
       col = :overall_verdict
       #col = :max_verdict
-      assessments = Assessable::Assessment.where(col => verdict)
+      assessments = Assessment.where(col => verdict)
 
       inclusions = { :before => 0, :after => 0 } 
       views = { :before => 0, :after => 0 }
@@ -456,7 +456,7 @@ namespace :metrics do
       puts "For points with an overall " + verdict.to_s + " verdict"
       col = :overall_verdict
       #col = :max_verdict
-      assessments = Assessable::Assessment.where(col => verdict)
+      assessments = Assessment.where(col => verdict)
 
       comments = { :before => 0, :after => 0 } 
       views = { :before => 0, :after => 0 }
@@ -528,14 +528,14 @@ namespace :metrics do
 
     election_date = DateTime.new(2012,11,8)
 
-    Assessable::Assessment.find_each do |ass|
+    Assessment.find_each do |ass|
       #pp "Created at: #{ass.created_at}, Updated at: #{ass.updated_at}"
       #pp "requested at: #{ass.requests.first.created_at}"
     end
-    # average_date = Assessable::Assessment.select('FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(created_at) + (UNIX_TIMESTAMP(updated_at) - UNIX_TIMESTAMP(created_at))/2 )) as updated_at')
+    # average_date = Assessment.select('FROM_UNIXTIME(AVG(UNIX_TIMESTAMP(created_at) + (UNIX_TIMESTAMP(updated_at) - UNIX_TIMESTAMP(created_at))/2 )) as updated_at')
     # average_date = average_date[0].updated_at
 
-    points = Assessable::Assessment.select('distinct(assessable_id)').map {|a| a.assessable_id }.compact
+    points = Assessment.select('distinct(assessable_id)').map {|a| a.assessable_id }.compact
 
     proposals = points.map {|p| Point.find(p).proposal_id}.compact.uniq
     all_points = Point.where("proposal_id in (?) AND created_at < (?)", proposals, election_date)
@@ -601,7 +601,7 @@ namespace :metrics do
 
     simulate_fact_check = true
     simulated_date = DateTime.new(2012,10,28)
-    simulated_assessment = Assessable::Assessment.new(:updated_at => simulated_date, :overall_verdict => -1)
+    simulated_assessment = Assessment.new(:updated_at => simulated_date, :overall_verdict => -1)
     simulated_request = Assessable::Request.new(:created_at => simulated_date)
 
     require 'csv'
@@ -631,7 +631,7 @@ namespace :metrics do
           row.push was_checked
 
           # An indicator for whether or not the point had been fact checked prior to the view
-          assessment = Assessable::Assessment.find_by_assessable_id(view.point_id)
+          assessment = Assessment.find_by_assessable_id(view.point_id)
           if assessment
             request = assessment.requests.first
           end
@@ -731,12 +731,12 @@ namespace :metrics do
 
   task :data_for_fact_checking_timeseries => :environment do 
 
-    assessed_points = Assessable::Assessment.select('distinct(assessable_id)').map {|a| a.assessable_id }.compact
+    assessed_points = Assessment.select('distinct(assessable_id)').map {|a| a.assessable_id }.compact
 
     proposals = assessed_points.map {|p| Point.find(p).proposal_id}.compact.uniq
 
     requests = Assessable::Request.all.map {|r| r.created_at}
-    assessments = Assessable::Assessment.all.map {|a| a.updated_at}
+    assessments = Assessment.all.map {|a| a.updated_at}
     points = Point.published.where("proposal_id in (?)", proposals).map {|p| p.created_at}
 
     days = {}

@@ -77,12 +77,10 @@ ConsiderIt::Application.routes.draw do
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]
 
   # New admin functionality
-  get 'dashboard/assessment' => 'assessment#index'
   resources :assessment, :only => [:show, :update]
   resources :claim, :only => [:show, :create, :update, :destroy]
   resources :request, :only => [:create], :controller => "assessment"
 
-  get "/dashboard/moderate" => 'moderation#index'
   match "/moderation/:id" => 'moderation#update', :via => :put
   post '/dashboard/message' => 'direct_message#create', :as => 'message'
 
@@ -90,8 +88,6 @@ ConsiderIt::Application.routes.draw do
   match 'update_user_avatar_hack' => 'current_user#update_user_avatar_hack', :via => [:put]
 
   get "/dashboard/email_notifications" => 'followable#index'
-  post "follow" => 'followable#follow'
-  post "unfollow" => 'followable#unfollow'
 
   post "/dashboard/import_data" => 'import_data#create'
 

@@ -1,4 +1,4 @@
-class Assessable::Assessment < ActiveRecord::Base
+class Assessment < ActiveRecord::Base
   belongs_to :user
 
   belongs_to :assessable, :polymorphic => true
@@ -16,6 +16,24 @@ class Assessable::Assessment < ActiveRecord::Base
 
   acts_as_tenant :subdomain
 
+  def self.all_for_subdomain
+    current_subdomain = Thread.current[:subdomain]
+
+    assessments = current_subdomain.assessments
+
+    assessments.each do |assessment|
+      dirty_key "/point/#{assessment.assessable_id}"
+      dirty_key "/proposal/#{assessment.root_object().proposal_id}"
+    end
+
+    result = { 
+      :key => '/page/dashboard/assessment',
+      :assessments => assessments,
+      :verdicts => Assessable::Verdict.all
+    }
+
+  end
+
   def as_json(options={})
     result = super(options)
     make_key(result, 'assessment')
@@ -29,13 +47,6 @@ class Assessable::Assessment < ActiveRecord::Base
     result
   end
 
-  def self.build_from(obj, user_id, status)
-    c = self.new
-    c.assessable_id = obj.id 
-    c.assessable_type = obj.class.name 
-    c.user_id = user_id
-    c
-  end
 
   def root_object
     assessable_type.constantize.find(assessable_id)

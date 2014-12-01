@@ -3292,50 +3292,29 @@ EmailNotificationSettings = ReactiveComponent
                             arest.serverFetch '/dashboard/email_notifications' # don't want to have to dirty this key whenever a point or proposal is updated
                           'unsubscribe'
 
-Root = ReactiveComponent
-  displayName: 'Root'
-  resetSelection: (e) ->
-    if @root.selected_point
-      window.writeToLog
-        what: 'deselected a point'
-        details:
-          point: @root.selected_point
 
-      @root.selected_point = null
-      save @root
+Computer = ReactiveComponent
+  # This doesn't actually render anything.  It just processes state
+  # changes to current_user for CSRF and logging in and out.
+  displayName: 'Computer'
+  render : ->
+    current_user = fetch('/current_user')
+    if current_user.csrf
+      arest.csrf(current_user.csrf)
 
+    #console.log("Maybe we will publish: '#{@root.opinions_to_publish}' #{current_user.logged_in}")
 
-  render : -> 
-    root = @data()
+    # Publish pending opinions if we can
+    while @root.opinions_to_publish.length > 0 and current_user.logged_in
+      opinion = fetch(@root.opinions_to_publish.pop()); save(@root)
+      if opinion.published
+        break
+      console.log("Publishing the opinion. It's", opinion)
+      opinion.published = true
+      save(opinion)
 
-    ######
-    # Handle application routing, derived from client state.
-    query_parameters = Backbone.history.getQueryParameters()
-    query_parameters = {}
+    return SPAN null, ''
 
-    if @root.proposal_mode == 'results'
-      query_parameters['results'] = true #the only query parameter we support now is ?results=true for proposal pages
-    if @root.selected_point
-      query_parameters['selected'] = @root.selected_point
-
-    # Second, construct the proper url
-    if root.page_name == 'homepage' 
-      url = ''
-    else if root.page_name == 'about'
-      url = 'about'
-    else #if we're rendering a proposal...
-      url = window.app_router.toFragment root.page_name, query_parameters
-
-    # Third, update the location bar if it's different
-    if "#{window.location.pathname}#{window.location.search}" != "/#{url}"
-      window.app_router.navigate url, {trigger : true}
-    ####
-
-    # Now let's render
-    DIV onClick: @resetSelection,
-      StateDash(),
-      Page(key: "/page/#{root.page_name}"),
-      Computer() # Doesn't actually render anything
 
 Page = ReactiveComponent
   displayName: 'Page'
@@ -3406,27 +3385,51 @@ Page = ReactiveComponent
 
         Footer()
 
-Computer = ReactiveComponent
-  # This doesn't actually render anything.  It just processes state
-  # changes to current_user for CSRF and logging in and out.
-  displayName: 'Computer'
-  render : ->
-    current_user = fetch('/current_user')
-    if current_user.csrf
-      arest.csrf(current_user.csrf)
+Root = ReactiveComponent
+  displayName: 'Root'
+  resetSelection: (e) ->
+    if @root.selected_point
+      window.writeToLog
+        what: 'deselected a point'
+        details:
+          point: @root.selected_point
 
-    #console.log("Maybe we will publish: '#{@root.opinions_to_publish}' #{current_user.logged_in}")
+      @root.selected_point = null
+      save @root
 
-    # Publish pending opinions if we can
-    while @root.opinions_to_publish.length > 0 and current_user.logged_in
-      opinion = fetch(@root.opinions_to_publish.pop()); save(@root)
-      if opinion.published
-        break
-      console.log("Publishing the opinion. It's", opinion)
-      opinion.published = true
-      save(opinion)
 
-    return SPAN null, ''
+  render : -> 
+    root = @data()
+
+    ######
+    # Handle application routing, derived from client state.
+    query_parameters = Backbone.history.getQueryParameters()
+    query_parameters = {}
+
+    if @root.proposal_mode == 'results'
+      query_parameters['results'] = true #the only query parameter we support now is ?results=true for proposal pages
+    if @root.selected_point
+      query_parameters['selected'] = @root.selected_point
+
+    # Second, construct the proper url
+    if root.page_name == 'homepage' 
+      url = ''
+    else if root.page_name == 'about'
+      url = 'about'
+    else #if we're rendering a proposal...
+      url = window.app_router.toFragment root.page_name, query_parameters
+
+    # Third, update the location bar if it's different
+    if "#{window.location.pathname}#{window.location.search}" != "/#{url}"
+      window.app_router.navigate url, {trigger : true}
+    ####
+
+    # Now let's render
+    DIV onClick: @resetSelection,
+      StateDash(),
+      Page(key: "/page/#{root.page_name}"),
+      Computer() # Doesn't actually render anything
+
 
 # Displays warnings for some browsers
 # Stores state about the current device. 
@@ -3465,26 +3468,11 @@ BrowserHacks = ReactiveComponent
 ## ########################
 ## Initialize defaults for client data
 
-fetch 'histogram',
-  highlighted_users : null
-  selected_segment : null
-  selected_segment_isclicked : null
-
-fetch 'slider',
-  has_moved : false
-  is_moving : false
-  stance : null
-  stance_segment : null
-
-fetch 'decisionboard',
-  sticky : false
-
 fetch 'root',
   auth_mode : null
   opinions_to_publish : []
 
-fetch('/current_user')
-
+fetch '/current_user'
 # Fetch current user every 2 minutes so that if the user gets
 # logged out (e.g. by server deploy after letting a browser window stay open), 
 # their browser will accurately reflect reality. 
@@ -3638,20 +3626,6 @@ window.writeToLog = (entry) ->
     where: fetch('root').page_name
 
   save entry
-
-window.arest.trans_in = (object) ->
-  fix_comments = (o) ->
-    if o.key?.match(/\/comments\//)
-      o.comments = for comment in o.comments
-        comment.key = "/comment/#{comment.id}"
-        comment.user = "/user/#{comment.user_id}"
-        delete comment.id
-        delete comment.user_id
-        comment
-
-  #arest.deep_map(fix_comments, object)
-  return object
-
 
 $(document).ready -> 
 

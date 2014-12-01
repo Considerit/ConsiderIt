@@ -6,7 +6,7 @@ class EventPreview < ActionMailer::Preview
   end
 
   def new_assessment
-    assessment = Assessable::Assessment.completed.last
+    assessment = Assessment.completed.last
 
     EventMailer.new_assessment(assessment.point.user, assessment.point, assessment, assessment.subdomain, 'your point')
   end

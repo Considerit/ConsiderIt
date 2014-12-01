@@ -11,14 +11,60 @@ class Moderation < ActiveRecord::Base
   class_attribute :my_public_fields
   self.my_public_fields = [:user_id, :id, :status, :moderatable_id, :moderatable_type, :updated_at, :updated_since_last_evaluation, :notification_sent]
 
+  def self.all_for_subdomain
+    current_subdomain = Thread.current[:subdomain]
 
-  def self.build_from(obj, user_id, status)
-    c = self.new
-    c.moderatable_id = obj.id 
-    c.moderatable_type = obj.class.name 
-    c.status = status
-    c.user_id = user_id
-    c
+    moderations = []
+
+    current_subdomain.classes_to_moderate.each do |moderation_class|
+
+      if moderation_class == Comment
+        # select all comments of points of active proposals
+        qry = "SELECT c.id, c.user_id, prop.id as proposal_id FROM comments c, points pnt, proposals prop WHERE prop.subdomain_id=#{current_subdomain.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
+      elsif moderation_class == Point
+        qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.subdomain_id=#{current_subdomain.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
+      elsif moderation_class == Proposal
+        qry = "SELECT id, slug, user_id, name, description from proposals where subdomain_id=#{current_subdomain.id}"
+      end
+
+      objects = ActiveRecord::Base.connection.select(qry)
+
+      if objects.count > 0
+
+        existing_moderations = Moderation.where("moderatable_type='#{moderation_class.name}' AND moderatable_id in (?)", objects.map {|o| o['id']})
+        if existing_moderations.count > 0
+          existing_moderations = Hash[existing_moderations.collect { |v| [v.moderatable_id, v] }]
+        else 
+          existing_moderations = {}
+        end
+
+
+        objects.each do |obj|
+          dirty_key "/#{moderation_class.name.downcase}/#{obj['id']}"
+          if obj.has_key? 'proposal_id'
+            dirty_key "/proposal/#{obj['proposal_id']}"
+          end
+
+          dirty_key "/user/#{obj['user_id']}"
+
+          if existing_moderations.has_key? obj['id']
+            moderation = existing_moderations[obj['id']]
+          else 
+            # Create a moderation for each that doesn't yet exist.           
+            moderation = Moderation.create! :moderatable_type => moderation_class.name, :moderatable_id => obj['id'], :subdomain_id => current_subdomain.id
+          end
+
+          moderations.push moderation
+        end
+      end
+
+    end
+    
+    {
+      key: '/page/dashboard/moderate',
+      moderations: moderations
+    }
+
   end
 
   def root_object

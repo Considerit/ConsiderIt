@@ -8,29 +8,64 @@ task_area_style = {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor
 
 
 
-# Checks if current user has proper credentials to view this component. 
-# If not, shows Auth. 
-AccessControlled = ReactiveComponent
-  displayName: 'AccessControlled'
-
-  render : -> 
+class AccessControlledReactiveComponent extends ReactiveComponent
+  render: -> 
     current_user = fetch '/current_user'
 
-    is_permitted = false
-    for role in @props.permitted
-      if (role == 'user' && current_user.logged_in) ||  current_user["is_#{role}"]
-        is_permitted = true
-        break
+    ####
+    # HACK: Clear out statebus if current_user changed. See comment below.
+    access_attrs = ['verified', 'logged_in', 'email']
+    if @_last_current_user
+      reduced_user = _.map access_attrs, (attr) -> current_user[attr] 
+      for el,idx in reduced_user
+        if el != @_last_current_user[idx]
+          arest.serverFetch @props.key
+          break
+    ####
 
-    if is_permitted
-      @props.children
-    else if current_user.logged_in
-      window.app_router.navigate("/", {trigger: true})
+    if !@data().access_denied
+      @renderWhenPermitted()
+
+    else 
+      # Let's recover, depending on the recourse the server dictates
+      recourse = @data().access_denied
+      switch recourse
+
+        when 'lack of credentials'
+          window.app_router.navigate("/", {trigger: true})
+
+        when 'login required'
+          @root.auth_mode = 'login'
+          save @root
+
+        when 'email not verified'
+          @root.auth_mode = 'verify'
+          save @root
+
+      #######
+      # Hack! The server will return access_denied on the page, e.g.: 
+      # 
+      #   { key: '/page/dashboard/moderate', access_denied: 'login required' }
+      # 
+      # Here's a problem: 
+      # What happens if the user logs in? Or if they verify their email?
+      # We will need to refetch that page on the server so we can proceed 
+      # with the proper data and without the access denied error.
+      #
+      # My solution here is to store relevant values of /current_user the last time
+      # an access denied error was registered. Then everytime one of those attributes
+      # changes (i.e. when the user might be able to access), we'll issue a server
+      # fetch on the page.
+      #
+      @_last_current_user = _.map access_attrs, (attr) -> current_user[attr] 
+      #
+      # This hack will be unnecessary by having a server that pushes out changes to 
+      # subscribed keys. In that world, the server logs a dependency for a client 
+      # on an access-controlled resource. If the client ever gains the proper 
+      # authorization, the server can just push down the data.
+
       SPAN null
-    else
-      @root.auth_mode = 'login'
-      save @root
-      SPAN null
+
 
 DashHeader = ReactiveComponent
   displayName: 'DashHeader'
@@ -52,7 +87,7 @@ DashHeader = ReactiveComponent
         
         H1 style: {fontSize: 28, padding: '20px 0', color: 'white'}, @props.name   
 
-ImportDataDash = ReactiveComponent
+ImportDataDash = AccessControlledReactiveComponent
   displayName: 'ImportDataDash'
 
   render : ->
@@ -169,11 +204,11 @@ ImportDataDash = ReactiveComponent
                   for success in @local.successes[table.toLowerCase()]
                     DIV style: {marginTop: 10}, success
 
-AppSettingsDash = ReactiveComponent
+AppSettingsDash = AccessControlledReactiveComponent
   displayName: 'AppSettingsDash'
 
   render : -> 
-    subdomain = @data()
+    subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
     DIV className: 'app_settings_dash',
@@ -316,7 +351,7 @@ AppSettingsDash = ReactiveComponent
             save @local
 
 
-RolesDash = ReactiveComponent
+RolesDash = AccessControlledReactiveComponent
   displayName: 'RolesDash'
 
   render : -> 
@@ -473,7 +508,7 @@ AdminTaskList = ReactiveComponent
       @selectPrev() if e.keyCode == 38 # up
 
         
-ModerationDash = ReactiveComponent
+ModerationDash = AccessControlledReactiveComponent
   displayName: 'ModerationDash'
 
   render : -> 
@@ -529,7 +564,7 @@ ModerationDash = ReactiveComponent
                         save subdomain
 
                         #saving the subdomain shouldn't always dirty moderations (which is expensive), so just doing it manually here
-                        arest.serverFetch('/dashboard/moderate')  
+                        arest.serverFetch('/page/dashboard/moderate')  
 
                       INPUT style: {cursor: 'pointer'}, type: 'radio', name: "moderate_#{model}_mode", id: "moderate_#{model}_mode_#{idx}", defaultChecked: subdomain["moderate_#{model}_mode"] == idx
                       LABEL style: {cursor: 'pointer', paddingLeft: 8 }, htmlFor: "moderate_#{model}_mode_#{idx}", field
@@ -737,7 +772,7 @@ ModerateItem = ReactiveComponent
             LABEL htmlFor: 'fail', 'Fail'
 
 
-FactcheckDash = ReactiveComponent
+FactcheckDash = AccessControlledReactiveComponent
   displayName: 'FactcheckDash'
 
   render : ->
@@ -1049,7 +1084,7 @@ EditClaim = ReactiveComponent
         SELECT
           defaultValue: if @props.fresh then null else @data().verdict
           className: 'claim_verdict'
-          for verdict in fetch('/dashboard/assessment').verdicts
+          for verdict in fetch('/page/dashboard/assessment').verdicts
             OPTION key: verdict.key, value: verdict.key, verdict.name
 
 
@@ -1086,7 +1121,7 @@ EditClaim = ReactiveComponent
 
 # Creates a new subdomain / subdomain. This is meant to only be accessed from 
 # the considerit homepage, but will work from any subdomain.
-CreateSubdomain = ReactiveComponent
+CreateSubdomain = AccessControlledReactiveComponent
   displayName: 'CreateSubdomain'
 
   render : -> 
@@ -1138,6 +1173,5 @@ window.ModerationDash = ModerationDash
 window.AppSettingsDash = AppSettingsDash
 window.RolesDash = RolesDash
 window.ImportDataDash = ImportDataDash
-window.AccessControlled = AccessControlled
 window.CreateSubdomain = CreateSubdomain
 window.DashHeader = DashHeader

@@ -8,8 +8,8 @@ task_area_style = {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor
 
 
 
-class AccessControlledReactiveComponent extends ReactiveComponent
-  render: -> 
+AccessControlled = 
+  accessGranted: -> 
     current_user = fetch '/current_user'
 
     ####
@@ -23,10 +23,7 @@ class AccessControlledReactiveComponent extends ReactiveComponent
           break
     ####
 
-    if !@data().access_denied
-      @renderWhenPermitted()
-
-    else 
+    if @data().access_denied 
       # Let's recover, depending on the recourse the server dictates
       recourse = @data().access_denied
       switch recourse
@@ -64,7 +61,7 @@ class AccessControlledReactiveComponent extends ReactiveComponent
       # on an access-controlled resource. If the client ever gains the proper 
       # authorization, the server can just push down the data.
 
-      SPAN null
+    return !@data().access_denied 
 
 
 DashHeader = ReactiveComponent
@@ -87,10 +84,13 @@ DashHeader = ReactiveComponent
         
         H1 style: {fontSize: 28, padding: '20px 0', color: 'white'}, @props.name   
 
-ImportDataDash = AccessControlledReactiveComponent
+ImportDataDash = ReactiveComponent
   displayName: 'ImportDataDash'
+  mixins: [AccessControlled]
 
   render : ->
+    return SPAN(null) if !@accessGranted()
+
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
@@ -204,10 +204,14 @@ ImportDataDash = AccessControlledReactiveComponent
                   for success in @local.successes[table.toLowerCase()]
                     DIV style: {marginTop: 10}, success
 
-AppSettingsDash = AccessControlledReactiveComponent
+AppSettingsDash = ReactiveComponent
   displayName: 'AppSettingsDash'
+  mixins: [AccessControlled]
 
   render : -> 
+    return SPAN(null) if !@accessGranted()
+
+
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
@@ -319,7 +323,7 @@ AppSettingsDash = AccessControlledReactiveComponent
   submit : -> 
     submitting_files = @submit_logo || @submit_masthead
 
-    subdomain = @data()
+    subdomain = fetch '/subdomain'
 
     fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url']
 
@@ -351,11 +355,14 @@ AppSettingsDash = AccessControlledReactiveComponent
             save @local
 
 
-RolesDash = AccessControlledReactiveComponent
+RolesDash = ReactiveComponent
   displayName: 'RolesDash'
+  mixins: [AccessControlled]
 
   render : -> 
-    subdomain = @data()
+    return SPAN(null) if !@accessGranted()
+
+    subdomain = fetch '/subdomain'
 
     roles = [ 
       ['admin', 'Admins can access everything.'], 
@@ -506,12 +513,18 @@ AdminTaskList = ReactiveComponent
     $(document).on 'keyup.dash', (e) =>
       @selectNext() if e.keyCode == 40 # down
       @selectPrev() if e.keyCode == 38 # up
+  componentWillUnmount: ->
+    $(document).off 'keyup.dash'
 
         
-ModerationDash = AccessControlledReactiveComponent
+ModerationDash = ReactiveComponent
+  mixins: [AccessControlled]
   displayName: 'ModerationDash'
 
   render : -> 
+    return SPAN(null) if !@accessGranted()
+
+
     moderations = @data().moderations.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
     subdomain = fetch '/subdomain'
 
@@ -772,10 +785,14 @@ ModerateItem = ReactiveComponent
             LABEL htmlFor: 'fail', 'Fail'
 
 
-FactcheckDash = AccessControlledReactiveComponent
+FactcheckDash = ReactiveComponent
   displayName: 'FactcheckDash'
+  mixins: [AccessControlled]
 
   render : ->
+    return SPAN(null) if !@accessGranted()
+
+
     assessments = @data().assessments.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
 
     # Separate assessments by status
@@ -1121,10 +1138,13 @@ EditClaim = ReactiveComponent
 
 # Creates a new subdomain / subdomain. This is meant to only be accessed from 
 # the considerit homepage, but will work from any subdomain.
-CreateSubdomain = AccessControlledReactiveComponent
+CreateSubdomain = ReactiveComponent
   displayName: 'CreateSubdomain'
+  mixins: [AccessControlled]
 
   render : -> 
+    return SPAN(null) if !@accessGranted()
+
     current_user = fetch('/current_user')
 
     DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 

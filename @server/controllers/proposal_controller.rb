@@ -21,7 +21,7 @@ class ProposalController < ApplicationController
   def create
     # TODO: slug should be validated as a legit url
     
-    fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
+    fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
     proposal = params.select{|k,v| fields.include? k}
 
     proposal.update({
@@ -104,7 +104,7 @@ class ProposalController < ApplicationController
     end
 
     if can?(:update, proposal)
-      fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
+      fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
       updated_fields = params.select{|k,v| fields.include? k}
       proposal.update_attributes! updated_fields
       dirty_key('/proposals')

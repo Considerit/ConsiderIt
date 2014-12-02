@@ -48,10 +48,12 @@ AccessControlled =
 
         when 'login required'
           @root.auth_mode = 'login'
+          @root.auth_reason = 'Access this page'
           save @root
 
         when 'email not verified'
           @root.auth_mode = 'verify'
+          @root.auth_reason = 'Access this page'
           save @root
 
       #######

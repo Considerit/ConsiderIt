@@ -78,14 +78,11 @@ GEM
       thor
     builder (3.2.2)
     cancan (1.6.10)
-    celluloid (0.16.0)
-      timers (~> 4.0.0)
     chronic (0.10.2)
     climate_control (0.0.3)
       activesupport (>= 3.0)
     cocaine (0.5.4)
       climate_control (>= 0.0.3, < 1.0)
-    coderay (1.1.0)
     coffee-rails (4.1.0)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0, < 5.0)
@@ -100,9 +97,6 @@ GEM
       mailhopper (>= 0.0.1)
     delayed_paperclip (2.8.0)
       paperclip (>= 3.3)
-    em-websocket (0.5.1)
-      eventmachine (>= 0.12.9)
-      http_parser.rb (~> 0.6.0)
     erubis (2.7.0)
     eventmachine (1.0.3)
     exception_notification (4.0.1)
@@ -112,7 +106,6 @@ GEM
     execjs (2.2.2)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
-    ffi (1.9.6)
     fog (1.24.0)
       fog-brightbox
       fog-core (~> 1.23)
@@ -151,38 +144,20 @@ GEM
     font-awesome-rails (4.2.0.0)
       railties (>= 3.2, < 5.0)
     formatador (0.2.5)
-    guard (2.6.1)
-      formatador (>= 0.2.4)
-      listen (~> 2.7)
-      lumberjack (~> 1.0)
-      pry (>= 0.9.12)
-      thor (>= 0.18.1)
-    guard-livereload (2.3.1)
-      em-websocket (~> 0.5)
-      guard (~> 2.0)
-      multi_json (~> 1.8)
     haml (4.0.5)
       tilt
     hashie (3.3.1)
     hike (1.2.3)
-    hitimes (1.2.2)
-    http_parser.rb (0.6.0)
     i18n (0.6.11)
     inflecto (0.0.2)
     ipaddress (0.8.0)
     json (1.8.1)
     jwt (1.0.0)
     libv8 (3.16.14.7)
-    listen (2.7.11)
-      celluloid (>= 0.15.2)
-      rb-fsevent (>= 0.9.3)
-      rb-inotify (>= 0.9)
-    lumberjack (1.0.9)
     mail (2.6.1)
       mime-types (>= 1.16, < 3)
     mailhopper (0.3.0)
       rails (>= 3.1.0)
-    method_source (0.8.2)
     mime-types (2.4.2)
     mini_portile (0.6.0)
     minitest (5.4.2)
@@ -231,13 +206,7 @@ GEM
     prerender_rails (1.1.1)
       activesupport
       rack
-    pry (0.10.1)
-      coderay (~> 1.1.0)
-      method_source (~> 0.8.1)
-      slop (~> 3.4)
     rack (1.5.2)
-    rack-livereload (0.3.15)
-      rack
     rack-test (0.6.2)
       rack (>= 1.0)
     rails (4.1.6)
@@ -256,9 +225,6 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.3.2)
-    rb-fsevent (0.9.4)
-    rb-inotify (0.9.5)
-      ffi (>= 0.5.0)
     ref (1.0.5)
     request_store (1.1.0)
     ruby-imagespec (0.3.1)
@@ -270,7 +236,6 @@ GEM
       sprockets-rails (~> 2.0)
     sitemap_generator (5.0.5)
       builder
-    slop (3.6.0)
     sprockets (2.11.0)
       hike (~> 1.2)
       multi_json (~> 1.0)
@@ -290,8 +255,6 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.4)
     tilt (1.4.1)
-    timers (4.0.1)
-      hitimes
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     uglifier (2.5.3)
@@ -327,8 +290,6 @@ DEPENDENCIES
   delayed_paperclip
   exception_notification
   font-awesome-rails (~> 4.2.0)
-  guard (>= 2.2.2)
-  guard-livereload
   haml
   mailhopper
   mysql2
@@ -341,9 +302,7 @@ DEPENDENCIES
   paperclip
   paperclip-compression
   prerender_rails
-  rack-livereload
   rails (~> 4)
-  rb-fsevent
   sass-rails (~> 4.0.3)
   sitemap_generator
   sprockets

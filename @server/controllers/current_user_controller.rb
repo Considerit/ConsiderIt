@@ -71,7 +71,7 @@ class CurrentUserController < ApplicationController
           errors.append 'Missing password'
         else
 
-          user = User.find_by_lower_email(params[:email])
+          user = User.where(:registered => true).find_by_email(params[:email].downcase)
 
           if !user || !user.registered
             # note: Returning this error message is a security risk as it
@@ -129,7 +129,7 @@ class CurrentUserController < ApplicationController
       when 'send_password_reset_token' 
         puts("Initiating reset_password")
         has_email = params[:email] && params[:email].strip.length > 0
-        user = has_email && User.find_by_lower_email(params[:email])
+        user = has_email && User.where(:registered => true).find_by_email(params[:email].downcase)
         
         if !user
           # note: returning this is a security risk as it reveals that a
@@ -264,7 +264,7 @@ class CurrentUserController < ApplicationController
 
     # Update their email address.  First, check if they gave us a new address
     email = params[:email]
-    user = User.find_by_email(email)
+    user = User.where(:registered => true).find_by_email(email)
     if !email || email.length == 0
       if trying_to == 'register'
         errors.append 'No email address specified' 
@@ -329,7 +329,7 @@ class CurrentUserController < ApplicationController
     # via google oauth. We'll want to match with the existing user and 
     # set the proper google uid. 
     if !user && access_token.info.email
-      user = User.find_by_lower_email(access_token.info.email)
+      user = User.where(:registered => true).find_by_email(access_token.info.email.downcase)
       if user
         user["#{access_token.provider}_uid".intern] = access_token.uid
         user.save

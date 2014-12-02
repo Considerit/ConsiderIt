@@ -68,7 +68,7 @@ class PageController < ApplicationController
     end
 
     if access_denied
-      render :status => :forbidden, :json => {:access_denied => access_denied}
+      render :json => [{:access_denied => access_denied, :key => "/page/#{page}"}]
     else
       to_dirty.each do |key| 
         dirty_key key

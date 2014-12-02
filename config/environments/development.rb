@@ -31,7 +31,7 @@ ConsiderIt::Application.configure do
   config.action_mailer.delivery_method = :smtp  
 
   # Automatically inject JavaScript needed for LiveReload
-  config.middleware.insert_after(ActionDispatch::Static, Rack::LiveReload)
+  # config.middleware.insert_after(ActionDispatch::Static, Rack::LiveReload)
 
   ActionMailer::Base.smtp_settings = {
     :address              => "smtp.gmail.com",

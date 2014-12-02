@@ -13,10 +13,6 @@ gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
 
 #############
-# AUTHORIZATION
-gem 'cancan' #https://github.com/ryanb/cancan
-
-#############
 # DATABASE & DATABASE MIDDLEWARE
 gem "mysql2"
 gem 'acts_as_tenant' # https://github.com/ErwinM/acts_as_tenant

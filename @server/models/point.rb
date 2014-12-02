@@ -176,4 +176,24 @@ class Point < ActiveRecord::Base
     Point.published.each {|pnt| pnt.recache }
   end
 
+  def can?(action)
+    user = Thread.current[:current_user]
+
+    return true if user.is_admin?
+    
+    if action == :read
+      can?(:update) || (self.published && (self.moderation_status.nil? || self.moderation_status != 0)) || (!self.published && self.user_id.nil?)
+    elsif action == :create
+      self.proposal.active
+    elsif action == :update
+      user.id == self.user_id
+    elsif action == :destroy      
+      can?(:update) && self.inclusions.count < 2
+    else
+      false
+    end
+    
+  end
+
+
 end

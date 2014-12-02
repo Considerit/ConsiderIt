@@ -42,7 +42,7 @@ class SubdomainController < ApplicationController
     authorize! :update, Subdomain
     if subdomain.id != current_subdomain.id #&& !current_user.super_admin
       # for now, don't allow modifying non-current subdomain
-      raise new CanCan::AccessDenied
+      raise new AccessDenied
     end
 
     fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'has_civility_pledge']

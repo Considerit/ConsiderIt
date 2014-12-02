@@ -63,10 +63,10 @@ gem "asset_sync"
 group :development, :test do
   gem 'thin'
   gem 'newrelic_rpm'
-  gem 'guard', '>= 2.2.2',       :require => false
-  gem 'guard-livereload',        :require => false
-  gem 'rack-livereload'
-  gem 'rb-fsevent',              :require => false  #filesystem management for OSX; used by guard
+  # gem 'guard', '>= 2.2.2',       :require => false
+  # gem 'guard-livereload',        :require => false
+  # gem 'rack-livereload'
+  # gem 'rb-fsevent',              :require => false  #filesystem management for OSX; used by guard
 end
 
 group :production do

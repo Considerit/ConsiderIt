@@ -74,15 +74,15 @@ splitParagraphs = (user_content) ->
   user_content = user_content.replace(hyperlink_pattern, "$1(*-&)link:$2(*-&)")
   paragraphs = user_content.split(/(?:\r?\n)/g)
 
-  for para in paragraphs    
-    P null, 
+  for para,idx in paragraphs
+    P key: "para-#{idx}", 
       # now split around all links
-      for text in para.split '(*-&)'
+      for text,idx in para.split '(*-&)'
         if text.substring(0,5) == 'link:'
-          A href: text.substring(5, text.length), target: '_blank',
+          A key: idx, href: text.substring(5, text.length), target: '_blank',
             text.substring(5, text.length)
         else
-          SPAN null, text
+          SPAN key: idx, text
 
 # safari only respects -webkit-transform
 crossbrowserTransformProperty = (props) -> _.extend props,
@@ -1378,7 +1378,7 @@ Point = ReactiveComponent
     select_enticement = []
 
     if needs_expansion_to_see_details
-      select_enticement.push SPAN null,
+      select_enticement.push SPAN key: 1,
         SPAN dangerouslySetInnerHTML: {__html: '&hellip;'}
         ' ('
         A className: 'select_point',
@@ -1386,16 +1386,14 @@ Point = ReactiveComponent
         ')'
 
     if point.comment_count > 0 || !needs_expansion_to_see_details
-      select_enticement.push ' '
-      select_enticement.push SPAN style: {whiteSpace: 'nowrap'},
+      select_enticement.push SPAN key: 2, style: {whiteSpace: 'nowrap'},
         " ("
         A className: 'select_point',
           "#{point.comment_count} comment#{if point.comment_count != 1 then 's' else ''}"
         ")"
 
     if point.assessment
-      select_enticement.push ' '
-      select_enticement.push SPAN null,
+      select_enticement.push SPAN key: 3,
         I(className: 'fa fa-search mini_magnifying_glass', title: 'Click to read a fact-check of this point')
 
 
@@ -2400,7 +2398,7 @@ Auth = ReactiveComponent
               LABEL className: 'third_party_call', 'Instantly:'
               for provider in providers
                 do (provider) =>
-                  BUTTON className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
+                  BUTTON key: provider, className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
                     I className: "fa fa-#{provider}"
                     SPAN null, provider
 
@@ -2920,17 +2918,20 @@ ProfileLink = ReactiveComponent
 
             if current_user.is_admin
               [A 
+                key: 'import_data'
                 className: 'menu_link'
                 href: '/dashboard/import_data'
                 onClick: clickInternalLink                
                 'Import Data'
 
               A 
+                key: 'application'
                 className: 'menu_link'
                 href: '/dashboard/application'
                 onClick: clickInternalLink                
                 'App Settings'
               A 
+                key: 'roles'              
                 className: 'menu_link'
                 href: '/dashboard/roles'
                 onClick: clickInternalLink                

@@ -7,21 +7,36 @@ task_area_section_style = {margin: '10px 0px 20px 0px', position: 'relative'}
 task_area_style = {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor: '#F4F0E9', position: 'absolute', left: CONTENT_WIDTH/4, top: -35, borderRadius: 8}
 
 
-
+####
+# AccessControlled
+#
+# Mixin that implements a check for whether this user can access
+# the component (that this is mixed into). 
+#
+# The server has to respond with
+# a keyed object w/ access_denied set for the component's key 
+# for this mixin to be useful.
+#
+# Note that the component needs to explicitly call the accessGranted method
+# in its render function. 
+#
 AccessControlled = 
   accessGranted: -> 
     current_user = fetch '/current_user'
 
     ####
     # HACK: Clear out statebus if current_user changed. See comment below.
+    local_but_not_component_unique = fetch "local-#{@props.key}"
     access_attrs = ['verified', 'logged_in', 'email']
-    if @_last_current_user
+    if local_but_not_component_unique._last_current_user && @data().access_denied 
       reduced_user = _.map access_attrs, (attr) -> current_user[attr] 
       for el,idx in reduced_user
-        if el != @_last_current_user[idx]
+        if el != local_but_not_component_unique._last_current_user[idx]
+          delete @data().access_denied
           arest.serverFetch @props.key
           break
     ####
+
 
     if @data().access_denied 
       # Let's recover, depending on the recourse the server dictates
@@ -54,7 +69,8 @@ AccessControlled =
       # changes (i.e. when the user might be able to access), we'll issue a server
       # fetch on the page.
       #
-      @_last_current_user = _.map access_attrs, (attr) -> current_user[attr] 
+      local_but_not_component_unique._last_current_user = _.map access_attrs, (attr) -> current_user[attr] 
+      save local_but_not_component_unique
       #
       # This hack will be unnecessary by having a server that pushes out changes to 
       # subscribed keys. In that world, the server logs a dependency for a client 
@@ -901,7 +917,7 @@ FactcheckPoint = ReactiveComponent
           H1 style: task_area_header_style, 'Fact check requests'
           DIV style: {}, 
             for request in assessment.requests
-              DIV className: 'comment_entry',
+              DIV className: 'comment_entry', key: request.key,
 
                 Avatar
                   className: 'comment_entry_avatar'
@@ -936,7 +952,7 @@ FactcheckPoint = ReactiveComponent
               else 
 
                 verdict = fetch(claim.verdict)
-                DIV style: {marginLeft: 73, marginBottom: 18, position: 'relative'}, 
+                DIV key: claim.key, style: {marginLeft: 73, marginBottom: 18, position: 'relative'}, 
                   IMG style: {position: 'absolute', width: 50, left: -73}, src: verdict.icon
 
                   DIV style: {fontSize: 18}, claim.claim_restatement

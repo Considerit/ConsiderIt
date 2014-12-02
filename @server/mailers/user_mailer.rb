@@ -24,20 +24,22 @@ class UserMailer < Mailer
     mail(:from => from, :to => to, :subject => "[#{current_subdomain.app_title}] #{subject}")
   end
 
-  def invitation(inviter, invitee, invitation_obj, action, current_subdomain)
+  def invitation(inviter, invitee, invitation_obj, action, current_subdomain, message = nil)
     @user = invitee
+    @inviter = inviter
     @subdomain = current_subdomain
     @invitation_obj = invitation_obj
     @action = action
+    @message = message
 
-    to = format_email user.email, user.name    
-    from = format_email(inviter, inviter.name)
+    to = format_email invitee.email, invitee.name    
+    from = format_email(inviter.email, inviter.name)
 
-    case invitation_obj.class
+    case invitation_obj.class.to_s
 
-    when Subdomain
+    when 'Subdomain'
       subject = "#{inviter.name} invites you to #{action} at #{invitation_obj.app_title}"
-    when Proposal
+    when 'Proposal'
       subject = "#{inviter.name} invites you to #{action} at '#{invitation_obj.name}'"
     end
 

@@ -4,6 +4,23 @@ require 'digest/md5'
 # http://consider.it homepage. 
 ENABLE_HOMEPAGE_IN_DEV = false
 
+# Adapted from CanCan
+class AccessDenied < StandardError
+  attr_reader :action, :subject
+  attr_writer :default_message
+
+  def initialize(message = nil, action = nil, subject = nil)
+    @message = message
+    @action = action
+    @subject = subject
+    @default_message = I18n.t(:"unauthorized.default", :default => "You are not authorized to access this page.")
+  end
+
+  def to_s
+    @message || @default_message
+  end
+end
+
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   skip_before_action :verify_authenticity_token, if: :csrf_skippable?
@@ -12,7 +29,7 @@ class ApplicationController < ActionController::Base
   prepend_before_action :get_current_subdomain
   before_action :init_thread_globals
 
-  rescue_from CanCan::AccessDenied do |exception|
+  rescue_from AccessDenied do |exception|
     render :json => { :errors => [current_user.nil? ? 'not logged in' : 'not authorized'] } 
     return
   end
@@ -35,8 +52,10 @@ class ApplicationController < ActionController::Base
 
   end
 
-  def current_ability
-    @current_ability ||= Ability.new(current_user)
+  def authorize!(action, model_or_object)
+    if !model_or_object.can?(action) 
+      raise new AccessError
+    end
   end
 
 protected
@@ -86,15 +105,15 @@ protected
     Thread.current[:dirtied_keys] = {}
     Thread.current[:subdomain] = current_subdomain
 
-    puts("In before: is there a current user? '#{session[:current_user_id2]}'")
+    puts("In before: is there a current user? '#{session[:current_user_id]}'")
     # First, reset the thread's current_user values from the session
-    Thread.current[:current_user_id2] = session[:current_user_id2]
-    Thread.current[:current_user2] = nil
+    Thread.current[:current_user_id] = session[:current_user_id]
+    Thread.current[:current_user] = nil
     # Now let's see if they work
     if !current_user()
       # If not, let's make a new one, which will replace the old
       # values in the session and thread
-      puts("That current_user '#{session[:current_user_id2]}' is bad. Making a new one.")
+      puts("That current_user '#{session[:current_user_id]}' is bad. Making a new one.")
       new_current_user
     end
 
@@ -117,9 +136,9 @@ protected
     ## important in it
 
     puts("Setting current user to #{user.id}")
-    session[:current_user_id2] = user.id
-    Thread.current[:current_user_id2] = user.id
-    Thread.current[:current_user2]    = user
+    session[:current_user_id] = user.id
+    Thread.current[:current_user_id] = user.id
+    Thread.current[:current_user]    = user
   end
 
   def compile_dirty_objects
@@ -284,3 +303,8 @@ protected
   end
 
 end
+
+
+
+
+

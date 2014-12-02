@@ -9,7 +9,7 @@ class ProposalController < ApplicationController
 
   def show
     proposal = Proposal.find_by_id(params[:id]) || Proposal.find_by_slug(params[:id])
-    if !proposal || cannot?(:read, proposal)
+    if !proposal || !proposal.can?(:read)
       render :json => { errors: ["not found"] }, :status => :not_found
       return 
     end
@@ -65,7 +65,7 @@ class ProposalController < ApplicationController
       end
     end
 
-    if can?(:update, proposal)
+    if proposal.can?(:update)
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage']
       updated_fields = params.select{|k,v| fields.include? k}
       proposal.update_attributes! updated_fields

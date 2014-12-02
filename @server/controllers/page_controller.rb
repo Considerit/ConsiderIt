@@ -15,15 +15,15 @@ class PageController < ApplicationController
 
       case page
       when 'dashboard/assessment'
-        if cannot? :index, Assessment
+        if !Assessment.can?(:access)
           access_denied = 'login required'
         end
       when 'dashboard/moderate'
-        if cannot? :index, Moderation
+        if !Moderation.can?(:access)
           access_denied = 'login required'
         end
       when 'dashboard/create_subdomain'
-        if cannot? :create, Subdomain
+        if !Subdomain.can?(:create)
           access_denied = 'login required'
         end
       when 'dashboard/import_data'
@@ -31,7 +31,7 @@ class PageController < ApplicationController
           access_denied = 'login required'
         end
       when 'dashboard/application', 'dashboard/roles'
-        if cannot? :update, Subdomain
+        if !current_subdomain.can?(:update)
           access_denied = 'login required'
         end
       else
@@ -55,7 +55,7 @@ class PageController < ApplicationController
         return
       end
 
-      if cannot? :read, proposal
+      if !proposal.can?(:read)
         # TODO: get real reason
         access_denied = 'login required'
       end

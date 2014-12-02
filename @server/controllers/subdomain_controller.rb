@@ -2,14 +2,6 @@ class SubdomainController < ApplicationController
   respond_to :json
   skip_before_action :verify_authenticity_token, :only => :update_images_hack
 
-  rescue_from CanCan::AccessDenied do |exception|
-    result = {
-      :errors => [current_user.nil? ? 'not logged in' : 'not authorized']
-    }
-    render :json => result 
-    return
-  end
-
   def new
     render :json => []
   end

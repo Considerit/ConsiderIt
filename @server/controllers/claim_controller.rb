@@ -1,14 +1,6 @@
 class ClaimController < ApplicationController  
   respond_to :json
 
-  rescue_from CanCan::AccessDenied do |exception|
-    result = {
-      :errors => [current_user.nil? ? 'not logged in' : 'not authorized']
-    }
-    render :json => result 
-    return
-  end
-
   def show 
     dirty_key "/claim/#{params[:id]}"
     render :json => []

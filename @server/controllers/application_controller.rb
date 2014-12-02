@@ -12,14 +12,15 @@ class ApplicationController < ActionController::Base
   prepend_before_action :get_current_subdomain
   before_action :init_thread_globals
 
+  rescue_from CanCan::AccessDenied do |exception|
+    render :json => { :errors => [current_user.nil? ? 'not logged in' : 'not authorized'] } 
+    return
+  end
+
   def render(*args)
-    if !current_subdomain
-      super 
-      return
-    end
 
     # if there are dirtied keys, we'll append the corresponding data to the response
-    if Thread.current[:dirtied_keys].keys.length > 0
+    if current_subdomain && Thread.current[:dirtied_keys].keys.length > 0
       for arg in args
         if arg.is_a?(::Hash) && arg.has_key?(:json)
           if arg[:json].is_a?(::Hash)
@@ -35,7 +36,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_ability
-    @current_ability ||= Ability.new(current_user, current_subdomain, request.session_options[:id], session, params)
+    @current_ability ||= Ability.new(current_user)
   end
 
 protected

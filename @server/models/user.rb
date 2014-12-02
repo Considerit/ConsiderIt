@@ -216,14 +216,6 @@ class User < ActiveRecord::Base
 
   end
 
-  def self.find_by_lower_email(email)
-    if email       
-      find_by_email email.downcase
-    else
-      nil
-    end
-  end
-
 
   def key
     "/user/#{self.id}"

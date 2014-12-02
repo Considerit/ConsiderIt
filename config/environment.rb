@@ -39,7 +39,6 @@ def key_id(object_or_key)
 end
 
 def dirty_key(key)
-  pp "DIRTYING #{key}"
   if Thread.current[:dirtied_keys]
     Thread.current[:dirtied_keys][key] = 1
   end

@@ -6,8 +6,6 @@ class PageController < ApplicationController
 
     to_dirty = []
     access_denied = nil
-
-    pp page
     
     if page == 'homepage'
       to_dirty.append '/page/homepage'

@@ -3089,8 +3089,6 @@ EditProposal = ReactiveComponent
     active = $el.find('#open_for_discussion:checked').length > 0
     hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0
 
-
-
     if @props.fresh
       proposal =
         key : '/new/proposal'
@@ -3119,7 +3117,6 @@ EditProposal = ReactiveComponent
           html: $el.find("#field-#{idx}-html").val()
 
       proposal.description_fields = JSON.stringify(description_fields)
-      console.log proposal.description_fields, description_fields
 
     save proposal, -> window.app_router.navigate "/#{slug}", {trigger : true}
 

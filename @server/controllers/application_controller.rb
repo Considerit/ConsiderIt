@@ -186,6 +186,9 @@ protected
       elsif key == '/page/dashboard/assessment'
         response.append Assessment.all_for_subdomain
 
+      elsif key.match "/page/dashboard"
+        noop = 1
+
       elsif key.match "/page/"
         # default to proposal 
         slug = key[6..key.length]
@@ -256,7 +259,7 @@ protected
     return current_user if current_user.registered
     return false if !session[:email_token_user]
     u = session[:email_token_user]['u']
-    return User.find_by_email(u)
+    return User.where(:registered => true).find_by_email(u)
   end
 
   # Checks if we have enough information to verify that this user

@@ -276,6 +276,26 @@ class Opinion < ActiveRecord::Base
   end
 
 
+  def can?(action)
+    user = Thread.current[:current_user]
+
+    return true if user.is_admin?
+    
+    if action == :read
+      self.proposal.can?(:read)
+    elsif action == :create
+      true
+    elsif action == :update
+      can?(:read) && (user.id == self.user_id)      
+    elsif action == :destroy      
+      can?(:update)
+    else
+      false
+    end
+    
+  end
+
+
 end
 
 

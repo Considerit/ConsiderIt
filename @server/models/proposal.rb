@@ -242,5 +242,30 @@ class Proposal < ActiveRecord::Base
   end
 
 
+  def can?(action)
+    user = Thread.current[:current_user]
+    
+    if action == :read
+      self.publicity != 0 || (user.registered && self.access_list.downcase.gsub(' ', '').split(',').include?(user.email) )
+    
+    elsif action == :update
+      can?(:read) && (user.is_admin? || (user.registered && user.id == self.user_id))
+
+    elsif action == :destroy
+      can?(:update) && (self.opinions.published.count == 0 || (self.opinions.published.count == 1 && self.opinions.published.first.user_id == user.id))
+    
+    else
+      false
+    end
+    
+  end
+
+  def self.can?(action)
+    if action == :create
+      Thread.current[:current_user].is_admin?
+    else
+      false
+    end
+  end
 
 end

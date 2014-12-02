@@ -77,7 +77,6 @@ GEM
       sass (~> 3.2)
       thor
     builder (3.2.2)
-    cancan (1.6.10)
     chronic (0.10.2)
     climate_control (0.0.3)
       activesupport (>= 3.0)
@@ -280,7 +279,6 @@ DEPENDENCIES
   backup
   bcrypt
   bourbon
-  cancan
   coffee-rails
   daemons
   dalli

@@ -63,4 +63,31 @@ class Comment < ActiveRecord::Base
 
   end
 
+  def self.can?(action)
+    if action == :create
+      Thread.current[:current_user].registered
+    else
+      false
+    end
+  end
+
+  def can?(action)
+    user = Thread.current[:current_user]
+
+    return true if user.is_admin?
+    
+    if action == :read
+      self.point.can?(:read)
+    elsif action == :create
+      Comment.can?(:create)
+    elsif action == :update
+      can?(:read) && (user.id == self.user_id)      
+    elsif action == :destroy      
+      can?(:update)
+    else
+      false
+    end
+    
+  end
+
 end

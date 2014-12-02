@@ -73,8 +73,8 @@ class User < ActiveRecord::Base
       tags: JSON.parse(tags) || {},
       is_super_admin: self.super_admin,
       is_admin: is_admin?,
-      is_moderator: has_any_role?([:admin, :superadmin, :moderator]),
-      is_evaluator: has_any_role?([:admin, :superadmin, :evaluator]),
+      is_moderator: Moderation.can?(:access),
+      is_evaluator: Assessment.can?(:access),
       trying_to: nil,
       no_email_notifications: no_email_notifications,
       verified: verified

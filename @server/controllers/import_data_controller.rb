@@ -10,7 +10,7 @@ class ImportDataController < ApplicationController
 
   def create
     if !access
-      raise new CanCan::AccessDenied
+      raise new AccessDenied
     end
 
     errors = []

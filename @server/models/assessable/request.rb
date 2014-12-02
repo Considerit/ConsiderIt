@@ -17,4 +17,13 @@ class Assessable::Request < ActiveRecord::Base
     result
   end
 
+
+  def self.can?(action)
+    if action == :create
+      Thread.current[:current_user].registered
+    else
+      false
+    end
+  end
+
 end

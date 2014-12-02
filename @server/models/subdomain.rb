@@ -107,4 +107,17 @@ class Subdomain < ActiveRecord::Base
 
   end
 
+
+  def can?(action)
+    Thread.current[:current_user].is_admin?
+  end
+
+  def self.can?(action)
+    if action == :create
+      Thread.current[:current_user].registered
+    else
+      false
+    end
+  end
+
 end

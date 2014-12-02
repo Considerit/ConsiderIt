@@ -126,14 +126,20 @@ protected
     # current opinion's proposal if the current opinion is dirty.
 
     response = []
+    processed = {}
 
     # Include the user object too, if we haven't already when fetching /current_user
     if Thread.current[:dirtied_keys].has_key?('/current_user') && !Thread.current[:dirtied_keys].has_key?("/user/#{current_user.id}")
       dirty_key "/user/#{current_user.id}"
     end
 
-    dirtied_keys = Thread.current[:dirtied_keys].keys
-    for key in Thread.current[:dirtied_keys].keys
+    while Thread.current[:dirtied_keys].keys.length > 0
+
+      key = Thread.current[:dirtied_keys].keys[0]
+      Thread.current[:dirtied_keys].delete key
+
+      next if processed.has_key?(key)
+      processed[key] = 1
 
       # Grab dirtied points, opinions, and users
       for type in [Point, Opinion, User, Comment, Moderation]

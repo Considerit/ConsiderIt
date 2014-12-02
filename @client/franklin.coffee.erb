@@ -335,8 +335,8 @@ Proposal = ReactiveComponent
                 else
                   @renderDescriptionField item
 
-          if current_user.is_admin
-            A style: {opacity: '.1'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
+          if current_user.is_admin || current_user.user == proposal.user
+            A style: {opacity: '.3'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
 
         #feelings
         DIV className:'feelings_region', style : { width: BODY_WIDTH },
@@ -3090,6 +3090,7 @@ EditProposal = ReactiveComponent
     hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0
 
 
+
     if @props.fresh
       proposal =
         key : '/new/proposal'
@@ -3110,20 +3111,41 @@ EditProposal = ReactiveComponent
         active: active
         hide_on_homepage: hide_on_homepage
 
+    if @local.description_fields
+      description_fields = []
+      for field, idx in @local.description_fields
+        description_fields.push
+          label: $el.find("#field-#{idx}-label").val()
+          html: $el.find("#field-#{idx}-html").val()
+
+      proposal.description_fields = JSON.stringify(description_fields)
+      console.log proposal.description_fields, description_fields
+
     save proposal, -> window.app_router.navigate "/#{slug}", {trigger : true}
 
   render : ->
     user = fetch('/current_user')
+    proposal = @data()
     
-    return DIV null, 'Nothing to see here, move on' if !user.logged_in || !user.is_admin || (!@props.fresh && !@data().slug )
+    return DIV null, 'Nothing to see here, move on' if (proposal.user != user.user && !user.is_admin) || (!@props.fresh && !proposal.slug )
 
     block_style = { width: CONTENT_WIDTH, padding: '2px 8px', marginBottom: 20 }
     input_style = {marginLeft: 18, fontSize: 18, width: CONTENT_WIDTH - 200, padding: '2px 4px'}
     label_style = {verticalAlign: 'top', fontSize: 18, width: 150, display: 'inline-block'}
 
-    DIV style: { width: PAGE_WIDTH, margin: 'auto', padding: '5em 0' },
+    if !@local.description_fields
+      @local.description_fields = $.parseJSON(@data().description_fields) || []
+      if @local.description_fields.length > 0
+        if @local.description_fields[0].group
+          # Right now, we just downgrade group syntax to flat description list syntax
+          # TODO: when editing a proposal, support the proposal description groups syntax (or get rid of it)
+          @local.description_fields = _.flatten(@local.description_fields.map (group) -> group.items)
+
+      save @local
+
+    DIV style: { width: PAGE_WIDTH, margin: 'auto', padding: '3em 0' },
       H1 style: {fontSize: 28, marginBottom: 20},
-        "Top secret create new proposal page. Shhhhh..."
+        "Edit Proposal"
 
       DIV style: block_style,
         LABEL htmlFor:'slug', style: label_style, 'URL'
@@ -3133,7 +3155,7 @@ EditProposal = ReactiveComponent
           pattern:'^.{3,}'
           placeholder:'e.g. consider.it/I_am_the_url. Just letters, numbers, underscores, dashes.'
           required:'required'
-          defaultValue: if @props.fresh then null else @data().slug
+          defaultValue: if @props.fresh then null else proposal.slug
           style: input_style
 
       DIV style: block_style,
@@ -3144,19 +3166,54 @@ EditProposal = ReactiveComponent
           pattern:'^.{3,}'
           placeholder:'Make this super succinct with a <verb> <noun>.'
           required:'required'
-          defaultValue: if @props.fresh then null else @data().name
+          defaultValue: if @props.fresh then null else proposal.name
           style: input_style
 
       DIV style: block_style,
         LABEL htmlFor:'description', style: label_style, 'Description'
-        TEXTAREA 
+        AutoGrowTextArea 
           id:'description'
           name:'description'
           pattern:'^.{3,}'
           placeholder:'Make this good :)'
           required:'required'
-          defaultValue: if @props.fresh then null else @data().description
+          defaultValue: if @props.fresh then null else proposal.description
           style: _.extend {}, input_style, {height: 150}
+
+      DIV style: {marginLeft: 150, marginBottom: 30},
+        DIV null, "Description fields:"
+
+        for field,idx in @local.description_fields
+          DIV key: "field-#{idx}", style: block_style,
+
+            INPUT 
+              style: input_style
+              type: 'text'
+              id:"field-#{idx}-label"
+              name:"field-#{idx}-label"
+              pattern:'^.{3,}'
+              placeholder:'Field name'
+              required:'required'
+              defaultValue: field.label
+
+            AutoGrowTextArea 
+              id:"field-#{idx}-html"
+              name:"field-#{idx}-html"
+              pattern:'^.{3,}'
+              placeholder:'Text that is shown when expanded'
+              required:'required'
+              defaultValue: field.html
+              style: _.extend {}, input_style, {height: 150}
+          #TODO: handle delete field
+
+        SPAN
+          style: {textDecoration: 'underline', cursor: 'pointer'}
+          onClick: => 
+            @local.description_fields.push({label: null, html: null})
+            save @local
+
+          "Add new description field"
+
 
       DIV style: block_style,
         LABEL htmlFor:'cluster', style: label_style, 'Group (optional)'
@@ -3165,7 +3222,7 @@ EditProposal = ReactiveComponent
           name:'cluster'
           pattern:'^.{3,}'
           placeholder:'The group to which this proposal belongs, if any.'
-          defaultValue: if @props.fresh then null else @data().cluster
+          defaultValue: if @props.fresh then null else proposal.cluster
           style: input_style
 
       DIV style: block_style,
@@ -3173,7 +3230,7 @@ EditProposal = ReactiveComponent
           id: 'listed_on_homepage'
           name: 'listed_on_homepage'
           type: 'checkbox'
-          defaultChecked: if @props.fresh then true else !@data().hide_on_homepage
+          defaultChecked: if @props.fresh then true else !proposal.hide_on_homepage
         LABEL htmlFor: 'listed_on_homepage', 'List on homepage'
 
       DIV style: block_style,
@@ -3181,7 +3238,7 @@ EditProposal = ReactiveComponent
           id: 'open_for_discussion'
           name: 'open_for_discussion'
           type: 'checkbox'
-          defaultChecked: if @props.fresh then true else @data().active
+          defaultChecked: if @props.fresh then true else proposal.active
         LABEL htmlFor: 'open_for_discussion', 'Open for discussion'
 
       DIV null,

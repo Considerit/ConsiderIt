@@ -6,6 +6,7 @@
     function fetch(url, defaults) {
         //if (window.watch && watch(url)) console.trace()
 
+        if (!url) return null
         if (url.key) url = url.key   // If user passes key as object
 
         window.record_dependence && record_dependence(url)

@@ -1,0 +1,20 @@
+Hi #{@user.first_name}, 
+= "\r\n"
+
+#{@inviter.name} invites you to #{@action}
+- if @invitation_obj.class.to_s == "Proposal"
+  = full_link(@invitation_obj.slug)
+- elsif @invitation_obj.class.to_s == "Subdomain"
+  = full_link('')
+
+= "\r\n"
+
+- if @message
+  #{@inviter.first_name} says: 
+
+  = @message
+
+= "\r\n"
+
+---
+If you feel that you’re receiving this email in error, please contact admin@consider.it.

@@ -105,7 +105,7 @@ protected
     Thread.current[:dirtied_keys] = {}
     Thread.current[:subdomain] = current_subdomain
 
-    puts("In before: is there a current user? '#{session[:current_user_id]}'")
+    # puts("In before: is there a current user? '#{session[:current_user_id]}'")
     # First, reset the thread's current_user values from the session
     Thread.current[:current_user_id] = session[:current_user_id]
     Thread.current[:current_user] = nil
@@ -141,6 +141,23 @@ protected
     Thread.current[:current_user]    = user
   end
 
+  def replace_user(old_user, new_user)
+    return if old_user.id == new_user.id
+
+    new_user.absorb(old_user)
+
+    # puts("Deleting old user #{old_user.id}")
+    if current_user.id == old_user.id
+      # puts("Signing out of #{current_user.id} before we delete it")
+
+      # Travis: should we be signing in new_user here? Everytime replace_user is
+      #         called, sign_in follows
+    end
+    old_user.destroy()
+
+    # puts("Done replacing. current_user=#{current_user}")
+  end
+  
   def compile_dirty_objects
     # Right now this works for points, opinions, proposals, and the
     # current opinion's proposal if the current opinion is dirty.

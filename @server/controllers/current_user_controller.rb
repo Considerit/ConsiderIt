@@ -33,11 +33,11 @@ class CurrentUserController < ApplicationController
 
     case trying_to
 
-      when 'register'
+      when 'register', 'register-after-invite'
 
         update_user_attrs 'register', errors
         try_update_password 'register', errors 
-        if !current_user.registered
+        if !current_user.registered || trying_to == 'register-after-invite'
           third_party_authenticated = current_user.twitter_uid || current_user.facebook_uid\
                                       || current_user.google_uid
           has_name = current_user.name && current_user.name.length > 0
@@ -54,12 +54,12 @@ class CurrentUserController < ApplicationController
             current_user.add_to_active_in
             log('registered account')
 
-
           else
             errors.append("Password needs to be at least #{@min_pass} letters") if !ok_password
             errors.append('Name is blank') if !has_name
             errors.append('Community pledge required') if !signed_pledge
           end
+
         end
 
       when 'login'
@@ -431,22 +431,7 @@ class CurrentUserController < ApplicationController
       "</script>"
   end
 
-  def replace_user(old_user, new_user)
-    return if old_user.id == new_user.id
 
-    new_user.absorb(old_user)
-
-    # puts("Deleting old user #{old_user.id}")
-    if current_user.id == old_user.id
-      # puts("Signing out of #{current_user.id} before we delete it")
-
-      # Travis: should we be signing in new_user here? Everytime replace_user is
-      #         called, sign_in follows
-    end
-    old_user.destroy()
-
-    # puts("Done replacing. current_user=#{current_user}")
-  end
 
   # Omniauth oauth handlers
   def facebook

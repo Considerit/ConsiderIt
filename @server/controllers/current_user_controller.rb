@@ -23,12 +23,12 @@ class CurrentUserController < ApplicationController
       trying_to = params[:trying_to]
     end
 
-    puts("")
-    puts("--------------------------------")
-    puts("----Start UPDATE CURRENT USER---")
-    puts("  with current_user=#{current_user.id}")
-    puts("  trying to #{params[:trying_to]}")
-    puts("")
+    # puts("")
+    # puts("--------------------------------")
+    # puts("----Start UPDATE CURRENT USER---")
+    # puts("  with current_user=#{current_user.id}")
+    # puts("  trying to #{params[:trying_to]}")
+    # puts("")
 
 
     case trying_to
@@ -63,7 +63,7 @@ class CurrentUserController < ApplicationController
         end
 
       when 'login'
-        puts("Signing in by email and password")
+        # puts("Signing in by email and password")
 
         if !params[:email] || params[:email].length == 0
           errors.append 'Missing email'
@@ -93,16 +93,16 @@ class CurrentUserController < ApplicationController
               dirty_key '/users'
             end
 
-            puts("Now current is #{current_user && current_user.id}")
+            # puts("Now current is #{current_user && current_user.id}")
             log('sign in by email')
           end
         end
       when 'login_via_reset_password_token'
 
-        puts("Signing in by password reset.  min_pass is #{@min_pass}")
+        # puts("Signing in by password reset.  min_pass is #{@min_pass}")
         has_password = params[:password] && params[:password].length >= @min_pass
         if !has_password
-          puts("They need to provide a longer password. Bailing.")
+          # puts("They need to provide a longer password. Bailing.")
           errors.append "Please make a new password at least #{@min_pass} letters long"
 
         else 
@@ -113,7 +113,7 @@ class CurrentUserController < ApplicationController
                                                   'reset_password_token',
                                                   params[:verification_code])
           user = User.where(reset_password_token: encoded_token).first
-          puts("We found user #{user} with a password reset token")
+          # puts("We found user #{user} with a password reset token")
           
           if user
             replace_user(current_user, user)
@@ -127,7 +127,7 @@ class CurrentUserController < ApplicationController
         end
 
       when 'send_password_reset_token' 
-        puts("Initiating reset_password")
+        # puts("Initiating reset_password")
         has_email = params[:email] && params[:email].strip.length > 0
         user = has_email && User.find_by_email(params[:email].downcase)
         
@@ -136,7 +136,7 @@ class CurrentUserController < ApplicationController
           #       particular email address exists in the system or not.
           #       But it's prolly the right tradeoff.
           errors.append "We have no account for that email address."
-          puts("Errors are #{errors}")
+          # puts("Errors are #{errors}")
         else 
           # This algorithm is adapted from devise
 
@@ -163,7 +163,7 @@ class CurrentUserController < ApplicationController
 
       when 'logout'
         if current_user && current_user.logged_in? && params[:logged_in] == false
-          puts("Logging out.")
+          # puts("Logging out.")
           dirty_key '/page/homepage'
           dirty_key '/proposals'
           new_current_user()
@@ -214,9 +214,9 @@ class CurrentUserController < ApplicationController
 
     render :json => [response]
 
-    puts("")
-    puts("----End UPDATE CURRENT USER---")
-    puts("------------------------------")
+    # puts("")
+    # puts("----End UPDATE CURRENT USER---")
+    # puts("------------------------------")
 
   end
 
@@ -252,7 +252,7 @@ class CurrentUserController < ApplicationController
     new_params[:tags] = JSON.dump(new_params[:tags]) if new_params[:tags]
 
     if current_user.update_attributes(new_params)
-      puts("Updating params. #{new_params}")
+      # puts("Updating params. #{new_params}")
       if !current_user.save
         raise 'Error saving basic current_user parameters!'
       end
@@ -276,7 +276,7 @@ class CurrentUserController < ApplicationController
     elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
       errors.append 'Bad email address'
     elsif current_user.email != email
-      puts("Updating email from #{current_user.email} to #{params[:email]}")
+      # puts("Updating email from #{current_user.email} to #{params[:email]}")
       # Okay, here comes a new email address!
       current_user.update_attributes({:email => email, :verified => false})
       if !current_user.save
@@ -294,7 +294,7 @@ class CurrentUserController < ApplicationController
     elsif params[:password].length < @min_pass
       errors.append 'Password is too short'
     else
-      puts("Changing user's password.")
+      # puts("Changing user's password.")
       current_user.password = params[:password]
       if !current_user.save
         raise "Error saving this user's password"
@@ -436,16 +436,16 @@ class CurrentUserController < ApplicationController
 
     new_user.absorb(old_user)
 
-    puts("Deleting old user #{old_user.id}")
+    # puts("Deleting old user #{old_user.id}")
     if current_user.id == old_user.id
-      puts("Signing out of #{current_user.id} before we delete it")
+      # puts("Signing out of #{current_user.id} before we delete it")
 
       # Travis: should we be signing in new_user here? Everytime replace_user is
       #         called, sign_in follows
     end
     old_user.destroy()
 
-    puts("Done replacing. current_user=#{current_user}")
+    # puts("Done replacing. current_user=#{current_user}")
   end
 
   # Omniauth oauth handlers

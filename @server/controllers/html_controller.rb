@@ -1,5 +1,6 @@
 class HtmlController < ApplicationController
   respond_to :html
+  before_action :process_query_parameters_from_email
 
   def index
 
@@ -19,14 +20,6 @@ class HtmlController < ApplicationController
       current_subdomain.save
     end
 
-    # Query parameters from an email link.    
-    # Store query parameters important for access control for email notifications
-    if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
-      session[:email_token_user] = {'u' => params['u'], 't' => params['t']}
-      
-      # Verify whether this user controls this account
-      verify_user_email_if_possible
-    end
 
     if !session.has_key?(:search_bot)
       #session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || (request.user_agent && !!request.user_agent.match('Prerender'))
@@ -81,8 +74,29 @@ class HtmlController < ApplicationController
     render "layouts/testmike", :layout => false
   end
 
-
   private
+
+  # Query parameters from an email link.    
+  # Store query parameters important for access control for email notifications
+  # Log user in if possible.
+  def process_query_parameters_from_email
+    if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
+      session[:email_token_user] = {'u' => params['u'], 't' => params['t']}
+
+      # Try to login if valid tokens. 
+      # This is dangerous, so we'll only allow it once per token
+      target_user = user_via_token()
+      if target_user && is_valid_token() && !current_user.registered && current_user.email != params['u']
+        replace_user(current_user, target_user)
+        set_current_user(target_user)
+        current_user.add_token()
+        dirty_key('/current_user')
+      end
+
+      # Try to verify this user's control of the email address
+      verify_user_email_if_possible
+    end
+  end
 
   #### Set meta tag info ####
   # Hardcoded for now. 

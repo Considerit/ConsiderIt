@@ -20,27 +20,10 @@ class HtmlController < ApplicationController
       current_subdomain.save
     end
 
-
     if !session.has_key?(:search_bot)
-      #session[:search_bot] = !!request.fullpath.match('_escaped_fragment_') || (request.user_agent && !!request.user_agent.match('Prerender'))
       session[:search_bot] = !!request.fullpath.match('_escaped_fragment_')  \
-                             || !request.user_agent #\
-                             #|| !!request.user_agent.match('Prerender') \
-                             #|| !!request.user_agent.match(/\(.*https?:\/\/.*\)/) #http://stackoverflow.com/questions/5882264/ruby-on-rails-how-to-determine-if-a-request-was-made-by-a-robot-or-search-engin
+                             || !request.user_agent
     end
-
-    # Some subdomains don't have a homepage. In the iterim, let's just redirect 
-    # accesses to the homepage to the latest published proposal
-    # TODO: better way of knowing if a particular subdomain has a homepage or not.
-    # if current_subdomain.name == 'cityoftigard' && request.path == '/' && request.query_string == "" && !session[:search_bot]
-    #   proposal = current_subdomain.proposals.open_to_public.active.last
-    #   if proposal
-    #     redirect_to "/#{proposal.slug}"
-    #   else
-    #     render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
-    #   end
-    #   return
-    # end
     
     # used by the layout
     @meta, @page, @title = get_meta_data()

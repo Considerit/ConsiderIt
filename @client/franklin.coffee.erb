@@ -3373,6 +3373,7 @@ Computer = ReactiveComponent
       opinion.published = true
       save(opinion)
 
+    # users following an email invitation need to complete registration (name + password)
     if current_user.needs_to_set_password
       @root.auth_mode = 'register-after-invite'
       @root.auth_reason = 'complete registration'

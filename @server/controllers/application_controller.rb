@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
   before_action :init_thread_globals
 
   rescue_from AccessDenied do |exception|
-    render :json => { :errors => [current_user.nil? ? 'not logged in' : 'not authorized'] } 
+    render :json => { :errors => [!current_user.registered ? 'not logged in' : 'not authorized'] } 
     return
   end
 

@@ -87,7 +87,7 @@ ConsiderIt::Application.routes.draw do
   get 'user_avatar_hack' => 'current_user#user_avatar_hack'
   match 'update_user_avatar_hack' => 'current_user#update_user_avatar_hack', :via => [:put]
 
-  get "/dashboard/email_notifications" => 'followable#index'
+  get "/dashboard/email_notifications" => 'notification#index'
 
   post "/dashboard/import_data" => 'import_data#create'
 

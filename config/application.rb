@@ -66,16 +66,16 @@ module ConsiderIt
     config.paths["app/controllers"] << "@server/controllers"
     config.paths["app/models"] << "@server/models"
     config.paths["app/views"] << "@server/views"
-    config.paths["app/views"] << "_old@client/templates"
-    config.paths["app/mailers"] << "@server/mailers"
-    config.paths["app/helpers"] << "@server/helpers"
+    config.paths["app/views"] << "@server/emails/views"    
+    config.paths["app/mailers"] << "@server/emails/mailers"
+    config.paths["app/helpers"] << "@server/emails/helpers"
 
     config.paths["app/controllers/concerns"] << "@server/controllers/concerns"
     config.paths["app/models/concerns"] << "@server/models/concerns"
 
     config.paths["lib/tasks"] << "test"
 
-    config.paths["config/initializers"] << "@server/notifications"
+    config.paths["config/initializers"] << "@server/emails/notifications"
 
     asset_paths = ["@client", "@client/assets"]
     for asset_path in asset_paths
@@ -83,7 +83,7 @@ module ConsiderIt
         config.assets.paths << Rails.root.join(asset_path)
     end
 
-    config.action_mailer.preview_path = "#{Rails.root}/@server/mailers/previews"
+    config.action_mailer.preview_path = "#{Rails.root}/@server/emails/mailers/previews"
     ########################################
 
 

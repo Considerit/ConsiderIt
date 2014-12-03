@@ -62,12 +62,10 @@ class User < ActiveRecord::Base
       csrf: form_authenticity_token,
       avatar_remote_url: avatar_remote_url,
       url: url,
-      bio: bio,
       twitter_uid: twitter_uid,
       facebook_uid: facebook_uid,
       google_uid: google_uid,
       name: name,
-      reset_my_password: false,
       reset_password_token: nil,
       b64_thumbnail: b64_thumbnail,
       tags: JSON.parse(tags) || {},
@@ -77,7 +75,8 @@ class User < ActiveRecord::Base
       is_evaluator: Assessment.can?(:access),
       trying_to: nil,
       no_email_notifications: no_email_notifications,
-      verified: verified
+      verified: verified,
+      needs_to_set_password: registered && !name #happens for users that were created via email invitation
     }
 
     data

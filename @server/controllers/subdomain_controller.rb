@@ -69,6 +69,7 @@ class SubdomainController < ApplicationController
                   # create a new user to send an invite too...
                   invitee = User.create!({
                     :email => user_or_email,
+                    :registered => true,
                     :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
                   })
                 end

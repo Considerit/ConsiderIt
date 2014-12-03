@@ -2366,9 +2366,7 @@ Auth = ReactiveComponent
           margin: 'auto'
           position: 'relative'
           display: 'block'
-          #left: '50%'
           width: DECISION_BOARD_WIDTH
-          #marginLeft: -DECISION_BOARD_WIDTH / 2        
         onClick: (e) => e.stopPropagation()
 
         if @root.auth_mode != 'update'
@@ -2467,7 +2465,7 @@ Auth = ReactiveComponent
                   TD className: 'field_cell', 
                     name_input_field
 
-                if third_party_authenticated 
+                if third_party_authenticated
                   p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
                   TR null, 
 
@@ -2488,7 +2486,10 @@ Auth = ReactiveComponent
                     TD className: 'field_cell', 
                       if !Modernizr.input.placeholder
                         LABEL htmlFor: 'user_email', 'Email:'
-                      email_input_field,
+                      if root.auth_mode == 'register-after-invite'
+                        current_user.email
+                      else
+                        email_input_field
 
                       if !Modernizr.input.placeholder
                         LABEL htmlFor: 'user_password', 'Password:'
@@ -2564,6 +2565,8 @@ Auth = ReactiveComponent
             onClick: @submitAuth
             if root.auth_mode == 'register'
               'Create account' 
+            else if root.auth_mode == 'register-after-invite'
+              'Complete registration'
             else if root.auth_mode == 'update'
               'Update'
             else 
@@ -3370,7 +3373,12 @@ Computer = ReactiveComponent
       opinion.published = true
       save(opinion)
 
-    return SPAN null, ''
+    if current_user.needs_to_set_password
+      @root.auth_mode = 'register-after-invite'
+      @root.auth_reason = 'complete registration'
+      save @root
+
+    SPAN null
 
 
 Page = ReactiveComponent

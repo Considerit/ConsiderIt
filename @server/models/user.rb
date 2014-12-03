@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
 
   before_validation :download_remote_image, :if => :avatar_url_provided?
   before_save do 
-    self.email.downcase! if self.email
+    self.email = self.email.downcase if self.email
 
     self.name = self.name.sanitize if self.name   
     self.bio = self.bio.sanitize if self.bio

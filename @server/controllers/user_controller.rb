@@ -34,7 +34,12 @@ class UserController < ApplicationController
     # don't fetch avatars for search bots
     respond_to do |format|
       @user = User
-      avatars = session[:search_bot] ? '' : render_to_string(:partial => 'user/avatars') 
+
+      avatars = ''
+      if !session[:search_bot]
+        users = @user.where("registered=1 AND b64_thumbnail IS NOT NULL AND INSTR(active_in, '\"#{current_subdomain.id}\"')")
+        avatars = users.select([:id,:b64_thumbnail]).map {|user| "#avatar-#{user.id} { background-image: url('#{user.b64_thumbnail}');}"}.join(' ')
+      end
       format.json { 
         render :json => {
           key: '/avatars',

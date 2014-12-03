@@ -72,7 +72,7 @@ class Subdomain < ActiveRecord::Base
 
   def user_roles
     r = JSON.parse(roles || "{}")
-    ['admin', 'moderator', 'evaluator'].each do |role|
+    ['admin', 'moderator', 'evaluator', 'proposers'].each do |role|
       if !r.has_key?(role) || !r[role]
         r[role] = []
       end

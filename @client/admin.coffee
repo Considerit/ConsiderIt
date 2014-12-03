@@ -383,12 +383,11 @@ RolesDash = ReactiveComponent
     subdomain = fetch '/subdomain'
 
     roles = [ 
-      ['admin', 'Admins can access everything.'], 
-      ['moderator', 'Moderators can review user content; they get email notifications when content needs review.']
+      ['admin', 'Administrators', 'Can configure everything related to this site, including all of the below.', 'fa-cog'], 
+      ['moderator', 'Moderators', 'Can moderate user content. Will receive emails for content needing moderation.', 'fa-fire-extinguisher'],
+      ['evaluator', 'Fact checkers', 'Can validate claims. Will receive emails when a fact-check is requested.', 'fa-flag-checkered'] if subdomain.assessment_enabled,
+      #['proposer', 'Proposers', 'Can add new proposals.', 'fa-lightbulb-o']      
     ]
-
-    if subdomain.assessment_enabled
-      roles.push ['evaluator', 'Evaluators review factual claims in pro/con points.']
 
 
     DIV null, 
@@ -396,12 +395,177 @@ RolesDash = ReactiveComponent
       DashHeader name: 'User Roles'
 
       DIV style: {width: CONTENT_WIDTH, margin: 'auto'},
-        for role in roles
-          DIV style: {marginTop: 12},
-            H1 style: {fontSize: 18}, capitalize(role[0])
-            SPAN style: {fontSize: 14}, role[1]
+        for role,idx in roles
+          DIV style: {marginTop: 24}, key: idx,
+            H1 style: {fontSize: 18, position: 'relative'}, 
+              I className: "fa #{role[3]}", style: {position: 'absolute', top: 2, left: -35, fontSize: 24}
+              role[1]
+            
+            SPAN style: {fontSize: 14}, role[2]
 
             PermissionBlock key: role[0]
+        
+        DIV style: {marginLeft: -35, marginTop: 12},
+          Invite roles: roles 
+
+invited_user_style = {display: 'inline-block', padding: '6px 12px', fontWeight: 400, fontSize: 13, backgroundColor: 'rgb(217, 227, 244)', color: 'black', borderRadius: 8, margin: 4}
+
+Invite = ReactiveComponent
+  displayName: 'Invite'
+
+  render: ->
+    subdomain = fetch '/subdomain'
+    users = fetch '/users'
+
+    if !@local.role
+      @local.added = []
+      @local.role = @props.roles[0]
+      save @local
+
+
+    DIV style: {position: 'relative', backgroundColor: '#E7F2FF', padding: '18px 24px'}, 
+      STYLE null, ".invite_menu_item:hover{background-color: #414141; color: white}"
+
+      DIV style: {fontWeight: 500, fontSize: 18, marginBottom: 6, display: 'inline-block'}, 
+        DIV 
+          id: 'select_new_role'
+          style: {backgroundColor: 'rgba(100,100,150,.1)'
+          padding: '8px 12px', borderRadius: 8, cursor: 'pointer'}
+          onClick: =>
+            $(document).on 'click.select_new_role', (e) =>
+              if e.target.id != 'select_new_role'
+                @local.select_new_role = false
+                save(@local)
+                $(document).off('click.select_new_role')
+
+            @local.select_new_role = true
+            save @local 
+          I className: "fa #{@local.role[3]}", style: {displayName: 'inline-block', margin: '0 8px 0 0'} 
+          "Add #{@local.role[1]}"
+          I style: {marginLeft: 8}, className: "fa fa-caret-down"
+
+        if @local.select_new_role
+          UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
+            for role,idx in @props.roles
+              if role[0] != @local.role[0]
+                LI 
+                  className: 'invite_menu_item'
+                  style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
+                  key: idx
+                  onClick: do(role) => (e) => 
+                    @local.role = role
+                    @local.added = []
+                    save @local
+                    e.stopPropagation()
+
+                  I className: "fa #{role[3]}", style: {displayName: 'inline-block', margin: '0 8px 0 0'} 
+                  "Add #{role[1]}"
+
+      if @local.added.length > 0
+        DIV null,
+          for user_key, idx in @local.added
+            
+            SPAN key: user_key, style: invited_user_style, 
+              SPAN null,
+                if user_key && user_key[0] == '/'
+                  user = fetch user_key
+                  if user.name 
+                    user.name 
+                  else 
+                    user.email
+                else
+                  user_key
+              SPAN
+                style: {cursor: 'pointer', marginLeft: 8}
+                onClick: do (user_key, role) => =>
+                  @local.added = _.without @local.added, user_key
+                  save @local
+                'x'
+
+      DIV null,
+        INPUT 
+          id: 'filter'
+          type: 'text'
+          style: {fontSize: 18, width: 500, padding: '3px 6px'}
+          autocomplete: 'off'
+          placeholder: "Name or email..."
+          onChange: (=> @local.filtered = $(@getDOMNode()).find('#filter').val(); save(@local);)
+          onKeyPress: (e) => 
+            # enter key pressed...
+            if e.which == 13
+              e.preventDefault()
+              $filter = $(@getDOMNode()).find('#filter')
+              candidates = $filter.val()
+              $filter.val('')
+              if candidates
+                candidates = candidates.split(',')
+                for candidate_email in candidates
+                  candidate_email = candidate_email.trim()
+                  if candidate_email.indexOf(' ') < 0 && candidate_email.indexOf('@') > 0 && candidate_email.indexOf('.') > 0
+                    @local.added.push candidate_email
+                save @local
+          onFocus: (e) => 
+            @local.selecting = true
+            save(@local)
+            e.stopPropagation()
+            $(document).on 'click.roles', (e) =>
+              if e.target.id != 'filter'
+                @local.selecting = false
+                @local.filtered = null
+                $(@getDOMNode()).find('#filter').val('')
+                save(@local)
+                $(document).off('click.roles')
+            return false
+
+      if @local.selecting
+        UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
+          for user,idx in _.filter(users.users, (u) => subdomain.roles[@local.role[0]].indexOf(u.key) < 0 && @local.added.indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
+            LI 
+              className: 'invite_menu_item'
+              style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
+              key: idx
+
+              onClick: do(user) => (e) => 
+                @local.added.push user.key
+                save @local
+                e.stopPropagation()
+
+              "#{user.name} <#{user.email}>"
+
+      DIV style: {marginTop: 20},
+        INPUT 
+          type: 'checkbox'
+          id: 'send_email_invite'
+          name: 'send_email_invite'
+          onClick: =>
+            @local.send_email_invite = !@local.send_email_invite
+            save @local
+
+        LABEL htmlFor: 'send_email_invite', 'Send email invitation'
+
+        if @local.send_email_invite
+          DIV style: {marginLeft: 20, marginTop: 10},
+            AutoGrowTextArea 
+              id: 'custom_email_message'
+              name: 'custom_email_message'
+              placeholder: '(optional) custom message'
+              style: {width: 500, fontSize: 14, padding: '8px 14px'}
+
+      DIV
+        style: {backgroundColor: considerit_blue, color: 'white', padding: '8px 14px', fontSize: 16, display: 'inline-block', cursor: 'pointer', borderRadius: 8, marginTop: 12}
+        onClick: (e) => 
+
+          subdomain.roles[@local.role[0]] = subdomain.roles[@local.role[0]].concat @local.added
+
+          subdomain.send_email_invite = @local.send_email_invite
+          if @local.send_email_invite
+            subdomain.custom_email_message = $('#custom_email_message').val()              
+          
+          @local.added = []
+
+          save subdomain
+
+        'Done'
 
 
 PermissionBlock = ReactiveComponent
@@ -409,53 +573,31 @@ PermissionBlock = ReactiveComponent
 
   render : -> 
     subdomain = fetch '/subdomain'
-    users = fetch '/users'
     role = @props.key
 
-    DIV null,
+    DIV style: {marginLeft: -4},
       if subdomain.roles[role]
         for user_key in subdomain.roles[role]
           user = fetch user_key
-          SPAN style: {display: 'inline-block', padding: '4px 8px', fontWeight: 400, fontSize: 15, backgroundColor: '#e1e1e1', color: 'black', borderRadius: 16, margin: '4px'}, 
-            if user.name then user.name else user.email
-            I style: {cursor: 'pointer', marginLeft: 8}, className: 'fa fa-close', onClick: do (user_key, role) => =>
-              # remove role
-              subdomain.roles[role] = _.without subdomain.roles[role], user_key
-              save subdomain
+          SPAN key: user_key, style: invited_user_style, 
+            if user_key && user_key[0] == '/'
+              user = fetch user_key
+              if user.name 
+                user.name 
+              else 
+                user.email
+            else
+              user_key
+            SPAN # remove role
+              style: {cursor: 'pointer', marginLeft: 8}
+              onClick: do (user_key, role) => =>
+                subdomain.roles[role] = _.without subdomain.roles[role], user_key
+                save subdomain
+              'x'
+      if !subdomain.roles[role] || subdomain.roles[role].length == 0
+        DIV style: {fontStyle: 'italic', margin: 4}, 'None'
+
       
-      DIV style: {position: 'relative'}, 
-        INPUT 
-          id: 'filter'
-          type: 'text'
-          style: {fontSize: 18, width: 500}
-          autocomplete: 'off'
-          placeholder: "Add #{role}"
-          onChange: (=> @local.filtered = $(@getDOMNode()).find('#filter').val(); save(@local);)
-          onFocus: (e) => 
-            @local.add = true
-            save(@local)
-            e.stopPropagation()
-            $(document).on 'click.roles', (e) =>
-              if e.target.id != 'filter'
-                @local.add = false
-                @local.filtered = null
-                $(@getDOMNode()).find('#filter').val('')
-                save(@local)
-                $(document).off('click.roles')
-            return false
-
-        if @local.add
-          UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
-            for user in _.filter(users.users, (u) => subdomain.roles[role].indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
-              LI 
-                style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
-                onClick: do(user) => (e) => 
-                  # add role
-                  subdomain.roles[role].push user.key
-                  save subdomain
-                  e.stopPropagation()
-
-                "#{user.name} <#{user.email}>"
 
 
 

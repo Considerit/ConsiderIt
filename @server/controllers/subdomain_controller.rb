@@ -39,7 +39,7 @@ class SubdomainController < ApplicationController
 
   def update
     subdomain = Subdomain.find(params[:id])
-    authorize! :update, Subdomain
+    authorize! :update, subdomain
     if subdomain.id != current_subdomain.id #&& !current_user.super_admin
       # for now, don't allow modifying non-current subdomain
       raise new AccessDenied
@@ -47,6 +47,38 @@ class SubdomainController < ApplicationController
 
     fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'has_civility_pledge']
     attrs = params.select{|k,v| fields.include? k}
+
+    if params.has_key?('roles') && params[:send_email_invite]
+      # detect who was added so we can send them an email invite
+      message = nil 
+      if params.has_key?('custom_email_message') && params['custom_email_message'] && params['custom_email_message'].length > 0
+        message = params['custom_email_message']
+      end
+      current_roles = subdomain.user_roles
+      current_roles.keys.each do |role|
+        if params['roles'].has_key?(role)        
+          diff = Set.new(params['roles'][role]) - Set.new(current_roles[role])
+          if diff.length > 0
+            diff.each do |user_or_email|
+              if user_or_email[0] == '/'
+                invitee = User.find(key_id(user_or_email))
+              else 
+                # let's first just check to make sure this user doesn't already have an account... 
+                invitee = User.find_by_email(user_or_email)
+                if !invitee
+                  # create a new user to send an invite too...
+                  invitee = User.create!({
+                    :email => user_or_email,
+                    :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
+                  })
+                end
+              end
+              UserMailer.invitation(current_user, invitee, current_subdomain, role, current_subdomain, message).deliver!
+            end
+          end
+        end
+      end
+    end
 
     serialized_fields = ['roles', 'branding']
     for field in serialized_fields

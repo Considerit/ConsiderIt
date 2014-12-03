@@ -54,7 +54,7 @@ class ApplicationController < ActionController::Base
 
   def authorize!(action, model_or_object)
     if !model_or_object.can?(action) 
-      raise new AccessError
+      raise new AccessDenied
     end
   end
 
@@ -279,7 +279,7 @@ protected
     return current_user if current_user.registered
     return false if !session[:email_token_user]
     u = session[:email_token_user]['u']
-    return User.where(:registered => true).find_by_email(u)
+    return User.find_by_email(u)
   end
 
   # Checks if we have enough information to verify that this user

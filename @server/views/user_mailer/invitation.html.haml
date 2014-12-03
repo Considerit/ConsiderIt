@@ -1,5 +1,6 @@
-%p
-  Hi #{@user.first_name}, 
+- if @user.first_name
+  %p
+    Hi #{@user.first_name}, 
 
 %p
   #{@inviter.name} invites you to #{@action} 

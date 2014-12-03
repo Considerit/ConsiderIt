@@ -62,7 +62,6 @@ notify_point = Proc.new do |data|
       notification_type = 'lurker'
     end
 
-    pp 'Emailing: ', u.email
     EventMailer.new_point(u, point, current_subdomain, notification_type).deliver!
 
   end

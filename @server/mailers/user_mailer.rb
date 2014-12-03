@@ -32,7 +32,10 @@ class UserMailer < Mailer
     @action = action
     @message = message
 
-    to = format_email invitee.email, invitee.name    
+    if invitee.first_name
+      to = format_email invitee.email, invitee.name    
+    end
+
     from = format_email(inviter.email, inviter.name)
 
     case invitation_obj.class.to_s

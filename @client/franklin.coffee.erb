@@ -325,6 +325,7 @@ Proposal = ReactiveComponent
               I className: 'fa fa-info-circle', style: {paddingRight: 7} 
               'Closed to new contributions at this time.'
 
+          # TODO: now that we're accepting user contributed proposals, we need to SANITIZE the description
           DIV className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
 
           if @local.description_fields

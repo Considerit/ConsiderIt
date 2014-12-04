@@ -585,8 +585,7 @@ PermissionBlock = ReactiveComponent
         for user_key in subdomain.roles[role]
           user = fetch user_key
           SPAN key: user_key, style: invited_user_style, 
-            if user_key && user_key[0] == '/'
-              user = fetch user_key
+            if user_key && user_key[0] == '/' && fetch(user_key) && fetch(user_key).name
               SPAN null,
                 if user.avatar_file_name
                   Avatar key: user_key, hide_name: true, style: {width: 20, height: 20, marginRight: 5}

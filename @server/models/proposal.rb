@@ -14,9 +14,6 @@ class Proposal < ActiveRecord::Base
 
   include Followable, Moderatable
   
-  self.moderatable_fields = [:name, :description, :long_description]
-  self.moderatable_objects = lambda { Proposal.where( :published => true) }
-
   class_attribute :my_public_fields, :my_summary_fields
   self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :publicity, :published, :seo_keywords, :seo_title, :seo_description]
 
@@ -30,6 +27,13 @@ class Proposal < ActiveRecord::Base
     # if a subdomain wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
     current_subdomain = Thread.current[:subdomain]
+
+    if current_subdomain.moderate_proposals_mode == 1
+      moderation_status_check = 'moderation_status=1'
+    else 
+      moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+    end
+
     if current_subdomain.name == 'livingvotersguide'
       year = 2014
       local_jurisdictions = []   
@@ -42,9 +46,9 @@ class Proposal < ActiveRecord::Base
         local_jurisdictions = ActiveRecord::Base.connection.select( "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{current_subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip']}%' ").map {|r| r['cluster']}
       end
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
-      proposals = current_subdomain.proposals.open_to_public.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
+      proposals = current_subdomain.proposals.open_to_public.where(moderation_status_check).where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
     else 
-      proposals = current_subdomain.proposals.open_to_public.where(:hide_on_homepage => false)
+      proposals = current_subdomain.proposals.open_to_public.where(:hide_on_homepage => false).where(moderation_status_check)
     end
 
     clustered_proposals = {}

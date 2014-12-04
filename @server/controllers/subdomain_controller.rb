@@ -72,6 +72,7 @@ class SubdomainController < ApplicationController
                     :registered => true,
                     :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
                   })
+                  invitee.add_to_active_in
                 end
               end
 

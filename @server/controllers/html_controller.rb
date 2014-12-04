@@ -70,14 +70,17 @@ class HtmlController < ApplicationController
       # This is dangerous, so we'll only allow it once per token
       target_user = user_via_token()
       if target_user && is_valid_token() && !current_user.registered && current_user.email != params['u']
+        target_user.verified = true
+        target_user.save
         replace_user(current_user, target_user)
         set_current_user(target_user)
         current_user.add_token()
         dirty_key('/current_user')
+      else 
+        # Try to verify this user's control of the email address
+        verify_user_email_if_possible            
       end
 
-      # Try to verify this user's control of the email address
-      verify_user_email_if_possible
     end
   end
 

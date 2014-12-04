@@ -74,6 +74,8 @@ class SubdomainController < ApplicationController
                   })
                 end
               end
+
+              params['roles'][role][params['roles'][role].index(user_or_email)] = "/user/#{invitee.id}"
               UserMailer.invitation(current_user, invitee, current_subdomain, role, current_subdomain, message).deliver!
             end
           end

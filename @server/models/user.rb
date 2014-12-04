@@ -99,9 +99,13 @@ class User < ActiveRecord::Base
   end
 
   def as_json(options={})
-    return { 'key' => "/user/#{id}",
+    result = { 'key' => "/user/#{id}",
              'name' => name,
              'avatar_file_name' => avatar_file_name }
+    if current_user.is_admin?
+      result['email'] = email
+    end
+    result
   end
 
   def is_admin?

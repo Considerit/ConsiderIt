@@ -40,7 +40,10 @@ class ProposalController < ApplicationController
     result = proposal.as_json
     result['key'] = "/proposal/#{proposal.id}?original_id=#{original_id}"
 
-    # dirty_key "/proposal/#{proposal.id}"
+    ActiveSupport::Notifications.instrument("proposal:published", 
+      :proposal => proposal,
+      :current_subdomain => current_subdomain
+    )
 
     write_to_log({
       :what => 'created new proposal',
@@ -67,9 +70,16 @@ class ProposalController < ApplicationController
 
     if proposal.can?(:update)
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
-      updated_fields = params.select{|k,v| fields.include? k}
+      updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}
       proposal.update_attributes! updated_fields
       dirty_key('/proposals')
+
+      if updated_fields.include?('name') || updated_fields.include?('description')
+        ActiveSupport::Notifications.instrument("proposal:updated", 
+          :model => proposal,
+          :current_subdomain => current_subdomain
+        )
+      end
     end
 
     dirty_key "/proposal/#{proposal.id}"
@@ -96,9 +106,6 @@ class ProposalController < ApplicationController
   #   # current update.
   #   existing_access_list = notify_private_accessors && !published_now ? proposal.attributes['access_list'] : nil
 
-  #   # TODO: explicitly grab params
-  #   proposal.update_attributes! params.permit!
-
   #   if notify_private_accessors
   #     users = []
   #     inviter = nil
@@ -122,17 +129,6 @@ class ProposalController < ApplicationController
   #     )
   #   end
 
-  #   if published_now
-  #     ActiveSupport::Notifications.instrument("proposal:published", 
-  #       :proposal => proposal,
-  #       :current_subdomain => current_subdomain
-  #     )
-  #   elsif !published_now && proposal.published
-  #     ActiveSupport::Notifications.instrument("proposal:updated", 
-  #       :model => proposal,
-  #       :current_subdomain => current_subdomain
-  #     )      
-  #   end
 
   #   response = {
   #     :success => true,

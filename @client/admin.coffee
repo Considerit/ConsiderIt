@@ -385,10 +385,11 @@ RolesDash = ReactiveComponent
     roles = [ 
       ['admin', 'Administrators', 'Can configure everything related to this site, including all of the below.', 'fa-cog'], 
       ['moderator', 'Moderators', 'Can moderate user content. Will receive emails for content needing moderation.', 'fa-fire-extinguisher'],
-      ['evaluator', 'Fact checkers', 'Can validate claims. Will receive emails when a fact-check is requested.', 'fa-flag-checkered'] if subdomain.assessment_enabled,
-      #['proposer', 'Proposers', 'Can add new proposals.', 'fa-lightbulb-o']      
+      if subdomain.assessment_enabled then ['evaluator', 'Fact checkers', 'Can validate claims. Will receive emails when a fact-check is requested.', 'fa-flag-checkered'] else null,
+      ['proposer', 'Proposers', 'Can add new proposals.', 'fa-lightbulb-o']      
     ]
 
+    roles = _.compact roles
 
     DIV null, 
 
@@ -492,7 +493,7 @@ Invite = ReactiveComponent
           id: 'filter'
           type: 'text'
           style: {fontSize: 18, width: 500, padding: '3px 6px'}
-          autocomplete: 'off'
+          autoComplete: 'off'
           placeholder: "Name or email..."
           onChange: (=> @local.filtered = $(@getDOMNode()).find('#filter').val(); save(@local);)
           onKeyPress: (e) => 
@@ -616,14 +617,16 @@ AdminTaskList = ReactiveComponent
 
     dash = @data()
 
-    # We assume an ordering of the task categories that where the earlier
+    # We assume an ordering of the task categories where the earlier
     # categories are more urgent & shown higher up in the list than later categories.
+
     if !dash.selected_task && @props.items.length > 0
       # Prefer to select a higher urgency task by default
 
       for [category, items] in @props.items
         if items.length > 0
           dash.selected_task = items[0].key
+          console.log dash.selected_task
           save dash
           break
 
@@ -692,7 +695,6 @@ ModerationDash = ReactiveComponent
   render : -> 
     return SPAN(null) if !@accessGranted()
 
-
     moderations = @data().moderations.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
     subdomain = fetch '/subdomain'
 
@@ -725,7 +727,7 @@ ModerationDash = ReactiveComponent
         DIV className: 'moderation_settings',
           if subdomain.moderated_classes.length == 0 || @local.edit_settings
             DIV null,             
-              for model in ['points', 'comments'] #, 'proposals']
+              for model in ['points', 'comments', 'proposals'] #, 'proposals']
                 # The order of the options is important for the database records
                 moderation_options = [
                   "Do not moderate #{model}", 
@@ -742,10 +744,9 @@ ModerationDash = ReactiveComponent
                       style: {marginLeft: 18, fontSize: 18, cursor: 'pointer'}
                       onClick: do (idx, model) => => 
                         subdomain["moderate_#{model}_mode"] = idx
-                        save subdomain
-
-                        #saving the subdomain shouldn't always dirty moderations (which is expensive), so just doing it manually here
-                        arest.serverFetch('/page/dashboard/moderate')  
+                        save subdomain, -> 
+                          #saving the subdomain shouldn't always dirty moderations (which is expensive), so just doing it manually here
+                          arest.serverFetch('/page/dashboard/moderate')  
 
                       INPUT style: {cursor: 'pointer'}, type: 'radio', name: "moderate_#{model}_mode", id: "moderate_#{model}_mode_#{idx}", defaultChecked: subdomain["moderate_#{model}_mode"] == idx
                       LABEL style: {cursor: 'pointer', paddingLeft: 8 }, htmlFor: "moderate_#{model}_mode_#{idx}", field
@@ -754,7 +755,7 @@ ModerationDash = ReactiveComponent
                 onClick: => 
                   @local.edit_settings = false
                   save @local
-                'Done'
+                'close'
 
           else 
             A 
@@ -777,6 +778,9 @@ ModerationDash = ReactiveComponent
               point = fetch(moderatable.point)
               proposal = fetch(point.proposal)
               tease = "#{moderatable.body.substring(0, 30)}..."
+            else if class_name == 'Proposal'
+              proposal = moderatable
+              tease = "#{proposal.name.substring(0, 30)}..."
 
             DIV className: 'tab',
               DIV style: {fontSize: 14, fontWeight: 600}, "Moderate #{class_name} #{item.moderatable_id}"
@@ -799,7 +803,6 @@ ModerateItem = ReactiveComponent
   render : ->
     item = @data()
 
-
     class_name = item.moderatable_type
     moderatable = fetch(item.moderatable)
     author = fetch(moderatable.user)
@@ -810,6 +813,8 @@ ModerateItem = ReactiveComponent
       point = fetch(moderatable.point)
       proposal = fetch(point.proposal)
       comments = fetch("/comments/#{point.id}")
+    else if class_name == 'Proposal'
+      proposal = moderatable
 
     current_user = fetch('/current_user')
     
@@ -826,7 +831,7 @@ ModerateItem = ReactiveComponent
         else if item.status == 0
           SPAN style: {}, "Failed moderation"
         else 
-          SPAN style: {}, "Is this #{item.moderatable_type} ok?"
+          SPAN style: {}, "Is this #{class_name} ok?"
 
         if item.user
           SPAN style: {float: 'right', fontSize: 18, verticalAlign: 'bottom'},
@@ -836,10 +841,15 @@ ModerateItem = ReactiveComponent
         # content area
         DIV style: task_area_section_style, 
 
-          if item.moderatable_type == 'Point'
+          if class_name == 'Point'
             UL style: {marginLeft: 73}, 
               Point key: point, rendered_as: 'under_review'
-          else if item.moderatable_type == 'Comment'
+          else if class_name == 'Proposal'
+            DIV null,
+              DIV null, moderatable.name
+              DIV null, moderatable.description
+
+          else if class_name == 'Comment'
             if !@local.show_conversation
               DIV null,
                 A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = true; save(@local)),
@@ -866,7 +876,7 @@ ModerateItem = ReactiveComponent
           DIV style:{fontSize: 12, marginLeft: 73}, 
             "by #{author.name}"
 
-            if (item.status != 0 && item.status != 2) || item.moderatable_type == 'Comment'
+            if (item.status != 0 && item.status != 2 && class_name != 'Proposal') || class_name == 'Comment'
               [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
               A 
                 target: '_blank'

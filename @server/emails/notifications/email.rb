@@ -11,30 +11,28 @@ end
 ############ Notifications for moderatable models
 
 
-#### notify_proposal is NOT MIGRATED / TESTED!!!!######
-# notify_proposal = Proc.new do |data|
-#   #params : proposal, current_subdomain
-#   proposal = data[:proposal] || data[:model]
-#   current_subdomain = data[:current_subdomain]
+# Notifications for new proposals are not enabled
+notify_proposal = Proc.new do |data|
+  proposal = data[:proposal] || data[:model]
+  current_subdomain = data[:current_subdomain]
 
-#   current_subdomain.follows.where(:follow => true).each do |follow|
-#     # if follower's action triggered event, skip...
-#     if follow
-#       if follow.user_id == proposal.user_id 
-#         next
-#       # if follower doesn't have an email address, skip...
-#       elsif !follow.user.email || follow.user.email.length == 0
-#         next
-#       else 
-#         EventMailer.discussion_new_proposal(follow.user, proposal, current_subdomain '').deliver!
-#       end
-#     end
-#   end
+  # current_subdomain.follows.where(:follow => true).each do |follow|
+  #   # if follower's action triggered event, skip...
+  #   if follow
+  #     if follow.user_id == proposal.user_id 
+  #       next
+  #     # if follower doesn't have an email address, skip...
+  #     elsif !follow.user.email || follow.user.email.length == 0
+  #       next
+  #     else 
+  #       EventMailer.discussion_new_proposal(follow.user, proposal, current_subdomain '').deliver!
+  #     end
+  #   end
+  # end
 
-# end
+end
 
 notify_point = Proc.new do |data|
-  #params : point, current_subdomain
 
   point = data[:point] || data[:model]
 
@@ -70,7 +68,6 @@ end
 
 
 notify_comment = Proc.new do |args|
-  #params: comment, current_subdomain
   comment = args[:model] || args[:comment]
   point = comment.point
   current_subdomain = args[:current_subdomain]

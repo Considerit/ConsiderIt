@@ -373,6 +373,41 @@ AppSettingsDash = ReactiveComponent
             save @local
 
 
+ProposalShare = ReactiveComponent
+  displayName: 'ProposalShare'
+
+  render : -> 
+
+    subdomain = fetch '/subdomain'
+
+    roles = [ 
+      {name: 'editor', label: 'Editors', description: 'Can modify the description of the proposal, as well as write, comment, and opine.', icon: 'fa-edit', wildcard_label: 'Anyone who can access can edit'}, 
+      {name: 'writer', label: 'Writers', description: 'Can write pro and con points that are shared with others. Any writer can comment and opine.', icon: 'fa-th-list', wildcard_label: 'Anyone who can access can write'},
+      {name: 'commenter', label: 'Commenters', description: 'Can comment on shared pro and con points.', icon: 'fa-comment', wildcard_label: 'Anyone who can access can comment'},
+      {name: 'opiner', label: 'Opiners', description: 'Can contribute their opinions of this proposal. But not original content.', icon: 'fa-bar-chart', wildcard_label: 'Anyone who can access can opine'},
+      {name: 'observer', label: 'Observers', description: 'Can access this proposal. But that’s it. Anyone added to the above categories is also an observer.', icon: 'fa-eye', wildcard_label: "Anyone who can access #{subdomain.name} can view"}
+    ]
+
+    roles = _.compact roles
+
+    DIV null, 
+
+      DIV style: {width: BODY_WIDTH, margin: 'auto'},
+        for role,idx in roles
+          DIV style: {marginTop: 24}, key: idx,
+            H1 style: {fontSize: 18, position: 'relative'}, 
+              I className: "fa #{role.icon}", style: {position: 'absolute', top: 2, left: -35, fontSize: 24}
+              role.label
+            
+            SPAN style: {fontSize: 14}, role.description
+
+            PermissionBlock key: role.name, target: @proposal, role: role
+        
+        DIV style: {marginLeft: -35, marginTop: 12},
+          Invite roles: roles, target: @proposal
+
+
+
 RolesDash = ReactiveComponent
   displayName: 'RolesDash'
   mixins: [AccessControlled]
@@ -383,10 +418,12 @@ RolesDash = ReactiveComponent
     subdomain = fetch '/subdomain'
 
     roles = [ 
-      ['admin', 'Administrators', 'Can configure everything related to this site, including all of the below.', 'fa-cog'], 
-      ['moderator', 'Moderators', 'Can moderate user content. Will receive emails for content needing moderation.', 'fa-fire-extinguisher'],
-      if subdomain.assessment_enabled then ['evaluator', 'Fact checkers', 'Can validate claims. Will receive emails when a fact-check is requested.', 'fa-flag-checkered'] else null,
-      ['proposer', 'Proposers', 'Can add new proposals.', 'fa-lightbulb-o']      
+      {name: 'admin', label: 'Administrators', description: 'Can configure everything related to this site, including all of the below.', icon: 'fa-cog'}, 
+      {name: 'moderator', label: 'Moderators', description: 'Can moderate user content. Will receive emails for content needing moderation.', icon: 'fa-fire-extinguisher'},
+      if subdomain.assessment_enabled then {name: 'evaluator', label: 'Fact checkers', description: 'Can validate claims. Will receive emails when a fact-check is requested.', icon: 'fa-flag-checkered'} else null,
+      {name: 'proposer', label: 'Proposers', description: 'Can add new proposals.', icon: 'fa-lightbulb-o', wildcard_label: 'Any registered visitor can post new proposals'},
+      {name: 'visitor', label: 'Visitors', description: 'Can access this site.', icon: 'fa-android', wildcard_label: 'Anyone can visit this site.'} #'fa-key'
+
     ]
 
     roles = _.compact roles
@@ -399,15 +436,15 @@ RolesDash = ReactiveComponent
         for role,idx in roles
           DIV style: {marginTop: 24}, key: idx,
             H1 style: {fontSize: 18, position: 'relative'}, 
-              I className: "fa #{role[3]}", style: {position: 'absolute', top: 2, left: -35, fontSize: 24}
-              role[1]
+              I className: "fa #{role.icon}", style: {position: 'absolute', top: 2, left: -35, fontSize: 24}
+              role.label
             
-            SPAN style: {fontSize: 14}, role[2]
+            SPAN style: {fontSize: 14}, role.description
 
-            PermissionBlock key: role[0]
+            PermissionBlock key: role.name, target: '/subdomain', role: role
         
         DIV style: {marginLeft: -35, marginTop: 12},
-          Invite roles: roles 
+          Invite roles: roles, target: '/subdomain'
 
 invited_user_style = {display: 'inline-block', padding: '6px 12px', fontWeight: 400, fontSize: 13, backgroundColor: 'rgb(217, 227, 244)', color: 'black', borderRadius: 8, margin: 4}
 
@@ -415,7 +452,7 @@ Invite = ReactiveComponent
   displayName: 'Invite'
 
   render: ->
-    subdomain = fetch '/subdomain'
+    target = fetch @props.target
     users = fetch '/users'
 
     if !@local.role
@@ -441,14 +478,14 @@ Invite = ReactiveComponent
 
             @local.select_new_role = true
             save @local 
-          I className: "fa #{@local.role[3]}", style: {displayName: 'inline-block', margin: '0 8px 0 0'} 
-          "Add #{@local.role[1]}"
+          I className: "fa #{@local.role.icon}", style: {displayName: 'inline-block', margin: '0 8px 0 0'} 
+          "Add #{@local.role.label}"
           I style: {marginLeft: 8}, className: "fa fa-caret-down"
 
         if @local.select_new_role
           UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
             for role,idx in @props.roles
-              if role[0] != @local.role[0]
+              if role.name != @local.role.name
                 LI 
                   className: 'invite_menu_item'
                   style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
@@ -459,8 +496,8 @@ Invite = ReactiveComponent
                     save @local
                     e.stopPropagation()
 
-                  I className: "fa #{role[3]}", style: {displayName: 'inline-block', margin: '0 8px 0 0'} 
-                  "Add #{role[1]}"
+                  I className: "fa #{role.icon}", style: {displayName: 'inline-block', margin: '0 8px 0 0'} 
+                  "Add #{role.label}"
 
       if @local.added.length > 0
         DIV null,
@@ -525,7 +562,8 @@ Invite = ReactiveComponent
 
       if @local.selecting
         UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
-          for user,idx in _.filter(users.users, (u) => subdomain.roles[@local.role[0]].indexOf(u.key) < 0 && @local.added.indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
+          for user,idx in _.filter(users.users, (u) => 
+            target.roles[@local.role.name].indexOf(u.key) < 0 && @local.added.indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
             LI 
               className: 'invite_menu_item'
               style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
@@ -561,15 +599,15 @@ Invite = ReactiveComponent
         style: {backgroundColor: considerit_blue, color: 'white', padding: '8px 14px', fontSize: 16, display: 'inline-block', cursor: 'pointer', borderRadius: 8, marginTop: 12}
         onClick: (e) => 
 
-          subdomain.roles[@local.role[0]] = subdomain.roles[@local.role[0]].concat @local.added
+          target.roles[@local.role.name] = target.roles[@local.role.name].concat @local.added
 
-          subdomain.send_email_invite = @local.send_email_invite
+          target.send_email_invite = @local.send_email_invite
           if @local.send_email_invite
-            subdomain.custom_email_message = $('#custom_email_message').val()              
+            target.custom_email_message = $('#custom_email_message').val()              
           
           @local.added = []
 
-          save subdomain
+          save target
 
         'Done'
 
@@ -578,12 +616,26 @@ PermissionBlock = ReactiveComponent
   displayName: 'PermissionBlock'
 
   render : -> 
-    subdomain = fetch '/subdomain'
-    role = @props.key
+    target = fetch @props.target
+    role = @props.role
+
+    console.log role.wildcard_label
 
     DIV style: {marginLeft: -4},
-      if subdomain.roles[role]
-        for user_key in subdomain.roles[role]
+      
+      if role.wildcard_label
+        DIV null,
+          INPUT 
+            id: "wildcard-#{role.name}"
+            name: "wildcard-#{role.name}"
+            type: 'checkbox'
+          LABEL htmlFor: "wildcard-#{role.name}", role.wildcard_label
+
+      else if !target.roles[role.name] || target.roles[role.name].length == 0
+        DIV style: {fontStyle: 'italic', margin: 4}, 'None'
+
+      if target.roles[role.name]
+        for user_key in target.roles[role.name]
           SPAN key: user_key, style: invited_user_style, 
             if user_key && user_key[0] == '/'
               user = fetch user_key
@@ -599,15 +651,13 @@ PermissionBlock = ReactiveComponent
             SPAN # remove role
               style: {cursor: 'pointer', marginLeft: 8}
               onClick: do (user_key, role) => =>
-                subdomain.roles[role] = _.without subdomain.roles[role], user_key
-                save subdomain
+                target.roles[role.name] = _.without target.roles[role.name], user_key
+                save target
               'x'
-      if !subdomain.roles[role] || subdomain.roles[role].length == 0
-        DIV style: {fontStyle: 'italic', margin: 4}, 'None'
-
       
 
 
+      
 
 AdminTaskList = ReactiveComponent
   displayName: 'AdminTaskList'
@@ -1369,6 +1419,7 @@ window.FactcheckDash = FactcheckDash
 window.ModerationDash = ModerationDash
 window.AppSettingsDash = AppSettingsDash
 window.RolesDash = RolesDash
+window.ProposalShare = ProposalShare
 window.ImportDataDash = ImportDataDash
 window.CreateSubdomain = CreateSubdomain
 window.DashHeader = DashHeader

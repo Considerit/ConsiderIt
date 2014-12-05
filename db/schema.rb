@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141128235652) do
+ActiveRecord::Schema.define(version: 20141204041329) do
 
   create_table "assessments", force: true do |t|
     t.integer  "user_id"
@@ -234,6 +234,7 @@ ActiveRecord::Schema.define(version: 20141128235652) do
     t.text     "description_fields",                     limit: 16777215
     t.string   "cluster"
     t.text     "zips"
+    t.text     "roles"
   end
 
   add_index "proposals", ["subdomain_id", "active"], name: "select_proposal_by_active", using: :btree

@@ -101,9 +101,23 @@ class Proposal < ActiveRecord::Base
     #     :access_list => self.access_list
     #   })
     # end
+    if current_user.is_admin?
+      result['roles'] = self.user_roles
+    end
 
     result
   end
+
+  def user_roles
+    r = JSON.parse(roles || "{}")
+    ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|
+      if !r.has_key?(role) || !r[role]
+        r[role] = []
+      end
+    end
+    r
+  end
+
 
   # 
   def fact_check_request_enabled?

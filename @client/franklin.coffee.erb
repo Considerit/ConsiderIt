@@ -3131,7 +3131,7 @@ EditProposal = ReactiveComponent
     label_style = {verticalAlign: 'top', fontSize: 18, width: 150, display: 'inline-block'}
 
     if !@local.description_fields
-      @local.description_fields = $.parseJSON(@data().description_fields) || []
+      @local.description_fields = if @data().description_fields then $.parseJSON(@data().description_fields) || [] else []
       if @local.description_fields.length > 0
         if @local.description_fields[0].group
           # Right now, we just downgrade group syntax to flat description list syntax
@@ -3393,7 +3393,6 @@ Page = ReactiveComponent
   displayName: 'Page'
 
   render: ->
-
     avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
 

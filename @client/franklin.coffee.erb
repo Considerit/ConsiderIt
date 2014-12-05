@@ -337,8 +337,13 @@ Proposal = ReactiveComponent
                   @renderDescriptionField item
 
           if current_user.is_admin || current_user.user == proposal.user
-            A style: {opacity: '.3'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
+            DIV null,
+              A style: {opacity: '.3'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
+              A style: {opacity: '.3'}, onClick: (=> @local.edit_roles = true; save(@local)), 'Share'
 
+          if @local.edit_roles
+            ProposalShare()
+            
         #feelings
         DIV className:'feelings_region', style : { width: BODY_WIDTH },
           OpinionFilter()

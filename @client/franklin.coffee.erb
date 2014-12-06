@@ -342,7 +342,7 @@ Proposal = ReactiveComponent
               A style: {opacity: '.3'}, onClick: (=> @local.edit_roles = true; save(@local)), 'Share'
 
           if @local.edit_roles
-            ProposalShare()
+            ProposalShare key: proposal
             
         #feelings
         DIV className:'feelings_region', style : { width: BODY_WIDTH },
@@ -3113,6 +3113,10 @@ EditProposal = ReactiveComponent
         active: active
         hide_on_homepage: hide_on_homepage
 
+      if @local.roles
+        proposal.roles = @local.roles
+        proposal.invitations = @local.invitations
+
     else 
       proposal = @data()
       _.extend proposal, 
@@ -3251,6 +3255,18 @@ EditProposal = ReactiveComponent
           type: 'checkbox'
           defaultChecked: if @props.fresh then true else proposal.active
         LABEL htmlFor: 'open_for_discussion', 'Open for discussion'
+
+
+      if @props.fresh
+        SPAN 
+          style: {textDecoration: 'underline', cursor: 'pointer'}
+          onClick: => 
+            @local.edit_roles = !@local.edit_roles
+            save @local
+          'Set roles and send invitations'
+
+        if @local.edit_roles
+          ProposalShare key: @local
 
       DIV null,
         INPUT className:'button primary_button', type:'submit', value:"#{if @props.fresh then 'Publish' else 'Update'}", onClick: @saveProposal

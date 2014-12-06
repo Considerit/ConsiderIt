@@ -278,7 +278,6 @@ Proposal = ReactiveComponent
   render : ->
     proposal = @proposal
     your_opinion = fetch @proposal.your_opinion
-    included_points = your_opinion.point_inclusions
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
@@ -336,6 +335,7 @@ Proposal = ReactiveComponent
                 else
                   @renderDescriptionField item
 
+          # CAN?
           if current_user.is_admin || current_user.user == proposal.user
             DIV null,
               A style: {color: '#888'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
@@ -370,18 +370,8 @@ Proposal = ReactiveComponent
             CommunityPoints { key: 'cons' }
 
 
-      if @root.proposal_mode == 'results' && your_opinion.published && subdomain.name == 'livingvotersguide'
-        if @proposal.category && @proposal.designator
-          tweet = "Flex your civic muscle on #{@proposal.category.substring(0,1)}-#{@proposal.designator}! Learn about the issue and decide here: "
-        else 
-          tweet = "Learn and decide whether you will support \'#{proposal.name}\' on your Washington ballot here:"
-        DIV className: 'opinion_thanks_and_invite',
-          'Thanks for your opinion! Invite your friends and family: '
-          SPAN style: {position: 'relative', top: 5, marginLeft: 5},
-            FBShare()
-            Tweet
-              text: tweet
-              url: "https://livingvotersguide.org/#{@proposal.slug}?results=true"
+      if subdomain.name == 'livingvotersguide' && @root.proposal_mode == 'results' && your_opinion.published
+        ThanksAndShareStrip()
 
   componentDidUpdate : ->
     $el = $(@getDOMNode())
@@ -397,15 +387,16 @@ Proposal = ReactiveComponent
 
   renderDescriptionField : (field) ->
     DIV className: 'description_field', key: field.label,
-      DIV className: 'field_heading', onClick: => 
-        field.expanded = !field.expanded
-        save(@local)
-        if field.expanded 
-          window.writeToLog
-            what: 'expand proposal description'
-            details: 
-              description_type: field.label        
-      ,
+      DIV 
+        className: 'field_heading'
+        onClick: => 
+          field.expanded = !field.expanded
+          save(@local)
+          if field.expanded 
+            window.writeToLog
+              what: 'expand proposal description'
+              details: 
+                description_type: field.label        
         SPAN className: "expand_arrow fa #{if field.expanded then 'fa-minus-circle' else 'fa-plus-circle'}" #, dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
         SPAN className: 'field_name', field.label
       if field.expanded
@@ -470,7 +461,6 @@ StickyProposalHeading = ReactiveComponent
           backgroundColor: subdomain.branding.primary_color
           textAlign: 'center'
 
-        # TODO: we need a way of knowing whether this subdomain has a homepage or not
         A
           className: 'homepage_link'
           onClick: (=> window.app_router.navigate("/", {trigger: true}))
@@ -529,9 +519,23 @@ StickyProposalHeading = ReactiveComponent
                                         # pleased!
                                         mouth = ')'
 
-                                      DIV style: {borderBottom: "1px solid white", width: 100, position: 'relative', top: 15},
+                                      DIV 
+                                        style: 
+                                          borderBottom: "1px solid white"
+                                          width: 100
+                                          position: 'relative'
+                                          top: 15
 
-                                        DIV {style: borderRadius: '50%', backgroundColor: 'white', width: face_size, height: face_size, position: 'absolute', top: -face_size / 2, marginLeft: -face_size / 2 , left: "#{100 * (-1 * opinion.stance + 1.0) / 2.0}%"},
+                                        DIV
+                                          style: 
+                                            borderRadius: '50%'
+                                            backgroundColor: 'white'
+                                            width: face_size
+                                            height: face_size
+                                            position: 'absolute'
+                                            top: -face_size / 2
+                                            marginLeft: -face_size / 2 
+                                            left: "#{100 * (-1 * opinion.stance + 1.0) / 2.0}%"
                                           DIV style: _.extend {}, eye_style, {left: 6} # left eye
                                           DIV style: _.extend {}, eye_style, {left: face_size - 8} # right eye
                                           DIV style: mouth_style, mouth
@@ -545,7 +549,12 @@ StickyProposalHeading = ReactiveComponent
                         for cluster in proposals.clusters
                           if @proposal.cluster != cluster.name && cluster.proposals.length > 0
                             do (cluster) =>
-                              DIV className: 'another_cluster', style: {padding: '0 50px', width: '100%', position: 'relative'}, onMouseEnter: (=> @local.show_cluster = cluster.name; save(@local)), onMouseLeave: (=> @mouseLeaveOtherCluster(cluster.name) ),
+                              DIV 
+                                className: 'another_cluster'
+                                onMouseEnter: => @local.show_cluster = cluster.name; save(@local)
+                                onMouseLeave: => @mouseLeaveOtherCluster(cluster.name)
+                                style: {padding: '0 50px', width: '100%', position: 'relative'}
+
                                 SPAN style: {float: 'left', fontSize: 18, fontWeight: 400},
                                   cluster.name
                                 I className: 'fa fa-caret-right', style: {float: 'right'}
@@ -728,8 +737,10 @@ Histogram = ReactiveComponent
                 TD 
                   key: idx 
                   className: "histogram_bar #{if is_selected then 'is_selected' else 'not_selected'}"
-                  style: {width: avatar_size, opacity: (if is_selected && !selected_segment? then '1' else '1'), minHeight: (if bar.length == 0 then 75 else 0)}
-                ,
+                  style: 
+                    width: avatar_size
+                    opacity: if is_selected && !selected_segment? then '1' else '1'
+                    minHeight: if bar.length == 0 then 75 else 0
                   for opinion in bar
                     user = opinion.user
                     Avatar 
@@ -983,17 +994,13 @@ OpinionFilter = ReactiveComponent
       for phrase, i in filter_options
 
         # Shift i by 1, and start with null
-        i = i-1
-        if i == -1
-          i = null
-
-        c = "filter_option"
-        if hist.selected_segment == i
-          c = c + ' selected'
-
-        # I had to make this wrapper to make a new context for i
-        wrapper = (i) => (=> @onSelectSegment(i))
-        A key: "segment-#{i}", className: c, onClick: wrapper(i), phrase
+        i = if i == 0 then null else i - 1
+          
+        A 
+          key: "segment-#{i}"
+          className: "filter_option #{if hist.selected_segment == i then 'selected' else ''}"
+          onClick: do(i) => => @onSelectSegment(i) 
+          phrase
 
 
 ##
@@ -1008,7 +1015,6 @@ DecisionBoard = ReactiveComponent
     subdomain = fetch('/subdomain')
     
     your_opinion = fetch(@proposal.your_opinion)
-    published = your_opinion.published
 
     selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
     selected_wing_point = selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
@@ -1044,13 +1050,13 @@ DecisionBoard = ReactiveComponent
           # only shown during results, but needs to be present always for animation
           A 
             className:'give_opinion_button primary_button'
-          , if published then 'Update your Opinion' else 'Give your Opinion'
+          , if your_opinion.published then 'Update your Opinion' else 'Give your Opinion'
 
       DIV className: 'decision_board_footer', style: decision_board_style, 
         DIV 
           className:'save_opinion_button primary_button'
           onClick: @saveYourOpinion
-        , if published then 'See the results' else 'Save your opinion and see results'
+        , if your_opinion.published then 'See the results' else 'Save your opinion and see results'
 
         if @root.proposal_mode == 'crafting'
           A className:'follow_proposal',
@@ -1064,11 +1070,11 @@ DecisionBoard = ReactiveComponent
                 save @proposal
             LABEL htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
 
-        if !published
+        if !your_opinion.published
           A 
             className:'cancel_opinion_button primary_cancel_button'
-            onClick: (=> togglePage('results', 'cancel_button'))
-          , 'or just skip to the results'  
+            onClick: => togglePage('results', 'cancel_button')
+            'or just skip to the results'  
 
 
   componentDidMount : ->

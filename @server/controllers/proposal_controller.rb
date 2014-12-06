@@ -1,4 +1,5 @@
 class ProposalController < ApplicationController
+  include Invitations
 
   respond_to :json
 
@@ -20,9 +21,22 @@ class ProposalController < ApplicationController
 
   def create
     # TODO: slug should be validated as a legit url
-    
+
+    authorize! :create, Proposal
+
     fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
     proposal = params.select{|k,v| fields.include? k}
+
+    if params.has_key?('roles') && params.has_key?(:invitations) && params[:invitations]
+      params['roles'] = process_invitations(params['roles'], params[:invitations], proposal)
+    end 
+
+    serialized_fields = ['roles']
+    for field in serialized_fields
+      if params.has_key? field
+        proposal[field] = JSON.dump params[field]
+      end
+    end
 
     proposal.update({
           :published => true,
@@ -32,7 +46,6 @@ class ProposalController < ApplicationController
         })
 
     proposal = Proposal.new proposal
-    authorize! :create, proposal
 
     proposal.save
 
@@ -71,6 +84,19 @@ class ProposalController < ApplicationController
     if proposal.can?(:update)
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
       updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}
+
+      if params.has_key?('roles') && params.has_key?(:invitations) && params[:invitations]
+        params['roles'] = process_invitations(params['roles'], params[:invitations], proposal)
+      end 
+
+      serialized_fields = ['roles']
+      for field in serialized_fields
+        if params.has_key? field
+          updated_fields[field] = JSON.dump params[field]
+        end
+      end
+
+
       proposal.update_attributes! updated_fields
       dirty_key('/proposals')
 

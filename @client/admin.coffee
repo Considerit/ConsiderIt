@@ -381,11 +381,11 @@ ProposalShare = ReactiveComponent
     subdomain = fetch '/subdomain'
 
     roles = [ 
-      {name: 'editor', label: 'Editors', description: 'Can modify the description of the proposal, as well as write, comment, and opine.', icon: 'fa-edit', wildcard_label: 'Anyone who can access can edit'}, 
-      {name: 'writer', label: 'Writers', description: 'Can write pro and con points that are shared with others. Any writer can comment and opine.', icon: 'fa-th-list', wildcard_label: 'Anyone who can access can write'},
-      {name: 'commenter', label: 'Commenters', description: 'Can comment on shared pro and con points.', icon: 'fa-comment', wildcard_label: 'Anyone who can access can comment'},
-      {name: 'opiner', label: 'Opiners', description: 'Can contribute their opinions of this proposal. But not original content.', icon: 'fa-bar-chart', wildcard_label: 'Anyone who can access can opine'},
-      {name: 'observer', label: 'Observers', description: 'Can access this proposal. But that’s it. Anyone added to the above categories is also an observer.', icon: 'fa-eye', wildcard_label: "Anyone who can access #{subdomain.name} can view"}
+      {name: 'editor', label: 'Editors', description: 'Can modify the description of the proposal, as well as write, comment, and opine.', icon: 'fa-edit', wildcard: {label: 'Any registered user who can access can edit', default: false}}, 
+      {name: 'writer', label: 'Writers', description: 'Can write pro and con points that are shared with others. Any writer can comment and opine.', icon: 'fa-th-list', wildcard: {label: 'Any registered user who can access can write', default: true}},
+      {name: 'commenter', label: 'Commenters', description: 'Can comment on shared pro and con points.', icon: 'fa-comment', wildcard: {label: 'Any registered user who can access can comment', default: true}},
+      {name: 'opiner', label: 'Opiners', description: 'Can contribute their opinions of this proposal. But not original content.', icon: 'fa-bar-chart', wildcard: {label: 'Any registered user who can access can opine', default: true}},
+      {name: 'observer', label: 'Observers', description: 'Can access this proposal. But that’s it. Anyone added to the above categories is also an observer.', icon: 'fa-eye', wildcard: {label: "Anyone who can access #{subdomain.name} can view", default: true}}
     ]
 
     roles = _.compact roles
@@ -407,7 +407,6 @@ ProposalShare = ReactiveComponent
           Invite roles: roles, target: @proposal
 
 
-
 RolesDash = ReactiveComponent
   displayName: 'RolesDash'
   mixins: [AccessControlled]
@@ -421,8 +420,8 @@ RolesDash = ReactiveComponent
       {name: 'admin', label: 'Administrators', description: 'Can configure everything related to this site, including all of the below.', icon: 'fa-cog'}, 
       {name: 'moderator', label: 'Moderators', description: 'Can moderate user content. Will receive emails for content needing moderation.', icon: 'fa-fire-extinguisher'},
       if subdomain.assessment_enabled then {name: 'evaluator', label: 'Fact checkers', description: 'Can validate claims. Will receive emails when a fact-check is requested.', icon: 'fa-flag-checkered'} else null,
-      {name: 'proposer', label: 'Proposers', description: 'Can add new proposals.', icon: 'fa-lightbulb-o', wildcard_label: 'Any registered visitor can post new proposals'},
-      {name: 'visitor', label: 'Visitors', description: 'Can access this site.', icon: 'fa-android', wildcard_label: 'Anyone can visit this site.'} #'fa-key'
+      {name: 'proposer', label: 'Proposers', description: 'Can add new proposals.', icon: 'fa-lightbulb-o', wildcard: {label: 'Any registered visitor can post new proposals', default: false}},
+      {name: 'visitor', label: 'Visitors', description: 'Can access this site.', icon: 'fa-android', wildcard: {label: 'Anyone can visit this site.', default: true}} #'fa-key'
 
     ]
 
@@ -464,6 +463,7 @@ Invite = ReactiveComponent
     DIV style: {position: 'relative', backgroundColor: '#E7F2FF', padding: '18px 24px'}, 
       STYLE null, ".invite_menu_item:hover{background-color: #414141; color: white}"
 
+      # Show (and optionally change) the role currently being modified by the invite component
       DIV style: {fontWeight: 500, fontSize: 18, marginBottom: 6, display: 'inline-block'}, 
         DIV 
           id: 'select_new_role'
@@ -499,6 +499,7 @@ Invite = ReactiveComponent
                   I className: "fa #{role.icon}", style: {displayName: 'inline-block', margin: '0 8px 0 0'} 
                   "Add #{role.label}"
 
+      # Show everyone queued for being added/invited to a role
       if @local.added.length > 0
         DIV null,
           for user_key, idx in @local.added
@@ -525,6 +526,7 @@ Invite = ReactiveComponent
                   save @local
                 'x'
 
+      # Text input for adding new people to a role
       DIV null,
         INPUT 
           id: 'filter'
@@ -556,14 +558,15 @@ Invite = ReactiveComponent
                 @local.selecting = false
                 @local.filtered = null
                 $(@getDOMNode()).find('#filter').val('')
-                save(@local)
+                save @local
                 $(document).off('click.roles')
             return false
 
+      # Dropdown, autocomplete menu for adding existing users
       if @local.selecting
         UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
           for user,idx in _.filter(users.users, (u) => 
-            target.roles[@local.role.name].indexOf(u.key) < 0 && @local.added.indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
+            target.roles[@local.role.name].indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
             LI 
               className: 'invite_menu_item'
               style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
@@ -601,13 +604,18 @@ Invite = ReactiveComponent
 
           target.roles[@local.role.name] = target.roles[@local.role.name].concat @local.added
 
-          target.send_email_invite = @local.send_email_invite
           if @local.send_email_invite
-            target.custom_email_message = $('#custom_email_message').val()              
+            if !target.invitations
+              target.invitations = []
+
+            invitation = {role: @local.role.name, keys_or_emails: @local.added}
+            invitation.message = $('#custom_email_message').val()              
+
+            target.invitations.push invitation
           
           @local.added = []
-
           save target
+          save @local
 
         'Done'
 
@@ -619,44 +627,55 @@ PermissionBlock = ReactiveComponent
     target = fetch @props.target
     role = @props.role
 
-    console.log role.wildcard_label
-
     DIV style: {marginLeft: -4},
       
-      if role.wildcard_label
+      if role.wildcard
         DIV null,
           INPUT 
             id: "wildcard-#{role.name}"
             name: "wildcard-#{role.name}"
             type: 'checkbox'
-          LABEL htmlFor: "wildcard-#{role.name}", role.wildcard_label
+            defaultChecked: if @props.target[0] != '/' then role.wildcard.default else target.roles[role.name].indexOf('*') > -1
+            onChange: -> 
+              if $("#wildcard-#{role.name}").is(':checked')
+                target.roles[role.name].push '*'
+              else
+                target.roles[role.name] = _.without target.roles[role.name], '*'
+
+              save target
+
+
+          LABEL htmlFor: "wildcard-#{role.name}", role.wildcard.label
 
       else if !target.roles[role.name] || target.roles[role.name].length == 0
         DIV style: {fontStyle: 'italic', margin: 4}, 'None'
 
       if target.roles[role.name]
         for user_key in target.roles[role.name]
-          SPAN key: user_key, style: invited_user_style, 
-            if user_key && user_key[0] == '/'
-              user = fetch user_key
-              SPAN null,
-                if user.avatar_file_name
-                  Avatar key: user_key, hide_name: true, style: {width: 20, height: 20, marginRight: 5}
-                if user.name 
-                  user.name 
-                else 
-                  user.email
-            else
-              user_key
-            SPAN # remove role
-              style: {cursor: 'pointer', marginLeft: 8}
-              onClick: do (user_key, role) => =>
-                target.roles[role.name] = _.without target.roles[role.name], user_key
-                save target
-              'x'
-      
+          if user_key != '*'
+            SPAN key: user_key, style: invited_user_style, 
+              if user_key && user_key[0] == '/'
+                user = fetch user_key
+                SPAN null,
+                  if user.avatar_file_name
+                    Avatar key: user_key, hide_name: true, style: {width: 20, height: 20, marginRight: 5}
+                  if user.name 
+                    user.name 
+                  else 
+                    user.email
+              else
+                user_key
 
-
+              SPAN # remove role
+                style: {cursor: 'pointer', marginLeft: 8}
+                onClick: do (user_key, role) => =>
+                  target.roles[role.name] = _.without target.roles[role.name], user_key
+                  if target.invitations
+                    for invite in target.invitations
+                      if invite.role == role.name
+                        invite.keys_or_emails = _.without invite.keys_or_emails, user_key
+                  save target
+                'x'
       
 
 AdminTaskList = ReactiveComponent
@@ -675,7 +694,6 @@ AdminTaskList = ReactiveComponent
       for [category, items] in @props.items
         if items.length > 0
           dash.selected_task = items[0].key
-          console.log dash.selected_task
           save dash
           break
 

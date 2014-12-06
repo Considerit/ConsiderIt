@@ -67,8 +67,7 @@ class Proposal < ActiveRecord::Base
     else 
       ordered_clusters = manual_clusters
     end
-    clusters = ordered_clusters.map {|cluster| {:name => cluster, :proposals => clustered_proposals[cluster] }}
-
+    clusters = ordered_clusters.map {|cluster| {:name => cluster, :proposals => clustered_proposals[cluster] } }.select {|c| c[:proposals]}
     proposals = {
       key: '/proposals',
       clusters: clusters

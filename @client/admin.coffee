@@ -428,7 +428,7 @@ RolesDash = ReactiveComponent
     subdomain = fetch '/subdomain'
 
     roles = [ 
-      {name: 'admin', label: 'Administrators', description: 'Can configure everything related to this site, including all of the below.', icon: 'fa-cog'}, 
+      {name: 'admin', label: 'Administrators', description: 'Can configure everything related to this site, including all of the below.', icon: 'fa-wrench'}, 
       {name: 'moderator', label: 'Moderators', description: 'Can moderate user content. Will receive emails for content needing moderation.', icon: 'fa-fire-extinguisher'},
       if subdomain.assessment_enabled then {name: 'evaluator', label: 'Fact checkers', description: 'Can validate claims. Will receive emails when a fact-check is requested.', icon: 'fa-flag-checkered'} else null,
       {name: 'proposer', label: 'Proposers', description: 'Can add new proposals.', icon: 'fa-lightbulb-o', wildcard: {label: 'Any registered visitor can post new proposals', default: false}},

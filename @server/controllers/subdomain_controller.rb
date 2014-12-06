@@ -21,6 +21,7 @@ class SubdomainController < ApplicationController
       new_subdomain = Subdomain.new :name => subdomain
       roles = new_subdomain.user_roles
       roles['admin'].push "/user/#{current_user.id}"
+      roles['visitor'].push "*"
       new_subdomain.roles = JSON.dump roles
       new_subdomain.save
     end
@@ -48,38 +49,36 @@ class SubdomainController < ApplicationController
     fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'has_civility_pledge']
     attrs = params.select{|k,v| fields.include? k}
 
-    if params.has_key?('roles') && params[:send_email_invite]
-      # detect who was added so we can send them an email invite
-      message = nil 
-      if params.has_key?('custom_email_message') && params['custom_email_message'] && params['custom_email_message'].length > 0
-        message = params['custom_email_message']
-      end
-      current_roles = subdomain.user_roles
-      current_roles.keys.each do |role|
-        if params['roles'].has_key?(role)        
-          diff = Set.new(params['roles'][role]) - Set.new(current_roles[role])
-          if diff.length > 0
-            diff.each do |user_or_email|
-              if user_or_email[0] == '/'
-                invitee = User.find(key_id(user_or_email))
-              else 
-                # let's first just check to make sure this user doesn't already have an account... 
-                invitee = User.find_by_email(user_or_email)
-                if !invitee
-                  # create a new user to send an invite too...
-                  invitee = User.create!({
-                    :email => user_or_email,
-                    :registered => true,
-                    :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
-                  })
-                  invitee.add_to_active_in
-                end
-              end
+    if params.has_key?('roles') && params.has_key?(:invitations) && params[:invitations]
+      params[:invitations].each do |invite|
+        message = invite['message'] && invite['message'].length > 0 ? invite['message'] : nil
+        users_with_role = params['roles'][invite['role']]
 
-              params['roles'][role][params['roles'][role].index(user_or_email)] = "/user/#{invitee.id}"
-              UserMailer.invitation(current_user, invitee, current_subdomain, role, current_subdomain, message).deliver!
+        for user_or_email in invite['keys_or_emails']
+          next if user_or_email.index('*') # wildcards; no invitations!!
+            
+          if user_or_email[0] == '/'
+            invitee = User.find(key_id(user_or_email))
+
+          else 
+            # check to make sure this user doesn't already have an account... 
+            invitee = User.find_by_email(user_or_email)
+            if !invitee
+              # every invited & fully specified email address who doesn't yet have an account will have one created for them
+              invitee = User.create!({
+                :email => user_or_email,
+                :registered => true,
+                :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
+              })
+              invitee.add_to_active_in
+
+              # replace email address with the user's key in the roles object
+              users_with_role[users_with_role.index(user_or_email)] = "/user/#{invitee.id}"
+
             end
           end
+          UserMailer.invitation(current_user, invitee, current_subdomain, invite['role'], current_subdomain, message).deliver!
+
         end
       end
     end

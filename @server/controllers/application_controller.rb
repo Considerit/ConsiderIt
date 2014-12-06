@@ -54,7 +54,7 @@ class ApplicationController < ActionController::Base
 
   def authorize!(action, model_or_object)
     if !model_or_object.can?(action) 
-      raise new AccessDenied
+      raise AccessDenied
     end
   end
 

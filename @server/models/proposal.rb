@@ -81,20 +81,20 @@ class Proposal < ActiveRecord::Base
 
   def as_json(options={})
     options[:only] ||= Proposal.my_public_fields
-    result = super(options)
+    json = super(options)
 
     # Find an existing opinion for this user
     your_opinion = Opinion.where(:proposal_id => self.id, :user => current_user).first
-    result['your_opinion'] = "/opinion/#{your_opinion.id}" if your_opinion
+    json['your_opinion'] = "/opinion/#{your_opinion.id}" if your_opinion
 
-    result['top_point'] = self.points.published.order(:score).last
+    json['top_point'] = self.points.published.order(:score).last
 
-    make_key(result, 'proposal')
-    stubify_field(result, 'user')
+    make_key(json, 'proposal')
+    stubify_field(json, 'user')
     follows = get_explicit_follow(current_user) 
-    result["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
+    json["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 
-    result['assessment_enabled'] = fact_check_request_enabled?
+    json['assessment_enabled'] = fact_check_request_enabled?
 
     # if can?(:manage, proposal) && self.publicity < 2
     #   response.update({
@@ -102,10 +102,12 @@ class Proposal < ActiveRecord::Base
     #   })
     # end
     if current_user.is_admin?
-      result['roles'] = self.user_roles
+      json['roles'] = self.user_roles
+      json['invitations'] = nil
+
     end
 
-    result
+    json
   end
 
   def user_roles

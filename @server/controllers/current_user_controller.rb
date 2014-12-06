@@ -51,6 +51,26 @@ class CurrentUserController < ApplicationController
             if !current_user.save
               raise "Error registering this uesr"
             end
+
+            ########
+            # This user might have have a role waiting for them...either on a subdomain or proposal
+            # We'll look for any places to replace their email address with their key
+            # BUG: unlikely error can occur if this email address has been invited to a role
+            #       across multiple subdomains before creating an account. 
+            if current_subdomain.roles.index("\"#{current_user.email}\"") > 0
+              pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{current_subdomain.name}"              
+              current_subdomain.roles = current_subdomain.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
+              current_subdomain.save
+            end
+            if proposals_with_role = current_subdomain.proposals.where("roles like %\"#{current_user.email}\"%") && proposals_with_role.count > 0
+              proposals_with_role.each do |proposal|
+                pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{proposal.name}"
+                proposal.roles = proposal.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
+                proposal.save
+              end 
+            end
+            ########
+
             current_user.add_to_active_in
             log('registered account')
 

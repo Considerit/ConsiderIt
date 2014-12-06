@@ -2478,7 +2478,7 @@ Auth = ReactiveComponent
                   TD className: 'field_cell', 
                     name_input_field
 
-                if third_party_authenticated
+                if third_party_authenticated && @root.auth_mode != 'update'
                   p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
                   TR null, 
 

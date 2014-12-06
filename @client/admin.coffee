@@ -401,21 +401,20 @@ ProposalShare = ReactiveComponent
 
       proposal.roles['editor'].push "/user/#{current_user.id}"
 
-    DIV null, 
 
-      DIV style: {width: BODY_WIDTH, margin: 'auto'},
-        for role,idx in roles
-          DIV style: {marginTop: 24}, key: idx,
-            H1 style: {fontSize: 18, position: 'relative'}, 
-              I className: "fa #{role.icon}", style: {position: 'absolute', top: 2, left: -35, fontSize: 24}
-              role.label
-            
-            SPAN style: {fontSize: 14}, role.description
+    DIV style: {},
+      for role,idx in roles
+        DIV style: {marginTop: 24}, key: idx,
+          H1 style: {fontSize: 18, position: 'relative'}, 
+            I className: "fa #{role.icon}", style: {position: 'absolute', top: 2, left: -35, fontSize: 24}
+            role.label
+          
+          SPAN style: {fontSize: 14}, role.description
 
-            PermissionBlock key: role.name, target: proposal, role: role
-        
-        DIV style: {marginLeft: -35, marginTop: 12},
-          Invite roles: roles, target: proposal
+          PermissionBlock key: role.name, target: proposal, role: role
+      
+      DIV style: {marginLeft: -35, marginTop: 12},
+        Invite roles: roles, target: proposal
 
 
 RolesDash = ReactiveComponent
@@ -542,7 +541,7 @@ Invite = ReactiveComponent
         INPUT 
           id: 'filter'
           type: 'text'
-          style: {fontSize: 18, width: 500, padding: '3px 6px'}
+          style: {fontSize: 18, width: 350, padding: '3px 6px'}
           autoComplete: 'off'
           placeholder: "Name or email..."
           onChange: (=> @local.filtered = $(@getDOMNode()).find('#filter').val(); save(@local);)

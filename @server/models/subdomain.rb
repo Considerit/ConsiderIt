@@ -24,6 +24,7 @@ class Subdomain < ActiveRecord::Base
     json['key'] = '/subdomain'
     if current_user.is_admin?
       json['roles'] = self.user_roles
+      json['invitations'] = nil
     end
     json['branding'] = self.branding_info
     json
@@ -72,7 +73,7 @@ class Subdomain < ActiveRecord::Base
 
   def user_roles
     r = JSON.parse(roles || "{}")
-    ['admin', 'moderator', 'evaluator', 'proposers'].each do |role|
+    ['admin', 'moderator', 'evaluator', 'proposer', 'visitor'].each do |role|
       if !r.has_key?(role) || !r[role]
         r[role] = []
       end

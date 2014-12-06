@@ -1,6 +1,10 @@
+module Invitations
+end
+
 class SubdomainController < ApplicationController
   respond_to :json
   skip_before_action :verify_authenticity_token, :only => :update_images_hack
+  include Invitations
 
   def new
     render :json => []
@@ -50,37 +54,7 @@ class SubdomainController < ApplicationController
     attrs = params.select{|k,v| fields.include? k}
 
     if params.has_key?('roles') && params.has_key?(:invitations) && params[:invitations]
-      params[:invitations].each do |invite|
-        message = invite['message'] && invite['message'].length > 0 ? invite['message'] : nil
-        users_with_role = params['roles'][invite['role']]
-
-        for user_or_email in invite['keys_or_emails']
-          next if user_or_email.index('*') # wildcards; no invitations!!
-            
-          if user_or_email[0] == '/'
-            invitee = User.find(key_id(user_or_email))
-
-          else 
-            # check to make sure this user doesn't already have an account... 
-            invitee = User.find_by_email(user_or_email)
-            if !invitee
-              # every invited & fully specified email address who doesn't yet have an account will have one created for them
-              invitee = User.create!({
-                :email => user_or_email,
-                :registered => true,
-                :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
-              })
-              invitee.add_to_active_in
-
-              # replace email address with the user's key in the roles object
-              users_with_role[users_with_role.index(user_or_email)] = "/user/#{invitee.id}"
-
-            end
-          end
-          UserMailer.invitation(current_user, invitee, current_subdomain, invite['role'], current_subdomain, message).deliver!
-
-        end
-      end
+      params['roles'] = process_invitations(params['roles'], params[:invitations], current_subdomain)
     end
 
     serialized_fields = ['roles', 'branding']
@@ -112,4 +86,43 @@ class SubdomainController < ApplicationController
     render :json => []
   end
 
+end
+
+module Invitations
+  def process_invitations(roles, invitations, target)
+
+    invitations.each do |invite|
+      message = invite['message'] && invite['message'].length > 0 ? invite['message'] : nil
+      users_with_role = roles[invite['role']]
+
+      for user_or_email in invite['keys_or_emails']
+        next if user_or_email.index('*') # wildcards; no invitations!!
+          
+        if user_or_email[0] == '/'
+          invitee = User.find(key_id(user_or_email))
+
+        else 
+          # check to make sure this user doesn't already have an account... 
+          invitee = User.find_by_email(user_or_email)
+          if !invitee
+            # every invited & fully specified email address who doesn't yet have an account will have one created for them
+            invitee = User.create!({
+              :email => user_or_email,
+              :registered => true,
+              :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
+            })
+            invitee.add_to_active_in
+
+            # replace email address with the user's key in the roles object
+            users_with_role[users_with_role.index(user_or_email)] = "/user/#{invitee.id}"
+
+          end
+        end
+        UserMailer.invitation(current_user, invitee, target, invite['role'], current_subdomain, message).deliver!
+
+      end
+    end
+
+    roles
+  end  
 end

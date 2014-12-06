@@ -379,6 +379,7 @@ ProposalShare = ReactiveComponent
   render : -> 
 
     subdomain = fetch '/subdomain'
+    current_user = fetch '/current_user'
 
     roles = [ 
       {name: 'editor', label: 'Editors', description: 'Can modify the description of the proposal, as well as write, comment, and opine.', icon: 'fa-edit', wildcard: {label: 'Any registered user who can access can edit', default: false}}, 
@@ -389,6 +390,16 @@ ProposalShare = ReactiveComponent
     ]
 
     roles = _.compact roles
+
+    proposal = fetch @props.key
+    if !proposal.roles
+      proposal.roles = {}
+      for role in roles
+        proposal.roles[role.name] = []
+        if role.wildcard && role.wildcard.default
+          proposal.roles[role.name].push '*'
+
+      proposal.roles['editor'].push "/user/#{current_user.id}"
 
     DIV null, 
 
@@ -401,10 +412,10 @@ ProposalShare = ReactiveComponent
             
             SPAN style: {fontSize: 14}, role.description
 
-            PermissionBlock key: role.name, target: @proposal, role: role
+            PermissionBlock key: role.name, target: proposal, role: role
         
         DIV style: {marginLeft: -35, marginTop: 12},
-          Invite roles: roles, target: @proposal
+          Invite roles: roles, target: proposal
 
 
 RolesDash = ReactiveComponent
@@ -635,7 +646,7 @@ PermissionBlock = ReactiveComponent
             id: "wildcard-#{role.name}"
             name: "wildcard-#{role.name}"
             type: 'checkbox'
-            defaultChecked: if @props.target[0] != '/' then role.wildcard.default else target.roles[role.name].indexOf('*') > -1
+            defaultChecked: target.roles[role.name].indexOf('*') > -1
             onChange: -> 
               if $("#wildcard-#{role.name}").is(':checked')
                 target.roles[role.name].push '*'

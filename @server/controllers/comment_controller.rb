@@ -5,7 +5,7 @@ class CommentController < ApplicationController
   def index
 
     point = Point.find params[:point_id]
-    authorize! :read, point
+    authorize! 'read point', point
 
     dirty_key "/comments/#{point.id}"
 
@@ -14,14 +14,14 @@ class CommentController < ApplicationController
 
   def show
     comment = Comment.find params[:id]
-    authorize! :read, comment
+    authorize! 'read comment', comment
 
     dirty_key "/comment/#{comment.id}"
     render :json => []
   end
 
   def create
-    authorize! :create, Comment
+    
 
     fields = ['body']
     comment = params.select{|k,v| fields.include? k}
@@ -37,6 +37,8 @@ class CommentController < ApplicationController
       point = comment['point']
 
       comment = Comment.new comment
+      
+      authorize! 'create comment', comment
 
       if comment.save
         ActiveSupport::Notifications.instrument("comment:point:created", 
@@ -67,7 +69,7 @@ class CommentController < ApplicationController
 
   def update
     comment = Comment.find(params[:id])
-    authorize! :update, Comment
+    authorize! 'update comment', comment
 
     fields = ['body']
     comment_vals = params.select{|k,v| fields.include? k}
@@ -87,7 +89,7 @@ class CommentController < ApplicationController
 
   def destroy
     comment = Comment.find params[:id]
-    authorize! :destroy, comment
+    authorize! 'delete comment', comment
 
     dirty_key("/comments/#{comment.point_id}")
     comment.destroy

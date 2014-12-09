@@ -1,7 +1,7 @@
 class ModerationController < ApplicationController
 
   def update
-    authorize! :update, Moderation
+    authorize! 'moderate content'
 
     moderation = Moderation.find params[:id] 
 

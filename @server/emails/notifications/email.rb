@@ -242,33 +242,6 @@ end
 
 
 
-###########################
-##### PROPOSAL LEVEL ######
-###########################
-
-#### alert_proposal_publicity_changed is NOT MIGRATED / TESTED!!!!######
-
-ActiveSupport::Notifications.subscribe("alert_proposal_publicity_changed") do |*args|
-  data = args.last
-  users = data[:users]
-  inviter = data[:inviter]
-  proposal = data[:proposal]
-  current_subdomain = data[:current_subdomain]
-
-  users.delete(inviter.email) if inviter #don't email inviter twice if they specified themselves in the list
-
-  users.each do |user|
-    if user.length > 0
-      UserMailer.invitation(user, proposal, 'invitee').deliver!
-    end
-  end
-  if inviter && !inviter.email.nil? && inviter.email.length > 0
-    UserMailer.invitation(inviter.email, proposal, 'your proposal').deliver!
-  end
-
-end
-
-
 #### published_new_opinion is NOT MIGRATED / TESTED!!!!######
 ActiveSupport::Notifications.subscribe("published_new_opinion") do |*args|
 

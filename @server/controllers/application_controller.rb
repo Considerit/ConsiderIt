@@ -1,25 +1,9 @@
 require 'digest/md5'
+require Rails.root.join('@server', 'permissions')
 
-# When developing, set to true if you want to see the 
-# http://consider.it homepage. 
+
+# Set to true if you're working on the http://consider.it homepage. 
 ENABLE_HOMEPAGE_IN_DEV = false
-
-# Adapted from CanCan
-class AccessDenied < StandardError
-  attr_reader :action, :subject
-  attr_writer :default_message
-
-  def initialize(message = nil, action = nil, subject = nil)
-    @message = message
-    @action = action
-    @subject = subject
-    @default_message = "You are not authorized to access this page."
-  end
-
-  def to_s
-    @message || @default_message
-  end
-end
 
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
@@ -29,9 +13,10 @@ class ApplicationController < ActionController::Base
   prepend_before_action :get_current_subdomain
   before_action :init_thread_globals
 
-  rescue_from AccessDenied do |exception|
-    render :json => { :errors => [!current_user.registered ? 'not logged in' : 'not authorized'] } 
-    return
+  rescue_from PermissionDenied do |exception|
+    result = { :access_denied => exception.reason } 
+    result[:key] = exception.key if exception.key
+    render :json => result
   end
 
   def render(*args)
@@ -52,9 +37,10 @@ class ApplicationController < ActionController::Base
 
   end
 
-  def authorize!(action, model_or_object)
-    if !model_or_object.can?(action) 
-      raise AccessDenied
+  def authorize!(action, object = nil, key = nil)
+    permitted = permit(action, object)
+    if permitted < 0
+      raise PermissionDenied.new permitted, key
     end
   end
 
@@ -304,6 +290,28 @@ protected
   def verify_user_email_if_possible 
     if !current_user.verified && is_valid_token && current_user.email == session[:email_token_user]['u']
       current_user.verified = true
+
+      ########
+      # This user might have have a role waiting for them...either on a subdomain or proposal
+      # We'll look for any places to replace their email address with their key
+      # BUG: unlikely error can occur if this email address has been invited to a role
+      #       across multiple subdomains before creating an account. In this case, 
+      #       only the current subdomain's roles will be migrated.
+      if current_subdomain.roles.index("\"#{current_user.email}\"") > 0
+        pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{current_subdomain.name}"              
+        current_subdomain.roles = current_subdomain.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
+        current_subdomain.save
+      end
+      if proposals_with_role = current_subdomain.proposals.where("roles like %\"#{current_user.email}\"%") && proposals_with_role.count > 0
+        proposals_with_role.each do |proposal|
+          pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{proposal.name}"
+          proposal.roles = proposal.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
+          proposal.save
+        end 
+      end
+      ########
+
+
       current_user.save
     end
   end

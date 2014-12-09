@@ -2,7 +2,7 @@ class AssessmentController < ApplicationController
   respond_to :json
 
   def show
-    authorize! :index, Assessment
+    authorize! 'factcheck content'
 
     assessment = Assessment.find(params[:id])
     #TODO: authorize against this specific assessment?
@@ -12,7 +12,7 @@ class AssessmentController < ApplicationController
   end
 
   def update
-    authorize! :index, Assessment
+    authorize! 'factcheck content'
     
     fields = ["complete", "reviewable", "notes"]
     updates = params.select{|k,v| fields.include? k}
@@ -53,9 +53,10 @@ class AssessmentController < ApplicationController
   # "/request_assessment/:point_id"
 
   def create
-    authorize! :create, Assessable::Request
-
     point = Point.find(key_id(params['point']))
+
+    authorize! 'request factcheck', point.proposal
+
 
     request = {
       'suggestion' => params['suggestion'],

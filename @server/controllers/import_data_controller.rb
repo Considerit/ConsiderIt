@@ -9,9 +9,8 @@ class ImportDataController < ApplicationController
   include ActionView::Helpers::NumberHelper
 
   def create
-    if !access
-      raise new AccessDenied
-    end
+
+    authorize! 'update subdomain'
 
     errors = []
     modified = {}
@@ -362,10 +361,6 @@ class ImportDataController < ApplicationController
   end
 
   private
-
-  def access
-    return current_user.is_admin?
-  end
 
   # These are LVG-specific data imports. Unfortunately we have to maintain them!
   def import_for_LVG(errors, modified)

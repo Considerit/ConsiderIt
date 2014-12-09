@@ -12,6 +12,7 @@
 //= require ../../activerest-m
 
 //= require ../../sticky_element
+//= require ../../permissions
 //= require ../../franklin
 //= require ../../subdomain_specific
 //= require ../../admin

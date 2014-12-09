@@ -275,7 +275,11 @@ PageTransition =
 # Has proposal description, feelings area (slider + histogram), and reasons area
 Proposal = ReactiveComponent
   displayName: 'Proposal'
+  mixins: [AccessControlled]
+
   render : ->
+    return SPAN(null) if !@accessGranted()
+    
     proposal = @proposal
     your_opinion = fetch @proposal.your_opinion
     current_user = fetch('/current_user')
@@ -335,10 +339,12 @@ Proposal = ReactiveComponent
                 else
                   @renderDescriptionField item
 
-          # CAN?
-          if current_user.is_admin || current_user.user == proposal.user
+          if permit('update proposal', proposal) > 0
             DIV null,
-              A style: {color: '#888'}, onClick: (-> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})), 'Edit'
+              A 
+                style: {color: '#888'}
+                onClick: -> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})
+                'Edit'
               A 
                 style: {color: '#888', padding: 10, backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'}
                 onClick: => 
@@ -1028,6 +1034,11 @@ DecisionBoard = ReactiveComponent
     else if selected_point
       decision_board_style.borderColor = "#ccc"
 
+    if your_opinion.published
+      can_opine = permit 'update opinion', @proposal, your_opinion
+    else
+      can_opine = permit 'publish opinion', @proposal
+
     DIV className:'opinion_region focal_wrapper', style: opinion_region_style,
       Slider
         width: HISTOGRAM_WIDTH
@@ -1036,27 +1047,46 @@ DecisionBoard = ReactiveComponent
         className:'decision_board_body'
         style: decision_board_style
         onClick: => if @root.proposal_mode == 'results' then togglePage('crafting', 'give_opinion_button')
-      ,
 
         DIV null, 
           # only shown during crafting, but needs to be present always for animation
           DIV className: 'your_points',
-            # your pros
             YourPoints { key: 'your_pro_points', valence: 'pros' }
-
-            # your cons
             YourPoints { key: 'your_con_points', valence: 'cons' }
 
-          # only shown during results, but needs to be present always for animation
-          A 
-            className:'give_opinion_button primary_button'
-          , if your_opinion.published then 'Update your Opinion' else 'Give your Opinion'
+          if can_opine != Permission.INSUFFICIENT_PRIVILEGES
+            # only shown during results, but needs to be present for animation
+            A className: 'give_opinion_button primary_button',
+              if your_opinion.published 
+                'Update your Opinion' 
+              else 
+                'Give your Opinion'
 
       DIV className: 'decision_board_footer', style: decision_board_style, 
-        DIV 
-          className:'save_opinion_button primary_button'
-          onClick: @saveYourOpinion
-        , if your_opinion.published then 'See the results' else 'Save your opinion and see results'
+
+        # Big bold button at the bottom of the crafting page
+        if can_opine != Permission.INSUFFICIENT_PRIVILEGES
+          DIV 
+            className:'save_opinion_button primary_button'
+            onClick: => 
+              your_opinion = fetch(@proposal.your_opinion)
+              if can_opine > 0
+                your_opinion.published = true
+                save your_opinion
+                togglePage('results', 'save_button')
+              else
+                @root.auth_mode = if can_opine == Permission.UNVERIFIED_USER then 'verify' else 'register'
+                @root.auth_reason = 'Save your Opinion'
+
+                # We'll need to publish this opinion after auth is completed
+                @root.opinions_to_publish.push(@proposal.your_opinion)
+
+                save @root
+
+            if your_opinion.published 
+              'See the results' 
+            else 
+              'Save your opinion and see results'
 
         if @root.proposal_mode == 'crafting'
           A className:'follow_proposal',
@@ -1139,21 +1169,6 @@ DecisionBoard = ReactiveComponent
       conditional: => 
         @root.proposal_mode == 'crafting'
 
-  # When user clicks the big bold button at the bottom of the crafting page
-  saveYourOpinion : -> 
-    your_opinion = fetch(@proposal.your_opinion)
-    if fetch('/current_user').logged_in
-      your_opinion.published = true
-      save (your_opinion)
-      togglePage('results', 'save_button')
-    else
-      @root.auth_mode = 'login'
-      @root.auth_reason = 'Save your Opinion'
-
-      # We'll need to publish this opinion after auth is completed
-      @root.opinions_to_publish.push(@proposal.your_opinion)
-
-      save @root
 
 ##
 # YourPoints
@@ -1163,18 +1178,11 @@ DecisionBoard = ReactiveComponent
 YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
-  handleAddPointBegin : ->
-    your_points = @data()
-    your_points.adding_new_point = true
-    save your_points
-
-    writeToLog
-      what: 'click new point'
-
   render : ->
-    root = fetch('root')
     included_points = fetch(@proposal.your_opinion).point_inclusions
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
+
+    can_add_new_point = permit 'create point', @proposal
 
     your_points = @data @props.key,
       editing_points : []
@@ -1183,7 +1191,7 @@ YourPoints = ReactiveComponent
     DIV 
       className:"points_on_decision_board #{@props.valence}_on_decision_board"
       style: { width: POINT_WIDTH }
-    ,
+
       DIV className:'points_heading_label',
         "Give Your #{capitalize(@props.valence)}"
 
@@ -1202,16 +1210,33 @@ YourPoints = ReactiveComponent
             #"Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
             "Drag a #{capitalize(if @props.valence=='pros' then 'pro' else 'con')} from the #{left_or_right}"
 
+        if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES
+          if !your_points.adding_new_point
+            DIV className:'newpoint_prompt',
+              SPAN className:'qualifier', 
+                'or '
+              SPAN className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
+              A 
+                className:'newpoint_link'
+                onClick: => 
+                  if can_add_new_point == Permission.NOT_LOGGED_IN
+                    @root.auth_mode = 'register'
+                    @root.auth_reason = 'write a point'
+                    save @root
+                  else if can_add_new_point == Permission.UNVERIFIED_USER
+                    @root.auth_mode = 'verify'
+                    @root.auth_reason = 'write a point'
+                    save @root
 
-        if !your_points.adding_new_point
-          DIV className:'newpoint_prompt',
-            SPAN className:'qualifier', 
-              'or '
-            SPAN className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
-            A className:'newpoint_link', 'data-action':'write-point', onClick: @handleAddPointBegin,
-            "Write a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
-        else
-          EditPoint { key: "new_point_#{@props.valence}", fresh: true, valence: @props.valence, your_points_key: @props.key }
+                  your_points = @data()
+                  your_points.adding_new_point = true
+                  save your_points
+                  writeToLog {what: 'click new point'}
+
+                "Write a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
+
+          else
+            EditPoint { key: "new_point_#{@props.valence}", fresh: true, valence: @props.valence, your_points_key: @props.key }
 
 
 
@@ -1243,7 +1268,6 @@ CommunityPoints = ReactiveComponent
         minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
         zIndex: if pro_is_selected and @props.key == 'pros'
                   '6'
-    ,
       DIV className:'points_heading_label',
         if fetch('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
         P className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
@@ -1457,24 +1481,18 @@ Point = ReactiveComponent
             if !is_selected && select_enticement && @props.rendered_as != 'under_review'
               select_enticement
 
-
-      if current_user.user == point.user && @props.rendered_as == 'decision_board_point'
         DIV null,
-          # Should we only allow editing of a point before it is published?
-          # Is an author allowed to edit a point after someone else has included it?
-          A
-            className: 'edit_point'
-            onClick: ((e) =>
-              e.stopPropagation()
-              points = fetch(@props.your_points_key)
-              points.editing_points.push(@props.key)
-              save(points))
-            SPAN null, 'edit'
+          if permit('update point', point) > 0 && @props.rendered_as == 'decision_board_point'
+            A
+              className: 'edit_point'
+              onClick: ((e) =>
+                e.stopPropagation()
+                points = fetch(@props.your_points_key)
+                points.editing_points.push(@props.key)
+                save(points))
+              SPAN null, 'edit'
 
-          # Allow the point author to delete this point before it is published.
-          # After it gets published, however, it can influence other people, so the author shouldn't be able to delete.
-          # Later they can just remove it from their list if they don't believe it anymore. 
-          if point.includers.length == 0 || (point.includers.length == 1 && point.includers[0] == current_user.user)
+          if permit('delete point', point) > 0 && @props.rendered_as == 'decision_board_point'
             A className: 'delete_point', onClick: @deletePoint,
               SPAN null, 'delete'
 
@@ -1627,8 +1645,6 @@ Comment = ReactiveComponent
 
       DIV className: 'comment_entry',
 
-
-
         # Comment author name
         DIV className: 'comment_entry_name',
           fetch(comment.user).name + ':'
@@ -1644,7 +1660,7 @@ Comment = ReactiveComponent
           splitParagraphs(comment.body)
 
         # Delete/edit button
-        if comment.user == fetch('/current_user').user
+        if permit('update comment', comment) > 0
           comment_action_style = 
             color: '#444'
             textDecoration: 'underline'
@@ -1681,8 +1697,7 @@ FactCheck = ReactiveComponent
 
       # Comment author icon
       DIV className: 'magnifying_glass',
-        I
-          className: 'fa fa-search'
+        I className: 'fa fa-search'
 
       # Comment body
       DIV className: 'comment_entry_body',
@@ -1714,7 +1729,7 @@ EditComment = ReactiveComponent
   displayName: 'EditComment'
 
   render : -> 
-    logged_in = fetch('/current_user').logged_in
+    permitted = permit 'create comment', @proposal
 
     DIV className: 'comment_entry',
 
@@ -1731,17 +1746,27 @@ EditComment = ReactiveComponent
           position: 'absolute'
           width: 50
           height: 50
-          backgroundColor: if not logged_in then 'transparent'
-          border:          if not logged_in then '1px dashed grey'
+          backgroundColor: if permitted < 0 then 'transparent'
+          border:          if permitted < 0 then '1px dashed grey'
 
         key: fetch('/current_user').user
         hide_name: true
 
-      if not logged_in && @proposal.active
+      if permitted == Permission.DISABLED
+        SPAN 
+          style: {position: 'absolute', margin: '14px 0 0 70px'}
+          'Comments closed'
+
+      else if permitted == Permission.INSUFFICIENT_PRIVILEGES
+        SPAN 
+          style: {position: 'absolute', margin: '14px 0 0 70px'}
+          'Sorry, you do not have permission to comment'
+
+      else if permitted < 0
         SPAN
           className: 'hover_pointer'
           onClick: =>
-            @root.auth_mode = 'login'
+            @root.auth_mode = if permitted == Permission.NOT_LOGGED_IN then 'login' else 'verify'
             @root.auth_reason = 'Write a Comment'
             save(@root)
           style:
@@ -1749,15 +1774,20 @@ EditComment = ReactiveComponent
             margin: '14px 0 0 70px'
             textDecoration: 'underline'
             color: considerit_blue
-           'Log in to write a comment'
+          if permitted == Permission.NOT_LOGGED_IN
+            SPAN null,
+              'Log in to write a comment'
+              if '*' not in @proposal.roles.commenter
+                SPAN style: {display: 'block', fontSize: 11},
+                  '. Only some email addresses are authorized to comment.'
 
-      if !@proposal.active
-        SPAN style: {position: 'absolute', margin: '14px 0 0 70px'}, 'Comments closed at this time'        
+          else if permitted == Permission.UNVERIFIED_USER
+            'Verify your account to write a comment'
 
       AutoGrowTextArea
         className: 'new_comment'
-        placeholder: (logged_in and @proposal.active and 'Write a new comment') or ''
-        disabled: !logged_in || !@proposal.active
+        placeholder: if permitted > 0 then 'Write a new comment' else ''
+        disabled: permitted < 0
         onChange: (e) => @local.new_comment = e.target.value; save(@local)
         defaultValue: if @props.fresh then null else @data().body
         min_height: 60
@@ -1766,24 +1796,25 @@ EditComment = ReactiveComponent
           width: 390
           lineHeight: 1.4
           fontSize: 16
-          border: if !logged_in || !@proposal.active then 'dashed 1px'
+          border: if permitted < 0 then 'dashed 1px'
 
-      DIV style: {textAlign: 'right'},
-        Button({style: {marginLeft: 314}}, 'Save comment', (e) =>
-          e.stopPropagation()
-          if @props.fresh
-            comment =
-              key: '/new/comment'
-              body: @local.new_comment
-              user: fetch('/current_user').user
-              point: "/point/#{@props.point}"
-          else
-            comment = @data()
-            comment.body = @local.new_comment
-            comment.editing = false
+      if permitted > 0
+        DIV style: {textAlign: 'right'},
+          Button({style: {marginLeft: 314}}, 'Save comment', (e) =>
+            e.stopPropagation()
+            if @props.fresh
+              comment =
+                key: '/new/comment'
+                body: @local.new_comment
+                user: fetch('/current_user').user
+                point: "/point/#{@props.point}"
+            else
+              comment = @data()
+              comment.body = @local.new_comment
+              comment.editing = false
 
-          save(comment)
-          $(@getDOMNode()).find('.new_comment').val(''))
+            save(comment)
+            $(@getDOMNode()).find('.new_comment').val(''))
 
 
 Discussion = ReactiveComponent
@@ -1916,6 +1947,8 @@ SubmitFactCheck = ReactiveComponent
   # - Contains a verdict
 
   render: ->
+    return SPAN(null) if !@proposal.assessment_enabled
+
     logged_in = fetch('/current_user').logged_in
 
     request_a_fact_check = =>
@@ -1951,8 +1984,8 @@ SubmitFactCheck = ReactiveComponent
           'librarian will respond'
         ' to your request within 48 hours'
 
-    give_a_claim = =>
-      if logged_in
+    request_a_factcheck = =>
+      if permit('request factcheck', @proposal) > 0
         [
           DIV style: {marginTop: 12},
             'What factual claim do you want researched?'
@@ -2037,7 +2070,7 @@ SubmitFactCheck = ReactiveComponent
       @local.state = 'requested'
 
 
-    show_request = @proposal.assessment_enabled || @local.state != 'blank slate'
+    show_request = @local.state != 'blank slate'
     
     request_style = if show_request then { marginBottom: 45, minHeight: 60 } else {}
 
@@ -2057,11 +2090,10 @@ SubmitFactCheck = ReactiveComponent
           marginLeft: 60
         switch @local.state
           when 'blank slate'
-            if @proposal.assessment_enabled
-              request_a_fact_check()
+            request_a_fact_check()
           when 'clicked'
             [request_a_fact_check()
-            give_a_claim()]
+            request_a_factcheck()]
           when 'requested'
             request_in_progress()
           when 'verdict'
@@ -3410,13 +3442,19 @@ Computer = ReactiveComponent
     #console.log("Maybe we will publish: '#{@root.opinions_to_publish}' #{current_user.logged_in}")
 
     # Publish pending opinions if we can
-    while @root.opinions_to_publish.length > 0 and current_user.logged_in
-      opinion = fetch(@root.opinions_to_publish.pop()); save(@root)
-      if opinion.published
-        break
-      console.log("Publishing the opinion. It's", opinion)
-      opinion.published = true
-      save(opinion)
+    if @root.opinions_to_publish.length > 0
+      can_opine = permit('publish opinion', opinion.proposal)
+      if can_opine > 0
+        while @root.opinions_to_publish.length > 0
+          opinion = fetch(@root.opinions_to_publish.pop()); save(@root)
+          break if opinion.published
+          opinion.published = true
+          save opinion
+      else if can_opine == Permission.INSUFFICIENT_PRIVILEGES
+        noop = 1
+        # TODO: show some kind of prompt to user indicating that despite 
+        #       creating an account, they still aren't permitted to publish 
+        #       their opinion.
 
     # users following an email invitation need to complete registration (name + password)
     if current_user.needs_to_set_password
@@ -3434,14 +3472,6 @@ Page = ReactiveComponent
 
     avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
-
-    # FOR TESTING
-    # current_user = fetch('/current_user')
-    # if !current_user.verified && current_user.logged_in
-    #   @root.auth_mode = 'verify'
-    #   @root.auth_reason = 'access this proposal'
-    #   save @root
-    ####
 
     if @root.auth_mode && @root.auth_mode != 'update'
       return Auth()

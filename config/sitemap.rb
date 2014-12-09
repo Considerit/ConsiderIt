@@ -24,7 +24,8 @@ Subdomain.find_each do |subdomain|
     # Defaults: :priority => 0.5, :changefreq => 'weekly',
     #           :lastmod => Time.now, :host => default_host
     #
-    subdomain.proposals.active.open_to_public.each do |prop|
+    subdomain.proposals.active.each do |prop|
+      next if !prop.open_to_public
       begin
         add prop.slug, {:priority => 1.0, :changefreq => 'daily'}
       rescue
@@ -32,9 +33,10 @@ Subdomain.find_each do |subdomain|
       end
     end
 
-    subdomain.proposals.where( :active => false, :published => true ).open_to_public.each do |prop|
+    subdomain.proposals.where( :active => false, :published => true ).each do |prop|
       next if prop.opinions.published.count == 0
-      
+      next if !prop.open_to_public
+
       begin
         add prop.slug, {:priority => 0.2, :changefreq => 'monthly'}
         #add proposal_path(prop.slug), {:priority => 0.7, :changefreq => 'weekly'}

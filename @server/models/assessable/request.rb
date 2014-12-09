@@ -18,12 +18,4 @@ class Assessable::Request < ActiveRecord::Base
   end
 
 
-  def self.can?(action)
-    if action == :create
-      Thread.current[:current_user].registered
-    else
-      false
-    end
-  end
-
 end

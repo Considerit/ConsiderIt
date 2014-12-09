@@ -82,13 +82,4 @@ class Moderation < ActiveRecord::Base
 
   end
 
-  def can?(action)
-    Moderation.can(action)
-  end
-
-  def self.can?(action)
-    Thread.current[:current_user].has_any_role?([:admin, :superadmin, :moderator])
-  end
-
-
 end

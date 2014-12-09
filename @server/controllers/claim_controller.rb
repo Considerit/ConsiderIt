@@ -7,7 +7,7 @@ class ClaimController < ApplicationController
   end
 
   def create
-    authorize! :index, Assessment
+    authorize! 'factcheck content'
 
     assessment = Assessment.find key_id(params['assessment'])
 
@@ -35,7 +35,7 @@ class ClaimController < ApplicationController
   end
 
   def update
-    authorize! :index, Assessment
+    authorize! 'factcheck content'
 
     claim = Assessable::Claim.find(params[:id])
 
@@ -70,7 +70,7 @@ class ClaimController < ApplicationController
 
 
   def destroy
-    authorize! :index, Assessment
+    authorize! 'factcheck content'
 
     claim = Assessable::Claim.find(params[:id])
 

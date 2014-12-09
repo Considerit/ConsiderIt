@@ -61,13 +61,4 @@ class Assessment < ActiveRecord::Base
 
   end
 
-  def can?(action)
-    Assessment.can(action)
-  end
-
-  def self.can?(action)
-    Thread.current[:current_user].has_any_role?([:admin, :superadmin, :evaluator])
-  end
-
-
 end

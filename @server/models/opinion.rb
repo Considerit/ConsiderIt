@@ -30,12 +30,9 @@ class Opinion < ActiveRecord::Base
     result
   end
 
-  def self.get_or_make(proposal, user)
+  def self.get_or_make(proposal)
     # Each (user,proposal) should have only one opinion.
-
-    if !user
-      raise "Need a user to get their opinion!"
-    end
+    user = Thread.current[:current_user] 
     
     # First try to find a published opinion for this user
     your_opinion = Opinion.where(:proposal_id => proposal.id, 
@@ -274,27 +271,6 @@ class Opinion < ActiveRecord::Base
       end
     end
   end
-
-
-  def can?(action)
-    user = Thread.current[:current_user]
-
-    return true if user.is_admin?
-    
-    if action == :read
-      self.proposal.can?(:read)
-    elsif action == :create
-      true
-    elsif action == :update
-      can?(:read) && (user.id == self.user_id)      
-    elsif action == :destroy      
-      can?(:update)
-    else
-      false
-    end
-    
-  end
-
 
 end
 

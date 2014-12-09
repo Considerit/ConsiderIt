@@ -52,26 +52,8 @@ class CurrentUserController < ApplicationController
               raise "Error registering this uesr"
             end
 
-            ########
-            # This user might have have a role waiting for them...either on a subdomain or proposal
-            # We'll look for any places to replace their email address with their key
-            # BUG: unlikely error can occur if this email address has been invited to a role
-            #       across multiple subdomains before creating an account. 
-            if current_subdomain.roles.index("\"#{current_user.email}\"") > 0
-              pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{current_subdomain.name}"              
-              current_subdomain.roles = current_subdomain.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
-              current_subdomain.save
-            end
-            if proposals_with_role = current_subdomain.proposals.where("roles like %\"#{current_user.email}\"%") && proposals_with_role.count > 0
-              proposals_with_role.each do |proposal|
-                pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{proposal.name}"
-                proposal.roles = proposal.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
-                proposal.save
-              end 
-            end
-            ########
-
             current_user.add_to_active_in
+            dirty_key '/proposals'
             log('registered account')
 
           else
@@ -140,6 +122,7 @@ class CurrentUserController < ApplicationController
             set_current_user(user)
             try_update_password 'login_via_reset_password_token', errors
             current_user.add_to_active_in
+            dirty_key '/proposals'
           else
             errors.append "Sorry, that's the wrong verification code."
           end  
@@ -199,6 +182,10 @@ class CurrentUserController < ApplicationController
         # this will get used below in verify_user_email_if_possible
         session[:email_token_user] = {'u' => current_user.email, 't' => params[:verification_code]}
         log('verifying email')
+
+      when 'send_verification_token'
+        UserMailer.verification(current_user, current_subdomain)
+
     end
 
     verify_user_email_if_possible
@@ -276,7 +263,7 @@ class CurrentUserController < ApplicationController
       if !current_user.save
         raise 'Error saving basic current_user parameters!'
       end
-      dirty_key '/proposals' # might have access to more proposals if user tags have been changed
+      dirty_key '/proposals' # might have access to more proposals if user tags have been changed (LVG, zipcodes)
 
     else
       raise 'Had trouble manipulating this user!'

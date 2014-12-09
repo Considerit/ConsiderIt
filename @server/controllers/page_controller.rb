@@ -3,50 +3,36 @@ class PageController < ApplicationController
 
   def show
     page = params[:id]
-
-    to_dirty = []
-    access_denied = nil
     
     if page == 'homepage'
-      to_dirty.append '/page/homepage'
-      to_dirty.append '/users'
+      dirty_key '/page/homepage'
+      dirty_key '/users'
 
     elsif page.match 'dashboard/'
 
       case page
+
       when 'dashboard/assessment'
-        if !Assessment.can?(:access)
-          access_denied = 'login required'
-        end
+        authorize_action = "factcheck content"
+
       when 'dashboard/moderate'
-        if !Moderation.can?(:access)
-          access_denied = 'login required'
-        end
+        authorize_action = "moderate content"
+
       when 'dashboard/create_subdomain'
-        if !Subdomain.can?(:create)
-          access_denied = 'login required'
-        end
-      when 'dashboard/import_data'
-        if !current_user.is_admin?
-          access_denied = 'login required'
-        end
-      when 'dashboard/application', 'dashboard/roles'
-        if !current_subdomain.can?(:update)
-          access_denied = 'login required'
-        end
+        authorize_action = "create subdomain"
+
+      when 'dashboard/application', 'dashboard/roles', 'dashboard/import_data'
+        authorize_action = "update subdomain"
+
       else
-        permitted = true
+        authorize_action = nil
       end
+      
+      authorize!(authorize_action, current_subdomain, "/page/#{page}") if authorize_action
 
-      if !access_denied
-        to_dirty.append "/page/#{page}"
-      end
+      dirty_key "/page/#{page}"
 
-
-    elsif page == 'proposal/new' || page == 'about' # don't need anything special
-      noop = 1
-
-    else # if proposal
+    elsif page != 'proposal/new' && page != 'about'
 
       proposal = Proposal.find_by_slug page
 
@@ -55,30 +41,17 @@ class PageController < ApplicationController
         return
       end
 
-      if !proposal.can?(:read)
-        # TODO: get real reason
-        access_denied = 'login required'
-      end
+      authorize! "read proposal", proposal, "/page/#{proposal.slug}"
 
       # Ensure an existing opinion for this user
-      your_opinion = Opinion.get_or_make(proposal, current_user)
+      your_opinion = Opinion.get_or_make(proposal)
 
-      to_dirty.append "/page/#{proposal.slug}"
-      to_dirty.append '/users'
+      dirty_key "/page/#{proposal.slug}"
+      dirty_key '/users'
     end
 
-    if access_denied
-      render :json => [{:access_denied => access_denied, :key => "/page/#{page}"}]
-    else
-      to_dirty.each do |key| 
-        dirty_key key
-      end
+    render :json => []
 
-      render :json => []
-    end
-
-
-  
   end
 
 end

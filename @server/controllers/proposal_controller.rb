@@ -10,10 +10,11 @@ class ProposalController < ApplicationController
 
   def show
     proposal = Proposal.find_by_id(params[:id]) || Proposal.find_by_slug(params[:id])
-    if !proposal || !proposal.can?(:read)
+    if !proposal
       render :json => { errors: ["not found"] }, :status => :not_found
       return 
     end
+    authorize! "read proposal", proposal
 
     dirty_key "/proposal/#{proposal.slug}"
     render :json => []
@@ -22,7 +23,7 @@ class ProposalController < ApplicationController
   def create
     # TODO: slug should be validated as a legit url
 
-    authorize! :create, Proposal
+    authorize! 'create proposal'
 
     fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
     proposal = params.select{|k,v| fields.include? k}
@@ -81,7 +82,7 @@ class ProposalController < ApplicationController
       end
     end
 
-    if proposal.can?(:update)
+    if permit('update proposal', proposal) > 0
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
       updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}
 
@@ -112,64 +113,9 @@ class ProposalController < ApplicationController
     render :json => []
   end
 
-
-  # def old_update
-  #   # ASSUMPTION: a proposal cannot become unpublished after it has been published
-  #   proposal = Proposal.find_by_slug(params[:slug])
-  #   authorize! :update, proposal
-
-  #   private_discussion = (params.has_key?(:publicity) && params[:publicity] == '0') || proposal.publicity == 0
-
-  #   published_now = params.has_key?(:published) && params[:published] == 'true' && !proposal.published
-
-  #   notify_private_accessors = private_discussion && (published_now || proposal.published)
-
-  #   # we don't want to send emails to people who have already been
-  #   # invited via email. This only applies to proposals that have
-  #   # already been published, because email invitations aren't sent
-  #   # out until publishing. We can avoid double sending invitations by
-  #   # grabbing the access list of the proposal as set *before* this
-  #   # current update.
-  #   existing_access_list = notify_private_accessors && !published_now ? proposal.attributes['access_list'] : nil
-
-  #   if notify_private_accessors
-  #     users = []
-  #     inviter = nil
-
-  #     if existing_access_list.nil? || existing_access_list == '' 
-  #       if !current_user.nil? && current_user.registered
-  #         inviter = current_user
-  #       end
-  #       users = proposal.access_list.gsub(' ', '').split(',')
-  #     else
-  #       before = existing_access_list.gsub(' ', '').split(',').to_set
-  #       after = proposal.access_list.gsub(' ', '').split(',').to_set
-  #       users = after - before
-  #     end
-
-  #     ActiveSupport::Notifications.instrument("alert_proposal_publicity_changed", 
-  #       :proposal => proposal,
-  #       :users => users,
-  #       :inviter => inviter,
-  #       :current_subdomain => current_subdomain
-  #     )
-  #   end
-
-
-  #   response = {
-  #     :success => true,
-  #     :access_list => proposal.access_list,
-  #     :publicity => proposal.publicity,
-  #     :published => proposal.published,
-  #     :active => proposal.active,
-  #     :proposal => proposal
-  #   }
-  #   render :json => response.to_json
-  # end
-
   def destroy
     proposal = Proposal.find(params[:id])
-    authorize! :destroy, proposal
+    authorize! 'delete proposal', proposal
     proposal.destroy
     render :json => {:success => true}
   end

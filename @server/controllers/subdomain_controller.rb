@@ -11,7 +11,7 @@ class SubdomainController < ApplicationController
   end
 
   def create
-    authorize! :create, Subdomain
+    authorize! 'create subdomain'
 
     errors = []
 
@@ -44,10 +44,11 @@ class SubdomainController < ApplicationController
 
   def update
     subdomain = Subdomain.find(params[:id])
-    authorize! :update, subdomain
+    authorize! 'update subdomain', subdomain
+
     if subdomain.id != current_subdomain.id #&& !current_user.super_admin
       # for now, don't allow modifying non-current subdomain
-      raise new AccessDenied
+      raise PermissionDenied.new Permission::DISABLED
     end
 
     fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'has_civility_pledge']

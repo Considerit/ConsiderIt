@@ -24,10 +24,10 @@
 # Failure cases should be less than 0.
 Permission = 
   PERMITTED: 1
-  DISABLED : -1
-  UNVERIFIED_USER : -2
-  NOT_LOGGED_IN : -3
-  INSUFFICIENT_PRIVILEGES: -4
+  DISABLED : -1  # no one can take this action
+  UNVERIFIED_EMAIL : -2 # can take action once email is verified 
+  NOT_LOGGED_IN : -3 # not sure if action can be taken
+  INSUFFICIENT_PRIVILEGES: -4 # we know this user can't do this
 
 
 
@@ -46,7 +46,7 @@ permit = (action) ->
 
     when 'update proposal'
       proposal = fetch arguments[1]
-      if !current_user.is_admin || !matchEmail(proposal.roles.editor)
+      if !current_user.is_admin && !matchEmail(proposal.roles.editor)
         return Permission.INSUFFICIENT_PRIVILEGES
 
     when 'publish opinion'
@@ -145,7 +145,6 @@ AccessControlled =
   accessGranted: -> 
     current_user = fetch '/current_user'
 
-
     ####
     # HACK: Clear out statebus if current_user changed. See comment below.
     local_but_not_component_unique = fetch "local-#{@props.key}"
@@ -172,10 +171,13 @@ AccessControlled =
           @root.auth_reason = 'Access this page'
           save @root
 
-        when Permission.UNVERIFIED_USER
+        when Permission.UNVERIFIED_EMAIL
           @root.auth_mode = 'verify'
           @root.auth_reason = 'Access this page'
           save @root
+          current_user.trying_to = 'send_verification_token'
+          save current_user
+
 
       #######
       # Hack! The server will return access_denied on the page, e.g.: 

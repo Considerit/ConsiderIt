@@ -16,13 +16,12 @@
 # Permission cases ENUM
 # This needs to be synchronized with client (see @client/permissions.coffee).
 # Failure cases should be less than 0.
-
 module Permission
   PERMITTED = 1
-  DISABLED = -1
-  UNVERIFIED_USER = -2
-  NOT_LOGGED_IN = -3
-  INSUFFICIENT_PRIVILEGES = -4
+  DISABLED = -1 # no one can take this action
+  UNVERIFIED_EMAIL = -2 # can take action once email is verified 
+  NOT_LOGGED_IN = -3 # not sure if action can be taken
+  INSUFFICIENT_PRIVILEGES = -4 # we know this user can't do this
 end
 
 class PermissionDenied < StandardError
@@ -81,7 +80,7 @@ def permit(action, object)
         return Permission::INSUFFICIENT_PRIVILEGES 
       end
     elsif !current_user.verified
-      return Permission::UNVERIFIED_USER
+      return Permission::UNVERIFIED_EMAIL
     end
 
   when 'update proposal'

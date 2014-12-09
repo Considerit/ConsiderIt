@@ -339,6 +339,7 @@ Proposal = ReactiveComponent
                 else
                   @renderDescriptionField item
 
+
           if permit('update proposal', proposal) > 0
             DIV null,
               A 
@@ -1075,8 +1076,13 @@ DecisionBoard = ReactiveComponent
                 save your_opinion
                 togglePage('results', 'save_button')
               else
-                @root.auth_mode = if can_opine == Permission.UNVERIFIED_USER then 'verify' else 'register'
-                @root.auth_reason = 'Save your Opinion'
+                if can_opine == Permission.UNVERIFIED_EMAIL
+                  @root.auth_mode = 'verify'
+                  current_user.trying_to = 'send_verification_token'
+                  save current_user
+                else
+                  @root.auth_mode = 'register'
+                  @root.auth_reason = 'Save your Opinion'
 
                 # We'll need to publish this opinion after auth is completed
                 @root.opinions_to_publish.push(@proposal.your_opinion)
@@ -1223,10 +1229,13 @@ YourPoints = ReactiveComponent
                     @root.auth_mode = 'register'
                     @root.auth_reason = 'write a point'
                     save @root
-                  else if can_add_new_point == Permission.UNVERIFIED_USER
+                  else if can_add_new_point == Permission.UNVERIFIED_EMAIL
                     @root.auth_mode = 'verify'
                     @root.auth_reason = 'write a point'
                     save @root
+                    current_user.trying_to = 'send_verification_token'
+                    save current_user
+
 
                   your_points = @data()
                   your_points.adding_new_point = true
@@ -1766,23 +1775,34 @@ EditComment = ReactiveComponent
         SPAN
           className: 'hover_pointer'
           onClick: =>
-            @root.auth_mode = if permitted == Permission.NOT_LOGGED_IN then 'login' else 'verify'
+            if permitted == Permission.NOT_LOGGED_IN
+              @root.auth_mode = 'login' 
+            else if permitted == Permission.UNVERIFIED_EMAIL
+              @root.auth_mode = 'verify'
+              current_user.trying_to = 'send_verification_token'
+              save current_user
+
             @root.auth_reason = 'Write a Comment'
             save(@root)
+
           style:
             position: 'absolute'
             margin: '14px 0 0 70px'
-            textDecoration: 'underline'
-            color: considerit_blue
           if permitted == Permission.NOT_LOGGED_IN
-            SPAN null,
-              'Log in to write a comment'
+            DIV null,
+              SPAN 
+                style: { textDecoration: 'underline', color: considerit_blue }
+                'Log in to write a comment'
               if '*' not in @proposal.roles.commenter
-                SPAN style: {display: 'block', fontSize: 11},
-                  '. Only some email addresses are authorized to comment.'
+                DIV style: {fontSize: 11},
+                  'Only some email addresses are authorized to comment.'
 
-          else if permitted == Permission.UNVERIFIED_USER
-            'Verify your account to write a comment'
+          else if permitted == Permission.UNVERIFIED_EMAIL
+            DIV null,
+              SPAN
+                style: { textDecoration: 'underline', color: considerit_blue }
+               'Verify your account'
+              SPAN null, 'to write a comment'
 
       AutoGrowTextArea
         className: 'new_comment'

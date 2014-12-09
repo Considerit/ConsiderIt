@@ -142,6 +142,7 @@ class CurrentUserController < ApplicationController
           # puts("Errors are #{errors}")
         else 
           # This algorithm is adapted from devise
+          # TODO: unify with user.unique_token
 
           # Generate a token that nobody's using
           raw_token = loop do
@@ -185,6 +186,7 @@ class CurrentUserController < ApplicationController
 
       when 'send_verification_token'
         UserMailer.verification(current_user, current_subdomain)
+        log('verification token sent')
 
     end
 

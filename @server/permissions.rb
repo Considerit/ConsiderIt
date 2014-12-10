@@ -35,7 +35,7 @@ end
 
 def permit(action, object)
   current_user = Thread.current[:current_user]
-
+  current_subdomain = Thread.current[:subdomain]
 
   def matchEmail(permission_list)
     return true if permission_list.index('*')
@@ -66,7 +66,7 @@ def permit(action, object)
 
   when 'create proposal'
     return Permission::NOT_LOGGED_IN if !current_user.registered
-    if !current_user.has_any_role?([:admin, :superadmin, :proposer])
+    if !current_user.is_admin? && !matchEmail(current_subdomain.user_roles['proposer'])
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
@@ -87,7 +87,7 @@ def permit(action, object)
       end
     end
 
-  when 'update proposal'
+  when 'update proposal', 'delete proposal'
     proposal = object
 
     can_read = permit('read proposal', object)
@@ -95,17 +95,6 @@ def permit(action, object)
 
     if !current_user.is_admin? && !matchEmail(proposal.user_roles['editor'])
       return Permission::INSUFFICIENT_PRIVILEGES
-    end
-
-  when 'delete proposal'
-    proposal = object
-
-    can_update = permit('read proposal', object)
-    return can_update if can_read < 0
-
-    if !(proposal.opinions.published.count == 0 || (proposal.opinions.published.count == 1 && proposal.opinions.published.first.user_id == current_user.id))
-      # don't delete proposal if other people have opined. Might want to reconsider this rule. 
-      return Permission::DISABLED
     end
 
   when 'read opinion'

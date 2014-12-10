@@ -3536,6 +3536,7 @@ Page = ReactiveComponent
                 when 'dashboard/roles'
                   RolesDash key: "/page/dashboard/roles"
                 else 
+                  console.log @page
                   Proposal key: @page.proposal.key
 
         Footer()

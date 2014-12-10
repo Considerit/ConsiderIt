@@ -109,6 +109,15 @@ class Proposal < ActiveRecord::Base
     json
   end
 
+  # Returns a hash of all the roles. Each role is expressed
+  # as a list of (1) user keys, (2) email addresses (for users w/o an account)
+  # and (3) email wildcards ('*', '*@consider.it'). 
+  # 
+  # Setting filter to try returns a roles hash that strips out 
+  # all specific email addresses / user keys that are not the
+  # current user. 
+  #
+  # TODO: consolidate with subdomain.user_roles
   def user_roles(filter = false)
     r = JSON.parse(roles || "{}")
     ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|

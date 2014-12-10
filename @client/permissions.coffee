@@ -43,8 +43,14 @@ permit = (action) ->
   current_user = fetch '/current_user'
 
   switch action
+    when 'create proposal'
+      subdomain = fetch '/subdomain'
 
-    when 'update proposal'
+      return Permission.NOT_LOGGED_IN if !current_user.logged_in
+      if !current_user.is_admin && !matchEmail(subdomain.roles.proposer)
+        return Permission.INSUFFICIENT_PRIVILEGES 
+
+    when 'update proposal', 'delete proposal'
       proposal = fetch arguments[1]
       if !current_user.is_admin && !matchEmail(proposal.roles.editor)
         return Permission.INSUFFICIENT_PRIVILEGES
@@ -54,7 +60,7 @@ permit = (action) ->
       return Permission.DISABLED if !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
 
-      if !current_user.is_admin && !matchSomeRole(proposal.user_roles, ['editor', 'writer', 'opiner'])
+      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer', 'opiner'])
         return Permission.INSUFFICIENT_PRIVILEGES 
 
     when 'update opinion'
@@ -67,7 +73,7 @@ permit = (action) ->
     when 'create point'
       proposal = fetch arguments[1]
       return Permission.DISABLED if !proposal.active
-      if !current_user.is_admin && !matchSomeRole(proposal.roles ['editor', 'writer'])
+      if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer'])
         if !current_user.logged_in
           return Permission.NOT_LOGGED_IN  
         else 

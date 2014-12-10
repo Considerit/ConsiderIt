@@ -37,7 +37,7 @@ class OpinionController < ApplicationController
 
     # Update published
     if params['published'] && !opinion.published
-      authorize! 'publish opinion', opinion
+      authorize! 'publish opinion', proposal
 
       opinion.publish()  # This will also publish all the newly-written points
       dirty_key "/page/homepage" # you're now a recent contributor!

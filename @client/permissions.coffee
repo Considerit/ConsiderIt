@@ -115,6 +115,9 @@ permit = (action) ->
       return Permission.DISABLED if !proposal.assessment_enabled || !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in 
 
+    else
+      console.error "Unrecognized action to permit: #{action}"
+
   return Permission.PERMITTED
 
 matchEmail = (permission_list) -> 

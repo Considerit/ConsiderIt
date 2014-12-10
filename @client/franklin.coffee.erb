@@ -350,6 +350,15 @@ Proposal = ReactiveComponent
                   save @local
                 'Share'
 
+              if permit('delete proposal', proposal) > 0
+                A
+                  style: {color: '#888'}
+                  onClick: => 
+                    if confirm('Delete this proposal forever?')
+                      destroy(proposal.key)
+                      window.app_router.navigate("/", {trigger: true})
+                  'Delete'
+
           if @local.edit_roles
             DIV 
               style: {width: BODY_WIDTH, margin: 'auto', backgroundColor: '#fafafa', padding: '10px 60px'}
@@ -1499,7 +1508,12 @@ Point = ReactiveComponent
               SPAN null, 'edit'
 
           if permit('delete point', point) > 0 && @props.rendered_as == 'decision_board_point'
-            A className: 'delete_point', onClick: @deletePoint,
+            A 
+              className: 'delete_point'
+              onClick: (e) =>
+                e.stopPropagation()
+                if confirm('Delete this point forever?')
+                  destroy @props.key
               SPAN null, 'delete'
 
       if is_selected
@@ -1582,10 +1596,6 @@ Point = ReactiveComponent
       details: 
         point: @props.key
 
-
-  deletePoint :(e) ->
-    e.stopPropagation()
-    destroy @props.key
 
   ## ##
   # On hovering over a point, highlight the people who included this 
@@ -1677,7 +1687,7 @@ Comment = ReactiveComponent
               style: comment_action_style
               onClick: do (key = comment.key) => (e) =>
                 e.stopPropagation()
-                if (confirm('Delete this comment?'))
+                if confirm('Delete this comment forever?')
                   destroy(key)
               'delete'
 

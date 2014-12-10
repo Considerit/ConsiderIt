@@ -254,7 +254,8 @@ window.Permission = Permission
 # The limitation of this option is that it would be a privacy violation to 
 # give the email addresses of specific individuals. We could state "...and 
 # some specific individuals" in that case. To implement this option, we 
-# will filter out specific individuals from the proposal roles hash for non-admins. 
+# will filter out specific individuals from the proposal roles hash for non-admins
+# in the JSON proposal hash. 
 ###
 
 

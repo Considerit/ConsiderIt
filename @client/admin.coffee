@@ -313,7 +313,7 @@ ProposalShare = ReactiveComponent
       {name: 'writer', label: 'Writers', description: 'Can write pro and con points that are shared with others. Any writer can comment and opine.', icon: 'fa-th-list', wildcard: {label: 'Any registered user who can access can write', default: true}},
       {name: 'commenter', label: 'Commenters', description: 'Can comment on shared pro and con points.', icon: 'fa-comment', wildcard: {label: 'Any registered user who can access can comment', default: true}},
       {name: 'opiner', label: 'Opiners', description: 'Can contribute their opinions of this proposal. But not original content.', icon: 'fa-bar-chart', wildcard: {label: 'Any registered user who can access can opine', default: true}},
-      {name: 'observer', label: 'Observers', description: 'Can access this proposal. But that’s it. Anyone added to the above categories is also an observer.', icon: 'fa-eye', wildcard: {label: "Anyone who can access #{subdomain.name} can view", default: true}}
+      {name: 'observer', label: 'Observers', description: 'Can access this proposal. But that\'s it.', icon: 'fa-eye', wildcard: {label: "Public. Anyone can view", default: true}}
     ]
 
     roles = _.compact roles
@@ -324,7 +324,10 @@ ProposalShare = ReactiveComponent
       for role in roles
         proposal.roles[role.name] = []
         if role.wildcard && role.wildcard.default
-          proposal.roles[role.name].push '*'
+          if role.name == 'observer'
+            proposal.roles[role.name] = subdomain.roles['visitor'].slice()
+          else
+            proposal.roles[role.name].push '*'
 
       proposal.roles['editor'].push "/user/#{current_user.id}"
 
@@ -358,7 +361,7 @@ RolesDash = ReactiveComponent
       {name: 'moderator', label: 'Moderators', description: 'Can moderate user content. Will receive emails for content needing moderation.', icon: 'fa-fire-extinguisher'},
       if subdomain.assessment_enabled then {name: 'evaluator', label: 'Fact checkers', description: 'Can validate claims. Will receive emails when a fact-check is requested.', icon: 'fa-flag-checkered'} else null,
       {name: 'proposer', label: 'Proposers', description: 'Can add new proposals.', icon: 'fa-lightbulb-o', wildcard: {label: 'Any registered visitor can post new proposals', default: false}},
-      {name: 'visitor', label: 'Visitors', description: 'Can access this site.', icon: 'fa-android', wildcard: {label: 'Anyone can visit this site.', default: true}} #'fa-key'
+      {name: 'visitor', label: 'Visitors', description: 'Default users who can view proposals.', icon: 'fa-android', wildcard: {label: 'Proposals are public by default.', default: true}} #'fa-key'
 
     ]
 

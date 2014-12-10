@@ -2962,6 +2962,17 @@ Homepage = ReactiveComponent
                   'Initiative 960' 
                 " passing in 2007."
 
+      if permit('create_proposal') > 0
+        # lazily styled & positioned...
+        DIV style: {width: 871, margin: 'auto'}, 
+          A 
+            style: {color: '#888', textDecoration: 'underline', fontSize: 18, marginLeft: 30}
+            href: '/proposal/new'
+            onClick: (e) => 
+              clickInternalLink(e)
+              $(document).scrollTop(0)
+            'Create new proposal'
+
 
 
 ProfileLink = ReactiveComponent

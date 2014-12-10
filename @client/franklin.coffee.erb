@@ -275,13 +275,10 @@ PageTransition =
 # Has proposal description, feelings area (slider + histogram), and reasons area
 Proposal = ReactiveComponent
   displayName: 'Proposal'
-  mixins: [AccessControlled]
 
-  render : ->
-    return SPAN(null) if !@accessGranted()
-    
+  render : ->    
     proposal = @proposal
-    your_opinion = fetch @proposal.your_opinion
+    your_opinion = fetch proposal.your_opinion
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
@@ -404,7 +401,7 @@ Proposal = ReactiveComponent
               what: 'expand proposal description'
               details: 
                 description_type: field.label        
-        SPAN className: "expand_arrow fa #{if field.expanded then 'fa-minus-circle' else 'fa-plus-circle'}" #, dangerouslySetInnerHTML: {__html: if field.expanded then '&#9660;' else '&#9658;'}
+        SPAN className: "expand_arrow fa #{if field.expanded then 'fa-minus-circle' else 'fa-plus-circle'}" 
         SPAN className: 'field_name', field.label
       if field.expanded
         DIV className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
@@ -3487,6 +3484,7 @@ Computer = ReactiveComponent
 
 Page = ReactiveComponent
   displayName: 'Page'
+  mixins: [AccessControlled]
 
   render: ->
 
@@ -3511,33 +3509,37 @@ Page = ReactiveComponent
           DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
             if @root.auth_mode || @root.page_name == 'edit_profile'
               Auth()
-            else if @root.page_name.match(/(.+)\/edit/)
-              EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
+
             else
-              switch @root.page_name
-                when 'homepage'
-                  Homepage key: @page.key
-                when 'about'
-                  About()
-                when 'proposal/new'
-                  EditProposal key: "new_proposal", fresh: true              
-                when 'dashboard/email_notifications'
-                  EmailNotificationSettings key: '/dashboard/email_notifications'
-                when 'dashboard/assessment'
-                  FactcheckDash key: "/page/dashboard/assessment"
-                when 'dashboard/create_subdomain'
-                  CreateSubdomain key: "/page/dashboard/create_subdomain"
-                when 'dashboard/import_data'
-                  ImportDataDash key: "/page/dashboard/import_data"
-                when 'dashboard/moderate'
-                  ModerationDash key: "/page/dashboard/moderate"
-                when 'dashboard/application'
-                  AppSettingsDash key: "/page/dashboard/application"
-                when 'dashboard/roles'
-                  RolesDash key: "/page/dashboard/roles"
-                else 
-                  console.log @page
-                  Proposal key: @page.proposal.key
+
+              if !@accessGranted()
+                SPAN null 
+              else if @root.page_name.match(/(.+)\/edit/)
+                EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
+              else
+                switch @root.page_name
+                  when 'homepage'
+                    Homepage key: @page.key
+                  when 'about'
+                    About()
+                  when 'proposal/new'
+                    EditProposal key: "new_proposal", fresh: true              
+                  when 'dashboard/email_notifications'
+                    EmailNotificationSettings key: '/page/dashboard/email_notifications'
+                  when 'dashboard/assessment'
+                    FactcheckDash key: "/page/dashboard/assessment"
+                  when 'dashboard/create_subdomain'
+                    CreateSubdomain key: "/page/dashboard/create_subdomain"
+                  when 'dashboard/import_data'
+                    ImportDataDash key: "/page/dashboard/import_data"
+                  when 'dashboard/moderate'
+                    ModerationDash key: "/page/dashboard/moderate"
+                  when 'dashboard/application'
+                    AppSettingsDash key: "/page/dashboard/application"
+                  when 'dashboard/roles'
+                    RolesDash key: "/page/dashboard/roles"
+                  else 
+                    Proposal key: if @page.proposal then @page.proposal.key else @page
 
         Footer()
 

@@ -52,11 +52,10 @@ permit = (action) ->
     when 'publish opinion'
       proposal = fetch arguments[1]
       return Permission.DISABLED if !proposal.active
+      return Permission.NOT_LOGGED_IN if !current_user.logged_in
+
       if !current_user.is_admin && !matchSomeRole(proposal.user_roles, ['editor', 'writer', 'opiner'])
-        if !current_user.logged_in
-          return Permission.NOT_LOGGED_IN  
-        else 
-          return Permission.INSUFFICIENT_PRIVILEGES 
+        return Permission.INSUFFICIENT_PRIVILEGES 
 
     when 'update opinion'
       proposal = fetch arguments[1]
@@ -131,7 +130,7 @@ matchSomeRole = (roles, accepted_roles) ->
 # AccessControlled
 #
 # Mixin that implements a check for whether this user can access
-# this page (a component that this is mixed into). 
+# this Page (a component that this is mixed into). 
 #
 # The server has to respond with
 # a keyed object w/ access_denied set for the component's key 
@@ -147,14 +146,14 @@ AccessControlled =
 
     ####
     # HACK: Clear out statebus if current_user changed. See comment below.
-    local_but_not_component_unique = fetch "local-#{@props.key}"
+    local_but_not_component_unique = fetch "local-#{@page.key}"
     access_attrs = ['verified', 'logged_in', 'email']
     if local_but_not_component_unique._last_current_user && @data().access_denied 
       reduced_user = _.map access_attrs, (attr) -> current_user[attr] 
       for el,idx in reduced_user
         if el != local_but_not_component_unique._last_current_user[idx]
           delete @data().access_denied
-          arest.serverFetch @props.key
+          arest.serverFetch @page.key
           break
     ####
 
@@ -212,51 +211,6 @@ window.AccessControlled = AccessControlled
 window.permit = permit
 window.Permission = Permission
 
-
-########################
-## These are some notes on design rationale
-
-
-#####
-# Problem: How does the client know whether to display the "add a new point" button? 
-# Or "add a comment"? Or "submit an opinion"? The problem occurs for people that 
-# aren't logged in. 
-
-# When you're not logged in, we don't know if you will ultimately have permission 
-# to carry out these actions, based on the configurations. We don't want to promise 
-# an action that you can't take. On the other hand, we want to make these actions 
-# apparent as an an incentive to login. 
-
-# This is pretty easy for the case where every authenticated user can create a point 
-# (or comment etc). In this case, we'd always show the button, or at least a link 
-# that says "login to comment". 
-
-# However, if the proposal is configured such that only certain people can add a 
-# point, we won't know until after they authenticate whether they'll be able to 
-# carry out the action. 
-
-# One option would be to always show the button, but hide it if they login and end 
-# up not having permission. But this could be confusing and frustrating for someone 
-# who feels like they were promised the opportunity to make a contribution, went 
-# through the hassle of creating an account, and then is ultimately denied the 
-# opportunity. 
-
-# A second option is the opposite: hide the respective button unless they 
-# already have permission to carry out the action. However, this option would 
-# make it difficult for new users to know what they could actually do if they 
-# logged in. We'd have to have some kind of generic "login to participate" 
-# button in the center of the decision board or something. 
-
-# A third option is to make it clear who will have permission to take the 
-# action after authenticating. If every authenticated user can, then the 
-# interface can just display the button, with recourse upon clicking. If 
-# there are special permissions, text could explain who will be able to act. 
-# The limitation of this option is that it would be a privacy violation to 
-# give the email addresses of specific individuals. We could state "...and 
-# some specific individuals" in that case. To implement this option, we 
-# will filter out specific individuals from the proposal roles hash for non-admins
-# in the JSON proposal hash. 
-###
 
 
 

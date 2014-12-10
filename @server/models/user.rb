@@ -229,7 +229,7 @@ class User < ActiveRecord::Base
       name
       : email ? 
         email.split('@')[0]
-        : "#{subdomain.app_title} participant"
+        : "#{Thread.current[:subdomain].app_title} participant"
   end
   
   def first_name

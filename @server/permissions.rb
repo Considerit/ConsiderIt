@@ -79,8 +79,12 @@ def permit(action, object)
       else
         return Permission::INSUFFICIENT_PRIVILEGES 
       end
-    elsif !current_user.verified
-      return Permission::UNVERIFIED_EMAIL
+    elsif !proposal.user_roles['observer'].index('*')
+      if !current_user.registered
+        return Permission::NOT_LOGGED_IN 
+      elsif !current_user.verified
+        return Permission::UNVERIFIED_EMAIL
+      end
     end
 
   when 'update proposal'
@@ -89,7 +93,7 @@ def permit(action, object)
     can_read = permit('read proposal', object)
     return can_read if can_read < 0
 
-    if !current_user.is_admin? && !matchEmail(proposal.user_roles['editors'])
+    if !current_user.is_admin? && !matchEmail(proposal.user_roles['editor'])
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
@@ -111,12 +115,9 @@ def permit(action, object)
   when 'publish opinion'
     proposal = object
     return Permission::DISABLED if !proposal.active
+    return Permission::NOT_LOGGED_IN if !current_user.registered
     if !current_user.is_admin? && !matchSomeRole(proposal.user_roles, ['editor', 'writer', 'opiner'])
-      if !current_user.registered
-        return Permission::NOT_LOGGED_IN 
-      else
-        return Permission::INSUFFICIENT_PRIVILEGES
-      end
+      return Permission::INSUFFICIENT_PRIVILEGES
     end
 
   when 'update opinion', 'delete opinion'

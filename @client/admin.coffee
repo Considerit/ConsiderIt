@@ -31,11 +31,8 @@ DashHeader = ReactiveComponent
 
 ImportDataDash = ReactiveComponent
   displayName: 'ImportDataDash'
-  mixins: [AccessControlled]
 
   render : ->
-    return SPAN(null) if !@accessGranted()
-
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
@@ -151,11 +148,8 @@ ImportDataDash = ReactiveComponent
 
 AppSettingsDash = ReactiveComponent
   displayName: 'AppSettingsDash'
-  mixins: [AccessControlled]
 
   render : -> 
-    return SPAN(null) if !@accessGranted()
-
 
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
@@ -349,11 +343,8 @@ ProposalShare = ReactiveComponent
 
 RolesDash = ReactiveComponent
   displayName: 'RolesDash'
-  mixins: [AccessControlled]
 
   render : -> 
-    return SPAN(null) if !@accessGranted()
-
     subdomain = fetch '/subdomain'
 
     roles = [ 
@@ -696,12 +687,9 @@ AdminTaskList = ReactiveComponent
 
         
 ModerationDash = ReactiveComponent
-  mixins: [AccessControlled]
   displayName: 'ModerationDash'
 
   render : -> 
-    return SPAN(null) if !@accessGranted()
-
     moderations = @data().moderations.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
     subdomain = fetch '/subdomain'
 
@@ -972,11 +960,8 @@ ModerateItem = ReactiveComponent
 
 FactcheckDash = ReactiveComponent
   displayName: 'FactcheckDash'
-  mixins: [AccessControlled]
 
   render : ->
-    return SPAN(null) if !@accessGranted()
-
 
     assessments = @data().assessments.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
 
@@ -1325,17 +1310,14 @@ EditClaim = ReactiveComponent
 # the considerit homepage, but will work from any subdomain.
 CreateSubdomain = ReactiveComponent
   displayName: 'CreateSubdomain'
-  mixins: [AccessControlled]
 
   render : -> 
-    return SPAN(null) if !@accessGranted()
-
     current_user = fetch('/current_user')
 
-    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
+    DIV null, 
       DashHeader name: 'Create new subdomain (secret, you so special!!!)'
 
-      DIV style: {marginTop: 20},
+      DIV style: {width: CONTENT_WIDTH, margin: 'auto', marginTop: 20},
         LABEL htmlFor: 'subdomain', 
           'Name of the new subdomain'
         INPUT id: 'subdomain', name: 'subdomain', type: 'text', style: {fontSize: 28, padding: '8px 12px', width: CONTENT_WIDTH}, placeholder: 'Don\'t be silly with weird characters'

@@ -60,7 +60,7 @@ ConsiderIt::Application.routes.draw do
   get '/subdomain' => 'subdomain#show'
   post '/subdomain' => 'subdomain#create'
   match '/subdomain' => 'subdomain#update', :via => [:put]
-  get '/dashboard/create_subdomain' => 'subdomain#new'
+
   match 'update_images_hack' => 'subdomain#update_images_hack', :via => [:put]
 
   post '/log' => 'log#create'
@@ -86,8 +86,6 @@ ConsiderIt::Application.routes.draw do
 
   get 'user_avatar_hack' => 'current_user#user_avatar_hack'
   match 'update_user_avatar_hack' => 'current_user#update_user_avatar_hack', :via => [:put]
-
-  get "/dashboard/email_notifications" => 'notification#index'
 
   post "/dashboard/import_data" => 'import_data#create'
 

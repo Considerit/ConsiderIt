@@ -6,10 +6,6 @@ class SubdomainController < ApplicationController
   skip_before_action :verify_authenticity_token, :only => :update_images_hack
   include Invitations
 
-  def new
-    render :json => []
-  end
-
   def create
     authorize! 'create subdomain'
 

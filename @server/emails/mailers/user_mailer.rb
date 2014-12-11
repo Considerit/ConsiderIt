@@ -19,6 +19,7 @@ class UserMailer < Mailer
     @subdomain = current_subdomain
     subject = "please verify your email address"
 
+    puts "And the token is ", @token
     to = format_email @user.email, @user.name
     from = format_email(default_sender(current_subdomain), current_subdomain.app_title)
     mail(:from => from, :to => to, :subject => "[#{current_subdomain.app_title}] #{subject}")

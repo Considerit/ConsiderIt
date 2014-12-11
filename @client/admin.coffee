@@ -303,10 +303,10 @@ ProposalShare = ReactiveComponent
     current_user = fetch '/current_user'
 
     roles = [ 
-      {name: 'editor', label: 'Editors', description: 'Can modify the description of the proposal, as well as write, comment, and opine.', icon: 'fa-edit', wildcard: {label: 'Any registered user who can access can edit', default: false}}, 
-      {name: 'writer', label: 'Writers', description: 'Can write pro and con points that are shared with others. Any writer can comment and opine.', icon: 'fa-th-list', wildcard: {label: 'Any registered user who can access can write', default: true}},
-      {name: 'commenter', label: 'Commenters', description: 'Can comment on shared pro and con points.', icon: 'fa-comment', wildcard: {label: 'Any registered user who can access can comment', default: true}},
-      {name: 'opiner', label: 'Opiners', description: 'Can contribute their opinions of this proposal. But not original content.', icon: 'fa-bar-chart', wildcard: {label: 'Any registered user who can access can opine', default: true}},
+      {name: 'editor', label: 'Editors', description: 'Can modify the description of the proposal, as well as write, comment, and opine.', icon: 'fa-edit', wildcard: {label: 'Any registered user who can observe can edit', default: false}}, 
+      {name: 'writer', label: 'Writers', description: 'Can write pro and con points that are shared with others. Any writer can comment and opine.', icon: 'fa-th-list', wildcard: {label: 'Any registered user who can observe can write', default: true}},
+      {name: 'commenter', label: 'Commenters', description: 'Can comment on shared pro and con points.', icon: 'fa-comment', wildcard: {label: 'Any registered user who can observe can comment', default: true}},
+      {name: 'opiner', label: 'Opiners', description: 'Can contribute their opinions of this proposal. But not original content.', icon: 'fa-bar-chart', wildcard: {label: 'Any registered user who can observe can opine', default: true}},
       {name: 'observer', label: 'Observers', description: 'Can access this proposal. But that\'s it.', icon: 'fa-eye', wildcard: {label: "Public. Anyone can view", default: true}}
     ]
 

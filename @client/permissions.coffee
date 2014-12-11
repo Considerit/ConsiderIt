@@ -126,8 +126,9 @@ matchEmail = (permission_list) ->
   return true if user.key in permission_list
   for email_or_key in permission_list
     if email_or_key.indexOf('*') > -1
-      allowed_domain = email_or_key.split('@')[1]
-      return true if user.email.split('@')[1] == allowed_domain
+      if user.email
+        allowed_domain = email_or_key.split('@')[1]
+        return true if user.email.split('@')[1] == allowed_domain
   return false
 
 matchSomeRole = (roles, accepted_roles) ->

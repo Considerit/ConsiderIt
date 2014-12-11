@@ -63,6 +63,7 @@ def permit(action, object)
   when 'update subdomain', 'delete subdomain'
     return Permission::NOT_LOGGED_IN if !current_user.registered
     return Permission::INSUFFICIENT_PRIVILEGES if !current_user.is_admin?
+    return Permission::UNVERIFIED_EMAIL if !current_user.verified  
 
   when 'create proposal'
     return Permission::NOT_LOGGED_IN if !current_user.registered
@@ -181,14 +182,17 @@ def permit(action, object)
   when 'factcheck content'
     return Permission::NOT_LOGGED_IN if !current_user.registered
     return Permission::INSUFFICIENT_PRIVILEGES if !current_user.has_any_role?([:admin, :superadmin, :evaluator])
+    return Permission::UNVERIFIED_EMAIL if !current_user.verified  
 
   when 'moderate content'
     return Permission::NOT_LOGGED_IN if !current_user.registered
     return Permission::INSUFFICIENT_PRIVILEGES if !current_user.has_any_role?([:admin, :superadmin, :moderator])
-  
+    return Permission::UNVERIFIED_EMAIL if !current_user.verified  
   else
     raise "Undefined Permission: #{action}"
   end
+
+  puts "#{current_user.name} is permitted to #{action}"
 
   return Permission::PERMITTED
 end

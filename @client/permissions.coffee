@@ -157,13 +157,10 @@ AccessControlled =
     # HACK: Clear out statebus if current_user changed. See comment below.
     local_but_not_component_unique = fetch "local-#{@page.key}"
     access_attrs = ['verified', 'logged_in', 'email']
-    if local_but_not_component_unique._last_current_user && @data().access_denied 
-      reduced_user = _.map access_attrs, (attr) -> current_user[attr] 
-      for el,idx in reduced_user
-        if el != local_but_not_component_unique._last_current_user[idx]
-          delete @data().access_denied
-          arest.serverFetch @page.key
-          break
+    if local_but_not_component_unique._last_current_user && @data().access_denied
+      if @_relevant_current_user_values_have_changed(access_attrs)
+        delete @data().access_denied
+        arest.serverFetch @page.key
     ####
 
 
@@ -187,30 +184,42 @@ AccessControlled =
           save current_user
 
 
-      #######
-      # Hack! The server will return access_denied on the page, e.g.: 
-      # 
-      #   { key: '/page/dashboard/moderate', access_denied: 'login required' }
-      # 
-      # Here's a problem: 
-      # What happens if the user logs in? Or if they verify their email?
-      # We will need to refetch that page on the server so we can proceed 
-      # with the proper data and without the access denied error.
-      #
-      # My solution here is to store relevant values of /current_user the last time
-      # an access denied error was registered. Then everytime one of those attributes
-      # changes (i.e. when the user might be able to access), we'll issue a server
-      # fetch on the page.
-      #
+    #######
+    # Hack! The server will return access_denied on the page, e.g.: 
+    # 
+    #   { key: '/page/dashboard/moderate', access_denied: 'login required' }
+    # 
+    # Here's a problem: 
+    # What happens if the user logs in? Or if they verify their email?
+    # We will need to refetch that page on the server so we can proceed 
+    # with the proper data and without the access denied error.
+    #
+    # My solution here is to store relevant values of /current_user the last time
+    # an access denied error was registered. Then everytime one of those attributes
+    # changes (i.e. when the user might be able to access), we'll issue a server
+    # fetch on the page.
+    #
+    if @_relevant_current_user_values_have_changed(access_attrs)
       local_but_not_component_unique._last_current_user = _.map access_attrs, (attr) -> current_user[attr] 
       save local_but_not_component_unique
-      #
-      # This hack will be unnecessary by having a server that pushes out changes to 
-      # subscribed keys. In that world, the server logs a dependency for a client 
-      # on an access-controlled resource. If the client ever gains the proper 
-      # authorization, the server can just push down the data.
+
+    #
+    # This hack will be unnecessary by having a server that pushes out changes to 
+    # subscribed keys. In that world, the server logs a dependency for a client 
+    # on an access-controlled resource. If the client ever gains the proper 
+    # authorization, the server can just push down the data.
 
     return !@data().access_denied || @data().access_denied > 0
+  
+  _relevant_current_user_values_have_changed: (access_attrs) ->
+    current_user = fetch '/current_user' 
+    last_values = fetch "local-#{@page.key}"
+
+    reduced_user = _.map access_attrs, (attr) -> current_user[attr] 
+    for el,idx in reduced_user
+      if !last_values._last_current_user || el != last_values._last_current_user[idx]
+        return true
+    return false
 
 
 #######################

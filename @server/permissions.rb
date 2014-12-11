@@ -43,6 +43,7 @@ def permit(action, object)
     permission_list.each do |email_or_key| 
       if email_or_key.index('*')
         allowed_domain = email_or_key.split('@')[1]
+        next if !current_user.email
         return true if current_user.email.split('@')[1] == allowed_domain
       end
     end

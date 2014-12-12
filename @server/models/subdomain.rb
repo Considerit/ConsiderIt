@@ -82,7 +82,7 @@ class Subdomain < ActiveRecord::Base
   # all specific email addresses / user keys that are not the
   # current user. 
   #
-  # TODO: consolidate with subdomain.user_roles
+  # TODO: consolidate with proposal.user_roles
   def user_roles(filter = false)
     r = JSON.parse(roles || "{}")
     ['admin', 'moderator', 'evaluator', 'proposer', 'visitor'].each do |role|

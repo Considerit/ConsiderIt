@@ -1,6 +1,6 @@
 class HtmlController < ApplicationController
   respond_to :html
-  before_action :process_query_parameters_from_email
+  before_action :verify_user
 
   def index
 
@@ -31,7 +31,7 @@ class HtmlController < ApplicationController
 
 
     if !session[:search_bot]
-      referer = session.has_key?(:email_token_user) ? 'from email notification' : request.referer
+      referer = params.has_key?('u') ? 'from email notification' : request.referer
       write_to_log({
         :what => 'landed on site',
         :where => request.fullpath,
@@ -59,30 +59,6 @@ class HtmlController < ApplicationController
 
   private
 
-  # Query parameters from an email link.    
-  # Store query parameters important for access control for email notifications
-  # Log user in if possible.
-  def process_query_parameters_from_email
-    if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
-      session[:email_token_user] = {'u' => params['u'], 't' => params['t']}
-
-      # Try to login if valid tokens. 
-      # This is dangerous, so we'll only allow it once per token
-      target_user = user_via_token()
-      if target_user && is_valid_token() && !current_user.registered && current_user.email != params['u']
-        target_user.verified = true
-        target_user.save
-        replace_user(current_user, target_user)
-        set_current_user(target_user)
-        current_user.add_token()
-        dirty_key('/current_user')
-      else 
-        # Try to verify this user's control of the email address
-        verify_user_email_if_possible            
-      end
-
-    end
-  end
 
   #### Set meta tag info ####
   # Hardcoded for now. 

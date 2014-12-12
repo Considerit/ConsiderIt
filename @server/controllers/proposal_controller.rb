@@ -1,3 +1,6 @@
+module Invitations #defined in subdomain_controller
+end
+
 class ProposalController < ApplicationController
   include Invitations
 

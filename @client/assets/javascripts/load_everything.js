@@ -13,6 +13,7 @@
 
 //= require ../../sticky_element
 //= require ../../permissions
+//= require ../../roles
 //= require ../../franklin
 //= require ../../subdomain_specific
 //= require ../../admin

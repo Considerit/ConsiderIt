@@ -143,7 +143,7 @@ matchSomeRole = (roles, accepted_roles) ->
 # this Page (a component that this is mixed into). 
 #
 # The server has to respond with
-# a keyed object w/ access_denied set for the component's key 
+# a keyed object w/ permission_denied set for the component's key 
 # for this mixin to be useful.
 #
 # Note that the component needs to explicitly call the accessGranted method
@@ -158,16 +158,16 @@ AccessControlled =
     # HACK: Clear out statebus if current_user changed. See comment below.
     local_but_not_component_unique = fetch "local-#{@page.key}"
     access_attrs = ['verified', 'logged_in', 'email']
-    if local_but_not_component_unique._last_current_user && @data().access_denied
+    if local_but_not_component_unique._last_current_user && @data().permission_denied
       if @_relevant_current_user_values_have_changed(access_attrs)
-        delete @data().access_denied
+        delete @data().permission_denied
         arest.serverFetch @page.key
     ####
 
 
-    if @data().access_denied && @data().access_denied < 0
+    if @data().permission_denied && @data().permission_denied < 0
       # Let's recover, depending on the recourse the server dictates
-      switch @data().access_denied
+      switch @data().permission_denied
 
         when Permission.INSUFFICIENT_PRIVILEGES
           window.app_router.navigate("/", {trigger: true})
@@ -186,9 +186,9 @@ AccessControlled =
 
 
     #######
-    # Hack! The server will return access_denied on the page, e.g.: 
+    # Hack! The server will return permission_denied on the page, e.g.: 
     # 
-    #   { key: '/page/dashboard/moderate', access_denied: 'login required' }
+    #   { key: '/page/dashboard/moderate', permission_denied: 'login required' }
     # 
     # Here's a problem: 
     # What happens if the user logs in? Or if they verify their email?
@@ -210,7 +210,7 @@ AccessControlled =
     # on an access-controlled resource. If the client ever gains the proper 
     # authorization, the server can just push down the data.
 
-    return !@data().access_denied || @data().access_denied > 0
+    return !@data().permission_denied || @data().permission_denied > 0
   
   _relevant_current_user_values_have_changed: (access_attrs) ->
     current_user = fetch '/current_user' 

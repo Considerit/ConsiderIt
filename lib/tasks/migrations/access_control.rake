@@ -1,7 +1,5 @@
 namespace :access do
 
-  # Imports an subdomain, copying all data and handling updating of IDs
-  # Make that db schema of source and dest are the same!
   task :control => :environment do
 
     Proposal.where('publicity > 0').each do |prop|

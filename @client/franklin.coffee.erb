@@ -362,7 +362,7 @@ Proposal = ReactiveComponent
           if @local.edit_roles
             DIV 
               style: {width: BODY_WIDTH, margin: 'auto', backgroundColor: '#fafafa', padding: '10px 60px'}
-              ProposalShare key: proposal
+              ProposalRoles key: proposal
             
         #feelings
         DIV className:'feelings_region', style : { width: BODY_WIDTH },
@@ -3359,7 +3359,7 @@ EditProposal = ReactiveComponent
               DIV 
                 style: {width: CONTENT_WIDTH, backgroundColor: '#fafafa', padding: '10px 60px'}
 
-                ProposalShare key: @local
+                ProposalRoles key: @local
 
         DIV null,
           INPUT className:'button primary_button', type:'submit', value:"#{if @props.fresh then 'Publish' else 'Update'}", onClick: @saveProposal
@@ -3558,7 +3558,7 @@ Page = ReactiveComponent
                   when 'dashboard/application'
                     AppSettingsDash key: "/page/dashboard/application"
                   when 'dashboard/roles'
-                    RolesDash key: "/page/dashboard/roles"
+                    SubdomainRoles key: "/page/dashboard/roles"
                   else 
                     Proposal key: if @page.proposal then @page.proposal.key else @page
 

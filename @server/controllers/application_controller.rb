@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   before_action :init_thread_globals
 
   rescue_from PermissionDenied do |exception|
-    result = { :access_denied => exception.reason } 
+    result = { :permission_denied => exception.reason } 
     result[:key] = exception.key if exception.key
     render :json => result
   end
@@ -266,37 +266,6 @@ protected
   end
 
 
-  # Checks whether the tokens match from an email notification link
-  # and a target user. This is used for verifying a user's control of 
-  # an email address & for modifying email notification settings 
-  # via an email. 
-  def is_valid_token
-    target_user = user_via_token()
-    return false if !target_user || !session.has_key?(:email_token_user)
-
-    u = session[:email_token_user]['u']
-    t = session[:email_token_user]['t']
-
-    encrypted = ApplicationController.MD5_hexdigest("#{u}#{target_user.unique_token}#{current_subdomain.name}")    
-    encrypted == t
-  end
-
-  def user_via_token
-    return current_user if current_user.registered
-    return false if !session[:email_token_user]
-    u = session[:email_token_user]['u']
-    return User.find_by_email(u)
-  end
-
-  # Checks if we have enough information to verify that this user
-  # controls their account
-  def verify_user_email_if_possible 
-    if !current_user.verified && is_valid_token && current_user.email == session[:email_token_user]['u']
-      current_user.verified = true
-      current_user.save
-    end
-  end
-
   def self.MD5_hexdigest(key)
     Digest::MD5.hexdigest(key)
   end
@@ -306,6 +275,60 @@ protected
   helper_method :current_subdomain
   def current_subdomain
     ActsAsTenant.current_tenant
+  end
+
+
+  #####
+  # Checks to see if we can verify the user's email address.
+  # There are two pathways here: 
+  #     1) Every route processed by the HTML controller calls this method
+  #        to check if there are some url parameters mapping to a user
+  #        (as happens via all considerit email links). 
+  #         
+  #        If the user is currently logged out and the token valid, 
+  #        the user will even be logged in. 
+  #
+  #     2) If the users is manually trying to enter a verification code
+  #        the current_user_controller will invoke this method directly. 
+  def verify_user(target_email = nil, auth_token = nil)
+
+    # extract query parameters from an email link
+    if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
+      target_email = params['u']
+      auth_token = params['t']
+    end
+
+    if target_email && auth_token
+
+      # Figure out which user is being targetted
+      if current_user.registered
+        target_user = current_user
+      else
+        target_user = User.find_by_email target_email
+      end
+
+      # Check if the encrypted token is valid for the target user
+      if !target_user
+        token_valid = false
+      else
+        encrypted = ApplicationController.MD5_hexdigest("#{target_email}#{target_user.unique_token}#{current_subdomain.name}")    
+        token_valid = encrypted == auth_token
+      end
+
+      if token_valid 
+
+        # Try to login if the tokens match a valid user
+        if current_user.id != target_user.id
+          replace_user(current_user, target_user)
+          set_current_user(target_user)
+          current_user.add_token() # Logging in via email token is dangerous, so we'll only allow it once per token          
+        end
+
+        current_user.verified = true
+        current_user.save
+        dirty_key('/current_user')
+      end
+    end
   end
 
 end

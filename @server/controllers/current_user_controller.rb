@@ -38,8 +38,7 @@ class CurrentUserController < ApplicationController
         update_user_attrs 'register', errors
         try_update_password 'register', errors 
         if !current_user.registered || trying_to == 'register-after-invite'
-          third_party_authenticated = current_user.twitter_uid || current_user.facebook_uid\
-                                      || current_user.google_uid
+          third_party_authenticated = current_user.facebook_uid || current_user.google_uid
           has_name = current_user.name && current_user.name.length > 0
           can_login = ((current_user.email && current_user.email.length > 0)\
                        || third_party_authenticated)
@@ -203,8 +202,7 @@ class CurrentUserController < ApplicationController
         log('updating info')
 
       when 'verify'
-        # this will get used below in verify_user_email_if_possible
-        session[:email_token_user] = {'u' => current_user.email, 't' => params[:verification_code]}
+        verify_user(current_user.email, params[:verification_code])
         log('verifying email')
 
       when 'send_verification_token'
@@ -213,7 +211,7 @@ class CurrentUserController < ApplicationController
 
     end
 
-    verify_user_email_if_possible
+    
 
     # Wrap everything up
     response = current_user.current_user_hash(form_authenticity_token)

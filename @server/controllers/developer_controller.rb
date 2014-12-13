@@ -3,7 +3,7 @@ class DeveloperController < ApplicationController
 
   def change_default_subdomain
 
-    if Rails.env.development?
+    if Rails.env.development? || request.host == 'chlk.it'
       session[:default_subdomain] = params['id']
     end
 

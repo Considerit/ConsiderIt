@@ -93,6 +93,8 @@ namespace :alerts do
           qry = "SELECT pnt.id, pnt.user_id, pnt.proposal_id FROM points pnt, proposals prop WHERE prop.subdomain_id=#{subdomain.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND pnt.published=1"
         elsif moderation_class == Proposal
           qry = "SELECT id, slug, user_id, name, description from proposals where subdomain_id=#{subdomain.id}"
+        else
+          raise "Can't handle moderation type"
         end
 
         objects = ActiveRecord::Base.connection.select(qry)

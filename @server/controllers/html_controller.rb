@@ -20,6 +20,10 @@ class HtmlController < ApplicationController
       current_subdomain.save
     end
 
+    if request.host == 'chlk.it'
+      @show_subdomain_changer = true
+    end
+
     if !session.has_key?(:search_bot)
       session[:search_bot] = !!request.fullpath.match('_escaped_fragment_')  \
                              || !request.user_agent

@@ -16,5 +16,4 @@ class UserPreview < ActionMailer::Preview
     UserMailer.invitation(User.where('registered').first, User.where('registered').last, Proposal.active.first, 'consider', Subdomain.first, "Hey man, come check this out, I think it's a good idea!")
   end
 
-
 end

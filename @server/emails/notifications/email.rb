@@ -121,7 +121,7 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
   end
   
   current_subdomain = data[:current_subdomain]
-  if current_subdomain.classes_to_moderate.length > 0
+  if current_subdomain.classes_to_moderate.length > 0 && current_subdomain["moderate_#{moderatable_type}s_mode"] > 0
     # send to all users with moderator status
     roles = current_subdomain.user_roles()
     moderators = roles.has_key?('moderator') ? roles['moderator'] : []

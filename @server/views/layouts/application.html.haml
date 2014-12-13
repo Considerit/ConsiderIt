@@ -58,7 +58,7 @@
 
 
     %body
-      - if Rails.env.development?
+      - if Rails.env.development? || @show_subdomain_changer
         #development_bar
           .change
             Change Subdomain

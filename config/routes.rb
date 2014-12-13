@@ -14,13 +14,13 @@ ConsiderIt::Application.routes.draw do
 
     ## Test controller for nonactiverest
     get '/activemike' => 'html#activemike'
-
-    ## Development dashboard; right now it lets you easily switch between subdomains
-    get '/change_subdomain/:id' => 'developer#change_default_subdomain', :as => 'change_subdomain'
   
     get '/rails/mailers' => "rails/mailers#index"
     get '/rails/mailers/*path'   => "rails/mailers#preview"
   end
+
+  ## Development dashboard; right now it lets you easily switch between subdomains
+  get '/change_subdomain/:id' => 'developer#change_default_subdomain', :as => 'change_subdomain'
 
   # Third party oauth routes. These go before 
   # the html controller non-json catch all because 

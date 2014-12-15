@@ -9,9 +9,6 @@ $base_background_color: white
 $default_avatar_in_histogram_color: #999
 $considerit_blue: #2478CC
 
-$grid_gutter: 18px
-$vertical_baseline: 1em
-
 $main_font-family: "Avenir Next W01", "Avenir Next", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif !default
 
 
@@ -195,7 +192,7 @@ blockquote
   +font-size(0)
   background-color: white
   // color: white
-  padding: 0 $grid_gutter/4
+  padding: 0 4px
   border-radius: 16px
   z-index: 999999
   white-space: nowrap
@@ -390,7 +387,7 @@ $profile_menu_z: 999999
   position: relative
   margin: auto
   +font-size(1)
-  margin-bottom: 2 * $vertical_baseline
+  margin-bottom: 2em
 
 .proposal_heading
   width: 100%
@@ -401,16 +398,16 @@ $profile_menu_z: 999999
 
 // The proposal details revealed 
 .proposal_details
-  padding-top: $vertical_baseline
+  padding-top: 1em
   font-size: 18px
 
 .proposal_details, .description_field
   // some default styles for html written by users rendered here
   br
-    padding-bottom: $vertical_baseline/2
+    padding-bottom: .5em
 
   p, ul, table
-    margin-bottom: $vertical_baseline / 2
+    margin-bottom: .5em
 
   td
     padding: 0 3px
@@ -459,7 +456,7 @@ $profile_menu_z: 999999
   margin-top: 1em
 
 .description_field
-  padding: $vertical_baseline / 4 0
+  padding: .25em 0
   //color: #414141
 
   .field_heading
@@ -641,7 +638,7 @@ $slider_handle_size: 22px
 
 .reasons_region  
   position: relative
-  margin: 48px auto 4 * $vertical_baseline auto
+  margin: 48px auto 4em auto
 
 .focal_wrapper
   position: absolute
@@ -660,8 +657,8 @@ $slider_handle_size: 22px
   margin-top: 28px
 
 .points_by_community
-  margin-left: $grid_gutter
-  margin-right: $grid_gutter
+  margin-left: 18px
+  margin-right: 18px
   position: relative
   z-index: 2 //so that points being dragged are above opinion region
 
@@ -773,7 +770,7 @@ $slider_handle_size: 22px
     a.give_opinion_button
       display: block
       color: white
-      padding: $vertical_baseline / 4 $grid_gutter
+      padding: .25em 18px
       margin: 0
       +font-size(1)
       box-shadow: none
@@ -781,11 +778,11 @@ $slider_handle_size: 22px
         color: white
 
 .your_points
-  padding: 0 $grid_gutter
+  padding: 0 18px
   margin-top: -3px // To undo the 3 pixel border
 
 .add_point_drop_target
-  padding: 0px 0 $vertical_baseline/4 $grid_gutter/2
+  padding: 0px 0 .25em 9px
   position: relative
 
   .drop_target
@@ -794,7 +791,7 @@ $slider_handle_size: 22px
   .drop_prompt
     +font-size(0)
     position: absolute
-    top: 1.4 * $vertical_baseline
+    top: 1.4em
     left: 36px
     width: 180px
     color: $base_text_color
@@ -813,7 +810,7 @@ $slider_handle_size: 22px
   margin-top: 20px
   box-shadow: 0px 1px 0px darken($considerit_blue, 10%)
   border: none
-  padding: 6px $grid_gutter
+  padding: 6px 18px
 
 .primary_button, .primary_cancel_button
   border-radius: 16px
@@ -834,18 +831,18 @@ $slider_handle_size: 22px
   
 a.primary_cancel_button
   color: #888
-  margin-top: $vertical_baseline / 2
+  margin-top: .5em
 
 a.cancel_opinion_button, a.cancel_auth_button
   float: right
-  margin-top: $vertical_baseline / 2
+  margin-top: .5em
 
 button.primary_button, input[type="submit"]
   display: inline-block
 
 
 .follow_proposal
-  margin-top: $vertical_baseline / 2
+  margin-top: .5em
   padding: 3px
   display: inline-block
   input
@@ -866,8 +863,8 @@ button.primary_button, input[type="submit"]
   list-style: none outside none
 
 .decision_board_point
-  margin-left: $grid_gutter / 2
-  padding: 0 $grid_gutter $vertical_baseline $grid_gutter
+  margin-left: 9px
+  padding: 0 18px 1em 18px
 
 
 // point_content styling. Point content is the main part of a point
@@ -884,8 +881,8 @@ $community_point_mouth_width: 17px
 .community_point, .under_review
   .point_content
     border-radius: 16px
-    padding: $vertical_baseline / 2 $grid_gutter / 2 
-    margin-bottom: $vertical_baseline / 2
+    padding: .5em 9px 
+    margin-bottom: .5em
     background-color: #F6F7F9
     box-shadow: #B5B5B5 0 1px 1px 0px
     min-height: 34px
@@ -993,8 +990,8 @@ $point-includer-width: 22px
 
 // Add a new point prompt
 .newpoint_prompt
-  padding: $vertical_baseline/4 0
-  margin-top: $vertical_baseline
+  padding: .25em 0
+  margin-top: 1em
   margin-left: 20px
   +font-size(0)
 
@@ -1021,10 +1018,10 @@ a.edit_point, a.delete_point
 // Add a new point form
 // TODO: refactor once design more complete
 .newpoint_form
-  margin: 0 $grid_gutter
+  margin: 0 18px
 
   position: relative
-  margin-left: $grid_gutter
+  margin-left: 18px
   input, textarea
     +font-size(0)
     padding-top: 0
@@ -1063,10 +1060,10 @@ a.edit_point, a.delete_point
   .newpoint-submit
     text-align: right
     margin-top: 3px
-    margin-bottom: $vertical_baseline / 2
+    margin-bottom: .5em
 
     .primary_button
-      margin-top: $vertical_baseline / 2
+      margin-top: .5em
       width: 100%
       +font-size(2)
 
@@ -1125,15 +1122,15 @@ a.edit_point, a.delete_point
 
 
 .auth_region
-  margin-bottom: 10 * $vertical_baseline
+  margin-bottom: 10em
 
 .auth
-  padding: 1.5 * $vertical_baseline $grid_gutter .5 * $vertical_baseline $grid_gutter
+  padding: 1.5em 18px .5em 18px
   +font-size(3)
   margin-top: 10px
 
   .third_party_call
-    margin-right: $grid_gutter * 2
+    margin-right: 18px
 
   .third_party_option
     border: 1px solid #777
@@ -1142,8 +1139,8 @@ a.edit_point, a.delete_point
     color: #fff
     box-shadow: inset 0 0.1em 0 rgba(white, 0.4), inset 0 0 0.1em rgba(white, 0.9)
     display: inline-block
-    padding: 3px $grid_gutter / 2 3px $grid_gutter / 2 + 25
-    margin: 0 $grid_gutter / 4
+    padding: 3px 9px 3px 9px + 25
+    margin: 0 4px
     text-align: center
     text-shadow: 0 1px 0 rgba(black, 0.5)
     border-radius: .3em
@@ -1170,7 +1167,7 @@ a.edit_point, a.delete_point
       background-color: $considerit_blue //#46c0fb
 
     i
-      margin-right: $grid_gutter
+      margin-right: 18px
       display: inline-block
       +font-size(1)
       position: absolute
@@ -1184,18 +1181,18 @@ a.edit_point, a.delete_point
   .separator
     color: rgba($considerit_blue, .1)
     font-weight: bold
-    padding-top: $vertical_baseline
+    padding-top: 1em
 
     label
-      padding: 0 $grid_gutter
+      padding: 0 18px
 
 
   .auth_section_label
-    padding: $vertical_baseline 0
+    padding: 1em 0
     display: block
 
   .reset_password_section_label
-    padding: 0 0 $vertical_baseline 0
+    padding: 0 0 1em 0
     display: block
 
   input[type="text"], input[type="email"], input[type="password"]
@@ -1209,12 +1206,12 @@ a.edit_point, a.delete_point
     border-collapse: separate  
 
     &.login
-      border-spacing: 0 $vertical_baseline/4
+      border-spacing: 0 .25em
 
     &.register
-      border-spacing: 0 $vertical_baseline
+      border-spacing: 0 1em
       #user_password
-        margin-top: $vertical_baseline/2
+        margin-top: .5em
 
   td
     vertical-align: top
@@ -1224,7 +1221,7 @@ a.edit_point, a.delete_point
 
     &.field_cell
       width: 100%
-      padding-left: $grid_gutter
+      padding-left: 18px
 
   label 
     color: $considerit_blue
@@ -1265,7 +1262,7 @@ $avatar_preview_size: 60px
   background-color: lighten($default_avatar_in_histogram_color, 30%)
   overflow: hidden
   display: inline-block
-  margin-right: $grid_gutter
+  margin-right: 18px
 
   #avatar_preview
     width: $avatar_preview_size
@@ -1283,7 +1280,7 @@ $avatar_preview_size: 60px
   padding: 10px
   //border-radius: 16px
   i
-    padding-right: $grid_gutter/2
+    padding-right: 9px
 
 .switch_auth_mode
   color: lighten($base_text_color, 25%)
@@ -1327,7 +1324,7 @@ $avatar_preview_size: 60px
     width: 305px
     display: inline-block
     
-    margin-bottom: $vertical_baseline
+    margin-bottom: 1em
     vertical-align: top
 
     &.oppose

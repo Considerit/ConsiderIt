@@ -7,8 +7,6 @@ task_area_section_style = {margin: '10px 0px 20px 0px', position: 'relative'}
 task_area_style = {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor: '#F4F0E9', position: 'absolute', left: CONTENT_WIDTH/4, top: -35, borderRadius: 8}
 
 
-
-
 DashHeader = ReactiveComponent
   displayName: 'DashHeader'
 

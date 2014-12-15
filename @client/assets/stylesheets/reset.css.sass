@@ -1,25 +1,10 @@
 @import "variables"
 @import "bourbon"
-@import "library"
 
-
-.menu
-  color: $menu_text_color
-  a
-    color: $menu_text_color
-    &:hover
-      color: $complementary_text_color
-      background-color: emphasize($complementary_background_color, 10%)
-
-    &.selected
-      color: $complementary_text_color
-      background-color: $complementary_background_color
 
 //////////////////////////////////////////
 // LAYOUT
 //////////////////////////////////////////
-
-
 
 /* CONTAINERS */
 
@@ -27,12 +12,9 @@
 
 .content
   position: relative
-  font-size: $base-font-size
+  font-size: 16px
   color: $base_text_color
   min-height: 500px
-
-  a
-    +link_style(emphasize($base_text_color, 10%, $reference: $base_background_color), $base_background_color, 25%)
 
 #body
   min-height: 200px
@@ -45,11 +27,6 @@
 
 .l_header
   margin: 0 auto
-  // min-height: 32px
-  // color: $header_text_color
-  // background: $header_background_declaration
-  // a
-  //   +link_style(emphasize($header_text_color, 10%, $reference: $header_background_color), $header_background_color, 25%)
 
 #body
   z-index: 2
@@ -57,21 +34,6 @@
 
 #inner_body
   margin: auto
-
-
-// .l_footer_wrap
-//   width: $body_width
-//   position: relative
-//   margin: 0 auto
-
-// .l_tooltip
-//   display: none
-
-// .tooltipster-content .l_tooltip
-//   display: block
-
-// .l_tooltip_title
-//   padding-top: $vertical_baseline/2
 
 
 
@@ -210,7 +172,7 @@ blockquote
   width: 4000px
   height: 40000px
   z-index: 450
-  background-color: rgba(deemphasize($base_background_color, 100%), .75)
+  background-color: rgba(lighten($base_background_color, 100%), .75)
 
 .button
   +font-size(1)
@@ -274,16 +236,9 @@ $preloadersize_height: 10.5px
 body, h1, h2, h3, h4, h5, h6 //, input, button
   color: $base_text_color
 
-h1, h2, h3, h4, h5, h6
-  font-family: $header_font-family
-
 // do we need to put input and button here...?
 body, input, button, textarea
   font-family: $main_font-family
-
-a  
-  +link_style($base_text_color, $base_background_color, 25%)
-
 
 
 // developer bar

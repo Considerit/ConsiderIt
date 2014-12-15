@@ -1,6 +1,5 @@
 @import "variables"
 @import "bourbon"
-@import "library"
 
 /////////////////////////////////////////////////////////////////////////////
 /// Mixins
@@ -421,11 +420,6 @@ $proposer_img_size: 50px
 //   border-bottom: $extreme_segment_border_height double
 //   // padding-top: $extreme_segment_border_height
 
-// .histogram_segment[data-segment="0"]
-//   border-bottom-color: $extreme_opposer_color
-
-// .histogram_segment[data-segment="6"]
-//   border-bottom-color: $extreme_supporter_color
 
 $segment_color: #db004d
 
@@ -448,12 +442,10 @@ $segment_color: #db004d
 
 
 .histogram_segment_pole.supporters
-  //color: $extreme_supporter_color
   left: -160px
   width: 145px
 
 .histogram_segment_pole.opposers
-  //color: $extreme_opposer_color  
   right: -145px
   width: 130px
 
@@ -496,7 +488,7 @@ $segment_color: #db004d
 
 .slider_base
   height: 6px
-  background-color: desaturate($decision_board_text_color, 100%)
+  background-color: desaturate($considerit_blue, 100%)
 
 [data-page="crafting"] .slider_base
   background-color: #AFD7FF
@@ -517,9 +509,9 @@ $slider_handle_size: 22px
   height: $slider_handle_size
   margin-left: -$slider_handle_size / 2
   top: -9px
-  background-color: $decision_board_text_color
+  background-color: $considerit_blue
   position: relative
-  box-shadow: 0px 1px 0px darken($decision_board_text_color, 15%), inset 0 1px 2px rgba(white, .4), 0px 0px 0px 1px darken($decision_board_text_color, 0%)
+  box-shadow: 0px 1px 0px darken($considerit_blue, 15%), inset 0 1px 2px rgba(white, .4), 0px 0px 0px 1px darken($considerit_blue, 0%)
   +grab_cursor
 
   .face_part
@@ -549,7 +541,7 @@ $slider_handle_size: 22px
   .drag_arrow
     position: absolute
     top: 3px
-    color: $decision_board_border_color
+    color: $considerit_blue
     +font-size(-2)
 
     &.left
@@ -591,7 +583,7 @@ $slider_handle_size: 22px
   border-radius: 10px  
   +font-size(6)
   font-weight: 700
-  color: $decision_board_text_color
+  color: $considerit_blue
   text-align: center
 
 .slider_feedback
@@ -672,7 +664,7 @@ $slider_handle_size: 22px
 
 .points_on_decision_board .points_heading_label
   font-weight: 700
-  color: $decision_board_text_color
+  color: $considerit_blue
 
 .points_by_community .points_heading_label
   position: relative
@@ -740,35 +732,17 @@ $slider_handle_size: 22px
 
 .decision_board_body
   border-radius: 16px
-  border: 3px dashed $decision_board_border_color
+  border: 3px dashed $considerit_blue
 
 .decision_board_body.waiting
   cursor: wait
   border-color: #ccc
 
-  // a
-  //   +link_style( emphasize($decision_board_text_color, 10%, $reference: $decision_board_background_color), $decision_board_background_color, 25%)
-  
-  // h1, h2, h3
-  //   color: $decision_board_text_color
-
-  // textarea, input[type="text"], input[type="email"], input[type="password"]
-  //   background-color: transparent
-  //   border: 1px solid
-  //   +inset-border($base_text_color)
-  //   display: inline-block
-  //   color: $base_text_color
-
-  //   &.error 
-  //     border-color: #883333
-  //     &:focus
-  //       +inset-border($decision_board_text_color)
-
 
 [data-page="results"]
   .decision_board_body
     border-style: solid
-    background-color: $decision_board_border_color
+    background-color: $considerit_blue
     box-shadow: 0px 2px 0px black
     &:hover
       cursor: pointer
@@ -786,12 +760,6 @@ $slider_handle_size: 22px
 .your_points
   padding: 0 $grid_gutter
   margin-top: -3px // To undo the 3 pixel border
-
-// Drop target for decision board
-.user_is_hovering_on_a_drop_target_pro .pros_on_decision_board, .user_is_hovering_on_a_drop_target_con .cons_on_decision_board
-  .add_point_drop_target
-    border-style: solid emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
-    color: emphasize($decision_board_text_color, 25%, $reference: $decision_board_background_color)
 
 .add_point_drop_target
   padding: 0px 0 $vertical_baseline/4 $grid_gutter/2
@@ -816,11 +784,11 @@ $slider_handle_size: 22px
 
 
 =blue_button 
-  background-color: $decision_board_text_color
+  background-color: $considerit_blue
   color: white
   font-size: 29px
   margin-top: 20px
-  box-shadow: 0px 1px 0px darken($decision_board_text_color, 10%)
+  box-shadow: 0px 1px 0px darken($considerit_blue, 10%)
   border: none
   padding: 6px $grid_gutter
 
@@ -893,8 +861,7 @@ $community_point_mouth_width: 17px
     border-radius: 16px
     padding: $vertical_baseline / 2 $grid_gutter / 2 
     margin-bottom: $vertical_baseline / 2
-    background-color: $peer_background_color
-    color: $peer_text_color
+    background-color: #F6F7F9
     box-shadow: #B5B5B5 0 1px 1px 0px
     min-height: 34px
     
@@ -949,25 +916,6 @@ $community_point_mouth_width: 17px
   margin-bottom: 1em
 .point_details p:last-child
   margin-bottom: 0
-
-// .point_details 
-  // +font-size(-2)
-  // padding-left: 10px
-
-// The button that shows # comments when hovering on a point (disabled for now)
-// .open_point_link
-//   visibility: hidden
-//   position: absolute
-//   bottom: 0
-//   text-align: center
-//   width: 90%
-//   +font-size(-3)
-//   padding: 0 $grid_gutter/4
-//   background-color: $peer_background_color
-//   color: $base_text_color
-
-// .point_content:hover .open_point_link
-//   visibility: visible
 
 // Avatars of point authors
 .point_author_avatar, .point_includer_avatar
@@ -1027,7 +975,7 @@ $point-includer-width: 22px
 
   .newpoint_link
     text-decoration: underline
-    color: $decision_board_text_color
+    color: $considerit_blue
   .newpoint_bullet
     padding: 0 6px
     color: $base_text_color    
@@ -1202,11 +1150,11 @@ a.edit_point, a.delete_point
       width: 1px
 
     &.google
-      background-color: $decision_board_border_color //#4e6cf7
+      background-color: $considerit_blue //#4e6cf7
     &.facebook
-      background-color: $decision_board_border_color //#4863ae
+      background-color: $considerit_blue //#4863ae
     &.twitter
-      background-color: $decision_board_border_color //#46c0fb
+      background-color: $considerit_blue //#46c0fb
 
     i
       margin-right: $grid_gutter
@@ -1221,7 +1169,7 @@ a.edit_point, a.delete_point
 
 
   .separator
-    color: rgba($decision_board_border_color, .1)
+    color: rgba($considerit_blue, .1)
     font-weight: bold
     padding-top: $vertical_baseline
 
@@ -1266,7 +1214,7 @@ a.edit_point, a.delete_point
       padding-left: $grid_gutter
 
   label 
-    color: $decision_board_border_color
+    color: $considerit_blue
     font-weight: 600
 
   .login label 
@@ -1338,35 +1286,12 @@ $avatar_preview_size: 60px
   a.toggle_auth
     display: inline-block
     // border-radius: 16px
-    color: $decision_board_border_color
+    color: $considerit_blue
     text-decoration: underline
     background-color: transparent 
     border: none
     font-weight: 600
-    //padding: 5px 8px 
-    //margin: 0 5px
-    // +font-size(2)
-    //font-weight: 600
 
-
-
-// HEADER
-
-// FOOTER
-
-.l_footer
-  padding: 2.5 * $vertical_baseline 0 $vertical_baseline/2 0
-  text-align: center
-
-  a
-    text-decoration: underline
-    +link_style(emphasize($footer_text_color, 10%, $reference: $footer_background_color), $footer_background_color, 25%)
-    font-weight: 600
-
-  .separator
-    +font-size(-2)
-    color: #aaa
-    padding: 0 10px
 
 
 ////////////////////////////////
@@ -1377,60 +1302,6 @@ $avatar_preview_size: 60px
 [subdomain="tigard"]
 
 [subdomain="livingvotersguide"]
-
-  .opinion_thanks_and_invite
-    position: fixed
-    left: 0
-    bottom: 0
-    width: 100%
-    background-color: rgb(0,182,236)
-    //border-radius: 8px
-    padding: 5px 10px
-    color: white
-    z-index: 999
-    text-align: center
-    font-weight: 600
-    font-size: 18px
-
-
-  ///////////////////////
-  // HOMEPAGE zip code area
-
-  .ragged_top
-    background-image: url(asset-path("greytriangle_up.png"))
-    background-repeat: (repeat-x)
-    background-size: 18px 9px
-    height: 9px
-
-  .ragged_bottom
-    background-image: url(asset-path("greytriangle_down.png"))
-    background-repeat: (repeat-x)
-    background-size: 18px 9px
-    height: 9px
-
-  .ragged_middle
-    background-color: #93928E
-
-  .filled_zip
-    padding: 13px 23px
-    background-color: #F5F4ED
-    font-size: 18px
-    font-weight: 400
-    width: 245px
-    margin: auto
-
-  .filled_zip input
-    font-size: 18px
-    font-weight: 600
-    border: 1px solid transparent
-    background-color: transparent
-    width: 60px
-    margin-left: 7px
-    
-  .filled_zip:hover input, .filled_zip input:focus
-    border: 1px solid #767676
-    background-color: white
-
 
 
 ///// GENERAL

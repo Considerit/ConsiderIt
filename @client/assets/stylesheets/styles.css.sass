@@ -150,10 +150,6 @@ blockquote
     content: close-quote
     font-weight: bold
 
-/* HELPERS */
-
-.clear
-  clear: both
 
 .fl
   float: left
@@ -220,11 +216,6 @@ body, input, button, textarea
   min-height: 500px
 
 
-
-/////////////////////////////////////////////////////////////////////////////
-/// STYLES for Franklin
-/////////////////////////////////////////////////////////////////////////////
-
 ///////////////////////
 // HOMEPAGE proposals
 
@@ -247,16 +238,6 @@ td, th
   text-align: center
   position: relative
   top: -8px
-
-////
-// LVG specific
-td.summary_measure_designator
-  padding-top: 4px
-  width: 50px
-  display: inline-block
-  font-size: 15px
-////
-
 
 td.summary_name
   display: inline-block
@@ -411,37 +392,6 @@ $profile_menu_z: 999999
   +font-size(1)
   margin-bottom: 2 * $vertical_baseline
 
-// Proposal proposer is the avatar of the user who submitted the proposal
-$proposer_img_size: 50px
-.context
-  position: relative
-  // margin-top: -$vertical_baseline
-  margin-top: $vertical_baseline
-
-.proposer_name //, .proposal_category
-  color: lighten($base_text_color, 35%)
-  +font-size(0)
-
-.proposer_name
-  text-align: center
-  position: relative
-  top: -4px
-
-.proposal_category
-  margin-right: $grid_gutter / 2
-  // position: absolute
-  // top: -$vertical_baseline * 1.5
-  // left: $grid_gutter
-
-
-.proposer_avatar
-  left: 50%
-  margin-left: -$proposer_img_size / 2
-  // top: -$proposer_img_size / 4
-  position: relative
-  width: $proposer_img_size // - 30
-  vertical-align: bottom 
-
 .proposal_heading
   width: 100%
   color: white
@@ -520,11 +470,8 @@ $proposer_img_size: 50px
     line-height: 1.6
     font-size: 18px
 
-
   .expand_arrow
-    //font-family: "Courier New"  // monospaced so that on expansion we don't see weird jumps
     padding-right: 6px
-    //+font-size(4)
     opacity: .7
     position: relative
     left: -4px
@@ -534,98 +481,18 @@ $proposer_img_size: 50px
     width: 700px
     overflow: hidden // clears floats
 
-[subdomain="livingvotersguide"]
-  .endorser_group
-    width: 305px
-    display: inline-block
-    
-    margin-bottom: $vertical_baseline
-    vertical-align: top
-
-    &.oppose
-      margin-left: 60px
-
-    li, a
-      +font-size(-2)
-
-    ul
-      margin-left: 0px
-      padding-left: 10px
-
-  .total_money_raised
-    font-weight: 600
-    float: right
-
-  .funder_name
-
-  .funders li
-    list-style: none
-
-    .funder_amount
-      float: right
-
-  .news 
-    padding-left: 0
-    li
-      +font-size(-1)
-      list-style: none
-      padding-bottom: 6px
-
-  .editorials ul
-    padding-left: 10px
-    li
-      list-style: none
-      padding-top: 6px
-
 /////////////////////
 // FEELINGS REGION
 // Integrated histogram and slider widget
 
 // histogram
 
-.feelings_region
-  margin: 0 auto
-  position: relative
 
 .histogram
   position: relative
 
   table, td, tr
     height: 100%
-
-.histogram_segment
-  display: inline-block
-  height: 100%
-  border-top: 1px solid transparent
-  position: relative
-
-// $extreme_segment_border_height: 4px
-// .histogram_segment[data-segment="0"], .histogram_segment[data-segment="6"]
-//   position: relative
-//   top: $extreme_segment_border_height
-//   border-bottom: $extreme_segment_border_height double
-//   // padding-top: $extreme_segment_border_height
-
-
-$segment_color: #db004d
-
-[data-page="crafting"] .histogram_segment .avatar
-  pointer-events: none
-
-[data-page="results"] .histogram_segment
-  // &:hover
-  //   cursor: pointer
-  &.is_selected
-    // background-color: lighten($segment_color, 55%)
-    // border-top-color: $segment_color
-
-    // .avatar
-    //   background-color: lighten(desaturate($segment_color, 60%), 25%)
-
-  &.not_selected
-    .avatar
-      opacity: .05
-
 
 .histogram_segment_pole.supporters
   left: -160px
@@ -672,19 +539,6 @@ $segment_color: #db004d
   top: -48px
   margin: auto
 
-.slider_base
-  height: 6px
-  background-color: desaturate($considerit_blue, 100%)
-
-[data-page="crafting"] .slider_base
-  background-color: #AFD7FF
-
-.slider_base_triangle_left, .slider_base_triangle_right
-  position: absolute
-  width: 0
-  height: 0
-  border-bottom: 6px solid #787878
-  display: none
 
 $slider_handle_size: 22px
 
@@ -751,6 +605,10 @@ $slider_handle_size: 22px
 .slider_feedback
   position: absolute
   top: -80px
+  pointer-events: none // clicking on this interferes with slider and toggle state
+
+[data-page="results"] .slider_feedback
+  display: none
 
 .auth_header
   position: relative
@@ -771,27 +629,6 @@ $slider_handle_size: 22px
   font-weight: 700
   color: $considerit_blue
   text-align: center
-
-.slider_feedback
-  pointer-events: none // clicking on this interferes with slider and toggle state
-
-
-[data-page="results"] .slider_feedback
-  display: none
-
-// the poles of the histogram & slider
-.slider_labels
-  display: none
-  width: 134%
-  margin-left: -17%
-  position: absolute
-  bottom: -37px
-  z-index: -1 // so that it doesn't sit on top of users on histogram
-
-  .histogram_label_support
-    float: left
-  .histogram_label_oppose
-    float: right
 
 
 /////////////////////
@@ -865,7 +702,7 @@ $slider_handle_size: 22px
   position: absolute
   width: 100%
   bottom: -12px
-  color: $segment_color
+  color: #db004d
 
   font-weight: 400
   +retina
@@ -987,12 +824,14 @@ $slider_handle_size: 22px
 .primary_button
   +blue_button
   font-weight: 600
+
 .primary_button.disabled
   background-color: #eee
   color: #ccc
   box-shadow: none
   border: none
   cursor: wait
+  
 a.primary_cancel_button
   color: #888
   margin-top: $vertical_baseline / 2
@@ -1285,20 +1124,8 @@ a.edit_point, a.delete_point
 // Auth styling
 
 
-// [data-authmode="login"], [data-authmode="register"], [data-authmode="login_via_reset_password_token"]
-
-//   visibility: hidden
-//   .slider_base
-//     visibility: visible
-//   .auth_region
-//     visibility: visible
-
-
 .auth_region
   margin-bottom: 10 * $vertical_baseline
-
-  .slider_base
-    background-color: transparent
 
 .auth
   padding: 1.5 * $vertical_baseline $grid_gutter .5 * $vertical_baseline $grid_gutter
@@ -1488,6 +1315,55 @@ $avatar_preview_size: 60px
 [subdomain="tigard"]
 
 [subdomain="livingvotersguide"]
+
+  td.summary_measure_designator
+    padding-top: 4px
+    width: 50px
+    display: inline-block
+    font-size: 15px
+
+
+  .endorser_group
+    width: 305px
+    display: inline-block
+    
+    margin-bottom: $vertical_baseline
+    vertical-align: top
+
+    &.oppose
+      margin-left: 60px
+
+    li, a
+      +font-size(-2)
+
+    ul
+      margin-left: 0px
+      padding-left: 10px
+
+  .total_money_raised
+    font-weight: 600
+    float: right
+
+  .funder_name
+
+  .funders li
+    list-style: none
+
+    .funder_amount
+      float: right
+
+  .news 
+    padding-left: 0
+    li
+      +font-size(-1)
+      list-style: none
+      padding-bottom: 6px
+
+  .editorials ul
+    padding-left: 10px
+    li
+      list-style: none
+      padding-top: 6px
 
 
 ///// GENERAL

@@ -371,7 +371,7 @@ Proposal = ReactiveComponent
               ProposalRoles key: proposal
             
         #feelings
-        DIV className:'feelings_region', style : { width: BODY_WIDTH },
+        DIV style : { width: BODY_WIDTH, margin: '0 auto', position: 'relative' },
           OpinionFilter()
           HistogramData()
           Histogram()
@@ -937,7 +937,11 @@ Slider = ReactiveComponent
     selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
     selected_wing_point =  selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
 
-    slider_base_style = {width: @props.width}
+    slider_base_style = 
+      width: @props.width
+      height: 6
+      backgroundColor: if page == 'crafting' then '#AFD7FF' else '#787878'
+
     handle_style = {left: slider.clientX}
     bubblemouth_style = {left: slider.clientX}
 

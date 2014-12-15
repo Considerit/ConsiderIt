@@ -52,9 +52,6 @@ class OpinionController < ApplicationController
     #proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
 
     #proposal.delay.update_metrics()
-
-    # Enable this next line if I make sure it's properly prepared and won't clobber cache
-    #proposal[:key] = "/proposal/#{proposal.id}"
     
     dirty_key "/opinion/#{opinion.id}"
 

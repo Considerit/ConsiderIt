@@ -3098,7 +3098,12 @@ Header = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
 
-    DIV className: 'l_header', style: {backgroundColor: 'white', minWidth: PAGE_WIDTH},
+    DIV 
+      style: 
+        position: 'relative'
+        margin: '0 auto'
+        backgroundColor: 'white'
+        minWidth: PAGE_WIDTH
 
       if window["#{subdomain.name}Header"]
         window["#{subdomain.name}Header"]()
@@ -3541,41 +3546,40 @@ Page = ReactiveComponent
         
         BrowserHacks()
         Header()
-        DIV id: 'body', style : { minWidth: PAGE_WIDTH }, 
-          DIV id: 'inner_body', #style : { width: CONTENT_WIDTH },
-            if @root.auth_mode || @root.page_name == 'edit_profile'
-              Auth()
+        DIV style : { minWidth: PAGE_WIDTH, minHeight: 200, zIndex: 2, margin: 'auto' }, 
+          if @root.auth_mode || @root.page_name == 'edit_profile'
+            Auth()
 
+          else
+
+            if !@accessGranted()
+              SPAN null 
+            else if @root.page_name.match(/(.+)\/edit/)
+              EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
             else
-
-              if !@accessGranted()
-                SPAN null 
-              else if @root.page_name.match(/(.+)\/edit/)
-                EditProposal key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}", fresh: false
-              else
-                switch @root.page_name
-                  when 'homepage'
-                    Homepage key: @page.key
-                  when 'about'
-                    About()
-                  when 'proposal/new'
-                    EditProposal key: "new_proposal", fresh: true              
-                  when 'dashboard/email_notifications'
-                    EmailNotificationSettings key: '/page/dashboard/email_notifications'
-                  when 'dashboard/assessment'
-                    FactcheckDash key: "/page/dashboard/assessment"
-                  when 'dashboard/create_subdomain'
-                    CreateSubdomain key: "/page/dashboard/create_subdomain"
-                  when 'dashboard/import_data'
-                    ImportDataDash key: "/page/dashboard/import_data"
-                  when 'dashboard/moderate'
-                    ModerationDash key: "/page/dashboard/moderate"
-                  when 'dashboard/application'
-                    AppSettingsDash key: "/page/dashboard/application"
-                  when 'dashboard/roles'
-                    SubdomainRoles key: "/page/dashboard/roles"
-                  else 
-                    Proposal key: if @page.proposal then @page.proposal.key else @page
+              switch @root.page_name
+                when 'homepage'
+                  Homepage key: @page.key
+                when 'about'
+                  About()
+                when 'proposal/new'
+                  EditProposal key: "new_proposal", fresh: true              
+                when 'dashboard/email_notifications'
+                  EmailNotificationSettings key: '/page/dashboard/email_notifications'
+                when 'dashboard/assessment'
+                  FactcheckDash key: "/page/dashboard/assessment"
+                when 'dashboard/create_subdomain'
+                  CreateSubdomain key: "/page/dashboard/create_subdomain"
+                when 'dashboard/import_data'
+                  ImportDataDash key: "/page/dashboard/import_data"
+                when 'dashboard/moderate'
+                  ModerationDash key: "/page/dashboard/moderate"
+                when 'dashboard/application'
+                  AppSettingsDash key: "/page/dashboard/application"
+                when 'dashboard/roles'
+                  SubdomainRoles key: "/page/dashboard/roles"
+                else 
+                  Proposal key: if @page.proposal then @page.proposal.key else @page
 
         Footer()
 

@@ -91,6 +91,19 @@ AddRolesAndInvite = ReactiveComponent
       save @local
 
 
+    processNewFolks = =>
+      $filter = $(@getDOMNode()).find('#filter')
+      candidates = $filter.val()
+      $filter.val('')
+      if candidates
+        candidates = candidates.split(',')
+        for candidate_email in candidates
+          candidate_email = candidate_email.trim()
+          if candidate_email.indexOf(' ') < 0 && candidate_email.indexOf('@') > 0 && candidate_email.indexOf('.') > 0
+            @local.added.push candidate_email
+        save @local
+
+
     DIV style: {position: 'relative', backgroundColor: '#E7F2FF', padding: '18px 24px'}, 
       STYLE null, ".invite_menu_item:hover{background-color: #414141; color: white}"
 
@@ -152,25 +165,16 @@ AddRolesAndInvite = ReactiveComponent
             # enter key pressed...
             if e.which == 13
               e.preventDefault()
-              $filter = $(@getDOMNode()).find('#filter')
-              candidates = $filter.val()
-              $filter.val('')
-              if candidates
-                candidates = candidates.split(',')
-                for candidate_email in candidates
-                  candidate_email = candidate_email.trim()
-                  if candidate_email.indexOf(' ') < 0 && candidate_email.indexOf('@') > 0 && candidate_email.indexOf('.') > 0
-                    @local.added.push candidate_email
-                save @local
+              processNewFolks()
           onFocus: (e) => 
             @local.selecting = true
             save(@local)
             e.stopPropagation()
             $(document).on 'click.roles', (e) =>
               if e.target.id != 'filter'
+                processNewFolks()                
                 @local.selecting = false
                 @local.filtered = null
-                $(@getDOMNode()).find('#filter').val('')
                 save @local
                 $(document).off('click.roles')
             return false

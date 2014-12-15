@@ -19,6 +19,12 @@ TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vic
 BIGGEST_POSSIBLE_AVATAR_SIZE = 50
 
 # layout constants
+# Pictoral summary of layout variables:
+# 
+#    |                                        $page_width                                           |   
+#    | $content_gutter |                    $content_width                       |  $content_gutter |
+#                      |  $body_gutter |      $body_width        | $body_gutter  |             
+
 window.GRID_MINOR = 30
 window.GRID_GUTTER = 18
 window.GRID_MAJOR = GRID_MINOR + GRID_GUTTER #golden ratio
@@ -3158,7 +3164,11 @@ Footer = ReactiveComponent
   render : -> 
     subdomain = fetch('/subdomain')
 
-    DIV className: 'l_footer',  
+    DIV 
+      style: 
+        position: 'relative'
+        padding: '2.5em 0 .5em 0'
+        textAlign: 'center'
       if window["#{subdomain.name}Footer"]
         window["#{subdomain.name}Footer"]()
       else

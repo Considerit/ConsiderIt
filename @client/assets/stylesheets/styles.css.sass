@@ -1,12 +1,25 @@
-@import "variables"
 @import "bourbon"
 
 /////////////////////////////////////////////////////////////////////////////
 /// Mixins
 /////////////////////////////////////////////////////////////////////////////
 
+$base_text_color: black
+$base_background_color: white
+$default_avatar_in_histogram_color: #999
 $considerit_blue: #2478CC
 
+$grid_gutter: 18px
+$vertical_baseline: 1em
+
+$main_font-family: "Avenir Next W01", "Avenir Next", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif !default
+
+
+$font-size-scale: 9px 11px 12px 13px 14px 16px 18px 21px 24px 27px 30px 32px 34px 36px 42px 48px 54px 60px
+
+=font-size($size:0)
+  font-size: nth($font-size-scale, $size + 5)
+  line-height: 1.4
 
 =grab_cursor
   cursor: move
@@ -20,10 +33,6 @@ $considerit_blue: #2478CC
     cursor: -webkit-grabbing
     cursor: -moz-grabbing
 
-// Browsers render the inset colors so differently...
-=inset-border($base_text_color)
-  border-color: darken($base_text_color, 10%) lighten($base_text_color, 5%) lighten($base_text_color, 10%) lighten($base_text_color, 5%)
-
 // Mixin for mediaquery for retina screens. 
 // Adapted from https://gist.github.com/ddemaree/5470343
 =retina($ratio: 1.5)
@@ -32,6 +41,183 @@ $considerit_blue: #2478CC
  
   @media only screen and (-webkit-min-device-pixel-ratio: #{$ratio}), only screen and (-o-min-device-pixel-ratio: '#{$opera-ratio}/100'), only screen and (min-resolution: #{$dpi}dpi), only screen and (min-resolution: #{$ratio}dppx)
     @content
+
+
+///////////////////////////
+/* RESET
+ * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
+ * http://cssreset.com
+ */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video
+  margin: 0
+  padding: 0
+  border: 0
+  font-size: 100%
+  font: inherit
+  vertical-align: baseline
+  line-height: 1.4
+
+hr
+  display: block
+  height: 1px
+  border: 0
+  border-top: 1px solid #ccc
+  margin: 0
+  padding: 0
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section
+  display: block
+
+body 
+  line-height: 1.3
+  min-height: 100%
+
+ol, ul 
+  list-style: none
+  list-style-position: inside
+
+blockquote, q
+  quotes: none
+
+blockquote:before, blockquote:after,
+q:before, q:after
+  content: ''
+  content: none
+
+table
+  border-collapse: collapse
+  border-spacing: 0
+
+// do we need to put input and button here...?
+html
+
+  h1, h2, h3, h4, h5, h6, strong
+    font-weight: bold
+
+
+  em, i 
+    font-style: italic
+
+
+/* ELEMENT DEFAULTS */
+
+//http://paulirish.com/2012/box-sizing-border-box-ftw/
+*
+  +box_sizing(border-box)
+
+a
+  color: inherit
+  outline: none
+  cursor: pointer  
+  text-decoration: none
+  img
+    border: none  
+
+input, button
+  //+transition(opacity .15s linear, color .15s linear, background-color .15s linear)
+
+table
+  border-collapse: separate  
+
+ul
+  margin: 0
+  list-style-type: disc
+
+ol
+  margin: 0
+  list-style-type: decimal
+
+blockquote
+  quotes: "\201C" "\201D"
+  &:before
+    content: open-quote
+    font-weight: bold
+  &:after
+    content: close-quote
+    font-weight: bold
+
+/* HELPERS */
+
+.clear
+  clear: both
+
+.fl
+  float: left
+
+.fr
+  float: right
+
+#lightbox
+  position: fixed
+  top: -20000px
+  left: -2000px
+  width: 4000px
+  height: 40000px
+  z-index: 450
+  background-color: rgba(lighten($base_background_color, 100%), .75)
+
+.button
+  +font-size(1)
+
+.button, button, input[type="submit"]
+  outline: none
+  cursor: pointer
+  text-align: center
+
+
+.avatar
+  vertical-align: top
+  background-color: transparent
+  border: none
+  display: inline-block
+  margin: 0
+  padding: 0
+  border-radius: 50%
+  background-size: cover
+  //background-image: url('/system/default_avatar/small_default-profile-pic.png')
+  background-color: $default_avatar_in_histogram_color
+
+  &.avatar_anonymous
+    cursor: default
+
+.hover_avatar_name
+  position: absolute
+  +font-size(0)
+  background-color: white
+  // color: white
+  padding: 0 $grid_gutter/4
+  border-radius: 16px
+  z-index: 999999
+  white-space: nowrap
+  pointer-events: none
+
+body, h1, h2, h3, h4, h5, h6 //, input, button
+  color: $base_text_color
+
+// do we need to put input and button here...?
+body, input, button, textarea
+  font-family: $main_font-family
+
+
+.content
+  position: relative
+  font-size: 16px
+  color: $base_text_color
+  min-height: 500px
 
 
 
@@ -1316,3 +1502,34 @@ $avatar_preview_size: 60px
 
 .hover_pointer
   cursor: pointer
+
+
+// developer bar
+#development_bar
+  background-color: black
+  width: 125px
+  text-align: center
+  position: absolute
+  z-index: 99999
+
+  &:hover ul
+    display: block
+  ul
+    display: none
+  li
+    list-style: none
+    background-color: black
+
+  a, .change
+    color: white
+    display: block
+    padding: 2px 6px
+
+  a
+    font-size: 14px
+    font-weight: 600
+    &:hover
+      background-color: blue
+  .change
+    font-size: 10px
+

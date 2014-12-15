@@ -45,9 +45,11 @@ class UserMailer < Mailer
       subject = "#{inviter.name} invites you to #{action} at #{invitation_obj.app_title}"
     when 'Proposal'
       subject = "#{inviter.name} invites you to #{action} at '#{invitation_obj.name}'"
+    else
+      raise "Why are you trying to send an invitation to a #{invitation_obj.class.to_s}?"
     end
 
-    mail(:from => from, :to => to, :subject => "#{subject}")
+    mail(:from => from, :to => to, :subject => subject)
 
   end
 

@@ -3355,11 +3355,16 @@ EditProposal = ReactiveComponent
               I className: 'fa-child fa', style: {marginRight: 7}
               'Roles and invitations'
 
-            if @local.edit_roles
-              DIV 
-                style: {width: CONTENT_WIDTH, backgroundColor: '#fafafa', padding: '10px 60px'}
+            DIV 
+              style: 
+                width: CONTENT_WIDTH
+                backgroundColor: '#fafafa'
+                padding: '10px 60px'
+                display: if @local.edit_roles then 'block' else 'none' #roles has to be rendered
+                                                                              #so that default roles are 
+                                                                              #set on the proposal
 
-                ProposalRoles key: @local
+              ProposalRoles key: @local
 
         DIV null,
           INPUT className:'button primary_button', type:'submit', value:"#{if @props.fresh then 'Publish' else 'Update'}", onClick: @saveProposal

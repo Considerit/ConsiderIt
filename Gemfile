@@ -50,7 +50,6 @@ gem "therubyracer", :require => 'v8' #coffeescript dependency that gives Ruby in
 gem 'coffee-rails'
 gem 'uglifier'
 gem 'sass-rails', "~> 4.0.3"
-gem 'bourbon'
 gem "asset_sync"
 
 # Bundle gems for the local environment. Make sure to

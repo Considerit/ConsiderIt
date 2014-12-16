@@ -11,12 +11,6 @@ $considerit_blue: #2478CC
 
 $main_font-family: "Avenir Next W01", "Avenir Next", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif !default
 
-$font-size-scale: 9px 11px 12px 13px 14px 16px 18px 21px 24px 27px 30px 32px 34px 36px 42px 48px 54px 60px
-
-=font-size($size:0)
-  font-size: nth($font-size-scale, $size + 5)
-  line-height: 1.4
-
 =grab_cursor
   cursor: move
   cursor: ew-resize
@@ -79,7 +73,6 @@ footer, header, hgroup, menu, nav, section
   display: block
 
 body 
-  line-height: 1.3
   min-height: 100%
 
 ol, ul 
@@ -163,7 +156,7 @@ blockquote
   background-color: rgba(lighten($base_background_color, 100%), .75)
 
 .button
-  +font-size(1)
+  font-size: 18px
 
 .button, button, input[type="submit"]
   outline: none
@@ -188,7 +181,7 @@ blockquote
 
 .hover_avatar_name
   position: absolute
-  +font-size(0)
+  font-size: 16px
   background-color: white
   // color: white
   padding: 0 4px
@@ -385,7 +378,7 @@ $profile_menu_z: 999999
 .description_region
   position: relative
   margin: auto
-  +font-size(1)
+  font-size: 18px
   margin-bottom: 2em
 
 .proposal_heading
@@ -500,7 +493,7 @@ $profile_menu_z: 999999
 
 .histogram_segment_pole
   position: absolute
-  +font-size(6)
+  font-size: 32px
   bottom: -20px
   pointer-events: none
 
@@ -578,7 +571,7 @@ $slider_handle_size: 22px
     position: absolute
     top: 3px
     color: $considerit_blue
-    +font-size(-2)
+    font-size: 13px
 
     &.left
       left: -15px
@@ -621,7 +614,7 @@ $slider_handle_size: 22px
 
 .auth_heading, .slider_feedback
   border-radius: 10px  
-  +font-size(6)
+  font-size: 32px
   font-weight: 700
   color: $considerit_blue
   text-align: center
@@ -679,7 +672,7 @@ $slider_handle_size: 22px
   text-align: center
   margin-bottom: 30px
   margin-top: 7px
-  +font-size(6)
+  font-size: 32px
 
 .points_on_decision_board .points_heading_label
   font-weight: 700
@@ -694,7 +687,7 @@ $slider_handle_size: 22px
 
 .points_segment_label
   text-align: center
-  +font-size(-2)
+  font-size: 13px
   position: absolute
   width: 100%
   bottom: -12px
@@ -726,7 +719,7 @@ $slider_handle_size: 22px
   z-index: 10
   right: -275px
   bottom: -200px
-  +font-size(-1)
+  font-size: 14px
 
   .filter_option
     display: block
@@ -771,7 +764,7 @@ $slider_handle_size: 22px
       color: white
       padding: .25em 18px
       margin: 0
-      +font-size(1)
+      font-size: 18px
       box-shadow: none
       &:hover
         color: white
@@ -788,7 +781,7 @@ $slider_handle_size: 22px
     width: 223px
 
   .drop_prompt
-    +font-size(0)
+    font-size: 16px
     position: absolute
     top: 1.4em
     left: 36px
@@ -845,11 +838,11 @@ button.primary_button, input[type="submit"]
   padding: 3px
   display: inline-block
   input
-    +font-size(3)
+    font-size: 24px
     cursor: pointer
   label
     margin-left: 6px
-    +font-size(1)
+    font-size: 18px
     color: #888
     cursor: pointer
 
@@ -907,11 +900,11 @@ $community_point_mouth_width: 17px
 // Point text
 .point_nutshell
   word-wrap: break-word
-  +font-size(0)
+  font-size: 16px
 
 .point_details_tease, .point_details 
   margin-top: .5em
-  +font-size(0)
+  font-size: 16px
   word-wrap: break-word
   
   font-weight: 400
@@ -992,7 +985,7 @@ $point-includer-width: 22px
   padding: .25em 0
   margin-top: 1em
   margin-left: 20px
-  +font-size(0)
+  font-size: 16px
 
   .newpoint_link
     text-decoration: underline
@@ -1008,7 +1001,7 @@ $point-includer-width: 22px
 
 // point actions
 a.edit_point, a.delete_point
-  +font-size(-2)
+  font-size: 13px
   color: #999
   padding-right: 8px
 
@@ -1022,16 +1015,16 @@ a.edit_point, a.delete_point
   position: relative
   margin-left: 18px
   input, textarea
-    +font-size(0)
+    font-size: 16px
     padding-top: 0
     padding-bottom: 0
 
   &:before
     left: -11px    
-    +font-size(-4)
+    font-size: 11px
 
   label
-    +font-size(0)
+    font-size: 16px
 
   .newpoint_description
     width: 100%
@@ -1044,13 +1037,13 @@ a.edit_point, a.delete_point
     overflow: hidden
 
   .count
-    +font-size(0)
+    font-size: 16px
     position: absolute
     right: 20px
     top: -19px
 
   .add_details
-    +font-size(0)
+    font-size: 16px
     span
       padding-left: 6px
     &:hover
@@ -1064,13 +1057,13 @@ a.edit_point, a.delete_point
     .primary_button
       margin-top: .5em
       width: 100%
-      +font-size(2)
+      font-size: 21px
 
   .newpoint_hide_name
     position: absolute
     bottom: 0px
     label, input
-      +font-size(-1)
+      font-size: 14px
 
 
 // Discussions
@@ -1125,7 +1118,7 @@ a.edit_point, a.delete_point
 
 .auth
   padding: 1.5em 18px .5em 18px
-  +font-size(3)
+  font-size: 24px
   margin-top: 10px
 
   .third_party_call
@@ -1168,13 +1161,13 @@ a.edit_point, a.delete_point
     i
       margin-right: 18px
       display: inline-block
-      +font-size(1)
+      font-size: 18px
       position: absolute
       left: 9px
 
     span
       font-weight: 600
-      +font-size(-2)
+      font-size: 13px
 
 
   .separator
@@ -1198,7 +1191,7 @@ a.edit_point, a.delete_point
     border: 1px solid #aaa
     padding: 5px 10px
     width: 100%
-    +font-size(2)
+    font-size: 21px
     color: lighten($base_text_color, 15%)
 
   table
@@ -1233,16 +1226,16 @@ a.edit_point, a.delete_point
     list-style: none
 
     label
-      +font-size(0)
+      font-size: 16px
       color: lighten($base_text_color, 15%)
       padding-left: 6px
       font-weight: normal
     input
-      +font-size(3)
+      font-size: 24px
 
 
 .auth .forgot_password
-  +font-size(-3)
+  font-size: 12px
   border-bottom: 1px solid lighten($base_text_color, 70%)
   color: lighten($base_text_color, 40%)
   margin-left: 12px
@@ -1250,7 +1243,7 @@ a.edit_point, a.delete_point
   top: -4px
 
 .verification_code_explanation
-  +font-size(-2)
+  font-size: 13px
 
 $avatar_preview_size: 60px
 .avatar_preview_enclosure
@@ -1330,7 +1323,7 @@ $avatar_preview_size: 60px
       margin-left: 60px
 
     li, a
-      +font-size(-2)
+      font-size: 13px
 
     ul
       margin-left: 0px
@@ -1351,7 +1344,7 @@ $avatar_preview_size: 60px
   .news 
     padding-left: 0
     li
-      +font-size(-1)
+      font-size: 14px
       list-style: none
       padding-bottom: 6px
 

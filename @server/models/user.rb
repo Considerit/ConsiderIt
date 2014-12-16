@@ -41,8 +41,7 @@ class User < ActiveRecord::Base
     self.b64_thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
     
     JSON.parse(self.active_in).each do |subdomain_id|
-      current = Rails.cache.read("avatar-digest-#{subdomain_id}") || 0
-      Rails.cache.write("avatar-digest-#{subdomain_id}", current + 1)   
+      Rails.cache.delete("avatar-digest-#{subdomain_id}") 
     end
   end
 
@@ -149,8 +148,7 @@ class User < ActiveRecord::Base
       # on initial login to the new subdomain.
       if self.avatar_file_name && active_subdomains.length > 1
         subdomain_id = Thread.current[:subdomain].id
-        current = Rails.cache.read("avatar-digest-#{subdomain_id}") || 0
-        Rails.cache.write("avatar-digest-#{subdomain_id}", current + 1)   
+        Rails.cache.delete("avatar-digest-#{subdomain_id}")
       end
     end
 

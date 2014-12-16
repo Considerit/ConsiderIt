@@ -1,5 +1,3 @@
-@import "bourbon"
-
 /////////////////////////////////////////////////////////////////////////////
 /// Mixins
 /////////////////////////////////////////////////////////////////////////////
@@ -10,6 +8,13 @@ $default_avatar_in_histogram_color: #999
 $considerit_blue: #2478CC
 
 $main_font-family: "Avenir Next W01", "Avenir Next", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif !default
+
+=transform($trans)
+  -webkit-transform: $trans
+  -moz-transform: $trans
+  -ms-transform: $trans
+  -o-transform: $trans
+  transform: $trans
 
 =grab_cursor
   cursor: move
@@ -106,7 +111,9 @@ html
 
 //http://paulirish.com/2012/box-sizing-border-box-ftw/
 *
-  +box_sizing(border-box)
+  -webkit-box-sizing: border-box
+  -moz-box-sizing: border-box
+  box-sizing: border-box
 
 a
   color: inherit
@@ -115,9 +122,6 @@ a
   text-decoration: none
   img
     border: none  
-
-input, button
-  //+transition(opacity .15s linear, color .15s linear, background-color .15s linear)
 
 table
   border-collapse: separate  
@@ -173,7 +177,6 @@ blockquote
   padding: 0
   border-radius: 50%
   background-size: cover
-  //background-image: url('/system/default_avatar/small_default-profile-pic.png')
   background-color: $default_avatar_in_histogram_color
 
   &.avatar_anonymous
@@ -434,9 +437,6 @@ $profile_menu_z: 999999
   left: -217px
   text-align: right
   top: 4px
-  // position: absolute
-  // top: 50%
-  // transform: translateY(-50%)
 
   +retina
     font-weight: 300
@@ -515,7 +515,6 @@ $profile_menu_z: 999999
   .avatar
     border-radius: 50%
     background-color: $default_avatar_in_histogram_color
-    background-image: none
     +transform(rotate(180deg))
     -ms-transform: rotate(0)
 
@@ -1137,9 +1136,10 @@ a.edit_point, a.delete_point
     text-shadow: 0 1px 0 rgba(black, 0.5)
     border-radius: .3em
     position: relative
-    +background-image(linear-gradient(rgba(white, 0.1), rgba(white, 0.05) 49%, rgba(black, 0.05) 51%, rgba(black, 0.1)))
+    background-color: $considerit_blue //#4e6cf7
+
     &:hover
-      +background-image(linear-gradient(rgba(white, 0.2), rgba(white, 0.1) 49%, rgba(black, 0.1) 51%, rgba(black, 0.2)))
+      background-color: darken($considerit_blue, 15%)
 
     &:before
       border-right: 0.075em solid rgba(black, 0.1)
@@ -1150,13 +1150,6 @@ a.edit_point, a.delete_point
       left: 25px
       height: 100%
       width: 1px
-
-    &.google
-      background-color: $considerit_blue //#4e6cf7
-    &.facebook
-      background-color: $considerit_blue //#4863ae
-    &.twitter
-      background-color: $considerit_blue //#46c0fb
 
     i
       margin-right: 18px

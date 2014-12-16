@@ -3,7 +3,6 @@ require File.expand_path('../boot', __FILE__)
 require 'rails/all'
 require 'pp'
 require './config/local_environment'
-require "actionpack/action_caching"
 
 if defined?(Bundler)
   # Require the gems listed in Gemfile, including any gems

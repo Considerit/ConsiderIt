@@ -38,8 +38,6 @@ GEM
       activesupport (= 4.1.6)
       rack (~> 1.5.2)
       rack-test (~> 0.6.2)
-    actionpack-action_caching (1.1.1)
-      actionpack (>= 4.0.0, < 5.0)
     actionview (4.1.6)
       activesupport (= 4.1.6)
       builder (~> 3.1)
@@ -197,7 +195,6 @@ GEM
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
-    newrelic_rpm (3.9.5.251)
     nokogiri (1.6.5)
       mini_portile (~> 0.6.0)
     oauth2 (1.0.0)
@@ -301,7 +298,6 @@ PLATFORMS
 
 DEPENDENCIES
   actionmailer-with-request
-  actionpack-action_caching
   acts_as_tenant
   asset_sync
   aws-sdk
@@ -320,7 +316,6 @@ DEPENDENCIES
   haml
   mailhopper
   mysql2
-  newrelic_rpm
   oj (= 2.10.2)
   oj_mimic_json
   omniauth-facebook

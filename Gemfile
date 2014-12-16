@@ -22,12 +22,12 @@ gem "haml"
 gem 'paperclip' # https://github.com/thoughtbot/paperclip
 gem 'paperclip-compression'
 gem 'delayed_paperclip'
-gem 'font-awesome-rails', "~> 4.2.0"
+gem 'font-awesome-rails'
 
 #############
 # PURE PERFORMANCE
 # Rails JSON encoding is super slow, oj makes it faster
-gem 'oj', "2.10.2" #temp restriction on version until https://github.com/ohler55/oj/issues/190 solved
+gem 'oj' 
 gem 'oj_mimic_json' # we need this for Rails 4.1.x
 
 #############
@@ -48,7 +48,7 @@ gem 'sprockets-rails', :require => 'sprockets/railtie'
 gem "therubyracer", :require => 'v8' #coffeescript dependency that gives Ruby interface to v8 javascript engine 
 gem 'coffee-rails'
 gem 'uglifier'
-gem 'sass-rails', "~> 4.0.3"
+gem 'sass-rails'
 gem "asset_sync"
 
 # Bundle gems for the local environment. Make sure to

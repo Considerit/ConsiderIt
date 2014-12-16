@@ -3,7 +3,6 @@ source 'http://rubygems.org'
 #############
 # CORE
 gem 'rails', '~>4'
-gem 'actionpack-action_caching' # Required for caches_action on Avatars
 
 #############
 # AUTHENTICATION
@@ -57,7 +56,7 @@ gem "asset_sync"
 # and rake tasks are available in development mode:
 group :development, :test do
   gem 'thin'
-  gem 'newrelic_rpm'
+  # gem 'newrelic_rpm'
   # gem 'guard', '>= 2.2.2',       :require => false
   # gem 'guard-livereload',        :require => false
   # gem 'rack-livereload'

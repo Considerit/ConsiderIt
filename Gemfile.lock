@@ -31,8 +31,6 @@ GEM
       actionpack (= 4.1.6)
       actionview (= 4.1.6)
       mail (~> 2.5, >= 2.5.4)
-    actionmailer-with-request (0.4.0)
-      rails (>= 3)
     actionpack (4.1.6)
       actionview (= 4.1.6)
       activesupport (= 4.1.6)
@@ -297,7 +295,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  actionmailer-with-request
   acts_as_tenant
   asset_sync
   aws-sdk

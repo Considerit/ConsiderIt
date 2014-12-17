@@ -252,13 +252,6 @@ GEM
     ref (1.0.5)
     request_store (1.1.0)
     ruby-imagespec (0.3.1)
-    sass (3.4.9)
-    sass-rails (5.0.0)
-      railties (>= 4.0.0, < 5.0)
-      sass (~> 3.1)
-      sprockets (>= 2.8, < 4.0)
-      sprockets-rails (>= 2.0, < 4.0)
-      tilt (~> 1.1)
     sitemap_generator (5.0.5)
       builder
     sprockets (2.12.3)
@@ -314,7 +307,7 @@ DEPENDENCIES
   haml
   mailhopper
   mysql2
-  oj (= 2.10.2)
+  oj
   oj_mimic_json
   omniauth-facebook
   omniauth-google-oauth2
@@ -323,7 +316,6 @@ DEPENDENCIES
   paperclip-compression
   prerender_rails
   rails (~> 4)
-  sass-rails
   sitemap_generator
   sprockets
   sprockets-rails

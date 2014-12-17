@@ -123,6 +123,10 @@ do ($, window, document) ->
       should_be_stuck = effective_viewport_top >= container_top && (@options.stick_on_zoomed_screens || (!is_zoomed && screen.width > 700) ) && (!@options.conditional || @options.conditional())
 
       if should_be_stuck && !@is_stuck
+        @to_restore = 
+          position: @$el[0].style['position']
+          top: @$el[0].style['top']
+
         @$el[0].style['position'] = if @use_fixed_positioning then 'fixed' else 'absolute'
         @$el[0].style['top'] = "#{@options.top_offset}px" 
         @$el[0].style["-webkit-backface-visibility"] = "hidden"
@@ -135,8 +139,8 @@ do ($, window, document) ->
 
       else if !should_be_stuck && @is_stuck
         @translate_y = @translate_x = -1
-        @$el[0].style['position'] = ''
-        @$el[0].style['top'] = ''
+        @$el[0].style['position'] = @to_restore.position
+        @$el[0].style['top'] = @to_restore.top
 
         @$el[0].style.transform = ""        
         @$el[0].style['-webkit-transform'] = ""

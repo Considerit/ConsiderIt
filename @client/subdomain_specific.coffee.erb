@@ -31,13 +31,6 @@ window.DefaultFooter = ReactiveComponent
   render: ->
     subdomain = fetch '/subdomain'
     DIV null,
-      # DIV style: {margin: '20px 0'},
-      #   FBShare()
-      #   Tweet
-      #     hashtags: 'asteroids, NASA'
-      #     referer: 'https%3A%2F%2Fecastonline.consider.it%2F'
-      #     text: 'Think about NASA\'s Asteroid Initiative.'
-      #     url: 'https%3A%2F%2Fecastonline.consider.it%2F'
 
       A href: "#{subdomain.external_project_url}", target: '_blank', style: {display: 'inline-block', margin: 'auto'},
         if subdomain.branding.logo

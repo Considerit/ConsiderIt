@@ -8,47 +8,41 @@
 #     in the lifecycle methods now that we're not using @props or @state. Right now using a hack
 #     (see use of _route_changed ActiveREST cache key)
 
-####
-# Make the DIV, SPAN, etc.
-for el of React.DOM
-  window[el.toUpperCase()] = React.DOM[el]
 
-####
-# Constants, especially used for layout styling
-TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
-BIGGEST_POSSIBLE_AVATAR_SIZE = 50
+## ########################
+## Initialize defaults for client data
 
-# layout constants
-# Pictoral summary of layout variables:
-# 
-#    |                                        $page_width                                           |   
-#    |  content_gutter |                    $content_width                       |   content_gutter |
-#                      |      gutter   |      $body_width        |       gutter  |             
+fetch 'histogram',
+  highlighted_users : null
+  selected_segment : null
+  selected_segment_isclicked : null
 
-window.PAGE_WIDTH = 1152
-window.CONTENT_WIDTH = 960
-window.BODY_WIDTH = 540
-window.POINT_WIDTH = 250
-window.POINT_CONTENT_WIDTH = 197
-window.HISTOGRAM_WIDTH = BODY_WIDTH    # Width of the slider / histogram base 
-window.DECISION_BOARD_WIDTH = BODY_WIDTH + 4 # the four is for the border
-window.REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 76
-window.MAX_HISTOGRAM_HEIGHT = 200
-window.DESCRIPTION_WIDTH = BODY_WIDTH
+fetch 'slider',
+  has_moved : false
+  is_moving : false
+  stance : null
+  stance_segment : null
 
-# Colors
-considerit_blue = '#2478CC'
-# Colors are primarily stored in the database (to allow customers & Kev to self-brand).
-# See @server/models/subdomain#branding_info for hardcoding color values
-# when doing development. 
+fetch 'decisionboard',
+  sticky : false
+  
+fetch 'root',
+  auth_mode : null
+  opinions_to_publish : []
+
+fetch '/current_user'
+
+rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
+fetch 'browser',
+  is_android_browser : !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
+  is_opera_mini : !!navigator.userAgent.match /Opera Mini/
+  is_ie9 : !!(document.documentMode && document.documentMode == 9)
+  is_iOS : !!navigator.platform.match(/(iPad|iPhone)/)
+  touch_enabled : Modernizr.touch
+  high_density_display : ((window.matchMedia && (window.matchMedia('only screen and (min-resolution: 124dpi), only screen and (min-resolution: 1.3dppx), only screen and (min-resolution: 48.8dpcm)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (min-device-pixel-ratio: 1.3)').matches)) || (window.devicePixelRatio && window.devicePixelRatio > 1.3))
 
 
-##
-# Helpers that should probably go elsewhere
 
-capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
-
-L = loading_indicator = DIV null, 'Loading...'
 proposal_url = (proposal) =>
   # The special thing about this function is that it only links to
   # "?results=true" if the proposal has an opinion.
@@ -56,43 +50,6 @@ proposal_url = (proposal) =>
   if proposal.top_point
     result += '?results=true'
   return result
-
-splitParagraphs = (user_content) ->
-  if !user_content
-    return SPAN null
-    
-  user_content = user_content.replace(/(<li>|<br\s?\/?>|<p>)/g, '\n') #add newlines
-  user_content = user_content.replace(/(<([^>]+)>)/ig, "") #strips all tags
-
-  # autolink. We'll insert a delimiter ('(*-&)') to use for splitting later.
-  # regex adapted from https://github.com/bryanwoods/autolink-js, MIT license, author Bryan Woods
-  hyperlink_pattern = ///
-    (^|[\s\n]) # Capture the beginning of string or line or leading whitespace
-    (
-      (?:https?):// # Look for a valid URL protocol (non-captured)
-      [\-A-Z0-9+\u0026\u2019@#/%?=()~_|!:,.;]* # Valid URL characters (any number of times)
-      [\-A-Z0-9+\u0026@#/%=~()_|] # String must end in a valid URL character
-    )
-  ///gi
-  user_content = user_content.replace(hyperlink_pattern, "$1(*-&)link:$2(*-&)")
-  paragraphs = user_content.split(/(?:\r?\n)/g)
-
-  for para,idx in paragraphs
-    P key: "para-#{idx}", 
-      # now split around all links
-      for text,idx in para.split '(*-&)'
-        if text.substring(0,5) == 'link:'
-          A key: idx, href: text.substring(5, text.length), target: '_blank',
-            text.substring(5, text.length)
-        else
-          SPAN key: idx, text
-
-# safari only respects -webkit-transform
-crossbrowserTransformProperty = (props) -> _.extend props,
-  '-webkit-transform' : props.transform
-  '-ms-transform' : props.transform
-  '-moz-transform' : props.transform
-
 
 getStanceSegment = (value) ->
   for i in [0..5]
@@ -127,7 +84,6 @@ togglePage = (proposal_mode, triggered_by) ->
       _.delay -> 
         _route_changed = false
       , 1
-
 
 
 stance_segment_boundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
@@ -285,8 +241,6 @@ Proposal = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
-    description_region_style = {width: DESCRIPTION_WIDTH}
-
     # Update global references:
     #  - The current_proposal for this page
     #  - The user_opinions hash (maps users to their opinions in this proposal)
@@ -321,7 +275,13 @@ Proposal = ReactiveComponent
 
       DIV null,
         #description
-        DIV className:'description_region', style: description_region_style, 
+        DIV 
+          style: 
+            width: DESCRIPTION_WIDTH
+            position: 'relative'
+            margin: 'auto'
+            fontSize: 16
+            marginBottom: '2em'
 
           if !proposal.active
             SPAN style: {display: 'inline-block', color: 'rgb(250, 146, 45)', padding: '4px 0px', marginTop: 10},
@@ -329,10 +289,15 @@ Proposal = ReactiveComponent
               'Closed to new contributions at this time.'
 
           # TODO: now that we're accepting user contributed proposals, we need to SANITIZE the description
-          DIV className: 'proposal_details', dangerouslySetInnerHTML:{__html: proposal.description}
+          DIV 
+            className: 'proposal_details'
+            style: 
+              paddingTop: '1em'
+              fontSize: 18
+            dangerouslySetInnerHTML:{__html: proposal.description}
 
           if @local.description_fields
-            DIV className: 'description_fields',
+            DIV style: {marginTop: '1em'},
               for item in @local.description_fields
                 if item.group
                   @renderDescriptionFieldGroup item
@@ -376,14 +341,18 @@ Proposal = ReactiveComponent
         #reasons
         DIV 
           className:'reasons_region'
-          style : { width: REASONS_REGION_WIDTH },
-            #community pros
-            CommunityPoints { key: 'pros' }
+          style : 
+            width: REASONS_REGION_WIDTH
+            position: 'relative'
+            margin: '48px auto 4em auto' 
+              
+          #community pros
+          CommunityPoints { key: 'pros' }
 
-            DecisionBoard()
+          DecisionBoard()
 
-            #community cons
-            CommunityPoints { key: 'cons' }
+          #community cons
+          CommunityPoints { key: 'cons' }
 
 
       if subdomain.name == 'livingvotersguide' && @root.proposal_mode == 'results' && your_opinion.published
@@ -397,14 +366,15 @@ Proposal = ReactiveComponent
     # is taller than either of the wing point columns
     $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height()} 
 
-    # $el.find('.description_region').css
-    #   top: $el.find('.proposal_heading').height() + 24
-
 
   renderDescriptionField : (field) ->
-    DIV className: 'description_field', key: field.label,
+    DIV 
+      className: 'description_field'
+      key: field.label
+      style: {padding: '.25em 0'}
+
       DIV 
-        className: 'field_heading'
+        style: {cursor: 'pointer'}
         onClick: => 
           field.expanded = !field.expanded
           save(@local)
@@ -413,17 +383,72 @@ Proposal = ReactiveComponent
               what: 'expand proposal description'
               details: 
                 description_type: field.label        
-        SPAN className: "expand_arrow fa #{if field.expanded then 'fa-minus-circle' else 'fa-plus-circle'}" 
-        SPAN className: 'field_name', field.label
+        SPAN 
+          className: "fa #{if field.expanded then 'fa-minus-circle' else 'fa-plus-circle'}" 
+          style: 
+            opacity: .7
+            position: 'relative'
+            left: -4
+            paddingRight: 6
+
+        SPAN 
+          style: {lineHeight: 1.6, fontSize: 18}
+          field.label
+
       if field.expanded
-        DIV className: 'field_body', dangerouslySetInnerHTML:{__html: field.html}
+        DIV 
+          style: 
+            padding: '10px 0'
+            width: 700
+            overflow: 'hidden'
+          dangerouslySetInnerHTML:{__html: field.html}
 
   renderDescriptionFieldGroup : (group) -> 
-    DIV className: 'description_group', key: group.group,
-      DIV className: 'description_group_name', 
+    DIV 
+      className: 'description_group'
+      key: group.group,
+      style: 
+        position: 'relative'
+        marginBottom: 10
+        borderLeft: '1px solid #e1e1e1'
+        paddingLeft: 20
+        left: -20
+
+      DIV 
+        style: 
+          position: 'absolute'
+          width: 200
+          left: -217
+          textAlign: 'right'
+          top: 4
+          fontWeight: if fetch('browser').high_density_display then 300 else 400
+
         LABEL null, group.group
       for field in group.items
         @renderDescriptionField field
+
+styles += """
+.proposal_details br, .description_field br {
+  padding-bottom: 0.5em; }
+.proposal_details p, .proposal_details ul, .proposal_details table, .description_field p, .description_field ul, .description_field table {
+  margin-bottom: 0.5em; }
+.proposal_details td, .description_field td {
+  padding: 0 3px; }
+.proposal_details li, .description_field li {
+  list-style: outside; }
+.proposal_details ul, .description_field ul {
+  padding-left: 20px;
+  margin-left: 20px; }
+.proposal_details a, .description_field a {
+  text-decoration: underline; }
+.proposal_details blockquote, .description_field blockquote {
+  opacity: 0.7;
+  padding: 10px 20px; }
+.proposal_details table, .description_field table {
+  padding: 20px 0px; }
+
+
+"""
 
 
 StickyProposalHeading = ReactiveComponent
@@ -478,30 +503,65 @@ StickyProposalHeading = ReactiveComponent
           textAlign: 'center'
 
         A
-          className: 'homepage_link'
           onClick: (=> window.app_router.navigate("/", {trigger: true}))
           style: {position: 'absolute', display: 'inline-block', top: 10, left: 12},
           I className: 'fa fa-home', style: {fontSize: 28, color: 'white'}
 
-        DIV className: 'current_proposal_cluster', @proposal.cluster
+        DIV
+          style: 
+            display: 'inline-block'
+            position: 'absolute'
+            left: 58
+            fontSize: 18
+            paddingTop: 12
+
+          @proposal.cluster
 
         DIV
-          className: 'proposal_navigation_menu_wrapper'
-          # Set the width here so we can align it perfectly with the proposal description text:
-          style: {width: DESCRIPTION_WIDTH}
+          # Set the width so we can align it perfectly with the proposal description text:
+          style: 
+            width: DESCRIPTION_WIDTH
+            textAlign: 'left'
+            margin: 'auto'
+
           DIV style: {width: PAGE_WIDTH}, # ...but let the stuff inside be big
             DIV
-              className: 'proposal_navigation_menu'
+              style:
+                fontSize: 22
+                fontWeight: 700
+                position: 'relative'
+                top: 4
+
               onMouseEnter: (=> @local.dropped_down = true; save(@local))
               onMouseLeave: (=> @local.dropped_down = false; save(@local))
 
-              DIV className: 'current_proposal', style: {backgroundColor: 'rgba(0,0,0,.2)'},
+              DIV 
+                style: 
+                  backgroundColor: 'rgba(0,0,0,.2)'
+                  padding: '3px 15px'
+                  borderRadius: 6
+                  marginTop: 3
+                  display: 'inline-block'
+                  cursor: 'pointer'
+
                 SPAN null,
                   "#{if @proposal.designator && @proposal.category then "#{@proposal.category[0]}-#{@proposal.designator} " else ''}#{@proposal.name}" 
-                  I className: 'fa fa-caret-down', style: {paddingLeft: 8}
+                  I 
+                    className: 'fa fa-caret-down'
+                    style: 
+                      paddingLeft: 8
+                      fontSize: 30
+                      position: 'relative'
+                      top: 2
 
               if @local.dropped_down
-                DIV className: 'proposal_navigation_dropdown', style: {width: 500, position: 'absolute', top: 38, paddingTop: 5},
+                DIV 
+                  style: 
+                    width: 500
+                    position: 'absolute'
+                    top: 38
+                    paddingTop: 5
+
                   DIV style: {backgroundColor: subdomain.branding.primary_color, borderRadius: '4px'},
                     DIV style: {backgroundColor: 'rgba(0,0,0,.2)', padding: '14px 0', borderRadius: '4px'},
 
@@ -512,7 +572,13 @@ StickyProposalHeading = ReactiveComponent
                               for other_proposal in curr_cluster.proposals
                                 TR href: proposal_url(other_proposal), onClick: clickInternalLink, key: "tr/#{other_proposal.slug}",
                                   TD style: {textAlign: 'left', paddingLeft: 20},
-                                    A href: proposal_url(other_proposal), onClick: clickInternalLink, style: {fontWeight: if other_proposal.key == @proposal.key then 700 else 400},
+                                    A 
+                                      href: proposal_url(other_proposal)
+                                      onClick: clickInternalLink
+                                      style: 
+                                        color: 'white'
+                                        fontWeight: if other_proposal.key == @proposal.key then 700 else 400
+                                        fontSize: 18                                        
                                       other_proposal.name
 
                                   TD style: {position: 'relative'},
@@ -524,7 +590,7 @@ StickyProposalHeading = ReactiveComponent
                                       face_size = 20 # height/width of the summary slider bar
                                       eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: subdomain.branding.primary_color, position: 'absolute', top: 6 }
                                       mouth_style = {fontSize: 12, color: subdomain.branding.primary_color, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
-                                      crossbrowserTransformProperty mouth_style
+                                      css.crossbrowserify mouth_style
                                       if opinion.stance_segment < 3
                                         # frown!
                                         mouth = '('
@@ -581,14 +647,32 @@ StickyProposalHeading = ReactiveComponent
                                     UL className: 'other_proposal_list', style: {backgroundColor: 'rgba(0,0,0,.2)', borderRadius: '4px', padding: '8px 0' },
                                       for other_proposal in cluster.proposals
                                         LI style: {listStyle: 'none'}, key: "li/#{other_proposal.slug}",
-                                          A href: proposal_url(other_proposal), onClick: clickInternalLink, style: {display: 'block', textAlign: 'left', padding: '2px 10px'},
+                                          A 
+                                            href: proposal_url(other_proposal)
+                                            onClick: clickInternalLink
+                                            style:
+                                              display: 'block'
+                                              textAlign: 'left'
+                                              padding: '2px 10px'
+                                              color: 'white'
+                                              fontSize: 18
+                                              fontWeight: 400
                                             other_proposal.name
 
 
               if next_proposal
-                DIV className: 'next_proposal',
+                DIV 
+                  style: 
+                    fontSize: 15
+                    marginLeft: 50
+                    display: 'inline-block'
+                    fontWeight: 400
+
                   "Next: "
                     A
+                      style: 
+                        color: 'white'
+                        textDecoration: 'underline'
                       onClick: do (url = proposal_url(next_proposal)) =>
                         => window.app_router.navigate(url, {trigger: true})
                       next_proposal.name
@@ -616,7 +700,18 @@ StickyProposalHeading = ReactiveComponent
       @local.show_cluster = null
       save(@local)
 
+styles += """
+.current_cluster tr:hover, .other_proposal_list li:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer; }
 
+.proposal_heading {
+  width: 100%;
+  color: white;
+  z-index: 999;
+  position: relative; }
+
+"""
 
 ##
 # HistogramData
@@ -740,44 +835,84 @@ Histogram = ReactiveComponent
         className: 'histogram'
         onClick: @onClickHistogram
         # onMouseLeave: @onSelectSegment
-        style: { width: effective_histogram_width, marginLeft: margin_adjustment }, 
-          TBODY null,
-            TR null, 
-              TD key: 'supporters', className: "histogram_segment_pole supporters", 
-                SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
+        style: 
+          width: effective_histogram_width
+          marginLeft: margin_adjustment
+          position: 'relative'
+        TBODY null,
+          TR null, 
+            TD 
+              key: 'supporters'
+              className: "histogram_segment_pole"
+              style: 
+                left: -160
+                width: 145 
+              SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
 
-              for bar, idx in columns
-                segment = if bar.length > 0 then bar[0].stance_segment else -1
-                is_selected = selected_segment == segment
+            for bar, idx in columns
+              segment = if bar.length > 0 then bar[0].stance_segment else -1
+              is_selected = selected_segment == segment
 
-                TD 
-                  key: idx 
-                  className: "histogram_bar #{if is_selected then 'is_selected' else 'not_selected'}"
-                  style: 
-                    width: avatar_size
-                    opacity: if is_selected && !selected_segment? then '1' else '1'
-                    minHeight: if bar.length == 0 then 75 else 0
-                  for opinion in bar
-                    user = opinion.user
-                    Avatar 
-                      key: user
-                      user: user
-                      hide_face: @root.proposal_mode == 'crafting'
-                      hide_name: @root.proposal_mode == 'crafting'
-                      'data-segment':segment
-                      style:
-                        height: avatar_size
-                        width: avatar_size
-                        opacity: if users_to_highlight && 
-                          !_.contains(users_to_highlight, opinion.user) 
-                          then '.15' 
-                          else if selected_segment == null || is_selected 
-                          then '1.0'
-                          else '.15'
+              TD 
+                key: idx 
+                className: "histogram_bar #{if is_selected then 'is_selected' else 'not_selected'}"
+                style: 
+                  width: avatar_size
+                  opacity: if is_selected && !selected_segment? then '1' else '1'
+                  minHeight: if bar.length == 0 then 75 else 0
+                for opinion in bar
+                  user = opinion.user
+                  Avatar 
+                    key: user
+                    user: user
+                    hide_face: @root.proposal_mode == 'crafting'
+                    hide_name: @root.proposal_mode == 'crafting'
+                    'data-segment':segment
+                    style:
+                      height: avatar_size
+                      width: avatar_size
+                      opacity: if users_to_highlight && 
+                        !_.contains(users_to_highlight, opinion.user) 
+                        then '.15' 
+                        else if selected_segment == null || is_selected 
+                        then '1.0'
+                        else '.15'
 
-              TD key: 'opposers', className: "histogram_segment_pole opposers", 
-                SPAN null, if @root.proposal_mode == 'crafting' then 'Oppose' else 'Opposers'
+            TD 
+              key: 'opposers'
+              className: "histogram_segment_pole"
+              style: 
+                right: -145
+                width: 130
+              SPAN null, if @root.proposal_mode == 'crafting' then 'Oppose' else 'Opposers'
 
+
+styles += """
+.histogram_segment_pole {
+  position: absolute;
+  font-size: 30px;
+  bottom: -20px;
+  pointer-events: none; 
+  font-weight: #{if fetch('browser').high_density_display then '300' else '400'};}
+  .histogram_segment_pole span {
+    position: absolute;
+    bottom: 0; }
+
+.histogram_bar {
+  display: inline-block;
+  font-size: 0;
+  vertical-align: bottom; 
+  #{css.crossbrowserify({transform: 'rotate(180deg)'}, true)}
+  -ms-transform: rotate(0);
+  }
+
+  .histogram_bar .avatar {
+    border-radius: 50%;
+    background-color: "default_avatar_in_histogram_color"; 
+    #{css.crossbrowserify({transform: 'rotate(180deg)'}, true)}
+    -ms-transform: rotate(0);}
+
+"""
 
 ##
 # Slider
@@ -889,27 +1024,27 @@ Slider = ReactiveComponent
     
     bubblemouth_src = if segment == 3 then bubblemouth_srcs['neutral'][page] else bubblemouth_srcs['other'][page]
 
-    face_left_eye_style = 
-      transform: 
-        if false && segment in [0, 6] 
-        then 'scale(.9, .8)' 
-        else "scale(#{.8 + .2 * Math.abs(stance)}, #{.8 + .2 * Math.abs(stance)})"
-
-    face_right_eye_style = 
-      transform: 
-        if false && segment in [0, 6] 
-        then 'scale(1.1, 1.2)' 
-        else "scale(#{.8 + .2 * Math.abs(stance)}, #{.8 + .2 * Math.abs(stance)})"
+    eye_style = 
+      backgroundColor: 'white'
+      top: 6
+      width: 3
+      height: 3
+      transform: "scale(#{.8 + .2 * Math.abs(stance)}, #{.8 + .2 * Math.abs(stance)})"
 
     face_mouth_style = 
+      bottom: -1
+      width: SLIDER_HANDLE_SIZE - 4
+      left: 2
+      height: SLIDER_HANDLE_SIZE - 4
+      boxShadow: '3px 3px 0 0 white'
       transform: 
         "scale(#{.4 + .3 * Math.abs(stance) }, #{.08 + .4 * stance}) 
          translate(0, #{-2 - 5 * Math.abs(stance)}px) 
          rotate(45deg) 
          skew(#{if segment in [0,6] then '10deg' else '0deg'})"
 
-    crossbrowserTransformProperty sty for sty in [
-      face_left_eye_style, face_right_eye_style, face_mouth_style]
+    css.crossbrowserify sty for sty in [eye_style, face_mouth_style]
+    _.extend(face_part, {position: 'absolute', pointerEvents: 'none', borderRadius: '50%' }) for face_part in [eye_style, face_mouth_style]
 
     # Keep feedback centered over handle, but keep within the bounds of the slider region 
     # when the slider is in an extreme position. 
@@ -923,14 +1058,6 @@ Slider = ReactiveComponent
     else
       feedback_width = 450
 
-    slider_feedback_style = 
-      visibility: 'visible'
-      left: feedback_left
-      marginLeft: -feedback_width / 2
-      width: feedback_width
-      fontSize: if sticky then '18px' else '29px'
-      top: if sticky then '-65px' else '-80px'
-
     selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
     selected_wing_point =  selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
 
@@ -939,7 +1066,18 @@ Slider = ReactiveComponent
       height: 6
       backgroundColor: if page == 'crafting' then '#AFD7FF' else '#787878'
 
-    handle_style = {left: slider.clientX}
+    handle_style =
+      boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{considerit_blue}"            
+      backgroundColor: considerit_blue      
+      left: slider.clientX
+      zIndex: 10
+      borderRadius: '50%'
+      width: SLIDER_HANDLE_SIZE
+      height: SLIDER_HANDLE_SIZE
+      marginLeft: -SLIDER_HANDLE_SIZE / 2
+      top: -9
+      position: 'relative'
+
     bubblemouth_style = {left: slider.clientX}
 
     if selected_point
@@ -948,24 +1086,92 @@ Slider = ReactiveComponent
       slider_base_style.backgroundColor = "#ddd"
       bubblemouth_style.visibility = 'hidden' # TODO: use grayscale filter when !selected_wing_point instead of hidding
 
-    DIV className: 'slider', style : { left: - (@props.width - DECISION_BOARD_WIDTH) / 2 },
+    DIV 
+      className: 'slider'
+      style : 
+        left: - (@props.width - DECISION_BOARD_WIDTH) / 2
+        position: 'absolute'
+        top: -48
+        margin: 'auto'
       DIV className:'slider_base', style : slider_base_style, 
         DIV 
-          className:'slider_feedback'
-          style: slider_feedback_style
-        , if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stance_names[segment]}"
+          style: 
+            position: 'absolute'
+            top: -80
+            pointerEvents: 'none' # clicking on this interferes with slider and toggle state
+            visibility: 'visible'
+            left: feedback_left
+            marginLeft: -feedback_width / 2
+            width: feedback_width
+            fontSize: if sticky then '18px' else '29px'
+            top: if sticky then '-65px' else '-80px'
+            display: if page == 'results' then 'none' else 'block'
+            borderRadius: 10 
+            fontWeight: 700
+            color: considerit_blue
+            textAlign: 'center'
 
-        DIV className: 'the_handle', style: handle_style, onMouseUp: @handleMouseUp, onMouseDown: @handleMouseDown, onTouchStart: @handleMouseDown, onTouchMove: @handleMouseMove, onTouchEnd: @handleMouseUp, onTouchCancel: @handleMouseUp,
+          if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stance_names[segment]}"
+
+
+        DIV 
+          className: 'the_handle'
+          onMouseUp: @handleMouseUp
+          onMouseDown: @handleMouseDown
+          onTouchStart: @handleMouseDown
+          onTouchMove: @handleMouseMove
+          onTouchEnd: @handleMouseUp
+          onTouchCancel: @handleMouseUp
+          style: handle_style
+
           if page == 'crafting'
             DIV className: 'face',            
-              DIV className: 'face_mouth face_part', style: face_mouth_style
-              DIV className: 'face_left_eye face_eye face_part', style: face_left_eye_style
-              DIV className: 'face_right_eye face_eye face_part', style: face_right_eye_style
-          DIV className: 'drag_arrow right', '>' if page == 'crafting' && !slider.has_moved
-          DIV className: 'drag_arrow left', '<' if page == 'crafting' && !slider.has_moved
+              DIV 
+                className: 'face_mouth'
+                style: face_mouth_style
+              DIV 
+                className: 'face_eye'
+                style: _.extend {}, eye_style,
+                  left: 6
+              DIV 
+                className: 'face_eye'
+                style: _.extend {}, eye_style,
+                  right: 6
+
+          if page == 'crafting' && !slider.has_moved
+            [DIV 
+              className: 'drag_arrow'
+              style: 
+                right: -15
+                position: 'absolute'
+                top: 3
+                color: considerit_blue
+                fontSize: 12              
+              '>' 
+            DIV 
+              className: 'drag_arrow'
+              style: 
+                left: -15
+                position: 'absolute'
+                top: 3
+                color: considerit_blue
+                fontSize: 12                
+              '<']
 
         IMG className:'bubblemouth', src: bubblemouth_src, style: bubblemouth_style
-    
+
+styles += """
+#{css.grab_cursor('.the_handle')}
+
+.bubblemouth {
+  position: absolute;
+  width: 18px;
+  pointer-events: none;
+  z-index: 10;
+  margin-left: -#{SLIDER_HANDLE_SIZE/2}px; }
+
+"""
+
 
 ##
 # OpinionFilter
@@ -1010,9 +1216,16 @@ OpinionFilter = ReactiveComponent
         'only firm supporters',
         'only full supporters']
 
-    DIV className: 'opinion_filter_region',
-      for phrase, i in filter_options
+    DIV 
+      style: 
+        display: if @root.proposal_mode == 'crafting' then 'none' else 'block'
+        position: 'absolute'
+        zIndex: 10
+        right: -275
+        bottom: -200
+        fontSize: 13
 
+      for phrase, i in filter_options
         # Shift i by 1, and start with null
         i = if i == 0 then null else i - 1
           
@@ -1020,6 +1233,19 @@ OpinionFilter = ReactiveComponent
           key: "segment-#{i}"
           className: "filter_option #{if hist.selected_segment == i then 'selected' else ''}"
           onClick: do(i) => => @onSelectSegment(i) 
+          style: 
+            color: if hist.selected_segment == i then 'black' else '#666'
+            position: 'relative'
+            display: 'block'
+
+          SPAN 
+            style: 
+              position: 'absolute'
+              content: '•'
+              left: -10
+              top: 1
+              visibility: if hist.selected_segment == i then '' else 'hidden'
+            '•'
           phrase
 
 
@@ -1039,8 +1265,23 @@ DecisionBoard = ReactiveComponent
     selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
     selected_wing_point = selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
     
-    opinion_region_style = {width: DECISION_BOARD_WIDTH}
-    decision_board_style = {}
+    decision_board_style =
+      borderRadius: 16
+      borderStyle: 'dashed'
+      borderWidth: 3
+      borderColor: considerit_blue
+
+
+    if @local.user_hovering_on_drop_target
+      decision_board_style.borderStyle = 'solid'
+
+    if @root.proposal_mode == 'results'
+      _.extend decision_board_style,
+        borderStyle: 'solid'
+        backgroundColor: considerit_blue
+        boxShadow: '0px 2px 0px black'
+        cursor: 'pointer'
+
     if selected_wing_point
       decision_board_style.filter = 'grayscale(1)'
       decision_board_style['-webkit-filter'] = 'grayscale(1)'
@@ -1048,12 +1289,21 @@ DecisionBoard = ReactiveComponent
     else if selected_point
       decision_board_style.borderColor = "#ccc"
 
+
     if your_opinion.published
       can_opine = permit 'update opinion', @proposal, your_opinion
     else
       can_opine = permit 'publish opinion', @proposal
 
-    DIV className:'opinion_region focal_wrapper', style: opinion_region_style,
+
+    DIV 
+      className:'opinion_region'
+      style: 
+        position: 'absolute'
+        width: DECISION_BOARD_WIDTH
+        zIndex: 0 #so that points being dragged are above opinion region
+        display: 'inline-block'
+        verticalAlign: 'top'
       Slider
         width: HISTOGRAM_WIDTH
 
@@ -1064,19 +1314,37 @@ DecisionBoard = ReactiveComponent
 
         DIV null, 
           # only shown during crafting, but needs to be present always for animation
-          DIV className: 'your_points',
+          DIV 
+            className: 'your_points'
+            style: 
+              padding: '0 18px'
+              marginTop: -3 # To undo the 3 pixel border
             YourPoints { key: 'your_pro_points', valence: 'pros' }
             YourPoints { key: 'your_con_points', valence: 'cons' }
 
           if can_opine != Permission.INSUFFICIENT_PRIVILEGES
             # only shown during results, but needs to be present for animation
-            A className: 'give_opinion_button primary_button',
+            if @root.proposal_mode == 'results'
+              give_opinion_style = 
+                display: 'block'
+                color: 'white'
+                padding: '.25em 18px'
+                margin: 0
+                fontSize: 16
+                boxShadow: 'none'
+            else
+              give_opinion_style = {}
+
+            A 
+              className: 'give_opinion_button primary_button'
+              style: give_opinion_style
+
               if your_opinion.published 
                 'Update your Opinion' 
               else 
                 'Give your Opinion'
 
-      DIV className: 'decision_board_footer', style: decision_board_style, 
+      DIV className: 'decision_board_footer', 
 
         # Big bold button at the bottom of the crafting page
         if can_opine != Permission.INSUFFICIENT_PRIVILEGES
@@ -1108,16 +1376,32 @@ DecisionBoard = ReactiveComponent
               'Save your opinion and see results'
 
         if @root.proposal_mode == 'crafting'
-          A className:'follow_proposal',
+          A 
+            style: 
+              marginTop: '.5em'
+              padding: 3
+              display: 'inline-block'
+
             INPUT
               type:      'checkbox'
               id:        "follow_proposal"
               name:      "follow_proposal"
               checked:   @proposal.is_following
+              style: 
+                fontSize: 21
+                cursor: 'pointer'
               onChange: =>
                 @proposal.is_following = !@proposal.is_following
                 save @proposal
-            LABEL htmlFor: "follow_proposal", title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.', 'Notify me about new activity'
+            LABEL 
+              htmlFor: "follow_proposal"
+              title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.'
+              style: 
+                marginLeft: 6
+                fontSize: 16
+                color: '#888'
+                cursor: 'pointer'   
+              'Notify me about new activity'
 
         if !your_opinion.published
           A 
@@ -1146,11 +1430,18 @@ DecisionBoard = ReactiveComponent
               details: 
                 point: ui.draggable.parent().data('id')
 
-          $el.removeClass "user_is_hovering_on_a_drop_target"
+          @local.user_hovering_on_drop_target = false
+          save @local
+
       out : (ev, ui) => 
-        $el.removeClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
+        if ui.draggable.parent().is('.community_point')
+          @local.user_hovering_on_drop_target = false
+          save @local
+
       over : (ev, ui) => 
-        $el.addClass("user_is_hovering_on_a_drop_target") if ui.draggable.parent().is('.community_point')
+        if ui.draggable.parent().is('.community_point')
+          @local.user_hovering_on_drop_target = true
+          save @local
 
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
@@ -1171,7 +1462,7 @@ DecisionBoard = ReactiveComponent
   setStickyHeader : ->
     $el = $(@getDOMNode())
 
-    slider_region_height =  115 #$el.find('.slider .the_handle').outerHeight() + $el.find('.slider .slider_feedback').outerHeight() + 15 + 20 #15 is bubblemouth
+    slider_region_height =  115
 
     $el.StickyElement
       container: $('.reasons_region')
@@ -1198,7 +1489,7 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   render : ->
-    included_points = fetch(@proposal.your_opinion).point_inclusions
+    included_points = fetch(@proposal.your_opinion).point_inclusions    
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
 
     can_add_new_point = permit 'create point', @proposal
@@ -1209,34 +1500,68 @@ YourPoints = ReactiveComponent
 
     DIV 
       className:"points_on_decision_board #{@props.valence}_on_decision_board"
-      style: { width: POINT_WIDTH }
+      style: 
+        width: POINT_WIDTH
+        marginTop: 28
 
-      DIV className:'points_heading_label',
+      DIV 
+        className:'points_heading_label'
+        style: 
+          fontWeight: 700
+          color: considerit_blue
         "Give Your #{capitalize(@props.valence)}"
 
       UL null,
         for point in included_points
+
           if fetch(point).is_pro == (@props.valence == 'pros')
             if point in your_points.editing_points
               EditPoint { key: point, fresh: false, valence: @props.valence, your_points_key: @props.key }
             else
               Point { key: point, rendered_as: 'decision_board_point', your_points_key: @props.key }
 
-        DIV className:'add_point_drop_target',
-          DIV className: "drop_target_circle_#{left_or_right}"
-          IMG className:'drop_target', src: "<%= asset_path 'drop_target.png' %>"
-          SPAN className:'drop_prompt',
-            #"Drag #{@props.valence} points from the #{if @props.valence == 'pro' then 'left' else 'right'} that resonate with you."
+        #drop target
+        DIV 
+          style: 
+            padding: '0 0 .25em 9px'
+            position: 'relative'
+
+          IMG 
+            src: "<%= asset_path 'drop_target.png' %>"
+            style: css.crossbrowserify
+              transform: if @props.valence == 'pros' then '' else 'scaleX(-1)'
+              width: 223
+
+
+          SPAN 
+            style:
+              fontSize: 14
+              position: 'absolute'
+              top: '1.4em'
+              left: if @props.valence == 'pros' then 36 else 29
+              width: 180
+
             "Drag a #{capitalize(if @props.valence=='pros' then 'pro' else 'con')} from the #{left_or_right}"
 
         if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES
           if !your_points.adding_new_point
-            DIV className:'newpoint_prompt',
-              SPAN className:'qualifier', 
+            DIV 
+              style: 
+                padding: '.25em 0'
+                marginTop: '1em'
+                marginLeft: 20
+                fontSize: 14
+
+              SPAN 
+                style: {fontWeight: if fetch('browser').high_density_display then 300 else 400}
                 'or '
-              SPAN className:'newpoint_bullet', dangerouslySetInnerHTML:{__html: '&bull;'}
+              SPAN 
+                style: {padding: '0 6px'}
+                dangerouslySetInnerHTML:{__html: '&bull;'}
               A 
-                className:'newpoint_link'
+                style:
+                  textDecoration: 'underline'
+                  color: considerit_blue
                 onClick: => 
                   if can_add_new_point == Permission.NOT_LOGGED_IN
                     @root.auth_mode = 'register'
@@ -1260,6 +1585,18 @@ YourPoints = ReactiveComponent
           else
             EditPoint { key: "new_point_#{@props.valence}", fresh: true, valence: @props.valence, your_points_key: @props.key }
 
+styles += """
+.points_by_community, .points_on_decision_board {
+  display: inline-block;
+  vertical-align: top; }
+
+.points_heading_label {
+  text-align: center;
+  margin-bottom: 30px;
+  margin-top: 7px;
+  font-size: 30px; }
+
+"""
 
 
 ##
@@ -1288,11 +1625,33 @@ CommunityPoints = ReactiveComponent
       style:
         width: POINT_CONTENT_WIDTH
         minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
-        zIndex: if pro_is_selected and @props.key == 'pros'
-                  '6'
-      DIV className:'points_heading_label',
+        zIndex: if pro_is_selected and @props.key == 'pros' then 6 else 2
+        margin: '38px 18px 0 18px'
+        position: 'relative'
+
+      DIV 
+        className:'points_heading_label'
+        style: 
+          position: 'relative'
+          fontWeight: if fetch('browser').high_density_display then 300 else 400
+          left: if @props.key == 'pros' then -20 else 20
+            # Mike: I wanted the headers to be centered over the ENTIRE
+            # points including avatars, not just bubbles.  But the
+            # avatars are sticking out on their own, so I simulated
+            # a centered look with these -20px and +20px offsets
+
         if fetch('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
-        P className:'points_segment_label', style: {visibility: if selected_segment == null then 'hidden' else 'visible'},
+        P 
+          style: 
+            visibility: if selected_segment == null then 'hidden' else 'visible'
+            textAlign: 'center'
+            fontSize: 12
+            position: 'absolute'
+            width: '100%'
+            bottom: -12
+            color: '#db004d'
+            fontWeight: if fetch('browser').high_density_display then 300 else 400
+
           if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
 
       UL null,
@@ -1303,7 +1662,15 @@ CommunityPoints = ReactiveComponent
               is_new: Date.parse(point.created_at) > newpoint_threshold
               rendered_as : 'community_point'
         else
-          LI className: 'empty_point', "No #{label} listed"
+          LI 
+            style: 
+              marginTop: 50
+              fontStyle: 'italic'
+              listStyle: 'none'
+              textAlign: 'center'
+              fontWeight: if fetch('browser').high_density_display then '300' else '400'
+
+            "No #{label} listed"
 
   buildNewPointThreshold : ->
     # Grab the 10th percentile
@@ -1350,6 +1717,10 @@ CommunityPoints = ReactiveComponent
         _.sortBy points, (pnt) => - if is_results then pnt.score else pnt.last_inclusion
 
     points
+
+styles += """
+
+"""
 
 
 ##
@@ -1459,17 +1830,32 @@ Point = ReactiveComponent
 
     if point.assessment
       select_enticement.push SPAN key: 3,
-        I(className: 'fa fa-search mini_magnifying_glass', title: 'Click to read a fact-check of this point')
+        I
+          className: 'fa fa-search'
+          title: 'Click to read a fact-check of this point'
+          style: 
+            color: '#5E6B9E'
+            fontSize: 14
+            cursor: 'help'
+            paddingLeft: 4
 
+
+    point_style = 
+      position: 'relative'
+      listStyle: 'none outside none'
+
+    if @props.rendered_as == 'decision_board_point'
+      _.extend point_style, 
+        marginLeft: 9
+        padding: '0 18px 1em 18px'
 
     LI
-      className: "point #{@props.rendered_as}
-        #{if point.is_pro then 'pro' else 'con'}"
+      className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'}"
       'data-id':@props.key
       onClick: @selectPoint
       onTouchEnd: @selectPoint
-    ,
-    
+      style: point_style
+
       if @props.rendered_as == 'community_point' && @props.is_new
         renderNewIndicator()
 
@@ -1506,7 +1892,11 @@ Point = ReactiveComponent
         DIV null,
           if permit('update point', point) > 0 && @props.rendered_as == 'decision_board_point'
             A
-              className: 'edit_point'
+              style:
+                fontSize: 12
+                color: '#999'
+                paddingRight: 8
+
               onClick: ((e) =>
                 e.stopPropagation()
                 points = fetch(@props.your_points_key)
@@ -1516,7 +1906,10 @@ Point = ReactiveComponent
 
           if permit('delete point', point) > 0 && @props.rendered_as == 'decision_board_point'
             A 
-              className: 'delete_point'
+              style:
+                fontSize: 12
+                color: '#999'
+                paddingRight: 8
               onClick: (e) =>
                 e.stopPropagation()
                 if confirm('Delete this point forever?')
@@ -1653,6 +2046,107 @@ Point = ReactiveComponent
     includers
         
 
+styles += """
+.community_point_mouth {
+  position: absolute;
+  width: #{COMMUNITY_POINT_MOUTH_WIDTH}px;
+  top: 8px;
+  z-index: 1; }
+
+.community_point.pro .community_point_mouth, .under_review .community_point_mouth {
+  left: -#{COMMUNITY_POINT_MOUTH_WIDTH}px; }
+
+.community_point.con .community_point_mouth {
+  right: -#{COMMUNITY_POINT_MOUTH_WIDTH}px;
+  #{css.crossbrowserify({transform: 'scaleX(-1)'}, true)}; }
+
+.decision_board_point .community_point_mouth {
+  left: -#{COMMUNITY_POINT_MOUTH_WIDTH}px; }
+
+/* war! disabled jquery UI draggable class defined with !important */
+.point_content.ui-draggable-disabled {
+  cursor: pointer !important; }
+
+#{css.grab_cursor('.point_content.ui-draggable')}
+
+.community_point .point_content, .under_review .point_content {
+  border-radius: 16px;
+  padding: 0.5em 9px;
+  margin-bottom: 0.5em;
+  background-color: #f6f7f9;
+  box-shadow: #b5b5b5 0 1px 1px 0px;
+  min-height: 34px; }
+
+.point_nutshell {
+  word-wrap: break-word;
+  font-size: 14px; }
+
+.point_details_tease, .point_details {
+  margin-top: 0.5em;
+  font-size: 14px;
+  word-wrap: break-word; 
+  font-weight: #{if fetch('browser').high_density_display then 300 else 400}; }
+  .point_details_tease a, .point_details a {
+    text-decoration: underline;
+    word-break: break-all; }
+
+.point_details {
+  display: block; }
+
+.point_details_tease {
+  cursor: pointer; }
+  .point_details_tease a.select_point {
+    text-decoration: none; }
+    .point_details_tease a.select_point:hover {
+      text-decoration: underline; }
+
+.point_details p {
+  margin-bottom: 1em; }
+
+.point_details p:last-child {
+  margin-bottom: 0; }
+
+.point_author_avatar, .point_includer_avatar {
+  position: absolute; }
+
+.decision_board_point .point_author_avatar {
+  top: 8px;
+  width: 22px;
+  height: 22px; }
+
+.under_review .point_author_avatar {
+  top: 0px;
+  width: 50px;
+  height: 50px;
+  left: -73px;
+  box-shadow: -1px 2px 0 0 #eeeeee; }
+
+.point_includer_avatar {
+  width: 22px;
+  height: 22px; }
+
+.community_point .point_author_avatar {
+  top: 0;
+  width: 22px;
+  height: 22px; }
+
+.community_point.pro .point_author_avatar {
+  left: -1;
+  box-shadow: -1px 2px 0 0 #eeeeee; }
+.community_point.pro .point_includer_avatar {
+  box-shadow: -1px 2px 0 0 #eeeeee; }
+
+.community_point.con .point_author_avatar {
+  right: -1;
+  box-shadow: 1px 2px 0 0 #eeeeee; }
+.community_point.con .point_includer_avatar {
+  box-shadow: 1px 2px 0 0 #eeeeee; }
+
+.decision_board_point .point_author_avatar {
+  left: -10px;
+  top: -2px; }
+
+"""
 
 Comment = ReactiveComponent
   displayName: 'Comment'
@@ -1706,6 +2200,33 @@ Comment = ReactiveComponent
                 save comment
               'edit'          
 
+# fact-checks, edit comments, comments...
+styles += """
+.comment_entry {
+  margin-bottom: 45px;
+  min-height: 60px;
+  position: relative; }
+
+.comment_entry_name {
+  font-weight: bold;
+  color: #666666; }
+
+.comment_entry_avatar {
+  position: absolute;
+  width: 50px;
+  height: 50px; }
+
+.comment_entry_body {
+  margin-left: 60px;
+  word-wrap: break-word;
+  position: relative; }
+  .comment_entry_body a {
+    text-decoration: underline; }
+  .comment_entry_body strong {
+    font-weight: 600; }
+  .comment_entry_body p {
+    margin-bottom: 1em; }
+"""
 
 FactCheck = ReactiveComponent
   displayName: 'FactCheck'
@@ -1746,7 +2267,15 @@ FactCheck = ReactiveComponent
               SPAN style: {marginLeft: 20, fontSize: 12, textDecoration: 'underline', cursor: 'help'}, title: verdict.desc,  'help'
           DIV style: {margin: '10px 0'}, dangerouslySetInnerHTML:{__html: claim.result}]
 
-
+styles += """
+.magnifying_glass {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  font-size: 50px;
+  margin-top: -2px;
+  color: #5e6b9e; }
+"""
 
 EditComment = ReactiveComponent
   displayName: 'EditComment'
@@ -2145,39 +2674,66 @@ EditPoint = ReactiveComponent
       sign_name : if @props.fresh then true else !@data().hide_name
       add_details : false
 
-    DIV className:'newpoint_form',
+    textarea_style = 
+      width: '100%'
+      minHeight: 100
+      overflow: 'hidden'
+      fontSize: 14
+
+    DIV
+      className: 'edit_point'
+      style: 
+        margin: '0 18px'
+        position: 'relative'
+        fontSize: 14
+
       INPUT id:'is_pro', name: 'is_pro', type: 'hidden', value: "#{@props.valence == 'pros'}"
-      LABEL htmlFor:'nutshell', 'Your point'
+      LABEL 
+        htmlFor:'nutshell'
+        'Your point'
       CharacterCountTextInput 
         id:'nutshell'
-        className:'newpoint_nutshell'
         maxLength:140
         name:'nutshell'
         pattern:'^.{3,}'
         placeholder:'Make this summary succinct.'
         required:'required'
         defaultValue: if @props.fresh then null else @data().nutshell
+        style: textarea_style
 
       
       DIV null,
-        A className: 'add_details', onClick: @handleToggleDetails, title: 'Provide background and/or back your point up with evidence.',
+        A 
+          className: 'add_details'
+          onClick: =>
+            @local.add_details = !@local.add_details
+            save(@local)            
+          title: 'Provide background and/or back your point up with evidence.'
+          style: { fontSize: 14 }
+
           I className: if @local.add_details then 'fa-caret-down fa' else 'fa-caret-right fa'
-          SPAN null, 'Expand on your point'
+          SPAN
+            style: {paddingLeft: 6}
+            'Expand on your point'
 
         if @local.add_details
           DIV null, 
             AutoGrowTextArea 
               id:'text'
-              className:'newpoint_description'
               name:'text'
               placeholder:'Provide background and/or back your point up with evidence.'
               required:'required'
               min_height: 170
               defaultValue: if @props.fresh then null else @data().text
+              style: textarea_style
 
 
       if @proposal.active
-        DIV className:'newpoint_hide_name',
+        DIV 
+          style: 
+            position: 'absolute'
+            bottom: 0
+            fontSize: 13
           INPUT
             className: 'newpoint-anonymous'
             type:      'checkbox'
@@ -2187,25 +2743,41 @@ EditPoint = ReactiveComponent
             onChange: =>
               @local.sign_name = !@local.sign_name
               save(@local)
-          LABEL htmlFor: "sign_name-#{@props.valence}", title:'Signing your name lends your point more weight with other participants.', 'Sign your name'
+          LABEL 
+            htmlFor: "sign_name-#{@props.valence}"
+            title:'Signing your name lends your point more weight with other participants.', 'Sign your name'
         
-      DIV className:'newpoint-submit',
-        if !@proposal.active
-          DIV style: {color: '#777', fontSize: 12}, 'New points disabled for this proposal'
-        else
-          INPUT className:'button primary_button', action:'submit-point', type:'submit', value:'Done', onClick: @savePoint
+      DIV 
+        style: 
+          textAlign: 'right'
+          marginTop: 3
+          marginBottom: '.5em'
 
-        A className:'newpoint-cancel primary_cancel_button', onClick: @handleAddPointCancel,
+        if !@proposal.active
+          DIV 
+            style: {color: '#777', fontSize: 12}
+            'New points disabled for this proposal'
+        else
+          INPUT 
+            className:'button primary_button'
+            action:'submit-point',
+            type:'submit', 
+            onClick: @savePoint
+            value:'Done'
+            style: 
+              marginTop: '.5em'
+              width: '100%'
+              fontSize: 18
+
+        A 
+          className:'newpoint-cancel primary_cancel_button'
+          onClick: @done
           'cancel'  
 
   componentDidMount : ->
     $el = $(@getDOMNode())
     $el.find('#nutshell').focus()
     $el.find('.newpoint-cancel').ensureInView {scroll: false, position: 'bottom'}
-
-  handleToggleDetails : (ev) ->
-    @local.add_details = !@local.add_details
-    save(@local)
 
   done : ->
     your_points = fetch @props.your_points_key
@@ -2252,8 +2824,13 @@ EditPoint = ReactiveComponent
     fetch(@proposal.your_opinion).point_inclusions.push(point.key)
     re_render([@proposal.your_opinion])
 
-  handleAddPointCancel : (ev) -> @done()
-
+styles += """
+.edit_point .count{
+  position: absolute;
+  right: 20px;
+  top: -19px;
+}
+"""
 
 ##
 # Avatar
@@ -2319,6 +2896,30 @@ Avatar = ReactiveComponent
     @local.show_details = false
     save(@local)
 
+window.styles += """
+.avatar {
+  vertical-align: top;
+  background-color: transparent;
+  border: none;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  background-size: cover;
+  background-color: #{default_avatar_in_histogram_color}; }
+  .avatar.avatar_anonymous {
+    cursor: default; }
+
+.hover_avatar_name {
+  position: absolute;
+  font-size: 14px;
+  background-color: white;
+  padding: 0 4px;
+  border-radius: 16px;
+  z-index: 999999;
+  white-space: nowrap;
+  pointer-events: none; }
+"""
 
 
 
@@ -2432,7 +3033,8 @@ Auth = ReactiveComponent
     bubble_mouth_props = 
       transform: "translate(0px, 11px) scale(1.5, 1.5)"
       left: 270
-    crossbrowserTransformProperty bubble_mouth_props
+      position: 'relative'
+    css.crossbrowserify bubble_mouth_props
 
     if !subdomain.has_civility_pledge
       pledges = []
@@ -2441,26 +3043,52 @@ Auth = ReactiveComponent
                  'I will speak only on behalf of myself', 
                  'I will not attack or mock others']
 
+    auth_area_style = 
+      padding: '1.5em 18px .5em 18px'
+      fontSize: 21
+      marginTop: 10
+
+    if @root.auth_mode != 'update'
+      _.extend auth_area_style, 
+        borderRadius: 16
+        borderStyle: 'dashed'
+        borderWidth: 3
+        borderColor: considerit_blue
+
     DIV null,
       if @root.auth_mode == 'update'
         DashHeader name: 'Edit Profile'
 
       DIV
-        className:'auth_region focal_wrapper'
         style: 
-          margin: 'auto'
+          margin: '0 auto 10em 0'
           position: 'relative'
           display: 'block'
+          zIndex: 0
+          margin: 'auto'
+          position: 'relative'
           width: DECISION_BOARD_WIDTH
+
         onClick: (e) => e.stopPropagation()
 
         if @root.auth_mode != 'update'
-          DIV className: 'auth_header', style : {width: HISTOGRAM_WIDTH}, 
+          DIV 
+            className: 'auth_header'
+            style : 
+              width: HISTOGRAM_WIDTH
+              position: 'relative'
+              margin: 'auto' 
+              top: 5
             DIV 
               className:'auth_heading'
               style: 
+                borderRadius: 10                
+                fontWeight: 700
+                color: considerit_blue
+                textAlign: 'center'
                 visibility: 'visible'
                 left: HISTOGRAM_WIDTH / 2.0
+                top: 5
                 marginLeft: -225
                 width: 450
                 fontSize: 50
@@ -2471,25 +3099,50 @@ Auth = ReactiveComponent
                 DIV style: {fontSize: 18, margin: '-8px 0 15px 0'},
                   "To #{@root.auth_reason}"
 
-            DIV className: 'the_handle', style: {left: 255}
+            DIV 
+              className: 'the_handle'
+              style: 
+                left: 255
+                height: SLIDER_HANDLE_SIZE * 2.5
+                width: SLIDER_HANDLE_SIZE * 2.5
+                top: 0
+                borderRadius: '50%'
+                marginLeft: -SLIDER_HANDLE_SIZE / 2
+                backgroundColor: considerit_blue
+                position: 'relative'
+                boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{considerit_blue}"
+
             IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
 
-        DIV className:"auth" + (if @root.auth_mode != 'update' then ' decision_board_body' else '') + (if @local.submitting then ' waiting' else ''),
+        DIV 
+          className: "auth" + (if @local.submitting then ' waiting' else '')
+          style: auth_area_style
           if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
             DIV className: 'third_party_auth',
-              LABEL className: 'third_party_call', 'Instantly:'
+              LABEL 
+                style: {marginRight: 18}
+                'Instantly:'
               for provider in providers
                 do (provider) =>
                   BUTTON key: provider, className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
                     I className: "fa fa-#{provider}"
                     SPAN null, provider
 
-              DIV className: 'separator', dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label>or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
+              DIV 
+                style: 
+                  fontWeight: 700
+                  paddingTop: '1em'
+                  color: "rgba(36,120,204,0.1)"
+                dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label style=\"padding: 0 18px; color: #{considerit_blue}\">or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 
           if root.auth_mode in ['login', 'login_via_reset_password_token', 'verify']
             DIV null, 
               if root.auth_mode == 'login'
-                LABEL className: 'auth_section_label', 'By email address:'
+                LABEL 
+                  style: 
+                    padding: '1em 0'
+                    display: 'block'
+                  'By email address:'
               else if root.auth_mode == 'login_via_reset_password_token'
                 DIV null,
                   LABEL className: 'reset_password_section_label', 'Reset your password'
@@ -2520,7 +3173,9 @@ Auth = ReactiveComponent
                           type: "text"
                           onKeyPress: submitOnEnter
                           onChange: (event) => current_user.verification_code = event.target.value
-                        DIV className: 'verification_code_explanation', "Find code in an email just sent to you."
+                        DIV 
+                          style: {fontSize: 12}
+                          "Find code in an email just sent to you."
 
                   else
                     TR null,
@@ -2537,7 +3192,16 @@ Auth = ReactiveComponent
                       TD className: 'field_cell', 
                         password_input_field,
                         if root.auth_mode == 'login'
-                          A className: 'forgot_password', onClick: @sendResetPassword, 'I forgot! Email me password instructions.'
+                          A 
+                            onClick: @sendResetPassword
+                            style: 
+                              fontSize: 11
+                              borderBottom: '1px solid #ccc'
+                              color: '#888'
+                              marginLeft: 12
+                              position: 'relative'
+                              top: -4
+                            'I forgot! Email me password instructions.'
 
 
           else 
@@ -2591,22 +3255,29 @@ Auth = ReactiveComponent
                       # we'll just submit the file form after user is signed in
 
 
-                      FORM id: 'user_avatar_form', action: '/update_user_avatar_hack', 
+                      FORM 
+                        id: 'user_avatar_form'
+                        action: '/update_user_avatar_hack', 
 
                         DIV className: 'avatar_preview_enclosure',
                           IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else if current_user.b64_thumbnail then current_user.b64_thumbnail else null
 
-                        INPUT id: 'user_avatar', name: "avatar", type: "file", onChange: (ev) => 
-                          @submit_avatar_form = true
-                          input = $('#user_avatar')[0]
-                          if input.files && input.files[0]
-                            reader = new FileReader()
-                            reader.onload = (e) ->
-                              $("#avatar_preview").attr 'src', e.target.result
-                            reader.readAsDataURL input.files[0]
-                            #current_user.avatar = input.files[0]
-                          else
-                            $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
+                        INPUT 
+                          id: 'user_avatar'
+                          name: "avatar"
+                          type: "file"
+                          style: {marginTop: 24, verticalAlign: 'top'}
+                          onChange: (ev) => 
+                            @submit_avatar_form = true
+                            input = $('#user_avatar')[0]
+                            if input.files && input.files[0]
+                              reader = new FileReader()
+                              reader.onload = (e) ->
+                                $("#avatar_preview").attr 'src', e.target.result
+                              reader.readAsDataURL input.files[0]
+                              #current_user.avatar = input.files[0]
+                            else
+                              $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
 
                 if subdomain.has_civility_pledge && root.auth_mode != 'update'
                   TR null,
@@ -2615,18 +3286,46 @@ Auth = ReactiveComponent
                     TD className: 'field_cell',
                       UL className: 'pledges',
                         for pledge, idx in pledges
-                          LI className: 'pledge', 
-                            INPUT className:"pledge-input", type:'checkbox', id:"pledge-#{idx}", name:"pledge-#{idx}"
-                            LABEL htmlFor: "pledge-#{idx}", pledge
+                          LI 
+                            className: 'pledge'
+                            style: {listStyle: 'none'} 
+                            INPUT 
+                              className:"pledge-input"
+                              type:'checkbox'
+                              id:"pledge-#{idx}"
+                              name:"pledge-#{idx}"
+                              style: {fontSize: 21}
+                            LABEL 
+                              htmlFor: "pledge-#{idx}"
+                              style: 
+                                fontSize: 14
+                                color: '#414141'
+                                paddingLeft: 6
+                                fontWeight: 400
+                              pledge
 
           if current_user.errors && current_user.errors.length > 0
-            DIV className: "auth_errors", 
-              I className: 'fa fa-exclamation-circle'
+            DIV
+              style: 
+                textAlign: 'center'
+                fontSize: 21
+                color: 'darkred'
+                backgroundColor: '#ffD8D8' 
+                padding: 10
+              I 
+                className: 'fa fa-exclamation-circle'
+                style: {paddingRight: 9}
               SPAN null, "#{current_user.errors.join(', ')}"
 
           if root.auth_mode in ['login', 'register']
-            button = A 
-                      className: 'toggle_auth'
+            toggle_auth = A 
+                      style: 
+                        display: 'inline-block'
+                        color: considerit_blue
+                        textDecoration: 'underline'
+                        backgroundColor: 'transparent'
+                        border: 'none'
+                        fontWeight: 600
                       onClick: => 
                         current_user = fetch('/current_user')
                         @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
@@ -2637,12 +3336,21 @@ Auth = ReactiveComponent
                       else 
                         'Create an Account'
 
-            DIV className: 'switch_auth_mode',
+            DIV 
+              style: 
+                fontSize: 20
+                left: 0
+                position: 'relative'
+                top: -6
+                fontWeight: 'normal'
+                marginTop: 20
+                backgroundColor: '#ffffa1'
+                padding: 14
               SPAN null,
                 if root.auth_mode == 'register'
-                  ['Or ', button, ' if you have one already']
+                  ['Or ', toggle_auth, ' if you have one already']
                 else
-                  ['Or ', button, ' if you need one']
+                  ['Or ', toggle_auth, ' if you need one']
 
         DIV null, 
           DIV
@@ -2765,6 +3473,83 @@ Auth = ReactiveComponent
 
     save @root
 
+styles += """
+.auth .third_party_option {
+  border: 1px solid #777777;
+  border-color: rgba(0, 0, 0, 0.2);
+  border-bottom-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  box-shadow: inset 0 0.1em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.1em rgba(255, 255, 255, 0.9);
+  display: inline-block;
+  padding: 3px 9px 3px 34px;
+  margin: 0 4px;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  border-radius: 0.3em;
+  position: relative;
+  background-color: #{considerit_blue}; }
+  .auth .third_party_option:hover {
+    background-color: #19528b; }
+  .auth .third_party_option:before {
+    border-right: 0.075em solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0.075em 0 0 rgba(255, 255, 255, 0.25);
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 25px;
+    height: 100%;
+    width: 1px; }
+  .auth .third_party_option i {
+    margin-right: 18px;
+    display: inline-block;
+    font-size: 16px;
+    position: absolute;
+    left: 9px; }
+  .auth .third_party_option span {
+    font-weight: 600;
+    font-size: 12px; }
+.auth .reset_password_section_label {
+  padding: 0 0 1em 0;
+  display: block; }
+.auth input[type="text"], .auth input[type="email"], .auth input[type="password"] {
+  border: 1px solid #aaaaaa;
+  padding: 5px 10px;
+  width: 100%;
+  font-size: 18px;
+  color: #414141; }
+.auth table {
+  border-collapse: separate; }
+  .auth table.login {
+    border-spacing: 0 0.25em; }
+  .auth table.register {
+    border-spacing: 0 1em; }
+    .auth table.register #user_password {
+      margin-top: 0.5em; }
+.auth td {
+  vertical-align: top; }
+  .auth td.label_cell {
+    width: 37%; }
+  .auth td.field_cell {
+    width: 100%;
+    padding-left: 18px; }
+.auth label {
+  color: #{considerit_blue};
+  font-weight: 600; }
+.auth .login label {
+  color: #595959; }
+
+.avatar_preview_enclosure {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  background-color: #e6e6e6;
+  overflow: hidden;
+  display: inline-block;
+  margin-right: 18px; }
+  .avatar_preview_enclosure #avatar_preview {
+    width: 60px; }
+
+"""
 
 ProposalSummary = ReactiveComponent
   displayName: 'ProposalSummary'
@@ -2828,10 +3613,11 @@ ProposalSummary = ReactiveComponent
         style: {cursor: 'pointer'}
         onClick: (=> window.app_router.navigate(proposal_url(proposal), {trigger: true}))
         if proposal.top_point
-          DIV className: 'top_point community_point con', style : { width: 270, position: 'relative' },
-            # Avatar key: proposal.top_point.user, className:"point_author_avatar", hide_face: proposal.top_point.hide_name
+          DIV 
+            className: 'top_point community_point con'
+            style : { width: 270, position: 'relative' }
 
-            DIV className:'point_content', style : { },
+            DIV className:'point_content',
               IMG 
                 className: 'community_point_mouth'
                 src: "<%= asset_path 'community_point_mouth.png' %>"
@@ -2839,6 +3625,30 @@ ProposalSummary = ReactiveComponent
               DIV className:'point_nutshell', style: {fontSize: 15},
                 "#{proposal.top_point.nutshell[0..30]}..."
 
+styles += """
+tr.proposal_summary {
+  min-height: 60px; }
+
+td.summary_name {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: 500; }
+  td.summary_name a {
+    border-bottom: 1px solid #b1afa7; }
+
+td.summary_decide {
+  width: 170px;
+  text-align: center;
+  display: inline-block;
+  height: 100%;
+  min-height: 66px; }
+
+td.summary_share {
+  width: 320px;
+  display: inline-block;
+  padding-left: 15px;
+  margin-top: -4px; }
+"""
 
 Homepage = ReactiveComponent
   displayName: 'Homepage'
@@ -2895,9 +3705,19 @@ Homepage = ReactiveComponent
             TR null,
               for col in columns
                 TD style: {display: 'inline-block', width: 250},
-                  DIV className: 'learn_decide_share1',
+                  DIV 
+                    style: 
+                      fontWeight: 700
+                      fontSize: 42
+                      textAlign: 'center'
                     col.heading
-                  DIV className: 'learn_decide_share2',
+                  DIV 
+                    style: 
+                      fontWeight: 300
+                      fontSize: 18
+                      textAlign: 'center'
+                      position: 'relative'
+                      top: -8
                     col.details
 
       DIV style: {marginTop: 30},
@@ -2937,7 +3757,16 @@ Homepage = ReactiveComponent
                 TBODY null,
                   TR null,
                     # Draw the cluster name off to the side
-                    TH className: 'proposal_cluster',
+                    TH 
+                      style: 
+                        textAlign: 'right'
+                        width: 115
+                        padding: '8px 8px 8px 8px'
+                        display: 'inline-block'
+                        fontSize: 18
+                        position: 'absolute'
+                        left: -125
+                        fontWeight: if fetch('browser').high_density_display then 300 else 400
                       cluster.name                
 
                   # Draw each proposal summary
@@ -2982,6 +3811,7 @@ Homepage = ReactiveComponent
 
 
 
+
 ProfileLink = ReactiveComponent
   displayName: 'ProfileLink'
 
@@ -2989,83 +3819,74 @@ ProfileLink = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
 
+    menu_options = [
+      {href: '/edit_profile', label: 'Edit Profile'},
+      {href: '/dashboard/email_notifications', label: 'Notifications'},
+      if current_user.is_admin then {href: '/dashboard/import_data', label: 'Import Data'} else null,
+      if current_user.is_admin then {href: '/dashboard/application', label: 'App Settings'} else null,
+      if current_user.is_admin then {href: '/dashboard/roles', label: 'User Roles'} else null,
+      if current_user.is_moderator then {href: '/dashboard/moderate', label: 'Moderate'} else null,
+      if subdomain.assessment_enabled && current_user.is_evaluator then {href: '/dashboard/assessment', label: 'Fact-check'} else null 
+    ]
+
+    menu_options = _.compact menu_options
+
     DIV style: {display: 'inline-block'}, 
-      STYLE null,
-        ".profile_anchor { color: #{subdomain.branding.header_text_color} }"
 
       if current_user.logged_in
-        anchor_style = if !@local.menu then {backgroundColor: 'rgba(255,255,255, .1)', boxShadow: '0px 1px 1px rgba(0,0,0,.1)', borderRadius: 8, padding: '3px 4px'} else {padding: '3px 4px'}
         SPAN
           className: 'profile_menu_wrap'
           style:
             position: 'relative'
           onMouseEnter: => @local.menu = true; save(@local)
           onMouseLeave: => @local.menu = false; save(@local)
-          DIV className: 'profile_menu', style: {display: (if not @local.menu then 'none')},
-            A 
-              className: 'menu_link'
-              href: '/edit_profile'                
-              onClick: clickInternalLink
-              'Edit Profile'
+          DIV 
+            style: 
+              display: if not @local.menu then 'none'
+              position: 'absolute'
+              marginTop: -8
+              marginLeft: -8
+              padding: 8
+              paddingTop: 50
+              paddingRight: 14
+              backgroundColor: '#eee'
+              left: -82
+              textAlign: 'left'
+              zIndex: 999999
 
-            A 
-              className: 'menu_link'
-              href: '/dashboard/email_notifications'                
-              onClick: clickInternalLink
-              'Notifications'
-
-            if current_user.is_admin
-              [A 
-                key: 'import_data'
+            for option in menu_options
+              A
                 className: 'menu_link'
-                href: '/dashboard/import_data'
-                onClick: clickInternalLink                
-                'Import Data'
-
-              A 
-                key: 'application'
-                className: 'menu_link'
-                href: '/dashboard/application'
-                onClick: clickInternalLink                
-                'App Settings'
-              A 
-                key: 'roles'              
-                className: 'menu_link'
-                href: '/dashboard/roles'
-                onClick: clickInternalLink                
-                'User Roles']
-
-            if current_user.is_moderator
-              A 
-                className: 'menu_link'
-                href: '/dashboard/moderate'
-                onClick: clickInternalLink                
-                'Moderate'
-
-            if subdomain.assessment_enabled && current_user.is_evaluator
-              A 
-                className: 'menu_link'
-                href: '/dashboard/assessment'
+                href: option.href
+                key: option.href
                 onClick: clickInternalLink
-                'Fact-check'
+                option.label
 
             A 
               className: 'menu_link'
-              'data-action': 'logout'
               onClick: @logout
               'Log out'
 
-          SPAN className: 'profile_anchor', style: anchor_style,
+          SPAN 
+            style: 
+              color: subdomain.branding.header_text_color
+              position: 'relative'
+              zIndex: 9999999999
+              backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)' else 'inherit'
+              boxShadow: if !@local.menu then '0px 1px 1px rgba(0,0,0,.1)' else 'none'
+              borderRadius: 8
+              padding: '3px 4px'
+
             Avatar key: current_user.user, hide_name: true, className: 'userbar_avatar', style: {height: 20, width: 20, marginRight: 7, marginTop: 4}
             I className: 'fa fa-caret-down', style: {visibility: if @local.menu then 'hidden' else 'visible'}
       else
         A
           'className': 'profile_anchor'
-          'data-action': 'login'
           onClick: (e) =>
             @root.auth_mode = 'login'
             @root.auth_reason = null            
             save @root
+          style: {color: 'white'}
           'Log in'
 
       #Avatar key: current_user.user, className: 'userbar_avatar', style: {height: 26, width: 26, marginTop: -2}
@@ -3091,6 +3912,25 @@ ProfileLink = ReactiveComponent
 
     save @root
 
+styles += """
+.profile_navigation {
+  text-align: right;
+  width: 100%;
+  padding: 20px 120px 0 0;
+  font-size: 21px; }
+
+.menu_link {
+  position: relative;
+  bottom: 8px;
+  padding-left: 27px;
+  display: block;
+  color: #{considerit_blue};
+  white-space: nowrap; }
+
+.menu_link:hover{ color: black; }
+
+.profile_menu_wrap:hover .profile_anchor{ color: inherit; }
+"""
 
 Header = ReactiveComponent
   displayName: 'Header'
@@ -3113,8 +3953,9 @@ Header = ReactiveComponent
 
       DIV null, 
         if @root.page_name == 'about'
-          # TODO: we need a way of knowing whether this subdomain has a homepage or not
-          A className: 'homepage_link', onClick: (=> window.app_router.navigate("/", {trigger: true})), style: {position: 'absolute', display: 'inline-block', zIndex: 999, marginTop: 8, marginLeft: 16, fontWeight: 600}, 
+          A 
+            onClick: (=> window.app_router.navigate("/", {trigger: true}))
+            style: {position: 'absolute', display: 'inline-block', zIndex: 999, marginTop: 8, marginLeft: 16, fontWeight: 600}
             I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
             SPAN style: {fontSize: 15, paddingLeft: 6, color: '#777', verticalAlign: 'text-bottom'}, 'Home'
 
@@ -3502,18 +4343,17 @@ Computer = ReactiveComponent
 
     # Publish pending opinions if we can
     if @root.opinions_to_publish.length > 0
-      can_opine = permit('publish opinion', opinion.proposal)
-      if can_opine > 0
-        while @root.opinions_to_publish.length > 0
-          opinion = fetch(@root.opinions_to_publish.pop()); save(@root)
-          break if opinion.published
+      while @root.opinions_to_publish.length > 0
+        opinion = fetch(@root.opinions_to_publish.pop()); save(@root)
+        can_opine = permit('publish opinion', opinion.proposal)
+        if can_opine > 0 && !opinion.published
           opinion.published = true
           save opinion
-      else if can_opine == Permission.INSUFFICIENT_PRIVILEGES
-        noop = 1
-        # TODO: show some kind of prompt to user indicating that despite 
-        #       creating an account, they still aren't permitted to publish 
-        #       their opinion.
+        else if can_opine == Permission.INSUFFICIENT_PRIVILEGES
+          noop = 1
+          # TODO: show some kind of prompt to user indicating that despite 
+          #       creating an account, they still aren't permitted to publish 
+          #       their opinion.
 
     # users following an email invitation need to complete registration (name + password)
     if current_user.needs_to_set_password
@@ -3638,16 +4478,7 @@ BrowserHacks = ReactiveComponent
   displayName: 'BrowserHacks'
 
   render : ->
-    browser = fetch('browser')
-    if !browser.is_iOS?
-      rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
-      browser.is_android_browser = !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
-      browser.is_opera_mini = !!navigator.userAgent.match /Opera Mini/
-      browser.is_ie9 = !!(document.documentMode && document.documentMode == 9)
-      browser.is_iOS = !!navigator.platform.match(/(iPad|iPhone)/)
-      browser.touch_enabled = Modernizr.touch
-      save browser
-    
+    browser = fetch 'browser'
     if  browser.is_opera_mini #|| browser.is_android_browser
       DIV style: {backgroundColor: 'red', padding: '10px', textAlign: 'center', color: 'white', fontSize: 24}, 
         "This website does not work well with #{if browser.is_android_browser then 'the Android Browser' else 'Opera Mini'}. Please use "
@@ -3664,28 +4495,7 @@ BrowserHacks = ReactiveComponent
       SCRIPT type: 'text/javascript', src: '//browser-update.org/update.js'
 
 
-## ########################
-## Initialize defaults for client data
-
-fetch 'histogram',
-  highlighted_users : null
-  selected_segment : null
-  selected_segment_isclicked : null
-
-fetch 'slider',
-  has_moved : false
-  is_moving : false
-  stance : null
-  stance_segment : null
-
-fetch 'decisionboard',
-  sticky : false
   
-fetch 'root',
-  auth_mode : null
-  opinions_to_publish : []
-
-fetch '/current_user'
 
 # Fetch current user every 2 minutes so that if the user gets
 # logged out (e.g. by server deploy after letting a browser window stay open), 
@@ -3841,29 +4651,29 @@ window.writeToLog = (entry) ->
 
   save entry
 
-$(document).ready -> 
-
-  #static consider.it homepage doesn't want this stuff by default
-  if document.getElementById('content') 
-    if 'ontouchend' in document #detect touch support
-      React.initializeTouchEvents(true)
-
-    Backbone.history.start {pushState: true}
-    window.root = React.renderComponent(Root(), document.getElementById('content'))
-
 # exports...
-window.splitParagraphs = splitParagraphs
 window.Point = Point
 window.Comment = Comment
 window.Avatar = Avatar
 window.Button = Button
 window.AutoGrowTextArea = AutoGrowTextArea
-window.considerit_blue = considerit_blue
 window.clickInternalLink = clickInternalLink
 window.ProfileLink = ProfileLink
 window.TechnologyByConsiderit = TechnologyByConsiderit
 window.FBLike = FBLike
 window.FBShare = FBShare
 window.Tweet = Tweet
-window.capitalize = capitalize
 
+#######
+# Start the app!
+
+#static consider.it homepage doesn't want this stuff by default
+if document.getElementById('content') 
+  # add styles
+  $('body').append("<style type='text/css'>#{styles}</style>")
+
+  if 'ontouchend' in document #detect touch support
+    React.initializeTouchEvents(true)
+
+  Backbone.history.start {pushState: true}
+  window.root = React.renderComponent(Root(), document.getElementById('content'))

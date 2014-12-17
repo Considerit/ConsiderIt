@@ -48,7 +48,6 @@ gem 'sprockets-rails', :require => 'sprockets/railtie'
 gem "therubyracer", :require => 'v8' #coffeescript dependency that gives Ruby interface to v8 javascript engine 
 gem 'coffee-rails'
 gem 'uglifier'
-gem 'sass-rails'
 gem "asset_sync"
 
 # Bundle gems for the local environment. Make sure to

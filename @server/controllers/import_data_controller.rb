@@ -102,7 +102,14 @@ class ImportDataController < ApplicationController
 
             # Find each required relational object
             if config[:required_fields].include? 'user'
-              user = User.find_by_email(row['user'].downcase)
+              pp row['user'], "#{table} file"
+
+              if row['user']
+                user = User.find_by_email(row['user'].downcase)
+              else
+                user = nil
+              end
+              
               if !user
                 errors.append "#{table} file: could not find a User with an email #{row['user']}. Did you forget to add #{row['user']} to the User file?"
                 error = true

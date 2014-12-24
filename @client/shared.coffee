@@ -248,9 +248,6 @@ body, input, button, textarea {
   filter: FlipH;
   -ms-filter: "FlipH"; }
 
-.hover_pointer {
-  cursor: pointer; }
-
 .primary_button, .primary_cancel_button {
   border-radius: 16px;
   text-align: center;

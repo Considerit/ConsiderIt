@@ -33,7 +33,7 @@ fetch 'root',
 fetch '/current_user'
 
 rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
-fetch 'browser',
+browser = 
   is_android_browser : !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
   is_opera_mini : !!navigator.userAgent.match /Opera Mini/
   is_ie9 : !!(document.documentMode && document.documentMode == 9)
@@ -421,7 +421,7 @@ Proposal = ReactiveComponent
           left: -217
           textAlign: 'right'
           top: 4
-          fontWeight: if fetch('browser').high_density_display then 300 else 400
+          fontWeight: if browser.high_density_display then 300 else 400
 
         LABEL null, group.group
       for field in group.items
@@ -893,7 +893,7 @@ styles += """
   font-size: 30px;
   bottom: -20px;
   pointer-events: none; 
-  font-weight: #{if fetch('browser').high_density_display then '300' else '400'};}
+  font-weight: #{if browser.high_density_display then '300' else '400'};}
   .histogram_segment_pole span {
     position: absolute;
     bottom: 0; }
@@ -908,7 +908,7 @@ styles += """
 
   .histogram_bar .avatar {
     border-radius: 50%;
-    background-color: "default_avatar_in_histogram_color"; 
+    background-color: #{default_avatar_in_histogram_color}; 
     #{css.crossbrowserify({transform: 'rotate(180deg)'}, true)}
     -ms-transform: rotate(0);}
 
@@ -1553,7 +1553,7 @@ YourPoints = ReactiveComponent
                 fontSize: 14
 
               SPAN 
-                style: {fontWeight: if fetch('browser').high_density_display then 300 else 400}
+                style: {fontWeight: if browser.high_density_display then 300 else 400}
                 'or '
               SPAN 
                 style: {padding: '0 6px'}
@@ -1633,7 +1633,7 @@ CommunityPoints = ReactiveComponent
         className:'points_heading_label'
         style: 
           position: 'relative'
-          fontWeight: if fetch('browser').high_density_display then 300 else 400
+          fontWeight: if browser.high_density_display then 300 else 400
           left: if @props.key == 'pros' then -20 else 20
             # Mike: I wanted the headers to be centered over the ENTIRE
             # points including avatars, not just bubbles.  But the
@@ -1650,7 +1650,7 @@ CommunityPoints = ReactiveComponent
             width: '100%'
             bottom: -12
             color: '#db004d'
-            fontWeight: if fetch('browser').high_density_display then 300 else 400
+            fontWeight: if browser.high_density_display then 300 else 400
 
           if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
 
@@ -1668,7 +1668,7 @@ CommunityPoints = ReactiveComponent
               fontStyle: 'italic'
               listStyle: 'none'
               textAlign: 'center'
-              fontWeight: if fetch('browser').high_density_display then '300' else '400'
+              fontWeight: if browser.high_density_display then '300' else '400'
 
             "No #{label} listed"
 
@@ -1976,7 +1976,7 @@ Point = ReactiveComponent
     # android browser needs to respond to this via a touch event;
     # all other browsers via click event. iOS fails to select 
     # a point if both touch and click are handled...sigh...
-    return unless fetch('browser').is_android_browser || e.type == 'click'
+    return unless browser.is_android_browser || e.type == 'click'
 
     return if @props.rendered_as == 'under_review'
 
@@ -2085,7 +2085,7 @@ styles += """
   margin-top: 0.5em;
   font-size: 14px;
   word-wrap: break-word; 
-  font-weight: #{if fetch('browser').high_density_display then 300 else 400}; }
+  font-weight: #{if browser.high_density_display then 300 else 400}; }
   .point_details_tease a, .point_details a {
     text-decoration: underline;
     word-break: break-all; }
@@ -3766,7 +3766,7 @@ Homepage = ReactiveComponent
                         fontSize: 18
                         position: 'absolute'
                         left: -125
-                        fontWeight: if fetch('browser').high_density_display then 300 else 400
+                        fontWeight: if browser.high_density_display then 300 else 400
                       cluster.name                
 
                   # Draw each proposal summary

@@ -2261,7 +2261,7 @@ FactCheck = ReactiveComponent
             'Claim: '
             SPAN style: {fontWeight: 600}, claim.claim_restatement
           DIV null, 
-            SPAN style: {},
+            SPAN null,
               'Rating: '
               SPAN style: {fontStyle: 'italic'}, verdict.name
               SPAN style: {marginLeft: 20, fontSize: 12, textDecoration: 'underline', cursor: 'help'}, title: verdict.desc,  'help'
@@ -2541,7 +2541,7 @@ SubmitFactCheck = ReactiveComponent
 
     a_librarian_will_respond = (width) =>
       DIV style: {maxWidth: width},
-        'A ',
+        'A '
         A
           style: {textDecoration: 'underline'}
           href: '/about/#fact_check'
@@ -2565,16 +2565,18 @@ SubmitFactCheck = ReactiveComponent
             onChange: (e) =>
               @local.research_question = e.target.value
               save(@local)
-          Button({style: {float: 'right'}},
-            'submit'
-            (e) =>
+          Button
+            style: {float: 'right'}
+            onClick => (e) =>
               e.stopPropagation()
               request =
                 key: '/new/request'
                 suggestion: @local.research_question
                 point: "/point/#{arest.key_id(@discussion.key)}"
               save(request)
-              $(@getDOMNode()).find('.new_request').val(''))
+              $(@getDOMNode()).find('.new_request').val('')
+            'submit'
+
           a_librarian_will_respond(255)
         ]
       else
@@ -2615,7 +2617,7 @@ SubmitFactCheck = ReactiveComponent
             when 4
               "Unfortunately, the claims made are outside the research scope of the fact-checking service."
 
-        DIV {marginBottom: 10},
+        DIV style: {marginBottom: 10},
           A style: {textDecoration: 'underline'},
             ''
           "See the details"
@@ -2850,15 +2852,18 @@ Avatar = ReactiveComponent
     catch e
       noop = 1
 
-    className = "avatar #{if @props.className then @props.className else ''}"
-
     id = if @props.hide_face then "avatar-hidden" else "avatar-#{user.key.split('/')[2]}"
 
     attrs =
-      className: className
+      className: "avatar #{if @props.className then @props.className else ''}"
       id: id
-      onMouseEnter: @showDetails
-      onMouseLeave: @hideDetails
+      onMouseEnter: (ev) -> 
+        @local.show_details = true
+        save(@local)
+      onMouseLeave: (ev) -> 
+        $('.hover_avatar_name').remove()
+        @local.show_details = false
+        save(@local)
 
     if @props.img_style && user.key != -1 && user.avatar_file_name
       attrs.src = "/system/avatars/#{@props.key}/#{@props.img_style}/#{avatar_file_name}"
@@ -2887,15 +2892,6 @@ Avatar = ReactiveComponent
     $name.css 
       left: pos.left - $name.width() / 2 + $el.width()/2
       top: pos.top + direction * $name.height()
-
-  showDetails : (ev) -> 
-    @local.show_details = true
-    save(@local)
-
-  hideDetails : (ev) -> 
-    $('.hover_avatar_name').remove()
-    @local.show_details = false
-    save(@local)
 
 window.styles += """
 .avatar {
@@ -3373,11 +3369,11 @@ Auth = ReactiveComponent
           else
             A 
               className:'cancel_auth_button primary_cancel_button'
-              onClick: (=>
+              onClick: =>
                 root.auth_mode = null
                 root.publish_this_opinion = null
-                save(root))
-            , 'cancel log in'
+                save root
+              'cancel log in'
 
 
   componentDidMount : -> 
@@ -3570,9 +3566,9 @@ ProposalSummary = ReactiveComponent
         padding: '0 30px'
         display: 'block'
         borderLeft: cell_border
-      onMouseEnter: (=> @local.hovering_on = true; save(@local))
-      onMouseLeave: (=> @local.hovering_on = false; save(@local))
-    ,
+      onMouseEnter: => @local.hovering_on = true; save(@local)
+      onMouseLeave: => @local.hovering_on = false; save(@local)
+
       if subdomain.name == 'livingvotersguide'
         TD className: 'summary_measure_designator',
           if proposal.category && proposal.designator

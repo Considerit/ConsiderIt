@@ -2316,7 +2316,11 @@ EditComment = ReactiveComponent
 
       else if permitted < 0
         SPAN
-          className: 'hover_pointer'
+          style:
+            position: 'absolute'
+            margin: '14px 0 0 70px'
+            cursor: 'pointer'
+
           onClick: =>
             if permitted == Permission.NOT_LOGGED_IN
               @root.auth_mode = 'login' 
@@ -2328,9 +2332,6 @@ EditComment = ReactiveComponent
             @root.auth_reason = 'Write a Comment'
             save(@root)
 
-          style:
-            position: 'absolute'
-            margin: '14px 0 0 70px'
           if permitted == Permission.NOT_LOGGED_IN
             DIV null,
               SPAN 
@@ -2493,8 +2494,8 @@ Button = (props, text, callback) ->
     display: 'inline-block'
     fontWeight: 600
     textAlign: 'center'
+    cursor: 'pointer'
   props.style = _.extend(style, (props.style or {}))
-  props.className = 'hover_pointer'
   props.onClick = callback
 
   DIV props, text
@@ -2526,7 +2527,7 @@ SubmitFactCheck = ReactiveComponent
             color: '#474747'
             marginTop: -4
             marginBottom: -1
-          className: 'hover_pointer'
+            cursor: 'pointer'
           onClick: (=>
             if @local.state == 'blank slate'
               @local.state = 'clicked'

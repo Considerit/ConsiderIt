@@ -123,7 +123,7 @@ permit = (action) ->
 matchEmail = (permission_list) -> 
   user = fetch '/current_user'
   return true if '*' in permission_list
-  return true if user.key in permission_list
+  return true if user.user in permission_list
   for email_or_key in permission_list
     if email_or_key.indexOf('*') > -1
       if user.email

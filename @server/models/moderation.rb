@@ -27,7 +27,7 @@ class Moderation < ActiveRecord::Base
         qry = "SELECT id, slug, user_id, name, description from proposals where subdomain_id=#{current_subdomain.id}"
       end
 
-      objects = ActiveRecord::Base.connection.select(qry)
+      objects = ActiveRecord::Base.connection.exec_query(qry)
 
       if objects.count > 0
 

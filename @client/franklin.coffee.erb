@@ -1002,6 +1002,11 @@ Slider = ReactiveComponent
     # Update the slider position when the server gets back to us
     your_opinion = fetch(@proposal.your_opinion)
 
+    if your_opinion.published
+      can_opine = permit 'update opinion', @proposal, your_opinion
+    else
+      can_opine = permit 'publish opinion', @proposal
+
     if slider.stance != your_opinion.stance and !slider.is_moving
       slider.stance = your_opinion.stance
       slider.stance_segment = your_opinion.stance_segment
@@ -1072,8 +1077,8 @@ Slider = ReactiveComponent
       left: slider.clientX
       zIndex: 10
       borderRadius: '50%'
-      width: SLIDER_HANDLE_SIZE
-      height: SLIDER_HANDLE_SIZE
+      width: if can_opine != Permission.INSUFFICIENT_PRIVILEGES then SLIDER_HANDLE_SIZE else 0
+      height: if can_opine != Permission.INSUFFICIENT_PRIVILEGES then SLIDER_HANDLE_SIZE else 0
       marginLeft: -SLIDER_HANDLE_SIZE / 2
       top: -9
       position: 'relative'
@@ -1158,7 +1163,8 @@ Slider = ReactiveComponent
                 fontSize: 12                
               '<']
 
-        IMG className:'bubblemouth', src: bubblemouth_src, style: bubblemouth_style
+        if can_opine != Permission.INSUFFICIENT_PRIVILEGES
+          IMG className:'bubblemouth', src: bubblemouth_src, style: bubblemouth_style
 
 styles += """
 #{css.grab_cursor('.the_handle')}
@@ -1296,6 +1302,7 @@ DecisionBoard = ReactiveComponent
       can_opine = permit 'publish opinion', @proposal
 
 
+    console.log can_opine
     DIV 
       className:'opinion_region'
       style: 
@@ -1307,33 +1314,35 @@ DecisionBoard = ReactiveComponent
       Slider
         width: HISTOGRAM_WIDTH
 
-      DIV 
-        className:'decision_board_body'
-        style: decision_board_style
-        onClick: => if @root.proposal_mode == 'results' then togglePage('crafting', 'give_opinion_button')
 
-        DIV null, 
-          # only shown during crafting, but needs to be present always for animation
-          DIV 
-            className: 'your_points'
-            style: 
-              padding: '0 18px'
-              marginTop: -3 # To undo the 3 pixel border
-            YourPoints { key: 'your_pro_points', valence: 'pros' }
-            YourPoints { key: 'your_con_points', valence: 'cons' }
+      if can_opine != Permission.INSUFFICIENT_PRIVILEGES
+        # only shown during results, but needs to be present for animation
+        if @root.proposal_mode == 'results'
+          give_opinion_style = 
+            display: 'block'
+            color: 'white'
+            padding: '.25em 18px'
+            margin: 0
+            fontSize: 16
+            boxShadow: 'none'
+        else
+          give_opinion_style = {}
 
-          if can_opine != Permission.INSUFFICIENT_PRIVILEGES
-            # only shown during results, but needs to be present for animation
-            if @root.proposal_mode == 'results'
-              give_opinion_style = 
-                display: 'block'
-                color: 'white'
-                padding: '.25em 18px'
-                margin: 0
-                fontSize: 16
-                boxShadow: 'none'
-            else
-              give_opinion_style = {}
+        [DIV 
+          className:'decision_board_body'
+          style: decision_board_style
+          onClick: => if @root.proposal_mode == 'results' then togglePage('crafting', 'give_opinion_button')
+
+          DIV null, 
+            # only shown during crafting, but needs to be present always for animation
+            DIV 
+              className: 'your_points'
+              style: 
+                padding: '0 18px'
+                marginTop: -3 # To undo the 3 pixel border
+              YourPoints { key: 'your_pro_points', valence: 'pros' }
+              YourPoints { key: 'your_con_points', valence: 'cons' }
+
 
             A 
               className: 'give_opinion_button primary_button'
@@ -1344,10 +1353,9 @@ DecisionBoard = ReactiveComponent
               else 
                 'Give your Opinion'
 
-      DIV className: 'decision_board_footer', 
+        DIV className: 'decision_board_footer', 
 
-        # Big bold button at the bottom of the crafting page
-        if can_opine != Permission.INSUFFICIENT_PRIVILEGES
+          # Big bold button at the bottom of the crafting page
           DIV 
             className:'save_opinion_button primary_button'
             onClick: => 
@@ -1375,39 +1383,40 @@ DecisionBoard = ReactiveComponent
             else 
               'Save your opinion and see results'
 
-        if @root.proposal_mode == 'crafting'
-          A 
-            style: 
-              marginTop: '.5em'
-              padding: 3
-              display: 'inline-block'
-
-            INPUT
-              type:      'checkbox'
-              id:        "follow_proposal"
-              name:      "follow_proposal"
-              checked:   @proposal.is_following
+          if @root.proposal_mode == 'crafting'
+            A 
               style: 
-                fontSize: 21
-                cursor: 'pointer'
-              onChange: =>
-                @proposal.is_following = !@proposal.is_following
-                save @proposal
-            LABEL 
-              htmlFor: "follow_proposal"
-              title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.'
-              style: 
-                marginLeft: 6
-                fontSize: 16
-                color: '#888'
-                cursor: 'pointer'   
-              'Notify me about new activity'
+                marginTop: '.5em'
+                padding: 3
+                display: 'inline-block'
 
-        if !your_opinion.published
-          A 
-            className:'cancel_opinion_button primary_cancel_button'
-            onClick: => togglePage('results', 'cancel_button')
-            'or just skip to the results'  
+              INPUT
+                type:      'checkbox'
+                id:        "follow_proposal"
+                name:      "follow_proposal"
+                checked:   @proposal.is_following
+                style: 
+                  fontSize: 21
+                  cursor: 'pointer'
+                onChange: =>
+                  @proposal.is_following = !@proposal.is_following
+                  save @proposal
+              LABEL 
+                htmlFor: "follow_proposal"
+                title:'We\'ll send periodic email notifications summarizing activity on the proposal, as well as alerts about new pro and con points. You can easily unsubscribe later.'
+                style: 
+                  marginLeft: 6
+                  fontSize: 16
+                  color: '#888'
+                  cursor: 'pointer'   
+                'Notify me about new activity'
+
+          if !your_opinion.published
+            A 
+              className:'cancel_opinion_button primary_cancel_button'
+              onClick: => togglePage('results', 'cancel_button')
+              'or just skip to the results'  
+        ]
 
 
   componentDidMount : ->
@@ -1573,10 +1582,10 @@ YourPoints = ReactiveComponent
                     current_user.trying_to = 'send_verification_token'
                     save current_user
 
+                  else
+                    your_points.adding_new_point = true
+                    save your_points
 
-                  your_points = @data()
-                  your_points.adding_new_point = true
-                  save your_points
                   writeToLog {what: 'click new point'}
 
                 "Write a new #{capitalize(if @props.valence == 'pros' then 'pro' else 'con')}"
@@ -4073,7 +4082,7 @@ EditProposal = ReactiveComponent
     proposal = @data()
     subdomain = fetch '/subdomain'
     
-    return DIV null, 'Nothing to see here, move on' if (proposal.user != user.user && !user.is_admin) || (!@props.fresh && !proposal.slug )
+    return DIV null, 'Nothing to see here, move on' if (permit('update proposal', proposal) < 0) || (!@props.fresh && !proposal.slug )
 
     block_style = { width: CONTENT_WIDTH, padding: '2px 0px', marginBottom: 12, position: 'relative' }
     description_field_style = {fontSize: 16, width: CONTENT_WIDTH - 200, padding: '4px 8px', marginBottom: 8, border: '1px solid #ccc'}

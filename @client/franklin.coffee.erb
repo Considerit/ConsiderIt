@@ -1532,7 +1532,6 @@ YourPoints = ReactiveComponent
               transform: if @props.valence == 'pros' then '' else 'scaleX(-1)'
               width: 223
 
-
           SPAN 
             style:
               fontSize: 14
@@ -2857,10 +2856,10 @@ Avatar = ReactiveComponent
     attrs =
       className: "avatar #{if @props.className then @props.className else ''}"
       id: id
-      onMouseEnter: (ev) -> 
+      onMouseEnter: (ev) => 
         @local.show_details = true
         save(@local)
-      onMouseLeave: (ev) -> 
+      onMouseLeave: (ev) => 
         $('.hover_avatar_name').remove()
         @local.show_details = false
         save(@local)

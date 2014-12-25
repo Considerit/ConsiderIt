@@ -97,7 +97,7 @@ namespace :alerts do
           raise "Can't handle moderation type"
         end
 
-        objects = ActiveRecord::Base.connection.select(qry)
+        objects = ActiveRecord::Base.connection.exec_query(qry)
 
         existing_moderations = Moderation.where("moderatable_type='#{moderation_class.name}' AND moderatable_id in (?)", objects.map {|o| o['id']})
 

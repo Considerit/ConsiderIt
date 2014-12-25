@@ -58,6 +58,8 @@ module ConsiderIt
     config.assets.image_optim = false
 
     config.action_controller.permit_all_parameters = true #disable strong parameters
+
+    config.active_record.raise_in_transactional_callbacks = true
     
     ##################
     # for our custom rails directory structure

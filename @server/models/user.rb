@@ -89,7 +89,7 @@ class User < ActiveRecord::Base
     if current_user.is_admin?
       fields += ",email"
     end
-    users = ActiveRecord::Base.connection.select( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
+    users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
     users = users.as_json
     jsonify_objects(users, 'user')
 

@@ -1,5 +1,4 @@
 class Mailer < ActionMailer::Base
-  ActionMailer::Base.delivery_method = :mailhopper  
   layout 'email'
   add_template_helper MailerHelper
 

@@ -86,7 +86,7 @@ Backup::Model.new(:'{{ ansible_hostname }}-dump', 'Backups up considerit databas
     mail.on_warning           = true
     mail.on_failure           = true
 
-    mail.delivery_method      = :sendmail
+    mail.delivery_method      = :smtp
     mail.from                 = "tkriplean@gmail.com"
     mail.to                   = "tkriplean@gmail.com"
   end

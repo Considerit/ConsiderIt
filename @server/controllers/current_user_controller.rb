@@ -182,7 +182,7 @@ class CurrentUserController < ApplicationController
           user.reset_password_sent_at = Time.now.utc
           user.save(:validate => false)
           
-          UserMailer.reset_password_instructions(user, raw_token, Thread.current[:subdomain]).deliver!
+          UserMailer.reset_password_instructions(user, raw_token, Thread.current[:subdomain]).deliver_now
 
           log('requested password reset')
         end

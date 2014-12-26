@@ -94,9 +94,6 @@ GEM
     coffee-script-source (1.8.0)
     daemons (1.1.9)
     dalli (2.7.2)
-    delayed_mailhopper (0.0.7)
-      delayed_job
-      mailhopper (>= 0.0.1)
     delayed_paperclip (2.9.0)
       paperclip (>= 3.3)
     erubis (2.7.0)
@@ -194,8 +191,6 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
-    mailhopper (0.3.0)
-      rails (>= 3.1.0)
     mime-types (2.4.3)
     mini_portile (0.6.1)
     minitest (5.5.0)
@@ -324,12 +319,10 @@ DEPENDENCIES
   dalli
   delayed_job!
   delayed_job_active_record!
-  delayed_mailhopper
   delayed_paperclip
   exception_notification
   font-awesome-rails
   haml
-  mailhopper
   mysql2
   oj
   oj_mimic_json

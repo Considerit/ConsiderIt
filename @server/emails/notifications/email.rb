@@ -25,7 +25,7 @@ notify_proposal = Proc.new do |data|
   #     elsif !follow.user.email || follow.user.email.length == 0
   #       next
   #     else 
-  #       EventMailer.discussion_new_proposal(follow.user, proposal, current_subdomain '').deliver!
+  #       EventMailer.discussion_new_proposal(follow.user, proposal, current_subdomain '').deliver_later
   #     end
   #   end
   # end
@@ -60,7 +60,7 @@ notify_point = Proc.new do |data|
       notification_type = 'lurker'
     end
 
-    EventMailer.new_point(u, point, current_subdomain, notification_type).deliver!
+    EventMailer.new_point(u, point, current_subdomain, notification_type).deliver_later
 
   end
 
@@ -99,7 +99,7 @@ notify_comment = Proc.new do |args|
       notification_type = 'lurker'
     end
 
-    EventMailer.new_comment(u, point, comment, current_subdomain, notification_type).deliver!
+    EventMailer.new_comment(u, point, comment, current_subdomain, notification_type).deliver_later
   end
 
 end
@@ -132,7 +132,7 @@ def handle_moderatable_creation_event(moderatable_type, notification_method, arg
       rescue
       end
       if user
-        AdminMailer.content_to_moderate(user, current_subdomain).deliver!
+        AdminMailer.content_to_moderate(user, current_subdomain).deliver_later
       end
     end
   end
@@ -193,7 +193,7 @@ ActiveSupport::Notifications.subscribe("new_assessment_request") do |*args|
     rescue
     end
     if user && send_email_to_user(user)
-      AdminMailer.content_to_assess(assessment, user, current_subdomain).deliver!
+      AdminMailer.content_to_assess(assessment, user, current_subdomain).deliver_later
     end
   end
 
@@ -234,7 +234,7 @@ ActiveSupport::Notifications.subscribe("assessment_completed") do |*args|
 
     next if !send_email_to_user(follow.user)
 
-    EventMailer.new_assessment(follow.user, assessable, assessment, current_subdomain, notification_type).deliver!
+    EventMailer.new_assessment(follow.user, assessable, assessment, current_subdomain, notification_type).deliver_later
 
   end
 
@@ -287,7 +287,7 @@ ActiveSupport::Notifications.subscribe("published_new_opinion") do |*args|
 
   #   proposal.follows.where(:follow => true).where("user_id != #{opinion.user_id}").each do |follow|
   #     pp "\t Notifying #{follow.user.name}"
-  #     EventMailer.proposal_milestone_reached(follow.user, proposal, fib(next_milestone)).deliver!
+  #     EventMailer.proposal_milestone_reached(follow.user, proposal, fib(next_milestone)).deliver_later
   #   end
   #   proposal.followable_last_notification_milestone = next_milestone
   #   proposal.followable_last_notification = DateTime.now

@@ -115,7 +115,7 @@ module Invitations
 
           end
         end
-        UserMailer.invitation(current_user, invitee, target, invite['role'], current_subdomain, message).deliver!
+        UserMailer.invitation(current_user, invitee, target, invite['role'], current_subdomain, message).deliver_later
 
       end
     end

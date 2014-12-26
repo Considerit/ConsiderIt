@@ -51,7 +51,8 @@ module ConsiderIt
 
     config.assets.version = '1.0'
 
-    config.action_mailer.delivery_method = :mailhopper
+    has_aws = Rails.env.production? && APP_CONFIG.has_key?(:aws) && APP_CONFIG[:aws].has_key?(:access_key_id) && !APP_CONFIG[:aws][:access_key_id].nil?
+    config.action_mailer.delivery_method = has_aws ? :ses : :smtp
 
     config.force_ssl = false
     
@@ -60,6 +61,7 @@ module ConsiderIt
     config.action_controller.permit_all_parameters = true #disable strong parameters
 
     config.active_record.raise_in_transactional_callbacks = true
+    Rails.application.config.active_job.queue_adapter = :delayed_job
     
     ##################
     # for our custom rails directory structure

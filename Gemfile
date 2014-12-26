@@ -37,9 +37,6 @@ gem 'whenever' # https://github.com/javan/whenever
 gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' # https://github.com/collectiveidea/delayed_job
 gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delayed_job_active_record.git'
 gem "daemons"
-gem 'mailhopper' # https://github.com/cerebris/mailhopper
-gem 'delayed_mailhopper' # https://github.com/cerebris/delayed_mailhopper
-# gem 'actionmailer-with-request' # https://github.com/weppos/actionmailer_with_request
 gem 'backup' #https://github.com/meskyanichi/backup
 
 #############

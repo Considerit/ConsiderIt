@@ -8,11 +8,14 @@
 
 //= require ./element_viewport_positioning
 
+//= require ../../shared
 //= require ../../third_party_auth
 //= require ../../activerest-m
 
 //= require ../../sticky_element
-//= require ../../franklin
+//= require ../../permissions
+//= require ../../roles
 //= require ../../subdomain_specific
 //= require ../../admin
 //= require ../../state_dash
+//= require ../../franklin

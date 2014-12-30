@@ -27,20 +27,6 @@ class Legacy::AdminController < ApplicationController
 
   end
 
-  def import_data_create
-    result = Proposal.import_from_spreadsheet params[:account][:csv], {
-      :published => params[:account]["published"],
-      :user_id => params[:account]["user_id"],
-    }
-
-    if current_subdomain.name == 'livingvotersguide' && params[:account].has_key?(:csv_local) && params[:account][:csv_local]
-      result.update Proposal.import_jurisdictions params[:account][:csv], params[:account][:csv_local]
-    end
-
-    render :json => result
-
-  end
-
   protected
 
   def _get_timeseries

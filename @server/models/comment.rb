@@ -18,11 +18,6 @@ class Comment < ActiveRecord::Base
     self.body = self.body.sanitize
   end
 
-  self.moderatable_fields = [:body]
-  self.moderatable_objects = lambda {
-    Comment.where('id > -1') #tacked on this where in order to enable chaining
-  }
-
   def as_json(options={})
     options[:only] ||= Comment.my_public_fields
     result = super(options)
@@ -62,5 +57,6 @@ class Comment < ActiveRecord::Base
     comments
 
   end
+
 
 end

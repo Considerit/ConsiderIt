@@ -37,7 +37,7 @@
 # Command line options will override those set here.
 # For example, the following would override the example settings above
 # to disable syslog and enable console output.
-#   backup perform --trigger my_backup --no-syslog --no-quiet
+#   backup perform --trigger {{ ansible_hostname }} --no-syslog --no-quiet
 
 ##
 # Component Defaults

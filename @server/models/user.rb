@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
 
   before_validation :download_remote_image, :if => :avatar_url_provided?
   before_save do 
-    self.email.downcase! if self.email
+    self.email = self.email.downcase if self.email
 
     self.name = self.name.sanitize if self.name   
     self.bio = self.bio.sanitize if self.bio
@@ -41,8 +41,7 @@ class User < ActiveRecord::Base
     self.b64_thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
     
     JSON.parse(self.active_in).each do |subdomain_id|
-      current = Rails.cache.read("avatar-digest-#{subdomain_id}") || 0
-      Rails.cache.write("avatar-digest-#{subdomain_id}", current + 1)   
+      Rails.cache.delete("avatar-digest-#{subdomain_id}") 
     end
   end
 
@@ -62,21 +61,21 @@ class User < ActiveRecord::Base
       csrf: form_authenticity_token,
       avatar_remote_url: avatar_remote_url,
       url: url,
-      bio: bio,
       twitter_uid: twitter_uid,
       facebook_uid: facebook_uid,
       google_uid: google_uid,
       name: name,
-      reset_my_password: false,
       reset_password_token: nil,
       b64_thumbnail: b64_thumbnail,
       tags: JSON.parse(tags) || {},
       is_super_admin: self.super_admin,
       is_admin: is_admin?,
-      is_moderator: has_any_role?([:admin, :superadmin, :moderator]),
-      is_evaluator: has_any_role?([:admin, :superadmin, :evaluator]),
+      is_moderator: permit('moderate content', nil) > 0,
+      is_evaluator: permit('factcheck content', nil) > 0,
       trying_to: nil,
-      no_email_notifications: no_email_notifications
+      no_email_notifications: no_email_notifications,
+      verified: verified,
+      needs_to_set_password: registered && !name #happens for users that were created via email invitation
     }
 
     data
@@ -90,7 +89,7 @@ class User < ActiveRecord::Base
     if current_user.is_admin?
       fields += ",email"
     end
-    users = ActiveRecord::Base.connection.select( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
+    users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
     users = users.as_json
     jsonify_objects(users, 'user')
 
@@ -99,9 +98,13 @@ class User < ActiveRecord::Base
   end
 
   def as_json(options={})
-    return { 'key' => "/user/#{id}",
+    result = { 'key' => "/user/#{id}",
              'name' => name,
              'avatar_file_name' => avatar_file_name }
+    if current_user.is_admin?
+      result['email'] = email
+    end
+    result
   end
 
   def is_admin?
@@ -145,8 +148,7 @@ class User < ActiveRecord::Base
       # on initial login to the new subdomain.
       if self.avatar_file_name && active_subdomains.length > 1
         subdomain_id = Thread.current[:subdomain].id
-        current = Rails.cache.read("avatar-digest-#{subdomain_id}") || 0
-        Rails.cache.write("avatar-digest-#{subdomain_id}", current + 1)   
+        Rails.cache.delete("avatar-digest-#{subdomain_id}")
       end
     end
 
@@ -215,14 +217,6 @@ class User < ActiveRecord::Base
 
   end
 
-  def self.find_by_lower_email(email)
-    if email       
-      find_by_email email.downcase
-    else
-      nil
-    end
-  end
-
 
   def key
     "/user/#{self.id}"
@@ -233,7 +227,7 @@ class User < ActiveRecord::Base
       name
       : email ? 
         email.split('@')[0]
-        : "#{subdomain.app_title} participant"
+        : "#{Thread.current[:subdomain].app_title} participant"
   end
   
   def first_name
@@ -385,7 +379,7 @@ class User < ActiveRecord::Base
     end
 
     # Bulk updates...
-    for table in [Point, Proposal, Comment, Assessable::Assessment, Assessable::Request, \
+    for table in [Point, Proposal, Comment, Assessment, Assessable::Request, \
                   Follow, Moderation ] 
 
       # First, remember what we're dirtying

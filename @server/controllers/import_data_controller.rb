@@ -8,19 +8,9 @@ require 'csv'
 class ImportDataController < ApplicationController
   include ActionView::Helpers::NumberHelper
 
-  rescue_from CanCan::AccessDenied do |exception|
-    result = {
-      :errors => [current_user.nil? ? 'not logged in' : 'not authorized']
-    }
-    render :json => result 
-    return
-  end
-
-
   def create
-    if !access
-      raise new CanCan::AccessDenied
-    end
+
+    authorize! 'update subdomain'
 
     errors = []
     modified = {}
@@ -112,7 +102,13 @@ class ImportDataController < ApplicationController
 
             # Find each required relational object
             if config[:required_fields].include? 'user'
-              user = User.find_by_email(row['user'].downcase)
+
+              if row['user']
+                user = User.find_by_email(row['user'].downcase)
+              else
+                user = nil
+              end
+
               if !user
                 errors.append "#{table} file: could not find a User with an email #{row['user']}. Did you forget to add #{row['user']} to the User file?"
                 error = true
@@ -371,10 +367,6 @@ class ImportDataController < ApplicationController
   end
 
   private
-
-  def access
-    return current_user.is_admin?
-  end
 
   # These are LVG-specific data imports. Unfortunately we have to maintain them!
   def import_for_LVG(errors, modified)

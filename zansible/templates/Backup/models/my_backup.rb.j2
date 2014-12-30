@@ -6,7 +6,7 @@
 #
 # $ backup perform -t my_backup [-c <path_to_configuration_file>]
 #
-Backup::Model.new(:my_backup, 'Backups up considerit database to S3') do
+Backup::Model.new(:'{{ ansible_hostname }}-dump', 'Backups up considerit database to S3') do
   ##
   # Split [Splitter]
   #
@@ -55,6 +55,19 @@ Backup::Model.new(:my_backup, 'Backups up considerit database to S3') do
     s3.keep              = 10
   end
 
+  store_with Dropbox do |db|
+    db.api_key     = "{{ config.dropbox.key }}"
+    db.api_secret  = "{{ config.dropbox.secret }}"
+    # Sets the path where the cached authorized session will be stored.
+    # Relative paths will be relative to ~/Backup, unless the --root-path
+    # is set on the command line or within your configuration file.
+    # db.cache_path  = ".cache"
+    # :app_folder (default) or :dropbox
+    db.access_type = :app_folder
+    db.path        = "{{ ansible_hostname }}-considerit"
+    db.keep        = 10
+  end
+
   ##
   # Gzip [Compressor]
   #
@@ -73,7 +86,7 @@ Backup::Model.new(:my_backup, 'Backups up considerit database to S3') do
     mail.on_warning           = true
     mail.on_failure           = true
 
-    mail.delivery_method      = :sendmail
+    mail.delivery_method      = :smtp
     mail.from                 = "tkriplean@gmail.com"
     mail.to                   = "tkriplean@gmail.com"
   end

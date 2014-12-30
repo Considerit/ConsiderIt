@@ -14,13 +14,13 @@ ConsiderIt::Application.routes.draw do
 
     ## Test controller for nonactiverest
     get '/activemike' => 'html#activemike'
-
-    ## Development dashboard; right now it lets you easily switch between subdomains
-    get '/change_subdomain/:id' => 'developer#change_default_subdomain', :as => 'change_subdomain'
   
     get '/rails/mailers' => "rails/mailers#index"
     get '/rails/mailers/*path'   => "rails/mailers#preview"
   end
+
+  ## Development dashboard; right now it lets you easily switch between subdomains
+  get '/change_subdomain/:id' => 'developer#change_default_subdomain', :as => 'change_subdomain'
 
   # Third party oauth routes. These go before 
   # the html controller non-json catch all because 
@@ -45,7 +45,7 @@ ConsiderIt::Application.routes.draw do
   get '(*url)' => 'html#index', :constraints => NotJSON.new
 
   # Here's the entire JSON API:
-  resources :page, :only => [:show]
+  get '/page/*id' => 'page#show'
   resources :user, :only => [:show]
   get '/users' => 'user#index'
   resources :proposal
@@ -60,7 +60,7 @@ ConsiderIt::Application.routes.draw do
   get '/subdomain' => 'subdomain#show'
   post '/subdomain' => 'subdomain#create'
   match '/subdomain' => 'subdomain#update', :via => [:put]
-  get '/dashboard/create_subdomain' => 'subdomain#new'
+
   match 'update_images_hack' => 'subdomain#update_images_hack', :via => [:put]
 
   post '/log' => 'log#create'
@@ -77,21 +77,15 @@ ConsiderIt::Application.routes.draw do
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]
 
   # New admin functionality
-  get 'dashboard/assessment' => 'assessment#index'
   resources :assessment, :only => [:show, :update]
   resources :claim, :only => [:show, :create, :update, :destroy]
   resources :request, :only => [:create], :controller => "assessment"
 
-  get "/dashboard/moderate" => 'moderation#index'
   match "/moderation/:id" => 'moderation#update', :via => :put
   post '/dashboard/message' => 'direct_message#create', :as => 'message'
 
   get 'user_avatar_hack' => 'current_user#user_avatar_hack'
   match 'update_user_avatar_hack' => 'current_user#update_user_avatar_hack', :via => [:put]
-
-  get "/dashboard/email_notifications" => 'followable#index'
-  post "follow" => 'followable#follow'
-  post "unfollow" => 'followable#unfollow'
 
   post "/dashboard/import_data" => 'import_data#create'
 

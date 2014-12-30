@@ -14,22 +14,24 @@ class Proposal < ActiveRecord::Base
 
   include Followable, Moderatable
   
-  self.moderatable_fields = [:name, :description, :long_description]
-  self.moderatable_objects = lambda { Proposal.where( :published => true) }
-
   class_attribute :my_public_fields, :my_summary_fields
-  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :publicity, :published, :seo_keywords, :seo_title, :seo_description]
+  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :published]
 
   scope :active, -> {where( :active => true, :published => true )}
-  scope :open_to_public, -> {where( :publicity => 2, :published => true )}
-  scope :privately_shared, -> {where( 'publicity < 2')}
 
 
-  def self.summaries
-        
+  def self.summaries(current_subdomain = nil)
+    current_subdomain = Thread.current[:subdomain] if !current_subdomain
+
     # if a subdomain wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
-    current_subdomain = Thread.current[:subdomain]
+
+    if current_subdomain.moderate_proposals_mode == 1
+      moderation_status_check = 'moderation_status=1'
+    else 
+      moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+    end
+
     if current_subdomain.name == 'livingvotersguide'
       year = 2014
       local_jurisdictions = []   
@@ -39,19 +41,25 @@ class Proposal < ActiveRecord::Base
         # If the user has a zipcode, we'll want to include all the jurisdictions 
         # associated with that zipcode. We'll also want to insert them between the statewide
         # measures and the advisory votes, since we hate the advisory votes. 
-        local_jurisdictions = ActiveRecord::Base.connection.select( "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{current_subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip']}%' ").map {|r| r['cluster']}
+        local_jurisdictions = ActiveRecord::Base.connection.exec_query( "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{current_subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip']}%' ").map {|r| r['cluster']}
       end
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
-      proposals = current_subdomain.proposals.open_to_public.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
+      proposals = current_subdomain.proposals.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
     else 
-      proposals = current_subdomain.proposals.open_to_public.where(:hide_on_homepage => false)
+      proposals = current_subdomain.proposals.where(:hide_on_homepage => false)
     end
+
+    proposals = proposals.where(moderation_status_check)
 
     clustered_proposals = {}
 
     # group all proposals into clusters
 
-    proposals.each do |proposal|        
+    proposals.each do |proposal|
+
+      # Impose access control restrictions for current user
+      next if permit('read proposal', proposal) < 0
+
       clustered_proposals[proposal.cluster] = [] if !clustered_proposals.has_key? proposal.cluster
       clustered_proposals[proposal.cluster].append proposal.as_json
     end
@@ -63,8 +71,7 @@ class Proposal < ActiveRecord::Base
     else 
       ordered_clusters = manual_clusters
     end
-    clusters = ordered_clusters.map {|cluster| {:name => cluster, :proposals => clustered_proposals[cluster] }}
-
+    clusters = ordered_clusters.map {|cluster| {:name => cluster, :proposals => clustered_proposals[cluster] } }.select {|c| c[:proposals]}
     proposals = {
       key: '/proposals',
       clusters: clusters
@@ -77,31 +84,58 @@ class Proposal < ActiveRecord::Base
 
   def as_json(options={})
     options[:only] ||= Proposal.my_public_fields
-    result = super(options)
+    json = super(options)
 
     # Find an existing opinion for this user
     your_opinion = Opinion.where(:proposal_id => self.id, :user => current_user).first
-    result['your_opinion'] = "/opinion/#{your_opinion.id}" if your_opinion
+    json['your_opinion'] = "/opinion/#{your_opinion.id}" if your_opinion
 
-    result['top_point'] = self.points.published.order(:score).last
+    json['top_point'] = self.points.published.order(:score).last
 
-    make_key(result, 'proposal')
-    stubify_field(result, 'user')
+    make_key(json, 'proposal')
+    stubify_field(json, 'user')
     follows = get_explicit_follow(current_user) 
-    result["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
+    json["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 
-    result['assessment_enabled'] = fact_check_request_enabled?
+    json['assessment_enabled'] = fact_check_request_enabled?
 
-    # if can?(:manage, proposal) && self.publicity < 2
-    #   response.update({
-    #     :access_list => self.access_list
-    #   })
-    # end
+    if permit('update proposal', self) > 0
+      json['roles'] = self.user_roles
+      json['invitations'] = nil
+    else
+      json['roles'] = self.user_roles(filter = true)
+    end
 
-    result
+    json
   end
 
+  # Returns a hash of all the roles. Each role is expressed
+  # as a list of (1) user keys, (2) email addresses (for users w/o an account)
+  # and (3) email wildcards ('*', '*@consider.it'). 
   # 
+  # Setting filter to try returns a roles hash that strips out 
+  # all specific email addresses / user keys that are not the
+  # current user. 
+  #
+  # TODO: consolidate with subdomain.user_roles
+  def user_roles(filter = false)
+    r = JSON.parse(roles || "{}")
+    ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|
+      if !r.has_key?(role) || !r[role]
+        r[role] = []
+      elsif filter
+        # Remove all specific email address for privacy. Leave wildcards.
+        # Is used by client permissions system to determining whether 
+        # to show action buttons for unauthenticated users. 
+        r[role] = r[role].map{|email_or_key| 
+          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" ? email_or_key : '-' 
+        }.uniq
+      end
+    end
+    r
+  end
+
+
   def fact_check_request_enabled?
     return false # nothing can be requested to be fact-checked currently
 
@@ -163,6 +197,11 @@ class Proposal < ActiveRecord::Base
       my_title
     end
     
+  end
+
+
+  def open_to_public
+    !hide_on_homepage && user_roles['observer'].index('*')
   end
 
   # def notable_points
@@ -240,7 +279,6 @@ class Proposal < ActiveRecord::Base
 
     true
   end
-
 
 
 end

@@ -1,7 +1,7 @@
 class Assessable::Request < ActiveRecord::Base
 
   belongs_to :user
-  belongs_to :assessment, :class_name => 'Assessable::Assessment'
+  belongs_to :assessment
   belongs_to :assessable, :polymorphic => true
   acts_as_tenant :subdomain
 
@@ -16,5 +16,6 @@ class Assessable::Request < ActiveRecord::Base
     result['point'] = "/point/#{assessable_id}"
     result
   end
+
 
 end

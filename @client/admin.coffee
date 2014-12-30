@@ -7,31 +7,6 @@ task_area_section_style = {margin: '10px 0px 20px 0px', position: 'relative'}
 task_area_style = {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor: '#F4F0E9', position: 'absolute', left: CONTENT_WIDTH/4, top: -35, borderRadius: 8}
 
 
-
-# Checks if current user has proper credentials to view this component. 
-# If not, shows Auth. 
-AccessControlled = ReactiveComponent
-  displayName: 'AccessControlled'
-
-  render : -> 
-    current_user = fetch '/current_user'
-
-    is_permitted = false
-    for role in @props.permitted
-      if (role == 'user' && current_user.logged_in) ||  current_user["is_#{role}"]
-        is_permitted = true
-        break
-
-    if is_permitted
-      @props.children
-    else if current_user.logged_in
-      window.app_router.navigate("/", {trigger: true})
-      SPAN null
-    else
-      @root.auth_mode = 'login'
-      save @root
-      SPAN null
-
 DashHeader = ReactiveComponent
   displayName: 'DashHeader'
 
@@ -45,7 +20,6 @@ DashHeader = ReactiveComponent
 
       DIV style: {width: CONTENT_WIDTH, margin: 'auto', position: 'relative'},
         A
-          className: 'homepage_link'
           onClick: (=> window.app_router.navigate("/", {trigger: true}))
           style: {position: 'absolute', display: 'inline-block', top: 25, left: -40},
           I className: 'fa fa-home', style: {fontSize: 28}
@@ -173,7 +147,8 @@ AppSettingsDash = ReactiveComponent
   displayName: 'AppSettingsDash'
 
   render : -> 
-    subdomain = @data()
+
+    subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
     DIV className: 'app_settings_dash',
@@ -284,7 +259,7 @@ AppSettingsDash = ReactiveComponent
   submit : -> 
     submitting_files = @submit_logo || @submit_masthead
 
-    subdomain = @data()
+    subdomain = fetch '/subdomain'
 
     fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url']
 
@@ -315,90 +290,6 @@ AppSettingsDash = ReactiveComponent
             @local.errors = true
             save @local
 
-
-RolesDash = ReactiveComponent
-  displayName: 'RolesDash'
-
-  render : -> 
-    subdomain = @data()
-
-    roles = [ 
-      ['admin', 'Admins can access everything.'], 
-      ['moderator', 'Moderators can review user content; they get email notifications when content needs review.']
-    ]
-
-    if subdomain.assessment_enabled
-      roles.push ['evaluator', 'Evaluators review factual claims in pro/con points.']
-
-
-    DIV null, 
-
-      DashHeader name: 'User Roles'
-
-      DIV style: {width: CONTENT_WIDTH, margin: 'auto'},
-        for role in roles
-          DIV style: {marginTop: 12},
-            H1 style: {fontSize: 18}, capitalize(role[0])
-            SPAN style: {fontSize: 14}, role[1]
-
-            PermissionBlock key: role[0]
-
-
-PermissionBlock = ReactiveComponent
-  displayName: 'PermissionBlock'
-
-  render : -> 
-    subdomain = fetch '/subdomain'
-    users = fetch '/users'
-    role = @props.key
-
-    DIV null,
-      if subdomain.roles[role]
-        for user_key in subdomain.roles[role]
-          user = fetch user_key
-          SPAN style: {display: 'inline-block', padding: '4px 8px', fontWeight: 400, fontSize: 15, backgroundColor: '#e1e1e1', color: 'black', borderRadius: 16, margin: '4px'}, 
-            if user.name then user.name else user.email
-            I style: {cursor: 'pointer', marginLeft: 8}, className: 'fa fa-close', onClick: do (user_key, role) => =>
-              # remove role
-              subdomain.roles[role] = _.without subdomain.roles[role], user_key
-              save subdomain
-      
-      DIV style: {position: 'relative'}, 
-        INPUT 
-          id: 'filter'
-          type: 'text'
-          style: {fontSize: 18, width: 500}
-          autocomplete: 'off'
-          placeholder: "Add #{role}"
-          onChange: (=> @local.filtered = $(@getDOMNode()).find('#filter').val(); save(@local);)
-          onFocus: (e) => 
-            @local.add = true
-            save(@local)
-            e.stopPropagation()
-            $(document).on 'click.roles', (e) =>
-              if e.target.id != 'filter'
-                @local.add = false
-                @local.filtered = null
-                $(@getDOMNode()).find('#filter').val('')
-                save(@local)
-                $(document).off('click.roles')
-            return false
-
-        if @local.add
-          UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
-            for user in _.filter(users.users, (u) => subdomain.roles[role].indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
-              LI 
-                style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
-                onClick: do(user) => (e) => 
-                  # add role
-                  subdomain.roles[role].push user.key
-                  save subdomain
-                  e.stopPropagation()
-
-                "#{user.name} <#{user.email}>"
-
-
-
 AdminTaskList = ReactiveComponent
   displayName: 'AdminTaskList'
 
@@ -406,8 +297,9 @@ AdminTaskList = ReactiveComponent
 
     dash = @data()
 
-    # We assume an ordering of the task categories that where the earlier
+    # We assume an ordering of the task categories where the earlier
     # categories are more urgent & shown higher up in the list than later categories.
+
     if !dash.selected_task && @props.items.length > 0
       # Prefer to select a higher urgency task by default
 
@@ -471,6 +363,8 @@ AdminTaskList = ReactiveComponent
     $(document).on 'keyup.dash', (e) =>
       @selectNext() if e.keyCode == 40 # down
       @selectPrev() if e.keyCode == 38 # up
+  componentWillUnmount: ->
+    $(document).off 'keyup.dash'
 
         
 ModerationDash = ReactiveComponent
@@ -509,7 +403,7 @@ ModerationDash = ReactiveComponent
         DIV className: 'moderation_settings',
           if subdomain.moderated_classes.length == 0 || @local.edit_settings
             DIV null,             
-              for model in ['points', 'comments'] #, 'proposals']
+              for model in ['points', 'comments', 'proposals'] #, 'proposals']
                 # The order of the options is important for the database records
                 moderation_options = [
                   "Do not moderate #{model}", 
@@ -526,10 +420,9 @@ ModerationDash = ReactiveComponent
                       style: {marginLeft: 18, fontSize: 18, cursor: 'pointer'}
                       onClick: do (idx, model) => => 
                         subdomain["moderate_#{model}_mode"] = idx
-                        save subdomain
-
-                        #saving the subdomain shouldn't always dirty moderations (which is expensive), so just doing it manually here
-                        arest.serverFetch('/dashboard/moderate')  
+                        save subdomain, -> 
+                          #saving the subdomain shouldn't always dirty moderations (which is expensive), so just doing it manually here
+                          arest.serverFetch('/page/dashboard/moderate')  
 
                       INPUT style: {cursor: 'pointer'}, type: 'radio', name: "moderate_#{model}_mode", id: "moderate_#{model}_mode_#{idx}", defaultChecked: subdomain["moderate_#{model}_mode"] == idx
                       LABEL style: {cursor: 'pointer', paddingLeft: 8 }, htmlFor: "moderate_#{model}_mode_#{idx}", field
@@ -538,7 +431,7 @@ ModerationDash = ReactiveComponent
                 onClick: => 
                   @local.edit_settings = false
                   save @local
-                'Done'
+                'close'
 
           else 
             A 
@@ -561,6 +454,9 @@ ModerationDash = ReactiveComponent
               point = fetch(moderatable.point)
               proposal = fetch(point.proposal)
               tease = "#{moderatable.body.substring(0, 30)}..."
+            else if class_name == 'Proposal'
+              proposal = moderatable
+              tease = "#{proposal.name.substring(0, 30)}..."
 
             DIV className: 'tab',
               DIV style: {fontSize: 14, fontWeight: 600}, "Moderate #{class_name} #{item.moderatable_id}"
@@ -583,7 +479,6 @@ ModerateItem = ReactiveComponent
   render : ->
     item = @data()
 
-
     class_name = item.moderatable_type
     moderatable = fetch(item.moderatable)
     author = fetch(moderatable.user)
@@ -594,6 +489,8 @@ ModerateItem = ReactiveComponent
       point = fetch(moderatable.point)
       proposal = fetch(point.proposal)
       comments = fetch("/comments/#{point.id}")
+    else if class_name == 'Proposal'
+      proposal = moderatable
 
     current_user = fetch('/current_user')
     
@@ -610,7 +507,7 @@ ModerateItem = ReactiveComponent
         else if item.status == 0
           SPAN style: {}, "Failed moderation"
         else 
-          SPAN style: {}, "Is this #{item.moderatable_type} ok?"
+          SPAN style: {}, "Is this #{class_name} ok?"
 
         if item.user
           SPAN style: {float: 'right', fontSize: 18, verticalAlign: 'bottom'},
@@ -620,10 +517,15 @@ ModerateItem = ReactiveComponent
         # content area
         DIV style: task_area_section_style, 
 
-          if item.moderatable_type == 'Point'
+          if class_name == 'Point'
             UL style: {marginLeft: 73}, 
               Point key: point, rendered_as: 'under_review'
-          else if item.moderatable_type == 'Comment'
+          else if class_name == 'Proposal'
+            DIV null,
+              DIV null, moderatable.name
+              DIV null, moderatable.description
+
+          else if class_name == 'Comment'
             if !@local.show_conversation
               DIV null,
                 A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = true; save(@local)),
@@ -650,7 +552,7 @@ ModerateItem = ReactiveComponent
           DIV style:{fontSize: 12, marginLeft: 73}, 
             "by #{author.name}"
 
-            if (item.status != 0 && item.status != 2) || item.moderatable_type == 'Comment'
+            if (item.status != 0 && item.status != 2 && class_name != 'Proposal') || class_name == 'Comment'
               [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
               A 
                 target: '_blank'
@@ -741,6 +643,7 @@ FactcheckDash = ReactiveComponent
   displayName: 'FactcheckDash'
 
   render : ->
+
     assessments = @data().assessments.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
 
     # Separate assessments by status
@@ -849,7 +752,7 @@ FactcheckPoint = ReactiveComponent
           H1 style: task_area_header_style, 'Fact check requests'
           DIV style: {}, 
             for request in assessment.requests
-              DIV className: 'comment_entry',
+              DIV className: 'comment_entry', key: request.key,
 
                 Avatar
                   className: 'comment_entry_avatar'
@@ -884,7 +787,7 @@ FactcheckPoint = ReactiveComponent
               else 
 
                 verdict = fetch(claim.verdict)
-                DIV style: {marginLeft: 73, marginBottom: 18, position: 'relative'}, 
+                DIV key: claim.key, style: {marginLeft: 73, marginBottom: 18, position: 'relative'}, 
                   IMG style: {position: 'absolute', width: 50, left: -73}, src: verdict.icon
 
                   DIV style: {fontSize: 18}, claim.claim_restatement
@@ -1049,7 +952,7 @@ EditClaim = ReactiveComponent
         SELECT
           defaultValue: if @props.fresh then null else @data().verdict
           className: 'claim_verdict'
-          for verdict in fetch('/dashboard/assessment').verdicts
+          for verdict in fetch('/page/dashboard/assessment').verdicts
             OPTION key: verdict.key, value: verdict.key, verdict.name
 
 
@@ -1092,10 +995,10 @@ CreateSubdomain = ReactiveComponent
   render : -> 
     current_user = fetch('/current_user')
 
-    DIV style: {width: CONTENT_WIDTH, margin: 'auto'}, 
+    DIV null, 
       DashHeader name: 'Create new subdomain (secret, you so special!!!)'
 
-      DIV style: {marginTop: 20},
+      DIV style: {width: CONTENT_WIDTH, margin: 'auto', marginTop: 20},
         LABEL htmlFor: 'subdomain', 
           'Name of the new subdomain'
         INPUT id: 'subdomain', name: 'subdomain', type: 'text', style: {fontSize: 28, padding: '8px 12px', width: CONTENT_WIDTH}, placeholder: 'Don\'t be silly with weird characters'
@@ -1136,8 +1039,6 @@ CreateSubdomain = ReactiveComponent
 window.FactcheckDash = FactcheckDash
 window.ModerationDash = ModerationDash
 window.AppSettingsDash = AppSettingsDash
-window.RolesDash = RolesDash
 window.ImportDataDash = ImportDataDash
-window.AccessControlled = AccessControlled
 window.CreateSubdomain = CreateSubdomain
 window.DashHeader = DashHeader

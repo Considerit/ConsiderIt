@@ -29,16 +29,6 @@ class Point < ActiveRecord::Base
 
   acts_as_tenant :subdomain
 
-  self.moderatable_fields = [:nutshell, :text]
-  self.moderatable_objects = lambda {
-    Point.joins(:proposal).published.where(:proposals => {:active => true})
-  }
-
-  self.assessable_fields = [:nutshell, :text]
-  self.assessable_objects = lambda {
-    Point.joins(:proposal).published.where(:proposals => {:active => true})
-  }
-
   class_attribute :my_public_fields
   self.my_public_fields = [:comment_count, :created_at, :id, :includers, :is_pro, :nutshell, :proposal_id, :published, :score, :text, :user_id, :hide_name, :last_inclusion]
 
@@ -175,5 +165,7 @@ class Point < ActiveRecord::Base
   def self.update_scores
     Point.published.each {|pnt| pnt.recache }
   end
+
+
 
 end

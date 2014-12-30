@@ -2,39 +2,53 @@ class PageController < ApplicationController
   respond_to :json
 
   def show
-    case params[:id]
-
-    when 'homepage'
-      key = '/page/homepage'
-      dirty_key key
+    page = params[:id]
+    
+    if page == 'homepage'
+      dirty_key '/page/homepage'
       dirty_key '/users'
 
-    when 'about' # don't need anything special
-      key = '/page/about'
+    elsif page.match 'dashboard/'
 
-    when 'proposal/new' # don't need anything special
-      key = '/page/proposal/new'
+      case page
 
-    else # if proposal
+      when 'dashboard/assessment'
+        authorize_action = "factcheck content"
 
-      proposal = Proposal.find_by_slug(params[:id])
+      when 'dashboard/moderate'
+        authorize_action = "moderate content"
+
+      when 'dashboard/create_subdomain'
+        authorize_action = "create subdomain"
+
+      when 'dashboard/application', 'dashboard/roles', 'dashboard/import_data'
+        authorize_action = "update subdomain"
+
+      else
+        authorize_action = nil
+      end
+      
+      authorize!(authorize_action, current_subdomain, "/page/#{page}") if authorize_action
+
+      dirty_key "/page/#{page}"
+
+    elsif page != 'proposal/new' && page != 'about'
+
+      proposal = Proposal.find_by_slug page
 
       if !proposal 
         render :status => :not_found, :json => {:result => 'Not found'}
         return
-      elsif cannot?(:read, proposal)
-        render :status => :forbidden, :json => {:result => 'Permission denied'}
-        return
       end
 
-      # Ensure an existing opinion for this user
-      your_opinion = Opinion.get_or_make(proposal, current_user)
+      authorize! "read proposal", proposal, "/page/#{proposal.slug}"
 
-      key = "/page/#{proposal.slug}"
-      dirty_key key
+      # Ensure an existing opinion for this user
+      your_opinion = Opinion.get_or_make(proposal)
+
+      dirty_key "/page/#{proposal.slug}"
       dirty_key '/users'
     end
-
 
     render :json => []
 

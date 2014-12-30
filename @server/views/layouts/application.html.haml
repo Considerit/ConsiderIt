@@ -31,7 +31,7 @@
       //android
       %link{ :rel => "icon", :sizes => "196x196", :href => "/apple-touch-icon.png"} 
 
-      = stylesheet_link_tag 'stylesheets/application', debug: false
+      %link{:href => "//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", :rel => "stylesheet"}
 
       - if !@is_search_bot
         %link{ :href => "//fast.fonts.net/cssapi/cd97b194-90f2-4567-be7e-3a72011995f3.css",  :rel => 'stylesheet', :type => 'text/css' }
@@ -39,6 +39,49 @@
       /[if lte IE 8]
         %script{:type => "text/javascript"}
           window.location = "http://windows.microsoft.com/en-us/internet-explorer/download-ie";
+
+
+    %body
+      - if Rails.env.development? || @show_subdomain_changer
+        :css
+          #development_bar {
+            background-color: black;
+            width: 125px;
+            text-align: center;
+            position: absolute;
+            z-index: 99999; }
+            #development_bar:hover ul {
+              display: block; }
+            #development_bar ul {
+              display: none; }
+            #development_bar li {
+              list-style: none;
+              background-color: black; }
+            #development_bar a, #development_bar .change {
+              color: white;
+              display: block;
+              padding: 2px 6px; }
+            #development_bar a {
+              font-size: 14px;
+              font-weight: 600; }
+              #development_bar a:hover {
+                background-color: blue; }
+            #development_bar .change {
+              font-size: 10px; }
+
+
+        #development_bar
+          .change
+            Change Subdomain
+          %ul#subdomains
+            - Subdomain.all.each do |subdomain|
+              - next if subdomain.name == 'homepage'
+              %li
+                %a{:href => change_subdomain_path(subdomain)}
+                  = subdomain.name
+
+      #content.content{ subdomain: current_subdomain.name }
+
 
 
       :javascript
@@ -55,22 +98,6 @@
         }
 
       = javascript_include_tag 'javascripts/load_everything', debug: Rails.env.development?
-
-
-    %body
-      - if Rails.env.development?
-        #development_bar
-          .change
-            Change Subdomain
-          %ul#subdomains
-            - Subdomain.all.each do |subdomain|
-              - next if subdomain.name == 'homepage'
-              %li
-                %a{:href => change_subdomain_path(subdomain)}
-                  = subdomain.name
-
-      #content.content{ subdomain: current_subdomain.name }
-
 
 
       // for Facebook social buttons

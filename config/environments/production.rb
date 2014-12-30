@@ -22,6 +22,13 @@ ConsiderIt::Application.configure do
 
   config.eager_load = true
 
+
+  config.action_controller.perform_caching = false
+  config.assets.debug = true
+  config.cache_classes = false
+
+
+
   # Generate digests for assets URLs.
   config.assets.digest = true
    
@@ -30,7 +37,7 @@ ConsiderIt::Application.configure do
    
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   
-  config.assets.precompile += %w( javascripts/load_everything.js *.svg *.eot *.woff *.ttf *.jpg *.png *.jpeg *.gif)
+  config.assets.precompile += %w( javascripts/load_everything.js load_everything.js *.svg *.eot *.woff *.ttf *.jpg *.png *.jpeg *.gif)
 
   # Specifies the header that your server uses for sending files
   # config.action_dispatch.x_sendfile_header = "X-Sendfile"
@@ -42,7 +49,7 @@ ConsiderIt::Application.configure do
   # just comment this out and Rails will serve the files
 
   # See everything in the log (default is :info)
-  # config.log_level = :debug
+  config.log_level = :debug
 
   # Use a different logger for distributed setups
   # config.logger = SyslogLogger.new
@@ -77,9 +84,8 @@ ConsiderIt::Application.configure do
 
   # Disable delivery errors, bad email addresses will be ignored
   config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.default_url_options = { :address => 'localhost' }
+  # config.action_mailer.default_url_options = { :address => 'localhost' }
   config.action_mailer.perform_deliveries = true 
-  #config.action_mailer.delivery_method = :mailhopper  
 
   # Enable threaded mode
   # config.threadsafe!

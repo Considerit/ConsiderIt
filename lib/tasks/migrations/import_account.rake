@@ -80,7 +80,7 @@ namespace :import do
         ]
       }],
       ['assessments', {
-        :max_id => Assessable::Assessment.last.id + 1000,
+        :max_id => Assessment.last.id + 1000,
         :fks => [
           ['requests', 'assessment_id'],
           ['claims', 'assessment_id']          

@@ -1,21 +1,21 @@
 GIT
   remote: git://github.com/collectiveidea/delayed_job.git
-  revision: 62c929abfbb1548822ff9c31d806d2ade1bec528
+  revision: c34d78370189d515e1494a31718e8428077a50d5
   specs:
-    delayed_job (4.0.4)
-      activesupport (>= 3.0, < 4.2)
+    delayed_job (4.0.6)
+      activesupport (>= 3.0, < 5.0)
 
 GIT
   remote: git://github.com/collectiveidea/delayed_job_active_record.git
-  revision: b3adaee6ad88b047bf839419b6a9ead22b883067
+  revision: 270b06eef0879a7ea167eb41182336aa14fb762e
   specs:
-    delayed_job_active_record (4.0.2)
-      activerecord (>= 3.0, < 4.2)
+    delayed_job_active_record (4.0.3)
+      activerecord (>= 3.0, < 5.0)
       delayed_job (>= 3.0, < 4.1)
 
 GIT
   remote: git://github.com/drewblas/aws-ses.git
-  revision: bb8b922a7badf6aa23b93cd5fdfd711343e237ed
+  revision: e16be3a217395cf576ac0226a606378839f62a6c
   specs:
     aws-ses (0.6.0)
       builder
@@ -26,66 +26,65 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
-    actionmailer (4.1.6)
-      actionpack (= 4.1.6)
-      actionview (= 4.1.6)
+    CFPropertyList (2.2.8)
+    actionmailer (4.2.0)
+      actionpack (= 4.2.0)
+      actionview (= 4.2.0)
+      activejob (= 4.2.0)
       mail (~> 2.5, >= 2.5.4)
-    actionmailer-with-request (0.4.0)
-      rails (>= 3)
-    actionpack (4.1.6)
-      actionview (= 4.1.6)
-      activesupport (= 4.1.6)
-      rack (~> 1.5.2)
+      rails-dom-testing (~> 1.0, >= 1.0.5)
+    actionpack (4.2.0)
+      actionview (= 4.2.0)
+      activesupport (= 4.2.0)
+      rack (~> 1.6.0)
       rack-test (~> 0.6.2)
-    actionpack-action_caching (1.1.1)
-      actionpack (>= 4.0.0, < 5.0)
-    actionview (4.1.6)
-      activesupport (= 4.1.6)
+      rails-dom-testing (~> 1.0, >= 1.0.5)
+      rails-html-sanitizer (~> 1.0, >= 1.0.1)
+    actionview (4.2.0)
+      activesupport (= 4.2.0)
       builder (~> 3.1)
       erubis (~> 2.7.0)
-    activemodel (4.1.6)
-      activesupport (= 4.1.6)
+      rails-dom-testing (~> 1.0, >= 1.0.5)
+      rails-html-sanitizer (~> 1.0, >= 1.0.1)
+    activejob (4.2.0)
+      activesupport (= 4.2.0)
+      globalid (>= 0.3.0)
+    activemodel (4.2.0)
+      activesupport (= 4.2.0)
       builder (~> 3.1)
-    activerecord (4.1.6)
-      activemodel (= 4.1.6)
-      activesupport (= 4.1.6)
-      arel (~> 5.0.0)
-    activesupport (4.1.6)
-      i18n (~> 0.6, >= 0.6.9)
+    activerecord (4.2.0)
+      activemodel (= 4.2.0)
+      activesupport (= 4.2.0)
+      arel (~> 6.0)
+    activesupport (4.2.0)
+      i18n (~> 0.7)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
-      thread_safe (~> 0.1)
+      thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    acts_as_tenant (0.3.6)
+    acts_as_tenant (0.3.7)
       rails (>= 3.1)
       request_store (>= 1.0.5)
-    arel (5.0.1.20140414130214)
+    arel (6.0.0)
     asset_sync (1.1.0)
       activemodel
       fog (>= 1.8.0)
       unf
-    aws-sdk (1.56.0)
-      aws-sdk-v1 (= 1.56.0)
-    aws-sdk-v1 (1.56.0)
+    aws-sdk (1.60.2)
+      aws-sdk-v1 (= 1.60.2)
+    aws-sdk-v1 (1.60.2)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
     backup (3.4.0)
       open4 (~> 1.3.0)
       thor (>= 0.15.4, < 2)
-    bcrypt (3.1.7)
-    bourbon (3.2.3)
-      sass (~> 3.2)
-      thor
+    bcrypt (3.1.9)
     builder (3.2.2)
-    cancan (1.6.10)
-    celluloid (0.16.0)
-      timers (~> 4.0.0)
     chronic (0.10.2)
     climate_control (0.0.3)
       activesupport (>= 3.0)
-    cocaine (0.5.4)
+    cocaine (0.5.5)
       climate_control (>= 0.0.3, < 1.0)
-    coderay (1.1.0)
     coffee-rails (4.1.0)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0, < 5.0)
@@ -95,46 +94,59 @@ GEM
     coffee-script-source (1.8.0)
     daemons (1.1.9)
     dalli (2.7.2)
-    delayed_mailhopper (0.0.7)
-      delayed_job
-      mailhopper (>= 0.0.1)
-    delayed_paperclip (2.8.0)
+    delayed_paperclip (2.9.0)
       paperclip (>= 3.3)
-    em-websocket (0.5.1)
-      eventmachine (>= 0.12.9)
-      http_parser.rb (~> 0.6.0)
     erubis (2.7.0)
-    eventmachine (1.0.3)
+    eventmachine (1.0.4)
     exception_notification (4.0.1)
       actionmailer (>= 3.0.4)
       activesupport (>= 3.0.4)
-    excon (0.40.0)
+    excon (0.42.1)
     execjs (2.2.2)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
-    ffi (1.9.6)
-    fog (1.24.0)
-      fog-brightbox
-      fog-core (~> 1.23)
+    fission (0.5.0)
+      CFPropertyList (~> 2.2)
+    fog (1.26.0)
+      fog-atmos
+      fog-brightbox (~> 0.4)
+      fog-core (~> 1.27, >= 1.27.1)
+      fog-ecloud
       fog-json
+      fog-profitbricks
       fog-radosgw (>= 0.0.2)
       fog-sakuracloud (>= 0.0.4)
       fog-softlayer
+      fog-storm_on_demand
+      fog-terremark
+      fog-vmfusion
+      fog-voxel
+      fog-xml (~> 0.1.1)
       ipaddress (~> 0.5)
       nokogiri (~> 1.5, >= 1.5.11)
-    fog-brightbox (0.5.1)
+    fog-atmos (0.1.0)
+      fog-core
+      fog-xml
+    fog-brightbox (0.7.1)
       fog-core (~> 1.22)
       fog-json
-      inflecto
-    fog-core (1.24.0)
+      inflecto (~> 0.0.2)
+    fog-core (1.27.2)
       builder
       excon (~> 0.38)
       formatador (~> 0.2)
       mime-types
       net-scp (~> 1.1)
       net-ssh (>= 2.1.3)
+    fog-ecloud (0.0.2)
+      fog-core
+      fog-xml
     fog-json (1.0.0)
       multi_json (~> 1.0)
+    fog-profitbricks (0.0.1)
+      fog-core
+      fog-xml
+      nokogiri
     fog-radosgw (0.0.3)
       fog-core (>= 1.21.0)
       fog-json
@@ -142,74 +154,69 @@ GEM
     fog-sakuracloud (0.1.1)
       fog-core
       fog-json
-    fog-softlayer (0.3.20)
+    fog-softlayer (0.3.26)
       fog-core
       fog-json
-    fog-xml (0.1.0)
+    fog-storm_on_demand (0.1.0)
+      fog-core
+      fog-json
+    fog-terremark (0.0.3)
+      fog-core
+      fog-xml
+    fog-vmfusion (0.0.1)
+      fission
+      fog-core
+    fog-voxel (0.0.2)
+      fog-core
+      fog-xml
+    fog-xml (0.1.1)
       fog-core
       nokogiri (~> 1.5, >= 1.5.11)
     font-awesome-rails (4.2.0.0)
       railties (>= 3.2, < 5.0)
     formatador (0.2.5)
-    guard (2.6.1)
-      formatador (>= 0.2.4)
-      listen (~> 2.7)
-      lumberjack (~> 1.0)
-      pry (>= 0.9.12)
-      thor (>= 0.18.1)
-    guard-livereload (2.3.1)
-      em-websocket (~> 0.5)
-      guard (~> 2.0)
-      multi_json (~> 1.8)
-    haml (4.0.5)
+    globalid (0.3.0)
+      activesupport (>= 4.1.0)
+    haml (4.0.6)
       tilt
-    hashie (3.3.1)
+    hashie (3.3.2)
     hike (1.2.3)
-    hitimes (1.2.2)
-    http_parser.rb (0.6.0)
-    i18n (0.6.11)
+    i18n (0.7.0)
     inflecto (0.0.2)
     ipaddress (0.8.0)
     json (1.8.1)
-    jwt (1.0.0)
+    jwt (1.2.0)
     libv8 (3.16.14.7)
-    listen (2.7.11)
-      celluloid (>= 0.15.2)
-      rb-fsevent (>= 0.9.3)
-      rb-inotify (>= 0.9)
-    lumberjack (1.0.9)
-    mail (2.6.1)
+    loofah (2.0.1)
+      nokogiri (>= 1.5.9)
+    mail (2.6.3)
       mime-types (>= 1.16, < 3)
-    mailhopper (0.3.0)
-      rails (>= 3.1.0)
-    method_source (0.8.2)
-    mime-types (2.4.2)
-    mini_portile (0.6.0)
-    minitest (5.4.2)
+    mime-types (2.4.3)
+    mini_portile (0.6.1)
+    minitest (5.5.0)
     multi_json (1.10.1)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
-    mysql2 (0.3.16)
+    mysql2 (0.3.17)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
-    newrelic_rpm (3.9.5.251)
-    nokogiri (1.6.3.1)
-      mini_portile (= 0.6.0)
+    nokogiri (1.6.5)
+      mini_portile (~> 0.6.0)
     oauth2 (1.0.0)
       faraday (>= 0.8, < 0.10)
       jwt (~> 1.0)
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (~> 1.2)
-    oj (2.10.2)
+    oj (2.11.1)
     oj_mimic_json (1.0.1)
     omniauth (1.2.2)
       hashie (>= 1.2, < 4)
       rack (~> 1.0)
     omniauth-facebook (2.0.0)
       omniauth-oauth2 (~> 1.2)
-    omniauth-google-oauth2 (0.2.5)
+    omniauth-google-oauth2 (0.2.6)
       omniauth (> 1.0)
       omniauth-oauth2 (~> 1.1)
     omniauth-oauth2 (1.2.0)
@@ -219,7 +226,7 @@ GEM
       omniauth (~> 1.2)
     open4 (1.3.4)
     os (0.9.6)
-    paperclip (4.2.0)
+    paperclip (4.2.1)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
       cocaine (~> 0.5.3)
@@ -231,52 +238,47 @@ GEM
     prerender_rails (1.1.1)
       activesupport
       rack
-    pry (0.10.1)
-      coderay (~> 1.1.0)
-      method_source (~> 0.8.1)
-      slop (~> 3.4)
-    rack (1.5.2)
-    rack-livereload (0.3.15)
-      rack
+    rack (1.6.0)
     rack-test (0.6.2)
       rack (>= 1.0)
-    rails (4.1.6)
-      actionmailer (= 4.1.6)
-      actionpack (= 4.1.6)
-      actionview (= 4.1.6)
-      activemodel (= 4.1.6)
-      activerecord (= 4.1.6)
-      activesupport (= 4.1.6)
+    rails (4.2.0)
+      actionmailer (= 4.2.0)
+      actionpack (= 4.2.0)
+      actionview (= 4.2.0)
+      activejob (= 4.2.0)
+      activemodel (= 4.2.0)
+      activerecord (= 4.2.0)
+      activesupport (= 4.2.0)
       bundler (>= 1.3.0, < 2.0)
-      railties (= 4.1.6)
-      sprockets-rails (~> 2.0)
-    railties (4.1.6)
-      actionpack (= 4.1.6)
-      activesupport (= 4.1.6)
+      railties (= 4.2.0)
+      sprockets-rails
+    rails-deprecated_sanitizer (1.0.3)
+      activesupport (>= 4.2.0.alpha)
+    rails-dom-testing (1.0.5)
+      activesupport (>= 4.2.0.beta, < 5.0)
+      nokogiri (~> 1.6.0)
+      rails-deprecated_sanitizer (>= 1.0.1)
+    rails-html-sanitizer (1.0.1)
+      loofah (~> 2.0)
+    railties (4.2.0)
+      actionpack (= 4.2.0)
+      activesupport (= 4.2.0)
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
-    rake (10.3.2)
-    rb-fsevent (0.9.4)
-    rb-inotify (0.9.5)
-      ffi (>= 0.5.0)
+    rake (10.4.2)
     ref (1.0.5)
     request_store (1.1.0)
+    responders (2.0.2)
+      railties (>= 4.2.0.alpha, < 5)
     ruby-imagespec (0.3.1)
-    sass (3.2.19)
-    sass-rails (4.0.3)
-      railties (>= 4.0.0, < 5.0)
-      sass (~> 3.2.0)
-      sprockets (~> 2.8, <= 2.11.0)
-      sprockets-rails (~> 2.0)
     sitemap_generator (5.0.5)
       builder
-    slop (3.6.0)
-    sprockets (2.11.0)
+    sprockets (2.12.3)
       hike (~> 1.2)
       multi_json (~> 1.0)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
-    sprockets-rails (2.2.0)
+    sprockets-rails (2.2.2)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
@@ -290,17 +292,15 @@ GEM
     thor (0.19.1)
     thread_safe (0.3.4)
     tilt (1.4.1)
-    timers (4.0.1)
-      hitimes
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    uglifier (2.5.3)
+    uglifier (2.6.0)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.6)
-    whenever (0.9.3)
+    whenever (0.9.4)
       chronic (>= 0.6.3)
     xml-simple (1.1.4)
 
@@ -308,32 +308,23 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  actionmailer-with-request
-  actionpack-action_caching
   acts_as_tenant
   asset_sync
   aws-sdk
   aws-ses (~> 0.6.0)!
   backup
   bcrypt
-  bourbon
-  cancan
   coffee-rails
   daemons
   dalli
   delayed_job!
   delayed_job_active_record!
-  delayed_mailhopper
   delayed_paperclip
   exception_notification
-  font-awesome-rails (~> 4.2.0)
-  guard (>= 2.2.2)
-  guard-livereload
+  font-awesome-rails
   haml
-  mailhopper
   mysql2
-  newrelic_rpm
-  oj (= 2.10.2)
+  oj
   oj_mimic_json
   omniauth-facebook
   omniauth-google-oauth2
@@ -341,10 +332,8 @@ DEPENDENCIES
   paperclip
   paperclip-compression
   prerender_rails
-  rack-livereload
   rails (~> 4)
-  rb-fsevent
-  sass-rails (~> 4.0.3)
+  responders (~> 2.0)
   sitemap_generator
   sprockets
   sprockets-rails

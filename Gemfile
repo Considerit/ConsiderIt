@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 #############
 # CORE
 gem 'rails', '~>4'
-gem 'actionpack-action_caching' # Required for caches_action on Avatars
+gem 'responders', '~> 2.0' #for respond_to, removed from core Rails 4.2
 
 #############
 # AUTHENTICATION
@@ -11,10 +11,6 @@ gem "bcrypt"
 gem 'omniauth-oauth2'
 gem 'omniauth-facebook'
 gem 'omniauth-google-oauth2'
-
-#############
-# AUTHORIZATION
-gem 'cancan' #https://github.com/ryanb/cancan
 
 #############
 # DATABASE & DATABASE MIDDLEWARE
@@ -27,12 +23,12 @@ gem "haml"
 gem 'paperclip' # https://github.com/thoughtbot/paperclip
 gem 'paperclip-compression'
 gem 'delayed_paperclip'
-gem 'font-awesome-rails', "~> 4.2.0"
+gem 'font-awesome-rails'
 
 #############
 # PURE PERFORMANCE
 # Rails JSON encoding is super slow, oj makes it faster
-gem 'oj', "2.10.2" #temp restriction on version until https://github.com/ohler55/oj/issues/190 solved
+gem 'oj' 
 gem 'oj_mimic_json' # we need this for Rails 4.1.x
 
 #############
@@ -41,9 +37,6 @@ gem 'whenever' # https://github.com/javan/whenever
 gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' # https://github.com/collectiveidea/delayed_job
 gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delayed_job_active_record.git'
 gem "daemons"
-gem 'mailhopper' # https://github.com/cerebris/mailhopper
-gem 'delayed_mailhopper' # https://github.com/cerebris/delayed_mailhopper
-gem 'actionmailer-with-request' # https://github.com/weppos/actionmailer_with_request
 gem 'backup' #https://github.com/meskyanichi/backup
 
 #############
@@ -53,8 +46,6 @@ gem 'sprockets-rails', :require => 'sprockets/railtie'
 gem "therubyracer", :require => 'v8' #coffeescript dependency that gives Ruby interface to v8 javascript engine 
 gem 'coffee-rails'
 gem 'uglifier'
-gem 'sass-rails', "~> 4.0.3"
-gem 'bourbon'
 gem "asset_sync"
 
 # Bundle gems for the local environment. Make sure to
@@ -62,11 +53,11 @@ gem "asset_sync"
 # and rake tasks are available in development mode:
 group :development, :test do
   gem 'thin'
-  gem 'newrelic_rpm'
-  gem 'guard', '>= 2.2.2',       :require => false
-  gem 'guard-livereload',        :require => false
-  gem 'rack-livereload'
-  gem 'rb-fsevent',              :require => false  #filesystem management for OSX; used by guard
+  # gem 'newrelic_rpm'
+  # gem 'guard', '>= 2.2.2',       :require => false
+  # gem 'guard-livereload',        :require => false
+  # gem 'rack-livereload'
+  # gem 'rb-fsevent',              :require => false  #filesystem management for OSX; used by guard
 end
 
 group :production do

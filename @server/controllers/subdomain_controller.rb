@@ -1,21 +1,13 @@
+module Invitations
+end
+
 class SubdomainController < ApplicationController
   respond_to :json
   skip_before_action :verify_authenticity_token, :only => :update_images_hack
-
-  rescue_from CanCan::AccessDenied do |exception|
-    result = {
-      :errors => [current_user.nil? ? 'not logged in' : 'not authorized']
-    }
-    render :json => result 
-    return
-  end
-
-  def new
-    render :json => []
-  end
+  include Invitations
 
   def create
-    authorize! :create, Subdomain
+    authorize! 'create subdomain'
 
     errors = []
 
@@ -29,6 +21,7 @@ class SubdomainController < ApplicationController
       new_subdomain = Subdomain.new :name => subdomain
       roles = new_subdomain.user_roles
       roles['admin'].push "/user/#{current_user.id}"
+      roles['visitor'].push "*"
       new_subdomain.roles = JSON.dump roles
       new_subdomain.save
     end
@@ -47,14 +40,19 @@ class SubdomainController < ApplicationController
 
   def update
     subdomain = Subdomain.find(params[:id])
-    authorize! :update, Subdomain
+    authorize! 'update subdomain', subdomain
+
     if subdomain.id != current_subdomain.id #&& !current_user.super_admin
       # for now, don't allow modifying non-current subdomain
-      raise new CanCan::AccessDenied
+      raise PermissionDenied.new Permission::DISABLED
     end
 
     fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'has_civility_pledge']
     attrs = params.select{|k,v| fields.include? k}
+
+    if params.has_key?('roles') && params.has_key?(:invitations) && params[:invitations]
+      params['roles'] = process_invitations(params['roles'], params[:invitations], current_subdomain)
+    end
 
     serialized_fields = ['roles', 'branding']
     for field in serialized_fields
@@ -85,4 +83,43 @@ class SubdomainController < ApplicationController
     render :json => []
   end
 
+end
+
+module Invitations
+  def process_invitations(roles, invitations, target)
+
+    invitations.each do |invite|
+      message = invite['message'] && invite['message'].length > 0 ? invite['message'] : nil
+      users_with_role = roles[invite['role']]
+
+      for user_or_email in invite['keys_or_emails']
+        next if user_or_email.index('*') # wildcards; no invitations!!
+          
+        if user_or_email[0] == '/'
+          invitee = User.find(key_id(user_or_email))
+
+        else 
+          # check to make sure this user doesn't already have an account... 
+          invitee = User.find_by_email(user_or_email)
+          if !invitee
+            # every invited & fully specified email address who doesn't yet have an account will have one created for them
+            invitee = User.create!({
+              :email => user_or_email,
+              :registered => true,
+              :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
+            })
+            invitee.add_to_active_in
+
+            # replace email address with the user's key in the roles object
+            users_with_role[users_with_role.index(user_or_email)] = "/user/#{invitee.id}"
+
+          end
+        end
+        UserMailer.invitation(current_user, invitee, target, invite['role'], current_subdomain, message).deliver_later
+
+      end
+    end
+
+    roles
+  end  
 end

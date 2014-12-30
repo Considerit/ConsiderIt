@@ -3,7 +3,7 @@ class PointController < ApplicationController
 
   def show
     point = Point.find params[:id]
-    authorize! :read, point
+    authorize! 'read point', point
 
     dirty_key "/point/#{params[:id]}"
     render :json => []
@@ -22,11 +22,11 @@ class PointController < ApplicationController
     point['published'] = false
     point['user_id'] = current_user && current_user.id || nil
 
+    authorize! 'create point', proposal
+
     point = Point.new point
 
-    authorize! :create, point
-
-    opinion = Opinion.get_or_make(proposal, current_user)
+    opinion = Opinion.get_or_make(proposal)
 
     if !proposal
       raise "Error! No proposal matching '#{point['proposal']}'"
@@ -70,22 +70,25 @@ class PointController < ApplicationController
       point.follow! current_user, {:follow => params[:is_following], :explicit => true}
     end
 
-    fields = ["nutshell", "text", "hide_name"]
-    updates = params.select{|k,v| fields.include? k}
+    if permit('update point', point) > 0
 
-    point.update_attributes! ActionController::Parameters.new(updates).permit!
+      fields = ["nutshell", "text", "hide_name"]
+      updates = params.select{|k,v| fields.include? k}
 
-    if point.published
-      write_to_log({
-        :what => 'edited a point',
-        :where => request.fullpath,
-        :details => {:point => "/point/#{point.id}"}
-      })
+      point.update_attributes! ActionController::Parameters.new(updates).permit!
 
-      ActiveSupport::Notifications.instrument("point:updated", 
-        :model => point,
-        :current_subdomain => current_subdomain
-      )
+      if point.published
+        write_to_log({
+          :what => 'edited a point',
+          :where => request.fullpath,
+          :details => {:point => "/point/#{point.id}"}
+        })
+
+        ActiveSupport::Notifications.instrument("point:updated", 
+          :model => point,
+          :current_subdomain => current_subdomain
+        )
+      end
     end
 
     dirty_key "/point/#{params[:id]}"
@@ -96,7 +99,7 @@ class PointController < ApplicationController
     point = Point.find params[:id]
     proposal = point.proposal
     
-    authorize! :destroy, point
+    authorize! 'delete point', point
 
     point.destroy
     proposal.opinions.where("point_inclusions like '%#{params[:id]}%'").map do |o|

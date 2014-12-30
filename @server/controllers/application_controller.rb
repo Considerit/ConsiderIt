@@ -1,7 +1,8 @@
 require 'digest/md5'
+require Rails.root.join('@server', 'permissions')
 
 
-
+# Set to true if you're working on the http://consider.it homepage. 
 ENABLE_HOMEPAGE_IN_DEV = false
 
 class ApplicationController < ActionController::Base
@@ -12,14 +13,16 @@ class ApplicationController < ActionController::Base
   prepend_before_action :get_current_subdomain
   before_action :init_thread_globals
 
+  rescue_from PermissionDenied do |exception|
+    result = { :permission_denied => exception.reason } 
+    result[:key] = exception.key if exception.key
+    render :json => result
+  end
+
   def render(*args)
-    if !current_subdomain
-      super 
-      return
-    end
 
     # if there are dirtied keys, we'll append the corresponding data to the response
-    if Thread.current[:dirtied_keys].keys.length > 0
+    if current_subdomain && Thread.current[:dirtied_keys].keys.length > 0
       for arg in args
         if arg.is_a?(::Hash) && arg.has_key?(:json)
           if arg[:json].is_a?(::Hash)
@@ -34,17 +37,11 @@ class ApplicationController < ActionController::Base
 
   end
 
-  def current_ability
-    @current_ability ||= Ability.new(current_user, current_subdomain, request.session_options[:id], session, params)
-  end
-
-  def self.token_for_action(user_id, object, action)
-    user = User.find(user_id.to_i)
-    Digest::MD5.hexdigest("#{user.unique_token}#{object.id}#{object.class.name}#{action}")
-  end
-
-  def self.arbitrary_token(key)
-    Digest::MD5.hexdigest(key)
+  def authorize!(action, object = nil, key = nil)
+    permitted = permit(action, object)
+    if permitted < 0
+      raise PermissionDenied.new permitted, key
+    end
   end
 
 protected
@@ -94,15 +91,15 @@ protected
     Thread.current[:dirtied_keys] = {}
     Thread.current[:subdomain] = current_subdomain
 
-    puts("In before: is there a current user? '#{session[:current_user_id2]}'")
+    # puts("In before: is there a current user? '#{session[:current_user_id]}'")
     # First, reset the thread's current_user values from the session
-    Thread.current[:current_user_id2] = session[:current_user_id2]
-    Thread.current[:current_user2] = nil
+    Thread.current[:current_user_id] = session[:current_user_id]
+    Thread.current[:current_user] = nil
     # Now let's see if they work
     if !current_user()
       # If not, let's make a new one, which will replace the old
       # values in the session and thread
-      puts("That current_user '#{session[:current_user_id2]}' is bad. Making a new one.")
+      puts("That current_user '#{session[:current_user_id]}' is bad. Making a new one.")
       new_current_user
     end
 
@@ -125,24 +122,47 @@ protected
     ## important in it
 
     puts("Setting current user to #{user.id}")
-    session[:current_user_id2] = user.id
-    Thread.current[:current_user_id2] = user.id
-    Thread.current[:current_user2]    = user
+    session[:current_user_id] = user.id
+    Thread.current[:current_user_id] = user.id
+    Thread.current[:current_user]    = user
   end
 
+  def replace_user(old_user, new_user)
+    return if old_user.id == new_user.id
+
+    new_user.absorb(old_user)
+
+    # puts("Deleting old user #{old_user.id}")
+    if current_user.id == old_user.id
+      # puts("Signing out of #{current_user.id} before we delete it")
+
+      # Travis: should we be signing in new_user here? Everytime replace_user is
+      #         called, sign_in follows
+    end
+    old_user.destroy()
+
+    # puts("Done replacing. current_user=#{current_user}")
+  end
+  
   def compile_dirty_objects
     # Right now this works for points, opinions, proposals, and the
     # current opinion's proposal if the current opinion is dirty.
 
     response = []
+    processed = {}
 
     # Include the user object too, if we haven't already when fetching /current_user
     if Thread.current[:dirtied_keys].has_key?('/current_user') && !Thread.current[:dirtied_keys].has_key?("/user/#{current_user.id}")
       dirty_key "/user/#{current_user.id}"
     end
 
-    dirtied_keys = Thread.current[:dirtied_keys].keys
-    for key in Thread.current[:dirtied_keys].keys
+    while Thread.current[:dirtied_keys].keys.length > 0
+
+      key = Thread.current[:dirtied_keys].keys[0]
+      Thread.current[:dirtied_keys].delete key
+
+      next if processed.has_key?(key)
+      processed[key] = 1
 
       # Grab dirtied points, opinions, and users
       for type in [Point, Opinion, User, Comment, Moderation]
@@ -174,7 +194,7 @@ protected
         response.append User.all_for_subdomain
 
       elsif key.match '/page/homepage'
-        recent_contributors = ActiveRecord::Base.connection.select( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE opinions.subdomain_id=#{current_subdomain.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
+        recent_contributors = ActiveRecord::Base.connection.exec_query( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE opinions.subdomain_id=#{current_subdomain.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
 
         clean = {
           contributors: recent_contributors.map {|u| "/user/#{u['id']}"},
@@ -182,6 +202,18 @@ protected
           key: key
         } 
         response.append clean
+
+      elsif key == '/page/dashboard/email_notifications'
+        response.append({:follows => current_user.notifications, :key => key})
+
+      elsif key == '/page/dashboard/moderate'
+        response.append Moderation.all_for_subdomain
+
+      elsif key == '/page/dashboard/assessment'
+        response.append Assessment.all_for_subdomain
+
+      elsif key.match "/page/dashboard"
+        noop = 1
 
       elsif key.match "/page/"
         # default to proposal 
@@ -222,7 +254,7 @@ protected
 
         response.append clean
       elsif key.match '/assessment/'
-        assessment = Assessable::Assessment.find(key[12..key.length])
+        assessment = Assessment.find(key[12..key.length])
         response.append assessment.as_json
       elsif key.match '/claim/'
         claim = Assessable::Claim.find(key[7..key.length])
@@ -234,6 +266,10 @@ protected
   end
 
 
+  def self.MD5_hexdigest(key)
+    Digest::MD5.hexdigest(key)
+  end
+
   #####
   # aliasing current_tenant from acts_as_tenant gem so we can be consistent with subdomain
   helper_method :current_subdomain
@@ -241,4 +277,63 @@ protected
     ActsAsTenant.current_tenant
   end
 
+
+  #####
+  # Checks to see if we can verify the user's email address.
+  # There are two pathways here: 
+  #     1) Every route processed by the HTML controller calls this method
+  #        to check if there are some url parameters mapping to a user
+  #        (as happens via all considerit email links). 
+  #         
+  #        If the user is currently logged out and the token valid, 
+  #        the user will even be logged in. 
+  #
+  #     2) If the users is manually trying to enter a verification code
+  #        the current_user_controller will invoke this method directly. 
+  def verify_user(target_email = nil, auth_token = nil)
+
+    # extract query parameters from an email link
+    if params.has_key?('u') && params.has_key?('t') && params['t'].length > 0
+      target_email = params['u']
+      auth_token = params['t']
+    end
+
+    if target_email && auth_token
+
+      # Figure out which user is being targetted
+      if current_user.registered
+        target_user = current_user
+      else
+        target_user = User.find_by_email target_email
+      end
+
+      # Check if the encrypted token is valid for the target user
+      if !target_user
+        token_valid = false
+      else
+        encrypted = ApplicationController.MD5_hexdigest("#{target_email}#{target_user.unique_token}#{current_subdomain.name}")    
+        token_valid = encrypted == auth_token
+      end
+
+      if token_valid 
+
+        # Try to login if the tokens match a valid user
+        if current_user.id != target_user.id
+          replace_user(current_user, target_user)
+          set_current_user(target_user)
+          current_user.add_token() # Logging in via email token is dangerous, so we'll only allow it once per token          
+        end
+
+        current_user.verified = true
+        current_user.save
+        dirty_key('/current_user')
+      end
+    end
+  end
+
 end
+
+
+
+
+

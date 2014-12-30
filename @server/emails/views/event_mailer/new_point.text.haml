@@ -1,0 +1,28 @@
+
+
+Hi #{@user.first_name},
+= "\r\n"
+
+- if @notification_type == 'your proposal'
+
+  #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for your proposal "#{@point.proposal.title}":
+
+- elsif @notification_type == 'opinion submitter'
+
+  #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}":
+
+- elsif @notification_type == 'lurker'
+
+  #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}":
+
+= "\r\n"
+"#{@point.nutshell}"
+= "\r\n"
+
+Read and discuss further: #{full_link(@proposal.slug, {selected: "%2Fpoint%2F#{@point.id}"})}
+
+= "\r\n"
+
+\----
+
+= render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this proposal'}

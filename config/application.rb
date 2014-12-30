@@ -3,7 +3,6 @@ require File.expand_path('../boot', __FILE__)
 require 'rails/all'
 require 'pp'
 require './config/local_environment'
-require "actionpack/action_caching"
 
 if defined?(Bundler)
   # Require the gems listed in Gemfile, including any gems
@@ -52,13 +51,17 @@ module ConsiderIt
 
     config.assets.version = '1.0'
 
-    config.action_mailer.delivery_method = :mailhopper
+    has_aws = Rails.env.production? && APP_CONFIG.has_key?(:aws) && APP_CONFIG[:aws].has_key?(:access_key_id) && !APP_CONFIG[:aws][:access_key_id].nil?
+    config.action_mailer.delivery_method = has_aws ? :ses : :smtp
 
     config.force_ssl = false
     
     config.assets.image_optim = false
 
     config.action_controller.permit_all_parameters = true #disable strong parameters
+
+    config.active_record.raise_in_transactional_callbacks = true
+    Rails.application.config.active_job.queue_adapter = :delayed_job
     
     ##################
     # for our custom rails directory structure
@@ -66,16 +69,16 @@ module ConsiderIt
     config.paths["app/controllers"] << "@server/controllers"
     config.paths["app/models"] << "@server/models"
     config.paths["app/views"] << "@server/views"
-    config.paths["app/views"] << "_old@client/templates"
-    config.paths["app/mailers"] << "@server/mailers"
-    config.paths["app/helpers"] << "@server/helpers"
+    config.paths["app/views"] << "@server/emails/views"    
+    config.paths["app/mailers"] << "@server/emails/mailers"
+    config.paths["app/helpers"] << "@server/emails/helpers"
 
     config.paths["app/controllers/concerns"] << "@server/controllers/concerns"
     config.paths["app/models/concerns"] << "@server/models/concerns"
 
     config.paths["lib/tasks"] << "test"
 
-    config.paths["config/initializers"] << "@server/notifications"
+    config.paths["config/initializers"] << "@server/emails/notifications"
 
     asset_paths = ["@client", "@client/assets"]
     for asset_path in asset_paths
@@ -83,7 +86,7 @@ module ConsiderIt
         config.assets.paths << Rails.root.join(asset_path)
     end
 
-    config.action_mailer.preview_path = "#{Rails.root}/@server/mailers/previews"
+    config.action_mailer.preview_path = "#{Rails.root}/@server/emails/mailers/previews"
     ########################################
 
 

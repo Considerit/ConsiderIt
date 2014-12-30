@@ -4,6 +4,7 @@ class Subdomain < ActiveRecord::Base
   has_many :opinions, :dependent => :destroy
   has_many :users, :dependent => :destroy
   has_many :comments, :dependent => :destroy
+  has_many :assessments, :dependent => :destroy
 
   has_attached_file :logo, :processors => [:thumbnail, :compression]
   has_attached_file :masthead, :processors => [:thumbnail, :compression]
@@ -23,7 +24,11 @@ class Subdomain < ActiveRecord::Base
     json['key'] = '/subdomain'
     if current_user.is_admin?
       json['roles'] = self.user_roles
+      json['invitations'] = nil
+    else
+      json['roles'] = self.user_roles(filter = true)
     end
+
     json['branding'] = self.branding_info
     json
   end
@@ -69,11 +74,27 @@ class Subdomain < ActiveRecord::Base
     brands
   end
 
-  def user_roles
+  # Returns a hash of all the roles. Each role is expressed
+  # as a list of (1) user keys, (2) email addresses (for users w/o an account)
+  # and (3) email wildcards ('*', '*@consider.it'). 
+  # 
+  # Setting filter to try returns a roles hash that strips out 
+  # all specific email addresses / user keys that are not the
+  # current user. 
+  #
+  # TODO: consolidate with proposal.user_roles
+  def user_roles(filter = false)
     r = JSON.parse(roles || "{}")
-    ['admin', 'moderator', 'evaluator'].each do |role|
+    ['admin', 'moderator', 'evaluator', 'proposer', 'visitor'].each do |role|
       if !r.has_key?(role) || !r[role]
         r[role] = []
+      elsif filter
+        # Remove all specific email address for privacy. Leave wildcards.
+        # Is used by client permissions system to determining whether 
+        # to show action buttons for unauthenticated users. 
+        r[role] = r[role].map{|email_or_key| 
+          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" ? email_or_key : '-' 
+        }.uniq
       end
     end
     r

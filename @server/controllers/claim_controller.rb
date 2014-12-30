@@ -1,23 +1,15 @@
 class ClaimController < ApplicationController  
   respond_to :json
 
-  rescue_from CanCan::AccessDenied do |exception|
-    result = {
-      :errors => [current_user.nil? ? 'not logged in' : 'not authorized']
-    }
-    render :json => result 
-    return
-  end
-
   def show 
     dirty_key "/claim/#{params[:id]}"
     render :json => []
   end
 
   def create
-    authorize! :index, Assessable::Assessment
+    authorize! 'factcheck content'
 
-    assessment = Assessable::Assessment.find key_id(params['assessment'])
+    assessment = Assessment.find key_id(params['assessment'])
 
     fields = ["claim_restatement", "result"]
 
@@ -43,7 +35,7 @@ class ClaimController < ApplicationController
   end
 
   def update
-    authorize! :index, Assessable::Assessment
+    authorize! 'factcheck content'
 
     claim = Assessable::Claim.find(params[:id])
 
@@ -78,7 +70,7 @@ class ClaimController < ApplicationController
 
 
   def destroy
-    authorize! :index, Assessable::Assessment
+    authorize! 'factcheck content'
 
     claim = Assessable::Claim.find(params[:id])
 

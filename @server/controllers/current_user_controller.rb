@@ -1,8 +1,6 @@
 # coding: utf-8
 
 class CurrentUserController < ApplicationController
-  #protect_from_forgery :except => :update, with: :exception
-  # skip_before_action :verify_authenticity_token, :if => :file_uploaded
   skip_before_action :verify_authenticity_token, :only => :update_user_avatar_hack
 
   # Gets the current user data
@@ -25,24 +23,22 @@ class CurrentUserController < ApplicationController
       trying_to = params[:trying_to]
     end
 
-    pp params, trying_to
-    puts("")
-    puts("--------------------------------")
-    puts("----Start UPDATE CURRENT USER---")
-    puts("  with current_user=#{current_user.id}")
-    puts("  trying to #{params[:trying_to]}")
-    puts("")
+    # puts("")
+    # puts("--------------------------------")
+    # puts("----Start UPDATE CURRENT USER---")
+    # puts("  with current_user=#{current_user.id}")
+    # puts("  trying to #{params[:trying_to]}")
+    # puts("")
 
 
     case trying_to
 
-      when 'register'
+      when 'register', 'register-after-invite'
 
         update_user_attrs 'register', errors
         try_update_password 'register', errors 
-        if !current_user.registered
-          third_party_authenticated = current_user.twitter_uid || current_user.facebook_uid\
-                                      || current_user.google_uid
+        if !current_user.registered || trying_to == 'register-after-invite'
+          third_party_authenticated = current_user.facebook_uid || current_user.google_uid
           has_name = current_user.name && current_user.name.length > 0
           can_login = ((current_user.email && current_user.email.length > 0)\
                        || third_party_authenticated)
@@ -54,19 +50,44 @@ class CurrentUserController < ApplicationController
             if !current_user.save
               raise "Error registering this uesr"
             end
-            current_user.add_to_active_in
-            log('registered account')
 
+            current_user.add_to_active_in
+            dirty_key '/proposals'
+
+            ########
+            # This user might have have a role waiting for them...either on a subdomain or proposal
+            # We'll look for any places to replace their email address with their key
+            # BUG: unlikely error can occur if this email address has been invited to a role
+            #       across multiple subdomains before creating an account. In this case, 
+            #       only the current subdomain's roles will be migrated.
+            if current_subdomain.roles.index("\"#{current_user.email}\"")
+              pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{current_subdomain.name}"              
+              current_subdomain.roles = current_subdomain.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
+              current_subdomain.save
+            end
+
+            proposals_with_role = current_subdomain.proposals.where("roles like '%\"#{current_user.email}\"%'")
+            if  proposals_with_role.count > 0
+              proposals_with_role.each do |proposal|
+                pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{proposal.name}"
+                proposal.roles = proposal.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
+                proposal.save
+              end 
+            end
+            ########
+
+            log('registered account')
 
           else
             errors.append("Password needs to be at least #{@min_pass} letters") if !ok_password
             errors.append('Name is blank') if !has_name
             errors.append('Community pledge required') if !signed_pledge
           end
+
         end
 
       when 'login'
-        puts("Signing in by email and password")
+        # puts("Signing in by email and password")
 
         if !params[:email] || params[:email].length == 0
           errors.append 'Missing email'
@@ -74,7 +95,7 @@ class CurrentUserController < ApplicationController
           errors.append 'Missing password'
         else
 
-          user = User.find_by_lower_email(params[:email])
+          user = User.find_by_email(params[:email].downcase)
 
           if !user || !user.registered
             # note: Returning this error message is a security risk as it
@@ -96,16 +117,16 @@ class CurrentUserController < ApplicationController
               dirty_key '/users'
             end
 
-            puts("Now current is #{current_user && current_user.id}")
+            # puts("Now current is #{current_user && current_user.id}")
             log('sign in by email')
           end
         end
       when 'login_via_reset_password_token'
 
-        puts("Signing in by password reset.  min_pass is #{@min_pass}")
+        # puts("Signing in by password reset.  min_pass is #{@min_pass}")
         has_password = params[:password] && params[:password].length >= @min_pass
         if !has_password
-          puts("They need to provide a longer password. Bailing.")
+          # puts("They need to provide a longer password. Bailing.")
           errors.append "Please make a new password at least #{@min_pass} letters long"
 
         else 
@@ -114,15 +135,16 @@ class CurrentUserController < ApplicationController
           # digest and see if it matches any users
           encoded_token = OpenSSL::HMAC.hexdigest('SHA256',
                                                   'reset_password_token',
-                                                  params[:reset_password_token])
+                                                  params[:verification_code])
           user = User.where(reset_password_token: encoded_token).first
-          puts("We found user #{user} with a password reset token")
+          # puts("We found user #{user} with a password reset token")
           
           if user
             replace_user(current_user, user)
             set_current_user(user)
             try_update_password 'login_via_reset_password_token', errors
             current_user.add_to_active_in
+            dirty_key '/proposals'
           else
             errors.append "Sorry, that's the wrong verification code."
           end  
@@ -130,18 +152,19 @@ class CurrentUserController < ApplicationController
         end
 
       when 'send_password_reset_token' 
-        puts("Initiating reset_password")
+        # puts("Initiating reset_password")
         has_email = params[:email] && params[:email].strip.length > 0
-        user = has_email && User.find_by_lower_email(params[:email])
+        user = has_email && User.find_by_email(params[:email].downcase)
         
         if !user
           # note: returning this is a security risk as it reveals that a
           #       particular email address exists in the system or not.
           #       But it's prolly the right tradeoff.
           errors.append "We have no account for that email address."
-          puts("Errors are #{errors}")
+          # puts("Errors are #{errors}")
         else 
           # This algorithm is adapted from devise
+          # TODO: unify with user.unique_token
 
           # Generate a token that nobody's using
           raw_token = loop do
@@ -159,14 +182,14 @@ class CurrentUserController < ApplicationController
           user.reset_password_sent_at = Time.now.utc
           user.save(:validate => false)
           
-          UserMailer.reset_password_instructions(user, raw_token, Thread.current[:subdomain]).deliver!
+          UserMailer.reset_password_instructions(user, raw_token, Thread.current[:subdomain]).deliver_now
 
           log('requested password reset')
         end
 
       when 'logout'
         if current_user && current_user.logged_in? && params[:logged_in] == false
-          puts("Logging out.")
+          # puts("Logging out.")
           dirty_key '/page/homepage'
           dirty_key '/proposals'
           new_current_user()
@@ -178,7 +201,17 @@ class CurrentUserController < ApplicationController
         try_update_password 'update', errors
         log('updating info')
 
+      when 'verify'
+        verify_user(current_user.email, params[:verification_code])
+        log('verifying email')
+
+      when 'send_verification_token'
+        UserMailer.verification(current_user, current_subdomain)
+        log('verification token sent')
+
     end
+
+    
 
     # Wrap everything up
     response = current_user.current_user_hash(form_authenticity_token)
@@ -211,9 +244,9 @@ class CurrentUserController < ApplicationController
 
     render :json => [response]
 
-    puts("")
-    puts("----End UPDATE CURRENT USER---")
-    puts("------------------------------")
+    # puts("")
+    # puts("----End UPDATE CURRENT USER---")
+    # puts("------------------------------")
 
   end
 
@@ -249,11 +282,11 @@ class CurrentUserController < ApplicationController
     new_params[:tags] = JSON.dump(new_params[:tags]) if new_params[:tags]
 
     if current_user.update_attributes(new_params)
-      puts("Updating params. #{new_params}")
+      # puts("Updating params. #{new_params}")
       if !current_user.save
         raise 'Error saving basic current_user parameters!'
       end
-      dirty_key '/proposals' # might have access to more proposals if user tags have been changed
+      dirty_key '/proposals' # might have access to more proposals if user tags have been changed (LVG, zipcodes)
 
     else
       raise 'Had trouble manipulating this user!'
@@ -272,10 +305,10 @@ class CurrentUserController < ApplicationController
     # And that it's valid
     elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
       errors.append 'Bad email address'
-    else
-      puts("Updating email from #{current_user.email} to #{params[:email]}")
+    elsif current_user.email != email
+      # puts("Updating email from #{current_user.email} to #{params[:email]}")
       # Okay, here comes a new email address!
-      current_user.update_attributes({:email => email})
+      current_user.update_attributes({:email => email, :verified => false})
       if !current_user.save
         raise "Error saving this user's email"
       end
@@ -291,7 +324,7 @@ class CurrentUserController < ApplicationController
     elsif params[:password].length < @min_pass
       errors.append 'Password is too short'
     else
-      puts("Changing user's password.")
+      # puts("Changing user's password.")
       current_user.password = params[:password]
       if !current_user.save
         raise "Error saving this user's password"
@@ -326,7 +359,7 @@ class CurrentUserController < ApplicationController
     # via google oauth. We'll want to match with the existing user and 
     # set the proper google uid. 
     if !user && access_token.info.email
-      user = User.find_by_lower_email(access_token.info.email)
+      user = User.find_by_email(access_token.info.email.downcase)
       if user
         user["#{access_token.provider}_uid".intern] = access_token.uid
         user.save
@@ -346,6 +379,12 @@ class CurrentUserController < ApplicationController
       if user.is_admin?
         dirty_key '/subdomain'
         dirty_key '/users'
+      end
+
+      # third party user's emails are automatically verified
+      if !current_user.verified 
+        current_user.verified = true
+        current_user.save
       end
 
       write_to_log({
@@ -380,15 +419,6 @@ class CurrentUserController < ApplicationController
             'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large'
           }
 
-        when 'twitter'
-          third_party_params = {
-            'twitter_uid' => access_token.uid,
-            'bio' => access_token.info.description,
-            'url' => access_token.info.urls.Website ? access_token.info.urls.Website : access_token.info.urls.Twitter,
-            # 'twitter_handle' => access_token.info.nickname,
-            'avatar_url' => access_token.info.image.gsub('_normal', ''), #'_reasonably_small'),
-          }
-
         else
           raise 'Unsupported provider'
       end
@@ -401,6 +431,12 @@ class CurrentUserController < ApplicationController
         # to enter an email and password. In that case, password
         # can't be null.
         third_party_params['password'] = SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] 
+      end
+
+
+      # third party user's emails are automatically verified
+      if !current_user.verified 
+        third_party_params['verified'] = true
       end
 
       current_user.update_attributes! third_party_params
@@ -425,22 +461,7 @@ class CurrentUserController < ApplicationController
       "</script>"
   end
 
-  def replace_user(old_user, new_user)
-    return if old_user.id == new_user.id
 
-    new_user.absorb(old_user)
-
-    puts("Deleting old user #{old_user.id}")
-    if current_user.id == old_user.id
-      puts("Signing out of #{current_user.id} before we delete it")
-
-      # Travis: should we be signing in new_user here? Everytime replace_user is
-      #         called, sign_in follows
-    end
-    old_user.destroy()
-
-    puts("Done replacing. current_user=#{current_user}")
-  end
 
   # Omniauth oauth handlers
   def facebook

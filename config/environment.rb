@@ -45,13 +45,13 @@ def dirty_key(key)
 end
 
 def current_user
-  return nil if !Thread.current[:current_user_id2]
+  return nil if !Thread.current[:current_user_id]
 
-  if !Thread.current[:current_user2]
+  if !Thread.current[:current_user]
     # Well then, time to load the user OBJECT from the database for this id.
-    Thread.current[:current_user2] = User.find_by_id(Thread.current[:current_user_id2])
+    Thread.current[:current_user] = User.find_by_id(Thread.current[:current_user_id])
   end
-  Thread.current[:current_user2]
+  Thread.current[:current_user]
 end
 
 

@@ -230,7 +230,7 @@ class ImportDataController < ApplicationController
                           'published' => true,
                           'is_pro' => ['1', 'true'].include?(row['is_pro'].downcase)
                         })
-              point = Point.find_by_nutshell(attrs['nutshell'])
+              point = proposal.points.find_by_nutshell(attrs['nutshell'])
               if !point
                 attrs['subdomain_id'] = current_subdomain.id
                 point = Point.new attrs

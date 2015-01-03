@@ -347,9 +347,13 @@ class CurrentUserController < ApplicationController
     # provided in the access token
     case access_token.provider
       when 'facebook'
+        provider = 'facebook'
         user = User.find_by_facebook_uid(access_token.uid)
       when 'google_oauth2'
+        provider = 'google'
         user = User.find_by_google_uid(access_token.uid)
+      else
+        raise "Don't support #{access_token.provider}"
     end
 
     # If we didn't find a user by the uid, perhaps they already have a user
@@ -361,7 +365,7 @@ class CurrentUserController < ApplicationController
     if !user && access_token.info.email
       user = User.find_by_email(access_token.info.email.downcase)
       if user
-        user["#{access_token.provider}_uid".intern] = access_token.uid
+        user["#{provider}_uid".intern] = access_token.uid
         user.save
       end
     end
@@ -402,9 +406,9 @@ class CurrentUserController < ApplicationController
       end      
       
       # We'll use the oauth access_token to fill in some of the user's data
-      case access_token.provider
+      case provider
 
-        when 'google_oauth2'
+        when 'google'
           third_party_params = {
             'google_uid' => access_token.uid,
             'email' => access_token.info.email,

@@ -206,7 +206,7 @@ class CurrentUserController < ApplicationController
         log('verifying email')
 
       when 'send_verification_token'
-        UserMailer.verification(current_user, current_subdomain)
+        UserMailer.verification(current_user, current_subdomain).deliver_now
         log('verification token sent')
 
     end

@@ -57,7 +57,7 @@ end
 
 # Initialize the rails application
 ConsiderIt::Application.initialize! do |config|
-  config.serve_static_assets = true    
+  config.serve_static_files = true    
 end
 
 if "irb" == $0

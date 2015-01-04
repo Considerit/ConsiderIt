@@ -236,7 +236,7 @@ AddRolesAndInvite = ReactiveComponent
           save target
           save @local
 
-        'Done'
+        'Done. Add these roles.'
 
 
 UsersWithRole = ReactiveComponent

@@ -53,7 +53,7 @@ protected
     begin
       Log.create!({
         :subdomain_id => current_subdomain.id,
-        :who => current_user,
+        :who => current_user.id,
         :what => options[:what],
         :where => options[:where],
         :when => Time.current,

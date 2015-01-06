@@ -1,8 +1,5 @@
-module Invitations #defined in subdomain_controller
-end
-
 class ProposalController < ApplicationController
-  include Invitations
+  include SubdomainController::Invitations
 
   respond_to :json
 
@@ -29,29 +26,30 @@ class ProposalController < ApplicationController
     authorize! 'create proposal'
 
     fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
-    proposal = params.select{|k,v| fields.include? k}
+    attrs = params.select{|k,v| fields.include? k}
 
-    if params.has_key?('roles') && params.has_key?(:invitations) && params[:invitations]
-      params['roles'] = process_invitations(params['roles'], params[:invitations], proposal)
-    end 
 
-    serialized_fields = ['roles']
-    for field in serialized_fields
-      if params.has_key? field
-        proposal[field] = JSON.dump params[field]
-      end
-    end
-
-    proposal.update({
+    attrs.update({
           :published => true,
           :user_id => current_user.id,
           :subdomain_id => current_subdomain.id, 
           :active => true
         })
 
-    proposal = Proposal.new proposal
+    proposal = Proposal.new attrs
+
 
     proposal.save
+
+    if params.has_key?('roles')
+      # need to update these attributes later on after proposal is created
+      if params.has_key?(:invitations) && params[:invitations]
+        params['roles'] = process_and_send_invitations(params['roles'], params[:invitations], proposal)
+      end
+      proposal.roles = JSON.dump params['roles']
+      proposal.save
+    end
+
 
     original_id = key_id(params[:key])
     result = proposal.as_json
@@ -90,7 +88,7 @@ class ProposalController < ApplicationController
       updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}
 
       if params.has_key?('roles') && params.has_key?(:invitations) && params[:invitations]
-        params['roles'] = process_invitations(params['roles'], params[:invitations], proposal)
+        params['roles'] = process_and_send_invitations(params['roles'], params[:invitations], proposal)
       end 
 
       serialized_fields = ['roles']

@@ -51,7 +51,7 @@ class SubdomainController < ApplicationController
     attrs = params.select{|k,v| fields.include? k}
 
     if params.has_key?('roles') && params.has_key?(:invitations) && params[:invitations]
-      params['roles'] = process_invitations(params['roles'], params[:invitations], current_subdomain)
+      params['roles'] = process_and_send_invitations(params['roles'], params[:invitations], current_subdomain)
     end
 
     serialized_fields = ['roles', 'branding']
@@ -86,7 +86,7 @@ class SubdomainController < ApplicationController
 end
 
 module Invitations
-  def process_invitations(roles, invitations, target)
+  def process_and_send_invitations(roles, invitations, target)
 
     invitations.each do |invite|
       message = invite['message'] && invite['message'].length > 0 ? invite['message'] : nil

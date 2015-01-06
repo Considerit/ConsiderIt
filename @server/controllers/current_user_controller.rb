@@ -144,7 +144,12 @@ class CurrentUserController < ApplicationController
             set_current_user(user)
             try_update_password 'login_via_reset_password_token', errors
             current_user.add_to_active_in
+            if !current_user.verified 
+              current_user.verified = true
+              current_user.save
+            end
             dirty_key '/proposals'
+
           else
             errors.append "Sorry, that's the wrong verification code."
           end  

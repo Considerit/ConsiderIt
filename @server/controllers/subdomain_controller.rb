@@ -121,5 +121,5 @@ module Invitations
     end
 
     roles
-  end  
+  end
 end

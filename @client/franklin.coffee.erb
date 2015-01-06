@@ -3378,6 +3378,8 @@ Auth = ReactiveComponent
             A 
               className:'cancel_auth_button primary_cancel_button'
               onClick: =>
+                if root.auth_mode == 'verify'
+                  window.app_router.navigate("/", {trigger: true})
                 root.auth_mode = null
                 root.publish_this_opinion = null
                 save root

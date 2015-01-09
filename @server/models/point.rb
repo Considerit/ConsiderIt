@@ -129,10 +129,9 @@ class Point < ActiveRecord::Base
             .where(:proposal_id => self.proposal_id) \
             .where("user_id IN (?)", self.inclusions.map {|i| i.user_id} ) \
             .select(:stance, :user_id)
- 
 
     self.includers = opinions.map {|x| x.user_id}
-    self.num_inclusions = self.includers.length          
+    self.num_inclusions = JSON.load(self.includers).length
     self.last_inclusion = num_inclusions > 0 ? self.inclusions.where("user_id IN (?)", self.includers).order(:created_at).last.created_at.to_i : -1
 
     ###

@@ -101,27 +101,148 @@ window.cityoftigardHeader = ReactiveComponent
       # DIV style: {backgroundColor: color.proposal_header, width: '100%', height: 50}
 
 ####################
-# Bitcoin
-window['bitcoin-demoHeader'] = window['bitcoin-electionHeader'] = ReactiveComponent
+# Bitcoin demo
+window['bitcoin-demoHeader'] = ReactiveComponent
   displayName: 'bitcoin-demoHeader'
 
   render: -> 
+    # Background image box
+    DIV
+      style:
+        height: 300
+        backgroundImage: "url(<%= asset_path 'bitcoin/bg.jpg' %>)"
+        backgroundPosition: 'center'
+        backgroundSize: 'cover'
 
-
-    DIV className: 'bitcoin-header', 
       DIV className: 'profile_navigation',
         ProfileLink()
 
-      DIV style: {padding: '45px 0'}, 
+      # Logo
+      IMG
+        style: { display: 'block'; margin: 'auto'; height: 100; marginTop: 45 }
+        src: "<%= asset_path 'bitcoin/logo.svg' %>"
 
-        STYLE null, 
-          """
-          .bitcoin-header { height: 300px; background-image: url(<%= asset_path 'bitcoin/bg.jpg' %>); background-position: center; background-size: cover; }
-          .bitcoin-logo { display: block; margin: auto;}
-          """
-        IMG className: 'bitcoin-logo', src: "<%= asset_path 'bitcoin/logo.svg' %>", style: {height: 100}
-        DIV style: {textAlign: 'center', fontWeight: 600, margin: 'auto', fontSize: 24, color: 'white', padding: "10px 0px 0px 60px"}, 'demo'
+      # The word "Demo"
+      DIV
+        style:
+          textAlign: 'center'
+          fontWeight: 600
+          margin: 'auto'
+          fontSize: 24
+          color: 'white'
+          padding: "10px 0px 0px 60px"
+        'demo'
 
+####################
+# Bitcoin Election
+
+window['bitcoin-electionHeader'] = ReactiveComponent
+  displayName: 'bitcoin-electionHeader'
+
+  render: ->
+    homepage = @root.page_name == 'homepage'
+    height = if homepage then 325 else 63
+
+    # Header
+    DIV
+      style:
+        backgroundColor: '#676766'
+        height: height
+        paddingLeft: if homepage then 220
+      onMouseEnter: => @local.hover=true;  save(@local)
+      onMouseLeave: => @local.hover=false; save(@local)
+
+      DIV
+        style:
+          height:     height
+          width:      if not homepage then 560
+          marginLeft: if not homepage then 300
+          position: 'absolute'
+          cursor: if not homepage then 'pointer'
+        onClick: if not homepage then => window.app_router.navigate("/", {trigger: true})
+
+        # Back arrow
+        if @local.hover and not homepage
+          DIV
+            style:
+              position: 'absolute'
+              color: '#eee'
+              fontSize: 43
+              left: -100
+              paddingLeft: 25
+              marginTop: 0
+              fontWeight: 600
+              width: 180
+            '<'
+
+        # Logo
+        A
+          href: if homepage then 'https://bitcoinfoundation.org'
+          IMG
+            style:
+              position: 'absolute'
+              height: if homepage then 40 else 26
+              left: if homepage then -118
+              top: 17
+            src: "<%= asset_path 'bitcoin/logo.svg' %>"
+
+        # Text
+        DIV
+          style:
+            color: 'cyan' #if homepage then 'cyan' else 'white'
+            marginTop: if homepage then 87 else 13
+            fontSize: if homepage then 63 else 26
+            fontWeight: 500
+            left: if homepage then 306
+            right: if not homepage then 0
+            position: if not homepage then 'absolute'
+          'Distributed Deliberation'
+        if homepage
+          election_day = new Date('02/13/2015')
+          today = new Date()
+          _second = 1000
+          _minute = _second * 60
+          _hour = _minute * 60
+          _day = _hour * 24
+          days_remaining = Math.ceil((election_day - today) / _day)
+
+          DIV
+            style:
+              color: 'white'
+              fontSize: 22
+              fontWeight: 300
+              paddingTop: 20
+              paddingBottom: 76
+              maxWidth: 700
+            'We are choosing two new board members.'
+            " Voting opens in #{days_remaining} days! Learn "
+            A
+              href: 'https://blog.bitcoinfoundation.org/elections-update/'
+              style: textDecoration: 'underline'
+              'how to vote.'
+            ' This deliberation is open to the public, and moderated.'
+            # ' Only '
+            # A
+            #   href: 'https://bitcoinfoundation.org/join/#individual-membership'
+            #   style: textDecoration: 'underline'
+            #   'Foundation members'
+            # ' can vote.'
+
+      DIV
+        className: 'profile_navigation'
+        ProfileLink()
+
+$(->
+  # These need to be run AFTER franklin.coffee has loaded
+  window['bitcoin-electionHomepage'] = ElectionHomepage
+  window['bitcoin-election-proposal-subheader'] = ProposalSubheading
+
+  # For testing only:
+  #window['livingvotersguideHomepage'] = ElectionHomepage
+  #window['bitcoin-demoHomepage'] = ElectionHomepage
+  #window['bitcoinHomepage'] = ElectionHomepage
+  #window['usHomepage'] = ElectionHomepage
+ )
 
 
 #####################

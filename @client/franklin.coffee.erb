@@ -235,9 +235,8 @@ PageTransition =
 Proposal = ReactiveComponent
   displayName: 'Proposal'
 
-  render : ->    
-    proposal = @proposal
-    your_opinion = fetch proposal.your_opinion
+  render : ->
+    your_opinion = fetch @proposal.your_opinion
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
@@ -260,7 +259,7 @@ Proposal = ReactiveComponent
     for opinion in @page.opinions
       window.user_opinions[opinion.user] = opinion
 
-    proposer = fetch(proposal.user)
+    proposer = fetch(@proposal.user)
 
     # Description fields are the expandable details that help people drill
     # into the proposal. They are very specific to the type of proposal (e.g. for
@@ -282,7 +281,7 @@ Proposal = ReactiveComponent
 
     DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
 
-      StickyProposalHeading()
+      (window["#{subdomain.name}-proposal-subheader"] or StickyProposalHeading)()
 
       DIV null,
         #description
@@ -294,19 +293,6 @@ Proposal = ReactiveComponent
             fontSize: 16
             marginBottom: '2em'
 
-          if !proposal.active
-            SPAN style: {display: 'inline-block', color: 'rgb(250, 146, 45)', padding: '4px 0px', marginTop: 10},
-              I className: 'fa fa-info-circle', style: {paddingRight: 7} 
-              'Closed to new contributions at this time.'
-
-          # TODO: now that we're accepting user contributed proposals, we need to SANITIZE the description
-          DIV 
-            className: 'proposal_details'
-            style: 
-              paddingTop: '1em'
-              fontSize: 18
-            dangerouslySetInnerHTML:{__html: proposal.description}
-
           if @local.description_fields
             DIV style: {marginTop: '1em'},
               for item in @local.description_fields
@@ -315,12 +301,11 @@ Proposal = ReactiveComponent
                 else
                   @renderDescriptionField item
 
-
-          if permit('update proposal', proposal) > 0
+          if permit('update proposal', @proposal) > 0
             DIV null,
               A 
                 style: {color: '#888'}
-                onClick: -> window.app_router.navigate("#{proposal.key}/edit", {trigger: true})
+                onClick: -> window.app_router.navigate("#{@proposal.key}/edit", {trigger: true})
                 'Edit'
               A 
                 style: {color: '#888', padding: 10, backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'}
@@ -329,24 +314,24 @@ Proposal = ReactiveComponent
                   save @local
                 'Share'
 
-              if permit('delete proposal', proposal) > 0
+              if permit('delete proposal', @proposal) > 0
                 A
                   style: {color: '#888'}
                   onClick: => 
                     if confirm('Delete this proposal forever?')
-                      destroy(proposal.key)
+                      destroy(@proposal.key)
                       window.app_router.navigate("/", {trigger: true})
                   'Delete'
 
           if @local.edit_roles
             DIV 
               style: {width: BODY_WIDTH, margin: 'auto', backgroundColor: '#fafafa', padding: '10px 60px'}
-              ProposalRoles key: proposal
+              ProposalRoles key: @proposal
             
         #feelings
         DIV style : { width: BODY_WIDTH, margin: '0 auto', position: 'relative' },
           OpinionFilter()
-          HistogramData()
+          HistogramData(proposal_slug: @proposal.slug)
           Histogram()
 
         #reasons
@@ -691,6 +676,7 @@ StickyProposalHeading = ReactiveComponent
 
   componentDidMount : -> @initOrUpdateHeader()
   componentDidUpdate : -> @initOrUpdateHeader()
+
   initOrUpdateHeader : -> 
     $el = $(@getDOMNode())
 
@@ -701,7 +687,6 @@ StickyProposalHeading = ReactiveComponent
         placeholder: $el.find('.proposal_heading.placeholder')[0]
         container: $el.parents('.proposal')
         stick_on_zoomed_screens: false
-
 
   componentWillUnmount : -> 
     $el = $(@getDOMNode())
@@ -722,7 +707,101 @@ styles += """
   z-index: 999;
   position: relative; }
 
+
 """
+
+
+window.ProposalSubheading = ReactiveComponent
+  displayName: 'ProposalSubheading'
+  render : ->
+    subdomain = fetch('/subdomain')
+    proposals = fetch('/proposals')
+    heading_fontsize = 45
+
+    # Determine the next proposal
+    next_proposal =
+      if proposals.clusters  # In case /proposals isn't loaded
+        curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
+        if curr_cluster?.proposals.length > 1
+          # Now find the current proposal in the cluster, and return the next one
+          for proposal, index in curr_cluster.proposals
+            if @proposal == proposal
+              break
+          next_index = (index + 1) % curr_cluster.proposals.length
+          curr_cluster.proposals[next_index]
+
+    DIV
+      style:
+        margin: '30px 0 0 0'
+
+      # Placeholder
+      # DIV
+      #   className: 'proposal_heading_placeholder'
+      #   style:
+      #     color: 'transparent'
+      #     position: 'relative'
+      #     paddingBottom: 15
+      #     paddingLeft: 300
+      #     width: 560 + 300
+      #   DIV null,
+      #     @proposal.cluster
+      #   DIV
+      #     style: {fontSize: heading_fontsize, fontWeight: 700, lineHeight: 1.2}
+      #     @proposal.name
+
+      # Actual sticky thing
+      DIV
+        className: 'stickable'
+        style:
+          width: 560 + 300
+          backgroundColor: 'white'
+          zIndex: 3
+          position: 'relative'
+          paddingBottom: 15
+          paddingLeft: 300
+
+        # Next button
+        A
+          style:
+            position: 'absolute'
+            right: 0
+          onClick: do (url = proposal_url(next_proposal)) =>
+            => window.app_router.navigate(url, {trigger: true})
+          'next >'
+
+        # Cluster name
+        DIV
+          style:
+            fontStyle: 'italic'
+          @proposal.cluster
+
+        # Proposal name
+        DIV
+          style:
+            lineHeight: 1.2
+            fontWeight: 700
+            fontSize: heading_fontsize
+          @proposal.name
+
+  # componentDidMount : -> @initOrUpdateHeader()
+  # componentDidUpdate : -> @initOrUpdateHeader()
+  #
+  # initOrUpdateHeader : -> 
+  #   $el = $(@getDOMNode())
+  #
+  #   $header = $el.find('.stickable')
+  #
+  #   if $header.length > 0 && !@is_waiting()
+  #     $header.StickyElement
+  #       placeholder: $el.find('.proposal_heading_placeholder')[0]
+  #       container: $el.parents('.proposal')
+  #       stick_on_zoomed_screens: false
+  #
+  # componentWillUnmount : -> 
+  #   $el = $(@getDOMNode())
+  #   $el.find('.stickable').StickyElement('destroy')
+
+
 
 ##
 # HistogramData
@@ -733,22 +812,30 @@ HistogramData = ReactiveComponent
   ##
   # Split up opinions into columns based on their stance.   
   render : ->
+    proposal_slug = @props.proposal_slug
+    histogram_data = fetch('histogramdata/' + proposal_slug)
+
     # We only need to recompute this data if the distribution of stances has changed. 
-    opinions = @page.opinions || []
+    opinions = fetch('/page/' + proposal_slug).opinions || []
     last_computation_hash = JSON.stringify( _.map(opinions, (o) => fetch(o.key).stance) )
 
-    if @local.last_computation_hash != last_computation_hash
+    if not histogram_data.last_computation_hash \
+       or (histogram_data.last_computation_hash != last_computation_hash)
+
+      max_avatar_size = @props.max_avatar_size or BIGGEST_POSSIBLE_AVATAR_SIZE
+      histogram_width = @props.width or HISTOGRAM_WIDTH
+      max_height = @props.height or MAX_HISTOGRAM_HEIGHT
 
       ##
       # Size the avatars. Size of avatar shrinks proportional to 1/sqrt(num_opinions)
-      avatar_size = Math.min BIGGEST_POSSIBLE_AVATAR_SIZE, 
-        Math.floor(BIGGEST_POSSIBLE_AVATAR_SIZE / Math.sqrt( (opinions.length + 1) / 10 )  )
+      avatar_size = Math.min max_avatar_size,
+        Math.floor(max_avatar_size / Math.sqrt( (opinions.length + 1) / 10 )  )
 
       # Calculate the number of columns in the histogram. But we want to ensure that there
       # are an _odd_ number of cols so that a neutral opinion falls into the exact 
       # center of the histogram. To ensure this, we'll manipulate avatar_size. 
       loop 
-        columns_in_histogram = Math.floor(HISTOGRAM_WIDTH / avatar_size)
+        columns_in_histogram = Math.floor(histogram_width / avatar_size)
         break if columns_in_histogram % 2 == 1
         avatar_size -= 1
 
@@ -766,7 +853,7 @@ HistogramData = ReactiveComponent
       # Spill out extremes into multiple columns. We'll cap the number of opinions
       # in a column to max_opinions_in_column. We'll keep the number of extreme columns
       # equal between supporters and opposers. 
-      max_opinions_in_column = Math.floor MAX_HISTOGRAM_HEIGHT / avatar_size
+      max_opinions_in_column = Math.floor max_height / avatar_size
       most_extreme_opinions = Math.max columns[0].length, columns[columns.length-1].length
       if most_extreme_opinions > max_opinions_in_column
         num_extreme_cols = Math.ceil most_extreme_opinions / max_opinions_in_column
@@ -786,13 +873,11 @@ HistogramData = ReactiveComponent
 
       columns.reverse() #we're going from 1 <=> -1 for supporters <=> opposers
 
-      histogram_data = @data()
       histogram_data.columns = columns
       histogram_data.avatar_size = avatar_size
-      @local.last_computation_hash = last_computation_hash
+      histogram_data.last_computation_hash = last_computation_hash
 
       save histogram_data
-      save @local
 
     SPAN null #dummy DOM for React render 
   
@@ -833,7 +918,7 @@ Histogram = ReactiveComponent
     users_to_highlight = fetch('histogram').highlighted_users
 
 
-    histogram_data = fetch('histogramdata')
+    histogram_data = fetch('histogramdata/' + @proposal.slug)
     columns = histogram_data.columns
     num_columns = columns.length
     avatar_size = histogram_data.avatar_size
@@ -2888,11 +2973,10 @@ Avatar = ReactiveComponent
     if @props.img_style && user.key != -1 && user.avatar_file_name
       attrs.src = "/system/avatars/#{@props.key}/#{@props.img_style}/#{avatar_file_name}"
 
-    @transferPropsTo @props.tag attrs
+    @transferPropsTo SPAN attrs
 
   getDefaultProps : ->
     key: '/user/-1' # defaults to anonymous user
-    tag: IMG
     img_style: null #null defaults to the css-based b64 embedded images
     hide_face: false
 
@@ -3671,6 +3755,16 @@ td.summary_share {
 
 Homepage = ReactiveComponent
   displayName: 'Homepage'
+  render: ->
+    subdomain = fetch('/subdomain')
+    if window["#{subdomain.name}Homepage"]
+      return window["#{subdomain.name}Homepage"]()
+    else
+      return DefaultHomepage()
+
+
+DefaultHomepage = ReactiveComponent
+  displayName: 'DefaultHomepage'
 
   componentDidMount : -> @initOrUpdateHeader()
 
@@ -3700,14 +3794,20 @@ Homepage = ReactiveComponent
 
     # Columns of the sticky header for the proposal list.
     if subdomain.name == 'livingvotersguide'
-      columns = [ {heading: 'Learn', details: 'about your ballot'}, {heading: 'Decide', details: 'how you\'ll vote'}, {heading: 'Share', details: 'your opinion'}, {heading: 'Join', details: 'the contributors'}]
+      columns = [ {heading: 'Learn', details: 'about your ballot'}, \
+                  {heading: 'Decide', details: 'how you\'ll vote'}, \
+                  {heading: 'Share', details: 'your opinion'}, \
+                  {heading: 'Join', details: 'the contributors'}]
     else
-      columns = [ {heading: 'Learn', details: 'about the issues'}, {heading: 'Decide', details: 'what you think'}, {heading: 'Share', details: 'your opinion'}, {heading: 'Join', details: 'the contributors'}]
+      columns = [ {heading: 'Learn', details: 'about the issues'}, \
+                  {heading: 'Decide', details: 'what you think'}, \
+                  {heading: 'Share', details: 'your opinion'}, \
+                  {heading: 'Join', details: 'the contributors'}]
 
     sticky_header_height = 79
 
     DIV className: 'homepage',
-      # Draw the header
+      # Draw the sticky subheader
       DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height}
       DIV 
         className: "sticky_header stickable"
@@ -3829,6 +3929,219 @@ Homepage = ReactiveComponent
             'Create new proposal'
 
 
+window.ElectionHomepage = ReactiveComponent
+  displayName: 'Homepage'
+  render : ->
+    subdomain = fetch('/subdomain')
+    proposals = fetch('/proposals')
+    line_height = '1.8em'
+
+    DIV
+      style: {fontSize: 22}
+      STYLE null,
+        '''a.proposal {border-bottom: 1px solid grey}'''
+
+      # List all clusters
+      for cluster, index in proposals.clusters or []
+        if cluster.proposals?.length > 0
+          first_column =
+            width: 350
+            marginLeft: 220
+            display: 'inline-block'
+            verticalAlign: 'top'
+
+          secnd_column =
+            width: 300
+            display: 'inline-block'
+            verticalAlign: 'top'
+            marginLeft: 50
+
+          first_header =
+            fontSize: 30
+            marginBottom: 40
+            fontWeight: 600
+          _.extend(first_header, first_column)
+
+          secnd_header =
+            fontSize: 30
+            marginBottom: 45
+            fontWeight: 600
+            position: 'relative'
+          _.extend(secnd_header, secnd_column)
+
+          special_secnd_headers =
+            'Debate': "Candidates' Opinions"
+
+          # 
+          # Cluster of proposals
+          DIV
+            style: margin: '45px 0'
+
+            # Header of cluster
+            H1
+              style: first_header
+              cluster.name
+            H1
+              style: secnd_header
+              SPAN
+                style:
+                  position: 'absolute'
+                  bottom: -43
+                  fontSize: 21
+                  color: '#444'
+                  fontWeight: 300
+                'Oppose'
+              SPAN
+                style:
+                  position: 'absolute'
+                  bottom: -43
+                  fontSize: 21
+                  color: '#444'
+                  right: 0
+                  fontWeight: 300
+                'Support'
+              special_secnd_headers[cluster.name] or 'Members\' Opinions'
+
+            for proposal in cluster.proposals
+              author = fetch(proposal.user)
+
+              # Proposal
+              DIV
+                key: proposal.key
+                style:
+                  minHeight: 70
+
+                DIV style: first_column,
+
+                  # Person's icon
+                  Avatar
+                    key: author.key
+                    user: author.key
+                    style:
+                      height: 60
+                      width: 60
+
+                  # Name of Proposal
+                  DIV
+                    style:
+                      display: 'inline-block'
+                      fontWeight: 550
+                      marginLeft: 20
+                      paddingBottom: 20
+                      width: first_column.width - 60 - 20
+                    A
+                      className: 'proposal'
+                      onClick: clickInternalLink
+                      href: proposal_url(proposal)
+                      proposal.name
+
+                # Histogram for Proposal
+                DIV
+                  style: secnd_column
+                  MiniHisto(proposal: proposal, width: 300, height: 50)
+
+
+MiniHisto = ReactiveComponent
+  displayName: 'mini_histo'
+  render: ->
+    @opinions = fetch('/page/' + @props.proposal.slug).opinions
+    icons = for opinion in @opinions
+      # id = arest.key_id(user.key)
+      #"/system/avatars/#{id}/small/#{user.avatar_file_name}"
+      neutral = Math.abs(opinion.stance) < .1
+      Avatar
+        key: opinion.user
+        user: opinion.user
+        style:
+          position: 'absolute'
+          backgroundColor: '#d3d3d3'
+          # border:  if neutral then 'solid 1px black'
+          # opacity: if neutral then .2
+    DIV
+      style:
+        height: @props.height
+        width: @props.width
+        #backgroundColor: '#f8f8f8'
+        position: 'relative'
+        borderBottom: '1px solid #444'
+      SPAN
+        style:
+          position: 'absolute'
+          left: -21
+          bottom: -12
+          fontSize: 19
+          fontWeight: 600
+          color: '#444'
+        '—'
+      SPAN
+        style:
+          position: 'absolute'
+          right: -21
+          bottom: -13
+          fontSize: 19
+          fontWeight: 600
+          color: '#444'
+        '+'
+      DIV
+        ref: 'histo'
+        icons
+
+  attach_mini_histo: ->
+    if @refs and @refs.histo and not @mounted
+      page = fetch('/page/' + @props.proposal.slug)
+      histo = @refs.histo.getDOMNode()
+      icons = histo.childNodes
+      opinions = for opinion, i in page.opinions
+        {stance: opinion.stance, icon: icons[i]}
+      mini_histo(@props.width, @props.height-1, histo, opinions)
+      @mounted = true
+  componentDidMount: ->
+    @attach_mini_histo()
+  componentDidUpdate: ->
+    @attach_mini_histo()
+  componentWillUnmount: ->
+    @mounted = false
+
+
+# MiniHisto2 = ReactiveComponent
+#   displayName: 'mini_histo'
+#   render: ->
+#     # Virtual component computes the data... until I fix this
+#     h = HistogramData
+#           proposal_slug: @props.proposal.slug
+#           width: @props.width
+#           height: @props.height
+#           max_avatar_size: 40
+#     histogram_data = fetch('histogramdata/' + @props.proposal.slug)
+#     if not histogram_data.columns
+#       return DIV null, h, loading_indicator
+
+#     columns = histogram_data.columns
+#     num_columns = columns.length
+#     avatar_size = histogram_data.avatar_size
+
+#     effective_histogram_width = num_columns * avatar_size + 2
+#     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2
+
+#     DIV
+#       style:
+#         height: @props.height
+#         width: @props.width
+#         backgroundColor: '#eee'
+#         position: 'relative'
+#       h
+#       for bar, i in columns
+#         for opinion, j in bar
+#           user = opinion.user
+#           Avatar 
+#             key: user
+#             user: user
+#             style:
+#               position: 'absolute'
+#               height: avatar_size
+#               width: avatar_size
+#               left: i * avatar_size
+#               bottom: j * avatar_size
 
 
 ProfileLink = ReactiveComponent

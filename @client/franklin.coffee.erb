@@ -544,7 +544,7 @@ StickyProposalHeading = ReactiveComponent
                 top: 4
 
               onMouseEnter: (=> @local.dropped_down = true; save(@local))
-              onMouseLeave: (=> @local.dropped_down = true; save(@local))
+              onMouseLeave: (=> @local.dropped_down = false; save(@local))
 
               DIV 
                 style: 

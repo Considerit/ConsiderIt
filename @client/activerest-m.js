@@ -148,7 +148,6 @@
     var pending_saves = {} // Stores xmlhttprequest of any key being saved
                            // (Note: This shim will fail in many situations...)
     function server_save(object, continuation) {
-        console.log('pending saves', pending_saves[object.key])
         if (pending_saves[object.key]) {
             console.log('Yo foo, aborting')
             pending_saves[object.key].abort()

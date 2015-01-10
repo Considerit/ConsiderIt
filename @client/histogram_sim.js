@@ -85,6 +85,9 @@ function mini_histo(width, height, parent, opinions) {
 
         node = d3.select(parent).selectAll("img")
             .data(nodes)
+            .call(force.drag)
+            .on("mousedown", function() { d3.event.stopPropagation() })
+            .on('dragstart', function () { force.alpha(.03) })
             // .enter().append("circle")
             // .attr("class", "node")
             // .attr("cx", function(d) { return d.x })
@@ -95,9 +98,6 @@ function mini_histo(width, height, parent, opinions) {
             //     return color((opinions[i].stance / 2 + .5) * 20) })
             // .style("stroke", function(d, i) {
             //     return Math.abs(opinions[i].stance) < .2 && '#ccc' }) //d3.rgb(fill(1)).darker(2) })
-            .call(force.drag)
-            .on("mousedown", function() { d3.event.stopPropagation() })
-            .on('dragstart', function () { force.alpha(.03) })
 
         for (var i=0; i<opinions.length; i++)
             opinions[i].icon.style.width = opinions[i].icon.style.height = r*2 + 'px'

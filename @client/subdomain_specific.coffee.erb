@@ -199,8 +199,8 @@ window['bitcoin-electionHeader'] = ReactiveComponent
       DIV
         style:
           height:     height
-          width:      if not homepage then 560
-          marginLeft: if not homepage then 300
+          width:      if not homepage then 760
+          #marginLeft: if not homepage then 300
           position: 'absolute'
           cursor: if not homepage then 'pointer'
         onClick: if not homepage then => window.app_router.navigate("/", {trigger: true})
@@ -212,7 +212,7 @@ window['bitcoin-electionHeader'] = ReactiveComponent
               position: 'absolute'
               color: '#eee'
               fontSize: 43
-              left: -100
+              left: 20
               paddingLeft: 25
               marginTop: 0
               fontWeight: 600
@@ -226,8 +226,8 @@ window['bitcoin-electionHeader'] = ReactiveComponent
             style:
               position: 'absolute'
               height: if homepage then 40 else 26
-              left: if homepage then -118
-              top: 17
+              left: if homepage then -118 else 106
+              top: 18
             src: "<%= asset_path 'bitcoin/logo.svg' %>"
 
         # Text
@@ -239,8 +239,7 @@ window['bitcoin-electionHeader'] = ReactiveComponent
             # marginTop: if homepage then 87 else 20
             # fontSize: if homepage then 63 else 21
             fontWeight: 500
-            left: if homepage then 306
-            right: if not homepage then 0
+            left: 300
             position: if not homepage then 'absolute'
           'Distributed Deliberation'
         if homepage

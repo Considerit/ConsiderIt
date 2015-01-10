@@ -141,7 +141,7 @@ window['bitcoin-electionHeader'] = ReactiveComponent
 
   render: ->
     homepage = @root.page_name == 'homepage'
-    height = if homepage then 325 else 63
+    height = if homepage then 345 else 63
 
     # Header
     DIV
@@ -152,6 +152,8 @@ window['bitcoin-electionHeader'] = ReactiveComponent
       onMouseEnter: => @local.hover=true;  save(@local)
       onMouseLeave: => @local.hover=false; save(@local)
 
+      STYLE null, '.profile_navigation {font-size: 26px; padding-top: 16px;}'
+        
       DIV
         style:
           height:     height
@@ -190,8 +192,10 @@ window['bitcoin-electionHeader'] = ReactiveComponent
         DIV
           style:
             color: 'cyan' #if homepage then 'cyan' else 'white'
-            marginTop: if homepage then 87 else 13
+            marginTop: if homepage then 87 else 16
             fontSize: if homepage then 63 else 26
+            # marginTop: if homepage then 87 else 20
+            # fontSize: if homepage then 63 else 21
             fontWeight: 500
             left: if homepage then 306
             right: if not homepage then 0
@@ -214,19 +218,21 @@ window['bitcoin-electionHeader'] = ReactiveComponent
               paddingTop: 20
               paddingBottom: 76
               maxWidth: 700
-            'We are choosing two new board members.'
-            " Voting opens in #{days_remaining} days! Learn "
+            'We are choosing two new board members. '
             A
               href: 'https://blog.bitcoinfoundation.org/elections-update/'
               style: textDecoration: 'underline'
-              'how to vote.'
-            ' This deliberation is open to the public, and moderated.'
-            # ' Only '
-            # A
-            #   href: 'https://bitcoinfoundation.org/join/#individual-membership'
-            #   style: textDecoration: 'underline'
-            #   'Foundation members'
-            # ' can vote.'
+              "Voting opens in #{days_remaining} days!"
+
+            P
+              style: marginTop: 20
+              'This deliberation website is open to the public. But to vote, you must '
+              A
+                href: 'https://bitcoinfoundation.org/join/#individual-membership'
+                style: textDecoration: 'underline'
+                'become a member'
+              ' of the Bitcoin Foundation.'
+              
 
       DIV
         className: 'profile_navigation'

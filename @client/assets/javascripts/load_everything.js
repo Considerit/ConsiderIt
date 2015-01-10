@@ -3,6 +3,7 @@
 //= require ./vendor/underscore
 //= require ./vendor/backbone
 //= require ./vendor/jquery.ui
+//= require ./vendor/d3.v3.min.js
 
 //= require_tree ./vendor
 
@@ -16,3 +17,5 @@
 //= require ../../subdomain_specific
 //= require ../../admin
 //= require ../../state_dash
+//= require ../../histogram_sim
+

@@ -544,7 +544,7 @@ StickyProposalHeading = ReactiveComponent
                 top: 4
 
               onMouseEnter: (=> @local.dropped_down = true; save(@local))
-              onMouseLeave: (=> @local.dropped_down = false; save(@local))
+              onMouseLeave: (=> @local.dropped_down = true; save(@local))
 
               DIV 
                 style: 
@@ -654,7 +654,7 @@ StickyProposalHeading = ReactiveComponent
                                 DIV style: {clear: 'both'}
 
                                 if @local.show_cluster == cluster.name
-                                  DIV style: {width: 300, backgroundColor: subdomain.branding.primary_color, borderRadius: '4px', position: 'absolute', left: 498, top: -12},                                  
+                                  DIV style: {width: 300, zIndex: 99999, backgroundColor: subdomain.branding.primary_color, borderRadius: '4px', position: 'absolute', left: 458, top: -12},                                  
                                     UL className: 'other_proposal_list', style: {backgroundColor: 'rgba(0,0,0,.2)', borderRadius: '4px', padding: '8px 0' },
                                       for other_proposal in cluster.proposals
                                         LI style: {listStyle: 'none'}, key: "li/#{other_proposal.slug}",

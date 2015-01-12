@@ -95,7 +95,7 @@ stance_names =
   1 : 'Firmly Oppose'
   4 : 'Slightly Support'
   2 : 'Slightly Oppose'
-  3 : 'are Neutral or Undecided'
+  3 : 'are Undecided'
 
 ##
 # PageTransition mixin
@@ -1418,7 +1418,7 @@ OpinionFilter = ReactiveComponent
         'only full opposers',
         'only firm opposers',
         'only slight opposers',
-        'only neutrals',
+        'only undecideds',
         'only slight supporters',
         'only firm supporters',
         'only full supporters']
@@ -4050,7 +4050,7 @@ window.ElectionHomepage = ReactiveComponent
         if cluster.proposals?.length > 0
           first_column =
             width: 350
-            marginLeft: 220
+            marginLeft: 200
             display: 'inline-block'
             verticalAlign: 'top'
 
@@ -4071,6 +4071,7 @@ window.ElectionHomepage = ReactiveComponent
             marginBottom: 45
             fontWeight: 600
             position: 'relative'
+            whiteSpace: 'nowrap'
           _.extend(secnd_header, secnd_column)
 
           special_secnd_headers =
@@ -4140,11 +4141,11 @@ window.ElectionHomepage = ReactiveComponent
                   DIV
                     style:
                       display: 'inline-block'
-                      fontWeight: 500
-                      marginLeft: if is_candidates then 20
+                      fontWeight: 400
+                      marginLeft: if is_candidates then 18
                       paddingBottom: 20
-                      width: first_column.width - 50 + (if is_candidates then -20 else 0)
-                      marginTop: if is_candidates then 6
+                      width: first_column.width - 50 + (if is_candidates then -18 else 0)
+                      marginTop: if is_candidates then 9
                     A
                       className: 'proposal'
                       style: if not is_candidates then {borderBottom: '1px solid grey'}
@@ -4175,6 +4176,9 @@ MiniHisto = ReactiveComponent
         style:
           position: 'absolute'
           backgroundColor: '#d3d3d3'
+          # filter: 'grayscale(.8)'
+          # '-webkit-filter': 'grayscale(.8)'
+          #opacity: .8
           # border:  if neutral then 'solid 1px black'
           # opacity: if neutral then .2
     DIV
@@ -4264,8 +4268,8 @@ MiniHisto = ReactiveComponent
 #               bottom: j * avatar_size
 
 
-ProfileLink = ReactiveComponent
-  displayName: 'ProfileLink'
+ProfileMenu = ReactiveComponent
+  displayName: 'ProfileMenu'
 
   render : -> 
     current_user = fetch('/current_user')
@@ -4283,7 +4287,11 @@ ProfileLink = ReactiveComponent
 
     menu_options = _.compact menu_options
 
-    DIV style: {display: 'inline-block'}, 
+    DIV
+      style:
+        position: 'absolute'
+        right: 50
+        top: 18
 
       if current_user.logged_in
         SPAN
@@ -5113,7 +5121,7 @@ window.Avatar = Avatar
 window.Button = Button
 window.AutoGrowTextArea = AutoGrowTextArea
 window.clickInternalLink = clickInternalLink
-window.ProfileLink = ProfileLink
+window.ProfileMenu = ProfileMenu
 window.TechnologyByConsiderit = TechnologyByConsiderit
 window.FBLike = FBLike
 window.FBShare = FBShare

@@ -44,8 +44,12 @@
     %body
       - if Rails.env.development? || @show_subdomain_changer
         :css
+          #development_bar:hover {
+            opacity: 1;
+            }
           #development_bar {
             background-color: black;
+            opacity: .15;
             width: 125px;
             text-align: center;
             position: absolute;

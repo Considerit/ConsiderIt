@@ -15,8 +15,7 @@ window.DefaultHeader = ReactiveComponent
         backgroundImage: "url(#{subdomain.branding.masthead})"   
            
     DIV style: masthead_style,
-      DIV className: 'profile_navigation',
-        ProfileLink()
+      ProfileMenu()
 
       if subdomain.branding.masthead_header_text
         DIV style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
@@ -53,8 +52,7 @@ window.tigardHeader = ReactiveComponent
       STYLE null, 
         '.banner_link {color: #78d18b; font-weight: 600; text-decoration: underline;}'
 
-      DIV className: 'profile_navigation',
-        ProfileLink()
+      ProfileMenu()
         
       DIV style: {color: '#707070', fontSize: 32, margin: '20px auto 0 auto', fontWeight: 800, textTransform: 'uppercase', position: 'relative', top: -20}, 
         'Help plan '
@@ -89,8 +87,7 @@ window.cityoftigardHeader = ReactiveComponent
   render: -> 
     logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
     DIV style: {backgroundColor: '#253967'},
-      DIV className: 'profile_navigation',
-        ProfileLink()
+      ProfileMenu()
 
       DIV style: {height: 24},
         A href: '/', onClick: clickInternalLink, style: {position: 'absolute', top:0, zIndex: 999999},
@@ -114,8 +111,7 @@ window['bitcoin-demoHeader'] = ReactiveComponent
         backgroundPosition: 'center'
         backgroundSize: 'cover'
 
-      DIV className: 'profile_navigation',
-        ProfileLink()
+      ProfileMenu()
 
       # Logo
       IMG
@@ -148,11 +144,11 @@ window['bitcoin-electionHeader'] = ReactiveComponent
       style:
         backgroundColor: '#676766'
         height: height
-        paddingLeft: if homepage then 220
+        paddingLeft: if homepage then 200
       onMouseEnter: => @local.hover=true;  save(@local)
       onMouseLeave: => @local.hover=false; save(@local)
 
-      STYLE null, '.profile_navigation.login {font-size: 26px; padding-top: 16px;}'
+      STYLE null, '.profile_anchor.login {font-size: 26px; padding-top: 16px;}'
         
       DIV
         style:
@@ -192,7 +188,7 @@ window['bitcoin-electionHeader'] = ReactiveComponent
         DIV
           style:
             color: 'cyan' #if homepage then 'cyan' else 'white'
-            marginTop: if homepage then 87 else 16
+            marginTop: if homepage then 87 else 18
             fontSize: if homepage then 63 else 26
             # marginTop: if homepage then 87 else 20
             # fontSize: if homepage then 63 else 21
@@ -225,16 +221,15 @@ window['bitcoin-electionHeader'] = ReactiveComponent
 
             P
               style: marginTop: 20
-              'This deliberation website is open to the public. But to vote, you must '
+              'This deliberation website is open to the public.'
+              ' But to vote, you must '
               A
                 href: 'https://bitcoinfoundation.org/join/#individual-membership'
                 style: textDecoration: 'underline'
                 'become a member'
               ' of the Bitcoin Foundation.'
               
-      DIV
-        className: 'profile_navigation'
-        ProfileLink()
+      ProfileMenu()
 
 $(->
   # These need to be run AFTER franklin.coffee has loaded
@@ -301,8 +296,8 @@ window.livingvotersguideHeader = ReactiveComponent
         """
 
       # Top cream area
-      DIV style: {height: 69}, className: 'profile_navigation',
-        ProfileLink()
+      DIV null,
+        ProfileMenu({style: {height: 69, position: 'relative'}})
         SPAN style: {color: 'white'}, '   |   '
         A href:'/about', onClick: clickInternalLink, style: {color: 'white', cursor: 'pointer'},
           'About'

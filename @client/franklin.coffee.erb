@@ -4213,7 +4213,8 @@ ProfileLink = ReactiveComponent
             I className: 'fa fa-caret-down', style: {visibility: if @local.menu then 'hidden' else 'visible'}
       else
         A
-          'className': 'profile_anchor'
+          'className': 'profile_anchor login'
+          'data-action': 'login'
           onClick: (e) =>
             @root.auth_mode = 'login'
             @root.auth_reason = null            

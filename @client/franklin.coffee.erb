@@ -1412,7 +1412,6 @@ DecisionBoard = ReactiveComponent
         width: HISTOGRAM_WIDTH
 
 
-<<<<<<< HEAD
       if can_opine != Permission.INSUFFICIENT_PRIVILEGES && (can_opine != Permission.DISABLED || your_opinion.published )
         # only shown during results, but needs to be present for animation
         if @root.proposal_mode == 'results'
@@ -1438,23 +1437,8 @@ DecisionBoard = ReactiveComponent
               style: 
                 padding: '0 18px'
                 marginTop: -3 # To undo the 3 pixel border
-              YourPoints { key: 'your_pro_points', valence: 'pros' }
               YourPoints { key: 'your_con_points', valence: 'cons' }
-=======
-        DIV null, 
-          # only shown during crafting, but needs to be present always for animation
-          DIV className: 'your_points',
-            # your cons
-            YourPoints { key: 'your_con_points', valence: 'cons' }
-
-            # your pros
-            YourPoints { key: 'your_pro_points', valence: 'pros' }
-
-          # only shown during results, but needs to be present always for animation
-          A 
-            className:'give_opinion_button primary_button'
-          , if published then 'Update your Opinion' else 'Give your Opinion'
->>>>>>> Swapped pro and con for everything except the histogram
+              YourPoints { key: 'your_pro_points', valence: 'pros' }
 
 
             A 
@@ -1611,14 +1595,8 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   render : ->
-<<<<<<< HEAD
     included_points = fetch(@proposal.your_opinion).point_inclusions    
-    left_or_right = if @props.valence == 'pros' then 'left' else 'right'
-=======
-    root = fetch('root')
-    included_points = fetch(@proposal.your_opinion).point_inclusions
-    left_or_right = if @props.valence == 'cons' then 'left' else 'right'
->>>>>>> Swapped pro and con for everything except the histogram
+    left_or_right = if @props.valence == 'pros' then 'right' else 'left'
 
     can_add_new_point = permit 'create point', @proposal
 
@@ -1648,7 +1626,6 @@ YourPoints = ReactiveComponent
             else
               Point { key: point, rendered_as: 'decision_board_point', your_points_key: @props.key }
 
-<<<<<<< HEAD
         #drop target
         DIV 
           style: 
@@ -1658,7 +1635,7 @@ YourPoints = ReactiveComponent
           IMG 
             src: "<%= asset_path 'drop_target.png' %>"
             style: css.crossbrowserify
-              transform: if @props.valence == 'pros' then '' else 'scaleX(-1)'
+              transform: if @props.valence == 'cons' then '' else 'scaleX(-1)'
               width: 223
 
           SPAN 
@@ -1666,16 +1643,9 @@ YourPoints = ReactiveComponent
               fontSize: 14
               position: 'absolute'
               top: '1.4em'
-              left: if @props.valence == 'pros' then 36 else 29
+              left: if @props.valence == 'cons' then 36 else 29
               width: 180
 
-=======
-        DIV className:'add_point_drop_target',
-          DIV className: "drop_target_circle_#{left_or_right}"
-          IMG className:'drop_target', src: "<%= asset_path 'drop_target.png' %>"
-          SPAN className:'drop_prompt',
-            #"Drag #{@props.valence} points from the #{if @props.valence == 'con' then 'left' else 'right'} that resonate with you."
->>>>>>> Swapped pro and con for everything except the histogram
             "Drag a #{capitalize(if @props.valence=='pros' then 'pro' else 'con')} from the #{left_or_right}"
 
         if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES
@@ -1760,8 +1730,7 @@ CommunityPoints = ReactiveComponent
       style:
         width: POINT_CONTENT_WIDTH
         minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
-<<<<<<< HEAD
-        zIndex: if pro_is_selected and @props.key == 'pros' then 6 else 2
+        zIndex: if con_is_selected and @props.key == 'cons' then 6 else 2
         margin: '38px 18px 0 18px'
         position: 'relative'
 
@@ -1770,18 +1739,12 @@ CommunityPoints = ReactiveComponent
         style: 
           position: 'relative'
           fontWeight: if browser.high_density_display then 300 else 400
-          left: if @props.key == 'pros' then -20 else 20
+          left: if @props.key == 'cons' then -20 else 20
             # Mike: I wanted the headers to be centered over the ENTIRE
             # points including avatars, not just bubbles.  But the
             # avatars are sticking out on their own, so I simulated
             # a centered look with these -20px and +20px offsets
 
-=======
-        zIndex: if con_is_selected and @props.key == 'cons'
-                  '6'
-    ,
-      DIV className:'points_heading_label',
->>>>>>> Swapped pro and con for everything except the histogram
         if fetch('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
         P 
           style: 

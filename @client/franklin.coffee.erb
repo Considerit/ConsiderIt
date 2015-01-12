@@ -318,7 +318,7 @@ Proposal = ReactiveComponent
             DIV null,
               A 
                 style: {color: '#888'}
-                onClick: -> window.app_router.navigate("#{@proposal.key}/edit", {trigger: true})
+                onClick: => window.app_router.navigate("#{@proposal.key}/edit", {trigger: true})
                 'Edit'
               A 
                 style: {color: '#888', padding: 10, backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'}

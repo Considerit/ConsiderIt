@@ -130,16 +130,13 @@ class Point < ActiveRecord::Base
             .where("user_id IN (?)", self.inclusions.map {|i| i.user_id} ) \
             .select(:stance, :user_id)
 
-    self.includers = opinions.map {|x| x.user_id}
-    self.num_inclusions = JSON.load(self.includers).length
-    self.last_inclusion = num_inclusions > 0 ? self.inclusions.where("user_id IN (?)", self.includers).order(:created_at).last.created_at.to_i : -1
+    updated_includers = opinions.map {|x| x.user_id}
 
     ###
     # define cross-spectrum appeal
-
-    if num_inclusions == 0 # special cases
+    if updated_includers.length == 0 # special cases
       self.appeal = 0.001
-    elsif num_inclusions == 1
+    elsif updated_includers.length == 1
       self.appeal = 0.001
     else
       # Compute the variance of the distribution of stances of users
@@ -153,10 +150,12 @@ class Point < ActiveRecord::Base
       standard_deviation = Math.sqrt(variance)
 
       self.appeal = standard_deviation
-      self.score = num_inclusions + standard_deviation * num_inclusions
+      self.score = updated_includers.length + standard_deviation * updated_includers.length
     end
 
-    self.includers = self.includers.to_s
+    self.includers = updated_includers.to_s
+    self.num_inclusions = updated_includers.length
+    self.last_inclusion = updated_includers.length > 0 ? self.inclusions.where("user_id IN (?)", updated_includers).order(:created_at).last.created_at.to_i : -1
 
     save(:validate => false) if changed?
   end

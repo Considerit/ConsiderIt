@@ -938,12 +938,12 @@ Histogram = ReactiveComponent
         TBODY null,
           TR null, 
             TD 
-              key: 'supporters'
+              key: 'opposers'
               className: "histogram_segment_pole"
               style: 
                 left: -160
                 width: 145 
-              SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
+              SPAN null, if @root.proposal_mode == 'crafting' then 'Oppose' else 'Opposers'
 
             for bar, idx in columns
               segment = if bar.length > 0 then bar[0].stance_segment else -1
@@ -975,12 +975,12 @@ Histogram = ReactiveComponent
                         else '.15'
 
             TD 
-              key: 'opposers'
+              key: 'supporters'
               className: "histogram_segment_pole"
               style: 
                 right: -145
                 width: 130
-              SPAN null, if @root.proposal_mode == 'crafting' then 'Oppose' else 'Opposers'
+              SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
 
 
 styles += """

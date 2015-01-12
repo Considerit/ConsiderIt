@@ -845,7 +845,7 @@ HistogramData = ReactiveComponent
       for opinion in opinions
         opinion = fetch(opinion.key)
          
-        round_method = if opinion.stance_segment < 3 then Math.ceil else Math.floor
+        round_method = if opinion.stance_segment < 3 then Math.floor else Math.ceil
 
         column = round_method (opinion.stance + 1) / 2.0 * (columns_in_histogram - 1)
         columns[column].push opinion
@@ -871,7 +871,7 @@ HistogramData = ReactiveComponent
             else 
               columns.push opinions_for_new_col #add to end for opposers
 
-      columns.reverse() #we're going from 1 <=> -1 for supporters <=> opposers
+      #columns.reverse() #we're going from 1 <=> -1 for supporters <=> opposers
 
       histogram_data.columns = columns
       histogram_data.avatar_size = avatar_size

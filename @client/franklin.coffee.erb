@@ -293,6 +293,19 @@ Proposal = ReactiveComponent
             fontSize: 16
             marginBottom: '2em'
 
+          if !@proposal.active
+            SPAN style: {display: 'inline-block', color: 'rgb(250, 146, 45)', padding: '4px 0px', marginTop: 10},
+              I className: 'fa fa-info-circle', style: {paddingRight: 7}
+              'Closed to new contributions at this time.'
+
+          # TODO: now that we're accepting user contributed proposals, we need to SANITIZE the description
+          DIV
+            className: 'proposal_details'
+            style:
+              paddingTop: '1em'
+              fontSize: 18
+            dangerouslySetInnerHTML:{__html: @proposal.description}
+
           if @local.description_fields
             DIV style: {marginTop: '1em'},
               for item in @local.description_fields

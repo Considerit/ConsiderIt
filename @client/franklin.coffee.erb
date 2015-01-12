@@ -136,7 +136,7 @@ PageTransition =
       when 'communitypoints'
 
         if root.proposal_mode == 'crafting'
-          offset_x = if @props.key == 'pros' then 0 else DECISION_BOARD_WIDTH
+          offset_x = if @props.key == 'cons' then 0 else DECISION_BOARD_WIDTH
         else if root.proposal_mode == 'results'
           offset_x = DECISION_BOARD_WIDTH / 2
 
@@ -146,8 +146,8 @@ PageTransition =
       when 'slider'
         slider = fetch 'slider'
 
-        direction = if slider.stance_segment >  3 then -1 else 1
-        mouth_x      = if slider.stance_segment == 3 then  0 else -22
+        direction = if slider.stance_segment >  3 then 1 else -1
+        mouth_x   = if slider.stance_segment == 3 then 0 else -22
 
         handle_width = 22
 
@@ -342,13 +342,13 @@ Proposal = ReactiveComponent
             position: 'relative'
             margin: '48px auto 4em auto' 
               
-          #community pros
-          CommunityPoints { key: 'pros' }
+          #community cons
+          CommunityPoints { key: 'cons' }
 
           DecisionBoard()
 
-          #community cons
-          CommunityPoints { key: 'cons' }
+          #community pros
+          CommunityPoints { key: 'pros' }
 
 
       if subdomain.name == 'livingvotersguide' && @root.proposal_mode == 'results' && your_opinion.published
@@ -613,7 +613,7 @@ StickyProposalHeading = ReactiveComponent
                                             position: 'absolute'
                                             top: -face_size / 2
                                             marginLeft: -face_size / 2 
-                                            left: "#{100 * (-1 * opinion.stance + 1.0) / 2.0}%"
+                                            left: "#{100 * (opinion.stance + 1.0) / 2.0}%"
                                           DIV style: _.extend {}, eye_style, {left: 6} # left eye
                                           DIV style: _.extend {}, eye_style, {left: face_size - 8} # right eye
                                           DIV style: mouth_style, mouth
@@ -845,7 +845,7 @@ HistogramData = ReactiveComponent
       for opinion in opinions
         opinion = fetch(opinion.key)
          
-        round_method = if opinion.stance_segment < 3 then Math.floor else Math.ceil
+        round_method = if opinion.stance_segment < 3 then Math.ceil else Math.floor
 
         column = round_method (opinion.stance + 1) / 2.0 * (columns_in_histogram - 1)
         columns[column].push opinion
@@ -1057,7 +1057,7 @@ Slider = ReactiveComponent
 
     # We save the slider's position to the server only on mouse-up.
     # This way you can drag it with good performance.
-    if your_opinion.stance != slider.stance
+    if your_opinion.stance       != slider.stance
       your_opinion.stance         = slider.stance
       your_opinion.stance_segment = slider.stance_segment
       save your_opinion
@@ -1086,7 +1086,7 @@ Slider = ReactiveComponent
     slider.has_moved = true
 
     # convert position of handle to a slider value on [1, -1]
-    slider.stance = -(2 * slider.clientX / @props.width - 1)
+    slider.stance = slider.clientX / @props.width * 2 - 1
     slider.stance_segment = getStanceSegment slider.stance
 
     save slider
@@ -1106,7 +1106,7 @@ Slider = ReactiveComponent
     if slider.stance != your_opinion.stance and !slider.is_moving
       slider.stance = your_opinion.stance
       slider.stance_segment = your_opinion.stance_segment
-      slider.clientX = @props.width * (1 - slider.stance) / 2
+      slider.clientX = @props.width * (slider.stance / 2 + .5)
       if your_opinion.stance
         slider.has_moved = true
       save(slider)
@@ -1148,7 +1148,7 @@ Slider = ReactiveComponent
 
     # Keep feedback centered over handle, but keep within the bounds of the slider region 
     # when the slider is in an extreme position. 
-    feedback_left = @props.width * -(stance-1) / 2.0 
+    feedback_left = @props.width * (stance/2 + .5)
     if sticky 
       feedback_width = if slider.has_moved then 190 else 400
       if feedback_left > @props.width / 2
@@ -1412,6 +1412,7 @@ DecisionBoard = ReactiveComponent
         width: HISTOGRAM_WIDTH
 
 
+<<<<<<< HEAD
       if can_opine != Permission.INSUFFICIENT_PRIVILEGES && (can_opine != Permission.DISABLED || your_opinion.published )
         # only shown during results, but needs to be present for animation
         if @root.proposal_mode == 'results'
@@ -1439,6 +1440,21 @@ DecisionBoard = ReactiveComponent
                 marginTop: -3 # To undo the 3 pixel border
               YourPoints { key: 'your_pro_points', valence: 'pros' }
               YourPoints { key: 'your_con_points', valence: 'cons' }
+=======
+        DIV null, 
+          # only shown during crafting, but needs to be present always for animation
+          DIV className: 'your_points',
+            # your cons
+            YourPoints { key: 'your_con_points', valence: 'cons' }
+
+            # your pros
+            YourPoints { key: 'your_pro_points', valence: 'pros' }
+
+          # only shown during results, but needs to be present always for animation
+          A 
+            className:'give_opinion_button primary_button'
+          , if published then 'Update your Opinion' else 'Give your Opinion'
+>>>>>>> Swapped pro and con for everything except the histogram
 
 
             A 
@@ -1595,8 +1611,14 @@ YourPoints = ReactiveComponent
   displayName: 'YourPoints'
 
   render : ->
+<<<<<<< HEAD
     included_points = fetch(@proposal.your_opinion).point_inclusions    
     left_or_right = if @props.valence == 'pros' then 'left' else 'right'
+=======
+    root = fetch('root')
+    included_points = fetch(@proposal.your_opinion).point_inclusions
+    left_or_right = if @props.valence == 'cons' then 'left' else 'right'
+>>>>>>> Swapped pro and con for everything except the histogram
 
     can_add_new_point = permit 'create point', @proposal
 
@@ -1626,6 +1648,7 @@ YourPoints = ReactiveComponent
             else
               Point { key: point, rendered_as: 'decision_board_point', your_points_key: @props.key }
 
+<<<<<<< HEAD
         #drop target
         DIV 
           style: 
@@ -1646,6 +1669,13 @@ YourPoints = ReactiveComponent
               left: if @props.valence == 'pros' then 36 else 29
               width: 180
 
+=======
+        DIV className:'add_point_drop_target',
+          DIV className: "drop_target_circle_#{left_or_right}"
+          IMG className:'drop_target', src: "<%= asset_path 'drop_target.png' %>"
+          SPAN className:'drop_prompt',
+            #"Drag #{@props.valence} points from the #{if @props.valence == 'con' then 'left' else 'right'} that resonate with you."
+>>>>>>> Swapped pro and con for everything except the histogram
             "Drag a #{capitalize(if @props.valence=='pros' then 'pro' else 'con')} from the #{left_or_right}"
 
         if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES
@@ -1718,7 +1748,7 @@ CommunityPoints = ReactiveComponent
     points = @buildPointsList() #todo: memoize
     newpoint_threshold = @buildNewPointThreshold() #todo: memoize
     label = capitalize @props.key
-    pro_is_selected = @root.selected_point and fetch(@root.selected_point).is_pro
+    con_is_selected = @root.selected_point and not fetch(@root.selected_point).is_pro
 
     # TODO: The minheight below is not a principled or complete solution to two sizing issues: 
     #           1) resizing the reasons region when the height of the decision board 
@@ -1730,6 +1760,7 @@ CommunityPoints = ReactiveComponent
       style:
         width: POINT_CONTENT_WIDTH
         minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
+<<<<<<< HEAD
         zIndex: if pro_is_selected and @props.key == 'pros' then 6 else 2
         margin: '38px 18px 0 18px'
         position: 'relative'
@@ -1745,6 +1776,12 @@ CommunityPoints = ReactiveComponent
             # avatars are sticking out on their own, so I simulated
             # a centered look with these -20px and +20px offsets
 
+=======
+        zIndex: if con_is_selected and @props.key == 'cons'
+                  '6'
+    ,
+      DIV className:'points_heading_label',
+>>>>>>> Swapped pro and con for everything except the histogram
         if fetch('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
         P 
           style: 
@@ -1864,7 +1901,7 @@ Point = ReactiveComponent
           curr_column = Math.floor(i / s.rows)
           side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
           top_offset = (i % s.rows) * s.dy 
-          left_right = if @data().is_pro then 'left' else 'right'
+          left_right = if @data().is_pro then 'right' else 'left'
           style = { top: top_offset }
           style[left_right] = -side_offset
 
@@ -1877,7 +1914,7 @@ Point = ReactiveComponent
     renderNewIndicator = =>
       if @data().includers
         side_offset = 48
-        left_right = if @data().is_pro then 'left' else 'right'
+        left_right = if @data().is_pro then 'right' else 'left'
         style = 
           position: 'absolute'
           color: 'rgb(255,22,3)'
@@ -2507,25 +2544,25 @@ Discussion = ReactiveComponent
       height: 63
 
     # Reconfigure discussion board position
-    side = if @props.is_pro then 'left' else 'right'
+    side = if @props.is_pro then 'right' else 'left'
     if @props.in_wings
       discussion_style[side] = 215
       discussion_style['top'] = 44
     else
-      discussion_style[side] = if @props.is_pro then -30 else -23
+      discussion_style[side] = if @props.is_pro then -23 else -30
       discussion_style['marginTop'] = 13
 
     # Reconfigure bubble mouth position
     if @props.in_wings
-      bubble_mouth_style.right = if @props.is_pro then undefined else -27
-      bubble_mouth_style.left  = if @props.is_pro then -27       else undefined
+      bubble_mouth_style.right = if @props.is_pro then -27       else undefined
+      bubble_mouth_style.left  = if @props.is_pro then undefined else -27
     else
       trans_func = 'rotate(270deg)'
-      if not @props.is_pro
+      if @props.is_pro
         trans_func += ' scaleY(-1)'
 
       _.extend bubble_mouth_style,
-        left: if @props.is_pro then 100 else 335
+        left: if @props.is_pro then 335 else 100
         top: -45
         transform:            trans_func
         '-ms-transform':      trans_func
@@ -2543,7 +2580,7 @@ Discussion = ReactiveComponent
     DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
       IMG
         src: "<%= asset_path 'bubblemouth-discussions.png' %>"
-        className: if @props.is_pro then 'flipped' else ''
+        className: if @props.is_pro then '' else 'flipped'
         style: bubble_mouth_style
 
       H1

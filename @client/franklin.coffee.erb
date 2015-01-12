@@ -4041,8 +4041,9 @@ window.ElectionHomepage = ReactiveComponent
 
     DIV
       style: {fontSize: 22}
+
       STYLE null,
-        '''a.proposal {border-bottom: 1px solid grey}'''
+        '''a.proposal:hover {border-bottom: 1px solid grey}'''
 
       # List all clusters
       for cluster, index in proposals.clusters or []
@@ -4118,33 +4119,46 @@ window.ElectionHomepage = ReactiveComponent
                 DIV style: first_column,
 
                   if is_candidates
+                    candidate = proposal.roles.editor.length > 0 and proposal.roles.editor[0]
+                    if not candidate or candidate == '-'
+                      candidate = author.key
+
                     # Person's icon
-                    Avatar
-                      key: author.key
-                      user: author.key
-                      style:
-                        height: 50
-                        width: 50
-                        borderRadius: 0
+                    A
+                      href: proposal_url(proposal)
+                      onClick: clickInternalLink
+                      Avatar
+                        key: candidate
+                        user: candidate
+                        style:
+                          height: 50
+                          width: 50
+                          borderRadius: 0
+                          backgroundColor: '#ddd'
 
                   # Name of Proposal
                   DIV
                     style:
                       display: 'inline-block'
-                      fontWeight: 550
+                      fontWeight: 500
                       marginLeft: if is_candidates then 20
                       paddingBottom: 20
                       width: first_column.width - 50 + (if is_candidates then -20 else 0)
+                      marginTop: if is_candidates then 6
                     A
                       className: 'proposal'
+                      style: if not is_candidates then {borderBottom: '1px solid grey'}
                       onClick: clickInternalLink
                       href: proposal_url(proposal)
                       proposal.name
 
                 # Histogram for Proposal
-                DIV
-                  style: secnd_column
-                  MiniHisto(proposal: proposal, width: 300, height: 50)
+                A
+                  href: proposal_url(proposal)
+                  onClick: clickInternalLink
+                  DIV
+                    style: secnd_column
+                    MiniHisto(proposal: proposal, width: 300, height: 50)
 
 
 MiniHisto = ReactiveComponent

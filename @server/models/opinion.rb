@@ -107,14 +107,10 @@ class Opinion < ActiveRecord::Base
     points_to_include.select {|p_id| points_already_included.include? p_id }
   end
 
-
   def include(point)
     if not point.is_a? Point
       point = Point.find point
     end
-
-    dirty_key("/point/#{point.id}")
-    dirty_key("/opinion/#{self.id}")
 
     user = User.find(self.user_id)
 
@@ -134,7 +130,10 @@ class Opinion < ActiveRecord::Base
     point.follow! user, :follow => true, :explicit => false
     point.recache
     self.recache
-  end    
+
+    dirty_key("/point/#{point.id}")
+    dirty_key("/opinion/#{self.id}")
+  end
 
   def exclude(point)
     if not point.is_a? Point

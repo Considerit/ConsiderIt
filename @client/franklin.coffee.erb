@@ -2262,10 +2262,10 @@ styles += """
   top: 8px;
   z-index: 1; }
 
-.community_point.pro .community_point_mouth, .under_review .community_point_mouth {
+.community_point.con .community_point_mouth, .under_review .community_point_mouth {
   left: -#{COMMUNITY_POINT_MOUTH_WIDTH}px; }
 
-.community_point.con .community_point_mouth {
+.community_point.pro .community_point_mouth {
   right: -#{COMMUNITY_POINT_MOUTH_WIDTH}px;
   #{css.crossbrowserify({transform: 'scaleX(-1)'}, true)}; }
 
@@ -2339,16 +2339,16 @@ styles += """
   width: 22px;
   height: 22px; }
 
-.community_point.pro .point_author_avatar {
+.community_point.con .point_author_avatar {
   left: -1;
   box-shadow: -1px 2px 0 0 #eeeeee; }
-.community_point.pro .point_includer_avatar {
+.community_point.con .point_includer_avatar {
   box-shadow: -1px 2px 0 0 #eeeeee; }
 
-.community_point.con .point_author_avatar {
+.community_point.pro .point_author_avatar {
   right: -1;
   box-shadow: 1px 2px 0 0 #eeeeee; }
-.community_point.con .point_includer_avatar {
+.community_point.pro .point_includer_avatar {
   box-shadow: 1px 2px 0 0 #eeeeee; }
 
 .decision_board_point .point_author_avatar {
@@ -4107,6 +4107,7 @@ window.ElectionHomepage = ReactiveComponent
 
             for proposal in cluster.proposals
               author = fetch(proposal.user)
+              is_candidates = cluster.name.toLowerCase() == 'candidates'
 
               # Proposal
               DIV
@@ -4116,22 +4117,24 @@ window.ElectionHomepage = ReactiveComponent
 
                 DIV style: first_column,
 
-                  # Person's icon
-                  Avatar
-                    key: author.key
-                    user: author.key
-                    style:
-                      height: 60
-                      width: 60
+                  if is_candidates
+                    # Person's icon
+                    Avatar
+                      key: author.key
+                      user: author.key
+                      style:
+                        height: 60
+                        width: 60
+                        borderRadius: 0
 
                   # Name of Proposal
                   DIV
                     style:
                       display: 'inline-block'
                       fontWeight: 550
-                      marginLeft: 20
+                      marginLeft: if is_candidates then 20
                       paddingBottom: 20
-                      width: first_column.width - 60 - 20
+                      width: first_column.width - 60 + (if is_candidates then -20 else 0)
                     A
                       className: 'proposal'
                       onClick: clickInternalLink

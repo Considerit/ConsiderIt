@@ -4499,39 +4499,41 @@ EditProposal = ReactiveComponent
             defaultValue: if @props.fresh then null else proposal.description
             style: _.extend {}, input_style, {height: 150}
 
-        DIV style: {marginLeft: 168, marginBottom: 30},
+        # Expandable description fields
+        if fetch('/current_user').is_admin
+          DIV style: {marginLeft: 168, marginBottom: 30},
 
-          for field,idx in @local.description_fields
-            
-            DIV key: "field-#{idx}", style: block_style,
-              I className: "fa fa-plus-circle", style: {position: 'absolute', left: -20, top: 10, color: '#bbb'}
-              INPUT 
-                style: description_field_style
-                type: 'text'
-                id:"field-#{idx}-label"
-                name:"field-#{idx}-label"
-                pattern:'^.{3,}'
-                placeholder:'Label'
-                required:'required'
-                onChange: do(idx) => (e) => @local.description_fields[idx].label = e.target.value; save(@local)
-                value: @local.description_fields[idx].label
+            for field,idx in @local.description_fields
 
-              AutoGrowTextArea 
-                id:"field-#{idx}-html"
-                name:"field-#{idx}-html"
-                pattern:'^.{3,}'
-                placeholder:'Text that is shown when expanded'
-                required:'required'
-                onChange: do(idx) => (e) => @local.description_fields[idx].html = e.target.value; save(@local)
-                value: @local.description_fields[idx].html
-                style: description_field_style
-              
-              SPAN 
-                style: {color: '#ccc', textDecoration: 'underline', fontSize: 12, cursor: 'pointer', position: 'absolute', top: 5, marginLeft: 20}
-                onClick: do (idx) => =>
-                  @local.description_fields.splice(idx, 1)
-                  save @local
-                'delete'
+              DIV key: "field-#{idx}", style: block_style,
+                I className: "fa fa-plus-circle", style: {position: 'absolute', left: -20, top: 10, color: '#bbb'}
+                INPUT
+                  style: description_field_style
+                  type: 'text'
+                  id:"field-#{idx}-label"
+                  name:"field-#{idx}-label"
+                  pattern:'^.{3,}'
+                  placeholder:'Label'
+                  required:'required'
+                  onChange: do(idx) => (e) => @local.description_fields[idx].label = e.target.value; save(@local)
+                  value: @local.description_fields[idx].label
+
+                AutoGrowTextArea
+                  id:"field-#{idx}-html"
+                  name:"field-#{idx}-html"
+                  pattern:'^.{3,}'
+                  placeholder:'Text that is shown when expanded'
+                  required:'required'
+                  onChange: do(idx) => (e) => @local.description_fields[idx].html = e.target.value; save(@local)
+                  value: @local.description_fields[idx].html
+                  style: description_field_style
+
+                SPAN
+                  style: {color: '#ccc', textDecoration: 'underline', fontSize: 12, cursor: 'pointer', position: 'absolute', top: 5, marginLeft: 20}
+                  onClick: do (idx) => =>
+                    @local.description_fields.splice(idx, 1)
+                    save @local
+                  'delete'
 
           SPAN
             style: {color: '#bbb', cursor: 'pointer', fontSize: 14}

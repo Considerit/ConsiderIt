@@ -295,12 +295,11 @@ window.livingvotersguideHeader = ReactiveComponent
         .header { height: 275px; background-image: url(<%= asset_path 'livingvotersguide/bg.jpg' %>); background-position: center; background-size: cover; }
         """
 
-      # Top cream area
-      DIV null,
+      DIV style: {height: 69},
         ProfileMenu({style: {height: 69, position: 'relative'}})
-        SPAN style: {color: 'white'}, '   |   '
-        A href:'/about', onClick: clickInternalLink, style: {color: 'white', cursor: 'pointer'},
-          'About'
+        # SPAN style: {color: 'white'}, '   |   '
+        # A href:'/about', onClick: clickInternalLink, style: {color: 'white', cursor: 'pointer'},
+        #   'About'
         
 
       # Logo

@@ -139,22 +139,21 @@ window['bitcoin-electionHeader'] = ReactiveComponent
     homepage = @root.page_name == 'homepage'
     window.lefty = true
 
-    # Header
+    # Entire header (the grey area)
     DIV
       style:
         backgroundColor: '#676766'
         height: if not homepage then 63
-        paddingLeft: if homepage then 200
       onMouseEnter: => @local.hover=true;  save(@local)
       onMouseLeave: => @local.hover=false; save(@local)
 
       STYLE null, '.profile_anchor.login {font-size: 26px; padding-top: 16px;}'
         
+      # The top bar with the logo
       DIV
         style:
-          width:      if not homepage then 760
-          position: 'relative'
           cursor: if not homepage then 'pointer'
+          paddingTop: if homepage then 18 else 17
         onClick: if not homepage then => window.app_router.navigate("/", {trigger: true})
 
         # Back arrow
@@ -162,13 +161,13 @@ window['bitcoin-electionHeader'] = ReactiveComponent
           DIV
             style:
               position: 'absolute'
+              left: 20
+              top: 0
               color: '#eee'
               fontSize: 43
-              left: 20
-              paddingLeft: 25
-              marginTop: 0
               fontWeight: 400
-              width: 180
+              paddingLeft: 25 # Make the clickable target bigger
+              width: 180      # Make the clickable target bigger
             '<'
 
         # Logo
@@ -176,21 +175,22 @@ window['bitcoin-electionHeader'] = ReactiveComponent
           href: if homepage then 'https://bitcoinfoundation.org'
           IMG
             style:
-              position: 'absolute'
               height: if homepage then 40 else 26
-              left: if homepage then -118 else 106
-              top: 18
+              marginLeft: if homepage then 82 else 106
             src: "<%= asset_path 'bitcoin/logo.svg' %>"
 
+        if not homepage
+          SPAN
+            style:
+              color: 'cyan'
+              fontSize: 26
+              fontWeight: 500
+              marginLeft: 40
+            'Distributed Deliberation'
+
+        ProfileMenu()
+
         # Text
-        DIV
-          style:
-            color: 'cyan' #if homepage then 'cyan' else 'white'
-            paddingTop: if homepage then 87 else 17
-            fontSize: if homepage then 63 else 26
-            fontWeight: 500
-            marginLeft: if not homepage then 300
-          'Distributed Deliberation'
         if homepage
           election_day = new Date('02/13/2015')
           today = new Date()
@@ -202,12 +202,22 @@ window['bitcoin-electionHeader'] = ReactiveComponent
 
           DIV
             style:
+              paddingLeft: 200
               color: 'white'
               fontSize: 22
               fontWeight: 300
-              paddingTop: 20
+              paddingTop: 23
               paddingBottom: 45
-              maxWidth: 700
+              maxWidth: 900
+
+            DIV
+              style:
+                color: 'cyan' #if homepage then 'cyan' else 'white'
+                fontSize: 63
+                fontWeight: 500
+                marginBottom: 20
+              'Distributed Deliberation'
+
             'We are choosing two new board members. '
             A
               href: 'https://blog.bitcoinfoundation.org/elections-update/'
@@ -223,8 +233,7 @@ window['bitcoin-electionHeader'] = ReactiveComponent
                 style: textDecoration: 'underline'
                 'become a member'
               ' of the Bitcoin Foundation.'
-              
-      ProfileMenu()
+
 
 $(->
   # These need to be run AFTER franklin.coffee has loaded

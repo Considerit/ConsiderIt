@@ -41,7 +41,7 @@ browser =
   touch_enabled : Modernizr.touch
   high_density_display : ((window.matchMedia && (window.matchMedia('only screen and (min-resolution: 124dpi), only screen and (min-resolution: 1.3dppx), only screen and (min-resolution: 48.8dpcm)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (min-device-pixel-ratio: 1.3)').matches)) || (window.devicePixelRatio && window.devicePixelRatio > 1.3))
 
-
+window.lefty = false
 
 proposal_url = (proposal) =>
   # The special thing about this function is that it only links to
@@ -290,6 +290,8 @@ Proposal = ReactiveComponent
             width: DESCRIPTION_WIDTH
             position: 'relative'
             margin: 'auto'
+            marginLeft: if lefty then 300
+            #marginRight: if lefty then 0
             fontSize: 16
             marginBottom: '2em'
 
@@ -338,11 +340,17 @@ Proposal = ReactiveComponent
 
           if @local.edit_roles
             DIV 
-              style: {width: BODY_WIDTH, margin: 'auto', backgroundColor: '#fafafa', padding: '10px 60px'}
+              style: {width: BODY_WIDTH, margin: 'auto', backgroundColor: '#fafafa', padding: '10px 60px', \
+                      marginLeft: (if lefty then 300)}#, marginRight: if lefty then 0}
               ProposalRoles key: @proposal
             
         #feelings
-        DIV style : { width: BODY_WIDTH, margin: '0 auto', position: 'relative' },
+        DIV
+          style:
+            width: BODY_WIDTH
+            margin: '0 auto'
+            marginLeft: if lefty then 300
+            position: 'relative'
           OpinionFilter()
           HistogramData(proposal_slug: @proposal.slug)
           Histogram()
@@ -353,7 +361,9 @@ Proposal = ReactiveComponent
           style : 
             width: REASONS_REGION_WIDTH
             position: 'relative'
-            margin: '48px auto 4em auto' 
+            margin: '48px auto 4em auto'
+            marginLeft: if lefty then 65
+            #marginRight: if lefty then 0
               
           #community cons
           CommunityPoints { key: 'cons' }
@@ -532,6 +542,8 @@ StickyProposalHeading = ReactiveComponent
             width: DESCRIPTION_WIDTH
             textAlign: 'left'
             margin: 'auto'
+            marginLeft: if lefty then 300
+            #marginRight: if lefty then 0
 
           DIV style: {width: PAGE_WIDTH}, # ...but let the stuff inside be big
             DIV
@@ -3178,6 +3190,7 @@ Auth = ReactiveComponent
           display: 'block'
           zIndex: 0
           margin: 'auto'
+          marginLeft: if lefty then 300
           position: 'relative'
           width: DECISION_BOARD_WIDTH
 
@@ -4768,7 +4781,8 @@ Page = ReactiveComponent
         
         BrowserHacks()
         Header()
-        DIV style : { minWidth: PAGE_WIDTH, minHeight: 200, zIndex: 2, margin: 'auto' }, 
+        DIV style : { minWidth: PAGE_WIDTH, minHeight: 200, zIndex: 2, margin: 'auto', \
+                      marginLeft: if lefty then 0 },
           if @root.auth_mode || @root.page_name == 'edit_profile'
             Auth()
 

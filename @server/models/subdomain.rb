@@ -71,8 +71,6 @@ class Subdomain < ActiveRecord::Base
     brands['masthead'] = self.masthead_file_name ? self.masthead.url : nil
     brands['logo'] = self.logo_file_name ? self.logo.url : nil
 
-    pp brands
-
     brands
   end
 

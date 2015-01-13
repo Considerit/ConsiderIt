@@ -356,6 +356,13 @@ class User < ActiveRecord::Base
         # Merge the two opinions. We'll absorb the old opinion into the new one!
         # Update new_ops' user_id to the old user. 
         new_op.absorb(old_op, true)
+      else
+        # if this is the first time this user is saving an opinion for this proposal
+        # we'll just change the user id of the opinion, seeing as there isn't any
+        # opinion to absorb into
+        new_op.user_id = dest_user
+        new_op.save
+        dirty_key("/opinion/#{new_op.id}")
       end
       
     end

@@ -129,6 +129,7 @@ protected
 
   def replace_user(old_user, new_user)
     return if old_user.id == new_user.id
+    if old_user.registered then raise "Replacing a real user! Danger!" end
 
     new_user.absorb(old_user)
 

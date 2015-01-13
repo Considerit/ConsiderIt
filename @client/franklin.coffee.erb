@@ -3952,6 +3952,15 @@ DefaultHomepage = ReactiveComponent
               $(document).scrollTop(0)
             'Create new proposal'
 
+window.net_support = (proposal) ->
+  opinions = fetch('/page/' + proposal.slug).opinions
+  if not opinions
+    return null
+  sum = 0
+  for o in opinions
+    sum += o.stance
+  return sum
+
 window.ElectionHomepage = ReactiveComponent
   displayName: 'Homepage'
   render : ->
@@ -3997,6 +4006,10 @@ window.ElectionHomepage = ReactiveComponent
           special_secnd_headers =
             'Debate': "Candidates' Opinions"
 
+          # Sort
+          sorted_proposals = _.clone(cluster.proposals).sort((a,b) ->
+            net_support(b) - net_support(a))
+
           # 
           # Cluster of proposals
           DIV
@@ -4027,7 +4040,7 @@ window.ElectionHomepage = ReactiveComponent
                 'Support'
               special_secnd_headers[cluster.name] or 'Members\' Opinions'
 
-            for proposal in cluster.proposals
+            for proposal in sorted_proposals
               author = fetch(proposal.user)
               is_candidates = cluster.name.toLowerCase() == 'candidates'
 

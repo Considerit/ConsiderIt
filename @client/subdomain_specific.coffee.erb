@@ -160,7 +160,7 @@ window['bitcoin-electionHeader'] = ReactiveComponent
         onClick: if not homepage then => window.app_router.navigate("/", {trigger: true})
 
         # Back arrow
-        if @local.hover and not homepage
+        if not homepage
           DIV
             style:
               position: 'absolute'
@@ -169,7 +169,7 @@ window['bitcoin-electionHeader'] = ReactiveComponent
               left: 20
               paddingLeft: 25
               marginTop: 0
-              fontWeight: 600
+              fontWeight: 400
               width: 180
             '<'
 

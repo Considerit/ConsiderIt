@@ -137,13 +137,12 @@ window['bitcoin-electionHeader'] = ReactiveComponent
 
   render: ->
     homepage = @root.page_name == 'homepage'
-    height = if homepage then 345 else 63
 
     # Header
     DIV
       style:
         backgroundColor: '#676766'
-        height: height
+        height: if not homepage then 63
         paddingLeft: if homepage then 200
       onMouseEnter: => @local.hover=true;  save(@local)
       onMouseLeave: => @local.hover=false; save(@local)
@@ -152,10 +151,8 @@ window['bitcoin-electionHeader'] = ReactiveComponent
         
       DIV
         style:
-          height:     height
           width:      if not homepage then 760
-          #marginLeft: if not homepage then 300
-          position: 'absolute'
+          position: 'relative'
           cursor: if not homepage then 'pointer'
         onClick: if not homepage then => window.app_router.navigate("/", {trigger: true})
 
@@ -188,13 +185,10 @@ window['bitcoin-electionHeader'] = ReactiveComponent
         DIV
           style:
             color: 'cyan' #if homepage then 'cyan' else 'white'
-            marginTop: if homepage then 87 else 18
+            paddingTop: if homepage then 87 else 17
             fontSize: if homepage then 63 else 26
-            # marginTop: if homepage then 87 else 20
-            # fontSize: if homepage then 63 else 21
             fontWeight: 500
-            left: 300
-            position: if not homepage then 'absolute'
+            marginLeft: if not homepage then 300
           'Distributed Deliberation'
         if homepage
           election_day = new Date('02/13/2015')
@@ -211,7 +205,7 @@ window['bitcoin-electionHeader'] = ReactiveComponent
               fontSize: 22
               fontWeight: 300
               paddingTop: 20
-              paddingBottom: 76
+              paddingBottom: 45
               maxWidth: 700
             'We are choosing two new board members. '
             A
@@ -295,11 +289,16 @@ window.livingvotersguideHeader = ReactiveComponent
         .header { height: 275px; background-image: url(<%= asset_path 'livingvotersguide/bg.jpg' %>); background-position: center; background-size: cover; }
         """
 
-      DIV style: {height: 69},
-        ProfileMenu({style: {height: 69, position: 'relative'}})
-        # SPAN style: {color: 'white'}, '   |   '
-        # A href:'/about', onClick: clickInternalLink, style: {color: 'white', cursor: 'pointer'},
-        #   'About'
+      # Top cream area
+      DIV
+        style:
+          position: 'absolute'
+          right: 17
+          top: 17
+        ProfileMenu({style: {height: 69, left: 0; top: 0, position: 'relative', display: 'inline-block'}})
+        SPAN style: {color: 'white'}, '   |   '
+        A href:'/about', onClick: clickInternalLink, style: {color: 'white', cursor: 'pointer'},
+          'About'
         
 
       # Logo

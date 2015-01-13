@@ -88,11 +88,12 @@ class CurrentUserController < ApplicationController
 
       when 'login'
         # puts("Signing in by email and password")
-
         if !params[:email] || params[:email].length == 0
           errors.append 'Missing email'
         elsif !params[:password] || params[:password].length == 0
           errors.append 'Missing password'
+        else if current_user.registered
+          errors.append 'You are already logged in'
         else
 
           user = User.find_by_email(params[:email].downcase)
@@ -129,6 +130,8 @@ class CurrentUserController < ApplicationController
           # puts("They need to provide a longer password. Bailing.")
           errors.append "Please make a new password at least #{@min_pass} letters long"
 
+        else if current_user.registered
+          errors.append 'You are already logged in'
         else 
         
           # Now let's take that raw reset_password_token, and compute the

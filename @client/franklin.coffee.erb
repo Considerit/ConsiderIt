@@ -4713,17 +4713,28 @@ Computer = ReactiveComponent
 
     # Publish pending opinions if we can
     if @root.opinions_to_publish.length > 0
-      while @root.opinions_to_publish.length > 0
-        opinion = fetch(@root.opinions_to_publish.pop()); save(@root)
+
+      remaining_opinions = []
+
+      for opinion_key in @root.opinions_to_publish
+        opinion = fetch(opinion_key)
         can_opine = permit('publish opinion', opinion.proposal)
+
         if can_opine > 0 && !opinion.published
           opinion.published = true
           save opinion
-        else if can_opine == Permission.INSUFFICIENT_PRIVILEGES
-          noop = 1
+        else 
+          remaining_opinions.push opinion_key
+
           # TODO: show some kind of prompt to user indicating that despite 
           #       creating an account, they still aren't permitted to publish 
           #       their opinion.
+          # if can_opine == Permission.INSUFFICIENT_PRIVILEGES
+          #   ...
+
+      if remaining_opinions.length != @root.opinions_to_publish.length
+        @root.opinions_to_publish = remaining_opinions
+        save @root
 
     # users following an email invitation need to complete registration (name + password)
     if current_user.needs_to_set_password

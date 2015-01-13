@@ -92,7 +92,7 @@ class CurrentUserController < ApplicationController
           errors.append 'Missing email'
         elsif !params[:password] || params[:password].length == 0
           errors.append 'Missing password'
-        else if current_user.registered
+        elsif current_user.registered
           errors.append 'You are already logged in'
         else
 
@@ -130,7 +130,7 @@ class CurrentUserController < ApplicationController
           # puts("They need to provide a longer password. Bailing.")
           errors.append "Please make a new password at least #{@min_pass} letters long"
 
-        else if current_user.registered
+        elsif current_user.registered
           errors.append 'You are already logged in'
         else 
         

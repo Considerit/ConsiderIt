@@ -14,8 +14,8 @@
 
 fetch 'histogram',
   highlighted_users : null
-  selected_segment : null
-  selected_segment_isclicked : null
+  selected_opinions : null
+  selected_by_click : null
 
 fetch 'slider',
   has_moved : false
@@ -892,7 +892,81 @@ HistogramData = ReactiveComponent
       save histogram_data
 
     SPAN null #dummy DOM for React render 
-  
+
+##
+# OpinionFilter
+# Filters whose opinions are displayed
+OpinionFilter = ReactiveComponent
+  displayName: 'OpinionFilter'
+
+  onSelectSegment : (segment) ->
+    hist = fetch('histogram')
+    if !segment? || hist.selected_segment == segment
+      # Deselect
+      hist.selected_segment = null
+      hist.selected_by_click = null
+    else
+      # Select
+      hist.selected_segment = segment
+      hist.selected_by_click = true
+
+      window.writeToLog
+        what: 'filter results by segment'
+        details: 
+          segment: segment
+
+    save hist
+
+  render : ->
+    hist = fetch('histogram')
+
+    # Remove filter when on crafting page
+    if @root.proposal_mode == 'crafting'
+      hist.selected_opinions = null
+      hist.selected_by_click = null
+
+    filter_options = ['show all opinions',
+        'only full opposers',
+        'only firm opposers',
+        'only slight opposers',
+        'only undecideds',
+        'only slight supporters',
+        'only firm supporters',
+        'only full supporters']
+
+    return SPAN null
+
+    # DIV 
+    #   style: 
+    #     display: if @root.proposal_mode == 'crafting' then 'none' else 'block'
+    #     position: 'absolute'
+    #     zIndex: 10
+    #     right: -275
+    #     bottom: -200
+    #     fontSize: 13
+
+    #   for phrase, i in filter_options
+    #     # Shift i by 1, and start with null
+    #     i = if i == 0 then null else i - 1
+          
+    #     A 
+    #       key: "segment-#{i}"
+    #       className: "filter_option #{if hist.selected_segment == i then 'selected' else ''}"
+    #       onClick: do(i) => => @onSelectSegment(i) 
+    #       style: 
+    #         color: if hist.selected_segment == i then 'black' else '#666'
+    #         position: 'relative'
+    #         display: 'block'
+
+    #       SPAN 
+    #         style: 
+    #           position: 'absolute'
+    #           content: '•'
+    #           left: -10
+    #           top: 1
+    #           visibility: if hist.selected_segment == i then '' else 'hidden'
+    #         '•'
+    #       phrase
 
 ##
 # Histogram
@@ -900,35 +974,74 @@ Histogram = ReactiveComponent
   displayName : 'Histogram'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
-  onClickHistogram : (ev) ->
-    if @root.proposal_mode == 'crafting'
-      togglePage('results', 'click_histogram')
-
-  onSelectSegment : (ev) ->
+  onSelectSegment : (ev, segment) ->
     if @root.proposal_mode == 'results'
-      segment = $(ev.currentTarget).data('segment')
       hist = fetch('histogram')
 
       selected_segment = hist.selected_segment
 
       # If clicking on already hard-selected segment, then we'll deselect. 
-      if selected_segment == segment and selected_segment_isclicked
+      if selected_segment == segment and hist.selected_by_click
         segment = null
 
       click_select = ev.type == 'click' 
 
       #ignore mouseEnter and mouseLeave events if selection was via click
-      return if selected_segment and selected_segment_isclicked and !click_select 
+      return if selected_segment and hist.selected_by_click and !click_select 
 
       hist.selected_segment = segment
-      hist.selected_segment_isclicked = click_select and segment
+      hist.selected_by_click = click_select and segment
       save(hist)
       ev.stopPropagation()
 
-  render : ->
-    selected_segment = fetch('histogram').selected_segment
-    users_to_highlight = fetch('histogram').highlighted_users
+  selectOpinions : (ev) ->
+    hist = fetch('histogram')
+    click_select = ev.type == 'click'    
 
+    if click_select && @root.proposal_mode == 'crafting'
+      togglePage('results', 'click_histogram')
+
+    # if the user has click selected an area, and is merely mousing over 
+    # other parts of the histogram, don't select the hovered opinions
+    return if hist.selected_opinions && hist.selected_by_click && !click_select 
+
+    all_opinions = fetch('/page/' + @proposal.slug).opinions || []
+    # If the user has clicked on an avatar, we'll just filter to their opinion
+    if ev.target.className.indexOf('avatar') != -1 && click_select
+      user_key = "/user/#{ev.target.getAttribute('id').substring(7, ev.target.getAttribute('id').length)}"
+      selected_opinions = (o.key for o in all_opinions when o.user == user_key)
+    else
+      # Otherwise, we'll filter to a region of opinions
+      # We can calculate the opinion_center (the slider value about which we will select opinions)
+      # based on the mouse offset within the histogram element.
+      h_x = @getDOMNode().getBoundingClientRect().left + window.pageXOffset
+      h_w = @getDOMNode().offsetWidth
+      m_x = ev.pageX
+      opinion_center = 2 * (m_x - h_x) / h_w - 1
+
+      # The opinion center is used to calculate which opinions are selected.
+      # We'll show opinions within +/- filter_width of opinion_center.
+      filter_width = .1 
+      selected_opinions = (o.key for o in all_opinions when o.stance < opinion_center + filter_width && o.stance > opinion_center - filter_width)
+
+    hist.selected_opinions = selected_opinions
+    hist.selected_by_click = click_select && !hist.selected_by_click
+    save hist
+
+  onLeaveHistogram : (ev) -> 
+    hist = fetch('histogram')
+    if !hist.selected_by_click
+      hist.selected_opinions = null
+      save hist
+
+  render : ->
+    hist = fetch('histogram')
+    users_to_highlight = hist.highlighted_users
+    if hist.selected_opinions
+      if users_to_highlight
+        users_to_highlight = _.intersection users_to_highlight, (fetch(o).user for o in hist.selected_opinions)
+      else 
+        users_to_highlight = (fetch(o).user for o in hist.selected_opinions)
 
     histogram_data = fetch('histogramdata/' + @proposal.slug)
     columns = histogram_data.columns
@@ -938,61 +1051,58 @@ Histogram = ReactiveComponent
     effective_histogram_width = num_columns * avatar_size + 2
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2 #- avatar_size / 4
 
-    DIV null,
-      TABLE 
-        className: 'histogram'
-        onClick: @onClickHistogram
-        # onMouseLeave: @onSelectSegment
-        style: 
-          width: effective_histogram_width
-          marginLeft: margin_adjustment
-          position: 'relative'
-        TBODY null,
-          TR null, 
-            TD 
-              key: 'opposers'
-              className: "histogram_segment_pole"
-              style: 
-                left: -160
-                width: 145 
-              SPAN null, if @root.proposal_mode == 'crafting' then 'Oppose' else 'Opposers'
+    TABLE 
+      className: 'histogram'
+      onClick: @selectOpinions
+      onMouseMove: @selectOpinions
+      onMouseLeave: @onLeaveHistogram
 
-            for bar, idx in columns
-              segment = if bar.length > 0 then bar[0].stance_segment else -1
-              is_selected = selected_segment == segment
+      style: 
+        width: effective_histogram_width
+        marginLeft: margin_adjustment
+        position: 'relative'
 
-              TD 
-                key: idx 
-                className: "histogram_bar #{if is_selected then 'is_selected' else 'not_selected'}"
-                style: 
-                  width: avatar_size
-                  opacity: if is_selected && !selected_segment? then '1' else '1'
-                  minHeight: if bar.length == 0 then 75 else 0
-                for opinion in bar
-                  user = opinion.user
-                  Avatar 
-                    key: user
-                    user: user
-                    hide_face: @root.proposal_mode == 'crafting'
-                    hide_name: @root.proposal_mode == 'crafting'
-                    'data-segment':segment
-                    style:
-                      height: avatar_size
-                      width: avatar_size
-                      opacity: if users_to_highlight && 
-                        !_.contains(users_to_highlight, opinion.user) 
-                        then '.15' 
-                        else if selected_segment == null || is_selected 
-                        then '1.0'
-                        else '.15'
+      TBODY null,
+        TR null, 
+          TD 
+            key: 'opposers'
+            className: "histogram_segment_pole"
+            style: 
+              left: -160
+              width: 145 
+            SPAN null, if @root.proposal_mode == 'crafting' then 'Oppose' else 'Opposers'
+
+          for bar, idx in columns
+            segment = if bar.length > 0 then bar[0].stance_segment else -1
 
             TD 
-              key: 'supporters'
-              className: "histogram_segment_pole"
+              key: idx 
+              className: "histogram_bar"
+
               style: 
-                right: -145
-                width: 130
-              SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
+                width: avatar_size
+                minHeight: if bar.length == 0 then 75 else 0
+              for opinion in bar
+                user = opinion.user
+                transparent = users_to_highlight && !_.contains(users_to_highlight, opinion.user)
+
+                Avatar 
+                  key: user
+                  user: user
+                  hide_face: @root.proposal_mode == 'crafting'
+                  hide_name: @root.proposal_mode == 'crafting'
+                  style:
+                    height: avatar_size
+                    width: avatar_size
+                    opacity: if transparent then '.35'  else '1.0'
+
+          TD 
+            key: 'supporters'
+            className: "histogram_segment_pole"
+            style: 
+              right: -145
+              width: 130
+            SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
 
 
 styles += """
@@ -1017,7 +1127,8 @@ styles += """
     border-radius: 50%;
     background-color: #{default_avatar_in_histogram_color}; 
     #{css.crossbrowserify({transform: 'rotate(180deg)'}, true)}
-    -ms-transform: rotate(0);}
+    -ms-transform: rotate(0);
+    cursor: pointer; }
 
 """
 
@@ -1287,80 +1398,7 @@ styles += """
 """
 
 
-##
-# OpinionFilter
-# Filters whose opinions are displayed
-OpinionFilter = ReactiveComponent
-  displayName: 'OpinionFilter'
 
-  onSelectSegment : (segment) ->
-    hist = fetch('histogram')
-    if !segment? || hist.selected_segment == segment
-      # Deselect
-      hist.selected_segment = null
-      hist.selected_segment_isclicked = null
-    else
-      # Select
-      hist.selected_segment = segment
-      hist.selected_segment_isclicked = true
-
-      window.writeToLog
-        what: 'filter results by segment'
-        details: 
-          segment: segment
-
-
-    save hist
-
-
-  render : ->
-    hist = fetch('histogram')
-
-    # Remove filter when on crafting page
-    if @root.proposal_mode == 'crafting'
-      hist.selected_segment = null
-      hist.selected_segment_isclicked = null
-
-    filter_options = ['show all opinions',
-        'only full opposers',
-        'only firm opposers',
-        'only slight opposers',
-        'only undecideds',
-        'only slight supporters',
-        'only firm supporters',
-        'only full supporters']
-
-    DIV 
-      style: 
-        display: if @root.proposal_mode == 'crafting' then 'none' else 'block'
-        position: 'absolute'
-        zIndex: 10
-        right: -275
-        bottom: -200
-        fontSize: 13
-
-      for phrase, i in filter_options
-        # Shift i by 1, and start with null
-        i = if i == 0 then null else i - 1
-          
-        A 
-          key: "segment-#{i}"
-          className: "filter_option #{if hist.selected_segment == i then 'selected' else ''}"
-          onClick: do(i) => => @onSelectSegment(i) 
-          style: 
-            color: if hist.selected_segment == i then 'black' else '#666'
-            position: 'relative'
-            display: 'block'
-
-          SPAN 
-            style: 
-              position: 'absolute'
-              content: '•'
-              left: -10
-              top: 1
-              visibility: if hist.selected_segment == i then '' else 'hidden'
-            '•'
-          phrase
 
 
 ##
@@ -1708,7 +1746,7 @@ styles += """
 
 .points_heading_label {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 18px;
   margin-top: 7px;
   font-size: 30px; }
 
@@ -1723,7 +1761,7 @@ CommunityPoints = ReactiveComponent
   displayName: 'CommunityPoints'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
   render : ->
-    selected_segment = fetch('histogram').selected_segment
+    # selected_opinions = fetch('histogram').selected_opinions
 
     #filter to pros or cons & down to points that haven't been included
     points = @buildPointsList() #todo: memoize
@@ -1757,18 +1795,18 @@ CommunityPoints = ReactiveComponent
             # a centered look with these -20px and +20px offsets
 
         if fetch('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
-        P 
-          style: 
-            visibility: if selected_segment == null then 'hidden' else 'visible'
-            textAlign: 'center'
-            fontSize: 12
-            position: 'absolute'
-            width: '100%'
-            bottom: -12
-            color: '#db004d'
-            fontWeight: if browser.high_density_display then 300 else 400
+        # P 
+        #   style: 
+        #     visibility: if selected_segment == null then 'hidden' else 'visible'
+        #     textAlign: 'center'
+        #     fontSize: 12
+        #     position: 'absolute'
+        #     width: '100%'
+        #     bottom: -12
+        #     color: '#db004d'
+        #     fontWeight: if browser.high_density_display then 300 else 400
 
-          if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
+        #   if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
 
       UL null,
         if points.length > 0
@@ -1799,7 +1837,7 @@ CommunityPoints = ReactiveComponent
 
   buildPointsList : ->
     is_results = fetch('root').proposal_mode == 'results'
-    selected_segment = fetch('histogram').selected_segment
+    selected_opinions = fetch('histogram').selected_opinions
     included_points = fetch(@proposal.your_opinion).point_inclusions
     points = @page.points
     opinions = @page.opinions
@@ -1810,27 +1848,26 @@ CommunityPoints = ReactiveComponent
         has_not_been_included = is_results || !_.contains(included_points, pnt.key)
         is_correct_valence && has_not_been_included
     
-    if selected_segment?
+    if selected_opinions?
       # If there is a histogram segment selected, we'll have to filter down 
       # to the points that users in this segment think are important, and 
-      # order them by resonance to those users. I'm doing this quite inefficiently.
-      point_inclusions_per_point_for_segment = {} # map of points to including users
-      _.each opinions, (opinion) =>
-        if opinion.stance_segment == selected_segment && opinion.point_inclusions
-          for point in opinion.point_inclusions
-            if !(point of point_inclusions_per_point_for_segment)
-              point_inclusions_per_point_for_segment[point] = 1
-            else
-              point_inclusions_per_point_for_segment[point] += 1
+      # order them by resonance to those users.
 
-      points = 
-        _.filter points, (pnt) -> pnt.key of point_inclusions_per_point_for_segment
-      points = 
-        _.sortBy points, (pnt) -> -point_inclusions_per_point_for_segment[pnt.key]
+      point_inclusions_per_point = {} # map of points to including users
+      _.each selected_opinions, (opinion_key) =>
+        opinion = fetch(opinion_key)
+        if opinion.point_inclusions
+          for point in opinion.point_inclusions
+            if !(point of point_inclusions_per_point)
+              point_inclusions_per_point[point] = 1
+            else
+              point_inclusions_per_point[point] += 1
+
+      points = (pnt for pnt in points when pnt.key of point_inclusions_per_point)
+      points = _.sortBy points, (pnt) -> -point_inclusions_per_point[pnt.key]
     else
       # Default sort order
-      points = 
-        _.sortBy points, (pnt) => - if is_results then pnt.score else pnt.last_inclusion
+      points = _.sortBy points, (pnt) => - if is_results then pnt.score else pnt.last_inclusion
 
     points
 
@@ -1850,22 +1887,24 @@ Point = ReactiveComponent
 
     is_selected = @root.selected_point == @props.key
 
-    selected_segment = fetch('histogram').selected_segment
     current_user = fetch('/current_user')
 
 
-    renderIncluders = =>
+    renderIncluders = (draw_all_includers) =>
 
       if @data().includers
 
-        includers = @buildIncluders()
+        if !draw_all_includers
+          includers = [point.user]
+        else 
+          includers = @buildIncluders()
 
         s = #includers_style
           rows: 8
           dx: 2
           dy: 5
           col_gap: 8
-          side_offset: 32 + 14 + 1
+          side_offset: if @props.rendered_as == 'decision_board_point' then 10 else 47
 
         # Now we'll go through the list from back to front
         i = includers.length
@@ -1884,6 +1923,8 @@ Point = ReactiveComponent
             key: includer
             className: "point_includer_avatar"
             style: style
+            hide_face: point.user == includer && point.hide_name
+            hide_name: @props.rendered_as == 'under_review'
 
     renderNewIndicator = =>
       if @data().includers
@@ -1965,6 +2006,7 @@ Point = ReactiveComponent
         marginLeft: 9
         padding: '0 18px 1em 18px'
 
+    draw_all_includers = @props.rendered_as == 'community_point'
     LI
       className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'}"
       'data-id':@props.key
@@ -1975,16 +2017,14 @@ Point = ReactiveComponent
       if @props.rendered_as == 'community_point' && @props.is_new
         renderNewIndicator()
 
-      DIV className:'includers', onMouseEnter: @highlightIncluders, onMouseLeave: @unHighlightIncluders, 
-        if @props.rendered_as == 'community_point'
-          renderIncluders()
+      DIV className:'includers', onMouseEnter: @highlightIncluders, onMouseLeave: @unHighlightIncluders,
+        if @props.rendered_as == 'decision_board_point'
+          SPAN 
+            style: {position: 'absolute', top: -1, left: -7, fontFamily: 'courier'}
+            dangerouslySetInnerHTML:{__html: if point.is_pro then '+' else '-'}
 
-        else if !selected_segment || (userOpinion(point.user) && author_opinion = fetch(userOpinion(point.user)) && author_opinion.stance_segment == selected_segment )
-          Avatar 
-            key: point.user
-            className:"point_author_avatar"
-            hide_face: point.hide_name
-            hide_name: @props.rendered_as == 'under_review'
+        else
+          renderIncluders(draw_all_includers)
 
       DIV className:'point_content', style : point_content_style,
         if @props.rendered_as == 'community_point' || @props.rendered_as == 'under_review' || is_selected
@@ -2144,19 +2184,14 @@ Point = ReactiveComponent
     author_has_included = _.contains point.includers, point.user
     to_remove = [point.user]
 
+    includers = point.includers
+
     # only show includers from this stance segment if a segment is selected
-    selected_segment = fetch('histogram').selected_segment
-    if selected_segment?
-      for includer in point.includers
-        if userOpinion(includer)
-          stance_segment = fetch(userOpinion(includer)).stance_segment
+    selected_opinions = fetch('histogram').selected_opinions
+    if selected_opinions      
+      includers = _.intersection includers, (fetch(o).user for o in selected_opinions)
 
-          if stance_segment && stance_segment != selected_segment
-            to_remove.push includer
-        else 
-          to_remove.push includer
-
-    includers = _.difference point.includers, to_remove
+    includers = _.difference includers, to_remove
     if author_has_included 
       includers.push point.user
     includers
@@ -2222,15 +2257,10 @@ styles += """
 .point_details p:last-child {
   margin-bottom: 0; }
 
-.point_author_avatar, .point_includer_avatar {
+.point_includer_avatar {
   position: absolute; }
 
-.decision_board_point .point_author_avatar {
-  top: 8px;
-  width: 22px;
-  height: 22px; }
-
-.under_review .point_author_avatar {
+.under_review .point_includer_avatar {
   top: 0px;
   width: 50px;
   height: 50px;
@@ -2241,26 +2271,14 @@ styles += """
   width: 22px;
   height: 22px; }
 
-.community_point .point_author_avatar {
-  top: 0;
-  width: 22px;
-  height: 22px; }
-
-.community_point.con .point_author_avatar {
-  left: -1;
-  box-shadow: -1px 2px 0 0 #eeeeee; }
 .community_point.con .point_includer_avatar {
   box-shadow: -1px 2px 0 0 #eeeeee; }
 
-.community_point.pro .point_author_avatar {
-  right: -1;
-  box-shadow: 1px 2px 0 0 #eeeeee; }
 .community_point.pro .point_includer_avatar {
   box-shadow: 1px 2px 0 0 #eeeeee; }
 
-.decision_board_point .point_author_avatar {
-  left: -10px;
-  top: -2px; }
+.decision_board_point.pro .point_includer_avatar {
+  left: -10px; }
 
 """
 

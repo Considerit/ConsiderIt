@@ -757,75 +757,47 @@ window.ProposalSubheading = ReactiveComponent
 
     DIV
       style:
-        margin: '30px 0 0 0'
+        paddingBottom: 15
+        marginLeft: 300
+        marginTop: 30
+        width: 560
+        position: 'relative'
 
-      # Placeholder
-      # DIV
-      #   className: 'proposal_heading_placeholder'
-      #   style:
-      #     color: 'transparent'
-      #     position: 'relative'
-      #     paddingBottom: 15
-      #     paddingLeft: 300
-      #     width: 560 + 300
-      #   DIV null,
-      #     @proposal.cluster
-      #   DIV
-      #     style: {fontSize: heading_fontsize, fontWeight: 700, lineHeight: 1.2}
-      #     @proposal.name
-
-      # Actual sticky thing
-      DIV
-        className: 'stickable'
+      # Next button
+      A
         style:
-          width: 560 + 300
-          backgroundColor: 'white'
-          zIndex: 3
-          position: 'relative'
-          paddingBottom: 15
-          paddingLeft: 300
+          position: 'absolute'
+          right: 0
+        onClick: do (url = proposal_url(next_proposal)) =>
+          => window.app_router.navigate(url, {trigger: true})
+        'Next >'
 
-        # Next button
-        A
+      # Proposer
+      if @proposal.user and @proposal.cluster == 'Candidates'
+        Avatar
+          key: @proposal.user
+          user: @proposal.user
           style:
             position: 'absolute'
-            right: 0
-          onClick: do (url = proposal_url(next_proposal)) =>
-            => window.app_router.navigate(url, {trigger: true})
-          'Next >'
+            height: 70
+            width: 70
+            marginLeft: -70 - 20
+            borderRadius: 0
+            backgroundColor: '#ddd'
 
-        # Cluster name
-        DIV
-          style:
-            fontStyle: 'italic'
-          @proposal.cluster
+      # Cluster name
+      DIV
+        style:
+          fontStyle: 'italic'
+        @proposal.cluster
 
-        # Proposal name
-        DIV
-          style:
-            lineHeight: 1.2
-            fontWeight: 700
-            fontSize: heading_fontsize
-          @proposal.name
-
-  # componentDidMount : -> @initOrUpdateHeader()
-  # componentDidUpdate : -> @initOrUpdateHeader()
-  #
-  # initOrUpdateHeader : -> 
-  #   $el = $(@getDOMNode())
-  #
-  #   $header = $el.find('.stickable')
-  #
-  #   if $header.length > 0 && !@is_waiting()
-  #     $header.StickyElement
-  #       placeholder: $el.find('.proposal_heading_placeholder')[0]
-  #       container: $el.parents('.proposal')
-  #       stick_on_zoomed_screens: false
-  #
-  # componentWillUnmount : -> 
-  #   $el = $(@getDOMNode())
-  #   $el.find('.stickable').StickyElement('destroy')
-
+      # Proposal name
+      DIV
+        style:
+          lineHeight: 1.2
+          fontWeight: 700
+          fontSize: heading_fontsize
+        @proposal.name
 
 ##
 # HistogramData

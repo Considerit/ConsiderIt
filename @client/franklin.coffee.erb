@@ -4196,9 +4196,11 @@ ProfileMenu = ReactiveComponent
 
     DIV
       style:
-        position: 'absolute'
-        right: 50
-        top: 18
+        _.extend(
+          position: 'absolute'
+          right: 50
+          top: 17,
+          _.clone(@props.style))
 
       if current_user.logged_in
         SPAN

@@ -157,7 +157,10 @@ class Point < ActiveRecord::Base
     self.num_inclusions = updated_includers.length
     self.last_inclusion = updated_includers.length > 0 ? self.inclusions.where("user_id IN (?)", updated_includers).order(:created_at).last.created_at.to_i : -1
 
-    save(:validate => false) if changed?
+    if changed?
+      save(:validate => false) 
+      dirty_key "/point/#{self.id}"
+    end
   end
         
   def self.update_scores

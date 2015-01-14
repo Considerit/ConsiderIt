@@ -6,7 +6,11 @@ window.DefaultHeader = ReactiveComponent
   render: ->
     subdomain = fetch '/subdomain'   
 
-    masthead_style =  {textAlign: 'center', backgroundColor: subdomain.branding.primary_color}
+    masthead_style = 
+      textAlign: 'center'
+      backgroundColor: subdomain.branding.primary_color
+      height: 30
+
     if subdomain.branding.masthead
       _.extend masthead_style, 
         height: 300

@@ -110,7 +110,7 @@ protected
     if user.save
       puts("Signing into the stubby.  Curr=#{current_user}")
       set_current_user(user)
-      puts("Signed into stubby.  Curr=#{current_user}")
+      puts("Signed into stubby.  Curr=#{current_user} #{current_user.id} #{session[:current_user_id]}")
     else
       raise 'Error making stub account. Yikes!'
     end

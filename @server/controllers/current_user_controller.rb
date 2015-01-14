@@ -93,6 +93,7 @@ class CurrentUserController < ApplicationController
         elsif !params[:password] || params[:password].length == 0
           errors.append 'Missing password'
         elsif current_user.registered
+          puts("Trying to log in a user who is already in!")
           errors.append 'You are already logged in'
         else
 
@@ -196,8 +197,8 @@ class CurrentUserController < ApplicationController
         end
 
       when 'logout'
-        if current_user && current_user.logged_in? && params[:logged_in] == false
-          # puts("Logging out.")
+        if current_user && current_user.logged_in?
+          puts("Logging out.")
           dirty_key '/page/homepage'
           dirty_key '/proposals'
           new_current_user()
@@ -225,18 +226,13 @@ class CurrentUserController < ApplicationController
     response = current_user.current_user_hash(form_authenticity_token)
     response[:errors] = errors
 
-    # Don't overwrite these fields in the case of errors. Let the user edit them again.
-    # TODO: can we use errors variable here for a more precise conditional?
-    #
-    # MIKE:
-    #       Good catch.  I thought about it, and the current behavior
-    #       will cause a bug when users can edit their profiles.  They
-    #       will be logged in, but their password will disappear each
-    #       time they submit an update.
-    if !response[:logged_in] 
+    # If a user is trying to log in, and there was an error, we can
+    # re-send them the faulty information so they can fix it.
+    if (params[:trying_to] == 'login' || params[:trying_to] == 'login_via_reset_password_token')\
+       && !response[:logged_in]
       response[:reset_password_token] = params[:reset_password_token] if params[:reset_password_token]
       response[:password] = params[:password] if params[:password]
-      response[:email] = params[:email] if params[:email]
+      response[:email]    = params[:email]    if params[:email]
     end
 
     if errors.length > 0

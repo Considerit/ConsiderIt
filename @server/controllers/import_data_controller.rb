@@ -68,7 +68,11 @@ class ImportDataController < ApplicationController
           end
 
 
-          CSV.foreach(file.tempfile, :headers => true, :encoding => encoding) do |row|
+          CSV.foreach(file.tempfile, :headers => true, 
+            :encoding => encoding, 
+            :header_converters=> lambda {|f| f.strip},
+            :converters => lambda {|f| f ? f.strip : nil}) do |row|
+
             error = false
 
             # Make sure that this file has all the required columns           

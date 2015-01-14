@@ -61,7 +61,8 @@ class UserMailer < Mailer
       to = format_email invitee.email, invitee.name    
     end
 
-    from = format_email(inviter.email, inviter.name)
+    from = format_email default_sender(subdomain), inviter.name
+    reply_to = format_email inviter.email, inviter.name
 
     case invitation_obj.class.to_s
 
@@ -73,7 +74,7 @@ class UserMailer < Mailer
       raise "Why are you trying to send an invitation to a #{invitation_obj.class.to_s}?"
     end
 
-    mail(:from => from, :to => to, :subject => subject)
+    mail(:from => from, :to => to, :subject => subject, :reply_to => reply_to)
 
   end
 

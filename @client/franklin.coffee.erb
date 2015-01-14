@@ -340,8 +340,12 @@ Proposal = ReactiveComponent
 
           if @local.edit_roles
             DIV 
-              style: {width: BODY_WIDTH, margin: 'auto', backgroundColor: '#fafafa', padding: '10px 60px', \
-                      marginLeft: (if lefty then 300)}#, marginRight: if lefty then 0}
+              style:
+                width: BODY_WIDTH
+                margin: 'auto'
+                backgroundColor: '#fafafa'
+                padding: '10px 60px'
+                marginLeft: (if lefty then 0)
               ProposalRoles key: @proposal
             
         #feelings
@@ -736,6 +740,12 @@ styles += """
 """
 
 
+# For elections (where a proposal's cluster name is "candidate"), a
+# proposal's "candidate" is the first editor.
+window.proposal_candidate = (proposal) ->
+  candidate = proposal.roles.editor.length > 0 and proposal.roles.editor[0]
+  return candidate != '-' and candidate
+
 window.ProposalSubheading = ReactiveComponent
   displayName: 'ProposalSubheading'
   render : ->
@@ -773,17 +783,19 @@ window.ProposalSubheading = ReactiveComponent
         'Next >'
 
       # Proposer
-      if @proposal.user and @proposal.cluster == 'Candidates'
-        Avatar
-          key: @proposal.user
-          user: @proposal.user
-          style:
-            position: 'absolute'
-            height: 70
-            width: 70
-            marginLeft: -70 - 20
-            borderRadius: 0
-            backgroundColor: '#ddd'
+      if @proposal.cluster == 'Candidates'
+        candidate = proposal_candidate(@proposal)
+        if candidate
+          Avatar
+            key: @proposal.user
+            user: @proposal.user
+            style:
+              position: 'absolute'
+              height: 70
+              width: 70
+              marginLeft: -70 - 20
+              borderRadius: 0
+              backgroundColor: '#ddd'
 
       # Cluster name
       DIV
@@ -4013,7 +4025,6 @@ window.ElectionHomepage = ReactiveComponent
               special_secnd_headers[cluster.name] or 'Members\' Opinions'
 
             for proposal in sorted_proposals
-              author = fetch(proposal.user)
               is_candidates = cluster.name.toLowerCase() == 'candidates'
 
               # Proposal
@@ -4025,9 +4036,7 @@ window.ElectionHomepage = ReactiveComponent
                 DIV style: first_column,
 
                   if is_candidates
-                    candidate = proposal.roles.editor.length > 0 and proposal.roles.editor[0]
-                    if not candidate or candidate == '-'
-                      candidate = author.key
+                    candidate = proposal_candidate(proposal)
 
                     # Person's icon
                     A

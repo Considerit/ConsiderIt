@@ -10,9 +10,9 @@ class AdminMailer < Mailer
     subject = "Pending content to moderate"
 
     to = format_email user.email, user.name
-    from = format_email(default_sender(subdomain), subdomain.app_title)
+    from = format_email(default_sender(subdomain), (subdomain.app_title or subdomain.name))
 
-    mail(:from => from, :to => to, :subject => "[#{subdomain.app_title}] #{subject}")
+    mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
 
   end
 
@@ -24,9 +24,9 @@ class AdminMailer < Mailer
     subject = "A new fact check request"
 
     to = format_email user.email, user.name    
-    from = format_email(default_sender(subdomain), subdomain.app_title)
+    from = format_email(default_sender(subdomain), (subdomain.app_title or subdomain.name))
 
-    mail(:from => from, :to => to, :subject => "[#{subdomain.app_title}] #{subject}")
+    mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
 
   end
 

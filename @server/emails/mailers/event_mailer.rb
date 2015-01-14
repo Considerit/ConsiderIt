@@ -12,9 +12,10 @@ class EventMailer < Mailer
     to = format_email recipient.email, recipient.name
 
     # from e.g. Moderator <hank@cityclub.org>
-    from = format_email current_user.email, message.sender
+    from = format_email default_sender(subdomain), current_user.name
+    reply_to = format_email current_user.email, current_user.name
 
-    mail(:from => from, :to => to, :subject => subject_line(@message.subject, subdomain), :bcc => from)
+    mail(:from => from, :to => to, :subject => subject_line(@message.subject, subdomain), :bcc => from, :reply_to => reply_to)
 
   end
 

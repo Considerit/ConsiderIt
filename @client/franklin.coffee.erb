@@ -344,7 +344,6 @@ Proposal = ReactiveComponent
         #feelings
         DIV style : { width: BODY_WIDTH, margin: '0 auto', position: 'relative' },
           OpinionFilter()
-          HistogramData(proposal_slug: @proposal.slug)
           Histogram()
 
         #reasons
@@ -816,86 +815,10 @@ window.ProposalSubheading = ReactiveComponent
 
 
 ##
-# HistogramData
-# Doesn't render anything. Stores computed Histogram data. 
-HistogramData = ReactiveComponent
-  displayName: 'HistogramData'
-
-  ##
-  # Split up opinions into columns based on their stance.   
-  render : ->
-    proposal_slug = @props.proposal_slug
-    histogram_data = fetch('histogramdata/' + proposal_slug)
-
-    # We only need to recompute this data if the distribution of stances has changed. 
-    opinions = fetch('/page/' + proposal_slug).opinions || []
-    last_computation_hash = JSON.stringify( _.map(opinions, (o) => fetch(o.key).stance) )
-
-    if not histogram_data.last_computation_hash \
-       or (histogram_data.last_computation_hash != last_computation_hash)
-
-      max_avatar_size = @props.max_avatar_size or BIGGEST_POSSIBLE_AVATAR_SIZE
-      histogram_width = @props.width or HISTOGRAM_WIDTH
-      max_height = @props.height or MAX_HISTOGRAM_HEIGHT
-
-      ##
-      # Size the avatars. Size of avatar shrinks proportional to 1/sqrt(num_opinions)
-      avatar_size = Math.min max_avatar_size,
-        Math.floor(max_avatar_size / Math.sqrt( (opinions.length + 1) / 10 )  )
-
-      # Calculate the number of columns in the histogram. But we want to ensure that there
-      # are an _odd_ number of cols so that a neutral opinion falls into the exact 
-      # center of the histogram. To ensure this, we'll manipulate avatar_size. 
-      loop 
-        columns_in_histogram = Math.floor(histogram_width / avatar_size)
-        break if columns_in_histogram % 2 == 1
-        avatar_size -= 1
-
-      columns = ([] for col in [0..columns_in_histogram-1])
-
-      # Assign each Opinion to a column
-      for opinion in opinions
-        opinion = fetch(opinion.key)
-         
-        round_method = if opinion.stance_segment < 3 then Math.floor else Math.ceil
-
-        column = round_method (opinion.stance + 1) / 2.0 * (columns_in_histogram - 1)
-        columns[column].push opinion
-
-      # Spill out extremes into multiple columns. We'll cap the number of opinions
-      # in a column to max_opinions_in_column. We'll keep the number of extreme columns
-      # equal between supporters and opposers. 
-      max_opinions_in_column = Math.floor max_height / avatar_size
-      most_extreme_opinions = Math.max columns[0].length, columns[columns.length-1].length
-      if most_extreme_opinions > max_opinions_in_column
-        num_extreme_cols = Math.ceil most_extreme_opinions / max_opinions_in_column
-
-        # split each extreme into num_extreme_cols. First supporters then opposers.
-        for extreme, idx in [columns[0], columns[columns.length - 1]]
-          for i in [0..num_extreme_cols - 2]
-            if extreme.length > max_opinions_in_column
-              opinions_for_new_col = extreme.splice(max_opinions_in_column, max_opinions_in_column)
-            else
-              opinions_for_new_col = []
-
-            if idx == 0 
-              columns.unshift opinions_for_new_col #add to beginning for supporters
-            else 
-              columns.push opinions_for_new_col #add to end for opposers
-
-      #columns.reverse() #we're going from 1 <=> -1 for supporters <=> opposers
-
-      histogram_data.columns = columns
-      histogram_data.avatar_size = avatar_size
-      histogram_data.last_computation_hash = last_computation_hash
-
-      save histogram_data
-
-    SPAN null #dummy DOM for React render 
-
-##
 # OpinionFilter
 # Filters whose opinions are displayed
+# This component does not render anything at this time;
+# once we get group filtering, we will resurrect
 OpinionFilter = ReactiveComponent
   displayName: 'OpinionFilter'
 
@@ -974,26 +897,6 @@ Histogram = ReactiveComponent
   displayName : 'Histogram'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
-  onSelectSegment : (ev, segment) ->
-    if @root.proposal_mode == 'results'
-      hist = fetch('histogram')
-
-      selected_segment = hist.selected_segment
-
-      # If clicking on already hard-selected segment, then we'll deselect. 
-      if selected_segment == segment and hist.selected_by_click
-        segment = null
-
-      click_select = ev.type == 'click' 
-
-      #ignore mouseEnter and mouseLeave events if selection was via click
-      return if selected_segment and hist.selected_by_click and !click_select 
-
-      hist.selected_segment = segment
-      hist.selected_by_click = click_select and segment
-      save(hist)
-      ev.stopPropagation()
-
   selectOpinions : (ev) ->
     hist = fetch('histogram')
     click_select = ev.type == 'click'    
@@ -1043,66 +946,67 @@ Histogram = ReactiveComponent
       else 
         users_to_highlight = (fetch(o).user for o in hist.selected_opinions)
 
-    histogram_data = fetch('histogramdata/' + @proposal.slug)
-    columns = histogram_data.columns
-    num_columns = columns.length
-    avatar_size = histogram_data.avatar_size
 
-    effective_histogram_width = num_columns * avatar_size + 2
-    margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2 #- avatar_size / 4
-
-    TABLE 
+    opinions = fetch('/page/' + @proposal.slug).opinions || []
+    
+    DIV 
       className: 'histogram'
       onClick: @selectOpinions
       onMouseMove: @selectOpinions
       onMouseLeave: @onLeaveHistogram
 
       style: 
-        width: effective_histogram_width
-        marginLeft: margin_adjustment
+        width: BODY_WIDTH
+        height: HISTOGRAM_HEIGHT
         position: 'relative'
 
-      TBODY null,
-        TR null, 
-          TD 
-            key: 'opposers'
-            className: "histogram_segment_pole"
-            style: 
-              left: -160
-              width: 145 
-            SPAN null, if @root.proposal_mode == 'crafting' then 'Oppose' else 'Opposers'
+      DIV 
+        key: 'opposers'
+        className: "histogram_segment_pole"
+        style: 
+          left: -160
+          width: 145 
+        SPAN null, if @root.proposal_mode == 'crafting' then 'Oppose' else 'Opposers'
 
-          for bar, idx in columns
-            segment = if bar.length > 0 then bar[0].stance_segment else -1
 
-            TD 
-              key: idx 
-              className: "histogram_bar"
+      DIV 
+        ref: 'histo'
 
-              style: 
-                width: avatar_size
-                minHeight: if bar.length == 0 then 75 else 0
-              for opinion in bar
-                user = opinion.user
-                transparent = users_to_highlight && !_.contains(users_to_highlight, opinion.user)
+        for opinion in opinions
+          user = opinion.user
+          fetch(opinion) # subscribe ...
+          transparent = users_to_highlight && !_.contains(users_to_highlight, opinion.user)
 
-                Avatar 
-                  key: user
-                  user: user
-                  hide_face: @root.proposal_mode == 'crafting'
-                  hide_name: @root.proposal_mode == 'crafting'
-                  style:
-                    height: avatar_size
-                    width: avatar_size
-                    opacity: if transparent then '.35'  else '1.0'
+          Avatar 
+            key: user
+            user: user
+            hide_face: @root.proposal_mode == 'crafting'
+            hide_name: @root.proposal_mode == 'crafting'
+            style:
+              opacity: if transparent then '.35'  else '1.0'
 
-          TD 
-            key: 'supporters'
-            className: "histogram_segment_pole"
-            style: 
-              right: -145
-              width: 130
-            SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
+      DIV 
+        key: 'supporters'
+        className: "histogram_segment_pole"
+        style: 
+          right: -145
+          width: 130
+        SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
+
+  attach_mini_histo: ->
+    if @refs and @refs.histo #and not @mounted
+      page = fetch('/page/' + @proposal.slug)
+      histo = @refs.histo.getDOMNode()
+      icons = histo.childNodes
+      opinions = for opinion, i in page.opinions
+        {stance: opinion.stance, icon: icons[i]}
+      mini_histo(BODY_WIDTH, HISTOGRAM_HEIGHT, histo, opinions, "histogram_cache")
+      @mounted = true
+  componentDidMount: ->
+    @attach_mini_histo()
+  componentDidUpdate: ->
+    @attach_mini_histo()
+
 
 
 styles += """
@@ -1115,20 +1019,10 @@ styles += """
     position: absolute;
     bottom: 0; }
 
-.histogram_bar {
-  display: inline-block;
-  font-size: 0;
-  vertical-align: bottom; 
-  #{css.crossbrowserify({transform: 'rotate(180deg)'}, true)}
-  -ms-transform: rotate(0);
-  }
-
-  .histogram_bar .avatar {
-    border-radius: 50%;
+  .histogram .avatar {
     background-color: #{default_avatar_in_histogram_color}; 
-    #{css.crossbrowserify({transform: 'rotate(180deg)'}, true)}
-    -ms-transform: rotate(0);
-    cursor: pointer; }
+    cursor: pointer; 
+    position: absolute;}
 
 """
 

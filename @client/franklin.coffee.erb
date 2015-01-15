@@ -3497,9 +3497,9 @@ MiniHisto = ReactiveComponent
         style:
           position: 'absolute'
           backgroundColor: '#d3d3d3'
-          # filter: 'grayscale(.8)'
-          # '-webkit-filter': 'grayscale(.8)'
-          #opacity: .8
+          # filter:           if not @local.hover then 'grayscale(1)'
+          # '-webkit-filter': if not @local.hover then 'grayscale(1)'
+          # opacity:          if not @local.hover then .5
           # border:  if neutral then 'solid 1px black'
           # opacity: if neutral then .2
     DIV
@@ -3509,6 +3509,8 @@ MiniHisto = ReactiveComponent
         position: 'relative'
         borderBottom: '1px solid #999'
         display: if icons.length == 0 then 'none'
+      # onMouseEnter: => @local.hover = true;  save(@local)
+      # onMouseLeave: => @local.hover = false; save(@local)
       SPAN
         style:
           position: 'absolute'

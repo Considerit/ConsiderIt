@@ -55,6 +55,8 @@ class CommentController < ApplicationController
 
         point.comment_count = point.comments.count
         point.save
+        dirty_key "/point/#{point.id}"
+
       else 
         result = {errors: ['could not save comment']}
       end

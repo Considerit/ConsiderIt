@@ -119,20 +119,30 @@ class Proposal < ActiveRecord::Base
   #
   # TODO: consolidate with subdomain.user_roles
   def user_roles(filter = false)
-    r = JSON.parse(roles || "{}")
+    result = JSON.parse(roles || "{}")
     ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|
-      if !r.has_key?(role) || !r[role]
-        r[role] = []
-      elsif filter
+
+      # Initialize empty role to []
+      result[role] = [] if !result.has_key?(role) || !result[role]
+
+      # Filter role if the client isn't supposed to see it
+      if filter && role != 'editor'   # FIND BETTER FIX: mike added
+                                      # "result != editor" so bitcoin
+                                      # candidates can see the editor,
+                                      # because he's temporarily
+                                      # encoding 'editor' as
+                                      # 'candidate' and needs to
+                                      # display their photo.
+
         # Remove all specific email address for privacy. Leave wildcards.
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 
-        r[role] = r[role].map{|email_or_key| 
-          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" ? email_or_key : '-' 
+        result[role] = result[role].map{|email_or_key|
+          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" ? email_or_key : '-'
         }.uniq
       end
     end
-    r
+    result
   end
 
 

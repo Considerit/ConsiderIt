@@ -55,10 +55,6 @@ Auth = ReactiveComponent
                  null,
                  if root.auth_mode == 'register' then ".{5,}" else '')
 
-    providers = ['facebook', 'google']
-
-    third_party_authenticated = current_user.facebook_uid || current_user.twitter_uid || current_user.google_uid
-
     #####
     # We used to display the Auth header using the position and
     # styling of the slider.  Now it's just neutral.
@@ -154,33 +150,10 @@ Auth = ReactiveComponent
         DIV 
           className: "auth" + (if @local.submitting then ' waiting' else '')
           style: auth_area_style
-          if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
-            DIV className: 'third_party_auth',
-              LABEL 
-                style: {marginRight: 18}
-                'Instantly:'
-              for provider in providers
-                do (provider) =>
-                  BUTTON key: provider, className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
-                    I className: "fa fa-#{provider}"
-                    SPAN null, provider
-
-              DIV 
-                style: 
-                  fontWeight: 700
-                  paddingTop: '1em'
-                  color: "rgba(36,120,204,0.1)"
-                dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label style=\"padding: 0 18px; color: #{considerit_blue}\">or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
 
           if root.auth_mode in ['login', 'login_via_reset_password_token', 'verify']
             DIV null, 
-              if root.auth_mode == 'login'
-                LABEL 
-                  style: 
-                    padding: '1em 0'
-                    display: 'block'
-                  'By email address:'
-              else if root.auth_mode == 'login_via_reset_password_token'
+              if root.auth_mode == 'login_via_reset_password_token'
                 DIV null,
                   LABEL className: 'reset_password_section_label', 'Reset your password'
                   DIV style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
@@ -251,35 +224,21 @@ Auth = ReactiveComponent
                   TD className: 'field_cell', 
                     name_input_field
 
-                if third_party_authenticated && @root.auth_mode != 'update'
-                  p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
-                  TR null, 
+                TR null, 
 
-                    TD className: 'label_cell',
-                      LABEL htmlFor: 'user_provider', 
-                        if third_party_authenticated then 'I login via:' else 'I login as:'
-                    TD className: 'field_cell', 
-                      BUTTON className: "third_party_option #{p}", style: {cursor: 'default'},
-                        I className: "fa fa-#{p}"
-                        SPAN null, p
+                  TD className: 'label_cell',
+                    LABEL htmlFor: 'user_email', 'I login as:'
+                  TD className: 'field_cell', 
+                    if !Modernizr.input.placeholder
+                      LABEL htmlFor: 'user_email', 'Email:'
+                    if root.auth_mode == 'register-after-invite'
+                      current_user.email
+                    else
+                      email_input_field
 
-                else
-
-                  TR null, 
-
-                    TD className: 'label_cell',
-                      LABEL htmlFor: 'user_email', 'I login as:'
-                    TD className: 'field_cell', 
-                      if !Modernizr.input.placeholder
-                        LABEL htmlFor: 'user_email', 'Email:'
-                      if root.auth_mode == 'register-after-invite'
-                        current_user.email
-                      else
-                        email_input_field
-
-                      if !Modernizr.input.placeholder
-                        LABEL htmlFor: 'user_password', 'Password:'
-                      password_input_field
+                    if !Modernizr.input.placeholder
+                      LABEL htmlFor: 'user_password', 'Password:'
+                    password_input_field
 
                 # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
                 if window.FormData
@@ -510,40 +469,6 @@ Auth = ReactiveComponent
     save @root
 
 styles += """
-.auth .third_party_option {
-  border: 1px solid #777777;
-  border-color: rgba(0, 0, 0, 0.2);
-  border-bottom-color: rgba(0, 0, 0, 0.4);
-  color: white;
-  box-shadow: inset 0 0.1em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.1em rgba(255, 255, 255, 0.9);
-  display: inline-block;
-  padding: 3px 9px 3px 34px;
-  margin: 0 4px;
-  text-align: center;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
-  border-radius: 0.3em;
-  position: relative;
-  background-color: #{considerit_blue}; }
-  .auth .third_party_option:hover {
-    background-color: #19528b; }
-  .auth .third_party_option:before {
-    border-right: 0.075em solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0.075em 0 0 rgba(255, 255, 255, 0.25);
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 25px;
-    height: 100%;
-    width: 1px; }
-  .auth .third_party_option i {
-    margin-right: 18px;
-    display: inline-block;
-    font-size: 16px;
-    position: absolute;
-    left: 9px; }
-  .auth .third_party_option span {
-    font-weight: 600;
-    font-size: 12px; }
 .auth .reset_password_section_label {
   padding: 0 0 1em 0;
   display: block; }
@@ -588,58 +513,4 @@ styles += """
 """
 
 
-
-class ThirdPartyAuthHandler 
-  constructor : (options = {}) ->
-    provider = options.provider
-    callback = options.callback
-
-    if provider == 'google'
-      provider = 'google_oauth2'
-      
-    vanity_url = location.host.split('.').length == 1
-    if !vanity_url
-      document.domain = location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1') 
-    else 
-      document.domain = document.domain # make sure it is explitly set
-
-    @callback = callback
-    @popup = @openPopupWindow "/auth/#{provider}"
-
-  pollLoginPopup : ->
-    # try
-    if @popup? && @popup.document && window.document && window.document.domain == @popup.document.domain && @popup.current_user_hash?
-      @callback @popup.current_user_hash
-      @popup.close()
-      @popup = null
-      clearInterval(@polling_interval)
-    # catch e
-    #   console.error e
-
-  openPopupWindow : (url) ->
-    openidpopup = window.open(url, 'openid_popup', 'width=450,height=500,location=1,status=1,resizable=yes')
-    openidpopup.current_user_hash = null
-    coords = @getCenteredCoords(450,500)  
-    openidpopup.moveTo(coords[0],coords[1])
-    @polling_interval = setInterval => 
-      @pollLoginPopup()
-    , 200
-
-    openidpopup
-
-  getCenteredCoords : (width, height) ->
-    if (window.ActiveXObject)
-      xPos = window.event.screenX - (width/2) + 100
-      yPos = window.event.screenY - (height/2) - 100
-    else
-      parentSize = [window.outerWidth, window.outerHeight]
-      parentPos = [window.screenX, window.screenY]
-      xPos = parentPos[0] +
-          Math.max(0, Math.floor((parentSize[0] - width) / 2))
-      yPos = parentPos[1] +
-          Math.max(0, Math.floor((parentSize[1] - (height*1.25)) / 2))
-    yPos = 100
-    [xPos, yPos]
-
-window.ThirdPartyAuthHandler = ThirdPartyAuthHandler
 window.Auth = Auth

@@ -72,6 +72,12 @@ class Opinion < ActiveRecord::Base
     # it includes it in its list of stuff
     dirty_key "/page/#{Proposal.find(proposal_id).slug}"
 
+    # Need to recache the included points so that the user is shown as an official
+    # includer of this point now that the opinion is being published. 
+    inclusions.each do |inc|
+      inc.point.recache
+    end
+
     # ActiveSupport::Notifications.instrument("published_new_opinion", 
     #                                         :opinion => self,
     #                                         :current_subdomain => Thread.current[:subdomain])

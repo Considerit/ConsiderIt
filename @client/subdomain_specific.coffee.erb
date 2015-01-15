@@ -6,7 +6,11 @@ window.DefaultHeader = ReactiveComponent
   render: ->
     subdomain = fetch '/subdomain'   
 
-    masthead_style =  {textAlign: 'center', backgroundColor: subdomain.branding.primary_color}
+    masthead_style = 
+      textAlign: 'center'
+      backgroundColor: subdomain.branding.primary_color
+      height: 45
+
     if subdomain.branding.masthead
       _.extend masthead_style, 
         height: 300
@@ -299,7 +303,6 @@ window.livingvotersguideHeader = ReactiveComponent
         .header { height: 275px; background-image: url(<%= asset_path 'livingvotersguide/bg.jpg' %>); background-position: center; background-size: cover; }
         """
 
-      # Top cream area
       DIV
         style:
           position: 'absolute'
@@ -319,8 +322,9 @@ window.livingvotersguideHeader = ReactiveComponent
         style:
           color: 'white'
           height: 137
-          marginBottom: 23
+          #marginBottom: 10
           clear: 'both'
+          paddingTop: 69
 
         # Online Intelligence for Washington Voters
         DIV
@@ -333,6 +337,15 @@ window.livingvotersguideHeader = ReactiveComponent
             fontWeight: 600
           SPAN null, 'Created by the people '
           'and for the people of Washington state'
+          DIV
+            style: 
+              marginBottom: 15
+              marginTop: 10
+              fontSize: 18
+              fontWeight: 300
+            "Thanks Washington! We'll see you again in 2015."
+
+
 
         DIV
           style:
@@ -346,14 +359,6 @@ window.livingvotersguideHeader = ReactiveComponent
           DIV style: {marginTop: 8}, 'with fact-checks from'
           A {href: 'http://spl.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'The Seattle Public Library')
 
-      DIV
-        style: 
-          fontStyle: 'italic'
-          marginLeft: 332
-          marginBottom: 15
-          fontSize: 18
-          color: 'white'
-        "Thanks Washington! We'll see you again in 2015."
 
 window.ZipcodeBox = ReactiveComponent
   displayName: 'ZipcodeBox'

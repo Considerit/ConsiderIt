@@ -223,11 +223,12 @@ class User < ActiveRecord::Base
   end
 
   def username
+    subdomain = Thread.current[:subdomain]
     name ? 
       name
       : email ? 
         email.split('@')[0]
-        : "#{Thread.current[:subdomain].app_title} participant"
+        : "#{subdomain.app_title or subdomain.name} participant"
   end
   
   def first_name

@@ -782,20 +782,20 @@ window.ProposalSubheading = ReactiveComponent
           => window.app_router.navigate(url, {trigger: true})
         'Next >'
 
-      # Proposer
+      # Candidate photo
       if @proposal.cluster == 'Candidates'
         candidate = proposal_candidate(@proposal)
         if candidate
           Avatar
-            key: @proposal.user
-            user: @proposal.user
+            key: candidate
+            user: candidate
             style:
               position: 'absolute'
               height: 70
               width: 70
               marginLeft: -70 - 20
               borderRadius: 0
-              backgroundColor: '#ddd'
+              backgroundColor: 'transparent'
 
       # Cluster name
       DIV

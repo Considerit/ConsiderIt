@@ -228,7 +228,7 @@ class CurrentUserController < ApplicationController
 
     # If a user is trying to log in, and there was an error, we can
     # re-send them the faulty information so they can fix it.
-    if (params[:trying_to] == 'login' || params[:trying_to] == 'reset_password')\
+    if ( ['login', 'reset_password', 'register', 'register_after_invite'].include?(response[:trying_to]))\
        && !response[:logged_in]
       response[:reset_password_token] = params[:reset_password_token] if params[:reset_password_token]
       response[:password] = params[:password] if params[:password]

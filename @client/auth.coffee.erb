@@ -133,7 +133,7 @@ Auth = ReactiveComponent
         [ @headerAndBorder goal, 'Verify Your Email', 
             @body [['Code:', @inputBox('verification_code', 'verification code from email')]], 
                   'We sent you a verification code via email.'
-          @submitButton('Log in') ]
+          @submitButton('Verify') ]
 
       else
         throw "Unrecognized authentication form #{root.auth.form}"

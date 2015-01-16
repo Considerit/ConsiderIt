@@ -33,7 +33,7 @@ Auth = ReactiveComponent
     return SPAN null if !root.auth
 
     DIV null,
-      if root.auth.form == 'update'
+      if root.auth.form == 'edit profile'
         DashHeader(name: 'Edit Profile')
 
       DIV
@@ -75,7 +75,7 @@ Auth = ReactiveComponent
       #   ...or a slight variation for completing registration
       #      after invitation, where email is fixed and can't
       #      switch to log in. 
-      when 'register', 'register_after_invite'
+      when 'create account', 'create account via invitation'
         
         if avatar_field = @avatarInput()
           avatar_field = ['I look like:', avatar_field]
@@ -83,7 +83,7 @@ Auth = ReactiveComponent
         if pledges = @pledgeInput()
           pledges_field = ['I pledge to:', pledges]
 
-        if root.auth.form == 'register'
+        if root.auth.form == 'create account'
           email_field = @inputBox('email', 'email@address')
           footer = @footerForRegistrationAndLogin()
         else
@@ -104,7 +104,7 @@ Auth = ReactiveComponent
       # The EDIT PROFILE form
       # We don't render an enclosing header and border, 
       # and add feedback when the user is updated.
-      when 'update'
+      when 'edit profile'
         if avatar_field = @avatarInput()
           avatar_field = ['I look like:', avatar_field]
 
@@ -121,7 +121,7 @@ Auth = ReactiveComponent
         ]
 
       # The RESET PASSWORD form
-      when 'reset_password'
+      when 'reset password'
         [ @headerAndBorder null, 'Reset Your Password', 
             @body [['Code:', @inputBox('verification_code', 'verification code from email')],
                    ['New password:', @inputBox('password', "choose a new password", 'password')]
@@ -129,7 +129,7 @@ Auth = ReactiveComponent
           @submitButton('Log in') ]
 
       # The email VERIFICATION form
-      when 'verify'
+      when 'verify email'
         [ @headerAndBorder goal, 'Verify Your Email', 
             @body [['Code:', @inputBox('verification_code', 'verification code from email')]], 
                   'We sent you a verification code via email.'
@@ -192,7 +192,7 @@ Auth = ReactiveComponent
                 right: 0
                 top: 26
               onClick: =>
-                if root.auth.form == 'verify'
+                if root.auth.form == 'verify email'
                   window.app_router.navigate("/", {trigger: true})
                 root.auth = null
                 save root
@@ -299,7 +299,7 @@ Auth = ReactiveComponent
   #
   footerForRegistrationAndLogin : -> 
     root = fetch 'root'
-    if root.auth.form == 'register'
+    if root.auth.form == 'create account'
       toggle_to = 'Log in' 
       button = 'Create new account'
     else 
@@ -319,7 +319,7 @@ Auth = ReactiveComponent
           fontSize: 24
         onClick: => 
           current_user = fetch('/current_user')
-          @root.auth.form = if @root.auth.form == 'register' then 'login' else 'register'
+          @root.auth.form = if @root.auth.form == 'create account' then 'login' else 'create account'
           current_user.errors = []
           save @root
 
@@ -365,9 +365,6 @@ Auth = ReactiveComponent
   inputBox : (name, placeholder, type, onChange, pattern) ->
     current_user = fetch('/current_user')
 
-    if name == 'password'
-      console.log 'ni', current_user.password, @local.password
-
     if @local[name] != current_user[name]
       if name == 'password' || name == 'email'
         noop = 1
@@ -389,7 +386,7 @@ Auth = ReactiveComponent
         border: "1px solid #{auth_gray}"
         padding: '5px 10px'
         fontSize: 18
-      value: if @root.auth.form == 'update' then @local[name] else null
+      value: if @root.auth.form == 'edit profile' then @local[name] else null
       name: "user[#{name}]"
       key: "#{name}_inputBox"
       placeholder: placeholder
@@ -519,7 +516,7 @@ Auth = ReactiveComponent
               arest.updateCache(current_user)
             else
               # Switch to reset_password mode
-              @root.auth.form = 'reset_password'
+              @root.auth.form = 'reset password'
               save @root
         'I forgot my password!'
 
@@ -541,10 +538,10 @@ Auth = ReactiveComponent
     current_user.trying_to = @root.auth.form
     
     save current_user, => 
-      if @root.auth.form in ['register', 'update']
+      if @root.auth.form in ['create account', 'edit profile']
         ensureCurrentUserAvatar()
 
-      if @root.auth.form == 'update'
+      if @root.auth.form == 'edit profile'
         @local.saved_successfully = current_user.errors.length == 0        
 
       # Once the user logs in, we will stop showing the log-in screen

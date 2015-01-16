@@ -1470,11 +1470,11 @@ DecisionBoard = ReactiveComponent
                 togglePage('results', 'save_button')
               else
                 if can_opine == Permission.UNVERIFIED_EMAIL
-                  @root.auth = {form: 'verify', goal: 'Save your Opinion'}
+                  @root.auth = {form: 'verify email', goal: 'Save your Opinion'}
                   current_user.trying_to = 'send_verification_token'
                   save current_user
                 else
-                  @root.auth = {form: 'register', goal: 'Save your Opinion'}
+                  @root.auth = {form: 'create account', goal: 'Save your Opinion'}
 
                 # We'll need to publish this opinion after auth is completed
                 @root.opinions_to_publish.push(@proposal.your_opinion)
@@ -1675,10 +1675,10 @@ YourPoints = ReactiveComponent
                   color: considerit_blue
                 onClick: => 
                   if can_add_new_point == Permission.NOT_LOGGED_IN
-                    @root.auth = {form: 'register', goal: 'write a point'}
+                    @root.auth = {form: 'create account', goal: 'write a point'}
                     save @root
                   else if can_add_new_point == Permission.UNVERIFIED_EMAIL
-                    @root.auth = {form: 'verify', goal: 'write a point'}
+                    @root.auth = {form: 'verify email', goal: 'write a point'}
                     save @root
                     current_user.trying_to = 'send_verification_token'
                     save current_user
@@ -2434,7 +2434,7 @@ EditComment = ReactiveComponent
             if permitted == Permission.NOT_LOGGED_IN
               @root.auth = {form: 'login', goal: 'Write a Comment'}
             else if permitted == Permission.UNVERIFIED_EMAIL
-              @root.auth = {form: 'verify', goal: 'Write a Comment'}
+              @root.auth = {form: 'verify email', goal: 'Write a Comment'}
               current_user.trying_to = 'send_verification_token'
               save current_user
 
@@ -3678,7 +3678,7 @@ ProfileMenu = ReactiveComponent
     current_user.logged_in = false
     current_user.trying_to = 'logout'
 
-    if @root.auth && @root.auth.form == 'update'
+    if @root.auth && @root.auth.form == 'edit profile'
       @root.page_name = 'homepage'
 
     @root.auth = null
@@ -4151,7 +4151,7 @@ Computer = ReactiveComponent
 
     # users following an email invitation need to complete registration (name + password)
     if current_user.needs_to_set_password
-      @root.auth = {form: 'register_after_invite', goal: 'complete registration'}
+      @root.auth = {form: 'create account via invitation', goal: 'complete registration'}
       save @root
 
     SPAN null
@@ -4166,7 +4166,7 @@ Page = ReactiveComponent
     avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
 
-    if @root.auth && @root.auth.form != 'update'
+    if @root.auth && @root.auth.form != 'edit profile'
       return Auth()
 
     if subdomain.name == 'homepage' && @root.page_name == 'homepage'
@@ -4387,7 +4387,7 @@ Router = Backbone.Router.extend
     resetState(root)
 
     root.page_name = 'edit_profile'
-    root.auth = {form: 'update'}
+    root.auth = {form: 'edit profile'}
 
     save root
 

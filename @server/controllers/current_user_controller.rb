@@ -38,12 +38,10 @@ class CurrentUserController < ApplicationController
         update_user_attrs 'create account', errors
         try_update_password 'create account', errors 
         if !current_user.registered || trying_to == 'create account via invitation'
-          third_party_authenticated = current_user.facebook_uid || current_user.google_uid
           has_name = current_user.name && current_user.name.length > 0
-          can_login = ((current_user.email && current_user.email.length > 0)\
-                       || third_party_authenticated)
+          can_login = current_user.email && current_user.email.length > 0
           signed_pledge = params[:signed_pledge]
-          ok_password = third_party_authenticated || (params[:password] && params[:password].length >= @min_pass)
+          ok_password = params[:password] && params[:password].length >= @min_pass
 
           if has_name && can_login && signed_pledge && ok_password
             current_user.registered = true
@@ -106,8 +104,7 @@ class CurrentUserController < ApplicationController
             errors.append "No user exists at that email address" 
 
           elsif !user.authenticate(params[:password])
-            provider = user.third_party_authenticated()
-            errors.append "Wrong password.#{provider ? ' Click "I forgot my password" if you\'re having problems.' : ''}"
+            errors.append "Wrong password. Click \"I forgot my password\" if you\'re having problems."
           else 
             current_user.add_to_active_in
             replace_user(current_user, user)
@@ -338,168 +335,6 @@ class CurrentUserController < ApplicationController
   def log (what)
     write_to_log({:what => what, :where => request.fullpath, :details => nil})
   end
-
-
-  def update_via_third_party
-
-    access_token = env["omniauth.auth"]
-
-    ######
-    # Try to find an existing user that matches the credentials 
-    # provided in the access token
-    case access_token.provider
-      when 'facebook'
-        provider = 'facebook'
-        user = User.find_by_facebook_uid(access_token.uid)
-      when 'google_oauth2'
-        provider = 'google'
-        user = User.find_by_google_uid(access_token.uid)
-      else
-        raise "Don't support #{access_token.provider}"
-    end
-
-    # If we didn't find a user by the uid, perhaps they already have a user
-    # registered by the given email address, but just haven't authenticated 
-    # yet by this particular third party. For example, say I register by 
-    # email/password with me@gmail.com, but then later I try to authenticate
-    # via google oauth. We'll want to match with the existing user and 
-    # set the proper google uid. 
-    if !user && access_token.info.email
-      user = User.find_by_email(access_token.info.email.downcase)
-      if user
-        user["#{provider}_uid".intern] = access_token.uid
-        user.save
-      end
-    end
-
-
-    # If a registered user is associated with this third party, just log them in
-    if user && user.registered
-      # Then the user registration is complete.
-      replace_user current_user, user
-      set_current_user(user)
-
-      current_user.add_to_active_in
-
-      dirty_key '/proposals'
-      if user.is_admin?
-        dirty_key '/subdomain'
-        dirty_key '/users'
-      end
-
-      # third party user's emails are automatically verified
-      if !current_user.verified 
-        current_user.verified = true
-        current_user.save
-      end
-
-      write_to_log({
-        :what => 'logged in through 3rd party',
-        :where => '/current_user',
-        :details => {:provider => user.third_party_authenticated}
-      })
-
-    else
-      # Then the user still needs to complete the pledge.  
-      if user
-        replace_user current_user, user
-        set_current_user(user)
-        current_user.add_to_active_in
-      end      
-      
-      # We'll use the oauth access_token to fill in some of the user's data
-      case provider
-
-        when 'google'
-          third_party_params = {
-            'google_uid' => access_token.uid,
-            'email' => access_token.info.email,
-            'avatar_url' => access_token.info.image,
-          }        
-
-        when 'facebook'
-          third_party_params = {
-            'facebook_uid' => access_token.uid,
-            'email' => access_token.info.email,
-            #'url' => access_token.info.urls.Website ? access_token.info.urls.Website : nil, #TODO: fix this for facebook
-            'avatar_url' => 'https://graph.facebook.com/' + access_token.uid + '/picture?type=large'
-          }
-
-        else
-          raise 'Unsupported provider'
-      end
-
-      third_party_params['name'] = access_token.info.name
-
-      if !current_user.encrypted_password
-        # this prevents a bcrypt hashing problem in the scenario where 
-        # a user creates an account via third party, forgets, and tries
-        # to enter an email and password. In that case, password
-        # can't be null.
-        third_party_params['password'] = SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] 
-      end
-
-
-      # third party user's emails are automatically verified
-      if !current_user.verified 
-        third_party_params['verified'] = true
-      end
-
-      current_user.update_attributes! third_party_params
-
-    end
-
-    response = [current_user.current_user_hash(form_authenticity_token)]
-    response.concat(compile_dirty_objects())
-
-    document_domain = nil
-    vanity_url = request.host.split('.').length == 1
-    document_domain = vanity_url ? "document.domain" : "location.host.replace(/^.*?([^.]+\.[^.]+)$/g,'$1')"
-
-    render :inline =>
-      "<div style='font-weight:600; font-size: 36px; color: #414141'>Please close this window</div>" +
-      "<div style='font-size: 24px'><div>You've logged in successfully!</div>" + 
-      "<div>Unfortunately, a bug in the iPad & iPhone prevents this window from closing automatically." +
-      "<div>Sorry for the inconvenience.</div></div>" +
-      "<script type=\"text/javascript\">" +
-      (document_domain ? "document.domain = #{document_domain};\n" : '') + 
-      "  window.current_user_hash = #{response.to_json};  " +
-      "</script>"
-  end
-
-
-
-  # Omniauth oauth handlers
-  def facebook
-    update_via_third_party
-  end
-
-  def google_oauth2
-    update_via_third_party
-  end
-
-  def twitter
-    update_via_third_party
-  end
-
-  def passthru
-    render status: 404, text: "Not found. Oauth authentication passthru."
-  end
-
-  # when something goes wrong in an oauth transation, this method gets called
-  def failure
-    # TODO: handle this gracefully for the user
-    raise env['omniauth.error.type']
-  end
-
-  private
-
-  # this won't be needed after old dash is replaced
-  def file_uploaded
-    params[:remotipart_submitted].present? && params[:remotipart_submitted] == "true"
-  end
-
-
 
 end
 

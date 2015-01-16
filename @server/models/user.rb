@@ -61,9 +61,6 @@ class User < ActiveRecord::Base
       csrf: form_authenticity_token,
       avatar_remote_url: avatar_remote_url,
       url: url,
-      twitter_uid: twitter_uid,
-      facebook_uid: facebook_uid,
-      google_uid: google_uid,
       name: name,
       reset_password_token: nil,
       b64_thumbnail: b64_thumbnail,
@@ -184,19 +181,6 @@ class User < ActiveRecord::Base
     end
 
     followable_objects
-  end
-
-
-  def third_party_authenticated
-    if !!self.facebook_uid
-      'Facebook' 
-    elsif !!self.google_uid
-      'Google'
-    elsif !!self.twitter_uid
-      'Twitter'
-    else
-      nil
-    end
   end
 
   def avatar_url_provided?

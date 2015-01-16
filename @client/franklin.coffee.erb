@@ -62,7 +62,7 @@ userOpinion = (user_key) ->
 
 _route_changed = false
 
-togglePage = (proposal_mode, triggered_by) ->
+window.togglePage = (proposal_mode, triggered_by) ->
   $('.histogram_segment_pole').ensureInView
     offset_buffer: 150
     callback : -> 

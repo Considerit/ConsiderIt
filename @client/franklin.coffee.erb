@@ -3040,8 +3040,9 @@ AutoGrowTextArea = ReactiveComponent
 
   checkAndSetHeight : ->
     scroll_height = @getDOMNode().scrollHeight
+    max_height = @props.max_height or 400
     if scroll_height > @getDOMNode().clientHeight
-      @local.height = scroll_height + 5
+      @local.height = Math.min scroll_height + 5, max_height
       save(@local)
 
   render : -> 
@@ -3860,27 +3861,60 @@ EditProposal = ReactiveComponent
     
     return DIV null, 'Nothing to see here, move on' if (permit('update proposal', proposal) < 0) || (!@props.fresh && !proposal.slug )
 
-    block_style = { width: CONTENT_WIDTH, padding: '2px 0px', marginBottom: 12, position: 'relative' }
-    description_field_style = {fontSize: 16, width: CONTENT_WIDTH - 200, padding: '4px 8px', marginBottom: 8, border: '1px solid #ccc'}
-    input_style = _.extend {}, description_field_style, {marginLeft: 18}
-    label_style = {verticalAlign: 'top', fontSize: 16, width: 150, display: 'inline-block'}
+    block_style = 
+      width: CONTENT_WIDTH
+      padding: '2px 0px'
+      marginBottom: 12
+      position: 'relative'
+
+    description_field_style =
+      fontSize: 18
+      width: CONTENT_WIDTH - 200
+      padding: 12
+      marginBottom: 8
+      border: '1px solid #ccc'
+
+    input_style = _.extend {}, description_field_style, 
+      display: 'block'
+
+    label_style =
+      fontSize: 24
+      fontWeight: 600
+      width: 240
+      display: 'inline-block'
+      color: considerit_blue
+      marginBottom: 3
+
 
     if !@local.description_fields
       @local.description_fields = if @data().description_fields then $.parseJSON(@data().description_fields) || [] else []
+      @local.open_fields = []
+
       if @local.description_fields.length > 0
         if @local.description_fields[0].group
           # Right now, we just downgrade group syntax to flat description list syntax
           # TODO: when editing a proposal, support the proposal description groups syntax (or get rid of it)
           @local.description_fields = _.flatten(@local.description_fields.map (group) -> group.items)
 
+        # Add unique identifiers to each field so we can hide/edit them
+        for field,idx in @local.description_fields
+          field.id = idx
+
+      save @local
+
+    toggleDescriptionFieldOpen = (field, field_open) =>
+      if field_open
+        @local.open_fields = _.without @local.open_fields, field.id
+      else
+        @local.open_fields.push field.id
       save @local
 
     DIV null, 
       DashHeader name: if @props.fresh then "New Proposal" else "Edit #{proposal.name}"
-      DIV style: { width: PAGE_WIDTH, margin: 'auto', padding: '3em 0' },
+      DIV style: { width: CONTENT_WIDTH, margin: 'auto', padding: '3em 0' },
 
         DIV style: block_style,
-          LABEL htmlFor:'slug', style: label_style, 'URL'
+          LABEL htmlFor:'slug', style: label_style, 'URL:'
           INPUT 
             id:'slug'
             name:'slug'
@@ -3891,44 +3925,49 @@ EditProposal = ReactiveComponent
             style: input_style
 
         DIV style: block_style,
-          LABEL htmlFor:'name', style: label_style, 'Topic question'
+          LABEL htmlFor:'name', style: label_style, 'Summary:'
           INPUT 
             id:'name'
             name:'name'
             pattern:'^.{3,}'
-            placeholder:'Make this super succinct with a <verb> <noun>.'
+            placeholder:'Aim for 3-8 words with a verb and noun.'
             required:'required'
             defaultValue: if @props.fresh then null else proposal.name
             style: input_style
 
         DIV style: block_style,
-          LABEL htmlFor:'description', style: label_style, 'Description'
+          LABEL htmlFor:'description', style: label_style, 'Description:'
           AutoGrowTextArea 
             id:'description'
             name:'description'
             pattern:'^.{3,}'
-            placeholder:'Make this good :)'
+            placeholder:'Clearly describe the details.'
             required:'required'
             defaultValue: if @props.fresh then null else proposal.description
             style: _.extend {}, input_style, {height: 150}
 
           # Expandable description fields
-          if fetch('/current_user').is_admin
-            DIV style: {marginLeft: 168, marginBottom: 30},
-              for field,idx in @local.description_fields
+          DIV style: {marginBottom: 20, marginLeft: 45},
+            for field,idx in @local.description_fields
+              field_open = field.id in @local.open_fields
+              DIV key: "field-#{idx}", style: _.extend({}, block_style, {width: ''}),
 
-                DIV key: "field-#{idx}", style: block_style,
-                  I className: "fa fa-plus-circle", style: {position: 'absolute', left: -20, top: 10, color: '#bbb'}
-                  INPUT
-                    style: description_field_style
+                I 
+                  className: "fa fa-#{if field_open then 'plus' else 'minus'}-circle"
+                  style: {position: 'absolute', left: -20, top: 18, color: '#414141', cursor: 'pointer'}
+                  onClick: do (field, field_open) => => toggleDescriptionFieldOpen(field, field_open)
+
+                if field_open
+                  [INPUT
+                    style: _.extend {}, description_field_style, {width: description_field_style.width - 45}
                     type: 'text'
                     id:"field-#{idx}-label"
                     name:"field-#{idx}-label"
                     pattern:'^.{3,}'
                     placeholder:'Label'
                     required:'required'
-                    onChange: do(idx) => (e) => @local.description_fields[idx].label = e.target.value; save(@local)
-                    value: @local.description_fields[idx].label
+                    onChange: do(field,idx) => (e) => field.label = e.target.value; save(@local)
+                    value: field.label
 
                   AutoGrowTextArea
                     id:"field-#{idx}-html"
@@ -3936,30 +3975,61 @@ EditProposal = ReactiveComponent
                     pattern:'^.{3,}'
                     placeholder:'Text that is shown when expanded'
                     required:'required'
-                    onChange: do(idx) => (e) => @local.description_fields[idx].html = e.target.value; save(@local)
-                    value: @local.description_fields[idx].html
-                    style: description_field_style
+                    onChange: do(field,idx) => (e) => field.html = e.target.value; save(@local)
+                    value: field.html
+                    style: _.extend {}, description_field_style, {width: description_field_style.width - 45}]
+                else
+                  DIV 
+                    style: 
+                      fontSize: 18
+                      fontWeight: 600
+                      cursor: 'pointer'
+                      marginTop: 12
+                      marginLeft: 5
+                      width: description_field_style.width - 45
+                    onClick: do (field, field_open) => => toggleDescriptionFieldOpen(field, field_open)
+                    field.label
 
-                  SPAN
-                    style: {color: '#ccc', textDecoration: 'underline', fontSize: 12, cursor: 'pointer', position: 'absolute', top: 5, marginLeft: 20}
+                DIV 
+                  style: 
+                    position: 'absolute'
+                    right: 150
+                    top: 12
+
+                  A
+                    style: {color: '#aaa', textDecoration: 'underline', fontSize: 14, cursor: 'pointer', display: 'block'}
+                    onClick: do (field, field_open) => => toggleDescriptionFieldOpen(field, field_open)
+                    if field_open then 'close' else 'edit'
+
+                  A
+                    style: {color: '#aaa', textDecoration: 'underline', fontSize: 14, cursor: 'pointer', display: 'block'}
                     onClick: do (idx) => =>
                       @local.description_fields.splice(idx, 1)
                       save @local
                     'delete'
 
-          SPAN
-            style: {color: '#bbb', cursor: 'pointer', fontSize: 14}
-            onClick: => 
-              console.log 'HIYA!'
-              @local.description_fields.push({label: null, html: null})
-              save @local
+            SPAN
+              style: 
+                color: '#aaa'
+                cursor: 'pointer'
+                fontSize: 18
+                marginLeft: -18
 
-            "+ "
-            SPAN style: {textDecoration: 'underline'}, "expandable field"
+              onClick: => 
+                new_id = 0
+                for field in @local.description_fields
+                  new_id += field.id  
+                new_id += 1
+                @local.description_fields.push {label: null, html: null, id: new_id}
+                @local.open_fields.push new_id
+                save @local
+
+              "+ "
+              SPAN style: {textDecoration: 'underline', marginLeft: 7}, "Add expandable description section"
 
 
         DIV style: block_style,
-          LABEL htmlFor:'cluster', style: label_style, 'Group (optional)'
+          LABEL htmlFor:'cluster', style: label_style, 'Group (optional):'
           INPUT 
             id:'cluster'
             name:'cluster'
@@ -3969,31 +4039,46 @@ EditProposal = ReactiveComponent
             style: input_style
 
         DIV style: block_style,
+          LABEL htmlFor: 'listed_on_homepage', style: label_style, 'List on homepage:'
+
           INPUT 
             id: 'listed_on_homepage'
             name: 'listed_on_homepage'
             type: 'checkbox'
             defaultChecked: if @props.fresh then true else !proposal.hide_on_homepage
-          LABEL htmlFor: 'listed_on_homepage', 'List on homepage'
+            style: {fontSize: 24}
 
         DIV style: block_style,
+          LABEL htmlFor: 'open_for_discussion', style: label_style, 'Open for discussion:'
+
           INPUT 
             id: 'open_for_discussion'
             name: 'open_for_discussion'
             type: 'checkbox'
             defaultChecked: if @props.fresh then true else proposal.active
-          LABEL htmlFor: 'open_for_discussion', 'Open for discussion'
+            style: {fontSize: 24}
 
 
         if @props.fresh
           DIV null, 
             SPAN 
-              style: {textDecoration: 'underline', cursor: 'pointer'}
+              style: _.extend {}, label_style,
+                textDecoration: 'underline'
+                cursor: 'pointer'
+                width: 400
+                position: 'relative'
               onClick: => 
                 @local.edit_roles = !@local.edit_roles
                 save @local
-              I className: 'fa-child fa', style: {marginRight: 7}
-              'Roles and invitations'
+              I 
+                className: 'fa-child fa'
+                style: 
+                  position: 'absolute'
+                  left: -25
+                  top: 5
+
+
+              'Permissions and invitations'
 
             DIV 
               style: 
@@ -4007,7 +4092,14 @@ EditProposal = ReactiveComponent
               ProposalRoles key: @local
 
         DIV null,
-          INPUT className:'button primary_button', type:'submit', value:"#{if @props.fresh then 'Publish' else 'Update'}", onClick: @saveProposal
+          INPUT 
+            className:'button primary_button'
+            type:'submit'
+            style: 
+              width: 300
+              marginTop: 35
+            value:"#{if @props.fresh then 'Publish' else 'Update'}"
+            onClick: @saveProposal
 
 
 About = ReactiveComponent

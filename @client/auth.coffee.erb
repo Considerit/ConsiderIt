@@ -11,7 +11,7 @@
 #
 # Each of these screens has some differences. We try to keep these differences
 # clearly documented in the render method so that the method doesn't get
-# too complicated to understand and modify. 
+# too complicated to understand and modify.
 
 auth_ghost_gray = '#a1a1a1' # the gray color for ghost text
 auth_text_gray = '#444'    # the gray color for solid text
@@ -19,7 +19,7 @@ auth_text_gray = '#444'    # the gray color for solid text
 Auth = ReactiveComponent
   displayName: 'Auth'
 
-  render: -> 
+  render: ->
     current_user = fetch('/current_user')
     root = fetch('root')
 
@@ -52,10 +52,10 @@ Auth = ReactiveComponent
   #
   # Constructs the correct form given the desired mode.
   # Builds the form from input and section components
-  # defined further down the file. Intended to be as 
+  # defined further down the file. Intended to be as
   # declarative as possible for making clear definitions
-  # of different auth modes. 
-  buildAuthForm : -> 
+  # of different auth modes.
+  buildAuthForm : ->
     root = fetch('root')
     current_user = fetch('/current_user')
 
@@ -65,7 +65,7 @@ Auth = ReactiveComponent
 
       # The LOGIN form, with easy switch to register
       when 'login'
-        [ @headerAndBorder goal, 'Introduce Yourself', 
+        [ @headerAndBorder goal, 'Introduce Yourself',
             @body [['Hi, I log in as:',
                     [ @inputBox('email', 'email@address'),
                       @inputBox('password', "password", 'password'),
@@ -75,7 +75,7 @@ Auth = ReactiveComponent
       # The REGISTER form, with easy switch to log in
       #   ...or a slight variation for completing registration
       #      after invitation, where email is fixed and can't
-      #      switch to log in. 
+      #      switch to log in.
       when 'create account', 'create account via invitation'
         
         if avatar_field = @avatarInput()
@@ -88,12 +88,12 @@ Auth = ReactiveComponent
           email_field = @inputBox('email', 'email@address')
           footer = @footerForRegistrationAndLogin()
         else
-          email_field = DIV 
-            style: {color: auth_text_gray, padding: '4px 8px'}, 
+          email_field = DIV
+            style: {color: auth_text_gray, padding: '4px 8px'},
             current_user.email
           footer = @submitButton('Create new account')
 
-        [ @headerAndBorder goal, 'Introduce Yourself', 
+        [ @headerAndBorder goal, 'Introduce Yourself',
             @body [['Hi, I log in as:',
                       [ email_field,
                         @inputBox('password', "password", 'password')]],
@@ -103,14 +103,14 @@ Auth = ReactiveComponent
           footer ]
 
       # The EDIT PROFILE form
-      # We don't render an enclosing header and border, 
+      # We don't render an enclosing header and border,
       # and add feedback when the user is updated.
       when 'edit profile'
         if avatar_field = @avatarInput()
           avatar_field = ['I look like:', avatar_field]
 
         [ @body [
-            ['Hi, I log in as:', 
+            ['Hi, I log in as:',
               [ @inputBox('email', 'email@address'),
                 @inputBox('password', "password", 'password')]
             ],
@@ -123,7 +123,7 @@ Auth = ReactiveComponent
 
       # The RESET PASSWORD form
       when 'reset password'
-        [ @headerAndBorder null, 'Reset Your Password', 
+        [ @headerAndBorder null, 'Reset Your Password',
             @body [['Code:', @inputBox('verification_code', 'verification code from email')],
                    ['New password:', @inputBox('password', "choose a new password", 'password')]
                   ], 'We sent you a verification code via email.'
@@ -131,8 +131,8 @@ Auth = ReactiveComponent
 
       # The email VERIFICATION form
       when 'verify email'
-        [ @headerAndBorder goal, 'Verify Your Email', 
-            @body [['Code:', @inputBox('verification_code', 'verification code from email')]], 
+        [ @headerAndBorder goal, 'Verify Your Email',
+            @body [['Code:', @inputBox('verification_code', 'verification code from email')]],
                   'We sent you a verification code via email.'
           @submitButton('Verify') ]
 
@@ -142,38 +142,38 @@ Auth = ReactiveComponent
   #####
   # headerAndBorder
   #
-  # Creates the header with bubble mouth and blue circle. 
-  # Also creates an enclosure with blue dashed boarder. 
-  # 
+  # Creates the header with bubble mouth and blue circle.
+  # Also creates an enclosure with blue dashed boarder.
+  #
   # goal: The reason this auth form is being shown
   # task: The label for this auth form
   # body: Child nodes that will be rendered inside
   #
-  headerAndBorder : (goal, task, body) -> 
+  headerAndBorder : (goal, task, body) ->
     root = fetch('root')
 
     DIV null,
 
       # The auth form's header
-      DIV 
-        style : 
+      DIV
+        style :
           width: HISTOGRAM_WIDTH
           position: 'relative'
-          margin: 'auto' 
+          margin: 'auto'
           top: 5 # to overlap bubblemouth with enclosure
 
-        DIV 
-          style: 
+        DIV
+          style:
             textAlign: 'center'
             position: 'relative'
 
           if goal
-            DIV 
-              style: 
+            DIV
+              style:
                 fontWeight: 600
                 fontSize: 18
                 color: considerit_blue
-                transform: 'translateY(6px)' 
+                transform: 'translateY(6px)'
               goal
 
           DIV
@@ -187,8 +187,8 @@ Auth = ReactiveComponent
             task
             I
               className: 'fa-close fa'
-              title: 'cancel'     
-              style: 
+              title: 'cancel'
+              style:
                 color: auth_ghost_gray
                 position: 'absolute'
                 cursor: 'pointer'
@@ -202,8 +202,8 @@ Auth = ReactiveComponent
                 save root
               ' cancel'
 
-        DIV 
-          style: 
+        DIV
+          style:
             left: HISTOGRAM_WIDTH / 2
             height: 50
             width: 50
@@ -214,7 +214,7 @@ Auth = ReactiveComponent
             position: 'relative'
             boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{considerit_blue}"
 
-        IMG 
+        IMG
           # Asset fingerprinting. This is why this file is ERB
           src: "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
           style:
@@ -244,19 +244,19 @@ Auth = ReactiveComponent
   # body
   #
   # Renders the main part of the auth form. Also
-  # renders any user errors. 
-  # 
+  # renders any user errors.
+  #
   # fields: a list of input fields and labels to
   #         be rendered in a table.
   # additional_instructions: text rendered before
   #                          the fields
-  body : (fields, additional_instructions) -> 
+  body : (fields, additional_instructions) ->
     current_user = fetch '/current_user'
 
     DIV null,
       if additional_instructions
-        DIV 
-          style: 
+        DIV
+          style:
             color: auth_text_gray
             marginBottom: 18
           additional_instructions
@@ -264,51 +264,51 @@ Auth = ReactiveComponent
       TABLE null, TBODY null,
         for field in fields
           if field
-            [TR null, 
-              TD 
+            [TR null,
+              TD
                 style:
                   paddingTop: 4
                   verticalAlign: 'top'
                   width: '30%'
-                LABEL 
-                  style: 
+                LABEL
+                  style:
                     color: considerit_blue
                     fontWeight: 600
                   field[0]
-              TD 
-                style: 
+              TD
+                style:
                   verticalAlign: 'top'
                   width: '100%'
                   paddingLeft: 18
-                field[1] 
+                field[1]
              TR style: {height: 10}]
 
       if current_user.errors && current_user.errors.length > 0
         DIV
-          style: 
+          style:
             textAlign: 'center'
             fontSize: 18
             color: 'darkred'
-            backgroundColor: '#ffD8D8' 
+            backgroundColor: '#ffD8D8'
             padding: 10
             marginTop: 10
-          I 
+          I
             className: 'fa fa-exclamation-circle'
             style: {paddingRight: 9}
           SPAN null, "#{current_user.errors.join(', ')}"
 
   #####
   # footerForRegistrationAndLogin
-  # 
+  #
   # The footer for switching between create new account and login
   #
-  footerForRegistrationAndLogin : -> 
+  footerForRegistrationAndLogin : ->
     root = fetch 'root'
     if root.auth.form == 'create account'
-      toggle_to = 'Log in' 
+      toggle_to = 'Log in'
       button = 'Create new account'
-    else 
-      button = 'Log in' 
+    else
+      button = 'Log in'
       toggle_to = 'Create new account'
 
     DIV
@@ -322,14 +322,14 @@ Auth = ReactiveComponent
           paddingLeft: 18
           paddingRight: 7
         'or '
-      A 
-        style: 
+      A
+        style:
           display: 'inline-block'
           color: '#444'
           textDecoration: 'underline'
           fontWeight: 400
           fontSize: 24
-        onClick: => 
+        onClick: =>
           current_user = fetch('/current_user')
           @root.auth.form = if @root.auth.form == 'create account' then 'login' else 'create account'
           current_user.errors = []
@@ -344,13 +344,13 @@ Auth = ReactiveComponent
   ####
   # submitButton
   #
-  # Renders the blue button for auth form submission. 
-  # 
+  # Renders the blue button for auth form submission.
+  #
   # action: the text for the button
   # inline: is the button inline-block?
-  submitButton : (action, inline) -> 
+  submitButton : (action, inline) ->
     DIV
-      style: 
+      style:
         fontSize: 24
         display: if inline then 'inline-block' else 'block'
       className:'primary_button' + (if @local.submitting then ' disabled' else '')
@@ -360,14 +360,14 @@ Auth = ReactiveComponent
   ####
   # inputBox
   #
-  # Renders an input form element for modifying current_user. 
+  # Renders an input form element for modifying current_user.
   #
   # name: the name of the field being modified
   # placeholder: text for html5 field placeholder
   # type: input type; text, email or password
   # onChange: optional callback for when text is typed
   # pattern: html5 constraints on values
-  # 
+  #
   inputBox : (name, placeholder, type, onChange, pattern) ->
     current_user = fetch('/current_user')
 
@@ -378,7 +378,7 @@ Auth = ReactiveComponent
       save @local
       return SPAN null
 
-    # There is a react bug where input cursor will jump to end for 
+    # There is a react bug where input cursor will jump to end for
     # controlled components. http://searler.github.io/react.js/2014/04/11/React-controlled-text.html
     # This makes it annoying to edit text. I've contained this issue to edit_profile only
     # by only setting value in the Input component when in edit_profile mode
@@ -386,7 +386,7 @@ Auth = ReactiveComponent
     INPUT
       id: 'user_' + name
       className: 'auth_text_input'
-      style: 
+      style:
         marginBottom: 6
         width: 300
         border: "1px solid #{auth_ghost_gray}"
@@ -398,10 +398,10 @@ Auth = ReactiveComponent
       placeholder: placeholder
       required: "required"
       type: type || 'text'
-      onChange: onChange || (event) => 
+      onChange: onChange || (event) =>
         @local[name] = current_user[name] = event.target.value
         save @local
-      onKeyPress: => 
+      onKeyPress: =>
         # submit on enter
         if event.which == 13
           @submitAuth(event)
@@ -410,7 +410,7 @@ Auth = ReactiveComponent
   ####
   # avatarInput
   #
-  # Outputs a file input for uploading (and previewing) an avatar. 
+  # Outputs a file input for uploading (and previewing) an avatar.
   # Returns null for non-FormData compliant browsers (IE9)...
   #
   avatarInput : ->

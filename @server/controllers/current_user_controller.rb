@@ -18,7 +18,7 @@ class CurrentUserController < ApplicationController
 
 
     if !params.has_key?(:trying_to) || !params[:trying_to] || params[:trying_to] == 'update_avatar_hack'
-      trying_to = 'update'    
+      trying_to = 'edit profile'    
     else
       trying_to = params[:trying_to]
     end
@@ -33,11 +33,11 @@ class CurrentUserController < ApplicationController
 
     case trying_to
 
-      when 'register', 'register_after_invite'
+      when 'create account', 'create account via invitation'
 
-        update_user_attrs 'register', errors
-        try_update_password 'register', errors 
-        if !current_user.registered || trying_to == 'register_after_invite'
+        update_user_attrs 'create account', errors
+        try_update_password 'create account', errors 
+        if !current_user.registered || trying_to == 'create account via invitation'
           third_party_authenticated = current_user.facebook_uid || current_user.google_uid
           has_name = current_user.name && current_user.name.length > 0
           can_login = ((current_user.email && current_user.email.length > 0)\
@@ -123,7 +123,7 @@ class CurrentUserController < ApplicationController
             log('sign in by email')
           end
         end
-      when 'reset_password'
+      when 'reset password'
 
         # puts("Signing in by password reset.  min_pass is #{@min_pass}")
         has_password = params[:password] && params[:password].length >= @min_pass
@@ -146,7 +146,7 @@ class CurrentUserController < ApplicationController
           if user
             replace_user(current_user, user)
             set_current_user(user)
-            try_update_password 'reset_password', errors
+            try_update_password 'reset password', errors
             current_user.add_to_active_in
             if !current_user.verified 
               current_user.verified = true
@@ -205,12 +205,12 @@ class CurrentUserController < ApplicationController
           log('logged out')
         end
 
-      when 'update'
-        update_user_attrs 'update', errors
-        try_update_password 'update', errors
+      when 'edit profile'
+        update_user_attrs 'edit profile', errors
+        try_update_password 'edit profile', errors
         log('updating info')
 
-      when 'verify'
+      when 'verify email'
         verify_user(current_user.email, params[:verification_code])
         log('verifying email')
 
@@ -220,15 +220,13 @@ class CurrentUserController < ApplicationController
 
     end
 
-    
-
     # Wrap everything up
     response = current_user.current_user_hash(form_authenticity_token)
     response[:errors] = errors
 
     # If a user is trying to log in, and there was an error, we can
     # re-send them the faulty information so they can fix it.
-    if ( ['login', 'reset_password', 'register', 'register_after_invite'].include?(response[:trying_to]))\
+    if ( ['login', 'reset password', 'create account', 'create account via invitation'].include?(response[:trying_to]))\
        && !response[:logged_in]
       response[:reset_password_token] = params[:reset_password_token] if params[:reset_password_token]
       response[:password] = params[:password] if params[:password]
@@ -300,7 +298,7 @@ class CurrentUserController < ApplicationController
     email = params[:email]
     user = User.find_by_email(email)
     if !email || email.length == 0
-      if trying_to == 'register'
+      if trying_to == 'create account'
         errors.append 'No email address specified' 
       end
     # And if it's not taken
@@ -322,7 +320,7 @@ class CurrentUserController < ApplicationController
   def try_update_password(trying_to, errors)
     # Update their password
     if !params[:password] || params[:password].length == 0
-      if trying_to == 'register' || trying_to == 'reset_password'
+      if trying_to == 'create account' || trying_to == 'reset password'
         errors.append 'No password specified'
       end
     elsif params[:password].length < @min_pass

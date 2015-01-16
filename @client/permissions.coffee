@@ -177,7 +177,7 @@ AccessControlled =
           save @root
 
         when Permission.UNVERIFIED_EMAIL
-          @root.auth = {form: 'verify', goal: 'Access this page'}
+          @root.auth = {form: 'verify email', goal: 'Access this page'}
           save @root
           current_user.trying_to = 'send_verification_token'
           save current_user

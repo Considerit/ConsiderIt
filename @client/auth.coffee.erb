@@ -13,7 +13,8 @@
 # clearly documented in the render method so that the method doesn't get
 # too complicated to understand and modify. 
 
-auth_gray = '#a1a1a1' # the gray color used through the auth forms
+auth_ghost_gray = '#a1a1a1' # the gray color for ghost text
+auth_text_gray = '#444'    # the gray color for solid text
 
 Auth = ReactiveComponent
   displayName: 'Auth'
@@ -38,8 +39,8 @@ Auth = ReactiveComponent
 
       DIV
         style:
-          margin: "0 auto 0 #{if lefty then 300 else 'auto'}"
-          padding: '2em 0'
+          margin: "0 auto 0 #{if lefty then '300px' else 'auto'}"
+          padding: '4em 0'
           position: 'relative'
           zIndex: 0
           width: DECISION_BOARD_WIDTH
@@ -65,7 +66,7 @@ Auth = ReactiveComponent
       # The LOGIN form, with easy switch to register
       when 'login'
         [ @headerAndBorder goal, 'Introduce Yourself', 
-            @body [['Hi, I login as:', 
+            @body [['Hi, I log in as:',
                     [ @inputBox('email', 'email@address'),
                       @inputBox('password', "password", 'password'),
                       @resetPasswordLink() ]]]
@@ -88,12 +89,12 @@ Auth = ReactiveComponent
           footer = @footerForRegistrationAndLogin()
         else
           email_field = DIV 
-            style: {color: auth_gray, padding: '4px 8px'}, 
+            style: {color: auth_text_gray, padding: '4px 8px'}, 
             current_user.email
           footer = @submitButton('Create new account')
 
         [ @headerAndBorder goal, 'Introduce Yourself', 
-            @body [['Hi, I login as:', 
+            @body [['Hi, I log in as:',
                       [ email_field,
                         @inputBox('password', "password", 'password')]],
                     ['My name is:', @inputBox('name', 'first and last name')],
@@ -109,7 +110,7 @@ Auth = ReactiveComponent
           avatar_field = ['I look like:', avatar_field]
 
         [ @body [
-            ['Hi, I login as:', 
+            ['Hi, I log in as:', 
               [ @inputBox('email', 'email@address'),
                 @inputBox('password', "password", 'password')]
             ],
@@ -175,27 +176,31 @@ Auth = ReactiveComponent
                 transform: 'translateY(6px)' 
               goal
 
-          DIV style: {position: 'relative'}, 
-            SPAN 
-              style: 
-                fontWeight: 600
-                fontSize: 44
-                color: considerit_blue
-              task
+          DIV
+            style:
+              position: 'relative'
+              marginBottom: 10
+              fontWeight: 600
+              fontSize: 61
+              whiteSpace: 'nowrap'
+              color: considerit_blue
+            task
             I
               className: 'fa-close fa'
               title: 'cancel'     
               style: 
-                color: auth_gray
+                color: auth_ghost_gray
                 position: 'absolute'
                 cursor: 'pointer'
-                right: 0
-                top: 26
+                right: -133
+                top: 31
+                fontSize: 21
               onClick: =>
                 if root.auth.form == 'verify email'
                   window.app_router.navigate("/", {trigger: true})
                 root.auth = null
                 save root
+              ' cancel'
 
         DIV 
           style: 
@@ -224,7 +229,7 @@ Auth = ReactiveComponent
       DIV
         className: if @local.submitting then ' waiting' else ''
         style:
-          padding: '2.5em 36px 1.5em 36px'
+          padding: '2.5em 46px 1.5em 46px'
           fontSize: 18
           marginTop: 10
           borderRadius: 16
@@ -252,7 +257,7 @@ Auth = ReactiveComponent
       if additional_instructions
         DIV 
           style: 
-            color: auth_gray
+            color: auth_text_gray
             marginBottom: 18
           additional_instructions
 
@@ -261,10 +266,10 @@ Auth = ReactiveComponent
           if field
             [TR null, 
               TD 
-                style: 
+                style:
                   paddingTop: 4
                   verticalAlign: 'top'
-                  width: '37%'
+                  width: '30%'
                 LABEL 
                   style: 
                     color: considerit_blue
@@ -306,14 +311,21 @@ Auth = ReactiveComponent
       button = 'Log in' 
       toggle_to = 'Create new account'
 
-    DIV 
-      style: 
-        paddingRight: 36
-        textAlign: 'right'
+    DIV
+      style:
+        paddingLeft: 40
+      @submitButton button, true
+      SPAN
+        style:
+          color: '#444'
+          fontSize: 24
+          paddingLeft: 18
+          paddingRight: 7
+        'or '
       A 
         style: 
           display: 'inline-block'
-          color: auth_gray
+          color: '#444'
           textDecoration: 'underline'
           fontWeight: 400
           fontSize: 24
@@ -325,14 +337,8 @@ Auth = ReactiveComponent
 
         toggle_to
 
-      SPAN 
-        style: 
-          color: auth_gray
-          fontSize: 24
-          padding: '0 36px'
-        'or'
 
-      @submitButton button, true
+
 
 
   ####
@@ -383,7 +389,7 @@ Auth = ReactiveComponent
       style: 
         marginBottom: 6
         width: 300
-        border: "1px solid #{auth_gray}"
+        border: "1px solid #{auth_ghost_gray}"
         padding: '5px 10px'
         fontSize: 18
       value: if @root.auth.form == 'edit profile' then @local[name] else null
@@ -476,6 +482,7 @@ Auth = ReactiveComponent
             position: 'relative'
             paddingLeft: 30
             paddingBottom: 3
+            color: auth_text_gray
 
           INPUT
             className:"pledge-input"
@@ -493,7 +500,6 @@ Auth = ReactiveComponent
             htmlFor: "pledge-#{idx}"
             style: 
               fontSize: 18
-              color: auth_gray
             pledge
 
   ####
@@ -505,7 +511,7 @@ Auth = ReactiveComponent
       A 
         style: 
           textDecoration: 'underline'
-          color: auth_gray            
+          color: auth_ghost_gray
         onClick: => 
           # Tell the server to email us a token
           current_user = fetch('/current_user')
@@ -591,16 +597,16 @@ ensureCurrentUserAvatar = (attempts = 0) ->
 styles += """
 
 .auth_text_input::-webkit-input-placeholder{
-  color: #{auth_gray};
+  color: #{auth_ghost_gray};
 } 
 .auth_text_input:-moz-placeholder{
-  color: #{auth_gray};
+  color: #{auth_ghost_gray};
 } 
 .auth_text_input::-moz-placeholder {
-  color: #{auth_gray};
+  color: #{auth_ghost_gray};
 } 
 .auth_text_input::-ms-input-placeholder {
-  color: #{auth_gray};
+  color: #{auth_ghost_gray};
 }
 """
 

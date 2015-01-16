@@ -193,7 +193,7 @@ Auth = ReactiveComponent
                 position: 'absolute'
                 cursor: 'pointer'
                 right: -133
-                top: 31
+                top: 46
                 fontSize: 21
               onClick: =>
                 if root.auth.form == 'verify email'
@@ -307,35 +307,48 @@ Auth = ReactiveComponent
     if root.auth.form == 'create account'
       toggle_to = 'Log in'
       button = 'Create new account'
+      left = 421
     else
       button = 'Log in'
       toggle_to = 'Create new account'
+      left = 349
 
     DIV
       style:
-        paddingLeft: 40
-      @submitButton button, true
-      SPAN
-        style:
-          color: '#444'
-          fontSize: 24
-          paddingLeft: 18
-          paddingRight: 7
-        'or '
-      A
-        style:
-          display: 'inline-block'
-          color: '#444'
-          textDecoration: 'underline'
-          fontWeight: 400
-          fontSize: 24
-        onClick: =>
-          current_user = fetch('/current_user')
-          @root.auth.form = if @root.auth.form == 'create account' then 'login' else 'create account'
-          current_user.errors = []
-          save @root
+        position: 'relative'
+        textAlign: 'center'
 
-        toggle_to
+      @submitButton button, true
+
+      SPAN
+        style: 
+          position: 'absolute'
+          left: left
+          marginTop: 23
+          textAlign: 'left'
+          width: '100%'
+
+        SPAN
+          style:
+            color: '#444'
+            fontSize: 24
+            paddingLeft: 18
+            paddingRight: 7
+          'or '
+        A
+          style:
+            display: 'inline-block'
+            color: '#444'
+            textDecoration: 'underline'
+            fontWeight: 400
+            fontSize: 24
+          onClick: =>
+            current_user = fetch('/current_user')
+            @root.auth.form = if @root.auth.form == 'create account' then 'login' else 'create account'
+            current_user.errors = []
+            save @root
+
+          toggle_to
 
 
 

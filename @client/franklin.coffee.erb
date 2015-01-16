@@ -1470,12 +1470,11 @@ DecisionBoard = ReactiveComponent
                 togglePage('results', 'save_button')
               else
                 if can_opine == Permission.UNVERIFIED_EMAIL
-                  @root.auth_mode = 'verify'
+                  @root.auth = {form: 'verify', goal: 'Save your Opinion'}
                   current_user.trying_to = 'send_verification_token'
                   save current_user
                 else
-                  @root.auth_mode = 'register'
-                  @root.auth_reason = 'Save your Opinion'
+                  @root.auth = {form: 'register', goal: 'Save your Opinion'}
 
                 # We'll need to publish this opinion after auth is completed
                 @root.opinions_to_publish.push(@proposal.your_opinion)
@@ -1676,12 +1675,10 @@ YourPoints = ReactiveComponent
                   color: considerit_blue
                 onClick: => 
                   if can_add_new_point == Permission.NOT_LOGGED_IN
-                    @root.auth_mode = 'register'
-                    @root.auth_reason = 'write a point'
+                    @root.auth = {form: 'register', goal: 'write a point'}
                     save @root
                   else if can_add_new_point == Permission.UNVERIFIED_EMAIL
-                    @root.auth_mode = 'verify'
-                    @root.auth_reason = 'write a point'
+                    @root.auth = {form: 'verify', goal: 'write a point'}
                     save @root
                     current_user.trying_to = 'send_verification_token'
                     save current_user
@@ -2435,13 +2432,12 @@ EditComment = ReactiveComponent
 
           onClick: =>
             if permitted == Permission.NOT_LOGGED_IN
-              @root.auth_mode = 'login' 
+              @root.auth = {form: 'login', goal: 'Write a Comment'}
             else if permitted == Permission.UNVERIFIED_EMAIL
-              @root.auth_mode = 'verify'
+              @root.auth = {form: 'verify', goal: 'Write a Comment'}
               current_user.trying_to = 'send_verification_token'
               save current_user
 
-            @root.auth_reason = 'Write a Comment'
             save(@root)
 
           if permitted == Permission.NOT_LOGGED_IN
@@ -2694,8 +2690,7 @@ SubmitFactCheck = ReactiveComponent
       else
         DIV
           onClick: =>
-            @root.auth_mode = 'login'
-            @root.auth_reason = 'Request a Fact Check'
+            @root.auth = {form: 'login', goal: 'Request a Fact Check'}
             save(@root)
           style:
             marginTop: 14
@@ -3222,6 +3217,7 @@ DefaultHomepage = ReactiveComponent
     sticky_header_height = 79
 
     DIV className: 'homepage',
+
       # Draw the sticky subheader
       DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height}
       DIV 
@@ -3669,8 +3665,7 @@ ProfileMenu = ReactiveComponent
           'className': 'profile_anchor login'
           'data-action': 'login'
           onClick: (e) =>
-            @root.auth_mode = 'login'
-            @root.auth_reason = null            
+            @root.auth = {form: 'login', goal: null}
             save @root
           style: {color: 'white'}
           'Log in'
@@ -3683,10 +3678,10 @@ ProfileMenu = ReactiveComponent
     current_user.logged_in = false
     current_user.trying_to = 'logout'
 
-    if @root.auth_mode == 'update'
+    if @root.auth && @root.auth.form == 'update'
       @root.page_name = 'homepage'
 
-    @root.auth_mode = null
+    @root.auth = null
 
     save current_user, =>
       # We need to get a fresh your_opinion object
@@ -4156,8 +4151,7 @@ Computer = ReactiveComponent
 
     # users following an email invitation need to complete registration (name + password)
     if current_user.needs_to_set_password
-      @root.auth_mode = 'register-after-invite'
-      @root.auth_reason = 'complete registration'
+      @root.auth = {form: 'register_after_invite', goal: 'complete registration'}
       save @root
 
     SPAN null
@@ -4172,7 +4166,7 @@ Page = ReactiveComponent
     avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
 
-    if @root.auth_mode && @root.auth_mode != 'update'
+    if @root.auth && @root.auth.form != 'update'
       return Auth()
 
     if subdomain.name == 'homepage' && @root.page_name == 'homepage'
@@ -4180,7 +4174,7 @@ Page = ReactiveComponent
     else if !subdomain.name
       L
     else
-      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: 'white'}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
+      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: 'white'},
         if avatars.avatars
           STYLE type: 'text/css', id: 'b64-avatars', dangerouslySetInnerHTML: {__html: avatars.avatars}
         
@@ -4188,7 +4182,8 @@ Page = ReactiveComponent
         Header()
         DIV style : { minWidth: PAGE_WIDTH, minHeight: 200, zIndex: 2, margin: 'auto', \
                       marginLeft: if lefty then 0 },
-          if @root.auth_mode || @root.page_name == 'edit_profile'
+
+          if @root.page_name == 'edit_profile'
             Auth()
 
           else
@@ -4310,24 +4305,6 @@ setInterval ->
 , 2 * 60 * 1000
 
 
-# It is important that a user that just submitted a user picture see the picture
-# on the results and in the header. However, this is a bit tricky because the avatars
-# are cached on the server and the image is processed in a background task. 
-# Therefore, we'll wait until the image is available and then make it available
-# in the avatar cache.  
-ensureCurrentUserAvatar = (attempts = 0) ->
-  
-  $.getJSON '/user_avatar_hack', (response) =>
-    if response.b64_thumbnail          
-      current_user = fetch '/current_user'
-      $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{response.b64_thumbnail}');}</style>")
-    
-    else if attempts < 20
-      # Ugly: wait a little while for offline avatar processing to complete, then refetch
-      _.delay -> 
-        ensureCurrentUserAvatar(attempts + 1)
-      , 1000
-
 
 ##
 # Backbone routing
@@ -4410,8 +4387,7 @@ Router = Backbone.Router.extend
     resetState(root)
 
     root.page_name = 'edit_profile'
-    root.auth_mode = 'update'
-    root.auth_reason = null
+    root.auth = {form: 'update'}
 
     save root
 
@@ -4419,7 +4395,7 @@ Router = Backbone.Router.extend
 # Temporary method for handling resetting root state when switching between
 # routes. Remove once we have a better activeREST answer. 
 resetState = (root) ->
-  root.auth_mode = null
+  root.auth = null
 
   #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
   #      Right now activeREST doesn't allow wide consumption of a component's client state
@@ -4479,3 +4455,4 @@ if document.getElementById('content')
 
   Backbone.history.start {pushState: true}
   window.root = React.renderComponent(Root(), document.getElementById('content'))
+

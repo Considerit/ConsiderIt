@@ -4059,37 +4059,36 @@ EditProposal = ReactiveComponent
             style: {fontSize: 24}
 
 
-        if @props.fresh
-          DIV null, 
-            SPAN 
-              style: _.extend {}, label_style,
-                textDecoration: 'underline'
-                cursor: 'pointer'
-                width: 400
-                position: 'relative'
-              onClick: => 
-                @local.edit_roles = !@local.edit_roles
-                save @local
-              I 
-                className: 'fa-child fa'
-                style: 
-                  position: 'absolute'
-                  left: -25
-                  top: 5
-
-
-              'Permissions and invitations'
-
-            DIV 
+        DIV null, 
+          SPAN 
+            style: _.extend {}, label_style,
+              textDecoration: 'underline'
+              cursor: 'pointer'
+              width: 400
+              position: 'relative'
+            onClick: => 
+              @local.edit_roles = !@local.edit_roles
+              save @local
+            I 
+              className: 'fa-child fa'
               style: 
-                width: CONTENT_WIDTH
-                backgroundColor: '#fafafa'
-                padding: '10px 60px'
-                display: if @local.edit_roles then 'block' else 'none' #roles has to be rendered
-                                                                              #so that default roles are 
-                                                                              #set on the proposal
+                position: 'absolute'
+                left: -25
+                top: 5
 
-              ProposalRoles key: @local
+
+            'Permissions and invitations'
+
+          DIV 
+            style: 
+              width: CONTENT_WIDTH
+              backgroundColor: '#fafafa'
+              padding: '10px 60px'
+              display: if @local.edit_roles then 'block' else 'none' #roles has to be rendered
+                                                                            #so that default roles are 
+                                                                            #set on the proposal
+
+            ProposalRoles key: @local
 
         DIV null,
           INPUT 

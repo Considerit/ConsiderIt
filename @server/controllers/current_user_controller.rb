@@ -33,11 +33,11 @@ class CurrentUserController < ApplicationController
 
     case trying_to
 
-      when 'register', 'register-after-invite'
+      when 'register', 'register_after_invite'
 
         update_user_attrs 'register', errors
         try_update_password 'register', errors 
-        if !current_user.registered || trying_to == 'register-after-invite'
+        if !current_user.registered || trying_to == 'register_after_invite'
           third_party_authenticated = current_user.facebook_uid || current_user.google_uid
           has_name = current_user.name && current_user.name.length > 0
           can_login = ((current_user.email && current_user.email.length > 0)\
@@ -107,7 +107,7 @@ class CurrentUserController < ApplicationController
 
           elsif !user.authenticate(params[:password])
             provider = user.third_party_authenticated()
-            errors.append "Wrong password.#{provider ? ' Previously you used the ' + provider + ' button.' : ''}"
+            errors.append "Wrong password.#{provider ? ' Click "I forgot my password" if you\'re having problems.' : ''}"
           else 
             current_user.add_to_active_in
             replace_user(current_user, user)
@@ -123,7 +123,7 @@ class CurrentUserController < ApplicationController
             log('sign in by email')
           end
         end
-      when 'login_via_reset_password_token'
+      when 'reset_password'
 
         # puts("Signing in by password reset.  min_pass is #{@min_pass}")
         has_password = params[:password] && params[:password].length >= @min_pass
@@ -146,7 +146,7 @@ class CurrentUserController < ApplicationController
           if user
             replace_user(current_user, user)
             set_current_user(user)
-            try_update_password 'login_via_reset_password_token', errors
+            try_update_password 'reset_password', errors
             current_user.add_to_active_in
             if !current_user.verified 
               current_user.verified = true
@@ -228,7 +228,7 @@ class CurrentUserController < ApplicationController
 
     # If a user is trying to log in, and there was an error, we can
     # re-send them the faulty information so they can fix it.
-    if (params[:trying_to] == 'login' || params[:trying_to] == 'login_via_reset_password_token')\
+    if (params[:trying_to] == 'login' || params[:trying_to] == 'reset_password')\
        && !response[:logged_in]
       response[:reset_password_token] = params[:reset_password_token] if params[:reset_password_token]
       response[:password] = params[:password] if params[:password]
@@ -322,7 +322,7 @@ class CurrentUserController < ApplicationController
   def try_update_password(trying_to, errors)
     # Update their password
     if !params[:password] || params[:password].length == 0
-      if trying_to == 'register' || trying_to == 'login_via_reset_password_token'
+      if trying_to == 'register' || trying_to == 'reset_password'
         errors.append 'No password specified'
       end
     elsif params[:password].length < @min_pass

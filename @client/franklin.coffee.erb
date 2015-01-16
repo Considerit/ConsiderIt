@@ -3953,7 +3953,7 @@ EditProposal = ReactiveComponent
               DIV key: "field-#{idx}", style: _.extend({}, block_style, {width: ''}),
 
                 I 
-                  className: "fa fa-#{if field_open then 'plus' else 'minus'}-circle"
+                  className: "fa fa-#{if field_open then 'minus' else 'plus'}-circle"
                   style: {position: 'absolute', left: -20, top: 18, color: '#414141', cursor: 'pointer'}
                   onClick: do (field, field_open) => => toggleDescriptionFieldOpen(field, field_open)
 

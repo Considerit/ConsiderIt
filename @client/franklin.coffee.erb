@@ -397,6 +397,12 @@ Proposal = ReactiveComponent
     $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height()} 
 
 
+  componentDidMount : -> 
+
+    # when you go from homepage to a proposal, seek to proposal description
+    # top, otherwise you can be stuck in the middle of the proposal. 
+    $('.proposal').moveToTop()
+
   renderDescriptionField : (field) ->
     DIV 
       className: 'description_field'

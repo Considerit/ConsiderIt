@@ -789,6 +789,7 @@ window.ProposalSubheading = ReactiveComponent
           Avatar
             key: candidate
             user: candidate
+            img_style: 'large'
             style:
               position: 'absolute'
               height: 70
@@ -2973,7 +2974,8 @@ Avatar = ReactiveComponent
         save(@local)
 
     if @props.img_style && user.key != -1 && user.avatar_file_name
-      attrs.src = "/system/avatars/#{@props.key}/#{@props.img_style}/#{avatar_file_name}"
+      subdomain = fetch '/subdomain'
+      attrs.src = "#{subdomain.asset_host}/system/avatars/#{user.key.split('/')[2]}/#{@props.img_style}/#{avatar_file_name}"
 
     @transferPropsTo SPAN attrs
 
@@ -2999,7 +3001,7 @@ Avatar = ReactiveComponent
       left: pos.left - $name.width() / 2 + $el.width()/2
       top: pos.top + direction * $name.height()
 
-window.styles += """
+styles += """
 .avatar {
   vertical-align: top;
   background-color: transparent;

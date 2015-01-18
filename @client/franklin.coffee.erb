@@ -774,13 +774,14 @@ window.ProposalSubheading = ReactiveComponent
         position: 'relative'
 
       # Next button
-      A
-        style:
-          position: 'absolute'
-          right: 0
-        onClick: do (url = proposal_url(next_proposal)) =>
-          => window.app_router.navigate(url, {trigger: true})
-        'Next >'
+      if next_proposal
+        A
+          style:
+            position: 'absolute'
+            right: 0
+          onClick: do (url = proposal_url(next_proposal)) =>
+            => window.app_router.navigate(url, {trigger: true})
+          'Next >'
 
       # Candidate photo
       if @proposal.cluster == 'Candidates'

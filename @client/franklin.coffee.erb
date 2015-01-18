@@ -261,6 +261,13 @@ Proposal = ReactiveComponent
 
     proposer = fetch(@proposal.user)
 
+    # EXPERIMENTAL:  Automatically split paragraphs for candidates.
+    # Let's make it WYSIWYG so we can remove this code
+    if @proposal.cluster?.toLowerCase() == 'candidates'
+      description = @proposal.description.split('\n').join('<p>')
+    else
+      description = @proposal.description
+
     # Description fields are the expandable details that help people drill
     # into the proposal. They are very specific to the type of proposal (e.g. for
     # an LVG ballot measure, one of the fields might be "fiscal impact statement").  
@@ -306,7 +313,7 @@ Proposal = ReactiveComponent
             style:
               paddingTop: '1em'
               fontSize: 18
-            dangerouslySetInnerHTML:{__html: @proposal.description}
+            dangerouslySetInnerHTML:{__html: description}
 
           if @local.description_fields
             DIV style: {marginTop: '1em'},
@@ -2974,7 +2981,8 @@ Avatar = ReactiveComponent
         save(@local)
 
     if @props.img_style && user.key != -1 && user.avatar_file_name
-      attrs.src = "/system/avatars/#{@props.key}/#{@props.img_style}/#{avatar_file_name}"
+      # This line below doesn't work
+      attrs.src = "/system/avatars/#{@props.key}/#{@props.img_style}/#{user.avatar_file_name}"
 
     @transferPropsTo SPAN attrs
 

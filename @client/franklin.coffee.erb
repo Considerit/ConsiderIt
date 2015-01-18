@@ -261,6 +261,13 @@ Proposal = ReactiveComponent
 
     proposer = fetch(@proposal.user)
 
+    # EXPERIMENTAL:  Automatically split paragraphs for candidates.
+    # Let's make it WYSIWYG so we can remove this code
+    if @proposal.cluster?.toLowerCase() == 'candidates'
+      description = @proposal.description.split('\n').join('<p>')
+    else
+      description = @proposal.description
+
     # Description fields are the expandable details that help people drill
     # into the proposal. They are very specific to the type of proposal (e.g. for
     # an LVG ballot measure, one of the fields might be "fiscal impact statement").  
@@ -306,7 +313,7 @@ Proposal = ReactiveComponent
             style:
               paddingTop: '1em'
               fontSize: 18
-            dangerouslySetInnerHTML:{__html: @proposal.description}
+            dangerouslySetInnerHTML:{__html: description}
 
           if @local.description_fields
             DIV style: {marginTop: '1em'},
@@ -774,13 +781,14 @@ window.ProposalSubheading = ReactiveComponent
         position: 'relative'
 
       # Next button
-      A
-        style:
-          position: 'absolute'
-          right: 0
-        onClick: do (url = proposal_url(next_proposal)) =>
-          => window.app_router.navigate(url, {trigger: true})
-        'Next >'
+      if next_proposal
+        A
+          style:
+            position: 'absolute'
+            right: 0
+          onClick: do (url = proposal_url(next_proposal)) =>
+            => window.app_router.navigate(url, {trigger: true})
+          'Next >'
 
       # Candidate photo
       if @proposal.cluster == 'Candidates'

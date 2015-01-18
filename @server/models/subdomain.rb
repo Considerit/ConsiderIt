@@ -30,6 +30,7 @@ class Subdomain < ActiveRecord::Base
     end
 
     json['branding'] = self.branding_info
+    json['asset_host'] = "#{Rails.application.config.action_controller.asset_host}"
     json
   end
 
@@ -107,10 +108,6 @@ class Subdomain < ActiveRecord::Base
   def set_roles(new_roles)
     self.roles = JSON.dump(new_roles)
     self.save
-  end
-
-  def self.all_themes
-    Dir['app/assets/themes/*/'].map { |a| File.basename(a) }
   end
 
   def classes_to_moderate

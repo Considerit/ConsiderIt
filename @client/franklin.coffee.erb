@@ -2985,7 +2985,9 @@ Avatar = ReactiveComponent
       subdomain = fetch '/subdomain'
       attrs.src = "#{subdomain.asset_host}/system/avatars/#{user.key.split('/')[2]}/#{@props.img_style}/#{user.avatar_file_name}"
 
-    @transferPropsTo SPAN attrs
+      @transferPropsTo IMG attrs
+    else 
+      @transferPropsTo SPAN attrs
 
   getDefaultProps : ->
     key: '/user/-1' # defaults to anonymous user

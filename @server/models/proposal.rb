@@ -20,6 +20,22 @@ class Proposal < ActiveRecord::Base
   scope :active, -> {where( :active => true, :published => true )}
 
 
+  # Sanitize the HTML fields that we insert dangerously in the client
+  before_validation(on: [:create, :update]) do
+    # Initialize fields if empty
+    self.description        = '' if not attribute_present?("description")
+    self.description_fields = '' if not attribute_present?("description_fields")
+
+    # Sanitize description
+    self.description = ActionController::Base.helpers.sanitize(self.description)
+    # Sanitize description_fields[i].html
+    self.description_fields =
+      JSON.dump(JSON.parse(self.description_fields).map { |field|
+                  field['html'] = ActionController::Base.helpers.sanitize(field['html'])
+                  field
+                })
+  end
+
   def self.summaries(current_subdomain = nil)
     current_subdomain = Thread.current[:subdomain] if !current_subdomain
 
@@ -166,7 +182,7 @@ class Proposal < ActiveRecord::Base
 
 
   # The user is subscribed to proposal notifications _implicitly_ if:
-  #   • they have an opinion (published or not)
+  #   • they have an opinion (published or not)
   def following(follower)
     explicit = get_explicit_follow follower #using the Followable polymophic method
     if explicit

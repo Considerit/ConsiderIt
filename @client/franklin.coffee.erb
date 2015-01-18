@@ -2983,7 +2983,7 @@ Avatar = ReactiveComponent
 
     if @props.img_style && user.key != -1 && user.avatar_file_name
       subdomain = fetch '/subdomain'
-      attrs.src = "#{subdomain.asset_host}/system/avatars/#{user.key.split('/')[2]}/#{@props.img_style}/#{avatar_file_name}"
+      attrs.src = "#{subdomain.asset_host}/system/avatars/#{user.key.split('/')[2]}/#{@props.img_style}/#{user.avatar_file_name}"
 
     @transferPropsTo SPAN attrs
 

@@ -35,6 +35,7 @@ ConsiderIt::Application.routes.draw do
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :show]
   resources :client_error, :only => [:create]
+  resources :histogram, :only => [:update, :show]
 
   resources :comment, :only => [:create, :show, :update, :destroy]
   get '/comments/:point_id' => 'comment#index'

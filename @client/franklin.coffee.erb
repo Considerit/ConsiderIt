@@ -758,6 +758,7 @@ window.ProposalSubheading = ReactiveComponent
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
     heading_fontsize = 45
+    options = window.cluster_options?[@proposal.cluster] || {}
 
     # Determine the next proposal
     next_proposal =
@@ -789,13 +790,13 @@ window.ProposalSubheading = ReactiveComponent
             => window.app_router.navigate(url, {trigger: true})
           'Next >'
 
-      # Candidate photo
-      if @proposal.cluster == 'Candidates'
-        candidate = proposal_candidate(@proposal)
-        if candidate
+      # Photo
+      if options.editor_icons
+        editor = proposal_editor(@proposal)
+        if editor
           Avatar
-            key: candidate
-            user: candidate
+            key: editor
+            user: editor
             img_style: 'original'
             style:
               position: 'absolute'
@@ -1030,10 +1031,15 @@ styles += """
 MiniHisto = ReactiveComponent
   displayName: 'mini_histo'
   render: ->
+    options = window.cluster_options?[@props.proposal.cluster] || {}
+    filter_func = options.homie_histo_filter
+
+    # We'll only pass SOME opinions to the histogram
     @opinions = fetch('/page/' + @props.proposal.slug).opinions
+    @opinions = (opinion for opinion in @opinions when \
+                 not filter_func or filter_func(fetch(opinion.user)))
+
     icons = for opinion in @opinions
-      # id = arest.key_id(user.key)
-      #"/system/avatars/#{id}/small/#{user.avatar_file_name}"
       neutral = Math.abs(opinion.stance) < .1
       Avatar
         key: opinion.user
@@ -1046,6 +1052,7 @@ MiniHisto = ReactiveComponent
           # opacity:          if not @local.hover then .5
           # border:  if neutral then 'solid 1px black'
           # opacity: if neutral then .2
+
     DIV
       style:
         height: @props.height
@@ -1082,7 +1089,7 @@ MiniHisto = ReactiveComponent
       page = fetch('/page/' + @props.proposal.slug)
       histo = @refs.histo.getDOMNode()
       icons = histo.childNodes
-      opinions = for opinion, i in page.opinions
+      opinions = for opinion, i in @opinions
         {stance: opinion.stance, icon: icons[i]}
       mini_histo(@props.width, @props.height-1, histo, opinions)
       @mounted = true
@@ -3419,11 +3426,9 @@ DefaultHomepage = ReactiveComponent
               $(document).scrollTop(0)
             'Create new proposal'
 
-# For elections (where a proposal's cluster name is "candidate"), a
-# proposal's "candidate" is the first editor.
-window.proposal_candidate = (proposal) ->
-  candidate = proposal.roles.editor.length > 0 and proposal.roles.editor[0]
-  return candidate != '-' and candidate
+window.proposal_editor = (proposal) ->
+  editor = proposal.roles.editor.length > 0 and proposal.roles.editor[0]
+  return editor != '-' and editor
 
 window.ElectionHomepage = ReactiveComponent
   displayName: 'Homepage'
@@ -3450,6 +3455,8 @@ window.ElectionHomepage = ReactiveComponent
       # List all clusters
       for cluster, index in proposals.clusters or []
         if cluster.proposals?.length > 0
+          options = window.cluster_options?[cluster.name] || {}
+
           first_column =
             width: 350
             marginLeft: 200
@@ -3475,9 +3482,6 @@ window.ElectionHomepage = ReactiveComponent
             position: 'relative'
             whiteSpace: 'nowrap'
           _.extend(secnd_header, secnd_column)
-
-          special_secnd_headers =
-            'Debate': "Candidates' Opinions"
 
           # Sort
           sorted_proposals = _.clone(cluster.proposals).sort((a,b) ->
@@ -3511,10 +3515,10 @@ window.ElectionHomepage = ReactiveComponent
                   right: 0
                   fontWeight: 300
                 'Support'
-              special_secnd_headers[cluster.name] or 'Members\' Opinions'
+              options.homie_histo_title || 'Opinions'
 
             for proposal in sorted_proposals
-              is_candidates = cluster.name.toLowerCase() == 'candidates'
+              icons = options.editor_icons
 
               # Proposal
               DIV
@@ -3524,16 +3528,16 @@ window.ElectionHomepage = ReactiveComponent
 
                 DIV style: first_column,
 
-                  if is_candidates
-                    candidate = proposal_candidate(proposal)
+                  if icons
+                    editor = proposal_editor(proposal)
 
                     # Person's icon
                     A
                       href: proposal_url(proposal)
                       onClick: clickInternalLink
                       Avatar
-                        key: candidate
-                        user: candidate
+                        key: editor
+                        user: editor
                         style:
                           height: 50
                           width: 50
@@ -3545,13 +3549,13 @@ window.ElectionHomepage = ReactiveComponent
                     style:
                       display: 'inline-block'
                       fontWeight: 400
-                      marginLeft: if is_candidates then 18
+                      marginLeft: if icons then 18
                       paddingBottom: 20
-                      width: first_column.width - 50 + (if is_candidates then -18 else 0)
-                      marginTop: if is_candidates then 9
+                      width: first_column.width - 50 + (if icons then -18 else 0)
+                      marginTop: if icons then 9
                     A
                       className: 'proposal'
-                      style: if not is_candidates then {borderBottom: '1px solid grey'}
+                      style: if not icons then {borderBottom: '1px solid grey'}
                       onClick: clickInternalLink
                       href: proposal_url(proposal)
                       proposal.name
@@ -4371,7 +4375,6 @@ setInterval ->
   if current_user.logged_in
     arest.serverFetch('/current_user')
 , 2 * 60 * 1000
-
 
 
 ##

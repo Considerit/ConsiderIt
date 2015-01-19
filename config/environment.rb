@@ -12,7 +12,7 @@ end
 
 def make_key(hash, name)
   id = hash["id"]
-  hash['key'] = (id && "/#{name}/#{id}")
+  hash['key'] = hash['key'] || (id && "/#{name}/#{id}")
 end
 
 def jsonify_objects(objects, name, reference_names=[], delete_names=[], parse_names=[])

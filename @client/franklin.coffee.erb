@@ -3485,7 +3485,9 @@ window.ElectionHomepage = ReactiveComponent
 
           # Sort
           sorted_proposals = _.clone(cluster.proposals).sort((a,b) ->
-            (proposal_support(b) or -10000) - (proposal_support(a) or -10000))
+            x_a = proposal_support(a) - 10000 + (if proposal_editor(a) then 1 else 0)
+            x_b = proposal_support(b) - 10000 + (if proposal_editor(b) then 1 else 0)
+            return x_b - x_a)
 
           #
           # Cluster of proposals

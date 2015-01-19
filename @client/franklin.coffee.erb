@@ -3247,8 +3247,8 @@ Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
     subdomain = fetch('/subdomain')
-    if window["#{subdomain.name}Homepage"]
-      return window["#{subdomain.name}Homepage"]()
+    if window["#{subdomain.name}-homepage"]
+      return window["#{subdomain.name}-homepage"]()
     else
       return DefaultHomepage()
 
@@ -3705,8 +3705,8 @@ Header = ReactiveComponent
         backgroundColor: 'white'
         minWidth: PAGE_WIDTH
 
-      if window["#{subdomain.name}Header"]
-        window["#{subdomain.name}Header"]()
+      if window["#{subdomain.name}-header"]
+        window["#{subdomain.name}-header"]()
       else
         DefaultHeader()
 
@@ -3775,8 +3775,8 @@ Footer = ReactiveComponent
         position: 'relative'
         padding: '2.5em 0 .5em 0'
         textAlign: 'center'
-      if window["#{subdomain.name}Footer"]
-        window["#{subdomain.name}Footer"]()
+      if window["#{subdomain.name}-footer"]
+        window["#{subdomain.name}-footer"]()
       else
         DefaultFooter()
 

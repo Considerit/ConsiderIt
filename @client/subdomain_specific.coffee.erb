@@ -103,8 +103,8 @@ window.cityoftigardHeader = ReactiveComponent
 
 ####################
 # Bitcoin demo
-window['bitcoin-demoHeader'] = ReactiveComponent
-  displayName: 'bitcoin-demoHeader'
+window['bitcoin-demo-header'] = ReactiveComponent
+  displayName: 'bitcoin-demo-header'
 
   render: -> 
     # Background image box
@@ -136,8 +136,8 @@ window['bitcoin-demoHeader'] = ReactiveComponent
 ####################
 # Bitcoin Election
 
-window['bitcoin-electionHeader'] = ReactiveComponent
-  displayName: 'bitcoin-electionHeader'
+window['bitcoin-election-header'] = ReactiveComponent
+  displayName: 'bitcoin-election-header'
 
   render: ->
     homepage = @root.page_name == 'homepage'
@@ -243,14 +243,14 @@ window['bitcoin-electionHeader'] = ReactiveComponent
 
 $( ->
   # These need to be run AFTER franklin.coffee has loaded
-  window['bitcoin-electionHomepage'] = ElectionHomepage
+  window['bitcoin-election-homepage'] = ElectionHomepage
   window['bitcoin-election-proposal-subheader'] = ProposalSubheading
 
   # For testing only:
-  #window['livingvotersguideHomepage'] = ElectionHomepage
-  #window['bitcoin-demoHomepage'] = ElectionHomepage
-  #window['bitcoinHomepage'] = ElectionHomepage
-  #window['usHomepage'] = ElectionHomepage
+  #window['livingvotersguide-homepage'] = ElectionHomepage
+  #window['bitcoin-demo-homepage'] = ElectionHomepage
+  #window['bitcoin-homepage'] = ElectionHomepage
+  #window['us-homepage'] = ElectionHomepage
 )
 
 
@@ -291,7 +291,7 @@ window.ThanksAndShareStrip = ReactiveComponent
           url: "https://livingvotersguide.org/#{@proposal.slug}?results=true"
 
 
-window.livingvotersguideHeader = ReactiveComponent
+window['livingvotersguide-header'] = ReactiveComponent
   displayName: 'livingvotersguideHeader'
 
   render: ->
@@ -456,7 +456,7 @@ window.ZipcodeBox = ReactiveComponent
             height: 9
 
 
-window.livingvotersguideFooter = ReactiveComponent
+window['livingvotersguide-footer'] = ReactiveComponent
   displayName: 'livingvotersguideFooter'
   render: ->
     DIV null,

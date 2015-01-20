@@ -173,13 +173,11 @@ AccessControlled =
           window.app_router.navigate("/", {trigger: true})
 
         when Permission.NOT_LOGGED_IN
-          @root.auth_mode = 'login'
-          @root.auth_reason = 'Access this page'
+          @root.auth = {form: 'login', 'Access this page'}
           save @root
 
         when Permission.UNVERIFIED_EMAIL
-          @root.auth_mode = 'verify'
-          @root.auth_reason = 'Access this page'
+          @root.auth = {form: 'verify email', goal: 'Access this page'}
           save @root
           current_user.trying_to = 'send_verification_token'
           save current_user

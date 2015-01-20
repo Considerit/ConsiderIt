@@ -5,55 +5,13 @@ server {
   rewrite        ^ https://$host$request_uri? permanent;
 }
 
-server {
-  listen 443 ssl;
-  server_name   googleoauth.{{ server.name }};
-  ssl_certificate /etc/ssl/certs/{{ app_name }}.crt;
-  ssl_certificate_key /etc/ssl/private/{{ app_name }}.key;
-  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-  passenger_set_cgi_param HTTP_X_FORWARDED_PROTO https;
-
-  location /auth/google_oauth2/callback {
-    resolver 8.8.8.8;
-    proxy_set_header X-Forwarded-Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-Server $host;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-
-    proxy_pass https://$arg_state.{{ server.name }};
-    proxy_redirect off; #https://$arg_state.{{ server.name }}/auth/google_oauth2/callback https://googleauth.{{ server.name }}/auth/google_oauth2/callback;
-    proxy_read_timeout  90;
-
-    access_log  /var/log/nginx/access.log upstreamlog;
-  }
-}
-
 {% else %}
 server {
   listen         443 ssl;
   server_name    *.{{ server.name }};
   rewrite        ^ http://$host$request_uri? permanent;
 }
-server {
-  listen 80;
-  server_name   googleoauth.{{ server.name }};
 
-  location /auth/google_oauth2/callback {
-    resolver 8.8.8.8;
-    proxy_set_header X-Forwarded-Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-Server $host;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-
-    proxy_pass https://$arg_state.{{ server.name }};
-    proxy_redirect off; #https://$arg_state.{{ server.name }}/auth/google_oauth2/callback https://googleauth.{{ server.name }}/auth/google_oauth2/callback;
-    proxy_read_timeout  90;
-
-    access_log  /var/log/nginx/access.log upstreamlog;
-  }
-}
 {% endif %}
 
 

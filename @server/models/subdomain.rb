@@ -30,6 +30,7 @@ class Subdomain < ActiveRecord::Base
     end
 
     json['branding'] = self.branding_info
+    json['asset_host'] = "#{Rails.application.config.action_controller.asset_host}"
     json
   end
 
@@ -84,29 +85,29 @@ class Subdomain < ActiveRecord::Base
   #
   # TODO: consolidate with proposal.user_roles
   def user_roles(filter = false)
-    r = JSON.parse(roles || "{}")
+    result = JSON.parse(roles || "{}")
     ['admin', 'moderator', 'evaluator', 'proposer', 'visitor'].each do |role|
-      if !r.has_key?(role) || !r[role]
-        r[role] = []
-      elsif filter
+
+      # Initialize empty role to []
+      result[role] = [] if !result.has_key?(role) || !result[role]
+
+      # Filter role if the client isn't supposed to see it
+      if filter && role != 'proposer'
         # Remove all specific email address for privacy. Leave wildcards.
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 
-        r[role] = r[role].map{|email_or_key| 
-          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" ? email_or_key : '-' 
+        result[role] = result[role].map{|email_or_key|
+          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" ? email_or_key : '-'
         }.uniq
       end
     end
-    r
+
+    result
   end
 
   def set_roles(new_roles)
     self.roles = JSON.dump(new_roles)
     self.save
-  end
-
-  def self.all_themes
-    Dir['app/assets/themes/*/'].map { |a| File.basename(a) }
   end
 
   def classes_to_moderate

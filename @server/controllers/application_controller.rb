@@ -71,12 +71,6 @@ protected
     can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || ENABLE_HOMEPAGE_IN_DEV
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
       candidate_subdomain = Subdomain.find_by_name('homepage')
-
-    elsif rq.subdomain == 'googleoauth'
-      # This is for the reverse proxy for handling the response from google after oauth. 
-      # Part of the scheme for enabling google auth via wildcard subdomains
-      candidate_subdomain = Subdomain.find_by_name(params['state'])
-
     else
       default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
       candidate_subdomain = rq.subdomain.nil? || rq.subdomain.length == 0 ? Subdomain.find(default_subdomain) : Subdomain.find_by_name(rq.subdomain)
@@ -110,7 +104,7 @@ protected
     if user.save
       puts("Signing into the stubby.  Curr=#{current_user}")
       set_current_user(user)
-      puts("Signed into stubby.  Curr=#{current_user}")
+      puts("Signed into stubby.  Curr=#{current_user} #{current_user.id} #{session[:current_user_id]}")
     else
       raise 'Error making stub account. Yikes!'
     end
@@ -129,6 +123,7 @@ protected
 
   def replace_user(old_user, new_user)
     return if old_user.id == new_user.id
+    if old_user.registered then raise "Replacing a real user! Danger!" end
 
     new_user.absorb(old_user)
 

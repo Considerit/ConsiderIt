@@ -6,7 +6,11 @@ window.DefaultHeader = ReactiveComponent
   render: ->
     subdomain = fetch '/subdomain'   
 
-    masthead_style =  {textAlign: 'center', backgroundColor: subdomain.branding.primary_color}
+    masthead_style = 
+      textAlign: 'center'
+      backgroundColor: subdomain.branding.primary_color
+      height: 45
+
     if subdomain.branding.masthead
       _.extend masthead_style, 
         height: 300
@@ -99,8 +103,8 @@ window.cityoftigardHeader = ReactiveComponent
 
 ####################
 # Bitcoin demo
-window['bitcoin-demoHeader'] = ReactiveComponent
-  displayName: 'bitcoin-demoHeader'
+window['bitcoin-demo-header'] = ReactiveComponent
+  displayName: 'bitcoin-demo-header'
 
   render: -> 
     # Background image box
@@ -115,7 +119,7 @@ window['bitcoin-demoHeader'] = ReactiveComponent
 
       # Logo
       IMG
-        style: { display: 'block'; margin: 'auto'; height: 100; marginTop: 45 }
+        style: { display: 'block'; margin: 'auto'; height: 150; paddingTop: 45 }
         src: "<%= asset_path 'bitcoin/logo.svg' %>"
 
       # The word "Demo"
@@ -132,28 +136,30 @@ window['bitcoin-demoHeader'] = ReactiveComponent
 ####################
 # Bitcoin Election
 
-window['bitcoin-electionHeader'] = ReactiveComponent
-  displayName: 'bitcoin-electionHeader'
+window['bitcoin-election-header'] = ReactiveComponent
+  displayName: 'bitcoin-election-header'
 
   render: ->
     homepage = @root.page_name == 'homepage'
+    window.lefty = true
 
-    # Header
+    # Entire header (the grey area)
     DIV
       style:
         backgroundColor: '#676766'
         height: if not homepage then 63
-        paddingLeft: if homepage then 200
       onMouseEnter: => @local.hover=true;  save(@local)
       onMouseLeave: => @local.hover=false; save(@local)
 
-      STYLE null, '.profile_anchor.login {font-size: 26px; padding-top: 16px;}'
-        
+      STYLE null,
+        '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
+           p {margin-bottom: 1em}'''
+
+      # The top bar with the logo
       DIV
         style:
-          width:      if not homepage then 760
-          position: 'relative'
           cursor: if not homepage then 'pointer'
+          paddingTop: if homepage then 18 else 17
         onClick: if not homepage then => window.app_router.navigate("/", {trigger: true})
 
         # Back arrow
@@ -161,13 +167,13 @@ window['bitcoin-electionHeader'] = ReactiveComponent
           DIV
             style:
               position: 'absolute'
+              left: 20
+              top: 0
               color: '#eee'
               fontSize: 43
-              left: 20
-              paddingLeft: 25
-              marginTop: 0
               fontWeight: 400
-              width: 180
+              paddingLeft: 25 # Make the clickable target bigger
+              width: 180      # Make the clickable target bigger
             '<'
 
         # Logo
@@ -175,21 +181,20 @@ window['bitcoin-electionHeader'] = ReactiveComponent
           href: if homepage then 'https://bitcoinfoundation.org'
           IMG
             style:
-              position: 'absolute'
               height: if homepage then 40 else 26
-              left: if homepage then -118 else 106
-              top: 18
+              marginLeft: if homepage then 82 else 106
             src: "<%= asset_path 'bitcoin/logo.svg' %>"
 
+        if not homepage
+          SPAN
+            style:
+              color: 'cyan'
+              fontSize: 26
+              fontWeight: 500
+              marginLeft: 40
+            'Distributed Deliberation'
+
         # Text
-        DIV
-          style:
-            color: 'cyan' #if homepage then 'cyan' else 'white'
-            paddingTop: if homepage then 87 else 17
-            fontSize: if homepage then 63 else 26
-            fontWeight: 500
-            marginLeft: if not homepage then 300
-          'Distributed Deliberation'
         if homepage
           election_day = new Date('02/13/2015')
           today = new Date()
@@ -201,12 +206,22 @@ window['bitcoin-electionHeader'] = ReactiveComponent
 
           DIV
             style:
+              paddingLeft: 200
               color: 'white'
               fontSize: 22
               fontWeight: 300
-              paddingTop: 20
+              paddingTop: 23
               paddingBottom: 45
-              maxWidth: 700
+              maxWidth: 900
+
+            DIV
+              style:
+                color: 'cyan'
+                fontSize: 63
+                fontWeight: 500
+                marginBottom: 20
+              'Distributed Deliberation'
+
             'We are choosing two new board members. '
             A
               href: 'https://blog.bitcoinfoundation.org/elections-update/'
@@ -222,20 +237,34 @@ window['bitcoin-electionHeader'] = ReactiveComponent
                 style: textDecoration: 'underline'
                 'become a member'
               ' of the Bitcoin Foundation.'
-              
+
       ProfileMenu()
 
-$(->
+window.cluster_options =
+  # Each cluster can have its own options
+  Candidates:   # Options for the "Candidates" cluster
+    editor_icons: true
+    homie_histo_filter: (user) -> 'bitcoin foundation member' in user.groups
+    homie_histo_title: "Members' Opinions"
+
+  Debate:       # Options for the "Debate" cluster
+    homie_histo_title: "Candidates' Opinions"
+
+
+$( ->
   # These need to be run AFTER franklin.coffee has loaded
-  window['bitcoin-electionHomepage'] = ElectionHomepage
+  window['bitcoin-election-homepage'] = ElectionHomepage
   window['bitcoin-election-proposal-subheader'] = ProposalSubheading
 
   # For testing only:
-  #window['livingvotersguideHomepage'] = ElectionHomepage
-  #window['bitcoin-demoHomepage'] = ElectionHomepage
-  #window['bitcoinHomepage'] = ElectionHomepage
-  #window['usHomepage'] = ElectionHomepage
- )
+  #window['livingvotersguide-homepage'] = ElectionHomepage
+  #window['bitcoin-demo-homepage'] = ElectionHomepage
+  #window['bitcoin-homepage'] = ElectionHomepage
+  #window['us-homepage'] = ElectionHomepage
+)
+
+
+
 
 
 #####################
@@ -272,7 +301,7 @@ window.ThanksAndShareStrip = ReactiveComponent
           url: "https://livingvotersguide.org/#{@proposal.slug}?results=true"
 
 
-window.livingvotersguideHeader = ReactiveComponent
+window['livingvotersguide-header'] = ReactiveComponent
   displayName: 'livingvotersguideHeader'
 
   render: ->
@@ -289,7 +318,6 @@ window.livingvotersguideHeader = ReactiveComponent
         .header { height: 275px; background-image: url(<%= asset_path 'livingvotersguide/bg.jpg' %>); background-position: center; background-size: cover; }
         """
 
-      # Top cream area
       DIV
         style:
           position: 'absolute'
@@ -309,8 +337,9 @@ window.livingvotersguideHeader = ReactiveComponent
         style:
           color: 'white'
           height: 137
-          marginBottom: 23
+          #marginBottom: 10
           clear: 'both'
+          paddingTop: 69
 
         # Online Intelligence for Washington Voters
         DIV
@@ -323,6 +352,15 @@ window.livingvotersguideHeader = ReactiveComponent
             fontWeight: 600
           SPAN null, 'Created by the people '
           'and for the people of Washington state'
+          DIV
+            style: 
+              marginBottom: 15
+              marginTop: 10
+              fontSize: 18
+              fontWeight: 300
+            "Thanks Washington! We'll see you again in 2015."
+
+
 
         DIV
           style:
@@ -336,14 +374,6 @@ window.livingvotersguideHeader = ReactiveComponent
           DIV style: {marginTop: 8}, 'with fact-checks from'
           A {href: 'http://spl.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'The Seattle Public Library')
 
-      DIV
-        style: 
-          fontStyle: 'italic'
-          marginLeft: 332
-          marginBottom: 15
-          fontSize: 18
-          color: 'white'
-        "Thanks Washington! We'll see you again in 2015."
 
 window.ZipcodeBox = ReactiveComponent
   displayName: 'ZipcodeBox'
@@ -436,7 +466,7 @@ window.ZipcodeBox = ReactiveComponent
             height: 9
 
 
-window.livingvotersguideFooter = ReactiveComponent
+window['livingvotersguide-footer'] = ReactiveComponent
   displayName: 'livingvotersguideFooter'
   render: ->
     DIV null,

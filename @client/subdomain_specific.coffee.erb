@@ -240,6 +240,16 @@ window['bitcoin-election-header'] = ReactiveComponent
 
       ProfileMenu()
 
+window.cluster_options =
+  # Each cluster can have its own options
+  Candidates:   # Options for the "Candidates" cluster
+    editor_icons: true
+    homie_histo_filter: (user) -> 'bitcoin foundation member' in user.groups
+    homie_histo_title: "Members' Opinions"
+
+  Debate:       # Options for the "Debate" cluster
+    homie_histo_title: "Candidates' Opinions"
+
 
 $( ->
   # These need to be run AFTER franklin.coffee has loaded

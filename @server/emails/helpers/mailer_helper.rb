@@ -7,8 +7,8 @@ module MailerHelper
 
     query_params = query_params.map{|k,v| "#{k}=#{v}"}.join('&')
 
-    pp "#{@subdomain.host_with_port}/#{relative_path}?#{query_params}"
+    pp "#{Rails.env.development? ? 'http://' : 'https://'}#{@subdomain.host_with_port}/#{relative_path}?#{query_params}"
     
-    "#{@subdomain.host_with_port}/#{relative_path}?#{query_params}"    
+    "#{Rails.env.development? ? 'http://' : 'https://'}#{@subdomain.host_with_port}/#{relative_path}?#{query_params}"    
   end
 end

@@ -20,20 +20,24 @@ class Proposal < ActiveRecord::Base
   scope :active, -> {where( :active => true, :published => true )}
 
 
-  # Sanitize the HTML fields that we insert dangerously in the client
+  # Sanitize the HTML fields that we insert dangerously in the client. 
+  # We allow superadmins to post arbitrary HTML though. 
   before_validation(on: [:create, :update]) do
-    # Initialize fields if empty
-    self.description        = '' if not attribute_present?("description")
-    self.description_fields = '' if not attribute_present?("description_fields")
 
-    # Sanitize description
-    self.description = ActionController::Base.helpers.sanitize(self.description)
-    # Sanitize description_fields[i].html
-    self.description_fields =
-      JSON.dump(JSON.parse(self.description_fields).map { |field|
-                  field['html'] = ActionController::Base.helpers.sanitize(field['html'])
-                  field
-                })
+    if !current_user.super_admin
+      # Initialize fields if empty
+      self.description        = '' if not attribute_present?("description")
+      self.description_fields = '' if not attribute_present?("description_fields")
+
+      # Sanitize description
+      self.description = ActionController::Base.helpers.sanitize(self.description)
+      # Sanitize description_fields[i].html
+      self.description_fields =
+        JSON.dump(JSON.parse(self.description_fields).map { |field|
+                    field['html'] = ActionController::Base.helpers.sanitize(field['html'])
+                    field
+                  })
+    end
   end
 
   def self.summaries(current_subdomain = nil)

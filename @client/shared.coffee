@@ -259,11 +259,10 @@ body, input, button, textarea {
   background-color: #{considerit_blue};
   color: white;
   font-size: 29px;
-  margin-top: 20px;
+  margin-top: 14px;
   box-shadow: 0px 1px 0px black;
   border: none;
-  padding: 6px 18px;
-  font-weight: 600; }
+  padding: 8px 36px; }
 
 .primary_button.disabled {
   background-color: #eeeeee;
@@ -276,7 +275,7 @@ a.primary_cancel_button {
   color: #888888;
   margin-top: 0.5em; }
 
-a.cancel_opinion_button, a.cancel_auth_button {
+a.cancel_opinion_button {
   float: right;
   margin-top: 0.5em; }
 

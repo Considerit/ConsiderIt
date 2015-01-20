@@ -22,24 +22,6 @@ ConsiderIt::Application.routes.draw do
   ## Development dashboard; right now it lets you easily switch between subdomains
   get '/change_subdomain/:id' => 'developer#change_default_subdomain', :as => 'change_subdomain'
 
-  # Third party oauth routes. These go before 
-  # the html controller non-json catch all because 
-  # oauth submits an HTML GET request back to the server 
-  # with the user data, which is handled by 
-  # CurrentUserController#third_party_callback.
-  match "/auth/:provider",
-    constraints: { provider: /google_oauth2|facebook|twitter/},
-    to: "current_user#passthru",
-    as: :user_omniauth_authorize,
-    via: [:get, :post]
-
-  match "/auth/:action/callback",
-    constraints: { action: /google_oauth2|facebook|twitter/ },
-    to: "current_user#update_via_third_party",
-    as: :user_omniauth_callback,
-    via: [:get, :post]
-
-
   # All user-visible URLs go to the html controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
   get '(*url)' => 'html#index', :constraints => NotJSON.new
@@ -53,6 +35,7 @@ ConsiderIt::Application.routes.draw do
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :show]
   resources :client_error, :only => [:create]
+  resources :histogram, :only => [:update, :show]
 
   resources :comment, :only => [:create, :show, :update, :destroy]
   get '/comments/:point_id' => 'comment#index'

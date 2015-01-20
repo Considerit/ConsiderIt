@@ -13,8 +13,13 @@ private
     address.format # returns "John Doe <john@example.com>"
   end  
 
-  def default_sender(current_subdomain)
-    current_subdomain && current_subdomain.notifications_sender_email && current_subdomain.notifications_sender_email.length > 0 ? current_subdomain.notifications_sender_email : APP_CONFIG[:email]
+  def default_sender(subdomain)
+    subdomain && subdomain.notifications_sender_email && subdomain.notifications_sender_email.length > 0 ? subdomain.notifications_sender_email : APP_CONFIG[:email]
+  end
+
+  def subject_line(subject, subdomain)
+    title = subdomain.app_title or subdomain.name
+    "[#{title}] #{subject}"
   end
 
 end

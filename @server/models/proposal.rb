@@ -20,6 +20,26 @@ class Proposal < ActiveRecord::Base
   scope :active, -> {where( :active => true, :published => true )}
 
 
+  # Sanitize the HTML fields that we insert dangerously in the client. 
+  # We allow superadmins to post arbitrary HTML though. 
+  before_validation(on: [:create, :update]) do
+
+    if !current_user.super_admin
+      # Initialize fields if empty
+      self.description        = '' if not attribute_present?("description")
+      self.description_fields = '' if not attribute_present?("description_fields")
+
+      # Sanitize description
+      self.description = ActionController::Base.helpers.sanitize(self.description)
+      # Sanitize description_fields[i].html
+      self.description_fields =
+        JSON.dump(JSON.parse(self.description_fields).map { |field|
+                    field['html'] = ActionController::Base.helpers.sanitize(field['html'])
+                    field
+                  })
+    end
+  end
+
   def self.summaries(current_subdomain = nil)
     current_subdomain = Thread.current[:subdomain] if !current_subdomain
 
@@ -119,20 +139,30 @@ class Proposal < ActiveRecord::Base
   #
   # TODO: consolidate with subdomain.user_roles
   def user_roles(filter = false)
-    r = JSON.parse(roles || "{}")
+    result = JSON.parse(roles || "{}")
     ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|
-      if !r.has_key?(role) || !r[role]
-        r[role] = []
-      elsif filter
+
+      # Initialize empty role to []
+      result[role] = [] if !result.has_key?(role) || !result[role]
+
+      # Filter role if the client isn't supposed to see it
+      if filter && role != 'editor'   # FIND BETTER FIX: mike added
+                                      # "result != editor" so bitcoin
+                                      # candidates can see the editor,
+                                      # because he's temporarily
+                                      # encoding 'editor' as
+                                      # 'candidate' and needs to
+                                      # display their photo.
+
         # Remove all specific email address for privacy. Leave wildcards.
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 
-        r[role] = r[role].map{|email_or_key| 
-          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" ? email_or_key : '-' 
+        result[role] = result[role].map{|email_or_key|
+          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" ? email_or_key : '-'
         }.uniq
       end
     end
-    r
+    result
   end
 
 
@@ -156,7 +186,7 @@ class Proposal < ActiveRecord::Base
 
 
   # The user is subscribed to proposal notifications _implicitly_ if:
-  #   • they have an opinion (published or not)
+  #   • they have an opinion (published or not)
   def following(follower)
     explicit = get_explicit_follow follower #using the Followable polymophic method
     if explicit

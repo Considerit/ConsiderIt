@@ -2,33 +2,33 @@ require 'mail'
 
 class UserMailer < Mailer
 
-  def reset_password_instructions(user, token, current_subdomain)
+  def reset_password_instructions(user, token, subdomain)
     @user = user
     @token = token 
     subject = "password reset instructions"
-    @subdomain = current_subdomain
+    @subdomain = subdomain
 
     to = format_email @user.email, @user.name
-    from = format_email(default_sender(current_subdomain), current_subdomain.app_title)
-    mail(:from => from, :to => to, :subject => "[#{current_subdomain.app_title}] #{subject}")
+    from = format_email(default_sender(subdomain), (subdomain.app_title or subdomain.name))
+    mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
   end
 
-  def verification(user, current_subdomain)
+  def verification(user, subdomain)
     @user = user
-    @token = ApplicationController.MD5_hexdigest("#{user.email}#{user.unique_token}#{current_subdomain.name}")
-    @subdomain = current_subdomain
+    @token = ApplicationController.MD5_hexdigest("#{user.email}#{user.unique_token}#{subdomain.name}")
+    @subdomain = subdomain
     subject = "please verify your email address"
 
     puts "And the token is ", @token
     to = format_email @user.email, @user.name
-    from = format_email(default_sender(current_subdomain), current_subdomain.app_title)
-    mail(:from => from, :to => to, :subject => "[#{current_subdomain.app_title}] #{subject}")
+    from = format_email(default_sender(subdomain), (subdomain.app_title or subdomain.name))
+    mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
   end
 
-  def invitation(inviter, invitee, invitation_obj, role, current_subdomain, message = nil)
+  def invitation(inviter, invitee, invitation_obj, role, subdomain, message = nil)
     @user = invitee
     @inviter = inviter
-    @subdomain = current_subdomain
+    @subdomain = subdomain
     @invitation_obj = invitation_obj
     @message = message
 
@@ -61,7 +61,8 @@ class UserMailer < Mailer
       to = format_email invitee.email, invitee.name    
     end
 
-    from = format_email(inviter.email, inviter.name)
+    from = format_email default_sender(subdomain), inviter.name
+    reply_to = format_email inviter.email, inviter.name
 
     case invitation_obj.class.to_s
 
@@ -73,7 +74,7 @@ class UserMailer < Mailer
       raise "Why are you trying to send an invitation to a #{invitation_obj.class.to_s}?"
     end
 
-    mail(:from => from, :to => to, :subject => subject)
+    mail(:from => from, :to => to, :subject => subject, :reply_to => reply_to)
 
   end
 

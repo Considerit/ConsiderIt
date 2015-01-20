@@ -15,10 +15,6 @@
   // on the server).
   var root = this;
 
-  // Save the previous value of the `Backbone` variable, so that it can be
-  // restored later on, if `noConflict` is used.
-  var previousBackbone = root.Backbone;
-
   // Create local references to array methods we'll want to use later.
   var array = [];
   var push = array.push;
@@ -45,23 +41,6 @@
   // the `$` variable.
   Backbone.$ = root.jQuery || root.Zepto || root.ender || root.$;
 
-  // Runs Backbone.js in *noConflict* mode, returning the `Backbone` variable
-  // to its previous owner. Returns a reference to this Backbone object.
-  Backbone.noConflict = function() {
-    root.Backbone = previousBackbone;
-    return this;
-  };
-
-  // Turn on `emulateHTTP` to support legacy HTTP servers. Setting this option
-  // will fake `"PATCH"`, `"PUT"` and `"DELETE"` requests via the `_method` parameter and
-  // set a `X-Http-Method-Override` header.
-  Backbone.emulateHTTP = false;
-
-  // Turn on `emulateJSON` to support legacy servers that can't deal with direct
-  // `application/json` requests ... will encode the body as
-  // `application/x-www-form-urlencoded` instead and will send the model in a
-  // form param named `model`.
-  Backbone.emulateJSON = false;
 
   // Backbone.Events
   // ---------------
@@ -86,19 +65,6 @@
       var events = this._events[name] || (this._events[name] = []);
       events.push({callback: callback, context: context, ctx: context || this});
       return this;
-    },
-
-    // Bind an event to only be triggered a single time. After the first time
-    // the callback is invoked, it will be removed.
-    once: function(name, callback, context) {
-      if (!eventsApi(this, 'once', name, [callback, context]) || !callback) return this;
-      var self = this;
-      var once = _.once(function() {
-        self.off(name, once);
-        callback.apply(this, arguments);
-      });
-      once._callback = callback;
-      return this.on(name, once, context);
     },
 
     // Remove one or many callbacks. If `context` is null, removes all
@@ -148,21 +114,6 @@
       return this;
     },
 
-    // Tell this object to stop listening to either specific events ... or
-    // to every object it's currently listening to.
-    stopListening: function(obj, name, callback) {
-      var listeningTo = this._listeningTo;
-      if (!listeningTo) return this;
-      var remove = !name && !callback;
-      if (!callback && typeof name === 'object') callback = this;
-      if (obj) (listeningTo = {})[obj._listenId] = obj;
-      for (var id in listeningTo) {
-        obj = listeningTo[id];
-        obj.off(name, callback, this);
-        if (remove || _.isEmpty(obj._events)) delete this._listeningTo[id];
-      }
-      return this;
-    }
 
   };
 
@@ -209,9 +160,9 @@
     }
   };
 
-  var listenMethods = {listenTo: 'on', listenToOnce: 'once'};
+  var listenMethods = {listenTo: 'on'};
 
-  // Inversion-of-control versions of `on` and `once`. Tell *this* object to
+  // Inversion-of-control versions of `on`. Tell *this* object to
   // listen to an event in another object ... keeping track of what it's
   // listening to.
   _.each(listenMethods, function(implementation, method) {
@@ -224,10 +175,6 @@
       return this;
     };
   });
-
-  // Aliases for backwards compatibility.
-  Events.bind   = Events.on;
-  Events.unbind = Events.off;
 
   // Allow the `Backbone` object to serve as a global event bus, for folks who
   // want global "pubsub" in a convenient place.
@@ -455,14 +402,6 @@
       }
 
       if (!this.options.silent) return this.loadUrl();
-    },
-
-    // Disable Backbone.history, perhaps temporarily. Not useful in a real app,
-    // but possibly useful for unit testing Routers.
-    stop: function() {
-      Backbone.$(window).off('popstate', this.checkUrl).off('hashchange', this.checkUrl);
-      clearInterval(this._checkUrlInterval);
-      History.started = false;
     },
 
     // Add a route to be tested when the fragment changes. Routes added later

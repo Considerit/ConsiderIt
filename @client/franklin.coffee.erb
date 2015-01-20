@@ -41,9 +41,9 @@ browser =
   touch_enabled : Modernizr.touch
   high_density_display : ((window.matchMedia && (window.matchMedia('only screen and (min-resolution: 124dpi), only screen and (min-resolution: 1.3dppx), only screen and (min-resolution: 48.8dpcm)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (min-device-pixel-ratio: 1.3)').matches)) || (window.devicePixelRatio && window.devicePixelRatio > 1.3))
 
+window.lefty = false
 
-
-proposal_url = (proposal) =>
+window.proposal_url = (proposal) =>
   # The special thing about this function is that it only links to
   # "?results=true" if the proposal has an opinion.
   result = '/' + proposal.slug
@@ -62,7 +62,7 @@ userOpinion = (user_key) ->
 
 _route_changed = false
 
-togglePage = (proposal_mode, triggered_by) ->
+window.togglePage = (proposal_mode, triggered_by) ->
   $('.histogram_segment_pole').ensureInView
     offset_buffer: 150
     callback : -> 
@@ -261,6 +261,13 @@ Proposal = ReactiveComponent
 
     proposer = fetch(@proposal.user)
 
+    # EXPERIMENTAL:  Automatically split paragraphs for candidates.
+    # Let's make it WYSIWYG so we can remove this code
+    if @proposal.cluster?.toLowerCase() == 'candidates'
+      description = @proposal.description.split('\n').join('<p>')
+    else
+      description = @proposal.description
+
     # Description fields are the expandable details that help people drill
     # into the proposal. They are very specific to the type of proposal (e.g. for
     # an LVG ballot measure, one of the fields might be "fiscal impact statement").  
@@ -290,6 +297,8 @@ Proposal = ReactiveComponent
             width: DESCRIPTION_WIDTH
             position: 'relative'
             margin: 'auto'
+            marginLeft: if lefty then 300
+            #marginRight: if lefty then 0
             fontSize: 16
             marginBottom: '2em'
 
@@ -304,7 +313,7 @@ Proposal = ReactiveComponent
             style:
               paddingTop: '1em'
               fontSize: 18
-            dangerouslySetInnerHTML:{__html: @proposal.description}
+            dangerouslySetInnerHTML:{__html: description}
 
           if @local.description_fields
             DIV style: {marginTop: '1em'},
@@ -338,11 +347,21 @@ Proposal = ReactiveComponent
 
           if @local.edit_roles
             DIV 
-              style: {width: BODY_WIDTH, margin: 'auto', backgroundColor: '#fafafa', padding: '10px 60px'}
+              style:
+                width: BODY_WIDTH
+                margin: 'auto'
+                backgroundColor: '#fafafa'
+                padding: '10px 60px'
+                marginLeft: (if lefty then 0)
               ProposalRoles key: @proposal
             
         #feelings
-        DIV style : { width: BODY_WIDTH, margin: '0 auto', position: 'relative' },
+        DIV
+          style:
+            width: BODY_WIDTH
+            margin: '0 auto'
+            marginLeft: if lefty then 300
+            position: 'relative'
           OpinionFilter()
           Histogram()
 
@@ -352,7 +371,9 @@ Proposal = ReactiveComponent
           style : 
             width: REASONS_REGION_WIDTH
             position: 'relative'
-            margin: '48px auto 4em auto' 
+            margin: '48px auto 4em auto'
+            marginLeft: if lefty then 65
+            #marginRight: if lefty then 0
               
           #community cons
           CommunityPoints { key: 'cons' }
@@ -374,6 +395,12 @@ Proposal = ReactiveComponent
     # is taller than either of the wing point columns
     $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height()} 
 
+
+  componentDidMount : -> 
+
+    # when you go from homepage to a proposal, seek to proposal description
+    # top, otherwise you can be stuck in the middle of the proposal. 
+    $('.proposal').moveToTop()
 
   renderDescriptionField : (field) ->
     DIV 
@@ -531,6 +558,8 @@ StickyProposalHeading = ReactiveComponent
             width: DESCRIPTION_WIDTH
             textAlign: 'left'
             margin: 'auto'
+            marginLeft: if lefty then 300
+            #marginRight: if lefty then 0
 
           DIV style: {width: PAGE_WIDTH}, # ...but let the stuff inside be big
             DIV
@@ -722,13 +751,13 @@ styles += """
 
 """
 
-
 window.ProposalSubheading = ReactiveComponent
   displayName: 'ProposalSubheading'
   render : ->
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
     heading_fontsize = 45
+    options = window.cluster_options?[@proposal.cluster] || {}
 
     # Determine the next proposal
     next_proposal =
@@ -744,35 +773,14 @@ window.ProposalSubheading = ReactiveComponent
 
     DIV
       style:
-        margin: '30px 0 0 0'
+        paddingBottom: 15
+        marginLeft: 300
+        marginTop: 30
+        width: 560
+        position: 'relative'
 
-      # Placeholder
-      # DIV
-      #   className: 'proposal_heading_placeholder'
-      #   style:
-      #     color: 'transparent'
-      #     position: 'relative'
-      #     paddingBottom: 15
-      #     paddingLeft: 300
-      #     width: 560 + 300
-      #   DIV null,
-      #     @proposal.cluster
-      #   DIV
-      #     style: {fontSize: heading_fontsize, fontWeight: 700, lineHeight: 1.2}
-      #     @proposal.name
-
-      # Actual sticky thing
-      DIV
-        className: 'stickable'
-        style:
-          width: 560 + 300
-          backgroundColor: 'white'
-          zIndex: 3
-          position: 'relative'
-          paddingBottom: 15
-          paddingLeft: 300
-
-        # Next button
+      # Next button
+      if next_proposal
         A
           style:
             position: 'absolute'
@@ -781,37 +789,35 @@ window.ProposalSubheading = ReactiveComponent
             => window.app_router.navigate(url, {trigger: true})
           'Next >'
 
-        # Cluster name
-        DIV
-          style:
-            fontStyle: 'italic'
-          @proposal.cluster
+      # Photo
+      if options.editor_icons
+        editor = proposal_editor(@proposal)
+        if editor
+          Avatar
+            key: editor
+            user: editor
+            img_style: 'original'
+            style:
+              position: 'absolute'
+              #height: 225
+              width: 225
+              marginLeft: -225 - 35
+              borderRadius: 0
+              backgroundColor: 'transparent'
 
-        # Proposal name
-        DIV
-          style:
-            lineHeight: 1.2
-            fontWeight: 700
-            fontSize: heading_fontsize
-          @proposal.name
+      # Cluster name
+      DIV
+        style:
+          fontStyle: 'italic'
+        @proposal.cluster
 
-  # componentDidMount : -> @initOrUpdateHeader()
-  # componentDidUpdate : -> @initOrUpdateHeader()
-  #
-  # initOrUpdateHeader : -> 
-  #   $el = $(@getDOMNode())
-  #
-  #   $header = $el.find('.stickable')
-  #
-  #   if $header.length > 0 && !@is_waiting()
-  #     $header.StickyElement
-  #       placeholder: $el.find('.proposal_heading_placeholder')[0]
-  #       container: $el.parents('.proposal')
-  #       stick_on_zoomed_screens: false
-  #
-  # componentWillUnmount : -> 
-  #   $el = $(@getDOMNode())
-  #   $el.find('.stickable').StickyElement('destroy')
+      # Proposal name
+      DIV
+        style:
+          lineHeight: 1.2
+          fontWeight: 700
+          fontSize: heading_fontsize
+        @proposal.name
 
 
 ##
@@ -1025,6 +1031,79 @@ styles += """
     position: absolute;}
 
 """
+
+
+MiniHisto = ReactiveComponent
+  displayName: 'mini_histo'
+  render: ->
+    options = window.cluster_options?[@props.proposal.cluster] || {}
+    filter_func = options.homie_histo_filter
+
+    # We'll only pass SOME opinions to the histogram
+    @opinions = fetch('/page/' + @props.proposal.slug).opinions
+    @opinions = (opinion for opinion in @opinions when \
+                 not filter_func or filter_func(fetch(opinion.user)))
+
+    icons = for opinion in @opinions
+      neutral = Math.abs(opinion.stance) < .1
+      Avatar
+        key: opinion.user
+        user: opinion.user
+        style:
+          position: 'absolute'
+          backgroundColor: '#d3d3d3'
+          # filter:           if not @local.hover then 'grayscale(1)'
+          # '-webkit-filter': if not @local.hover then 'grayscale(1)'
+          # opacity:          if not @local.hover then .5
+          # border:  if neutral then 'solid 1px black'
+          # opacity: if neutral then .2
+
+    DIV
+      style:
+        height: @props.height
+        width: @props.width
+        position: 'relative'
+        borderBottom: '1px solid #999'
+        display: if icons.length == 0 then 'none'
+      # onMouseEnter: => @local.hover = true;  save(@local)
+      # onMouseLeave: => @local.hover = false; save(@local)
+      SPAN
+        style:
+          position: 'absolute'
+          left: -21
+          bottom: -12
+          fontSize: 19
+          fontWeight: 500
+          color: '#444'
+        '–'
+      SPAN
+        style:
+          position: 'absolute'
+          right: -21
+          bottom: -13
+          fontSize: 19
+          fontWeight: 500
+          color: '#444'
+        '+'
+      DIV
+        ref: 'histo'
+        icons
+
+  attach_mini_histo: ->
+    if @refs and @refs.histo and not @mounted
+      page = fetch('/page/' + @props.proposal.slug)
+      histo = @refs.histo.getDOMNode()
+      icons = histo.childNodes
+      opinions = for opinion, i in @opinions
+        {stance: opinion.stance, icon: icons[i]}
+      mini_histo(@props.width, @props.height-1, histo, opinions)
+      @mounted = true
+  componentDidMount: ->
+    @attach_mini_histo()
+  componentDidUpdate: ->
+    @attach_mini_histo()
+  componentWillUnmount: ->
+    @mounted = false
 
 ##
 # Slider
@@ -1406,12 +1485,11 @@ DecisionBoard = ReactiveComponent
                 togglePage('results', 'save_button')
               else
                 if can_opine == Permission.UNVERIFIED_EMAIL
-                  @root.auth_mode = 'verify'
+                  @root.auth = {form: 'verify email', goal: 'Save your Opinion'}
                   current_user.trying_to = 'send_verification_token'
                   save current_user
                 else
-                  @root.auth_mode = 'register'
-                  @root.auth_reason = 'Save your Opinion'
+                  @root.auth = {form: 'create account', goal: 'Save your Opinion'}
 
                 # We'll need to publish this opinion after auth is completed
                 @root.opinions_to_publish.push(@proposal.your_opinion)
@@ -1612,12 +1690,10 @@ YourPoints = ReactiveComponent
                   color: considerit_blue
                 onClick: => 
                   if can_add_new_point == Permission.NOT_LOGGED_IN
-                    @root.auth_mode = 'register'
-                    @root.auth_reason = 'write a point'
+                    @root.auth = {form: 'create account', goal: 'write a point'}
                     save @root
                   else if can_add_new_point == Permission.UNVERIFIED_EMAIL
-                    @root.auth_mode = 'verify'
-                    @root.auth_reason = 'write a point'
+                    @root.auth = {form: 'verify email', goal: 'write a point'}
                     save @root
                     current_user.trying_to = 'send_verification_token'
                     save current_user
@@ -2351,13 +2427,12 @@ EditComment = ReactiveComponent
 
           onClick: =>
             if permitted == Permission.NOT_LOGGED_IN
-              @root.auth_mode = 'login' 
+              @root.auth = {form: 'login', goal: 'Write a Comment'}
             else if permitted == Permission.UNVERIFIED_EMAIL
-              @root.auth_mode = 'verify'
+              @root.auth = {form: 'verify email', goal: 'Write a Comment'}
               current_user.trying_to = 'send_verification_token'
               save current_user
 
-            @root.auth_reason = 'Write a Comment'
             save(@root)
 
           if permitted == Permission.NOT_LOGGED_IN
@@ -2610,8 +2685,7 @@ SubmitFactCheck = ReactiveComponent
       else
         DIV
           onClick: =>
-            @root.auth_mode = 'login'
-            @root.auth_reason = 'Request a Fact Check'
+            @root.auth = {form: 'login', goal: 'Request a Fact Check'}
             save(@root)
           style:
             marginTop: 14
@@ -2894,9 +2968,12 @@ Avatar = ReactiveComponent
         save(@local)
 
     if @props.img_style && user.key != -1 && user.avatar_file_name
-      attrs.src = "/system/avatars/#{@props.key}/#{@props.img_style}/#{avatar_file_name}"
+      subdomain = fetch '/subdomain'
+      attrs.src = "#{subdomain.asset_host}/system/avatars/#{user.key.split('/')[2]}/#{@props.img_style}/#{user.avatar_file_name}"
 
-    @transferPropsTo SPAN attrs
+      @transferPropsTo IMG attrs
+    else 
+      @transferPropsTo SPAN attrs
 
   getDefaultProps : ->
     key: '/user/-1' # defaults to anonymous user
@@ -2920,7 +2997,7 @@ Avatar = ReactiveComponent
       left: pos.left - $name.width() / 2 + $el.width()/2
       top: pos.top + direction * $name.height()
 
-window.styles += """
+styles += """
 .avatar {
   vertical-align: top;
   background-color: transparent;
@@ -2961,8 +3038,9 @@ AutoGrowTextArea = ReactiveComponent
 
   checkAndSetHeight : ->
     scroll_height = @getDOMNode().scrollHeight
+    max_height = @props.max_height or 400
     if scroll_height > @getDOMNode().clientHeight
-      @local.height = scroll_height + 5
+      @local.height = Math.min scroll_height + 5, max_height
       save(@local)
 
   render : -> 
@@ -2984,598 +3062,6 @@ CharacterCountTextInput = ReactiveComponent
          @local.count = $(@getDOMNode()).find('textarea').val().length
          save(@local))
       SPAN className: 'count', @props.maxLength - @local.count
-
-
-Auth = ReactiveComponent
-  displayName: 'Auth'
-
-  render: -> 
-    current_user = fetch('/current_user')
-    subdomain = fetch('/subdomain')
-    root = fetch('root')
-
-    # When we switch to new auth_mode screens, wipe out all the old
-    # errors, cause we're startin' fresh!
-    if not @local.last_auth_mode or @local.last_auth_mode != root.auth_mode
-      @local.last_auth_mode = root.auth_mode
-      current_user.errors = []
-
-
-    # Let's set up some useful helpers
-    submitOnEnter = (event) =>
-      if event.which == 13
-        event.preventDefault()
-        @submitAuth(event)
-
-    input_box = (name, placeholder, type, onChange, pattern) =>
-      if @local[name] != current_user[name]
-        @local[name] = current_user[name]
-        save @local
-
-      # There is a react bug where input cursor will jump to end for 
-      # controlled components. http://searler.github.io/react.js/2014/04/11/React-controlled-text.html
-      # This makes it annoying to edit text. I've contained this issue to edit_profile only
-      # by only setting value in the Input component when in edit_profile mode
-      type = type || 'text'
-      onChange = onChange || (event) => 
-        @local[name] = current_user[name] = event.target.value
-        save @local
-
-      INPUT
-        id: 'user_' + name
-        value: if @root.auth_mode == 'update' then @local[name] else null
-        name: "user[#{name}]"
-        key: "#{name}_input_box"
-        placeholder: placeholder
-        required: "required"
-        type: type
-        onChange: onChange
-        onKeyPress: submitOnEnter
-        pattern: pattern
-
-    name_input_field     = input_box('name', 'first and last name')
-    email_input_field    = input_box('email', 'email@address', 'email')
-
-    password_input_field =
-      input_box('password',
-                 if root.auth_mode == 'login' then "password" else if root.auth_mode == 'register' then 'choose a password' else "choose a new password",
-                 'password',
-                 null,
-                 if root.auth_mode == 'register' then ".{5,}" else '')
-
-    providers = ['facebook', 'google']
-
-    third_party_authenticated = current_user.facebook_uid || current_user.twitter_uid || current_user.google_uid
-
-    #####
-    # We used to display the Auth header using the position and
-    # styling of the slider.  Now it's just neutral.
-
-    # Asset fingerprinting. This is why this file is ERB
-    bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
-
-    bubble_mouth_props = 
-      transform: "translate(0px, 11px) scale(1.5, 1.5)"
-      left: 270
-      position: 'relative'
-    css.crossbrowserify bubble_mouth_props
-
-    if !subdomain.has_civility_pledge
-      pledges = []
-    else
-      pledges = ['I will participate with only one account', 
-                 'I will speak only on behalf of myself', 
-                 'I will not attack or mock others']
-
-    auth_area_style = 
-      padding: '1.5em 18px .5em 18px'
-      fontSize: 21
-      marginTop: 10
-
-    if @root.auth_mode != 'update'
-      _.extend auth_area_style, 
-        borderRadius: 16
-        borderStyle: 'dashed'
-        borderWidth: 3
-        borderColor: considerit_blue
-
-    DIV null,
-      if @root.auth_mode == 'update'
-        DashHeader name: 'Edit Profile'
-
-      DIV
-        style: 
-          margin: '0 auto 10em 0'
-          position: 'relative'
-          display: 'block'
-          zIndex: 0
-          margin: 'auto'
-          position: 'relative'
-          width: DECISION_BOARD_WIDTH
-
-        onClick: (e) => e.stopPropagation()
-
-        if @root.auth_mode != 'update'
-          DIV 
-            className: 'auth_header'
-            style : 
-              width: HISTOGRAM_WIDTH
-              position: 'relative'
-              margin: 'auto' 
-              top: 5
-            DIV 
-              className:'auth_heading'
-              style: 
-                borderRadius: 10                
-                fontWeight: 700
-                color: considerit_blue
-                textAlign: 'center'
-                visibility: 'visible'
-                left: HISTOGRAM_WIDTH / 2.0
-                top: 5
-                marginLeft: -225
-                width: 450
-                fontSize: 50
-                position: 'relative'
-
-              'Introduce Yourself' 
-              if @root.auth_reason
-                DIV style: {fontSize: 18, margin: '-8px 0 15px 0'},
-                  "To #{@root.auth_reason}"
-
-            DIV 
-              className: 'the_handle'
-              style: 
-                left: 255
-                height: SLIDER_HANDLE_SIZE * 2.5
-                width: SLIDER_HANDLE_SIZE * 2.5
-                top: 0
-                borderRadius: '50%'
-                marginLeft: -SLIDER_HANDLE_SIZE / 2
-                backgroundColor: considerit_blue
-                position: 'relative'
-                boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{considerit_blue}"
-
-            IMG className:'bubblemouth', src: bubblemouth_src, style: bubble_mouth_props
-
-        DIV 
-          className: "auth" + (if @local.submitting then ' waiting' else '')
-          style: auth_area_style
-          if root.auth_mode in ['login', 'register'] && !current_user.provider && !third_party_authenticated
-            DIV className: 'third_party_auth',
-              LABEL 
-                style: {marginRight: 18}
-                'Instantly:'
-              for provider in providers
-                do (provider) =>
-                  BUTTON key: provider, className: "third_party_option #{provider}", onClick: (=> @startThirdPartyAuth(provider)),
-                    I className: "fa fa-#{provider}"
-                    SPAN null, provider
-
-              DIV 
-                style: 
-                  fontWeight: 700
-                  paddingTop: '1em'
-                  color: "rgba(36,120,204,0.1)"
-                dangerouslySetInnerHTML:{__html: "&mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;  <label style=\"padding: 0 18px; color: #{considerit_blue}\">or</label>  &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash; &mdash;"}
-
-          if root.auth_mode in ['login', 'login_via_reset_password_token', 'verify']
-            DIV null, 
-              if root.auth_mode == 'login'
-                LABEL 
-                  style: 
-                    padding: '1em 0'
-                    display: 'block'
-                  'By email address:'
-              else if root.auth_mode == 'login_via_reset_password_token'
-                DIV null,
-                  LABEL className: 'reset_password_section_label', 'Reset your password'
-                  DIV style: {'margin-bottom': 16}, "We just sent you a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
-              else if root.auth_mode == 'verify'
-                DIV null,
-                  LABEL className: 'reset_password_section_label', 'Confirm your email address'
-                  DIV style: {'margin-bottom': 16}, 
-                    "Hi! For additional security, we require users to prove that they control the email address with which they’re accessing this private area." 
-                  DIV style: {'margin-bottom': 16},
-                    "We just sent a verification code via email to #{current_user.email}. Check your email, and enter the code here:"
-
-
-              TABLE className: 'auth_fields login',
-                TBODY null,
-                  if root.auth_mode in ['login_via_reset_password_token', 'verify']
-                    TR null, 
-                      TD className: 'label_cell', 
-                        LABEL htmlFor: 'user_verification_code', 'code:'
-
-                      TD className: 'field_cell', 
-                        INPUT
-                          id: "verification_code"
-                          name: "verification_code"
-                          key: "reset_password_token_input_box"
-                          placeholder: "verification code"
-                          required: "required"
-                          type: "text"
-                          onKeyPress: submitOnEnter
-                          onChange: (event) => current_user.verification_code = event.target.value
-                        DIV 
-                          style: {fontSize: 12}
-                          "Find code in an email just sent to you."
-
-                  else
-                    TR null,
-                      TD className: 'label_cell',
-                        LABEL htmlFor: 'user_email', 'email:'
-                      TD className: 'field_cell',
-                        email_input_field
-
-                  if root.auth_mode in ['login_via_reset_password_token', 'login']
-                    TR null,
-                      TD {style: (if root.auth_mode == 'login_via_reset_password_token' then {width: '37%'} else {}), className: 'label_cell'},
-                        LABEL htmlFor: 'user_password', "#{if root.auth_mode == 'login_via_reset_password_token' then 'new ' else ''}password:"
-
-                      TD className: 'field_cell', 
-                        password_input_field,
-                        if root.auth_mode == 'login'
-                          A 
-                            onClick: @sendResetPassword
-                            style: 
-                              fontSize: 11
-                              borderBottom: '1px solid #ccc'
-                              color: '#888'
-                              marginLeft: 12
-                              position: 'relative'
-                              top: -4
-                            'I forgot! Email me password instructions.'
-
-
-          else 
-            # creating new account
-            TABLE className: 'auth_fields register', 
-              TBODY null,
-                TR null, 
-                  TD className: 'label_cell',
-                    LABEL htmlFor: 'user_name', 'Hi, my name is:'
-                  TD className: 'field_cell', 
-                    name_input_field
-
-                if third_party_authenticated && @root.auth_mode != 'update'
-                  p = if current_user.google_uid then 'google' else if current_user.facebook_uid then 'facebook' else 'twitter'
-                  TR null, 
-
-                    TD className: 'label_cell',
-                      LABEL htmlFor: 'user_provider', 
-                        if third_party_authenticated then 'I login via:' else 'I login as:'
-                    TD className: 'field_cell', 
-                      BUTTON className: "third_party_option #{p}", style: {cursor: 'default'},
-                        I className: "fa fa-#{p}"
-                        SPAN null, p
-
-                else
-
-                  TR null, 
-
-                    TD className: 'label_cell',
-                      LABEL htmlFor: 'user_email', 'I login as:'
-                    TD className: 'field_cell', 
-                      if !Modernizr.input.placeholder
-                        LABEL htmlFor: 'user_email', 'Email:'
-                      if root.auth_mode == 'register-after-invite'
-                        current_user.email
-                      else
-                        email_input_field
-
-                      if !Modernizr.input.placeholder
-                        LABEL htmlFor: 'user_password', 'Password:'
-                      password_input_field
-
-                # We're not going to bother with letting IE9 users set a profile picture. Too much hassle. 
-                if window.FormData
-
-                  TR null, 
-                    TD className: 'label_cell', 
-                      LABEL htmlFor: 'user_avatar', 'I look like this:'
-                    TD className: 'field_cell',
-                      # hack for submitting file data in ActiveREST for now
-                      # we'll just submit the file form after user is signed in
-
-
-                      FORM 
-                        id: 'user_avatar_form'
-                        action: '/update_user_avatar_hack', 
-
-                        DIV className: 'avatar_preview_enclosure',
-                          IMG id: 'avatar_preview', src: if current_user.avatar_remote_url then current_user.avatar_remote_url else if current_user.b64_thumbnail then current_user.b64_thumbnail else null
-
-                        INPUT 
-                          id: 'user_avatar'
-                          name: "avatar"
-                          type: "file"
-                          style: {marginTop: 24, verticalAlign: 'top'}
-                          onChange: (ev) => 
-                            @submit_avatar_form = true
-                            input = $('#user_avatar')[0]
-                            if input.files && input.files[0]
-                              reader = new FileReader()
-                              reader.onload = (e) ->
-                                $("#avatar_preview").attr 'src', e.target.result
-                              reader.readAsDataURL input.files[0]
-                              #current_user.avatar = input.files[0]
-                            else
-                              $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
-
-                if subdomain.has_civility_pledge && root.auth_mode != 'update'
-                  TR null,
-                    TD className: 'label_cell', 
-                      LABEL null, 'Community pledge:'
-                    TD className: 'field_cell',
-                      UL className: 'pledges',
-                        for pledge, idx in pledges
-                          LI 
-                            className: 'pledge'
-                            style: {listStyle: 'none'} 
-                            INPUT 
-                              className:"pledge-input"
-                              type:'checkbox'
-                              id:"pledge-#{idx}"
-                              name:"pledge-#{idx}"
-                              style: {fontSize: 21}
-                            LABEL 
-                              htmlFor: "pledge-#{idx}"
-                              style: 
-                                fontSize: 14
-                                color: '#414141'
-                                paddingLeft: 6
-                                fontWeight: 400
-                              pledge
-
-          if current_user.errors && current_user.errors.length > 0
-            DIV
-              style: 
-                textAlign: 'center'
-                fontSize: 21
-                color: 'darkred'
-                backgroundColor: '#ffD8D8' 
-                padding: 10
-              I 
-                className: 'fa fa-exclamation-circle'
-                style: {paddingRight: 9}
-              SPAN null, "#{current_user.errors.join(', ')}"
-
-          if root.auth_mode in ['login', 'register']
-            toggle_auth = A 
-                      style: 
-                        display: 'inline-block'
-                        color: considerit_blue
-                        textDecoration: 'underline'
-                        backgroundColor: 'transparent'
-                        border: 'none'
-                        fontWeight: 600
-                      onClick: => 
-                        current_user = fetch('/current_user')
-                        @root.auth_mode = if @root.auth_mode == 'register' then 'login' else 'register'
-                        current_user.errors = []
-                        save(@root)                      
-                      if root.auth_mode == 'register'
-                        'Use an Existing Account' 
-                      else 
-                        'Create an Account'
-
-            DIV 
-              style: 
-                fontSize: 20
-                left: 0
-                position: 'relative'
-                top: -6
-                fontWeight: 'normal'
-                marginTop: 20
-                backgroundColor: '#ffffa1'
-                padding: 14
-              SPAN null,
-                if root.auth_mode == 'register'
-                  ['Or ', toggle_auth, ' if you have one already']
-                else
-                  ['Or ', toggle_auth, ' if you need one']
-
-        DIV null, 
-          DIV
-            className:'auth_button primary_button' + (if @local.submitting then ' disabled' else '')
-            onClick: @submitAuth
-            if root.auth_mode == 'register'
-              'Create account' 
-            else if root.auth_mode == 'register-after-invite'
-              'Complete registration'
-            else if root.auth_mode == 'update'
-              'Update'
-            else 
-              'Login'
-            if root.auth_reason == 'Save your Opinion' then ' and save your opinion'
-
-          if root.auth_mode == 'update'
-            if @local.saved_successfully
-              SPAN style: {color: 'green'}, "Updated successfully"
-          else
-            A 
-              className:'cancel_auth_button primary_cancel_button'
-              onClick: =>
-                if root.auth_mode == 'verify'
-                  window.app_router.navigate("/", {trigger: true})
-                root.auth_mode = null
-                root.publish_this_opinion = null
-                save root
-              'cancel log in'
-
-
-  componentDidMount : -> 
-    if $(@getDOMNode()).find('.auth_heading').length > 0
-      $(document).scrollTop $(@getDOMNode()).find('.auth_heading').offset().top - 10
-
-    window.writeToLog
-      what: 'accessed authentication'
-
-
-  startThirdPartyAuth : (provider) ->
-    root = @root
-    new ThirdPartyAuthHandler
-      provider : provider
-      callback : (new_data) => 
-        # Yay we got a new current_user object!  But this hasn't gone
-        # through the normal arest channel, so we gotta save it in
-        # sneakily with updateCache()
-        arest.updateCache(new_data)
-
-        # We know that the user has authenticated, but we don't know
-        # whether they've completed OUR registration process including
-        # the pledge.  The server tells us this via the existence of a
-        # `user' object in current_user.
-
-        current_user = fetch '/current_user'
-        if current_user.logged_in
-          # We are logged in!  The user has completed registration.
-          @authCompleted()
-
-        else 
-          # We still need to show the pledge!
-          root.auth_mode = 'register'
-          save(root)
-
-  submitAuth : (ev) -> 
-    ev.preventDefault()
-    $el = $(@getDOMNode())
-
-    @local.submitting = true
-    save @local
-
-    current_user = fetch('/current_user')
-
-    current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
-    current_user.trying_to = @root.auth_mode
-    
-    save current_user, => 
-      if @root.auth_mode in ['register', 'update']
-        ensureCurrentUserAvatar()
-
-      if @root.auth_mode == 'update'
-        @local.saved_successfully = current_user.errors.length == 0        
-
-      # Once the user logs in, we will stop showing the log-in screen
-      else if current_user.logged_in
-        @authCompleted()
-
-      @local.submitting = false
-      save @local
-
-    # hack for submitting file data in ActiveREST for now
-    # we'll just submit the file form after user is signed in
-    # TODO: investigate alternatives for submitting form data
-    if @submit_avatar_form
-
-      $('#user_avatar_form').ajaxSubmit
-        type: 'PUT'
-        data: 
-          authenticity_token: current_user.csrf
-          trying_to: 'update_avatar_hack'
-
-
-  sendResetPassword : -> 
-
-    # Tell the server to email us a token
-    current_user = fetch('/current_user')
-    current_user.trying_to = 'send_password_reset_token'
-    save current_user, =>
-      if not (current_user.errors?.length > 0)
-        # Switch to reset_password mode
-        @root.auth_mode = 'login_via_reset_password_token'
-        save(@root)
-      else
-        # console.log("Waiting for user to fix errors #{current_user.errors?}")
-        arest.updateCache(current_user)
-      
-  authCompleted : -> 
-
-    if @root.auth_reason == 'Save your Opinion'
-      setTimeout((() -> togglePage('results', 'after_save')), 700)
-
-    @root.auth_mode = @root.auth_reason = null
-
-    save @root
-
-styles += """
-.auth .third_party_option {
-  border: 1px solid #777777;
-  border-color: rgba(0, 0, 0, 0.2);
-  border-bottom-color: rgba(0, 0, 0, 0.4);
-  color: white;
-  box-shadow: inset 0 0.1em 0 rgba(255, 255, 255, 0.4), inset 0 0 0.1em rgba(255, 255, 255, 0.9);
-  display: inline-block;
-  padding: 3px 9px 3px 34px;
-  margin: 0 4px;
-  text-align: center;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
-  border-radius: 0.3em;
-  position: relative;
-  background-color: #{considerit_blue}; }
-  .auth .third_party_option:hover {
-    background-color: #19528b; }
-  .auth .third_party_option:before {
-    border-right: 0.075em solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0.075em 0 0 rgba(255, 255, 255, 0.25);
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 25px;
-    height: 100%;
-    width: 1px; }
-  .auth .third_party_option i {
-    margin-right: 18px;
-    display: inline-block;
-    font-size: 16px;
-    position: absolute;
-    left: 9px; }
-  .auth .third_party_option span {
-    font-weight: 600;
-    font-size: 12px; }
-.auth .reset_password_section_label {
-  padding: 0 0 1em 0;
-  display: block; }
-.auth input[type="text"], .auth input[type="email"], .auth input[type="password"] {
-  border: 1px solid #aaaaaa;
-  padding: 5px 10px;
-  width: 100%;
-  font-size: 18px;
-  color: #414141; }
-.auth table {
-  border-collapse: separate; }
-  .auth table.login {
-    border-spacing: 0 0.25em; }
-  .auth table.register {
-    border-spacing: 0 1em; }
-    .auth table.register #user_password {
-      margin-top: 0.5em; }
-.auth td {
-  vertical-align: top; }
-  .auth td.label_cell {
-    width: 37%; }
-  .auth td.field_cell {
-    width: 100%;
-    padding-left: 18px; }
-.auth label {
-  color: #{considerit_blue};
-  font-weight: 600; }
-.auth .login label {
-  color: #595959; }
-
-.avatar_preview_enclosure {
-  height: 60px;
-  width: 60px;
-  border-radius: 50%;
-  background-color: #e6e6e6;
-  overflow: hidden;
-  display: inline-block;
-  margin-right: 18px; }
-  .avatar_preview_enclosure #avatar_preview {
-    width: 60px; }
-
-"""
 
 ProposalSummary = ReactiveComponent
   displayName: 'ProposalSummary'
@@ -3680,8 +3166,8 @@ Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
     subdomain = fetch('/subdomain')
-    if window["#{subdomain.name}Homepage"]
-      return window["#{subdomain.name}Homepage"]()
+    if window["#{subdomain.name}-homepage"]
+      return window["#{subdomain.name}-homepage"]()
     else
       return DefaultHomepage()
 
@@ -3730,6 +3216,7 @@ DefaultHomepage = ReactiveComponent
     sticky_header_height = 79
 
     DIV className: 'homepage',
+
       # Draw the sticky subheader
       DIV className: "sticky_header placeholder", style: {width: '100%', height: sticky_header_height}
       DIV 
@@ -3851,12 +3338,25 @@ DefaultHomepage = ReactiveComponent
               $(document).scrollTop(0)
             'Create new proposal'
 
+window.proposal_editor = (proposal) ->
+  editor = proposal.roles.editor.length > 0 and proposal.roles.editor[0]
+  return editor != '-' and editor
+
 window.ElectionHomepage = ReactiveComponent
   displayName: 'Homepage'
   render : ->
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
     line_height = '1.8em'
+
+    proposal_support = (proposal) ->
+      opinions = fetch('/page/' + proposal.slug).opinions
+      if not opinions
+        return null
+      sum = 0
+      for o in opinions
+        sum += o.stance
+      return sum
 
     DIV
       style: {fontSize: 22}
@@ -3867,6 +3367,8 @@ window.ElectionHomepage = ReactiveComponent
       # List all clusters
       for cluster, index in proposals.clusters or []
         if cluster.proposals?.length > 0
+          options = window.cluster_options?[cluster.name] || {}
+
           first_column =
             width: 350
             marginLeft: 200
@@ -3893,10 +3395,13 @@ window.ElectionHomepage = ReactiveComponent
             whiteSpace: 'nowrap'
           _.extend(secnd_header, secnd_column)
 
-          special_secnd_headers =
-            'Debate': "Candidates' Opinions"
+          # Sort
+          sorted_proposals = _.clone(cluster.proposals).sort((a,b) ->
+            x_a = proposal_support(a) - 10000 + (if proposal_editor(a) then 1 else 0)
+            x_b = proposal_support(b) - 10000 + (if proposal_editor(b) then 1 else 0)
+            return x_b - x_a)
 
-          # 
+          #
           # Cluster of proposals
           DIV
             style: margin: '45px 0'
@@ -3924,11 +3429,10 @@ window.ElectionHomepage = ReactiveComponent
                   right: 0
                   fontWeight: 300
                 'Support'
-              special_secnd_headers[cluster.name] or 'Members\' Opinions'
+              options.homie_histo_title || 'Opinions'
 
-            for proposal in cluster.proposals
-              author = fetch(proposal.user)
-              is_candidates = cluster.name.toLowerCase() == 'candidates'
+            for proposal in sorted_proposals
+              icons = options.editor_icons
 
               # Proposal
               DIV
@@ -3938,18 +3442,16 @@ window.ElectionHomepage = ReactiveComponent
 
                 DIV style: first_column,
 
-                  if is_candidates
-                    candidate = proposal.roles.editor.length > 0 and proposal.roles.editor[0]
-                    if not candidate or candidate == '-'
-                      candidate = author.key
+                  if icons
+                    editor = proposal_editor(proposal)
 
                     # Person's icon
                     A
                       href: proposal_url(proposal)
                       onClick: clickInternalLink
                       Avatar
-                        key: candidate
-                        user: candidate
+                        key: editor
+                        user: editor
                         style:
                           height: 50
                           width: 50
@@ -3961,13 +3463,13 @@ window.ElectionHomepage = ReactiveComponent
                     style:
                       display: 'inline-block'
                       fontWeight: 400
-                      marginLeft: if is_candidates then 18
+                      marginLeft: if icons then 18
                       paddingBottom: 20
-                      width: first_column.width - 50 + (if is_candidates then -18 else 0)
-                      marginTop: if is_candidates then 9
+                      width: first_column.width - 50 + (if icons then -18 else 0)
+                      marginTop: if icons then 9
                     A
                       className: 'proposal'
-                      style: if not is_candidates then {borderBottom: '1px solid grey'}
+                      style: if not icons then {borderBottom: '1px solid grey'}
                       onClick: clickInternalLink
                       href: proposal_url(proposal)
                       proposal.name
@@ -3979,112 +3481,6 @@ window.ElectionHomepage = ReactiveComponent
                   DIV
                     style: secnd_column
                     MiniHisto(proposal: proposal, width: 300, height: 50)
-
-
-MiniHisto = ReactiveComponent
-  displayName: 'mini_histo'
-  render: ->
-    @opinions = fetch('/page/' + @props.proposal.slug).opinions
-    icons = for opinion in @opinions
-      # id = arest.key_id(user.key)
-      #"/system/avatars/#{id}/small/#{user.avatar_file_name}"
-      neutral = Math.abs(opinion.stance) < .1
-      Avatar
-        key: opinion.user
-        user: opinion.user
-        style:
-          position: 'absolute'
-          backgroundColor: '#d3d3d3'
-          # filter: 'grayscale(.8)'
-          # '-webkit-filter': 'grayscale(.8)'
-          #opacity: .8
-          # border:  if neutral then 'solid 1px black'
-          # opacity: if neutral then .2
-    DIV
-      style:
-        height: @props.height
-        width: @props.width
-        #backgroundColor: '#f8f8f8'
-        position: 'relative'
-        borderBottom: '1px solid #444'
-      SPAN
-        style:
-          position: 'absolute'
-          left: -21
-          bottom: -12
-          fontSize: 19
-          fontWeight: 500
-          color: '#444'
-        '–'
-      SPAN
-        style:
-          position: 'absolute'
-          right: -21
-          bottom: -13
-          fontSize: 19
-          fontWeight: 500
-          color: '#444'
-        '+'
-      DIV
-        ref: 'histo'
-        icons
-
-  attach_mini_histo: ->
-    if @refs and @refs.histo and not @mounted
-      page = fetch('/page/' + @props.proposal.slug)
-      histo = @refs.histo.getDOMNode()
-      icons = histo.childNodes
-      opinions = for opinion, i in page.opinions
-        {stance: opinion.stance, icon: icons[i]}
-      mini_histo(@props.width, @props.height-1, histo, opinions)
-      @mounted = true
-  componentDidMount: ->
-    @attach_mini_histo()
-  componentDidUpdate: ->
-    @attach_mini_histo()
-  componentWillUnmount: ->
-    @mounted = false
-
-
-# MiniHisto2 = ReactiveComponent
-#   displayName: 'mini_histo'
-#   render: ->
-#     # Virtual component computes the data... until I fix this
-#     h = HistogramData
-#           proposal_slug: @props.proposal.slug
-#           width: @props.width
-#           height: @props.height
-#           max_avatar_size: 40
-#     histogram_data = fetch('histogramdata/' + @props.proposal.slug)
-#     if not histogram_data.columns
-#       return DIV null, h, loading_indicator
-
-#     columns = histogram_data.columns
-#     num_columns = columns.length
-#     avatar_size = histogram_data.avatar_size
-
-#     effective_histogram_width = num_columns * avatar_size + 2
-#     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2
-
-#     DIV
-#       style:
-#         height: @props.height
-#         width: @props.width
-#         backgroundColor: '#eee'
-#         position: 'relative'
-#       h
-#       for bar, i in columns
-#         for opinion, j in bar
-#           user = opinion.user
-#           Avatar 
-#             key: user
-#             user: user
-#             style:
-#               position: 'absolute'
-#               height: avatar_size
-#               width: avatar_size
-#               left: i * avatar_size
-#               bottom: j * avatar_size
 
 
 ProfileMenu = ReactiveComponent
@@ -4165,8 +3561,7 @@ ProfileMenu = ReactiveComponent
           'className': 'profile_anchor login'
           'data-action': 'login'
           onClick: (e) =>
-            @root.auth_mode = 'login'
-            @root.auth_reason = null            
+            @root.auth = {form: 'login', goal: null}
             save @root
           style: {color: 'white'}
           'Log in'
@@ -4179,10 +3574,10 @@ ProfileMenu = ReactiveComponent
     current_user.logged_in = false
     current_user.trying_to = 'logout'
 
-    if @root.auth_mode == 'update'
+    if @root.auth && @root.auth.form == 'edit profile'
       @root.page_name = 'homepage'
 
-    @root.auth_mode = null
+    @root.auth = null
 
     save current_user, =>
       # We need to get a fresh your_opinion object
@@ -4228,8 +3623,8 @@ Header = ReactiveComponent
         backgroundColor: 'white'
         minWidth: PAGE_WIDTH
 
-      if window["#{subdomain.name}Header"]
-        window["#{subdomain.name}Header"]()
+      if window["#{subdomain.name}-header"]
+        window["#{subdomain.name}-header"]()
       else
         DefaultHeader()
 
@@ -4298,8 +3693,8 @@ Footer = ReactiveComponent
         position: 'relative'
         padding: '2.5em 0 .5em 0'
         textAlign: 'center'
-      if window["#{subdomain.name}Footer"]
-        window["#{subdomain.name}Footer"]()
+      if window["#{subdomain.name}-footer"]
+        window["#{subdomain.name}-footer"]()
       else
         DefaultFooter()
 
@@ -4361,27 +3756,60 @@ EditProposal = ReactiveComponent
     
     return DIV null, 'Nothing to see here, move on' if (permit('update proposal', proposal) < 0) || (!@props.fresh && !proposal.slug )
 
-    block_style = { width: CONTENT_WIDTH, padding: '2px 0px', marginBottom: 12, position: 'relative' }
-    description_field_style = {fontSize: 16, width: CONTENT_WIDTH - 200, padding: '4px 8px', marginBottom: 8, border: '1px solid #ccc'}
-    input_style = _.extend {}, description_field_style, {marginLeft: 18}
-    label_style = {verticalAlign: 'top', fontSize: 16, width: 150, display: 'inline-block'}
+    block_style = 
+      width: CONTENT_WIDTH
+      padding: '2px 0px'
+      marginBottom: 12
+      position: 'relative'
+
+    description_field_style =
+      fontSize: 18
+      width: CONTENT_WIDTH - 200
+      padding: 12
+      marginBottom: 8
+      border: '1px solid #ccc'
+
+    input_style = _.extend {}, description_field_style, 
+      display: 'block'
+
+    label_style =
+      fontSize: 24
+      fontWeight: 600
+      width: 240
+      display: 'inline-block'
+      color: considerit_blue
+      marginBottom: 3
+
 
     if !@local.description_fields
       @local.description_fields = if @data().description_fields then $.parseJSON(@data().description_fields) || [] else []
+      @local.open_fields = []
+
       if @local.description_fields.length > 0
         if @local.description_fields[0].group
           # Right now, we just downgrade group syntax to flat description list syntax
           # TODO: when editing a proposal, support the proposal description groups syntax (or get rid of it)
           @local.description_fields = _.flatten(@local.description_fields.map (group) -> group.items)
 
+        # Add unique identifiers to each field so we can hide/edit them
+        for field,idx in @local.description_fields
+          field.id = idx
+
+      save @local
+
+    toggleDescriptionFieldOpen = (field, field_open) =>
+      if field_open
+        @local.open_fields = _.without @local.open_fields, field.id
+      else
+        @local.open_fields.push field.id
       save @local
 
     DIV null, 
       DashHeader name: if @props.fresh then "New Proposal" else "Edit #{proposal.name}"
-      DIV style: { width: PAGE_WIDTH, margin: 'auto', padding: '3em 0' },
+      DIV style: { width: CONTENT_WIDTH, margin: 'auto', padding: '3em 0' },
 
         DIV style: block_style,
-          LABEL htmlFor:'slug', style: label_style, 'URL'
+          LABEL htmlFor:'slug', style: label_style, 'URL:'
           INPUT 
             id:'slug'
             name:'slug'
@@ -4392,73 +3820,111 @@ EditProposal = ReactiveComponent
             style: input_style
 
         DIV style: block_style,
-          LABEL htmlFor:'name', style: label_style, 'Topic question'
+          LABEL htmlFor:'name', style: label_style, 'Summary:'
           INPUT 
             id:'name'
             name:'name'
             pattern:'^.{3,}'
-            placeholder:'Make this super succinct with a <verb> <noun>.'
+            placeholder:'Aim for 3-8 words with a verb and noun.'
             required:'required'
             defaultValue: if @props.fresh then null else proposal.name
             style: input_style
 
         DIV style: block_style,
-          LABEL htmlFor:'description', style: label_style, 'Description'
+          LABEL htmlFor:'description', style: label_style, 'Description:'
           AutoGrowTextArea 
             id:'description'
             name:'description'
             pattern:'^.{3,}'
-            placeholder:'Make this good :)'
+            placeholder:'Clearly describe the details.'
             required:'required'
             defaultValue: if @props.fresh then null else proposal.description
             style: _.extend {}, input_style, {height: 150}
 
-        DIV style: {marginLeft: 168, marginBottom: 30},
+          # Expandable description fields
+          DIV style: {marginBottom: 20, marginLeft: 45},
+            for field,idx in @local.description_fields
+              field_open = field.id in @local.open_fields
+              DIV key: "field-#{idx}", style: _.extend({}, block_style, {width: ''}),
 
-          for field,idx in @local.description_fields
-            
-            DIV key: "field-#{idx}", style: block_style,
-              I className: "fa fa-plus-circle", style: {position: 'absolute', left: -20, top: 10, color: '#bbb'}
-              INPUT 
-                style: description_field_style
-                type: 'text'
-                id:"field-#{idx}-label"
-                name:"field-#{idx}-label"
-                pattern:'^.{3,}'
-                placeholder:'Label'
-                required:'required'
-                onChange: do(idx) => (e) => @local.description_fields[idx].label = e.target.value; save(@local)
-                value: @local.description_fields[idx].label
+                I 
+                  className: "fa fa-#{if field_open then 'minus' else 'plus'}-circle"
+                  style: {position: 'absolute', left: -20, top: 18, color: '#414141', cursor: 'pointer'}
+                  onClick: do (field, field_open) => => toggleDescriptionFieldOpen(field, field_open)
 
-              AutoGrowTextArea 
-                id:"field-#{idx}-html"
-                name:"field-#{idx}-html"
-                pattern:'^.{3,}'
-                placeholder:'Text that is shown when expanded'
-                required:'required'
-                onChange: do(idx) => (e) => @local.description_fields[idx].html = e.target.value; save(@local)
-                value: @local.description_fields[idx].html
-                style: description_field_style
-              
-              SPAN 
-                style: {color: '#ccc', textDecoration: 'underline', fontSize: 12, cursor: 'pointer', position: 'absolute', top: 5, marginLeft: 20}
-                onClick: do (idx) => =>
-                  @local.description_fields.splice(idx, 1)
-                  save @local
-                'delete'
+                if field_open
+                  [INPUT
+                    style: _.extend {}, description_field_style, {width: description_field_style.width - 45}
+                    type: 'text'
+                    id:"field-#{idx}-label"
+                    name:"field-#{idx}-label"
+                    pattern:'^.{3,}'
+                    placeholder:'Label'
+                    required:'required'
+                    onChange: do(field,idx) => (e) => field.label = e.target.value; save(@local)
+                    value: field.label
 
-          SPAN
-            style: {color: '#bbb', cursor: 'pointer', fontSize: 14}
-            onClick: => 
-              @local.description_fields.push({label: null, html: null})
-              save @local
+                  AutoGrowTextArea
+                    id:"field-#{idx}-html"
+                    name:"field-#{idx}-html"
+                    pattern:'^.{3,}'
+                    placeholder:'Text that is shown when expanded'
+                    required:'required'
+                    onChange: do(field,idx) => (e) => field.html = e.target.value; save(@local)
+                    value: field.html
+                    style: _.extend {}, description_field_style, {width: description_field_style.width - 45}]
+                else
+                  DIV 
+                    style: 
+                      fontSize: 18
+                      fontWeight: 600
+                      cursor: 'pointer'
+                      marginTop: 12
+                      marginLeft: 5
+                      width: description_field_style.width - 45
+                    onClick: do (field, field_open) => => toggleDescriptionFieldOpen(field, field_open)
+                    field.label
 
-            "+ "
-            SPAN style: {textDecoration: 'underline'}, "expandable field"
+                DIV 
+                  style: 
+                    position: 'absolute'
+                    right: 150
+                    top: 12
+
+                  A
+                    style: {color: '#aaa', textDecoration: 'underline', fontSize: 14, cursor: 'pointer', display: 'block'}
+                    onClick: do (field, field_open) => => toggleDescriptionFieldOpen(field, field_open)
+                    if field_open then 'close' else 'edit'
+
+                  A
+                    style: {color: '#aaa', textDecoration: 'underline', fontSize: 14, cursor: 'pointer', display: 'block'}
+                    onClick: do (idx) => =>
+                      @local.description_fields.splice(idx, 1)
+                      save @local
+                    'delete'
+
+            SPAN
+              style: 
+                color: '#aaa'
+                cursor: 'pointer'
+                fontSize: 18
+                marginLeft: -18
+
+              onClick: => 
+                new_id = 0
+                for field in @local.description_fields
+                  new_id += field.id  
+                new_id += 1
+                @local.description_fields.push {label: null, html: null, id: new_id}
+                @local.open_fields.push new_id
+                save @local
+
+              "+ "
+              SPAN style: {textDecoration: 'underline', marginLeft: 7}, "Add expandable description section"
 
 
         DIV style: block_style,
-          LABEL htmlFor:'cluster', style: label_style, 'Group (optional)'
+          LABEL htmlFor:'cluster', style: label_style, 'Group (optional):'
           INPUT 
             id:'cluster'
             name:'cluster'
@@ -4468,45 +3934,66 @@ EditProposal = ReactiveComponent
             style: input_style
 
         DIV style: block_style,
+          LABEL htmlFor: 'listed_on_homepage', style: label_style, 'List on homepage:'
+
           INPUT 
             id: 'listed_on_homepage'
             name: 'listed_on_homepage'
             type: 'checkbox'
             defaultChecked: if @props.fresh then true else !proposal.hide_on_homepage
-          LABEL htmlFor: 'listed_on_homepage', 'List on homepage'
+            style: {fontSize: 24}
 
         DIV style: block_style,
+          LABEL htmlFor: 'open_for_discussion', style: label_style, 'Open for discussion:'
+
           INPUT 
             id: 'open_for_discussion'
             name: 'open_for_discussion'
             type: 'checkbox'
             defaultChecked: if @props.fresh then true else proposal.active
-          LABEL htmlFor: 'open_for_discussion', 'Open for discussion'
+            style: {fontSize: 24}
 
 
-        if @props.fresh
-          DIV null, 
-            SPAN 
-              style: {textDecoration: 'underline', cursor: 'pointer'}
-              onClick: => 
-                @local.edit_roles = !@local.edit_roles
-                save @local
-              I className: 'fa-child fa', style: {marginRight: 7}
-              'Roles and invitations'
-
-            DIV 
+        DIV null, 
+          SPAN 
+            style: _.extend {}, label_style,
+              textDecoration: 'underline'
+              cursor: 'pointer'
+              width: 400
+              position: 'relative'
+            onClick: => 
+              @local.edit_roles = !@local.edit_roles
+              save @local
+            I 
+              className: 'fa-child fa'
               style: 
-                width: CONTENT_WIDTH
-                backgroundColor: '#fafafa'
-                padding: '10px 60px'
-                display: if @local.edit_roles then 'block' else 'none' #roles has to be rendered
-                                                                              #so that default roles are 
-                                                                              #set on the proposal
+                position: 'absolute'
+                left: -25
+                top: 5
 
-              ProposalRoles key: @local
+
+            'Permissions and invitations'
+
+          DIV 
+            style: 
+              width: CONTENT_WIDTH
+              backgroundColor: '#fafafa'
+              padding: '10px 60px'
+              display: if @local.edit_roles then 'block' else 'none' #roles has to be rendered
+                                                                            #so that default roles are 
+                                                                            #set on the proposal
+
+            ProposalRoles key: @local
 
         DIV null,
-          INPUT className:'button primary_button', type:'submit', value:"#{if @props.fresh then 'Publish' else 'Update'}", onClick: @saveProposal
+          INPUT 
+            className:'button primary_button'
+            type:'submit'
+            style: 
+              width: 300
+              marginTop: 35
+            value:"#{if @props.fresh then 'Publish' else 'Update'}"
+            onClick: @saveProposal
 
 
 About = ReactiveComponent
@@ -4650,8 +4137,7 @@ Computer = ReactiveComponent
 
     # users following an email invitation need to complete registration (name + password)
     if current_user.needs_to_set_password
-      @root.auth_mode = 'register-after-invite'
-      @root.auth_reason = 'complete registration'
+      @root.auth = {form: 'create account via invitation', goal: 'complete registration'}
       save @root
 
     SPAN null
@@ -4666,7 +4152,7 @@ Page = ReactiveComponent
     avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
 
-    if @root.auth_mode && @root.auth_mode != 'update'
+    if @root.auth && @root.auth.form != 'edit profile'
       return Auth()
 
     if subdomain.name == 'homepage' && @root.page_name == 'homepage'
@@ -4674,14 +4160,16 @@ Page = ReactiveComponent
     else if !subdomain.name
       L
     else
-      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: 'white'}, 'data-authmode': @root.auth_mode, #authmode controls styling during authentication process
+      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: 'white'},
         if avatars.avatars
           STYLE type: 'text/css', id: 'b64-avatars', dangerouslySetInnerHTML: {__html: avatars.avatars}
         
         BrowserHacks()
         Header()
-        DIV style : { minWidth: PAGE_WIDTH, minHeight: 200, zIndex: 2, margin: 'auto' }, 
-          if @root.auth_mode || @root.page_name == 'edit_profile'
+        DIV style : { minWidth: PAGE_WIDTH, minHeight: 200, zIndex: 2, margin: 'auto', \
+                      marginLeft: if lefty then 0 },
+
+          if @root.page_name == 'edit_profile'
             Auth()
 
           else
@@ -4720,7 +4208,7 @@ Page = ReactiveComponent
 Root = ReactiveComponent
   displayName: 'Root'
   resetSelection: (e) ->
-    if @root.selected_point
+    if @root.selected_point && !@root.auth
       window.writeToLog
         what: 'deselected a point'
         details:
@@ -4801,25 +4289,6 @@ setInterval ->
   if current_user.logged_in
     arest.serverFetch('/current_user')
 , 2 * 60 * 1000
-
-
-# It is important that a user that just submitted a user picture see the picture
-# on the results and in the header. However, this is a bit tricky because the avatars
-# are cached on the server and the image is processed in a background task. 
-# Therefore, we'll wait until the image is available and then make it available
-# in the avatar cache.  
-ensureCurrentUserAvatar = (attempts = 0) ->
-  
-  $.getJSON '/user_avatar_hack', (response) =>
-    if response.b64_thumbnail          
-      current_user = fetch '/current_user'
-      $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{response.b64_thumbnail}');}</style>")
-    
-    else if attempts < 20
-      # Ugly: wait a little while for offline avatar processing to complete, then refetch
-      _.delay -> 
-        ensureCurrentUserAvatar(attempts + 1)
-      , 1000
 
 
 ##
@@ -4903,8 +4372,7 @@ Router = Backbone.Router.extend
     resetState(root)
 
     root.page_name = 'edit_profile'
-    root.auth_mode = 'update'
-    root.auth_reason = null
+    root.auth = {form: 'edit profile'}
 
     save root
 
@@ -4912,7 +4380,7 @@ Router = Backbone.Router.extend
 # Temporary method for handling resetting root state when switching between
 # routes. Remove once we have a better activeREST answer. 
 resetState = (root) ->
-  root.auth_mode = null
+  root.auth = null
 
   #TODO: Manage proposal_mode {crafting/results} with client state on the proposal.
   #      Right now activeREST doesn't allow wide consumption of a component's client state
@@ -4972,3 +4440,4 @@ if document.getElementById('content')
 
   Backbone.history.start {pushState: true}
   window.root = React.renderComponent(Root(), document.getElementById('content'))
+

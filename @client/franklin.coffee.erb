@@ -4290,7 +4290,7 @@ Page = ReactiveComponent
 Root = ReactiveComponent
   displayName: 'Root'
   resetSelection: (e) ->
-    if @root.selected_point
+    if @root.selected_point && !@root.auth
       window.writeToLog
         what: 'deselected a point'
         details:

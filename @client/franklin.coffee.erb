@@ -3110,47 +3110,6 @@ styles += """
   pointer-events: none; }
 """
 
-
-
-AutoGrowTextArea = ReactiveComponent
-  displayName: 'AutoGrowTextArea'  
-
-  # You can pass an onChange() handler in to props that will get
-  # called
-  onChange: (e) ->
-    @props.onChange?(e)
-    @checkAndSetHeight()
-
-  componentDidMount : -> @checkAndSetHeight()
-  componentDidUpdate : -> @checkAndSetHeight()
-
-  checkAndSetHeight : ->
-    scroll_height = @getDOMNode().scrollHeight
-    max_height = @props.max_height or 400
-    if scroll_height > @getDOMNode().clientHeight
-      @local.height = Math.min scroll_height + 5, max_height
-      save(@local)
-
-  render : -> 
-    if !@local.height
-      @local.height = @props.min_height
-
-    @transferPropsTo TEXTAREA
-      onChange: @onChange
-      style: {height: @local.height}
-
-
-CharacterCountTextInput = ReactiveComponent
-  displayName: 'CharacterCountTextInput'
-  componentWillMount : -> fetch(@local_key).count = 0
-  render : -> 
-    class_name = "is_counted"
-    DIV style: {position: 'relative'}, 
-      @transferPropsTo TEXTAREA className: class_name, onChange: (=>
-         @local.count = $(@getDOMNode()).find('textarea').val().length
-         save(@local))
-      SPAN className: 'count', @props.maxLength - @local.count
-
 ProposalSummary = ReactiveComponent
   displayName: 'ProposalSummary'
 
@@ -3801,7 +3760,7 @@ EditProposal = ReactiveComponent
     $el = $(@getDOMNode())
 
     name = $el.find('#name').val()
-    description = $el.find('#description').val()
+    description = fetch("description-#{@data().key}").html
     slug = $el.find('#slug').val()
     cluster = $el.find('#cluster').val()
     cluster = null if cluster == ""
@@ -3833,6 +3792,9 @@ EditProposal = ReactiveComponent
         hide_on_homepage: hide_on_homepage
 
     if @local.description_fields
+      for field in @local.description_fields
+        edited_html = fetch("field-#{field.id}-html-#{proposal.key}")
+        field.html = edited_html.html if edited_html.html
       proposal.description_fields = JSON.stringify(@local.description_fields)
 
     save proposal, -> window.app_router.navigate "/#{slug}", {trigger : true}
@@ -3920,20 +3882,18 @@ EditProposal = ReactiveComponent
 
         DIV style: block_style,
           LABEL htmlFor:'description', style: label_style, 'Description:'
-          AutoGrowTextArea 
-            id:'description'
-            name:'description'
-            pattern:'^.{3,}'
+          
+          WysiwygEditor
+            key:"description-#{proposal.key}"
             placeholder:'Clearly describe the details.'
-            required:'required'
-            defaultValue: if @props.fresh then null else proposal.description
-            style: _.extend {}, input_style, {height: 150}
+            style: input_style
+            html: if @props.fresh then null else proposal.description
 
           # Expandable description fields
           DIV style: {marginBottom: 20, marginLeft: 45},
-            for field,idx in @local.description_fields
+            for field in @local.description_fields
               field_open = field.id in @local.open_fields
-              DIV key: "field-#{idx}", style: _.extend({}, block_style, {width: ''}),
+              DIV key: "field-#{field.id}", style: _.extend({}, block_style, {width: ''}),
 
                 I 
                   className: "fa fa-#{if field_open then 'minus' else 'plus'}-circle"
@@ -3944,23 +3904,21 @@ EditProposal = ReactiveComponent
                   [INPUT
                     style: _.extend {}, description_field_style, {width: description_field_style.width - 45}
                     type: 'text'
-                    id:"field-#{idx}-label"
-                    name:"field-#{idx}-label"
+                    id:"field-#{field.id}-label"
+                    name:"field-#{field.id}-label"
                     pattern:'^.{3,}'
                     placeholder:'Label'
                     required:'required'
-                    onChange: do(field,idx) => (e) => field.label = e.target.value; save(@local)
+                    onChange: do(field) => (e) => field.label = e.target.value; save(@local)
                     value: field.label
 
-                  AutoGrowTextArea
-                    id:"field-#{idx}-html"
-                    name:"field-#{idx}-html"
-                    pattern:'^.{3,}'
+                  WysiwygEditor
+                    key:"field-#{field.id}-html-#{proposal.key}"
+                    name:"field-#{field.id}-html"
                     placeholder:'Text that is shown when expanded'
-                    required:'required'
-                    onChange: do(field,idx) => (e) => field.html = e.target.value; save(@local)
-                    value: field.html
-                    style: _.extend {}, description_field_style, {width: description_field_style.width - 45}]
+                    style: _.extend {}, description_field_style, {width: description_field_style.width - 45}
+                    html: field.html]
+
                 else
                   DIV 
                     style: 
@@ -3986,8 +3944,8 @@ EditProposal = ReactiveComponent
 
                   A
                     style: {color: '#aaa', textDecoration: 'underline', fontSize: 14, cursor: 'pointer', display: 'block'}
-                    onClick: do (idx) => =>
-                      @local.description_fields.splice(idx, 1)
+                    onClick: do (field) => =>
+                      @local.description_fields = _.filter @local.description_fields, (fld) -> fld.id != field.id
                       save @local
                     'delete'
 
@@ -4022,7 +3980,7 @@ EditProposal = ReactiveComponent
             style: input_style
 
         DIV style: block_style,
-          LABEL htmlFor: 'listed_on_homepage', style: label_style, 'List on homepage:'
+          LABEL htmlFor: 'listed_on_homepage', style: label_style, 'List on homepage?'
 
           INPUT 
             id: 'listed_on_homepage'
@@ -4032,7 +3990,7 @@ EditProposal = ReactiveComponent
             style: {fontSize: 24}
 
         DIV style: block_style,
-          LABEL htmlFor: 'open_for_discussion', style: label_style, 'Open for discussion:'
+          LABEL htmlFor: 'open_for_discussion', style: label_style, 'Open for discussion?'
 
           INPUT 
             id: 'open_for_discussion'
@@ -4305,6 +4263,11 @@ Root = ReactiveComponent
       @root.selected_point = null
       save @root
 
+    if @root.show_wyswyg_toolbar
+      # 
+      @root.show_wyswyg_toolbar = false
+      save @root
+
 
   render : -> 
     root = @data()
@@ -4447,7 +4410,7 @@ Router = Backbone.Router.extend
     root = fetch('root')
     resetState(root)
     root.page_name = "proposal/#{id}/edit"
-    save root      
+    save root
 
   dashboard : (dash, params) -> 
     root = fetch('root')
@@ -4477,17 +4440,6 @@ resetState = (root) ->
   root.selected_point = null
 
 
-# Handles router navigation for links so that a page reload doesn't happen
-clickInternalLink = (event) ->
-  href = $(event.currentTarget).attr('href')
-
-  # Allow shift+click for new tabs, etc.
-  if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
-    event.preventDefault()
-    # Instruct Backbone to trigger routing events
-    window.app_router.navigate href, { trigger : true }
-    return false
-
 window.app_router = new Router()
 window.on_ajax_error = () ->
   (root = fetch('root')).server_error = true
@@ -4507,8 +4459,6 @@ window.Point = Point
 window.Comment = Comment
 window.Avatar = Avatar
 window.Button = Button
-window.AutoGrowTextArea = AutoGrowTextArea
-window.clickInternalLink = clickInternalLink
 window.ProfileMenu = ProfileMenu
 window.TechnologyByConsiderit = TechnologyByConsiderit
 window.FBLike = FBLike

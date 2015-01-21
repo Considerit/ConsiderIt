@@ -783,25 +783,31 @@ window.ProposalSubheading = ReactiveComponent
         width: 560
         position: 'relative'
 
-      # Previous button
-      if prev_proposal
-        A
-          style:
-            position: 'absolute'
-            right: 74
-          onClick: do (url = proposal_url(prev_proposal)) =>
-            => window.app_router.navigate(url, {trigger: true})
-          '< Prev'
-
-      # Next button
+      # Next and Prev buttons
       if next_proposal
-        A
+        SPAN
           style:
             position: 'absolute'
             right: 0
-          onClick: do (url = proposal_url(next_proposal)) =>
-            => window.app_router.navigate(url, {trigger: true})
-          'Next >'
+            width: 73
+            textAlign: 'right'
+          onMouseOver: => @local.nav_hover = true;  save(@local)
+          onMouseLeave: => @local.nav_hover = false; save(@local)
+
+          # Previous button
+          A
+            onClick: do (url = proposal_url(next_proposal)) =>
+              => window.app_router.navigate(url, {trigger: true})
+            'Next >'
+
+          A
+            style:
+              position: 'absolute'
+              left: 0
+              opacity: if not @local.nav_hover then 0
+            onClick: do (url = proposal_url(prev_proposal)) =>
+              => window.app_router.navigate(url, {trigger: true})
+            '< '
 
       # Photo
       if options.editor_icons

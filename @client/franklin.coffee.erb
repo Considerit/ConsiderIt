@@ -401,7 +401,7 @@ Proposal = ReactiveComponent
 
     # when you go from homepage to a proposal, seek to proposal description
     # top, otherwise you can be stuck in the middle of the proposal. 
-    $('.proposal').moveToTop()
+    # $('.proposal').moveToTop()   # Disabled until we resolve https://github.com/tkriplean/ConsiderIt/commit/0561b9bdb6ae03705c3718d2283d8d8345fad632
 
   renderDescriptionField : (field) ->
     DIV 
@@ -760,8 +760,10 @@ window.ProposalSubheading = ReactiveComponent
     heading_fontsize = 45
     options = window.cluster_options?[@proposal.cluster] || {}
 
+    mod = (n, m) -> ((n % m) + m) % m
+
     # Determine the next proposal
-    next_proposal =
+    [next_proposal, prev_proposal] =
       if proposals.clusters  # In case /proposals isn't loaded
         curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
         if curr_cluster?.proposals.length > 1
@@ -769,8 +771,9 @@ window.ProposalSubheading = ReactiveComponent
           for proposal, index in curr_cluster.proposals
             if @proposal == proposal
               break
-          next_index = (index + 1) % curr_cluster.proposals.length
-          curr_cluster.proposals[next_index]
+          next_index = mod(index + 1, curr_cluster.proposals.length)
+          prev_index = mod(index - 1, curr_cluster.proposals.length)
+          [curr_cluster.proposals[next_index], curr_cluster.proposals[prev_index]]
 
     DIV
       style:
@@ -779,6 +782,16 @@ window.ProposalSubheading = ReactiveComponent
         marginTop: 30
         width: 560
         position: 'relative'
+
+      # Previous button
+      if prev_proposal
+        A
+          style:
+            position: 'absolute'
+            right: 74
+          onClick: do (url = proposal_url(prev_proposal)) =>
+            => window.app_router.navigate(url, {trigger: true})
+          '< Prev'
 
       # Next button
       if next_proposal
@@ -3390,7 +3403,7 @@ window.proposal_editor = (proposal) ->
   return editor != '-' and editor
 
 window.ElectionHomepage = ReactiveComponent
-  displayName: 'Homepage'
+  displayName: 'ElectionHomepage'
   render : ->
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
@@ -3890,7 +3903,13 @@ EditProposal = ReactiveComponent
             html: if @props.fresh then null else proposal.description
 
           # Expandable description fields
-          DIV style: {marginBottom: 20, marginLeft: 45},
+
+          DIV 
+            style: 
+              marginBottom: 20
+              marginLeft: 45
+              display: if not fetch('/current_user').is_super_admin then 'none' else 'block'
+
             for field in @local.description_fields
               field_open = field.id in @local.open_fields
               DIV key: "field-#{field.id}", style: _.extend({}, block_style, {width: ''}),

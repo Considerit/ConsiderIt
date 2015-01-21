@@ -240,6 +240,28 @@ class User < ActiveRecord::Base
     end
   end
 
+  # Users can belong to groups
+  # Groups is an array of strings
+  # TODO: merge with tags
+  def has_group? (group)
+    JSON.parse(self.groups || '[]').include?(group)
+  end
+  def add_group (group)
+    g = JSON.parse(self.groups || '[]')
+    if !g.include?(group)
+      self.groups = JSON.dump(g.push(group))
+      self.save()
+    end
+    g
+  end
+  def remove_group (group)
+    g = JSON.parse(self.groups || '[]') - [group]
+    self.groups = JSON.dump(g)
+    self.save()
+    g
+  end
+
+
   # def update_metrics
   #   referenced_proposals = {}
   #   opinions = 0

@@ -146,14 +146,14 @@ window.WysiwygEditor = ReactiveComponent
 
     if !@local.initialized
       # We store the current value of the HTML at
-      # this component's key. This is so that the 
-      # parent component can fetch the value outside 
+      # this component's key. This allows the  
+      # parent component to fetch the value outside 
       # of this generic wysiwyg component. 
       # However, we "dangerously" set the html of the 
       # editor to the original @props.html. This is 
       # because we don't want to interfere with the 
       # wysiwyg editor's ability to manage e.g. 
-      # selection location. 
+      # the selection location. 
       my_data.html = @props.html
       @local.initialized = true
       save @local; save my_data

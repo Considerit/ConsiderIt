@@ -16,7 +16,7 @@ DashHeader = ReactiveComponent
       style: 
         position: 'relative'
         backgroundColor: subdomain.branding.primary_color
-        color: 'white'
+        color: subdomain.branding.header_text_color
 
       DIV style: {width: CONTENT_WIDTH, margin: 'auto', position: 'relative'},
         A

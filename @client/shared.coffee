@@ -179,55 +179,76 @@ window.WysiwygEditor = ReactiveComponent
         # show_wysiwyg_toolbar state
         ev.stopPropagation()
 
-      # Toolbar
-      DIV 
-        id: 'toolbar'
-        style: 
-          position: 'fixed'
-          top: 0
-          backgroundColor: '#e7e7e7'
-          boxShadow: '0 1px 2px RGBA(0,0,0,.2)'
-          zIndex: 999
-          padding: '0 12px'
-          display: if @root.show_wyswyg_toolbar == @props.key then 'block' else 'none'
+      if @local.edit_code
+        AutoGrowTextArea
+          style: 
+            width: '100%'
+            fontSize: 18
+          defaultValue: fetch(@props.key).html
+          onChange: (e) => 
+            my_data = fetch(@props.key)
+            my_data.html = e.target.value
+            save my_data
 
-        I 
-          className: "ql-bullet fa fa-list-ul"
-          style: toolbar_button_style
-          title: 'Bulleted list'
+      else
 
-        I 
-          className: "ql-list fa fa-list-ol"
-          style: toolbar_button_style
-          title: 'Numbered list'
+        # Toolbar
+        [DIV 
+          id: 'toolbar'
+          style: 
+            position: 'fixed'
+            top: 0
+            backgroundColor: '#e7e7e7'
+            boxShadow: '0 1px 2px RGBA(0,0,0,.2)'
+            zIndex: 999
+            padding: '0 12px'
+            display: if @root.show_wyswyg_toolbar == @props.key then 'block' else 'none'
 
-        I 
-          className: "ql-bold fa fa-bold"
-          style: toolbar_button_style
-          title: 'Bold'
+          I 
+            className: "ql-bullet fa fa-list-ul"
+            style: toolbar_button_style
+            title: 'Bulleted list'
 
-        I 
-          className: "ql-link fa fa-link"
-          style: toolbar_button_style
-          title: 'Link'
+          I 
+            className: "ql-list fa fa-list-ol"
+            style: toolbar_button_style
+            title: 'Numbered list'
 
-        I 
-          className: "ql-image fa fa-image"
-          style: toolbar_button_style
-          title: 'Insert image'
+          I 
+            className: "ql-bold fa fa-bold"
+            style: toolbar_button_style
+            title: 'Bold'
 
-      DIV 
-        id: 'editor'
-        dangerouslySetInnerHTML:{__html: @props.html}
-        'data-placeholder': if show_placeholder then @props.placeholder else ''
-        onFocus: => 
-          # Show the toolbar on focus
-          # show_wyswyg_toolbar is global state for the toolbar to be 
-          # shown. It gets set to null when someone clicks outside the 
-          # editor area. This is handled at the root level
-          # in the same way that clicking outside a point closes it. 
-          # See Root.resetSelection.
-          @root.show_wyswyg_toolbar = @props.key; save(@root)
+          I 
+            className: "ql-link fa fa-link"
+            style: toolbar_button_style
+            title: 'Link'
+
+          # I 
+          #   className: "ql-image fa fa-image"
+          #   style: toolbar_button_style
+          #   title: 'Insert image'
+
+          if fetch('/current_user').is_super_admin
+            I
+              className: 'fa fa-code'
+              style: toolbar_button_style
+              onClick: => @local.edit_code = true; save @local
+
+
+        DIV 
+          id: 'editor'
+          dangerouslySetInnerHTML:{__html: @props.html}
+          'data-placeholder': if show_placeholder then @props.placeholder else ''
+          onFocus: => 
+            # Show the toolbar on focus
+            # show_wyswyg_toolbar is global state for the toolbar to be 
+            # shown. It gets set to null when someone clicks outside the 
+            # editor area. This is handled at the root level
+            # in the same way that clicking outside a point closes it. 
+            # See Root.resetSelection.
+            @root.show_wyswyg_toolbar = @props.key; save(@root)
+        ]
 
   componentDidMount : -> 
     # Attach the Quill wysiwyg editor

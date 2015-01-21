@@ -3943,7 +3943,11 @@ EditProposal = ReactiveComponent
             style: _.extend {}, input_style, {height: 150}
 
           # Expandable description fields
-          DIV style: {marginBottom: 20, marginLeft: 45},
+          DIV
+            style:
+              marginBottom: 20
+              marginLeft: 45
+              display: if not fetch('/current_user').is_admin then 'none'
             for field,idx in @local.description_fields
               field_open = field.id in @local.open_fields
               DIV key: "field-#{idx}", style: _.extend({}, block_style, {width: ''}),

@@ -9,9 +9,10 @@
 
 //= require ./element_viewport_positioning
 
-//= require ../../shared
 
 //= require ../../activerest-m
+
+//= require ../../shared
 
 //= require ../../auth
 //= require ../../sticky_element

@@ -101,7 +101,10 @@ function mini_histo(width, height, parent, opinions) {
 
         for (var i=0; i<opinions.length; i++)
             opinions[i].icon.style.width = opinions[i].icon.style.height = r*2 + 'px'
-            
+
+        hist = fetch('histogram')
+        hist.avatar_size = r*2
+        save(hist)            
     }
     init()
 

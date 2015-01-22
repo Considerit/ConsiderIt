@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150114062220) do
+ActiveRecord::Schema.define(version: 20150119041700) do
 
   create_table "assessments", force: :cascade do |t|
     t.integer  "user_id",         limit: 4
@@ -324,6 +324,7 @@ ActiveRecord::Schema.define(version: 20150114062220) do
     t.boolean  "super_admin",            limit: 1,     default: false
     t.boolean  "no_email_notifications", limit: 1,     default: false
     t.boolean  "verified",               limit: 1,     default: false
+    t.text     "groups",                 limit: 65535
   end
 
   add_index "users", ["avatar_file_name"], name: "index_users_on_avatar_file_name", using: :btree

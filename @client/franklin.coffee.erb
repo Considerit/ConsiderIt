@@ -1956,6 +1956,9 @@ Point = ReactiveComponent
           col_gap: 8
           side_offset: 32 + 14 + 1
 
+        if includers.length == 0
+          includers = [point.user]
+
         # Now we'll go through the list from back to front
         i = includers.length
 
@@ -2068,7 +2071,10 @@ Point = ReactiveComponent
         if @props.rendered_as == 'community_point'
           renderIncluders()
 
-        else if !selected_segment || (userOpinion(point.user) && author_opinion = fetch(userOpinion(point.user)) && author_opinion.stance_segment == selected_segment )
+        else if !selected_segment \
+                || (userOpinion(point.user) \
+                    && author_opinion = fetch(userOpinion(point.user)) \
+                    && author_opinion.stance_segment == selected_segment )
           Avatar 
             key: point.user
             className:"point_author_avatar"

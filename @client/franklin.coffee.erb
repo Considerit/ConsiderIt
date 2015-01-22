@@ -912,13 +912,8 @@ Histogram = ReactiveComponent
   displayName : 'Histogram'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
-  selectOpinions : (ev) ->
-    ev.stopPropagation()
-    hist = fetch 'histogram'
 
-    if @root.proposal_mode == 'crafting'
-      togglePage('results', 'click_histogram')
-
+  getOpinionsInCurrentFocus : (ev) -> 
     all_opinions = fetch('/page/' + @proposal.slug).opinions || []
     # If the user has clicked on an avatar, we'll just filter to their opinion
     if ev.target.className.indexOf('avatar') != -1
@@ -932,12 +927,26 @@ Histogram = ReactiveComponent
       # We'll show opinions within +/- filter_width of opinion_center.
       selected_opinions = (o.key for o in all_opinions when o.stance < opinion_center + @filter_width && o.stance > opinion_center - @filter_width)
 
+    selected_opinions
+
+  selectOpinions : (ev) ->
+    ev.stopPropagation()
+    hist = fetch 'histogram'
+
+    if @root.proposal_mode == 'crafting'
+      togglePage('results', 'click_histogram')
+
+    selected_opinions = @getOpinionsInCurrentFocus(ev)
+
     # Deselect if we've reclicked on same selection
     if JSON.stringify(hist.selected_opinions) == JSON.stringify(selected_opinions) || selected_opinions.length == 0
       hist.selected_opinions = null
     else
       hist.selected_opinions = selected_opinions
+
     save hist
+    @local.click_will_defocus = hist.selected_opinions
+    save @local
 
   movingThroughHistogram : (ev) -> 
     # We can calculate the opinion_center (the slider value about which we will select opinions)
@@ -947,6 +956,11 @@ Histogram = ReactiveComponent
     m_x = ev.pageX
     @local.opinion_center = 2 * (m_x - h_x) / h_w - 1
     @local.mousing_over_histogram = Math.abs(@local.opinion_center) <= 1
+
+    if @local.mousing_over_histogram
+      hist = fetch 'histogram'
+      opinions_in_focus = @getOpinionsInCurrentFocus(ev)
+      @local.click_will_defocus = JSON.stringify(hist.selected_opinions) == JSON.stringify(opinions_in_focus)
     save @local
 
   render : ->
@@ -965,6 +979,7 @@ Histogram = ReactiveComponent
     
     segment_selection_margin = 20
     hover_color = (transparency = 1) -> "rgba(255,223,0, #{transparency})"
+    #hover_color = (transparency = 1) -> "rgba(223,223,223, #{transparency})"
 
 
 
@@ -985,7 +1000,7 @@ Histogram = ReactiveComponent
             height: HISTOGRAM_HEIGHT + segment_selection_margin
             position: 'absolute'
             width: @filter_width * BODY_WIDTH
-            backgroundColor: hover_color(.1)
+            backgroundColor: "rgb(248,248,248)" #hover_color(.1)
             left: ((@local.opinion_center + 1)/2 - @filter_width/2) * BODY_WIDTH
             cursor: 'pointer'
             borderTop: "3px solid #{hover_color()}"
@@ -999,7 +1014,7 @@ Histogram = ReactiveComponent
               whiteSpace: 'nowrap'
               marginTop: -18
 
-            'Click to focus'
+            if @local.click_will_defocus then 'Click to defocus' else 'Click to focus'
 
       DIV style: {height: segment_selection_margin}
 
@@ -1498,7 +1513,7 @@ DecisionBoard = ReactiveComponent
         width: HISTOGRAM_WIDTH
 
 
-      if can_opine != Permission.INSUFFICIENT_PRIVILEGES && (can_opine != Permission.DISABLED || your_opinion.published )
+      if can_opine != Permission.INSUFFICIENT_PRIVILEGES && (can_opine != Permission.DISABLED || your_opinion.published ) && !(fetch('histogram').selected_opinions?.length > 0)
         # only shown during results, but needs to be present for animation
         if @root.proposal_mode == 'results'
           give_opinion_style = 

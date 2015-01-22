@@ -1013,7 +1013,11 @@ Histogram = ReactiveComponent
         SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
 
   attach_mini_histo: ->
-    if @refs and @refs.histo #and not @mounted
+    # We only need to recompute this data if the distribution of stances has changed. 
+    opinions = fetch('/page/' + @proposal.slug).opinions || []
+    last_computation_hash = JSON.stringify( _.map(opinions, (o) => fetch(o.key).stance) )
+
+    if @refs && @refs.histo && last_computation_hash != @local.last_computation_hash #and not @mounted
       page = fetch('/page/' + @proposal.slug)
       histo = @refs.histo.getDOMNode()
       icons = histo.childNodes
@@ -1021,10 +1025,11 @@ Histogram = ReactiveComponent
         {stance: opinion.stance, icon: icons[i]}
       mini_histo(BODY_WIDTH, HISTOGRAM_HEIGHT, histo, opinions, "histogram_cache")
       @mounted = true
-  componentDidMount: ->
-    @attach_mini_histo()
-  componentDidUpdate: ->
-    @attach_mini_histo()
+      @local.last_computation_hash = last_computation_hash
+      save @local
+
+  componentDidMount: -> @attach_mini_histo()
+  componentDidUpdate: -> @attach_mini_histo()
 
 
 

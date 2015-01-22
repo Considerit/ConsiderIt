@@ -51,6 +51,25 @@ window.proposal_url = (proposal) =>
     result += '?results=true'
   return result
 
+proposal_support = (proposal) ->
+  opinions = fetch('/page/' + proposal.slug).opinions
+  if not opinions
+    return null
+  sum = 0
+  for o in opinions
+    sum += o.stance
+  return sum
+
+
+sorted_proposals = (cluster) ->
+  options = window.cluster_options?[cluster.name] || {}
+  _.clone(cluster.proposals).sort((a,b) ->
+    x_a = proposal_support(a) - 10000 + (if options.editor_icons \
+                                         and proposal_editor(a) then 1 else 0)
+    x_b = proposal_support(b) - 10000 + (if options.editor_icons \
+                                         and proposal_editor(b) then 1 else 0)
+    return x_b - x_a)
+
 getStanceSegment = (value) ->
   for i in [0..5]
     if value < stance_segment_boundaries[i + 1]
@@ -767,13 +786,14 @@ window.ProposalSubheading = ReactiveComponent
       if proposals.clusters  # In case /proposals isn't loaded
         curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
         if curr_cluster?.proposals.length > 1
+          proposals = sorted_proposals(curr_cluster)
           # Now find the current proposal in the cluster, and return the next one
-          for proposal, index in curr_cluster.proposals
+          for proposal, index in proposals
             if @proposal == proposal
               break
-          next_index = mod(index + 1, curr_cluster.proposals.length)
-          prev_index = mod(index - 1, curr_cluster.proposals.length)
-          [curr_cluster.proposals[next_index], curr_cluster.proposals[prev_index]]
+          next_index = mod(index + 1, proposals.length)
+          prev_index = mod(index - 1, proposals.length)
+          [proposals[next_index], proposals[prev_index]]
 
     DIV
       style:
@@ -3415,15 +3435,6 @@ window.ElectionHomepage = ReactiveComponent
     proposals = fetch('/proposals')
     line_height = '1.8em'
 
-    proposal_support = (proposal) ->
-      opinions = fetch('/page/' + proposal.slug).opinions
-      if not opinions
-        return null
-      sum = 0
-      for o in opinions
-        sum += o.stance
-      return sum
-
     DIV
       style: {fontSize: 22}
 
@@ -3461,12 +3472,6 @@ window.ElectionHomepage = ReactiveComponent
             whiteSpace: 'nowrap'
           _.extend(secnd_header, secnd_column)
 
-          # Sort
-          sorted_proposals = _.clone(cluster.proposals).sort((a,b) ->
-            x_a = proposal_support(a) - 10000 + (if proposal_editor(a) then 1 else 0)
-            x_b = proposal_support(b) - 10000 + (if proposal_editor(b) then 1 else 0)
-            return x_b - x_a)
-
           #
           # Cluster of proposals
           DIV
@@ -3497,7 +3502,7 @@ window.ElectionHomepage = ReactiveComponent
                 'Support'
               options.homie_histo_title || 'Opinions'
 
-            for proposal in sorted_proposals
+            for proposal in sorted_proposals(cluster)
               icons = options.editor_icons
 
               # Proposal
@@ -4352,7 +4357,7 @@ BrowserHacks = ReactiveComponent
       SCRIPT type: 'text/javascript', src: '//browser-update.org/update.js'
 
 
-  
+
 
 # Fetch current user every 2 minutes so that if the user gets
 # logged out (e.g. by server deploy after letting a browser window stay open), 

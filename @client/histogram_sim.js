@@ -1,13 +1,8 @@
 // You can fiddle with these variables
 
-// temp cache
-cached_locations = []
-
-function mini_histo(width, height, parent, opinions, cache) {
+function mini_histo(width, height, parent, opinions) {
     width = width || 400
     height = height || 70
-
-    if(cache && !cached_locations[cache] ) cached_locations[cache] = {}
 
     // Big power, slow
     var n = 35,           // Number of opinions
@@ -65,23 +60,11 @@ function mini_histo(width, height, parent, opinions, cache) {
         //     .style("opacity", 1)
 
         nodes = d3.range(opinions.length).map(function(i) {
-            // return {index: i, radius: r, 
-            //     x: x_target(i), 
-            //     y: r + Math.random() * (height - r-r)};
-
-            icon_id = opinions[i].icon.getAttribute('id')
-            if (cached_locations[cache] && cached_locations[cache] && cached_locations[cache][icon_id]){
-                
-                x = cached_locations[cache][icon_id][0]
-                y = cached_locations[cache][icon_id][1]
-            } else {
-                x = r + (width-r-r) * (i / n)
-                y = r + Math.random() * (height - r-r)// r + (i * 400 / n) % (height-r-r)
-            }
+            //return {index: i, radius: r, x: x_target(i), y: height};
             return {index: i, radius: r,
-                    x: x,
+                    x: r + (width-r-r) * (i / n),
                     //x: r + Math.random() * (width - r - r),  // With random
-                    y: y
+                    y: r + Math.random() * (height - r-r)// r + (i * 400 / n) % (height-r-r)
                    }
         })
 
@@ -89,18 +72,7 @@ function mini_histo(width, height, parent, opinions, cache) {
             .nodes(nodes)
         //.size([width, height])
             .on("tick", tick)
-            .on('end', function () {
-                console.log('simulation complete')
-                if (cache){
-                    cached_locations[cache] = {}
-
-                    for (var i=0; i<opinions.length; i++) {
-                        img = opinions[i].icon
-                        cached_locations[cache][img.getAttribute('id')] = [parseInt(img.style.left, 10), parseInt(img.style.top, 10)]
-                    }
-                    save(cache)
-                }
-            })
+            .on('end', function () {console.log('simulation complete')})
             .gravity(0)
             .charge(0)
             .chargeDistance(0)

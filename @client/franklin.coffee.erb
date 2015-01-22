@@ -14,8 +14,6 @@
 
 fetch 'histogram',
   highlighted_users : null
-  selected_opinions : null
-  selected_by_click : null
 
 fetch 'slider',
   has_moved : false
@@ -29,6 +27,7 @@ fetch 'decisionboard',
 fetch 'root',
   auth_mode : null
   opinions_to_publish : []
+  selected_opinions : null
 
 fetch '/current_user'
 
@@ -846,11 +845,9 @@ OpinionFilter = ReactiveComponent
     if !segment? || hist.selected_segment == segment
       # Deselect
       hist.selected_segment = null
-      hist.selected_by_click = null
     else
       # Select
       hist.selected_segment = segment
-      hist.selected_by_click = true
 
       window.writeToLog
         what: 'filter results by segment'
@@ -860,12 +857,11 @@ OpinionFilter = ReactiveComponent
     save hist
 
   render : ->
-    hist = fetch('histogram')
 
     # Remove filter when on crafting page
     if @root.proposal_mode == 'crafting'
-      hist.selected_opinions = null
-      hist.selected_by_click = null
+      @root.selected_opinions = null
+      save @root
 
     filter_options = ['show all opinions',
         'only full opposers',
@@ -917,19 +913,14 @@ Histogram = ReactiveComponent
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   selectOpinions : (ev) ->
-    hist = fetch('histogram')
-    click_select = ev.type == 'click'    
+    ev.stopPropagation()
 
-    if click_select && @root.proposal_mode == 'crafting'
+    if @root.proposal_mode == 'crafting'
       togglePage('results', 'click_histogram')
-
-    # if the user has click selected an area, and is merely mousing over 
-    # other parts of the histogram, don't select the hovered opinions
-    return if hist.selected_opinions && hist.selected_by_click && !click_select 
 
     all_opinions = fetch('/page/' + @proposal.slug).opinions || []
     # If the user has clicked on an avatar, we'll just filter to their opinion
-    if ev.target.className.indexOf('avatar') != -1 && click_select
+    if ev.target.className.indexOf('avatar') != -1
       user_key = "/user/#{ev.target.getAttribute('id').substring(7, ev.target.getAttribute('id').length)}"
       selected_opinions = (o.key for o in all_opinions when o.user == user_key)
     else
@@ -946,24 +937,25 @@ Histogram = ReactiveComponent
       filter_width = .1 
       selected_opinions = (o.key for o in all_opinions when o.stance < opinion_center + filter_width && o.stance > opinion_center - filter_width)
 
-    hist.selected_opinions = selected_opinions
-    hist.selected_by_click = click_select && !hist.selected_by_click
-    save hist
+    # Deselect if we've reclicked on same selection
+    console.log @root.selected_opinions, selected_opinions, @root.selected_opinions == selected_opinions
+    if JSON.stringify(@root.selected_opinions) == JSON.stringify(selected_opinions)
+      @root.selected_opinions = null
+    else
+      @root.selected_opinions = selected_opinions
+    save @root
 
-  onLeaveHistogram : (ev) -> 
-    hist = fetch('histogram')
-    if !hist.selected_by_click
-      hist.selected_opinions = null
-      save hist
+
 
   render : ->
+
     hist = fetch('histogram')
     users_to_highlight = hist.highlighted_users
-    if hist.selected_opinions
+    if @root.selected_opinions
       if users_to_highlight
-        users_to_highlight = _.intersection users_to_highlight, (fetch(o).user for o in hist.selected_opinions)
+        users_to_highlight = _.intersection users_to_highlight, (fetch(o).user for o in @root.selected_opinions)
       else 
-        users_to_highlight = (fetch(o).user for o in hist.selected_opinions)
+        users_to_highlight = (fetch(o).user for o in @root.selected_opinions)
 
 
     opinions = fetch('/page/' + @proposal.slug).opinions || []
@@ -971,8 +963,6 @@ Histogram = ReactiveComponent
     DIV 
       className: 'histogram'
       onClick: @selectOpinions
-      onMouseMove: @selectOpinions
-      onMouseLeave: @onLeaveHistogram
 
       style: 
         width: BODY_WIDTH
@@ -996,13 +986,41 @@ Histogram = ReactiveComponent
           fetch(opinion) # subscribe ...
           transparent = users_to_highlight && !_.contains(users_to_highlight, opinion.user)
 
+          if users_to_highlight
+            if _.contains(users_to_highlight, opinion.user)
+              size_multiplier = if users_to_highlight.length == 1 then 3 else 1.2
+
+              avatar_style = 
+                border: "2px solid #A124CC"
+                width: hist.avatar_size * size_multiplier
+                height: hist.avatar_size * size_multiplier
+                transform: "translateY(-#{(hist.avatar_size * size_multiplier - hist.avatar_size)/2}px) translateX(-#{(hist.avatar_size * size_multiplier - hist.avatar_size)/2}px)"
+                zIndex: 99
+
+              if users_to_highlight.length == 1
+                avatar_style = _.extend avatar_style,
+                  width: hist.avatar_size * 3
+                  height: hist.avatar_size * 3
+                  transform: "translateY(-#{hist.avatar_size}px) translateX(-#{hist.avatar_size}px)"
+
+            else
+              avatar_style = 
+                opacity: 0.35
+                width: hist.avatar_size
+                height: hist.avatar_size
+
+          else 
+            avatar_style =
+              width: hist.avatar_size
+              height: hist.avatar_size
+
+
           Avatar 
             key: user
             user: user
             hide_face: @root.proposal_mode == 'crafting'
             hide_name: @root.proposal_mode == 'crafting'
-            style:
-              opacity: if transparent then '.35'  else '1.0'
+            style: avatar_style
 
       DIV 
         key: 'supporters'
@@ -1017,14 +1035,13 @@ Histogram = ReactiveComponent
     opinions = fetch('/page/' + @proposal.slug).opinions || []
     last_computation_hash = JSON.stringify( _.map(opinions, (o) => fetch(o.key).stance) )
 
-    if @refs && @refs.histo && last_computation_hash != @local.last_computation_hash #and not @mounted
+    if @refs && @refs.histo && last_computation_hash != @local.last_computation_hash
       page = fetch('/page/' + @proposal.slug)
       histo = @refs.histo.getDOMNode()
       icons = histo.childNodes
       opinions = for opinion, i in page.opinions
         {stance: opinion.stance, icon: icons[i]}
       mini_histo(BODY_WIDTH, HISTOGRAM_HEIGHT, histo, opinions, "histogram_cache")
-      @mounted = true
       @local.last_computation_hash = last_computation_hash
       save @local
 
@@ -1749,7 +1766,6 @@ CommunityPoints = ReactiveComponent
   displayName: 'CommunityPoints'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
   render : ->
-    # selected_opinions = fetch('histogram').selected_opinions
 
     #filter to pros or cons & down to points that haven't been included
     points = @buildPointsList() #todo: memoize
@@ -1825,7 +1841,7 @@ CommunityPoints = ReactiveComponent
 
   buildPointsList : ->
     is_results = fetch('root').proposal_mode == 'results'
-    selected_opinions = fetch('histogram').selected_opinions
+    selected_opinions = @root.selected_opinions
     included_points = fetch(@proposal.your_opinion).point_inclusions
     points = @page.points
     opinions = @page.opinions
@@ -2175,7 +2191,7 @@ Point = ReactiveComponent
     includers = point.includers
 
     # only show includers from this stance segment if a segment is selected
-    selected_opinions = fetch('histogram').selected_opinions
+    selected_opinions = @root.selected_opinions
     if selected_opinions      
       includers = _.intersection includers, (fetch(o).user for o in selected_opinions)
 
@@ -4200,8 +4216,11 @@ Root = ReactiveComponent
       save @root
 
     if @root.show_wyswyg_toolbar
-      # 
       @root.show_wyswyg_toolbar = false
+      save @root
+
+    if @root.selected_opinions && !root.auth
+      @root.selected_opinions = null
       save @root
 
 
@@ -4374,6 +4393,7 @@ resetState = (root) ->
   #      if its data is synced with the server. 
   root.proposal_mode = null    
   root.selected_point = null
+  root.selected_opinions = null
 
 
 window.app_router = new Router()

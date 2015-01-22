@@ -299,7 +299,7 @@ Proposal = ReactiveComponent
             marginLeft: if lefty then 300
             #marginRight: if lefty then 0
             fontSize: 16
-            marginBottom: '2em'
+            marginBottom: 18
 
           if !@proposal.active
             SPAN style: {display: 'inline-block', color: 'rgb(250, 146, 45)', padding: '4px 0px', marginTop: 10},
@@ -857,11 +857,11 @@ OpinionFilter = ReactiveComponent
     save hist
 
   render : ->
-
+    hist = fetch 'histogram'
     # Remove filter when on crafting page
     if @root.proposal_mode == 'crafting'
-      @root.selected_opinions = null
-      save @root
+      hist.selected_opinions = null
+      save hist
 
     filter_options = ['show all opinions',
         'only full opposers',
@@ -914,6 +914,7 @@ Histogram = ReactiveComponent
 
   selectOpinions : (ev) ->
     ev.stopPropagation()
+    hist = fetch 'histogram'
 
     if @root.proposal_mode == 'crafting'
       togglePage('results', 'click_histogram')
@@ -925,49 +926,82 @@ Histogram = ReactiveComponent
       selected_opinions = (o.key for o in all_opinions when o.user == user_key)
     else
       # Otherwise, we'll filter to a region of opinions
-      # We can calculate the opinion_center (the slider value about which we will select opinions)
-      # based on the mouse offset within the histogram element.
-      h_x = @getDOMNode().getBoundingClientRect().left + window.pageXOffset
-      h_w = @getDOMNode().offsetWidth
-      m_x = ev.pageX
-      opinion_center = 2 * (m_x - h_x) / h_w - 1
+      opinion_center = @local.opinion_center
 
       # The opinion center is used to calculate which opinions are selected.
       # We'll show opinions within +/- filter_width of opinion_center.
-      filter_width = .1 
-      selected_opinions = (o.key for o in all_opinions when o.stance < opinion_center + filter_width && o.stance > opinion_center - filter_width)
+      selected_opinions = (o.key for o in all_opinions when o.stance < opinion_center + @filter_width && o.stance > opinion_center - @filter_width)
 
     # Deselect if we've reclicked on same selection
-    console.log @root.selected_opinions, selected_opinions, @root.selected_opinions == selected_opinions
-    if JSON.stringify(@root.selected_opinions) == JSON.stringify(selected_opinions)
-      @root.selected_opinions = null
+    if JSON.stringify(hist.selected_opinions) == JSON.stringify(selected_opinions) || selected_opinions.length == 0
+      hist.selected_opinions = null
     else
-      @root.selected_opinions = selected_opinions
-    save @root
+      hist.selected_opinions = selected_opinions
+    save hist
 
-
+  movingThroughHistogram : (ev) -> 
+    # We can calculate the opinion_center (the slider value about which we will select opinions)
+    # based on the mouse offset within the histogram element.
+    h_x = @getDOMNode().getBoundingClientRect().left + window.pageXOffset
+    h_w = @getDOMNode().offsetWidth
+    m_x = ev.pageX
+    @local.opinion_center = 2 * (m_x - h_x) / h_w - 1
+    @local.mousing_over_histogram = Math.abs(@local.opinion_center) <= 1
+    save @local
 
   render : ->
+    @filter_width = .15
 
     hist = fetch('histogram')
     users_to_highlight = hist.highlighted_users
-    if @root.selected_opinions
+    if hist.selected_opinions
       if users_to_highlight
-        users_to_highlight = _.intersection users_to_highlight, (fetch(o).user for o in @root.selected_opinions)
+        users_to_highlight = _.intersection users_to_highlight, (fetch(o).user for o in hist.selected_opinions)
       else 
-        users_to_highlight = (fetch(o).user for o in @root.selected_opinions)
+        users_to_highlight = (fetch(o).user for o in hist.selected_opinions)
 
 
     opinions = fetch('/page/' + @proposal.slug).opinions || []
     
+    segment_selection_margin = 20
+    hover_color = (transparency = 1) -> "rgba(255,223,0, #{transparency})"
+
+
+
     DIV 
       className: 'histogram'
       onClick: @selectOpinions
+      onMouseMove: @movingThroughHistogram
+      onMouseLeave: => @local.mousing_over_histogram = false; save(@local)
 
       style: 
         width: BODY_WIDTH
-        height: HISTOGRAM_HEIGHT
+        height: HISTOGRAM_HEIGHT + segment_selection_margin
         position: 'relative'
+
+      if @local.mousing_over_histogram
+        DIV 
+          style:
+            height: HISTOGRAM_HEIGHT + segment_selection_margin
+            position: 'absolute'
+            width: @filter_width * BODY_WIDTH
+            backgroundColor: hover_color(.1)
+            left: ((@local.opinion_center + 1)/2 - @filter_width/2) * BODY_WIDTH
+            cursor: 'pointer'
+            borderTop: "3px solid #{hover_color()}"
+            top: 0
+
+          DIV
+            style:
+              fontSize: 12
+              color: 'black'
+              textAlign: 'center'
+              whiteSpace: 'nowrap'
+              marginTop: -18
+
+            'Click to focus'
+
+      DIV style: {height: segment_selection_margin}
 
       DIV 
         key: 'opposers'
@@ -977,10 +1011,12 @@ Histogram = ReactiveComponent
           width: 145 
         SPAN null, if @root.proposal_mode == 'crafting' then 'Oppose' else 'Opposers'
 
-
       DIV 
         ref: 'histo'
-
+        style: 
+          height: HISTOGRAM_HEIGHT
+          position: 'relative'
+          cursor: 'pointer'
         for opinion in opinions
           user = opinion.user
           fetch(opinion) # subscribe ...
@@ -988,24 +1024,18 @@ Histogram = ReactiveComponent
 
           if users_to_highlight
             if _.contains(users_to_highlight, opinion.user)
-              size_multiplier = if users_to_highlight.length == 1 then 3 else 1.2
+              size = if users_to_highlight.length == 1 then 80 else 1.2 * hist.avatar_size
 
               avatar_style = 
-                border: "2px solid #A124CC"
-                width: hist.avatar_size * size_multiplier
-                height: hist.avatar_size * size_multiplier
-                transform: "translateY(-#{(hist.avatar_size * size_multiplier - hist.avatar_size)/2}px) translateX(-#{(hist.avatar_size * size_multiplier - hist.avatar_size)/2}px)"
+                border: "3px solid #{hover_color()}"
+                width: size
+                height: size
+                transform: "translateY(-#{(size - hist.avatar_size)/2}px) translateX(-#{(size - hist.avatar_size)/2}px)"
                 zIndex: 99
-
-              if users_to_highlight.length == 1
-                avatar_style = _.extend avatar_style,
-                  width: hist.avatar_size * 3
-                  height: hist.avatar_size * 3
-                  transform: "translateY(-#{hist.avatar_size}px) translateX(-#{hist.avatar_size}px)"
 
             else
               avatar_style = 
-                opacity: 0.35
+                opacity: .5
                 width: hist.avatar_size
                 height: hist.avatar_size
 
@@ -1041,7 +1071,7 @@ Histogram = ReactiveComponent
       icons = histo.childNodes
       opinions = for opinion, i in page.opinions
         {stance: opinion.stance, icon: icons[i]}
-      mini_histo(BODY_WIDTH, HISTOGRAM_HEIGHT, histo, opinions, "histogram_cache")
+      mini_histo(BODY_WIDTH, HISTOGRAM_HEIGHT, histo, opinions)
       @local.last_computation_hash = last_computation_hash
       save @local
 
@@ -1062,7 +1092,6 @@ styles += """
 
   .histogram .avatar {
     background-color: #{default_avatar_in_histogram_color}; 
-    cursor: pointer; 
     position: absolute;}
 
 """
@@ -1841,7 +1870,7 @@ CommunityPoints = ReactiveComponent
 
   buildPointsList : ->
     is_results = fetch('root').proposal_mode == 'results'
-    selected_opinions = @root.selected_opinions
+    selected_opinions = fetch('histogram').selected_opinions
     included_points = fetch(@proposal.your_opinion).point_inclusions
     points = @page.points
     opinions = @page.opinions
@@ -2191,9 +2220,11 @@ Point = ReactiveComponent
     includers = point.includers
 
     # only show includers from this stance segment if a segment is selected
-    selected_opinions = @root.selected_opinions
+    selected_opinions = fetch('histogram').selected_opinions
     if selected_opinions      
-      includers = _.intersection includers, (fetch(o).user for o in selected_opinions)
+      selected_users = (fetch(o).user for o in selected_opinions)
+      includers = _.intersection includers, selected_users
+      author_has_included = _.contains selected_users, point.user
 
     includers = _.difference includers, to_remove
     if author_has_included 
@@ -4219,9 +4250,10 @@ Root = ReactiveComponent
       @root.show_wyswyg_toolbar = false
       save @root
 
-    if @root.selected_opinions && !root.auth
-      @root.selected_opinions = null
-      save @root
+    hist = fetch 'histogram'
+    if hist.selected_opinions && !root.auth
+      hist.selected_opinions = null
+      save hist
 
 
   render : -> 
@@ -4393,7 +4425,6 @@ resetState = (root) ->
   #      if its data is synced with the server. 
   root.proposal_mode = null    
   root.selected_point = null
-  root.selected_opinions = null
 
 
 window.app_router = new Router()

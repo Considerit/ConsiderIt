@@ -281,6 +281,7 @@ html .ql-container{
   top: 0;
   position: absolute;
   color: #aaa;
+  pointer-events: none;
 }
 """
 

@@ -1042,6 +1042,8 @@ Histogram = ReactiveComponent
     save @local
 
   movingThroughHistogram : (ev) -> 
+    return if @root.proposal_mode == 'crafting'
+
     # We can calculate the mouse_opinion_value (the slider value about which we will select opinions)
     # based on the mouse offset within the histogram element.
     h_x = @getDOMNode().getBoundingClientRect().left + window.pageXOffset
@@ -1096,6 +1098,7 @@ Histogram = ReactiveComponent
       height: size
       transform: "translateY(-#{(size - hist.avatar_size)/2}px) translateX(-#{(size - hist.avatar_size)/2}px)"
       zIndex: 9
+    css.crossbrowserify selected_avatar_style
     # 3) The style of an unselected avatar when some other avatar(s) is selected
     unselected_avatar_style = 
       opacity: .3
@@ -1115,7 +1118,7 @@ Histogram = ReactiveComponent
         height: HISTOGRAM_HEIGHT + segment_selection_margin
         position: 'relative'
 
-      if @local.mousing_over_histogram
+      if @local.mousing_over_histogram && @root.proposal_mode == 'results'
         DIV 
           style:
             height: HISTOGRAM_HEIGHT + segment_selection_margin
@@ -1154,7 +1157,7 @@ Histogram = ReactiveComponent
         style: 
           height: HISTOGRAM_HEIGHT
           position: 'relative'
-          cursor: 'pointer'
+          cursor: if @root.proposal_mode == 'results' then 'pointer'
         for opinion in opinions
           user = opinion.user
           fetch(opinion) # subscribe ...
@@ -3148,17 +3151,20 @@ Bubblemouth = ReactiveComponent
       size = 20
       left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 20 + size/2
 
+      css_triangle = 
+        width: 0
+        height: 0
+        borderTop: "#{size}px solid transparent"
+        borderBottom: "#{size}px solid transparent"
+        borderLeft: "#{size}px solid #{considerit_yellow}"
+        position: 'relative'
+        transform: 'rotate(270deg) scaleX(1.5)'
+        left: left
+        top: -35
+
+      css.crossbrowserify css_triangle
       DIV 
-        style: 
-          width: 0
-          height: 0
-          borderTop: "#{size}px solid transparent"
-          borderBottom: "#{size}px solid transparent"
-          borderLeft: "#{size}px solid #{considerit_yellow}"
-          position: 'relative'
-          transform: 'rotate(270deg) scaleX(1.5)'
-          left: left
-          top: -35
+        style: css_triangle
         DIV
           style:
             width: 0

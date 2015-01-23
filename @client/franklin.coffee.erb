@@ -3212,7 +3212,7 @@ Avatar = ReactiveComponent
 
     # Automatically upgrade the avatar size to 'large' if the width of the image is 
     # greater than the size of the b64 encoded image
-    if (@props.img_style || @props.style.width > 50) && user.key != -1 && user.avatar_file_name
+    if (@props.img_style || @props.style?.width > 50) && user.key != -1 && user.avatar_file_name
       img_style = @props.img_style or 'large'
       @props.src = "#{fetch('/subdomain').asset_host}/system/avatars/#{user.key.split('/')[2]}/#{img_style}/#{user.avatar_file_name}"
 

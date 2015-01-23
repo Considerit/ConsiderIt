@@ -39,6 +39,7 @@ window.COMMUNITY_POINT_MOUTH_WIDTH = 17
 # when doing development. 
 
 window.considerit_blue = '#2478CC'
+window.considerit_yellow = "rgb(255,223,0)"
 window.default_avatar_in_histogram_color = '#999'
 #########################
 

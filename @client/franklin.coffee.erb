@@ -983,8 +983,9 @@ Histogram = ReactiveComponent
       ev.stopPropagation()
 
   render : ->
-    selected_segment = fetch('histogram').selected_segment
-    users_to_highlight = fetch('histogram').highlighted_users
+    hist = fetch('histogram')
+    selected_segment = hist.selected_segment
+    users_to_highlight = hist.highlighted_users
 
 
     histogram_data = fetch('histogramdata/' + @proposal.slug)
@@ -995,7 +996,43 @@ Histogram = ReactiveComponent
     effective_histogram_width = num_columns * avatar_size + 2
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2 #- avatar_size / 4
 
-    DIV null,
+    selected_opinion = hist.selected_opinions?.length == 1 and hist.selected_opinions?[0]
+
+    DIV style: {position: 'relative'},
+      if selected_opinion
+        user = fetch(selected_opinion.user)
+        DIV
+          style:
+            position: 'absolute'
+            top: -(50 + 5 + 18 + 20*2)
+            #height: 120
+            backgroundColor: '#f9f9f9'
+            padding: 20
+            marginLeft: 157
+
+          DIV
+            style:
+              marginBottom: 5
+              fontSize: 18
+              textAlign: 'center'
+            'Showing opinion for'
+          Avatar
+            style:
+              height: 50
+              width: 50
+              display: 'inline-block'
+            key: user
+            user: user
+
+          SPAN
+            style:
+              display: 'inline-block'
+              fontWeight: 600
+              marginLeft: 15
+              fontSize: 18
+            user.name
+
+
       TABLE 
         className: 'histogram'
         onClick: @onClickHistogram
@@ -1027,17 +1064,31 @@ Histogram = ReactiveComponent
                   minHeight: if bar.length == 0 then 75 else 0
                 for opinion in bar
                   user = opinion.user
+                  if selected_opinion
+                    is_selected = selected_opinion.user == user
+                    users_to_highlight = [selected_opinion.user]
                   Avatar 
                     key: user
                     user: user
                     hide_face: @root.proposal_mode == 'crafting'
                     hide_name: @root.proposal_mode == 'crafting'
                     'data-segment':segment
+                    onClick: do (opinion) =>
+                      =>
+                        selected_opinion = hist.selected_opinions?.length == 1 and hist.selected_opinions?[0]
+                        # If already selected, deselect
+                        if selected_opinion.key == opinion.key
+                          console.log('deselecting')
+                          hist.selected_opinions = []
+                        else
+                          console.log('selecting')
+                          hist.selected_opinions = [opinion]
+                        save(hist)
                     style:
                       height: avatar_size
                       width: avatar_size
-                      opacity: if users_to_highlight && 
-                        !_.contains(users_to_highlight, opinion.user) 
+                      opacity: if users_to_highlight &&
+                        !_.contains(users_to_highlight, opinion.user)
                         then '.15' 
                         else if selected_segment == null || is_selected 
                         then '1.0'
@@ -1926,7 +1977,9 @@ CommunityPoints = ReactiveComponent
 
   buildPointsList : ->
     is_results = fetch('root').proposal_mode == 'results'
-    selected_segment = fetch('histogram').selected_segment
+    hist = fetch('histogram')
+    selected_segment = hist.selected_segment
+    selected_opinion = hist.selected_opinions?.length == 1 and hist.selected_opinions?[0]
     included_points = fetch(@proposal.your_opinion).point_inclusions
     points = @page.points
     opinions = @page.opinions
@@ -1936,8 +1989,12 @@ CommunityPoints = ReactiveComponent
         is_correct_valence = pnt.is_pro == (@props.key == 'pros')
         has_not_been_included = is_results || !_.contains(included_points, pnt.key)
         is_correct_valence && has_not_been_included
+    if selected_opinion
+      # Just show this one person's opinion
+      points =
+        _.filter points, (pnt) -> pnt.key in selected_opinion.point_inclusions
     
-    if selected_segment?
+    else if selected_segment?
       # If there is a histogram segment selected, we'll have to filter down 
       # to the points that users in this segment think are important, and 
       # order them by resonance to those users. I'm doing this quite inefficiently.

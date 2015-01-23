@@ -344,6 +344,7 @@ Proposal = ReactiveComponent
                   paddingTop: 10
                   paddingBottom: 10
                   fontWeight: 600
+                  textAlign: 'center'
                 onMouseDown: => @local.description_collapsed = false; save(@local)
                 'Expand full text'
             SPAN dangerouslySetInnerHTML:{__html: @proposal.description}

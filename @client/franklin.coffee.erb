@@ -280,12 +280,7 @@ Proposal = ReactiveComponent
 
     proposer = fetch(@proposal.user)
 
-    # EXPERIMENTAL:  Automatically split paragraphs for candidates.
-    # Let's make it WYSIWYG so we can remove this code
-    if @proposal.cluster?.toLowerCase() == 'candidates'
-      description = @proposal.description.split('\n').join('<p>')
-    else
-      description = @proposal.description
+    description = @proposal.description
 
     # Description fields are the expandable details that help people drill
     # into the proposal. They are very specific to the type of proposal (e.g. for

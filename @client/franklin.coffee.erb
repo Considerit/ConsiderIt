@@ -258,7 +258,7 @@ Proposal = ReactiveComponent
     your_opinion = fetch @proposal.your_opinion
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
-    @max_description_height = 500
+    @max_description_height = 700
 
     if your_opinion.published
       can_opine = permit 'update opinion', @proposal, your_opinion

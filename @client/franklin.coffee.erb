@@ -974,6 +974,9 @@ OpinionFilter = ReactiveComponent
 #      The base size of the avatars, as determined by the physics 
 #      simulation. This piece of state would be local, but it needs
 #      to be settable from the physics simulation.
+#   dragging
+#      Whether the user is currently dragging the mouse through the
+#      histogram. 
 #
 # local state: 
 #   click_will_defocus
@@ -984,9 +987,6 @@ OpinionFilter = ReactiveComponent
 #   mousing_over_histogram
 #      Whether the user is mousing over the histogram. Determines 
 #      when to show the selection region. 
-#   dragging
-#      Whether the user is currently dragging the mouse through the
-#      histogram. 
 #   simulation_opinion_hash
 #      Hash of all opinion stances used to determine if the physics
 #      simulation needs to be rerun.
@@ -1018,7 +1018,7 @@ Histogram = ReactiveComponent
       togglePage('results', 'click_histogram')
 
     # If the user has clicked on an avatar, we'll just filter to their opinion
-    click_select_a_user = ev.type == 'click' && ev.target.className.indexOf('avatar') != -1 && !@local.dragging
+    click_select_a_user = ev.type == 'click' && ev.target.className.indexOf('avatar') != -1 && !hist.dragging
     if click_select_a_user
       user_key = "/user/#{ev.target.getAttribute('id').substring(7, ev.target.getAttribute('id').length)}"
       all_opinions = fetch('/page/' + @proposal.slug).opinions || []
@@ -1027,7 +1027,7 @@ Histogram = ReactiveComponent
       selected_opinions = @getOpinionsInCurrentFocus()
 
     # Deselect if we've reclicked on same selection
-    if !@local.dragging && 
+    if !hist.dragging && 
         !@local.last_selection_via_drag && 
         (JSON.stringify(hist.selected_opinions) == JSON.stringify(selected_opinions) || 
           selected_opinions.length == 0)
@@ -1035,7 +1035,7 @@ Histogram = ReactiveComponent
     else
       hist.selected_opinions = selected_opinions
       hist.selected_opinion_value = @local.mouse_opinion_value
-      @local.last_selection_via_drag = @local.dragging
+      @local.last_selection_via_drag = hist.dragging
 
     @local.click_will_defocus = hist.selected_opinions?.length > 0
     @local.single_user_clicked = click_select_a_user && hist.selected_opinions?.length == 1
@@ -1061,7 +1061,7 @@ Histogram = ReactiveComponent
     
     save @local
 
-    if @local.dragging
+    if hist.dragging
       @selectOpinions ev
 
   render : ->
@@ -1113,11 +1113,14 @@ Histogram = ReactiveComponent
 
     DIV 
       className: 'histogram'
-      onClick: (ev) => @selectOpinions(ev, false)
-      onMouseMove: (ev) => @movingThroughHistogram(ev)
-      onMouseLeave: => @local.mousing_over_histogram = false; save(@local)
-      onMouseUp: => @local.dragging = false; save(@local)
-      onMouseDown: => @local.dragging = true; save(@local)
+      onClick: (ev) => console.log('click'); @selectOpinions(ev, false)
+      onMouseMove: (ev) => console.log('move'); @movingThroughHistogram(ev)
+      onMouseLeave: => console.log('leave'); @local.mousing_over_histogram = false; save(@local)
+      onMouseUp: => console.log('up'); hist.dragging = false; save(hist)
+      onMouseDown: => console.log('down'); hist.dragging = true; save(hist); return false 
+                                                # The return false prevents text selections
+                                                # of other parts of the page when dragging
+                                                # the selection region around.
 
       style: 
         width: BODY_WIDTH
@@ -1181,12 +1184,10 @@ Histogram = ReactiveComponent
           else
             avatar_style = regular_avatar_style
 
-
           Avatar 
             key: user
             user: user
-            # hide_face: @root.proposal_mode == 'crafting'
-            hide_name: @root.proposal_mode == 'crafting' || @local.dragging
+            hide_name: @root.proposal_mode == 'crafting' || hist.dragging
             style: avatar_style
 
       DIV 
@@ -4454,7 +4455,10 @@ Root = ReactiveComponent
 
     hist = fetch 'histogram'
     if hist.selected_opinions && !root.auth
-      hist.selected_opinions = null
+      if hist.dragging
+        hist.dragging = false
+      else
+        hist.selected_opinions = null
       save hist
 
 

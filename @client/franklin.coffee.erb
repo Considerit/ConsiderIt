@@ -258,6 +258,7 @@ Proposal = ReactiveComponent
     your_opinion = fetch @proposal.your_opinion
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
+    @max_description_height = 500
 
     if your_opinion.published
       can_opine = permit 'update opinion', @proposal, your_opinion
@@ -279,8 +280,6 @@ Proposal = ReactiveComponent
       window.user_opinions[opinion.user] = opinion
 
     proposer = fetch(@proposal.user)
-
-    description = @proposal.description
 
     # Description fields are the expandable details that help people drill
     # into the proposal. They are very specific to the type of proposal (e.g. for
@@ -327,7 +326,25 @@ Proposal = ReactiveComponent
             style:
               paddingTop: '1em'
               fontSize: 18
-            dangerouslySetInnerHTML:{__html: description}
+              position: 'relative'
+              maxHeight: if @local.description_collapsed then @max_description_height
+              overflowY: 'hidden'
+            if @local.description_collapsed
+              DIV
+                style:
+                  backgroundColor: 'white'
+                  backgroundColor: '#f9f9f9'
+                  width: '100%'
+                  position: 'absolute'
+                  bottom: 0
+                  textDecoration: 'underline'
+                  cursor: 'pointer'
+                  paddingTop: 10
+                  paddingBottom: 10
+                  fontWeight: 600
+                onMouseDown: => @local.description_collapsed = false; save(@local)
+                'Expand full text'
+            SPAN dangerouslySetInnerHTML:{__html: @proposal.description}
 
           if @local.description_fields
             DIV style: {marginTop: '1em'},
@@ -411,7 +428,11 @@ Proposal = ReactiveComponent
     $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height()} 
 
 
-  componentDidMount : -> 
+  componentDidMount : ->
+    options = window.cluster_options?[@proposal.cluster] || {}
+    if (options.collapse_descriptions and @local.description_collapsed == undefined \
+        and $('.proposal_details').height() > @max_description_height)
+      @local.description_collapsed = true; save(@local)
 
     # when you go from homepage to a proposal, seek to proposal description
     # top, otherwise you can be stuck in the middle of the proposal. 
@@ -4271,7 +4292,7 @@ Page = ReactiveComponent
                   AppSettingsDash key: "/page/dashboard/application"
                 when 'dashboard/roles'
                   SubdomainRoles key: "/page/dashboard/roles"
-                else 
+                else
                   Proposal key: @page.proposal.key
 
         Footer()

@@ -47,7 +47,7 @@ window.proposal_url = (proposal) =>
   # The special thing about this function is that it only links to
   # "?results=true" if the proposal has an opinion.
   result = '/' + proposal.slug
-  if proposal.top_point
+  if false and proposal.top_point
     result += '?results=true'
   return result
 

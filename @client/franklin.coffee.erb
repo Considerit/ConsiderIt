@@ -255,10 +255,12 @@ Proposal = ReactiveComponent
   displayName: 'Proposal'
 
   render : ->
+    options = window.cluster_options?[@proposal.cluster] || {}
+
     your_opinion = fetch @proposal.your_opinion
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
-    @max_description_height = 700
+    @max_description_height = options.collapse_descriptions_at
 
     if your_opinion.published
       can_opine = permit 'update opinion', @proposal, your_opinion
@@ -429,8 +431,7 @@ Proposal = ReactiveComponent
 
 
   componentDidMount : ->
-    options = window.cluster_options?[@proposal.cluster] || {}
-    if (options.collapse_descriptions and @local.description_collapsed == undefined \
+    if (@max_description_height and @local.description_collapsed == undefined \
         and $('.proposal_details').height() > @max_description_height)
       @local.description_collapsed = true; save(@local)
 

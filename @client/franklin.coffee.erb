@@ -1085,7 +1085,7 @@ Histogram = ReactiveComponent
     # Controls the size of the vertical space at the top of 
     # the histogram that gives some space for users to hover over 
     # the most populous areas
-    segment_selection_margin = 20 
+    segment_selection_margin = 30 
 
 
     # There are three avatar styles that might be applied depending on state:
@@ -1113,14 +1113,14 @@ Histogram = ReactiveComponent
 
     DIV 
       className: 'histogram'
-      onClick: (ev) => console.log('click'); @selectOpinions(ev, false)
-      onMouseMove: (ev) => console.log('move'); @movingThroughHistogram(ev)
-      onMouseLeave: => console.log('leave'); @local.mousing_over_histogram = false; save(@local)
-      onMouseUp: => console.log('up'); hist.dragging = false; save(hist)
-      onMouseDown: => console.log('down'); hist.dragging = true; save(hist); return false 
-                                                # The return false prevents text selections
-                                                # of other parts of the page when dragging
-                                                # the selection region around.
+      onClick: (ev) => @selectOpinions(ev, false)
+      onMouseMove: (ev) => @movingThroughHistogram(ev)
+      onMouseLeave: => @local.mousing_over_histogram = false; save(@local)
+      onMouseUp: => hist.dragging = false; save(hist)
+      onMouseDown: => hist.dragging = true; save(hist); return false 
+                                          # The return false prevents text selections
+                                          # of other parts of the page when dragging
+                                          # the selection region around.
 
       style: 
         width: BODY_WIDTH

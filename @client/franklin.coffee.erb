@@ -1002,31 +1002,32 @@ Histogram = ReactiveComponent
   displayName : 'Histogram'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
-  getOpinionsInCurrentFocus : (ev, from_mouse_over) -> 
-    all_opinions = fetch('/page/' + @proposal.slug).opinions || []
-    # If the user has clicked on an avatar, we'll just filter to their opinion
-    if ev.target.className.indexOf('avatar') != -1 && !from_mouse_over
-      user_key = "/user/#{ev.target.getAttribute('id').substring(7, ev.target.getAttribute('id').length)}"
-      selected_opinions = (o.key for o in all_opinions when o.user == user_key)
-    else
-      # Otherwise, we'll filter to a region of opinions
-      # The opinion center is used to calculate which opinions are selected.
-      # We'll show opinions within +/- filter_width of mouse_opinion_value.
-      selected_opinions = (o.key for o in all_opinions when o.stance < @local.mouse_opinion_value + @filter_width && o.stance > @local.mouse_opinion_value - @filter_width)
-
+  getOpinionsInCurrentFocus : -> 
+    # Filter to all opinions within selection area.
+    # The opinion center is used to calculate which opinions are selected.
+    # We'll show opinions within +/- filter_width of mouse_opinion_value.
+    all_opinions = fetch('/page/' + @proposal.slug).opinions || []    
+    selected_opinions = (o.key for o in all_opinions when o.stance <= @local.mouse_opinion_value + @filter_width && o.stance >= @local.mouse_opinion_value - @filter_width)
     selected_opinions
 
-  selectOpinions : (ev, via_drag) ->
+  selectOpinions : (ev) ->
     ev.stopPropagation()
     hist = fetch 'histogram'
 
     if @root.proposal_mode == 'crafting'
       togglePage('results', 'click_histogram')
 
-    selected_opinions = @getOpinionsInCurrentFocus(ev, via_drag)
+    # If the user has clicked on an avatar, we'll just filter to their opinion
+    click_select_a_user = ev.type == 'click' && ev.target.className.indexOf('avatar') != -1 && !@local.dragging
+    if click_select_a_user
+      user_key = "/user/#{ev.target.getAttribute('id').substring(7, ev.target.getAttribute('id').length)}"
+      all_opinions = fetch('/page/' + @proposal.slug).opinions || []
+      selected_opinions = (o.key for o in all_opinions when o.user == user_key)
+    else
+      selected_opinions = @getOpinionsInCurrentFocus()
 
     # Deselect if we've reclicked on same selection
-    if !via_drag && 
+    if !@local.dragging && 
         !@local.last_selection_via_drag && 
         (JSON.stringify(hist.selected_opinions) == JSON.stringify(selected_opinions) || 
           selected_opinions.length == 0)
@@ -1034,9 +1035,10 @@ Histogram = ReactiveComponent
     else
       hist.selected_opinions = selected_opinions
       hist.selected_opinion_value = @local.mouse_opinion_value
-      @local.last_selection_via_drag = via_drag
+      @local.last_selection_via_drag = @local.dragging
 
     @local.click_will_defocus = hist.selected_opinions?.length > 0
+    @local.single_user_clicked = click_select_a_user && hist.selected_opinions?.length == 1
 
     save hist
     save @local
@@ -1054,13 +1056,13 @@ Histogram = ReactiveComponent
     @local.mousing_over_histogram = Math.abs(@local.mouse_opinion_value) <= 1
 
     if @local.mousing_over_histogram
-      opinions_in_focus = @getOpinionsInCurrentFocus(ev)
+      opinions_in_focus = @getOpinionsInCurrentFocus()
       @local.click_will_defocus = JSON.stringify(fetch('histogram').selected_opinions) == JSON.stringify(opinions_in_focus)
     
     save @local
 
     if @local.dragging
-      @selectOpinions ev, true
+      @selectOpinions ev
 
   render : ->
 
@@ -1080,10 +1082,11 @@ Histogram = ReactiveComponent
 
     opinions = fetch('/page/' + @proposal.slug).opinions || []
     
-    # Controlls the size of the vertical space at the top of 
+    # Controls the size of the vertical space at the top of 
     # the histogram that gives some space for users to hover over 
     # the most populous areas
     segment_selection_margin = 20 
+
 
     # There are three avatar styles that might be applied depending on state:
     # 1) Regular, for when no user is selected
@@ -1091,19 +1094,22 @@ Histogram = ReactiveComponent
       width: hist.avatar_size
       height: hist.avatar_size
     # 2) The style of a selected avatar
-    size = if selected_users?.length == 1 && !@local.dragging then 80 else 1.2 * hist.avatar_size
+    size = if @local.single_user_clicked then 80 else 1 * hist.avatar_size
+    y_translate = -(size - hist.avatar_size)/2
     selected_avatar_style = 
-      border: "2px solid #{considerit_yellow}"
+      #border: "2px solid #{considerit_yellow}"
       width: size
       height: size
-      transform: "translateY(-#{(size - hist.avatar_size)/2}px) translateX(-#{(size - hist.avatar_size)/2}px)"
+      transform: "translateY(#{y_translate}px) translateX(-#{(size - hist.avatar_size)/2}px)"
       zIndex: 9
     css.crossbrowserify selected_avatar_style
     # 3) The style of an unselected avatar when some other avatar(s) is selected
     unselected_avatar_style = 
-      opacity: .3
+      opacity: .2
       width: hist.avatar_size
       height: hist.avatar_size
+      WebkitFilter: 'grayscale(100%)'
+      filter: 'grayscale(100%)'
 
     DIV 
       className: 'histogram'
@@ -1119,14 +1125,16 @@ Histogram = ReactiveComponent
         position: 'relative'
 
       if @local.mousing_over_histogram && @root.proposal_mode == 'results'
+        left = ((@local.mouse_opinion_value + 1)/2 - @filter_width/2) * BODY_WIDTH
+        base_width = @filter_width * BODY_WIDTH
         DIV 
           style:
             height: HISTOGRAM_HEIGHT + segment_selection_margin
             position: 'absolute'
-            width: @filter_width * BODY_WIDTH
+            width: Math.min(Math.min(base_width, base_width + left), BODY_WIDTH - left)
             backgroundColor: "rgb(248,248,248)"
             cursor: 'pointer'
-            left: ((@local.mouse_opinion_value + 1)/2 - @filter_width/2) * BODY_WIDTH
+            left: Math.max 0, left
             borderTop: "5px solid #{considerit_yellow}"
             top: 0
             pointerEvents: 'none'
@@ -1158,6 +1166,7 @@ Histogram = ReactiveComponent
           height: HISTOGRAM_HEIGHT
           position: 'relative'
           cursor: if @root.proposal_mode == 'results' then 'pointer'
+
         for opinion in opinions
           user = opinion.user
           fetch(opinion) # subscribe ...
@@ -1167,14 +1176,16 @@ Histogram = ReactiveComponent
               avatar_style = selected_avatar_style
             else
               avatar_style = unselected_avatar_style
-          else 
+          else if @root.proposal_mode == 'crafting'
+              avatar_style = unselected_avatar_style
+          else
             avatar_style = regular_avatar_style
 
 
           Avatar 
             key: user
             user: user
-            hide_face: @root.proposal_mode == 'crafting'
+            # hide_face: @root.proposal_mode == 'crafting'
             hide_name: @root.proposal_mode == 'crafting' || @local.dragging
             style: avatar_style
 
@@ -3200,7 +3211,7 @@ Avatar = ReactiveComponent
     user = @data()
 
     id = if @props.hide_face then "avatar-hidden" else "avatar-#{user.key.split('/')[2]}"
-    name = if @props.hide_face || @data().name.length == 0 then 'Anonymous' else @data().name
+    name = if @props.hide_face || @data().name?.length == 0 then 'Anonymous' else @data().name
 
     attrs =
       className: "avatar #{if @props.className then @props.className else ''}"

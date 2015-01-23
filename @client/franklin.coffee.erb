@@ -4272,7 +4272,7 @@ Page = ReactiveComponent
                 when 'dashboard/roles'
                   SubdomainRoles key: "/page/dashboard/roles"
                 else 
-                  Proposal key: if @page.proposal then @page.proposal.key else @page
+                  Proposal key: @page.proposal.key
 
         Footer()
 

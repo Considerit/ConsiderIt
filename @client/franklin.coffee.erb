@@ -1099,13 +1099,9 @@ Histogram = ReactiveComponent
                     onMouseDown: do (opinion) =>
                       =>
                         selected_opinion = hist.selected_opinions?.length == 1 and hist.selected_opinions?[0]
-                        # If already selected, deselect
-                        if selected_opinion.key == opinion.key
-                          console.log('deselecting')
-                          hist.selected_opinions = []
-                        else
-                          console.log('selecting')
-                          hist.selected_opinions = [opinion]
+                        hist.selected_opinions =
+                          # Toggle
+                          if selected_opinion.key==opinion.key then [] else [opinion]
                         save(hist)
                     style:
                       cursor: 'pointer'

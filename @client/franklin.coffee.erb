@@ -500,16 +500,29 @@ Proposal = ReactiveComponent
       for field in group.items
         @renderDescriptionField field
 
+# TODO: Refactor the below and make sure that the styles applied to the 
+#       user generated fields are in sync with the styling in the 
+#       wysiwyg editor. 
 styles += """
 .proposal_details br, .description_field br {
   padding-bottom: 0.5em; }
-.proposal_details p, .proposal_details ul, .proposal_details table, .description_field p, .description_field ul, .description_field table {
+.proposal_details p, 
+.proposal_details ul, 
+.description_field ul, 
+.proposal_details ol, 
+.description_field ol, 
+.proposal_details table, 
+.description_field p, 
+.description_field table {
   margin-bottom: 0.5em; }
 .proposal_details td, .description_field td {
   padding: 0 3px; }
 .proposal_details li, .description_field li {
   list-style: outside; }
-.proposal_details ul, .description_field ul {
+.proposal_details ol li, .proposal_details ol li {
+  list-style-type: decimal; }  
+.proposal_details ul, .description_field ul,
+.proposal_details ol, .description_field ol {
   padding-left: 20px;
   margin-left: 20px; }
 .proposal_details a, .description_field a {

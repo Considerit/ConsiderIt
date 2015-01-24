@@ -21,14 +21,13 @@ class EventPreview < ActionMailer::Preview
     subdomain = Subdomain.first
 
     attrs = {
-      'recipient' => 1701,
+      'recipient' => "/user/1701",
       'body' => "This is a test message",
       'subject' => "You should see this",
-      'sender' => User.where('registered').last.name
+      'sender_mask' => 'moderator'
     }
-    message = DirectMessage.new(attrs)
 
-    EventMailer.send_message(message, User.where('registered').last, subdomain)
+    EventMailer.send_message(attrs, User.where('registered').last, subdomain)
   end
 
 end

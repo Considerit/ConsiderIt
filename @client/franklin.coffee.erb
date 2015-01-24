@@ -982,6 +982,8 @@ Histogram = ReactiveComponent
       save(hist)
       ev.stopPropagation()
 
+  componentWillUnmount: -> (h=fetch('histogram')).selected_opinions=[];save(h)
+
   render : ->
     hist = fetch('histogram')
     selected_segment = hist.selected_segment
@@ -996,7 +998,12 @@ Histogram = ReactiveComponent
     effective_histogram_width = num_columns * avatar_size + 2
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2 #- avatar_size / 4
 
-    selected_opinion = hist.selected_opinions?.length == 1 and hist.selected_opinions?[0]
+    # Initialize selected opinion
+    if @root.proposal_mode == 'crafting'
+      # Disable
+      (h = fetch('histogram')).selected_opinions=[]; save(h)
+    selected_opinion = (hist.selected_opinions?.length == 1 \
+                        and hist.selected_opinions?[0])
 
     DIV style: {position: 'relative'},
       if selected_opinion
@@ -1004,18 +1011,16 @@ Histogram = ReactiveComponent
         DIV
           style:
             position: 'absolute'
-            top: -(50 + 5 + 18 + 20*2)
-            #height: 120
-            backgroundColor: '#f9f9f9'
-            padding: 20
-            marginLeft: 157
-
-          DIV
-            style:
-              marginBottom: 5
-              fontSize: 18
-              textAlign: 'center'
-            'Showing opinion for'
+            bottom: -86
+            width: 396
+            padding: 12
+            marginLeft: 76
+            backgroundColor: '#F6F7F9'
+            boxShadow: '0px 1px 1px #aaa'
+            zIndex: 1
+            textAlign: 'center'
+            cursor: 'pointer'
+          onMouseDown: -> (h = fetch('histogram')).selected_opinions=[]; save(h)
           Avatar
             style:
               height: 50
@@ -1027,9 +1032,14 @@ Histogram = ReactiveComponent
           SPAN
             style:
               display: 'inline-block'
-              fontWeight: 600
+              fontWeight: 700
               marginLeft: 15
               fontSize: 18
+            DIV
+              style:
+                fontWeight: 400
+                marginBottom: 5
+              'Opinion of'
             user.name
 
 
@@ -1073,7 +1083,7 @@ Histogram = ReactiveComponent
                     hide_face: @root.proposal_mode == 'crafting'
                     hide_name: @root.proposal_mode == 'crafting'
                     'data-segment':segment
-                    onClick: do (opinion) =>
+                    onMouseDown: do (opinion) =>
                       =>
                         selected_opinion = hist.selected_opinions?.length == 1 and hist.selected_opinions?[0]
                         # If already selected, deselect
@@ -1085,6 +1095,7 @@ Histogram = ReactiveComponent
                           hist.selected_opinions = [opinion]
                         save(hist)
                     style:
+                      cursor: 'pointer'
                       height: avatar_size
                       width: avatar_size
                       opacity: if users_to_highlight &&

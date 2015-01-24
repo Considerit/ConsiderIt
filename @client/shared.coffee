@@ -168,7 +168,7 @@ window.WysiwygEditor = ReactiveComponent
       borderRadius: 3
       boxShadow: '0 1px 2px rgba(0,0,0,.2)'
 
-    show_placeholder = (!my_data.html || (@editor && @editor.getLength() <= 1)) && @props.placeholder
+    show_placeholder = (!my_data.html || (@editor?.getText().trim().length == 0)) && !!@props.placeholder
 
     DIV 
       id: @props.key
@@ -297,6 +297,7 @@ html .ql-container{
   position: absolute;
   color: #aaa;
   pointer-events: none;
+  z-index: 1;
 }
 """
 

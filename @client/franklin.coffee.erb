@@ -876,7 +876,7 @@ OpinionFilter = ReactiveComponent
   render : ->
     hist = fetch 'histogram'
     # Remove filter when on crafting page
-    if @root.proposal_mode == 'crafting'
+    if @root.proposal_mode == 'crafting' && hist.selected_opinions
       hist.selected_opinions = null
       save hist
 

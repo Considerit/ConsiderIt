@@ -1012,9 +1012,9 @@ Histogram = ReactiveComponent
     margin_adjustment = -(effective_histogram_width - HISTOGRAM_WIDTH) / 2 #- avatar_size / 4
 
     # Initialize selected opinion
-    if @root.proposal_mode == 'crafting'
+    if @root.proposal_mode == 'crafting' and hist.selected_opinions?.length > 0
       # Disable
-      (h = fetch('histogram')).selected_opinions=[]; save(h)
+      hist.selected_opinions=[]; save(hist)
     selected_opinion = (hist.selected_opinions?.length == 1 \
                         and hist.selected_opinions?[0])
 

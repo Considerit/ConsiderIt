@@ -263,6 +263,21 @@ window.WysiwygEditor = ReactiveComponent
     @editor.on 'text-change', (delta, source) => 
       my_data = fetch @props.key
       my_data.html = @editor.getHTML()
+
+      if source == 'user' && my_data.html.indexOf(' style') > -1
+        # strip out any style tags the user may have pasted into the html
+        removeStyles = (el) ->
+          el.removeAttribute 'style'
+          if el.childNodes.length > 0
+            for child in el.childNodes
+              removeStyles child if child.nodeType == 1
+
+        node = $(my_data.html)[0]
+        removeStyles node
+        @editor.setHTML $(node).html()
+        return # the above line will trigger this text-change event 
+               # again, w/o the style html
+
       save my_data
 
 # Some overrides to Quill base styles

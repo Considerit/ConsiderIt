@@ -2,18 +2,12 @@ class DirectMessageController < ApplicationController
   respond_to :json
 
   def create
-    attrs = {
-      'recipient' => key_id(params['recipient']),
-      'body' => params['body'],
-      'subject' => params['subject'],
-      'sender' => params['sender']
-    }
-    @message = DirectMessage.new(attrs)
+    fields = ['recipient', 'body', 'subject', 'sender_mask']
+    message = params.select{|k,v| fields.include?(k) && v.length > 0}
 
-    if @message.valid?
-      EventMailer.send_message(@message, current_user, current_subdomain).deliver_later
+    if message.keys().length == fields.length # validate presence
+      EventMailer.send_message(message, current_user, current_subdomain).deliver_later
       render :json => {:result => 'success'}
-
     else
       render :json => {:result => 'failure'}
     end

@@ -567,7 +567,7 @@ ModerateItem = ReactiveComponent
                 onClick: (=> @local.messaging = moderatable; save(@local)),
                 'Message author']
             else if @local.messaging
-              DirectMessage to: @local.messaging.user, parent: @local
+              DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Moderator'
 
 
 
@@ -744,7 +744,7 @@ FactcheckPoint = ReactiveComponent
                 onClick: (=> @local.messaging = point; save(@local)),
                 'Message author']
             else if @local.messaging == point
-              DirectMessage to: @local.messaging.user, parent: @local
+              DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Fact-checker'
 
 
         # requests area
@@ -772,7 +772,7 @@ FactcheckPoint = ReactiveComponent
                       onClick: (=> @local.messaging = request; save(@local)),
                       'Message requester']
                   else if @local.messaging == request
-                    DirectMessage to: @local.messaging.user, parent: @local
+                    DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Fact-checker'
 
         # claims area
         DIV style: task_area_section_style, 
@@ -922,7 +922,8 @@ DirectMessage = ReactiveComponent
       recipient: @props.to
       subject: $el.find('.message_subject').val()
       body: $el.find('.message_body').val()
-      sender: 'factchecker'
+      sender_mask: @props.sender_mask or fetch('/current_user').name
+      authenticity_token: fetch('/current_user').csrf
 
     $.ajax '/dashboard/message', data: attrs, type: 'POST', success: => 
       @props.parent.messaging = null

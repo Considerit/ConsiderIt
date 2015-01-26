@@ -169,9 +169,20 @@ class Opinion < ActiveRecord::Base
 
       # We only have to update inclusions if the user is changing because
       # inclusions are identified by (proposal_id, user_id), not by Opinion.
-      new_inclusions = self.proposal.inclusions.where(:user_id => opinion.user_id)
-      all_inclusions = ( inclusions.map{|i| i.point.id} \
+      new_inclusions = self.proposal.inclusions.where(:user_id => opinion.user_id).where('point_id IS NOT NULL')
+      all_inclusions = ( inclusions.where('point_id IS NOT NULL').map{|i| i.point.id} \
                     + new_inclusions.map{|i| i.point.id}).uniq
+
+      # BUG: There is a strange bug we can't find where inclusion.point_id can
+      # get set to null. The code above has been null guarded. 
+      # This is an attempt to gather more data on it. 
+      if inclusions.where('point_id IS NULL').count > 0 
+        begin 
+          raise "We have a null point_id for an inclusion!"
+        rescue => e
+          ExceptionNotifier.notify_exception e, :env => request.env
+        end
+      end
 
       proposal.inclusions.where(:user_id => self.user_id).destroy_all
 

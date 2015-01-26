@@ -6,7 +6,7 @@ namespace :cache do
       Rails.logger.info "Updated point scores"
     rescue
       Rails.logger.info "Could not update point scores"
-    end    
+    end 
   end
 
   # task :proposals => :environment do
@@ -22,58 +22,16 @@ namespace :cache do
   #   # compute influence score
   #   User.update_user_metrics()
   # end
-
-  task :avatars => :environment do 
-    beginning_time = Time.now
-    ttime = 0
-
-
-    size = 'small'
-    #TODO: do not automatically replace each file ... check hash at end for equality
-    begin
-      Subdomain.find_each do |subdomain|
-        internal = Rails.application.config.action_controller.asset_host.nil?
-        File.open("public/system/cache/#{subdomain.name}.css", 'w') do |f|
-
-          subdomain.users.select([:id,:avatar_file_name]).where('avatar_file_name IS NOT NULL').each do |user|
-            #data = [File.read("public/system/avatars/#{user.id}/small/#{user.avatar_file_name}")].pack('m')
-            begin
-
-              img_path = "/system/avatars/#{user.id}/#{size}/#{user.avatar_file_name}".gsub(' ', '_')
-
-              if internal
-                img_data = File.read("public#{img_path}")
-              else
-                i_time = Time.now
-                img_data = open(URI.parse("http:#{Rails.application.config.action_controller.asset_host}#{img_path}")).read
-                ttime += (Time.now - i_time)*1000
-              end
-
-              data = Base64.encode64(img_data)
-              f.puts("#avatar-#{user.id} { background-image: url(\"data:image/jpeg;base64,#{data.gsub(/\n/," ")}\"); }")
-            rescue
-              Rails.logger.info "Could not generate avatar #{user.id}"
-            end
-            #avatars[:small][user.id] = "data:image/jpg;base64,#{data}"
-          end
-        end
-        # TODO: upload resulting cached avatar file if assethost is s3 (can we add digest to it and serve through asset pipeline?)
-      end
-    rescue
-      Rails.logger.info "Could not regenerate avatars"
-    end
-
-    end_time = Time.now
-    puts "Time elapsed #{(end_time - beginning_time)*1000} milliseconds"
-    puts "In big block #{ttime} milliseconds"
-
-
-  end
 end
 
-#task :compute_metrics => ["cache:points", "cache:proposals", "cache:users"]
-
 task :compute_metrics => ["cache:points"]
+
+# For a weird bug we can't figure out that leaves an 
+# inclusion without an associated point. 
+# Remove this after we have a decent caching method for inclusions
+task :clear_null_inclusions => :environment do
+  Inclusion.where(:point_id => nil).destroy_all
+end
 
 namespace :alerts do
   task :check_moderation => :environment do

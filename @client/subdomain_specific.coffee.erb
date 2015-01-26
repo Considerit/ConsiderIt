@@ -192,7 +192,7 @@ window['bitcoin-election-header'] = ReactiveComponent
               fontSize: 26
               fontWeight: 500
               marginLeft: 40
-            'Distributed Deliberation'
+            'The Distributed Opinion'
 
         # Text
         if homepage
@@ -212,7 +212,7 @@ window['bitcoin-election-header'] = ReactiveComponent
               fontWeight: 300
               paddingTop: 23
               paddingBottom: 45
-              maxWidth: 900
+              maxWidth: 915
 
             DIV
               style:
@@ -220,7 +220,7 @@ window['bitcoin-election-header'] = ReactiveComponent
                 fontSize: 63
                 fontWeight: 500
                 marginBottom: 20
-              'Distributed Deliberation'
+              'The Distributed Opinion'
 
             'We are choosing two new board members. '
             A
@@ -230,13 +230,17 @@ window['bitcoin-election-header'] = ReactiveComponent
 
             P
               style: marginTop: 20
-              'This deliberation website is open to the public.'
-              ' But to vote, you must '
+              'Voting will occur on a different website.  To vote, you must '
               A
                 href: 'https://bitcoinfoundation.org/join/#individual-membership'
                 style: textDecoration: 'underline'
                 'become a member'
               ' of the Bitcoin Foundation.'
+
+            P
+              style: marginTop: 20
+              'This website is open to the public, but only Foundation
+              Members\' opinions carry weight.'
 
       ProfileMenu()
 
@@ -244,11 +248,13 @@ window.cluster_options =
   # Each cluster can have its own options
   Candidates:   # Options for the "Candidates" cluster
     editor_icons: true
-    homie_histo_filter: (user) -> 'bitcoin foundation member' in user.groups
+    #homie_histo_filter: (user) -> 'bitcoin foundation member' in user.groups
     homie_histo_title: "Members' Opinions"
+    collapse_descriptions_at: 800
 
   Debate:       # Options for the "Debate" cluster
     homie_histo_title: "Candidates' Opinions"
+    collapse_descriptions_at: 800
 
 
 $( ->

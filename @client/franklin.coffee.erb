@@ -46,9 +46,28 @@ window.proposal_url = (proposal) =>
   # The special thing about this function is that it only links to
   # "?results=true" if the proposal has an opinion.
   result = '/' + proposal.slug
-  if proposal.top_point
+  if false and proposal.top_point
     result += '?results=true'
   return result
+
+proposal_support = (proposal) ->
+  opinions = fetch('/page/' + proposal.slug).opinions
+  if not opinions
+    return null
+  sum = 0
+  for o in opinions
+    sum += o.stance
+  return sum
+
+
+sorted_proposals = (cluster) ->
+  options = window.cluster_options?[cluster.name] || {}
+  _.clone(cluster.proposals).sort((a,b) ->
+    x_a = proposal_support(a) - 10000 + (if options.editor_icons \
+                                         and proposal_editor(a) then 1 else 0)
+    x_b = proposal_support(b) - 10000 + (if options.editor_icons \
+                                         and proposal_editor(b) then 1 else 0)
+    return x_b - x_a)
 
 getStanceSegment = (value) ->
   for i in [0..5]
@@ -235,9 +254,12 @@ Proposal = ReactiveComponent
   displayName: 'Proposal'
 
   render : ->
+    options = window.cluster_options?[@proposal.cluster] || {}
+
     your_opinion = fetch @proposal.your_opinion
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
+    @max_description_height = options.collapse_descriptions_at
 
     if your_opinion.published
       can_opine = permit 'update opinion', @proposal, your_opinion
@@ -259,13 +281,6 @@ Proposal = ReactiveComponent
       window.user_opinions[opinion.user] = opinion
 
     proposer = fetch(@proposal.user)
-
-    # EXPERIMENTAL:  Automatically split paragraphs for candidates.
-    # Let's make it WYSIWYG so we can remove this code
-    if @proposal.cluster?.toLowerCase() == 'candidates'
-      description = @proposal.description.split('\n').join('<p>')
-    else
-      description = @proposal.description
 
     # Description fields are the expandable details that help people drill
     # into the proposal. They are very specific to the type of proposal (e.g. for
@@ -316,7 +331,26 @@ Proposal = ReactiveComponent
             style:
               paddingTop: '1em'
               fontSize: 18
-            dangerouslySetInnerHTML:{__html: description}
+              position: 'relative'
+              maxHeight: if @local.description_collapsed then @max_description_height
+              overflowY: 'hidden'
+            if @local.description_collapsed
+              DIV
+                style:
+                  backgroundColor: 'white'
+                  backgroundColor: '#f9f9f9'
+                  width: '100%'
+                  position: 'absolute'
+                  bottom: 0
+                  textDecoration: 'underline'
+                  cursor: 'pointer'
+                  paddingTop: 10
+                  paddingBottom: 10
+                  fontWeight: 600
+                  textAlign: 'center'
+                onMouseDown: => @local.description_collapsed = false; save(@local)
+                'Expand full text'
+            SPAN dangerouslySetInnerHTML:{__html: @proposal.description}
 
           if @local.description_fields
             DIV style: {marginTop: '1em'},
@@ -413,7 +447,10 @@ Proposal = ReactiveComponent
     $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height()} 
 
 
-  componentDidMount : -> 
+  componentDidMount : ->
+    if (@max_description_height and @local.description_collapsed == undefined \
+        and $('.proposal_details').height() > @max_description_height)
+      @local.description_collapsed = true; save(@local)
 
     # when you go from homepage to a proposal, seek to proposal description
     # top, otherwise you can be stuck in the middle of the proposal. 
@@ -479,16 +516,29 @@ Proposal = ReactiveComponent
       for field in group.items
         @renderDescriptionField field
 
+# TODO: Refactor the below and make sure that the styles applied to the 
+#       user generated fields are in sync with the styling in the 
+#       wysiwyg editor. 
 styles += """
 .proposal_details br, .description_field br {
   padding-bottom: 0.5em; }
-.proposal_details p, .proposal_details ul, .proposal_details table, .description_field p, .description_field ul, .description_field table {
+.proposal_details p, 
+.proposal_details ul, 
+.description_field ul, 
+.proposal_details ol, 
+.description_field ol, 
+.proposal_details table, 
+.description_field p, 
+.description_field table {
   margin-bottom: 0.5em; }
 .proposal_details td, .description_field td {
   padding: 0 3px; }
 .proposal_details li, .description_field li {
   list-style: outside; }
-.proposal_details ul, .description_field ul {
+.proposal_details ol li, .proposal_details ol li {
+  list-style-type: decimal; }  
+.proposal_details ul, .description_field ul,
+.proposal_details ol, .description_field ol {
   padding-left: 20px;
   margin-left: 20px; }
 .proposal_details a, .description_field a {
@@ -782,13 +832,14 @@ window.ProposalSubheading = ReactiveComponent
       if proposals.clusters  # In case /proposals isn't loaded
         curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
         if curr_cluster?.proposals.length > 1
+          proposals = sorted_proposals(curr_cluster)
           # Now find the current proposal in the cluster, and return the next one
-          for proposal, index in curr_cluster.proposals
+          for proposal, index in proposals
             if @proposal == proposal
               break
-          next_index = mod(index + 1, curr_cluster.proposals.length)
-          prev_index = mod(index - 1, curr_cluster.proposals.length)
-          [curr_cluster.proposals[next_index], curr_cluster.proposals[prev_index]]
+          next_index = mod(index + 1, proposals.length)
+          prev_index = mod(index - 1, proposals.length)
+          [proposals[next_index], proposals[prev_index]]
 
     DIV
       style:
@@ -1064,8 +1115,9 @@ Histogram = ReactiveComponent
     if hist.dragging
       @selectOpinions ev
 
-  render : ->
+  componentWillUnmount: -> (h=fetch('histogram')).selected_opinions=[];save(h)
 
+  render : ->
     # filter_width controls the size of the selection region when hovering 
     # over the histogram. It defines the opinion bounds within which opinions
     # are selected. Opinions = [-1, 1]. filter_width is on this scale. 
@@ -1078,7 +1130,6 @@ Histogram = ReactiveComponent
         selected_users = _.intersection selected_users, (fetch(o).user for o in hist.selected_opinions)
       else 
         selected_users = (fetch(o).user for o in hist.selected_opinions)
-
 
     opinions = fetch('/page/' + @proposal.slug).opinions || []
     
@@ -1158,6 +1209,7 @@ Histogram = ReactiveComponent
       DIV 
         key: 'opposers'
         className: "histogram_segment_pole"
+
         style: 
           left: -160
           width: 145 
@@ -1215,8 +1267,6 @@ Histogram = ReactiveComponent
 
   componentDidMount: -> @attach_mini_histo()
   componentDidUpdate: -> @attach_mini_histo()
-
-
 
 styles += """
 .histogram {
@@ -1280,7 +1330,7 @@ MiniHisto = ReactiveComponent
           bottom: -12
           fontSize: 19
           fontWeight: 500
-          color: '#444'
+          color: '#999'
         '–'
       SPAN
         style:
@@ -1289,7 +1339,7 @@ MiniHisto = ReactiveComponent
           bottom: -13
           fontSize: 19
           fontWeight: 500
-          color: '#444'
+          color: '#999'
         '+'
       DIV
         ref: 'histo'
@@ -2015,6 +2065,7 @@ CommunityPoints = ReactiveComponent
   buildPointsList : ->
     is_results = fetch('root').proposal_mode == 'results'
     selected_opinions = fetch('histogram').selected_opinions
+
     included_points = fetch(@proposal.your_opinion).point_inclusions
     points = @page.points
     opinions = @page.opinions
@@ -2082,6 +2133,9 @@ Point = ReactiveComponent
           dy: 5
           col_gap: 8
           side_offset: if @props.rendered_as == 'decision_board_point' then 10 else 47
+
+        if includers.length == 0
+          includers = [point.user]
 
         # Now we'll go through the list from back to front
         i = includers.length
@@ -2199,7 +2253,6 @@ Point = ReactiveComponent
           SPAN 
             style: {position: 'absolute', top: -1, left: -7, fontFamily: 'courier'}
             dangerouslySetInnerHTML:{__html: if point.is_pro then '+' else '-'}
-
         else
           renderIncluders(draw_all_includers)
 
@@ -3572,15 +3625,6 @@ window.ElectionHomepage = ReactiveComponent
     proposals = fetch('/proposals')
     line_height = '1.8em'
 
-    proposal_support = (proposal) ->
-      opinions = fetch('/page/' + proposal.slug).opinions
-      if not opinions
-        return null
-      sum = 0
-      for o in opinions
-        sum += o.stance
-      return sum
-
     DIV
       style: {fontSize: 22}
 
@@ -3618,12 +3662,6 @@ window.ElectionHomepage = ReactiveComponent
             whiteSpace: 'nowrap'
           _.extend(secnd_header, secnd_column)
 
-          # Sort
-          sorted_proposals = _.clone(cluster.proposals).sort((a,b) ->
-            x_a = proposal_support(a) - 10000 + (if proposal_editor(a) then 1 else 0)
-            x_b = proposal_support(b) - 10000 + (if proposal_editor(b) then 1 else 0)
-            return x_b - x_a)
-
           #
           # Cluster of proposals
           DIV
@@ -3654,7 +3692,7 @@ window.ElectionHomepage = ReactiveComponent
                 'Support'
               options.homie_histo_title || 'Opinions'
 
-            for proposal in sorted_proposals
+            for proposal in sorted_proposals(cluster)
               icons = options.editor_icons
 
               # Proposal
@@ -4432,8 +4470,8 @@ Page = ReactiveComponent
                   AppSettingsDash key: "/page/dashboard/application"
                 when 'dashboard/roles'
                   SubdomainRoles key: "/page/dashboard/roles"
-                else 
-                  Proposal key: if @page.proposal then @page.proposal.key else @page
+                else
+                  Proposal key: @page.proposal.key
 
         Footer()
 
@@ -4521,7 +4559,7 @@ BrowserHacks = ReactiveComponent
       SCRIPT type: 'text/javascript', src: '//browser-update.org/update.js'
 
 
-  
+
 
 # Fetch current user every 2 minutes so that if the user gets
 # logged out (e.g. by server deploy after letting a browser window stay open), 

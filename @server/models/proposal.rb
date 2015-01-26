@@ -203,7 +203,7 @@ class Proposal < ActiveRecord::Base
 
     implicit_yes = opinions.where(:published => true)
     if explicit_no.count > 0 
-      implicit_yes = implicit_yes.where("user_id NOT IN (?)", explicit_no).all.map {|o| o.user}
+      implicit_yes = implicit_yes.where("user_id NOT IN (?)", explicit_no).all.map {|o| o}
     end
     implicit_yes = implicit_yes.map {|o| o.user}
 

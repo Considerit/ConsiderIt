@@ -136,8 +136,8 @@ window['bitcoin-demo-header'] = ReactiveComponent
 ####################
 # Bitcoin Election
 
-window['bitcoin-election-header'] = ReactiveComponent
-  displayName: 'bitcoin-election-header'
+window['bitcoin-header'] = ReactiveComponent
+  displayName: 'bitcoin-header'
 
   render: ->
     homepage = @root.page_name == 'homepage'
@@ -259,8 +259,8 @@ window.cluster_options =
 
 $( ->
   # These need to be run AFTER franklin.coffee has loaded
-  window['bitcoin-election-homepage'] = ElectionHomepage
-  window['bitcoin-election-proposal-subheader'] = ProposalSubheading
+  window['bitcoin-homepage'] = ElectionHomepage
+  window['bitcoin-proposal-subheader'] = ProposalSubheading
 
   # For testing only:
   #window['livingvotersguide-homepage'] = ElectionHomepage
@@ -270,7 +270,15 @@ $( ->
 )
 
 
+#####################
+# Redirect for old bitcoin
+Redirect = ReactiveComponent
+  displayName: 'Redirect'
+  render: ->
+    window.location.replace("https://bitcoin-election.consider.it")
 
+window['bitcoin-election-homepage'] = window['bitcoin-election-subheader'] = Redirect
+  
 
 
 #####################

@@ -134,7 +134,7 @@ window['bitcoin-demo-header'] = ReactiveComponent
         'demo'
 
 ####################
-# Bitcoin Election
+# Bitcoin
 
 window['bitcoin-header'] = ReactiveComponent
   displayName: 'bitcoin-header'
@@ -275,7 +275,7 @@ $( ->
 Redirect = ReactiveComponent
   displayName: 'Redirect'
   render: ->
-    window.location.replace("https://bitcoin.consider.it")
+    window.location.replace("https://bitcoin.consider.it" + pathname)
 
 window['bitcoin-election-homepage'] = window['bitcoin-election-subheader'] = Redirect
   

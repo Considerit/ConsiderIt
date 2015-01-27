@@ -275,7 +275,7 @@ $( ->
 Redirect = ReactiveComponent
   displayName: 'Redirect'
   render: ->
-    window.location.replace("https://bitcoin.consider.it" + pathname)
+    window.location.replace("https://bitcoin.consider.it" + window.location.pathname)
 
 window['bitcoin-election-homepage'] = window['bitcoin-election-subheader'] = Redirect
   

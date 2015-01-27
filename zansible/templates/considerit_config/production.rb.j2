@@ -106,7 +106,37 @@ ConsiderIt::Application.configure do
       :email_prefix => "[{{app_name}} Error] ",
       :sender_address => "\"Notifier\" <tkriplean@gmail.com>",
       :exception_recipients => %w{ {{ config.exception_notifier.email_recipients }} }, 
-      :sections => %w(request backtrace session environment)
+      :sections => %w(request backtrace session environment),
+      :email_format => :html
     }
+
+  ExceptionNotifier.add_notifier :internal_logger, ->(exception, options) { 
+    rq = ActionDispatch::Request.new(options[:env])
+    backtrace = exception.backtrace || []
+    session = options[:env]["rack.session"]
+
+    request_block = "* URL        : #{rq.url}
+                     * HTTP Method: #{rq.request_method}
+                     * IP address : #{rq.remote_ip}
+                     * Parameters : #{rq.filtered_parameters.inspect}"
+
+    details = {
+      :request => request_block,
+      :backtrace => backtrace.join("\n")
+    }
+
+    def_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
+    subdomain = rq.subdomain.nil? || rq.subdomain.length == 0 ? def_subdomain : Subdomain.find_by_name(rq.subdomain).id
+
+    Log.create!({
+      :subdomain_id => subdomain,
+      :who => session[:current_user_id],
+      :what => "Server Exception: #{exception.message}",
+      :where => rq.fullpath,
+      :when => Time.current,
+      :details => details
+    })
+  }
+
 
 end

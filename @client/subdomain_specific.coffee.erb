@@ -272,12 +272,16 @@ $( ->
 
 #####################
 # Redirect for old bitcoin
-Redirect = ReactiveComponent
-  displayName: 'Redirect'
-  render: ->
-    window.location.replace("https://bitcoin.consider.it" + window.location.pathname)
+if window.location.hostname == 'bitcoin-election.consider.it'
+  window.location.replace(window.location.href.replace('https://bitcoin-election', 'https://bitcoin'))
+# Redirect = ReactiveComponent
+#   displayName: 'Redirect'
+#   render: ->
+#     console.log(window.location.pathname)
+#     window.location.replace("https://bitcoin.consider.it" + window.location.pathname)
 
-window['bitcoin-election-homepage'] = window['bitcoin-election-subheader'] = Redirect
+# #window['bitcoin-election-homepage'] = window['bitcoin-election-subheader'] = Redirect
+# window.Root = Redirect
   
 
 

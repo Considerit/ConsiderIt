@@ -101,7 +101,7 @@ class CurrentUserController < ApplicationController
             # note: Returning this error message is a security risk as it
             #       reveals that a particular email address exists in the
             #       system or not.  But it's prolly the right tradeoff.
-            errors.append "No user exists at that email address" 
+            errors.append "No user exists at that email address. Maybe you should click 'Create New Account' below." 
 
           elsif !user.authenticate(params[:password])
             errors.append "Wrong password. Click \"I forgot my password\" if you\'re having problems."

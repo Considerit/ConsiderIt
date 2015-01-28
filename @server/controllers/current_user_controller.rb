@@ -39,11 +39,11 @@ class CurrentUserController < ApplicationController
         try_update_password 'create account', errors 
         if !current_user.registered || trying_to == 'create account via invitation'
           has_name = current_user.name && current_user.name.length > 0
-          can_login = current_user.email && current_user.email.length > 0
+          ok_email = current_user.email && current_user.email.length > 0
           signed_pledge = params[:signed_pledge]
           ok_password = params[:password] && params[:password].length >= @min_pass
 
-          if has_name && can_login && signed_pledge && ok_password
+          if has_name && ok_email && signed_pledge && ok_password
             current_user.registered = true
             if !current_user.save
               raise "Error registering this uesr"
@@ -80,6 +80,7 @@ class CurrentUserController < ApplicationController
             errors.append("Password needs to be at least #{@min_pass} letters") if !ok_password
             errors.append('Name is blank') if !has_name
             errors.append('Community pledge required') if !signed_pledge
+            errors.append('Email address can\'t be blank') if !ok_email
           end
 
         end

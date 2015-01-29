@@ -21,7 +21,7 @@ function mini_histo(width, height, parent, opinions) {
     if (opinions.length > 0) {
         // Now round r up until it fits perfectly within height
         var times_fit = height / (2*r)
-        r = (height / (Math.floor(times_fit))) / 2 - .001
+        r = (height / (Math.ceil(times_fit))) / 2 - .001
     }
     function x_target(i) {
         var x = i / n

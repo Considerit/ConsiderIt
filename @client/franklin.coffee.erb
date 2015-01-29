@@ -296,7 +296,8 @@ Proposal = ReactiveComponent
 
 
     # whether part of the histogram is focused
-    has_histogram_focus = !!fetch('histogram').selected_opinions
+    hist = fetch('histogram')
+    has_histogram_focus = !!hist.selected_opinions
 
     DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
 
@@ -410,12 +411,13 @@ Proposal = ReactiveComponent
             DIV 
               style: 
                 width: BODY_WIDTH + 80
-                border: "5px solid #{if has_histogram_focus then considerit_yellow else 'transparent'}"
+                border: "3px solid #{if !has_histogram_focus then 'transparent' else if @root.selected_point then '#ccc' else considerit_yellow }"
                 height: '100%'
                 position: 'absolute'
                 borderRadius: 16
                 marginLeft: if lefty then 65 else -BODY_WIDTH/2 - 40
                 left: if lefty then 0 else '50%'
+                top: 18
 
               Bubblemouth
                 target: 'histogram'
@@ -1007,6 +1009,8 @@ OpinionFilter = ReactiveComponent
 #   selected_opinion_value
 #      The central opinion value upon which the current selection is
 #      defined around. 
+#   single_user_clicked
+#      Whether a single user has been directly selected.
 #   highlighted_users
 #      Users that other components want to have highlighted in the 
 #      histogram. This is intersected with the users whose opinions
@@ -1073,13 +1077,14 @@ Histogram = ReactiveComponent
         (JSON.stringify(hist.selected_opinions) == JSON.stringify(selected_opinions) || 
           selected_opinions.length == 0)
       hist.selected_opinions = null
+      hist.single_user_clicked = false
     else
       hist.selected_opinions = selected_opinions
       hist.selected_opinion_value = @local.mouse_opinion_value
       @local.last_selection_via_drag = hist.dragging
 
     @local.click_will_defocus = hist.selected_opinions?.length > 0
-    @local.single_user_clicked = click_select_a_user && hist.selected_opinions?.length == 1
+    hist.single_user_clicked = click_select_a_user && hist.selected_opinions?.length == 1
 
     save hist
     save @local
@@ -1095,6 +1100,8 @@ Histogram = ReactiveComponent
 
     @local.mouse_opinion_value = 2 * (m_x - h_x) / h_w - 1
     @local.mousing_over_histogram = Math.abs(@local.mouse_opinion_value) <= 1
+
+    @local.mousing_over_user = ev.target.className.indexOf('avatar') != -1 && !fetch('histogram').dragging
 
     if @local.mousing_over_histogram
       opinions_in_focus = @getOpinionsInCurrentFocus()
@@ -1135,20 +1142,12 @@ Histogram = ReactiveComponent
       width: hist.avatar_size
       height: hist.avatar_size
     # 2) The style of a selected avatar
-    size = if @local.single_user_clicked then 80 else 1 * hist.avatar_size
-    y_translate = -(size - hist.avatar_size)/2
-    selected_avatar_style = 
-      #border: "2px solid #{considerit_yellow}"
-      width: size
-      height: size
-      transform: "translateY(#{y_translate}px) translateX(-#{(size - hist.avatar_size)/2}px)"
+    selected_avatar_style = _.extend {}, regular_avatar_style, 
       zIndex: 9
     css.crossbrowserify selected_avatar_style
     # 3) The style of an unselected avatar when some other avatar(s) is selected
-    unselected_avatar_style = 
+    unselected_avatar_style = _.extend {}, regular_avatar_style, 
       opacity: .2
-      width: hist.avatar_size
-      height: hist.avatar_size
       WebkitFilter: 'grayscale(100%)'
       filter: 'grayscale(100%)'
 
@@ -1168,7 +1167,7 @@ Histogram = ReactiveComponent
         height: HISTOGRAM_HEIGHT + segment_selection_margin
         position: 'relative'
 
-      if @local.mousing_over_histogram && @root.proposal_mode == 'results'
+      if @local.mousing_over_histogram && !@local.mousing_over_user && @root.proposal_mode == 'results'
         left = ((@local.mouse_opinion_value + 1)/2 - @filter_width/2) * BODY_WIDTH
         base_width = @filter_width * BODY_WIDTH
         DIV 
@@ -1217,12 +1216,12 @@ Histogram = ReactiveComponent
           fetch(opinion) # subscribe ...
 
           if selected_users
-            if _.contains(selected_users, opinion.user)
+            if _.contains(selected_users, opinion.user)   
               avatar_style = selected_avatar_style
             else
               avatar_style = unselected_avatar_style
           else if @root.proposal_mode == 'crafting'
-              avatar_style = unselected_avatar_style
+            avatar_style = unselected_avatar_style
           else
             avatar_style = regular_avatar_style
 
@@ -1243,7 +1242,10 @@ Histogram = ReactiveComponent
   attach_mini_histo: ->
     # We only need to recompute this data if the distribution of stances has changed. 
     opinions = fetch('/page/' + @proposal.slug).opinions || []
-    simulation_opinion_hash = JSON.stringify( _.map(opinions, (o) => fetch(o.key).stance) )
+
+    # We round the stance to two decimals to avoid more frequent recalculations than necessary
+    simulation_opinion_hash = JSON.stringify( _.map(opinions, (o) => Math.round(fetch(o.key).stance * 100) / 100 ) )
+
 
     if @refs && @refs.histo && simulation_opinion_hash != @local.simulation_opinion_hash
       page = fetch('/page/' + @proposal.slug)
@@ -3194,7 +3196,9 @@ styles += """
 # Bubblemouth
 #
 # Creates a bubble mouth that tracks either the position of the histogram selection
-# or the user's current opinion. 
+# or the user's current opinion.
+#
+# TODO: refactor, the abstraction is broken & the code is poor
 Bubblemouth = ReactiveComponent
   displayName: 'Bubblemouth'
 
@@ -3203,35 +3207,90 @@ Bubblemouth = ReactiveComponent
 
       hist = fetch('histogram')
 
-      size = 20
-      left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 20 + size/2
+      border_width = 3
+      left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 20
 
-      css_triangle = 
-        width: 0
-        height: 0
-        borderTop: "#{size}px solid transparent"
-        borderBottom: "#{size}px solid transparent"
-        borderLeft: "#{size}px solid #{considerit_yellow}"
-        position: 'relative'
-        transform: 'rotate(270deg) scaleX(1.5)'
-        left: left
-        top: -35
+      DIV style: {left: left, position: 'relative'},
+        if hist.single_user_clicked
+          avatar_size = 80
+          name_on_left = hist.selected_opinion_value > 0
+          user = fetch(fetch(hist.selected_opinions[0]).user)
 
-      css.crossbrowserify css_triangle
-      DIV 
-        style: css_triangle
-        DIV
-          style:
+
+          if hist.selected_opinion_value > 0
+            name_style = 
+              left: - 18 - avatar_size * .5 - Math.max(realWidth(user.name or 'Anonymous', {fontSize: '18px', fontWeight: '600'}), realWidth('Opinion of', {fontSize: '18px', fontWeight: '300'}))
+              borderTopLeftRadius: 16
+              paddingRight: avatar_size * .75
+              paddingLeft: 18
+
+          else
+            name_style = 
+              left: avatar_size/4
+              borderTopRightRadius: 16
+              paddingLeft: avatar_size * .75
+              paddingRight: 18
+
+          DIV null,
+            Avatar 
+              key: user
+              user: user
+              hide_name: true
+              style: 
+                position: 'absolute'
+                width: avatar_size
+                height: avatar_size
+                top: -avatar_size * .75
+                left: -avatar_size/4
+                zIndex: 99 
+                border: "3px solid #{considerit_blue}"
+
+            DIV 
+              style: _.extend name_style,
+                position: 'absolute'
+                backgroundColor: considerit_blue
+                paddingTop: 8
+                fontSize: 18
+                color: 'white'
+                top: -58
+
+              DIV
+                style: 
+                  fontWeight: 300
+                'Opinion of'
+              DIV 
+                style: 
+                  fontWeight: 600
+                user.name or 'Anonymous'
+
+        else 
+          size = 20
+          css_triangle = 
             width: 0
+            height: 0
+            borderTop: "#{size}px solid transparent"
+            borderBottom: "#{size}px solid transparent"
+            borderLeft: "#{size}px solid #{if @root.selected_point then '#ccc' else considerit_yellow}"
             position: 'relative'
-            top: -(size - 1)
-            left: -(size + 5)
-            borderTop: "#{size - 1}px solid transparent"
-            borderBottom: "#{size - 1}px solid transparent"
-            borderLeft: "#{size - 1}px solid white"
+            transform: 'rotate(270deg) scaleX(1.5)'
+            left: size/2
+            top: -35
+
+          DIV 
+            style: css.crossbrowserify(css_triangle)
+            DIV
+              style:
+                width: 0
+                position: 'relative'
+                top: -(size - 1)
+                left: -(size + border_width)
+                borderTop: "#{size - 1}px solid transparent"
+                borderBottom: "#{size - 1}px solid transparent"
+                borderLeft: "#{size - 1}px solid white"
 
 
     else if @props.target == 'slider'
+      # TODO...
       noop = 1
       bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
       IMG 
@@ -4468,26 +4527,30 @@ Page = ReactiveComponent
 Root = ReactiveComponent
   displayName: 'Root'
   resetSelection: (e) ->
-    if @root.selected_point && !@root.auth
-      window.writeToLog
-        what: 'deselected a point'
-        details:
-          point: @root.selected_point
 
-      @root.selected_point = null
-      save @root
+    if !root.auth
+      hist = fetch 'histogram'
+
+      if @root.selected_point
+        window.writeToLog
+          what: 'deselected a point'
+          details:
+            point: @root.selected_point
+
+        @root.selected_point = null
+        save @root
+
+      else if hist.selected_opinions
+        if hist.dragging
+          hist.dragging = false
+        else
+          hist.selected_opinions = null
+        save hist
 
     if @root.show_wyswyg_toolbar
       @root.show_wyswyg_toolbar = false
       save @root
 
-    hist = fetch 'histogram'
-    if hist.selected_opinions && !root.auth
-      if hist.dragging
-        hist.dragging = false
-      else
-        hist.selected_opinions = null
-      save hist
 
 
   render : -> 

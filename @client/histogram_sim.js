@@ -18,7 +18,7 @@ function mini_histo(width, height, parent, opinions) {
     // sqrt(width * height / length * 2) = r
     r = Math.sqrt(width * height / opinions.length * ratio_filled)/2
     r = Math.min(r, width/2, height/2)
-    if (opinions.length > 10) {
+    if (opinions.length > 0) {
         // Now round r up until it fits perfectly within height
         var times_fit = height / (2*r)
         r = (height / (Math.floor(times_fit))) / 2 - .001

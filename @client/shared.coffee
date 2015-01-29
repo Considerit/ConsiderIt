@@ -39,7 +39,7 @@ window.COMMUNITY_POINT_MOUTH_WIDTH = 17
 # when doing development. 
 
 window.considerit_blue = '#2478CC'
-window.considerit_yellow = "rgb(255,223,0)"
+window.considerit_yellow = considerit_blue #"rgb(255,223,0)"
 window.default_avatar_in_histogram_color = '#999'
 #########################
 
@@ -92,6 +92,13 @@ window.clickInternalLink = (event) ->
     window.app_router.navigate href, { trigger : true }
     return false
 
+# Computes the width of some text given some styles empirically
+window.realWidth = (str, style) -> 
+  $el = $("<span id='width_test'>#{str}</span>").css(style)
+  $('#content').append($el)
+  width = $('#width_test').width()
+  $('#width_test').remove()
+  width
 
 #############################
 ## Components

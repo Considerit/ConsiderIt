@@ -9,7 +9,7 @@ function mini_histo(width, height, parent, opinions) {
         r = 10,           // Size of each avatar
         fade_in_time = 0,
         x_force_mult = 2,
-        y_force_mult = height <= 100 ? 1 : 2.5,
+        y_force_mult = height <= 100 ? 1 : 4,
         ratio_filled = .3,
         targets = 'power'
 

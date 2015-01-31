@@ -1,4 +1,5 @@
 require 'digest/md5'
+require 'exception_notifier'
 require Rails.root.join('@server', 'permissions')
 
 

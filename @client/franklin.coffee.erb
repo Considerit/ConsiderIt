@@ -4717,7 +4717,14 @@ window.on_ajax_error = () ->
   (root = fetch('root')).server_error = true
   save(root)
 window.on_client_error = (e) ->
-  save({ key: '/new/client_error', stack: JSON.stringify(e.stack) })
+  save(
+    key: '/new/client_error'
+    stack: e.stack
+    message: e.message or e.description
+    name: e.name
+    line_number: e.lineNumber
+    column_number: e.columnNumber
+    )
 
 window.writeToLog = (entry) ->
   _.extend entry, 

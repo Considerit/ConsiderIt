@@ -883,7 +883,9 @@ window.ProposalSubheading = ReactiveComponent
       DIV
         style:
           fontStyle: 'italic'
-        @proposal.cluster
+          visibility: if !@proposal.cluster then 'hidden'
+        @proposal.cluster or '-' # if cluster isn't defined, we still need to fill the space, 
+                                 # otherwise alignment issues are caused
 
       # Proposal name
       DIV

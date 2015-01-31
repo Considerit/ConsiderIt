@@ -8,6 +8,12 @@
 
 fetch 'histogram',
   highlighted_users : null
+  # region_selection_width controls the size of the selection region when hovering 
+  # over the histogram. It defines the opinion bounds within which opinions
+  # are selected. Opinions = [-1, 1]. region_selection_width is on this scale. 
+  region_selection_width : .25
+  selected_opinion : null
+  selected_opinions : []
 
 fetch 'slider',
   has_moved : false
@@ -21,7 +27,6 @@ fetch 'decisionboard',
 fetch 'root',
   auth_mode : null
   opinions_to_publish : []
-  selected_opinions : null
 
 fetch '/current_user'
 
@@ -260,7 +265,6 @@ Proposal = ReactiveComponent
     else
       can_opine = permit 'publish opinion', @proposal
 
-
     # change to results page if user entered crafting page when it is not permitted
     if @root.proposal_mode == 'crafting' && !(can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, Permission.NOT_LOGGED_IN] || (can_opine == Permission.DISABLED && your_opinion.published))
       @root.proposal_mode = 'results'
@@ -297,7 +301,7 @@ Proposal = ReactiveComponent
 
     # whether part of the histogram is focused
     hist = fetch('histogram')
-    has_histogram_focus = !!hist.selected_opinions
+    has_histogram_focus = hist.selected_opinions.length > 0 || hist.selected_opinion
 
     DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
 
@@ -394,7 +398,6 @@ Proposal = ReactiveComponent
             margin: '0 auto'
             marginLeft: if lefty then 300
             position: 'relative'
-          OpinionFilter()
           Histogram()
 
         #reasons
@@ -411,7 +414,7 @@ Proposal = ReactiveComponent
             DIV 
               style: 
                 width: BODY_WIDTH + 80
-                border: "3px solid #{if !has_histogram_focus then 'transparent' else if @root.selected_point then '#ccc' else considerit_yellow }"
+                border: "3px solid #{if !has_histogram_focus then 'transparent' else if @root.selected_point then '#ccc' else considerit_blue }"
                 height: '100%'
                 position: 'absolute'
                 borderRadius: 16
@@ -419,8 +422,7 @@ Proposal = ReactiveComponent
                 left: if lefty then 0 else '50%'
                 top: 18
 
-              Bubblemouth
-                target: 'histogram'
+              Bubblemouth {target: 'histogram'}
 
           #community cons
           CommunityPoints { key: 'cons' }
@@ -893,80 +895,6 @@ window.ProposalSubheading = ReactiveComponent
 
 
 ##
-# OpinionFilter
-# Filters whose opinions are displayed
-# This component does not render anything at this time;
-# once we get group filtering, we will resurrect
-OpinionFilter = ReactiveComponent
-  displayName: 'OpinionFilter'
-
-  onSelectSegment : (segment) ->
-    hist = fetch('histogram')
-    if !segment? || hist.selected_segment == segment
-      # Deselect
-      hist.selected_segment = null
-    else
-      # Select
-      hist.selected_segment = segment
-
-      window.writeToLog
-        what: 'filter results by segment'
-        details: 
-          segment: segment
-
-    save hist
-
-  render : ->
-    hist = fetch 'histogram'
-    # Remove filter when on crafting page
-    if @root.proposal_mode == 'crafting' && hist.selected_opinions
-      hist.selected_opinions = null
-      save hist
-
-    filter_options = ['show all opinions',
-        'only full opposers',
-        'only firm opposers',
-        'only slight opposers',
-        'only undecideds',
-        'only slight supporters',
-        'only firm supporters',
-        'only full supporters']
-
-    return SPAN null
-
-    # DIV 
-    #   style: 
-    #     display: if @root.proposal_mode == 'crafting' then 'none' else 'block'
-    #     position: 'absolute'
-    #     zIndex: 10
-    #     right: -275
-    #     bottom: -200
-    #     fontSize: 13
-
-    #   for phrase, i in filter_options
-    #     # Shift i by 1, and start with null
-    #     i = if i == 0 then null else i - 1
-          
-    #     A 
-    #       key: "segment-#{i}"
-    #       className: "filter_option #{if hist.selected_segment == i then 'selected' else ''}"
-    #       onClick: do(i) => => @onSelectSegment(i) 
-    #       style: 
-    #         color: if hist.selected_segment == i then 'black' else '#666'
-    #         position: 'relative'
-    #         display: 'block'
-
-    #       SPAN 
-    #         style: 
-    #           position: 'absolute'
-    #           content: '•'
-    #           left: -10
-    #           top: 1
-    #           visibility: if hist.selected_segment == i then '' else 'hidden'
-    #         '•'
-    #       phrase
-
-##
 # Histogram
 #
 # Controls the display of the users arranged on a histogram. 
@@ -974,21 +902,37 @@ OpinionFilter = ReactiveComponent
 # The user avatars are arranged imprecisely on the histogram
 # based on the user's opinion, using a physics simulation. 
 #
-# The pros and cons can be filtered to specific opinion segments
-# by clicking on a region. This will highlight those users in the 
-# histogram, and the points will be reranked (elsewhere). The 
-# highlighted avatars grow a little larger and get outlined. 
+# The pros and cons can be filtered to specific opinion regions
+# (individual and collective). 
+# 
+# The interaction rules: 
 #
-# A segment can be deselected by clicking outside the histogram
-# or by clicking on the same selection. Note that clicking on a 
-# point will NOT deselect the opinions. 
+# Selection
+#   * Click on a user in the histogram, show that user's opinion:
+#      - Show in the decision board only the points included by this user
+#      - Show a second, larger image of the user and their name in
+#         the region between the histogram and decision board
+#   * Click an unselected region of the histogram unoccupied by a user:
+#      - Show the collective opinions of the users in that region. 
+#         Rerank the points in the decision board accordingly.
+#      - fix the selected region background
+#      - click+dragging enables dynamic selection mode:
+#         * continually update the selection region based on the current 
+#           mouse position 
+#         * suppress tooltips on user names to prevent distraction.
 #
-# Individuals can also be selected by clicking on them. In this case
-# the individual's avatar will be quite large. 
+# Deselection
+#   * If a single user is selected, clicking anywhere outside of that 
+#     user's picture in the histogram or opinion area will deselect
+#   * If a region is selected, clicking anywhere except within the 
+#     decision board will deselect the region.
 #
-# The segment filtering can be made continuous by drag sliding 
-# the mouse through the histogram. When drag sliding, user's 
-# name tooltips are suppressed to prevent distraction. 
+# Selected region background
+#   * A selection region follows the mouse in the histogram unless:
+#      - a region or user is already selected
+#      - a user is being hovered on
+#   * If a region is already selected, the region background sticks
+#     there.
 #
 # The segment filtering selection region is imprecise. It defines
 # a selection region based on the real values of the users' opinions,
@@ -1002,19 +946,21 @@ OpinionFilter = ReactiveComponent
 # This occurs when someone mouses over the inclusion pogs
 # for a point. 
 #
-# global state (stored at 'histogram'): 
+# State design for histogram:
+#
+# Global state stored at 'histogram':
+#   selection_opinion
+#      If set, an opinion key for an avatar that was clicked
 #   selected_opinions
-#      An array of opinion keys that define the current set of 
-#      filtered opinions. 
+#      Array of opinion keys defining the current set of selected opinions. 
 #   selected_opinion_value
-#      The central opinion value upon which the current selection is
-#      defined around. 
-#   single_user_clicked
-#      Whether a single user has been directly selected.
+#      The opinion value around which the current selection is defined  
+#   region_selection_width
+#      The width of the opinion selection region. 
 #   highlighted_users
 #      Users that other components want to have highlighted in the 
-#      histogram. This is intersected with the users whose opinions
-#      are selected to determine which avatars are highlighted. 
+#      histogram. In the render, this is intersected with the users whose 
+#      opinions are selected to determine which avatars are highlighted. 
 #   avatar_size
 #      The base size of the avatars, as determined by the physics 
 #      simulation. This piece of state would be local, but it needs
@@ -1023,18 +969,10 @@ OpinionFilter = ReactiveComponent
 #      Whether the user is currently dragging the mouse through the
 #      histogram. 
 #
-# local state: 
-#   click_will_defocus
-#      Whether a click in the current region should deselect the 
-#      currently selected opinions. A deselection should occur if
-#      a click would select the same opinions as those already 
-#      selected. 
-#   mousing_over_histogram
-#      Whether the user is mousing over the histogram. Determines 
-#      when to show the selection region. 
+# Local state: 
 #   simulation_opinion_hash
-#      Hash of all opinion stances used to determine if the physics
-#      simulation needs to be rerun.
+#      Hash of all opinion stances. Used to determine if the physics
+#      simulation needs to be rerun on a rerender.
 #   mouse_opinion_value
 #      Stores the mapped opinion value of the current mouse position
 #      within the histogram. 
@@ -1047,96 +985,17 @@ Histogram = ReactiveComponent
   displayName : 'Histogram'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
-  getOpinionsInCurrentFocus : -> 
-    # Filter to all opinions within selection area.
-    # The opinion center is used to calculate which opinions are selected.
-    # We'll show opinions within +/- filter_width of mouse_opinion_value.
-    all_opinions = fetch('/page/' + @proposal.slug).opinions || []    
-    selected_opinions = (o.key for o in all_opinions when o.stance <= @local.mouse_opinion_value + @filter_width && o.stance >= @local.mouse_opinion_value - @filter_width)
-    selected_opinions
-
-  selectOpinions : (ev) ->
-    ev.stopPropagation()
-    hist = fetch 'histogram'
-
-    if @root.proposal_mode == 'crafting'
-      togglePage('results', 'click_histogram')
-
-    # If the user has clicked on an avatar, we'll just filter to their opinion
-    click_select_a_user = ev.type == 'click' && ev.target.className.indexOf('avatar') != -1 && !hist.dragging
-    if click_select_a_user
-      user_key = "/user/#{ev.target.getAttribute('id').substring(7, ev.target.getAttribute('id').length)}"
-      all_opinions = fetch('/page/' + @proposal.slug).opinions || []
-      selected_opinions = (o.key for o in all_opinions when o.user == user_key)
-    else
-      selected_opinions = @getOpinionsInCurrentFocus()
-
-    # Deselect if we've reclicked on same selection
-    if !hist.dragging && 
-        !@local.last_selection_via_drag && 
-        (JSON.stringify(hist.selected_opinions) == JSON.stringify(selected_opinions) || 
-          selected_opinions.length == 0)
-      hist.selected_opinions = null
-      hist.single_user_clicked = false
-    else
-      hist.selected_opinions = selected_opinions
-      hist.selected_opinion_value = @local.mouse_opinion_value
-      @local.last_selection_via_drag = hist.dragging
-
-    @local.click_will_defocus = hist.selected_opinions?.length > 0
-    hist.single_user_clicked = click_select_a_user && hist.selected_opinions?.length == 1
-
-    save hist
-    save @local
-
-  movingThroughHistogram : (ev) -> 
-    return if @root.proposal_mode == 'crafting'
-
-    # We can calculate the mouse_opinion_value (the slider value about which we will select opinions)
-    # based on the mouse offset within the histogram element.
-    h_x = @getDOMNode().getBoundingClientRect().left + window.pageXOffset
-    h_w = @getDOMNode().offsetWidth
-    m_x = ev.pageX
-
-    @local.mouse_opinion_value = 2 * (m_x - h_x) / h_w - 1
-    @local.mousing_over_histogram = Math.abs(@local.mouse_opinion_value) <= 1
-
-    @local.mousing_over_user = ev.target.className.indexOf('avatar') != -1 && !fetch('histogram').dragging
-
-    if @local.mousing_over_histogram
-      opinions_in_focus = @getOpinionsInCurrentFocus()
-      @local.click_will_defocus = JSON.stringify(fetch('histogram').selected_opinions) == JSON.stringify(opinions_in_focus)
-    
-    save @local
-
-    if hist.dragging
-      @selectOpinions ev
-
-  componentWillUnmount: -> (h=fetch('histogram')).selected_opinions=[];save(h)
-
-  render : ->
-    # filter_width controls the size of the selection region when hovering 
-    # over the histogram. It defines the opinion bounds within which opinions
-    # are selected. Opinions = [-1, 1]. filter_width is on this scale. 
-    @filter_width = .25
+  render: -> 
 
     hist = fetch('histogram')
-    selected_users = hist.highlighted_users
-    if hist.selected_opinions
-      if selected_users
-        selected_users = _.intersection selected_users, (fetch(o).user for o in hist.selected_opinions)
-      else 
-        selected_users = (fetch(o).user for o in hist.selected_opinions)
-
     opinions = fetch('/page/' + @proposal.slug).opinions || []
-    
+
     # Controls the size of the vertical space at the top of 
     # the histogram that gives some space for users to hover over 
     # the most populous areas
-    segment_selection_margin = 30 
+    region_selection_vertical_padding = 30 
 
-
-    # There are three avatar styles that might be applied depending on state:
+    # There are a few avatar styles that might be applied depending on state:
     # 1) Regular, for when no user is selected
     regular_avatar_style =
       width: hist.avatar_size
@@ -1144,57 +1003,124 @@ Histogram = ReactiveComponent
     # 2) The style of a selected avatar
     selected_avatar_style = _.extend {}, regular_avatar_style, 
       zIndex: 9
+      backgroundColor: considerit_blue
     css.crossbrowserify selected_avatar_style
     # 3) The style of an unselected avatar when some other avatar(s) is selected
     unselected_avatar_style = _.extend {}, regular_avatar_style, 
       opacity: .2
       WebkitFilter: 'grayscale(100%)'
       filter: 'grayscale(100%)'
+    # 4) The style of the avatar on the crafting page
+    crafting_page_avatar_style = _.extend {}, unselected_avatar_style, 
+      opacity: .1
+
+    # highlighted users are the users whose avatars are colorized and fully opaque in the histogram.
+    # It is based on the current opinion selection and the highlighted_users state, 
+    # which can be manipulated by other components. 
+    highlighted_users = hist.highlighted_users
+    selected_users = if hist.selected_opinion then [hist.selected_opinion] else hist.selected_opinions
+    if selected_users.length > 0
+      if highlighted_users
+        highlighted_users = _.intersection highlighted_users, (fetch(o).user for o in selected_users)
+      else 
+        highlighted_users = (fetch(o).user for o in selected_users)
+
+    # whether to show the shaded opinion selection region in the histogram
+    draw_selection_area = !hist.selected_opinion && 
+                            @root.proposal_mode == 'results' &&
+                            (hist.selected_opinions.length > 0 || 
+                              (@local.mouse_opinion_value && !@local.mousing_over_user)) 
 
     DIV 
       className: 'histogram'
-      onClick: (ev) => @selectOpinions(ev, false)
-      onMouseMove: (ev) => @movingThroughHistogram(ev)
-      onMouseLeave: => @local.mousing_over_histogram = false; save(@local)
-      onMouseUp: => hist.dragging = false; save(hist)
-      onMouseDown: => hist.dragging = true; save(hist); return false 
-                                          # The return false prevents text selections
-                                          # of other parts of the page when dragging
-                                          # the selection region around.
-
       style: 
         width: BODY_WIDTH
-        height: HISTOGRAM_HEIGHT + segment_selection_margin
+        height: HISTOGRAM_HEIGHT + region_selection_vertical_padding
         position: 'relative'
 
-      if @local.mousing_over_histogram && !@local.mousing_over_user && @root.proposal_mode == 'results'
-        left = ((@local.mouse_opinion_value + 1)/2 - @filter_width/2) * BODY_WIDTH
-        base_width = @filter_width * BODY_WIDTH
-        DIV 
-          style:
-            height: HISTOGRAM_HEIGHT + segment_selection_margin
-            position: 'absolute'
-            width: Math.min(Math.min(base_width, base_width + left), BODY_WIDTH - left)
-            backgroundColor: "rgb(248,248,248)"
-            cursor: 'pointer'
-            left: Math.max 0, left
-            borderTop: "5px solid #{considerit_yellow}"
-            top: 0
-            pointerEvents: 'none'
+      onClick: (ev) => 
+        ev.stopPropagation()
 
-          DIV
-            style:
-              fontSize: 12
-              color: 'black'
-              textAlign: 'center'
-              whiteSpace: 'nowrap'
-              marginTop: -18
-              userSelect: 'none'
+        if @root.proposal_mode == 'crafting'
+          togglePage('results', 'click_histogram')
 
-            if @local.click_will_defocus then 'Deselect these opinions' else 'Select these opinions'
+        else
+          is_clicking_user = ev.target.className.indexOf('avatar') != -1
+          if is_clicking_user
+            user_key = "/user/#{ev.target.getAttribute('id').substring(7, ev.target.getAttribute('id').length)}"
+            user_opinion = _.findWhere opinions, {user: user_key}
+            is_deselection = hist.selected_opinion == user_opinion.key && !@local.last_selection_via_drag
+            if is_deselection
+              hist.selected_opinion = null
+            else 
+              hist.selected_opinion = user_opinion.key
+              hist.selected_opinions = []
+          else
+            new_selection = hist.selected_opinions.length > 0 && 
+                              @local.mouse_opinion_value <= hist.selected_opinion_value + hist.region_selection_width &&
+                              @local.mouse_opinion_value >= hist.selected_opinion_value - hist.region_selection_width &&
+                              !@local.last_selection_via_drag            
+            if new_selection
+              hist.selected_opinions = []
+            else
+              hist.selected_opinion = null
+              hist.selected_opinions = @getOpinionsInCurrentRegion()
 
-      DIV style: {height: segment_selection_margin}
+          has_selection = hist.selected_opinion || hist.selected_opinions.length > 0
+          hist.selected_opinion_value = if has_selection then @local.mouse_opinion_value else null
+          @local.last_selection_via_drag = false
 
+          save hist
+          save @local
+
+      onMouseMove: (ev) => 
+        if @root.proposal_mode == 'results'
+          ev.stopPropagation()
+
+          # Calculate the mouse_opinion_value (the slider value about which we determine
+          # the selection region) based on the mouse offset within the histogram element.
+          h_x = @getDOMNode().getBoundingClientRect().left + window.pageXOffset
+          h_w = @getDOMNode().offsetWidth
+          m_x = ev.pageX
+
+          @local.mousing_over_user = ev.target.className.indexOf('avatar') != -1 && !fetch('histogram').dragging
+
+          @local.mouse_opinion_value = 2 * (m_x - h_x) / h_w - 1
+          if Math.abs(@local.mouse_opinion_value) > 1
+            @local.mouse_opinion_value = null
+          
+          # dynamic selection on drag
+          if hist.dragging
+            hist.selected_opinions = @getOpinionsInCurrentRegion()
+            hist.selected_opinion_value = @local.mouse_opinion_value
+            @local.last_selection_via_drag = true
+            save hist
+
+          save @local
+
+      onMouseLeave: (ev) => 
+        @local.mouse_opinion_value = null
+        save @local
+
+      onMouseUp: (ev) => 
+        hist.dragging = false
+        save hist
+
+      onMouseDown: (ev) => 
+        ev.stopPropagation()
+
+        hist.dragging = true
+        save hist
+        return false 
+          # The return false prevents text selections
+          # of other parts of the page when dragging
+          # the selection region around.
+
+      # A little padding at the top to give some space for selecting
+      # opinion regions with lots of people stacked high      
+      DIV style: {height: region_selection_vertical_padding}
+
+      # Draw the poles of the slider
       DIV 
         key: 'opposers'
         className: "histogram_segment_pole"
@@ -1204,6 +1130,45 @@ Histogram = ReactiveComponent
           width: 145 
         SPAN null, if @root.proposal_mode == 'crafting' then 'Oppose' else 'Opposers'
 
+      DIV 
+        key: 'supporters'
+        className: "histogram_segment_pole"
+        style: 
+          right: -145
+          width: 130
+        SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
+
+
+      # Draw the opinion selection area
+      if draw_selection_area
+        anchor = hist.selected_opinion_value or @local.mouse_opinion_value
+        left = ((anchor + 1)/2 - hist.region_selection_width/2) * BODY_WIDTH
+        base_width = hist.region_selection_width * BODY_WIDTH
+        DIV 
+          style:
+            height: HISTOGRAM_HEIGHT + region_selection_vertical_padding
+            position: 'absolute'
+            width: Math.min(Math.min(base_width, base_width + left), BODY_WIDTH - left)
+            borderTop: "3px solid transparent"
+            backgroundColor: "rgb(248,248,248)"
+            cursor: 'pointer'
+            left: Math.max 0, left
+            top: 0
+
+          if hist.selected_opinions.length == 0
+            DIV
+              style:
+                fontSize: 12
+                textAlign: 'center'
+                whiteSpace: 'nowrap'
+                marginTop: -18
+                userSelect: 'none'
+                pointerEvents: 'none'
+
+              'Select these opinions'
+
+      # Draw the avatars in the histogram. Placement will be determined later
+      # by the physics sim
       DIV 
         ref: 'histo'
         style: 
@@ -1215,13 +1180,13 @@ Histogram = ReactiveComponent
           user = opinion.user
           fetch(opinion) # subscribe ...
 
-          if selected_users
-            if _.contains(selected_users, opinion.user)   
+          if highlighted_users
+            if _.contains(highlighted_users, opinion.user)   
               avatar_style = selected_avatar_style
             else
               avatar_style = unselected_avatar_style
           else if @root.proposal_mode == 'crafting'
-            avatar_style = unselected_avatar_style
+            avatar_style = crafting_page_avatar_style
           else
             avatar_style = regular_avatar_style
 
@@ -1231,21 +1196,22 @@ Histogram = ReactiveComponent
             hide_name: @root.proposal_mode == 'crafting' || hist.dragging
             style: avatar_style
 
-      DIV 
-        key: 'supporters'
-        className: "histogram_segment_pole"
-        style: 
-          right: -145
-          width: 130
-        SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
+  getOpinionsInCurrentRegion : -> 
+    # return the opinions whose stance is within +/- region_selection_width 
+    # of the moused over area of the histogram
+
+    all_opinions = fetch('/page/' + @proposal.slug).opinions || []    
+    selected_opinions = (o.key for o in all_opinions when o.stance <= @local.mouse_opinion_value + hist.region_selection_width && o.stance >= @local.mouse_opinion_value - hist.region_selection_width)
+    selected_opinions
 
   attach_mini_histo: ->
-    # We only need to recompute this data if the distribution of stances has changed. 
+    # We only need to rerun the sim if the distribution of stances has changed. 
     opinions = fetch('/page/' + @proposal.slug).opinions || []
 
     # We round the stance to two decimals to avoid more frequent recalculations than necessary
+    # (one way this happens is with the server rounding opinion data differently than the javascript
+    #  does when moving one's slider)
     simulation_opinion_hash = JSON.stringify( _.map(opinions, (o) => Math.round(fetch(o.key).stance * 100) / 100 ) )
-
 
     if @refs && @refs.histo && simulation_opinion_hash != @local.simulation_opinion_hash
       page = fetch('/page/' + @proposal.slug)
@@ -1259,6 +1225,8 @@ Histogram = ReactiveComponent
 
   componentDidMount: -> @attach_mini_histo()
   componentDidUpdate: -> @attach_mini_histo()
+
+
 
 styles += """
 .histogram {
@@ -1276,7 +1244,8 @@ styles += """
 
   .histogram .avatar {
     background-color: #{default_avatar_in_histogram_color}; 
-    position: absolute;}
+    position: absolute;  
+    content: '';}
 
 """
 
@@ -1437,6 +1406,7 @@ Slider = ReactiveComponent
 
   render : ->
     slider = fetch('slider')
+    hist = fetch('histogram')
 
     # Update the slider position when the server gets back to us
     your_opinion = fetch(@proposal.your_opinion)
@@ -1445,6 +1415,10 @@ Slider = ReactiveComponent
       can_opine = permit 'update opinion', @proposal, your_opinion
     else
       can_opine = permit 'publish opinion', @proposal
+
+    enable_opining = !(hist.selected_opinions.length > 0 || hist.selected_opinion) &&
+                      (can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, Permission.NOT_LOGGED_IN] || 
+                        (can_opine == Permission.DISABLED && your_opinion.published) )
 
     if slider.stance != your_opinion.stance and !slider.is_moving
       slider.stance = your_opinion.stance
@@ -1557,9 +1531,7 @@ Slider = ReactiveComponent
           if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stance_names[segment]}"
 
 
-        if (can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, Permission.NOT_LOGGED_IN] || 
-            (can_opine == Permission.DISABLED && your_opinion.published) ) &&
-              !fetch('histogram').selected_opinions
+        if enable_opining
 
           [DIV 
             className: 'the_handle' 
@@ -1621,9 +1593,6 @@ styles += """
 """
 
 
-
-
-
 ##
 # DecisionBoard
 # Handles the user's list of important points in crafting page. 
@@ -1634,6 +1603,7 @@ DecisionBoard = ReactiveComponent
   render : ->
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
+    hist = fetch('histogram')
     
     your_opinion = fetch(@proposal.your_opinion)
 
@@ -1670,7 +1640,9 @@ DecisionBoard = ReactiveComponent
     else
       can_opine = permit 'publish opinion', @proposal
 
-
+    enable_opining = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
+                      (can_opine != Permission.DISABLED || your_opinion.published ) && 
+                      !(hist.selected_opinions.length > 0 || hist.selected_opinion)
     DIV 
       className:'opinion_region'
       style: 
@@ -1684,7 +1656,7 @@ DecisionBoard = ReactiveComponent
         width: HISTOGRAM_WIDTH
 
 
-      if can_opine != Permission.INSUFFICIENT_PRIVILEGES && (can_opine != Permission.DISABLED || your_opinion.published ) && !fetch('histogram').selected_opinions
+      if enable_opining
         # only shown during results, but needs to be present for animation
         if @root.proposal_mode == 'results'
           give_opinion_style = 
@@ -2056,7 +2028,9 @@ CommunityPoints = ReactiveComponent
 
   buildPointsList : ->
     is_results = fetch('root').proposal_mode == 'results'
-    selected_opinions = fetch('histogram').selected_opinions
+    hist = fetch('histogram')
+
+    selected_opinions = if hist.selected_opinion then [hist.selected_opinion] else hist.selected_opinions
 
     included_points = fetch(@proposal.your_opinion).point_inclusions
     points = @page.points
@@ -2068,7 +2042,7 @@ CommunityPoints = ReactiveComponent
         has_not_been_included = is_results || !_.contains(included_points, pnt.key)
         is_correct_valence && has_not_been_included
     
-    if selected_opinions?
+    if selected_opinions.length > 0
       # If there is a histogram segment selected, we'll have to filter down 
       # to the points that users in this segment think are important, and 
       # order them by resonance to those users.
@@ -2409,8 +2383,9 @@ Point = ReactiveComponent
     includers = point.includers
 
     # only show includers from this stance segment if a segment is selected
-    selected_opinions = fetch('histogram').selected_opinions
-    if selected_opinions      
+    hist = fetch('histogram')
+    selected_opinions = if hist.selected_opinion then [hist.selected_opinion] else hist.selected_opinions
+    if selected_opinions.length > 0      
       selected_users = (fetch(o).user for o in selected_opinions)
       includers = _.intersection includers, selected_users
       author_has_included = _.contains selected_users, point.user
@@ -2482,7 +2457,8 @@ styles += """
   margin-bottom: 0; }
 
 .point_includer_avatar {
-  position: absolute; }
+  position: absolute;
+  content: ''; }
 
 .under_review .point_includer_avatar {
   top: 0px;
@@ -3211,10 +3187,10 @@ Bubblemouth = ReactiveComponent
       left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 20
 
       DIV style: {left: left, position: 'relative'},
-        if hist.single_user_clicked
+        if hist.selected_opinion
           avatar_size = 80
           name_on_left = hist.selected_opinion_value > 0
-          user = fetch(fetch(hist.selected_opinions[0]).user)
+          user = fetch(fetch(hist.selected_opinion).user)
 
 
           if hist.selected_opinion_value > 0
@@ -3270,7 +3246,7 @@ Bubblemouth = ReactiveComponent
             height: 0
             borderTop: "#{size}px solid transparent"
             borderBottom: "#{size}px solid transparent"
-            borderLeft: "#{size}px solid #{if @root.selected_point then '#ccc' else considerit_yellow}"
+            borderLeft: "#{size}px solid #{if @root.selected_point then '#ccc' else considerit_blue}"
             position: 'relative'
             transform: 'rotate(270deg) scaleX(1.5)'
             left: size/2
@@ -4544,7 +4520,9 @@ Root = ReactiveComponent
         if hist.dragging
           hist.dragging = false
         else
-          hist.selected_opinions = null
+          hist.selected_opinion = null
+          hist.selected_opinions = []
+          hist.selected_opinion_value = null
         save hist
 
     if @root.show_wyswyg_toolbar

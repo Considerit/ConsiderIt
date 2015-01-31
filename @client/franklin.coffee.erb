@@ -418,7 +418,7 @@ Proposal = ReactiveComponent
                 height: '100%'
                 position: 'absolute'
                 borderRadius: 16
-                marginLeft: if lefty then 65 else -BODY_WIDTH/2 - 40
+                marginLeft: if lefty then 200 else -BODY_WIDTH/2 - 40
                 left: if lefty then 0 else '50%'
                 top: 18
 
@@ -1244,8 +1244,7 @@ styles += """
 
   .histogram .avatar {
     background-color: #{default_avatar_in_histogram_color}; 
-    position: absolute;  
-    content: '';}
+    position: absolute;}
 
 """
 
@@ -2457,8 +2456,7 @@ styles += """
   margin-bottom: 0; }
 
 .point_includer_avatar {
-  position: absolute;
-  content: ''; }
+  position: absolute;}
 
 .under_review .point_includer_avatar {
   top: 0px;
@@ -3185,27 +3183,28 @@ Bubblemouth = ReactiveComponent
 
       border_width = 3
       left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 20
+      
+      if hist.selected_opinion
+        avatar_size = 80
+        user = fetch(fetch(hist.selected_opinion).user)
+        name_width = Math.max(realWidth(user.name or 'Anonymous', {fontSize: '18px', fontWeight: '600'}), 
+                              realWidth('Opinion of', {fontSize: '18px', fontWeight: '300'}))
 
-      DIV style: {left: left, position: 'relative'},
-        if hist.selected_opinion
-          avatar_size = 80
-          name_on_left = hist.selected_opinion_value > 0
-          user = fetch(fetch(hist.selected_opinion).user)
+        if hist.selected_opinion_value > 0
+          name_style = 
+            left: -18 - avatar_size * .5 - name_width 
+            borderTopLeftRadius: 16
+            paddingRight: avatar_size * .75
+            paddingLeft: 18
 
-
-          if hist.selected_opinion_value > 0
-            name_style = 
-              left: - 18 - avatar_size * .5 - Math.max(realWidth(user.name or 'Anonymous', {fontSize: '18px', fontWeight: '600'}), realWidth('Opinion of', {fontSize: '18px', fontWeight: '300'}))
-              borderTopLeftRadius: 16
-              paddingRight: avatar_size * .75
-              paddingLeft: 18
-
-          else
-            name_style = 
-              left: avatar_size/4
-              borderTopRightRadius: 16
-              paddingLeft: avatar_size * .75
-              paddingRight: 18
+        else
+          name_style = 
+            left: avatar_size/4
+            borderTopRightRadius: 16
+            paddingLeft: avatar_size * .75
+            paddingRight: 18
+              
+        DIV style: {left: left, position: 'absolute'},
 
           DIV null,
             Avatar 
@@ -3237,21 +3236,23 @@ Bubblemouth = ReactiveComponent
               DIV 
                 style: 
                   fontWeight: 600
+                  width: name_width
                 user.name or 'Anonymous'
 
-        else 
-          size = 20
-          css_triangle = 
-            width: 0
-            height: 0
-            borderTop: "#{size}px solid transparent"
-            borderBottom: "#{size}px solid transparent"
-            borderLeft: "#{size}px solid #{if @root.selected_point then '#ccc' else considerit_blue}"
-            position: 'relative'
-            transform: 'rotate(270deg) scaleX(1.5)'
-            left: size/2
-            top: -35
+      else 
+        size = 20
+        css_triangle = 
+          width: 0
+          height: 0
+          borderTop: "#{size}px solid transparent"
+          borderBottom: "#{size}px solid transparent"
+          borderLeft: "#{size}px solid #{if @root.selected_point then '#ccc' else considerit_blue}"
+          position: 'relative'
+          transform: 'rotate(270deg) scaleX(1.5)'
+          left: size/2
+          top: -35
 
+        DIV style: {left: left, position: 'absolute'},
           DIV 
             style: css.crossbrowserify(css_triangle)
             DIV
@@ -3292,9 +3293,21 @@ Avatar = ReactiveComponent
     id = if @props.hide_face then "avatar-hidden" else "avatar-#{user.key.split('/')[2]}"
     name = if @props.hide_face || @data().name?.length == 0 then 'Anonymous' else @data().name
 
+    style = _.extend {}, @props.style
+
+    # Automatically upgrade the avatar size to 'large' if the width of the image is 
+    # greater than the size of the b64 encoded image
+    if (@props.img_style || style?.width > 50) && user.key != -1 && user.avatar_file_name
+      img_style = @props.img_style or 'large'
+      @props.src = "#{fetch('/subdomain').asset_host}/system/avatars/#{user.key.split('/')[2]}/#{img_style}/#{user.avatar_file_name}"
+    else
+      style.content = "''" # prevents a weird outlining issue in chrome/safari 
+                         # http://stackoverflow.com/questions/4743127/chrome-safari-display-border-around-image
+
     attrs =
       className: "avatar #{if @props.className then @props.className else ''}"
       id: id
+      style: style
       onMouseEnter: => 
         if !@props.hide_name
           tooltip = fetch 'tooltip'
@@ -3305,12 +3318,6 @@ Avatar = ReactiveComponent
         tooltip = fetch 'tooltip'
         tooltip.coords = null
         save tooltip
-
-    # Automatically upgrade the avatar size to 'large' if the width of the image is 
-    # greater than the size of the b64 encoded image
-    if (@props.img_style || @props.style?.width > 50) && user.key != -1 && user.avatar_file_name
-      img_style = @props.img_style or 'large'
-      @props.src = "#{fetch('/subdomain').asset_host}/system/avatars/#{user.key.split('/')[2]}/#{img_style}/#{user.avatar_file_name}"
 
     @transferPropsTo IMG attrs
 

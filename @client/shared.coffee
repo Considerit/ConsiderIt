@@ -38,8 +38,8 @@ window.COMMUNITY_POINT_MOUTH_WIDTH = 17
 # See @server/models/subdomain#branding_info for hardcoding color values
 # when doing development. 
 
-window.considerit_blue = '#2478CC'
-window.default_avatar_in_histogram_color = '#999'
+window.focus_blue = '#2478CC'
+window.default_avatar_in_histogram_color = '#a7a7a7'
 #########################
 
 
@@ -487,7 +487,7 @@ body, input, button, textarea {
   cursor: pointer; }
 
 .primary_button {
-  background-color: #{considerit_blue};
+  background-color: #{focus_blue};
   color: white;
   font-size: 29px;
   margin-top: 14px;

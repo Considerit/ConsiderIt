@@ -218,7 +218,7 @@ AddRolesAndInvite = ReactiveComponent
 
       # Submit button
       DIV
-        style: {backgroundColor: considerit_blue, color: 'white', padding: '8px 14px', fontSize: 16, display: 'inline-block', cursor: 'pointer', borderRadius: 8, marginTop: 12}
+        style: {backgroundColor: focus_blue, color: 'white', padding: '8px 14px', fontSize: 16, display: 'inline-block', cursor: 'pointer', borderRadius: 8, marginTop: 12}
         onClick: (e) => 
 
           target.roles[@local.role.name] = target.roles[@local.role.name].concat @local.added

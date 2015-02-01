@@ -13,7 +13,8 @@ fetch 'histogram',
   # are selected. Opinions = [-1, 1]. region_selection_width is on this scale. 
   region_selection_width : .25
   selected_opinion : null
-  selected_opinions : []
+  selected_opinions : null # use null instead of [] because an empty selection 
+                           # can happen that we treat differently than no selection
 
 fetch 'slider',
   has_moved : false
@@ -301,7 +302,7 @@ Proposal = ReactiveComponent
 
     # whether part of the histogram is focused
     hist = fetch('histogram')
-    has_histogram_focus = hist.selected_opinions.length > 0 || hist.selected_opinion
+    has_histogram_focus = hist.selected_opinions || hist.selected_opinion
 
     DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
 
@@ -414,7 +415,7 @@ Proposal = ReactiveComponent
             DIV 
               style: 
                 width: BODY_WIDTH + 80
-                border: "3px solid #{if !has_histogram_focus then 'transparent' else if @root.selected_point then '#ccc' else considerit_blue }"
+                border: "3px solid #{if !has_histogram_focus then 'transparent' else if @root.selected_point then '#ccc' else focus_blue }"
                 height: '100%'
                 position: 'absolute'
                 borderRadius: 16
@@ -1005,7 +1006,7 @@ Histogram = ReactiveComponent
     # 2) The style of a selected avatar
     selected_avatar_style = _.extend {}, regular_avatar_style, 
       zIndex: 9
-      backgroundColor: considerit_blue
+      backgroundColor: focus_blue
     css.crossbrowserify selected_avatar_style
     # 3) The style of an unselected avatar when some other avatar(s) is selected
     unselected_avatar_style = _.extend {}, regular_avatar_style, 
@@ -1021,7 +1022,7 @@ Histogram = ReactiveComponent
     # which can be manipulated by other components. 
     highlighted_users = hist.highlighted_users
     selected_users = if hist.selected_opinion then [hist.selected_opinion] else hist.selected_opinions
-    if selected_users.length > 0
+    if selected_users
       if highlighted_users
         highlighted_users = _.intersection highlighted_users, (fetch(o).user for o in selected_users)
       else 
@@ -1030,7 +1031,7 @@ Histogram = ReactiveComponent
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = !hist.selected_opinion && 
                             @root.proposal_mode == 'results' &&
-                            (hist.selected_opinions.length > 0 || 
+                            (hist.selected_opinions || 
                               (@local.mouse_opinion_value && !@local.mousing_over_user)) 
 
     DIV 
@@ -1056,19 +1057,19 @@ Histogram = ReactiveComponent
               hist.selected_opinion = null
             else 
               hist.selected_opinion = user_opinion.key
-              hist.selected_opinions = []
+              hist.selected_opinions = null
           else
-            new_selection = hist.selected_opinions.length > 0 && 
+            new_selection = hist.selected_opinions && 
                               @local.mouse_opinion_value <= hist.selected_opinion_value + hist.region_selection_width &&
                               @local.mouse_opinion_value >= hist.selected_opinion_value - hist.region_selection_width &&
                               !@local.last_selection_via_drag            
             if new_selection
-              hist.selected_opinions = []
+              hist.selected_opinions = null
             else
               hist.selected_opinion = null
               hist.selected_opinions = @getOpinionsInCurrentRegion()
 
-          has_selection = hist.selected_opinion || hist.selected_opinions.length > 0
+          has_selection = hist.selected_opinion || hist.selected_opinions
           hist.selected_opinion_value = if has_selection then @local.mouse_opinion_value else null
           @local.last_selection_via_drag = false
 
@@ -1092,7 +1093,7 @@ Histogram = ReactiveComponent
             @local.mouse_opinion_value = null
           
           # dynamic selection on drag
-          if hist.dragging
+          if hist.dragging && !hist.selected_opinion
             hist.selected_opinions = @getOpinionsInCurrentRegion()
             hist.selected_opinion_value = @local.mouse_opinion_value
             @local.last_selection_via_drag = true
@@ -1152,12 +1153,12 @@ Histogram = ReactiveComponent
             position: 'absolute'
             width: Math.min(Math.min(base_width, base_width + left), BODY_WIDTH - left)
             borderTop: "3px solid transparent"
-            backgroundColor: "rgb(248,248,248)"
+            backgroundColor: "rgb(246, 247, 249)"
             cursor: 'pointer'
             left: Math.max 0, left
             top: 0
 
-          if hist.selected_opinions.length == 0
+          if !hist.selected_opinions
             DIV
               style:
                 fontSize: 12
@@ -1417,7 +1418,7 @@ Slider = ReactiveComponent
     else
       can_opine = permit 'publish opinion', @proposal
 
-    enable_opining = !(hist.selected_opinions.length > 0 || hist.selected_opinion) &&
+    enable_opining = !(hist.selected_opinions || hist.selected_opinion) &&
                       (can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, Permission.NOT_LOGGED_IN] || 
                         (can_opine == Permission.DISABLED && your_opinion.published) )
 
@@ -1485,8 +1486,8 @@ Slider = ReactiveComponent
       backgroundColor: if page == 'crafting' then '#AFD7FF' else '#787878'
 
     handle_style =
-      boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{considerit_blue}"            
-      backgroundColor: considerit_blue      
+      boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{focus_blue}"            
+      backgroundColor: focus_blue      
       left: slider.clientX
       zIndex: 10
       borderRadius: '50%'
@@ -1526,7 +1527,7 @@ Slider = ReactiveComponent
             display: if page == 'results' then 'none' else 'block'
             borderRadius: 10 
             fontWeight: 700
-            color: considerit_blue
+            color: focus_blue
             textAlign: 'center'
 
           if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stance_names[segment]}"
@@ -1565,7 +1566,7 @@ Slider = ReactiveComponent
                   right: -15
                   position: 'absolute'
                   top: 3
-                  color: considerit_blue
+                  color: focus_blue
                   fontSize: 12              
                 '>' 
               DIV 
@@ -1574,7 +1575,7 @@ Slider = ReactiveComponent
                   left: -15
                   position: 'absolute'
                   top: 3
-                  color: considerit_blue
+                  color: focus_blue
                   fontSize: 12                
                 '<']
 
@@ -1615,7 +1616,7 @@ DecisionBoard = ReactiveComponent
       borderRadius: 16
       borderStyle: 'dashed'
       borderWidth: 3
-      borderColor: considerit_blue
+      borderColor: focus_blue
 
 
     if @local.user_hovering_on_drop_target
@@ -1624,7 +1625,7 @@ DecisionBoard = ReactiveComponent
     if @root.proposal_mode == 'results'
       _.extend decision_board_style,
         borderStyle: 'solid'
-        backgroundColor: considerit_blue
+        backgroundColor: focus_blue
         boxShadow: '0px 2px 0px black'
         cursor: 'pointer'
 
@@ -1643,7 +1644,7 @@ DecisionBoard = ReactiveComponent
 
     enable_opining = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
                       (can_opine != Permission.DISABLED || your_opinion.published ) && 
-                      !(hist.selected_opinions.length > 0 || hist.selected_opinion)
+                      !(hist.selected_opinions || hist.selected_opinion)
     DIV 
       className:'opinion_region'
       style: 
@@ -1858,7 +1859,7 @@ YourPoints = ReactiveComponent
         className:'points_heading_label'
         style: 
           fontWeight: 700
-          color: considerit_blue
+          color: focus_blue
         "Give Your #{capitalize(@props.valence)}"
 
       UL null,
@@ -1910,7 +1911,7 @@ YourPoints = ReactiveComponent
               A 
                 style:
                   textDecoration: 'underline'
-                  color: considerit_blue
+                  color: focus_blue
                 onClick: => 
                   if can_add_new_point == Permission.NOT_LOGGED_IN
                     @root.auth = {form: 'create account', goal: 'write a point'}
@@ -2043,7 +2044,7 @@ CommunityPoints = ReactiveComponent
         has_not_been_included = is_results || !_.contains(included_points, pnt.key)
         is_correct_valence && has_not_been_included
     
-    if selected_opinions.length > 0
+    if selected_opinions
       # If there is a histogram segment selected, we'll have to filter down 
       # to the points that users in this segment think are important, and 
       # order them by resonance to those users.
@@ -2145,7 +2146,7 @@ Point = ReactiveComponent
     point_content_style = { width: POINT_CONTENT_WIDTH }
     if is_selected
       _.extend point_content_style,
-        border: "3px solid #{considerit_blue}"
+        border: "3px solid #{focus_blue}"
         left: -3
         top: -3
         width: point_content_style.width + 6
@@ -2386,7 +2387,7 @@ Point = ReactiveComponent
     # only show includers from this stance segment if a segment is selected
     hist = fetch('histogram')
     selected_opinions = if hist.selected_opinion then [hist.selected_opinion] else hist.selected_opinions
-    if selected_opinions.length > 0      
+    if selected_opinions?.length > 0      
       selected_users = (fetch(o).user for o in selected_opinions)
       includers = _.intersection includers, selected_users
       author_has_included = _.contains selected_users, point.user
@@ -2668,7 +2669,7 @@ EditComment = ReactiveComponent
           if permitted == Permission.NOT_LOGGED_IN
             DIV null,
               SPAN 
-                style: { textDecoration: 'underline', color: considerit_blue }
+                style: { textDecoration: 'underline', color: focus_blue }
                 'Log in to write a comment'
               if '*' not in @proposal.roles.commenter
                 DIV style: {fontSize: 11},
@@ -2677,7 +2678,7 @@ EditComment = ReactiveComponent
           else if permitted == Permission.UNVERIFIED_EMAIL
             DIV null,
               SPAN
-                style: { textDecoration: 'underline', color: considerit_blue }
+                style: { textDecoration: 'underline', color: focus_blue }
                'Verify your account'
               SPAN null, 'to write a comment'
 
@@ -2721,7 +2722,7 @@ Discussion = ReactiveComponent
     
     discussion_style =
       width: DECISION_BOARD_WIDTH
-      border: "3px solid #{considerit_blue}"
+      border: "3px solid #{focus_blue}"
       position: 'absolute'
       zIndex: 100
       padding: '20px 40px'
@@ -2778,7 +2779,7 @@ Discussion = ReactiveComponent
         style:
           textAlign: 'left'
           fontSize: 38
-          color: considerit_blue
+          color: focus_blue
           marginLeft: 60
           marginBottom: 25
           marginTop: 24
@@ -2820,7 +2821,7 @@ Discussion = ReactiveComponent
 
 Button = (props, text, callback) ->
   style =
-    backgroundColor: considerit_blue
+    backgroundColor: focus_blue
     borderRadius: 8
     color: 'white'
     padding: '3px 10px'
@@ -2920,7 +2921,7 @@ SubmitFactCheck = ReactiveComponent
           style:
             marginTop: 14
             textDecoration: 'underline'
-            color: considerit_blue
+            color: focus_blue
             cursor: 'pointer'
           'Log in to request a fact check'
 
@@ -3220,12 +3221,12 @@ Bubblemouth = ReactiveComponent
                 top: -avatar_size * .75
                 left: -avatar_size/4
                 zIndex: 99 
-                border: "3px solid #{considerit_blue}"
+                border: "3px solid #{focus_blue}"
 
             DIV 
               style: _.extend name_style,
                 position: 'absolute'
-                backgroundColor: considerit_blue
+                backgroundColor: focus_blue
                 paddingTop: 8
                 fontSize: 18
                 color: 'white'
@@ -3238,21 +3239,21 @@ Bubblemouth = ReactiveComponent
               DIV 
                 style: 
                   fontWeight: 600
-                  width: name_width
+                  width: name_width + 10
                 user.name or 'Anonymous'
 
       else 
         size = 20
+
         css_triangle = 
           width: 0
           height: 0
-          borderTop: "#{size}px solid transparent"
-          borderBottom: "#{size}px solid transparent"
-          borderLeft: "#{size}px solid #{if @root.selected_point then '#ccc' else considerit_blue}"
+          borderRight: "#{size}px solid transparent"
+          borderLeft: "#{size}px solid transparent"
+          borderBottom: "#{size * 1.5}px solid #{if @root.selected_point then '#ccc' else focus_blue}"
           position: 'relative'
-          transform: 'rotate(270deg) scaleX(1.5)'
           left: size/2
-          top: -35
+          top: -32
 
         DIV style: {left: left, position: 'absolute'},
           DIV 
@@ -3261,11 +3262,11 @@ Bubblemouth = ReactiveComponent
               style:
                 width: 0
                 position: 'relative'
-                top: -(size - 1)
-                left: -(size + border_width)
-                borderTop: "#{size - 1}px solid transparent"
-                borderBottom: "#{size - 1}px solid transparent"
-                borderLeft: "#{size - 1}px solid white"
+                left: -(size - 1)
+                top: border_width + 3
+                borderLeft: "#{size - 1}px solid transparent"
+                borderRight: "#{size - 1}px solid transparent"
+                borderBottom: "#{size * 1.5 - 1}px solid white"
 
 
     else if @props.target == 'slider'
@@ -3302,9 +3303,13 @@ Avatar = ReactiveComponent
     if (@props.img_style || style?.width > 50) && user.key != -1 && user.avatar_file_name
       img_style = @props.img_style or 'large'
       @props.src = "#{fetch('/subdomain').asset_host}/system/avatars/#{user.key.split('/')[2]}/#{img_style}/#{user.avatar_file_name}"
+      
     else
       style.content = "''" # prevents a weird outlining issue in chrome/safari 
                          # http://stackoverflow.com/questions/4743127/chrome-safari-display-border-around-image
+
+    if user.avatar_file_name
+      style.backgroundColor = 'white'
 
     attrs =
       className: "avatar #{if @props.className then @props.className else ''}"
@@ -3382,7 +3387,7 @@ ProposalSummary = ReactiveComponent
     proposal = @data()
     hover_class = if @local.hovering_on == proposal.id then 'hovering' else ''
 
-    link_hover_color = considerit_blue
+    link_hover_color = focus_blue
     cell_border = "1px solid #{if @local.hovering_on then link_hover_color else 'rgb(191, 192, 194)'}"
     TR 
       className: "proposal_summary " + hover_class
@@ -3900,7 +3905,7 @@ styles += """
   bottom: 8px;
   padding-left: 27px;
   display: block;
-  color: #{considerit_blue};
+  color: #{focus_blue};
   white-space: nowrap; }
 
 .menu_link:hover{ color: black; }
@@ -4079,7 +4084,7 @@ EditProposal = ReactiveComponent
       fontWeight: 600
       width: 240
       display: 'inline-block'
-      color: considerit_blue
+      color: focus_blue
       marginBottom: 3
 
 
@@ -4525,12 +4530,12 @@ Root = ReactiveComponent
         @root.selected_point = null
         save @root
 
-      else if hist.selected_opinions
+      else if hist.selected_opinions || hist.selected_opinion
         if hist.dragging
           hist.dragging = false
         else
           hist.selected_opinion = null
-          hist.selected_opinions = []
+          hist.selected_opinions = null
           hist.selected_opinion_value = null
         save hist
 
@@ -4711,6 +4716,9 @@ resetState = (root) ->
   root.proposal_mode = null    
   root.selected_point = null
 
+  hist = fetch('histogram')
+  hist.selected_opinion = hist.selected_opinions = hist.selected_opinion_value = null
+  save hist
 
 window.app_router = new Router()
 window.on_ajax_error = () ->

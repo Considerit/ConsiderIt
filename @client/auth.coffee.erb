@@ -28,6 +28,7 @@ Auth = ReactiveComponent
     if not @local.last_auth or @local.last_auth != root.auth
       @local.last_auth = root.auth
       current_user.errors = []
+      @local.errors = []
       save @local
       return SPAN null
 
@@ -70,7 +71,7 @@ Auth = ReactiveComponent
             @body [['Hi, I log in as:',
                     [ @inputBox('email', 'email@address'),
                       @inputBox('password', "password", 'password'),
-                      @resetPasswordLink() ]]].concat (if @root.auth.ask_questions then @userQuestionInputs() else [])
+                      @resetPasswordLink() ]]].concat @userQuestionInputs()
           @footerForRegistrationAndLogin() ]
 
       # The REGISTER form, with easy switch to log in
@@ -100,7 +101,7 @@ Auth = ReactiveComponent
                         @inputBox('password', "password", 'password')]],
                     avatar_field,
                     ['My name is:', @inputBox('name', 'first and last name')],
-                    pledges_field].concat (if @root.auth.ask_questions then @userQuestionInputs() else [])
+                    pledges_field].concat @userQuestionInputs()
           footer ]
 
       # The EDIT PROFILE form
@@ -294,19 +295,22 @@ Auth = ReactiveComponent
                 field[1]
              TR style: {height: 10}]
 
-      if current_user.errors && current_user.errors.length > 0
+      if (current_user.errors or []).length > 0 or @local.errors.length > 0
+        errors = current_user.errors.concat(@local.errors or [])
         DIV
           style:
-            textAlign: 'center'
             fontSize: 18
             color: 'darkred'
             backgroundColor: '#ffD8D8'
             padding: 10
             marginTop: 10
-          I
-            className: 'fa fa-exclamation-circle'
-            style: {paddingRight: 9}
-          SPAN null, "#{current_user.errors.join(', ')}"
+          for error in errors
+            DIV null, 
+              I
+                className: 'fa fa-exclamation-circle'
+                style: {paddingRight: 9}
+
+              SPAN null, error
 
   #####
   # footerForRegistrationAndLogin
@@ -357,7 +361,9 @@ Auth = ReactiveComponent
             current_user = fetch('/current_user')
             @root.auth.form = if @root.auth.form == 'create account' then 'login' else 'create account'
             current_user.errors = []
+            @local.errors = []
             save @root
+            save @local
 
           toggle_to
 
@@ -552,8 +558,8 @@ Auth = ReactiveComponent
     subdomain = fetch('/subdomain')
     current_user = fetch('/current_user')
 
-    questions = customizations[subdomain.name]?.user_questions
-    throw "No user questions defined for this subdomain" if !questions
+    questions = if @root.auth.ask_questions then customizations[subdomain.name]?.user_questions
+    questions = questions or []
 
     if @local.tags != current_user.tags
       @local.tags = current_user.tags
@@ -623,7 +629,6 @@ Auth = ReactiveComponent
         else
           throw "Unsupported question type: #{question.input} for #{question.tag}"
 
-
       inputs.push [label,input]
     inputs
 
@@ -637,42 +642,62 @@ Auth = ReactiveComponent
   submitAuth : (ev) -> 
     ev.preventDefault()
     $el = $(@getDOMNode())
-
-    @local.submitting = true
-    save @local
+    subdomain = fetch '/subdomain'
 
     current_user = fetch('/current_user')
 
-    current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
-    current_user.trying_to = @root.auth.form
-    
-    save current_user, => 
-      if @root.auth.form in ['create account', 'edit profile']
-        ensureCurrentUserAvatar()
+    # Client side validation of user questions
+    # Note that we don't have server side validation because
+    # the questions are all defined on the client. 
+    if @root.auth.ask_questions
+      questions = customizations[subdomain.name]?.user_questions or []
+      @local.errors = []
+      for question in questions
+        if question.required
+          has_response = !!current_user.tags[question.tag]
+          @local.errors.push "#{question.question} required!" if !has_response
 
-      if @root.auth.form == 'edit profile'
-        @local.saved_successfully = current_user.errors.length == 0        
+          is_valid_input = true
+          if question.validation
+            is_valid_input = question.validation(current_user.tags[question.tag])
+          @local.errors.push "#{current_user.tags[question.tag]} isn't a valid answer to #{question.question}!" if !is_valid_input && has_response
 
-      # Once the user logs in, we will stop showing the log-in screen
-      else if current_user.logged_in
-        if @root.auth.goal == 'Save your Opinion'
-          setTimeout((() -> togglePage('results', 'after_save')), 700)
-        @root.auth = null
-        save @root
-
-      @local.submitting = false
       save @local
 
-    # hack for submitting file data in ActiveREST for now
-    # we'll just submit the file form after user is signed in
-    # TODO: investigate alternatives for submitting form data
-    if @submit_avatar_form
+    if @local.errors.length == 0
+      @local.submitting = true
+      save @local
 
-      $('#user_avatar_form').ajaxSubmit
-        type: 'PUT'
-        data: 
-          authenticity_token: current_user.csrf
-          trying_to: 'update_avatar_hack'
+      current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
+      current_user.trying_to = @root.auth.form
+
+      save current_user, => 
+        if @root.auth.form in ['create account', 'edit profile']
+          ensureCurrentUserAvatar()
+
+        if @root.auth.form == 'edit profile'
+          @local.saved_successfully = current_user.errors.length == 0 && (@local.errors or []).length == 0
+
+        # Once the user logs in, we will stop showing the log-in screen
+        else if current_user.logged_in
+          if @root.auth.goal == 'Save your Opinion'
+            setTimeout((() -> togglePage('results', 'after_save')), 700)
+          @root.auth = null
+          save @root
+
+        @local.submitting = false
+        save @local
+
+      # hack for submitting file data in ActiveREST for now
+      # we'll just submit the file form after user is signed in
+      # TODO: investigate alternatives for submitting form data
+      if @submit_avatar_form
+
+        $('#user_avatar_form').ajaxSubmit
+          type: 'PUT'
+          data: 
+            authenticity_token: current_user.csrf
+            trying_to: 'update_avatar_hack'
 
   componentDidMount : -> 
     window.writeToLog {what: 'accessed authentication'}

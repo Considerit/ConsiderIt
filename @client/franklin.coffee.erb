@@ -1313,7 +1313,7 @@ DecisionBoard = ReactiveComponent
                 else
                   auth_form = 'create account'
 
-                @root.auth = {form: auth_form, goal: 'Save your Opinion'}
+                @root.auth = {form: auth_form, goal: 'Save your Opinion', ask_questions: true}
 
                 # We'll need to publish this opinion after auth is completed
                 @root.opinions_to_publish.push(@proposal.your_opinion)

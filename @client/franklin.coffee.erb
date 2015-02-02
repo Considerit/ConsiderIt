@@ -3046,20 +3046,7 @@ Header = ReactiveComponent
       DIV style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if @root.server_error then 'block' else 'none'},
         'Warning: there was a server error!'
 
-
-
-Footer = ReactiveComponent
-  displayName: 'Footer'
-  render : -> 
-    subdomain = fetch('/subdomain')
-
-    DIV 
-      style: 
-        position: 'relative'
-        padding: '2.5em 0 .5em 0'
-        textAlign: 'center'
-
-      (customizations[subdomain.name]?.Footer or customizations.default.Footer)()
+    
 
 
 # top secret proposal creation component
@@ -3565,7 +3552,7 @@ Page = ReactiveComponent
                 else
                   Proposal key: @page.proposal.key
 
-        Footer()
+        (customizations[subdomain.name]?.Footer or customizations.default.Footer)()
 
 Root = ReactiveComponent
   displayName: 'Root'

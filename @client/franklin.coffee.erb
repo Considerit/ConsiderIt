@@ -964,10 +964,6 @@ window.ProposalSubheading = ReactiveComponent
 #      Users that other components want to have highlighted in the 
 #      histogram. In the render, this is intersected with the users whose 
 #      opinions are selected to determine which avatars are highlighted. 
-#   avatar_size
-#      The base size of the avatars, as determined by the physics 
-#      simulation. This piece of state would be local, but it needs
-#      to be settable from the physics simulation.
 #   dragging
 #      Whether the user is currently dragging the mouse through the
 #      histogram. 
@@ -1000,9 +996,7 @@ Histogram = ReactiveComponent
 
     # There are a few avatar styles that might be applied depending on state:
     # 1) Regular, for when no user is selected
-    regular_avatar_style =
-      width: hist.avatar_size
-      height: hist.avatar_size
+    regular_avatar_style = {}
     # 2) The style of a selected avatar
     selected_avatar_style = _.extend {}, regular_avatar_style, 
       zIndex: 9

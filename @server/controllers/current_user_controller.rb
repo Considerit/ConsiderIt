@@ -208,6 +208,10 @@ class CurrentUserController < ApplicationController
         try_update_password 'edit profile', errors
         log('updating info')
 
+      when 'user questions'
+        update_user_attrs 'user questions', errors
+        log('answering user questions')
+
       when 'verify email'
         verify_user(current_user.email, params[:verification_code])
         log('verifying email')

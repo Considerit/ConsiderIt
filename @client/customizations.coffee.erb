@@ -935,6 +935,7 @@ election_cluster_options =
 ##############
 # ECAST
 
+ecast_highlight_color =  "#73B3B9"  #"#CB7833"
 customizations.ecastonline = customizations['ecast-demo'] = 
   user_questions : [
     {tag: 'zip.editable', question: 'My zip code is', input: 'text', required: true, validation: (zip) ->
@@ -970,7 +971,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
           overflow: 'hidden'
           width: '100%'
           position: 'relative'
-          borderBottom: '7px solid #CB7833'
+          borderBottom: "5px solid #{ecast_highlight_color}"
 
         IMG 
           style: 
@@ -1049,13 +1050,39 @@ customizations.ecastonline = customizations['ecast-demo'] =
         DIV
           style: 
             position: 'absolute'
-            left: 411
+            left: 434
             top: 609
-            color: 'white'
+            color: ecast_highlight_color
             fontSize: 17
-            width: 355
-            fontWeight: 500
+            fontWeight: 600
+            width: 325
+
+          I 
+            className: 'fa fa-film'
+            style: 
+              position: 'absolute'
+              left: -27
+              top: 3
           'Learn more first! Watch this video from the public forums that ECAST hosted.'
+
+          SPAN
+            style: 
+              position: 'absolute'
+              top: 24
+              right: -15
+
+            I
+              className: 'fa fa-angle-right'
+              style: 
+                paddingLeft: 10
+            I
+              className: 'fa fa-angle-right'
+              style: 
+                paddingLeft: 5
+            I
+              className: 'fa fa-angle-right'
+              style: 
+                paddingLeft: 5
 
 
         # Video
@@ -1067,10 +1094,12 @@ customizations.ecastonline = customizations['ecast-demo'] =
           src: "http://www.youtube.com/embed/M7lc1UVf-VE?autoplay=0&origin=http://example.com"
           frameborder: 0
           style:
-            top: 445
+            top: 460
             left: 790
             zIndex: 99
             position: 'absolute'
+            border: "5px solid #{ecast_highlight_color}"
+            borderBottom: 'none'
 
 
         # Text in bubble
@@ -1101,8 +1130,8 @@ customizations.ecastonline = customizations['ecast-demo'] =
 
 styles += """
 [subdomain="ecastonline"] .simplehomepage a.proposal, [subdomain="ecast-demo"] .simplehomepage a.proposal{
-  border-color: rgb(205, 121, 52) !important;
-  color: rgb(205, 121, 52) !important;
+  border-color: #{ecast_highlight_color} !important;
+  color: #{ecast_highlight_color} !important;
 }
 """
 

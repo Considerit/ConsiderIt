@@ -18,7 +18,7 @@
 //= require ../../sticky_element
 //= require ../../permissions
 //= require ../../roles
-//= require ../../subdomain_specific
+//= require ../../customizations
 //= require ../../admin
 //= require ../../state_dash
 //= require ../../franklin

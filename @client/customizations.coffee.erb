@@ -916,11 +916,8 @@ election_cluster_options =
 
 
 ##########################
-# SUBDOMAIN DEFINITIONS
+# SUBDOMAIN CONFIGURATION
 ##########################
-
-
-
 
 
 ####################
@@ -1087,7 +1084,7 @@ customizations['bitcoin-demo'] =
 customizations.livingvotersguide = 
 
   Homepage: LearnDecideShareHomepage
-  # ProposalHeader: StickyProposalHeader
+  ProposalHeader: StickyProposalHeader
 
   homepage_heading_columns : [ 
     {heading: 'Learn', details: 'about your ballot'}, \
@@ -1205,24 +1202,24 @@ customizations.livingvotersguide =
   ZipcodeBox : ReactiveComponent
     displayName: 'ZipcodeBox'
     render: ->
-      c = fetch('/current_user')
+      current_user = fetch('/current_user')
       extra_text = if Modernizr.input.placeholder then '' else ' Zip Code'
       onChange = (event) =>
         if event.target.value.match(/\d\d\d\d\d/)
-          c.tags.zip = event.target.value
-          save(c)
+          current_user.tags['zip.editable'] = event.target.value
+          save(current_user)
 
         else if event.target.value.length == 0
-          c.tags.zip = undefined
+          current_user.tags['zip.editable'] = undefined
           @local.stay_around = true
-          save(c)
+          save(current_user)
           save(@local)
 
       onBlur = =>
         @local.stay_around = false
         save(@local)
 
-      if c.tags.zip or @local.stay_around
+      if current_user.tags['zip.editable'] or @local.stay_around
         STYLE null,
           """
           .filled_zip:hover input, .filled_zip input:focus{
@@ -1252,7 +1249,7 @@ customizations.livingvotersguide =
               marginLeft: 7
             type: 'text'
             key: 'zip_input'
-            defaultValue: c.tags.zip or ''
+            defaultValue: current_user.tags['zip.editable'] or ''
             onChange: onChange
             onBlur: onBlur
 

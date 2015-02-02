@@ -938,15 +938,43 @@ election_cluster_options =
 ecast_highlight_color =  "#73B3B9"  #"#CB7833"
 customizations.ecastonline = customizations['ecast-demo'] = 
   user_questions : [
-    {tag: 'zip.editable', question: 'My zip code is', input: 'text', required: true, validation: (zip) ->
-      return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip)
-    }, 
-    {tag: 'gender.editable', question: 'My gender is', input: 'dropdown', options:['Male', 'Female'], required: true}, 
-    {tag: 'age.editable', question: 'My age is', input: 'text', required: true, validation: (age) -> 
-      return /^[1-9]?[0-9]{1}$|^100$/.test(age)
-    },
-    {tag: 'ethnicity.editable', question: 'My ethnicity is', input: 'dropdown', options:['African American', 'Asian', 'Latino/Hispanic', 'White', 'Other'], required: true}, 
-    {tag: 'education.editable', question: 'My formal education is', input: 'dropdown', options:['Did not graduate from high school', 'Graduated from high school or equivalent', 'Attended, but did not graduate from college', 'College degree', 'Graduate professional degree'], required: true}]
+    { 
+      tag: 'zip.editable'
+      question: 'My zip code is'
+      input: 'text'
+      required: true
+      input_style: 
+        width: 85
+      validation: (zip) ->
+        return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip)
+    }, {
+      tag: 'gender.editable'
+      question: 'My gender is'
+      input: 'dropdown'
+      options:['Male', 'Female']
+      required: true
+    }, {
+      tag: 'age.editable'
+      question: 'My age is'
+      input: 'text'
+      required: true
+      input_style: 
+        width: 50
+      validation: (age) -> 
+        return /^[1-9]?[0-9]{1}$|^100$/.test(age)
+    }, {
+      tag: 'ethnicity.editable'
+      question: 'My ethnicity is'
+      input: 'dropdown'
+      options:['African American', 'Asian', 'Latino/Hispanic', 'White', 'Other']
+      required: true
+    }, {
+      tag: 'education.editable'
+      question: 'My formal education is'
+      input: 'dropdown'
+      options:['Did not graduate from high school', 'Graduated from high school or equivalent', 'Attended, but did not graduate from college', 'College degree', 'Graduate professional degree']
+      required: true
+    }]
 
 
   cluster_options :

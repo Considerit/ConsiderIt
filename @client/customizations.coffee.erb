@@ -1010,12 +1010,15 @@ customizations.ecastonline = customizations['ecast-demo'] =
               color: 'white'
             'hosted by'
 
-          IMG 
-            style: 
-              display: 'block'
-              marginTop: 4
-              width: 215
-            src: "<%= asset_path 'ecast/ecast.png' %>"          
+          A 
+            href: "http://ecastonline.org/"
+            target: '_blank'
+            IMG 
+              style: 
+                display: 'block'
+                marginTop: 4
+                width: 215
+              src: "<%= asset_path 'ecast/ecast.png' %>"          
 
           DIV 
             style: 
@@ -1024,13 +1027,17 @@ customizations.ecastonline = customizations['ecast-demo'] =
               marginTop: 12              
             'supported by'
 
-          IMG 
-            style: 
-              display: 'block'
-              marginTop: 4
-              width: 160
+          A 
+            href: "http://www.nasa.gov/"
+            target: '_blank'
 
-            src: "<%= asset_path 'ecast/nasa.png' %>"
+            IMG 
+              style: 
+                display: 'block'
+                marginTop: 4
+                width: 160
+
+              src: "<%= asset_path 'ecast/nasa.png' %>"
 
         # Video callout
         DIV

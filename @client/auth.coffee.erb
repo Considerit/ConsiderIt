@@ -58,6 +58,7 @@ Auth = ReactiveComponent
   buildAuthForm : ->
     root = fetch('root')
     current_user = fetch('/current_user')
+    
 
     goal = if @root.auth.goal then "To #{@root.auth.goal}" else null
 
@@ -99,7 +100,7 @@ Auth = ReactiveComponent
                         @inputBox('password', "password", 'password')]],
                     avatar_field,
                     ['My name is:', @inputBox('name', 'first and last name')],
-                    pledges_field]
+                    pledges_field].concat @userQuestionInputs()
           footer ]
 
       # The EDIT PROFILE form
@@ -136,6 +137,11 @@ Auth = ReactiveComponent
                   'We sent you a verification code via email.'
           @submitButton('Verify') ]
 
+      when 'user questions'
+        [ @headerAndBorder goal, 'Please give some info',
+            @body @userQuestionInputs()
+          @submitButton('Done!') ]
+
       else
         throw "Unrecognized authentication form #{root.auth.form}"
 
@@ -152,6 +158,7 @@ Auth = ReactiveComponent
   headerAndBorder : (goal, task, body) ->
     root = fetch('root')
 
+    real_task_width = realWidth(task, {fontSize: 61, fontWeight: 600})
     DIV null,
 
       # The auth form's header
@@ -184,7 +191,11 @@ Auth = ReactiveComponent
               fontSize: 61
               whiteSpace: 'nowrap'
               color: considerit_blue
-            task
+            SPAN
+              style: 
+                position: 'relative'
+                marginLeft: -(real_task_width - HISTOGRAM_WIDTH) / 2
+              task
             I
               className: 'fa-close fa'
               title: 'cancel'
@@ -349,9 +360,6 @@ Auth = ReactiveComponent
             save @root
 
           toggle_to
-
-
-
 
 
   ####
@@ -539,6 +547,76 @@ Auth = ReactiveComponent
         'I forgot my password!'
 
   ####
+  # userQuestionInputs
+  #
+  # Creates the ui inputs for answering user questions for this subdomain
+  userQuestionInputs : -> 
+    subdomain = fetch('/subdomain')
+    current_user = fetch('/current_user')
+
+    questions = customizations[subdomain.name]?.user_questions
+    throw "No user questions defined for this subdomain" if !questions
+
+    inputs = []
+    for question in questions
+      label = "#{question.question}:"
+
+      switch question.input
+        when 'text'
+          input = INPUT
+            style:
+              marginBottom: 6
+              width: 300
+              border: "1px solid #{auth_ghost_gray}"
+              padding: '5px 10px'
+              fontSize: 18
+            key: "#{question.tag}_inputBox"
+            type: 'text'
+            onChange: do(question) => (event) =>
+              @local.tags = @local.tags or {}
+              @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
+              save @local
+            onKeyPress: =>
+              # submit on enter
+              if event.which == 13
+                @submitAuth(event)
+
+        when 'boolean'
+          input = INPUT
+            type:'checkbox'
+            style: 
+              fontSize: 24
+              marginTop: 10
+            onChange: do(question) => (event) =>
+              @local.tags = @local.tags or {}
+              @local.tags[question.tag] = current_user.tags[question.tag] = event.target.checked
+              save @local
+
+        when 'dropdown'
+          input = SELECT
+            style: 
+              fontSize: 18
+              marginTop: 4
+            onChange: do(question) => (event) =>
+              @local.tags = @local.tags or {}
+              @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
+              save @local
+            [for value in question.options
+               OPTION  
+                 value: value
+                 value
+            ]
+
+        else
+          throw "Unsupported question type: #{question.input} for #{question.tag}"
+
+
+      inputs.push [label,input]
+    inputs
+
+
+
+  ####
   # submitAuth
   #
   # Carries out auth form submission. Called from clicking the 
@@ -604,6 +682,8 @@ ensureCurrentUserAvatar = (attempts = 0) ->
       _.delay -> 
         ensureCurrentUserAvatar(attempts + 1)
       , 1000
+
+
 
 
 # can't combine the placeholder styles into one rule...

@@ -27,6 +27,8 @@ Permission =
   DISABLED : -1  # no one can take this action
   UNVERIFIED_EMAIL : -2 # can take action once email is verified 
   NOT_LOGGED_IN : -3 # not sure if action can be taken
+  INSUFFICIENT_INFORMATION : -5 # this user hasn't divulged enough 
+                                # information to take this action
   INSUFFICIENT_PRIVILEGES: -4 # we know this user can't do this
 
 
@@ -57,11 +59,19 @@ permit = (action) ->
 
     when 'publish opinion'
       proposal = fetch arguments[1]
+      subdomain = fetch '/subdomain'
+
       return Permission.DISABLED if !proposal.active
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
 
       if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer', 'opiner'])
         return Permission.INSUFFICIENT_PRIVILEGES 
+
+      required_info = _.pluck _.where(customizations[subdomain.name]?.user_questions or [], {required: true}), 'tag' 
+      existing_required_info = _.intersection required_info, _.keys(current_user.tags)
+
+      if existing_required_info.length != required_info.length
+        return Permission.INSUFFICIENT_INFORMATION
 
     when 'update opinion'
       proposal = fetch arguments[1]

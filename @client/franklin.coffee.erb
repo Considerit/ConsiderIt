@@ -245,7 +245,7 @@ Proposal = ReactiveComponent
 
 
     # change to results page if user entered crafting page when it is not permitted
-    if @root.proposal_mode == 'crafting' && !(can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, Permission.NOT_LOGGED_IN] || (can_opine == Permission.DISABLED && your_opinion.published))
+    if @root.proposal_mode == 'crafting' && !(can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || (can_opine == Permission.DISABLED && your_opinion.published))
       @root.proposal_mode = 'results'
       save @root
 
@@ -1056,7 +1056,7 @@ Slider = ReactiveComponent
           if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stance_names[segment]}"
 
 
-        if can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, Permission.NOT_LOGGED_IN] || (can_opine == Permission.DISABLED && your_opinion.published)
+        if can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || (can_opine == Permission.DISABLED && your_opinion.published)
 
           [DIV 
             className: 'the_handle'
@@ -1305,11 +1305,15 @@ DecisionBoard = ReactiveComponent
                 togglePage('results', 'save_button')
               else
                 if can_opine == Permission.UNVERIFIED_EMAIL
-                  @root.auth = {form: 'verify email', goal: 'Save your Opinion'}
+                  auth_form = 'verify email'
                   current_user.trying_to = 'send_verification_token'
                   save current_user
+                else if can_opine == Permission.INSUFFICIENT_INFORMATION
+                  auth_form = 'user questions'
                 else
-                  @root.auth = {form: 'create account', goal: 'Save your Opinion'}
+                  auth_form = 'create account'
+
+                @root.auth = {form: auth_form, goal: 'Save your Opinion'}
 
                 # We'll need to publish this opinion after auth is completed
                 @root.opinions_to_publish.push(@proposal.your_opinion)

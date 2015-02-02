@@ -10,6 +10,12 @@ class HtmlController < ApplicationController
       return
     end
 
+    if params[:domain] and (Rails.env.development? || request.host == 'chlk.it')
+      session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
+      redirect_to '/'    
+      return
+    end
+
     # Storing the full host name on the subdomain object.
     # This is needed because we don't have a request
     # when sending emails out at later points. 

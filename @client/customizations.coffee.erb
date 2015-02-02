@@ -883,8 +883,10 @@ customizations.default =
         style: 
           position: 'relative'
           padding: '2.5em 0 .5em 0'
-          textAlign: if !lefty then 'center'
-          marginLeft: if lefty then 100      
+          textAlign: 'center'
+          margin: 'auto'
+          marginLeft: if lefty then 20 + BODY_WIDTH / 2
+          width: BODY_WIDTH
 
         A href: "#{subdomain.external_project_url}", target: '_blank', style: {display: 'inline-block', margin: 'auto'},
           if subdomain.branding.logo

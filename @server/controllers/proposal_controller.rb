@@ -28,6 +28,9 @@ class ProposalController < ApplicationController
     fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
     attrs = params.select{|k,v| fields.include? k}
 
+    if attrs['slug']
+      attrs['slug'] = attrs['slug'].strip
+    end
 
     attrs.update({
           :published => true,

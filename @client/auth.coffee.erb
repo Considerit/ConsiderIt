@@ -393,8 +393,6 @@ Auth = ReactiveComponent
     current_user = fetch('/current_user')
 
     if @local[name] != current_user[name]
-      if name == 'password' || name == 'email'
-        noop = 1
       @local[name] = current_user[name]
       save @local
       return SPAN null
@@ -557,9 +555,14 @@ Auth = ReactiveComponent
     questions = customizations[subdomain.name]?.user_questions
     throw "No user questions defined for this subdomain" if !questions
 
+    if @local.tags != current_user.tags
+      @local.tags = current_user.tags
+      save @local
+      return SPAN null
+
     inputs = []
     for question in questions
-      label = "#{question.question}:"
+      label = "#{question.question}:"      
 
       switch question.input
         when 'text'
@@ -572,6 +575,8 @@ Auth = ReactiveComponent
               fontSize: 18
             key: "#{question.tag}_inputBox"
             type: 'text'
+            value: @local.tags[question.tag]
+
             onChange: do(question) => (event) =>
               @local.tags = @local.tags or {}
               @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
@@ -587,6 +592,7 @@ Auth = ReactiveComponent
             style: 
               fontSize: 24
               marginTop: 10
+            checked: @local.tags[question.tag]
             onChange: do(question) => (event) =>
               @local.tags = @local.tags or {}
               @local.tags[question.tag] = current_user.tags[question.tag] = event.target.checked
@@ -597,14 +603,21 @@ Auth = ReactiveComponent
             style: 
               fontSize: 18
               marginTop: 4
+            value: @local.tags[question.tag]
             onChange: do(question) => (event) =>
               @local.tags = @local.tags or {}
               @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
               save @local
-            [for value in question.options
-               OPTION  
-                 value: value
-                 value
+            [
+              OPTION 
+                value: ''
+                selected: true 
+                disabled: true 
+                hidden: true
+              for value in question.options
+                OPTION  
+                  value: value
+                  value
             ]
 
         else

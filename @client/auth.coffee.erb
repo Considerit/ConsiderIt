@@ -70,7 +70,7 @@ Auth = ReactiveComponent
             @body [['Hi, I log in as:',
                     [ @inputBox('email', 'email@address'),
                       @inputBox('password', "password", 'password'),
-                      @resetPasswordLink() ]]]
+                      @resetPasswordLink() ]]].concat (if @root.auth.ask_questions then @userQuestionInputs() else [])
           @footerForRegistrationAndLogin() ]
 
       # The REGISTER form, with easy switch to log in
@@ -100,7 +100,7 @@ Auth = ReactiveComponent
                         @inputBox('password', "password", 'password')]],
                     avatar_field,
                     ['My name is:', @inputBox('name', 'first and last name')],
-                    pledges_field].concat @userQuestionInputs()
+                    pledges_field].concat (if @root.auth.ask_questions then @userQuestionInputs() else [])
           footer ]
 
       # The EDIT PROFILE form

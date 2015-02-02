@@ -64,7 +64,7 @@ class User < ActiveRecord::Base
       name: name,
       reset_password_token: nil,
       b64_thumbnail: b64_thumbnail,
-      tags: JSON.parse(tags) || {},
+      tags: JSON.parse(tags || '{}'),
       is_super_admin: self.super_admin,
       is_admin: is_admin?,
       is_moderator: permit('moderate content', nil) > 0,
@@ -98,7 +98,8 @@ class User < ActiveRecord::Base
     result = { 'key' => "/user/#{id}",
                'name' => name,
                'avatar_file_name' => avatar_file_name,
-               'groups' => JSON.parse(groups || '[]') }
+               'tags' => JSON.parse(tags || '{}')  }
+                  # TODO: filter private tags
     if current_user.is_admin?
       result['email'] = email
     end

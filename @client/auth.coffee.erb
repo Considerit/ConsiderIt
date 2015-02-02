@@ -571,14 +571,15 @@ Auth = ReactiveComponent
       label = "#{question.question}:"      
 
       switch question.input
+
         when 'text'
           input = INPUT
-            style:
+            style: _.defaults question.input_style or {}, 
               marginBottom: 6
               width: 300
               border: "1px solid #{auth_ghost_gray}"
               padding: '5px 10px'
-              fontSize: 18
+              fontSize: 18            
             key: "#{question.tag}_inputBox"
             type: 'text'
             value: @local.tags[question.tag]
@@ -595,7 +596,7 @@ Auth = ReactiveComponent
         when 'boolean'
           input = INPUT
             type:'checkbox'
-            style: 
+            style: _.defaults question.input_style or {},  
               fontSize: 24
               marginTop: 10
             checked: @local.tags[question.tag]
@@ -606,7 +607,7 @@ Auth = ReactiveComponent
 
         when 'dropdown'
           input = SELECT
-            style: 
+            style: _.defaults question.input_style or {},
               fontSize: 18
               marginTop: 4
             value: @local.tags[question.tag]

@@ -920,6 +920,17 @@ election_cluster_options =
 # SUBDOMAIN CONFIGURATION
 ##########################
 
+##############
+# ECAST
+
+customizations.ecastonline = customizations['ecastonline-demo'] = 
+  user_questions : [
+    {tag: 'zip.editable', question: 'My zipcode is', input: 'text', required: true}, 
+    {tag: 'gender.editable', question: 'My gender is', input: 'dropdown', options:['Male', 'Female', 'Other'], required: true}, 
+    {tag: 'age.editable', question: 'My age is', input: 'text', required: false},
+    {tag: 'test.editable', question: 'Is true?', input: 'boolean', required: true}]
+
+
 
 ####################
 # Bitcoin
@@ -930,8 +941,6 @@ if window.location.hostname == 'bitcoin-election.consider.it'
 
 customizations.bitcoin = 
 
-  Homepage : SimpleHomepage
-  ProposalHeader : SimpleProposalHeading
   hide_home_button_in_proposal_header: true
 
   Header : ReactiveComponent
@@ -1301,7 +1310,7 @@ customizations.livingvotersguide =
             SPAN style: {fontWeight: 600}, 'by the people'
             ' and '
             SPAN style: {fontWeight: 600}, 'for the people'
-            ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and express your ideas. We believe that sharing our diverse opinions leads to making wiser decisions together. '
+            ' of Washington State. It\'s your platform to learn about candidate and ballot measures, decide how to vote and express your ideas. We believe that sharing our diverse opinions leads to making wiser decisions together. '
             A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', onClick: clickInternalLink, 'Learn more'
             '.'
 

@@ -2,6 +2,7 @@
 # Core considerit client code
 #////////////////////////////////////////////////////////////
 
+DO_NOT_COMPRESS_THIS_FILE = true
 
 ## ########################
 ## Initialize defaults for client data
@@ -324,6 +325,7 @@ Proposal = ReactiveComponent
                 onMouseDown: => @local.description_collapsed = false; save(@local)
                 'Expand full text'
             SPAN dangerouslySetInnerHTML:{__html: @proposal.description}
+
 
           if @local.description_fields
             DIV style: {marginTop: '1em'},
@@ -3784,14 +3786,16 @@ window.MiniHisto = MiniHisto
 #######
 # Start the app!
 
-#static consider.it homepage doesn't want this stuff by default
-if document.getElementById('content') 
-  # add styles
-  $('body').append("<style type='text/css'>#{styles}</style>")
 
-  if 'ontouchend' in document #detect touch support
-    React.initializeTouchEvents(true)
+$( ->
+  #static consider.it homepage doesn't want this stuff by default
+  if document.getElementById('content') 
+    # add styles
+    $('body').append("<style type='text/css'>#{styles}</style>")
 
-  Backbone.history.start {pushState: true}
-  window.root = React.renderComponent(Root(), document.getElementById('content'))
+    if 'ontouchend' in document #detect touch support
+      React.initializeTouchEvents(true)
 
+    Backbone.history.start {pushState: true}
+    window.root = React.renderComponent(Root(), document.getElementById('content'))
+)

@@ -90,6 +90,14 @@ window.clickInternalLink = (event) ->
     window.app_router.navigate href, { trigger : true }
     return false
 
+# Computes the width of some text given some styles empirically
+window.realWidth = (str, style) -> 
+  $el = $("<span id='width_test'>#{str}</span>").css(style)
+  $('#content').append($el)
+  width = $('#width_test').width()
+  $('#width_test').remove()
+  width
+
 
 #############################
 ## Components

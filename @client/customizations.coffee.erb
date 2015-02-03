@@ -59,6 +59,7 @@ SimpleHomepage = ReactiveComponent
     line_height = '1.8em'
 
     DIV
+      className: 'simplehomepage'
       style: 
         fontSize: 22
         margin: if !lefty then 'auto'
@@ -71,7 +72,7 @@ SimpleHomepage = ReactiveComponent
       for cluster, index in proposals.clusters or []
         if cluster.proposals?.length > 0
           options = customizations[fetch('/subdomain').name]?.cluster_options?[cluster.name] || {}
-
+                    
           first_column =
             width: 350
             marginLeft: if lefty then 200
@@ -85,13 +86,13 @@ SimpleHomepage = ReactiveComponent
             marginLeft: 50
 
           first_header =
-            fontSize: 30
+            fontSize: 36
             marginBottom: 40
             fontWeight: 600
           _.extend(first_header, first_column)
 
           secnd_header =
-            fontSize: 30
+            fontSize: 36
             marginBottom: 45
             fontWeight: 600
             position: 'relative'
@@ -106,7 +107,7 @@ SimpleHomepage = ReactiveComponent
             # Header of cluster
             H1
               style: first_header
-              cluster.name
+              cluster.name || 'Proposals'
             H1
               style: secnd_header
               SPAN
@@ -126,7 +127,11 @@ SimpleHomepage = ReactiveComponent
                   right: 0
                   fontWeight: 300
                 'Support'
-              options.homie_histo_title || 'Opinions'
+              SPAN 
+                style: 
+                  position: 'relative'
+                  marginLeft: -(realWidth(options.homie_histo_title || 'Opinions', {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
+                options.homie_histo_title || 'Opinions'
 
             for proposal in sorted_proposals(cluster)
               icons = options.editor_icons
@@ -477,18 +482,19 @@ SimpleProposalHeading = ReactiveComponent
     mod = (n, m) -> ((n % m) + m) % m
 
     # Determine the next proposal
-    [next_proposal, prev_proposal] =
-      if proposals.clusters  # In case /proposals isn't loaded
-        curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
-        if curr_cluster?.proposals.length > 1
-          proposals = sorted_proposals(curr_cluster)
-          # Now find the current proposal in the cluster, and return the next one
-          for proposal, index in proposals
-            if @proposal == proposal
-              break
-          next_index = mod(index + 1, proposals.length)
-          prev_index = mod(index - 1, proposals.length)
-          [proposals[next_index], proposals[prev_index]]
+    next_proposal = prev_proposal = null
+    if proposals.clusters  # In case /proposals isn't loaded
+      curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
+      if curr_cluster?.proposals.length > 1
+        proposals = sorted_proposals(curr_cluster)
+        # Now find the current proposal in the cluster, and return the next one
+        for proposal, index in proposals
+          if @proposal == proposal
+            break
+        next_index = mod(index + 1, proposals.length)
+        prev_index = mod(index - 1, proposals.length)
+        next_proposal = proposals[next_index]
+        prev_proposal = proposals[prev_index]
 
     DIV
       style:
@@ -873,7 +879,14 @@ customizations.default =
     displayName: 'Footer'
     render: ->
       subdomain = fetch '/subdomain'
-      DIV null,
+      DIV
+        style: 
+          position: 'relative'
+          padding: '2.5em 0 .5em 0'
+          textAlign: 'center'
+          margin: 'auto'
+          marginLeft: if lefty then 20 + BODY_WIDTH / 2
+          width: BODY_WIDTH
 
         A href: "#{subdomain.external_project_url}", target: '_blank', style: {display: 'inline-block', margin: 'auto'},
           if subdomain.branding.logo
@@ -891,7 +904,7 @@ customizations.default =
 TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'
   render : -> 
-    DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 20},
+    DIV style: {textAlign: 'left', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 20},
       "Technology by "
       A href: 'http://consider.it', style: {textDecoration: 'underline', color: '#B03B42', fontWeight: 600}, target: '_blank', 'Considerit'
 
@@ -916,11 +929,239 @@ election_cluster_options =
 
 
 ##########################
-# SUBDOMAIN DEFINITIONS
+# SUBDOMAIN CONFIGURATION
 ##########################
 
+##############
+# ECAST
+
+ecast_highlight_color =  "#73B3B9"  #"#CB7833"
+customizations.ecastonline = customizations['ecast-demo'] = 
+  user_questions : [
+    { 
+      tag: 'zip.editable'
+      question: 'My zip code is'
+      input: 'text'
+      required: true
+      input_style: 
+        width: 85
+      validation: (zip) ->
+        return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip)
+    }, {
+      tag: 'gender.editable'
+      question: 'My gender is'
+      input: 'dropdown'
+      options:['Male', 'Female']
+      required: true
+    }, {
+      tag: 'age.editable'
+      question: 'My age is'
+      input: 'text'
+      required: true
+      input_style: 
+        width: 50
+      validation: (age) -> 
+        return /^[1-9]?[0-9]{1}$|^100$/.test(age)
+    }, {
+      tag: 'ethnicity.editable'
+      question: 'My ethnicity is'
+      input: 'dropdown'
+      options:['African American', 'Asian', 'Latino/Hispanic', 'White', 'Other']
+      required: true
+    }, {
+      tag: 'education.editable'
+      question: 'My formal education is'
+      input: 'dropdown'
+      options:['Did not graduate from high school', 'Graduated from high school or equivalent', 'Attended, but did not graduate from college', 'College degree', 'Graduate professional degree']
+      required: true
+    }]
 
 
+  cluster_options :
+    Recommendations:
+      homie_histo_title: "Citizens' opinions"
+
+  Header : ReactiveComponent
+    displayName: 'Header'
+
+    render : ->
+      window.lefty = true
+
+      paragraph_style = 
+        marginBottom: 20
+        textShadow: '0 1px 1px rgba(255,255,255,.5)'
+        fontWeight: 600
+
+      DIV 
+        style: 
+          backgroundColor: 'black'
+          height: 685
+          overflow: 'hidden'
+          width: '100%'
+          position: 'relative'
+          borderBottom: "5px solid #{ecast_highlight_color}"
+
+        IMG 
+          style: 
+            position: 'absolute'
+          src: "<%= asset_path 'ecast/bg.png' %>"
+
+        # Title of site
+        DIV 
+          style: 
+            position: 'absolute'
+            left: 50
+            top: 38
+
+          DIV 
+            style: 
+              fontSize: 42
+              fontWeight: 600
+              color: 'white'
+              textShadow: '0 2px 4px rgba(0,0,0,.5)'
+
+            "Informing NASA's Asteroid Initiative"
+
+          DIV
+            style: 
+              fontSize: 24
+              fontWeight: 600         
+              color: 'white'
+              textAlign: 'center'
+              marginTop: -5
+
+            "A citizens forum"
+
+        # Credits
+        DIV 
+          style:
+            position: 'absolute'
+            top: 61
+            left: 790
+
+          DIV 
+            style: 
+              fontSize: 18
+              color: 'white'
+            'hosted by'
+
+          A 
+            href: "http://ecastonline.org/"
+            target: '_blank'
+            IMG 
+              style: 
+                display: 'block'
+                marginTop: 4
+                width: 215
+              src: "<%= asset_path 'ecast/ecast.png' %>"
+
+          DIV 
+            style: 
+              fontSize: 18
+              color: 'white'
+              marginTop: 12              
+            'supported by'
+
+          A 
+            href: "http://www.nasa.gov/"
+            target: '_blank'
+
+            IMG 
+              style: 
+                display: 'block'
+                marginTop: 4
+                width: 160
+
+              src: "<%= asset_path 'ecast/nasa.png' %>"
+
+        # Video callout
+        DIV
+          style: 
+            position: 'absolute'
+            left: 434
+            top: 609
+            color: ecast_highlight_color
+            fontSize: 17
+            fontWeight: 600
+            width: 325
+
+          I 
+            className: 'fa fa-film'
+            style: 
+              position: 'absolute'
+              left: -27
+              top: 3
+          'Learn more first! Watch this video from the public forums that ECAST hosted.'
+
+          SPAN
+            style: 
+              position: 'absolute'
+              top: 24
+              right: -15
+
+            I
+              className: 'fa fa-angle-right'
+              style: 
+                paddingLeft: 10
+            I
+              className: 'fa fa-angle-right'
+              style: 
+                paddingLeft: 5
+            I
+              className: 'fa fa-angle-right'
+              style: 
+                paddingLeft: 5
+
+
+        # Video
+        IFRAME
+          position: 'absolute'
+          type: "text/html" 
+          width: 370
+          height: 220
+          src: "http://www.youtube.com/embed/M7lc1UVf-VE?autoplay=0&origin=http://example.com"
+          frameborder: 0
+          style:
+            top: 460
+            left: 790
+            zIndex: 99
+            position: 'absolute'
+            border: "5px solid #{ecast_highlight_color}"
+            borderBottom: 'none'
+
+
+        # Text in bubble
+        DIV 
+          style: 
+            fontSize: 17
+            position: 'absolute'
+            top: 156
+            left: 97
+            width: 600
+
+          P style: paragraph_style, 
+            "In its history, the Earth has been repeatedly struck by asteroids, large chunks of rock from space that can cause considerable damage in a collision. Can we—or should we—try to protect Earth from potentially hazardous impacts?"
+
+          P style: paragraph_style, 
+            "Sounds like stuff just for rocket scientists. But how would you like to be part of this discussion?"
+
+          P style: paragraph_style, 
+            "Now you can! NASA is collaborating with ECAST—Expert and Citizen Assessment of Science and Technology—to give citizens a say in decisions about the future of space exploration."
+
+          P style: paragraph_style, 
+            "Join the dialogue below about detecting asteroids and mitigating their potential impact. The five recommendations below emerged from ECAST public forums held in Phoenix and Boston last November." 
+
+          P style: paragraph_style, 
+            "Please take a few moments to review the background materials and the recommendations, and tell us what you think! Your input is important as we analyze the outcomes of the forums and make our final report to NASA." 
+
+        ProfileMenu()
+
+styles += """
+[subdomain="ecastonline"] .simplehomepage a.proposal, [subdomain="ecast-demo"] .simplehomepage a.proposal{
+  border-color: #{ecast_highlight_color} !important;
+  color: #{ecast_highlight_color} !important;
+}
+"""
 
 
 ####################
@@ -932,8 +1173,6 @@ if window.location.hostname == 'bitcoin-election.consider.it'
 
 customizations.bitcoin = 
 
-  Homepage : SimpleHomepage
-  ProposalHeader : SimpleProposalHeading
   hide_home_button_in_proposal_header: true
 
   Header : ReactiveComponent
@@ -1087,7 +1326,7 @@ customizations['bitcoin-demo'] =
 customizations.livingvotersguide = 
 
   Homepage: LearnDecideShareHomepage
-  # ProposalHeader: StickyProposalHeader
+  ProposalHeader: StickyProposalHeader
 
   homepage_heading_columns : [ 
     {heading: 'Learn', details: 'about your ballot'}, \
@@ -1205,24 +1444,24 @@ customizations.livingvotersguide =
   ZipcodeBox : ReactiveComponent
     displayName: 'ZipcodeBox'
     render: ->
-      c = fetch('/current_user')
+      current_user = fetch('/current_user')
       extra_text = if Modernizr.input.placeholder then '' else ' Zip Code'
       onChange = (event) =>
         if event.target.value.match(/\d\d\d\d\d/)
-          c.tags.zip = event.target.value
-          save(c)
+          current_user.tags['zip.editable'] = event.target.value
+          save(current_user)
 
         else if event.target.value.length == 0
-          c.tags.zip = undefined
+          current_user.tags['zip.editable'] = undefined
           @local.stay_around = true
-          save(c)
+          save(current_user)
           save(@local)
 
       onBlur = =>
         @local.stay_around = false
         save(@local)
 
-      if c.tags.zip or @local.stay_around
+      if current_user.tags['zip.editable'] or @local.stay_around
         STYLE null,
           """
           .filled_zip:hover input, .filled_zip input:focus{
@@ -1252,7 +1491,7 @@ customizations.livingvotersguide =
               marginLeft: 7
             type: 'text'
             key: 'zip_input'
-            defaultValue: c.tags.zip or ''
+            defaultValue: current_user.tags['zip.editable'] or ''
             onChange: onChange
             onBlur: onBlur
 
@@ -1296,14 +1535,19 @@ customizations.livingvotersguide =
   Footer : ReactiveComponent
     displayName: 'Footer'
     render: ->
-      DIV null,
+      DIV 
+        style: 
+          position: 'relative'
+          padding: '2.5em 0 .5em 0'
+          textAlign: 'center'
+
         DIV style: {color: 'white', backgroundColor: '#93928E', marginTop: 48, padding: 18},
           DIV style: {fontSize: 18, fontStyle: 'italic', textAlign: 'left', width: 690, fontStyle: 'italic', margin: 'auto'},
             'Unlike voter guides generated by government, newspapers or advocacy organizations, Living Voters Guide is created '
             SPAN style: {fontWeight: 600}, 'by the people'
             ' and '
             SPAN style: {fontWeight: 600}, 'for the people'
-            ' of Washington State. It’s your platform to learn about candidate and ballot measures, decide how to vote and express your ideas. We believe that sharing our diverse opinions leads to making wiser decisions together. '
+            ' of Washington State. It\'s your platform to learn about candidate and ballot measures, decide how to vote and express your ideas. We believe that sharing our diverse opinions leads to making wiser decisions together. '
             A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', onClick: clickInternalLink, 'Learn more'
             '.'
 
@@ -1430,28 +1674,11 @@ customizations.tigard =
 
         ProfileMenu()
           
-        DIV style: {color: '#707070', fontSize: 32, margin: '20px auto 0 auto', fontWeight: 800, textTransform: 'uppercase', position: 'relative', top: -20}, 
+        DIV style: {color: '#707070', fontSize: 32, padding: '20px 0', margin: '0px auto 0 auto', fontWeight: 800, textTransform: 'uppercase', position: 'relative'}, 
           'Help plan '
           A className: 'banner_link', href: 'http://riverterracetigard.com/', 'River Terrace'
           ', Tigard\'s newest neighborhood' 
 
-  Footer : ReactiveComponent
-    displayName: 'tigardFooter'
-    render: ->
-      DIV style: {marginTop: 20},
-        A href: 'http://riverterracetigard.com/', target: '_blank', style: {display: 'inline-block', margin: 'auto'},
-          IMG className: 'logo', src: "<%= asset_path 'tigard/logo.jpg' %>", style: {height: 80}         
-
-        DIV style: {margin: '20px 0'},
-          FBShare()
-          Tweet
-            hashtags: 'RiverTerrace'
-            referer: 'https%3A%2F%2Ftigard.consider.it%2F'
-            text: 'Help plan River Terrace.'
-            url: 'https%3A%2F%2Ftigard.consider.it%2F'        
-
-        DIV style: {padding: 9, fontSize: '70%'},
-          TechnologyByConsiderit()
 
 
 #####################

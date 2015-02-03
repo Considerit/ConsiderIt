@@ -88,8 +88,9 @@ class Subdomain < ActiveRecord::Base
     result = JSON.parse(roles || "{}")
     ['admin', 'moderator', 'evaluator', 'proposer', 'visitor'].each do |role|
 
-      # Initialize empty role to []
-      result[role] = [] if !result.has_key?(role) || !result[role]
+      # default roles if they haven't been set
+      default_role = role == 'visitor' ? ['*'] : []
+      result[role] = default_role if !result.has_key?(role) || !result[role]
 
       # Filter role if the client isn't supposed to see it
       if filter && role != 'proposer'

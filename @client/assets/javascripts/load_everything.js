@@ -11,15 +11,15 @@
 
 
 //= require ../../activerest-m
+//= require ../../state_dash
+
+
+//= require ../../histogram_sim
 
 //= require ../../shared
-
-//= require ../../auth
 //= require ../../sticky_element
+//= require ../../auth
 //= require ../../permissions
 //= require ../../roles
-//= require ../../subdomain_specific
+//= require ../../customizations
 //= require ../../admin
-//= require ../../state_dash
-//= require ../../franklin
-//= require ../../histogram_sim

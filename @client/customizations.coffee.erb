@@ -937,6 +937,8 @@ election_cluster_options =
 
 ecast_highlight_color =  "#73B3B9"  #"#CB7833"
 customizations.ecastonline = customizations['ecast-demo'] = 
+  ProposalHeader: StickyProposalHeader
+
   user_questions : [
     { 
       tag: 'zip.editable'
@@ -979,6 +981,10 @@ customizations.ecastonline = customizations['ecast-demo'] =
 
   cluster_options :
     Recommendations:
+      homie_histo_title: "Citizens' opinions"
+    Mitigation:
+      homie_histo_title: "Citizens' opinions"
+    Detection:
       homie_histo_title: "Citizens' opinions"
 
   Header : ReactiveComponent
@@ -1119,7 +1125,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
           type: "text/html" 
           width: 370
           height: 220
-          src: "http://www.youtube.com/embed/M7lc1UVf-VE?autoplay=0&origin=http://example.com"
+          src: "//www.youtube.com/embed/M7lc1UVf-VE?autoplay=0"
           frameborder: 0
           style:
             top: 460
@@ -1169,7 +1175,7 @@ styles += """
 
 # Redirect for old bitcoin
 if window.location.hostname == 'bitcoin-election.consider.it'
-  window.location.replace(window.location.href.replace())
+  window.location.replace(window.location.href.replace('https://bitcoin-election', 'https://bitcoin'))
 
 customizations.bitcoin = 
 

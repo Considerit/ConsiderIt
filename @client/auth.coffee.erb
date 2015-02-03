@@ -28,6 +28,7 @@ Auth = ReactiveComponent
     if not @local.last_auth or @local.last_auth != root.auth
       @local.last_auth = root.auth
       current_user.errors = []
+      @local.errors = []
       save @local
       return SPAN null
 
@@ -58,6 +59,7 @@ Auth = ReactiveComponent
   buildAuthForm : ->
     root = fetch('root')
     current_user = fetch('/current_user')
+    
 
     goal = if @root.auth.goal then "To #{@root.auth.goal}" else null
 
@@ -69,7 +71,7 @@ Auth = ReactiveComponent
             @body [['Hi, I log in as:',
                     [ @inputBox('email', 'email@address'),
                       @inputBox('password', "password", 'password'),
-                      @resetPasswordLink() ]]]
+                      @resetPasswordLink() ]]].concat @userQuestionInputs()
           @footerForRegistrationAndLogin() ]
 
       # The REGISTER form, with easy switch to log in
@@ -99,7 +101,7 @@ Auth = ReactiveComponent
                         @inputBox('password', "password", 'password')]],
                     avatar_field,
                     ['My name is:', @inputBox('name', 'first and last name')],
-                    pledges_field]
+                    pledges_field].concat @userQuestionInputs()
           footer ]
 
       # The EDIT PROFILE form
@@ -136,6 +138,11 @@ Auth = ReactiveComponent
                   'We sent you a verification code via email.'
           @submitButton('Verify') ]
 
+      when 'user questions'
+        [ @headerAndBorder goal, 'Please give some info',
+            @body @userQuestionInputs()
+          @submitButton('Done!') ]
+
       else
         throw "Unrecognized authentication form #{root.auth.form}"
 
@@ -152,6 +159,7 @@ Auth = ReactiveComponent
   headerAndBorder : (goal, task, body) ->
     root = fetch('root')
 
+    real_task_width = realWidth(task, {fontSize: 61, fontWeight: 600})
     DIV null,
 
       # The auth form's header
@@ -184,7 +192,11 @@ Auth = ReactiveComponent
               fontSize: 61
               whiteSpace: 'nowrap'
               color: considerit_blue
-            task
+            SPAN
+              style: 
+                position: 'relative'
+                marginLeft: -(real_task_width - HISTOGRAM_WIDTH) / 2
+              task
             I
               className: 'fa-close fa'
               title: 'cancel'
@@ -283,19 +295,22 @@ Auth = ReactiveComponent
                 field[1]
              TR style: {height: 10}]
 
-      if current_user.errors && current_user.errors.length > 0
+      if (current_user.errors or []).length > 0 or @local.errors.length > 0
+        errors = current_user.errors.concat(@local.errors or [])
         DIV
           style:
-            textAlign: 'center'
             fontSize: 18
             color: 'darkred'
             backgroundColor: '#ffD8D8'
             padding: 10
             marginTop: 10
-          I
-            className: 'fa fa-exclamation-circle'
-            style: {paddingRight: 9}
-          SPAN null, "#{current_user.errors.join(', ')}"
+          for error in errors
+            DIV null, 
+              I
+                className: 'fa fa-exclamation-circle'
+                style: {paddingRight: 9}
+
+              SPAN null, error
 
   #####
   # footerForRegistrationAndLogin
@@ -346,12 +361,11 @@ Auth = ReactiveComponent
             current_user = fetch('/current_user')
             @root.auth.form = if @root.auth.form == 'create account' then 'login' else 'create account'
             current_user.errors = []
+            @local.errors = []
             save @root
+            save @local
 
           toggle_to
-
-
-
 
 
   ####
@@ -385,8 +399,6 @@ Auth = ReactiveComponent
     current_user = fetch('/current_user')
 
     if @local[name] != current_user[name]
-      if name == 'password' || name == 'email'
-        noop = 1
       @local[name] = current_user[name]
       save @local
       return SPAN null
@@ -539,6 +551,91 @@ Auth = ReactiveComponent
         'I forgot my password!'
 
   ####
+  # userQuestionInputs
+  #
+  # Creates the ui inputs for answering user questions for this subdomain
+  userQuestionInputs : -> 
+    subdomain = fetch('/subdomain')
+    current_user = fetch('/current_user')
+
+    questions = if @root.auth.ask_questions then customizations[subdomain.name]?.user_questions
+    questions = questions or []
+
+    if @local.tags != current_user.tags
+      @local.tags = current_user.tags
+      save @local
+      return SPAN null
+
+    inputs = []
+    for question in questions
+      label = "#{question.question}:"      
+
+      switch question.input
+
+        when 'text'
+          input = INPUT
+            style: _.defaults question.input_style or {}, 
+              marginBottom: 6
+              width: 300
+              border: "1px solid #{auth_ghost_gray}"
+              padding: '5px 10px'
+              fontSize: 18            
+            key: "#{question.tag}_inputBox"
+            type: 'text'
+            value: @local.tags[question.tag]
+
+            onChange: do(question) => (event) =>
+              @local.tags = @local.tags or {}
+              @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
+              save @local
+            onKeyPress: =>
+              # submit on enter
+              if event.which == 13
+                @submitAuth(event)
+
+        when 'boolean'
+          input = INPUT
+            type:'checkbox'
+            style: _.defaults question.input_style or {},  
+              fontSize: 24
+              marginTop: 10
+            checked: @local.tags[question.tag]
+            onChange: do(question) => (event) =>
+              @local.tags = @local.tags or {}
+              @local.tags[question.tag] = current_user.tags[question.tag] = event.target.checked
+              save @local
+
+        when 'dropdown'
+          input = SELECT
+            style: _.defaults question.input_style or {},
+              fontSize: 18
+              marginTop: 4
+            value: @local.tags[question.tag]
+            onChange: do(question) => (event) =>
+              @local.tags = @local.tags or {}
+              @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
+              save @local
+            [
+              OPTION 
+                value: ''
+                selected: true 
+                disabled: true 
+                hidden: true
+              for value in question.options
+                OPTION  
+                  value: value
+                  value
+            ]
+
+        else
+          throw "Unsupported question type: #{question.input} for #{question.tag}"
+
+      inputs.push [label,input]
+    inputs
+
+
+
+  ####
   # submitAuth
   #
   # Carries out auth form submission. Called from clicking the 
@@ -546,42 +643,62 @@ Auth = ReactiveComponent
   submitAuth : (ev) -> 
     ev.preventDefault()
     $el = $(@getDOMNode())
-
-    @local.submitting = true
-    save @local
+    subdomain = fetch '/subdomain'
 
     current_user = fetch('/current_user')
 
-    current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
-    current_user.trying_to = @root.auth.form
-    
-    save current_user, => 
-      if @root.auth.form in ['create account', 'edit profile']
-        ensureCurrentUserAvatar()
+    # Client side validation of user questions
+    # Note that we don't have server side validation because
+    # the questions are all defined on the client. 
+    if @root.auth.ask_questions
+      questions = customizations[subdomain.name]?.user_questions or []
+      @local.errors = []
+      for question in questions
+        if question.required
+          has_response = !!current_user.tags[question.tag]
+          @local.errors.push "#{question.question} required!" if !has_response
 
-      if @root.auth.form == 'edit profile'
-        @local.saved_successfully = current_user.errors.length == 0        
+          is_valid_input = true
+          if question.validation
+            is_valid_input = question.validation(current_user.tags[question.tag])
+          @local.errors.push "#{current_user.tags[question.tag]} isn't a valid answer to #{question.question}!" if !is_valid_input && has_response
 
-      # Once the user logs in, we will stop showing the log-in screen
-      else if current_user.logged_in
-        if @root.auth.goal == 'Save your Opinion'
-          setTimeout((() -> togglePage('results', 'after_save')), 700)
-        @root.auth = null
-        save @root
-
-      @local.submitting = false
       save @local
 
-    # hack for submitting file data in ActiveREST for now
-    # we'll just submit the file form after user is signed in
-    # TODO: investigate alternatives for submitting form data
-    if @submit_avatar_form
+    if @local.errors.length == 0
+      @local.submitting = true
+      save @local
 
-      $('#user_avatar_form').ajaxSubmit
-        type: 'PUT'
-        data: 
-          authenticity_token: current_user.csrf
-          trying_to: 'update_avatar_hack'
+      current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
+      current_user.trying_to = @root.auth.form
+
+      save current_user, => 
+        if @root.auth.form in ['create account', 'edit profile']
+          ensureCurrentUserAvatar()
+
+        if @root.auth.form == 'edit profile'
+          @local.saved_successfully = current_user.errors.length == 0 && (@local.errors or []).length == 0
+
+        # Once the user logs in, we will stop showing the log-in screen
+        else if current_user.logged_in
+          if @root.auth.goal == 'Save your Opinion'
+            setTimeout((() -> togglePage('results', 'after_save')), 700)
+          @root.auth = null
+          save @root
+
+        @local.submitting = false
+        save @local
+
+      # hack for submitting file data in ActiveREST for now
+      # we'll just submit the file form after user is signed in
+      # TODO: investigate alternatives for submitting form data
+      if @submit_avatar_form
+
+        $('#user_avatar_form').ajaxSubmit
+          type: 'PUT'
+          data: 
+            authenticity_token: current_user.csrf
+            trying_to: 'update_avatar_hack'
 
   componentDidMount : -> 
     window.writeToLog {what: 'accessed authentication'}
@@ -604,6 +721,8 @@ ensureCurrentUserAvatar = (attempts = 0) ->
       _.delay -> 
         ensureCurrentUserAvatar(attempts + 1)
       , 1000
+
+
 
 
 # can't combine the placeholder styles into one rule...

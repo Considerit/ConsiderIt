@@ -44,15 +44,11 @@ class ProposalController < ApplicationController
 
     proposal.save
 
-    if params.has_key?('roles')
-      # need to update these attributes later on after proposal is created
-      if params.has_key?(:invitations) && params[:invitations]
-        params['roles'] = process_and_send_invitations(params['roles'], params[:invitations], proposal)
-      end
-      proposal.roles = JSON.dump params['roles']
-      proposal.save
-    end
+    # need to save the proposal before potentially sending out
+    # email invitations via role.
+    update_roles proposal
 
+    proposal.save
 
     original_id = key_id(params[:key])
     result = proposal.as_json
@@ -90,17 +86,7 @@ class ProposalController < ApplicationController
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
       updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}
 
-      if params.has_key?('roles') && params.has_key?(:invitations) && params[:invitations]
-        params['roles'] = process_and_send_invitations(params['roles'], params[:invitations], proposal)
-      end 
-
-      serialized_fields = ['roles']
-      for field in serialized_fields
-        if params.has_key? field
-          updated_fields[field] = JSON.dump params[field]
-        end
-      end
-
+      update_roles(proposal)
 
       proposal.update_attributes! updated_fields
       dirty_key('/proposals')
@@ -115,6 +101,21 @@ class ProposalController < ApplicationController
 
     dirty_key "/proposal/#{proposal.id}"
     render :json => []
+  end
+
+  def update_roles(proposal)
+    if params.has_key?('roles')
+      # need to update these attributes later on after proposal is created
+      if params.has_key?('invitations') && params['invitations']
+        params['roles'] = process_and_send_invitations(params['roles'], params['invitations'], proposal)
+      end
+
+      # rails replaces [] with nil in params for some reason...
+      params['roles'].each do |k,v|
+        params['roles'][k] = [] if !v
+      end
+      proposal.roles = JSON.dump params['roles']
+    end
   end
 
   def destroy

@@ -3074,10 +3074,6 @@ EditProposal = ReactiveComponent
         active: active
         hide_on_homepage: hide_on_homepage
 
-      if @local.roles
-        proposal.roles = @local.roles
-        proposal.invitations = @local.invitations
-
     else 
       proposal = @data()
       _.extend proposal, 
@@ -3087,6 +3083,10 @@ EditProposal = ReactiveComponent
         description: description
         active: active
         hide_on_homepage: hide_on_homepage
+
+    if @local.roles
+      proposal.roles = @local.roles
+      proposal.invitations = @local.invitations
 
     if @local.description_fields
       for field in @local.description_fields
@@ -3748,6 +3748,10 @@ window.on_ajax_error = () ->
   (root = fetch('root')).server_error = true
   save(root)
 window.on_client_error = (e) ->
+  if navigator.userAgent.indexOf('PhantomJS') >= 0
+    # don't care about errors on phtanomjs web crawlers
+    return
+
   save(
     key: '/new/client_error'
     stack: e.stack

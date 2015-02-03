@@ -3886,10 +3886,6 @@ EditProposal = ReactiveComponent
         active: active
         hide_on_homepage: hide_on_homepage
 
-      if @local.roles
-        proposal.roles = @local.roles
-        proposal.invitations = @local.invitations
-
     else 
       proposal = @data()
       _.extend proposal, 
@@ -3899,6 +3895,10 @@ EditProposal = ReactiveComponent
         description: description
         active: active
         hide_on_homepage: hide_on_homepage
+
+    if @local.roles
+      proposal.roles = @local.roles
+      proposal.invitations = @local.invitations
 
     if @local.description_fields
       for field in @local.description_fields

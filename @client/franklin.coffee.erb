@@ -3290,7 +3290,27 @@ EditProposal = ReactiveComponent
 
     DIV null, 
       DashHeader name: if @props.fresh then "New Proposal" else "Edit #{proposal.name}"
-      DIV style: { width: CONTENT_WIDTH, margin: 'auto', padding: '3em 0' },
+      DIV 
+        style: 
+          width: CONTENT_WIDTH
+          margin: 'auto'
+          padding: '3em 0'
+          position: 'relative'
+        A 
+          style: 
+            color: '#777'
+            position: 'absolute'
+            left: -100
+            top: 54
+          href: "/#{proposal.slug}"
+          onClick: clickInternalLink
+
+          I
+            className: 'fa fa-arrow-left'
+            style: 
+              paddingRight: 10
+          'back'
+
 
         DIV style: block_style,
           LABEL htmlFor:'slug', style: label_style, 'URL:'

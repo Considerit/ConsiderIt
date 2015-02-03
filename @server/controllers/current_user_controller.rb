@@ -208,6 +208,10 @@ class CurrentUserController < ApplicationController
         try_update_password 'edit profile', errors
         log('updating info')
 
+      when 'user questions'
+        update_user_attrs 'user questions', errors
+        log('answering user questions')
+
       when 'verify email'
         verify_user(current_user.email, params[:verification_code])
         log('verifying email')
@@ -278,8 +282,18 @@ class CurrentUserController < ApplicationController
 
     fields = ['avatar', 'bio', 'name', 'hide_name', 'tags', 'no_email_notifications']
     new_params = params.select{|k,v| fields.include? k}
-    new_params[:name] = '' if !new_params[:name]
-    new_params[:tags] = JSON.dump(new_params[:tags]) if new_params[:tags]
+    new_params[:name] = '' if !new_params[:name] #TODO: Do we really want to allow blank names?...
+
+    if new_params.has_key? :tags
+      # strip out non-editable tags...
+      new_tags = new_params[:tags].reject {|k,v| !k.include?('.editable') } 
+
+      # make sure non-editable tags weren't removed entirely...
+      non_editable_old_tags = JSON.parse(current_user.tags || '{}').reject {|k,v| k.include?('.editable') } 
+      new_tags.update non_editable_old_tags
+
+      new_params[:tags] = JSON.dump new_tags
+    end
 
     if current_user.update_attributes(new_params)
       # puts("Updating params. #{new_params}")
@@ -297,7 +311,7 @@ class CurrentUserController < ApplicationController
     user = User.find_by_email(email)
     if !email || email.length == 0
       if trying_to == 'create account'
-        errors.append 'No email address specified' 
+        errors.append 'No email address specified'
       end
     # And if it's not taken
     elsif user && (user != current_user)

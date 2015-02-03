@@ -38,7 +38,7 @@ window.browser =
   is_opera_mini : !!navigator.userAgent.match /Opera Mini/
   is_ie9 : !!(document.documentMode && document.documentMode == 9)
   is_iOS : !!navigator.platform.match(/(iPad|iPhone)/)
-  touch_enabled : Modernizr.touch
+  touch_enabled : 'ontouchend' in document
   high_density_display : ((window.matchMedia && (window.matchMedia('only screen and (min-resolution: 124dpi), only screen and (min-resolution: 1.3dppx), only screen and (min-resolution: 48.8dpcm)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (min-device-pixel-ratio: 1.3)').matches)) || (window.devicePixelRatio && window.devicePixelRatio > 1.3))
 
 window.lefty = false
@@ -667,7 +667,7 @@ Histogram = ReactiveComponent
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = !hist.selected_opinion && 
                             @root.proposal_mode == 'results' &&
-                            (hist.selected_opinions || 
+                            ((!@local.touched && hist.selected_opinions) || 
                               (@local.mouse_opinion_value && !@local.mousing_over_user)) 
 
     DIV 
@@ -677,83 +677,23 @@ Histogram = ReactiveComponent
         height: HISTOGRAM_HEIGHT + region_selection_vertical_padding
         position: 'relative'
 
-      onClick: (ev) => 
-        ev.stopPropagation()
+      onClick: @onClick
+      onMouseMove: @onMouseMove
+      onMouseLeave: @onMouseLeave
+      onMouseUp: @onMouseUp
+      onMouseDown: @onMouseDown
 
-        if @root.proposal_mode == 'crafting'
-          togglePage('results', 'click_histogram')
-
-        else
-          is_clicking_user = ev.target.className.indexOf('avatar') != -1
-          if is_clicking_user
-            user_key = "/user/#{ev.target.getAttribute('id').substring(7, ev.target.getAttribute('id').length)}"
-            user_opinion = _.findWhere opinions, {user: user_key}
-            is_deselection = hist.selected_opinion == user_opinion.key && !@local.last_selection_via_drag
-            if is_deselection
-              hist.selected_opinion = null
-            else 
-              hist.selected_opinion = user_opinion.key
-              hist.selected_opinions = null
-          else
-            new_selection = hist.selected_opinions && 
-                              @local.mouse_opinion_value <= hist.selected_opinion_value + hist.region_selection_width &&
-                              @local.mouse_opinion_value >= hist.selected_opinion_value - hist.region_selection_width &&
-                              !@local.last_selection_via_drag            
-            if new_selection
-              hist.selected_opinions = null
-            else
-              hist.selected_opinion = null
-              hist.selected_opinions = @getOpinionsInCurrentRegion()
-
-          has_selection = hist.selected_opinion || hist.selected_opinions
-          hist.selected_opinion_value = if has_selection then @local.mouse_opinion_value else null
-          @local.last_selection_via_drag = false
-
-          save hist
-          save @local
-
-      onMouseMove: (ev) => 
-        if @root.proposal_mode == 'results'
-          ev.stopPropagation()
-
-          # Calculate the mouse_opinion_value (the slider value about which we determine
-          # the selection region) based on the mouse offset within the histogram element.
-          h_x = @getDOMNode().getBoundingClientRect().left + window.pageXOffset
-          h_w = @getDOMNode().offsetWidth
-          m_x = ev.pageX
-
-          @local.mousing_over_user = ev.target.className.indexOf('avatar') != -1 && !fetch('histogram').dragging
-
-          @local.mouse_opinion_value = 2 * (m_x - h_x) / h_w - 1
-          if Math.abs(@local.mouse_opinion_value) > 1
-            @local.mouse_opinion_value = null
-          
-          # dynamic selection on drag
-          if hist.dragging && !hist.selected_opinion
-            hist.selected_opinions = @getOpinionsInCurrentRegion()
-            hist.selected_opinion_value = @local.mouse_opinion_value
-            @local.last_selection_via_drag = true
-            save hist
-
-          save @local
-
-      onMouseLeave: (ev) => 
-        @local.mouse_opinion_value = null
+      onTouchStart: (ev) => 
+        ev.preventDefault()
+        @onClick(ev)
+        hist.dragging = true
+        @local.touched = true
+        save hist
         save @local
 
-      onMouseUp: (ev) => 
-        hist.dragging = false
-        save hist
-
-      onMouseDown: (ev) => 
-        ev.stopPropagation()
-
-        hist.dragging = true
-        save hist
-        return false 
-          # The return false prevents text selections
-          # of other parts of the page when dragging
-          # the selection region around.
+      onTouchMove: (ev) => ev.preventDefault(); @onMouseMove(ev)
+      onTouchEnd: (ev) => ev.preventDefault(); @onMouseUp(ev)
+      onTouchCancel: (ev) => ev.preventDefault(); @onMouseUp(ev)
 
       # A little padding at the top to give some space for selecting
       # opinion regions with lots of people stacked high      
@@ -834,6 +774,105 @@ Histogram = ReactiveComponent
             user: user
             hide_name: @root.proposal_mode == 'crafting' || hist.dragging
             style: avatar_style
+
+
+  onClick: (ev) -> 
+
+    ev.stopPropagation()
+    hist = fetch('histogram')
+
+    if @root.proposal_mode == 'crafting'
+      togglePage('results', 'click_histogram')
+
+    else
+      if ev.type == 'touchstart'
+        @local.mouse_opinion_value = @getOpinionValueAtFocus(ev)
+
+      opinions = fetch('/page/' + @proposal.slug).opinions || []
+      is_clicking_user = ev.target.className.indexOf('avatar') != -1
+
+      if is_clicking_user
+        user_key = "/user/#{ev.target.getAttribute('id').substring(7, ev.target.getAttribute('id').length)}"
+        user_opinion = _.findWhere opinions, {user: user_key}
+        is_deselection = hist.selected_opinion == user_opinion.key && !@local.last_selection_via_drag
+        if is_deselection
+          hist.selected_opinion = null
+        else 
+          hist.selected_opinion = user_opinion.key
+          hist.selected_opinions = null
+      else
+
+        is_deselection = hist.selected_opinions && 
+                          @local.mouse_opinion_value <= hist.selected_opinion_value + hist.region_selection_width &&
+                          @local.mouse_opinion_value >= hist.selected_opinion_value - hist.region_selection_width &&
+                          !@local.last_selection_via_drag            
+        if is_deselection
+          hist.selected_opinions = null
+          if ev.type == 'touchstart'
+            @local.mouse_opinion_value = null
+        else
+          hist.selected_opinion = null
+          hist.selected_opinions = @getOpinionsInCurrentRegion()
+
+      has_selection = hist.selected_opinion || hist.selected_opinions
+      hist.selected_opinion_value = if has_selection then @local.mouse_opinion_value else null
+      @local.last_selection_via_drag = false
+
+      save hist
+      save @local
+
+  getOpinionValueAtFocus: (ev) -> 
+    # Calculate the mouse_opinion_value (the slider value about which we determine
+    # the selection region) based on the mouse offset within the histogram element.
+    h_x = @getDOMNode().getBoundingClientRect().left + window.pageXOffset
+    h_w = @getDOMNode().offsetWidth
+    m_x = ev.pageX or ev.touches[0].pageX
+
+    2 * (m_x - h_x) / h_w - 1
+
+  onMouseMove: (ev) -> 
+    if @root.proposal_mode == 'results'
+      hist = fetch('histogram')
+      ev.stopPropagation()
+
+      @local.mousing_over_user = ev.target.className.indexOf('avatar') != -1 && !fetch('histogram').dragging
+      @local.mouse_opinion_value = @getOpinionValueAtFocus(ev)
+
+      if Math.abs(@local.mouse_opinion_value) > 1
+        @local.mouse_opinion_value = null
+      
+      # dynamic selection on drag
+      if hist.dragging && !hist.selected_opinion &&
+          @local.mouse_opinion_value # this last conditional is only for touch interactions
+                                     # where there is mechanism for leaving
+                                     # the histogram
+        hist.selected_opinions = @getOpinionsInCurrentRegion()
+        hist.selected_opinion_value = @local.mouse_opinion_value 
+        @local.last_selection_via_drag = true
+        save hist
+
+      save @local
+
+  onMouseLeave: (ev) -> 
+    @local.mouse_opinion_value = null
+    save @local
+
+  onMouseUp: (ev) -> 
+    hist = fetch('histogram')     
+    hist.dragging = false
+    save hist
+
+  onMouseDown: (ev) -> 
+    ev.stopPropagation()
+    hist = fetch('histogram')
+
+    hist.dragging = true
+    save hist
+    return false 
+      # The return false prevents text selections
+      # of other parts of the page when dragging
+      # the selection region around.
+
 
   getOpinionsInCurrentRegion : -> 
     # return the opinions whose stance is within +/- region_selection_width 
@@ -1176,11 +1215,13 @@ Slider = ReactiveComponent
           [DIV 
             className: 'the_handle' 
             onMouseUp: @handleMouseUp
-            onMouseDown: @handleMouseDown
-            onTouchStart: @handleMouseDown
-            onTouchMove: @handleMouseMove
             onTouchEnd: @handleMouseUp
             onTouchCancel: @handleMouseUp
+
+            onMouseDown: @handleMouseDown
+            onTouchStart: @handleMouseDown
+
+            onTouchMove: @handleMouseMove
             style: handle_style
 
             if page == 'crafting'

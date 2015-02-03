@@ -1,3 +1,28 @@
+class SelectiveAssetsCompressor < Uglifier
+  def initialize(options = { })
+    options = {:output => {:comments => :all}}
+    super(options)
+  end
+
+  def output(string)
+    if string =~ /DO_NOT_COMPRESS_THIS_FILE/
+      string
+    else
+      super(string)
+    end
+  end
+
+
+  def compress(string)
+    if string =~ /DO_NOT_COMPRESS_THIS_FILE/
+      string
+    else
+      super(string)
+    end
+  end
+end
+
+
 ConsiderIt::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -11,7 +36,9 @@ ConsiderIt::Application.configure do
 
   # Compress JavaScripts and CSS
   #config.assets.compress = true
-  config.assets.js_compressor = :uglifier
+
+
+  config.assets.js_compressor = SelectiveAssetsCompressor.new
   
   # Choose the compressors to use
   # config.assets.js_compressor  = :uglifier
@@ -37,7 +64,7 @@ ConsiderIt::Application.configure do
    
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   
-  config.assets.precompile += %w( javascripts/load_everything.js load_everything.js *.svg *.eot *.woff *.ttf *.jpg *.png *.jpeg *.gif)
+  config.assets.precompile += %w( javascripts/franklin.js franklin.js javascripts/load_everything.js load_everything.js *.svg *.eot *.woff *.ttf *.jpg *.png *.jpeg *.gif)
 
   # Specifies the header that your server uses for sending files
   # config.action_dispatch.x_sendfile_header = "X-Sendfile"

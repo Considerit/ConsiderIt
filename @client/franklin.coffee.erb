@@ -2942,7 +2942,8 @@ Avatar = ReactiveComponent
 
     # Automatically upgrade the avatar size to 'large' if the width of the image is 
     # greater than the size of the b64 encoded image
-    if (@props.img_style || style?.width > 50) && user.key != -1 && user.avatar_file_name
+    use_src = (@props.img_style || style?.width > 50) && user.key != -1 && user.avatar_file_name
+    if use_src
       img_style = @props.img_style or 'large'
       @props.src = "#{fetch('/subdomain').asset_host}/system/avatars/#{user.key.split('/')[2]}/#{img_style}/#{user.avatar_file_name}"
       
@@ -2968,7 +2969,10 @@ Avatar = ReactiveComponent
         tooltip.coords = null
         save tooltip
 
-    @transferPropsTo IMG attrs
+    # We make these SPANs by default to support IE9, which gets confused if there 
+    # is an image without a src
+    tag = if use_src then IMG else SPAN
+    @transferPropsTo tag attrs
 
   getDefaultProps : ->
     key: '/user/-1' # defaults to anonymous user

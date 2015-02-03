@@ -50,9 +50,7 @@ class SubdomainController < ApplicationController
     fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'has_civility_pledge']
     attrs = params.select{|k,v| fields.include? k}
 
-    if params.has_key?('roles') && params.has_key?(:invitations) && params[:invitations]
-      params['roles'] = process_and_send_invitations(params['roles'], params[:invitations], current_subdomain)
-    end
+    update_roles
 
     serialized_fields = ['roles', 'branding']
     for field in serialized_fields
@@ -67,6 +65,18 @@ class SubdomainController < ApplicationController
     dirty_key '/subdomain'
     render :json => []
 
+  end
+
+  def update_roles
+    if params.has_key?('roles')
+      if params.has_key?(:invitations) && params[:invitations]
+        params['roles'] = process_and_send_invitations(params['roles'], params[:invitations], current_subdomain)
+      end
+      # rails replaces [] with nil in params for some reason...
+      params['roles'].each do |k,v|
+        params['roles'][k] = [] if !v
+      end
+    end
   end
 
   def update_images_hack

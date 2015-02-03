@@ -64,7 +64,7 @@ class User < ActiveRecord::Base
       name: name,
       reset_password_token: nil,
       b64_thumbnail: b64_thumbnail,
-      tags: JSON.parse(tags) || {},
+      tags: JSON.parse(tags || '{}'),
       is_super_admin: self.super_admin,
       is_admin: is_admin?,
       is_moderator: permit('moderate content', nil) > 0,
@@ -98,7 +98,8 @@ class User < ActiveRecord::Base
     result = { 'key' => "/user/#{id}",
                'name' => name,
                'avatar_file_name' => avatar_file_name,
-               'groups' => JSON.parse(groups || '[]') }
+               'tags' => JSON.parse(tags || '{}')  }
+                  # TODO: filter private tags
     if current_user.is_admin?
       result['email'] = email
     end
@@ -239,28 +240,6 @@ class User < ActiveRecord::Base
       u.unique_token
     end
   end
-
-  # Users can belong to groups
-  # Groups is an array of strings
-  # TODO: merge with tags
-  def has_group? (group)
-    JSON.parse(self.groups || '[]').include?(group)
-  end
-  def add_group (group)
-    g = JSON.parse(self.groups || '[]')
-    if !g.include?(group)
-      self.groups = JSON.dump(g.push(group))
-      self.save()
-    end
-    g
-  end
-  def remove_group (group)
-    g = JSON.parse(self.groups || '[]') - [group]
-    self.groups = JSON.dump(g)
-    self.save()
-    g
-  end
-
 
   # def update_metrics
   #   referenced_proposals = {}

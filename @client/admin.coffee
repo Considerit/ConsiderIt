@@ -758,7 +758,7 @@ FactcheckPoint = ReactiveComponent
                   className: 'comment_entry_avatar'
                   tag: DIV
                   key: request.user
-                  hide_name: true
+                  hide_tooltip: true
 
                 DIV style: {marginLeft: 73},
                   splitParagraphs(request.suggestion)

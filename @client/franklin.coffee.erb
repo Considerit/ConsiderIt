@@ -815,7 +815,7 @@ Histogram = ReactiveComponent
           hist.selected_opinions = @getOpinionsInCurrentRegion()
 
       has_selection = hist.selected_opinion || hist.selected_opinions
-      hist.selected_opinion_value = if has_selection then @local.mouse_opinion_value else null
+      hist.selected_opinion_value = if !has_selection then null else if !is_clicking_user then @local.mouse_opinion_value else user_opinion.stance
       @local.last_selection_via_drag = false
 
       save hist

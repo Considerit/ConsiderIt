@@ -306,7 +306,7 @@ UserWithRole = (user_key, on_remove_from_role) ->
         user = fetch user_key
         SPAN null,
           if user.avatar_file_name
-            Avatar key: user_key, hide_name: true, style: {width: 20, height: 20, marginRight: 5}
+            Avatar key: user_key, hide_tooltip: true, style: {width: 20, height: 20, marginRight: 5}
           if user.name 
             user.name 
           else 

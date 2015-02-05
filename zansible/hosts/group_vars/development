@@ -32,16 +32,10 @@ config:
   secret_key_base: '2951b055ced80eb9fc4f4c6aeab29c8f5ecd265928785b0233440e74af2b321bc0960022059be0d77e87498e3a85e09867b151bfac81d3b38eed88ed05171a34'
 
   google_analytics: UA-31400941-1
-  bitly:
-    user_name: o_4k0pfph950
-    api_key: R_c4ecd2e60147cb135da812d44a22a355
   new_relic: 578589adb6303e0190d1df8a343577521a70a562
   aws:
-    enabled: true
-    access_key_id: AKIAIN4RE4I6AT422EYQ
-    secret_access_key: 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
-    fog_directory: chalkboard-it
-    cloudfront: d27cw8yowf77j7
+    enabled: false
+
   exception_notifier:
     email_recipients: admin@consider.it
 

@@ -235,7 +235,6 @@ ActiveRecord::Schema.define(version: 20150119041700) do
     t.string   "cluster",                                limit: 255
     t.text     "zips",                                   limit: 65535
     t.text     "roles",                                  limit: 65535
-    t.text     "other",                                  limit: 65535
   end
 
   add_index "proposals", ["subdomain_id", "active"], name: "select_proposal_by_active", using: :btree

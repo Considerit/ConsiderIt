@@ -45,7 +45,7 @@ def prepare_production_database(sql_url)
   tar_extract = Gem::Package::TarReader.new(open('tmp/production_db.tar'))
   tar_extract.rewind # The extract has to be rewinded after every iteration
   tar_extract.each do |entry|
-    if entry.full_name == 'xenogear/databases/MySQL.sql.gz'
+    if entry.full_name.end_with?('.sql.gz')
       open('tmp/production_db.sql', 'wb') do |gz|
         gz << Zlib::GzipReader.new(entry).read
       end

@@ -32,12 +32,10 @@ task :download_files_from_production => :environment do
   ]
 
   # find out where we store out assets...
-  has_aws = APP_CONFIG.has_key?(:aws) && APP_CONFIG[:aws].has_key?(:access_key_id) && !APP_CONFIG[:aws][:access_key_id].nil?
+  has_aws = Rails.env.production? && APP_CONFIG.has_key?(:aws) && APP_CONFIG[:aws].has_key?(:access_key_id) && !APP_CONFIG[:aws][:access_key_id].nil?
   if has_aws
     my_asset_host = "http://#{APP_CONFIG[:aws][:cloudfront]}.cloudfront.net"  
   end
-
-  pp has_aws
 
   attachments.each do |attachment|
     # for each object of model that has an attachment of this type
@@ -110,7 +108,6 @@ require "net/http"
 def url_exist?(url_string)
   url = URI.parse(url_string)
   req = Net::HTTP.new(url.host, url.port)
-  req.use_ssl = (url.scheme == 'https')
   path = url.path if url.path.present?
   res = req.request_head(path || '/')
   !["404", "403"].include? res.code 

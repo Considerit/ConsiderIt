@@ -54,14 +54,16 @@ task :download_files_from_production => :environment do
       # check if the file is already downloaded
       if has_aws
         already_downloaded = url_exist?("#{my_asset_host}/#{url}")
+        url = "#{asset_host}/#{url}"
       else
         path = "#{Rails.root.to_s}/public#{url}"
         already_downloaded = File.exist?(path)
+        url = "#{asset_host}#{url}"
       end
 
       if !already_downloaded
         # if not, download it
-        url = "#{asset_host}#{url}"
+        
 
         io = URI.parse(url)
         begin

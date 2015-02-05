@@ -544,21 +544,22 @@ styles += """
 # The pros and cons can be filtered to specific opinion regions
 # (individual and collective). 
 # 
+##
 # The interaction rules: 
 #
 # Selection
 #   * Click on a user in the histogram, show that user's opinion:
-#      - Show in the decision board only the points included by this user
+#      - Filter decision board points to those included by this user
 #      - Show a second, larger image of the user and their name in
 #         the region between the histogram and decision board
-#   * Click an unselected region of the histogram unoccupied by a user:
+#   * Click an area of the histogram unoccupied by a user, when 
+#     not already in selection mode, to enter selection mode:
 #      - Show the collective opinions of the users in that region. 
 #         Rerank the points in the decision board accordingly.
-#      - fix the selected region background
-#      - click+dragging enables dynamic selection mode:
-#         * continually update the selection region based on the current 
-#           mouse position 
-#         * suppress tooltips on user names to prevent distraction.
+#   * Move the mouse in histogram when in group selection mode:
+#      - selected opinions dynamically updated based on mouse position 
+#      - selection region stays entirely within the histogram 
+#   * Drag the edges of the region selection top edge to resize the selection
 #
 # Deselection
 #   * If a single user is selected, clicking anywhere outside of that 
@@ -566,12 +567,12 @@ styles += """
 #   * If a region is selected, clicking anywhere except within the 
 #     decision board will deselect the region.
 #
+##
 # Selected region background
-#   * A selection region follows the mouse in the histogram unless:
-#      - a region or user is already selected
-#      - a user is being hovered on
-#   * If a region is already selected, the region background sticks
-#     there.
+#   * A selection region background follows the mouse in the histogram if:
+#      - we're in group selection mode
+#      - we're hovering over the histogram in 
+#   * Show a border at the top if in group selection mode
 #
 # The segment filtering selection region is imprecise. It defines
 # a selection region based on the real values of the users' opinions,
@@ -668,7 +669,7 @@ Histogram = ReactiveComponent
     draw_selection_area = !hist.selected_opinion && 
                             @root.proposal_mode == 'results' &&
                             ((!@local.touched && hist.selected_opinions) || 
-                              (@local.mouse_opinion_value && !@local.mousing_over_user)) 
+                              (@local.mouse_opinion_value && !@local.hoving_over_avatar)) 
 
     DIV 
       className: 'histogram'
@@ -718,20 +719,33 @@ Histogram = ReactiveComponent
         SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
 
 
-      # Draw the opinion selection area
+      # Draw the opinion selection area + region resizing border
       if draw_selection_area
         anchor = hist.selected_opinion_value or @local.mouse_opinion_value
         left = ((anchor + 1)/2 - hist.region_selection_width/2) * BODY_WIDTH
         base_width = hist.region_selection_width * BODY_WIDTH
+        selection_width = Math.min(Math.min(base_width, base_width + left), BODY_WIDTH - left)
+        selection_left = Math.max 0, left
+        [DIV 
+          className: 'selection_region_resizer'
+          style: 
+            borderBottom: "3px solid #{if hist.selected_opinions then focus_blue else 'transparent'}"
+            height: 15
+            width: selection_width
+            position: 'absolute'
+            left: selection_left
+            top: -15
+            cursor: 'col-resize'
+
+
         DIV 
           style:
             height: HISTOGRAM_HEIGHT + region_selection_vertical_padding
             position: 'absolute'
-            width: Math.min(Math.min(base_width, base_width + left), BODY_WIDTH - left)
-            borderTop: "3px solid transparent"
+            width: selection_width
             backgroundColor: "rgb(246, 247, 249)"
             cursor: 'pointer'
-            left: Math.max 0, left
+            left: selection_left
             top: 0
 
           if !hist.selected_opinions
@@ -744,7 +758,7 @@ Histogram = ReactiveComponent
                 userSelect: 'none'
                 pointerEvents: 'none'
 
-              'Select these opinions'
+              'Select these opinions']
 
       # Draw the avatars in the histogram. Placement will be determined later
       # by the physics sim
@@ -772,7 +786,7 @@ Histogram = ReactiveComponent
           Avatar 
             key: user
             user: user
-            hide_tooltip: @root.proposal_mode == 'crafting' || hist.dragging
+            hide_tooltip: @root.proposal_mode == 'crafting'
             style: avatar_style
 
 
@@ -803,8 +817,6 @@ Histogram = ReactiveComponent
       else
 
         is_deselection = hist.selected_opinions && 
-                          @local.mouse_opinion_value <= hist.selected_opinion_value + hist.region_selection_width &&
-                          @local.mouse_opinion_value >= hist.selected_opinion_value - hist.region_selection_width &&
                           !@local.last_selection_via_drag            
         if is_deselection
           hist.selected_opinions = null
@@ -821,6 +833,7 @@ Histogram = ReactiveComponent
       save hist
       save @local
 
+
   getOpinionValueAtFocus: (ev) -> 
     # Calculate the mouse_opinion_value (the slider value about which we determine
     # the selection region) based on the mouse offset within the histogram element.
@@ -835,23 +848,35 @@ Histogram = ReactiveComponent
       hist = fetch('histogram')
       ev.stopPropagation()
 
-      @local.mousing_over_user = ev.target.className.indexOf('avatar') != -1 && !fetch('histogram').dragging
-      @local.mouse_opinion_value = @getOpinionValueAtFocus(ev)
-
-      if Math.abs(@local.mouse_opinion_value) > 1
-        @local.mouse_opinion_value = null
-      
-      # dynamic selection on drag
-      if hist.dragging && !hist.selected_opinion &&
-          @local.mouse_opinion_value # this last conditional is only for touch interactions
-                                     # where there is mechanism for leaving
-                                     # the histogram
-        hist.selected_opinions = @getOpinionsInCurrentRegion()
-        hist.selected_opinion_value = @local.mouse_opinion_value 
+      # handle drag resizing selection area
+      if hist.dragging
+        h_w = @getDOMNode().offsetWidth
+        mouse_x = ev.pageX
+        change_in_selection_region = 2 * (mouse_x - @local.mouse_x_of_last_resize) / h_w
+        hist.region_selection_width += change_in_selection_region
+        hist.region_selection_width = Math.min(1, Math.max(.03, hist.region_selection_width))
+        @local.mouse_x_of_last_resize = mouse_x
         @local.last_selection_via_drag = true
+        save @local
         save hist
+      else if $(ev.target).closest('.selection_region_resizer').length == 0
+        @local.hoving_over_avatar = ev.target.className.indexOf('avatar') != -1
+        @local.mouse_opinion_value = @getOpinionValueAtFocus(ev)
 
-      save @local
+        if @local.mouse_opinion_value + hist.region_selection_width >= 1
+          @local.mouse_opinion_value = 1 - hist.region_selection_width
+        else if @local.mouse_opinion_value - hist.region_selection_width <= -1
+          @local.mouse_opinion_value = -1 + hist.region_selection_width
+        
+        # dynamic selection on drag
+        if hist.selected_opinions &&
+            @local.mouse_opinion_value # this last conditional is only for touch interactions
+                                       # where there is no mechanism for "leaving" the histogram
+          hist.selected_opinions = @getOpinionsInCurrentRegion()
+          hist.selected_opinion_value = @local.mouse_opinion_value 
+          save hist
+
+        save @local
 
   onMouseLeave: (ev) -> 
     @local.mouse_opinion_value = null
@@ -859,15 +884,20 @@ Histogram = ReactiveComponent
 
   onMouseUp: (ev) -> 
     hist = fetch('histogram')     
-    hist.dragging = false
-    save hist
+    
+    if hist.dragging
+      hist.dragging = false
+      save hist
 
   onMouseDown: (ev) -> 
     ev.stopPropagation()
-    hist = fetch('histogram')
 
-    hist.dragging = true
-    save hist
+    if $(ev.target).closest('.selection_region_resizer').length > 0
+      hist = fetch('histogram')
+      hist.dragging = true
+      @local.mouse_x_of_last_resize = ev.pageX
+      save hist
+
     return false 
       # The return false prevents text selections
       # of other parts of the page when dragging
@@ -920,9 +950,10 @@ styles += """
     position: absolute;
     bottom: 0; }
 
-  .histogram .avatar {
-    background-color: #{default_avatar_in_histogram_color}; 
-    position: absolute;}
+.histogram .avatar {
+  background-color: #{default_avatar_in_histogram_color}; 
+  position: absolute;
+  cursor: pointer;}
 
 """
 
@@ -1663,7 +1694,7 @@ CommunityPoints = ReactiveComponent
         className:'points_heading_label'
         style: 
           position: 'relative'
-          fontWeight: if browser.high_density_display then 300 else 400
+          #fontWeight: if browser.high_density_display then 300 else 400
           left: if @props.key == 'cons' then -20 else 20
             # Mike: I wanted the headers to be centered over the ENTIRE
             # points including avatars, not just bubbles.  But the
@@ -2868,17 +2899,22 @@ Bubblemouth = ReactiveComponent
       hist = fetch('histogram')
 
       border_width = 3
-      left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 20
-      
+
       if hist.selected_opinion
+        place_avatar_opinion_value = if hist.selected_opinion_value > 0 then .8 else -.8
+        left = ((place_avatar_opinion_value + 1)/2) * BODY_WIDTH + 20
+
         avatar_size = 80
         user = fetch(fetch(hist.selected_opinion).user)
-        name_width = Math.max(realWidth(user.name or 'Anonymous', {fontSize: '18px', fontWeight: '600'}), 
-                              realWidth('Opinion of', {fontSize: '18px', fontWeight: '300'}))
+        name = user.name or 'Anonymous'
+        title = "#{name}'#{if name[name.length - 1] != 's' then 's' else ''} Opinion"
+
+        name_width = realWidth(title, {fontSize: '30px', fontWeight: '600'}) #+  
+                              #realWidth('Opinion of', {fontSize: '18px', fontWeight: '300'})
 
         if hist.selected_opinion_value > 0
           name_style = 
-            left: -18 - avatar_size * .5 - name_width 
+            left: -28 - avatar_size * .5 - name_width 
             borderTopLeftRadius: 16
             paddingRight: avatar_size * .75
             paddingLeft: 18
@@ -2911,22 +2947,31 @@ Bubblemouth = ReactiveComponent
                 position: 'absolute'
                 backgroundColor: focus_blue
                 paddingTop: 8
-                fontSize: 18
+                paddingBottom: 8
                 color: 'white'
                 top: -58
+                width: name_width + 10 + 18 + avatar_size * .75 + 10
 
-              DIV
-                style: 
-                  fontWeight: 300
-                'Opinion of'
-              DIV 
+
+              SPAN 
                 style: 
                   fontWeight: 600
-                  width: name_width + 10
-                user.name or 'Anonymous'
+                  fontSize: 30
+                title
+
+
+
+              # SPAN
+              #   style: 
+              #     fontWeight: 300
+              #     fontSize: 18
+              #     paddingRight: 10
+              #   'Opinion of'
+
 
       else 
         size = 20
+        left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 20
 
         css_triangle = 
           width: 0

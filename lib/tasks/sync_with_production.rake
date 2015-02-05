@@ -1,3 +1,94 @@
+require 'open-uri'
+require 'rubygems/package'
+require 'zlib'
+
+##################################################################
+# Synchronizes staging or dev environment with production database
+#
+# 1) Download and import a target production database backup
+# 2) Drops, recreates, and imports new considerit database
+# 3) Imports file attachments into local environment
+# 4) Appends .ghost to all non-super admin user email addresses
+#    to prevent emails being sent to real users in a testing context
+# 5) Migrates the database so it is in sync with current environment
+
+# dumps are located in ~/Dropbox/Apps/considerit_backup/xenogear
+# This script assumes a tarball created via the Backup gem. 
+DATABASE_BACKUP_URL = "https://www.dropbox.com/s/97j6j3qdaig9yd4/xenogear.tar?dl=1"
+
+# Where production assets are served from 
+PRODUCTION_ASSET_HOST = "http://d2rtgkroh5y135.cloudfront.net"
+
+task :sync_with_production, [:sql_url] => :environment do |t, args|
+  sql_url = args[:sql_url] ? args[:sql_url] : DATABASE_BACKUP_URL
+
+  puts "Preparing local database based on production database #{sql_url}..."
+  success = prepare_production_database sql_url
+
+  if success
+    puts "Downloading file attachments from production..."
+    download_files_from_production
+  else
+    puts "Failed"
+  end
+end
+
+def prepare_production_database(sql_url)
+
+  # Download and extract target production database backup
+
+  open('tmp/production_db.tar', 'wb') do |file|
+    file << open(URI.parse(sql_url)).read
+  end
+
+  # Backup's tarball is a directory xenogear/databases/MySQL.sql.gz
+  tar_extract = Gem::Package::TarReader.new(open('tmp/production_db.tar'))
+  tar_extract.rewind # The extract has to be rewinded after every iteration
+  tar_extract.each do |entry|
+    if entry.full_name == 'xenogear/databases/MySQL.sql.gz'
+      open('tmp/production_db.sql', 'wb') do |gz|
+        gz << Zlib::GzipReader.new(entry).read
+      end
+    end
+  end
+  tar_extract.close
+
+  puts "...downloaded and extracted production database backup from #{DATABASE_BACKUP_URL}"
+
+  # Drop existing database
+  filename = "test/data/test.sql"
+  
+  Rake::Task["db:drop"].invoke  
+  Rake::Task["db:create"].invoke
+  puts "...dropped and recreated database #{Rails.configuration.database_configuration[Rails.env]["database"]}"
+
+  # Import production database backup
+  puts "...now we're importing data. Might take a few minutes."
+  db = Rails.configuration.database_configuration[Rails.env]
+  system "mysql -u#{db['username']} -p#{db['password']} #{db['database']} < #{Rails.root}/tmp/production_db.sql"
+
+  puts "...imported production db into #{Rails.configuration.database_configuration[Rails.env]["database"]}"
+
+  # Append .ghost to all non-super admin user email addresses
+  # to prevent emails being sent to real users in a testing context
+  ActiveRecord::Base.connection.execute("UPDATE users SET email=CONCAT(email,'.ghost') WHERE email IS NOT NULL AND super_admin=false")
+  puts "...modified non superadmin email addresses to prevent email notifications"
+
+  # Migrates the database so it is in sync with current environment
+  system "bundle exec rake db:migrate > /dev/null 2>&1"
+  puts "...migrated the database"
+
+  cleanup = ['tmp/production_db.tar', 'tmp/production_db.sql']
+  cleanup.each do |f|
+    File.delete f if File.exist?(f)
+  end
+  puts "...cleaned up tmp files"
+
+  return true
+end
+
+
+
 # Serving assets from AWS via Cloudfront and S3 
 # helps speed up page loads by distributing the 
 # requests across multiple servers that are on average
@@ -20,9 +111,12 @@
 # the database originated. It will default to the asset host
 # for consider.it.
 
-asset_host = "http://d2rtgkroh5y135.cloudfront.net"
 
 task :download_files_from_production => :environment do
+  download_files_from_production
+end
+
+def download_files_from_production
   # The attachments to synchronize.
   attachments = [ 
     {name: 'avatars', model: User},
@@ -34,7 +128,7 @@ task :download_files_from_production => :environment do
   # find out where we store out assets...
   has_aws = Rails.env.production? && APP_CONFIG.has_key?(:aws) && APP_CONFIG[:aws].has_key?(:access_key_id) && !APP_CONFIG[:aws][:access_key_id].nil?
   if has_aws
-    my_asset_host = "http://#{APP_CONFIG[:aws][:cloudfront]}.cloudfront.net"
+    local_asset_host = "http://#{APP_CONFIG[:aws][:cloudfront]}.cloudfront.net"
     path_template = Paperclip::Attachment.default_options[:path]
   else
     # default_options[:url] will look like "/system/:attachment/:id/:style/:filename"
@@ -53,12 +147,12 @@ task :download_files_from_production => :environment do
 
       # check if the file is already downloaded
       if has_aws
-        already_downloaded = url_exist?("#{my_asset_host}/#{url}")
-        url = "#{asset_host}/#{url}"
+        already_downloaded = url_exist?("#{local_asset_host}/#{url}")
+        url = "#{PRODUCTION_ASSET_HOST}/#{url}"
       else
         path = "#{Rails.root.to_s}/public#{url}"
         already_downloaded = File.exist?(path)
-        url = "#{asset_host}#{url}"
+        url = "#{PRODUCTION_ASSET_HOST}#{url}"
       end
 
       if !already_downloaded
@@ -104,8 +198,9 @@ task :download_files_from_production => :environment do
   end
   # Avatar attachments are processed as background tasks
   Delayed::Worker.new.work_off(Delayed::Job.count)
-
 end
+
+
 
 # from http://stackoverflow.com/questions/5908017/check-if-url-exists-in-ruby
 require "net/http"

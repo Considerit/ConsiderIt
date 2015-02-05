@@ -726,39 +726,42 @@ Histogram = ReactiveComponent
         base_width = hist.region_selection_width * BODY_WIDTH
         selection_width = Math.min(Math.min(base_width, base_width + left), BODY_WIDTH - left)
         selection_left = Math.max 0, left
-        [DIV 
-          className: 'selection_region_resizer'
-          style: 
-            borderBottom: "3px solid #{if hist.selected_opinions then focus_blue else 'transparent'}"
-            height: 15
-            width: selection_width
-            position: 'absolute'
-            left: selection_left
-            top: -15
-            cursor: 'col-resize'
+
+        DIV null,
+          if hist.selected_opinions
+            DIV 
+              className: 'selection_region_resizer'
+              style: 
+                borderBottom: "3px solid #{focus_blue}"
+                height: 15
+                width: selection_width
+                position: 'absolute'
+                left: selection_left
+                top: -15
+                cursor: 'col-resize'
 
 
-        DIV 
-          style:
-            height: HISTOGRAM_HEIGHT + region_selection_vertical_padding
-            position: 'absolute'
-            width: selection_width
-            backgroundColor: "rgb(246, 247, 249)"
-            cursor: 'pointer'
-            left: selection_left
-            top: 0
+          DIV 
+            style:
+              height: HISTOGRAM_HEIGHT + region_selection_vertical_padding
+              position: 'absolute'
+              width: selection_width
+              backgroundColor: "rgb(246, 247, 249)"
+              cursor: 'pointer'
+              left: selection_left
+              top: 0
 
-          if !hist.selected_opinions
-            DIV
-              style:
-                fontSize: 12
-                textAlign: 'center'
-                whiteSpace: 'nowrap'
-                marginTop: -18
-                userSelect: 'none'
-                pointerEvents: 'none'
+            if !hist.selected_opinions
+              DIV
+                style:
+                  fontSize: 12
+                  textAlign: 'center'
+                  whiteSpace: 'nowrap'
+                  marginTop: -18
+                  userSelect: 'none'
+                  pointerEvents: 'none'
 
-              'Select these opinions']
+                'Select these opinions'
 
       # Draw the avatars in the histogram. Placement will be determined later
       # by the physics sim
@@ -892,8 +895,8 @@ Histogram = ReactiveComponent
   onMouseDown: (ev) -> 
     ev.stopPropagation()
 
-    if $(ev.target).closest('.selection_region_resizer').length > 0
-      hist = fetch('histogram')
+    hist = fetch('histogram')
+    if $(ev.target).closest('.selection_region_resizer').length > 0 && hist.selected_opinions      
       hist.dragging = true
       @local.mouse_x_of_last_resize = ev.pageX
       save hist

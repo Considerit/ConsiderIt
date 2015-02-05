@@ -34,15 +34,18 @@ task :download_files_from_production => :environment do
   # find out where we store out assets...
   has_aws = Rails.env.production? && APP_CONFIG.has_key?(:aws) && APP_CONFIG[:aws].has_key?(:access_key_id) && !APP_CONFIG[:aws][:access_key_id].nil?
   if has_aws
-    my_asset_host = "http://#{APP_CONFIG[:aws][:cloudfront]}.cloudfront.net"  
+    my_asset_host = "http://#{APP_CONFIG[:aws][:cloudfront]}.cloudfront.net"
+    path_template = Paperclip::Attachment.default_options[:path]
+  else
+    # default_options[:url] will look like "/system/:attachment/:id/:style/:filename"
+    path_template = Paperclip::Attachment.default_options[:url]  
   end
 
   attachments.each do |attachment|
     # for each object of model that has an attachment of this type
     field = "#{attachment[:name].singularize}_file_name"
     attachment[:model].where("#{field} IS NOT NULL").each do |obj|
-      # default_options[:url] will look like "/system/:attachment/:id/:style/:filename"
-      url = Paperclip::Attachment.default_options[:url]
+      url = path_template
               .gsub(":attachment", attachment[:name])
               .gsub(":id", obj.id.to_s)
               .gsub(":style", "original")

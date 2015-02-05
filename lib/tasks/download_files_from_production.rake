@@ -50,13 +50,12 @@ task :download_files_from_production => :environment do
               .gsub(":id", obj.id.to_s)
               .gsub(":style", "original")
               .gsub(":filename", obj[field])
-      
-      path = "#{Rails.root.to_s}/public#{url}"
 
       # check if the file is already downloaded
       if has_aws
-        already_downloaded = url_exist?("#{my_asset_host}#{url}")
+        already_downloaded = url_exist?("#{my_asset_host}/#{url}")
       else
+        path = "#{Rails.root.to_s}/public#{url}"
         already_downloaded = File.exist?(path)
       end
 

@@ -50,8 +50,14 @@ window.proposal_url = (proposal) =>
     result += '?results=true'
   return result
 
-window.is_neutral_opinion = (stance) -> 
+window.isNeutralOpinion = (stance) -> 
   return Math.abs(stance) < 0.05
+
+window.sliderPole = (scope, valence) -> 
+  subdomain = fetch('/subdomain')
+
+  customizations[subdomain.name]?.slider_pole_labels?[scope]?[valence] or
+    customizations.default.slider_pole_labels[scope][valence]
 
 
 userOpinion = (user_key) ->
@@ -132,8 +138,8 @@ PageTransition =
       when 'slider'
         slider = fetch 'slider'
 
-        direction = if slider.stance > 0 && !is_neutral_opinion(slider.stance) then 1 else -1
-        mouth_x   = if is_neutral_opinion(slider.stance) then 0 else -22
+        direction = if slider.stance > 0 && !isNeutralOpinion(slider.stance) then 1 else -1
+        mouth_x   = if isNeutralOpinion(slider.stance) then 0 else -22
 
         handle_width = 22
 
@@ -693,7 +699,8 @@ Histogram = ReactiveComponent
         style: 
           left: -160
           width: 145 
-        SPAN null, if @root.proposal_mode == 'crafting' then 'Oppose' else 'Opposers'
+        SPAN null,
+          sliderPole((if @root.proposal_mode == 'crafting' then 'individual' else 'group'), 'oppose') 
 
       DIV 
         key: 'supporters'
@@ -701,7 +708,8 @@ Histogram = ReactiveComponent
         style: 
           right: -145
           width: 130
-        SPAN null, if @root.proposal_mode == 'crafting' then 'Support' else 'Supporters'
+        SPAN null,
+          sliderPole((if @root.proposal_mode == 'crafting' then 'individual' else 'group'), 'support') 
 
 
       # Draw the opinion selection area + region resizing border
@@ -1105,7 +1113,7 @@ Slider = ReactiveComponent
 
     stanceLabel = (stance) -> 
       subdomain = fetch('/subdomain')
-      if is_neutral_opinion(stance)
+      if isNeutralOpinion(stance)
         "are Undecided"
       else 
 
@@ -1116,8 +1124,7 @@ Slider = ReactiveComponent
                                 "Firmly "
                               else
                                 "Slightly " 
-        valence = customizations[subdomain.name]?.slider_pole_labels?.personal?[if stance > 0 then 'support' else 'oppose'] or \
-                    customizations.default.slider_pole_labels.personal[if stance > 0 then 'support' else 'oppose']
+        valence = sliderPole('individual', if stance > 0 then 'support' else 'oppose')
 
         "#{strength_of_opinion} #{valence}"
 
@@ -1154,7 +1161,7 @@ Slider = ReactiveComponent
       neutral : {crafting: "<%= asset_path 'bubblemouth_neutral-crafting.png' %>", results: "<%= asset_path 'bubblemouth_neutral-results.png' %>"}
       other : {crafting: "<%= asset_path 'bubblemouth-crafting.png' %>", results: "<%= asset_path 'bubblemouth-results.png' %>"}
 
-    bubblemouth_src = if is_neutral_opinion(slider.stance) then bubblemouth_srcs['neutral'][page] else bubblemouth_srcs['other'][page]
+    bubblemouth_src = if isNeutralOpinion(slider.stance) then bubblemouth_srcs['neutral'][page] else bubblemouth_srcs['other'][page]
 
     eye_style = 
       backgroundColor: 'white'

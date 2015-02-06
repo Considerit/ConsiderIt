@@ -110,10 +110,10 @@ PageTransition =
     root = @root
     $el = $(@getDOMNode())
 
-
     # Each Component that implements this mixin can get triggered multiple times after a route change. 
     # So we're going to ensure that we apply styles only once for a given route change. 
     return if @transitioning == root.proposal_mode
+
     @transitioning = root.proposal_mode
 
     switch @name
@@ -840,6 +840,8 @@ Histogram = ReactiveComponent
     2 * (m_x - h_x) / h_w - 1
 
   onMouseMove: (ev) -> 
+    return if fetch('slider').is_moving
+
     if @root.proposal_mode == 'results'
       hist = fetch('histogram')
       ev.stopPropagation()
@@ -875,10 +877,12 @@ Histogram = ReactiveComponent
         save @local
 
   onMouseLeave: (ev) -> 
+    return if fetch('slider').is_moving
     @local.mouse_opinion_value = null
     save @local
 
   onMouseUp: (ev) -> 
+    return if fetch('slider').is_moving
     hist = fetch('histogram')     
     
     if hist.dragging
@@ -886,6 +890,7 @@ Histogram = ReactiveComponent
       save hist
 
   onMouseDown: (ev) -> 
+    return if fetch('slider').is_moving
     ev.stopPropagation()
 
     hist = fetch('histogram')
@@ -1076,8 +1081,8 @@ Slider = ReactiveComponent
 
     # We save the slider's position to the server only on mouse-up.
     # This way you can drag it with good performance.
-    if your_opinion.stance       != slider.stance
-      your_opinion.stance         = slider.stance
+    if your_opinion.stance != slider.stance
+      your_opinion.stance = slider.stance
       save your_opinion
       window.writeToLog 
         what: 'move slider'
@@ -1222,7 +1227,7 @@ Slider = ReactiveComponent
       handle_style.backgroundColor = "#ccc"
       handle_style.boxShadow = "0px 1px 0px #aaa"
       slider_base_style.backgroundColor = "#ddd"
-      bubblemouth_style.visibility = 'hidden' # TODO: use grayscale filter when !selected_wing_point instead of hidding
+      bubblemouth_style.visibility = 'hidden' # TODO: use grayscale filter when !selected_wing_point instead of hiding
 
     DIV 
       className: 'slider'
@@ -1329,6 +1334,8 @@ DecisionBoard = ReactiveComponent
     
     your_opinion = fetch(@proposal.your_opinion)
 
+    register_dependency = fetch('slider').clientX #to keep bubble mouth in sync with slider
+
     selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
     selected_wing_point = selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
     
@@ -1355,7 +1362,6 @@ DecisionBoard = ReactiveComponent
       decision_board_style.opacity = '.4'
     else if selected_point
       decision_board_style.borderColor = "#ccc"
-
 
     if your_opinion.published
       can_opine = permit 'update opinion', @proposal, your_opinion

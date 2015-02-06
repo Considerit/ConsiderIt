@@ -21,7 +21,6 @@ fetch 'slider',
   has_moved : false
   is_moving : false
   stance : null
-  stance_segment : null
 
 fetch 'decisionboard',
   sticky : false
@@ -51,12 +50,9 @@ window.proposal_url = (proposal) =>
     result += '?results=true'
   return result
 
+window.is_neutral_opinion = (stance) -> 
+  return Math.abs(stance) < 0.05
 
-getStanceSegment = (value) ->
-  for i in [0..5]
-    if value < stance_segment_boundaries[i + 1]
-      return i
-  return 6
 
 userOpinion = (user_key) ->
   window.user_opinions[user_key]
@@ -64,7 +60,7 @@ userOpinion = (user_key) ->
 _route_changed = false
 
 window.togglePage = (proposal_mode, triggered_by) ->
-  $('.histogram_segment_pole').ensureInView
+  $('.slider_pole_label').ensureInView
     offset_buffer: 150
     callback : -> 
       root = fetch('root')
@@ -86,17 +82,6 @@ window.togglePage = (proposal_mode, triggered_by) ->
         _route_changed = false
       , 1
 
-
-stance_segment_boundaries = { 0 : -1, 1 : -.9999, 2 : -0.5, 3 : -0.05, 4 : 0.05, 5 : 0.5, 6 : .9999 } 
-
-stance_names = 
-  6 : 'Fully Support'
-  0 : 'Fully Oppose'
-  5 : 'Firmly Support'
-  1 : 'Firmly Oppose'
-  4 : 'Slightly Support'
-  2 : 'Slightly Oppose'
-  3 : 'are Undecided'
 
 ##
 # PageTransition mixin
@@ -147,8 +132,8 @@ PageTransition =
       when 'slider'
         slider = fetch 'slider'
 
-        direction = if slider.stance_segment >  3 then 1 else -1
-        mouth_x   = if slider.stance_segment == 3 then 0 else -22
+        direction = if slider.stance > 0 && !is_neutral_opinion(slider.stance) then 1 else -1
+        mouth_x   = if is_neutral_opinion(slider.stance) then 0 else -22
 
         handle_width = 22
 
@@ -574,7 +559,7 @@ styles += """
 #      - we're hovering over the histogram in 
 #   * Show a border at the top if in group selection mode
 #
-# The segment filtering selection region is imprecise. It defines
+# The selection region is imprecise. It defines
 # a selection region based on the real values of the users' opinions,
 # _not_ the imprecise location of the avatar's position on the 
 # histogram. This can cause some confusion as to who will be 
@@ -617,7 +602,7 @@ styles += """
 #      Stores the mapped opinion value of the current mouse position
 #      within the histogram. 
 #   last_selection_via_drag
-#      Whether the last time a segment was selected was by dragging
+#      Whether the last time the selection region moved was done by dragging
 #      in the histogram. This is used to resolve a technicality with 
 #      the order in which mouseUp and mouseClick events are fired. 
 
@@ -703,7 +688,7 @@ Histogram = ReactiveComponent
       # Draw the poles of the slider
       DIV 
         key: 'opposers'
-        className: "histogram_segment_pole"
+        className: "slider_pole_label"
 
         style: 
           left: -160
@@ -712,7 +697,7 @@ Histogram = ReactiveComponent
 
       DIV 
         key: 'supporters'
-        className: "histogram_segment_pole"
+        className: "slider_pole_label"
         style: 
           right: -145
           width: 130
@@ -943,13 +928,13 @@ styles += """
 .histogram {
   user-select: none; -moz-user-select: none; -webkit-user-select: none;-ms-user-select: none;
 }
-.histogram_segment_pole {
+.slider_pole_label {
   position: absolute;
   font-size: 30px;
   bottom: -20px;
   pointer-events: none; 
   user-select: none; -moz-user-select: none; -webkit-user-select: none;-ms-user-select: none;}
-  .histogram_segment_pole span {
+  .slider_pole_label span {
     position: absolute;
     bottom: 0; }
 
@@ -1085,7 +1070,6 @@ Slider = ReactiveComponent
     # This way you can drag it with good performance.
     if your_opinion.stance       != slider.stance
       your_opinion.stance         = slider.stance
-      your_opinion.stance_segment = slider.stance_segment
       save your_opinion
       window.writeToLog 
         what: 'move slider'
@@ -1113,12 +1097,31 @@ Slider = ReactiveComponent
 
     # convert position of handle to a slider value on [1, -1]
     slider.stance = slider.clientX / @props.width * 2 - 1
-    slider.stance_segment = getStanceSegment slider.stance
 
     save slider
 
 
   render : ->
+
+    stanceLabel = (stance) -> 
+      subdomain = fetch('/subdomain')
+      if is_neutral_opinion(stance)
+        "are Undecided"
+      else 
+
+        degree = Math.abs(stance)
+        strength_of_opinion = if degree > .999
+                                "Fully "
+                              else if degree > .5
+                                "Firmly "
+                              else
+                                "Slightly " 
+        valence = customizations[subdomain.name]?.slider_pole_labels?.personal?[if stance > 0 then 'support' else 'oppose'] or \
+                    customizations.default.slider_pole_labels.personal[if stance > 0 then 'support' else 'oppose']
+
+        "#{strength_of_opinion} #{valence}"
+
+
     slider = fetch('slider')
     hist = fetch('histogram')
 
@@ -1136,7 +1139,6 @@ Slider = ReactiveComponent
 
     if slider.stance != your_opinion.stance and !slider.is_moving
       slider.stance = your_opinion.stance
-      slider.stance_segment = your_opinion.stance_segment
       slider.clientX = @props.width * (slider.stance / 2 + .5)
       if your_opinion.stance
         slider.has_moved = true
@@ -1145,15 +1147,14 @@ Slider = ReactiveComponent
     page = @root.proposal_mode
     sticky = fetch('decisionboard').sticky
     stance = slider.stance
-    segment = slider.stance_segment
 
     # Can't be dynamically set b/c of integration with asset fingerprinting. 
     # This is also why this file is ERB.
     bubblemouth_srcs = 
       neutral : {crafting: "<%= asset_path 'bubblemouth_neutral-crafting.png' %>", results: "<%= asset_path 'bubblemouth_neutral-results.png' %>"}
       other : {crafting: "<%= asset_path 'bubblemouth-crafting.png' %>", results: "<%= asset_path 'bubblemouth-results.png' %>"}
-    
-    bubblemouth_src = if segment == 3 then bubblemouth_srcs['neutral'][page] else bubblemouth_srcs['other'][page]
+
+    bubblemouth_src = if is_neutral_opinion(slider.stance) then bubblemouth_srcs['neutral'][page] else bubblemouth_srcs['other'][page]
 
     eye_style = 
       backgroundColor: 'white'
@@ -1171,8 +1172,7 @@ Slider = ReactiveComponent
       transform: 
         "scale(#{.4 + .3 * Math.abs(stance) }, #{.08 + .4 * stance}) 
          translate(0, #{-2 - 5 * Math.abs(stance)}px) 
-         rotate(45deg) 
-         skew(#{if segment in [0,6] then '10deg' else '0deg'})"
+         rotate(45deg)"
 
     css.crossbrowserify sty for sty in [eye_style, face_mouth_style]
     _.extend(face_part, {position: 'absolute', pointerEvents: 'none', borderRadius: '50%' }) for face_part in [eye_style, face_mouth_style]
@@ -1242,7 +1242,7 @@ Slider = ReactiveComponent
             color: focus_blue
             textAlign: 'center'
 
-          if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stance_names[segment]}"
+          if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stanceLabel(slider.stance)}"
 
 
         if enable_opining
@@ -1682,7 +1682,7 @@ CommunityPoints = ReactiveComponent
     # TODO: The minheight below is not a principled or complete solution to two sizing issues: 
     #           1) resizing the reasons region when the height of the decision board 
     #              (which is absolutely positioned) grows taller the wing points
-    #           2) when filtering the points on result page to a segment without many inclusions,
+    #           2) when filtering the points on result page to a group of opinions with few inclusions,
     #              the document height can jarringly fluctuate
     DIV
       className: "points_by_community #{@props.key}_by_community"
@@ -1705,18 +1705,6 @@ CommunityPoints = ReactiveComponent
             # a centered look with these -20px and +20px offsets
 
         if fetch('root').proposal_mode == 'results' then "Top #{label}" else "Others' #{label}"
-        # P 
-        #   style: 
-        #     visibility: if selected_segment == null then 'hidden' else 'visible'
-        #     textAlign: 'center'
-        #     fontSize: 12
-        #     position: 'absolute'
-        #     width: '100%'
-        #     bottom: -12
-        #     color: '#db004d'
-        #     fontWeight: if browser.high_density_display then 300 else 400
-
-        #   if selected_segment == null then '-' else "for those who #{stance_names[selected_segment]}"          
 
       UL null,
         if points.length > 0
@@ -1762,8 +1750,7 @@ CommunityPoints = ReactiveComponent
         is_correct_valence && has_not_been_included
     
     if selected_opinions
-      # If there is a histogram segment selected, we'll have to filter down 
-      # to the points that users in this segment think are important, and 
+      # Filter down to the points included in the selection opinions, and 
       # order them by resonance to those users.
 
       point_inclusions_per_point = {} # map of points to including users
@@ -2101,10 +2088,10 @@ Point = ReactiveComponent
 
     includers = point.includers
 
-    # only show includers from this stance segment if a segment is selected
     hist = fetch('histogram')
     selected_opinions = if hist.selected_opinion then [hist.selected_opinion] else hist.selected_opinions
     if selected_opinions?.length > 0      
+      # only show includers from the current opinion selection
       selected_users = (fetch(o).user for o in selected_opinions)
       includers = _.intersection includers, selected_users
       author_has_included = _.contains selected_users, point.user

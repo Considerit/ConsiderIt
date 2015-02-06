@@ -1173,6 +1173,7 @@ Slider = ReactiveComponent
       height: 3
       transform: "scale(#{.8 + .2 * Math.abs(stance)}, #{.8 + .2 * Math.abs(stance)})"
 
+    mouth_scale_y = .4 * stance
     face_mouth_style = 
       bottom: -1
       width: SLIDER_HANDLE_SIZE - 4
@@ -1180,7 +1181,7 @@ Slider = ReactiveComponent
       height: SLIDER_HANDLE_SIZE - 4
       boxShadow: '3px 3px 0 0 white'
       transform: 
-        "scale(#{.4 + .3 * Math.abs(stance) }, #{.08 + .4 * stance}) 
+        "scale(#{.4 + .3 * Math.abs(stance) }, #{if Math.abs(mouth_scale_y) < .08 then (if mouth_scale_y >= 0 then 1 else -1) * .08 else mouth_scale_y}) 
          translate(0, #{-2 - 5 * Math.abs(stance)}px) 
          rotate(45deg)"
 
@@ -1192,7 +1193,7 @@ Slider = ReactiveComponent
       slider_feedback = if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stanceLabel(slider.stance)}"
       feedback_style = 
         pointerEvents: 'none' # clicking on feedback interferes with slider and toggle state
-        fontSize: if sticky then 18 else 29
+        fontSize: 30
         fontWeight: 700
         color: focus_blue
 
@@ -1209,7 +1210,7 @@ Slider = ReactiveComponent
 
       _.extend feedback_style, 
         position: 'absolute'      
-        top: if sticky then -38 else -80      
+        top: if sticky then -57 else -80      
         left: feedback_left
         marginLeft: -feedback_width / 2
         width: feedback_width

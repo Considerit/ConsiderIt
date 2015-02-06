@@ -117,7 +117,7 @@ SimpleHomepage = ReactiveComponent
                   fontSize: 21
                   color: '#444'
                   fontWeight: 300
-                'Oppose'
+                sliderPole('individual', 'oppose')
               SPAN
                 style:
                   position: 'absolute'
@@ -126,7 +126,7 @@ SimpleHomepage = ReactiveComponent
                   color: '#444'
                   right: 0
                   fontWeight: 300
-                'Support'
+                sliderPole('individual', 'support')
               SPAN 
                 style: 
                   position: 'relative'
@@ -391,13 +391,13 @@ ProposalSummary = ReactiveComponent
         style: {borderLeft: cell_border, borderRight: cell_border, cursor: 'pointer'},
         onClick: (=> window.app_router.navigate("/#{proposal.slug}", {trigger: true}))
         if !proposal.your_opinion || !your_opinion.published \
-           || is_neutral_opinion(your_opinion.stance)
+           || isNeutralOpinion(your_opinion.stance)
           style = {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}
           if @local.hovering_on
             style.color = 'black'
             style.fontWeight = 600
           SPAN style: style, '?'
-        else if your_opinion.stance < 0 && !is_neutral_opinion(your_opinion.stance)
+        else if your_opinion.stance < 0 && !isNeutralOpinion(your_opinion.stance)
           SPAN style: {position: 'relative', left: 14},
             IMG 
               className: 'summary_opinion_marker'
@@ -721,7 +721,7 @@ StickyProposalHeader = ReactiveComponent
                                         eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: subdomain.branding.primary_color, position: 'absolute', top: 6 }
                                         mouth_style = {fontSize: 12, color: subdomain.branding.primary_color, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
                                         css.crossbrowserify mouth_style
-                                        if is_neutral_opinion(your_opinion.stance)
+                                        if isNeutralOpinion(fetch(other_proposal.your_opinion).stance)
                                           # confused!
                                           mouth = '|'
                                         else if opinion.stance < 0
@@ -839,14 +839,12 @@ styles += """
 """
 
 
-
-
 ######################
 # Default customizations
 customizations.default = 
 
   slider_pole_labels :
-    personal: 
+    individual: 
       support: 'Support'
       oppose: 'Oppose'
     group: 
@@ -947,6 +945,15 @@ election_cluster_options =
 
 ecast_highlight_color =  "#73B3B9"  #"#CB7833"
 customizations.ecastonline = customizations['ecast-demo'] = 
+
+  slider_pole_labels :
+    individual: 
+      support: 'Agree'
+      oppose: 'Disagree'
+    group: 
+      support: 'Agree'
+      oppose: 'Disagree'
+
   ProposalHeader: StickyProposalHeader
 
   user_questions : [

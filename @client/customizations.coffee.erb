@@ -358,6 +358,8 @@ ProposalSummary = ReactiveComponent
     subdomain = fetch('/subdomain')
 
     proposal = @data()
+    your_opinion = fetch(proposal.your_opinion)
+    
     hover_class = if @local.hovering_on == proposal.id then 'hovering' else ''
 
     link_hover_color = focus_blue
@@ -388,14 +390,14 @@ ProposalSummary = ReactiveComponent
         className: 'summary_decide'
         style: {borderLeft: cell_border, borderRight: cell_border, cursor: 'pointer'},
         onClick: (=> window.app_router.navigate("/#{proposal.slug}", {trigger: true}))
-        if !proposal.your_opinion || !fetch(proposal.your_opinion).published \
-           || fetch(proposal.your_opinion).stance_segment == 3
+        if !proposal.your_opinion || !your_opinion.published \
+           || is_neutral_opinion(your_opinion.stance)
           style = {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}
           if @local.hovering_on
             style.color = 'black'
             style.fontWeight = 600
           SPAN style: style, '?'
-        else if fetch(proposal.your_opinion).stance_segment < 3
+        else if your_opinion.stance < 0 && !is_neutral_opinion(your_opinion.stance)
           SPAN style: {position: 'relative', left: 14},
             IMG 
               className: 'summary_opinion_marker'
@@ -719,12 +721,12 @@ StickyProposalHeader = ReactiveComponent
                                         eye_style = { width: 2, height: 2, borderRadius: '50%', backgroundColor: subdomain.branding.primary_color, position: 'absolute', top: 6 }
                                         mouth_style = {fontSize: 12, color: subdomain.branding.primary_color, left: face_size * .45, top: face_size * .28, position: 'absolute', transform: 'rotate(90deg)'}
                                         css.crossbrowserify mouth_style
-                                        if opinion.stance_segment < 3
-                                          # frown!
-                                          mouth = '('
-                                        else if opinion.stance_segment == 3
+                                        if is_neutral_opinion(your_opinion.stance)
                                           # confused!
                                           mouth = '|'
+                                        else if opinion.stance < 0
+                                          # frown!
+                                          mouth = '('
                                         else
                                           # pleased!
                                           mouth = ')'
@@ -842,6 +844,14 @@ styles += """
 ######################
 # Default customizations
 customizations.default = 
+
+  slider_pole_labels :
+    personal: 
+      support: 'Support'
+      oppose: 'Oppose'
+    group: 
+      support: 'Supporters'
+      oppose: 'Opposers'
 
   Homepage : SimpleHomepage
   ProposalHeader : SimpleProposalHeading

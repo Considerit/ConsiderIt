@@ -159,7 +159,7 @@ Auth = ReactiveComponent
   headerAndBorder : (goal, task, body) ->
     root = fetch('root')
 
-    real_task_width = realWidth(task, {fontSize: 61, fontWeight: 600})
+    real_task_width = widthWhenRendered(task, {fontSize: 61, fontWeight: 600})
     DIV null,
 
       # The auth form's header

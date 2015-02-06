@@ -130,7 +130,7 @@ SimpleHomepage = ReactiveComponent
               SPAN 
                 style: 
                   position: 'relative'
-                  marginLeft: -(realWidth(options.homie_histo_title || 'Opinions', {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
+                  marginLeft: -(widthWhenRendered(options.homie_histo_title || 'Opinions', {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
                 options.homie_histo_title || 'Opinions'
 
             for proposal in sorted_proposals(cluster)

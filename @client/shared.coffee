@@ -92,7 +92,7 @@ window.clickInternalLink = (event) ->
     return false
 
 # Computes the width of some text given some styles empirically
-window.realWidth = (str, style) -> 
+window.widthWhenRendered = (str, style) -> 
   $el = $("<span id='width_test'>#{str}</span>").css(style)
   $('#content').append($el)
   width = $('#width_test').width()

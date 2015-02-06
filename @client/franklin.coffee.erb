@@ -139,16 +139,14 @@ PageTransition =
         slider = fetch 'slider'
 
         direction = if slider.stance > 0 && !isNeutralOpinion(slider.stance) then 1 else -1
-        mouth_x   = if isNeutralOpinion(slider.stance) then 0 else -22
-
-        handle_width = 22
+        mouth_x   = if isNeutralOpinion(slider.stance) then 0 else -SLIDER_HANDLE_SIZE
 
         if root.proposal_mode == 'crafting'
           bubblemouth_style = { translateX: direction * mouth_x, translateY: 20, scaleX: direction * 1.5, scaleY: 1.5  }
-          handle_style = { scale: 2.5 }
         else 
           bubblemouth_style = { translateX: direction * mouth_x, translateY: -4, scaleX: direction, scaleY: 1  }
-          handle_style = { scale: 1 }
+
+        handle_style = { scale: if root.proposal_mode == 'results' || fetch('decisionboard').sticky then 1 else 2.5}
 
         $el.find('.bubblemouth').velocity bubblemouth_style, {duration}
         $el.find('.the_handle').velocity handle_style, {duration}
@@ -706,7 +704,7 @@ Histogram = ReactiveComponent
         key: 'supporters'
         className: "slider_pole_label"
         style: 
-          right: -145
+          right: -160
           width: 130
         SPAN null,
           sliderPole((if @root.proposal_mode == 'crafting' then 'individual' else 'group'), 'support') 
@@ -1189,17 +1187,33 @@ Slider = ReactiveComponent
     css.crossbrowserify sty for sty in [eye_style, face_mouth_style]
     _.extend(face_part, {position: 'absolute', pointerEvents: 'none', borderRadius: '50%' }) for face_part in [eye_style, face_mouth_style]
 
-    # Keep feedback centered over handle, but keep within the bounds of the slider region 
-    # when the slider is in an extreme position. 
-    feedback_left = @props.width * (stance/2 + .5)
-    if sticky 
-      feedback_width = if slider.has_moved then 190 else 400
-      if feedback_left > @props.width / 2
-        feedback_left = Math.min(@props.width - feedback_width/2 + 35, feedback_left)
-      else if feedback_left < @props.width / 2
-        feedback_left = Math.max(feedback_width/2 - 35, feedback_left)
-    else
-      feedback_width = 450
+    if @root.proposal_mode == 'crafting'
+      # Slider feedback
+      slider_feedback = if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stanceLabel(slider.stance)}"
+      feedback_style = 
+        pointerEvents: 'none' # clicking on feedback interferes with slider and toggle state
+        fontSize: if sticky then 18 else 29
+        fontWeight: 700
+        color: focus_blue
+
+      # Keep feedback centered over handle, but keep within the bounds of the slider region 
+      # when the slider is in an extreme position. 
+      feedback_left = @props.width * (stance/2 + .5)
+      feedback_width = widthWhenRendered slider_feedback, feedback_style
+
+      if sticky 
+        if slider.stance > 0
+          feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
+        else
+          feedback_left = Math.max(feedback_width/2, feedback_left)
+
+      _.extend feedback_style, 
+        position: 'absolute'      
+        top: if sticky then -38 else -80      
+        left: feedback_left
+        marginLeft: -feedback_width / 2
+        width: feedback_width
+
 
     selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
     selected_wing_point =  selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
@@ -1221,6 +1235,8 @@ Slider = ReactiveComponent
       top: -9
       position: 'relative'
 
+    css.crossbrowserify handle_style
+
     bubblemouth_style = {left: slider.clientX}
 
     if selected_point
@@ -1232,29 +1248,18 @@ Slider = ReactiveComponent
     DIV 
       className: 'slider'
       style : 
-        left: - (@props.width - DECISION_BOARD_WIDTH) / 2
+        left: - (@props.width - DECISION_BOARD_WIDTH) / 2 + 2
         position: 'absolute'
         top: -48
         margin: 'auto'
-      DIV className:'slider_base', style : slider_base_style, 
-        DIV 
-          style: 
-            position: 'absolute'
-            top: -80
-            pointerEvents: 'none' # clicking on this interferes with slider and toggle state
-            visibility: 'visible'
-            left: feedback_left
-            marginLeft: -feedback_width / 2
-            width: feedback_width
-            fontSize: if sticky then '18px' else '29px'
-            top: if sticky then '-65px' else '-80px'
-            display: if page == 'results' then 'none' else 'block'
-            borderRadius: 10 
-            fontWeight: 700
-            color: focus_blue
-            textAlign: 'center'
+      DIV 
+        className:'slider_base'
+        style : slider_base_style
 
-          if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stanceLabel(slider.stance)}"
+        if @root.proposal_mode == 'crafting'
+          DIV 
+            style: feedback_style
+            slider_feedback
 
 
         if enable_opining
@@ -1381,7 +1386,7 @@ DecisionBoard = ReactiveComponent
         verticalAlign: 'top'
 
       Slider
-        width: HISTOGRAM_WIDTH
+        width: HISTOGRAM_WIDTH - 10
 
 
       if enable_opining

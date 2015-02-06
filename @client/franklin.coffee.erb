@@ -2912,8 +2912,8 @@ Bubblemouth = ReactiveComponent
         name = user.name or 'Anonymous'
         title = "#{name}'#{if name[name.length - 1] != 's' then 's' else ''} Opinion"
 
-        name_width = realWidth(title, {fontSize: '30px', fontWeight: '600'}) #+  
-                              #realWidth('Opinion of', {fontSize: '18px', fontWeight: '300'})
+        name_width = widthWhenRendered(title, {fontSize: '30px', fontWeight: '600'}) #+  
+                              #widthWhenRendered('Opinion of', {fontSize: '18px', fontWeight: '300'})
 
         if hist.selected_opinion_value > 0
           name_style = 

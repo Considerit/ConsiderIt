@@ -556,6 +556,9 @@ styles += """
 #   * If a region is selected, clicking anywhere except within the 
 #     decision board will deselect the region.
 #
+# Note that for mobile, region resizing is disabled, and the selection 
+# changes on touch move rather than mousemove.
+# 
 ##
 # Selected region background
 #   * A selection region background follows the mouse in the histogram if:
@@ -657,8 +660,8 @@ Histogram = ReactiveComponent
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = !hist.selected_opinion && 
                             @root.proposal_mode == 'results' &&
-                            ((!@local.touched && hist.selected_opinions) || 
-                              (@local.mouse_opinion_value && !@local.hoving_over_avatar)) 
+                            (hist.selected_opinions || 
+                              (!@local.touched && @local.mouse_opinion_value && !@local.hoving_over_avatar)) 
 
     DIV 
       className: 'histogram'
@@ -675,11 +678,10 @@ Histogram = ReactiveComponent
 
       onTouchStart: (ev) => 
         ev.preventDefault()
-        @onClick(ev)
-        hist.dragging = true
         @local.touched = true
         save hist
         save @local
+        @onClick(ev)
 
       onTouchMove: (ev) => ev.preventDefault(); @onMouseMove(ev)
       onTouchEnd: (ev) => ev.preventDefault(); @onMouseUp(ev)
@@ -730,7 +732,6 @@ Histogram = ReactiveComponent
                 left: selection_left
                 top: -15
                 cursor: 'col-resize'
-
 
           DIV 
             style:
@@ -811,7 +812,11 @@ Histogram = ReactiveComponent
       else
 
         is_deselection = hist.selected_opinions && 
-                          !@local.last_selection_via_drag            
+                          !@local.last_selection_via_drag &&
+                          (!@local.touched || 
+                            (@local.mouse_opinion_value <= hist.selected_opinion_value + hist.region_selection_width &&
+                             @local.mouse_opinion_value >= hist.selected_opinion_value - hist.region_selection_width))
+
         if is_deselection
           hist.selected_opinions = null
           if ev.type == 'touchstart'
@@ -898,7 +903,7 @@ Histogram = ReactiveComponent
     ev.stopPropagation()
 
     hist = fetch('histogram')
-    if $(ev.target).closest('.selection_region_resizer').length > 0 && hist.selected_opinions      
+    if $(ev.target).closest('.selection_region_resizer').length > 0 && hist.selected_opinions && !@local.touched
       hist.dragging = true
       @local.mouse_x_of_last_resize = ev.pageX
       save hist

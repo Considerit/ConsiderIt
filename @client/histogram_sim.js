@@ -7,8 +7,7 @@ function positionAvatars(width, height, parent, opinions) {
   width = width || 400
   height = height || 70
 
-  var opinions = opinions
-                   .slice()
+  var opinions = opinions.slice()
                    .sort(function (a,b) {return a.stance-b.stance}),
       n = opinions.length, // Number of opinions
       r,  // Radius of each node

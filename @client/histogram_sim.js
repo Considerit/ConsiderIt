@@ -100,14 +100,6 @@ function positionAvatars(width, height, parent, opinions) {
   }
 
   function collide(node) {
-    // Travis: I understand what the 16 *does* but not the significance
-    //         of the particular value. Does 16 make sense for all
-    //         avatar sizes and sizes of the bounding box?
-    var neighborhood_radius = node.radius + 16,
-        nx1 = node.x - neighborhood_radius,
-        nx2 = node.x + neighborhood_radius,
-        ny1 = node.y - neighborhood_radius,
-        ny2 = node.y + neighborhood_radius
 
     return function(quad, x1, y1, x2, y2) {
 
@@ -120,9 +112,9 @@ function positionAvatars(width, height, parent, opinions) {
 
         if (dist < combined_r) {
           // repel both points equally in opposite directions
-          separate_by = ( dist - combined_r ) / dist
-          offset_x = dx * separate_by * .5
-          offset_y = dy * separate_by * .5
+          var separate_by = ( dist - combined_r ) / dist,
+              offset_x = dx * separate_by * .5,
+              offset_y = dy * separate_by * .5
 
           node.x -= offset_x
           node.y -= offset_y
@@ -131,7 +123,16 @@ function positionAvatars(width, height, parent, opinions) {
         }
       }
 
-      // visit subregions if we could possibly have a collision there
+      // Visit subregions if we could possibly have a collision there
+      // Travis: I understand what the 16 *does* but not the significance
+      //         of the particular value. Does 16 make sense for all
+      //         avatar sizes and sizes of the bounding box?
+      var neighborhood_radius = node.radius + 16,
+          nx1 = node.x - neighborhood_radius,
+          nx2 = node.x + neighborhood_radius,
+          ny1 = node.y - neighborhood_radius,
+          ny2 = node.y + neighborhood_radius
+
       return x1 > nx2
           || x2 < nx1
           || y1 > ny2

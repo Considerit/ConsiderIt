@@ -3,24 +3,11 @@
 // of avatars within a given area. Also calculates (and returns) an
 // avatar size. 
 
-function positionAvatars(width, height, parent, opinions) {
-  width = width || 400
-  height = height || 70
 
-  var opinions = opinions.slice()
-                   .sort(function (a,b) {return a.stance-b.stance}),
-      n = opinions.length, // Number of opinions
-      r,  // Radius of each node
-      x_force_mult = 2,
-      y_force_mult = height <= 100 ? 1 : 4,
-      ratio_filled = .3,
-      nodes, force
+// Calculate node radius based on size of area and number of nodes
+function getAvatarRadius(width, height, opinions) {
+  var ratio_filled = .3, r
 
-  //////
-  // Calculate node radius based on size of area and number of nodes
-  // (2*r)^2 * length == width * height * ratio_filled
-  // (width * height / length) * 2 = (2*r)^2
-  // sqrt(width * height / length * 2) = r
   r = Math.sqrt(width * height / opinions.length * ratio_filled)/2
   r = Math.min(r, width/2, height/2)
 
@@ -31,13 +18,34 @@ function positionAvatars(width, height, parent, opinions) {
     r = (height / (Math.floor(times_fit))) / 2 - .001
   }
 
+  return r
+}
+
+
+function positionAvatars(width, height, opinions) {
+  width = width || 400
+  height = height || 70
+
+  var opinions = opinions.slice()
+                   .sort(function (a,b) {return a.stance-b.stance}),
+      n = opinions.length, 
+      r = getAvatarRadius(width, height, opinions), 
+      x_force_mult = 2,
+      y_force_mult = height <= 100 ? 1 : 4,
+      nodes, force
+
   // Initialize positions of each node
   nodes = d3.range(opinions.length).map(function(i) {
+    var radius = opinions[i].radius || r
+
+    if opinions[i].icon.style.width != radius * 2
+      opinions[i].icon.style.width = opinions[i].icon.style.height = radius*2 + 'px'
+
     return {
       index: i, 
-      radius: r,
-      x: r + (width-r-r) * (i / n),
-      y: r + Math.random() * (height - r-r)// r + (i * 400 / n) % (height-r-r)
+      radius: radius,
+      x: radius + (width- 2 * radius) * (i / n),
+      y: radius + Math.random() * (height - 2 * radius)
     }
   })
 
@@ -50,9 +58,6 @@ function positionAvatars(width, height, parent, opinions) {
     .charge(0)
     .chargeDistance(0)
     .start()
-
-  for (var i=0; i<opinions.length; i++)
-    opinions[i].icon.style.width = opinions[i].icon.style.height = r*2 + 'px'
 
   // translates the opinion stance to a real x position in the bounding box
   function x_target(i) {
@@ -89,12 +94,12 @@ function positionAvatars(width, height, parent, opinions) {
       o.y += e.alpha * y_force_mult
 
       // Ensure node is still within the bounding box
-      o.x = Math.max(r, Math.min(width  - r, o.x))
-      o.y = Math.max(r, Math.min(height - r, o.y))
+      o.x = Math.max(o.radius, Math.min(width  - o.radius, o.x))
+      o.y = Math.max(o.radius, Math.min(height - o.radius, o.y))
 
       // Re-position node
-      opinions[i].icon.style.left = o.x - r + 'px'
-      opinions[i].icon.style.top  = o.y - r + 'px'
+      opinions[i].icon.style.left = o.x - o.radius + 'px'
+      opinions[i].icon.style.top  = o.y - o.radius + 'px'
     })
   }
 
@@ -103,7 +108,7 @@ function positionAvatars(width, height, parent, opinions) {
     return function(quad, x1, y1, x2, y2) {
 
       // Repel two nodes if they overlap
-      if (quad.leaf && (quad.point !== node)) {
+      if (quad.leaf && quad.point && quad.point !== node) {
         var dx = node.x - quad.point.x,
             dy = node.y - quad.point.y,
             dist = Math.sqrt(dx * dx + dy * dy),
@@ -139,6 +144,4 @@ function positionAvatars(width, height, parent, opinions) {
     }
   }
 
-  // Returns calculated radius
-  return r
 }

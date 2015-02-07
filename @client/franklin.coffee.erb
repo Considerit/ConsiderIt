@@ -879,6 +879,12 @@ Histogram = ReactiveComponent
     @local.mouse_opinion_value = null
     save @local
 
+    hist = fetch('histogram')         
+    if hist.dragging
+      hist.dragging = false
+      save hist
+
+
   onMouseUp: (ev) -> 
     return if fetch('slider').is_moving
     hist = fetch('histogram')     

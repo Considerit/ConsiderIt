@@ -911,7 +911,7 @@ Histogram = ReactiveComponent
     selected_opinions = (o.key for o in all_opinions when o.stance <= @local.mouse_opinion_value + hist.region_selection_width && o.stance >= @local.mouse_opinion_value - hist.region_selection_width)
     selected_opinions
 
-  attach_mini_histo: ->
+  physicsSimulation: ->
     # We only need to rerun the sim if the distribution of stances has changed. 
     opinions = fetch('/page/' + @proposal.slug).opinions || []
 
@@ -921,17 +921,23 @@ Histogram = ReactiveComponent
     simulation_opinion_hash = JSON.stringify( _.map(opinions, (o) => Math.round(fetch(o.key).stance * 100) / 100 ) )
 
     if @refs && @refs.histo && simulation_opinion_hash != @local.simulation_opinion_hash
+      hist = fetch('histogram')
       page = fetch('/page/' + @proposal.slug)
       histo = @refs.histo.getDOMNode()
       icons = histo.childNodes
       opinions = for opinion, i in page.opinions
         {stance: opinion.stance, icon: icons[i]}
-      mini_histo(BODY_WIDTH, HISTOGRAM_HEIGHT, histo, opinions)
+      calcs = positionAvatars(BODY_WIDTH, HISTOGRAM_HEIGHT, histo, opinions)
+      avatar_radius = calcs[0]
+      if hist.avatar_size != avatar_radius * 2
+          hist.avatar_size = avatar_radius * 2
+          save hist
+      
       @local.simulation_opinion_hash = simulation_opinion_hash
       save @local
 
-  componentDidMount: -> @attach_mini_histo()
-  componentDidUpdate: -> @attach_mini_histo()
+  componentDidMount: -> @physicsSimulation()
+  componentDidUpdate: -> @physicsSimulation()
 
 
 
@@ -958,7 +964,7 @@ styles += """
 
 # Used by the SimpleHomepage to create the small histogram for each proposal summary
 MiniHisto = ReactiveComponent
-  displayName: 'mini_histo'
+  displayName: 'MiniHisto'
   render: ->
     options = customizations[fetch('/subdomain').name]?.cluster_options?[@props.proposal.cluster] || {}
     filter_func = options.homie_histo_filter
@@ -1013,19 +1019,19 @@ MiniHisto = ReactiveComponent
         ref: 'histo'
         icons
 
-  attach_mini_histo: ->
+  physicsSimulation: ->
     if @refs and @refs.histo and not @mounted
       page = fetch('/page/' + @props.proposal.slug)
       histo = @refs.histo.getDOMNode()
       icons = histo.childNodes
       opinions = for opinion, i in @opinions
         {stance: opinion.stance, icon: icons[i]}
-      mini_histo(@props.width, @props.height-1, histo, opinions)
+      positionAvatars(@props.width, @props.height-1, histo, opinions)
       @mounted = true
   componentDidMount: ->
-    @attach_mini_histo()
+    @physicsSimulation()
   componentDidUpdate: ->
-    @attach_mini_histo()
+    @physicsSimulation()
   componentWillUnmount: ->
     @mounted = false
 

@@ -270,11 +270,7 @@ Proposal = ReactiveComponent
         @local.expanded_field = null
       catch
         @local.description_fields = null
-
-
-    # whether part of the histogram is focused
-    hist = fetch('histogram')
-    has_histogram_focus = hist.selected_opinions || hist.selected_opinion
+    
 
     DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
 
@@ -384,19 +380,8 @@ Proposal = ReactiveComponent
             marginLeft: if lefty then 65
 
 
-          if has_histogram_focus
-            DIV 
-              style: 
-                width: BODY_WIDTH + 80
-                border: "3px solid #{if !has_histogram_focus then 'transparent' else if @root.selected_point then '#ccc' else focus_blue }"
-                height: '100%'
-                position: 'absolute'
-                borderRadius: 16
-                marginLeft: if lefty then 200 else -BODY_WIDTH/2 - 40
-                left: if lefty then 0 else '50%'
-                top: 18
-
-              Bubblemouth {target: 'histogram'}
+          # Border + bubblemouth that is shown when there is a histogram selection
+          GroupSelectionRegion()
 
           #community cons
           CommunityPoints { key: 'cons' }
@@ -766,7 +751,7 @@ Histogram = ReactiveComponent
 
         for opinion in opinions
           user = opinion.user
-          fetch(opinion) # subscribe ...
+          fetch(opinion) # subscribe to changes so physics sim will get rerun...
 
           if highlighted_users
             if _.contains(highlighted_users, opinion.user)   
@@ -2908,132 +2893,120 @@ styles += """
 }
 """
 
-
-##
-# Bubblemouth
+####
+# GroupSelectionRegion
 #
-# Creates a bubble mouth that tracks either the position of the histogram selection
-# or the user's current opinion.
-#
-# TODO: refactor, the abstraction is broken & the code is poor
-Bubblemouth = ReactiveComponent
-  displayName: 'Bubblemouth'
+# Draws a border around the selected opinion(s)
+# Shows a bubble mouth for selected opinions or 
+# a user name + avatar display if we've selected
+# an individual opinion.
+GroupSelectionRegion = ReactiveComponent
+  displayName: 'GroupSelectionRegion'
 
   render : -> 
-    if @props.target == 'histogram'
+    hist = fetch 'histogram'
 
-      hist = fetch('histogram')
+    has_histogram_focus = hist.selected_opinions || hist.selected_opinion
+    if has_histogram_focus
+      DIV 
+        style: 
+          width: BODY_WIDTH + 80
+          border: "3px solid #{if @root.selected_point then '#ccc' else focus_blue }"
+          height: '100%'
+          position: 'absolute'
+          borderRadius: 16
+          marginLeft: if lefty then 200 else -BODY_WIDTH/2 - 40
+          left: if lefty then 0 else '50%'
+          top: 18
 
-      border_width = 3
+        # draw a bubble mouth
+        if hist.selected_opinions
+          size = 20
+          left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 20
+          border_width = 3
 
-      if hist.selected_opinion
-        place_avatar_opinion_value = if hist.selected_opinion_value > 0 then .8 else -.8
-        left = ((place_avatar_opinion_value + 1)/2) * BODY_WIDTH + 20
+          css_triangle = 
+            width: 0
+            height: 0
+            borderRight: "#{size}px solid transparent"
+            borderLeft: "#{size}px solid transparent"
+            borderBottom: "#{size * 1.5}px solid #{if @root.selected_point then '#ccc' else focus_blue}"
+            position: 'relative'
+            top: -32
 
-        avatar_size = 80
-        user = fetch(fetch(hist.selected_opinion).user)
-        name = user.name or 'Anonymous'
-        title = "#{name}'#{if name[name.length - 1] != 's' then 's' else ''} Opinion"
-
-        name_width = widthWhenRendered(title, {fontSize: '30px', fontWeight: '600'}) #+  
-                              #widthWhenRendered('Opinion of', {fontSize: '18px', fontWeight: '300'})
-
-        if hist.selected_opinion_value > 0
-          name_style = 
-            left: -28 - avatar_size * .5 - name_width 
-            borderTopLeftRadius: 16
-            paddingRight: avatar_size * .75
-            paddingLeft: 18
-
-        else
-          name_style = 
-            left: avatar_size/4
-            borderTopRightRadius: 16
-            paddingLeft: avatar_size * .75
-            paddingRight: 18
-              
-        DIV style: {left: left, position: 'absolute'},
-
-          DIV null,
-            Avatar 
-              key: user
-              user: user
-              hide_tooltip: true
-              style: 
-                position: 'absolute'
-                width: avatar_size
-                height: avatar_size
-                top: -avatar_size * .75
-                left: -avatar_size/4
-                zIndex: 99 
-                border: "3px solid #{focus_blue}"
-
+          DIV style: {left: left, position: 'absolute'},
             DIV 
-              style: _.extend name_style,
-                position: 'absolute'
-                backgroundColor: focus_blue
-                paddingTop: 8
-                paddingBottom: 8
-                color: 'white'
-                top: -58
-                width: name_width + 10 + 18 + avatar_size * .75 + 10
+              style: css.crossbrowserify(css_triangle)
+              DIV
+                style:
+                  width: 0
+                  position: 'relative'
+                  left: -(size - 1)
+                  top: border_width + 3
+                  borderLeft: "#{size - 1}px solid transparent"
+                  borderRight: "#{size - 1}px solid transparent"
+                  borderBottom: "#{size * 1.5 - 1}px solid white"
 
+        # draw a name + avatar display for the selected opinion
+        else 
+          place_avatar_opinion_value = if hist.selected_opinion_value > 0 then .8 else -.8
+          left = ((place_avatar_opinion_value + 1)/2) * BODY_WIDTH + 20
 
-              SPAN 
+          avatar_size = 80
+          user = fetch(fetch(hist.selected_opinion).user)
+          name = user.name or 'Anonymous'
+          title = "#{name}'#{if name[name.length - 1] != 's' then 's' else ''} Opinion"
+
+          name_width = widthWhenRendered(title, {fontSize: '30px', fontWeight: '600'})
+
+          if hist.selected_opinion_value > 0
+            name_style = 
+              left: -28 - avatar_size * .5 - name_width 
+              borderTopLeftRadius: 16
+              paddingRight: avatar_size * .75
+              paddingLeft: 18
+
+          else
+            name_style = 
+              left: avatar_size/4
+              borderTopRightRadius: 16
+              paddingLeft: avatar_size * .75
+              paddingRight: 18
+                
+          DIV style: {left: left, position: 'absolute'},
+
+            DIV null,
+              Avatar 
+                key: user
+                user: user
+                hide_tooltip: true
                 style: 
-                  fontSize: 30
-                title
+                  position: 'absolute'
+                  width: avatar_size
+                  height: avatar_size
+                  top: -avatar_size * .75
+                  left: -avatar_size/4
+                  zIndex: 99 
+                  border: "3px solid #{focus_blue}"
+
+              DIV 
+                style: _.extend name_style,
+                  position: 'absolute'
+                  backgroundColor: focus_blue
+                  paddingTop: 8
+                  paddingBottom: 8
+                  color: 'white'
+                  top: -58
+                  width: name_width + 10 + 18 + avatar_size * .75 + 10
 
 
+                SPAN 
+                  style: 
+                    fontSize: 30
+                  title
 
-              # SPAN
-              #   style: 
-              #     fontWeight: 300
-              #     fontSize: 18
-              #     paddingRight: 10
-              #   'Opinion of'
-
-
-      else 
-        size = 20
-        left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 20
-
-        css_triangle = 
-          width: 0
-          height: 0
-          borderRight: "#{size}px solid transparent"
-          borderLeft: "#{size}px solid transparent"
-          borderBottom: "#{size * 1.5}px solid #{if @root.selected_point then '#ccc' else focus_blue}"
-          position: 'relative'
-          top: -32
-
-        DIV style: {left: left, position: 'absolute'},
-          DIV 
-            style: css.crossbrowserify(css_triangle)
-            DIV
-              style:
-                width: 0
-                position: 'relative'
-                left: -(size - 1)
-                top: border_width + 3
-                borderLeft: "#{size - 1}px solid transparent"
-                borderRight: "#{size - 1}px solid transparent"
-                borderBottom: "#{size * 1.5 - 1}px solid white"
-
-
-    else if @props.target == 'slider'
-      # TODO...
-      noop = 1
-      bubblemouth_src = "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
-      IMG 
-        className:'bubblemouth'
-        src: bubblemouth_src
-        style:
-          left: left 
-    else
-      throw 'Unrecognized bubblemouth target'
-
-
+    else 
+      SPAN null
 
 ##
 # Avatar

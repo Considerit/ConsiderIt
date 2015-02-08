@@ -130,8 +130,9 @@ window.positionAvatars = function(width, height, opinions) {
             dist = Math.sqrt(dx * dx + dy * dy),
             combined_r = node.radius + quad.point.radius
 
-        // transpose two points in the same neighborhood if it would reduce energy of system
-        if ( energy_reduced_by_swap(node, quad.point) > 0) { 
+        // Transpose two points in the same neighborhood if it would reduce energy of system
+        // 10 is not a principled threshold. 
+        if ( energy_reduced_by_swap(node, quad.point) > 10) { 
           swap_position(node, quad.point)          
           dx *= -1; dy *= -1
         }

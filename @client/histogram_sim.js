@@ -9,7 +9,7 @@ window.positionAvatars = function(width, height, opinions) {
   var opinions = opinions.slice()
                    .sort(function (a,b) {return a.stance-b.stance}),
       n = opinions.length, 
-      r = getAvatarRadius(width, height, opinions), 
+      r = calculateAvatarRadius(width, height, opinions), 
       x_force_mult = 2,
       y_force_mult = height <= 100 ? 1 : 4,
       nodes, force
@@ -146,7 +146,7 @@ window.positionAvatars = function(width, height, opinions) {
 }
 
 // Calculate node radius based on size of area and number of nodes
-window.getAvatarRadius = function(width, height, opinions) {
+window.calculateAvatarRadius = function(width, height, opinions) {
   var ratio_filled = .3, r
 
   r = Math.sqrt(width * height / opinions.length * ratio_filled)/2

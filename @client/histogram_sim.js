@@ -5,7 +5,7 @@
 
 
 // Calculate node radius based on size of area and number of nodes
-function getAvatarRadius(width, height, opinions) {
+window.getAvatarRadius = function(width, height, opinions) {
   var ratio_filled = .3, r
 
   r = Math.sqrt(width * height / opinions.length * ratio_filled)/2
@@ -22,7 +22,7 @@ function getAvatarRadius(width, height, opinions) {
 }
 
 
-function positionAvatars(width, height, opinions) {
+window.positionAvatars = function(width, height, opinions) {
   width = width || 400
   height = height || 70
 
@@ -38,7 +38,7 @@ function positionAvatars(width, height, opinions) {
   nodes = d3.range(opinions.length).map(function(i) {
     var radius = opinions[i].radius || r
 
-    if opinions[i].icon.style.width != radius * 2
+    if(opinions[i].icon.style.width != radius * 2)
       opinions[i].icon.style.width = opinions[i].icon.style.height = radius*2 + 'px'
 
     return {

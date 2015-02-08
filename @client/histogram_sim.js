@@ -89,17 +89,10 @@ window.positionAvatars = function(width, height, opinions) {
       q.visit(collide(nodes[i]))
 
 
+
     //////
     // Apply standard forces
     nodes.forEach(function(o, i) {
-
-      // Move for NaNs
-      // Travis: How can a NaN occur?
-      if (isNaN(o.y) || isNaN(o.x)) {
-        console.error('Nan0 at', o.x, o.y, opinions[o.index])
-        o.y = height/2
-        o.x = x_target(o.index)//width/2
-      }
 
       // Push node toward its desired x-location (e.g. stance)
       o.x += e.alpha * (x_force_mult * width  * .001) * (x_target(o.index) - o.x)
@@ -141,9 +134,11 @@ window.positionAvatars = function(width, height, opinions) {
 
         if (dist < combined_r) {
           // repel both points equally in opposite directions
-          var separate_by = ( dist - combined_r ) / dist,
-              offset_x = dx * separate_by * .5,
-              offset_y = dy * separate_by * .5
+
+          var separate_by, offset_x, offset_y
+          separate_by = dist == 0 ? 1 : ( dist - combined_r ) / dist
+          offset_x = dx * separate_by * .5,
+          offset_y = dy * separate_by * .5
 
           node.x -= offset_x
           node.y -= offset_y

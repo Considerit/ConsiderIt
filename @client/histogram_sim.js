@@ -42,16 +42,11 @@ window.positionAvatars = function(width, height, opinions) {
       opinions[i].icon.style.width = opinions[i].icon.style.height = radius*2 + 'px'
 
     // I'm finding that different initial conditions work better at different scales
-    if (opinions.length > 10){
-      // Give large numbers of avatars some good initial spacing
-      x = radius + (width- 2 * radius) * (i / n)
-      y = radius + Math.random() * (height - 2 * radius)
-    } else {
-      // Small numbers of avatars can be more precisely placed for quick 
-      // convergence with little churn
-      x = x_target(i)
-      y = height - radius
-    }
+    // Give large numbers of avatars some good initial spacing
+    // Small numbers of avatars can be more precisely placed for quick 
+    // convergence with little churn  
+    x = opinions.length > 10 ? radius + (width- 2 * radius) * (i / n) : x_target(i)
+    y = opinions.length == 1 ? height - radius : radius + Math.random() * (height - 2 * radius)
 
     return {
       index: i, 
@@ -87,8 +82,6 @@ window.positionAvatars = function(width, height, opinions) {
         some_node_moved = false
     while (++i < n)
       q.visit(collide(nodes[i]))
-
-
 
     //////
     // Apply standard forces

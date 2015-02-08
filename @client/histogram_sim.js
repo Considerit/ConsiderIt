@@ -1,26 +1,6 @@
 //////
 // Uses a d3-based physics simulation to calculate a reasonable layout
-// of avatars within a given area. Also calculates (and returns) an
-// avatar size. 
-
-
-// Calculate node radius based on size of area and number of nodes
-window.getAvatarRadius = function(width, height, opinions) {
-  var ratio_filled = .3, r
-
-  r = Math.sqrt(width * height / opinions.length * ratio_filled)/2
-  r = Math.min(r, width/2, height/2)
-
-  // Travis: what's the purpose of this?
-  if (opinions.length > 10) {
-    // Now round r up until it fits perfectly within height
-    var times_fit = height / (2*r)
-    r = (height / (Math.floor(times_fit))) / 2 - .001
-  }
-
-  return r
-}
-
+// of avatars within a given area.
 
 window.positionAvatars = function(width, height, opinions) {
   width = width || 400
@@ -163,4 +143,21 @@ window.positionAvatars = function(width, height, opinions) {
     }
   }
 
+}
+
+// Calculate node radius based on size of area and number of nodes
+window.getAvatarRadius = function(width, height, opinions) {
+  var ratio_filled = .3, r
+
+  r = Math.sqrt(width * height / opinions.length * ratio_filled)/2
+  r = Math.min(r, width/2, height/2)
+
+  // Travis: what's the purpose of this?
+  if (opinions.length > 10) {
+    // Now round r up until it fits perfectly within height
+    var times_fit = height / (2*r)
+    r = (height / (Math.floor(times_fit))) / 2 - .001
+  }
+
+  return r
 }

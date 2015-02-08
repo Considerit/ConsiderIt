@@ -1,3 +1,22 @@
+/////
+// Calculate node radius based on size of area and number of nodes
+window.calculateAvatarRadius = function(width, height, opinions) {
+  var ratio_filled = .3, r
+
+  r = Math.sqrt(width * height / opinions.length * ratio_filled)/2
+  r = Math.min(r, width/2, height/2)
+
+  // Travis: what's the purpose of this?
+  if (opinions.length > 10) {
+    // Now round r up until it fits perfectly within height
+    var times_fit = height / (2*r)
+    r = (height / (Math.floor(times_fit))) / 2 - .001
+  }
+
+  return r
+}
+
+
 //////
 // Uses a d3-based physics simulation to calculate a reasonable layout
 // of avatars within a given area.
@@ -12,7 +31,7 @@ window.positionAvatars = function(width, height, opinions) {
       r = calculateAvatarRadius(width, height, opinions), 
       x_force_mult = 2,
       y_force_mult = height <= 100 ? 1 : 4,
-      nodes, force
+      nodes, force, ticks = 0
 
   // Initialize positions of each node
   nodes = d3.range(opinions.length).map(function(i) {
@@ -21,11 +40,14 @@ window.positionAvatars = function(width, height, opinions) {
     if(parseFloat(opinions[i].icon.style.width) != radius * 2)
       opinions[i].icon.style.width = opinions[i].icon.style.height = radius*2 + 'px'
 
-    // I'm finding that different initial conditions work better at different scales
-    // Give large numbers of avatars some good initial spacing
-    // Small numbers of avatars can be more precisely placed for quick 
-    // convergence with little churn  
-    x = opinions.length > 10 ? radius + (width- 2 * radius) * (i / n) : x_target(i)
+    opinions[i].x_target = (opinions[i].stance + 1)/2 * width
+
+    // Travis: I'm finding that different initial conditions work 
+    // better at different scales.
+    //   - Give large numbers of avatars some good initial spacing
+    //   - Small numbers of avatars can be more precisely placed for quick 
+    //     convergence with little churn  
+    x = opinions.length > 10 ? radius + (width- 2 * radius) * (i / n) : opinions[i].x_target
     y = opinions.length == 1 ? height - radius : radius + Math.random() * (height - 2 * radius)
 
     return {
@@ -40,26 +62,28 @@ window.positionAvatars = function(width, height, opinions) {
   force = d3.layout.force()
     .nodes(nodes)
     .on("tick", tick)
-    .on('end', function () {console.log('simulation complete')})
+    .on('end', end)
     .gravity(0)
     .charge(0)
     .chargeDistance(0)
     .start()
 
-  // translates the opinion stance to a real x position in the bounding box
-  function x_target(i) {
-    return (opinions[i].stance + 1)/2 * width
+  // Called after the simulation stops
+  function end() {
+    total_energy = calculate_global_energy()
+    console.log('Simulation complete after ' + ticks + ' ticks. ' + 
+                'Energy of system could be reduced by at most ' + total_energy + ' by global sort.')
   }
 
   // One iteration of the simulation
   function tick(e) {
 
+    var q, i = 0, some_node_moved = false
+
     //////
     // Repel colliding nodes
     // A quadtree helps efficiently detect collisions
-    var q = d3.geom.quadtree(nodes),
-        i = 0, 
-        some_node_moved = false
+    q = d3.geom.quadtree(nodes)
     while (++i < n)
       q.visit(collide(nodes[i]))
 
@@ -68,7 +92,7 @@ window.positionAvatars = function(width, height, opinions) {
     nodes.forEach(function(o, i) {
 
       // Push node toward its desired x-location (e.g. stance)
-      o.x += e.alpha * (x_force_mult * width  * .001) * (x_target(o.index) - o.x)
+      o.x += e.alpha * (x_force_mult * width  * .001) * (opinions[o.index].x_target - o.x)
 
       // Push node downwards
       o.y += e.alpha * y_force_mult
@@ -89,25 +113,31 @@ window.positionAvatars = function(width, height, opinions) {
       }
     })
 
+    ticks += 1
+
     // Complete the simulation if we've reached a steady state
-    if (!some_node_moved)
-      force.stop()
+    if (!some_node_moved) force.stop()
+
+    
   }
 
   function collide(node) {
 
     return function(quad, x1, y1, x2, y2) {
-
-      // Repel two nodes if they overlap
       if (quad.leaf && quad.point && quad.point !== node) {
         var dx = node.x - quad.point.x,
             dy = node.y - quad.point.y,
             dist = Math.sqrt(dx * dx + dy * dy),
             combined_r = node.radius + quad.point.radius
 
-        if (dist < combined_r) {
-          // repel both points equally in opposite directions
+        // transpose two points in the same neighborhood if it would reduce energy of system
+        if ( energy_reduced_by_swap(node, quad.point) > 0) { 
+          swap_position(node, quad.point)          
+          dx *= -1; dy *= -1
+        }
 
+        // repel both points equally in opposite directions if they overlap
+        if (dist < combined_r) {
           var separate_by, offset_x, offset_y
           separate_by = dist == 0 ? 1 : ( dist - combined_r ) / dist
           offset_x = dx * separate_by * .5,
@@ -117,12 +147,6 @@ window.positionAvatars = function(width, height, opinions) {
           node.y -= offset_y
           quad.point.x += offset_x
           quad.point.y += offset_y
-          // Travis: Why doesn't the below converge, but the above does?
-          // node.x += offset_x
-          // node.y += offset_y
-          // quad.point.x -= offset_x
-          // quad.point.y -= offset_y
-
         }
       }
 
@@ -143,21 +167,100 @@ window.positionAvatars = function(width, height, opinions) {
     }
   }
 
-}
+  // Check if system energy would be reduced if two nodes' positions would 
+  // be swapped. We square the difference in order to favor large differences 
+  // for one vs small differences for the pair.
+  function energy_reduced_by_swap(p1, p2) {
+    var p1_jealousy = Math.pow(p1.x - opinions[p1.index].x_target, 2) - 
+                      Math.pow(p2.x - opinions[p1.index].x_target, 2),
+        p2_jealousy = Math.pow(p2.x - opinions[p2.index].x_target, 2) - 
+                      Math.pow(p1.x - opinions[p2.index].x_target, 2)
 
-// Calculate node radius based on size of area and number of nodes
-window.calculateAvatarRadius = function(width, height, opinions) {
-  var ratio_filled = .3, r
-
-  r = Math.sqrt(width * height / opinions.length * ratio_filled)/2
-  r = Math.min(r, width/2, height/2)
-
-  // Travis: what's the purpose of this?
-  if (opinions.length > 10) {
-    // Now round r up until it fits perfectly within height
-    var times_fit = height / (2*r)
-    r = (height / (Math.floor(times_fit))) / 2 - .001
+    return p1_jealousy + p2_jealousy
   }
 
-  return r
+  // Swaps the positions of two nodes
+  var position_props = ['x', 'y', 'px', 'py']
+  function swap_position(p1, p2) {
+    var swap
+    for(var i=0; i < position_props.length; i++){
+      swap = p1[position_props[i]]
+      p1[position_props[i]] = p2[position_props[i]]
+      p2[position_props[i]] = swap
+    }
+  }
+
+  ///////////////////////////////////////////////////////
+  // The rest of these methods are only used for testing
+  ///////////////////////////////////////////////////////
+
+
+  // Calculates the reduction in global energy that a sort would have, 
+  // where global energy is the sum across all nodes of the square of their 
+  // distance from desired x position. We square the difference in order 
+  // to favor large differences for individuals over small differences for
+  // many.
+  function calculate_global_energy() {
+    var energy_unsorted = 0,
+        energy_sorted = 0,
+        sorted = global_sort(false)
+
+    for (var i = 0; i < nodes.length; i++){
+      energy_sorted   += Math.pow(Math.abs( sorted[i].x - opinions[sorted[i].index].x_target ), 2)
+      energy_unsorted += Math.pow(Math.abs(  nodes[i].x - opinions[nodes[i].index].x_target ), 2)
+    }
+
+    return Math.sqrt(energy_unsorted) - Math.sqrt(energy_sorted)
+  }
+
+  //////
+  // global_sort
+  //
+  // Given a set of simulated face positions, reassigns avatars to the positions based on 
+  // stance to enforce a global ordering. 
+  // This method is visually jarring, so using it to sort nodes in place should be 
+  // used as little as possible.
+  function global_sort(sort_in_place) {
+    if (sort_in_place === undefined) sort_in_place = true
+
+    // Create one node list sorted by x position
+    x_sorted_nodes = nodes.slice()
+                  .sort(function (a,b) {return a.x-b.x})
+    // ... and another sorted by desired x position
+    desired_x_sorted_nodes = nodes.slice()
+                  .sort(function (a,b) {return opinions[a.index].x_target - opinions[b.index].x_target})
+
+    // Create a new dummy set of nodes optimally arranged
+    new_nodes = []
+    for (var i = 0; i < nodes.length; i++){
+      new_nodes.push({
+        // assign the avatar...
+        index: desired_x_sorted_nodes[i].index, 
+        radius: desired_x_sorted_nodes[i].radius,
+        weight: desired_x_sorted_nodes[i].weight,
+        // ...to a good position
+        x: x_sorted_nodes[i].x,
+        y: x_sorted_nodes[i].y,
+        px: x_sorted_nodes[i].px,
+        py: x_sorted_nodes[i].py
+      })
+    }
+
+    // Walk through nodes and reassign the faces given
+    // the optimal assignments discovered earlier. We
+    // can't assign nodes=new_nodes because the layout
+    // depends on nodes pointing to the same object.
+    if (sort_in_place){
+      var props = ['index', 'radius', 'x', 'y', 'px', 'py', 'weight']    
+      for (var i = 0; i < nodes.length; i++)
+        for (var j = 0; j < props.length; j++)
+          nodes[i][props[j]] = new_nodes[i][props[j]]
+    }
+    return new_nodes
+  }
+
+
 }
+
+
+

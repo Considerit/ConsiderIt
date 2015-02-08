@@ -1256,34 +1256,26 @@ Slider = ReactiveComponent
         className:'slider_base'
         style : slider_base_style
 
-        for triangle_left in [true, false]
+        for support in [true, false]
           DIV 
             style: 
               position: 'absolute'
-              left: if triangle_left then -5
-              right: if !triangle_left then -5
+              left: if support then -5
+              right: if !support then -5
               width: 5
               height: slider_base_style.height
               backgroundColor: slider_base_style.backgroundColor
 
             DIV
-              style: 
+              style: cssTriangle (if support then 'left' else 'right'), slider_base_style.backgroundColor, 12, 6,               
                 position: 'absolute'
-                left: if triangle_left then -12
-                right: if !triangle_left then -12
-                width: 0
-                height: 0
-                borderStyle: 'solid'
-                borderWidth: if !triangle_left then "3px 0 3px 12px" else "3px 12px 3px 0"
-                borderColor: if !triangle_left then "transparent transparent transparent #{slider_base_style.backgroundColor}" else "transparent #{slider_base_style.backgroundColor} transparent transparent"
-
-
+                left: if support then -12
+                right: if !support then -12
 
       if @root.proposal_mode == 'crafting'
         DIV 
           style: feedback_style
           slider_feedback
-
 
       if enable_opining
         [DIV 
@@ -2941,31 +2933,20 @@ GroupSelectionRegion = ReactiveComponent
 
         # draw a bubble mouth
         if hist.selected_opinions
-          size = 20
-          left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 20
-          border_width = 3
+          w = 40; h = 30
+          left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 10
 
-          css_triangle = 
-            width: 0
-            height: 0
-            borderRight: "#{size}px solid transparent"
-            borderLeft: "#{size}px solid transparent"
-            borderBottom: "#{size * 1.5}px solid #{if @root.selected_point then '#ccc' else focus_blue}"
-            position: 'relative'
-            top: -32
+          DIV 
+            style: cssTriangle 'top', (if @root.selected_point then '#ccc' else focus_blue), w, h,               
+              position: 'relative'
+              top: -32
+              left: left
 
-          DIV style: {left: left, position: 'absolute'},
-            DIV 
-              style: css.crossbrowserify(css_triangle)
-              DIV
-                style:
-                  width: 0
-                  position: 'relative'
-                  left: -(size - 1)
-                  top: border_width + 3
-                  borderLeft: "#{size - 1}px solid transparent"
-                  borderRight: "#{size - 1}px solid transparent"
-                  borderBottom: "#{size * 1.5 - 1}px solid white"
+            DIV
+              style: cssTriangle 'top', 'white', w - 1, h - 1,
+                position: 'relative'
+                left: -(w - 2)/2
+                top: 6
 
         # draw a name + avatar display for the selected opinion
         else 

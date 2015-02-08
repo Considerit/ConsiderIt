@@ -38,14 +38,26 @@ window.positionAvatars = function(width, height, opinions) {
   nodes = d3.range(opinions.length).map(function(i) {
     var radius = opinions[i].radius || r
 
-    if(opinions[i].icon.style.width != radius * 2)
+    if(parseFloat(opinions[i].icon.style.width) != radius * 2)
       opinions[i].icon.style.width = opinions[i].icon.style.height = radius*2 + 'px'
+
+    // I'm finding that different initial conditions work better at different scales
+    if (opinions.length > 10){
+      // Give large numbers of avatars some good initial spacing
+      x = radius + (width- 2 * radius) * (i / n)
+      y = radius + Math.random() * (height - 2 * radius)
+    } else {
+      // Small numbers of avatars can be more precisely placed for quick 
+      // convergence with little churn
+      x = x_target(i)
+      y = height - radius
+    }
 
     return {
       index: i, 
       radius: radius,
-      x: radius + (width- 2 * radius) * (i / n),
-      y: radius + Math.random() * (height - 2 * radius)
+      x: x,
+      y: y
     }
   })
 
@@ -71,9 +83,11 @@ window.positionAvatars = function(width, height, opinions) {
     // Repel colliding nodes
     // A quadtree helps efficiently detect collisions
     var q = d3.geom.quadtree(nodes),
-        i = 0
+        i = 0, 
+        some_node_moved = false
     while (++i < n)
       q.visit(collide(nodes[i]))
+
 
     //////
     // Apply standard forces
@@ -82,7 +96,7 @@ window.positionAvatars = function(width, height, opinions) {
       // Move for NaNs
       // Travis: How can a NaN occur?
       if (isNaN(o.y) || isNaN(o.x)) {
-        console.error('Nan0 at', o.x, o.y)
+        console.error('Nan0 at', o.x, o.y, opinions[o.index])
         o.y = height/2
         o.x = x_target(o.index)//width/2
       }
@@ -97,10 +111,21 @@ window.positionAvatars = function(width, height, opinions) {
       o.x = Math.max(o.radius, Math.min(width  - o.radius, o.x))
       o.y = Math.max(o.radius, Math.min(height - o.radius, o.y))
 
-      // Re-position node
-      opinions[i].icon.style.left = o.x - o.radius + 'px'
-      opinions[i].icon.style.top  = o.y - o.radius + 'px'
+      // Re-position dom element...if it's moved enough      
+      if ( !opinions[i].icon.style.left || Math.abs( parseFloat(opinions[i].icon.style.left) - (o.x - o.radius)) > .1 ){
+        opinions[i].icon.style.left = o.x - o.radius + 'px'
+        some_node_moved = true
+      }
+
+      if ( !opinions[i].icon.style.top || Math.abs( parseFloat(opinions[i].icon.style.top) - (o.y - o.radius)) > .1 ) {
+        opinions[i].icon.style.top  = o.y - o.radius + 'px'
+        some_node_moved = true
+      }
     })
+
+    // Complete the simulation if we've reached a steady state
+    if (!some_node_moved)
+      force.stop()
   }
 
   function collide(node) {

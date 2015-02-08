@@ -610,7 +610,7 @@ Histogram = ReactiveComponent
     hist = fetch('histogram')
     opinions = fetch('/page/' + @proposal.slug).opinions || []
 
-    avatar_radius = getAvatarRadius(BODY_WIDTH, HISTOGRAM_HEIGHT, opinions)
+    avatar_radius = calculateAvatarRadius(BODY_WIDTH, HISTOGRAM_HEIGHT, opinions)
     if @local.avatar_size != avatar_radius * 2
       @local.avatar_size = avatar_radius * 2
       save @local
@@ -944,7 +944,7 @@ MiniHisto = ReactiveComponent
     @opinions = (opinion for opinion in @opinions when \
                  not filter_func or filter_func(fetch(opinion.user)))
 
-    avatar_radius = getAvatarRadius(@props.width, @props.height-1, @opinions)
+    avatar_radius = calculateAvatarRadius(@props.width, @props.height-1, @opinions)
     if @local.avatar_size != avatar_radius * 2
       @local.avatar_size = avatar_radius * 2
       save @local

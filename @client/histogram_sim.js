@@ -137,6 +137,12 @@ window.positionAvatars = function(width, height, opinions) {
           node.y -= offset_y
           quad.point.x += offset_x
           quad.point.y += offset_y
+          // Travis: Why doesn't the below converge, but the above does?
+          // node.x += offset_x
+          // node.y += offset_y
+          // quad.point.x -= offset_x
+          // quad.point.y -= offset_y
+
         }
       }
 

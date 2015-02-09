@@ -66,7 +66,6 @@ userOpinion = (user_key) ->
 _route_changed = false
 
 window.togglePage = (proposal_mode, triggered_by) ->
-  console.log $('.histogram').length
   $('.histogram').ensureInView
     offset_buffer: -100
     callback : -> 
@@ -4017,7 +4016,7 @@ Router = Backbone.Router.extend
     resetState(root)
 
     root.page_name = 'edit_profile'
-    root.auth = {form: 'edit profile'}
+    root.auth = {form: 'edit profile', ask_questions: true}
 
     save root
 

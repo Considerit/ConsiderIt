@@ -117,7 +117,7 @@ Auth = ReactiveComponent
                 @inputBox('password', "password", 'password')]
             ],
             ['My name is:', @inputBox('name', 'first and last name')],
-            avatar_field]
+            avatar_field].concat @userQuestionInputs()
           @submitButton('Update')
           if @local.saved_successfully
             SPAN style: {color: 'green'}, "Updated successfully"

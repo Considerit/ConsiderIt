@@ -30,7 +30,7 @@ window.positionAvatars = function(width, height, opinions) {
       n = opinions.length, 
       r = calculateAvatarRadius(width, height, opinions), 
       x_force_mult = 2,
-      y_force_mult = height <= 100 ? 1 : 4,
+      y_force_mult = height <= 100 ? 2 : 6,
       nodes, force, ticks = 0
 
   // Initialize positions of each node
@@ -141,8 +141,8 @@ window.positionAvatars = function(width, height, opinions) {
         if (dist < combined_r) {
           var separate_by, offset_x, offset_y
           separate_by = dist == 0 ? 1 : ( dist - combined_r ) / dist
-          offset_x = dx * separate_by * .5,
-          offset_y = dy * separate_by * .5
+          offset_x = dx * separate_by * .6,
+          offset_y = dy * separate_by * .6
 
           node.x -= offset_x
           node.y -= offset_y

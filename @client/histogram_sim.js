@@ -172,6 +172,7 @@ window.positionAvatars = function(width, height, opinions) {
   // be swapped. We square the difference in order to favor large differences 
   // for one vs small differences for the pair.
   function energy_reduced_by_swap(p1, p2) {
+    // how much does each point covet the other's location, over their own?
     var p1_jealousy = Math.pow(p1.x - opinions[p1.index].x_target, 2) - 
                       Math.pow(p2.x - opinions[p1.index].x_target, 2),
         p2_jealousy = Math.pow(p2.x - opinions[p2.index].x_target, 2) - 

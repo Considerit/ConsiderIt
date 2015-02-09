@@ -607,16 +607,16 @@ StickyProposalHeader = ReactiveComponent
     # Now we know that we are drawing the navigation bar
 
     # Determine the next proposal
-    next_proposal =
-      if proposals.clusters  # In case /proposals isn't loaded
-        curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
-        if curr_cluster?.proposals.length > 1
-          # Now find the current proposal in the cluster, and return the next one
-          for proposal, index in curr_cluster.proposals
-            if @proposal == proposal
-              break
-          next_index = (index + 1) % curr_cluster.proposals.length
-          curr_cluster.proposals[next_index]
+    # next_proposal =
+    #   if proposals.clusters  # In case /proposals isn't loaded
+    #     curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
+    #     if curr_cluster?.proposals.length > 1
+    #       # Now find the current proposal in the cluster, and return the next one
+    #       for proposal, index in curr_cluster.proposals
+    #         if @proposal == proposal
+    #           break
+    #       next_index = (index + 1) % curr_cluster.proposals.length
+    #       curr_cluster.proposals[next_index]
 
     heading_height = 50
     DIV null, 
@@ -790,19 +790,19 @@ StickyProposalHeader = ReactiveComponent
                                               other_proposal.name
 
 
-              if next_proposal
-                A 
-                  style: 
-                    fontSize: 15
-                    marginLeft: 50
-                    display: 'inline-block'
-                    fontWeight: 400
-                    color: 'white'
-                    textDecoration: 'underline'
+              # if next_proposal
+              #   A 
+              #     style: 
+              #       fontSize: 15
+              #       marginLeft: 50
+              #       display: 'inline-block'
+              #       fontWeight: 400
+              #       color: 'white'
+              #       textDecoration: 'underline'
 
-                  onClick: do (url = proposal_url(next_proposal)) =>
-                    => window.app_router.navigate(url, {trigger: true})
-                  'Next >' 
+              #     onClick: do (url = proposal_url(next_proposal)) =>
+              #       => window.app_router.navigate(url, {trigger: true})
+              #     'Next >' 
 
   componentDidMount : -> @initOrUpdateHeader()
   componentDidUpdate : -> @initOrUpdateHeader()

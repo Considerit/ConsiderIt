@@ -91,7 +91,7 @@ window.positionAvatars = function(width, height, opinions) {
     // Apply standard forces
     nodes.forEach(function(o, i) {
 
-      // Push node toward its desired x-location (e.g. stance)
+      // Push node toward its desired x-position
       o.x += e.alpha * (x_force_mult * width  * .001) * (opinions[o.index].x_target - o.x)
 
       // Push node downwards
@@ -207,8 +207,8 @@ window.positionAvatars = function(width, height, opinions) {
         sorted = global_sort(false)
 
     for (var i = 0; i < nodes.length; i++){
-      energy_sorted   += Math.pow(Math.abs( sorted[i].x - opinions[sorted[i].index].x_target ), 2)
-      energy_unsorted += Math.pow(Math.abs(  nodes[i].x - opinions[nodes[i].index].x_target ), 2)
+      energy_sorted   += Math.pow(sorted[i].x - opinions[sorted[i].index].x_target, 2)
+      energy_unsorted += Math.pow( nodes[i].x - opinions[nodes[i].index].x_target , 2)
     }
 
     return Math.sqrt(energy_unsorted) - Math.sqrt(energy_sorted)

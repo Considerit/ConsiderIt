@@ -411,7 +411,9 @@ Proposal = ReactiveComponent
 
     # TODO: Hack!! When you go from homepage to a proposal, seek to proposal description
     # top, otherwise you can be stuck in the middle of the proposal. 
-    if (customizations[fetch('/subdomain').name]?.ProposalHeader or customizations.default.ProposalHeader) != SimpleProposalHeading  # Disabled for apps with a next button until we resolve https://github.com/tkriplean/ConsiderIt/commit/0561b9bdb6ae03705c3718d2283d8d8345fad632
+    # Disabled for apps with a next button until we resolve 
+    # https://github.com/tkriplean/ConsiderIt/commit/0561b9bdb6ae03705c3718d2283d8d8345fad632
+    if (customizations[fetch('/subdomain').name]?.ProposalHeader or customizations.default.ProposalHeader) != SimpleProposalHeading  
       $('.proposal').moveToTop() 
 
   renderDescriptionField : (field) ->

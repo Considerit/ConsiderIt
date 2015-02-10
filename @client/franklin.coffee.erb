@@ -152,7 +152,7 @@ PageTransition =
         slider = fetch 'slider'
 
         direction = if slider.stance > 0 && !isNeutralOpinion(slider.stance) then 1 else -1
-        mouth_x   = if isNeutralOpinion(slider.stance) then 0 else -SLIDER_HANDLE_SIZE
+        mouth_x   = if isNeutralOpinion(slider.stance) then 0 else -18
 
         if root.proposal_mode == 'crafting'
           bubblemouth_style = { translateX: direction * mouth_x, translateY: 20, scaleX: direction * 1.5, scaleY: 1.5  }
@@ -160,7 +160,6 @@ PageTransition =
           bubblemouth_style = { translateX: direction * mouth_x, translateY: -4, scaleX: direction, scaleY: 1  }
 
         $el.velocity bubblemouth_style, {duration}
-
 
       # The decision board will have to expand for crafting and collapse into to the Give Opinion button in results
       when 'decisionboard'
@@ -1165,7 +1164,7 @@ Slider = ReactiveComponent
       # Keep feedback centered over handle, but keep within the bounds of the slider region 
       # when the slider is in an extreme position. 
       feedback_left = @props.width * (slider.stance/2 + .5)
-      feedback_width = widthWhenRendered slider_feedback, feedback_style
+      feedback_width = widthWhenRendered(slider_feedback, feedback_style) + 10
       if sticky 
         if slider.stance > 0
           feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
@@ -1405,7 +1404,8 @@ DecisionBoard = ReactiveComponent
       Slider
         width: HISTOGRAM_WIDTH - 10
 
-      Bubblemouth()
+      if enable_opining        
+        Bubblemouth()
 
 
       if enable_opining
@@ -1605,13 +1605,14 @@ Bubblemouth = ReactiveComponent
                       else
                         bubblemouth_srcs['other'][@root.proposal_mode]
 
+    console.log slider.clientX
     bubblemouth_style = 
-      left: slider.clientX
+      left: translateStanceToPixelX slider.stance, DECISION_BOARD_WIDTH
       position: 'absolute'
       width: 18
       pointerEvents: 'none'
       zIndex: 10
-      marginLeft: -SLIDER_HANDLE_SIZE/2
+      marginLeft: -9
       top: -25
 
     IMG 

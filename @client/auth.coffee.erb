@@ -13,8 +13,8 @@
 # clearly documented in the render method so that the method doesn't get
 # too complicated to understand and modify.
 
-auth_ghost_gray = '#a1a1a1' # the gray color for ghost text
-auth_text_gray = '#444'    # the gray color for solid text
+window.auth_ghost_gray = '#a1a1a1' # the gray color for ghost text
+window.auth_text_gray = '#444'    # the gray color for solid text
 
 Auth = ReactiveComponent
   displayName: 'Auth'
@@ -329,44 +329,48 @@ Auth = ReactiveComponent
       toggle_to = 'Create new account'
       left = 349
 
-    DIV
-      style:
-        position: 'relative'
-        textAlign: 'center'
+    DIV null, 
+      DIV
+        style:
+          position: 'relative'
+          textAlign: 'center'
 
-      @submitButton button, true
-
-      SPAN
-        style: 
-          position: 'absolute'
-          left: left
-          marginTop: 23
-          textAlign: 'left'
-          width: '100%'
+        @submitButton button, true
 
         SPAN
-          style:
-            color: '#444'
-            fontSize: 24
-            paddingLeft: 18
-            paddingRight: 7
-          'or '
-        A
-          style:
-            display: 'inline-block'
-            color: '#444'
-            textDecoration: 'underline'
-            fontWeight: 400
-            fontSize: 24
-          onClick: =>
-            current_user = fetch('/current_user')
-            @root.auth.form = if @root.auth.form == 'create account' then 'login' else 'create account'
-            current_user.errors = []
-            @local.errors = []
-            save @root
-            save @local
+          style: 
+            position: 'absolute'
+            left: left
+            marginTop: 23
+            textAlign: 'left'
+            width: '100%'
 
-          toggle_to
+          SPAN
+            style:
+              color: '#444'
+              fontSize: 24
+              paddingLeft: 18
+              paddingRight: 7
+            'or '
+          A
+            style:
+              display: 'inline-block'
+              color: '#444'
+              textDecoration: 'underline'
+              fontWeight: 400
+              fontSize: 24
+            onClick: =>
+              current_user = fetch('/current_user')
+              @root.auth.form = if @root.auth.form == 'create account' then 'login' else 'create account'
+              current_user.errors = []
+              @local.errors = []
+              save @root
+              save @local
+
+            toggle_to
+
+      if customizations[fetch('/subdomain').name]?.auth?.additional_auth_footer?
+        customizations[fetch('/subdomain').name].auth.additional_auth_footer()
 
 
   ####
@@ -559,7 +563,7 @@ Auth = ReactiveComponent
     subdomain = fetch('/subdomain')
     current_user = fetch('/current_user')
 
-    questions = if @root.auth.ask_questions then customizations[subdomain.name]?.user_questions
+    questions = if @root.auth.ask_questions then customizations[subdomain.name]?.auth?.user_questions
     questions = questions or []
 
     if @local.tags != current_user.tags
@@ -652,7 +656,7 @@ Auth = ReactiveComponent
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
     if @root.auth.ask_questions
-      questions = customizations[subdomain.name]?.user_questions or []
+      questions = customizations[subdomain.name]?.auth?.user_questions or []
       @local.errors = []
       for question in questions
         if question.required

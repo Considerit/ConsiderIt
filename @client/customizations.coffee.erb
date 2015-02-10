@@ -841,6 +841,8 @@ styles += """
 # Default customizations
 customizations.default = 
 
+  show_crafting_page_first: false
+
   slider_pole_labels :
     individual: 
       support: 'Support'
@@ -943,6 +945,7 @@ election_cluster_options =
 
 ecast_highlight_color =  "#73B3B9"  #"#CB7833"
 customizations.ecastonline = customizations['ecast-demo'] = 
+  show_crafting_page_first: true
 
   slider_pole_labels :
     individual: 
@@ -1273,6 +1276,8 @@ if window.location.hostname == 'bitcoin-election.consider.it'
   window.location.replace(window.location.href.replace('https://bitcoin-election', 'https://bitcoin'))
 
 customizations.bitcoin = 
+
+  show_crafting_page_first: false
 
   hide_home_button_in_proposal_header: true
 

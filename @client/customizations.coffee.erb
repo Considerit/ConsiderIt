@@ -854,8 +854,8 @@ customizations.default =
   Homepage : SimpleHomepage
   ProposalHeader : SimpleProposalHeading
 
-  Header : ReactiveComponent
-    displayName: 'Header'
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
 
     render: ->
       subdomain = fetch '/subdomain'   
@@ -1035,8 +1035,51 @@ customizations.ecastonline = customizations['ecast-demo'] =
     Detection:
       homie_histo_title: "Citizens' opinions"
 
-  Header : ReactiveComponent
-    displayName: 'Header'
+  NonHomepageHeader : ReactiveComponent
+    displayName: 'NonHomepageHeader'
+
+    render: ->
+      DIV 
+        style: 
+          backgroundColor: 'black'
+          width: '100%'
+          position: 'relative'
+          borderBottom: "2px solid #{ecast_highlight_color}"
+          padding: "10px 0"
+          backgroundImage: "url(<%= asset_path 'ecast/bg.png' %>)"
+          height: 98
+
+        A 
+          href: "http://ecastonline.org/"
+          target: '_blank'
+          IMG 
+            style: 
+              height: 75
+              position: 'absolute'
+              left: 50
+              top: 10
+
+            src: "<%= asset_path 'ecast/ecast.png' %>"
+
+        A 
+          style: 
+            fontSize: 30
+            fontWeight: 600
+            color: 'white'
+            textShadow: '0 2px 4px rgba(0,0,0,.5)'       
+            position: 'relative'
+            top: 20
+            left: 250 
+          href: '/'
+          onClick: clickInternalLink
+          "Informing NASA's Asteroid Initiative: A Citizen Forum"
+
+
+
+        ProfileMenu()
+
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
 
     render : ->
       window.lefty = true
@@ -1090,7 +1133,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
             A
               href: '/'
               onClick: clickInternalLink
-              "A citizens forum"
+              "A Citizen Forum"
 
         # Credits
         DIV 
@@ -1235,8 +1278,8 @@ customizations.bitcoin =
 
   hide_home_button_in_proposal_header: true
 
-  Header : ReactiveComponent
-    displayName: 'Header'
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
 
     render: ->
       homepage = @root.page_name == 'homepage'
@@ -1349,8 +1392,8 @@ customizations.bitcoin =
 ####################
 # Bitcoin demo
 customizations['bitcoin-demo'] = 
-  Header : ReactiveComponent
-    displayName: 'Header'
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
 
     render: -> 
       # Background image box
@@ -1429,8 +1472,8 @@ customizations.livingvotersguide =
             url: "https://livingvotersguide.org/#{@proposal.slug}?results=true"
 
 
-  Header : ReactiveComponent
-    displayName: 'Header'
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
 
     render: ->
       logo_style =
@@ -1724,8 +1767,8 @@ customizations.tigard =
   Homepage: LearnDecideShareHomepage
   ProposalHeader: StickyProposalHeader
 
-  Header : ReactiveComponent
-    displayName: 'Header'
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
 
     render: ->
       DIV style: {textAlign: 'center'},
@@ -1745,8 +1788,8 @@ customizations.tigard =
 # City of Tigard
 customizations.cityoftigard = 
   
-  Header : ReactiveComponent
-    displayName: 'Header'
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
 
     render: -> 
       logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}

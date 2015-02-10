@@ -95,7 +95,8 @@ window.positionAvatars = function(width, height, opinions) {
       o.x += e.alpha * (x_force_mult * width  * .001) * (opinions[o.index].x_target - o.x)
 
       // Push node downwards
-      o.y += e.alpha * y_force_mult
+      // The last term helps accelerate unimpeded falling nodes
+      o.y += e.alpha * y_force_mult * Math.max(o.y - o.py + 1, 1)
 
       // Ensure node is still within the bounding box
       o.x = Math.max(o.radius, Math.min(width  - o.radius, o.x))

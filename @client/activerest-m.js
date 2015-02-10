@@ -307,11 +307,15 @@
                     var result = original_method && original_method.apply(this, arguments)
                 } catch (e) {
                     execution_context = []
-                    if (e instanceof TypeError) {
-                        if (this.is_waiting()) return loading_indicator
-                        else { error(e, this.name); return error_indicator(e.message) }
-                    } else { error(e, this.name) }
+                    if (this.is_waiting())
+                        return loading_indicator
+                    else {
+                        // Then let's re-cause the error, but without catching it
+                        original_method.apply(this, arguments)
+                        console.assert(false) // this cannot happen unless method has side effects
+                    }
                 }
+
                 execution_context = []
                 after && after.apply(this, arguments)
 

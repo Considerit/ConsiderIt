@@ -3680,33 +3680,50 @@ EmailNotificationSettings = ReactiveComponent
     data = @data()
     current_user = fetch('/current_user')
 
-    # TODO: listing each followable and making it unfollowable
     DIV null,
       DashHeader name: 'Email Notification Settings'
       DIV style: {width: CONTENT_WIDTH, margin: '15px auto'}, 
-
-        DIV null,
+        DIV style: {position: 'relative'},
           INPUT 
             id: 'no_email_notifications'
             name: 'no_email_notifications'
             type: 'checkbox'
             defaultChecked: !current_user.no_email_notifications
+            style: css.crossbrowserify
+              transform: "scale(1.5)"
+              fontSize: 30
+              position: 'absolute'
+              left: -32
+              top: 11
             onChange: (e) => 
               current_user.no_email_notifications = !$('#no_email_notifications').is(':checked')
               save current_user
-          LABEL htmlFor: 'no_email_notifications', 'Receive email notifications'
+
+          LABEL 
+            htmlFor: 'no_email_notifications'
+            style: 
+              fontSize: 30
+ 
+            'Enable email notifications'
 
         if !current_user.no_email_notifications
           if _.flatten(_.values(data.follows)).length == 0
             DIV null, 'You\'re not currently receiving any email notifications'
           else
             DIV null,
-              H1 style: {fontSize: 24, margin: '10px 0'}, "This is what you receive email notifications about:"
-
+              HR null
               for followable_type in ['Point', 'Proposal']
                 if data.follows[followable_type].length > 0
                   DIV null,
-                    H1 style: {fontSize: 18, margin: '10px 0'}, "#{followable_type}s"
+                    H1 
+                      style: 
+                        fontSize: 18
+                        marginTop: '18px'
+
+                      if followable_type == 'Point'
+                        "Pro/con points to which you are subscribed"
+                      else
+                        "#{followable_type}s to which you have subscribed"
                     for follow in data.follows[followable_type]
                       followable = fetch(follow)
                       DIV style: {margin: '20px 0'}, 

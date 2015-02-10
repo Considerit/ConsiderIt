@@ -604,16 +604,17 @@ StickyProposalHeader = ReactiveComponent
     # Now we know that we are drawing the navigation bar
 
     # Determine the next proposal
-    # next_proposal =
-    #   if proposals.clusters  # In case /proposals isn't loaded
-    #     curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
-    #     if curr_cluster?.proposals.length > 1
-    #       # Now find the current proposal in the cluster, and return the next one
-    #       for proposal, index in curr_cluster.proposals
-    #         if @proposal == proposal
-    #           break
-    #       next_index = (index + 1) % curr_cluster.proposals.length
-    #       curr_cluster.proposals[next_index]
+    if proposals.clusters  # In case /proposals isn't loaded
+      curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
+
+    next_proposal =
+      if curr_cluster?.proposals.length > 1
+        # Now find the current proposal in the cluster, and return the next one
+        for proposal, index in curr_cluster.proposals
+          if @proposal == proposal
+            break
+        next_index = (index + 1) % curr_cluster.proposals.length
+        curr_cluster.proposals[next_index]
 
     heading_height = 50
     DIV null, 

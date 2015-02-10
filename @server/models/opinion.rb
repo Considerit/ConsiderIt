@@ -7,16 +7,11 @@ class Opinion < ActiveRecord::Base
   acts_as_tenant :subdomain
 
   scope :published, -> {where( :published => true )}
-  scope :public_fields, -> {select( [:created_at, :updated_at, :id, :proposal_id, :stance, :stance_segment, :user_id, :point_inclusions, :published] )}
-
-  before_save do 
-    self.explanation = self.explanation.sanitize if self.explanation
-    self.stance_segment = Opinion.get_segment(self.stance)
-  end 
+  scope :public_fields, -> {select( [:created_at, :updated_at, :id, :proposal_id, :stance, :user_id, :point_inclusions, :published] )}
 
   def as_json(options={})
     pubs = ['created_at', 'updated_at', 'id', 'point_inclusions',
-            'proposal_id', 'stance', 'stance_segment', 'user_id', 'explanation',
+            'proposal_id', 'stance', 'user_id', 'explanation',
             'published']
 
     result = super(options)
@@ -201,7 +196,6 @@ class Opinion < ActiveRecord::Base
     # with the new neutral one)
     if opinion.updated_at < updated_at && opinion.published
       self.stance = opinion.stance
-      self.stance_segment = opinion.stance_segment
     end
 
     # If something was published, ensure everything is published
@@ -219,24 +213,6 @@ class Opinion < ActiveRecord::Base
 
   def inclusions
     Inclusion.where(:proposal_id => proposal_id, :user_id => user_id)
-  end
-
-  def self.get_segment(value)
-    if value == -1
-      return 0
-    elsif value == 1
-      return 6
-    elsif value <= 0.05 && value >= -0.05
-      return 3
-    elsif value >= 0.5
-      return 5
-    elsif value <= -0.5
-      return 1
-    elsif value >= 0.05
-      return 4
-    elsif value <= -0.05
-      return 2
-    end   
   end
 
   # This is a maintenance function.  You shouldn't need to run it

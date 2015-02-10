@@ -956,44 +956,75 @@ customizations.ecastonline = customizations['ecast-demo'] =
 
   ProposalHeader: StickyProposalHeader
 
-  user_questions : [
-    { 
-      tag: 'zip.editable'
-      question: 'My zip code is'
-      input: 'text'
-      required: true
-      input_style: 
-        width: 85
-      validation: (zip) ->
-        return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip)
-    }, {
-      tag: 'gender.editable'
-      question: 'My gender is'
-      input: 'dropdown'
-      options:['Male', 'Female']
-      required: true
-    }, {
-      tag: 'age.editable'
-      question: 'My age is'
-      input: 'text'
-      required: true
-      input_style: 
-        width: 50
-      validation: (age) -> 
-        return /^[1-9]?[0-9]{1}$|^100$/.test(age)
-    }, {
-      tag: 'ethnicity.editable'
-      question: 'My ethnicity is'
-      input: 'dropdown'
-      options:['African American', 'Asian', 'Latino/Hispanic', 'White', 'Other']
-      required: true
-    }, {
-      tag: 'education.editable'
-      question: 'My formal education is'
-      input: 'dropdown'
-      options:['Did not graduate from high school', 'Graduated from high school or equivalent', 'Attended, but did not graduate from college', 'College degree', 'Graduate professional degree']
-      required: true
-    }]
+  auth: 
+
+    additional_auth_footer: -> 
+
+      auth = fetch('root').auth
+      if auth.ask_questions && auth.form != 'edit profile'
+        return DIV 
+          style:
+            fontSize: 13
+            color: auth_text_gray
+            padding: '16px 0' 
+          """
+          The demographic data collected from participants in this project will be used for research purposes, for 
+          example, to identify the demographic and other characteristics of the people who participated in the 
+          deliberation.  This information can be used in analyzing the results of this online forum.  
+          No email addresses, demographic data, or personally-identifying information will be displayed to 
+          other visitors to this site.  Any comments you submit will be identified only by the display name 
+          you enter below.  By completing this registration, you acknowledge that your participation in this 
+          project is entirely voluntary and you agree that the data provided may be used for research. If you 
+          have any questions or concerns at any time, please 
+          """
+          A 
+            href: 'mailto:info@ecastonline.org'
+            target: "_blank"
+            style: 
+              textDecoration: 'underline'
+             "Contact Us"
+          "."
+      else 
+        SPAN null, ''
+
+    user_questions : [
+      { 
+        tag: 'zip.editable'
+        question: 'My zip code is'
+        input: 'text'
+        required: true
+        input_style: 
+          width: 85
+        validation: (zip) ->
+          return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip)
+      }, {
+        tag: 'gender.editable'
+        question: 'My gender is'
+        input: 'dropdown'
+        options:['Male', 'Female']
+        required: true
+      }, {
+        tag: 'age.editable'
+        question: 'My age is'
+        input: 'text'
+        required: true
+        input_style: 
+          width: 50
+        validation: (age) -> 
+          return /^[1-9]?[0-9]{1}$|^100$/.test(age)
+      }, {
+        tag: 'ethnicity.editable'
+        question: 'My ethnicity is'
+        input: 'dropdown'
+        options:['African American', 'Asian', 'Latino/Hispanic', 'White', 'Other']
+        required: true
+      }, {
+        tag: 'education.editable'
+        question: 'My formal education is'
+        input: 'dropdown'
+        options:['Did not graduate from high school', 'Graduated from high school or equivalent', 'Attended, but did not graduate from college', 'College degree', 'Graduate professional degree']
+        required: true
+      }]
 
 
   cluster_options :

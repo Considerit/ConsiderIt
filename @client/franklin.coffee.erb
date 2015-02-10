@@ -815,7 +815,7 @@ Histogram = ReactiveComponent
     h_w = @getDOMNode().offsetWidth
     m_x = ev.pageX or ev.touches[0].pageX
 
-    2 * (m_x - h_x) / h_w - 1
+    translatePixelXToStance m_x - h_x, h_w
 
   onMouseMove: (ev) -> 
     return if fetch('slider').is_moving
@@ -1089,7 +1089,7 @@ Slider = ReactiveComponent
     slider.has_moved = true
 
     # convert position of handle to a slider value on [1, -1]
-    slider.stance = slider.clientX / @props.width * 2 - 1
+    slider.stance = translatePixelXToStance(slider.clientX, @props.width)
 
     save slider
 
@@ -2938,7 +2938,7 @@ GroupSelectionRegion = ReactiveComponent
         # draw a bubble mouth
         if hist.selected_opinions
           w = 40; h = 30
-          left = ((hist.selected_opinion_value + 1)/2) * BODY_WIDTH + 10
+          left = translateStanceToPixelX(hist.selected_opinion_value, BODY_WIDTH) + 10
 
           DIV 
             style: cssTriangle 'top', (if @root.selected_point then '#ccc' else focus_blue), w, h,               
@@ -2955,7 +2955,7 @@ GroupSelectionRegion = ReactiveComponent
         # draw a name + avatar display for the selected opinion
         else 
           place_avatar_opinion_value = if hist.selected_opinion_value > 0 then .8 else -.8
-          left = ((place_avatar_opinion_value + 1)/2) * BODY_WIDTH + 20
+          left = translateStanceToPixelX(place_avatar_opinion_value, BODY_WIDTH) + 20
 
           avatar_size = 80
           user = fetch(fetch(hist.selected_opinion).user)

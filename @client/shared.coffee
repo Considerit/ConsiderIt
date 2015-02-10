@@ -127,6 +127,13 @@ window.cssTriangle = (direction, color, width, height, style) ->
 
   style
 
+# maps an opinion stance in [-1, 1] to a pixel value [0, width]
+window.translateStanceToPixelX = (stance, width) -> (stance + 1) / 2 * width
+
+# Maps a pixel value [0, width] to an opinion stance in [-1, 1] 
+window.translatePixelXToStance = (pixel_x, width) -> 2 * (pixel_x / width) - 1
+
+
 
 #############################
 ## Components

@@ -46,7 +46,16 @@ window.proposal_url = (proposal) =>
   # The special thing about this function is that it only links to
   # "?results=true" if the proposal has an opinion.
   result = '/' + proposal.slug
-  if false and proposal.top_point
+  subdomain = fetch('/subdomain')
+  
+
+  show_crafting_page_first =  
+    if customizations[subdomain.name]?.show_crafting_page_first?
+      customizations[subdomain.name].show_crafting_page_first
+    else 
+      customizations.default.show_crafting_page_first
+
+  if !show_crafting_page_first && proposal.top_point
     result += '?results=true'
   return result
 

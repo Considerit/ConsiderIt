@@ -23,6 +23,7 @@ window.BODY_WIDTH = 540
 window.POINT_WIDTH = 250
 window.POINT_CONTENT_WIDTH = 197
 window.HISTOGRAM_WIDTH = BODY_WIDTH    # Width of the slider / histogram base 
+window.HISTOGRAM_HEIGHT = 170
 window.DECISION_BOARD_WIDTH = BODY_WIDTH + 4 # the four is for the border
 window.REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 76
 window.MAX_HISTOGRAM_HEIGHT = 200
@@ -37,8 +38,8 @@ window.COMMUNITY_POINT_MOUTH_WIDTH = 17
 # See @server/models/subdomain#branding_info for hardcoding color values
 # when doing development. 
 
-window.considerit_blue = '#2478CC'
-window.default_avatar_in_histogram_color = '#999'
+window.focus_blue = '#2478CC'
+window.default_avatar_in_histogram_color = '#a7a7a7'
 #########################
 
 
@@ -91,12 +92,40 @@ window.clickInternalLink = (event) ->
     return false
 
 # Computes the width of some text given some styles empirically
-window.realWidth = (str, style) -> 
+window.widthWhenRendered = (str, style) -> 
   $el = $("<span id='width_test'>#{str}</span>").css(style)
   $('#content').append($el)
   width = $('#width_test').width()
   $('#width_test').remove()
   width
+
+# Returns the style for a css triangle
+# 
+window.cssTriangle = (direction, color, width, height, style) -> 
+  style = style or {}
+
+  switch direction
+    when 'top'
+      border_width = "0 #{width/2}px #{height}px #{width/2}px"
+      border_color = "transparent transparent #{color} transparent"
+    when 'bottom'
+      border_width = "#{height}px #{width/2}px 0 #{width/2}px"
+      border_color = "#{color} transparent transparent transparent"
+    when 'left'
+      border_width = "#{height/2}px #{width}px #{height/2}px 0"
+      border_color = "transparent #{color} transparent transparent"
+    when 'right'
+      border_width = "#{height/2}px 0 #{height/2}px #{width}px"
+      border_color = "transparent transparent transparent #{color}"
+
+  _.defaults style, 
+    width: 0
+    height: 0
+    borderStyle: 'solid'
+    borderWidth: border_width
+    borderColor: border_color
+
+  style
 
 
 #############################
@@ -487,7 +516,7 @@ body, input, button, textarea {
   cursor: pointer; }
 
 .primary_button {
-  background-color: #{considerit_blue};
+  background-color: #{focus_blue};
   color: white;
   font-size: 29px;
   margin-top: 14px;

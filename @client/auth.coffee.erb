@@ -13,8 +13,8 @@
 # clearly documented in the render method so that the method doesn't get
 # too complicated to understand and modify.
 
-auth_ghost_gray = '#a1a1a1' # the gray color for ghost text
-auth_text_gray = '#444'    # the gray color for solid text
+window.auth_ghost_gray = '#a1a1a1' # the gray color for ghost text
+window.auth_text_gray = '#444'    # the gray color for solid text
 
 Auth = ReactiveComponent
   displayName: 'Auth'
@@ -117,7 +117,7 @@ Auth = ReactiveComponent
                 @inputBox('password', "password", 'password')]
             ],
             ['My name is:', @inputBox('name', 'first and last name')],
-            avatar_field]
+            avatar_field].concat @userQuestionInputs()
           @submitButton('Update')
           if @local.saved_successfully
             SPAN style: {color: 'green'}, "Updated successfully"
@@ -159,7 +159,7 @@ Auth = ReactiveComponent
   headerAndBorder : (goal, task, body) ->
     root = fetch('root')
 
-    real_task_width = realWidth(task, {fontSize: 61, fontWeight: 600})
+    real_task_width = widthWhenRendered(task, {fontSize: 61, fontWeight: 600})
     DIV null,
 
       # The auth form's header
@@ -180,7 +180,7 @@ Auth = ReactiveComponent
               style:
                 fontWeight: 600
                 fontSize: 18
-                color: considerit_blue
+                color: focus_blue
                 transform: 'translateY(6px)'
               goal
 
@@ -191,12 +191,13 @@ Auth = ReactiveComponent
               fontWeight: 600
               fontSize: 61
               whiteSpace: 'nowrap'
-              color: considerit_blue
+              color: focus_blue
             SPAN
               style: 
                 position: 'relative'
                 marginLeft: -(real_task_width - HISTOGRAM_WIDTH) / 2
               task
+
             I
               className: 'fa-close fa'
               title: 'cancel'
@@ -222,9 +223,9 @@ Auth = ReactiveComponent
             top: 0
             borderRadius: '50%'
             marginLeft: -50 / 2
-            backgroundColor: considerit_blue
+            backgroundColor: focus_blue
             position: 'relative'
-            boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{considerit_blue}"
+            boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{focus_blue}"
 
         IMG
           # Asset fingerprinting. This is why this file is ERB
@@ -247,7 +248,7 @@ Auth = ReactiveComponent
           borderRadius: 16
           borderStyle: 'dashed'
           borderWidth: 3
-          borderColor: considerit_blue
+          borderColor: focus_blue
 
         body
 
@@ -284,7 +285,7 @@ Auth = ReactiveComponent
                   width: '30%'
                 LABEL
                   style:
-                    color: considerit_blue
+                    color: focus_blue
                     fontWeight: 600
                   field[0]
               TD
@@ -368,6 +369,7 @@ Auth = ReactiveComponent
           toggle_to
 
 
+
   ####
   # submitButton
   #
@@ -376,13 +378,18 @@ Auth = ReactiveComponent
   # action: the text for the button
   # inline: is the button inline-block?
   submitButton : (action, inline) ->
-    DIV
-      style:
-        fontSize: 24
-        display: if inline then 'inline-block' else 'block'
-      className:'primary_button' + (if @local.submitting then ' disabled' else '')
-      onClick: @submitAuth
-      action
+    DIV null,
+      DIV
+        style:
+          fontSize: 24
+          display: if inline then 'inline-block' else 'block'
+        className:'primary_button' + (if @local.submitting then ' disabled' else '')
+        onClick: @submitAuth
+        action
+
+      if customizations[fetch('/subdomain').name]?.auth?.additional_auth_footer?
+        customizations[fetch('/subdomain').name].auth.additional_auth_footer()
+
 
   ####
   # inputBox
@@ -558,7 +565,7 @@ Auth = ReactiveComponent
     subdomain = fetch('/subdomain')
     current_user = fetch('/current_user')
 
-    questions = if @root.auth.ask_questions then customizations[subdomain.name]?.user_questions
+    questions = if @root.auth.ask_questions then customizations[subdomain.name]?.auth?.user_questions
     questions = questions or []
 
     if @local.tags != current_user.tags
@@ -651,7 +658,7 @@ Auth = ReactiveComponent
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
     if @root.auth.ask_questions
-      questions = customizations[subdomain.name]?.user_questions or []
+      questions = customizations[subdomain.name]?.auth?.user_questions or []
       @local.errors = []
       for question in questions
         if question.required

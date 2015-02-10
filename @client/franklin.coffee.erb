@@ -136,6 +136,10 @@ PageTransition =
 
       # The slider handle and mouth will change size and location when moving between crafting and results
       when 'slider'
+        handle_style = { scale: if root.proposal_mode == 'results' || fetch('decisionboard').sticky then 1 else 2.5}
+        $el.find('.the_handle').velocity handle_style, {duration}
+
+      when 'bubblemouth'
         slider = fetch 'slider'
 
         direction = if slider.stance > 0 && !isNeutralOpinion(slider.stance) then 1 else -1
@@ -146,10 +150,8 @@ PageTransition =
         else 
           bubblemouth_style = { translateX: direction * mouth_x, translateY: -4, scaleX: direction, scaleY: 1  }
 
-        handle_style = { scale: if root.proposal_mode == 'results' || fetch('decisionboard').sticky then 1 else 2.5}
+        $el.velocity bubblemouth_style, {duration}
 
-        $el.find('.bubblemouth').velocity bubblemouth_style, {duration}
-        $el.find('.the_handle').velocity handle_style, {duration}
 
       # The decision board will have to expand for crafting and collapse into to the Give Opinion button in results
       when 'decisionboard'
@@ -634,10 +636,9 @@ Histogram = ReactiveComponent
       backgroundColor: focus_blue
     css.crossbrowserify selected_avatar_style
     # 3) The style of an unselected avatar when some other avatar(s) is selected
-    unselected_avatar_style = _.extend {}, regular_avatar_style, 
+    unselected_avatar_style = css.grayscale _.extend {}, regular_avatar_style, 
       opacity: .2
-      WebkitFilter: 'grayscale(100%)'
-      filter: 'grayscale(100%)'
+
     # 4) The style of the avatar on the crafting page
     crafting_page_avatar_style = _.extend {}, unselected_avatar_style, 
       opacity: .1
@@ -1016,10 +1017,241 @@ MiniHisto = ReactiveComponent
 
 ##
 # Slider
-# Manages the slider and the UI elements attached to it. 
+# Manages the slider and the UI elements attached to it. Specifically: 
+#   - a slider base
+#   - labels for the poles of the slider
+#   - a draggable slider handle
+#   - feedback description about the current opinion
+#
+#
+#
+#
 Slider = ReactiveComponent
   displayName: 'Slider'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
+
+  render : ->
+
+    slider = fetch('slider')
+    hist = fetch('histogram')
+    sticky = fetch('decisionboard').sticky
+    set_in_grayscale = @root.selected_point && @root.proposal_mode == 'crafting'
+
+
+    # Update the slider position when the server gets back to us
+    your_opinion = fetch(@proposal.your_opinion)
+    if slider.stance != your_opinion.stance and !slider.is_moving
+      slider.stance = your_opinion.stance
+      slider.clientX = @props.width * (slider.stance / 2 + .5)
+      if your_opinion.stance
+        slider.has_moved = true
+      save(slider)
+
+    ####
+    # Define slider layout
+    slider_style = 
+      left: - (@props.width - DECISION_BOARD_WIDTH) / 2 + 2
+      position: 'absolute'
+      top: -48
+      margin: 'auto'
+      width: @props.width
+
+    if set_in_grayscale
+      css.grayscale slider_style
+
+    ####
+    # Define slider base
+    slider_base_style = 
+      width: @props.width
+      height: 6
+      backgroundColor: if @root.proposal_mode == 'crafting' then '#AFD7FF' else '#787878'
+      position: 'absolute'
+
+
+    ####
+    # Define slider poles
+    draw_poles = !sticky
+
+    ####
+    # Define slider handle
+
+    # Check whether the user has permission to opine, which affects whether a 
+    # slider handle is shown. 
+    if your_opinion.published
+      can_opine = permit 'update opinion', @proposal, your_opinion
+    else
+      can_opine = permit 'publish opinion', @proposal
+
+    enable_opining = !(hist.selected_opinions || hist.selected_opinion) &&
+                      (can_opine not in [Permission.DISABLED, Permission.INSUFFICIENT_PRIVILEGES] || 
+                      your_opinion.published )
+
+    draw_handle = enable_opining && !set_in_grayscale
+    if draw_handle
+      handle_style =
+        boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{focus_blue}"            
+        backgroundColor: focus_blue      
+        left: slider.clientX
+        zIndex: 10
+        borderRadius: '50%'
+        width: if can_opine != Permission.INSUFFICIENT_PRIVILEGES then SLIDER_HANDLE_SIZE else 0
+        height: if can_opine != Permission.INSUFFICIENT_PRIVILEGES then SLIDER_HANDLE_SIZE else 0
+        marginLeft: -SLIDER_HANDLE_SIZE / 2
+        top: -9
+        position: 'relative'
+
+      face_style = 
+        position: 'absolute'
+        pointerEvents: 'none'
+        borderRadius: '50%'
+
+      eye_style = _.extend {}, face_style,
+        backgroundColor: 'white'
+        top: 6
+        width: 3
+        height: 3
+        transform: "scale(#{.8 + .2 * Math.abs(slider.stance)}, #{.8 + .2 * Math.abs(slider.stance)})"
+
+      mouth_scale_y = .4 * slider.stance
+      mouth_style = _.extend {}, face_style,
+        bottom: -1
+        width: SLIDER_HANDLE_SIZE - 4
+        left: 2
+        height: SLIDER_HANDLE_SIZE - 4
+        boxShadow: '3px 3px 0 0 white'
+        transform: 
+          "scale(#{.4 + .3 * Math.abs(slider.stance) }, #{if Math.abs(mouth_scale_y) < .08 then (if mouth_scale_y >= 0 then 1 else -1) * .08 else mouth_scale_y}) 
+           translate(0, #{-2 - 5 * Math.abs(slider.stance)}px) 
+           rotate(45deg)"
+
+
+    ####
+    # Define slider feedback
+    draw_feedback = @root.proposal_mode == 'crafting' && draw_handle && !set_in_grayscale
+    
+    if draw_feedback
+      slider_feedback = 
+        if !slider.has_moved 
+          'Slide Your Overall Opinion' 
+        else if isNeutralOpinion(slider.stance)
+          "You are Undecided"
+        else 
+          degree = Math.abs(slider.stance)
+          strength_of_opinion = if degree > .999
+                                  "Fully "
+                                else if degree > .5
+                                  "Firmly "
+                                else
+                                  "Slightly " 
+          valence = sliderPole('individual', if slider.stance > 0 then 'support' else 'oppose')
+
+          "You #{strength_of_opinion} #{valence}"
+
+      feedback_style = 
+        pointerEvents: 'none' # clicking on feedback interferes with slider and toggle state
+        fontSize: 30
+        fontWeight: 700
+        color: focus_blue
+
+      # Keep feedback centered over handle, but keep within the bounds of the slider region 
+      # when the slider is in an extreme position. 
+      feedback_left = @props.width * (slider.stance/2 + .5)
+      feedback_width = widthWhenRendered slider_feedback, feedback_style
+      if sticky 
+        if slider.stance > 0
+          feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
+        else
+          feedback_left = Math.max(feedback_width/2, feedback_left)
+
+      _.extend feedback_style, 
+        position: 'absolute'      
+        top: if sticky then -57 else -80      
+        left: feedback_left
+        marginLeft: -feedback_width / 2
+        width: feedback_width
+
+
+    DIV 
+      className: 'slider'
+      style : slider_style
+
+      # Draw the pole labels of the slider
+      if draw_poles
+        for pole in ['oppose', 'support']        
+          pole_label = sliderPole((if @root.proposal_mode == 'crafting' then 'individual' else 'group'), pole)
+          DIV 
+            key: "pole_#{pole}"
+            style: 
+              position: 'absolute'
+              fontSize: 30
+              top: -20
+              pointerEvents: 'none'
+              left: if pole == 'oppose' then -167
+              right: if pole == 'support' then -167
+              width: if pole == 'oppose' then 145 else 130
+
+            pole_label 
+
+      # Draw the base of the slider
+      DIV 
+        style : slider_base_style
+
+        for support in [true, false]
+          DIV 
+            style: 
+              position: 'absolute'
+              left: if support then -5
+              right: if !support then -5
+              width: 5
+              height: slider_base_style.height
+              backgroundColor: slider_base_style.backgroundColor
+
+            DIV
+              style: cssTriangle (if support then 'left' else 'right'), slider_base_style.backgroundColor, 12, 6,               
+                position: 'absolute'
+                left: if support then -12
+                right: if !support then -12
+
+      if draw_feedback
+        DIV 
+          style: feedback_style
+          slider_feedback
+
+      if draw_handle
+        DIV 
+          className: 'the_handle' 
+          onMouseUp: @handleMouseUp
+          onTouchEnd: @handleMouseUp
+          onTouchCancel: @handleMouseUp
+
+          onMouseDown: @handleMouseDown
+          onTouchStart: @handleMouseDown
+
+          onTouchMove: @handleMouseMove
+          style: css.crossbrowserify handle_style
+
+          if @root.proposal_mode == 'crafting'
+           [DIV 
+              style: css.crossbrowserify(mouth_style)
+            DIV 
+              style: css.crossbrowserify(_.defaults({left: 6}, eye_style))
+            DIV 
+              style: css.crossbrowserify(_.defaults({right: 6}, eye_style ))
+           ]
+
+          if @root.proposal_mode == 'crafting' && !slider.has_moved
+            for support in [true, false]
+              DIV 
+                style: 
+                  right: if support then -15
+                  left: if !support then -15
+                  position: 'absolute'
+                  top: 3
+                  color: focus_blue
+                  fontSize: 12              
+                if support then '>' else '<'
+
+
 
   # Kick off sliding 
   handleMouseDown: (e) -> 
@@ -1094,255 +1326,10 @@ Slider = ReactiveComponent
     save slider
 
 
-  render : ->
-
-    stanceLabel = (stance) -> 
-      subdomain = fetch('/subdomain')
-      if isNeutralOpinion(stance)
-        "are Undecided"
-      else 
-
-        degree = Math.abs(stance)
-        strength_of_opinion = if degree > .999
-                                "Fully "
-                              else if degree > .5
-                                "Firmly "
-                              else
-                                "Slightly " 
-        valence = sliderPole('individual', if stance > 0 then 'support' else 'oppose')
-
-        "#{strength_of_opinion} #{valence}"
-
-
-    slider = fetch('slider')
-    hist = fetch('histogram')
-
-    # Update the slider position when the server gets back to us
-    your_opinion = fetch(@proposal.your_opinion)
-
-    if your_opinion.published
-      can_opine = permit 'update opinion', @proposal, your_opinion
-    else
-      can_opine = permit 'publish opinion', @proposal
-
-    enable_opining = !(hist.selected_opinions || hist.selected_opinion) &&
-                      (can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || 
-                        (can_opine == Permission.DISABLED && your_opinion.published) )
-
-    if slider.stance != your_opinion.stance and !slider.is_moving
-      slider.stance = your_opinion.stance
-      slider.clientX = @props.width * (slider.stance / 2 + .5)
-      if your_opinion.stance
-        slider.has_moved = true
-      save(slider)
-
-    page = @root.proposal_mode
-    sticky = fetch('decisionboard').sticky
-    stance = slider.stance
-
-    # Can't be dynamically set b/c of integration with asset fingerprinting. 
-    # This is also why this file is ERB.
-    bubblemouth_srcs = 
-      neutral : {crafting: "<%= asset_path 'bubblemouth_neutral-crafting.png' %>", results: "<%= asset_path 'bubblemouth_neutral-results.png' %>"}
-      other : {crafting: "<%= asset_path 'bubblemouth-crafting.png' %>", results: "<%= asset_path 'bubblemouth-results.png' %>"}
-
-    bubblemouth_src = if isNeutralOpinion(slider.stance) then bubblemouth_srcs['neutral'][page] else bubblemouth_srcs['other'][page]
-
-    eye_style = 
-      backgroundColor: 'white'
-      top: 6
-      width: 3
-      height: 3
-      transform: "scale(#{.8 + .2 * Math.abs(stance)}, #{.8 + .2 * Math.abs(stance)})"
-
-    mouth_scale_y = .4 * stance
-    face_mouth_style = 
-      bottom: -1
-      width: SLIDER_HANDLE_SIZE - 4
-      left: 2
-      height: SLIDER_HANDLE_SIZE - 4
-      boxShadow: '3px 3px 0 0 white'
-      transform: 
-        "scale(#{.4 + .3 * Math.abs(stance) }, #{if Math.abs(mouth_scale_y) < .08 then (if mouth_scale_y >= 0 then 1 else -1) * .08 else mouth_scale_y}) 
-         translate(0, #{-2 - 5 * Math.abs(stance)}px) 
-         rotate(45deg)"
-
-    css.crossbrowserify sty for sty in [eye_style, face_mouth_style]
-    _.extend(face_part, {position: 'absolute', pointerEvents: 'none', borderRadius: '50%' }) for face_part in [eye_style, face_mouth_style]
-
-    if @root.proposal_mode == 'crafting'
-      # Slider feedback
-      slider_feedback = if !slider.has_moved then 'Slide Your Overall Opinion' else "You #{stanceLabel(slider.stance)}"
-      feedback_style = 
-        pointerEvents: 'none' # clicking on feedback interferes with slider and toggle state
-        fontSize: 30
-        fontWeight: 700
-        color: focus_blue
-
-      # Keep feedback centered over handle, but keep within the bounds of the slider region 
-      # when the slider is in an extreme position. 
-      feedback_left = @props.width * (stance/2 + .5)
-      feedback_width = widthWhenRendered slider_feedback, feedback_style
-
-      if sticky 
-        if slider.stance > 0
-          feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
-        else
-          feedback_left = Math.max(feedback_width/2, feedback_left)
-
-      _.extend feedback_style, 
-        position: 'absolute'      
-        top: if sticky then -57 else -80      
-        left: feedback_left
-        marginLeft: -feedback_width / 2
-        width: feedback_width
-
-
-    selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
-    selected_wing_point =  selected_point && !_.contains(your_opinion.point_inclusions, @root.selected_point)
-
-    slider_base_style = 
-      width: @props.width
-      height: 6
-      backgroundColor: if page == 'crafting' then '#AFD7FF' else '#787878'
-      position: 'absolute'
-
-    handle_style =
-      boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{focus_blue}"            
-      backgroundColor: focus_blue      
-      left: slider.clientX
-      zIndex: 10
-      borderRadius: '50%'
-      width: if can_opine != Permission.INSUFFICIENT_PRIVILEGES then SLIDER_HANDLE_SIZE else 0
-      height: if can_opine != Permission.INSUFFICIENT_PRIVILEGES then SLIDER_HANDLE_SIZE else 0
-      marginLeft: -SLIDER_HANDLE_SIZE / 2
-      top: -9
-      position: 'relative'
-
-    bubblemouth_style = {left: slider.clientX}
-
-    if selected_point
-      handle_style.backgroundColor = "#ccc"
-      handle_style.boxShadow = "0px 1px 0px #aaa"
-      slider_base_style.backgroundColor = "#ddd"
-      bubblemouth_style.visibility = 'hidden' # TODO: use grayscale filter when !selected_wing_point instead of hiding
-
-    DIV 
-      className: 'slider'
-      style : 
-        left: - (@props.width - DECISION_BOARD_WIDTH) / 2 + 2
-        position: 'absolute'
-        top: -48
-        margin: 'auto'
-        width: @props.width
-
-      # Draw the pole labels of the slider
-      if !sticky
-        for pole in ['oppose', 'support']        
-          pole_label = sliderPole((if @root.proposal_mode == 'crafting' then 'individual' else 'group'), pole)
-          DIV 
-            key: "pole_#{pole}"
-            style: 
-              position: 'absolute'
-              fontSize: 30
-              top: -20
-              pointerEvents: 'none'
-              left: if pole == 'oppose' then -167
-              right: if pole == 'support' then -167
-              width: if pole == 'oppose' then 145 else 130
-
-            pole_label 
-
-      # Draw the base of the slider
-      DIV 
-        className:'slider_base'
-        style : slider_base_style
-
-        for support in [true, false]
-          DIV 
-            style: 
-              position: 'absolute'
-              left: if support then -5
-              right: if !support then -5
-              width: 5
-              height: slider_base_style.height
-              backgroundColor: slider_base_style.backgroundColor
-
-            DIV
-              style: cssTriangle (if support then 'left' else 'right'), slider_base_style.backgroundColor, 12, 6,               
-                position: 'absolute'
-                left: if support then -12
-                right: if !support then -12
-
-      if @root.proposal_mode == 'crafting'
-        DIV 
-          style: feedback_style
-          slider_feedback
-
-      if enable_opining
-        [DIV 
-          className: 'the_handle' 
-          onMouseUp: @handleMouseUp
-          onTouchEnd: @handleMouseUp
-          onTouchCancel: @handleMouseUp
-
-          onMouseDown: @handleMouseDown
-          onTouchStart: @handleMouseDown
-
-          onTouchMove: @handleMouseMove
-          style: css.crossbrowserify handle_style
-
-          if page == 'crafting'
-            DIV className: 'face',            
-              DIV 
-                className: 'face_mouth'
-                style: face_mouth_style
-              DIV 
-                className: 'face_eye'
-                style: _.extend {}, eye_style,
-                  left: 6
-              DIV 
-                className: 'face_eye'
-                style: _.extend {}, eye_style,
-                  right: 6
-
-          if page == 'crafting' && !slider.has_moved
-            [DIV 
-              className: 'drag_arrow'
-              style: 
-                right: -15
-                position: 'absolute'
-                top: 3
-                color: focus_blue
-                fontSize: 12              
-              '>' 
-            DIV 
-              className: 'drag_arrow'
-              style: 
-                left: -15
-                position: 'absolute'
-                top: 3
-                color: focus_blue
-                fontSize: 12                
-              '<']
-
-        IMG 
-          className:'bubblemouth'
-          src: bubblemouth_src
-          style: bubblemouth_style
-        ]
-
 styles += """
 #{css.grab_cursor('.the_handle')}
-
-.bubblemouth {
-  position: absolute;
-  width: 18px;
-  pointer-events: none;
-  z-index: 10;
-  margin-left: -#{SLIDER_HANDLE_SIZE/2}px; }
-
 """
+
 
 
 ##
@@ -1382,8 +1369,7 @@ DecisionBoard = ReactiveComponent
         cursor: 'pointer'
 
     if selected_wing_point
-      decision_board_style.filter = 'grayscale(1)'
-      decision_board_style['-webkit-filter'] = 'grayscale(1)'
+      css.grayscale decision_board_style
       decision_board_style.opacity = '.4'
     else if selected_point
       decision_board_style.borderColor = "#ccc"
@@ -1396,6 +1382,8 @@ DecisionBoard = ReactiveComponent
     enable_opining = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
                       (can_opine != Permission.DISABLED || your_opinion.published ) && 
                       !(hist.selected_opinions || hist.selected_opinion)
+
+
     DIV 
       className:'opinion_region'
       style: 
@@ -1407,6 +1395,8 @@ DecisionBoard = ReactiveComponent
 
       Slider
         width: HISTOGRAM_WIDTH - 10
+
+      Bubblemouth()
 
 
       if enable_opining
@@ -1584,6 +1574,43 @@ DecisionBoard = ReactiveComponent
         save(d)
       conditional: => 
         @root.proposal_mode == 'crafting'
+
+Bubblemouth = ReactiveComponent
+  displayName: 'Bubblemouth'
+  mixins: [PageTransition] #implements animation logic when moving results <==> crafting
+
+  render : -> 
+    slider = fetch('slider')
+    # Can't be dynamically set b/c of integration with asset fingerprinting. 
+    # This is also why this file is ERB.
+    bubblemouth_srcs = 
+      neutral : 
+        crafting: "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
+        results: "<%= asset_path 'bubblemouth_neutral-results.png' %>"
+      other : 
+        crafting: "<%= asset_path 'bubblemouth-crafting.png' %>"
+        results: "<%= asset_path 'bubblemouth-results.png' %>"
+
+    bubblemouth_src = if isNeutralOpinion(slider.stance) 
+                        bubblemouth_srcs['neutral'][@root.proposal_mode] 
+                      else
+                        bubblemouth_srcs['other'][@root.proposal_mode]
+
+    bubblemouth_style = 
+      left: slider.clientX
+      position: 'absolute'
+      width: 18
+      pointerEvents: 'none'
+      zIndex: 10
+      marginLeft: -SLIDER_HANDLE_SIZE/2
+      top: -25
+
+    IMG 
+      className:'bubblemouth'
+      src: bubblemouth_src
+      style: bubblemouth_style
+
+
 
 
 ##

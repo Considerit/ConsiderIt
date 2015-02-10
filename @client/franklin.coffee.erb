@@ -910,13 +910,14 @@ Histogram = ReactiveComponent
       histo = @refs.histo.getDOMNode()
 
       icons = histo.childNodes
-      opinions = for opinion, i in page.opinions
-        {stance: opinion.stance, icon: icons[i], radius: icons[i].style.width/2}
+      if icons.length == opinions.length
+        opinions = for opinion, i in page.opinions
+          {stance: opinion.stance, icon: icons[i], radius: icons[i].style.width/2}
 
-      positionAvatars(BODY_WIDTH, HISTOGRAM_HEIGHT, opinions)
-      
-      @local.simulation_opinion_hash = simulation_opinion_hash
-      save @local
+        positionAvatars(BODY_WIDTH, HISTOGRAM_HEIGHT, opinions)
+        
+        @local.simulation_opinion_hash = simulation_opinion_hash
+        save @local
 
   componentDidMount: -> @physicsSimulation()
   componentDidUpdate: -> @physicsSimulation()
@@ -3296,7 +3297,7 @@ Header = ReactiveComponent
       else 
         customizations["#{subdomain.name}"]?.NonHomepageHeader?() or 
          customizations["#{subdomain.name}"]?.HomepageHeader?() or 
-         customizations.default.NonHomepageHeader() or 
+         customizations.default.NonHomepageHeader?() or 
          customizations.default.HomepageHeader()
 
       DIV null, 

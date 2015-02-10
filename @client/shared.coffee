@@ -424,7 +424,7 @@ blockquote, q {
 
 blockquote:before, blockquote:after,
 q:before, q:after {
-  content: "";
+  content: '';
   content: none; }
 
 table {
@@ -467,13 +467,11 @@ ol {
   list-style-type: decimal; }
 
 blockquote {
-  quotes: "\201C" "\201D"; }
+  quotes: '"' '"' "'" "'"; }
   blockquote:before {
-    content: open-quote;
-    font-weight: bold; }
+    content: open-quote;}
   blockquote:after {
-    content: close-quote;
-    font-weight: bold; }
+    content: close-quote;}
 
 """
 
@@ -484,7 +482,7 @@ body, h1, h2, h3, h4, h5, h6 {
   color: black; }
 
 body, input, button, textarea {
-  font-family: "Avenir Next W01", "Avenir Next", "Lucida Grande", "Lucida Sans Unicode", "Helvetica Neue", Helvetica, Verdana, sans-serif; }
+  font-family: 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; }
 
 .content {
   position: relative;
@@ -495,7 +493,7 @@ body, input, button, textarea {
 .button {
   font-size: 16px; }
 
-.button, button, input[type="submit"] {
+.button, button, input[type='submit'] {
   outline: none;
   cursor: pointer;
   text-align: center; }
@@ -507,7 +505,7 @@ body, input, button, textarea {
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1);
   filter: FlipH;
-  -ms-filter: "FlipH"; }
+  -ms-filter: 'FlipH'; }
 
 .primary_button, .primary_cancel_button {
   border-radius: 16px;
@@ -539,7 +537,7 @@ a.cancel_opinion_button {
   float: right;
   margin-top: 0.5em; }
 
-button.primary_button, input[type="submit"] {
+button.primary_button, input[type='submit'] {
   display: inline-block; }
 
 """

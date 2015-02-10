@@ -3287,8 +3287,14 @@ Header = ReactiveComponent
         backgroundColor: 'white'
         minWidth: PAGE_WIDTH
 
-
-      customizations["#{subdomain.name}"]?.Header?() or customizations.default.Header()
+      if @root.page_name == 'homepage'
+        customizations["#{subdomain.name}"]?.HomepageHeader?() or 
+         customizations.default.HomepageHeader()
+      else 
+        customizations["#{subdomain.name}"]?.NonHomepageHeader?() or 
+         customizations["#{subdomain.name}"]?.HomepageHeader?() or 
+         customizations.default.NonHomepageHeader() or 
+         customizations.default.HomepageHeader()
 
       DIV null, 
         if @root.page_name == 'about'
@@ -3297,7 +3303,6 @@ Header = ReactiveComponent
             style: {position: 'absolute', display: 'inline-block', zIndex: 999, marginTop: 8, marginLeft: 16, fontWeight: 600}
             I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
             SPAN style: {fontSize: 15, paddingLeft: 6, color: '#777', verticalAlign: 'text-bottom'}, 'Home'
-
 
       DIV style: { backgroundColor: '#eee', color: '#f00', padding: '5px 20px', display: if @root.server_error then 'block' else 'none'},
         'Warning: there was a server error!'

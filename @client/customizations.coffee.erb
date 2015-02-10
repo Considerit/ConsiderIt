@@ -371,10 +371,18 @@ ProposalSummary = ReactiveComponent
         padding: '0 30px'
         display: 'block'
         borderLeft: cell_border
+        minHeight: 60
       onMouseEnter: => @local.hovering_on = true; save(@local)
       onMouseLeave: => @local.hovering_on = false; save(@local)
 
-      TD className: 'summary_name', style: {width: 320},
+      TD 
+        className: 'summary_name'
+        style: 
+          width: 320
+          display: 'inline-block'
+          fontSize: 18
+          fontWeight: 500
+
         A 
           onClick: clickInternalLink
           href: proposal_url(proposal)
@@ -387,8 +395,16 @@ ProposalSummary = ReactiveComponent
           proposal.name
 
       TD
-        className: 'summary_decide'
-        style: {borderLeft: cell_border, borderRight: cell_border, cursor: 'pointer'},
+        style: 
+          borderLeft: cell_border
+          borderRight: cell_border
+          cursor: 'pointer'
+          width: 170
+          textAlign: 'center'
+          display: 'inline-block'
+          height: '100%'
+          minHeight: 66
+
         onClick: (=> window.app_router.navigate("/#{proposal.slug}", {trigger: true}))
         if !proposal.your_opinion || !your_opinion.published \
            || isNeutralOpinion(your_opinion.stance)
@@ -415,7 +431,13 @@ ProposalSummary = ReactiveComponent
 
       TD
         className: 'summary_share'
-        style: {cursor: 'pointer'}
+        style: 
+          cursor: 'pointer'
+          width: 320
+          display: 'inline-block'
+          paddingLeft: 15
+          marginTop: -4
+
         onClick: (=> window.app_router.navigate(proposal_url(proposal), {trigger: true}))
         if proposal.top_point
           DIV 
@@ -429,31 +451,6 @@ ProposalSummary = ReactiveComponent
 
               DIV className:'point_nutshell', style: {fontSize: 15},
                 "#{proposal.top_point.nutshell[0..30]}..."
-
-styles += """
-tr.proposal_summary {
-  min-height: 60px; }
-
-td.summary_name {
-  display: inline-block;
-  font-size: 18px;
-  font-weight: 500; }
-
-td.summary_decide {
-  width: 170px;
-  text-align: center;
-  display: inline-block;
-  height: 100%;
-  min-height: 66px; }
-
-td.summary_share {
-  width: 320px;
-  display: inline-block;
-  padding-left: 15px;
-  margin-top: -4px; }
-"""
-
-
 
 ###########################
 # Proposal headers

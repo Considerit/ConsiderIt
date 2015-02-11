@@ -218,7 +218,6 @@ window.LearnDecideShareHomepage = ReactiveComponent
         parent_key: @local.key
 
         DIV 
-          className: "sticky_header stickable"
           style: 
             backgroundColor: subdomain.branding.primary_color
             color: 'white'
@@ -271,7 +270,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
           options = customization("cluster_options.#{cluster.name}") || {}
           DIV null,
             if index == 1 and subdomain.name == 'livingvotersguide'
-              customizations.livingvotersguide.ZipcodeBox()
+              customization('ZipcodeBox')()
 
             if cluster.proposals?.length > 0 
               TABLE

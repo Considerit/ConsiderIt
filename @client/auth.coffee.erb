@@ -387,8 +387,8 @@ Auth = ReactiveComponent
         onClick: @submitAuth
         action
 
-      if customizations[fetch('/subdomain').name]?.auth?.additional_auth_footer?
-        customizations[fetch('/subdomain').name].auth.additional_auth_footer()
+      if customization('auth.additional_auth_footer')
+        customization('auth.additional_auth_footer')()
 
 
   ####
@@ -565,7 +565,7 @@ Auth = ReactiveComponent
     subdomain = fetch('/subdomain')
     current_user = fetch('/current_user')
 
-    questions = if @root.auth.ask_questions then customizations[subdomain.name]?.auth?.user_questions
+    questions = if @root.auth.ask_questions then customization 'auth.user_questions'
     questions = questions or []
 
     if @local.tags != current_user.tags
@@ -658,7 +658,7 @@ Auth = ReactiveComponent
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
     if @root.auth.ask_questions
-      questions = customizations[subdomain.name]?.auth?.user_questions or []
+      questions = customization('auth.user_questions') or []
       @local.errors = []
       for question in questions
         if question.required

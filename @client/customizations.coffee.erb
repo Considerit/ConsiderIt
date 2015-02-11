@@ -8,7 +8,38 @@
 #      to tailor their functionality.
 #   2) Specific subdomain configuration
 
-window.customizations = {}
+####
+# customization
+#
+# Public API to customizations object. Returns the proper value of the field
+# for this subdomain, or the default value if it hasn't been defined for the
+# subdomain.
+#
+# Nested customizations can be fetched with . notation, by passing e.g. 
+# "auth.use_footer"
+#
+window.customization = (field) -> 
+  subdomain = fetch('/subdomain')
+
+  if !customizations[subdomain.name]?
+    config = customizations.default
+  else 
+    config = customizations[subdomain.name]
+
+  val = config
+  fields = field.split('.')
+  found_value = true
+
+  for f, idx in fields
+    if val[f]? || idx == fields.length - 1
+      val = val[f]
+    else 
+      throw "Could not find customization #{field} for subdomain #{subdomain.name}"
+
+  val
+
+
+customizations = {}
 
 
 ############################
@@ -43,7 +74,7 @@ proposal_support = (proposal) ->
 
 
 sorted_proposals = (cluster) ->
-  options = customizations[fetch('/subdomain').name]?.cluster_options?[cluster.name] || {}
+  options = customization("cluster_options.#{cluster.name}") || {}
   _.clone(cluster.proposals).sort((a,b) ->
     x_a = proposal_support(a) - 10000 + (if options.editor_icons \
                                          and proposal_editor(a) then 1 else 0)
@@ -71,7 +102,7 @@ SimpleHomepage = ReactiveComponent
       # List all clusters
       for cluster, index in proposals.clusters or []
         if cluster.proposals?.length > 0
-          options = customizations[fetch('/subdomain').name]?.cluster_options?[cluster.name] || {}
+          options = customization("cluster_options.#{cluster.name}") || {}
                     
           first_column =
             width: 350
@@ -117,7 +148,7 @@ SimpleHomepage = ReactiveComponent
                   fontSize: 21
                   color: '#444'
                   fontWeight: 300
-                sliderPole('individual', 'oppose')
+                customization("slider_pole_labels.individual.oppose")
               SPAN
                 style:
                   position: 'absolute'
@@ -126,7 +157,7 @@ SimpleHomepage = ReactiveComponent
                   color: '#444'
                   right: 0
                   fontWeight: 300
-                sliderPole('individual', 'support')
+                customization("slider_pole_labels.individual.support")
               SPAN 
                 style: 
                   position: 'relative'
@@ -211,7 +242,7 @@ LearnDecideShareHomepage = ReactiveComponent
     contributors_without_avatar_count = @page.contributors.filter((u)-> !fetch(u).avatar_file_name).length
 
     # Columns of the sticky header for the proposal list.
-    columns = customizations[subdomain.name]?.homepage_heading_columns or [ 
+    columns = customization('homepage_heading_columns') or [ 
                   {heading: 'Learn', details: 'about the issues'}, \
                   {heading: 'Decide', details: 'what you think'}, \
                   {heading: 'Share', details: 'your opinion'}, \
@@ -277,7 +308,7 @@ LearnDecideShareHomepage = ReactiveComponent
 
         # Draw the proposal summaries
         for cluster, index in proposals.clusters or []
-          options = customizations[fetch('/subdomain').name]?.cluster_options?[cluster.name] || {}
+          options = customization("cluster_options.#{cluster.name}") || {}
           DIV null,
             if index == 1 and subdomain.name == 'livingvotersguide'
               customizations.livingvotersguide.ZipcodeBox()
@@ -458,8 +489,8 @@ window.SimpleProposalHeading = ReactiveComponent
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
     heading_fontsize = 45
-    options = customizations[fetch('/subdomain').name]?.cluster_options?[@proposal.cluster] || {}
-    show_home_button = !customizations[subdomain.name]?.hide_home_button_in_proposal_header
+    options = customization("cluster_options.#{@proposal.cluster}") || {}
+    show_home_button = !customization('hide_home_button_in_proposal_header')
 
     mod = (n, m) -> ((n % m) + m) % m
 
@@ -803,6 +834,12 @@ styles += """
 # Default customizations
 customizations.default = 
 
+  cluster_options : {}
+  
+  auth: 
+    additional_auth_footer: null
+    user_questions: null
+
   show_crafting_page_first: false
 
   slider_pole_labels :
@@ -870,8 +907,7 @@ customizations.default =
             'Bug to report? Want to use this technology in your organization? '
             A style: {textDecoration: 'none', fontWeight: 700}, href: "mailto:admin@consider.it", 'Email us'
 
-
-
+customizations.default.NonHomepageHeader = customizations.default.HomepageHeader
 
 TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'
@@ -1397,8 +1433,9 @@ customizations['bitcoin-demo'] =
 customizations.livingvotersguide = 
 
   Homepage: LearnDecideShareHomepage
+
   ProposalHeader: ProposalHeaderWithMenu
-  sticky_proposal_header : false
+  sticky_proposal_header : true
 
   homepage_heading_columns : [ 
     {heading: 'Learn', details: 'about your ballot'}, \
@@ -1511,7 +1548,6 @@ customizations.livingvotersguide =
             A {href: 'http://seattlecityclub.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'Seattle CityClub')
             DIV style: {marginTop: 8}, 'with fact-checks from'
             A {href: 'http://spl.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'The Seattle Public Library')
-
 
   ZipcodeBox : ReactiveComponent
     displayName: 'ZipcodeBox'
@@ -1652,6 +1688,7 @@ customizations.livingvotersguide =
         DIV style: {padding: 9},
           TechnologyByConsiderit()
 
+customizations.livingvotersguide.NonHomepageHeader = customizations.livingvotersguide.HomepageHeader
 
 FBShare = ReactiveComponent
   displayName: 'FBShare'
@@ -1752,6 +1789,9 @@ customizations.tigard =
           ', Tigard\'s newest neighborhood' 
 
 
+customizations.tigard.NonHomepageHeader = customizations.tigard.HomepageHeader
+
+
 
 #####################
 # City of Tigard
@@ -1768,3 +1808,14 @@ customizations.cityoftigard =
         DIV style: {height: 24},
           A href: '/', onClick: clickInternalLink, style: {position: 'absolute', top:0, zIndex: 999999},
             IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
+
+customizations.cityoftigard.NonHomepageHeader = customizations.cityoftigard.HomepageHeader
+
+
+
+
+##########
+# Fill in default values for each unspecified field for 
+# each subdomain customization
+for k in _.keys customizations
+  _.defaults customizations[k], customizations.default

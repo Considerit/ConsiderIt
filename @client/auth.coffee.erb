@@ -367,6 +367,10 @@ Auth = ReactiveComponent
             save @local
 
           toggle_to
+      
+      if customization('auth.additional_auth_footer')
+        additional = customization('auth.additional_auth_footer')()
+
 
 
 
@@ -378,8 +382,8 @@ Auth = ReactiveComponent
   # action: the text for the button
   # inline: is the button inline-block?
   submitButton : (action, inline) ->
-    DIV null,
-      DIV
+    # this is gross code
+    el =  DIV
         style:
           fontSize: 24
           display: if inline then 'inline-block' else 'block'
@@ -387,8 +391,16 @@ Auth = ReactiveComponent
         onClick: @submitAuth
         action
 
-      if customization('auth.additional_auth_footer')
-        customization('auth.additional_auth_footer')()
+    if !inline && customization('auth.additional_auth_footer')
+      additional = customization('auth.additional_auth_footer')()
+
+    if additional
+      DIV null, 
+        el
+        additional
+    else
+      el
+        
 
 
   ####

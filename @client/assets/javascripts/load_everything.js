@@ -21,5 +21,6 @@
 //= require ../../auth
 //= require ../../permissions
 //= require ../../roles
+//= require ../../swapables
 //= require ../../customizations
 //= require ../../admin

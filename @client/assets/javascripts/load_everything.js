@@ -17,7 +17,7 @@
 //= require ../../histogram_sim
 
 //= require ../../shared
-//= require ../../sticky_element
+//= require ../../sticky_component
 //= require ../../auth
 //= require ../../permissions
 //= require ../../roles

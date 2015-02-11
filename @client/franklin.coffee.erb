@@ -31,6 +31,11 @@ fetch 'root',
 
 fetch '/current_user'
 
+# We detect mobile browsers by inspecting the user agent. This check isn't perfect.
+#    See these resources for information about fixed positioning on mobile devices
+#        - http://remysharp.com/2012/05/24/issues-with-position-fixed-scrolling-on-ios#position-drift. 
+#        - https://developer.apple.com/library/safari/technotes/tn2010/tn2262/_index.html ("4. Modify code that relies on CSS fixed positioning")
+#        - http://www.quirksmode.org/blog/archives/2010/12/the_fifth_posit.html
 rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
 window.browser = 
   is_android_browser : !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
@@ -39,6 +44,14 @@ window.browser =
   is_iOS : !!navigator.platform.match(/(iPad|iPhone)/)
   touch_enabled : 'ontouchend' in document
   high_density_display : ((window.matchMedia && (window.matchMedia('only screen and (min-resolution: 124dpi), only screen and (min-resolution: 1.3dppx), only screen and (min-resolution: 48.8dpcm)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (min-device-pixel-ratio: 1.3)').matches)) || (window.devicePixelRatio && window.devicePixelRatio > 1.3))
+  is_mobile :  navigator.userAgent.match(/Android/i) || 
+                navigator.userAgent.match(/webOS/i) ||
+                navigator.userAgent.match(/iPhone/i) ||
+                navigator.userAgent.match(/iPad/i) ||
+                navigator.userAgent.match(/iPod/i) ||
+                navigator.userAgent.match(/BlackBerry/i) ||
+                navigator.userAgent.match(/Windows Phone/i)
+
 
 window.lefty = false
 
@@ -281,10 +294,20 @@ Proposal = ReactiveComponent
       catch
         @local.description_fields = null
     
+    proposal_header = (customizations[subdomain.name]?.ProposalHeader or customizations.default.ProposalHeader)()
+    sticky_header = (!customizations[subdomain.name]?.sticky_proposal_header? && customizations[subdomain.name].default.sticky_proposal_header) || (customizations[subdomain.name]?.sticky_proposal_header? && customizations[subdomain.name]?.sticky_proposal_header)
 
+    console.log sticky_header
     DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
 
-      (customizations[subdomain.name]?.ProposalHeader or customizations.default.ProposalHeader)()
+      if sticky_header
+        StickyComponent
+          container_selector: '.proposal'
+          stick_on_zoomed_screens: false
+          proposal_header
+
+      else
+        proposal_header
 
       DIV null,
         #description
@@ -396,7 +419,19 @@ Proposal = ReactiveComponent
           #community cons
           CommunityPoints { key: 'cons' }
 
-          DecisionBoard()
+          StickyComponent
+            container_selector: '.reasons_region'
+            stick_on_zoomed_screens: true
+            parent_key: 'decisionboard'
+            bottom_offset: 20
+            style: 
+              position: 'absolute'
+              width: DECISION_BOARD_WIDTH
+              zIndex: 0 #so that points being dragged are above opinion region
+              display: 'inline-block'
+              verticalAlign: 'top'
+
+            DecisionBoard { key: 'decisionboard' }
 
           #community pros
           CommunityPoints { key: 'pros' }
@@ -1394,12 +1429,6 @@ DecisionBoard = ReactiveComponent
 
     DIV 
       className:'opinion_region'
-      style: 
-        position: 'absolute'
-        width: DECISION_BOARD_WIDTH
-        zIndex: 0 #so that points being dragged are above opinion region
-        display: 'inline-block'
-        verticalAlign: 'top'
 
       Slider
         width: HISTOGRAM_WIDTH - 10
@@ -1446,7 +1475,9 @@ DecisionBoard = ReactiveComponent
               else 
                 'Give your Opinion'
 
-        DIV className: 'decision_board_footer', 
+        DIV 
+          style:
+            width: DECISION_BOARD_WIDTH
 
           # Big bold button at the bottom of the crafting page
           DIV 
@@ -1511,13 +1542,11 @@ DecisionBoard = ReactiveComponent
             A 
               className:'cancel_opinion_button primary_cancel_button'
               onClick: => togglePage('results', 'cancel_button')
-              'or just skip to the results'  
-        ]
+              'or just skip to the results' ]
+          
 
 
   componentDidMount : ->
-    @setStickyHeader()
-
     # make this a drop target
     $el = $(@getDOMNode())
     $el.droppable
@@ -1547,42 +1576,6 @@ DecisionBoard = ReactiveComponent
         if ui.draggable.parent().is('.community_point')
           @local.user_hovering_on_drop_target = true
           save @local
-
-  componentWillUnmount : -> 
-    $el = $(@getDOMNode())
-    $el.StickyElement('destroy')
-
-  componentDidUpdate : -> 
-    $el = $(@getDOMNode())    
-    root = fetch('root')
-
-    # hack to get around a problem where the browser's remembered scroll position messes
-    # up the sticky location after initialization
-    if !@initial_position_fixed
-      $el.StickyElement('fix_initial_position')
-      @initial_position_fixed = true
-    else if root.proposal_mode == 'results' #fix problem where it would stay sticky moving to results page
-      $el.StickyElement('update')
-
-  setStickyHeader : ->
-    $el = $(@getDOMNode())
-
-    slider_region_height =  115
-
-    $el.StickyElement
-      container: $('.reasons_region')
-      top_offset: $('.proposal_heading').outerHeight() + slider_region_height
-      bottom_offset: 20
-      unsticks: =>
-        d = @data()
-        d.sticky = false
-        save(d)
-      sticks: =>
-        d = @data()
-        d.sticky = true
-        save(d)
-      conditional: => 
-        @root.proposal_mode == 'crafting'
 
 Bubblemouth = ReactiveComponent
   displayName: 'Bubblemouth'

@@ -1375,36 +1375,37 @@ customizations.bitcoin =
                   marginBottom: 20
                 'The Distributed Opinion'
 
-              'Who are you voting for in the Board Election?  Come here to:'
-              UL style: margin: 10,
-                LI style: list_style, 'Weigh in and influence other members'
-                LI style: list_style, 'Learn what other members think'
-                LI style: list_style, 'Make your own choice'
+              DIV style: fontWeight: 600, fontSize: 35, 'Who will you vote for in the Board Election?'
 
-              P
-                style: margin: '30px 0'
-                'While you think, open a tab to the live '
+              P style: marginTop: 20,
+                "Who are these guys, anyway?  Find out with this "
+                I null, 'distributed'
+                " guide to the election.  Give your opinion to contribute.  Open a tab to the live "
                 A
                   href: 'https://soundcloud.com/mindtomatter/ltb-e186-bitcoin-foundation-2015-candidate-debate'
-                  style: textDecoration: 'underline', fontWeight: 500
-                  "Audio Debate"
-                '.'
+                  style: textDecoration: 'underline'
+                  "audio debate"
+                ' while you think.'
+
+              # UL style: margin: 10,
+              #   LI style: list_style, 'Weigh in and influence other members'
+              #   LI style: list_style, 'Learn what other members think'
+              #   LI style: list_style, 'Make your own choice'
+
 
               P
                 style: margin: '30px 0'
-                A
-                  href: 'https://blog.bitcoinfoundation.org/elections-update/'
-                  style: textDecoration: 'underline', fontWeight: 500
-                  "Voting opens in #{days_remaining} days!"
-
-              P
-                style: margin: '30px 0'
-                ' The public is welcome to add their opinions, but only '
+                'The public can participate, but only '
                 A
                   style: textDecoration: 'underline'
                   href: 'https://bitcoinfoundation.org/members/'
                   'Foundation Members\''
-                ' opinions appear on the homepage.'
+                ' opinions appear on the homepage. '
+
+                A
+                  href: 'https://blog.bitcoinfoundation.org/elections-update/'
+                  style: textDecoration: 'underline', fontWeight: 600
+                  "Voting opens in #{days_remaining} days!"
 
 
         ProfileMenu()

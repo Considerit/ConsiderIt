@@ -1364,7 +1364,7 @@ customizations.bitcoin =
                 fontSize: 22
                 fontWeight: 300
                 paddingTop: 23
-                paddingBottom: 45
+                paddingBottom: 30
                 maxWidth: 915
 
               DIV
@@ -1379,8 +1379,8 @@ customizations.bitcoin =
 
               P style: marginTop: 20,
                 "Who are these guys, anyway?  Find out with this "
-                I null, 'distributed'
-                " guide to the election.  Give your opinion to contribute.  Open a tab to the live "
+                I null, 'distributed guide'
+                " to the election. Give your opinion to contribute.  Open a tab to the live "
                 A
                   href: 'https://soundcloud.com/mindtomatter/ltb-e186-bitcoin-foundation-2015-candidate-debate'
                   style: textDecoration: 'underline'
@@ -1414,7 +1414,7 @@ customizations.bitcoin =
     # Each cluster can have its own options
     Candidates:   # Options for the "Candidates" cluster
       editor_icons: true
-      homie_histo_filter: (user) -> user.name of bitcoin_foundation_members
+      homie_histo_filter: (user) -> fetch('ny1').yeah or user.name of bitcoin_foundation_members
       homie_histo_title: "Members' Opinions"
       collapse_descriptions_at: 800
 

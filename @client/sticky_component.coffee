@@ -4,14 +4,35 @@
 #
 # Useful reference: http://www.quirksmode.org/mobile/viewports.html
 #
+# Stores its top & bottom at sticky-{id}
+#
+# Registers itself at stuck-stickies
 #
 # set props.parent_key if you want the parent to know when 
 # we're in sticky mode
 
-__sticky_components = 0
 
+####
+# stickies
+#
+# Global registry of sticky components
+# Sticky components can consult the registry to 
+# figure out how they need to adjust to make run
+# for other sticky components. 
+fetch 'stickies', 
+  unstuck: []
+  stuck: []
+
+####
+# StickyComponent
+#
+# Makes the child component sticky.
+#
+# ...
+# 
 window.StickyComponent = ReactiveComponent
   displayName: 'StickyComponent'
+
 
   render : -> 
 
@@ -26,6 +47,15 @@ window.StickyComponent = ReactiveComponent
         last_viewport_top : document.documentElement.scrollTop || document.body.scrollTop
 
       save @local
+
+      stickies = fetch('stickies')
+      all_stickies = (s for s in [stickies.unstuck + stickies.stuck])
+      @key = "sticky-0"; i=1
+      while @key in all_stickies
+        @key = "sticky-#{i}"
+        i++
+      stickies.unstuck.push @key
+      save stickies
 
     if @local.is_stuck
       style = 
@@ -45,35 +75,70 @@ window.StickyComponent = ReactiveComponent
         @props.children
 
   componentDidMount : -> 
-    @my_id = __sticky_components
-    __sticky_components += 1
 
     # attach event listeners
-    $(window).on "resize.StickyComponent-#{@my_id}", => @windowResized()
-    $(window).on "scroll.StickyComponent-#{@my_id}", => @updatePosition()
-
+    $(window).on "resize.#{@key}", => @windowResized()
+    $(window).on "scroll.#{@key}", => @updatePosition()
+    
     @windowResized()
 
+    sticky = fetch @key
+    sticky.gets_stuck_at_y_pos = $(@props.container_selector).offset().top
+    save sticky    
+
   componentWillUnmount : -> 
-    $(window).off ".StickyComponent-#{@my_id}"
+    $(window).off ".#{@key}"
+    stickies = fetch('stickies')
+    stickies.stuck = _.without stickies.stuck, @key
+    stickies.unstuck = _.without stickies.unstuck, @key
+    save stickies
 
   windowResized : -> 
     @local.viewport_height = window.innerHeight
     save @local
 
-  toggleSticky : -> 
+  toggleStuck : -> 
     @local.is_stuck = !@local.is_stuck
+    sticky = fetch(@key)
+    
+    # update global stickies
+    stickies = fetch('stickies')
+    if @local.is_stuck
+      stickies.stuck.push @key
+      stickies.unstuck = _.without stickies.unstuck, @key
+      sticky.gets_stuck_at_y_pos = $(@props.container_selector).offset().top
+    else
+      stickies.unstuck.push @key
+      stickies.stuck = _.without stickies.stuck, @key
+
     if @props.parent_key
-      data = fetch(@props.parent_key)
-      data.sticky = @local.is_stuck
-      save data
+      external = fetch(@props.parent_key)
+      external.sticky = @local.is_stuck
+      save external
+
     save @local
+    save sticky
+    save stickies
 
   updatePosition : -> 
+
+    stickies = fetch('stickies')
+    sticky = fetch(@key)
+    viewport_offset = @local.top_offset
+
+    for other_sticky in stickies.stuck
+      # if the other sticky got stuck _above_ this sticky, add its height
+      other_sticky = fetch other_sticky
+
+      #TODO: Need a consistent tie breaker for gets_stuck_at_y_pos
+      if other_sticky.gets_stuck_at_y_pos < sticky.gets_stuck_at_y_pos
+        viewport_offset += other_sticky.viewport_bottom - other_sticky.viewport_top
+
+
     $container = $(@props.container_selector)
     container_top = $container.offset().top 
     viewport_top = (document.documentElement.scrollTop || document.body.scrollTop)
-    effective_viewport_top = viewport_top + @local.top_offset
+    effective_viewport_top = viewport_top + viewport_offset
 
     is_zoomed = window.innerWidth < $(window).width()
 
@@ -84,17 +149,15 @@ window.StickyComponent = ReactiveComponent
                        (@local.stick_on_zoomed_screens || (!is_zoomed && screen.width > 700) ) && 
                        (!@props.conditional || @props.conditional())
 
-    if should_be_stuck && !@local.is_stuck
-      @toggleSticky()
-
-    else if !should_be_stuck && @local.is_stuck
-      @toggleSticky()
+    if should_be_stuck != @local.is_stuck
+      @toggleStuck()
 
     # Don't need to do anything if we're not actually stuck
     if !@local.is_stuck
       @local.last_viewport_top = viewport_top
       save @local
       return
+
 
     ######
     # HORIZONTAL ADJUSTMENTS
@@ -108,12 +171,12 @@ window.StickyComponent = ReactiveComponent
 
     $el = $(@refs.stuck.getDOMNode()).children()
     element_height = $el.height() # check element's height each scroll event because it may have changed
-    element_fits_in_viewport = element_height < (@local.viewport_height - @local.top_offset)
+    element_fits_in_viewport = element_height < (@local.viewport_height - viewport_offset)
     element_top = $el.offset().top
     element_bottom = element_top + element_height #container_top + element_height
 
     if element_fits_in_viewport #the common case, often for an empty decision board or the proposal header
-      translate_y = if @local.use_fixed_positioning then 0 else $(window).scrollTop() - $(@getDOMNode()).offsetParent().offset().top
+      translate_y = if @local.use_fixed_positioning then viewport_offset else viewport_offset + $(window).scrollTop() - $(@getDOMNode()).offsetParent().offset().top
 
     else # if element doesn't fit in viewport, such as if you have a really full decision board
 
@@ -165,6 +228,11 @@ window.StickyComponent = ReactiveComponent
     @local.last_viewport_top = viewport_top
     @local.placeholder_height = if $el[0].style.position in ['absolute', 'fixed'] then 0 else element_height 
     save @local
+
+    sticky.viewport_top = viewport_offset
+    sticky.viewport_bottom = viewport_offset + element_height
+    save sticky
+
 
 
     ##### 

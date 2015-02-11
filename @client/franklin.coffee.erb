@@ -59,28 +59,14 @@ window.proposal_url = (proposal) =>
   # The special thing about this function is that it only links to
   # "?results=true" if the proposal has an opinion.
   result = '/' + proposal.slug
-  subdomain = fetch('/subdomain')
-  
+  subdomain = fetch('/subdomain')  
 
-  show_crafting_page_first =  
-    if customizations[subdomain.name]?.show_crafting_page_first?
-      customizations[subdomain.name].show_crafting_page_first
-    else 
-      customizations.default.show_crafting_page_first
-
-  if !show_crafting_page_first && proposal.top_point
+  if !customization('show_crafting_page_first') && proposal.top_point
     result += '?results=true'
   return result
 
 window.isNeutralOpinion = (stance) -> 
   return Math.abs(stance) < 0.05
-
-window.sliderPole = (scope, valence) -> 
-  subdomain = fetch('/subdomain')
-
-  customizations[subdomain.name]?.slider_pole_labels?[scope]?[valence] or
-    customizations.default.slider_pole_labels[scope][valence]
-
 
 userOpinion = (user_key) ->
   window.user_opinions[user_key]
@@ -249,7 +235,7 @@ Proposal = ReactiveComponent
   displayName: 'Proposal'
 
   render : ->
-    options = customizations[fetch('/subdomain').name]?.cluster_options?[@proposal.cluster] || {}
+    options = customization("cluster_options.#{@proposal.cluster}") || {}
 
     your_opinion = fetch @proposal.your_opinion
     current_user = fetch('/current_user')
@@ -294,13 +280,11 @@ Proposal = ReactiveComponent
       catch
         @local.description_fields = null
     
-    proposal_header = (customizations[subdomain.name]?.ProposalHeader or customizations.default.ProposalHeader)()
-    sticky_header = (!customizations[subdomain.name]?.sticky_proposal_header? && customizations[subdomain.name].default.sticky_proposal_header) || (customizations[subdomain.name]?.sticky_proposal_header? && customizations[subdomain.name]?.sticky_proposal_header)
+    proposal_header = (customization('ProposalHeader'))()
 
-    console.log sticky_header
     DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
 
-      if sticky_header
+      if customization('sticky_proposal_header')
         StickyComponent
           container_selector: '.proposal'
           stick_on_zoomed_screens: false
@@ -437,8 +421,8 @@ Proposal = ReactiveComponent
           CommunityPoints { key: 'pros' }
 
 
-      if your_opinion.published && customizations[subdomain.name]?.ThanksForYourOpinion && @root.proposal_mode == 'results'
-        customizations[subdomain.name].ThanksForYourOpinion()
+      if @root.proposal_mode == 'results' && your_opinion.published && customization('ThanksForYourOpinion')
+        customization('ThanksForYourOpinion')()
 
   componentDidUpdate : ->
     $el = $(@getDOMNode())
@@ -458,7 +442,7 @@ Proposal = ReactiveComponent
     # top, otherwise you can be stuck in the middle of the proposal. 
     # Disabled for apps with a next button until we resolve 
     # https://github.com/tkriplean/ConsiderIt/commit/0561b9bdb6ae03705c3718d2283d8d8345fad632
-    if (customizations[fetch('/subdomain').name]?.ProposalHeader or customizations.default.ProposalHeader) != SimpleProposalHeading  
+    if customization('ProposalHeader') != SimpleProposalHeading  
       $('.proposal').moveToTop() 
 
   renderDescriptionField : (field) ->
@@ -983,7 +967,7 @@ styles += """
 MiniHisto = ReactiveComponent
   displayName: 'MiniHisto'
   render: ->
-    options = customizations[fetch('/subdomain').name]?.cluster_options?[@props.proposal.cluster] || {}
+    options = customization("cluster_options.#{@props.proposal.cluster}") || {}
     filter_func = options.homie_histo_filter
 
     # We'll only pass SOME opinions to the histogram
@@ -1186,7 +1170,8 @@ Slider = ReactiveComponent
                                   "Firmly "
                                 else
                                   "Slightly " 
-          valence = sliderPole('individual', if slider.stance > 0 then 'support' else 'oppose')
+
+          valence = customization("slider_pole_labels.individual.#{if slider.stance > 0 then 'support' else 'oppose'}")
 
           "You #{strength_of_opinion} #{valence}"
 
@@ -1220,8 +1205,8 @@ Slider = ReactiveComponent
 
       # Draw the pole labels of the slider
       if draw_poles
-        for pole in ['oppose', 'support']        
-          pole_label = sliderPole((if @root.proposal_mode == 'crafting' then 'individual' else 'group'), pole)
+        for pole in ['oppose', 'support']  
+          group = if @root.proposal_mode == 'crafting' then 'individual' else 'group'
           DIV 
             key: "pole_#{pole}"
             style: 
@@ -1233,7 +1218,7 @@ Slider = ReactiveComponent
               right: if pole == 'support' then -167
               width: if pole == 'oppose' then 145 else 130
 
-            pole_label 
+            customization("slider_pole_labels.#{group}.#{pole}") 
 
       # Draw the base of the slider
       DIV 
@@ -3169,7 +3154,7 @@ styles += """
 Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
-    (customizations[fetch('/subdomain').name]?.Homepage or customizations.default.Homepage)()
+    customization('Homepage')()
 
 
 window.proposal_editor = (proposal) ->
@@ -3322,13 +3307,9 @@ Header = ReactiveComponent
         minWidth: PAGE_WIDTH
 
       if @root.page_name == 'homepage'
-        customizations["#{subdomain.name}"]?.HomepageHeader?() or 
-         customizations.default.HomepageHeader()
+        customization('HomepageHeader')()
       else 
-        customizations["#{subdomain.name}"]?.NonHomepageHeader?() or 
-         customizations["#{subdomain.name}"]?.HomepageHeader?() or 
-         customizations.default.NonHomepageHeader?() or 
-         customizations.default.HomepageHeader()
+        customization('NonHomepageHeader')()
 
       DIV null, 
         if @root.page_name == 'about'
@@ -3884,7 +3865,7 @@ Page = ReactiveComponent
                 else
                   Proposal key: @page.proposal.key
 
-        (customizations[subdomain.name]?.Footer or customizations.default.Footer)()
+        customization('Footer')()
 
 Root = ReactiveComponent
   displayName: 'Root'

@@ -144,7 +144,7 @@ PageTransition =
 
       # The slider handle and mouth will change size and location when moving between crafting and results
       when 'slider'
-        handle_style = { scale: if root.proposal_mode == 'results' || fetch('decisionboard').sticky then 1 else 2.5}
+        handle_style = { scale: if root.proposal_mode == 'results' || fetch('slider').sticky then 1 else 2.5}
         $el.find('.the_handle').velocity handle_style, {duration}
 
       when 'bubblemouth'
@@ -385,7 +385,20 @@ Proposal = ReactiveComponent
             margin: '0 auto'
             marginLeft: if lefty then 300
             position: 'relative'
+
           Histogram()
+
+          StickyComponent
+            stick_on_zoomed_screens: true
+            parent_key: 'slider'
+            start : -> 
+              $('.histogram').offset().top + $('.histogram').height() # - SLIDER_HANDLE_SIZE / 2
+            stickable : => 
+              @root.proposal_mode == 'crafting'
+
+            Slider
+              width: HISTOGRAM_WIDTH - 10
+
 
         #reasons
         DIV 
@@ -393,7 +406,7 @@ Proposal = ReactiveComponent
           style : 
             width: REASONS_REGION_WIDTH            
             position: 'relative'
-            margin: '48px auto 4em auto'
+            margin: '24px auto 4em auto'
             marginLeft: if lefty then 65
 
 
@@ -404,10 +417,18 @@ Proposal = ReactiveComponent
           CommunityPoints { key: 'cons' }
 
           StickyComponent
-            container_selector: '.reasons_region'
+            #container_selector: '.reasons_region'
             stick_on_zoomed_screens: true
             parent_key: 'decisionboard'
             bottom_offset: 20
+            stickable : => 
+              @root.proposal_mode == 'crafting'
+            start : -> 
+              $('.histogram').offset().top + $('.histogram').height()
+            stop : -> 
+              console.log $('.reasons_region').offset().top + $('.reasons_region').height()
+              $('.reasons_region').offset().top + $('.reasons_region').height()
+
             style: 
               position: 'absolute'
               width: DECISION_BOARD_WIDTH
@@ -1061,7 +1082,7 @@ Slider = ReactiveComponent
 
     slider = fetch('slider')
     hist = fetch('histogram')
-    sticky = fetch('decisionboard').sticky
+    sticky = slider.sticky
     set_in_grayscale = @root.selected_point && @root.proposal_mode == 'crafting'
 
 
@@ -1077,10 +1098,8 @@ Slider = ReactiveComponent
     ####
     # Define slider layout
     slider_style = 
+      position: 'relative'
       left: - (@props.width - DECISION_BOARD_WIDTH) / 2 + 2
-      position: 'absolute'
-      top: -48
-      margin: 'auto'
       width: @props.width
 
     if set_in_grayscale
@@ -1414,9 +1433,6 @@ DecisionBoard = ReactiveComponent
 
     DIV 
       className:'opinion_region'
-
-      Slider
-        width: HISTOGRAM_WIDTH - 10
 
       if enable_opining        
         Bubblemouth()

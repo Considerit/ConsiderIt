@@ -10,7 +10,8 @@
 #
 # set props.parent_key if you want the parent to know when 
 # we're in sticky mode
-
+#
+# TODO: redesign state
 
 ####
 # stickies
@@ -36,7 +37,18 @@ window.StickyComponent = ReactiveComponent
 
   render : -> 
 
+
     if !@local.initialized
+      stickies = fetch('stickies')
+      all_stickies = (s for s in _.union(stickies.unstuck, stickies.stuck))
+
+      @key = "sticky-0"; i=1
+      while @key in all_stickies
+        @key = "sticky-#{i}"
+        i++
+      stickies.unstuck.push @key
+      save stickies
+
       _.defaults @local,
         initialized: true
         use_fixed_positioning: !browser.is_mobile
@@ -45,17 +57,9 @@ window.StickyComponent = ReactiveComponent
         bottom_offset: @props.bottom_offset? or 0 #distance from bottom of viewport to stick bottom of element
         stick_on_zoomed_screens : (@props.stick_on_zoomed_screens? && @props.stick_on_zoomed_screens) or true
         last_viewport_top : document.documentElement.scrollTop || document.body.scrollTop
-
+        translate_y: 0
+        translate_x: 0
       save @local
-
-      stickies = fetch('stickies')
-      all_stickies = (s for s in [stickies.unstuck + stickies.stuck])
-      @key = "sticky-0"; i=1
-      while @key in all_stickies
-        @key = "sticky-#{i}"
-        i++
-      stickies.unstuck.push @key
-      save stickies
 
     if @local.is_stuck
       style = 
@@ -68,7 +72,7 @@ window.StickyComponent = ReactiveComponent
     else 
       style = {}
 
-    @transferPropsTo DIV null,
+    @transferPropsTo DIV {id: @key},
       DIV style: {height: if @local.is_stuck && @local.placeholder_height? then @local.placeholder_height else 0}
        
       DIV ref: 'stuck', style: css.crossbrowserify(style),
@@ -83,8 +87,8 @@ window.StickyComponent = ReactiveComponent
     @windowResized()
 
     sticky = fetch @key
-    sticky.gets_stuck_at_y_pos = $(@props.container_selector).offset().top
-    save sticky    
+    sticky.original_y_pos = $(@refs.stuck.getDOMNode()).children().offset().top
+    save sticky
 
   componentWillUnmount : -> 
     $(window).off ".#{@key}"
@@ -99,14 +103,12 @@ window.StickyComponent = ReactiveComponent
 
   toggleStuck : -> 
     @local.is_stuck = !@local.is_stuck
-    sticky = fetch(@key)
     
     # update global stickies
     stickies = fetch('stickies')
     if @local.is_stuck
       stickies.stuck.push @key
       stickies.unstuck = _.without stickies.unstuck, @key
-      sticky.gets_stuck_at_y_pos = $(@props.container_selector).offset().top
     else
       stickies.unstuck.push @key
       stickies.stuck = _.without stickies.stuck, @key
@@ -117,37 +119,87 @@ window.StickyComponent = ReactiveComponent
       save external
 
     save @local
-    save sticky
     save stickies
+
+    console.log "Toggled #{@key} to #{@local.is_stuck}"
+
+  realDimensions : ($el) -> 
+    min_top = $el.offset().top
+    max_top = min_top + $el.height()
+
+    recurse = ($e, min_top, max_top) -> 
+      t = $e.offset().top
+      h = $e.height()
+      if min_top > t
+        min_top = t
+      if t + h > max_top
+        max_top = t + h
+
+      for c in $e.children()
+        [min_top, max_top] = recurse($(c), min_top, max_top)
+
+      [min_top, max_top]
+
+    [min_top, max_top] = recurse $el, $el.offset().top, min_top + $el.height()
+
+    console.log "Height of ", @key, max_top - min_top
+    [max_top - min_top, min_top]
+
 
   updatePosition : -> 
 
     stickies = fetch('stickies')
     sticky = fetch(@key)
-    viewport_offset = @local.top_offset
+
+    $el = $(@refs.stuck.getDOMNode()).children()
+
+    # Can't use $el.height() because there may be absolutely positioned elements
+    # inside $el that we need to account for. For example, a Slider.    
+    [element_height, element_top] = @realDimensions($el) 
+    # How far absolutely positioned child elements jut above $el      
+    jutting = element_top - $el.offset().top
+
+    if @local.is_stuck
+      # Adjust values based on the measurements taken _before_ this element got stuck 
+      [before_element_height, before_element_top, before_jutting] = @local.dimensions_before_stick
+      element_top = $el.offset().top - (before_jutting - jutting)
+      element_height = before_element_height
+      jutting = before_jutting
+      
+    viewport_offset = @local.top_offset - jutting
 
     for other_sticky in stickies.stuck
       # if the other sticky got stuck _above_ this sticky, add its height
       other_sticky = fetch other_sticky
 
-      #TODO: Need a consistent tie breaker for gets_stuck_at_y_pos
-      if other_sticky.gets_stuck_at_y_pos < sticky.gets_stuck_at_y_pos
+      if other_sticky.original_y_pos < sticky.original_y_pos || 
+          (other_sticky.original_y_pos == sticky.original_y_pos && sticky.key < other_sticky.key)
         viewport_offset += other_sticky.viewport_bottom - other_sticky.viewport_top
 
+    if @props.container_selector
+      $container = $(@props.container_selector)
+      start_sticking_at_y = $container.offset().top 
+      stop_sticking_at_y = start_sticking_at_y + $container.height()
+    else 
+      start_sticking_at_y = @props.start?() or $("##{@key}").offset().top
+      stop_sticking_at_y = @props.stop?() or Infinity  #$("##{@key}").offset().top + $("##{@key}").height()
 
-    $container = $(@props.container_selector)
-    container_top = $container.offset().top 
     viewport_top = (document.documentElement.scrollTop || document.body.scrollTop)
+
     effective_viewport_top = viewport_top + viewport_offset
 
     is_zoomed = window.innerWidth < $(window).width()
-
+    
     ######
     # DETERMINE OUR STICKY STATE
     # Are we transitioning between being stuck and not being stuck?
-    should_be_stuck = effective_viewport_top >= container_top && 
+    should_be_stuck = effective_viewport_top >= start_sticking_at_y && 
                        (@local.stick_on_zoomed_screens || (!is_zoomed && screen.width > 700) ) && 
-                       (!@props.conditional || @props.conditional())
+                       (!@props.stickable || @props.stickable())
+
+    if should_be_stuck
+      @local.dimensions_before_stick = [element_height, element_top, jutting]
+      save @local
 
     if should_be_stuck != @local.is_stuck
       @toggleStuck()
@@ -169,22 +221,18 @@ window.StickyComponent = ReactiveComponent
     ######
     # VERTICAL ADJUSTMENTS 
 
-    $el = $(@refs.stuck.getDOMNode()).children()
-    element_height = $el.height() # check element's height each scroll event because it may have changed
     element_fits_in_viewport = element_height < (@local.viewport_height - viewport_offset)
-    element_top = $el.offset().top
-    element_bottom = element_top + element_height #container_top + element_height
+    element_bottom = element_top + element_height
 
     if element_fits_in_viewport #the common case, often for an empty decision board or the proposal header
-      translate_y = if @local.use_fixed_positioning then viewport_offset else viewport_offset + $(window).scrollTop() - $(@getDOMNode()).offsetParent().offset().top
+      translate_y = if @local.use_fixed_positioning 
+                      viewport_offset 
+                    else 
+                      viewport_offset + $(window).scrollTop() - $(@getDOMNode()).offsetParent().offset().top
+
+      console.log @key, translate_y
 
     else # if element doesn't fit in viewport, such as if you have a really full decision board
-
-      # The sticky positioning will be off if the sticky element is bigger than its container
-      # So we'll make the container bigger in that case. Note that this solution might not generalize.
-      
-      # if element_height > $container.height()
-      #   $container.css('height', element_height)
 
       viewport_bottom = viewport_top + @local.viewport_height
       effective_viewport_bottom = viewport_bottom - @local.bottom_offset
@@ -206,27 +254,22 @@ window.StickyComponent = ReactiveComponent
 
         # otherwise, we'll simulate scrolling down through this element with negative Y translation
         else 
-          translate_y = @local.translate_y + (@local.last_viewport_top - viewport_top) #- (effective_viewport_top - container_top)
+          translate_y = @local.translate_y + (@local.last_viewport_top - viewport_top)
 
-    container_bottom = container_top + $container.height()
     # make sure that inertial scroll didn't force us to scroll past the bottom of the container
-    if element_bottom + (translate_y - @local.translate_y) > container_bottom
-      translate_y = container_bottom - element_bottom + @local.translate_y
+    console.log @key, stop_sticking_at_y, element_bottom, translate_y, @local.translate_y
+    if element_bottom + (translate_y - @local.translate_y) > stop_sticking_at_y
+      translate_y = stop_sticking_at_y - element_bottom + @local.translate_y
 
     ####
     # APPLY THE ADJUSTMENTS to the fixed element
     if translate_y != @local.translate_y || translate_x != @local.translate_x
       @local.translate_y = translate_y
       @local.translate_x = translate_x
-
-    # Make sure that elements don't scroll down past their container bottom
-    # if effective_viewport_top + element_height > container_bottom
-    #   @$el[0].style['top'] = "#{container_bottom - element_height - viewport_top}px" 
-    # else if @$el[0].style['top'] != "#{@local.top_offset}px"
-    #   @$el[0].style['top'] = "#{@local.top_offset}px"          
+      console.log @key, translate_y
 
     @local.last_viewport_top = viewport_top
-    @local.placeholder_height = if $el[0].style.position in ['absolute', 'fixed'] then 0 else element_height 
+    @local.placeholder_height = if $el[0].style.position in ['absolute', 'fixed'] then 0 else $el.height() 
     save @local
 
     sticky.viewport_top = viewport_offset

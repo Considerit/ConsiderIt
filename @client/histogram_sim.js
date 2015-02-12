@@ -3,6 +3,8 @@
 window.calculateAvatarRadius = function(width, height, opinions) {
   var ratio_filled = .25, r
 
+  if (window.histogram_ratio_filled) ratio_filled = window.histogram_ratio_filled
+
   r = Math.sqrt(width * height / opinions.length * ratio_filled)/2
   r = Math.min(r, width/2, height/2)
 

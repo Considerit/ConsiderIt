@@ -144,7 +144,7 @@ PageTransition =
 
       # The slider handle and mouth will change size and location when moving between crafting and results
       when 'slider'
-        handle_style = { scale: if root.proposal_mode == 'results' || fetch('slider').sticky then 1 else 2.5}
+        handle_style = { scale: if root.proposal_mode == 'results' || fetch('slider').stuck then 1 else 2.5}
         $el.find('.the_handle').velocity handle_style, {duration}
 
       when 'bubblemouth'
@@ -286,8 +286,11 @@ Proposal = ReactiveComponent
 
       if customization('sticky_proposal_header')
         StickyComponent
-          container_selector: '.proposal'
           stick_on_zoomed_screens: false
+          start: -> 
+            $('.proposal').offset().top
+          stop: -> 
+            $('.proposal').offset().top + $('.proposal').height()
           proposal_header
 
       else
@@ -390,9 +393,9 @@ Proposal = ReactiveComponent
 
           StickyComponent
             stick_on_zoomed_screens: true
-            parent_key: 'slider'
-            start : -> 
-              $('.histogram').offset().top + $('.histogram').height() # - SLIDER_HANDLE_SIZE / 2
+            key: 'slider'
+            constraints : ['decisionboard']
+
             stickable : => 
               @root.proposal_mode == 'crafting'
 
@@ -419,15 +422,13 @@ Proposal = ReactiveComponent
           StickyComponent
             #container_selector: '.reasons_region'
             stick_on_zoomed_screens: true
-            parent_key: 'decisionboard'
+            key: 'decisionboard'
             bottom_offset: 20
             stickable : => 
               @root.proposal_mode == 'crafting'
-            start : -> 
-              $('.histogram').offset().top + $('.histogram').height()
             stop : -> 
-              console.log $('.reasons_region').offset().top + $('.reasons_region').height()
               $('.reasons_region').offset().top + $('.reasons_region').height()
+            constraints : ['slider']
 
             style: 
               position: 'absolute'
@@ -1082,7 +1083,7 @@ Slider = ReactiveComponent
 
     slider = fetch('slider')
     hist = fetch('histogram')
-    sticky = slider.sticky
+    sticky = slider.stuck
     set_in_grayscale = @root.selected_point && @root.proposal_mode == 'crafting'
 
 

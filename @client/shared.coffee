@@ -92,12 +92,17 @@ window.clickInternalLink = (event) ->
     return false
 
 # Computes the width of some text given some styles empirically
+width_cache = {}
 window.widthWhenRendered = (str, style) -> 
-  $el = $("<span id='width_test'>#{str}</span>").css(style)
-  $('#content').append($el)
-  width = $('#width_test').width()
-  $('#width_test').remove()
-  width
+  # This DOM manipulation is relatively expensive, so cache results
+  key = JSON.stringify _.extend({str: str}, style)
+  if key not of width_cache
+    $el = $("<span id='width_test'>#{str}</span>").css(style)
+    $('#content').append($el)
+    width = $('#width_test').width()
+    $('#width_test').remove()
+    width_cache[key] = width
+  width_cache[key]
 
 # Returns the style for a css triangle
 # 

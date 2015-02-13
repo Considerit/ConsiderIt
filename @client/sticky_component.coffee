@@ -67,25 +67,8 @@ window.StickyComponent = ReactiveComponent
 
     sticky = fetch @key
     if sticky.stuck
-
-      [x, y] = [0, sticky.y]
-
-      if browser.is_mobile
-        positioning_method = 'absolute'
-        # When absolutely positioning, the reference is with respect to the closest
-        # parent that has been positioned. Because sticky.y is with respect to the 
-        # document, we need to adjust for the parent offset.   
-        y -= $(@getDOMNode()).offsetParent().offset().top 
-      else
-        positioning_method = 'fixed'
-
-        # Fixed positioning is relative to the viewport, not the document
-        y -= scroller.viewport_top 
-
-        # Adjust for horizontal scroll for fixed position elements because they don't 
-        # move with the rest of the content (they're fixed to the viewport). 
-        # ScrollLeft is used to offset the fixed element to simulate sticking to the window.
-        x -= $(window).scrollLeft()
+      [x, y] = [sticky.x, sticky.y]
+      positioning_method = if browser.is_mobile then 'absolute' else 'fixed'
 
       style = 
         top: 0
@@ -178,6 +161,7 @@ scroller =
   viewport_top : document.documentElement.scrollTop || document.body.scrollTop  
   last_viewport_top : document.documentElement.scrollTop || document.body.scrollTop
           # caches scroll positions at t and t-1 for use in calculations
+  last_positions : {}
 
   #######
   # register & unregister
@@ -222,18 +206,53 @@ scroller =
 
     if stuck.length > 0
       # Calculate y-positions for all stuck components
-      y_pos = scroller.solveForY stickies
+      y_pos = scroller.solveForY stuck, stickies
 
       for k in stuck
         sticky = fetch k
-        sticky.y = y_pos[k].value
+        scroller.last_positions[k] = y_pos[k].value
+        [x, y] = scroller.adjustForDevice y_pos[k].value, stickies[k]
+        if sticky.y != y || sticky.x != x
+          sticky.y = y
+          sticky.x = x
+          if !sticky.stuck
+            scroller.toggleStuck k, stickies[k]
+          
+          save sticky
 
-        if !sticky.stuck
-          scroller.toggleStuck k, stickies[k]
 
-        save sticky
+
 
     scroller.last_viewport_top = scroller.viewport_top
+
+
+  ####
+  # adjustForDevice
+  #
+  # Calculates x & y sticky component values based on the positioning
+  # method used for the particular device. 
+  #
+  # On desktop we can safely use the more efficient fixed positioning. 
+  # But for mobile, we use absolute positioning because mobile devices 
+  # have terrible support for fixed positioning. 
+  adjustForDevice : (y, v) ->
+    if browser.is_mobile
+      # When absolutely positioning, the reference is with respect to the closest
+      # parent that has been positioned. Because sticky.y is with respect to the 
+      # document, we need to adjust for the parent offset.   
+      y -= v.$el.parent().offsetParent().offset().top 
+      x = 0
+    else
+      # Fixed positioning is relative to the viewport, not the document
+      y -= scroller.viewport_top 
+
+      # Adjust for horizontal scroll for fixed position elements because they don't 
+      # move with the rest of the content (they're fixed to the viewport). 
+      # ScrollLeft is used to offset the fixed element to simulate sticking to the window.
+      x = -$(window).scrollLeft()
+
+    [x,y]
+
 
   ########
   # toggleStuck
@@ -246,7 +265,7 @@ scroller =
     is_stuck = !sticky.stuck
     sticky.stuck = is_stuck
     if !is_stuck
-      sticky.y = null
+      sticky.y = sticky.x = null
     save sticky
 
     if v.stuck_key?
@@ -298,16 +317,10 @@ scroller =
   #
   # Different constraints may need to be introduced to accommodate different
   # sticky component configurations.   
-  solveForY : (stickies) -> 
+  solveForY : (stuck, stickies) -> 
     
     # cassowary constraint solver
     solver = new c.SimplexSolver()    
-
-    # Stores the cassowary variables representing each component's y-position 
-    # that the solver will optimize. 
-    y_pos = {}
-    for own k,v of stickies
-      y_pos[k] = new c.Variable
 
     # We modify the contraints slightly based on whether we're scrolling up or down
     scrolling_down = scroller.viewport_top > scroller.last_viewport_top
@@ -318,7 +331,14 @@ scroller =
     # We'll iterate through each component in order of their stacking priority
     y_stack = 0
 
-    sorted = _.sortBy(_.values(stickies), (v) -> v.stack_priority)
+    sorted = (v for own k,v of stickies when k in stuck)
+    sorted = _.sortBy( sorted, (v) -> v.stack_priority)
+
+    # Stores the variables representing each component's y-position 
+    # that the cassowary will optimize. 
+    y_pos = {}
+    for v in sorted
+      y_pos[v.key] = new c.Variable
 
     ########
     # Linear constraints
@@ -383,17 +403,17 @@ scroller =
 
       if sticky.y?
         # BOUNDED BY SCROLL DISTANCE
-        console.log "\tBOUNDED BY SCROLL DISTANCE: |#{k} - #{sticky.y}| <= |#{scroller.viewport_top} - #{scroller.last_viewport_top}|, strong" if debug
+        console.log "\tBOUNDED BY SCROLL DISTANCE: |#{k} - #{scroller.last_positions[k]}| <= |#{scroller.viewport_top} - #{scroller.last_viewport_top}|, strong" if debug
         solver.addConstraint new c.Inequality \
           y_pos[k], \
           c.LEQ,
-          sticky.y + scroll_distance, \
+          scroller.last_positions[k] + scroll_distance, \
           c.Strength.strong
 
         solver.addConstraint new c.Inequality \
           y_pos[k], \
           c.GEQ,
-          sticky.y - scroll_distance, \
+          scroller.last_positions[k] - scroll_distance, \
           c.Strength.strong
 
       # CLOSE TO TOP

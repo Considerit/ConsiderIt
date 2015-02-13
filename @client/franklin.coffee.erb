@@ -282,15 +282,16 @@ Proposal = ReactiveComponent
     
     proposal_header = (customization('ProposalHeader'))()
 
-    DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
+    DIV key:@props.slug, 'data-page':@root.proposal_mode,
 
       if customization('sticky_proposal_header')
         StickyComponent
           stick_on_zoomed_screens: false
-          start: -> 
-            $('.proposal').offset().top
-          stop: -> 
-            $('.proposal').offset().top + $('.proposal').height()
+          start: => 
+            $(@getDOMNode()).offset().top
+          stop: => 
+            $el = $(@getDOMNode())
+            $el.offset().top + $el.height()
           proposal_header
 
       else
@@ -392,10 +393,10 @@ Proposal = ReactiveComponent
           Histogram()
 
           StickyComponent
+            key: 'sticky-slider'
+            stuck_key: 'slider'          
             stick_on_zoomed_screens: true
-            key: 'slider'
-            constraints : ['decisionboard']
-
+            constraints : ['sticky-decisionboard']
             stickable : => 
               @root.proposal_mode == 'crafting'
 
@@ -420,15 +421,14 @@ Proposal = ReactiveComponent
           CommunityPoints { key: 'cons' }
 
           StickyComponent
-            #container_selector: '.reasons_region'
+            key: 'sticky-decisionboard'
+            stuck_key: 'decisionboard'            
+            constraints : ['sticky-slider']
             stick_on_zoomed_screens: true
-            key: 'decisionboard'
-            bottom_offset: 20
             stickable : => 
               @root.proposal_mode == 'crafting'
             stop : -> 
-              $('.reasons_region').offset().top + $('.reasons_region').height()
-            constraints : ['slider']
+              $('.reasons_region').offset().top + $('.reasons_region').height() - 20
 
             style: 
               position: 'absolute'
@@ -465,7 +465,7 @@ Proposal = ReactiveComponent
     # Disabled for apps with a next button until we resolve 
     # https://github.com/tkriplean/ConsiderIt/commit/0561b9bdb6ae03705c3718d2283d8d8345fad632
     if customization('ProposalHeader') != SimpleProposalHeading  
-      $('.proposal').moveToTop() 
+      $(@getDOMNode()).moveToTop() 
 
   renderDescriptionField : (field) ->
     DIV 

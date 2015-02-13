@@ -144,7 +144,7 @@ PageTransition =
 
       # The slider handle and mouth will change size and location when moving between crafting and results
       when 'slider'
-        handle_style = { scale: if root.proposal_mode == 'results' || fetch('slider').sticky then 1 else 2.5}
+        handle_style = { scale: if root.proposal_mode == 'results' || fetch('slider').stuck then 1 else 2.5}
         $el.find('.the_handle').velocity handle_style, {duration}
 
       when 'bubblemouth'
@@ -282,12 +282,16 @@ Proposal = ReactiveComponent
     
     proposal_header = (customization('ProposalHeader'))()
 
-    DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
+    DIV key:@props.slug, 'data-page':@root.proposal_mode,
 
       if customization('sticky_proposal_header')
         StickyComponent
-          container_selector: '.proposal'
           stick_on_zoomed_screens: false
+          start: => 
+            $(@getDOMNode()).offset().top
+          stop: => 
+            $el = $(@getDOMNode())
+            $el.offset().top + $el.height()
           proposal_header
 
       else
@@ -389,10 +393,10 @@ Proposal = ReactiveComponent
           Histogram()
 
           StickyComponent
+            key: 'sticky-slider'
+            stuck_key: 'slider'          
             stick_on_zoomed_screens: true
-            parent_key: 'slider'
-            start : -> 
-              $('.histogram').offset().top + $('.histogram').height() # - SLIDER_HANDLE_SIZE / 2
+            constraints : ['sticky-decisionboard']
             stickable : => 
               @root.proposal_mode == 'crafting'
 
@@ -417,17 +421,14 @@ Proposal = ReactiveComponent
           CommunityPoints { key: 'cons' }
 
           StickyComponent
-            #container_selector: '.reasons_region'
+            key: 'sticky-decisionboard'
+            stuck_key: 'decisionboard'            
+            constraints : ['sticky-slider']
             stick_on_zoomed_screens: true
-            parent_key: 'decisionboard'
-            bottom_offset: 20
             stickable : => 
               @root.proposal_mode == 'crafting'
-            start : -> 
-              $('.histogram').offset().top + $('.histogram').height()
             stop : -> 
-              console.log $('.reasons_region').offset().top + $('.reasons_region').height()
-              $('.reasons_region').offset().top + $('.reasons_region').height()
+              $('.reasons_region').offset().top + $('.reasons_region').height() - 20
 
             style: 
               position: 'absolute'
@@ -464,7 +465,7 @@ Proposal = ReactiveComponent
     # Disabled for apps with a next button until we resolve 
     # https://github.com/tkriplean/ConsiderIt/commit/0561b9bdb6ae03705c3718d2283d8d8345fad632
     if customization('ProposalHeader') != SimpleProposalHeading  
-      $('.proposal').moveToTop() 
+      $(@getDOMNode()).moveToTop() 
 
   renderDescriptionField : (field) ->
     DIV 
@@ -1082,7 +1083,7 @@ Slider = ReactiveComponent
 
     slider = fetch('slider')
     hist = fetch('histogram')
-    sticky = slider.sticky
+    sticky = slider.stuck
     set_in_grayscale = @root.selected_point && @root.proposal_mode == 'crafting'
 
 

@@ -163,15 +163,18 @@ window.StickyComponent = ReactiveComponent
 #
 # The scroller will update the state(bus) of individual sticky 
 # components so that they know how to render. 
+#
+# For console output: 
+debug = true
 
 scroller =
 
   ####
   # Internal state
   registry: {} 
-          # registry is all registered sticky components, by key
+          # all registered sticky components, by key
   responding_to_scroll : false
-          # whether it is bound to scroll event or not
+          # whether scroller is bound to scroll event
   viewport_top : document.documentElement.scrollTop || document.body.scrollTop  
   last_viewport_top : document.documentElement.scrollTop || document.body.scrollTop
           # caches scroll positions at t and t-1 for use in calculations
@@ -203,47 +206,55 @@ scroller =
   onScroll : (e) -> 
     scroller.viewport_top = document.documentElement.scrollTop || document.body.scrollTop
 
-    # Determine stacking order based on the y position at which 
-    # the sticky was mounted. 
-    sorted_by_original_y = ( [k, v()] for own k,v of scroller.registry)
-    sorted_by_original_y.sort (a,b) -> a.stack_priority - b.stack_priority
+    # The registered stickies with updated context values
+    stickies = {}
+    for own k,v of scroller.registry
+      stickies[k] = v()
+      stickies[k].key = k
 
-    [stuck, unstuck] = scroller.determineIfStuck sorted_by_original_y
+    # Figure out which components are docked
+    [stuck, unstuck] = scroller.determineIfStuck stickies
 
-    for [k,v] in unstuck
-      sticky = fetch(k)
-      if sticky.stuck
-        sticky.stuck = false
-        stuck.y = null
-        save sticky
-        console.log "Toggled  #{k} to #{sticky.stuck}"
-
-        if v.stuck_key?
-          external_stuck = fetch(v.stuck_key)
-          external_stuck.stuck = false
-          save external_stuck
+    # unstick components that were docked
+    for k in unstuck
+      if fetch(k).stuck
+        scroller.toggleStuck k, stickies[k]
 
     if stuck.length > 0
-      stuck_with_values = _.filter sorted_by_original_y, (s) -> s[0] in (k for [k,v] in stuck)
-      y_pos = scroller.calculateYPositions stuck_with_values
+      # Calculate y-positions for all stuck components
+      y_pos = scroller.solveForY stickies
 
-      for [k,v] in stuck
+      for k in stuck
         sticky = fetch k
+        sticky.y = y_pos[k].value
 
         if !sticky.stuck
-          sticky.stuck = true
-          console.log "Toggled #{k} to #{sticky.stuck}"
+          scroller.toggleStuck k, stickies[k]
 
-          if v.stuck_key?
-            external_stuck = fetch(v.stuck_key)
-            external_stuck.stuck = true
-            save external_stuck
-
-
-        sticky.y = y_pos[k].value
         save sticky
 
     scroller.last_viewport_top = scroller.viewport_top
+
+  ########
+  # toggleStuck
+  #
+  # Helper method for onScroll that updates a component's 
+  # stuck state. Manage external stuck state if a component 
+  # has defined one. 
+  toggleStuck : (k, v) ->
+    sticky = fetch k
+    is_stuck = !sticky.stuck
+    sticky.stuck = is_stuck
+    if !is_stuck
+      sticky.y = null
+    save sticky
+
+    if v.stuck_key?
+      external_stuck = fetch(v.stuck_key)
+      external_stuck.stuck = is_stuck
+      save external_stuck
+
+    console.log "Toggled #{k} to #{sticky.stuck}" if debug
 
   #######
   # determineIfStuck
@@ -251,14 +262,18 @@ scroller =
   # Helper method for onScroll that separates the sticky components
   # into the keys of those which should now be stuck and those that
   # shouldn't.  
-  determineIfStuck : (sorted_by_original_y) -> 
+  determineIfStuck : (stickies) -> 
     stuck = []; unstuck = []
 
     # Whether the screen is zoomed or quite small 
     zoomed_or_small = window.innerWidth < $(window).width() || screen.width <= 700
 
+    # Sort by stacking order. Stacking order based on the 
+    # y position when the component was mounted. 
+    sorted = _.sortBy(_.values(stickies), (v) -> v.stack_priority)
+
     y_stack = 0
-    for [k, v] in sorted_by_original_y
+    for v in sorted
 
       if v.skip_stick || (!v.stick_on_zoom && zoomed_or_small)
         is_stuck = false 
@@ -267,14 +282,14 @@ scroller =
 
       if is_stuck
         y_stack += v.height
-        stuck.push [k,v]
+        stuck.push v.key
       else
-        unstuck.push [k,v]
+        unstuck.push v.key
 
     [stuck, unstuck]
 
   #######
-  # calculateYPositions
+  # solveForY
   #
   # Helper method for onScroll that returns optimal y positions for
   # each stuck component. Optimal placement facilitated by the definition
@@ -283,31 +298,92 @@ scroller =
   #
   # Different constraints may need to be introduced to accommodate different
   # sticky component configurations.   
-  calculateYPositions : (stuck) -> 
-    debug = true
-
+  solveForY : (stickies) -> 
+    
+    # cassowary constraint solver
     solver = new c.SimplexSolver()    
 
+    # Stores the cassowary variables representing each component's y-position 
+    # that the solver will optimize. 
     y_pos = {}
+    for own k,v of stickies
+      y_pos[k] = new c.Variable
+
+    # We modify the contraints slightly based on whether we're scrolling up or down
+    scrolling_down = scroller.viewport_top > scroller.last_viewport_top
+    scroll_distance = Math.abs(scroller.viewport_top - scroller.last_viewport_top)
 
     viewport_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 
-    scrolling_down = scroller.viewport_top > scroller.last_viewport_top
-
+    # We'll iterate through each component in order of their stacking priority
     y_stack = 0
 
-    for [k,v], i in stuck
-      console.log "**#{k} constraints**" if debug
-      y_pos[k] = new c.Variable
+    sorted = _.sortBy(_.values(stickies), (v) -> v.stack_priority)
 
-      sticky = fetch k
+    ########
+    # Linear constraints
+    #
+    # Set the constraints for the y-position of each docked component. 
+    #
+    # y(t) is the y-position of this component at time t. 
+    # v(t) is the viewport top at time t
+    #
+    # START
+    # The component shouldn't be placed above its specified docking start location.
+    #        y(t) >= start
+    #
+    # STOP
+    # The component shouldn't be placed below its specified docking stopping location.
+    #        y(t) + height <= stop
+    #    
+    # BOUNDED BY SCROLL DISTANCE (strength = strong)
+    # If this component has previously been positioned, the change in position
+    # should be bound by the scroll distance. 
+    #       |y(t) - y(t-1)| <= |v(t) - v(t-1)|
+    #
+    # CLOSE TO TOP (strength = weak)
+    # Prefer being close to the top of the viewport. In the future, if we need
+    # to support components preferring to be stuck to bottom, we'd need to 
+    # conditionally set the component's edge preference. 
+    #        y(t) = v(t)
+    #
+    # BELOW VIEWPORT TOP (strength = variable)
+    # Try to keep y(t) at or below the viewport to be seen. In order to 
+    # implement the scheme described at http://stackoverflow.com/questions/18358816, 
+    # we weaken the strength of this constraint when scrolling down and strengthen 
+    # it when scrolling up. 
+    #        y(t) >= v(t) + sum of heights of components higher in stack
+    #
+    # BOTTOM OF COMPONENT ABOVE VIEWPORT BOTTOM (strenth = variable)
+    # Like the previous constraint. Try to keep the bottom of the component in
+    # the viewport so it can be seen. We increase the strength of this constraint
+    # when scrolling down and weaken it when scrolling up.
+    #        y(t) + component height <= v(t) + viewport height
+    #
+    # RELATIONAL
+    # Add any declared constraints between different sticky components, constraining
+    # the one higher in the stacking order to always be above and non-overlapping 
+    # the one lower in the stacking order
+    #        y1(t) + height <= y2(t)
 
-      # If we've already been moving, we should be bounded by the amount scrolled. 
-      # |y(t) - y(t-1)| <= |v(t) - v(t-1)|
+
+    for v, i in sorted
+      console.log "**#{v.key} constraints**" if debug
+      k = v.key; sticky = fetch k
+
+      # START
+      console.log "\tStart: #{k} >= #{v.start}, required" if debug
+      solver.addConstraint new c.Inequality \
+        y_pos[k], c.GEQ, v.start
+
+      # STOP
+      console.log "\tStop: #{k} <= #{v.stop - (v.height)}, required" if debug
+      solver.addConstraint new c.Inequality \
+        y_pos[k], c.LEQ, v.stop - v.height
+
       if sticky.y?
-        scroll_distance = Math.abs(scroller.viewport_top - scroller.last_viewport_top)
-
-        console.log "\tBounded: |#{k} - #{sticky.y}| <= |#{scroller.viewport_top} - #{scroller.last_viewport_top}|, strong" if debug
+        # BOUNDED BY SCROLL DISTANCE
+        console.log "\tBOUNDED BY SCROLL DISTANCE: |#{k} - #{sticky.y}| <= |#{scroller.viewport_top} - #{scroller.last_viewport_top}|, strong" if debug
         solver.addConstraint new c.Inequality \
           y_pos[k], \
           c.LEQ,
@@ -320,12 +396,13 @@ scroller =
           sticky.y - scroll_distance, \
           c.Strength.strong
 
-
+      # CLOSE TO TOP
       # Prefer being close to the top of the viewport
       console.log "\tClose To top: #{k} = #{scroller.viewport_top}, weak" if debug
       solver.addConstraint new c.Equation \
         y_pos[k], scroller.viewport_top, c.Strength.weak
 
+      # BELOW VIEWPORT TOP
       # Try to keep it at or below the viewport, especially when scrolling up
       console.log "\tTop below viewport top: #{k} >= #{scroller.viewport_top} - #{v.jut} + #{y_stack}, #{if scrolling_down then 'weak' else 'medium'}" if debug
       solver.addConstraint new c.Inequality \
@@ -333,7 +410,9 @@ scroller =
         c.GEQ, \
         scroller.viewport_top - v.jut + y_stack, \
         if scrolling_down then c.Strength.weak else c.Strength.medium
+      y_stack += v.height
 
+      # BOTTOM OF COMPONENT ABOVE VIEWPORT BOTTOM
       # Try to keep the bottom above the viewport, especially when scrolling down
       console.log "\tBottom Above viewport bottom: #{k} + #{v.$el.height() + v.jut} <= #{scroller.viewport_top} + #{viewport_height}, #{if scrolling_down then 'weak' else 'medium'}" if debug
       solver.addConstraint new c.Inequality \
@@ -342,30 +421,9 @@ scroller =
         scroller.viewport_top + viewport_height - (v.height + v.jut), \ #(realDimensions(v.$el)[0] + v.jut), \
         if scrolling_down then c.Strength.medium else c.Strength.weak
 
-      # Endpoint constraints.
-      console.log "\tStart: #{k} >= #{v.start}, required" if debug
-      solver.addConstraint new c.Inequality \
-        y_pos[k], c.GEQ, v.start
-
-      console.log "\tStop: #{k} <= #{v.stop - (v.height)}, required" if debug
-      solver.addConstraint new c.Inequality \
-        y_pos[k], c.LEQ, v.stop - v.height
-
-
-      # Stack priority constraint. Make sure this sticky is stuck below the 
-      # others in the stack. 
-      console.log "\tStack priority: #{k} >= #{scroller.viewport_top} + #{y_stack} - #{v.jut}}, weak" if debug
-      solver.addConstraint new c.Inequality \
-                            y_pos[k], \
-                            c.GEQ, \
-                            scroller.viewport_top + y_stack - v.jut, \
-                            c.Strength.weak
-      y_stack += v.height
-
-
-
-      # Handle declared relational constraints. 
-      for [sk, sv], j in stuck
+      # RELATIONAL
+      for sv, j in sorted
+        sk = sv.key
         if j < i && sk in v.constraints
           console.log "\tRelational: #{k} >= #{sk} + #{sv.height} - #{v.jut} + #{sv.jut}}, required" if debug
           solver.addConstraint new c.Inequality \
@@ -382,8 +440,13 @@ scroller =
 
     y_pos
 
-
-
+#####
+# realDimensions
+#
+# Calculates the true height and top of an element by accounting for all 
+# absolutely positioned child elements. 
+#
+# This method is expensive, use it sparingly.
 realDimensions = ($el) -> 
 
   recurse = ($e, min_top, max_top) -> 
@@ -402,7 +465,3 @@ realDimensions = ($el) ->
   [min_top, max_top] = recurse $el, Infinity, 0
 
   [max_top - min_top, min_top]
-
-
-
-

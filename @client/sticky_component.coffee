@@ -24,13 +24,13 @@
 # Props (all optional): 
 #
 #   key (default = local key)
-#     Where stuck state & y position is stored.
+#     Where stuck state & y position is pre_stick_dimensions.
 #
 #   stuck_key
 #     Additional key where stuck state should be written. We provide 
 #     both key and stuck_key because some components change shape when 
 #     they become stuck, but it becomes performance bottleneck if those
-#     components get rerendered every scroll when the y-position stored
+#     components get rerendered every scroll when the y-position pre_stick_dimensions
 #     at key gets updated. 
 #
 #   start (default = initial y-position of sticky element)
@@ -62,7 +62,8 @@ window.StickyComponent = ReactiveComponent
       @key = if @props.key? then @props.key else @local.key
       sticky = fetch @key,
         stuck: false
-        y: 0
+        y: undefined
+        x: undefined
       save sticky
 
     sticky = fetch @key
@@ -96,31 +97,52 @@ window.StickyComponent = ReactiveComponent
     # making calculations. 
 
     $el = $(@refs.stuck.getDOMNode()).children()
+    [element_height, jut_above, jut_below] = realDimensions($el)
 
-    # Can't use $el.height() because there may be absolutely positioned elements
-    # inside $el that we need to account for. For example, a Slider.    
-    [element_height, element_top] = realDimensions($el)
-    
-    # How far absolutely positioned child elements jut above $el      
-    jutting = element_top - $el.offset().top
+    # For caching results of realDimensions (see below)
+    serializer = new XMLSerializer()
+    last_dom = null
 
+    t1 = t2 = 0
     scroller.register @key, => 
-      start         : @props.start?() or $(@getDOMNode()).offset().top
-      stop          : @props.stop?() or Infinity
-      stick_on_zoom : if @props.stick_on_zoomed_screens? then @props.stick_on_zoomed_screens else true
-      skip_stick    : @props.stickable && !@props.stickable()
-      $el           : $el
-      stack_priority: @local.stack_priority
-      jut           : jutting
-      height        : element_height
-      constraints   : @props.constraints or []
-      stuck_key     : @props.stuck_key
+      # This callback is invoked each scroll event handled by scroller
+      # in order to get data about this sticky component. 
+
+      # We can't use $el.height() to determine the height of the sticky
+      # component because there may be absolutely positioned elements
+      # inside $el that we need to account for. For example, a Slider.    
+      # We therefore need to recursively compute the real bounds of this
+      # element with realDimensions. 
+      #
+      # Calls to realDimensions are quite expensive, however, so we try to 
+      # avoid it as much as possible by caching a serialized version of 
+      # the entire stuck element to determine whether we need to rerun 
+      # realDimensions. This proves to work quite well in practice
+      # as the stuck element rarely changes in comparison to the 
+      # frequency of scroll events. 
+      current_dom = serializer.serializeToString $el[0]
+      if current_dom != last_dom
+        [element_height, jut_above, jut_below] = realDimensions($el)
+        last_dom = current_dom      
+
+      return {
+        start         : @props.start?() or $(@getDOMNode()).offset().top
+        stop          : @props.stop?() or Infinity
+        stick_on_zoom : if @props.stick_on_zoomed_screens? then @props.stick_on_zoomed_screens else true
+        skip_stick    : @props.stickable && !@props.stickable()
+        stack_priority: @local.stack_priority
+        jut_above     : jut_above
+        height        : element_height
+        constraints   : @props.constraints or []
+        stuck_key     : @props.stuck_key
+        offset_parent : if browser.is_mobile then $(@getDOMNode()).offsetParent().offset().top 
+      }
 
     # If the sticky component is wrapping an element that isn't already 
     # absolutely or fixed positioned, then when we enter sticky state 
     # and take it out of normal flow, the screen is jerked. So we 
-    # store the real height of the component and use it when we're stuck 
-    # to drop in a placeholder. 
+    # store the component's height to be assigned to a placeholder we
+    # drop in when docked.  
     @local.placeholder_height = if $el[0].style.position in ['absolute', 'fixed'] 
                                   0 
                                 else 
@@ -146,7 +168,7 @@ window.StickyComponent = ReactiveComponent
 #
 # The scroller will update the state(bus) of individual sticky 
 # components so that they know how to render. 
-#
+
 # For console output: 
 debug = true
 
@@ -161,7 +183,9 @@ scroller =
   viewport_top : document.documentElement.scrollTop || document.body.scrollTop  
   last_viewport_top : document.documentElement.scrollTop || document.body.scrollTop
           # caches scroll positions at t and t-1 for use in calculations
+  
   last_positions : {}
+  pre_stick_dimensions : {}
 
   #######
   # register & unregister
@@ -173,12 +197,13 @@ scroller =
 
     if !scroller.responding_to_scroll
       $(window).on "scroll.scroller", scroller.onScroll
+      $(window).on "resize.scroller", scroller.onScroll
       scroller.responding_to_scroll = true
 
   unregister : (key) -> 
     delete scroller.registry[key]
     if _.keys(scroller.registry).length == 0
-      $(window).off "scroll.scroller"
+      $(window).off ".scroller"
       scroller.responding_to_scroll = false
 
   #######
@@ -198,6 +223,7 @@ scroller =
 
     # Figure out which components are docked
     [stuck, unstuck] = scroller.determineIfStuck stickies
+
 
     # unstick components that were docked
     for k in unstuck
@@ -220,9 +246,6 @@ scroller =
           
           save sticky
 
-
-
-
     scroller.last_viewport_top = scroller.viewport_top
 
 
@@ -240,7 +263,7 @@ scroller =
       # When absolutely positioning, the reference is with respect to the closest
       # parent that has been positioned. Because sticky.y is with respect to the 
       # document, we need to adjust for the parent offset.   
-      y -= v.$el.parent().offsetParent().offset().top 
+      y -= v.offset_parent
       x = 0
     else
       # Fixed positioning is relative to the viewport, not the document
@@ -266,6 +289,9 @@ scroller =
     sticky.stuck = is_stuck
     if !is_stuck
       sticky.y = sticky.x = null
+      delete scroller.last_positions[k]
+    else
+      scroller.pre_stick_dimensions[k] = [v.height, v.jut_above, v.jut_below]
     save sticky
 
     if v.stuck_key?
@@ -285,7 +311,7 @@ scroller =
     stuck = []; unstuck = []
 
     # Whether the screen is zoomed or quite small 
-    zoomed_or_small = window.innerWidth < $(window).width() || screen.width <= 700
+    zoomed_or_small = window.innerWidth / $(window).width() < .95 || screen.width <= 700
 
     # Sort by stacking order. Stacking order based on the 
     # y position when the component was mounted. 
@@ -297,10 +323,15 @@ scroller =
       if v.skip_stick || (!v.stick_on_zoom && zoomed_or_small)
         is_stuck = false 
       else
-        is_stuck = scroller.viewport_top + y_stack - v.jut >= v.start
+        [height, jut_above, jut_below] = if v.key of scroller.pre_stick_dimensions 
+                                           scroller.pre_stick_dimensions[v.key] 
+                                         else 
+                                           [v.height, v.jut_above, v.jut_below]
+
+        is_stuck = scroller.viewport_top + y_stack + jut_above >= v.start
 
       if is_stuck
-        y_stack += v.height
+        y_stack += height
         stuck.push v.key
       else
         unstuck.push v.key
@@ -328,6 +359,7 @@ scroller =
 
     viewport_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 
+    console.log("viewport height: ", viewport_height) if debug
     # We'll iterate through each component in order of their stacking priority
     y_stack = 0
 
@@ -367,14 +399,14 @@ scroller =
     # conditionally set the component's edge preference. 
     #        y(t) = v(t)
     #
-    # BELOW VIEWPORT TOP (strength = variable)
+    # TOP OF COMPONENT VISIBLE (strength = variable)
     # Try to keep y(t) at or below the viewport to be seen. In order to 
     # implement the scheme described at http://stackoverflow.com/questions/18358816, 
     # we weaken the strength of this constraint when scrolling down and strengthen 
     # it when scrolling up. 
     #        y(t) >= v(t) + sum of heights of components higher in stack
     #
-    # BOTTOM OF COMPONENT ABOVE VIEWPORT BOTTOM (strenth = variable)
+    # BOTTOM OF COMPONENT VISIBLE (strength = variable)
     # Like the previous constraint. Try to keep the bottom of the component in
     # the viewport so it can be seen. We increase the strength of this constraint
     # when scrolling down and weaken it when scrolling up.
@@ -392,12 +424,12 @@ scroller =
       k = v.key; sticky = fetch k
 
       # START
-      console.log "\tStart: #{k} >= #{v.start}, required" if debug
+      console.log "\tSTART: #{k} >= #{v.start}, required" if debug
       solver.addConstraint new c.Inequality \
         y_pos[k], c.GEQ, v.start
 
       # STOP
-      console.log "\tStop: #{k} <= #{v.stop - (v.height)}, required" if debug
+      console.log "\tSTOP: #{k} <= #{v.stop - (v.height)}, required" if debug
       solver.addConstraint new c.Inequality \
         y_pos[k], c.LEQ, v.stop - v.height
 
@@ -418,39 +450,41 @@ scroller =
 
       # CLOSE TO TOP
       # Prefer being close to the top of the viewport
-      console.log "\tClose To top: #{k} = #{scroller.viewport_top}, weak" if debug
+      console.log "\tCLOSE TO TOP: #{k} = #{scroller.viewport_top}, weak" if debug
       solver.addConstraint new c.Equation \
         y_pos[k], scroller.viewport_top, c.Strength.weak
 
-      # BELOW VIEWPORT TOP
+      # TOP OF COMPONENT VISIBLE
       # Try to keep it at or below the viewport, especially when scrolling up
-      console.log "\tTop below viewport top: #{k} >= #{scroller.viewport_top} - #{v.jut} + #{y_stack}, #{if scrolling_down then 'weak' else 'medium'}" if debug
+      console.log "\tTOP OF COMPONENT VISIBLE: #{k} >= #{scroller.viewport_top} + #{v.jut_above} + #{y_stack}, #{if scrolling_down then 'weak' else 'medium'}" if debug
       solver.addConstraint new c.Inequality \
         y_pos[k], \
         c.GEQ, \
-        scroller.viewport_top - v.jut + y_stack, \
+        scroller.viewport_top + v.jut_above + y_stack, \
         if scrolling_down then c.Strength.weak else c.Strength.medium
       y_stack += v.height
 
-      # BOTTOM OF COMPONENT ABOVE VIEWPORT BOTTOM
+      # BOTTOM OF COMPONENT VISIBLE
       # Try to keep the bottom above the viewport, especially when scrolling down
-      console.log "\tBottom Above viewport bottom: #{k} + #{v.$el.height() + v.jut} <= #{scroller.viewport_top} + #{viewport_height}, #{if scrolling_down then 'weak' else 'medium'}" if debug
+      console.log "\tBOTTOM OF COMPONENT VISIBLE: #{k} + #{v.height} - #{v.jut_above} <= #{scroller.viewport_top} + #{viewport_height}, #{if scrolling_down then 'medium' else 'weak'}" if debug
       solver.addConstraint new c.Inequality \
         y_pos[k], \
         c.LEQ, \
-        scroller.viewport_top + viewport_height - (v.height + v.jut), \ #(realDimensions(v.$el)[0] + v.jut), \
-        if scrolling_down then c.Strength.medium else c.Strength.weak
+        scroller.viewport_top + viewport_height - (v.height - v.jut_above), 
+        if scrolling_down then c.Strength.required else c.Strength.weak
 
       # RELATIONAL
       for sv, j in sorted
         sk = sv.key
         if j < i && sk in v.constraints
-          console.log "\tRelational: #{k} >= #{sk} + #{sv.height} - #{v.jut} + #{sv.jut}}, required" if debug
+          console.log "\tRELATIONAL: #{k} >= #{sk} + #{sv.height} + #{v.jut_above} - #{sv.jut_above}}, required" if debug
+          
           solver.addConstraint new c.Inequality \
                                 y_pos[k], \
                                 c.GEQ, \
-                                c.plus(y_pos[sk], sv.height - v.jut + sv.jut), \
+                                c.plus(y_pos[sk], sv.height + v.jut_above - sv.jut_above), \
                                 c.Strength.required
+
 
     solver.resolve()
 
@@ -463,8 +497,9 @@ scroller =
 #####
 # realDimensions
 #
-# Calculates the true height and top of an element by accounting for all 
-# absolutely positioned child elements. 
+# Calculates an element's true height by accounting for all 
+# absolutely positioned child elements. Also returns
+# The jut of child elements above and below $el.height()
 #
 # This method is expensive, use it sparingly.
 realDimensions = ($el) -> 
@@ -484,4 +519,7 @@ realDimensions = ($el) ->
 
   [min_top, max_top] = recurse $el, Infinity, 0
 
-  [max_top - min_top, min_top]
+  offset = $el.offset().top
+  jut_above = offset - min_top
+  jut_below = max_top - (offset + $el.height())
+  [max_top - min_top, jut_above, jut_below]

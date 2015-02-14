@@ -1,7 +1,7 @@
 /////
 // Calculate node radius based on size of area and number of nodes
 window.calculateAvatarRadius = function(width, height, opinions) {
-  var ratio_filled = .25, r
+  var ratio_filled = .22, r
 
   if (window.histogram_ratio_filled) ratio_filled = window.histogram_ratio_filled
 

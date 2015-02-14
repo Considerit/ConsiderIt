@@ -1100,8 +1100,9 @@ Slider = ReactiveComponent
     # Define slider layout
     slider_style = 
       position: 'relative'
-      left: - (@props.width - DECISION_BOARD_WIDTH) / 2 + 2
+      left: - (@props.width - HISTOGRAM_WIDTH) / 2
       width: @props.width
+      height: SLIDER_HANDLE_SIZE
 
     if set_in_grayscale
       css.grayscale slider_style
@@ -1434,6 +1435,8 @@ DecisionBoard = ReactiveComponent
 
     DIV 
       className:'opinion_region'
+      style:
+        width: DECISION_BOARD_WIDTH
 
       if enable_opining        
         Bubblemouth()
@@ -3838,7 +3841,7 @@ Page = ReactiveComponent
     else if !subdomain.name
       L
     else
-      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: 'white'},
+      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: 'white', overflowX: 'hidden'},
         if avatars.avatars
           STYLE type: 'text/css', id: 'b64-avatars', dangerouslySetInnerHTML: {__html: avatars.avatars}
         

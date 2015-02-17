@@ -36,7 +36,6 @@ proposal_support = (proposal) ->
   subdomain = fetch('/subdomain').name
   opinion_support = fetch("customizations/#{subdomain}").opinion_support or
     (o) -> o.stance
-  console.log(opinion_support)
   opinions = fetch('/page/' + proposal.slug).opinions
   if not opinions
     return null

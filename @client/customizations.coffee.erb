@@ -34,14 +34,14 @@ window.customizations = {}
 
 proposal_support = (proposal) ->
   subdomain = fetch('/subdomain').name
-  opinion_support = fetch("customizations/#{subdomain}").opinion_support or
+  opinion_value = fetch("customizations/#{subdomain}").opinion_value or
     (o) -> o.stance
   opinions = fetch('/page/' + proposal.slug).opinions
   if not opinions
     return null
   sum = 0
   for o in opinions
-    sum += opinion_support(o)
+    sum += opinion_value(o)
   return sum
 
 
@@ -1262,7 +1262,7 @@ if window.location.hostname == 'bitcoin-election.consider.it'
 
 customizations.bitcoin = 
 
-  opinion_support: (opinion) -> opinion.stance
+  opinion_value: (opinion) -> opinion.stance
   cluster_options :
     # Each cluster can have its own options
     Candidates:   # Options for the "Candidates" cluster

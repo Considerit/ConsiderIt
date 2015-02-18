@@ -14,10 +14,6 @@ class Comment < ActiveRecord::Base
 
   acts_as_tenant :subdomain
 
-  before_save do 
-    self.body = self.body.sanitize
-  end
-
   def as_json(options={})
     options[:only] ||= Comment.my_public_fields
     result = super(options)

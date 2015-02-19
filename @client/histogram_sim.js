@@ -1,12 +1,16 @@
 /////
 // Calculate node radius based on size of area and number of nodes
 window.calculateAvatarRadius = function(width, height, opinions) {
-  var ratio_filled = .3, r
+  var ratio_filled = .22, r
+
+  if (window.histogram_ratio_filled) ratio_filled = window.histogram_ratio_filled
 
   r = Math.sqrt(width * height / opinions.length * ratio_filled)/2
   r = Math.min(r, width/2, height/2)
 
-  // Travis: what's the purpose of this?
+  // When there are lots of opinions, it's nice if they get all
+  // grid-like.  We'll adjust the size to make it evenly divide the
+  // box into a grid.
   if (opinions.length > 10) {
     // Now round r up until it fits perfectly within height
     var times_fit = height / (2*r)

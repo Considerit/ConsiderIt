@@ -23,7 +23,7 @@ fetch 'slider',
   stance : null
 
 fetch 'decisionboard',
-  sticky : false
+  docked : false
   
 fetch 'root',
   auth_mode : null
@@ -144,7 +144,7 @@ PageTransition =
 
       # The slider handle and mouth will change size and location when moving between crafting and results
       when 'slider'
-        handle_style = { scale: if root.proposal_mode == 'results' || fetch('slider').stuck then 1 else 2.5}
+        handle_style = { scale: if root.proposal_mode == 'results' || fetch('slider').docked then 1 else 2.5}
         $el.find('.the_handle').velocity handle_style, {duration}
 
       when 'bubblemouth'
@@ -284,9 +284,9 @@ Proposal = ReactiveComponent
 
     DIV key:@props.slug, 'data-page':@root.proposal_mode,
 
-      if customization('sticky_proposal_header')
-        StickyComponent
-          stick_on_zoomed_screens: false
+      if customization('docking_proposal_header')
+        Dock
+          dock_on_zoomed_screens: false
           start: => 
             $(@getDOMNode()).offset().top
           stop: => 
@@ -392,12 +392,12 @@ Proposal = ReactiveComponent
 
           Histogram()
 
-          StickyComponent
-            key: 'sticky-slider'
-            stuck_key: 'slider'          
-            stick_on_zoomed_screens: true
-            constraints : ['sticky-decisionboard']
-            stickable : => 
+          Dock
+            key: 'slider-dock'
+            docked_key: 'slider'          
+            dock_on_zoomed_screens: true
+            constraints : ['decisionboard-dock']
+            dockable : => 
               @root.proposal_mode == 'crafting'
 
             Slider
@@ -410,7 +410,7 @@ Proposal = ReactiveComponent
           style : 
             width: REASONS_REGION_WIDTH            
             position: 'relative'
-            paddingBottom: '4em' #padding instead of margin for sticky
+            paddingBottom: '4em' #padding instead of margin for docking
             margin: '24px auto 0 auto'
             marginLeft: if lefty then 65
 
@@ -421,12 +421,12 @@ Proposal = ReactiveComponent
           #community cons
           CommunityPoints { key: 'cons' }
 
-          StickyComponent
-            key: 'sticky-decisionboard'
-            stuck_key: 'decisionboard'            
-            constraints : ['sticky-slider']
-            stick_on_zoomed_screens: true
-            stickable : => 
+          Dock
+            key: 'decisionboard-dock'
+            docked_key: 'decisionboard'            
+            constraints : ['slider-dock']
+            dock_on_zoomed_screens: true
+            dockable : => 
               @root.proposal_mode == 'crafting'
             stop : -> 
               $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
@@ -462,7 +462,7 @@ Proposal = ReactiveComponent
       @local.description_collapsed = true; save(@local)
 
     # TODO: Hack!! When you go from homepage to a proposal, seek to proposal description
-    # top, otherwise you can be stuck in the middle of the proposal. 
+    # top, otherwise you can be docked in the middle of the proposal. 
     # Disabled for apps with a next button until we resolve 
     # https://github.com/tkriplean/ConsiderIt/commit/0561b9bdb6ae03705c3718d2283d8d8345fad632
     if customization('ProposalHeader') != SimpleProposalHeading  
@@ -1084,7 +1084,6 @@ Slider = ReactiveComponent
 
     slider = fetch('slider')
     hist = fetch('histogram')
-    sticky = slider.stuck
     set_in_grayscale = @root.selected_point && @root.proposal_mode == 'crafting'
 
 
@@ -1119,7 +1118,7 @@ Slider = ReactiveComponent
 
     ####
     # Define slider poles
-    draw_poles = !sticky
+    draw_poles = !slider.docked
 
     ####
     # Define slider handle
@@ -1207,7 +1206,7 @@ Slider = ReactiveComponent
       # when the slider is in an extreme position. 
       feedback_left = @props.width * (slider.stance/2 + .5)
       feedback_width = widthWhenRendered(slider_feedback, feedback_style) + 10
-      if sticky 
+      if slider.docked 
         if slider.stance > 0
           feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
         else
@@ -1215,7 +1214,7 @@ Slider = ReactiveComponent
 
       _.extend feedback_style, 
         position: 'absolute'      
-        top: if sticky then -57 else -80      
+        top: if slider.docked then -57 else -80      
         left: feedback_left
         marginLeft: -feedback_width / 2
         width: feedback_width

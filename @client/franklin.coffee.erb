@@ -410,7 +410,8 @@ Proposal = ReactiveComponent
           style : 
             width: REASONS_REGION_WIDTH            
             position: 'relative'
-            margin: '24px auto 4em auto'
+            paddingBottom: '4em' #padding instead of margin for sticky
+            margin: '24px auto 0 auto'
             marginLeft: if lefty then 65
 
 
@@ -428,7 +429,7 @@ Proposal = ReactiveComponent
             stickable : => 
               @root.proposal_mode == 'crafting'
             stop : -> 
-              $('.reasons_region').offset().top + $('.reasons_region').height() - 20
+              $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
 
             style: 
               position: 'absolute'

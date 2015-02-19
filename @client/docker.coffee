@@ -1,39 +1,46 @@
 ####
-# StickyComponent
+# Dock
 #
 # A component that wraps around another component and enables it
-# to stick to the top of the screen. 
+# to stick (dock) to the top of the screen. 
 # 
 # Only works in browsers that support CSS3 transforms (i.e. IE9+)
 #
 # This component will: 
 #   - assign the correct position to the element given the scroll 
 #     position, desired starting and stopping docking locations,
-#     while respecting the stacking order of all other sticky 
+#     while respecting the stacking order of all other docked 
 #     components. 
 #   - use the best positioning for mobile or desktop
 #   - drop a placeholder of the height of the component when it 
-#     enters sticky state if necessary, to prevent jerks as the 
+#     docks if necessary, to prevent jerks as the 
 #     component is taken out of the normal layout flow
-#   - implements sticking protocol outlined at 
+#   - implements docking protocol outlined at 
 #     http://stackoverflow.com/questions/18358816
 #
 # This component will NOT yet:
-#   - allow for sticking to anything but the top
+#   - allow for docking to anything but the top
+#
+# You can use this component by:
+#
+#     Dock
+#       key: 'my-dock'
+#       ComponentToDoc
+#         key: 'my-docked-component'
 #
 # Props (all optional): 
 #
 #   key (default = local key)
-#     Where stuck state & y position is stored.
+#     Where docked state & y position is stored.
 #
-#   stuck_key
-#     Additional key where stuck state should be written. We provide 
-#     both key and stuck_key because some components change shape when 
-#     they become stuck, but it becomes performance bottleneck if those
+#   docked_key
+#     Additional key where docked state should be written. We provide 
+#     both key and docked_key because some components change shape when 
+#     they become docked, but it becomes performance bottleneck if those
 #     components get rerendered every scroll when the y-position stored
 #     at key gets updated. 
 #
-#   start (default = initial y-position of sticky element)
+#   start (default = initial y-position of docking element)
 #     Callback that gives the y-position where docking should start. 
 #     A callback is used because docking may be dynamic given a 
 #     container that may itself be moving. 
@@ -41,25 +48,25 @@
 #   stop (default = Infinity)
 #     Same as start, except the y-position where docking should end. 
 #
-#   stickable
-#     Callback for determining whether this component is eligible for sticking. 
+#   dockable
+#     Callback for determining whether this component is eligible for docking. 
 #     Useful if there is some other important external state that dictates
-#     stickability. 
+#     dockability. 
 #
 #   constraints (default = [])
-#     An array of keys of other sticky components. These sticky components
+#     An array of keys of other docks. These docked components
 #     will then never overlap each other. 
 #
-#   stick_on_zoomed_screens (default = true)
-#     Whether to stick this component if on a zoomed or small screen. 
+#   dock_on_zoomed_screens (default = true)
+#     Whether to dock this component if on a zoomed or small screen. 
 
-window.StickyComponent = ReactiveComponent
-  displayName: 'StickyComponent'
+window.Dock = ReactiveComponent
+  displayName: 'Dock'
 
   render : -> 
-    sticky = fetch @key
-    if sticky.stuck
-      [x, y] = [sticky.x, sticky.y]
+    dock = fetch @key
+    if dock.docked
+      [x, y] = [dock.x, dock.y]
       positioning_method = if browser.is_mobile then 'absolute' else 'fixed'
 
       style = 
@@ -75,32 +82,29 @@ window.StickyComponent = ReactiveComponent
       # A placeholder for content that suddenly got ripped out of the standard layout
       DIV 
         style: 
-          height: if sticky.stuck then @local.placeholder_height else 0
+          height: if dock.docked then @local.placeholder_height else 0
       
-      # The stickable content
-      DIV ref: 'stuck', style: css.crossbrowserify(style or {}),
+      # The dockable content
+      DIV ref: 'dock_child', style: css.crossbrowserify(style or {}),
         @props.children
 
   componentWillMount : ->
     @key = if @props.key? then @props.key else @local.key
-    sticky = fetch @key,
-      stuck: false
+    dock = fetch @key,
+      docked: false
       y: undefined
       x: undefined
-    save sticky
+    save dock
 
   componentDidMount : -> 
-    # Register this sticky with docker. 
-    # Send docker a callback that it can invoke
-    # to learn about this sticky component when 
-    # making calculations. 
+    # Register this dock with docker. Send docker a callback that it 
+    # can invoke to learn about this dock when making calculations. 
 
-    $el = $(@refs.stuck.getDOMNode()).children()
+    $el = $(@refs.dock_child.getDOMNode()).children()
 
-
-    # The stacking order of this sticky component. Used to determine 
-    # how sticky components stack up. The initial y position seems to be 
-    # a good determiner of which sticky stack order. Perhaps a scenario 
+    # The stacking order of this dock. Used to determine 
+    # how docking components stack up. The initial y position seems to be 
+    # a good determiner of stacking order. Perhaps a scenario 
     # in the future will crop up where this is untrue.
     @local.stack_priority = $el.offset().top
     save @local
@@ -111,9 +115,9 @@ window.StickyComponent = ReactiveComponent
 
     docker.register @key, => 
       # This callback is invoked each scroll event handled by docker
-      # in order to get data about this sticky component. 
+      # in order to get data about this docked element. 
 
-      # We can't use $el.height() to determine the height of the sticky
+      # We can't use $el.height() to determine the height of the docking
       # component because there may be absolutely positioned elements
       # inside $el that we need to account for. For example, a Slider.    
       # We therefore need to recursively compute the real bounds of this
@@ -121,9 +125,9 @@ window.StickyComponent = ReactiveComponent
       #
       # Calls to realDimensions are quite expensive, however, so we try to 
       # avoid it as much as possible by caching a serialized version of 
-      # the entire stuck element to determine whether we need to rerun 
+      # the entire docked element to determine whether we need to rerun 
       # realDimensions. This proves to work quite well in practice
-      # as the stuck element rarely changes in comparison to the 
+      # as the docked element rarely changes in comparison to the 
       # frequency of scroll events. 
       current_dom = serializer.serializeToString $el[0]
 
@@ -131,13 +135,12 @@ window.StickyComponent = ReactiveComponent
         [element_height, jut_above, jut_below] = realDimensions($el)
         last_dom = current_dom
 
-        # If the sticky component is wrapping an element that isn't already 
-        # absolutely or fixed positioned, then when we dock the element 
-        # and take it out of normal flow, the screen is jerked. So we 
-        # store the component's height to be assigned to a placeholder we
-        # drop in when docked.  
+        # If the docking element isn't already absolutely or fixed positioned, 
+        # then when we dock the element and take it out of normal flow, the 
+        # screen is jerked. So we store the component's height to be assigned 
+        # to a placeholder we drop in when docked.  
         placeholder_height = if $el[0].style.position in ['absolute', 'fixed'] 
-                                0 
+                               0 
                              else 
                                $el.height()
         if @local.placeholder_height != placeholder_height
@@ -147,13 +150,13 @@ window.StickyComponent = ReactiveComponent
       return {
         start         : @props.start?() or $(@getDOMNode()).offset().top
         stop          : @props.stop?() or Infinity
-        stick_on_zoom : if @props.stick_on_zoomed_screens? then @props.stick_on_zoomed_screens else true
-        skip_stick    : @props.stickable && !@props.stickable()
+        dock_on_zoom  : if @props.dock_on_zoomed_screens? then @props.dock_on_zoomed_screens else true
+        skip_docking  : @props.dockable && !@props.dockable()
         stack_priority: @local.stack_priority
         jut_above     : jut_above
         height        : element_height
         constraints   : @props.constraints or []
-        stuck_key     : @props.stuck_key
+        docked_key    : @props.docked_key
         offset_parent : if browser.is_mobile then $(@getDOMNode()).offsetParent().offset().top 
       }
 
@@ -166,11 +169,11 @@ window.StickyComponent = ReactiveComponent
 ####
 # docker
 #
-# The docker updates on scroll the stuck state and location of 
-# all registered sticky components. 
+# The docker updates on scroll the docked state and location of 
+# all registered docks. 
 #
-# The docker will update the state(bus) of individual sticky 
-# components so that they know how to render. 
+# The docker will update the state(bus) of the docks so that 
+# they know how to render. 
 
 # For console output: 
 debug = true
@@ -180,7 +183,7 @@ docker =
   ####
   # Internal state
   registry: {} 
-          # all registered sticky components, by key
+          # all registered docks, by key
   listening_to_scroll_events : false
           # whether docker is bound to scroll event
   
@@ -194,29 +197,30 @@ docker =
   # register & unregister
   # Enters or removes a ScrollComponent into/from the registry. 
   # Make sure we're listening to scroll event only if there is 
-  # at least one registered sticky component. 
+  # at least one registered dock. 
   register : (key, info_callback) -> 
     docker.registry[key] = info_callback
-    docker.component_history[key] = {previous: {}, at_stick: {}}
+    docker.component_history[key] = {previous: {}, on_dock: {}}
 
     if !docker.listening_to_scroll_events
       
       $(window).on "scroll.docker", docker.onScroll
       $(window).on "resize.docker", docker.onResize
 
-      # If the height of a stuck component changes, we need to recalculate
+      # If the height of a docked component changes, we need to recalculate
       # the layout. Unfortunately, it is non-trivial and error prone to detect 
       # when the height of an element changes, so we'll just check periodically. 
-      docker.interval = setInterval docker.onCheckStickyResize, 500
+      docker.check_resize_interval = setInterval docker.onCheckStickyResize, 500
 
       docker.listening_to_scroll_events = true
-
 
   unregister : (key) -> 
     delete docker.registry[key]
     if _.keys(docker.registry).length == 0
       $(window).off ".docker"
       docker.listening_to_scroll_events = false
+      clearInterval docker.check_resize_interval
+      docker.check_resize_interval = null
       clearInterval docker.interval
       docker.interval = null
 
@@ -225,7 +229,7 @@ docker =
   onScroll : -> 
     docker.updateViewport()
 
-    # At most we will shift the sticky elements by the distance scrolled
+    # At most we will shift the docked components by the distance scrolled
     max_change = if docker.viewport.last.top?
                    Math.abs(docker.viewport.top - docker.viewport.last.top)
                  else
@@ -238,7 +242,7 @@ docker =
   onResize : -> 
     docker.updateViewport()
 
-    # Shift the sticky elements by at most the change in window height
+    # Shift the docked components by at most the change in window height
     max_change = Math.abs(docker.viewport.height - docker.viewport.last.height)
     docker.layout max_change
 
@@ -248,8 +252,8 @@ docker =
     height_changes = 0
 
     for own k,v of docker.registry
-      sticky = fetch k
-      if sticky.stuck && v().height != docker.component_history[k].previous.height
+      dock = fetch k
+      if dock.docked && v().height != docker.component_history[k].previous.height
         console.error "HEIGHT RESIZE at most #{height_changes}" if debug
         docker.layout Infinity
         break
@@ -270,120 +274,119 @@ docker =
   #######
   # layout
   #
-  # Orchestrates which components are stuck or unstuck. 
-  # Calculates y values for each stuck component using a
+  # Orchestrates which components are docked or undocked. 
+  # Calculates y values for each docked component using a
   # linear constraint solver. 
   layout : (max_change) ->
-    # The registered stickies with updated context values
-    stickies = {}
+    # The registered docks with updated context values
+    docks = {}
     for own k,v of docker.registry
-      stickies[k] = v()
-      stickies[k].key = k
+      docks[k] = v()
+      docks[k].key = k
 
     # Figure out which components are docked
-    [stuck, unstuck] = docker.determineIfStuck stickies
+    [docked, undocked] = docker.determineIfDocked docks
 
-    # unstick components that were docked
-    for k in unstuck
-      if fetch(k).stuck
-        docker.toggleStuck k, stickies[k]
+    # undock components that were docked
+    for k in undocked
+      if fetch(k).docked
+        docker.toggleDocked k, docks[k]
 
-    if stuck.length > 0
-      # Calculate y-positions for all stuck components
-      y_pos = docker.solveForY stuck, stickies, max_change
+    if docked.length > 0
+      # Calculate y-positions for all docked components
+      y_pos = docker.solveForY docked, docks, max_change
 
-      for k in stuck
-        sticky = fetch k
-        docker.component_history[k].previous = _.extend stickies[k], 
+      for k in docked
+        dock = fetch k
+        docker.component_history[k].previous = _.extend docks[k], 
                                                     calculated_y: y_pos[k].value
 
-        [x, y] = docker.adjustForDevice y_pos[k].value, stickies[k]
-        if sticky.y != y || sticky.x != x
-          console.log "UPDATING #{sticky.key}" if debug
-          sticky.y = y
-          sticky.x = x
-          if !sticky.stuck
-            docker.toggleStuck k, stickies[k]
+        [x, y] = docker.adjustForDevice y_pos[k].value, docks[k]
+        if dock.y != y || dock.x != x
+          console.log "UPDATING #{dock.key}" if debug
+          dock.y = y
+          dock.x = x
+          if !dock.docked
+            docker.toggleDocked k, docks[k]
           
-          save sticky
+          save dock
 
 
   #######
-  # determineIfStuck
+  # determineIfDocked
   #
-  # Helper method for layout that separates the sticky components
-  # into the keys of those which should now be stuck and those that
-  # shouldn't.  
-  determineIfStuck : (stickies) -> 
-    stuck = []; unstuck = []
+  # Helper method for layout that returns which docking components should 
+  # be docked and which are undocked.  
+  determineIfDocked : (docks) -> 
+    docked = []; undocked = []
 
     # Whether the screen is zoomed or quite small 
     zoomed_or_small = window.innerWidth / $(window).width() < .95 || screen.width <= 700
 
     # Sort by stacking order. Stacking order based on the 
     # y position when the component was mounted. 
-    sorted = _.sortBy(_.values(stickies), (v) -> v.stack_priority)
+    sorted = _.sortBy(_.values(docks), (v) -> v.stack_priority)
 
     y_stack = 0
     for v in sorted
 
-      if v.skip_stick || (!v.stick_on_zoom && zoomed_or_small)
-        is_stuck = false 
+      if v.skip_docking || (!v.dock_on_zoom && zoomed_or_small)
+        is_docked = false 
       else
-        dimensions =  if fetch(v.key).stuck
-                        docker.component_history[v.key].at_stick
+        dimensions =  if fetch(v.key).docked
+                        docker.component_history[v.key].on_dock
                       else 
                         {height: v.height, jut_above: v.jut_above}
 
-        is_stuck = docker.viewport.top + y_stack + dimensions.jut_above >= v.start
+        is_docked = docker.viewport.top + y_stack + dimensions.jut_above >= v.start
 
-      if is_stuck
+      if is_docked
         y_stack += dimensions.height
-        stuck.push v.key
+        docked.push v.key
       else
-        unstuck.push v.key
+        undocked.push v.key
 
-    [stuck, unstuck]
+    [docked, undocked]
 
   ########
-  # toggleStuck
+  # toggleDocked
   #
   # Helper method for layout that updates a component's 
-  # stuck state. Manage external stuck state if a component 
+  # docked state. Manage external docked state if a component 
   # has defined one. 
-  toggleStuck : (k, v) ->
-    sticky = fetch k
-    is_stuck = !sticky.stuck
-    sticky.stuck = is_stuck
-    if !is_stuck
-      sticky.y = sticky.x = null
+  toggleDocked : (k, v) ->
+    dock = fetch k
+    is_docked = !dock.docked
+    dock.docked = is_docked
+    if !is_docked
+      dock.y = dock.x = null
       docker.component_history[k].previous = {}
     else
-      docker.component_history[k].at_stick = v
+      docker.component_history[k].on_dock = v
 
-    save sticky
+    save dock
 
-    if v.stuck_key?
-      external_stuck = fetch(v.stuck_key)
-      external_stuck.stuck = is_stuck
-      save external_stuck
+    if v.docked_key?
+      external_docked = fetch(v.docked_key)
+      external_docked.docked = is_docked
+      save external_docked
 
-    console.log "Toggled #{k} to #{sticky.stuck}" if debug
+    console.log "Toggled #{k} to #{dock.docked}" if debug
 
   #######
   # solveForY
   #
   # Helper method for layout that returns optimal y positions for
-  # each stuck component. Optimal placement facilitated by the definition
+  # each docked component. Optimal placement facilitated by the definition
   # of linear constraints which are then processed by the cassowary constraint 
   # solver.
   #
   # Different constraints may need to be introduced to accommodate different
-  # sticky component configurations.   
+  # docking configurations.   
   #
-  # max_change constrains how far each sticky component is allowed to move
+  # max_change constrains how far each docking element is allowed to move
   # since the last time it was laid out. 
-  solveForY : (stuck, stickies, max_change) -> 
+  solveForY : (docked, docks, max_change) -> 
     
     # cassowary constraint solver
     solver = new c.SimplexSolver()    
@@ -398,7 +401,7 @@ docker =
     # We'll iterate through each component in order of their stacking priority
     y_stack = 0
 
-    sorted = (v for own k,v of stickies when k in stuck)
+    sorted = (v for own k,v of docks when k in docked)
     sorted = _.sortBy( sorted, (v) -> v.stack_priority)
 
     # Stores the variables representing each component's y-position 
@@ -431,7 +434,7 @@ docker =
     #
     # CLOSE TO TOP (strength = weak)
     # Prefer being close to the top of the viewport. In the future, if we need
-    # to support components preferring to be stuck to bottom, we'd need to 
+    # to support components preferring to be docked to bottom, we'd need to 
     # conditionally set the component's edge preference. 
     #        y(t) = v(t)
     #
@@ -449,7 +452,7 @@ docker =
     #        y(t) + component height <= v(t) + viewport height
     #
     # RELATIONAL
-    # Add any declared constraints between different sticky components, constraining
+    # Add any declared constraints between different docks, constraining
     # the one higher in the stacking order to always be above and non-overlapping 
     # the one lower in the stacking order
     #        y1(t) + height <= y2(t)
@@ -457,7 +460,7 @@ docker =
 
     for v, i in sorted
       console.log "**#{v.key} constraints**" if debug
-      k = v.key; sticky = fetch k
+      k = v.key; dock = fetch k
       previous_calculated_y = docker.component_history[k].previous.calculated_y
 
       # START
@@ -534,7 +537,7 @@ docker =
   ####
   # adjustForDevice
   #
-  # Calculates x & y sticky component values based on the positioning
+  # Calculates x & y offset values based on the positioning
   # method used for the particular device. 
   #
   # On desktop we can safely use the more efficient fixed positioning. 
@@ -543,7 +546,7 @@ docker =
   adjustForDevice : (y, v) ->
     if browser.is_mobile
       # When absolutely positioning, the reference is with respect to the closest
-      # parent that has been positioned. Because sticky.y is with respect to the 
+      # parent that has been positioned. Because dock.y is with respect to the 
       # document, we need to adjust for the parent offset.   
       y -= v.offset_parent
       x = 0
@@ -553,7 +556,7 @@ docker =
 
       # Adjust for horizontal scroll for fixed position elements because they don't 
       # move with the rest of the content (they're fixed to the viewport). 
-      # ScrollLeft is used to offset the fixed element to simulate sticking to the window.
+      # ScrollLeft is used to offset the fixed element to simulate docking to the window.
       x = -$(window).scrollLeft()
 
     [x,y]

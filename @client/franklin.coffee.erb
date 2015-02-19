@@ -287,11 +287,6 @@ Proposal = ReactiveComponent
       if customization('docking_proposal_header')
         Dock
           dock_on_zoomed_screens: false
-          start: => 
-            $(@getDOMNode()).offset().top
-          stop: => 
-            $el = $(@getDOMNode())
-            $el.offset().top + $el.height()
           proposal_header
 
       else
@@ -428,6 +423,9 @@ Proposal = ReactiveComponent
             dock_on_zoomed_screens: true
             dockable : => 
               @root.proposal_mode == 'crafting'
+
+            start: -24
+
             stop : -> 
               $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
 
@@ -1616,7 +1614,6 @@ Bubblemouth = ReactiveComponent
       className:'bubblemouth'
       src: bubblemouth_src
       style: bubblemouth_style
-
 
 
 

@@ -75,7 +75,6 @@ customizations.default.NonHomepageHeader = customizations.default.HomepageHeader
 
 
 
-
 ##########################
 # SUBDOMAIN CONFIGURATIONS
 
@@ -567,7 +566,6 @@ customizations.bitcoin =
 customizations.bitcoin.NonHomepageHeader = customizations.bitcoin.HomepageHeader
 
 
-
 ####################
 # Bitcoin demo
 
@@ -993,5 +991,6 @@ customizations.cityoftigard.NonHomepageHeader = customizations.cityoftigard.Home
 # each subdomain customization
 for own k,v of customizations
   _.defaults customizations[k], customizations.default
+
   customizations[k].key = "customizations/#{k}"
   save(customizations[k])

@@ -180,7 +180,7 @@ window.SimpleHomepage = ReactiveComponent
 # LearnDecideShareHomepage
 #
 # A homepage where proposals are shown in a four column
-# table with a prominent sticky header. 
+# table.
 #
 # Proposals are divided into clusters. 
 # 
@@ -201,20 +201,20 @@ window.LearnDecideShareHomepage = ReactiveComponent
     contributors = @page.contributors.filter((u)-> !!fetch(u).avatar_file_name)
     contributors_without_avatar_count = @page.contributors.filter((u)-> !fetch(u).avatar_file_name).length
 
-    # Columns of the sticky header for the proposal list.
+    # Columns of the docking header for the proposal list.
     columns = customization('homepage_heading_columns') or [ 
                   {heading: 'Learn', details: 'about the issues'}, \
                   {heading: 'Decide', details: 'what you think'}, \
                   {heading: 'Share', details: 'your opinion'}, \
                   {heading: 'Join', details: 'the contributors'}]
 
-    sticky_header_height = 79
+    docking_header_height = 79
 
     DIV className: 'homepage',
 
-      StickyComponent
+      Dock
         container_selector: '.homepage'
-        stick_on_zoomed_screens: false
+        dock_on_zoomed_screens: false
         parent_key: @local.key
         start: -> 0
         stop: -> 0
@@ -223,8 +223,8 @@ window.LearnDecideShareHomepage = ReactiveComponent
           style: 
             backgroundColor: subdomain.branding.primary_color
             color: 'white'
-            height: sticky_header_height
-            minWidth: PAGE_WIDTH #minwidth is for when dropping into sticky, position fixed mode
+            height: docking_header_height
+            minWidth: PAGE_WIDTH #minwidth is for when docking, position fixed mode
 
           TABLE style: {margin: 'auto', paddingLeft: 242},
             TBODY null,
@@ -503,7 +503,7 @@ window.TechnologyByConsiderit = ReactiveComponent
 ##
 # SimpleProposalHeading
 #
-# A non-sticky header that displays a prev/next proposal button & cluster name
+# A header that displays a prev/next proposal button & cluster name
 #
 # Customizations:
 #  cluster_options
@@ -610,9 +610,8 @@ window.SimpleProposalHeading = ReactiveComponent
 
 
 ####
-# A header that sticks to the top of the page. 
-# Shows the proposal title with a drop down menu
-# for navigating to any other proposal. 
+# A header that shows the proposal title with a drop 
+# down menu for navigating to any other proposal. 
 # Has a link to the homepage. 
 #
 
@@ -631,7 +630,7 @@ window.ProposalHeaderWithMenu = ReactiveComponent
     if not use_navigation_bar
       heading_style =
         textAlign: 'center'
-        minWidth: PAGE_WIDTH # for width consistency when dropping into fixed sticky header
+        minWidth: PAGE_WIDTH # for width consistency when docking
         backgroundColor: subdomain.branding.primary_color
         fontSize: 26
         padding: '4px 90px'
@@ -660,7 +659,7 @@ window.ProposalHeaderWithMenu = ReactiveComponent
       className: 'proposal_heading'
       style:
         height: heading_height
-        minWidth: PAGE_WIDTH # for width consistency when dropping into fixed sticky header
+        minWidth: PAGE_WIDTH # for width consistency when docking
         backgroundColor: subdomain.branding.primary_color
         textAlign: 'center'
 

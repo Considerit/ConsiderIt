@@ -41,12 +41,15 @@
 #     at key gets updated. 
 #
 #   start (default = initial y-position of docking element)
-#     Callback that gives the y-position where docking should start. 
-#     A callback is used because docking may be dynamic given a 
-#     container that may itself be moving. 
+#     Can be a 
+#       1. Callback that gives the y-position where docking should start. 
+#          A callback may be used because docking may be dynamic given a 
+#          container that may itself be moving. 
+#       2. An offset that will be added to the default start location
 #
 #   stop (default = Infinity)
-#     Same as start, except the y-position where docking should end. 
+#     A callback in the same vein as start, except it should return the 
+#     y-position where docking should end. 
 #
 #   dockable
 #     Callback for determining whether this component is eligible for docking. 
@@ -67,6 +70,7 @@ window.Dock = ReactiveComponent
     dock = fetch @key
     if dock.docked
       [x, y] = [dock.x, dock.y]
+
       positioning_method = if browser.is_mobile then 'absolute' else 'fixed'
 
       style = 
@@ -147,7 +151,7 @@ window.Dock = ReactiveComponent
           save @local
           
       return {
-        start         : @props.start?() or $(@getDOMNode()).offset().top
+        start         : if _.isFunction(@props.start) then @props.start() else $(@getDOMNode()).offset().top + (@props.start || 0)
         stop          : @props.stop?() or Infinity
         dock_on_zoom  : if @props.dock_on_zoomed_screens? then @props.dock_on_zoomed_screens else true
         skip_docking  : @props.dockable && !@props.dockable()
@@ -438,12 +442,6 @@ docker =
     #       |y(t) - y(t-1)| <= max_change
     #       |y(t) - y(t-1)| <= |v(t) - v(t-1)|  <-- usually scroll distance
     #
-    # CLOSE TO TOP (strength = weak)
-    # Prefer being close to the top of the viewport. In the future, if we need
-    # to support components preferring to be docked to bottom, we'd need to 
-    # conditionally set the component's edge preference. 
-    #        y(t) = v(t)
-    #
     # TOP OF COMPONENT VISIBLE (strength = variable)
     # Try to keep y(t) at or below the viewport to be seen. In order to 
     # implement the scheme described at http://stackoverflow.com/questions/18358816, 
@@ -474,10 +472,11 @@ docker =
       solver.addConstraint new c.Inequality \
         y_pos[k], c.GEQ, v.start, c.Strength.strong
 
-      # STOP
-      console.log "\tSTOP: #{k} <= #{v.stop - (v.height)}, strong" if debug
-      solver.addConstraint new c.Inequality \
-        y_pos[k], c.LEQ, v.stop - v.height, c.Strength.strong
+      if v.stop != Infinity
+        # STOP
+        console.log "\tSTOP: #{k} <= #{v.stop - (v.height)}, strong" if debug
+        solver.addConstraint new c.Inequality \
+          y_pos[k], c.LEQ, v.stop - v.height, c.Strength.strong
 
       if max_change? && previous_calculated_y?
         # BOUNDED BY MAX CHANGE (usually scroll distance)
@@ -493,12 +492,6 @@ docker =
           c.GEQ,
           previous_calculated_y - max_change, \
           c.Strength.strong
-
-      # CLOSE TO TOP
-      # Prefer being close to the top of the viewport
-      console.log "\tCLOSE TO TOP: #{k} = #{docker.viewport.top}, weak" if debug
-      solver.addConstraint new c.Equation \
-        y_pos[k], docker.viewport.top, c.Strength.weak
 
       # TOP OF COMPONENT VISIBLE
       # Try to keep it at or below the viewport, especially when scrolling up
@@ -548,7 +541,8 @@ docker =
   #
   # On desktop we can safely use the more efficient fixed positioning. 
   # But for mobile, we use absolute positioning because mobile devices 
-  # have terrible support for fixed positioning. 
+  # have terrible support for fixed positioning. Specifically, fixed 
+  # doesn't work in conjunction with touch based zooming. 
   adjustForDevice : (y, v) ->
     if browser.is_mobile
       # When absolutely positioning, the reference is with respect to the closest

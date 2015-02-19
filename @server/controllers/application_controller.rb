@@ -98,6 +98,9 @@ protected
       new_current_user
     end
 
+    if [197946, 14897].include?(Thread.current[:current_user_id])
+      raise PermissionDenied.new('Your account has been disabled until the election is over for viaolating the Civility Pledge.')
+    end
   end
   
   def new_current_user

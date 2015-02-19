@@ -114,9 +114,8 @@ window.Dock = ReactiveComponent
     serializer = new XMLSerializer()
 
     docker.register @key, => 
-      # This callback is invoked each scroll event handled by docker
-      # in order to get data about this docked element. 
-
+      # This callback is invoked each time the dock is laid out by docker.
+      #
       # We can't use $el.height() to determine the height of the docking
       # component because there may be absolutely positioned elements
       # inside $el that we need to account for. For example, a Slider.    
@@ -176,7 +175,7 @@ window.Dock = ReactiveComponent
 # they know how to render. 
 
 # For console output: 
-debug = true
+debug = false
 
 docker =
 
@@ -204,7 +203,7 @@ docker =
 
     if !docker.listening_to_scroll_events
       
-      $(window).on "scroll.docker", docker.onScroll
+      $(window).on "scroll.docker", -> docker.user_scrolled = true
       $(window).on "resize.docker", docker.onResize
 
       # If the height of a docked component changes, we need to recalculate
@@ -213,6 +212,13 @@ docker =
       docker.check_resize_interval = setInterval docker.onCheckStickyResize, 500
 
       docker.listening_to_scroll_events = true
+
+      # Recompute layout if we've seen a scroll in past X ms
+      docker.interval = setInterval -> 
+        if docker.user_scrolled
+          docker.user_scrolled = false
+          docker.onScroll()
+      , 100 
 
   unregister : (key) -> 
     delete docker.registry[key]

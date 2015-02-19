@@ -1204,6 +1204,7 @@ Slider = ReactiveComponent
       # when the slider is in an extreme position. 
       feedback_left = @props.width * (slider.stance/2 + .5)
       feedback_width = widthWhenRendered(slider_feedback, feedback_style) + 10
+
       if slider.docked 
         if slider.stance > 0
           feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)

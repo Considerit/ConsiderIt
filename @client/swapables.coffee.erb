@@ -24,11 +24,12 @@
 
 proposal_support = (proposal) ->
   opinions = fetch('/page/' + proposal.slug).opinions
+
   if not opinions
     return null
   sum = 0
   for o in opinions
-    sum += o.stance
+    sum += customization("opinion_value")(o)
   return sum
 
 
@@ -216,8 +217,6 @@ window.LearnDecideShareHomepage = ReactiveComponent
         container_selector: '.homepage'
         dock_on_zoomed_screens: false
         parent_key: @local.key
-        start: -> 0
-        stop: -> 0
 
         DIV 
           style: 

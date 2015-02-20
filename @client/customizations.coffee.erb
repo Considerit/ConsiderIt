@@ -17,10 +17,11 @@
 
 window.customization = (field) -> 
   subdomain = fetch('/subdomain')
+
   if !customizations[subdomain.name]?
-    config = customizations.default
+    config = fetch('customizations/default')
   else 
-    config = customizations[subdomain.name]
+    config = fetch("customizations/#{subdomain.name}")
 
   val = config
   fields = field.split('.')
@@ -47,7 +48,8 @@ customizations = {}
 customizations.default = 
 
   cluster_options : {}
-  
+  opinion_value: (o) -> o.stance
+
   auth: 
     additional_auth_footer: null
     user_questions: null
@@ -993,4 +995,4 @@ for own k,v of customizations
   _.defaults customizations[k], customizations.default
 
   customizations[k].key = "customizations/#{k}"
-  save(customizations[k])
+  save customizations[k]

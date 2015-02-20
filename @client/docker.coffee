@@ -397,6 +397,7 @@ docker =
   # max_change constrains how far each docking element is allowed to move
   # since the last time it was laid out. 
   solveForY : (docked, docks, max_change) -> 
+    c = cassowary
     
     # cassowary constraint solver
     solver = new c.SimplexSolver()    
@@ -566,6 +567,9 @@ docker =
     docker.updateViewport()
 
 docker.initialize()
+
+# cassowary.js exports to c, which can easily get overwritten. 
+cassowary = c
 
 #####
 # realDimensions

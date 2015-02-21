@@ -54,7 +54,7 @@ permit = (action) ->
 
     when 'update proposal', 'delete proposal'
       proposal = fetch arguments[1]
-      if !current_user.is_admin && !matchEmail(proposal.roles.editor)
+      if !current_user.is_admin && (proposal.key == 'new_proposal' || !matchEmail(proposal.roles.editor) )
         return Permission.INSUFFICIENT_PRIVILEGES
 
     when 'publish opinion'
@@ -67,7 +67,7 @@ permit = (action) ->
       if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer', 'opiner'])
         return Permission.INSUFFICIENT_PRIVILEGES 
 
-      required_info = _.pluck _.where(customizations[subdomain.name]?.auth?.user_questions or [], {required: true}), 'tag' 
+      required_info = _.pluck _.where(customization('auth.user_questions') or [], {required: true}), 'tag' 
       existing_required_info = _.intersection required_info, _.keys(current_user.tags)
 
       if existing_required_info.length != required_info.length

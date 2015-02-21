@@ -1171,7 +1171,7 @@ Slider = ReactiveComponent
                                          Permission.INSUFFICIENT_PRIVILEGES] || 
                       your_opinion.published )
 
-    draw_handle = enable_opining && !set_in_grayscale
+    draw_handle = enable_opining
     if draw_handle
 
       handle_style =
@@ -1187,6 +1187,7 @@ Slider = ReactiveComponent
         marginLeft: -SLIDER_HANDLE_SIZE / 2
         top: -9
         position: 'relative'
+        visibility: if set_in_grayscale then 'hidden'
 
       face_style = 
         position: 'absolute'
@@ -1221,8 +1222,7 @@ Slider = ReactiveComponent
     ####
     # Define slider feedback
     draw_feedback = @root.proposal_mode == 'crafting' && 
-                     draw_handle && 
-                     !set_in_grayscale
+                     draw_handle
     
     if draw_feedback
       slider_feedback = 
@@ -1249,6 +1249,7 @@ Slider = ReactiveComponent
         fontSize: 30
         fontWeight: 700
         color: focus_blue
+        visibility: if set_in_grayscale then 'hidden'
 
       # Keep feedback centered over handle, but keep within the bounds of 
       # the slider region when the slider is in an extreme position. 
@@ -1689,7 +1690,9 @@ Bubblemouth = ReactiveComponent
       zIndex: 10
       marginLeft: -9
       top: -25
+      visibility: if @root.selected_point then 'hidden'
 
+    console.log 'boya' if @root.selected_point
     IMG 
       className:'bubblemouth'
       src: bubblemouth_src
@@ -1715,6 +1718,10 @@ YourPoints = ReactiveComponent
       editing_points : []
       adding_new_point : false
 
+    header_style =           
+      fontWeight: 700
+      color: if @root.selected_point then "#ccc" else focus_blue
+
     DIV 
       className: "points_on_decision_board #{@props.valence}_on_decision_board"
       style: 
@@ -1723,9 +1730,7 @@ YourPoints = ReactiveComponent
 
       DIV 
         className:'points_heading_label'
-        style: 
-          fontWeight: 700
-          color: focus_blue
+        style: header_style
         "Give Your #{capitalize(@props.valence)}"
 
       UL null,
@@ -2019,23 +2024,26 @@ Point = ReactiveComponent
         SPAN {style: style}, '-new-'
 
 
-    point_content_style = { width: POINT_CONTENT_WIDTH }
+    point_content_style = 
+      width: POINT_CONTENT_WIDTH + 6
+      borderWidth: 3
+      borderStyle: 'solid'
+      borderColor: 'transparent'
+      left: -3
+      top: -3
+
     if is_selected
       _.extend point_content_style,
-        border: "3px solid #{focus_blue}"
-        left: -3
-        top: -3
-        width: point_content_style.width + 6
+        borderColor: focus_blue
         backgroundColor: 'white'
-        marginBottom: 2
 
-      if @props.rendered_as == 'decision_board_point'
-        _.extend point_content_style,
-          padding: 8
-          borderRadius: 8
-          marginTop: -8
-          marginLeft: -8
-          width: point_content_style.width + 16
+    if @props.rendered_as == 'decision_board_point'
+      _.extend point_content_style,
+        padding: 8
+        borderRadius: 8
+        top: point_content_style.top - 8
+        left: point_content_style.left - 8
+        width: point_content_style.width + 16
 
     if @props.rendered_as == 'under_review'
       _.extend point_content_style, {width: 500}
@@ -2048,11 +2056,14 @@ Point = ReactiveComponent
 
     if expand_to_see_details
       select_enticement.push SPAN key: 1,
-        SPAN dangerouslySetInnerHTML: {__html: '&hellip;'}
-        ' ('
-        A className: 'select_point',
-          'read more'
-        ')'
+        if is_selected
+          "read less"
+        else
+          [SPAN dangerouslySetInnerHTML: {__html: '&hellip;'}
+          ' ('
+          A className: 'select_point',
+            "read more"
+          ')']
 
     if point.comment_count > 0 || !expand_to_see_details
       select_enticement.push SPAN key: 2, style: {whiteSpace: 'nowrap'},
@@ -2083,7 +2094,7 @@ Point = ReactiveComponent
     if @props.rendered_as == 'decision_board_point'
       _.extend point_style, 
         marginLeft: 9
-        padding: '0 18px 1em 18px'
+        padding: '0 18px 0 18px'
 
     draw_all_includers = @props.rendered_as == 'community_point'
     LI
@@ -2101,16 +2112,7 @@ Point = ReactiveComponent
         onMouseEnter: @highlightIncluders
         onMouseLeave: @unHighlightIncluders
 
-        if @props.rendered_as == 'decision_board_point'
-          SPAN 
-            style: 
-              position: 'absolute'
-              top: -1
-              left: -7
-              fontFamily: 'courier'
-            dangerouslySetInnerHTML:{__html: if point.is_pro then '+' else '-'}
-        else
-          renderIncluders(draw_all_includers)
+        renderIncluders(draw_all_includers)
 
       DIV className:'point_content', style : point_content_style,
         if is_selected ||
@@ -2140,8 +2142,7 @@ Point = ReactiveComponent
               else 
                 $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
 
-            if !is_selected && select_enticement && 
-                @props.rendered_as != 'under_review'
+            if select_enticement && @props.rendered_as != 'under_review'
               select_enticement
 
         DIV null,
@@ -2350,6 +2351,7 @@ styles += """
   .point_details_tease a, .point_details a {
     text-decoration: underline;
     word-break: break-all; }
+  .point_details a.select_point{text-decoration: none;}
 
 .point_details {
   display: block; }

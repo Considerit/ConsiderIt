@@ -185,7 +185,7 @@ PageTransition =
           give_opinion_button_width = 200
 
           gutter = .1 * give_opinion_button_width
-          opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * slider_position/HISTOGRAM_WIDTH
+          opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * slider_position/BODY_WIDTH
 
           decision_board_style =
             translateX: opinion_region_x
@@ -282,11 +282,13 @@ Proposal = ReactiveComponent
     
     proposal_header = (customization('ProposalHeader'))()
 
+
     DIV key:@props.slug, 'data-page':@root.proposal_mode,
 
       if customization('docking_proposal_header')
         Dock
           dock_on_zoomed_screens: false
+          skip_jut: true
           proposal_header
 
       else
@@ -385,18 +387,48 @@ Proposal = ReactiveComponent
             marginLeft: if lefty then 300
             position: 'relative'
 
-          Histogram()
+          Dock
+            key: 'histogram-dock'
+            docked_key: 'histogram'
+            dock_on_zoomed_screens: true
+            constraints : ['slider-dock']
+            dockable : => 
+              #@root.proposal_mode == 'results'
+              false
+            start : 170 - 50
+
+            stop : -> 
+              $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
+
+            dummy: if fetch('histogram-dock').docked then 1 else -1
+                    # TODO: Dummy is a shallow patch for an odd problem. 
+                    # If you have a nested component (in this case Histogram) 
+                    # which passes a prop based on a Statebus value, then 
+                    # that nested component will not be rerendered with 
+                    # the new prop unless the parent component (Dock)
+                    # is rendered first. By setting a dummy prop on Dock
+                    # that corresponds to the prop for the child, we assure
+                    # that the parent will properly pass the prop onto the 
+                    # child. 
+            
+            Histogram
+              key: 'histogram'
+              width: BODY_WIDTH
+              height: if fetch('histogram-dock').docked then 50 else 170
+              enable_selection: true
 
           Dock
             key: 'slider-dock'
             docked_key: 'slider'          
             dock_on_zoomed_screens: true
-            constraints : ['decisionboard-dock']
+            constraints : ['decisionboard-dock', 'histogram-dock']
+            skip_jut: @root.proposal_mode == 'results'
             dockable : => 
               @root.proposal_mode == 'crafting'
 
             Slider
-              width: HISTOGRAM_WIDTH - 10
+              key: 'slider'
+              width: BODY_WIDTH - 10
 
 
         #reasons
@@ -570,7 +602,14 @@ styles += """
 #
 # The pros and cons can be filtered to specific opinion regions
 # (individual and collective). 
+#
+##
+# Props
 # 
+#   width, height
+#   enable_selection
+#     Whether users can select opinions segments on the histogram
+#
 ##
 # The interaction rules: 
 #
@@ -658,26 +697,22 @@ Histogram = ReactiveComponent
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   render: -> 
-
     hist = fetch('histogram')
     opinions = fetch('/page/' + @proposal.slug).opinions || []
 
-    avatar_radius = calculateAvatarRadius(BODY_WIDTH, HISTOGRAM_HEIGHT, opinions)
+    avatar_radius = calculateAvatarRadius(@props.width, @props.height, opinions)
     if @local.avatar_size != avatar_radius * 2
       @local.avatar_size = avatar_radius * 2
       save @local
-
-
-    # Controls the size of the vertical space at the top of 
-    # the histogram that gives some space for users to hover over 
-    # the most populous areas
-    region_selection_vertical_padding = 30 
 
     # There are a few avatar styles that might be applied depending on state:
     # 1) Regular, for when no user is selected
     regular_avatar_style =
       width: @local.avatar_size
       height: @local.avatar_size
+      position: 'absolute'
+      cursor: if @props.enable_selection then 'pointer' else 'auto'
+
     # 2) The style of a selected avatar
     selected_avatar_style = _.extend {}, regular_avatar_style, 
       zIndex: 9
@@ -703,34 +738,46 @@ Histogram = ReactiveComponent
         highlighted_users = (fetch(o).user for o in selected_users)
 
     # whether to show the shaded opinion selection region in the histogram
-    draw_selection_area = !hist.selected_opinion && 
+    draw_selection_area = @props.enable_selection &&
+                            !hist.selected_opinion && 
                             @root.proposal_mode == 'results' &&
                             (hist.selected_opinions || 
                               (!@local.touched && @local.mouse_opinion_value && !@local.hoving_over_avatar)) 
 
-    DIV 
+    # Controls the size of the vertical space at the top of 
+    # the histogram that gives some space for users to hover over 
+    # the most populous areas
+    region_selection_vertical_padding = 30 
+
+
+    histogram_props = 
       className: 'histogram'
       style: 
-        width: BODY_WIDTH
-        height: HISTOGRAM_HEIGHT + region_selection_vertical_padding
+        width: @props.width
+        height: @props.height + region_selection_vertical_padding
         position: 'relative'
 
-      onClick: @onClick
-      onMouseMove: @onMouseMove
-      onMouseLeave: @onMouseLeave
-      onMouseUp: @onMouseUp
-      onMouseDown: @onMouseDown
 
-      onTouchStart: (ev) => 
-        ev.preventDefault()
-        @local.touched = true
-        save hist
-        save @local
-        @onClick(ev)
+    if @props.enable_selection
+      _.extend histogram_props,
+        onClick: @onClick
+        onMouseMove: @onMouseMove
+        onMouseLeave: @onMouseLeave
+        onMouseUp: @onMouseUp
+        onMouseDown: @onMouseDown
 
-      onTouchMove: (ev) => ev.preventDefault(); @onMouseMove(ev)
-      onTouchEnd: (ev) => ev.preventDefault(); @onMouseUp(ev)
-      onTouchCancel: (ev) => ev.preventDefault(); @onMouseUp(ev)
+        onTouchStart: (ev) => 
+          ev.preventDefault()
+          @local.touched = true
+          save hist
+          save @local
+          @onClick(ev)
+
+        onTouchMove: (ev) => ev.preventDefault(); @onMouseMove(ev)
+        onTouchEnd: (ev) => ev.preventDefault(); @onMouseUp(ev)
+        onTouchCancel: (ev) => ev.preventDefault(); @onMouseUp(ev)
+
+    DIV histogram_props, 
 
       # A little padding at the top to give some space for selecting
       # opinion regions with lots of people stacked high      
@@ -739,9 +786,9 @@ Histogram = ReactiveComponent
       # Draw the opinion selection area + region resizing border
       if draw_selection_area
         anchor = hist.selected_opinion_value or @local.mouse_opinion_value
-        left = ((anchor + 1)/2 - hist.region_selection_width/2) * BODY_WIDTH
-        base_width = hist.region_selection_width * BODY_WIDTH
-        selection_width = Math.min(Math.min(base_width, base_width + left), BODY_WIDTH - left)
+        left = ((anchor + 1)/2 - hist.region_selection_width/2) * @props.width
+        base_width = hist.region_selection_width * @props.width
+        selection_width = Math.min(Math.min(base_width, base_width + left), @props.width - left)
         selection_left = Math.max 0, left
 
         DIV null,
@@ -759,7 +806,7 @@ Histogram = ReactiveComponent
 
           DIV 
             style:
-              height: HISTOGRAM_HEIGHT + region_selection_vertical_padding
+              height: @props.height + region_selection_vertical_padding
               position: 'absolute'
               width: selection_width
               backgroundColor: "rgb(246, 247, 249)"
@@ -784,9 +831,9 @@ Histogram = ReactiveComponent
       DIV 
         ref: 'histo'
         style: 
-          height: HISTOGRAM_HEIGHT
+          height: @props.height
           position: 'relative'
-          cursor: if @root.proposal_mode == 'results' then 'pointer'
+          cursor: if @root.proposal_mode == 'results' && @props.enable_selection then 'pointer'
 
         for opinion in opinions
           user = opinion.user
@@ -952,7 +999,7 @@ Histogram = ReactiveComponent
     # We round the stance to two decimals to avoid more frequent recalculations than necessary
     # (one way this happens is with the server rounding opinion data differently than the javascript
     #  does when moving one's slider)
-    simulation_opinion_hash = JSON.stringify( _.map(opinions, (o) => Math.round(fetch(o.key).stance * 100) / 100 ) )
+    simulation_opinion_hash = JSON.stringify( _.map(opinions, (o) => Math.round(fetch(o.key).stance * 100) / 100 ) ) + " (#{@props.width}, #{@props.height})"
 
     if @refs && @refs.histo && simulation_opinion_hash != @local.simulation_opinion_hash
       page = fetch('/page/' + @proposal.slug)
@@ -963,7 +1010,7 @@ Histogram = ReactiveComponent
         opinions = for opinion, i in page.opinions
           {stance: opinion.stance, icon: icons[i], radius: icons[i].style.width/2}
 
-        positionAvatars(BODY_WIDTH, HISTOGRAM_HEIGHT, opinions)
+        positionAvatars(@props.width, @props.height, opinions)
         
         @local.simulation_opinion_hash = simulation_opinion_hash
         save @local
@@ -978,7 +1025,6 @@ styles += """
   user-select: none; -moz-user-select: none; -webkit-user-select: none;-ms-user-select: none;
 }
 .histogram .avatar {
-  background-color: #{default_avatar_in_histogram_color}; 
   position: absolute;
   cursor: pointer;}
 
@@ -1098,7 +1144,7 @@ Slider = ReactiveComponent
     # Define slider layout
     slider_style = 
       position: 'relative'
-      left: - (@props.width - HISTOGRAM_WIDTH) / 2
+      left: - (@props.width - BODY_WIDTH) / 2
       width: @props.width
       height: SLIDER_HANDLE_SIZE
 
@@ -1113,10 +1159,6 @@ Slider = ReactiveComponent
       backgroundColor: if @root.proposal_mode == 'crafting' then '#AFD7FF' else '#787878'
       position: 'absolute'
 
-
-    ####
-    # Define slider poles
-    draw_poles = !slider.docked
 
     ####
     # Define slider handle
@@ -1223,10 +1265,10 @@ Slider = ReactiveComponent
       className: 'slider'
       style : slider_style
 
-      # Draw the pole labels of the slider
-      if draw_poles
+      # Draw the pole labels of the slider      
+      if !slider.docked
+        group = if @root.proposal_mode == 'crafting' then 'individual' else 'group'
         for pole in ['oppose', 'support']  
-          group = if @root.proposal_mode == 'crafting' then 'individual' else 'group'
           DIV 
             key: "pole_#{pole}"
             style: 
@@ -1234,11 +1276,23 @@ Slider = ReactiveComponent
               fontSize: 30
               top: -20
               pointerEvents: 'none'
-              left: if pole == 'oppose' then -167
+              left: if pole == 'oppose' then -167 #TODO: position wrt realwidth of label
               right: if pole == 'support' then -167
-              width: if pole == 'oppose' then 145 else 130
 
-            customization("slider_pole_labels.#{group}.#{pole}") 
+            customization("slider_pole_labels.#{group}.#{pole}")
+      else
+        for pole in ['oppose', 'support']  
+          DIV 
+            key: "pole_#{pole}"
+            style: 
+              position: 'absolute'
+              fontSize: 20
+              top: -12
+              pointerEvents: 'none'
+              left: if pole == 'oppose' then -30
+              right: if pole == 'support' then -35
+
+            if pole == 'oppose' then '–' else '+'
 
       # Draw the base of the slider
       DIV 
@@ -3942,7 +3996,7 @@ Root = ReactiveComponent
     ####
 
     # Now let's render
-    DIV onClick: @resetSelection,
+    DIV onClick: @resetSelection,          
       StateDash(),
       Page(key: "/page/#{root.page_name}"),
       Computer() # Doesn't actually render anything

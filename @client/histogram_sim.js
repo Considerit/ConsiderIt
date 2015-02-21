@@ -99,14 +99,14 @@ window.positionAvatars = function(width, height, opinions) {
       o.x += e.alpha * (x_force_mult * width  * .001) * (opinions[o.index].x_target - o.x)
 
       // Push node downwards
-      // The last term helps accelerate unimpeded falling nodes
+      // The last term accelerates unimpeded falling nodes
       o.y += e.alpha * y_force_mult * Math.max(o.y - o.py + 1, 1)
 
       // Ensure node is still within the bounding box
       o.x = Math.max(o.radius, Math.min(width  - o.radius, o.x))
       o.y = Math.max(o.radius, Math.min(height - o.radius, o.y))
 
-      // Re-position dom element...if it's moved enough      
+      // Re-position dom element...if it has moved enough      
       if ( !opinions[i].icon.style.left || Math.abs( parseFloat(opinions[i].icon.style.left) - (o.x - o.radius)) > .1 ){
         opinions[i].icon.style.left = o.x - o.radius + 'px'
         some_node_moved = true

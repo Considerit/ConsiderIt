@@ -23,7 +23,7 @@ fetch 'slider',
   stance : null
 
 fetch 'decisionboard',
-  sticky : false
+  docked : false
   
 fetch 'root',
   auth_mode : null
@@ -31,6 +31,11 @@ fetch 'root',
 
 fetch '/current_user'
 
+# We detect mobile browsers by inspecting the user agent. This check isn't perfect.
+#    See these resources for information about fixed positioning on mobile devices
+#        - http://remysharp.com/2012/05/24/issues-with-position-fixed-scrolling-on-ios#position-drift. 
+#        - https://developer.apple.com/library/safari/technotes/tn2010/tn2262/_index.html ("4. Modify code that relies on CSS fixed positioning")
+#        - http://www.quirksmode.org/blog/archives/2010/12/the_fifth_posit.html
 rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
 window.browser = 
   is_android_browser : !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
@@ -39,6 +44,14 @@ window.browser =
   is_iOS : !!navigator.platform.match(/(iPad|iPhone)/)
   touch_enabled : 'ontouchend' in document
   high_density_display : ((window.matchMedia && (window.matchMedia('only screen and (min-resolution: 124dpi), only screen and (min-resolution: 1.3dppx), only screen and (min-resolution: 48.8dpcm)').matches || window.matchMedia('only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (min-device-pixel-ratio: 1.3)').matches)) || (window.devicePixelRatio && window.devicePixelRatio > 1.3))
+  is_mobile :  navigator.userAgent.match(/Android/i) || 
+                navigator.userAgent.match(/webOS/i) ||
+                navigator.userAgent.match(/iPhone/i) ||
+                navigator.userAgent.match(/iPad/i) ||
+                navigator.userAgent.match(/iPod/i) ||
+                navigator.userAgent.match(/BlackBerry/i) ||
+                navigator.userAgent.match(/Windows Phone/i)
+
 
 window.lefty = false
 
@@ -46,28 +59,14 @@ window.proposal_url = (proposal) =>
   # The special thing about this function is that it only links to
   # "?results=true" if the proposal has an opinion.
   result = '/' + proposal.slug
-  subdomain = fetch('/subdomain')
-  
+  subdomain = fetch('/subdomain')  
 
-  show_crafting_page_first =  
-    if customizations[subdomain.name]?.show_crafting_page_first?
-      customizations[subdomain.name].show_crafting_page_first
-    else 
-      customizations.default.show_crafting_page_first
-
-  if !show_crafting_page_first && proposal.top_point
+  if !customization('show_crafting_page_first') && proposal.top_point
     result += '?results=true'
   return result
 
 window.isNeutralOpinion = (stance) -> 
   return Math.abs(stance) < 0.05
-
-window.sliderPole = (scope, valence) -> 
-  subdomain = fetch('/subdomain')
-
-  customizations[subdomain.name]?.slider_pole_labels?[scope]?[valence] or
-    customizations.default.slider_pole_labels[scope][valence]
-
 
 userOpinion = (user_key) ->
   window.user_opinions[user_key]
@@ -145,7 +144,7 @@ PageTransition =
 
       # The slider handle and mouth will change size and location when moving between crafting and results
       when 'slider'
-        handle_style = { scale: if root.proposal_mode == 'results' || fetch('decisionboard').sticky then 1 else 2.5}
+        handle_style = { scale: if root.proposal_mode == 'results' || fetch('slider').docked then 1 else 2.5}
         $el.find('.the_handle').velocity handle_style, {duration}
 
       when 'bubblemouth'
@@ -186,7 +185,7 @@ PageTransition =
           give_opinion_button_width = 200
 
           gutter = .1 * give_opinion_button_width
-          opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * slider_position/HISTOGRAM_WIDTH
+          opinion_region_x = -gutter + (DECISION_BOARD_WIDTH - give_opinion_button_width + 2 * gutter) * slider_position/BODY_WIDTH
 
           decision_board_style =
             translateX: opinion_region_x
@@ -236,7 +235,7 @@ Proposal = ReactiveComponent
   displayName: 'Proposal'
 
   render : ->
-    options = customizations[fetch('/subdomain').name]?.cluster_options?[@proposal.cluster] || {}
+    options = customization("cluster_options.#{@proposal.cluster}") || {}
 
     your_opinion = fetch @proposal.your_opinion
     current_user = fetch('/current_user')
@@ -281,10 +280,19 @@ Proposal = ReactiveComponent
       catch
         @local.description_fields = null
     
+    proposal_header = (customization('ProposalHeader'))()
 
-    DIV className:'proposal', key:@props.slug, 'data-page':@root.proposal_mode,
 
-      (customizations[subdomain.name]?.ProposalHeader or customizations.default.ProposalHeader)()
+    DIV key:@props.slug, 'data-page':@root.proposal_mode,
+
+      if customization('docking_proposal_header')
+        Dock
+          dock_on_zoomed_screens: false
+          skip_jut: true
+          proposal_header
+
+      else
+        proposal_header
 
       DIV null,
         #description
@@ -378,7 +386,52 @@ Proposal = ReactiveComponent
             margin: '0 auto'
             marginLeft: if lefty then 300
             position: 'relative'
-          Histogram()
+
+          Dock
+            key: 'histogram-dock'
+            docked_key: 'histogram'
+            dock_on_zoomed_screens: true
+            constraints : ['slider-dock']
+            dockable : => 
+              #@root.proposal_mode == 'results'
+              false
+            start : 170 - 50
+
+            stop : -> 
+              $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
+
+            dummy: if fetch('histogram-dock').docked then 1 else -1
+                    # TODO: Dummy is a shallow patch for an odd problem. 
+                    # If you have a nested component (in this case Histogram) 
+                    # which passes a prop based on a Statebus value, then 
+                    # that nested component will not be rerendered with 
+                    # the new prop unless the parent component (Dock)
+                    # is rendered first. By setting a dummy prop on Dock
+                    # that corresponds to the prop for the child, we assure
+                    # that the parent will properly pass the prop onto the 
+                    # child. 
+            
+            Histogram
+              key: 'histogram'
+              proposal: @proposal
+              width: BODY_WIDTH
+              height: if fetch('histogram-dock').docked then 50 else 170
+              enable_selection: true
+              draw_base: if fetch('histogram-dock').docked then true else false
+
+          Dock
+            key: 'slider-dock'
+            docked_key: 'slider'          
+            dock_on_zoomed_screens: true
+            constraints : ['decisionboard-dock', 'histogram-dock']
+            skip_jut: @root.proposal_mode == 'results'
+            dockable : => 
+              @root.proposal_mode == 'crafting'
+
+            Slider
+              key: 'slider'
+              width: BODY_WIDTH - 10
+
 
         #reasons
         DIV 
@@ -386,7 +439,8 @@ Proposal = ReactiveComponent
           style : 
             width: REASONS_REGION_WIDTH            
             position: 'relative'
-            margin: '48px auto 4em auto'
+            paddingBottom: '4em' #padding instead of margin for docking
+            margin: '24px auto 0 auto'
             marginLeft: if lefty then 65
 
 
@@ -396,14 +450,34 @@ Proposal = ReactiveComponent
           #community cons
           CommunityPoints { key: 'cons' }
 
-          DecisionBoard()
+          Dock
+            key: 'decisionboard-dock'
+            docked_key: 'decisionboard'            
+            constraints : ['slider-dock']
+            dock_on_zoomed_screens: true
+            dockable : => 
+              @root.proposal_mode == 'crafting'
+
+            start: -24
+
+            stop : -> 
+              $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
+
+            style: 
+              position: 'absolute'
+              width: DECISION_BOARD_WIDTH
+              zIndex: 0 #so that points being dragged are above opinion region
+              display: 'inline-block'
+              verticalAlign: 'top'
+
+            DecisionBoard { key: 'decisionboard' }
 
           #community pros
           CommunityPoints { key: 'pros' }
 
 
-      if your_opinion.published && customizations[subdomain.name]?.ThanksForYourOpinion && @root.proposal_mode == 'results'
-        customizations[subdomain.name].ThanksForYourOpinion()
+      if @root.proposal_mode == 'results' && your_opinion.published && customization('ThanksForYourOpinion')
+        customization('ThanksForYourOpinion')()
 
   componentDidUpdate : ->
     $el = $(@getDOMNode())
@@ -420,11 +494,11 @@ Proposal = ReactiveComponent
       @local.description_collapsed = true; save(@local)
 
     # TODO: Hack!! When you go from homepage to a proposal, seek to proposal description
-    # top, otherwise you can be stuck in the middle of the proposal. 
+    # top, otherwise you can be docked in the middle of the proposal. 
     # Disabled for apps with a next button until we resolve 
     # https://github.com/tkriplean/ConsiderIt/commit/0561b9bdb6ae03705c3718d2283d8d8345fad632
-    if (customizations[fetch('/subdomain').name]?.ProposalHeader or customizations.default.ProposalHeader) != SimpleProposalHeading  
-      $('.proposal').moveToTop() 
+    if customization('ProposalHeader') != SimpleProposalHeading  
+      $(@getDOMNode()).moveToTop() 
 
   renderDescriptionField : (field) ->
     DIV 
@@ -530,7 +604,17 @@ styles += """
 #
 # The pros and cons can be filtered to specific opinion regions
 # (individual and collective). 
+#
+##
+# Props
 # 
+#   width, height
+#   enable_selection
+#     Whether users can select opinions segments on the histogram
+#   draw_base
+#     Whether to draw a base with +/- labels. If a slider is attached,
+#     don't need the labels.
+#
 ##
 # The interaction rules: 
 #
@@ -618,26 +702,29 @@ Histogram = ReactiveComponent
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   render: -> 
-
     hist = fetch('histogram')
-    opinions = fetch('/page/' + @proposal.slug).opinions || []
 
-    avatar_radius = calculateAvatarRadius(BODY_WIDTH, HISTOGRAM_HEIGHT, opinions)
+    options = customization("cluster_options.#{@props.proposal.cluster}") || {}
+    filter_func = options.homie_histo_filter
+
+    # We'll only pass SOME opinions to the histogram
+    @opinions = fetch('/page/' + @props.proposal.slug).opinions
+    @opinions = (opinion for opinion in @opinions when \
+                 not filter_func or filter_func(fetch(opinion.user)))
+
+    avatar_radius = calculateAvatarRadius(@props.width, @props.height, @opinions)
     if @local.avatar_size != avatar_radius * 2
       @local.avatar_size = avatar_radius * 2
       save @local
-
-
-    # Controls the size of the vertical space at the top of 
-    # the histogram that gives some space for users to hover over 
-    # the most populous areas
-    region_selection_vertical_padding = 30 
 
     # There are a few avatar styles that might be applied depending on state:
     # 1) Regular, for when no user is selected
     regular_avatar_style =
       width: @local.avatar_size
       height: @local.avatar_size
+      position: 'absolute'
+      cursor: if @props.enable_selection then 'pointer' else 'auto'
+
     # 2) The style of a selected avatar
     selected_avatar_style = _.extend {}, regular_avatar_style, 
       zIndex: 9
@@ -663,45 +750,82 @@ Histogram = ReactiveComponent
         highlighted_users = (fetch(o).user for o in selected_users)
 
     # whether to show the shaded opinion selection region in the histogram
-    draw_selection_area = !hist.selected_opinion && 
+    draw_selection_area = @props.enable_selection &&
+                            !hist.selected_opinion && 
                             @root.proposal_mode == 'results' &&
                             (hist.selected_opinions || 
                               (!@local.touched && @local.mouse_opinion_value && !@local.hoving_over_avatar)) 
 
-    DIV 
+    # Controls the size of the vertical space at the top of 
+    # the histogram that gives some space for users to hover over 
+    # the most populous areas
+    region_selection_vertical_padding = if @props.enable_selection then 30 else 0
+
+
+    histogram_props = 
       className: 'histogram'
-      style: 
-        width: BODY_WIDTH
-        height: HISTOGRAM_HEIGHT + region_selection_vertical_padding
+      style: css.crossbrowserify
+        width: @props.width
+        height: @props.height + region_selection_vertical_padding
         position: 'relative'
+        borderBottom: if @props.draw_base then '1px solid #999'
+        visibility: if @opinions.length == 0 then 'hidden'
+        userSelect: 'none'
 
-      onClick: @onClick
-      onMouseMove: @onMouseMove
-      onMouseLeave: @onMouseLeave
-      onMouseUp: @onMouseUp
-      onMouseDown: @onMouseDown
 
-      onTouchStart: (ev) => 
-        ev.preventDefault()
-        @local.touched = true
-        save hist
-        save @local
-        @onClick(ev)
 
-      onTouchMove: (ev) => ev.preventDefault(); @onMouseMove(ev)
-      onTouchEnd: (ev) => ev.preventDefault(); @onMouseUp(ev)
-      onTouchCancel: (ev) => ev.preventDefault(); @onMouseUp(ev)
+    if @props.enable_selection
+      _.extend histogram_props,
+        onClick: @onClick
+        onMouseMove: @onMouseMove
+        onMouseLeave: @onMouseLeave
+        onMouseUp: @onMouseUp
+        onMouseDown: @onMouseDown
 
-      # A little padding at the top to give some space for selecting
-      # opinion regions with lots of people stacked high      
-      DIV style: {height: region_selection_vertical_padding}
+        onTouchStart: (ev) => 
+          ev.preventDefault()
+          @local.touched = true
+          save hist
+          save @local
+          @onClick(ev)
+
+        onTouchMove: (ev) => ev.preventDefault(); @onMouseMove(ev)
+        onTouchEnd: (ev) => ev.preventDefault(); @onMouseUp(ev)
+        onTouchCancel: (ev) => ev.preventDefault(); @onMouseUp(ev)
+
+    DIV histogram_props, 
+
+      if @props.draw_base
+        [SPAN
+          style:
+            position: 'absolute'
+            left: -21
+            bottom: -12
+            fontSize: 19
+            fontWeight: 500
+            color: '#999'
+          '–'
+        SPAN
+          style:
+            position: 'absolute'
+            right: -21
+            bottom: -13
+            fontSize: 19
+            fontWeight: 500
+            color: '#999'
+          '+']
+
+      if @props.enable_selection
+        # A little padding at the top to give some space for selecting
+        # opinion regions with lots of people stacked high      
+        DIV style: {height: region_selection_vertical_padding}
 
       # Draw the opinion selection area + region resizing border
       if draw_selection_area
         anchor = hist.selected_opinion_value or @local.mouse_opinion_value
-        left = ((anchor + 1)/2 - hist.region_selection_width/2) * BODY_WIDTH
-        base_width = hist.region_selection_width * BODY_WIDTH
-        selection_width = Math.min(Math.min(base_width, base_width + left), BODY_WIDTH - left)
+        left = ((anchor + 1)/2 - hist.region_selection_width/2) * @props.width
+        base_width = hist.region_selection_width * @props.width
+        selection_width = Math.min(Math.min(base_width, base_width + left), @props.width - left)
         selection_left = Math.max 0, left
 
         DIV null,
@@ -719,7 +843,7 @@ Histogram = ReactiveComponent
 
           DIV 
             style:
-              height: HISTOGRAM_HEIGHT + region_selection_vertical_padding
+              height: @props.height + region_selection_vertical_padding
               position: 'absolute'
               width: selection_width
               backgroundColor: "rgb(246, 247, 249)"
@@ -729,7 +853,7 @@ Histogram = ReactiveComponent
 
             if !hist.selected_opinions
               DIV
-                style:
+                style: css.crossbrowserify
                   fontSize: 12
                   textAlign: 'center'
                   whiteSpace: 'nowrap'
@@ -744,11 +868,12 @@ Histogram = ReactiveComponent
       DIV 
         ref: 'histo'
         style: 
-          height: HISTOGRAM_HEIGHT
+          height: @props.height
           position: 'relative'
-          cursor: if @root.proposal_mode == 'results' then 'pointer'
+          top: -1
+          cursor: if @root.proposal_mode == 'results' && @props.enable_selection then 'pointer'
 
-        for opinion in opinions
+        for opinion in @opinions
           user = opinion.user
           fetch(opinion) # subscribe to changes so physics sim will get rerun...
 
@@ -781,12 +906,11 @@ Histogram = ReactiveComponent
       if ev.type == 'touchstart'
         @local.mouse_opinion_value = @getOpinionValueAtFocus(ev)
 
-      opinions = fetch('/page/' + @proposal.slug).opinions || []
       is_clicking_user = ev.target.className.indexOf('avatar') != -1
 
       if is_clicking_user
         user_key = "/user/#{ev.target.getAttribute('id').substring(7, ev.target.getAttribute('id').length)}"
-        user_opinion = _.findWhere opinions, {user: user_key}
+        user_opinion = _.findWhere @opinions, {user: user_key}
         is_deselection = hist.selected_opinion == user_opinion.key && !@local.last_selection_via_drag
         if is_deselection
           hist.selected_opinion = null
@@ -901,126 +1025,34 @@ Histogram = ReactiveComponent
     # return the opinions whose stance is within +/- region_selection_width 
     # of the moused over area of the histogram
     hist = fetch('histogram')
-    all_opinions = fetch('/page/' + @proposal.slug).opinions || []    
+    all_opinions = fetch('/page/' + @props.proposal.slug).opinions || []    
     selected_opinions = (o.key for o in all_opinions when o.stance <= @local.mouse_opinion_value + hist.region_selection_width && o.stance >= @local.mouse_opinion_value - hist.region_selection_width)
     selected_opinions
 
   physicsSimulation: ->
-    opinions = fetch('/page/' + @proposal.slug).opinions || []
 
     # We only need to rerun the sim if the distribution of stances has changed. 
     # We round the stance to two decimals to avoid more frequent recalculations than necessary
     # (one way this happens is with the server rounding opinion data differently than the javascript
     #  does when moving one's slider)
-    simulation_opinion_hash = JSON.stringify( _.map(opinions, (o) => Math.round(fetch(o.key).stance * 100) / 100 ) )
+    simulation_opinion_hash = JSON.stringify( _.map(@opinions, (o) => Math.round(fetch(o.key).stance * 100) / 100 ) ) + " (#{@props.width}, #{@props.height})"
 
     if @refs && @refs.histo && simulation_opinion_hash != @local.simulation_opinion_hash
-      page = fetch('/page/' + @proposal.slug)
+      page = fetch('/page/' + @props.proposal.slug)
       histo = @refs.histo.getDOMNode()
 
       icons = histo.childNodes
-      if icons.length == opinions.length
-        opinions = for opinion, i in page.opinions
+      if icons.length == @opinions.length
+        opinions = for opinion, i in @opinions
           {stance: opinion.stance, icon: icons[i], radius: icons[i].style.width/2}
 
-        positionAvatars(BODY_WIDTH, HISTOGRAM_HEIGHT, opinions)
+        positionAvatars(@props.width, @props.height, opinions)
         
         @local.simulation_opinion_hash = simulation_opinion_hash
         save @local
 
   componentDidMount: -> @physicsSimulation()
   componentDidUpdate: -> @physicsSimulation()
-
-
-
-styles += """
-.histogram {
-  user-select: none; -moz-user-select: none; -webkit-user-select: none;-ms-user-select: none;
-}
-.histogram .avatar {
-  background-color: #{default_avatar_in_histogram_color}; 
-  position: absolute;
-  cursor: pointer;}
-
-"""
-
-# Used by the SimpleHomepage to create the small histogram for each proposal summary
-MiniHisto = ReactiveComponent
-  displayName: 'MiniHisto'
-  render: ->
-    options = customizations[fetch('/subdomain').name]?.cluster_options?[@props.proposal.cluster] || {}
-    filter_func = options.homie_histo_filter
-
-    # We'll only pass SOME opinions to the histogram
-    @opinions = fetch('/page/' + @props.proposal.slug).opinions
-    @opinions = (opinion for opinion in @opinions when \
-                 not filter_func or filter_func(fetch(opinion.user)))
-
-    avatar_radius = calculateAvatarRadius(@props.width, @props.height-1, @opinions)
-    if @local.avatar_size != avatar_radius * 2
-      @local.avatar_size = avatar_radius * 2
-      save @local
-
-    icons = for opinion in @opinions
-      neutral = Math.abs(opinion.stance) < .1
-      size = @local.avatar_size
-      Avatar
-        key: opinion.user
-        user: opinion.user
-        style:
-          position: 'absolute'
-          backgroundColor: '#d3d3d3'
-          width: size
-          height: size
-
-    DIV
-      style:
-        height: @props.height
-        width: @props.width
-        position: 'relative'
-        borderBottom: '1px solid #999'
-        display: if icons.length == 0 then 'none'
-      # onMouseEnter: => @local.hover = true;  save(@local)
-      # onMouseLeave: => @local.hover = false; save(@local)
-      SPAN
-        style:
-          position: 'absolute'
-          left: -21
-          bottom: -12
-          fontSize: 19
-          fontWeight: 500
-          color: '#999'
-        '–'
-      SPAN
-        style:
-          position: 'absolute'
-          right: -21
-          bottom: -13
-          fontSize: 19
-          fontWeight: 500
-          color: '#999'
-        '+'
-      DIV
-        ref: 'histo'
-        icons
-
-  physicsSimulation: ->
-    if @refs and @refs.histo and not @mounted
-      page = fetch('/page/' + @props.proposal.slug)
-      histo = @refs.histo.getDOMNode()
-      icons = histo.childNodes
-      opinions = for opinion, i in @opinions
-        {stance: opinion.stance, icon: icons[i], radius: icons[i].style.width / 2}
-      positionAvatars(@props.width, @props.height-1, opinions)
-      @mounted = true
-  componentDidMount: ->
-    @physicsSimulation()
-  componentDidUpdate: ->
-    @physicsSimulation()
-  componentWillUnmount: ->
-    @mounted = false
-
-
 
 
 ##
@@ -1042,7 +1074,6 @@ Slider = ReactiveComponent
 
     slider = fetch('slider')
     hist = fetch('histogram')
-    sticky = fetch('decisionboard').sticky
     set_in_grayscale = @root.selected_point && @root.proposal_mode == 'crafting'
 
 
@@ -1058,11 +1089,10 @@ Slider = ReactiveComponent
     ####
     # Define slider layout
     slider_style = 
-      left: - (@props.width - DECISION_BOARD_WIDTH) / 2 + 2
-      position: 'absolute'
-      top: -48
-      margin: 'auto'
+      position: 'relative'
+      left: - (@props.width - BODY_WIDTH) / 2
       width: @props.width
+      height: SLIDER_HANDLE_SIZE
 
     if set_in_grayscale
       css.grayscale slider_style
@@ -1075,10 +1105,6 @@ Slider = ReactiveComponent
       backgroundColor: if @root.proposal_mode == 'crafting' then '#AFD7FF' else '#787878'
       position: 'absolute'
 
-
-    ####
-    # Define slider poles
-    draw_poles = !sticky
 
     ####
     # Define slider handle
@@ -1151,7 +1177,8 @@ Slider = ReactiveComponent
                                   "Firmly "
                                 else
                                   "Slightly " 
-          valence = sliderPole('individual', if slider.stance > 0 then 'support' else 'oppose')
+
+          valence = customization("slider_pole_labels.individual.#{if slider.stance > 0 then 'support' else 'oppose'}")
 
           "You #{strength_of_opinion} #{valence}"
 
@@ -1165,7 +1192,8 @@ Slider = ReactiveComponent
       # when the slider is in an extreme position. 
       feedback_left = @props.width * (slider.stance/2 + .5)
       feedback_width = widthWhenRendered(slider_feedback, feedback_style) + 10
-      if sticky 
+
+      if slider.docked 
         if slider.stance > 0
           feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
         else
@@ -1173,7 +1201,7 @@ Slider = ReactiveComponent
 
       _.extend feedback_style, 
         position: 'absolute'      
-        top: if sticky then -57 else -80      
+        top: if slider.docked then -57 else -80      
         left: feedback_left
         marginLeft: -feedback_width / 2
         width: feedback_width
@@ -1183,10 +1211,11 @@ Slider = ReactiveComponent
       className: 'slider'
       style : slider_style
 
-      # Draw the pole labels of the slider
-      if draw_poles
-        for pole in ['oppose', 'support']        
-          pole_label = sliderPole((if @root.proposal_mode == 'crafting' then 'individual' else 'group'), pole)
+      # Draw the pole labels of the slider      
+      if !slider.docked
+        group = if @root.proposal_mode == 'crafting' then 'individual' else 'group'
+        for pole in ['oppose', 'support']  
+          w = widthWhenRendered(customization("slider_pole_labels.#{group}.#{pole}"), {fontSize: 30})
           DIV 
             key: "pole_#{pole}"
             style: 
@@ -1194,31 +1223,45 @@ Slider = ReactiveComponent
               fontSize: 30
               top: -20
               pointerEvents: 'none'
-              left: if pole == 'oppose' then -167
-              right: if pole == 'support' then -167
-              width: if pole == 'oppose' then 145 else 130
+              left: if pole == 'oppose' then -(w + 55)
+              right: if pole == 'support' then -(w + 55)
 
-            pole_label 
+            customization("slider_pole_labels.#{group}.#{pole}")
+      else
+        for pole in ['oppose', 'support']  
+          DIV 
+            key: "pole_#{pole}"
+            style: 
+              position: 'absolute'
+              fontSize: 20
+              top: -12
+              pointerEvents: 'none'
+              left: if pole == 'oppose' then -15
+              right: if pole == 'support' then -20
+
+            if pole == 'oppose' then '–' else '+'
 
       # Draw the base of the slider
       DIV 
         style : slider_base_style
 
-        for support in [true, false]
-          DIV 
-            style: 
-              position: 'absolute'
-              left: if support then -5
-              right: if !support then -5
-              width: 5
-              height: slider_base_style.height
-              backgroundColor: slider_base_style.backgroundColor
+        if !slider.docked
 
-            DIV
-              style: cssTriangle (if support then 'left' else 'right'), slider_base_style.backgroundColor, 12, 6,               
+          for support in [true, false]
+            DIV 
+              style: 
                 position: 'absolute'
-                left: if support then -12
-                right: if !support then -12
+                left: if support then -5
+                right: if !support then -5
+                width: 5
+                height: slider_base_style.height
+                backgroundColor: slider_base_style.backgroundColor
+
+              DIV
+                style: cssTriangle (if support then 'left' else 'right'), slider_base_style.backgroundColor, 12, 6,               
+                  position: 'absolute'
+                  left: if support then -12
+                  right: if !support then -12
 
       if draw_feedback
         DIV 
@@ -1394,15 +1437,8 @@ DecisionBoard = ReactiveComponent
 
     DIV 
       className:'opinion_region'
-      style: 
-        position: 'absolute'
+      style:
         width: DECISION_BOARD_WIDTH
-        zIndex: 0 #so that points being dragged are above opinion region
-        display: 'inline-block'
-        verticalAlign: 'top'
-
-      Slider
-        width: HISTOGRAM_WIDTH - 10
 
       if enable_opining        
         Bubblemouth()
@@ -1446,7 +1482,9 @@ DecisionBoard = ReactiveComponent
               else 
                 'Give your Opinion'
 
-        DIV className: 'decision_board_footer', 
+        DIV 
+          style:
+            width: DECISION_BOARD_WIDTH
 
           # Big bold button at the bottom of the crafting page
           DIV 
@@ -1511,13 +1549,11 @@ DecisionBoard = ReactiveComponent
             A 
               className:'cancel_opinion_button primary_cancel_button'
               onClick: => togglePage('results', 'cancel_button')
-              'or just skip to the results'  
-        ]
+              'or just skip to the results' ]
+          
 
 
   componentDidMount : ->
-    @setStickyHeader()
-
     # make this a drop target
     $el = $(@getDOMNode())
     $el.droppable
@@ -1548,42 +1584,6 @@ DecisionBoard = ReactiveComponent
           @local.user_hovering_on_drop_target = true
           save @local
 
-  componentWillUnmount : -> 
-    $el = $(@getDOMNode())
-    $el.StickyElement('destroy')
-
-  componentDidUpdate : -> 
-    $el = $(@getDOMNode())    
-    root = fetch('root')
-
-    # hack to get around a problem where the browser's remembered scroll position messes
-    # up the sticky location after initialization
-    if !@initial_position_fixed
-      $el.StickyElement('fix_initial_position')
-      @initial_position_fixed = true
-    else if root.proposal_mode == 'results' #fix problem where it would stay sticky moving to results page
-      $el.StickyElement('update')
-
-  setStickyHeader : ->
-    $el = $(@getDOMNode())
-
-    slider_region_height =  115
-
-    $el.StickyElement
-      container: $('.reasons_region')
-      top_offset: $('.proposal_heading').outerHeight() + slider_region_height
-      bottom_offset: 20
-      unsticks: =>
-        d = @data()
-        d.sticky = false
-        save(d)
-      sticks: =>
-        d = @data()
-        d.sticky = true
-        save(d)
-      conditional: => 
-        @root.proposal_mode == 'crafting'
-
 Bubblemouth = ReactiveComponent
   displayName: 'Bubblemouth'
   mixins: [PageTransition] #implements animation logic when moving results <==> crafting
@@ -1605,7 +1605,6 @@ Bubblemouth = ReactiveComponent
                       else
                         bubblemouth_srcs['other'][@root.proposal_mode]
 
-    console.log slider.clientX
     bubblemouth_style = 
       left: translateStanceToPixelX slider.stance, DECISION_BOARD_WIDTH
       position: 'absolute'
@@ -1619,7 +1618,6 @@ Bubblemouth = ReactiveComponent
       className:'bubblemouth'
       src: bubblemouth_src
       style: bubblemouth_style
-
 
 
 
@@ -3176,7 +3174,7 @@ styles += """
 Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
-    (customizations[fetch('/subdomain').name]?.Homepage or customizations.default.Homepage)()
+    customization('Homepage')()
 
 
 window.proposal_editor = (proposal) ->
@@ -3329,13 +3327,9 @@ Header = ReactiveComponent
         minWidth: PAGE_WIDTH
 
       if @root.page_name == 'homepage'
-        customizations["#{subdomain.name}"]?.HomepageHeader?() or 
-         customizations.default.HomepageHeader()
+        customization('HomepageHeader')()
       else 
-        customizations["#{subdomain.name}"]?.NonHomepageHeader?() or 
-         customizations["#{subdomain.name}"]?.HomepageHeader?() or 
-         customizations.default.NonHomepageHeader?() or 
-         customizations.default.HomepageHeader()
+        customization('NonHomepageHeader')()
 
       DIV null, 
         if @root.page_name == 'about'
@@ -3848,7 +3842,7 @@ Page = ReactiveComponent
     else if !subdomain.name
       L
     else
-      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: 'white'},
+      DIV style: {minWidth: PAGE_WIDTH, backgroundColor: 'white', overflowX: 'hidden'},
         if avatars.avatars
           STYLE type: 'text/css', id: 'b64-avatars', dangerouslySetInnerHTML: {__html: avatars.avatars}
         
@@ -3891,7 +3885,7 @@ Page = ReactiveComponent
                 else
                   Proposal key: @page.proposal.key
 
-        (customizations[subdomain.name]?.Footer or customizations.default.Footer)()
+        customization('Footer')()
 
 Root = ReactiveComponent
   displayName: 'Root'
@@ -3951,7 +3945,7 @@ Root = ReactiveComponent
     ####
 
     # Now let's render
-    DIV onClick: @resetSelection,
+    DIV onClick: @resetSelection,          
       StateDash(),
       Page(key: "/page/#{root.page_name}"),
       Computer() # Doesn't actually render anything
@@ -4130,7 +4124,7 @@ window.Comment = Comment
 window.Avatar = Avatar
 window.Button = Button
 window.ProfileMenu = ProfileMenu
-window.MiniHisto = MiniHisto
+window.Histogram = Histogram
 
 #######
 # Start the app!

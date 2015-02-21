@@ -17,9 +17,10 @@
 //= require ../../histogram_sim
 
 //= require ../../shared
-//= require ../../sticky_element
+//= require ../../docker
 //= require ../../auth
 //= require ../../permissions
 //= require ../../roles
+//= require ../../swapables
 //= require ../../customizations
 //= require ../../admin

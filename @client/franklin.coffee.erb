@@ -393,7 +393,7 @@ Proposal = ReactiveComponent
             dock_on_zoomed_screens: true
             constraints : ['slider-dock']
             dockable : => 
-              #@root.proposal_mode == 'results'
+              @root.proposal_mode == 'results'
               false
             start : 170 - 50
 
@@ -417,7 +417,7 @@ Proposal = ReactiveComponent
               width: BODY_WIDTH
               height: if fetch('histogram-dock').docked then 50 else 170
               enable_selection: true
-              draw_base: false
+              draw_base: if fetch('histogram-dock').docked then true else false
 
           Dock
             key: 'slider-dock'
@@ -1215,6 +1215,7 @@ Slider = ReactiveComponent
       if !slider.docked
         group = if @root.proposal_mode == 'crafting' then 'individual' else 'group'
         for pole in ['oppose', 'support']  
+          w = widthWhenRendered(customization("slider_pole_labels.#{group}.#{pole}"), {fontSize: 30})
           DIV 
             key: "pole_#{pole}"
             style: 
@@ -1222,8 +1223,8 @@ Slider = ReactiveComponent
               fontSize: 30
               top: -20
               pointerEvents: 'none'
-              left: if pole == 'oppose' then -167 #TODO: position wrt realwidth of label
-              right: if pole == 'support' then -167
+              left: if pole == 'oppose' then -(w + 55)
+              right: if pole == 'support' then -(w + 55)
 
             customization("slider_pole_labels.#{group}.#{pole}")
       else
@@ -1235,8 +1236,8 @@ Slider = ReactiveComponent
               fontSize: 20
               top: -12
               pointerEvents: 'none'
-              left: if pole == 'oppose' then -30
-              right: if pole == 'support' then -35
+              left: if pole == 'oppose' then -15
+              right: if pole == 'support' then -20
 
             if pole == 'oppose' then '–' else '+'
 
@@ -1244,21 +1245,23 @@ Slider = ReactiveComponent
       DIV 
         style : slider_base_style
 
-        for support in [true, false]
-          DIV 
-            style: 
-              position: 'absolute'
-              left: if support then -5
-              right: if !support then -5
-              width: 5
-              height: slider_base_style.height
-              backgroundColor: slider_base_style.backgroundColor
+        if !slider.docked
 
-            DIV
-              style: cssTriangle (if support then 'left' else 'right'), slider_base_style.backgroundColor, 12, 6,               
+          for support in [true, false]
+            DIV 
+              style: 
                 position: 'absolute'
-                left: if support then -12
-                right: if !support then -12
+                left: if support then -5
+                right: if !support then -5
+                width: 5
+                height: slider_base_style.height
+                backgroundColor: slider_base_style.backgroundColor
+
+              DIV
+                style: cssTriangle (if support then 'left' else 'right'), slider_base_style.backgroundColor, 12, 6,               
+                  position: 'absolute'
+                  left: if support then -12
+                  right: if !support then -12
 
       if draw_feedback
         DIV 

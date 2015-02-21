@@ -36,7 +36,7 @@ window.COMMUNITY_POINT_MOUTH_WIDTH = 17
 # when doing development. 
 
 window.focus_blue = '#2478CC'
-window.default_avatar_in_histogram_color = '#a7a7a7'
+window.default_avatar_in_histogram_color = '#d3d3d3'
 #########################
 
 
@@ -362,10 +362,16 @@ css_as_str = (attrs) -> _.keys(attrs).map( (p) -> "#{p}: #{attrs[p]}").join(';')
 css.crossbrowserify = (props, as_str = false) -> 
   if props.transform
     _.extend props,
-      '-webkit-transform' : props.transform
-      '-ms-transform' : props.transform
-      '-moz-transform' : props.transform
-      '-o-transform' : props.transform
+      WebkitTransform : props.transform
+      msTransform : props.transform
+      MozTransform : props.transform
+      OTransform : props.transform
+
+  if props.userSelect
+    _.extend props,
+      MozUserSelect: 'none'
+      WebkitUserSelect: 'none'
+      msUserSelect: 'none'
 
   if as_str then css_as_str(props) else props
 

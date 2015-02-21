@@ -54,7 +54,7 @@ permit = (action) ->
 
     when 'update proposal', 'delete proposal'
       proposal = fetch arguments[1]
-      if !current_user.is_admin && !matchEmail(proposal.roles.editor)
+      if !current_user.is_admin && (proposal.key == 'new_proposal' || !matchEmail(proposal.roles.editor) )
         return Permission.INSUFFICIENT_PRIVILEGES
 
     when 'publish opinion'

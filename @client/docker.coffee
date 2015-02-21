@@ -6,20 +6,23 @@
 # 
 # Only works in browsers that support CSS3 transforms (i.e. IE9+)
 #
-# This component will: 
-#   - assign the correct position to the element given the scroll 
+# This component does: 
+#   - Assign the correct position to the element given the scroll 
 #     position, desired starting and stopping docking locations,
 #     while respecting the stacking order of all other docked 
 #     components. 
-#   - use the best positioning for mobile or desktop
-#   - drop a placeholder of the height of the component when it 
+#   - Use the best positioning method for mobile or desktop
+#   - Insert a placeholder of the height of the component when it 
 #     docks if necessary, to prevent jerks as the 
 #     component is taken out of the normal layout flow
-#   - implements docking protocol outlined at 
+#   - Implement the docking protocol outlined at 
 #     http://stackoverflow.com/questions/18358816
 #
-# This component will NOT yet:
+# This component does NOT yet:
 #   - allow for docking to anything but the top
+#   - allow you to override default z-index for stacking components
+#     which is problematic if you have sticky components that are 
+#     designed to overlap. 
 #
 # You can use this component by:
 #
@@ -58,7 +61,7 @@
 #
 #   constraints (default = [])
 #     An array of keys of other docks. These docked components
-#     will then never overlap each other. 
+#     will be treated as a single docked component.
 #
 #   dock_on_zoomed_screens (default = true)
 #     Whether to dock this component if on a zoomed or small screen. 
@@ -66,8 +69,7 @@
 #   skip_jut (default = false)
 #     Sometimes you want absolutely positioned children to count toward the
 #     top/height calculation of a docking component...sometimes not. This is an 
-#     ugly prop and I'd like to solve it better. However, I haven't yet found
-#     an elegant solution. 
+#     ugly prop and I'd like to solve it more elegantly. 
 
 window.Dock = ReactiveComponent
   displayName: 'Dock'
@@ -147,7 +149,7 @@ window.Dock = ReactiveComponent
       # avoid it as much as possible by caching a serialized version of 
       # the entire docked element to determine whether we need to rerun 
       # realDimensions. This proves to work quite well in practice
-      # as the docked element rarely changes in comparison to the 
+      # as the docked element changes rarely compared to the 
       # frequency of scroll events. 
       current_dom = serializer.serializeToString($el[0]) + @props.skip_jut
 
@@ -178,11 +180,11 @@ window.Dock = ReactiveComponent
 ####
 # docker
 #
-# The docker updates on scroll the docked state and location of 
+# The docker updates on scroll and resize the docked state and location of 
 # all registered docks. 
 #
 # The docker will update the state(bus) of the docks so that 
-# they know how to render. 
+# they know if they're docked and where they should position.
 
 # For console output: 
 debug = false
@@ -467,8 +469,8 @@ docker =
     # the one higher in the stacking order to always be above and non-overlapping 
     # the one lower in the stacking order, preferring them to be right up against
     # each other.
-    #        y1(t) + height <= y2(t)
-    #        y1(t) + height = y2(t)
+    #        y1(t) + height <= y2(t)   (required)
+    #        y1(t) + height  = y2(t)   (strong)
 
 
     for v, i in sorted
@@ -553,9 +555,10 @@ docker =
   # Calculates x & y offset values based on the positioning
   # method used for the particular device. 
   #
-  # On desktop we can safely use the more efficient fixed positioning. 
-  # But for mobile, we use absolute positioning because mobile devices 
-  # have terrible support for fixed positioning. Specifically, fixed 
+  # On desktop we can safely use the more efficient and less jerky fixed 
+  # positioning. 
+  #
+  # But for mobile, we use absolute positioning because fixed positioning
   # doesn't work in conjunction with touch based zooming. 
   adjustForDevice : (y, v) ->
     if browser.is_mobile

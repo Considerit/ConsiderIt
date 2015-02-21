@@ -165,7 +165,7 @@ Auth = ReactiveComponent
       # The auth form's header
       DIV
         style :
-          width: HISTOGRAM_WIDTH
+          width: BODY_WIDTH
           position: 'relative'
           margin: 'auto'
           top: 5 # to overlap bubblemouth with enclosure
@@ -195,7 +195,7 @@ Auth = ReactiveComponent
             SPAN
               style: 
                 position: 'relative'
-                marginLeft: -(real_task_width - HISTOGRAM_WIDTH) / 2
+                marginLeft: -(real_task_width - BODY_WIDTH) / 2
               task
 
             I
@@ -217,7 +217,7 @@ Auth = ReactiveComponent
 
         DIV
           style:
-            left: HISTOGRAM_WIDTH / 2
+            left: BODY_WIDTH / 2
             height: 50
             width: 50
             top: 0
@@ -233,7 +233,7 @@ Auth = ReactiveComponent
           style:
             css.crossbrowserify
               transform: "translate(0px, 11px) scale(1.5, 1.5)"
-              left: HISTOGRAM_WIDTH / 2
+              left: BODY_WIDTH / 2
               position: 'relative'
               width: 18
               marginLeft: -9
@@ -367,6 +367,10 @@ Auth = ReactiveComponent
             save @local
 
           toggle_to
+      
+      if customization('auth.additional_auth_footer')
+        additional = customization('auth.additional_auth_footer')()
+
 
 
 
@@ -378,8 +382,8 @@ Auth = ReactiveComponent
   # action: the text for the button
   # inline: is the button inline-block?
   submitButton : (action, inline) ->
-    DIV null,
-      DIV
+    # this is gross code
+    el =  DIV
         style:
           fontSize: 24
           display: if inline then 'inline-block' else 'block'
@@ -387,8 +391,16 @@ Auth = ReactiveComponent
         onClick: @submitAuth
         action
 
-      if customizations[fetch('/subdomain').name]?.auth?.additional_auth_footer?
-        customizations[fetch('/subdomain').name].auth.additional_auth_footer()
+    if !inline && customization('auth.additional_auth_footer')
+      additional = customization('auth.additional_auth_footer')()
+
+    if additional
+      DIV null, 
+        el
+        additional
+    else
+      el
+        
 
 
   ####
@@ -565,7 +577,7 @@ Auth = ReactiveComponent
     subdomain = fetch('/subdomain')
     current_user = fetch('/current_user')
 
-    questions = if @root.auth.ask_questions then customizations[subdomain.name]?.auth?.user_questions
+    questions = if @root.auth.ask_questions then customization 'auth.user_questions'
     questions = questions or []
 
     if @local.tags != current_user.tags
@@ -658,7 +670,7 @@ Auth = ReactiveComponent
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
     if @root.auth.ask_questions
-      questions = customizations[subdomain.name]?.auth?.user_questions or []
+      questions = customization('auth.user_questions') or []
       @local.errors = []
       for question in questions
         if question.required

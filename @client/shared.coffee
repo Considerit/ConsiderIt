@@ -22,11 +22,8 @@ window.CONTENT_WIDTH = 960
 window.BODY_WIDTH = 540
 window.POINT_WIDTH = 250
 window.POINT_CONTENT_WIDTH = 197
-window.HISTOGRAM_WIDTH = BODY_WIDTH    # Width of the slider / histogram base 
-window.HISTOGRAM_HEIGHT = 170
 window.DECISION_BOARD_WIDTH = BODY_WIDTH + 4 # the four is for the border
 window.REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 76
-window.MAX_HISTOGRAM_HEIGHT = 200
 window.DESCRIPTION_WIDTH = BODY_WIDTH
 window.SLIDER_HANDLE_SIZE = 22
 window.COMMUNITY_POINT_MOUTH_WIDTH = 17
@@ -39,7 +36,7 @@ window.COMMUNITY_POINT_MOUTH_WIDTH = 17
 # when doing development. 
 
 window.focus_blue = '#2478CC'
-window.default_avatar_in_histogram_color = '#a7a7a7'
+window.default_avatar_in_histogram_color = '#d3d3d3'
 #########################
 
 
@@ -92,12 +89,17 @@ window.clickInternalLink = (event) ->
     return false
 
 # Computes the width of some text given some styles empirically
+width_cache = {}
 window.widthWhenRendered = (str, style) -> 
-  $el = $("<span id='width_test'>#{str}</span>").css(style)
-  $('#content').append($el)
-  width = $('#width_test').width()
-  $('#width_test').remove()
-  width
+  # This DOM manipulation is relatively expensive, so cache results
+  key = JSON.stringify _.extend({str: str}, style)
+  if key not of width_cache
+    $el = $("<span id='width_test'>#{str}</span>").css(style)
+    $('#content').append($el)
+    width = $('#width_test').width()
+    $('#width_test').remove()
+    width_cache[key] = width
+  width_cache[key]
 
 # Returns the style for a css triangle
 # 
@@ -360,10 +362,16 @@ css_as_str = (attrs) -> _.keys(attrs).map( (p) -> "#{p}: #{attrs[p]}").join(';')
 css.crossbrowserify = (props, as_str = false) -> 
   if props.transform
     _.extend props,
-      '-webkit-transform' : props.transform
-      '-ms-transform' : props.transform
-      '-moz-transform' : props.transform
-      '-o-transform' : props.transform
+      WebkitTransform : props.transform
+      msTransform : props.transform
+      MozTransform : props.transform
+      OTransform : props.transform
+
+  if props.userSelect
+    _.extend props,
+      MozUserSelect: 'none'
+      WebkitUserSelect: 'none'
+      msUserSelect: 'none'
 
   if as_str then css_as_str(props) else props
 

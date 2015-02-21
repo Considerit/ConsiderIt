@@ -188,6 +188,7 @@ def download_files_from_production
             obj.save
           rescue => e
             pp "FAILED SAVING: #{url} because of #{e.to_s}"
+            ActiveRecord::Base.connection.reconnect!
           else 
             pp "Saved locally: #{url}"
           end

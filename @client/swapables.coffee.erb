@@ -173,7 +173,12 @@ window.SimpleHomepage = ReactiveComponent
                   onClick: clickInternalLink
                   DIV
                     style: secnd_column
-                    MiniHisto(proposal: proposal, width: 300, height: 50)
+                    Histogram
+                      proposal: proposal
+                      width: 300
+                      height: 50
+                      enable_selection: false
+                      draw_base: true
 
 
 

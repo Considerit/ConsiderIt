@@ -560,6 +560,11 @@ docker =
   #
   # But for mobile, we use absolute positioning because fixed positioning
   # doesn't work in conjunction with touch based zooming. 
+  #  - http://remysharp.com/2012/05/24/issues-with-position-fixed-scrolling-on-ios#position-drift. 
+  #  - https://developer.apple.com/library/safari/technotes/tn2010/tn2262/_index.html 
+  #    ("4. Modify code that relies on CSS fixed positioning")
+  #  - http://www.quirksmode.org/blog/archives/2010/12/the_fifth_posit.html
+
   adjustForDevice : (y, v) ->
     if browser.is_mobile
       # When absolutely positioning, the reference is with respect to the closest

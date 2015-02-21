@@ -62,12 +62,19 @@
 #
 #   dock_on_zoomed_screens (default = true)
 #     Whether to dock this component if on a zoomed or small screen. 
+#
+#   skip_jut (default = false)
+#     Sometimes you want absolutely positioned children to count toward the
+#     top/height calculation of a docking component...sometimes not. This is an 
+#     ugly prop and I'd like to solve it better. However, I haven't yet found
+#     an elegant solution. 
 
 window.Dock = ReactiveComponent
   displayName: 'Dock'
 
   render : -> 
     dock = fetch @key
+
     if dock.docked
       [x, y] = [dock.x, dock.y]
 
@@ -80,7 +87,7 @@ window.Dock = ReactiveComponent
         transform: "translate(#{x}px, #{y}px)"
         zIndex: 999999 - @local.stack_priority
         width: '100%'
-        
+
     @transferPropsTo DIV null,
 
       # A placeholder for content that suddenly got ripped out of the standard layout
@@ -111,6 +118,16 @@ window.Dock = ReactiveComponent
     # a good determiner of stacking order. Perhaps a scenario 
     # in the future will crop up where this is untrue.
     @local.stack_priority = $el.offset().top
+    # If the docking element isn't already absolutely or fixed positioned, 
+    # then when we dock the element and take it out of normal flow, the 
+    # screen is jerked. So we store the component's height to be assigned 
+    # to a placeholder we drop in when docked.  
+    placeholder_height = if $el[0].style.position in ['absolute', 'fixed'] 
+                           0 
+                         else 
+                           $el.height()
+
+    @local.placeholder_height = placeholder_height
     save @local
 
     element_height = jut_above = jut_below = last_dom = null    
@@ -132,23 +149,12 @@ window.Dock = ReactiveComponent
       # realDimensions. This proves to work quite well in practice
       # as the docked element rarely changes in comparison to the 
       # frequency of scroll events. 
-      current_dom = serializer.serializeToString $el[0]
+      current_dom = serializer.serializeToString($el[0]) + @props.skip_jut
 
       if current_dom != last_dom
-        [element_height, jut_above, jut_below] = realDimensions($el)
-        last_dom = current_dom
 
-        # If the docking element isn't already absolutely or fixed positioned, 
-        # then when we dock the element and take it out of normal flow, the 
-        # screen is jerked. So we store the component's height to be assigned 
-        # to a placeholder we drop in when docked.  
-        placeholder_height = if $el[0].style.position in ['absolute', 'fixed'] 
-                               0 
-                             else 
-                               $el.height()
-        if @local.placeholder_height != placeholder_height
-          @local.placeholder_height = placeholder_height
-          save @local
+        [element_height, jut_above, jut_below] = if !@props.skip_jut then realDimensions($el) else [$el.height(), 0, 0]
+        last_dom = current_dom
           
       return {
         start         : if _.isFunction(@props.start) then @props.start() else $(@getDOMNode()).offset().top + (@props.start || 0)
@@ -459,8 +465,10 @@ docker =
     # RELATIONAL
     # Add any declared constraints between different docks, constraining
     # the one higher in the stacking order to always be above and non-overlapping 
-    # the one lower in the stacking order
+    # the one lower in the stacking order, preferring them to be right up against
+    # each other.
     #        y1(t) + height <= y2(t)
+    #        y1(t) + height = y2(t)
 
 
     for v, i in sorted
@@ -524,6 +532,11 @@ docker =
                                 c.GEQ, \
                                 c.plus(y_pos[sk], sv.height + v.jut_above - sv.jut_above), \
                                 c.Strength.required
+
+          solver.addConstraint new c.Equation \
+                                y_pos[k], \
+                                c.plus(y_pos[sk], sv.height + v.jut_above - sv.jut_above), \
+                                c.Strength.strong
 
 
     solver.resolve()

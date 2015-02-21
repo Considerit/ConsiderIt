@@ -55,27 +55,31 @@ userOpinion = (user_key) ->
 _route_changed = false
 
 window.togglePage = (proposal_mode, triggered_by) ->
-  $('.histogram').ensureInView
-    offset_buffer: -100
-    callback : -> 
-      root = fetch('root')
+  toggle = -> 
+    root = fetch('root')
 
-      window.writeToLog
-        what: 'toggle proposal mode'
-        details: 
-          from: root.proposal_mode
-          to: proposal_mode
-          triggered_by: triggered_by 
+    window.writeToLog
+      what: 'toggle proposal mode'
+      details: 
+        from: root.proposal_mode
+        to: proposal_mode
+        triggered_by: triggered_by 
 
-      root.proposal_mode = proposal_mode
-      root.selected_point = null
-      save root
+    root.proposal_mode = proposal_mode
+    root.selected_point = null
+    save root
 
-      # Kludge for tracking when the page changes
-      _route_changed = true
-      _.delay -> 
-        _route_changed = false
-      , 1
+    # Kludge for tracking when the page changes
+    _route_changed = true
+    _.defer -> _route_changed = false
+
+  if proposal_mode == 'results'
+    $('.histogram').ensureInView
+      offset_buffer: -50
+      callback : toggle
+  else
+    toggle()
+
 
 
 ##

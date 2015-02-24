@@ -220,7 +220,6 @@ customizations.ecastonline = customizations['ecast-demo'] =
             top: 20
             left: 250 
           href: '/'
-          onClick: clickInternalLink
           "Informing NASA's Asteroid Initiative: A Citizen Forum"
 
 
@@ -268,7 +267,6 @@ customizations.ecastonline = customizations['ecast-demo'] =
 
             A 
               href: '/'
-              onClick: clickInternalLink
               "Informing NASA's Asteroid Initiative"
 
           DIV
@@ -281,7 +279,6 @@ customizations.ecastonline = customizations['ecast-demo'] =
  
             A
               href: '/'
-              onClick: clickInternalLink
               "A Citizen Forum"
 
         # Credits
@@ -685,12 +682,12 @@ customizations.livingvotersguide =
             top: 17
           ProfileMenu({style: {height: 69, left: 0; top: 0, position: 'relative', display: 'inline-block'}})
           SPAN style: {color: 'white'}, '   |   '
-          A href:'/about', onClick: clickInternalLink, style: {color: 'white', cursor: 'pointer'},
+          A href:'/about', style: {color: 'white', cursor: 'pointer'},
             'About'
           
 
         # Logo
-        A href: (if @root.page_name == 'homepage' then '/about' else '/'), onClick: clickInternalLink,
+        A href: (if @root.page_name == 'homepage' then '/about' else '/'),
           IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.png' %>", style: logo_style
 
         DIV
@@ -839,7 +836,7 @@ customizations.livingvotersguide =
             ' and '
             SPAN style: {fontWeight: 600}, 'for the people'
             ' of Washington State. It\'s your platform to learn about candidate and ballot measures, decide how to vote and express your ideas. We believe that sharing our diverse opinions leads to making wiser decisions together. '
-            A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', onClick: clickInternalLink, 'Learn more'
+            A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', 'Learn more'
             '.'
 
           DIV style: {marginTop: 20},
@@ -989,11 +986,16 @@ customizations.cityoftigard =
         ProfileMenu()
 
         DIV style: {height: 24},
-          A href: '/', onClick: clickInternalLink, style: {position: 'absolute', top:0, zIndex: 999999},
+          A href: '/', style: {position: 'absolute', top:0, zIndex: 999999},
             IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
 
 
 customizations.cityoftigard.NonHomepageHeader = customizations.cityoftigard.HomepageHeader
+
+
+customizations['evergreen-faculty'] = 
+  HomepageHeader : ReactiveComponent 
+
 
 ##########
 # Fill in default values for each unspecified field for 

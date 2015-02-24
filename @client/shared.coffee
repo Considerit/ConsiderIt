@@ -411,10 +411,10 @@ css_as_str = (attrs) -> _.keys(attrs).map( (p) -> "#{p}: #{attrs[p]}").join(';')
 css.crossbrowserify = (props, as_str = false) -> 
   if props.transform
     _.extend props,
-      WebkitTransform : props.transform
-      msTransform : props.transform
-      MozTransform : props.transform
-      OTransform : props.transform
+      '-webkit-transform' : props.transform
+      '-ms-transform' : props.transform
+      '-moz-transform' : props.transform
+      '-o-transform' : props.transform
 
   if props.userSelect
     _.extend props,

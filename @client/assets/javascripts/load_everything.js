@@ -9,15 +9,14 @@
 
 //= require ./element_viewport_positioning
 
-
 //= require ../../activerest-m
 //= require ../../state_dash
-
 
 //= require ../../histogram_sim
 
 //= require ../../shared
-//= require ../../docker
+//= require ../../browser_location
+//= require ../../dock
 //= require ../../auth
 //= require ../../permissions
 //= require ../../roles

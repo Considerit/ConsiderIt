@@ -12,7 +12,6 @@ window.A = React.createClass
     if @props.href
       _.defaults @props, 
         onClick: (event) => 
-          event.preventDefault()
           if Backbone.history?._hasPushState
             href = @getDOMNode().getAttribute('href') # use getAttribute rather than .href so we 
                                                       # can easily check relative vs absolute url

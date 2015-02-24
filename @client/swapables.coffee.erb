@@ -93,6 +93,7 @@ window.SimpleHomepage = ReactiveComponent
           #
           # Cluster of proposals
           DIV
+            key: cluster.name
             style: margin: '45px 0'
 
             # Header of cluster
@@ -376,7 +377,7 @@ window.ProposalSummary = ReactiveComponent
           height: '100%'
           minHeight: 66
 
-        onClick: (=> window.app_router.navigate("/#{proposal.slug}", {trigger: true}))
+        onClick: => loadPage("/#{proposal.slug}")
         if !proposal.your_opinion || !your_opinion.published \
            || isNeutralOpinion(your_opinion.stance)
           style = {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}
@@ -409,7 +410,7 @@ window.ProposalSummary = ReactiveComponent
           paddingLeft: 15
           marginTop: -4
 
-        onClick: (=> window.app_router.navigate(proposal_url(proposal), {trigger: true}))
+        onClick: => loadPage(proposal_url(proposal))
         if proposal.top_point
           DIV 
             className: 'top_point community_point pro'
@@ -728,7 +729,7 @@ window.ProposalHeaderWithMenu = ReactiveComponent
                             TBODY null,
                               for other_proposal in curr_cluster.proposals
                                 TR 
-                                  onClick: do(other_proposal) => => window.app_router.navigate(proposal_url(other_proposal), {trigger: true})
+                                  onClick: do(other_proposal) => => loadPage(proposal_url(other_proposal))
                                   key: "tr/#{other_proposal.slug}"
                                   TD style: {textAlign: 'left', paddingLeft: 20},
                                     A 
@@ -791,6 +792,7 @@ window.ProposalHeaderWithMenu = ReactiveComponent
                             do (cluster) =>
                               DIV 
                                 className: 'another_cluster'
+                                key: cluster
                                 onMouseEnter: => @local.show_cluster = cluster.name; save(@local)
                                 onMouseLeave: => @mouseLeaveOtherCluster(cluster.name)
                                 style: {padding: '0 50px', width: '100%', position: 'relative'}
@@ -815,20 +817,6 @@ window.ProposalHeaderWithMenu = ReactiveComponent
                                               fontSize: 18
                                               fontWeight: 400
                                             other_proposal.name
-
-
-            # if next_proposal
-            #   A 
-            #     style: 
-            #       fontSize: 15
-            #       marginLeft: 50
-            #       display: 'inline-block'
-            #       fontWeight: 400
-            #       color: 'white'
-            #       textDecoration: 'underline'
-
-            #     href: proposal_url(next_proposal)
-            #     'Next >' 
 
   mouseLeaveOtherCluster : (cluster) -> 
     if @local.show_cluster == cluster

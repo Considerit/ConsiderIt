@@ -12,20 +12,19 @@ window.A = React.createClass
     if @props.href
       _.defaults @props, 
         onClick: (event) => 
-          event.preventDefault()
-          if Backbone.history?._hasPushState
-            href = @getDOMNode().getAttribute('href') # use getAttribute rather than .href so we 
-                                                      # can easily check relative vs absolute url
-            
-            is_external_link = href.indexOf('//') > -1
-            opened_in_new_tab = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey
+          href = @getDOMNode().getAttribute('href') # use getAttribute rather than .href so we 
+                                                    # can easily check relative vs absolute url
+          
+          is_external_link = href.indexOf('//') > -1
+          opened_in_new_tab = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey
 
-            # Allow shift+click for new tabs, etc.
-            if !is_external_link && !opened_in_new_tab
-              event.preventDefault()
-              # Instruct Backbone to trigger routing events
-              window.app_router.navigate href, { trigger : true }
-              return false
+          # Allow shift+click for new tabs, etc.
+          if !is_external_link && !opened_in_new_tab
+            event.preventDefault()
+
+            loadPage href
+            
+            return false
 
     old_A props, props.children
 
@@ -397,6 +396,48 @@ html .ql-container{
   z-index: 1;
 }
 """
+
+
+
+# Displays warnings for some browsers
+# Stores state about the current device. 
+# Note that IE<9 users are redirected at
+# an earlier point to an MS upgrade site. 
+window.BrowserHacks = ReactiveComponent
+  displayName: 'BrowserHacks'
+
+  render : ->
+    browser = fetch 'browser'
+    if  browser.is_opera_mini #|| browser.is_android_browser
+      DIV 
+        style: 
+          backgroundColor: 'red'
+          padding: 10
+          textAlign: 'center'
+          color: 'white'
+          fontSize: 24
+
+        "This website does not work well with "
+        if browser.is_android_browser then 'the Android Browser' else 'Opera Mini'
+        ". Please use "
+        A 
+          href: "https://play.google.com/store/apps/details?id=com.android.chrome&hl=en"
+          style: 
+            color: 'white'
+            textDecoration: 'underline'
+          'Chrome for Android' 
+        ' if you experience difficulty. Thanks, and sorry for the inconvenience!'
+
+    else 
+      # Use third party script for detecting and warning users
+      # of other outdated browsers. Sticking with
+      # third party for now because of some complexities
+      # in detecting some of these browser versions. In 
+      # the future, probably want to extract the logic. 
+      # "https://browser-update.org/update.html"
+      SCRIPT type: 'text/javascript', src: '//browser-update.org/update.js'
+
+
 
 ##############################
 ## Styles

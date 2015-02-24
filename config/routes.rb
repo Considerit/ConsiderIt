@@ -27,6 +27,7 @@ ConsiderIt::Application.routes.draw do
   get '(*url)' => 'html#index', :constraints => NotJSON.new
 
   # Here's the entire JSON API:
+  get '/page' => 'page#show'
   get '/page/*id' => 'page#show'
   resources :user, :only => [:show]
   get '/users' => 'user#index'

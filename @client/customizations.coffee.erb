@@ -443,7 +443,7 @@ customizations.bitcoin =
     displayName: 'HomepageHeader'
 
     render: ->
-      homepage = @root.page_name == 'homepage'
+      homepage = fetch('location').url == '/'
       window.lefty = true
 
       # Entire header (the grey area)
@@ -463,7 +463,7 @@ customizations.bitcoin =
           style:
             cursor: if not homepage then 'pointer'
             paddingTop: if homepage then 18 else 17
-          onClick: if not homepage then => window.app_router.navigate("/", {trigger: true})
+          onClick: if not homepage then => loadPage('/')
 
           # Back arrow
           if not homepage
@@ -687,7 +687,7 @@ customizations.livingvotersguide =
           
 
         # Logo
-        A href: (if @root.page_name == 'homepage' then '/about' else '/'),
+        A href: (if fetch('location').url == '/' then '/about' else '/'),
           IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.png' %>", style: logo_style
 
         DIV

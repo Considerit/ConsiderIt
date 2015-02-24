@@ -40,7 +40,7 @@ class OpinionController < ApplicationController
       authorize! 'publish opinion', proposal
 
       opinion.publish()  # This will also publish all the newly-written points
-      dirty_key "/page/homepage" # you're now a recent contributor!
+      dirty_key "/page/" # you're now a recent contributor on the homepage!
 
       write_to_log({
         :what => 'published opinion',

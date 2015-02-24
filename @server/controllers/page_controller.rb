@@ -2,10 +2,10 @@ class PageController < ApplicationController
   respond_to :json
 
   def show
-    page = params[:id]
+    page = params[:id] ? params[:id] : 'homepage'
     
     if page == 'homepage'
-      dirty_key '/page/homepage'
+      dirty_key '/page/'
       dirty_key '/users'
 
     elsif page.match 'dashboard/'

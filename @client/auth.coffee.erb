@@ -210,7 +210,7 @@ Auth = ReactiveComponent
                 fontSize: 21
               onClick: =>
                 if root.auth.form == 'verify email'
-                  window.app_router.navigate("/", {trigger: true})
+                  loadPage '/'
                 root.auth = null
                 save root
               ' cancel'
@@ -720,7 +720,7 @@ Auth = ReactiveComponent
             trying_to: 'update_avatar_hack'
 
   componentDidMount : -> 
-    window.writeToLog {what: 'accessed authentication'}
+    writeToLog {what: 'accessed authentication'}
 
 
 # It is important that a user that just submitted a user picture see the picture

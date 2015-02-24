@@ -192,7 +192,7 @@ protected
       elsif key == '/users'
         response.append User.all_for_subdomain
 
-      elsif key.match '/page/homepage'
+      elsif key == '/page/'
         recent_contributors = ActiveRecord::Base.connection.exec_query( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE opinions.subdomain_id=#{current_subdomain.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
 
         clean = {

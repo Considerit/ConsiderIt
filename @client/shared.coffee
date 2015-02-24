@@ -7,25 +7,27 @@ for el of React.DOM
 old_A = A
 window.A = React.createClass
   render : -> 
-    @transferPropsTo old_A
 
-      onClick: (event) => 
-        event.preventDefault()
-        if Backbone.history && Backbone.history._hasPushState
-          href = @getDOMNode().getAttribute('href') # use getAttribute rather than .href so we 
-                                                    # can easily check relative vs absolute url
-          
-          is_external_link = href.indexOf('//') > -1
-          opened_in_new_tab = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey
+    props = @props
+    if @props.href
+      _.defaults @props, 
+        onClick: (event) => 
+          event.preventDefault()
+          if Backbone.history?._hasPushState
+            href = @getDOMNode().getAttribute('href') # use getAttribute rather than .href so we 
+                                                      # can easily check relative vs absolute url
+            
+            is_external_link = href.indexOf('//') > -1
+            opened_in_new_tab = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey
 
-          # Allow shift+click for new tabs, etc.
-          if !is_external_link && !opened_in_new_tab
-            event.preventDefault()
-            # Instruct Backbone to trigger routing events
-            window.app_router.navigate href, { trigger : true }
-            return false
+            # Allow shift+click for new tabs, etc.
+            if !is_external_link && !opened_in_new_tab
+              event.preventDefault()
+              # Instruct Backbone to trigger routing events
+              window.app_router.navigate href, { trigger : true }
+              return false
 
-      @props.children
+    old_A props, props.children
 
 
 

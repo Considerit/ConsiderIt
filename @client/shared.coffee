@@ -3,6 +3,32 @@
 for el of React.DOM
   window[el.toUpperCase()] = React.DOM[el]
 
+# A history-aware link
+old_A = A
+window.A = React.createClass
+  render : -> 
+    @transferPropsTo old_A
+
+      onClick: (event) => 
+        event.preventDefault()
+        if Backbone.history && Backbone.history._hasPushState
+          href = @getDOMNode().getAttribute('href') # use getAttribute rather than .href so we 
+                                                    # can easily check relative vs absolute url
+          
+          is_external_link = href.indexOf('//') > -1
+          opened_in_new_tab = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey
+
+          # Allow shift+click for new tabs, etc.
+          if !is_external_link && !opened_in_new_tab
+            event.preventDefault()
+            # Instruct Backbone to trigger routing events
+            window.app_router.navigate href, { trigger : true }
+            return false
+
+      @props.children
+
+
+
 window.styles = ""
 
 ####
@@ -110,17 +136,6 @@ window.splitParagraphs = (user_content) ->
             text.substring(5, text.length)
         else
           SPAN key: idx, text
-
-# Handles router navigation for links so that a page reload doesn't happen
-window.clickInternalLink = (event) ->
-  href = $(event.currentTarget).attr('href')
-
-  # Allow shift+click for new tabs, etc.
-  if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
-    event.preventDefault()
-    # Instruct Backbone to trigger routing events
-    window.app_router.navigate href, { trigger : true }
-    return false
 
 # Computes the width of some text given some styles empirically
 width_cache = {}

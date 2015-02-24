@@ -141,7 +141,6 @@ window.SimpleHomepage = ReactiveComponent
                     # Person's icon
                     A
                       href: proposal_url(proposal)
-                      onClick: clickInternalLink
                       Avatar
                         key: editor
                         user: editor
@@ -163,14 +162,12 @@ window.SimpleHomepage = ReactiveComponent
                     A
                       className: 'proposal'
                       style: if not icons then {borderBottom: '1px solid grey'}
-                      onClick: clickInternalLink
                       href: proposal_url(proposal)
                       proposal.name
 
                 # Histogram for Proposal
                 A
                   href: proposal_url(proposal)
-                  onClick: clickInternalLink
                   DIV
                     style: secnd_column
                     Histogram
@@ -323,9 +320,6 @@ window.LearnDecideShareHomepage = ReactiveComponent
           A 
             style: {color: '#888', textDecoration: 'underline', fontSize: 18, marginLeft: 30}
             href: '/proposal/new'
-            onClick: (e) => 
-              clickInternalLink(e)
-              $(document).scrollTop(0)
             'Create new proposal'
 
 # Used by the LearnDecideShare homepage
@@ -362,7 +356,6 @@ window.ProposalSummary = ReactiveComponent
           fontWeight: 500
 
         A 
-          onClick: clickInternalLink
           href: proposal_url(proposal)
           style: 
             color: "#{if @local.hovering_on then link_hover_color else ''}" 
@@ -552,14 +545,13 @@ window.SimpleProposalHeading = ReactiveComponent
           style:
             position: 'absolute'
             right: 74
-          onClick: do (url = proposal_url(prev_proposal)) =>
-            => window.app_router.navigate(url, {trigger: true})
+          href: proposal_url(prev_proposal)
           '< Prev'
 
       # Home button
       if show_home_button
         A
-          onClick: (=> window.app_router.navigate("/", {trigger: true}))
+          href: '/'
           style: 
             position: 'absolute'
             right: 41
@@ -575,8 +567,7 @@ window.SimpleProposalHeading = ReactiveComponent
           style:
             position: 'absolute'
             right: if show_home_button then -23 else 0
-          onClick: do (url = proposal_url(next_proposal)) =>
-            => window.app_router.navigate(url, {trigger: true})
+          href: proposal_url(next_proposal)
           'Next >'
 
       # Photo
@@ -667,7 +658,7 @@ window.ProposalHeaderWithMenu = ReactiveComponent
         textAlign: 'center'
 
       A
-        onClick: (=> window.app_router.navigate("/", {trigger: true}))
+        href: '/'
         style: {position: 'absolute', display: 'inline-block', top: 10, left: 12},
         I className: 'fa fa-home', style: {fontSize: 28, color: 'white'}
 
@@ -736,11 +727,12 @@ window.ProposalHeaderWithMenu = ReactiveComponent
                           TABLE className: 'current_cluster', style: {width: '100%'},
                             TBODY null,
                               for other_proposal in curr_cluster.proposals
-                                TR href: proposal_url(other_proposal), onClick: clickInternalLink, key: "tr/#{other_proposal.slug}",
+                                TR 
+                                  onClick: do(other_proposal) => => window.app_router.navigate(proposal_url(other_proposal), {trigger: true})
+                                  key: "tr/#{other_proposal.slug}"
                                   TD style: {textAlign: 'left', paddingLeft: 20},
                                     A 
                                       href: proposal_url(other_proposal)
-                                      onClick: clickInternalLink
                                       style: 
                                         color: 'white'
                                         fontWeight: if other_proposal.key == @proposal.key then 700 else 400
@@ -815,7 +807,6 @@ window.ProposalHeaderWithMenu = ReactiveComponent
                                         LI style: {listStyle: 'none'}, key: "li/#{other_proposal.slug}",
                                           A 
                                             href: proposal_url(other_proposal)
-                                            onClick: clickInternalLink
                                             style:
                                               display: 'block'
                                               textAlign: 'left'
@@ -836,8 +827,7 @@ window.ProposalHeaderWithMenu = ReactiveComponent
             #       color: 'white'
             #       textDecoration: 'underline'
 
-            #     onClick: do (url = proposal_url(next_proposal)) =>
-            #       => window.app_router.navigate(url, {trigger: true})
+            #     href: proposal_url(next_proposal)
             #     'Next >' 
 
   mouseLeaveOtherCluster : (cluster) -> 

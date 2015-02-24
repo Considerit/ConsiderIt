@@ -33,8 +33,35 @@ fetch 'root',
 
 fetch '/current_user'
 
+# Fetch current user every 2 minutes so that if the user gets
+# logged out (e.g. by server deploy after letting a browser window stay open), 
+# their browser will accurately reflect reality. 
+# Only do this if user is already logged in, so that we don't 
+# accidently interfere with a login process.
+# TODO: Remove this after we have true realtime updates
+setInterval -> 
+  current_user = fetch '/current_user'
+  if current_user.logged_in
+    arest.serverFetch('/current_user')
+, 2 * 60 * 1000
 
 window.lefty = false
+
+
+#######
+# TODO: eliminate
+get_proposal_mode = -> 
+  loc = fetch('location')
+  if loc.url == '/'
+    return null
+  else if loc.params?.results 
+    'results' 
+  else 
+    'crafting'
+
+get_selected_point = -> 
+  fetch('location').params.selected
+######
 
 window.proposal_url = (proposal) =>
   # The special thing about this function is that it only links to
@@ -52,28 +79,32 @@ window.isNeutralOpinion = (stance) ->
 userOpinion = (user_key) ->
   window.user_opinions[user_key]
 
-_route_changed = false
+_proposal_mode_changed = false
 
 window.togglePage = (proposal_mode, triggered_by) ->
   toggle = -> 
-    root = fetch('root')
+    loc = fetch('location')
+
+    if proposal_mode == 'results'
+      loc.params.results = true
+    else
+      delete loc.params.results
+    delete loc.params.selected
+    save loc
+
+    # Kludge for tracking when the page changes
+    _proposal_mode_changed = true
+    _.defer -> _proposal_mode_changed = false
 
     window.writeToLog
       what: 'toggle proposal mode'
       details: 
-        from: root.proposal_mode
+        from: get_proposal_mode()
         to: proposal_mode
         triggered_by: triggered_by 
 
-    root.proposal_mode = proposal_mode
-    root.selected_point = null
-    save root
 
-    # Kludge for tracking when the page changes
-    _route_changed = true
-    _.defer -> _route_changed = false
-
-  if proposal_mode == 'results'
+  if proposal_mode == 'results' && $('.histogram').length > 0
     $('.histogram').ensureInView
       offset_buffer: -50
       callback : toggle
@@ -90,13 +121,13 @@ window.togglePage = (proposal_mode, triggered_by) ->
 #
 # The styles will be added on every update and on component mount. 
 # However, it will *animate* the styles only if the page has changed 
-# (_route_changed). Otherwise it just directly applies the styles
+# (_proposal_mode_changed). Otherwise it just directly applies the styles
 PageTransition = 
 
   componentDidMount : -> @applyStyles false
 
   componentDidUpdate : (prev_props, prev_page) ->
-    @applyStyles _route_changed
+    @applyStyles _proposal_mode_changed
 
   applyStyles : (animate) ->
     duration = if animate then TRANSITION_SPEED else 0
@@ -106,24 +137,24 @@ PageTransition =
     # Each Component that implements this mixin can get triggered multiple times 
     # after a route change. So we're going to ensure that we apply styles only 
     # once for a given route change. 
-    return if @transitioning == root.proposal_mode
+    return if @transitioning == get_proposal_mode()
 
-    @transitioning = root.proposal_mode
+    @transitioning = get_proposal_mode()
 
     switch @name
 
       # The histogram will get transparent when moving to crafting page
       when 'histogram'
-        opacity = if root.proposal_mode == 'crafting' then '0.2' else '1.0'
+        opacity = if get_proposal_mode() == 'crafting' then '0.2' else '1.0'
         $el.find('.histogram_bar').velocity {opacity: opacity}, {duration}
 
       # The position of the CommunityPoints will move to the wings on crafting,
       # and be close together in results
       when 'communitypoints'
 
-        if root.proposal_mode == 'crafting'
+        if get_proposal_mode() == 'crafting'
           offset_x = if @props.key == 'cons' then 0 else DECISION_BOARD_WIDTH
-        else if root.proposal_mode == 'results'
+        else if get_proposal_mode() == 'results'
           offset_x = DECISION_BOARD_WIDTH / 2
 
         $el.velocity { translateX: offset_x }, {duration}
@@ -133,7 +164,7 @@ PageTransition =
       when 'slider'
         slider = fetch('slider')
         handle_style = 
-          scale: if root.proposal_mode == 'results' || slider.docked then 1 else 2.5
+          scale: if get_proposal_mode() == 'results' || slider.docked then 1 else 2.5
         $el.find('.the_handle').velocity handle_style, {duration}
 
       when 'bubblemouth'
@@ -142,7 +173,7 @@ PageTransition =
         direction = if stance > 0 && !isNeutralOpinion(stance) then 1 else -1
         mouth_x   = if isNeutralOpinion(stance) then 0 else -18
 
-        if root.proposal_mode == 'crafting'
+        if get_proposal_mode() == 'crafting'
           bubblemouth_style = 
             translateX: direction * mouth_x
             translateY: 20
@@ -160,7 +191,7 @@ PageTransition =
       # The decision board will have to expand for crafting and collapse into 
       # to the Give Opinion button in results
       when 'decisionboard'
-        if root.proposal_mode == 'crafting'
+        if get_proposal_mode() == 'crafting'
           decision_board_style =
             translateX: 0
             translateY: 10
@@ -173,7 +204,7 @@ PageTransition =
           $el.find('.give_opinion_button').css 'visibility', 'hidden'
           _.delay => 
             #delay & check in case of quick switch between pages
-            if root.proposal_mode == 'crafting'
+            if get_proposal_mode() == 'crafting'
               $el.find('.your_points, .save_opinion_button, .cancel_opinion_button')
                 .css('display', '')
           , duration
@@ -206,7 +237,7 @@ PageTransition =
 
           _.delay => 
             #check in case of quick switch between pages
-            if root.proposal_mode == 'results'
+            if get_proposal_mode() == 'results'
               $el.find('.give_opinion_button').css 'visibility', ''
           , duration  
       else
@@ -255,12 +286,11 @@ Proposal = ReactiveComponent
       can_opine = permit 'publish opinion', @proposal
 
     # change to results page if user entered crafting page when it is not permitted
-    if @root.proposal_mode == 'crafting' && 
+    if get_proposal_mode() == 'crafting' && 
         !(can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, \
                         Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || 
          (can_opine == Permission.DISABLED && your_opinion.published))
-      @root.proposal_mode = 'results'
-      save @root
+      togglePage('results', 'permission not granted for crafting')
 
     # Update global references:
     #  - The current_proposal for this page
@@ -295,7 +325,7 @@ Proposal = ReactiveComponent
     proposal_header = (customization('ProposalHeader'))()
 
 
-    DIV key:@props.slug, 'data-page':@root.proposal_mode,
+    DIV key:@props.slug,
 
       if customization('docking_proposal_header')
         Dock
@@ -387,7 +417,7 @@ Proposal = ReactiveComponent
                   onClick: => 
                     if confirm('Delete this proposal forever?')
                       destroy(@proposal.key)
-                      window.app_router.navigate("/", {trigger: true})
+                      loadPage('/')
                   'Delete'
 
           if @local.edit_roles
@@ -414,7 +444,7 @@ Proposal = ReactiveComponent
             dock_on_zoomed_screens: true
             constraints : ['slider-dock']
             dockable : => 
-              #@root.proposal_mode == 'results'
+              #get_proposal_mode() == 'results'
               false
             start : 170 - 50
 
@@ -445,9 +475,9 @@ Proposal = ReactiveComponent
             docked_key: 'slider'          
             dock_on_zoomed_screens: true
             constraints : ['decisionboard-dock', 'histogram-dock']
-            skip_jut: @root.proposal_mode == 'results'
+            skip_jut: get_proposal_mode() == 'results'
             dockable : => 
-              @root.proposal_mode == 'crafting'
+              get_proposal_mode() == 'crafting'
 
             Slider
               key: 'slider'
@@ -477,7 +507,7 @@ Proposal = ReactiveComponent
             constraints : ['slider-dock']
             dock_on_zoomed_screens: true
             dockable : => 
-              @root.proposal_mode == 'crafting'
+              get_proposal_mode() == 'crafting'
 
             start: -24
 
@@ -497,7 +527,7 @@ Proposal = ReactiveComponent
           CommunityPoints { key: 'pros' }
 
 
-      if @root.proposal_mode == 'results' && 
+      if get_proposal_mode() == 'results' && 
           your_opinion.published && 
           customization('ThanksForYourOpinion')
         customization('ThanksForYourOpinion')()
@@ -780,7 +810,7 @@ Histogram = ReactiveComponent
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = @props.enable_selection &&
                             !hist.selected_opinion && 
-                            @root.proposal_mode == 'results' &&
+                            get_proposal_mode() == 'results' &&
                             (hist.selected_opinions || 
                               (!@local.touched && 
                                 @local.mouse_opinion_value && 
@@ -801,8 +831,6 @@ Histogram = ReactiveComponent
         borderBottom: if @props.draw_base then '1px solid #999'
         visibility: if @opinions.length == 0 then 'hidden'
         userSelect: 'none'
-
-
 
     if @props.enable_selection
       _.extend histogram_props,
@@ -903,7 +931,7 @@ Histogram = ReactiveComponent
           height: @props.height
           position: 'relative'
           top: -1
-          cursor: if @root.proposal_mode == 'results' && 
+          cursor: if get_proposal_mode() == 'results' && 
                       @props.enable_selection then 'pointer'
 
         for opinion in @opinions
@@ -915,7 +943,7 @@ Histogram = ReactiveComponent
               avatar_style = selected_avatar_style
             else
               avatar_style = unselected_avatar_style
-          else if @root.proposal_mode == 'crafting'
+          else if get_proposal_mode() == 'crafting'
             avatar_style = if fetch('/current_user').user == user 
                              _.extend({}, regular_avatar_style, {opacity: .25}) 
                            else 
@@ -924,9 +952,9 @@ Histogram = ReactiveComponent
             avatar_style = regular_avatar_style
 
           Avatar 
-            key: user
+            key: "hist-#{user}"
             user: user
-            hide_tooltip: @root.proposal_mode == 'crafting'
+            hide_tooltip: get_proposal_mode() == 'crafting'
             style: avatar_style
 
 
@@ -935,7 +963,7 @@ Histogram = ReactiveComponent
     ev.stopPropagation()
     hist = fetch('histogram')
 
-    if @root.proposal_mode == 'crafting'
+    if get_proposal_mode() == 'crafting'
       togglePage('results', 'click_histogram')
 
     else
@@ -996,7 +1024,7 @@ Histogram = ReactiveComponent
   onMouseMove: (ev) -> 
     return if fetch('slider').is_moving
 
-    if @root.proposal_mode == 'results'
+    if get_proposal_mode() == 'results'
       hist = fetch('histogram')
       ev.stopPropagation()
 
@@ -1127,7 +1155,7 @@ Slider = ReactiveComponent
 
     slider = fetch('slider')
     hist = fetch('histogram')
-    set_in_grayscale = @root.selected_point && @root.proposal_mode == 'crafting'
+    set_in_grayscale = get_selected_point() && get_proposal_mode() == 'crafting'
 
 
     # Update the slider position when the server gets back to us
@@ -1155,7 +1183,7 @@ Slider = ReactiveComponent
     slider_base_style = 
       width: @props.width
       height: 6
-      backgroundColor: if @root.proposal_mode == 'crafting' then '#AFD7FF' else '#787878'
+      backgroundColor: if get_proposal_mode() == 'crafting' then '#AFD7FF' else '#787878'
       position: 'absolute'
 
 
@@ -1224,7 +1252,7 @@ Slider = ReactiveComponent
 
     ####
     # Define slider feedback
-    draw_feedback = @root.proposal_mode == 'crafting' && 
+    draw_feedback = get_proposal_mode() == 'crafting' && 
                      draw_handle
     
     if draw_feedback
@@ -1279,7 +1307,7 @@ Slider = ReactiveComponent
 
       # Draw the pole labels of the slider      
       if !slider.docked
-        group = if @root.proposal_mode == 'crafting' then 'individual' else 'group'
+        group = if get_proposal_mode() == 'crafting' then 'individual' else 'group'
         for pole in ['oppose', 'support']  
           w = widthWhenRendered \
                 customization("slider_pole_labels.#{group}.#{pole}"), \
@@ -1317,6 +1345,7 @@ Slider = ReactiveComponent
 
           for support in [true, false]
             DIV 
+              key: "slider-base-#{support}"
               style: 
                 position: 'absolute'
                 left: if support then -5
@@ -1351,7 +1380,7 @@ Slider = ReactiveComponent
           onTouchMove: @handleMouseMove
           style: css.crossbrowserify handle_style
 
-          if @root.proposal_mode == 'crafting'
+          if get_proposal_mode() == 'crafting'
            [DIV 
               style: css.crossbrowserify(mouth_style)
             DIV 
@@ -1360,7 +1389,7 @@ Slider = ReactiveComponent
               style: css.crossbrowserify(_.defaults({right: 6}, eye_style ))
            ]
 
-          if @root.proposal_mode == 'crafting' && !slider.has_moved
+          if get_proposal_mode() == 'crafting' && !slider.has_moved
             for support in [true, false]
               DIV 
                 style: 
@@ -1408,8 +1437,8 @@ Slider = ReactiveComponent
     # Clicking on the slider handle should transition us between 
     # crafting <=> results. We should also transition to crafting 
     # when we've been dragging on the results page. 
-    if slider.stance == your_opinion.stance || @root.proposal_mode == 'results'
-      new_page = if @root.proposal_mode == 'results' then 'crafting' else 'results'
+    if slider.stance == your_opinion.stance || get_proposal_mode() == 'results'
+      new_page = if get_proposal_mode() == 'results' then 'crafting' else 'results'
       togglePage new_page, 'click_slider'
       e.stopPropagation()
 
@@ -1471,10 +1500,10 @@ DecisionBoard = ReactiveComponent
     register_dependency = fetch('slider').clientX 
                              # to keep bubble mouth in sync with slider
 
-    selected_point = @root.selected_point && @root.proposal_mode == 'crafting'
+    selected_point = get_selected_point() && get_proposal_mode() == 'crafting'
     selected_wing_point = selected_point && 
                            !_.contains(your_opinion.point_inclusions, \
-                                       @root.selected_point)
+                                       get_selected_point())
     
     decision_board_style =
       borderRadius: 16
@@ -1486,7 +1515,7 @@ DecisionBoard = ReactiveComponent
     if @local.user_hovering_on_drop_target
       decision_board_style.borderStyle = 'solid'
 
-    if @root.proposal_mode == 'results'
+    if get_proposal_mode() == 'results'
       _.extend decision_board_style,
         borderStyle: 'solid'
         backgroundColor: focus_blue
@@ -1520,7 +1549,7 @@ DecisionBoard = ReactiveComponent
 
       if enable_opining
         # only shown during results, but needs to be present for animation
-        if @root.proposal_mode == 'results'
+        if get_proposal_mode() == 'results'
           give_opinion_style = 
             display: 'block'
             color: 'white'
@@ -1531,11 +1560,12 @@ DecisionBoard = ReactiveComponent
         else
           give_opinion_style = {}
 
-        [DIV 
+        [DIV
+          key: 'body' 
           className:'decision_board_body'
           style: decision_board_style
           onClick: => 
-            if @root.proposal_mode == 'results' 
+            if get_proposal_mode() == 'results' 
               togglePage('crafting', 'give_opinion_button')
 
           DIV null, 
@@ -1559,6 +1589,7 @@ DecisionBoard = ReactiveComponent
                 'Give your Opinion'
 
         DIV 
+          key: 'footer'
           style:
             width: DECISION_BOARD_WIDTH
 
@@ -1594,7 +1625,7 @@ DecisionBoard = ReactiveComponent
             else 
               'Save your opinion and see results'
 
-          if @root.proposal_mode == 'crafting'
+          if get_proposal_mode() == 'crafting'
             A 
               style: 
                 marginTop: '.5em'
@@ -1681,9 +1712,9 @@ Bubblemouth = ReactiveComponent
         results: "<%= asset_path 'bubblemouth-results.png' %>"
 
     bubblemouth_src = if isNeutralOpinion(slider.stance) 
-                        bubblemouth_srcs['neutral'][@root.proposal_mode] 
+                        bubblemouth_srcs['neutral'][get_proposal_mode()] 
                       else
-                        bubblemouth_srcs['other'][@root.proposal_mode]
+                        bubblemouth_srcs['other'][get_proposal_mode()]
 
     bubblemouth_style = 
       left: translateStanceToPixelX slider.stance, DECISION_BOARD_WIDTH
@@ -1693,9 +1724,8 @@ Bubblemouth = ReactiveComponent
       zIndex: 10
       marginLeft: -9
       top: -25
-      visibility: if @root.selected_point then 'hidden'
+      visibility: if get_selected_point() then 'hidden'
 
-    console.log 'boya' if @root.selected_point
     IMG 
       className:'bubblemouth'
       src: bubblemouth_src
@@ -1723,7 +1753,7 @@ YourPoints = ReactiveComponent
 
     header_style =           
       fontWeight: 700
-      color: if @root.selected_point then "#ccc" else focus_blue
+      color: if get_selected_point() then "#ccc" else focus_blue
 
     DIV 
       className: "points_on_decision_board #{@props.valence}_on_decision_board"
@@ -1849,7 +1879,7 @@ CommunityPoints = ReactiveComponent
     points = @buildPointsList() #todo: memoize
     newpoint_threshold = @buildNewPointThreshold() #todo: memoize
     label = capitalize @props.key
-    con_is_selected = @root.selected_point and not fetch(@root.selected_point).is_pro
+    con_is_selected = get_selected_point() and not fetch(get_selected_point()).is_pro
 
     # TODO: The minheight below is not a principled or complete solution to two
     #       sizing issues: 
@@ -1876,7 +1906,7 @@ CommunityPoints = ReactiveComponent
             # avatars are sticking out on their own, so I simulated
             # a centered look with these -20px and +20px offsets
 
-        if fetch('root').proposal_mode == 'results' 
+        if get_proposal_mode() == 'results' 
           "Top #{label}" 
         else 
           "Others' #{label}"
@@ -1910,7 +1940,7 @@ CommunityPoints = ReactiveComponent
       new Date()
 
   buildPointsList : ->
-    is_results = fetch('root').proposal_mode == 'results'
+    is_results = get_proposal_mode() == 'results'
     hist = fetch('histogram')
 
     selected_opinions = if hist.selected_opinion 
@@ -1965,7 +1995,7 @@ Point = ReactiveComponent
   render : ->
     point = @data()
 
-    is_selected = @root.selected_point == @props.key
+    is_selected = get_selected_point() == @props.key
 
     current_user = fetch('/current_user')
 
@@ -2057,14 +2087,15 @@ Point = ReactiveComponent
 
     select_enticement = []
 
+
     if expand_to_see_details
       select_enticement.push SPAN key: 1,
         if is_selected
           "read less"
         else
-          [SPAN dangerouslySetInnerHTML: {__html: '&hellip;'}
+          [SPAN key: 1, dangerouslySetInnerHTML: {__html: '&hellip;'}
           ' ('
-          A className: 'select_point',
+          A key: 2, className: 'select_point',
             "read more"
           ')']
 
@@ -2101,8 +2132,8 @@ Point = ReactiveComponent
 
     draw_all_includers = @props.rendered_as == 'community_point'
     LI
+      key: "point-#{point.id}"
       className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'}"
-      'data-id':@props.key
       onClick: @selectPoint
       onTouchEnd: @selectPoint
       style: point_style
@@ -2183,7 +2214,7 @@ Point = ReactiveComponent
         Discussion
           key:"/comments/#{point.id}"
           is_pro: point.is_pro
-          in_wings: @root.proposal_mode == 'crafting' and not point_included
+          in_wings: get_proposal_mode() == 'crafting' and not point_included
 
   componentDidMount : ->
     @setDraggability()
@@ -2199,7 +2230,7 @@ Point = ReactiveComponent
   #   - Scroll to new point when scrolled down to bottom of long 
   #     discussion & click a new point below it
   ensureDiscussionIsInViewPort : ->
-    if @root.selected_point == @props.key
+    if get_selected_point() == @props.key
       $(@getDOMNode()).ensureInView {scroll: false}
 
   setDraggability : ->
@@ -2209,7 +2240,7 @@ Point = ReactiveComponent
 
     return if @props.rendered_as == 'under_review'
 
-    disable = fetch('root').proposal_mode == 'results'
+    disable = get_proposal_mode() == 'results'
 
     $point_content = $(@getDOMNode()).find('.point_content')
     revert = 
@@ -2246,14 +2277,16 @@ Point = ReactiveComponent
 
     e.stopPropagation()
 
-    if @root.selected_point == @props.key # deselect
-      @root.selected_point = null
+    loc = fetch('location')
+
+    if get_selected_point() == @props.key # deselect
+      delete loc.params.selected
       what = 'deselected a point'
     else
       what = 'selected a point'
-      @root.selected_point = @props.key
+      loc.params.selected = @props.key
 
-    save @root
+    save loc
 
     window.writeToLog
       what: what
@@ -2265,7 +2298,7 @@ Point = ReactiveComponent
   # On hovering over a point, highlight the people who included this 
   # point in the Histogram.
   highlightIncluders : -> 
-    if fetch('root').proposal_mode == 'results'
+    if get_proposal_mode() == 'results'
       point = @data()
       includers = point.includers
 
@@ -2281,7 +2314,7 @@ Point = ReactiveComponent
         save(hist)
 
   unHighlightIncluders : -> 
-    if fetch('root').proposal_mode == 'results'
+    if get_proposal_mode() == 'results'
       hist = fetch 'histogram'
       hist.highlighted_users = null
       save(hist)
@@ -2290,7 +2323,6 @@ Point = ReactiveComponent
   buildIncluders : -> 
     point = @data()
     author_has_included = _.contains point.includers, point.user
-    to_remove = [point.user]
 
     includers = point.includers
 
@@ -2305,10 +2337,11 @@ Point = ReactiveComponent
       includers = _.intersection includers, selected_users
       author_has_included = _.contains selected_users, point.user
 
-    includers = _.difference includers, to_remove
     if author_has_included 
+      includers = _.without includers, point.user
       includers.push point.user
-    includers
+
+    _.uniq includers
         
 
 styles += """
@@ -3123,7 +3156,7 @@ GroupSelectionRegion = ReactiveComponent
       DIV 
         style: 
           width: BODY_WIDTH + 80
-          border: "3px solid #{if @root.selected_point then '#ccc' else focus_blue }"
+          border: "3px solid #{if get_selected_point() then '#ccc' else focus_blue }"
           height: '100%'
           position: 'absolute'
           borderRadius: 16
@@ -3138,7 +3171,7 @@ GroupSelectionRegion = ReactiveComponent
 
           DIV 
             style: cssTriangle 'top', \
-                               (if @root.selected_point then '#ccc' else focus_blue), \
+                               (if get_selected_point() then '#ccc' else focus_blue), \
                                w, h,               
                                   position: 'relative'
                                   top: -32
@@ -3462,7 +3495,7 @@ ProfileMenu = ReactiveComponent
     current_user.trying_to = 'logout'
 
     if @root.auth && @root.auth.form == 'edit profile'
-      @root.page_name = 'homepage'
+      loadPage '/'
 
     @root.auth = null
 
@@ -3510,13 +3543,13 @@ Header = ReactiveComponent
         backgroundColor: 'white'
         minWidth: PAGE_WIDTH
 
-      if @root.page_name == 'homepage'
+      if fetch('location').url == '/'
         customization('HomepageHeader')()
       else 
         customization('NonHomepageHeader')()
 
       DIV null, 
-        if @root.page_name == 'about'
+        if fetch('location').url == '/about'
           A 
             href: '/'
             style: 
@@ -3591,7 +3624,8 @@ EditProposal = ReactiveComponent
         field.html = edited_html.html if edited_html.html
       proposal.description_fields = JSON.stringify(@local.description_fields)
 
-    save proposal, -> window.app_router.navigate "/#{slug}", {trigger : true}
+    save proposal, -> 
+      loadPage "/#{slug}"
 
   render : ->
     user = fetch('/current_user')
@@ -4079,12 +4113,14 @@ Page = ReactiveComponent
 
     avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
+    loc = fetch('location')
 
     if @root.auth && @root.auth.form != 'edit profile'
       return Auth()
 
-    if subdomain.name == 'homepage' && @root.page_name == 'homepage'
+    if subdomain.name == 'homepage' && loc.url == '/'
       SPAN null, ''
+
     else if !subdomain.name
       L
     else
@@ -4109,39 +4145,42 @@ Page = ReactiveComponent
             margin: 'auto'
             marginLeft: if lefty then 0
 
-          if @root.page_name == 'edit_profile'
+          if loc.url == '/edit_profile'
+            if !(@root.auth?.form == 'edit profile')
+              @root.auth = {form: 'edit profile', ask_questions: true}
+              save @root
             Auth()
 
           else
 
             if !@accessGranted()
               SPAN null 
-            else if @root.page_name.match(/(.+)\/edit/)
+            else if loc.url.match(/(.+)\/edit/)
               EditProposal 
-                key: "/#{@root.page_name.match(/(.+)\/edit/)[1]}"
+                key: loc.url.match(/(.+)\/edit/)[1]
                 fresh: false
             else
-              switch @root.page_name
-                when 'homepage'
-                  Homepage key: @page.key
-                when 'about'
+              switch loc.url
+                when '/'
+                  Homepage key: 'homepage'
+                when '/about'
                   About()
-                when 'proposal/new'
+                when '/proposal/new'
                   EditProposal key: "new_proposal", fresh: true              
-                when 'dashboard/email_notifications'
+                when '/dashboard/email_notifications'
                   EmailNotificationSettings 
                     key: '/page/dashboard/email_notifications'
-                when 'dashboard/assessment'
+                when '/dashboard/assessment'
                   FactcheckDash key: "/page/dashboard/assessment"
-                when 'dashboard/create_subdomain'
+                when '/dashboard/create_subdomain'
                   CreateSubdomain key: "/page/dashboard/create_subdomain"
-                when 'dashboard/import_data'
+                when '/dashboard/import_data'
                   ImportDataDash key: "/page/dashboard/import_data"
-                when 'dashboard/moderate'
+                when '/dashboard/moderate'
                   ModerationDash key: "/page/dashboard/moderate"
-                when 'dashboard/application'
+                when '/dashboard/application'
                   AppSettingsDash key: "/page/dashboard/application"
-                when 'dashboard/roles'
+                when '/dashboard/roles'
                   SubdomainRoles key: "/page/dashboard/roles"
                 else
                   Proposal key: @page.proposal.key
@@ -4155,14 +4194,15 @@ Root = ReactiveComponent
     if !root.auth
       hist = fetch 'histogram'
 
-      if @root.selected_point
+      if get_selected_point()
         window.writeToLog
           what: 'deselected a point'
           details:
-            point: @root.selected_point
+            point: get_selected_point()
 
-        @root.selected_point = null
-        save @root
+        loc = fetch('location')
+        delete loc.params.selected
+        save loc
 
       else if hist.selected_opinions || hist.selected_opinion
         if hist.dragging
@@ -4177,197 +4217,20 @@ Root = ReactiveComponent
       @root.show_wyswyg_toolbar = false
       save @root
 
-
-
   render : -> 
     root = @data()
 
-    ######
-    # Handle application routing, derived from client state.
-    query_parameters = Backbone.history.getQueryParameters()
-    query_parameters = {}
+    DIV 
+      onClick: @resetSelection
 
-    if @root.proposal_mode == 'results'
-      query_parameters['results'] = true 
-        # the only query parameter we currently support is ?results=true 
-        # for proposal pages
-    if @root.selected_point
-      query_parameters['selected'] = @root.selected_point
+      Page key: "/page#{fetch('location').url}"
 
-    # Second, construct the proper url
-    if root.page_name == 'homepage' 
-      url = ''
-    else if root.page_name == 'about'
-      url = 'about'
-    else #if we're rendering a proposal...
-      url = window.app_router.toFragment root.page_name, query_parameters
-
-    # Third, update the location bar if it's different
-    if "#{window.location.pathname}#{window.location.search}" != "/#{url}"
-      window.app_router.navigate url, {trigger : true}
-    ####
-
-    # Now let's render
-    DIV onClick: @resetSelection,          
-      StateDash(),
-      Page(key: "/page/#{root.page_name}"),
-      Computer() # Doesn't actually render anything
+      Computer()
       Tooltip()
+      BrowserLocation()
+      StateDash()
 
 
-# Displays warnings for some browsers
-# Stores state about the current device. 
-# Note that IE<9 users are redirected at
-# an earlier point to an MS upgrade site. 
-BrowserHacks = ReactiveComponent
-  displayName: 'BrowserHacks'
-
-  render : ->
-    browser = fetch 'browser'
-    if  browser.is_opera_mini #|| browser.is_android_browser
-      DIV 
-        style: 
-          backgroundColor: 'red'
-          padding: 10
-          textAlign: 'center'
-          color: 'white'
-          fontSize: 24
-
-        "This website does not work well with "
-        if browser.is_android_browser then 'the Android Browser' else 'Opera Mini'
-        ". Please use "
-        A 
-          href: "https://play.google.com/store/apps/details?id=com.android.chrome&hl=en"
-          style: 
-            color: 'white'
-            textDecoration: 'underline'
-          'Chrome for Android' 
-        ' if you experience difficulty. Thanks, and sorry for the inconvenience!'
-
-    else 
-      # Use third party script for detecting and warning users
-      # of other outdated browsers. Sticking with
-      # third party for now because of some complexities
-      # in detecting some of these browser versions. In 
-      # the future, probably want to extract the logic. 
-      # "https://browser-update.org/update.html"
-      SCRIPT type: 'text/javascript', src: '//browser-update.org/update.js'
-
-
-
-
-# Fetch current user every 2 minutes so that if the user gets
-# logged out (e.g. by server deploy after letting a browser window stay open), 
-# their browser will accurately reflect reality. 
-# Only do this if user is already logged in, so that we don't 
-# accidently interfere with a login process.
-# TODO: Remove this after we have true realtime updates
-setInterval -> 
-  current_user = fetch '/current_user'
-  if current_user.logged_in
-    arest.serverFetch('/current_user')
-, 2 * 60 * 1000
-
-
-##
-# Routing
-window.root = null
-Router = Backbone.Router.extend
-  
-  routes :
-    "(/)" : "homepage"
-    "about(/)" : "about"
-    "edit_profile(/)" : "edit_profile"
-    "proposal/new(/)" : "new_proposal"
-    "proposal/:proposal/edit(/)": "edit_proposal"
-    ":proposal(/)": "proposal"    
-    "dashboard/:dash(/)": "dashboard"
-
-  proposal : (slug, params) ->
-    root = fetch('root')
-    resetState(root)
-
-    root.page_name = slug
-
-    #TODO: Manage proposal_mode {crafting/results} with client state on 
-    #      the proposal. Right now activeREST doesn't allow wide consumption 
-    #      of a component's client state if its data is synced with the server. 
-    root.proposal_mode = 'crafting'
-    root.selected_point = null
-    if params 
-      root.proposal_mode = 'results' if params['results']
-      root.selected_point = params['selected'] if params['selected']
-
-    save root
-
-    writeToLog
-      what: 'loaded page',
-      where: slug
-
-  homepage : (params) -> 
-    root = fetch('root')
-    resetState(root)
-    root.page_name = 'homepage'
-    save root
-
-    writeToLog
-      what: 'loaded page',
-      where: 'homepage'
-
-  about : (params) ->
-    root = fetch('root')
-    resetState(root)
-    root.page_name = 'about'
-    save root
-
-    writeToLog
-      what: 'loaded page',
-      where: 'about'
-
-  new_proposal : (params) ->
-    root = fetch('root')
-    resetState(root)
-    root.page_name = 'proposal/new'
-    save root
-
-  edit_proposal : (id, params) ->
-    root = fetch('root')
-    resetState(root)
-    root.page_name = "proposal/#{id}/edit"
-    save root
-
-  dashboard : (dash, params) -> 
-    root = fetch('root')
-    resetState(root)
-    root.page_name = "dashboard/#{dash}"    
-    save root
-
-  edit_profile : (params) -> 
-    root = fetch('root')
-    resetState(root)
-
-    root.page_name = 'edit_profile'
-    root.auth = {form: 'edit profile', ask_questions: true}
-
-    save root
-
-
-# Temporary method for handling resetting root state when switching between
-# routes. Remove once we have a better activeREST answer. 
-resetState = (root) ->
-  root.auth = null
-
-  #TODO: Manage proposal_mode {crafting/results} with client state on 
-  #      the proposal. Right now activeREST doesn't allow wide consumption 
-  #      of a component's client state if its data is synced with the server. 
-  root.proposal_mode = null    
-  root.selected_point = null
-
-  hist = fetch('histogram')
-  hist.selected_opinion = hist.selected_opinions = hist.selected_opinion_value = null
-  save hist
-
-window.app_router = new Router()
 window.on_ajax_error = () ->
   (root = fetch('root')).server_error = true
   save(root)
@@ -4388,7 +4251,7 @@ window.on_client_error = (e) ->
 window.writeToLog = (entry) ->
   _.extend entry, 
     key: '/new/log'
-    where: fetch('root').page_name
+    where: fetch('location').url
 
   save entry
 
@@ -4403,16 +4266,15 @@ window.Histogram = Histogram
 #######
 # Start the app!
 
-
 $( ->
   #static consider.it homepage doesn't want this stuff by default
-  if document.getElementById('content') 
+  is_static_consider_it = !document.getElementById('content')
+  if !is_static_consider_it
     # add styles
     $('body').append("<style type='text/css'>#{styles}</style>")
 
     if 'ontouchend' in document #detect touch support
       React.initializeTouchEvents(true)
 
-    Backbone.history.start {pushState: true}
     window.root = React.renderComponent(Root(), document.getElementById('content'))
 )

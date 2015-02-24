@@ -180,7 +180,7 @@ AccessControlled =
       switch @data().permission_denied
 
         when Permission.INSUFFICIENT_PRIVILEGES
-          window.app_router.navigate("/", {trigger: true})
+          loadPage '/'
 
         when Permission.NOT_LOGGED_IN
           @root.auth = {form: 'login', 'Access this page'}

@@ -81,7 +81,7 @@ userOpinion = (user_key) ->
 
 _proposal_mode_changed = false
 
-window.togglePage = (proposal_mode, triggered_by) ->
+window.updateProposalMode = (proposal_mode, triggered_by) ->
   toggle = -> 
     loc = fetch('location')
 
@@ -290,7 +290,7 @@ Proposal = ReactiveComponent
         !(can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, \
                         Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || 
          (can_opine == Permission.DISABLED && your_opinion.published))
-      togglePage('results', 'permission not granted for crafting')
+      updateProposalMode('results', 'permission not granted for crafting')
 
     # Update global references:
     #  - The current_proposal for this page
@@ -952,7 +952,7 @@ Histogram = ReactiveComponent
             avatar_style = regular_avatar_style
 
           Avatar 
-            key: "hist-#{user}"
+            key: user
             user: user
             hide_tooltip: get_proposal_mode() == 'crafting'
             style: avatar_style
@@ -964,7 +964,7 @@ Histogram = ReactiveComponent
     hist = fetch('histogram')
 
     if get_proposal_mode() == 'crafting'
-      togglePage('results', 'click_histogram')
+      updateProposalMode('results', 'click_histogram')
 
     else
       if ev.type == 'touchstart'
@@ -1439,7 +1439,7 @@ Slider = ReactiveComponent
     # when we've been dragging on the results page. 
     if slider.stance == your_opinion.stance || get_proposal_mode() == 'results'
       new_page = if get_proposal_mode() == 'results' then 'crafting' else 'results'
-      togglePage new_page, 'click_slider'
+      updateProposalMode new_page, 'click_slider'
       e.stopPropagation()
 
     # We save the slider's position to the server only on mouse-up.
@@ -1566,7 +1566,7 @@ DecisionBoard = ReactiveComponent
           style: decision_board_style
           onClick: => 
             if get_proposal_mode() == 'results' 
-              togglePage('crafting', 'give_opinion_button')
+              updateProposalMode('crafting', 'give_opinion_button')
 
           DIV null, 
             # only shown during crafting, but needs to be present always for animation
@@ -1601,7 +1601,7 @@ DecisionBoard = ReactiveComponent
               if can_opine > 0
                 your_opinion.published = true
                 save your_opinion
-                togglePage('results', 'save_button')
+                updateProposalMode('results', 'save_button')
               else
                 if can_opine == Permission.UNVERIFIED_EMAIL
                   auth_form = 'verify email'
@@ -1659,7 +1659,7 @@ DecisionBoard = ReactiveComponent
           if !your_opinion.published
             A 
               className:'cancel_opinion_button primary_cancel_button'
-              onClick: => togglePage('results', 'cancel_button')
+              onClick: => updateProposalMode('results', 'cancel_button')
               'or just skip to the results' ]
           
 
@@ -1743,6 +1743,7 @@ YourPoints = ReactiveComponent
 
   render : ->
     included_points = fetch(@proposal.your_opinion).point_inclusions    
+
     left_or_right = if @props.valence == 'pros' then 'right' else 'left'
 
     can_add_new_point = permit 'create point', @proposal
@@ -2133,6 +2134,7 @@ Point = ReactiveComponent
     draw_all_includers = @props.rendered_as == 'community_point'
     LI
       key: "point-#{point.id}"
+      'data-id': @props.key
       className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'}"
       onClick: @selectPoint
       onTouchEnd: @selectPoint
@@ -2352,14 +2354,14 @@ styles += """
   z-index: 1; }
 
 .community_point.con .community_point_mouth, .under_review .community_point_mouth {
-  left: -#{COMMUNITY_POINT_MOUTH_WIDTH}px; }
+  left: -#{COMMUNITY_POINT_MOUTH_WIDTH + 3}px; }
 
 .community_point.pro .community_point_mouth {
-  right: -#{COMMUNITY_POINT_MOUTH_WIDTH}px;
+  right: -#{COMMUNITY_POINT_MOUTH_WIDTH + 3}px;
   #{css.crossbrowserify({transform: 'scaleX(-1)'}, true)}; }
 
 .decision_board_point .community_point_mouth {
-  left: -#{COMMUNITY_POINT_MOUTH_WIDTH}px; }
+  display: none; }
 
 /* war! disabled jquery UI draggable class defined with !important */
 .point_content.ui-draggable-disabled {
@@ -4218,17 +4220,17 @@ Root = ReactiveComponent
       save @root
 
   render : -> 
-    root = @data()
 
     DIV 
       onClick: @resetSelection
 
-      Page key: "/page#{fetch('location').url}"
-
       Computer()
-      Tooltip()
       BrowserLocation()
       StateDash()
+
+      Page key: "/page#{fetch('location').url}"
+
+      Tooltip()
 
 
 window.on_ajax_error = () ->

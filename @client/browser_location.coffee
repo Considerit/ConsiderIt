@@ -1,72 +1,79 @@
 ####
-# Manages the browser window location
+# Manages the browser window location by keeping the window history in sync
+# with the url & params stored on statebus at 'location'. 
 #
-# The url and url params are stored on statebus at key 'location'. A 
-# convenience method for manipulating location, loadPage, is defined
-# below.
-#
-# BrowserLocation will respond to changes in location, keeping the 
-# browser history up to date. We're still using backbone for managing
-# browser specific location updates, but now only a very small slice.
-#
-# Finally, this file is responsible for initializing location to the 
+# Also responsible for initializing location to the 
 # correct value of window location on initial page load. 
-
+#
+# Assumes html5 pushstate history interface available. Make sure to use a 
+# polyfill to support non-pushstate compatible browsers, such as 
+# https://github.com/devote/HTML5-History-API 
 
 ######
 # Public API
 #
 # loadPage
 #
-# Helper method for updating the browser window location. 
+# Convenience method for updating the browser window location. 
 # Optionally pass url_parameters as a separate object. 
 window.loadPage = (url, url_params) ->
   loc = fetch('location')
   loc.params = url_params or {}
 
-  # insert anchor for non-push state enabled browsers
-  if !Backbone.history?._hasPushState && url.indexOf('#') > -1
-    url = "/" + url.substring(url.indexOf('#') + 1, url.length)
-
-  # if the url has url params, parse and merge them into params
+  # if the url has search params, parse and merge them into params
   if url.indexOf('?') > -1
     [url, search] = url.split('?')
-    _.extend loc.params, parse_url_params(search)
+
+    for url_param in search.split('&')
+      url_param = url_param.split('=')
+      if url_param.length == 2
+        loc.params[url_param[0]] = url_param[1]
 
   loc.url = url
-
   save loc
 
 
-## Private
+##########
+## Internal
+
+# for html5 history polyfill
+location = window.history.location || window.location
+
+
+#####
+# BrowserLocation
+#
+# Responds to changes in location, keeping the browser history up to date. 
+# Also updates the window title if it has been updated via statebus. 
+
 window.BrowserLocation = ReactiveComponent
   displayName: 'BrowserLocation'
 
   render : -> 
     loc = fetch 'location'
 
-    new_location = loc.url 
-    if _.keys(loc.params).length > 0
-      params = ("#{k}=#{v}" for own k,v of loc.params)
-      new_location += "?#{params.join('&')}" 
+    # Update the window title if it has changed
+    title = loc.title or document.title
+    if loc.title && document.title != loc.title
+      document.title = loc.title
 
-    current_loc = "#{window.location.pathname}#{window.location.search}"
-    if current_loc != new_location 
-      if Backbone.history?._hasPushState
-        Backbone.history.navigate new_location
-      else
-        hash_url = loc.url
-        if loc.url[0] = '/'
-          hash_url = "/##{hash_url.substring(1, hash_url.length)}"
-        Backbone.history.navigate hash_url
+    # Respond to a location change
+    new_location = relativeURLFromStatebus()
+    if @last_location != new_location 
+
+      # update browser history if it hasn't already been updated
+      if relativeURLFromLocation() != new_location
+        history.pushState loc.params, title, new_location
+
+      @last_location = new_location
 
       writeToLog
-        what: 'loaded page',
+        what: 'changing url',
         where: loc.url
 
       ######
-      # Temporary technique for handling resetting root state when switching between
-      # routes. TODO: more elegant approach
+      # Temporary technique for handling resetting root state when switching 
+      # between routes. TODO: more elegant approach
       root = fetch('root')
       if root.auth
         root.auth = null
@@ -80,29 +87,32 @@ window.BrowserLocation = ReactiveComponent
 
     SPAN null
 
-parse_url_params = (search) -> 
-  params = {}
-  if search[0] == '?'
-    search = search.substring(1, search.length)
+relativeURLFromLocation = -> 
+  "#{location.pathname}#{location.search}#{location.hash}"
 
-  for url_param in search.split('&')
-    url_param = url_param.split('=')
-    if url_param.length == 2
-      params[url_param[0]] = url_param[1]
-  params
+relativeURLFromStatebus = ->  
+  loc = fetch 'location'
+
+  relative_url = loc.url 
+  if _.keys(loc.params).length > 0
+    params = ("#{k}=#{v}" for own k,v of loc.params)
+    relative_url += "?#{params.join('&')}" 
+  relative_url
+
 
 #####
-# Initializes the location state based on browser url when page is loaded
-params = {}
-search = window.location.search
-if search?.length > 0 
-  params = parse_url_params(search)
+# Update statebus location when browser back or forward button pressed
 
-loadPage "#{window.location.pathname}#{window.location.hash}", params
-#####
+[addEventListener, popstate_event] = if window.addEventListener 
+                                       ['addEventListener', 'popstate'] 
+                                     else 
+                                       ['attachEvent', 'onpopstate']
 
-# We're still using Backbone for managing the nitty-gritty of browser-specific
-# window locations
-$( -> 
-  Backbone.history.start {pushState: true}
-)
+window[addEventListener] popstate_event, (ev) -> 
+  console.log 'GOT POPSTATE'
+  loadPage relativeURLFromLocation()
+
+# Initialize location state when page is first loaded.
+loadPage relativeURLFromLocation()
+
+

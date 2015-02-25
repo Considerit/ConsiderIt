@@ -16,8 +16,8 @@ fetch 'histogram',
   region_selection_width : .25
   selected_opinion : null
   selected_opinions : null 
-      # use null instead of [] because an empty selection 
-      # can happen that we treat differently than no selection
+      # use null instead of [] because an empty selection of []
+      # is treated differently than no selection whatsoever
 
 fetch 'slider',
   has_moved : false
@@ -451,7 +451,8 @@ Proposal = ReactiveComponent
             stop : -> 
               $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
 
-            dummy: if fetch('histogram-dock').docked then 1 else -1
+            dummy:  if fetch('histogram-dock').docked then 1 else -1
+            dummy2: if get_proposal_mode() == 'crafting' then 1 else -1
                     # TODO: Dummy is a shallow patch for an odd problem. 
                     # If you have a nested component (in this case Histogram) 
                     # which passes a prop based on a Statebus value, then 
@@ -469,6 +470,7 @@ Proposal = ReactiveComponent
               height: if fetch('histogram-dock').docked then 50 else 170
               enable_selection: true
               draw_base: if fetch('histogram-dock').docked then true else false
+              backgrounded: get_proposal_mode() == 'crafting'
 
           Dock
             key: 'slider-dock'
@@ -479,9 +481,11 @@ Proposal = ReactiveComponent
             dockable : => 
               get_proposal_mode() == 'crafting'
 
+            dummy: if get_selected_point() && get_proposal_mode() == 'crafting' then 1 else 0
             Slider
               key: 'slider'
               width: BODY_WIDTH - 10
+              backgrounded: get_selected_point() && get_proposal_mode() == 'crafting'
 
 
         #reasons
@@ -662,12 +666,17 @@ styles += """
 ##
 # Props
 # 
+#   proposal
+#     The proposal from which the opinions are drawn. 
 #   width, height
-#   enable_selection
+#   enable_selection (default = false)
 #     Whether users can select opinions segments on the histogram
-#   draw_base
+#   draw_base (default = false)
 #     Whether to draw a base with +/- labels. If a slider is attached,
 #     don't need the labels.
+#   backgrounded (default = false)
+#     If backgrounded, the histogram avatars are dimmed, and interactivity
+#     disabled. 
 #
 ##
 # The interaction rules: 
@@ -788,8 +797,9 @@ Histogram = ReactiveComponent
     unselected_avatar_style = css.grayscale _.extend {}, regular_avatar_style, 
       opacity: .2
 
-    # 4) The style of the avatar on the crafting page
-    crafting_page_avatar_style = _.extend {}, unselected_avatar_style, 
+    # 4) The style of the avatar when the histogram is backgrounded 
+    #    (e.g. on the crafting page)
+    backgrounded_page_avatar_style = _.extend {}, unselected_avatar_style, 
       opacity: .1
 
     # Highlighted users are the users whose avatars are colorized and fully 
@@ -810,7 +820,7 @@ Histogram = ReactiveComponent
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = @props.enable_selection &&
                             !hist.selected_opinion && 
-                            get_proposal_mode() == 'results' &&
+                            !@props.backgrounded &&
                             (hist.selected_opinions || 
                               (!@local.touched && 
                                 @local.mouse_opinion_value && 
@@ -931,7 +941,7 @@ Histogram = ReactiveComponent
           height: @props.height
           position: 'relative'
           top: -1
-          cursor: if get_proposal_mode() == 'results' && 
+          cursor: if !@props.backgrounded && 
                       @props.enable_selection then 'pointer'
 
         for opinion in @opinions
@@ -943,18 +953,18 @@ Histogram = ReactiveComponent
               avatar_style = selected_avatar_style
             else
               avatar_style = unselected_avatar_style
-          else if get_proposal_mode() == 'crafting'
+          else if @props.backgrounded
             avatar_style = if fetch('/current_user').user == user 
                              _.extend({}, regular_avatar_style, {opacity: .25}) 
                            else 
-                             crafting_page_avatar_style
+                             backgrounded_page_avatar_style
           else
             avatar_style = regular_avatar_style
 
           Avatar 
             key: user
             user: user
-            hide_tooltip: get_proposal_mode() == 'crafting'
+            hide_tooltip: @props.backgrounded
             style: avatar_style
 
 
@@ -1024,7 +1034,7 @@ Histogram = ReactiveComponent
   onMouseMove: (ev) -> 
     return if fetch('slider').is_moving
 
-    if get_proposal_mode() == 'results'
+    if @props.enable_selection && !@props.backgrounded
       hist = fetch('histogram')
       ev.stopPropagation()
 
@@ -1155,8 +1165,6 @@ Slider = ReactiveComponent
 
     slider = fetch('slider')
     hist = fetch('histogram')
-    set_in_grayscale = get_selected_point() && get_proposal_mode() == 'crafting'
-
 
     # Update the slider position when the server gets back to us
     your_opinion = fetch(@proposal.your_opinion)
@@ -1175,7 +1183,7 @@ Slider = ReactiveComponent
       width: @props.width
       height: SLIDER_HANDLE_SIZE
 
-    if set_in_grayscale
+    if @props.backgrounded
       css.grayscale slider_style
 
     ####
@@ -1183,7 +1191,7 @@ Slider = ReactiveComponent
     slider_base_style = 
       width: @props.width
       height: 6
-      backgroundColor: if get_proposal_mode() == 'crafting' then '#AFD7FF' else '#787878'
+      backgroundColor: '#BBBFC7'
       position: 'absolute'
 
 
@@ -1218,7 +1226,7 @@ Slider = ReactiveComponent
         marginLeft: -SLIDER_HANDLE_SIZE / 2
         top: -9
         position: 'relative'
-        visibility: if set_in_grayscale then 'hidden'
+        visibility: if @props.backgrounded then 'hidden'
 
       face_style = 
         position: 'absolute'
@@ -1252,8 +1260,7 @@ Slider = ReactiveComponent
 
     ####
     # Define slider feedback
-    draw_feedback = get_proposal_mode() == 'crafting' && 
-                     draw_handle
+    draw_feedback = get_proposal_mode() == 'crafting' && draw_handle
     
     if draw_feedback
       slider_feedback = 
@@ -1280,7 +1287,7 @@ Slider = ReactiveComponent
         fontSize: 30
         fontWeight: 700
         color: focus_blue
-        visibility: if set_in_grayscale then 'hidden'
+        visibility: if @props.backgrounded then 'hidden'
 
       # Keep feedback centered over handle, but keep within the bounds of 
       # the slider region when the slider is in an extreme position. 
@@ -1499,11 +1506,6 @@ DecisionBoard = ReactiveComponent
 
     register_dependency = fetch('slider').clientX 
                              # to keep bubble mouth in sync with slider
-
-    selected_point = get_selected_point() && get_proposal_mode() == 'crafting'
-    selected_wing_point = selected_point && 
-                           !_.contains(your_opinion.point_inclusions, \
-                                       get_selected_point())
     
     decision_board_style =
       borderRadius: 16
@@ -1522,11 +1524,13 @@ DecisionBoard = ReactiveComponent
         boxShadow: '0px 2px 0px black'
         cursor: 'pointer'
 
-    if selected_wing_point
-      css.grayscale decision_board_style
-      decision_board_style.opacity = '.4'
-    else if selected_point
-      decision_board_style.borderColor = "#ccc"
+
+    if get_selected_point() && get_proposal_mode() == 'crafting'
+      if !_.contains(your_opinion.point_inclusions, get_selected_point())
+        css.grayscale decision_board_style
+        decision_board_style.opacity = '.4'
+      else
+        decision_board_style.borderColor = "#ccc"
 
     if your_opinion.published
       can_opine = permit 'update opinion', @proposal, your_opinion
@@ -2151,15 +2155,13 @@ Point = ReactiveComponent
         renderIncluders(draw_all_includers)
 
       DIV className:'point_content', style : point_content_style,
-        if is_selected ||
-            @props.rendered_as == 'community_point' || 
-            @props.rendered_as == 'under_review'
+
+
+        if (!is_selected || @props.rendered_as == 'under_review') && @props.rendered_as != 'decision_board_point'
+
           IMG
             className: 'community_point_mouth'
-            src:  if is_selected
-                    "<%= asset_path 'community_point_mouth_selected.png' %>" 
-                  else 
-                    "<%= asset_path 'community_point_mouth.png' %>"
+            src:  "<%= asset_path 'community_point_mouth.png' %>"
 
         DIV className:'point_nutshell',
           splitParagraphs point.nutshell

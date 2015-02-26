@@ -519,7 +519,7 @@ ModerateItem = ReactiveComponent
 
           if class_name == 'Point'
             UL style: {marginLeft: 73}, 
-              Point key: point, rendered_as: 'under_review'
+              Point key: point, rendered_as: 'under_review', enable_dragging: false
           else if class_name == 'Proposal'
             DIV null,
               DIV null, moderatable.name
@@ -538,7 +538,7 @@ ModerateItem = ReactiveComponent
                   'Hide full conversation'
 
                 UL style: {opacity: .5, marginLeft: 73}, 
-                  Point key: point, rendered_as: 'under_review'
+                  Point key: point, rendered_as: 'under_review', enable_dragging: false
                 for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key))
 
                   if comment != moderatable.key
@@ -726,7 +726,7 @@ FactcheckPoint = ReactiveComponent
         # point area
         DIV style: task_area_section_style, 
           UL style: {marginLeft: 73}, 
-            Point key: point, rendered_as: 'under_review'
+            Point key: point, rendered_as: 'under_review', enable_dragging: false
 
           DIV style:{fontSize: 12, marginLeft: 73}, 
             "by #{fetch(point.user).name}"

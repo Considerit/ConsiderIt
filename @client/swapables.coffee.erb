@@ -201,9 +201,11 @@ window.LearnDecideShareHomepage = ReactiveComponent
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
 
+    homepage = fetch('/page/')
+    
     # The "Welcome to the community!" people
-    contributors = @page.contributors.filter((u)-> !!fetch(u).avatar_file_name)
-    contributors_without_avatar_count = @page.contributors.filter((u)-> !fetch(u).avatar_file_name).length
+    contributors = homepage.contributors.filter((u)-> !!fetch(u).avatar_file_name)
+    contributors_without_avatar_count = homepage.contributors.filter((u)-> !fetch(u).avatar_file_name).length
 
     # Columns of the docking header for the proposal list.
     columns = customization('homepage_heading_columns') or [ 

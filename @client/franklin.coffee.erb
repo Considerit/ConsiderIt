@@ -80,12 +80,13 @@ window.isNeutralOpinion = (stance) ->
 userOpinion = (user_key) ->
   window.user_opinions[user_key]
 
-
-
-_proposal_mode_changed = false
 window.updateProposalMode = (proposal_mode, triggered_by) ->
   toggle = -> 
     loc = fetch('location')
+
+    if proposal_mode == 'results' && loc.params.results ||
+        proposal_mode == 'crafting' && !loc.params.results
+      return
 
     if proposal_mode == 'results'
       loc.params.results = true
@@ -93,10 +94,6 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
       delete loc.params.results
     delete loc.params.selected
     save loc
-
-    # Kludge for tracking when the page changes
-    _proposal_mode_changed = true
-    _.defer -> _proposal_mode_changed = false
 
     window.writeToLog
       what: 'toggle proposal mode'
@@ -112,139 +109,6 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
       callback : toggle
   else
     toggle()
-
-
-
-##
-# PageTransition mixin
-# Helper for components that implement a page transition animation.
-# Applies styles defined in the component that change
-# depending on the route. 
-#
-# The styles will be added on every update and on component mount. 
-# However, it will *animate* the styles only if the page has changed 
-# (_proposal_mode_changed). Otherwise it just directly applies the styles
-PageTransition = 
-
-  componentDidMount : -> @applyStyles false
-
-  componentDidUpdate : (prev_props, prev_page) ->
-    @applyStyles _proposal_mode_changed
-
-  applyStyles : (animate) ->
-    duration = if animate then TRANSITION_SPEED else 0
-    root = @root
-    $el = $(@getDOMNode())
-
-    mode = get_proposal_mode()
-
-    # Each Component that implements this mixin can get triggered multiple times 
-    # after a route change. So we're going to ensure that we apply styles only 
-    # once for a given route change. 
-    return if @transitioning == mode
-
-    @transitioning = mode
-
-    switch @name
-
-      # The position of the CommunityPoints will move to the wings on crafting,
-      # and be close together in results
-      when 'communitypoints'
-
-        if mode == 'crafting'
-          offset_x = if @props.key == 'cons' then 0 else DECISION_BOARD_WIDTH
-        else if mode == 'results'
-          offset_x = DECISION_BOARD_WIDTH / 2
-
-        $el.velocity { translateX: offset_x }, {duration}
-
-      # The slider handle and mouth will change size and location when moving 
-      # between crafting and results
-      when 'slider'
-        slider = fetch('slider')
-        handle_style = 
-          scale: if !@props.focused || slider.docked then 1 else 2.5
-        $el.find('.the_handle').velocity handle_style, {duration}
-
-      when 'bubblemouth'
-        slider = fetch 'slider'
-        stance = slider.stance
-        direction = if stance > 0 && !isNeutralOpinion(stance) then 1 else -1
-        mouth_x   = if isNeutralOpinion(stance) then 0 else -18
-
-        if mode == 'crafting'
-          bubblemouth_style = 
-            translateX: direction * mouth_x
-            translateY: 20
-            scaleX: direction * 1.5
-            scaleY: 1.5
-        else 
-          bubblemouth_style = 
-            translateX: direction * mouth_x
-            translateY: -4
-            scaleX: direction
-            scaleY: 1
-
-        $el.velocity bubblemouth_style, {duration}
-
-      # The decision board will have to expand for crafting and collapse into 
-      # to the Give Opinion button in results
-      when 'decisionboard'
-        if mode == 'crafting'
-          decision_board_style =
-            translateX: 0
-            translateY: 10
-            width: DECISION_BOARD_WIDTH
-            minHeight: 275
-
-          $el.find('.decision_board_body')
-            .velocity(decision_board_style, {duration})
-
-          $el.find('.give_opinion_button').css 'visibility', 'hidden'
-          _.delay => 
-            #delay & check in case of quick switch between pages
-            if mode == 'crafting'
-              $el.find('.your_points, .save_opinion_button, .cancel_opinion_button')
-                .css('display', '')
-          , duration
-
-        else 
-          slider = fetch 'slider'
-          slider_position = slider.clientX
-
-          give_opinion_button_width = 200
-
-          gutter = .1 * give_opinion_button_width
-          opinion_region_x = -gutter + slider_position/BODY_WIDTH * \
-                             (DECISION_BOARD_WIDTH - \
-                              give_opinion_button_width + \
-                              2 * gutter)
-                             
-
-          decision_board_style =
-            translateX: opinion_region_x
-            translateY: -18
-            width: give_opinion_button_width
-            minHeight: 32
-            marginTop: 0
-
-          $el.find('.decision_board_body')
-            .velocity(decision_board_style, {duration})
-
-          $el.find('.your_points, .save_opinion_button, .cancel_opinion_button')
-            .css('display', 'none')
-
-          _.delay => 
-            #check in case of quick switch between pages
-            if mode == 'results'
-              $el.find('.give_opinion_button').css 'visibility', ''
-          , duration  
-      else
-        throw "The #{@name} component does not define any styles to animate"
-
-    _.delay => 
-      @transitioning = null
-    , duration
 
 
 #####################
@@ -1195,7 +1059,6 @@ Histogram = ReactiveComponent
 #
 Slider = ReactiveComponent
   displayName: 'Slider'
-  mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   render : ->
 
@@ -1263,6 +1126,10 @@ Slider = ReactiveComponent
         top: -9
         position: 'relative'
         visibility: if @props.backgrounded then 'hidden'
+
+        transition: "transform #{TRANSITION_SPEED}ms"
+        transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
+
 
       face_style = 
         position: 'absolute'
@@ -1528,7 +1395,6 @@ styles += """
 # Handles the user's list of important points in crafting page. 
 DecisionBoard = ReactiveComponent
   displayName: 'DecisionBoard'
-  mixins: [PageTransition] # animation logic when moving results <==> crafting
 
   render : ->
     current_user = fetch('/current_user')
@@ -1545,17 +1411,37 @@ DecisionBoard = ReactiveComponent
       borderStyle: 'dashed'
       borderWidth: 3
       borderColor: focus_blue
-
+      transition: "transform #{TRANSITION_SPEED}ms, width #{TRANSITION_SPEED}ms, min-height #{TRANSITION_SPEED}ms"
 
     if @local.user_hovering_on_drop_target
       decision_board_style.borderStyle = 'solid'
 
     if get_proposal_mode() == 'results'
+      give_opinion_button_width = 200
+      slider = fetch 'slider'
+      slider_position = slider.clientX
+
+      gutter = .1 * give_opinion_button_width
+      opinion_region_x = -gutter + slider_position/BODY_WIDTH * \
+                         (DECISION_BOARD_WIDTH - \
+                          give_opinion_button_width + \
+                          2 * gutter)
+
+
       _.extend decision_board_style,
         borderStyle: 'solid'
         backgroundColor: focus_blue
         boxShadow: '0px 2px 0px black'
         cursor: 'pointer'
+        transform: "translate(#{opinion_region_x}px, -18px)"
+        minHeight: 32
+        width: give_opinion_button_width
+
+    else 
+      _.extend decision_board_style,
+        transform: "translate(0, 10px)"
+        minHeight: 275
+        width: DECISION_BOARD_WIDTH
 
 
     if get_selected_point() && get_proposal_mode() == 'crafting'
@@ -1594,13 +1480,15 @@ DecisionBoard = ReactiveComponent
             margin: 0
             fontSize: 16
             boxShadow: 'none'
-        else
-          give_opinion_style = {}
+            visibility: 'hidden'
+        else 
+          give_opinion_style =
+            visibility: 'hidden'
 
         [DIV
           key: 'body' 
           className:'decision_board_body'
-          style: decision_board_style
+          style: css.crossbrowserify decision_board_style
           onClick: => 
             if get_proposal_mode() == 'results' 
               updateProposalMode('crafting', 'give_opinion_button')
@@ -1612,6 +1500,7 @@ DecisionBoard = ReactiveComponent
               style: 
                 padding: '0 18px'
                 marginTop: -3 # To undo the 3 pixel border
+                display: 'none'
               YourPoints { key: 'your_con_points', valence: 'cons' }
               YourPoints { key: 'your_pro_points', valence: 'pros' }
 
@@ -1633,6 +1522,8 @@ DecisionBoard = ReactiveComponent
           # Big bold button at the bottom of the crafting page
           DIV 
             className:'save_opinion_button primary_button'
+            style:
+              display: 'none'
             onClick: => 
               your_opinion = fetch(@proposal.your_opinion)
               if can_opine > 0
@@ -1696,12 +1587,19 @@ DecisionBoard = ReactiveComponent
           if !your_opinion.published
             A 
               className:'cancel_opinion_button primary_cancel_button'
+              style: 
+                display: 'none'
               onClick: => updateProposalMode('results', 'cancel_button')
               'or just skip to the results' ]
           
 
+  componentDidUpdate : ->
+    console.log 'UPDATING'
+    @transition if !Modernizr.csstransitions then 0 else TRANSITION_SPEED
 
   componentDidMount : ->
+    @transition 0
+
     # make this a drop target
     $el = $(@getDOMNode())
     $el.droppable
@@ -1732,9 +1630,35 @@ DecisionBoard = ReactiveComponent
           @local.user_hovering_on_drop_target = true
           save @local
 
+  transition : (speed) -> 
+
+    if @last_proposal_mode != get_proposal_mode()
+      @last_proposal_mode = get_proposal_mode()
+
+      $(@getDOMNode())
+        .find('.give_opinion_button')
+        .css 'visibility', 'hidden'
+
+      $(@getDOMNode())
+        .find('.your_points, .save_opinion_button, .cancel_opinion_button')
+        .css 'display', 'none'
+
+      _.delay => 
+        if get_proposal_mode() == 'results'
+          $(@getDOMNode())
+            .find('.give_opinion_button')
+            .css 'visibility', ''
+
+        if get_proposal_mode() == 'crafting'
+          $(@getDOMNode())
+            .find('.your_points, .save_opinion_button, .cancel_opinion_button')
+            .css 'display', ''
+
+      , speed
+
+
 Bubblemouth = ReactiveComponent
   displayName: 'Bubblemouth'
-  mixins: [PageTransition] # animation logic when moving results <==> crafting
 
   render : -> 
     slider = fetch('slider')
@@ -1763,10 +1687,22 @@ Bubblemouth = ReactiveComponent
       top: -25
       visibility: if get_selected_point() then 'hidden'
 
+      transition: "transform #{TRANSITION_SPEED}ms"
+
+    stance = slider.stance
+    direction = if stance > 0 && !isNeutralOpinion(stance) then 1 else -1
+    mouth_x   = if isNeutralOpinion(stance) then 0 else -18
+
+    if get_proposal_mode() == 'crafting'
+      bubblemouth_style.transform = \
+        "scale(#{direction * 1.5}, 1.5) translate(#{mouth_x}px, 13px)"
+    else 
+      bubblemouth_style.transform = \
+        "scale(#{direction}, 1) translate(#{mouth_x}px, -4px)"      
     IMG 
       className:'bubblemouth'
       src: bubblemouth_src
-      style: bubblemouth_style
+      style: css.crossbrowserify bubblemouth_style
 
 
 
@@ -1954,7 +1890,6 @@ buildPointsList = (proposal, valence, sort_field, filter_included) ->
 # Shown in wing during crafting, in middle on results. 
 CommunityPoints = ReactiveComponent
   displayName: 'CommunityPoints'
-  mixins: [PageTransition] # animation logic when moving results <==> crafting
 
   render : ->
 
@@ -1965,6 +1900,11 @@ CommunityPoints = ReactiveComponent
     contains_selection = get_selected_point() && 
                           fetch(get_selected_point()).is_pro == (@props.key == 'pros')
 
+    x_pos = if @props.points_draggable
+              if @props.key == 'cons' then 0 else DECISION_BOARD_WIDTH
+            else
+              DECISION_BOARD_WIDTH / 2
+
     # TODO: The minheight below is not a principled or complete solution to two
     #       sizing issues: 
     #           1) resizing the reasons region when the height of the decision board 
@@ -1973,12 +1913,16 @@ CommunityPoints = ReactiveComponent
     #              with few inclusions, the document height can jarringly fluctuate
     DIV
       className: "points_by_community #{@props.key}_by_community"
-      style:
+      style: css.crossbrowserify
         width: POINT_CONTENT_WIDTH
         minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
         zIndex: if contains_selection then 6 else 2
         margin: '38px 18px 0 18px'
         position: 'relative'
+
+        transition: "transform #{TRANSITION_SPEED}ms"
+        transform: "translate(#{x_pos}px, 0)"
+
 
       DIV 
         className:'points_heading_label'

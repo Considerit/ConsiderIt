@@ -452,18 +452,21 @@ window.css = {}
 css_as_str = (attrs) -> _.keys(attrs).map( (p) -> "#{p}: #{attrs[p]}").join(';') + ';'
 
 css.crossbrowserify = (props, as_str = false) -> 
+
+  prefixes = ['-webkit-', '-ms-', '-mox-', '-o-']
   if props.transform
-    _.extend props,
-      '-webkit-transform' : props.transform
-      '-ms-transform' : props.transform
-      '-moz-transform' : props.transform
-      '-o-transform' : props.transform
+    for prefix in prefixes
+      props["#{prefix}transform"] = props.transform
+
+  if props.transition
+    for prefix in prefixes
+      props["#{prefix}transition"] = props.transition.replace("transform", "#{prefix}transform")
 
   if props.userSelect
     _.extend props,
-      MozUserSelect: 'none'
-      WebkitUserSelect: 'none'
-      msUserSelect: 'none'
+      MozUserSelect: props.userSelect
+      WebkitUserSelect: props.userSelect
+      msUserSelect: props.userSelect
 
   if as_str then css_as_str(props) else props
 

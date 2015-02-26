@@ -4160,7 +4160,10 @@ Page = ReactiveComponent
                 when '/dashboard/roles'
                   SubdomainRoles key: "/page/dashboard/roles"
                 else
-                  Proposal key: @page.proposal.key
+                  if @page?.proposal?
+                    Proposal key: @page.proposal.key
+                  else
+                    SPAN null
 
         customization('Footer')()
 
@@ -4168,7 +4171,7 @@ Root = ReactiveComponent
   displayName: 'Root'
   resetSelection: (e) ->
 
-    if !root.auth
+    if !@root.auth
       hist = fetch 'histogram'
 
       if get_selected_point()
@@ -4253,5 +4256,5 @@ $( ->
     if 'ontouchend' in document #detect touch support
       React.initializeTouchEvents(true)
 
-    window.root = React.renderComponent(Root(), document.getElementById('content'))
+    React.renderComponent Root(), document.getElementById('content')
 )

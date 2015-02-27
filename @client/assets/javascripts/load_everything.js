@@ -10,6 +10,7 @@
 
 //= require ../../activerest-m
 //= require ../../state_dash
+//= require ../../state_graph
 
 //= require ../../histogram_sim
 

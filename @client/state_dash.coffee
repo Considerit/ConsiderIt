@@ -264,7 +264,10 @@ fetch 'state_dash',
   filter: null
 
 recent_keys = [0,0,0,0,0]
-document.onkeypress = (e) ->
+
+
+
+document.addEventListener "keypress", (e) -> 
   key = (e and e.keyCode) or event.keyCode
   recent_keys.push(key)
   recent_keys = recent_keys.slice(1)

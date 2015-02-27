@@ -1480,7 +1480,6 @@ DecisionBoard = ReactiveComponent
             margin: 0
             fontSize: 16
             boxShadow: 'none'
-            visibility: 'hidden'
         else 
           give_opinion_style =
             visibility: 'hidden'
@@ -1500,7 +1499,7 @@ DecisionBoard = ReactiveComponent
               style: 
                 padding: '0 18px'
                 marginTop: -3 # To undo the 3 pixel border
-                display: 'none'
+
               YourPoints { key: 'your_con_points', valence: 'cons' }
               YourPoints { key: 'your_pro_points', valence: 'pros' }
 
@@ -1594,7 +1593,6 @@ DecisionBoard = ReactiveComponent
           
 
   componentDidUpdate : ->
-    console.log 'UPDATING'
     @transition if !Modernizr.csstransitions then 0 else TRANSITION_SPEED
 
   componentDidMount : ->
@@ -1607,15 +1605,15 @@ DecisionBoard = ReactiveComponent
       drop : (ev, ui) =>
         if ui.draggable.parent().is('.community_point')
           your_opinion = fetch(@proposal.your_opinion)
-          ui.draggable.parent().velocity 'fadeOut', 200, -> 
-            your_opinion.point_inclusions.push(
-              ui.draggable.parent().data('id'))
-            save(your_opinion)
 
-            window.writeToLog
-              what: 'included point'
-              details: 
-                point: ui.draggable.parent().data('id')
+          your_opinion.point_inclusions.push(
+            ui.draggable.parent().data('id'))
+          save(your_opinion)
+
+          window.writeToLog
+            what: 'included point'
+            details: 
+              point: ui.draggable.parent().data('id')
 
           @local.user_hovering_on_drop_target = false
           save @local
@@ -1631,30 +1629,39 @@ DecisionBoard = ReactiveComponent
           save @local
 
   transition : (speed) -> 
+    mode = get_proposal_mode()
 
-    if @last_proposal_mode != get_proposal_mode()
-      @last_proposal_mode = get_proposal_mode()
+    perform = (transitions) => 
+      for own k,v of transitions
+        $(@getDOMNode()).find(k).css(v)
 
-      $(@getDOMNode())
-        .find('.give_opinion_button')
-        .css 'visibility', 'hidden'
+    initial_state = 
+      '.give_opinion_button':
+        visibility: 'hidden'
+      '.your_points, .save_opinion_button, .cancel_opinion_button': 
+        display: 'none'
 
-      $(@getDOMNode())
-        .find('.your_points, .save_opinion_button, .cancel_opinion_button')
-        .css 'display', 'none'
+    final_state = JSON.parse JSON.stringify initial_state
+    if mode == 'results'
+      final_state['.give_opinion_button'].visibility = ''
+    else
+      final_state['.your_points, .save_opinion_button, .cancel_opinion_button'].display = ''
 
+    if @last_proposal_mode != mode && speed > 0
+      perform initial_state
+
+      # wait for css transitions to complete
+      @transitioning = true
       _.delay => 
-        if get_proposal_mode() == 'results'
-          $(@getDOMNode())
-            .find('.give_opinion_button')
-            .css 'visibility', ''
-
-        if get_proposal_mode() == 'crafting'
-          $(@getDOMNode())
-            .find('.your_points, .save_opinion_button, .cancel_opinion_button')
-            .css 'display', ''
-
+        perform final_state
+        @transitioning = false
       , speed
+
+    else if !@transitioning
+      perform initial_state
+      perform final_state
+
+    @last_proposal_mode = mode
 
 
 Bubblemouth = ReactiveComponent
@@ -4246,7 +4253,7 @@ window.Histogram = Histogram
 #######
 # Start the app!
 
-$( ->
+( ->
   #static consider.it homepage doesn't want this stuff by default
   is_static_consider_it = !document.getElementById('content')
   if !is_static_consider_it
@@ -4257,4 +4264,4 @@ $( ->
       React.initializeTouchEvents(true)
 
     React.renderComponent Root(), document.getElementById('content')
-)
+)()

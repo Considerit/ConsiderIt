@@ -9,6 +9,7 @@
 # polyfill to support non-pushstate compatible browsers, such as 
 # https://github.com/devote/HTML5-History-API 
 
+
 ######
 # Public API
 #
@@ -16,6 +17,7 @@
 #
 # Convenience method for updating the browser window location. 
 # Optionally pass url_parameters as a separate object. 
+
 window.loadPage = (url, url_params) ->
   loc = fetch('location')
   loc.params = url_params or {}
@@ -33,12 +35,12 @@ window.loadPage = (url, url_params) ->
   save loc
 
 
+
 ##########
 ## Internal
 
 # for html5 history polyfill
 location = window.history.location || window.location
-
 
 #####
 # BrowserLocation
@@ -109,10 +111,8 @@ relativeURLFromStatebus = ->
                                        ['attachEvent', 'onpopstate']
 
 window[addEventListener] popstate_event, (ev) -> 
-  console.log 'GOT POPSTATE'
   loadPage relativeURLFromLocation()
 
 # Initialize location state when page is first loaded.
 loadPage relativeURLFromLocation()
-
 

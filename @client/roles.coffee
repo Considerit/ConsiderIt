@@ -6,8 +6,8 @@ ProposalRoles = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    pro_label = customization('point_labels.pro.singular')
-    con_label = customization('point_labels.con.singular')
+    pro_label = customization('point_labels.pro')
+    con_label = customization('point_labels.con')
 
 
     roles = [ 

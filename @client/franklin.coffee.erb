@@ -359,8 +359,9 @@ Proposal = ReactiveComponent
               width: BODY_WIDTH - 10
               focused: mode == 'crafting'
               backgrounded: get_selected_point() && mode == 'crafting'
-              pole_labels: [ customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose"), \
-                             customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.support")]
+              pole_labels: [ \
+                customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose"), \
+                customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.support")]
 
         #reasons
         DIV 
@@ -379,7 +380,7 @@ Proposal = ReactiveComponent
           #community cons
           CommunityPoints 
             key: 'cons'
-            heading: "#{if mode == 'results' then 'Top' else "Others'"} Cons"
+            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{customization('point_labels.con.plural')}"
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \
@@ -412,7 +413,7 @@ Proposal = ReactiveComponent
           #community pros
           CommunityPoints 
             key: 'pros'
-            heading: "#{if mode == 'results' then 'Top' else "Others'"} Pros"            
+            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{customization('point_labels.pro.plural')}"            
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \
@@ -1411,7 +1412,9 @@ DecisionBoard = ReactiveComponent
       borderStyle: 'dashed'
       borderWidth: 3
       borderColor: focus_blue
-      transition: "transform #{TRANSITION_SPEED}ms, width #{TRANSITION_SPEED}ms, min-height #{TRANSITION_SPEED}ms"
+      transition: "transform #{TRANSITION_SPEED}ms, " + \
+                  "width #{TRANSITION_SPEED}ms, " + \
+                  "min-height #{TRANSITION_SPEED}ms"
 
     if @local.user_hovering_on_drop_target
       decision_board_style.borderStyle = 'solid'
@@ -1574,8 +1577,10 @@ DecisionBoard = ReactiveComponent
                 htmlFor: "follow_proposal"
                 title:'''
                       We\'ll send periodic email notifications summarizing 
-                      activity on the proposal, as well as alerts about new 
-                      pro and con points. You can easily unsubscribe later.'''
+                      activity on the proposal, as well as alerts about new ''' + \
+                      customization('point_labels.pro.singular') + ' and ' + \
+                      customization('point_labels.con.singular') + \
+                      'points. You can easily unsubscribe later.'
                 style: 
                   marginLeft: 6
                   fontSize: 16
@@ -1736,6 +1741,10 @@ YourPoints = ReactiveComponent
       fontWeight: 700
       color: if get_selected_point() then "#ccc" else focus_blue
 
+    singular_valence = @props.valence.substring 0, @props.valence.length - 1
+    heading = "Give Your " + \
+              capitalize(customization('point_labels.' + singular_valence + '.plural'))
+
     DIV 
       className: "points_on_decision_board #{@props.valence}_on_decision_board"
       style: 
@@ -1745,7 +1754,7 @@ YourPoints = ReactiveComponent
       DIV 
         className:'points_heading_label'
         style: header_style
-        "Give Your #{capitalize(@props.valence)}"
+        heading 
 
       UL null,
         for point in included_points
@@ -1785,7 +1794,12 @@ YourPoints = ReactiveComponent
               width: 180
 
             "Drag a "
-            capitalize(if @props.valence=='pros' then 'pro' else 'con')
+            capitalize \
+              if @props.valence == 'pros' 
+                customization('point_labels.pro.singular')
+              else 
+                customization('point_labels.con.singular')
+
             " from the #{left_or_right}"
 
         if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES
@@ -1825,8 +1839,11 @@ YourPoints = ReactiveComponent
                   writeToLog {what: 'click new point'}
 
                 "Write a new "
-                capitalize(if @props.valence == 'pros' then 'pro' else 'con')
-
+                capitalize \
+                  if @props.valence == 'pros' 
+                    customization('point_labels.pro.singular')
+                  else 
+                    customization('point_labels.con.singular')
           else
             EditPoint
               key: "new_point_#{@props.valence}"
@@ -1961,7 +1978,9 @@ CommunityPoints = ReactiveComponent
               textAlign: 'center'
               fontWeight: if browser.high_density_display then '300' else '400'
 
-            "No #{@props.key} given"
+            "No " + \
+            customization('point_labels.' + @props.key.substring(0, @props.key.length - 1) + '.plural') + \
+            " given"
 
 
 
@@ -2132,7 +2151,8 @@ Point = ReactiveComponent
       DIV className:'point_content', style : point_content_style,
 
 
-        if (!is_selected || @props.rendered_as == 'under_review') && @props.rendered_as != 'decision_board_point'
+        if (!is_selected || @props.rendered_as == 'under_review') && 
+            @props.rendered_as != 'decision_board_point'
 
           IMG
             className: 'community_point_mouth'
@@ -3891,7 +3911,6 @@ EditProposal = ReactiveComponent
                 position: 'absolute'
                 left: -25
                 top: 5
-
 
             'Permissions and invitations'
 

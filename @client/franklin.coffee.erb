@@ -380,7 +380,7 @@ Proposal = ReactiveComponent
           #community cons
           CommunityPoints 
             key: 'cons'
-            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{customization('point_labels.con.plural')}"
+            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{customization('point_labels.cons')}"
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \
@@ -413,7 +413,7 @@ Proposal = ReactiveComponent
           #community pros
           CommunityPoints 
             key: 'pros'
-            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{customization('point_labels.pro.plural')}"            
+            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{customization('point_labels.pros')}"            
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \
@@ -1578,8 +1578,8 @@ DecisionBoard = ReactiveComponent
                 title:'''
                       We\'ll send periodic email notifications summarizing 
                       activity on the proposal, as well as alerts about new ''' + \
-                      customization('point_labels.pro.singular') + ' and ' + \
-                      customization('point_labels.con.singular') + \
+                      customization('point_labels.pro') + ' and ' + \
+                      customization('point_labels.con') + \
                       'points. You can easily unsubscribe later.'
                 style: 
                   marginLeft: 6
@@ -1743,7 +1743,7 @@ YourPoints = ReactiveComponent
 
     singular_valence = @props.valence.substring 0, @props.valence.length - 1
     heading = "Give Your " + \
-              capitalize(customization('point_labels.' + singular_valence + '.plural'))
+              capitalize(customization('point_labels.' + singular_valence))
 
     DIV 
       className: "points_on_decision_board #{@props.valence}_on_decision_board"
@@ -1796,9 +1796,9 @@ YourPoints = ReactiveComponent
             "Drag a "
             capitalize \
               if @props.valence == 'pros' 
-                customization('point_labels.pro.singular')
+                customization('point_labels.pro')
               else 
-                customization('point_labels.con.singular')
+                customization('point_labels.con')
 
             " from the #{left_or_right}"
 
@@ -1841,9 +1841,9 @@ YourPoints = ReactiveComponent
                 "Write a new "
                 capitalize \
                   if @props.valence == 'pros' 
-                    customization('point_labels.pro.singular')
+                    customization('point_labels.pro')
                   else 
-                    customization('point_labels.con.singular')
+                    customization('point_labels.con')
           else
             EditPoint
               key: "new_point_#{@props.valence}"
@@ -1979,7 +1979,7 @@ CommunityPoints = ReactiveComponent
               fontWeight: if browser.high_density_display then '300' else '400'
 
             "No " + \
-            customization('point_labels.' + @props.key.substring(0, @props.key.length - 1) + '.plural') + \
+            customization('point_labels.' + @props.key.substring(0, @props.key.length - 1) ) + \
             " given"
 
 

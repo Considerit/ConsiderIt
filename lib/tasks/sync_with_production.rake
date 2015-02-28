@@ -56,18 +56,20 @@ def prepare_production_database(sql_url)
   puts "...downloaded and extracted production database backup from #{DATABASE_BACKUP_URL}"
 
   # Drop existing database
-  filename = "test/data/test.sql"
   
   Rake::Task["db:drop"].invoke  
   Rake::Task["db:create"].invoke
-  puts "...dropped and recreated database #{Rails.configuration.database_configuration[Rails.env]["database"]}"
+  db = Rails.configuration.database_configuration[Rails.env]
+  puts "...dropped and recreated database #{db['database']}"
 
   # Import production database backup
   puts "...now we're importing data. Might take a few minutes."
-  db = Rails.configuration.database_configuration[Rails.env]
+
+  puts "\t\tmysql -u#{db['username']} -p#{db['password']} #{db['database']} < #{Rails.root}/tmp/production_db.sql"
+
   system "mysql -u#{db['username']} -p#{db['password']} #{db['database']} < #{Rails.root}/tmp/production_db.sql"
 
-  puts "...imported production db into #{Rails.configuration.database_configuration[Rails.env]["database"]}"
+  puts "...imported production db into #{db['database']}"
 
   # Append .ghost to all non-super admin user email addresses
   # to prevent emails being sent to real users in a testing context
@@ -188,6 +190,7 @@ def download_files_from_production
             obj.save
           rescue => e
             pp "FAILED SAVING: #{url} because of #{e.to_s}"
+            ActiveRecord::Base.connection.reconnect!
           else 
             pp "Saved locally: #{url}"
           end

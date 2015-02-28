@@ -17,7 +17,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # doesn't already exist on the user's system.
   config.vm.box_url = "https://dl.dropboxusercontent.com/u/3403211/considerit/ubuntu12.box"
 
-  # config.vm.customize ["modifyvm", :id, "--memory", "4096"]
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 2048
+  end
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,

@@ -3,6 +3,33 @@
 for el of React.DOM
   window[el.toUpperCase()] = React.DOM[el]
 
+# A history-aware link
+old_A = A
+window.A = React.createClass
+  render : -> 
+
+    props = @props
+    if @props.href
+      _.defaults @props, 
+        onClick: (event) => 
+          if Backbone.history?._hasPushState
+            href = @getDOMNode().getAttribute('href') # use getAttribute rather than .href so we 
+                                                      # can easily check relative vs absolute url
+            
+            is_external_link = href.indexOf('//') > -1
+            opened_in_new_tab = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey
+
+            # Allow shift+click for new tabs, etc.
+            if !is_external_link && !opened_in_new_tab
+              event.preventDefault()
+              # Instruct Backbone to trigger routing events
+              window.app_router.navigate href, { trigger : true }
+              return false
+
+    old_A props, props.children
+
+
+
 window.styles = ""
 
 ####
@@ -22,11 +49,8 @@ window.CONTENT_WIDTH = 960
 window.BODY_WIDTH = 540
 window.POINT_WIDTH = 250
 window.POINT_CONTENT_WIDTH = 197
-window.HISTOGRAM_WIDTH = BODY_WIDTH    # Width of the slider / histogram base 
-window.HISTOGRAM_HEIGHT = 170
 window.DECISION_BOARD_WIDTH = BODY_WIDTH + 4 # the four is for the border
 window.REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 76
-window.MAX_HISTOGRAM_HEIGHT = 200
 window.DESCRIPTION_WIDTH = BODY_WIDTH
 window.SLIDER_HANDLE_SIZE = 22
 window.COMMUNITY_POINT_MOUTH_WIDTH = 17
@@ -39,12 +63,46 @@ window.COMMUNITY_POINT_MOUTH_WIDTH = 17
 # when doing development. 
 
 window.focus_blue = '#2478CC'
-window.default_avatar_in_histogram_color = '#a7a7a7'
+window.default_avatar_in_histogram_color = '#d3d3d3'
 #########################
+
+
+# We detect mobile browsers by inspecting the user agent. This check isn't perfect.
+rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
+window.browser = 
+  is_android_browser : !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
+  is_opera_mini : !!navigator.userAgent.match /Opera Mini/
+  is_ie9 : !!(document.documentMode && document.documentMode == 9)
+  is_iOS : !!navigator.platform.match(/(iPad|iPhone)/)
+  touch_enabled : 'ontouchend' in document
+  high_density_display : ((window.matchMedia && 
+                           (window.matchMedia('''
+                              only screen and (min-resolution: 124dpi), 
+                              only screen and (min-resolution: 1.3dppx), 
+                              only screen and (min-resolution: 48.8dpcm)''').matches || 
+                            window.matchMedia('''
+                              only screen and (-webkit-min-device-pixel-ratio: 1.3), 
+                              only screen and (-o-min-device-pixel-ratio: 2.6/2), 
+                              only screen and (min--moz-device-pixel-ratio: 1.3), 
+                              only screen and (min-device-pixel-ratio: 1.3)''').matches
+                            )) || 
+                          (window.devicePixelRatio && window.devicePixelRatio > 1.3))
+  is_mobile :  navigator.userAgent.match(/Android/i) || 
+                navigator.userAgent.match(/webOS/i) ||
+                navigator.userAgent.match(/iPhone/i) ||
+                navigator.userAgent.match(/iPad/i) ||
+                navigator.userAgent.match(/iPod/i) ||
+                navigator.userAgent.match(/BlackBerry/i) ||
+                navigator.userAgent.match(/Windows Phone/i)
+
 
 
 ##
 # Helpers
+
+
+window.inRange = (val, min, max) ->
+  return val <= max && val >= min
 
 window.capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
 
@@ -80,24 +138,18 @@ window.splitParagraphs = (user_content) ->
         else
           SPAN key: idx, text
 
-# Handles router navigation for links so that a page reload doesn't happen
-window.clickInternalLink = (event) ->
-  href = $(event.currentTarget).attr('href')
-
-  # Allow shift+click for new tabs, etc.
-  if !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
-    event.preventDefault()
-    # Instruct Backbone to trigger routing events
-    window.app_router.navigate href, { trigger : true }
-    return false
-
 # Computes the width of some text given some styles empirically
+width_cache = {}
 window.widthWhenRendered = (str, style) -> 
-  $el = $("<span id='width_test'>#{str}</span>").css(style)
-  $('#content').append($el)
-  width = $('#width_test').width()
-  $('#width_test').remove()
-  width
+  # This DOM manipulation is relatively expensive, so cache results
+  key = JSON.stringify _.extend({str: str}, style)
+  if key not of width_cache
+    $el = $("<span id='width_test'>#{str}</span>").css(style)
+    $('#content').append($el)
+    width = $('#width_test').width()
+    $('#width_test').remove()
+    width_cache[key] = width
+  width_cache[key]
 
 # Returns the style for a css triangle
 # 
@@ -364,6 +416,12 @@ css.crossbrowserify = (props, as_str = false) ->
       '-ms-transform' : props.transform
       '-moz-transform' : props.transform
       '-o-transform' : props.transform
+
+  if props.userSelect
+    _.extend props,
+      MozUserSelect: 'none'
+      WebkitUserSelect: 'none'
+      msUserSelect: 'none'
 
   if as_str then css_as_str(props) else props
 

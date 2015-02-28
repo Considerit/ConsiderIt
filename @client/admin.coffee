@@ -20,7 +20,7 @@ DashHeader = ReactiveComponent
 
       DIV style: {width: CONTENT_WIDTH, margin: 'auto', position: 'relative'},
         A
-          onClick: (=> window.app_router.navigate("/", {trigger: true}))
+          href: '/'
           style: {position: 'absolute', display: 'inline-block', top: 25, left: -40},
           I className: 'fa fa-home', style: {fontSize: 28}
         

@@ -48,7 +48,7 @@ class Subdomain < ActiveRecord::Base
   #   masthead_header_text
   #      This is bolded, white text in the header of the page.
   #   primary_color
-  #      This is the sticky proposal header / header background. Should be dark.
+  #      Used throughout site. Should be dark.
   #   masthead_background_image
   #      If this is set, the image is applied as a height = 300px background 
   #      image covering the area

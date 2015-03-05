@@ -146,7 +146,7 @@ window.positionAvatars = function(width, height, opinions) {
         if (dist < combined_r) {
           var separate_by, offset_x, offset_y
           separate_by = dist == 0 ? 1 : ( dist - combined_r ) / dist
-          offset_x = dx * separate_by * .6,
+          offset_x = dx * separate_by * .6
           offset_y = dy * separate_by * .6
 
           node.x -= offset_x

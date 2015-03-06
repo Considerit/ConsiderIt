@@ -1,7 +1,6 @@
 // ...
 //= require ./vendor/jquery
 //= require ./vendor/underscore
-//= require ./vendor/backbone
 //= require ./vendor/jquery.ui
 //= require ./vendor/d3.v3.min.js
 

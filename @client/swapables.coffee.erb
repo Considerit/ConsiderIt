@@ -377,7 +377,7 @@ window.ProposalSummary = ReactiveComponent
           height: '100%'
           minHeight: 66
 
-        onClick: => loadPage("/#{proposal.slug}")
+        onClick: => loadPage "/#{proposal.slug}"
         if !proposal.your_opinion || !your_opinion.published \
            || isNeutralOpinion(your_opinion.stance)
           style = {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}
@@ -410,7 +410,7 @@ window.ProposalSummary = ReactiveComponent
           paddingLeft: 15
           marginTop: -4
 
-        onClick: => loadPage(proposal_url(proposal))
+        onClick: => loadPage proposal_url(proposal)
         if proposal.top_point
           DIV 
             className: 'top_point community_point pro'

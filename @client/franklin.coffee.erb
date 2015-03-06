@@ -49,6 +49,7 @@ window.lefty = false
 
 
 #######
+# State stored in url params
 # TODO: eliminate
 get_proposal_mode = -> 
   loc = fetch('location')
@@ -79,11 +80,13 @@ window.isNeutralOpinion = (stance) ->
 userOpinion = (user_key) ->
   window.user_opinions[user_key]
 
-_proposal_mode_changed = false
-
 window.updateProposalMode = (proposal_mode, triggered_by) ->
   toggle = -> 
     loc = fetch('location')
+
+    if proposal_mode == 'results' && loc.params.results ||
+        proposal_mode == 'crafting' && !loc.params.results
+      return
 
     if proposal_mode == 'results'
       loc.params.results = true
@@ -91,10 +94,6 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
       delete loc.params.results
     delete loc.params.selected
     save loc
-
-    # Kludge for tracking when the page changes
-    _proposal_mode_changed = true
-    _.defer -> _proposal_mode_changed = false
 
     window.writeToLog
       what: 'toggle proposal mode'
@@ -110,142 +109,6 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
       callback : toggle
   else
     toggle()
-
-
-
-##
-# PageTransition mixin
-# Helper for components that implement a page transition animation.
-# Applies styles defined in the component that change
-# depending on the route. 
-#
-# The styles will be added on every update and on component mount. 
-# However, it will *animate* the styles only if the page has changed 
-# (_proposal_mode_changed). Otherwise it just directly applies the styles
-PageTransition = 
-
-  componentDidMount : -> @applyStyles false
-
-  componentDidUpdate : (prev_props, prev_page) ->
-    @applyStyles _proposal_mode_changed
-
-  applyStyles : (animate) ->
-    duration = if animate then TRANSITION_SPEED else 0
-    root = @root
-    $el = $(@getDOMNode())
-
-    # Each Component that implements this mixin can get triggered multiple times 
-    # after a route change. So we're going to ensure that we apply styles only 
-    # once for a given route change. 
-    return if @transitioning == get_proposal_mode()
-
-    @transitioning = get_proposal_mode()
-
-    switch @name
-
-      # The histogram will get transparent when moving to crafting page
-      when 'histogram'
-        opacity = if get_proposal_mode() == 'crafting' then '0.2' else '1.0'
-        $el.find('.histogram_bar').velocity {opacity: opacity}, {duration}
-
-      # The position of the CommunityPoints will move to the wings on crafting,
-      # and be close together in results
-      when 'communitypoints'
-
-        if get_proposal_mode() == 'crafting'
-          offset_x = if @props.key == 'cons' then 0 else DECISION_BOARD_WIDTH
-        else if get_proposal_mode() == 'results'
-          offset_x = DECISION_BOARD_WIDTH / 2
-
-        $el.velocity { translateX: offset_x }, {duration}
-
-      # The slider handle and mouth will change size and location when moving 
-      # between crafting and results
-      when 'slider'
-        slider = fetch('slider')
-        handle_style = 
-          scale: if get_proposal_mode() == 'results' || slider.docked then 1 else 2.5
-        $el.find('.the_handle').velocity handle_style, {duration}
-
-      when 'bubblemouth'
-        slider = fetch 'slider'
-        stance = slider.stance
-        direction = if stance > 0 && !isNeutralOpinion(stance) then 1 else -1
-        mouth_x   = if isNeutralOpinion(stance) then 0 else -18
-
-        if get_proposal_mode() == 'crafting'
-          bubblemouth_style = 
-            translateX: direction * mouth_x
-            translateY: 20
-            scaleX: direction * 1.5
-            scaleY: 1.5
-        else 
-          bubblemouth_style = 
-            translateX: direction * mouth_x
-            translateY: -4
-            scaleX: direction
-            scaleY: 1
-
-        $el.velocity bubblemouth_style, {duration}
-
-      # The decision board will have to expand for crafting and collapse into 
-      # to the Give Opinion button in results
-      when 'decisionboard'
-        if get_proposal_mode() == 'crafting'
-          decision_board_style =
-            translateX: 0
-            translateY: 10
-            width: DECISION_BOARD_WIDTH
-            minHeight: 275
-
-          $el.find('.decision_board_body')
-            .velocity(decision_board_style, {duration})
-
-          $el.find('.give_opinion_button').css 'visibility', 'hidden'
-          _.delay => 
-            #delay & check in case of quick switch between pages
-            if get_proposal_mode() == 'crafting'
-              $el.find('.your_points, .save_opinion_button, .cancel_opinion_button')
-                .css('display', '')
-          , duration
-
-        else 
-          slider = fetch 'slider'
-          slider_position = slider.clientX
-
-          give_opinion_button_width = 200
-
-          gutter = .1 * give_opinion_button_width
-          opinion_region_x = -gutter + slider_position/BODY_WIDTH * \
-                             (DECISION_BOARD_WIDTH - \
-                              give_opinion_button_width + \
-                              2 * gutter)
-                             
-
-          decision_board_style =
-            translateX: opinion_region_x
-            translateY: -18
-            width: give_opinion_button_width
-            minHeight: 32
-            marginTop: 0
-
-          $el.find('.decision_board_body')
-            .velocity(decision_board_style, {duration})
-
-          $el.find('.your_points, .save_opinion_button, .cancel_opinion_button')
-            .css('display', 'none')
-
-          _.delay => 
-            #check in case of quick switch between pages
-            if get_proposal_mode() == 'results'
-              $el.find('.give_opinion_button').css 'visibility', ''
-          , duration  
-      else
-        throw "The #{@name} component does not define any styles to animate"
-
-    _.delay => 
-      @transitioning = null
-    , duration
 
 
 #####################
@@ -286,13 +149,15 @@ Proposal = ReactiveComponent
     subdomain = fetch '/subdomain'
     @max_description_height = options.collapse_descriptions_at
 
+    mode = get_proposal_mode()
+
     if your_opinion.published
       can_opine = permit 'update opinion', @proposal, your_opinion
     else
       can_opine = permit 'publish opinion', @proposal
 
     # change to results page if user entered crafting page when it is not permitted
-    if get_proposal_mode() == 'crafting' && 
+    if mode == 'crafting' && 
         !(can_opine in [Permission.PERMITTED, Permission.UNVERIFIED_EMAIL, \
                         Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || 
          (can_opine == Permission.DISABLED && your_opinion.published))
@@ -330,6 +195,7 @@ Proposal = ReactiveComponent
     
     proposal_header = (customization('ProposalHeader'))()
 
+    newpoint_threshold = @buildNewPointThreshold()
 
     DIV key:@props.slug,
 
@@ -450,14 +316,15 @@ Proposal = ReactiveComponent
             dock_on_zoomed_screens: true
             constraints : ['slider-dock']
             dockable : => 
-              #get_proposal_mode() == 'results'
+              #mode == 'results'
               false
             start : 170 - 50
 
             stop : -> 
               $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
 
-            dummy: if fetch('histogram-dock').docked then 1 else -1
+            dummy:  if fetch('histogram-dock').docked then 1 else -1
+            dummy2: if mode == 'crafting' then 1 else -1
                     # TODO: Dummy is a shallow patch for an odd problem. 
                     # If you have a nested component (in this case Histogram) 
                     # which passes a prop based on a Statebus value, then 
@@ -475,20 +342,26 @@ Proposal = ReactiveComponent
               height: if fetch('histogram-dock').docked then 50 else 170
               enable_selection: true
               draw_base: if fetch('histogram-dock').docked then true else false
+              backgrounded: mode == 'crafting'
 
           Dock
             key: 'slider-dock'
             docked_key: 'slider'          
             dock_on_zoomed_screens: true
             constraints : ['decisionboard-dock', 'histogram-dock']
-            skip_jut: get_proposal_mode() == 'results'
+            skip_jut: mode == 'results'
             dockable : => 
-              get_proposal_mode() == 'crafting'
+              mode == 'crafting'
 
+            dummy: if get_selected_point() && mode == 'crafting' then 1 else 0
             Slider
               key: 'slider'
               width: BODY_WIDTH - 10
-
+              focused: mode == 'crafting'
+              backgrounded: get_selected_point() && mode == 'crafting'
+              pole_labels: [ \
+                customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose"), \
+                customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.support")]
 
         #reasons
         DIV 
@@ -505,7 +378,15 @@ Proposal = ReactiveComponent
           GroupSelectionRegion()
 
           #community cons
-          CommunityPoints { key: 'cons' }
+          CommunityPoints 
+            key: 'cons'
+            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{customization('point_labels.cons')}"
+            newpoint_threshold: newpoint_threshold
+            points_draggable: mode == 'crafting'
+            points: buildPointsList \
+              @proposal, 'cons', \
+              (if mode == 'results' then 'score' else 'last_inclusion'), \ 
+              mode == 'crafting'
 
           Dock
             key: 'decisionboard-dock'
@@ -513,7 +394,7 @@ Proposal = ReactiveComponent
             constraints : ['slider-dock']
             dock_on_zoomed_screens: true
             dockable : => 
-              get_proposal_mode() == 'crafting'
+              mode == 'crafting'
 
             start: -24
 
@@ -530,10 +411,18 @@ Proposal = ReactiveComponent
             DecisionBoard { key: 'decisionboard' }
 
           #community pros
-          CommunityPoints { key: 'pros' }
+          CommunityPoints 
+            key: 'pros'
+            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{customization('point_labels.pros')}"            
+            newpoint_threshold: newpoint_threshold
+            points_draggable: mode == 'crafting'
+            points: buildPointsList \
+              @proposal, 'pros', \
+              (if mode == 'results' then 'score' else 'last_inclusion'), \ 
+              mode == 'crafting'
 
 
-      if get_proposal_mode() == 'results' && 
+      if mode == 'results' && 
           your_opinion.published && 
           customization('ThanksForYourOpinion')
         customization('ThanksForYourOpinion')()
@@ -620,6 +509,17 @@ Proposal = ReactiveComponent
       for field in group.items
         @renderDescriptionField field
 
+  buildNewPointThreshold : ->
+    # Grab the 10th percentile
+    points = @page.points || []
+    newpoint_threshold = 
+      (_.sortBy points, \
+                (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
+
+    (newpoint_threshold and Date.parse(newpoint_threshold.created_at)) or 
+      new Date()
+
+
 # TODO: Refactor the below and make sure that the styles applied to the 
 #       user generated fields are in sync with the styling in the 
 #       wysiwyg editor. 
@@ -668,12 +568,17 @@ styles += """
 ##
 # Props
 # 
+#   proposal
+#     The proposal from which the opinions are drawn. 
 #   width, height
-#   enable_selection
+#   enable_selection (default = false)
 #     Whether users can select opinions segments on the histogram
-#   draw_base
+#   draw_base (default = false)
 #     Whether to draw a base with +/- labels. If a slider is attached,
 #     don't need the labels.
+#   backgrounded (default = false)
+#     If backgrounded, the histogram avatars are dimmed, and interactivity
+#     disabled. 
 #
 ##
 # The interaction rules: 
@@ -759,7 +664,6 @@ styles += """
 
 Histogram = ReactiveComponent
   displayName : 'Histogram'
-  mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   render: -> 
     hist = fetch('histogram')
@@ -794,8 +698,9 @@ Histogram = ReactiveComponent
     unselected_avatar_style = css.grayscale _.extend {}, regular_avatar_style, 
       opacity: .2
 
-    # 4) The style of the avatar on the crafting page
-    crafting_page_avatar_style = _.extend {}, unselected_avatar_style, 
+    # 4) The style of the avatar when the histogram is backgrounded 
+    #    (e.g. on the crafting page)
+    backgrounded_page_avatar_style = _.extend {}, unselected_avatar_style, 
       opacity: .1
 
     # Highlighted users are the users whose avatars are colorized and fully 
@@ -816,7 +721,7 @@ Histogram = ReactiveComponent
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = @props.enable_selection &&
                             !hist.selected_opinion && 
-                            get_proposal_mode() == 'results' &&
+                            !@props.backgrounded &&
                             (hist.selected_opinions || 
                               (!@local.touched && 
                                 @local.mouse_opinion_value && 
@@ -937,30 +842,30 @@ Histogram = ReactiveComponent
           height: @props.height
           position: 'relative'
           top: -1
-          cursor: if get_proposal_mode() == 'results' && 
+          cursor: if !@props.backgrounded && 
                       @props.enable_selection then 'pointer'
 
         for opinion in @opinions
           user = opinion.user
           fetch(opinion) # subscribe to changes so physics sim will get rerun...
 
-          if highlighted_users
+          if @props.backgrounded
+            avatar_style = if fetch('/current_user').user == user 
+                             _.extend({}, regular_avatar_style, {opacity: .25}) 
+                           else 
+                             backgrounded_page_avatar_style
+          else if highlighted_users
             if _.contains(highlighted_users, opinion.user)   
               avatar_style = selected_avatar_style
             else
               avatar_style = unselected_avatar_style
-          else if get_proposal_mode() == 'crafting'
-            avatar_style = if fetch('/current_user').user == user 
-                             _.extend({}, regular_avatar_style, {opacity: .25}) 
-                           else 
-                             crafting_page_avatar_style
           else
             avatar_style = regular_avatar_style
 
           Avatar 
             key: user
             user: user
-            hide_tooltip: get_proposal_mode() == 'crafting'
+            hide_tooltip: @props.backgrounded
             style: avatar_style
 
 
@@ -1030,7 +935,7 @@ Histogram = ReactiveComponent
   onMouseMove: (ev) -> 
     return if fetch('slider').is_moving
 
-    if get_proposal_mode() == 'results'
+    if @props.enable_selection && !@props.backgrounded
       hist = fetch('histogram')
       ev.stopPropagation()
 
@@ -1155,14 +1060,11 @@ Histogram = ReactiveComponent
 #
 Slider = ReactiveComponent
   displayName: 'Slider'
-  mixins: [PageTransition] #implements animation logic when moving results <==> crafting
 
   render : ->
 
     slider = fetch('slider')
     hist = fetch('histogram')
-    set_in_grayscale = get_selected_point() && get_proposal_mode() == 'crafting'
-
 
     # Update the slider position when the server gets back to us
     your_opinion = fetch(@proposal.your_opinion)
@@ -1181,7 +1083,7 @@ Slider = ReactiveComponent
       width: @props.width
       height: SLIDER_HANDLE_SIZE
 
-    if set_in_grayscale
+    if @props.backgrounded
       css.grayscale slider_style
 
     ####
@@ -1189,7 +1091,7 @@ Slider = ReactiveComponent
     slider_base_style = 
       width: @props.width
       height: 6
-      backgroundColor: if get_proposal_mode() == 'crafting' then '#AFD7FF' else '#787878'
+      backgroundColor: '#BBBFC7'
       position: 'absolute'
 
 
@@ -1224,7 +1126,11 @@ Slider = ReactiveComponent
         marginLeft: -SLIDER_HANDLE_SIZE / 2
         top: -9
         position: 'relative'
-        visibility: if set_in_grayscale then 'hidden'
+        visibility: if @props.backgrounded then 'hidden'
+
+        transition: "transform #{TRANSITION_SPEED}ms"
+        transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
+
 
       face_style = 
         position: 'absolute'
@@ -1258,8 +1164,7 @@ Slider = ReactiveComponent
 
     ####
     # Define slider feedback
-    draw_feedback = get_proposal_mode() == 'crafting' && 
-                     draw_handle
+    draw_feedback = @props.focused && draw_handle
     
     if draw_feedback
       slider_feedback = 
@@ -1286,7 +1191,7 @@ Slider = ReactiveComponent
         fontSize: 30
         fontWeight: 700
         color: focus_blue
-        visibility: if set_in_grayscale then 'hidden'
+        visibility: if @props.backgrounded then 'hidden'
 
       # Keep feedback centered over handle, but keep within the bounds of 
       # the slider region when the slider is in an extreme position. 
@@ -1313,35 +1218,32 @@ Slider = ReactiveComponent
 
       # Draw the pole labels of the slider      
       if !slider.docked
-        group = if get_proposal_mode() == 'crafting' then 'individual' else 'group'
-        for pole in ['oppose', 'support']  
-          w = widthWhenRendered \
-                customization("slider_pole_labels.#{group}.#{pole}"), \
-                {fontSize: 30}
+        for pole_label, idx in @props.pole_labels
+          w = widthWhenRendered pole_label, {fontSize: 30}
           DIV 
-            key: "pole_#{pole}"
+            key: pole_label
             style: 
               position: 'absolute'
               fontSize: 30
               top: -20
               pointerEvents: 'none'
-              left: if pole == 'oppose' then -(w + 55)
-              right: if pole == 'support' then -(w + 55)
+              left: if idx == 0 then -(w + 55)
+              right: if idx == 1 then -(w + 55)
 
-            customization("slider_pole_labels.#{group}.#{pole}")
+            pole_label
       else
-        for pole in ['oppose', 'support']  
+        for pole_label, idx in @props.pole_labels
           DIV 
-            key: "pole_#{pole}"
+            key: "small-#{pole_label}"
             style: 
               position: 'absolute'
               fontSize: 20
               top: -12
               pointerEvents: 'none'
-              left: if pole == 'oppose' then -15
-              right: if pole == 'support' then -20
+              left: if idx == 0 then -15
+              right: if idx == 1 then -20
 
-            if pole == 'oppose' then '–' else '+'
+            if idx == 0 then '–' else '+'
 
       # Draw the base of the slider
       DIV 
@@ -1386,7 +1288,7 @@ Slider = ReactiveComponent
           onTouchMove: @handleMouseMove
           style: css.crossbrowserify handle_style
 
-          if get_proposal_mode() == 'crafting'
+          if @props.focused
            [DIV 
               style: css.crossbrowserify(mouth_style)
             DIV 
@@ -1395,7 +1297,7 @@ Slider = ReactiveComponent
               style: css.crossbrowserify(_.defaults({right: 6}, eye_style ))
            ]
 
-          if get_proposal_mode() == 'crafting' && !slider.has_moved
+          if @props.focused && !slider.has_moved
             for support in [true, false]
               DIV 
                 style: 
@@ -1443,7 +1345,7 @@ Slider = ReactiveComponent
     # Clicking on the slider handle should transition us between 
     # crafting <=> results. We should also transition to crafting 
     # when we've been dragging on the results page. 
-    if slider.stance == your_opinion.stance || get_proposal_mode() == 'results'
+    if slider.stance == your_opinion.stance || !@props.focused
       new_page = if get_proposal_mode() == 'results' then 'crafting' else 'results'
       updateProposalMode new_page, 'click_slider'
       e.stopPropagation()
@@ -1494,7 +1396,6 @@ styles += """
 # Handles the user's list of important points in crafting page. 
 DecisionBoard = ReactiveComponent
   displayName: 'DecisionBoard'
-  mixins: [PageTransition] # animation logic when moving results <==> crafting
 
   render : ->
     current_user = fetch('/current_user')
@@ -1505,34 +1406,53 @@ DecisionBoard = ReactiveComponent
 
     register_dependency = fetch('slider').clientX 
                              # to keep bubble mouth in sync with slider
-
-    selected_point = get_selected_point() && get_proposal_mode() == 'crafting'
-    selected_wing_point = selected_point && 
-                           !_.contains(your_opinion.point_inclusions, \
-                                       get_selected_point())
     
     decision_board_style =
       borderRadius: 16
       borderStyle: 'dashed'
       borderWidth: 3
       borderColor: focus_blue
-
+      transition: "transform #{TRANSITION_SPEED}ms, " + \
+                  "width #{TRANSITION_SPEED}ms, " + \
+                  "min-height #{TRANSITION_SPEED}ms"
 
     if @local.user_hovering_on_drop_target
       decision_board_style.borderStyle = 'solid'
 
     if get_proposal_mode() == 'results'
+      give_opinion_button_width = 200
+      slider = fetch 'slider'
+      slider_position = slider.clientX
+
+      gutter = .1 * give_opinion_button_width
+      opinion_region_x = -gutter + slider_position/BODY_WIDTH * \
+                         (DECISION_BOARD_WIDTH - \
+                          give_opinion_button_width + \
+                          2 * gutter)
+
+
       _.extend decision_board_style,
         borderStyle: 'solid'
         backgroundColor: focus_blue
         boxShadow: '0px 2px 0px black'
         cursor: 'pointer'
+        transform: "translate(#{opinion_region_x}px, -18px)"
+        minHeight: 32
+        width: give_opinion_button_width
 
-    if selected_wing_point
-      css.grayscale decision_board_style
-      decision_board_style.opacity = '.4'
-    else if selected_point
-      decision_board_style.borderColor = "#ccc"
+    else 
+      _.extend decision_board_style,
+        transform: "translate(0, 10px)"
+        minHeight: 275
+        width: DECISION_BOARD_WIDTH
+
+
+    if get_selected_point() && get_proposal_mode() == 'crafting'
+      if !_.contains(your_opinion.point_inclusions, get_selected_point())
+        css.grayscale decision_board_style
+        decision_board_style.opacity = '.4'
+      else
+        decision_board_style.borderColor = "#ccc"
 
     if your_opinion.published
       can_opine = permit 'update opinion', @proposal, your_opinion
@@ -1563,13 +1483,14 @@ DecisionBoard = ReactiveComponent
             margin: 0
             fontSize: 16
             boxShadow: 'none'
-        else
-          give_opinion_style = {}
+        else 
+          give_opinion_style =
+            visibility: 'hidden'
 
         [DIV
           key: 'body' 
           className:'decision_board_body'
-          style: decision_board_style
+          style: css.crossbrowserify decision_board_style
           onClick: => 
             if get_proposal_mode() == 'results' 
               updateProposalMode('crafting', 'give_opinion_button')
@@ -1581,6 +1502,7 @@ DecisionBoard = ReactiveComponent
               style: 
                 padding: '0 18px'
                 marginTop: -3 # To undo the 3 pixel border
+
               YourPoints { key: 'your_con_points', valence: 'cons' }
               YourPoints { key: 'your_pro_points', valence: 'pros' }
 
@@ -1602,6 +1524,8 @@ DecisionBoard = ReactiveComponent
           # Big bold button at the bottom of the crafting page
           DIV 
             className:'save_opinion_button primary_button'
+            style:
+              display: 'none'
             onClick: => 
               your_opinion = fetch(@proposal.your_opinion)
               if can_opine > 0
@@ -1653,8 +1577,10 @@ DecisionBoard = ReactiveComponent
                 htmlFor: "follow_proposal"
                 title:'''
                       We\'ll send periodic email notifications summarizing 
-                      activity on the proposal, as well as alerts about new 
-                      pro and con points. You can easily unsubscribe later.'''
+                      activity on the proposal, as well as alerts about new ''' + \
+                      customization('point_labels.pro') + ' and ' + \
+                      customization('point_labels.con') + \
+                      'points. You can easily unsubscribe later.'
                 style: 
                   marginLeft: 6
                   fontSize: 16
@@ -1665,12 +1591,18 @@ DecisionBoard = ReactiveComponent
           if !your_opinion.published
             A 
               className:'cancel_opinion_button primary_cancel_button'
+              style: 
+                display: 'none'
               onClick: => updateProposalMode('results', 'cancel_button')
               'or just skip to the results' ]
           
 
+  componentDidUpdate : ->
+    @transition if !Modernizr.csstransitions then 0 else TRANSITION_SPEED
 
   componentDidMount : ->
+    @transition 0
+
     # make this a drop target
     $el = $(@getDOMNode())
     $el.droppable
@@ -1678,15 +1610,15 @@ DecisionBoard = ReactiveComponent
       drop : (ev, ui) =>
         if ui.draggable.parent().is('.community_point')
           your_opinion = fetch(@proposal.your_opinion)
-          ui.draggable.parent().velocity 'fadeOut', 200, -> 
-            your_opinion.point_inclusions.push(
-              ui.draggable.parent().data('id'))
-            save(your_opinion)
 
-            window.writeToLog
-              what: 'included point'
-              details: 
-                point: ui.draggable.parent().data('id')
+          your_opinion.point_inclusions.push(
+            ui.draggable.parent().data('id'))
+          save(your_opinion)
+
+          window.writeToLog
+            what: 'included point'
+            details: 
+              point: ui.draggable.parent().data('id')
 
           @local.user_hovering_on_drop_target = false
           save @local
@@ -1701,9 +1633,44 @@ DecisionBoard = ReactiveComponent
           @local.user_hovering_on_drop_target = true
           save @local
 
+  transition : (speed) -> 
+    mode = get_proposal_mode()
+
+    perform = (transitions) => 
+      for own k,v of transitions
+        $(@getDOMNode()).find(k).css(v)
+
+    initial_state = 
+      '.give_opinion_button':
+        visibility: 'hidden'
+      '.your_points, .save_opinion_button, .cancel_opinion_button': 
+        display: 'none'
+
+    final_state = JSON.parse JSON.stringify initial_state
+    if mode == 'results'
+      final_state['.give_opinion_button'].visibility = ''
+    else
+      final_state['.your_points, .save_opinion_button, .cancel_opinion_button'].display = ''
+
+    if @last_proposal_mode != mode && speed > 0
+      perform initial_state
+
+      # wait for css transitions to complete
+      @transitioning = true
+      _.delay => 
+        perform final_state
+        @transitioning = false
+      , speed
+
+    else if !@transitioning
+      perform initial_state
+      perform final_state
+
+    @last_proposal_mode = mode
+
+
 Bubblemouth = ReactiveComponent
   displayName: 'Bubblemouth'
-  mixins: [PageTransition] # animation logic when moving results <==> crafting
 
   render : -> 
     slider = fetch('slider')
@@ -1732,10 +1699,22 @@ Bubblemouth = ReactiveComponent
       top: -25
       visibility: if get_selected_point() then 'hidden'
 
+      transition: "transform #{TRANSITION_SPEED}ms"
+
+    stance = slider.stance
+    direction = if stance > 0 && !isNeutralOpinion(stance) then 1 else -1
+    mouth_x   = if isNeutralOpinion(stance) then 0 else -18
+
+    if get_proposal_mode() == 'crafting'
+      bubblemouth_style.transform = \
+        "scale(#{direction * 1.5}, 1.5) translate(#{mouth_x}px, 13px)"
+    else 
+      bubblemouth_style.transform = \
+        "scale(#{direction}, 1) translate(#{mouth_x}px, -4px)"      
     IMG 
       className:'bubblemouth'
       src: bubblemouth_src
-      style: bubblemouth_style
+      style: css.crossbrowserify bubblemouth_style
 
 
 
@@ -1762,6 +1741,10 @@ YourPoints = ReactiveComponent
       fontWeight: 700
       color: if get_selected_point() then "#ccc" else focus_blue
 
+    singular_valence = @props.valence.substring 0, @props.valence.length - 1
+    heading = "Give Your " + \
+              capitalize(customization('point_labels.' + singular_valence))
+
     DIV 
       className: "points_on_decision_board #{@props.valence}_on_decision_board"
       style: 
@@ -1771,7 +1754,7 @@ YourPoints = ReactiveComponent
       DIV 
         className:'points_heading_label'
         style: header_style
-        "Give Your #{capitalize(@props.valence)}"
+        heading 
 
       UL null,
         for point in included_points
@@ -1788,6 +1771,7 @@ YourPoints = ReactiveComponent
                 key: point
                 rendered_as: 'decision_board_point'
                 your_points_key: @props.key
+                enable_dragging: true
 
         #drop target
         DIV 
@@ -1810,7 +1794,12 @@ YourPoints = ReactiveComponent
               width: 180
 
             "Drag a "
-            capitalize(if @props.valence=='pros' then 'pro' else 'con')
+            capitalize \
+              if @props.valence == 'pros' 
+                customization('point_labels.pro')
+              else 
+                customization('point_labels.con')
+
             " from the #{left_or_right}"
 
         if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES
@@ -1850,8 +1839,11 @@ YourPoints = ReactiveComponent
                   writeToLog {what: 'click new point'}
 
                 "Write a new "
-                capitalize(if @props.valence == 'pros' then 'pro' else 'con')
-
+                capitalize \
+                  if @props.valence == 'pros' 
+                    customization('point_labels.pro')
+                  else 
+                    customization('point_labels.con')
           else
             EditPoint
               key: "new_point_#{@props.valence}"
@@ -1872,6 +1864,49 @@ styles += """
 
 """
 
+buildPointsList = (proposal, valence, sort_field, filter_included) ->
+  sort_field = sort_field or 'score'
+  points = fetch("/page/#{proposal.slug}").points
+  opinions = fetch("/page/#{proposal.slug}").opinions
+
+  points = (pnt for pnt in points when pnt.is_pro == (valence == 'pros') )
+
+  if filter_included
+    included_points = fetch(proposal.your_opinion).point_inclusions
+    points = (pnt for pnt in points when !_.contains(included_points, pnt.key) )
+
+  # Filter down to the points included in the selection opinions, if set. 
+  hist = fetch('histogram')
+  selected_opinions = if hist.selected_opinion 
+                        [hist.selected_opinion] 
+                      else 
+                        hist.selected_opinions
+  
+  if selected_opinions
+    # order points by resonance to those users.    
+    point_inclusions_per_point = {} # map of points to including users
+    _.each selected_opinions, (opinion_key) =>
+      opinion = fetch(opinion_key)
+      if opinion.point_inclusions
+        for point in opinion.point_inclusions
+          if !(point of point_inclusions_per_point)
+            point_inclusions_per_point[point] = 1
+          else
+            point_inclusions_per_point[point] += 1
+
+    points = (pnt for pnt in points when pnt.key of point_inclusions_per_point)
+
+  # Sort points based on resonance with selected users, or custom sort_field
+  sort = (pnt) ->
+    if selected_opinions
+      -point_inclusions_per_point[pnt.key] 
+    else
+      -pnt[sort_field]
+
+  points = _.sortBy points, sort
+  points
+
+
 
 ##
 # CommunityPoints
@@ -1879,14 +1914,20 @@ styles += """
 # Shown in wing during crafting, in middle on results. 
 CommunityPoints = ReactiveComponent
   displayName: 'CommunityPoints'
-  mixins: [PageTransition] # animation logic when moving results <==> crafting
+
   render : ->
 
     #filter to pros or cons & down to points that haven't been included
-    points = @buildPointsList() #todo: memoize
-    newpoint_threshold = @buildNewPointThreshold() #todo: memoize
+    points = @props.points
+    
     label = capitalize @props.key
-    con_is_selected = get_selected_point() and not fetch(get_selected_point()).is_pro
+    contains_selection = get_selected_point() && 
+                          fetch(get_selected_point()).is_pro == (@props.key == 'pros')
+
+    x_pos = if @props.points_draggable
+              if @props.key == 'cons' then 0 else DECISION_BOARD_WIDTH
+            else
+              DECISION_BOARD_WIDTH / 2
 
     # TODO: The minheight below is not a principled or complete solution to two
     #       sizing issues: 
@@ -1896,12 +1937,16 @@ CommunityPoints = ReactiveComponent
     #              with few inclusions, the document height can jarringly fluctuate
     DIV
       className: "points_by_community #{@props.key}_by_community"
-      style:
+      style: css.crossbrowserify
         width: POINT_CONTENT_WIDTH
         minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
-        zIndex: if con_is_selected and @props.key == 'cons' then 6 else 2
+        zIndex: if contains_selection then 6 else 2
         margin: '38px 18px 0 18px'
         position: 'relative'
+
+        transition: "transform #{TRANSITION_SPEED}ms"
+        transform: "translate(#{x_pos}px, 0)"
+
 
       DIV 
         className:'points_heading_label'
@@ -1913,18 +1958,17 @@ CommunityPoints = ReactiveComponent
             # avatars are sticking out on their own, so I simulated
             # a centered look with these -20px and +20px offsets
 
-        if get_proposal_mode() == 'results' 
-          "Top #{label}" 
-        else 
-          "Others' #{label}"
+        @props.heading
 
       UL null,
         if points.length > 0
           for point in points
             Point
               key: point.key,
-              is_new: Date.parse(point.created_at) > newpoint_threshold
+              is_new: @props.newpoint_threshold &&
+                       Date.parse(point.created_at) > @props.newpoint_threshold
               rendered_as : 'community_point'
+              enable_dragging : @props.points_draggable
         else
           LI 
             style: 
@@ -1934,63 +1978,11 @@ CommunityPoints = ReactiveComponent
               textAlign: 'center'
               fontWeight: if browser.high_density_display then '300' else '400'
 
-            "No #{label} given"
+            "No " + \
+            customization('point_labels.' + @props.key.substring(0, @props.key.length - 1) ) + \
+            " given"
 
-  buildNewPointThreshold : ->
-    # Grab the 10th percentile
-    points = @page.points || []
-    newpoint_threshold = 
-      (_.sortBy points, \
-                (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
 
-    (newpoint_threshold and Date.parse(newpoint_threshold.created_at)) or 
-      new Date()
-
-  buildPointsList : ->
-    is_results = get_proposal_mode() == 'results'
-    hist = fetch('histogram')
-
-    selected_opinions = if hist.selected_opinion 
-                          [hist.selected_opinion] 
-                        else 
-                          hist.selected_opinions
-
-    included_points = fetch(@proposal.your_opinion).point_inclusions
-    points = @page.points
-    opinions = @page.opinions
-
-    points =
-      _.filter points, (pnt) =>
-        is_correct_valence = pnt.is_pro == (@props.key == 'pros')
-        has_not_been_included = is_results || !_.contains(included_points, pnt.key)
-        is_correct_valence && has_not_been_included
-    
-    if selected_opinions
-      # Filter down to the points included in the selection opinions, and 
-      # order them by resonance to those users.
-
-      point_inclusions_per_point = {} # map of points to including users
-      _.each selected_opinions, (opinion_key) =>
-        opinion = fetch(opinion_key)
-        if opinion.point_inclusions
-          for point in opinion.point_inclusions
-            if !(point of point_inclusions_per_point)
-              point_inclusions_per_point[point] = 1
-            else
-              point_inclusions_per_point[point] += 1
-
-      points = (pnt for pnt in points when pnt.key of point_inclusions_per_point)
-      points = _.sortBy points, (pnt) -> -point_inclusions_per_point[pnt.key]
-    else
-      # Default sort order
-      points = _.sortBy points, (pnt) => 
-                          if is_results then -pnt.score else -pnt.last_inclusion
-
-    points
-
-styles += """
-
-"""
 
 
 ##
@@ -2157,15 +2149,14 @@ Point = ReactiveComponent
         renderIncluders(draw_all_includers)
 
       DIV className:'point_content', style : point_content_style,
-        if is_selected ||
-            @props.rendered_as == 'community_point' || 
-            @props.rendered_as == 'under_review'
+
+
+        if (!is_selected || @props.rendered_as == 'under_review') && 
+            @props.rendered_as != 'decision_board_point'
+
           IMG
             className: 'community_point_mouth'
-            src:  if is_selected
-                    "<%= asset_path 'community_point_mouth_selected.png' %>" 
-                  else 
-                    "<%= asset_path 'community_point_mouth.png' %>"
+            src:  "<%= asset_path 'community_point_mouth.png' %>"
 
         DIV className:'point_nutshell',
           splitParagraphs point.nutshell
@@ -2217,14 +2208,12 @@ Point = ReactiveComponent
               SPAN null, 'delete'
 
       if is_selected
-        your_opinion = fetch(@proposal.your_opinion)
-        point_included = _.contains(your_opinion.point_inclusions, point.key)
         Discussion
           key:"/comments/#{point.id}"
-          is_pro: point.is_pro
-          in_wings: get_proposal_mode() == 'crafting' and not point_included
+          point: point
 
-  componentDidMount : ->
+
+  componentDidMount : ->    
     @setDraggability()
     @ensureDiscussionIsInViewPort()
 
@@ -2248,12 +2237,10 @@ Point = ReactiveComponent
 
     return if @props.rendered_as == 'under_review'
 
-    disable = get_proposal_mode() == 'results'
-
     $point_content = $(@getDOMNode()).find('.point_content')
     revert = 
       if @props.rendered_as == 'community_point' 
-      then 'invalid' 
+        'invalid' 
       else (valid) =>
         if !valid
           your_opinion = fetch(@proposal.your_opinion)
@@ -2268,11 +2255,11 @@ Point = ReactiveComponent
         valid
 
     if $point_content.hasClass "ui-draggable"
-      $point_content.draggable(if disable then 'disable' else 'enable') 
+      $point_content.draggable(if @props.enable_dragging then 'enable' else 'disable' ) 
     else
       $point_content.draggable
         revert: revert
-        disabled: disable
+        disabled: !@props.enable_dragging
 
 
   selectPoint: (e) ->
@@ -2306,27 +2293,24 @@ Point = ReactiveComponent
   # On hovering over a point, highlight the people who included this 
   # point in the Histogram.
   highlightIncluders : -> 
-    if get_proposal_mode() == 'results'
-      point = @data()
-      includers = point.includers
+    point = @data()
+    includers = point.includers
 
-      # For point authors who chose not to sign their points, remove them from 
-      # the users to highlight. This is particularly important if the author 
-      # is the only one who "included" the point. Then it is very eash for 
-      # anyone to discover who wrote this point. 
-      if point.hide_name
-        includers = _.without includers, point.user
-      hist = fetch 'histogram'
-      if hist.highlighted_users != includers
-        hist.highlighted_users = includers
-        save(hist)
-
-  unHighlightIncluders : -> 
-    if get_proposal_mode() == 'results'
-      hist = fetch 'histogram'
-      hist.highlighted_users = null
+    # For point authors who chose not to sign their points, remove them from 
+    # the users to highlight. This is particularly important if the author 
+    # is the only one who "included" the point. Then it is very eash for 
+    # anyone to discover who wrote this point. 
+    if point.hide_name
+      includers = _.without includers, point.user
+    hist = fetch 'histogram'
+    if hist.highlighted_users != includers
+      hist.highlighted_users = includers
       save(hist)
 
+  unHighlightIncluders : -> 
+    hist = fetch 'histogram'
+    hist.highlighted_users = null
+    save(hist)
 
   buildIncluders : -> 
     point = @data()
@@ -2339,6 +2323,7 @@ Point = ReactiveComponent
                           [hist.selected_opinion] 
                         else 
                           hist.selected_opinions
+
     if selected_opinions?.length > 0      
       # only show includers from the current opinion selection
       selected_users = (fetch(o).user for o in selected_opinions)
@@ -2687,7 +2672,15 @@ Discussion = ReactiveComponent
   displayName: 'Discussion'
 
   render : -> 
-    
+
+    point = fetch @props.point
+    proposal = fetch point.proposal
+    is_pro = point.is_pro
+
+    your_opinion = fetch(proposal.your_opinion)
+    point_included = _.contains(your_opinion.point_inclusions, point.key)
+    in_wings = get_proposal_mode() == 'crafting' && !point_included
+
     discussion_style =
       width: DECISION_BOARD_WIDTH
       border: "3px solid #{focus_blue}"
@@ -2704,31 +2697,26 @@ Discussion = ReactiveComponent
       height: 63
 
     # Reconfigure discussion board position
-    side = if @props.is_pro then 'right' else 'left'
-    if @props.in_wings
+    side = if is_pro then 'right' else 'left'
+    if in_wings
       discussion_style[side] = 215
       discussion_style['top'] = 44
     else
-      discussion_style[side] = if @props.is_pro then -23 else -30
+      discussion_style[side] = if is_pro then -23 else -30
       discussion_style['marginTop'] = 13
 
     # Reconfigure bubble mouth position
-    if @props.in_wings
-      bubble_mouth_style.right = if @props.is_pro then -27       else undefined
-      bubble_mouth_style.left  = if @props.is_pro then undefined else -27
+    if in_wings
+      bubble_mouth_style[side] = -27
     else
       trans_func = 'rotate(270deg)'
-      if @props.is_pro
+      if is_pro
         trans_func += ' scaleY(-1)'
 
-      _.extend bubble_mouth_style,
-        left: if @props.is_pro then 335 else 100
+      css.crossbrowserify _.extend bubble_mouth_style,
+        left: if is_pro then 335 else 100
         top: -45
-        transform:            trans_func
-        '-ms-transform':      trans_func
-        '-moz-transform':     trans_func
-        '-webkit-transform':  trans_func
-        '-o-transform':       trans_func
+        transform: trans_func
       
 
     comments = @discussion.comments
@@ -2740,7 +2728,7 @@ Discussion = ReactiveComponent
     DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
       IMG
         src: "<%= asset_path 'bubblemouth-discussions.png' %>"
-        className: if @props.is_pro then '' else 'flipped'
+        className: if is_pro then '' else 'flipped'
         style: bubble_mouth_style
 
       H1
@@ -3924,7 +3912,6 @@ EditProposal = ReactiveComponent
                 left: -25
                 top: 5
 
-
             'Permissions and invitations'
 
           DIV 
@@ -4061,7 +4048,7 @@ EmailNotificationSettings = ReactiveComponent
                       followable = fetch(follow)
                       DIV style: {margin: '20px 0'}, 
                         if followable_type == 'Point'
-                          Point key: followable, rendered_as: 'under_review'
+                          Point key: followable, rendered_as: 'under_review', enable_dragging: false
                         else 
                           BLOCKQUOTE null,
                             followable.name
@@ -4199,7 +4186,10 @@ Page = ReactiveComponent
                 when '/dashboard/roles'
                   SubdomainRoles key: "/page/dashboard/roles"
                 else
-                  Proposal key: @page.proposal.key
+                  if @page?.proposal?
+                    Proposal key: @page.proposal.key
+                  else
+                    SPAN null
 
         customization('Footer')()
 
@@ -4207,7 +4197,7 @@ Root = ReactiveComponent
   displayName: 'Root'
   resetSelection: (e) ->
 
-    if !root.auth
+    if !@root.auth
       hist = fetch 'histogram'
 
       if get_selected_point()
@@ -4241,6 +4231,7 @@ Root = ReactiveComponent
       Computer()
       BrowserLocation()
       StateDash()
+      StateGraph()
 
       Page key: "/page#{fetch('location').url}"
 
@@ -4282,7 +4273,7 @@ window.Histogram = Histogram
 #######
 # Start the app!
 
-$( ->
+( ->
   #static consider.it homepage doesn't want this stuff by default
   is_static_consider_it = !document.getElementById('content')
   if !is_static_consider_it
@@ -4292,5 +4283,5 @@ $( ->
     if 'ontouchend' in document #detect touch support
       React.initializeTouchEvents(true)
 
-    window.root = React.renderComponent(Root(), document.getElementById('content'))
-)
+    React.renderComponent Root(), document.getElementById('content')
+)()

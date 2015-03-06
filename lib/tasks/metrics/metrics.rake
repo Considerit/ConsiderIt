@@ -154,6 +154,24 @@ namespace :metrics do
 
   end
 
+  task :ecast_information => :environment do
+    pages = ['Detection_1', 'Mitigation_1a', 'Mitigation_1b', 'Mitigation_2', 'Mitigation_4']
+    loaded = Log.where(:what => 'loaded page').where('logs.where in (?)', pages).where(:subdomain_id => 2050)
+    pp loaded.count
+    expanded = Log.where(:what => 'expand proposal description').where('logs.where in (?)', pages).where(:subdomain_id => 2050)
+    pp expanded.count
+    exps = {}
+    expanded.each do |exp|
+      details = JSON.parse exp.details
+      if !exps.has_key?(details['description_type'])
+        exps[details['description_type']] = 0
+      end
+      exps[details['description_type']] += 1
+    end
+
+    pp exps
+
+  end
 
   task :proposal_information => :environment do
     pages = ['I-594_Increase_background_checks_on_gun_purchases', 'I-1351_Modify_K-12_funding', 'I-591_Match_state_gun_regulation_to_national_standards']
@@ -796,10 +814,13 @@ namespace :metrics do
 
   task :referer => :environment do 
     puts "User referals"
-    year = 2014
+    year = 2015
+    subdomain = 2050
 
-    logs = Log.where('what=\'landed on site\' and details not like \'%bot%\'').where(:subdomain_id => 1)
+    logs = Log.where('what=\'landed on site\' and details not like \'%bot%\'').where(:subdomain_id => subdomain)
     domains = {}
+    
+    users_processed = {}
 
     logs.each do |log|
       begin
@@ -814,31 +835,36 @@ namespace :metrics do
 
 
       if !domains.has_key?(domain)
-        domains[domain] = {:users => {}, :visits => 0, :opinions => 0, :points => 0, :inclusions => 0}
+        domains[domain] = {:users => {}, :visits => 0, :opinions => 0, :points => 0, :inclusions => 0, :uvisits => {}}
       end
       user = log.user
 
       next if !user
 
       domains[domain][:visits] += 1 
-      if user.registered && !domains[domain][:users].has_key?(user.id)
+      domains[domain][:uvisits][user.id] = 1 #(domains[domain][:uvisits].has_key?(user.id) ? domains[domain][:uvisits][user.id] : 0) + 1
+      
+      if user.registered && !domains[domain][:users].has_key?(user.id) && !users_processed.has_key?(user.id)
         domains[domain][:users][user.id] = 1
 
-        domains[domain][:opinions] += user.opinions.published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count
-        domains[domain][:points] += user.points.published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count      
-        domains[domain][:inclusions] += user.inclusions.where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>8').joins('INNER JOIN opinions ON inclusions.user_id=opinions.user_id AND inclusions.proposal_id=opinions.proposal_id').where('opinions.published = 1').count
-        #domains[domain][:comments] += user.comments.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>8').count      
+        domains[domain][:opinions] += user.opinions.where("subdomain_id=#{subdomain}").published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>0').count
+        domains[domain][:points] += user.points.where("subdomain_id=#{subdomain}").published.where("YEAR(created_at)=#{year}").where('MONTH(created_at)>0').count      
+        domains[domain][:inclusions] += user.inclusions.where("inclusions.subdomain_id=#{subdomain}").where("YEAR(inclusions.created_at)=#{year}").where('MONTH(inclusions.created_at)>0').joins('INNER JOIN opinions ON inclusions.user_id=opinions.user_id AND inclusions.proposal_id=opinions.proposal_id').where('opinions.published = 1').count
+        #domains[domain][:comments] += user.comments.where("subdomain_id=#{subdomain}").where("YEAR(created_at)=#{year}").where('MONTH(created_at)>0').count      
       end
+      users_processed[user.id] = 1
+
     end
 
     as_array = []; domains.each {|k,vs| as_array.push([k,vs]) }  
 
-    puts( "Domain\tusers\topinions\tinclusions\tpoints")
+    puts( "Domain\tvisits\tunique visitors\topinions\tinclusions\tpoints")
     as_array.sort{|x,y| y[1][:visits]<=>x[1][:visits]}.each do |domain|
-        printf("%s\t%i\t%i\t%i\t%i\t%i\n",
+        printf("%s\t%i\t%i\t%i\t%i\t%i\t%i\n",
 
         domain[0], 
         domain[1][:visits],
+        domain[1][:uvisits].values().inject(:+),
         domain[1][:users].keys().length,
         domain[1][:opinions],
         domain[1][:inclusions],

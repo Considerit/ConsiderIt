@@ -8,13 +8,13 @@ default:
 
   new_relic: '{{config.new_relic}}'
 
-  {% if config.aws.enabled %}
+{% if config.aws.enabled %}
   aws:
     access_key_id: '{{ config.aws.access_key_id }}'
     secret_access_key: '{{ config.aws.secret_access_key }}'
     fog_directory: '{{ config.aws.fog_directory }}'
     cloudfront: '{{ config.aws.cloudfront }}'
-  {% endif %}
+{% endif %}
   
   meta: {{ config.meta }}
   domain: {{ config.domain }}

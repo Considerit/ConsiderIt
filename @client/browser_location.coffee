@@ -16,6 +16,7 @@
 #
 # Convenience method for updating the browser window location. 
 # Optionally pass url_parameters as a separate object. 
+
 window.loadPage = (url, url_params) ->
   loc = fetch('location')
   loc.params = url_params or {}

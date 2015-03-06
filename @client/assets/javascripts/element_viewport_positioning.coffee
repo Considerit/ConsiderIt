@@ -45,11 +45,10 @@ do ($, window, document) ->
 
       if options.scroll
         distance_to_travel = options.speed || Math.abs( doc_top - target )
-        $el.velocity 'scroll', 
-          duration: Math.min(distance_to_travel, 1500)
-          offset: -options.offset_buffer
-          complete: options.callback
-        , 'ease-in'
+        $("html, body").animate \
+          {scrollTop: $el.offset().top - options.offset_buffer}, \
+          duration: Math.min(distance_to_travel, 1500), \
+          complete: options.callback, 'ease-in'
 
       else 
         $(document).scrollTop target

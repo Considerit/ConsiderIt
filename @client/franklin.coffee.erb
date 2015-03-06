@@ -16,8 +16,8 @@ fetch 'histogram',
   region_selection_width : .25
   selected_opinion : null
   selected_opinions : null 
-      # use null instead of [] because an empty selection 
-      # can happen that we treat differently than no selection
+    # use null instead of [] because an empty selection of []
+    # is treated differently than no selection whatsoever
 
 fetch 'slider',
   has_moved : false
@@ -273,6 +273,12 @@ Proposal = ReactiveComponent
   displayName: 'Proposal'
 
   render : ->
+
+    loc = fetch('location')
+    if loc.title != @proposal.name
+      loc.title = @proposal.name
+      save loc
+    
     options = customization("cluster_options.#{@proposal.cluster}") || {}
 
     your_opinion = fetch @proposal.your_opinion
@@ -3390,6 +3396,14 @@ styles += """
 Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
+    loc = fetch('location')
+    subdomain = fetch('subdomain')
+
+    title = subdomain.app_title or subdomain.name
+    if loc.title != title
+      loc.title = title
+      save loc
+
     customization('Homepage')()
 
 

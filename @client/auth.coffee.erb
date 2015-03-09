@@ -708,7 +708,7 @@ Auth = ReactiveComponent
         # Once the user logs in, we will stop showing the log-in screen
         else if current_user.logged_in
           if @root.auth.goal == 'Save your Opinion'
-            setTimeout((() -> togglePage('results', 'after_save')), 700)
+            setTimeout((() -> updateProposalMode('results', 'after_save')), 700)
           @root.auth = null
           save @root
 

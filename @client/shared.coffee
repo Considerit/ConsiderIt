@@ -3,30 +3,7 @@
 for el of React.DOM
   window[el.toUpperCase()] = React.DOM[el]
 
-# A history-aware link
-old_A = A
-window.A = React.createClass
-  render : -> 
 
-    props = @props
-    if @props.href
-      _.defaults @props, 
-        onClick: (event) => 
-          href = @getDOMNode().getAttribute('href') # use getAttribute rather than .href so we 
-                                                    # can easily check relative vs absolute url
-          
-          is_external_link = href.indexOf('//') > -1
-          opened_in_new_tab = event.altKey || event.ctrlKey || event.metaKey || event.shiftKey
-
-          # Allow shift+click for new tabs, etc.
-          if !is_external_link && !opened_in_new_tab
-            event.preventDefault()
-
-            loadPage href
-            
-            return false
-
-    old_A props, props.children
 
 
 

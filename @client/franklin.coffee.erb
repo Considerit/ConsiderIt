@@ -49,7 +49,7 @@ window.lefty = false
 
 
 #######
-# State stored in url params
+# State stored in query params
 # TODO: eliminate
 get_proposal_mode = -> 
   loc = fetch('location')
@@ -381,7 +381,7 @@ Proposal = ReactiveComponent
           #community cons
           CommunityPoints 
             key: 'cons'
-            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{customization('point_labels.cons')}"
+            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{capitalize(customization('point_labels.cons'))}"
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \
@@ -414,7 +414,7 @@ Proposal = ReactiveComponent
           #community pros
           CommunityPoints 
             key: 'pros'
-            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{customization('point_labels.pros')}"            
+            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{capitalize(customization('point_labels.pros'))}"            
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \

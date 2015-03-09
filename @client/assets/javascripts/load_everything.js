@@ -12,12 +12,13 @@
 //= require ../../state_dash
 //= require ../../state_graph
 
-//= require ../../histogram_sim
-
 //= require ../../shared
 //= require ../../browser_location
 //= require ../../bubblemouth_svg
 //= require ../../dock
+//= require ../../avatar
+//= require ../../histogram
+//= require ../../tooltip
 //= require ../../auth
 //= require ../../permissions
 //= require ../../roles

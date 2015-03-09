@@ -603,6 +603,7 @@ cassowary = c
 realDimensions = ($el) -> 
 
   recurse = ($e, min_top, max_top) -> 
+    return [min_top, max_top] if $e.is('defs') # skip svg defs
     t = $e.offset().top
     h = $e.height()
     if min_top > t
@@ -620,4 +621,5 @@ realDimensions = ($el) ->
   offset = $el.offset().top
   jut_above = offset - min_top
   jut_below = max_top - (offset + $el.height())
+
   [max_top - min_top, jut_above, jut_below]

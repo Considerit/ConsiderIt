@@ -16,6 +16,7 @@
 
 //= require ../../shared
 //= require ../../browser_location
+//= require ../../bubblemouth_svg
 //= require ../../dock
 //= require ../../auth
 //= require ../../permissions

@@ -227,16 +227,23 @@ Auth = ReactiveComponent
             position: 'relative'
             boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{focus_blue}"
 
-        IMG
-          # Asset fingerprinting. This is why this file is ERB
-          src: "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
-          style:
-            css.crossbrowserify
-              transform: "translate(0px, 11px) scale(1.5, 1.5)"
-              left: BODY_WIDTH / 2
-              position: 'relative'
-              width: 18
-              marginLeft: -9
+
+        DIV 
+          key: 'auth_bubblemouth'
+          style: css.crossbrowserify
+            left: BODY_WIDTH / 2 - 34/2
+            top: 10 + 3 + 1 # +10 is because of the decision board translating down 10, 3 is for its border
+            position: 'relative'
+
+          BubblemouthSVG 
+            apex_xfrac: .5
+            width: 34
+            height: 28
+            fill: 'white', 
+            stroke: focus_blue, 
+            stroke_width: 11
+            dash_array: "25 10"
+
 
       # Dashed enclosure in which auth form is rendered
       DIV

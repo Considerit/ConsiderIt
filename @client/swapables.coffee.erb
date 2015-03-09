@@ -414,14 +414,31 @@ window.ProposalSummary = ReactiveComponent
 
         onClick: => loadPage proposal_url(proposal)
         if proposal.top_point
+          mouth_style = 
+            top: 5
+            position: 'absolute'
+            right: -COMMUNITY_POINT_MOUTH_WIDTH + 4
+            transform: 'rotate(90deg)'
+
           DIV 
             className: 'top_point community_point pro'
             style : { width: 270, position: 'relative' }
 
             DIV className:'point_content',
-              IMG 
-                className: 'community_point_mouth'
-                src: "<%= asset_path 'community_point_mouth.png' %>"
+
+              DIV 
+                key: 'community_point_mouth'
+                style: css.crossbrowserify mouth_style
+
+                BubblemouthSVG 
+                  apex_xfrac: 0
+                  width: COMMUNITY_POINT_MOUTH_WIDTH
+                  height: COMMUNITY_POINT_MOUTH_WIDTH
+                  fill: "#f6f7f9", 
+                  stroke: 'transparent', 
+                  stroke_width: 0
+                  box_shadow: true
+
 
               DIV className:'point_nutshell', style: {fontSize: 15},
                 "#{proposal.top_point.nutshell[0..30]}..."

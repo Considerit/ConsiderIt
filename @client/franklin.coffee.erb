@@ -309,6 +309,7 @@ Proposal = ReactiveComponent
             margin: '0 auto'
             marginLeft: if lefty then 300
             position: 'relative'
+            zIndex: 1
 
           Dock
             key: 'histogram-dock'
@@ -1470,7 +1471,7 @@ DecisionBoard = ReactiveComponent
         width: DECISION_BOARD_WIDTH
 
       if enable_opining        
-        Bubblemouth()
+        SliderBubblemouth()
 
 
       if enable_opining
@@ -1669,53 +1670,49 @@ DecisionBoard = ReactiveComponent
     @last_proposal_mode = mode
 
 
-Bubblemouth = ReactiveComponent
-  displayName: 'Bubblemouth'
+
+
+SliderBubblemouth = ReactiveComponent
+  displayName: 'SliderBubblemouth'
 
   render : -> 
     slider = fetch('slider')
-    # Can't be dynamically set b/c of integration with asset fingerprinting. 
-    # This is also why this file is ERB.
-    bubblemouth_srcs = 
-      neutral : 
-        crafting: "<%= asset_path 'bubblemouth_neutral-crafting.png' %>"
-        results: "<%= asset_path 'bubblemouth_neutral-results.png' %>"
-      other : 
-        crafting: "<%= asset_path 'bubblemouth-crafting.png' %>"
-        results: "<%= asset_path 'bubblemouth-results.png' %>"
 
-    bubblemouth_src = if isNeutralOpinion(slider.stance) 
-                        bubblemouth_srcs['neutral'][get_proposal_mode()] 
-                      else
-                        bubblemouth_srcs['other'][get_proposal_mode()]
-
-    bubblemouth_style = 
-      left: translateStanceToPixelX slider.stance, DECISION_BOARD_WIDTH
-      position: 'absolute'
-      width: 18
-      pointerEvents: 'none'
-      zIndex: 10
-      marginLeft: -9
-      top: -25
-      visibility: if get_selected_point() then 'hidden'
-
-      transition: "transform #{TRANSITION_SPEED}ms"
-
-    stance = slider.stance
-    direction = if stance > 0 && !isNeutralOpinion(stance) then 1 else -1
-    mouth_x   = if isNeutralOpinion(stance) then 0 else -18
+    w = 34
+    h = 24
+    stroke_width = 11
 
     if get_proposal_mode() == 'crafting'
-      bubblemouth_style.transform = \
-        "scale(#{direction * 1.5}, 1.5) translate(#{mouth_x}px, 13px)"
+      transform = ""
+      fill = 'white'
+      dash = "25 10"
     else 
-      bubblemouth_style.transform = \
-        "scale(#{direction}, 1) translate(#{mouth_x}px, -4px)"      
-    IMG 
-      className:'bubblemouth'
-      src: bubblemouth_src
-      style: css.crossbrowserify bubblemouth_style
+      transform = "translate(0, -25px) scale(.5) "
+      fill = focus_blue
+      dash = "0"
 
+    DIV 
+      key: 'slider_bubblemouth'
+      style: css.crossbrowserify
+        left: Math.min DECISION_BOARD_WIDTH - w - 10, \
+                Math.max 10, translateStanceToPixelX slider.stance, DECISION_BOARD_WIDTH - w
+        top: -h + 10 + 3 # +10 is because of the decision board translating down 10, 3 is for its border
+        position: 'absolute'
+        width: w
+        height: h 
+        zIndex: 10
+        visibility: if get_selected_point() then 'hidden'
+        transition: "transform #{TRANSITION_SPEED}ms"
+        transform: transform
+
+      BubblemouthSVG 
+        apex_xfrac: (slider.stance + 1) / 2
+        width: w
+        height: h
+        fill: fill, 
+        stroke: focus_blue, 
+        stroke_width: stroke_width
+        dash_array: dash
 
 
 ##
@@ -1741,9 +1738,27 @@ YourPoints = ReactiveComponent
       fontWeight: 700
       color: if get_selected_point() then "#ccc" else focus_blue
 
-    singular_valence = @props.valence.substring 0, @props.valence.length - 1
     heading = "Give Your " + \
-              capitalize(customization('point_labels.' + singular_valence))
+              capitalize(customization('point_labels.' + @props.valence))
+
+
+    # drop target defs
+    dt_stroke_width = 1
+    dt_w = POINT_CONTENT_WIDTH + 6
+    dt_h = 63
+    s_w = 8
+    s_h = 6
+
+    mouth_style = 
+      top: 8
+      position: 'absolute'
+    
+    if @props.valence == 'cons'
+      mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
+      mouth_style['left'] = 11.5
+    else 
+      mouth_style['transform'] = 'rotate(90deg)'
+      mouth_style['right'] = 11.5
 
     DIV 
       className: "points_on_decision_board #{@props.valence}_on_decision_board"
@@ -1773,83 +1788,138 @@ YourPoints = ReactiveComponent
                 your_points_key: @props.key
                 enable_dragging: true
 
-        #drop target
+      #drop target
+      DIV
+        style: 
+          padding: '0 0 .25em 24px'
+          position: 'relative'
+
+        SVG 
+          width: dt_w
+          height: dt_h
+
+          style: css.crossbrowserify
+            transform: if @props.valence == 'cons' then '' else 'scaleX(-1)'
+
+          DEFS null,
+            PATTERN 
+              id: "drop-stripes-#{@props.valence}"
+              width: s_w
+              height: s_h 
+              patternUnits: "userSpaceOnUse"
+
+              RECT 
+                width: '100%'
+                height: '100%'
+                fill: 'white'
+
+              for [x1, y1, x2, y2] in [ 
+                [-s_w/2,    0, s_w,   1.5 * s_h], 
+                [0,    -s_h/2,   1.5 * s_w, s_h]]
+
+                LINE 
+                  x1: x1
+                  y1: y1
+                  x2: x2 
+                  y2: y2 
+                  stroke: focus_blue
+                  strokeWidth: 1
+                  strokeOpacity: .2
+
+          RECT
+            width: dt_w - 2 * dt_stroke_width
+            height: dt_h - 2 * dt_stroke_width
+            x: dt_stroke_width
+            y: dt_stroke_width
+            rx: 16
+            ry: 16
+            fill: "url(#drop-stripes-#{@props.valence})"
+            stroke: focus_blue
+            strokeWidth: dt_stroke_width
+            strokeDasharray: '4 3'
+
+
+
         DIV 
-          style: 
-            padding: '0 0 .25em 9px'
-            position: 'relative'
+          key: 'drop_point_mouth'
+          style: css.crossbrowserify mouth_style
 
-          IMG 
-            src: "<%= asset_path 'drop_target.png' %>"
-            style: css.crossbrowserify
-              transform: if @props.valence == 'cons' then '' else 'scaleX(-1)'
-              width: 223
+          BubblemouthSVG 
+            apex_xfrac: 0
+            width: COMMUNITY_POINT_MOUTH_WIDTH
+            height: COMMUNITY_POINT_MOUTH_WIDTH
+            fill: "url(#drop-stripes-#{@props.valence})"
+            stroke: focus_blue
+            stroke_width: 6
+            dash_array: '24 18'
 
-          SPAN 
-            style:
+
+
+        SPAN 
+          style:
+            fontSize: 14
+            position: 'absolute'
+            top: '1.4em'
+            left: if @props.valence == 'cons' then 36 else 42
+            width: 180
+
+          "Drag a "
+          capitalize \
+            if @props.valence == 'pros' 
+              customization('point_labels.pro')
+            else 
+              customization('point_labels.con')
+
+          " from the #{left_or_right}"
+
+      if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES
+        if !your_points.adding_new_point
+          DIV 
+            style: 
+              padding: '.25em 0'
+              marginTop: '1em'
+              marginLeft: 20
               fontSize: 14
-              position: 'absolute'
-              top: '1.4em'
-              left: if @props.valence == 'cons' then 36 else 29
-              width: 180
 
-            "Drag a "
-            capitalize \
-              if @props.valence == 'pros' 
-                customization('point_labels.pro')
-              else 
-                customization('point_labels.con')
-
-            " from the #{left_or_right}"
-
-        if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES
-          if !your_points.adding_new_point
-            DIV 
+            SPAN 
               style: 
-                padding: '.25em 0'
-                marginTop: '1em'
-                marginLeft: 20
-                fontSize: 14
+                fontWeight: if browser.high_density_display then 300 else 400
+              'or '
+            SPAN 
+              style: {padding: '0 6px'}
+              dangerouslySetInnerHTML:{__html: '&bull;'}
+            A 
+              style:
+                textDecoration: 'underline'
+                color: focus_blue
+              onClick: => 
+                if can_add_new_point == Permission.NOT_LOGGED_IN
+                  @root.auth = {form: 'create account', goal: 'write a point'}
+                  save @root
+                else if can_add_new_point == Permission.UNVERIFIED_EMAIL
+                  @root.auth = {form: 'verify email', goal: 'write a point'}
+                  save @root
+                  current_user.trying_to = 'send_verification_token'
+                  save current_user
 
-              SPAN 
-                style: 
-                  fontWeight: if browser.high_density_display then 300 else 400
-                'or '
-              SPAN 
-                style: {padding: '0 6px'}
-                dangerouslySetInnerHTML:{__html: '&bull;'}
-              A 
-                style:
-                  textDecoration: 'underline'
-                  color: focus_blue
-                onClick: => 
-                  if can_add_new_point == Permission.NOT_LOGGED_IN
-                    @root.auth = {form: 'create account', goal: 'write a point'}
-                    save @root
-                  else if can_add_new_point == Permission.UNVERIFIED_EMAIL
-                    @root.auth = {form: 'verify email', goal: 'write a point'}
-                    save @root
-                    current_user.trying_to = 'send_verification_token'
-                    save current_user
+                else
+                  your_points.adding_new_point = true
+                  save your_points
 
-                  else
-                    your_points.adding_new_point = true
-                    save your_points
+                writeToLog {what: 'click new point'}
 
-                  writeToLog {what: 'click new point'}
-
-                "Write a new "
-                capitalize \
-                  if @props.valence == 'pros' 
-                    customization('point_labels.pro')
-                  else 
-                    customization('point_labels.con')
-          else
-            EditPoint
-              key: "new_point_#{@props.valence}"
-              fresh: true
-              valence: @props.valence
-              your_points_key: @props.key
+              "Write a new "
+              capitalize \
+                if @props.valence == 'pros' 
+                  customization('point_labels.pro')
+                else 
+                  customization('point_labels.con')
+        else
+          EditPoint
+            key: "new_point_#{@props.valence}"
+            fresh: true
+            valence: @props.valence
+            your_points_key: @props.key
 
 styles += """
 .points_by_community, .points_on_decision_board {
@@ -2150,13 +2220,36 @@ Point = ReactiveComponent
 
       DIV className:'point_content', style : point_content_style,
 
+        if @props.rendered_as != 'decision_board_point'
 
-        if (!is_selected || @props.rendered_as == 'under_review') && 
-            @props.rendered_as != 'decision_board_point'
+          side = if point.is_pro && @props.rendered_as != 'under_review' then 'right' else 'left'
+          mouth_style = 
+            top: 8
+            position: 'absolute'
 
-          IMG
-            className: 'community_point_mouth'
-            src:  "<%= asset_path 'community_point_mouth.png' %>"
+          mouth_style[side] = -COMMUNITY_POINT_MOUTH_WIDTH + if is_selected then 3 else 0
+          
+          if !point.is_pro
+            mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
+          else 
+            mouth_style['transform'] = 'rotate(90deg)'
+
+          DIV 
+            key: 'community_point_mouth'
+            style: css.crossbrowserify mouth_style
+
+            BubblemouthSVG 
+              apex_xfrac: 0
+              width: COMMUNITY_POINT_MOUTH_WIDTH
+              height: COMMUNITY_POINT_MOUTH_WIDTH
+              fill: "#f6f7f9"
+              stroke: if is_selected then focus_blue else 'transparent'
+              stroke_width: if is_selected then 20 else 0
+              box_shadow:   
+                dx: '3'
+                dy: '0'
+                stdDeviation: "2"
+                opacity: .5
 
         DIV className:'point_nutshell',
           splitParagraphs point.nutshell
@@ -2338,21 +2431,6 @@ Point = ReactiveComponent
         
 
 styles += """
-.community_point_mouth {
-  position: absolute;
-  width: #{COMMUNITY_POINT_MOUTH_WIDTH}px;
-  top: 8px;
-  z-index: 1; }
-
-.community_point.con .community_point_mouth, .under_review .community_point_mouth {
-  left: -#{COMMUNITY_POINT_MOUTH_WIDTH + 3}px; }
-
-.community_point.pro .community_point_mouth {
-  right: -#{COMMUNITY_POINT_MOUTH_WIDTH + 3}px;
-  #{css.crossbrowserify({transform: 'scaleX(-1)'}, true)}; }
-
-.decision_board_point .community_point_mouth {
-  display: none; }
 
 /* war! disabled jquery UI draggable class defined with !important */
 .point_content.ui-draggable-disabled {
@@ -2681,6 +2759,12 @@ Discussion = ReactiveComponent
     point_included = _.contains(your_opinion.point_inclusions, point.key)
     in_wings = get_proposal_mode() == 'crafting' && !point_included
 
+    comments = @discussion.comments
+    if @discussion.assessment
+      comments = comments.slice()
+      comments.push @discussion.assessment
+      comments.sort (a,b) -> a.created_at < b.created_at
+
     discussion_style =
       width: DECISION_BOARD_WIDTH
       border: "3px solid #{focus_blue}"
@@ -2690,12 +2774,6 @@ Discussion = ReactiveComponent
       borderRadius: 16
       backgroundColor: 'white'
 
-    bubble_mouth_style =
-      position: 'absolute'
-      top: 14
-      width: 27
-      height: 63
-
     # Reconfigure discussion board position
     side = if is_pro then 'right' else 'left'
     if in_wings
@@ -2703,33 +2781,41 @@ Discussion = ReactiveComponent
       discussion_style['top'] = 44
     else
       discussion_style[side] = if is_pro then -23 else -30
-      discussion_style['marginTop'] = 13
+      discussion_style['marginTop'] = 18
 
     # Reconfigure bubble mouth position
+    mouth_style =
+      position: 'absolute'
+
     if in_wings
-      bubble_mouth_style[side] = -27
-    else
+      mouth_style[side] = -29
+
       trans_func = 'rotate(270deg)'
       if is_pro
         trans_func += ' scaleY(-1)'
 
-      css.crossbrowserify _.extend bubble_mouth_style,
-        left: if is_pro then 335 else 100
-        top: -45
+      _.extend mouth_style, 
         transform: trans_func
-      
+        top: 19
 
-    comments = @discussion.comments
-    if @discussion.assessment
-      comments = comments.slice()
-      comments.push @discussion.assessment
-      comments.sort (a,b) -> a.created_at < b.created_at
+    else
+      _.extend mouth_style, 
+        left: if is_pro then 335 else 100
+        top: -28
+        transform: if !is_pro then 'scaleX(-1)'
 
     DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
-      IMG
-        src: "<%= asset_path 'bubblemouth-discussions.png' %>"
-        className: if is_pro then '' else 'flipped'
-        style: bubble_mouth_style
+
+      DIV 
+        style: css.crossbrowserify mouth_style
+
+        BubblemouthSVG 
+          apex_xfrac: 1.1
+          width: 36
+          height: 28
+          fill: 'white', 
+          stroke: focus_blue, 
+          stroke_width: 11
 
       H1
         style:

@@ -118,15 +118,6 @@ window.BubblemouthSVG = (props) ->
             FEMERGENODE 
               in: 'SourceGraphic'
 
-    if props.box_shadow
-      # can't apply drop shadow to main path because of 
-      # clip path. So we'll apply it to a copy. 
-      PATH
-        key: 'shadow'
-        fill: props.fill
-        style: 
-          filter: "url(##{id}-shadow)"
-        d: bubblemouth_path
 
     PATH
       key: 'stroke'
@@ -136,3 +127,14 @@ window.BubblemouthSVG = (props) ->
       clipPath: "url(##{id})"
       strokeDasharray: props.dash_array
       d: bubblemouth_path
+
+    if props.box_shadow
+      # can't apply drop shadow to main path because of 
+      # clip path. So we'll apply it to a copy. 
+      PATH
+        key: 'shadow'
+        fill: props.fill
+        style: 
+          filter: "url(##{id}-shadow)"
+        d: bubblemouth_path
+ 

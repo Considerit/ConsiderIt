@@ -648,9 +648,14 @@ window.ProposalHeaderWithMenu = ReactiveComponent
         backgroundColor: subdomain.branding.primary_color
         fontSize: 26
         padding: '4px 90px'
+        width: '100%'
+        color: 'white'
+        zIndex: 999
+        position: 'relative'
 
-      return DIV className: 'proposal_heading', style: heading_style,
-               SPAN null, @proposal.name
+      return DIV 
+        style: heading_style,
+        SPAN null, @proposal.name
     
     # Now we know that we are drawing the navigation bar
 
@@ -670,13 +675,16 @@ window.ProposalHeaderWithMenu = ReactiveComponent
     heading_height = 50
     DIV
       id: 'proposal_heading'
-      className: 'proposal_heading'
+      
       style:
         height: heading_height
         minWidth: PAGE_WIDTH # for width consistency when docking
         backgroundColor: subdomain.branding.primary_color
         textAlign: 'center'
-
+        width: '100%'
+        color: 'white'
+        zIndex: 999
+        position: 'relative'
       A
         href: '/'
         style: {position: 'absolute', display: 'inline-block', top: 10, left: 12},
@@ -846,10 +854,4 @@ styles += """
 .current_cluster tr:hover, .other_proposal_list li:hover {
   background-color: rgba(0, 0, 0, 0.1);
   cursor: pointer; }
-
-.proposal_heading {
-  width: 100%;
-  color: white;
-  z-index: 999;
-  position: relative; }
 """

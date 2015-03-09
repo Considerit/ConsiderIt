@@ -55,13 +55,13 @@ get_proposal_mode = ->
   loc = fetch('location')
   if loc.url == '/'
     return null
-  else if loc.params?.results 
+  else if loc.query_params?.results 
     'results' 
   else 
     'crafting'
 
 get_selected_point = -> 
-  fetch('location').params.selected
+  fetch('location').query_params.selected
 ######
 
 window.proposal_url = (proposal) =>
@@ -84,15 +84,15 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
   toggle = -> 
     loc = fetch('location')
 
-    if proposal_mode == 'results' && loc.params.results ||
-        proposal_mode == 'crafting' && !loc.params.results
+    if proposal_mode == 'results' && loc.query_params.results ||
+        proposal_mode == 'crafting' && !loc.query_params.results
       return
 
     if proposal_mode == 'results'
-      loc.params.results = true
+      loc.query_params.results = true
     else
-      delete loc.params.results
-    delete loc.params.selected
+      delete loc.query_params.results
+    delete loc.query_params.selected
     save loc
 
     window.writeToLog
@@ -2368,11 +2368,11 @@ Point = ReactiveComponent
     loc = fetch('location')
 
     if get_selected_point() == @props.key # deselect
-      delete loc.params.selected
+      delete loc.query_params.selected
       what = 'deselected a point'
     else
       what = 'selected a point'
-      loc.params.selected = @props.key
+      loc.query_params.selected = @props.key
 
     save loc
 
@@ -4148,6 +4148,30 @@ EmailNotificationSettings = ReactiveComponent
                                # a point or proposal is updated
                           'unsubscribe'
 
+LocationTransition = ReactiveComponent
+  displayName: 'locationTransition'
+  render : -> 
+    loc = fetch 'location'
+
+    if @last_location != loc.url 
+
+      ######
+      # Temporary technique for handling resetting root state when switching 
+      # between routes. TODO: more elegant approach
+      root = fetch('root')
+      if root.auth
+        root.auth = null
+        save root
+
+      hist = fetch('histogram')
+      if hist.selected_opinion || hist.selected_opinions || hist.selected_opinion_value
+        hist.selected_opinion = hist.selected_opinions = hist.selected_opinion_value = null
+        save hist
+      #######
+
+      @last_location = loc.url
+    SPAN null
+
 
 Computer = ReactiveComponent
   # This doesn't actually render anything.  It just processes state
@@ -4293,7 +4317,7 @@ Root = ReactiveComponent
             point: get_selected_point()
 
         loc = fetch('location')
-        delete loc.params.selected
+        delete loc.query_params.selected
         save loc
 
       else if hist.selected_opinions || hist.selected_opinion
@@ -4315,6 +4339,7 @@ Root = ReactiveComponent
       onClick: @resetSelection
 
       Computer()
+      LocationTransition()
       BrowserLocation()
       StateDash()
       StateGraph()

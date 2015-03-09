@@ -1,6 +1,6 @@
 ####
 # Manages the browser window location by keeping the window history in sync
-# with the url & params stored on statebus at 'location'. 
+# with the url & query params stored on statebus at 'location'. 
 #
 # Also responsible for initializing location to the 
 # correct value of window location on initial page load. 
@@ -8,38 +8,70 @@
 # Assumes html5 pushstate history interface available. Make sure to use a 
 # polyfill to support non-pushstate compatible browsers, such as 
 # https://github.com/devote/HTML5-History-API 
+#
+# Defines a location-aware react link.
+
 
 ######
 # Public API
-#
+
+####
 # loadPage
 #
 # Convenience method for updating the browser window location. 
-# Optionally pass url_parameters as a separate object. 
+# Optionally pass query_params as a separate object. 
 
-window.loadPage = (url, url_params) ->
+window.loadPage = (url, query_params) ->
   loc = fetch('location')
-  loc.params = url_params or {}
+  loc.query_params = query_params or {}
 
-  # if the url has search params, parse and merge them into params
+  # if the url has query parameters, parse and merge them into params
   if url.indexOf('?') > -1
-    [url, search] = url.split('?')
+    [url, query_params] = url.split('?')
 
-    for url_param in search.split('&')
-      url_param = url_param.split('=')
-      if url_param.length == 2
-        loc.params[url_param[0]] = url_param[1]
+    for query_param in query_params.split('&')
+      query_param = query_param.split('=')
+      if query_param.length == 2
+        loc.query_params[query_param[0]] = query_param[1]
 
   loc.url = url
   save loc
 
+######
+# A
+#
+# History-aware link
+# Limitation: if an absolute url is specified as the href, 
+# it will reload the page, even if the link is internal to this site
+old_A = A
+window.A = React.createClass
+  render : -> 
 
-##########
-## Internal
+    props = @props
+    if @props.href
+      _onclick = @props.onClick or (-> null)
+      @props.onClick = (event) => 
+        href = @getDOMNode().getAttribute('href') 
+                  # use getAttribute rather than .href so we 
+                  # can easily check relative vs absolute url
+        
+        is_external_link = href.indexOf('//') > -1
+        opened_in_new_tab = event.altKey || 
+                             event.ctrlKey || 
+                             event.metaKey || 
+                             event.shiftKey
 
-# for html5 history polyfill
-location = window.history.location || window.location
+        # Allow shift+click for new tabs, etc.
+        if !is_external_link && !opened_in_new_tab
+          event.preventDefault()
+          loadPage href
+          _onclick event
+          return false
+        else
+          _onclick event
 
+
+    old_A props, props.children
 
 #####
 # BrowserLocation
@@ -64,7 +96,7 @@ window.BrowserLocation = ReactiveComponent
 
       # update browser history if it hasn't already been updated
       if relativeURLFromLocation() != new_location
-        history.pushState loc.params, title, new_location
+        history.pushState loc.query_params, title, new_location
 
       @last_location = new_location
 
@@ -72,34 +104,28 @@ window.BrowserLocation = ReactiveComponent
         what: 'changing url',
         where: loc.url
 
-      ######
-      # Temporary technique for handling resetting root state when switching 
-      # between routes. TODO: more elegant approach
-      root = fetch('root')
-      if root.auth
-        root.auth = null
-        save root
-
-      hist = fetch('histogram')
-      if hist.selected_opinion || hist.selected_opinions || hist.selected_opinion_value
-        hist.selected_opinion = hist.selected_opinions = hist.selected_opinion_value = null
-        save hist
-      #######
 
     SPAN null
 
 relativeURLFromLocation = -> 
+  # location.search returns query parameters
   "#{location.pathname}#{location.search}#{location.hash}"
 
 relativeURLFromStatebus = ->  
   loc = fetch 'location'
 
   relative_url = loc.url 
-  if _.keys(loc.params).length > 0
-    params = ("#{k}=#{v}" for own k,v of loc.params)
-    relative_url += "?#{params.join('&')}" 
+  if _.keys(loc.query_params).length > 0
+    query_params = ("#{k}=#{v}" for own k,v of loc.query_params)
+    relative_url += "?#{query_params.join('&')}" 
   relative_url
 
+
+##########
+## Internal
+
+# for html5 history polyfill
+location = window.history.location || window.location
 
 #####
 # Update statebus location when browser back or forward button pressed

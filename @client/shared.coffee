@@ -4,9 +4,6 @@ for el of React.DOM
   window[el.toUpperCase()] = React.DOM[el]
 
 
-
-
-
 window.styles = ""
 
 ####
@@ -43,34 +40,33 @@ window.focus_blue = '#2478CC'
 window.default_avatar_in_histogram_color = '#d3d3d3'
 #########################
 
+##
+# logging
 
-# We detect mobile browsers by inspecting the user agent. This check isn't perfect.
-rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
-window.browser = 
-  is_android_browser : !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
-  is_opera_mini : !!navigator.userAgent.match /Opera Mini/
-  is_ie9 : !!(document.documentMode && document.documentMode == 9)
-  is_iOS : !!navigator.platform.match(/(iPad|iPhone)/)
-  touch_enabled : 'ontouchend' in document
-  high_density_display : ((window.matchMedia && 
-                           (window.matchMedia('''
-                              only screen and (min-resolution: 124dpi), 
-                              only screen and (min-resolution: 1.3dppx), 
-                              only screen and (min-resolution: 48.8dpcm)''').matches || 
-                            window.matchMedia('''
-                              only screen and (-webkit-min-device-pixel-ratio: 1.3), 
-                              only screen and (-o-min-device-pixel-ratio: 2.6/2), 
-                              only screen and (min--moz-device-pixel-ratio: 1.3), 
-                              only screen and (min-device-pixel-ratio: 1.3)''').matches
-                            )) || 
-                          (window.devicePixelRatio && window.devicePixelRatio > 1.3))
-  is_mobile :  navigator.userAgent.match(/Android/i) || 
-                navigator.userAgent.match(/webOS/i) ||
-                navigator.userAgent.match(/iPhone/i) ||
-                navigator.userAgent.match(/iPad/i) ||
-                navigator.userAgent.match(/iPod/i) ||
-                navigator.userAgent.match(/BlackBerry/i) ||
-                navigator.userAgent.match(/Windows Phone/i)
+window.on_ajax_error = () ->
+  (root = fetch('root')).server_error = true
+  save(root)
+window.on_client_error = (e) ->
+  if navigator.userAgent.indexOf('PhantomJS') >= 0
+    # don't care about errors on phtanomjs web crawlers
+    return
+
+  save(
+    key: '/new/client_error'
+    stack: e.stack
+    message: e.message or e.description
+    name: e.name
+    line_number: e.lineNumber
+    column_number: e.columnNumber
+    )
+
+window.writeToLog = (entry) ->
+  _.extend entry, 
+    key: '/new/log'
+    where: fetch('location').url
+
+  save entry
+
 
 
 
@@ -216,6 +212,7 @@ window.WysiwygEditor = ReactiveComponent
 
     my_data = fetch @props.key
     subdomain = fetch '/subdomain'
+    wysiwyg_editor = fetch 'wysiwyg_editor'
 
     if !@local.initialized
       # We store the current value of the HTML at
@@ -275,7 +272,7 @@ window.WysiwygEditor = ReactiveComponent
             boxShadow: '0 1px 2px RGBA(0,0,0,.2)'
             zIndex: 999
             padding: '0 12px'
-            display: if @root.show_wyswyg_toolbar == @props.key then 'block' else 'none'
+            display: if wysiwyg_editor.showing == @props.key then 'block' else 'none'
 
           I 
             className: "ql-bullet fa fa-list-ul"
@@ -315,12 +312,14 @@ window.WysiwygEditor = ReactiveComponent
           'data-placeholder': if show_placeholder then @props.placeholder else ''
           onFocus: => 
             # Show the toolbar on focus
-            # show_wyswyg_toolbar is global state for the toolbar to be 
+            # showing is global state for the toolbar to be 
             # shown. It gets set to null when someone clicks outside the 
             # editor area. This is handled at the root level
             # in the same way that clicking outside a point closes it. 
             # See Root.resetSelection.
-            @root.show_wyswyg_toolbar = @props.key; save(@root)
+            wysiwyg_editor = fetch 'wysiwyg_editor'
+            wysiwyg_editor.showing = @props.key
+            save wysiwyg_editor
         ]
 
   componentDidMount : -> 
@@ -376,43 +375,6 @@ html .ql-container{
 
 
 
-# Displays warnings for some browsers
-# Stores state about the current device. 
-# Note that IE<9 users are redirected at
-# an earlier point to an MS upgrade site. 
-window.BrowserHacks = ReactiveComponent
-  displayName: 'BrowserHacks'
-
-  render : ->
-    browser = fetch 'browser'
-    if  browser.is_opera_mini #|| browser.is_android_browser
-      DIV 
-        style: 
-          backgroundColor: 'red'
-          padding: 10
-          textAlign: 'center'
-          color: 'white'
-          fontSize: 24
-
-        "This website does not work well with "
-        if browser.is_android_browser then 'the Android Browser' else 'Opera Mini'
-        ". Please use "
-        A 
-          href: "https://play.google.com/store/apps/details?id=com.android.chrome&hl=en"
-          style: 
-            color: 'white'
-            textDecoration: 'underline'
-          'Chrome for Android' 
-        ' if you experience difficulty. Thanks, and sorry for the inconvenience!'
-
-    else 
-      # Use third party script for detecting and warning users
-      # of other outdated browsers. Sticking with
-      # third party for now because of some complexities
-      # in detecting some of these browser versions. In 
-      # the future, probably want to extract the logic. 
-      # "https://browser-update.org/update.html"
-      SCRIPT type: 'text/javascript', src: '//browser-update.org/update.js'
 
 
 

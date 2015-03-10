@@ -3171,9 +3171,11 @@ LocationTransition = ReactiveComponent
       # Temporary technique for handling resetting root state when switching 
       # between routes. TODO: more elegant approach
       auth = fetch('auth')
-      if auth.form
+
+      if loc.url == '/edit_profile' && auth.form != 'edit profile'
+        reset_key auth, {form: 'edit profile', ask_questions: true}
+      else if auth.form
         reset_key auth
-        save auth
 
       hist = fetch('histogram')
       if hist.selected_opinion || hist.selected_opinions || hist.selected_opinion_value
@@ -3185,7 +3187,7 @@ LocationTransition = ReactiveComponent
     SPAN null
 
 
-Computer = ReactiveComponent
+AuthTransition = ReactiveComponent
   # This doesn't actually render anything.  It just processes state
   # changes to current_user for CSRF and logging in and out.
   displayName: 'Computer'
@@ -3230,93 +3232,121 @@ Computer = ReactiveComponent
     SPAN null
 
 
+######
+# Page
+# Decides which page to render by reading state (particularly location and auth). 
+# Plays the role of an application router.
+#
 Page = ReactiveComponent
   displayName: 'Page'
   mixins: [AccessControlled]
 
   render: ->
-
-    avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
     loc = fetch('location')
     auth = fetch('auth')
+    
+    DIV 
+      style: 
+        minWidth: PAGE_WIDTH
+        minHeight: 200
+        zIndex: 2
+        margin: 'auto'
+        marginLeft: if lefty then 0
 
-    if auth.form && auth.form != 'edit profile'
-      return Auth()
+      if auth.form
+        Auth()
 
-    if subdomain.name == 'homepage' && loc.url == '/'
-      SPAN null, ''
+      else if !@accessGranted()
+        SPAN null 
 
-    else if !subdomain.name
-      L
-    else
-      DIV 
-        style:
-          minWidth: PAGE_WIDTH
-          backgroundColor: 'white'
-          overflowX: 'hidden'
-        if avatars.avatars
-          STYLE 
-            type: 'text/css'
-            id: 'b64-avatars'
-            dangerouslySetInnerHTML: {__html: avatars.avatars}
-        
-        BrowserHacks()
-        Header()
-        DIV 
-          style: 
-            minWidth: PAGE_WIDTH
-            minHeight: 200
-            zIndex: 2
-            margin: 'auto'
-            marginLeft: if lefty then 0
-
-          if loc.url == '/edit_profile'
-            if auth.form != 'edit profile'
-              reset_key 'auth', {form: 'edit profile', ask_questions: true}
-            Auth()
-
+      else if loc.url.match(/(.+)\/edit/)
+        EditProposal 
+          key: loc.url.match(/(.+)\/edit/)[1]
+          fresh: false
+          
+      else
+        switch loc.url
+          when '/'
+            Homepage key: 'homepage'
+          when '/about'
+            About()
+          when '/proposal/new'
+            EditProposal key: "new_proposal", fresh: true              
+          when '/dashboard/email_notifications'
+            EmailNotificationSettings 
+              key: '/page/dashboard/email_notifications'
+          when '/dashboard/assessment'
+            FactcheckDash key: "/page/dashboard/assessment"
+          when '/dashboard/create_subdomain'
+            CreateSubdomain key: "/page/dashboard/create_subdomain"
+          when '/dashboard/import_data'
+            ImportDataDash key: "/page/dashboard/import_data"
+          when '/dashboard/moderate'
+            ModerationDash key: "/page/dashboard/moderate"
+          when '/dashboard/application'
+            AppSettingsDash key: "/page/dashboard/application"
+          when '/dashboard/roles'
+            SubdomainRoles key: "/page/dashboard/roles"
           else
-
-            if !@accessGranted()
-              SPAN null 
-            else if loc.url.match(/(.+)\/edit/)
-              EditProposal 
-                key: loc.url.match(/(.+)\/edit/)[1]
-                fresh: false
+            if @page?.proposal?
+              Proposal key: @page.proposal.key
             else
-              switch loc.url
-                when '/'
-                  Homepage key: 'homepage'
-                when '/about'
-                  About()
-                when '/proposal/new'
-                  EditProposal key: "new_proposal", fresh: true              
-                when '/dashboard/email_notifications'
-                  EmailNotificationSettings 
-                    key: '/page/dashboard/email_notifications'
-                when '/dashboard/assessment'
-                  FactcheckDash key: "/page/dashboard/assessment"
-                when '/dashboard/create_subdomain'
-                  CreateSubdomain key: "/page/dashboard/create_subdomain"
-                when '/dashboard/import_data'
-                  ImportDataDash key: "/page/dashboard/import_data"
-                when '/dashboard/moderate'
-                  ModerationDash key: "/page/dashboard/moderate"
-                when '/dashboard/application'
-                  AppSettingsDash key: "/page/dashboard/application"
-                when '/dashboard/roles'
-                  SubdomainRoles key: "/page/dashboard/roles"
-                else
-                  if @page?.proposal?
-                    Proposal key: @page.proposal.key
-                  else
-                    SPAN null
+              LOADING_INDICATOR
 
-        customization('Footer')()
 
 Root = ReactiveComponent
   displayName: 'Root'
+
+  render : -> 
+
+    subdomain = fetch '/subdomain'
+    loc = fetch('location')
+
+    DIV 
+      onClick: @resetSelection
+
+      # state transition components
+      AuthTransition()
+      LocationTransition()
+
+      BrowserLocation()
+
+      if !subdomain.name
+        LOADING_INDICATOR
+
+      # if we're showing the static considerit homepage
+      else if subdomain.name == 'homepage' && loc.url == '/'
+        SPAN null
+
+      else 
+        avatars = fetch('/avatars')
+        auth = fetch('auth')
+
+        DIV 
+          style:
+            minWidth: PAGE_WIDTH
+            backgroundColor: 'white'
+            overflowX: 'hidden'
+
+          if avatars.avatars
+            STYLE 
+              type: 'text/css'
+              id: 'b64-avatars'
+              dangerouslySetInnerHTML: {__html: avatars.avatars}
+          
+          BrowserHacks()
+
+          Header() if !auth.form        
+
+          Page key: "/page#{loc.url}"
+
+          customization('Footer')()
+
+      Tooltip()
+      StateDash()
+      StateGraph()
+
   resetSelection: (e) ->
 
     if !fetch('auth').form
@@ -3345,21 +3375,6 @@ Root = ReactiveComponent
     if wysiwyg_editor.showing
       wysiwyg_editor.showing = false
       save wysiwyg_editor
-
-  render : -> 
-
-    DIV 
-      onClick: @resetSelection
-
-      Computer()
-      LocationTransition()
-      BrowserLocation()
-      StateDash()
-      StateGraph()
-
-      Page key: "/page#{fetch('location').url}"
-
-      Tooltip()
 
 
 # exports...

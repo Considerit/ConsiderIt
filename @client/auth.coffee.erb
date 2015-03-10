@@ -198,9 +198,7 @@ Auth = ReactiveComponent
                 marginLeft: -(real_task_width - BODY_WIDTH) / 2
               task
 
-            I
-              className: 'fa-close fa'
-              title: 'cancel'
+            SPAN
               style:
                 color: auth_ghost_gray
                 position: 'absolute'
@@ -208,10 +206,15 @@ Auth = ReactiveComponent
                 right: -133
                 top: 46
                 fontSize: 21
+              title: 'cancel'
+
               onClick: =>
                 if auth.form == 'verify email'
                   loadPage '/'
                 reset_key auth
+
+              I className: 'fa-close fa'
+
               ' cancel'
 
         DIV

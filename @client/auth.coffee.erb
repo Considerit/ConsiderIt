@@ -21,21 +21,21 @@ Auth = ReactiveComponent
 
   render: ->
     current_user = fetch('/current_user')
-    root = fetch('root')
+    auth = fetch('auth')
 
     # When we switch to new auth_mode screens, wipe out all the old
     # errors, cause we're startin' fresh!
-    if not @local.last_auth or @local.last_auth != root.auth
-      @local.last_auth = root.auth
+    if not @local.last_auth or @local.auth != auth.auth
+      @local.last_auth = auth
       current_user.errors = []
       @local.errors = []
       save @local
       return SPAN null
 
-    return SPAN null if !root.auth
+    return SPAN null if !auth.form
 
     DIV null,
-      if root.auth.form == 'edit profile'
+      if auth.form == 'edit profile'
         DashHeader(name: 'Edit Profile')
 
       DIV
@@ -57,13 +57,13 @@ Auth = ReactiveComponent
   # declarative as possible for making clear definitions
   # of different auth modes.
   buildAuthForm : ->
-    root = fetch('root')
+
+    auth = fetch('auth')
     current_user = fetch('/current_user')
     
+    goal = if auth.goal then "To #{auth.goal}" else null
 
-    goal = if @root.auth.goal then "To #{@root.auth.goal}" else null
-
-    switch root.auth.form
+    switch auth.form
 
       # The LOGIN form, with easy switch to register
       when 'login'
@@ -86,7 +86,7 @@ Auth = ReactiveComponent
         if pledges = @pledgeInput()
           pledges_field = ['I pledge to:', pledges]
 
-        if root.auth.form == 'create account'
+        if auth.form == 'create account'
           email_field = @inputBox('email', 'email@address')
           footer = @footerForRegistrationAndLogin()
         else
@@ -144,7 +144,7 @@ Auth = ReactiveComponent
           @submitButton('Done!') ]
 
       else
-        throw "Unrecognized authentication form #{root.auth.form}"
+        throw "Unrecognized authentication form #{auth.form}"
 
   #####
   # headerAndBorder
@@ -157,7 +157,7 @@ Auth = ReactiveComponent
   # body: Child nodes that will be rendered inside
   #
   headerAndBorder : (goal, task, body) ->
-    root = fetch('root')
+    auth = fetch('auth')
 
     real_task_width = widthWhenRendered(task, {fontSize: 61, fontWeight: 600})
     DIV null,
@@ -209,10 +209,9 @@ Auth = ReactiveComponent
                 top: 46
                 fontSize: 21
               onClick: =>
-                if root.auth.form == 'verify email'
+                if auth.form == 'verify email'
                   loadPage '/'
-                root.auth = null
-                save root
+                reset_key auth
               ' cancel'
 
         DIV
@@ -326,8 +325,8 @@ Auth = ReactiveComponent
   # The footer for switching between create new account and login
   #
   footerForRegistrationAndLogin : ->
-    root = fetch 'root'
-    if root.auth.form == 'create account'
+    auth = fetch 'auth'
+    if auth.form == 'create account'
       toggle_to = 'Log in'
       button = 'Create new account'
       left = 421
@@ -367,10 +366,10 @@ Auth = ReactiveComponent
             fontSize: 24
           onClick: =>
             current_user = fetch('/current_user')
-            @root.auth.form = if @root.auth.form == 'create account' then 'login' else 'create account'
+            auth.form = if auth.form == 'create account' then 'login' else 'create account'
             current_user.errors = []
             @local.errors = []
-            save @root
+            save auth
             save @local
 
           toggle_to
@@ -423,6 +422,7 @@ Auth = ReactiveComponent
   #
   inputBox : (name, placeholder, type, onChange, pattern) ->
     current_user = fetch('/current_user')
+    auth = fetch('auth')
 
     if @local[name] != current_user[name]
       @local[name] = current_user[name]
@@ -443,7 +443,7 @@ Auth = ReactiveComponent
         border: "1px solid #{auth_ghost_gray}"
         padding: '5px 10px'
         fontSize: 18
-      value: if @root.auth.form == 'edit profile' then @local[name] else null
+      value: if auth.form == 'edit profile' then @local[name] else null
       name: "user[#{name}]"
       key: "#{name}_inputBox"
       placeholder: placeholder
@@ -572,8 +572,8 @@ Auth = ReactiveComponent
               arest.updateCache(current_user)
             else
               # Switch to reset_password mode
-              @root.auth.form = 'reset password'
-              save @root
+              reset_key 'auth', {form : 'reset password'}
+
         'I forgot my password!'
 
   ####
@@ -583,8 +583,9 @@ Auth = ReactiveComponent
   userQuestionInputs : -> 
     subdomain = fetch('/subdomain')
     current_user = fetch('/current_user')
+    auth = fetch('auth')
 
-    questions = if @root.auth.ask_questions then customization 'auth.user_questions'
+    questions = if auth.ask_questions then customization 'auth.user_questions'
     questions = questions or []
 
     if @local.tags != current_user.tags
@@ -670,13 +671,14 @@ Auth = ReactiveComponent
     ev.preventDefault()
     $el = $(@getDOMNode())
     subdomain = fetch '/subdomain'
+    auth = fetch('auth')
 
     current_user = fetch('/current_user')
 
     # Client side validation of user questions
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
-    if @root.auth.ask_questions
+    if auth.ask_questions
       questions = customization('auth.user_questions') or []
       @local.errors = []
       for question in questions
@@ -696,21 +698,20 @@ Auth = ReactiveComponent
       save @local
 
       current_user.signed_pledge = $el.find('.pledge-input').length == $el.find('.pledge-input:checked').length
-      current_user.trying_to = @root.auth.form
+      current_user.trying_to = auth.form
 
       save current_user, => 
-        if @root.auth.form in ['create account', 'edit profile']
+        if auth.form in ['create account', 'edit profile']
           ensureCurrentUserAvatar()
 
-        if @root.auth.form == 'edit profile'
+        if auth.form == 'edit profile'
           @local.saved_successfully = current_user.errors.length == 0 && (@local.errors or []).length == 0
 
         # Once the user logs in, we will stop showing the log-in screen
         else if current_user.logged_in
-          if @root.auth.goal == 'Save your Opinion'
+          if auth.goal == 'Save your Opinion'
             setTimeout((() -> updateProposalMode('results', 'after_save')), 700)
-          @root.auth = null
-          save @root
+          reset_key auth
 
         @local.submitting = false
         save @local

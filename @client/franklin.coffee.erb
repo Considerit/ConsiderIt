@@ -11,7 +11,6 @@ fetch 'decisionboard',
   docked : false
   
 fetch 'root',
-  auth_mode : null
   opinions_to_publish : []
 
 # Fetch current user every 2 minutes so that if the user gets
@@ -691,13 +690,16 @@ DecisionBoard = ReactiveComponent
                 else
                   auth_form = 'create account'
 
-                @root.auth = {
-                  form: auth_form, goal: 'Save your Opinion', ask_questions: true}
+                auth = reset_key auth,
+                  form: auth_form
+                  goal: 'Save your Opinion'
+                  ask_questions: true
 
                 # We'll need to publish this opinion after auth is completed
                 @root.opinions_to_publish.push(@proposal.your_opinion)
 
                 save @root
+                save auth
 
             if your_opinion.published 
               'See the results' 
@@ -1042,11 +1044,14 @@ YourPoints = ReactiveComponent
                 color: focus_blue
               onClick: => 
                 if can_add_new_point == Permission.NOT_LOGGED_IN
-                  @root.auth = {form: 'create account', goal: 'write a point'}
-                  save @root
+                  reset_key 'auth', 
+                    form: 'create account'
+                    goal: 'write a point'
                 else if can_add_new_point == Permission.UNVERIFIED_EMAIL
-                  @root.auth = {form: 'verify email', goal: 'write a point'}
-                  save @root
+                  reset_key 'auth', 
+                    form: 'verify email'
+                    goal: 'write a point'
+                  save auth
                   current_user.trying_to = 'send_verification_token'
                   save current_user
 
@@ -1836,14 +1841,13 @@ EditComment = ReactiveComponent
             cursor: 'pointer'
 
           onClick: =>
+
             if permitted == Permission.NOT_LOGGED_IN
-              @root.auth = {form: 'login', goal: 'Write a Comment'}
+              reset_key 'auth', {form: 'login', goal: 'Write a Comment'}
             else if permitted == Permission.UNVERIFIED_EMAIL
-              @root.auth = {form: 'verify email', goal: 'Write a Comment'}
+              reset_key 'auth', {form: 'verify email', goal: 'Write a Comment'}
               current_user.trying_to = 'send_verification_token'
               save current_user
-
-            save(@root)
 
           if permitted == Permission.NOT_LOGGED_IN
             DIV null,
@@ -2107,8 +2111,8 @@ SubmitFactCheck = ReactiveComponent
       else
         DIV
           onClick: =>
-            @root.auth = {form: 'login', goal: 'Request a Fact Check'}
-            save(@root)
+            reset_key 'auth', {form: 'login', goal: 'Request a Fact Check'}
+            save(auth)
           style:
             marginTop: 14
             textDecoration: 'underline'
@@ -2325,7 +2329,6 @@ EditPoint = ReactiveComponent
 
   savePoint : (ev) ->
     $form = $(@getDOMNode())
-    root = fetch('root')
 
     nutshell = $form.find('#nutshell').val()
     text = $form.find('#text').val()
@@ -2582,8 +2585,7 @@ ProfileMenu = ReactiveComponent
           'className': 'profile_anchor login'
           'data-action': 'login'
           onClick: (e) =>
-            @root.auth = {form: 'login', goal: null}
-            save @root
+            reset_key 'auth', {form: 'login', goal: null}
           style: {color: 'white'}
           'Log in'
 
@@ -2593,10 +2595,12 @@ ProfileMenu = ReactiveComponent
     current_user.logged_in = false
     current_user.trying_to = 'logout'
 
-    if @root.auth && @root.auth.form == 'edit profile'
+    auth = fetch 'auth'
+
+    if auth.form && auth.form == 'edit profile'
       loadPage '/'
 
-    @root.auth = null
+    reset_key auth
 
     save current_user, =>
       # We need to get a fresh your_opinion object
@@ -2606,7 +2610,6 @@ ProfileMenu = ReactiveComponent
       # current_user logs out
       arest.clear_matching_objects((key) -> key.match( /\/page\// ))
 
-    save @root
 
 styles += """
 .profile_navigation {
@@ -3167,10 +3170,10 @@ LocationTransition = ReactiveComponent
       ######
       # Temporary technique for handling resetting root state when switching 
       # between routes. TODO: more elegant approach
-      root = fetch('root')
-      if root.auth
-        root.auth = null
-        save root
+      auth = fetch('auth')
+      if auth.form
+        reset_key auth
+        save auth
 
       hist = fetch('histogram')
       if hist.selected_opinion || hist.selected_opinions || hist.selected_opinion_value
@@ -3219,10 +3222,10 @@ Computer = ReactiveComponent
     # users following an email invitation need to complete 
     # registration (name + password)
     if current_user.needs_to_set_password
-      @root.auth = 
+      reset_key auth,
+        key: 'auth'
         form: 'create account via invitation'
         goal: 'complete registration'
-      save @root
 
     SPAN null
 
@@ -3236,8 +3239,9 @@ Page = ReactiveComponent
     avatars = fetch('/avatars')
     subdomain = fetch('/subdomain')
     loc = fetch('location')
+    auth = fetch('auth')
 
-    if @root.auth && @root.auth.form != 'edit profile'
+    if auth.form && auth.form != 'edit profile'
       return Auth()
 
     if subdomain.name == 'homepage' && loc.url == '/'
@@ -3268,9 +3272,8 @@ Page = ReactiveComponent
             marginLeft: if lefty then 0
 
           if loc.url == '/edit_profile'
-            if !(@root.auth?.form == 'edit profile')
-              @root.auth = {form: 'edit profile', ask_questions: true}
-              save @root
+            if auth.form != 'edit profile'
+              reset_key 'auth', {form: 'edit profile', ask_questions: true}
             Auth()
 
           else
@@ -3316,7 +3319,7 @@ Root = ReactiveComponent
   displayName: 'Root'
   resetSelection: (e) ->
 
-    if !@root.auth
+    if !fetch('auth').form
       hist = fetch 'histogram'
 
       if get_selected_point()

@@ -81,6 +81,20 @@ window.capitalize = (string) -> string.charAt(0).toUpperCase() + string.substrin
 
 window.L = window.loading_indicator = DIV null, 'Loading...'
 
+
+window.reset_key = (obj_or_key, updates) -> 
+  updates = updates or {}
+  if !obj_or_key.key
+    obj_or_key = fetch obj_or_key
+
+  for own k,v of obj_or_key
+    if k != 'key'
+      delete obj_or_key[k]
+
+  _.extend obj_or_key, updates
+  save obj_or_key
+
+
 window.splitParagraphs = (user_content) ->
   if !user_content
     return SPAN null

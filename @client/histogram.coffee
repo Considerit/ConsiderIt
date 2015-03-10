@@ -125,7 +125,8 @@ window.Histogram = ReactiveComponent
         selected_opinions : null 
           # use null instead of [] because an empty selection of []
           # is treated differently than no selection whatsoever
-
+      save hist
+      
     options = customization("cluster_options.#{@props.proposal.cluster}") || {}
     filter_func = options.homie_histo_filter
 

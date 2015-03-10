@@ -71,7 +71,7 @@
 #
 # State design for histogram:
 #
-# Global state stored at 'histogram':
+# Global state:
 #   selection_opinion
 #      If set, an opinion key for an avatar that was clicked
 #   selected_opinions
@@ -110,7 +110,21 @@ window.Histogram = ReactiveComponent
   displayName : 'Histogram'
 
   render: -> 
-    hist = fetch('histogram')
+    hist = fetch @props.key
+
+    if !hist.initialized
+      _.defaults hist,
+        initialized: true
+        highlighted_users : null
+        # region_selection_width controls the size of the selection region when 
+        # hovering over the histogram. It defines the opinion bounds within which 
+        # opinions are selected. Opinions = [-1, 1]. region_selection_width is 
+        # on this scale. 
+        region_selection_width : .25
+        selected_opinion : null
+        selected_opinions : null 
+          # use null instead of [] because an empty selection of []
+          # is treated differently than no selection whatsoever
 
     options = customization("cluster_options.#{@props.proposal.cluster}") || {}
     filter_func = options.homie_histo_filter
@@ -316,10 +330,11 @@ window.Histogram = ReactiveComponent
   onClick: (ev) -> 
 
     ev.stopPropagation()
-    hist = fetch('histogram')
+    hist = fetch @props.key
 
-    if get_proposal_mode() == 'crafting'
-      updateProposalMode('results', 'click_histogram')
+    if @props.backgrounded
+      if @props.on_click_when_backgrounded
+        @props.on_click_when_backgrounded()
 
     else
       if ev.type == 'touchstart'
@@ -380,7 +395,7 @@ window.Histogram = ReactiveComponent
     return if fetch('slider').is_moving
 
     if @props.enable_selection && !@props.backgrounded
-      hist = fetch('histogram')
+      hist = fetch @props.key
       ev.stopPropagation()
 
       # handle drag resizing selection area
@@ -420,7 +435,7 @@ window.Histogram = ReactiveComponent
     @local.mouse_opinion_value = null
     save @local
 
-    hist = fetch('histogram')         
+    hist = fetch @props.key
     if hist.dragging
       hist.dragging = false
       save hist
@@ -428,7 +443,7 @@ window.Histogram = ReactiveComponent
 
   onMouseUp: (ev) -> 
     return if fetch('slider').is_moving
-    hist = fetch('histogram')     
+    hist = fetch @props.key   
     
     if hist.dragging
       hist.dragging = false
@@ -438,7 +453,7 @@ window.Histogram = ReactiveComponent
     return if fetch('slider').is_moving
     ev.stopPropagation()
 
-    hist = fetch('histogram')
+    hist = fetch @props.key
     if $(ev.target).closest('.selection_region_resizer').length > 0 && 
         hist.selected_opinions && 
         !@local.touched
@@ -454,7 +469,7 @@ window.Histogram = ReactiveComponent
   getOpinionsInCurrentRegion : -> 
     # return the opinions whose stance is within +/- region_selection_width 
     # of the moused over area of the histogram
-    hist = fetch('histogram')
+    hist = fetch @props.key
     all_opinions = fetch('/page/' + @props.proposal.slug).opinions || []  
     min = @local.mouse_opinion_value - hist.region_selection_width
     max = @local.mouse_opinion_value + hist.region_selection_width

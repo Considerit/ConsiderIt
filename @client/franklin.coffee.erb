@@ -93,11 +93,15 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
 
 
 #####################
-# React Components (needs to be updated)
+# These are some of the major components and their relationships 
+# when viewing a proposal. 
 #
-# These are the components and their relationships:
+# Open the state graph in a running application by pressing cntrl-G to 
+# examine relationships with live code. 
 #
-#                     Application 
+#                         Root
+#                          |
+#                         Page 
 #                          |
 #                       Proposal
 #                   /      |           \            \
@@ -105,9 +109,7 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
 #               |          |
 #               |      YourPoints
 #               |    /            \
-#              Point             NewPoint
-#
-#   (also, Proposal, Histogram, and Point employ Avatar)
+#              Point             EditPoint
 
 
 ##
@@ -560,9 +562,12 @@ DecisionBoard = ReactiveComponent
       borderStyle: 'dashed'
       borderWidth: 3
       borderColor: focus_blue
-      transition: "transform #{TRANSITION_SPEED}ms, " + \
-                  "width #{TRANSITION_SPEED}ms, " + \
-                  "min-height #{TRANSITION_SPEED}ms"
+      transition: if @last_proposal_mode != get_proposal_mode() || @transitioning  
+                    "transform #{TRANSITION_SPEED}ms, " + \
+                    "width #{TRANSITION_SPEED}ms, " + \
+                    "min-height #{TRANSITION_SPEED}ms"
+                  else
+                    'none'
 
     if @local.user_hovering_on_drop_target
       decision_board_style.borderStyle = 'solid'
@@ -582,7 +587,7 @@ DecisionBoard = ReactiveComponent
       _.extend decision_board_style,
         borderStyle: 'solid'
         backgroundColor: focus_blue
-        boxShadow: '0px 2px 0px black'
+        borderBottom: '1px solid rgba(0,0,0,.6)'
         cursor: 'pointer'
         transform: "translate(#{opinion_region_x}px, -18px)"
         minHeight: 32

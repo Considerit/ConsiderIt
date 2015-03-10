@@ -2014,21 +2014,6 @@ Discussion = ReactiveComponent
     if $(@getDOMNode()).parents('.opinion_region').length > 0
       $('.decision_board_body').append placeholder
 
-Button = (props, text, callback) ->
-  style =
-    backgroundColor: focus_blue
-    borderRadius: 8
-    color: 'white'
-    padding: '3px 10px'
-    display: 'inline-block'
-    fontWeight: 600
-    textAlign: 'center'
-    cursor: 'pointer'
-  props.style = _.extend(style, (props.style or {}))
-  props.onClick = callback
-
-  DIV props, text
-
 
 SubmitFactCheck = ReactiveComponent
   displayName: 'SubmitFactCheck'
@@ -3249,7 +3234,6 @@ Root = ReactiveComponent
 # exports...
 window.Point = Point
 window.Comment = Comment
-window.Button = Button
 
 #######
 # Start the app!

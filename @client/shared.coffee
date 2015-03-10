@@ -79,7 +79,7 @@ window.inRange = (val, min, max) ->
 
 window.capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
 
-window.L = window.loading_indicator = DIV null, 'Loading...'
+window.L = window.LOADING_INDICATOR = DIV null, 'Loading...'
 
 
 window.reset_key = (obj_or_key, updates) -> 

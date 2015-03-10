@@ -13,6 +13,7 @@
 //= require ../../state_graph
 
 //= require ../../shared
+//= require ../../form
 //= require ../../browser_hacks
 //= require ../../browser_location
 //= require ../../bubblemouth_svg

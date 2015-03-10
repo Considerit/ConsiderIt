@@ -183,12 +183,10 @@ AccessControlled =
           loadPage '/'
 
         when Permission.NOT_LOGGED_IN
-          @root.auth = {form: 'login', 'Access this page'}
-          save @root
+          reset_key 'auth', {form: 'login', 'Access this page'}
 
         when Permission.UNVERIFIED_EMAIL
-          @root.auth = {form: 'verify email', goal: 'Access this page'}
-          save @root
+          reset_key 'auth', {form: 'verify email', goal: 'Access this page'}
           current_user.trying_to = 'send_verification_token'
           save current_user
 

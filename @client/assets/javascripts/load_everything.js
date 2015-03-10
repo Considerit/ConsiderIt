@@ -18,6 +18,7 @@
 //= require ../../dock
 //= require ../../avatar
 //= require ../../histogram
+//= require ../../slider
 //= require ../../tooltip
 //= require ../../auth
 //= require ../../permissions

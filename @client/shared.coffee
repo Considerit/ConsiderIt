@@ -26,7 +26,7 @@ window.POINT_CONTENT_WIDTH = 197
 window.DECISION_BOARD_WIDTH = BODY_WIDTH + 4 # the four is for the border
 window.REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 76
 window.DESCRIPTION_WIDTH = BODY_WIDTH
-window.SLIDER_HANDLE_SIZE = 22
+window.SLIDER_HANDLE_SIZE = 25
 window.COMMUNITY_POINT_MOUTH_WIDTH = 17
 
 ##################
@@ -138,34 +138,6 @@ window.widthWhenRendered = (str, style) ->
     width_cache[key] = width
   width_cache[key]
 
-# Returns the style for a css triangle
-# 
-window.cssTriangle = (direction, color, width, height, style) -> 
-  style = style or {}
-
-  switch direction
-    when 'top'
-      border_width = "0 #{width/2}px #{height}px #{width/2}px"
-      border_color = "transparent transparent #{color} transparent"
-    when 'bottom'
-      border_width = "#{height}px #{width/2}px 0 #{width/2}px"
-      border_color = "#{color} transparent transparent transparent"
-    when 'left'
-      border_width = "#{height/2}px #{width}px #{height/2}px 0"
-      border_color = "transparent #{color} transparent transparent"
-    when 'right'
-      border_width = "#{height/2}px 0 #{height/2}px #{width}px"
-      border_color = "transparent transparent transparent #{color}"
-
-  _.defaults style, 
-    width: 0
-    height: 0
-    borderStyle: 'solid'
-    borderWidth: border_width
-    borderColor: border_color
-
-  style
-
 # maps an opinion stance in [-1, 1] to a pixel value [0, width]
 window.translateStanceToPixelX = (stance, width) -> (stance + 1) / 2 * width
 
@@ -226,6 +198,35 @@ css.grab_cursor = (selector)->
     cursor: -moz-grabbing;
   }
   """
+
+# Returns the style for a css triangle
+# 
+window.cssTriangle = (direction, color, width, height, style) -> 
+  style = style or {}
+
+  switch direction
+    when 'top'
+      border_width = "0 #{width/2}px #{height}px #{width/2}px"
+      border_color = "transparent transparent #{color} transparent"
+    when 'bottom'
+      border_width = "#{height}px #{width/2}px 0 #{width/2}px"
+      border_color = "#{color} transparent transparent transparent"
+    when 'left'
+      border_width = "#{height/2}px #{width}px #{height/2}px 0"
+      border_color = "transparent #{color} transparent transparent"
+    when 'right'
+      border_width = "#{height/2}px 0 #{height/2}px #{width}px"
+      border_color = "transparent transparent transparent #{color}"
+
+  _.defaults style, 
+    width: 0
+    height: 0
+    borderStyle: 'solid'
+    borderWidth: border_width
+    borderColor: border_color
+
+  style
+
 
 
 ## CSS reset

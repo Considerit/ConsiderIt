@@ -22,7 +22,7 @@
 #  apex_xfrac: see diagram. The percent between the p1 & p2 that p3 is. 
 #  fill, stroke, stroke_width, dash_array, box_shadow
 
-window.BubblemouthSVG = (props) -> 
+window.Bubblemouth = (props) -> 
 
   # width/height of bubblemouth in svg coordinate space
   _.defaults props,
@@ -87,36 +87,8 @@ window.BubblemouthSVG = (props) ->
           d: bubblemouth_path
 
       if props.box_shadow
-        FILTER 
+        svg.dropShadow _.extend props.box_shadow, 
           id: "#{id}-shadow"
-
-          FEOFFSET
-            in: "SourceAlpha"          
-            dx: props.box_shadow.dx
-            dy: props.box_shadow.dy
-            result: "offsetblur" 
-
-          FEGAUSSIANBLUR
-            in: 'offsetblur'
-            stdDeviation: props.box_shadow.stdDeviation #how much blur
-            result: 'blur2'
-
-          FECOLORMATRIX
-            in: 'blur2'
-            result: 'color'
-            type: 'matrix'
-            values: """
-              0 0 0 0  0
-              0 0 0 0  0 
-              0 0 0 0  0 
-              0 0 0 #{props.box_shadow.opacity} 0"""
-
-
-          FEMERGE null,
-            FEMERGENODE 
-              in: 'color'
-            FEMERGENODE 
-              in: 'SourceGraphic'
 
     if props.box_shadow
       # can't apply drop shadow to main path because of 

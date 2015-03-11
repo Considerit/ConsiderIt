@@ -1,3 +1,12 @@
+
+# globally accessible method for getting the URL of a user's avatar
+window.avatarUrl = (user, img_size) -> 
+  user = fetch(user)
+  fetch('/subdomain').asset_host + \
+        "/system/avatars/" + \
+        "#{user.key.split('/')[2]}/#{img_size}/#{user.avatar_file_name}"  
+
+
 ##
 # Avatar
 # Displays a user's avatar
@@ -48,9 +57,8 @@ window.Avatar = ReactiveComponent
     use_large_image = img_size != 'thumb' && show_avatar
 
     if use_large_image
-      @props.src = fetch('/subdomain').asset_host + \
-                   "/system/avatars/" + \
-                   "#{user.key.split('/')[2]}/#{img_size}/#{user.avatar_file_name}"  
+      @props.src = avatarUrl user, img_size
+
     else
       # prevents a weird webkit outlining issue
       # http://stackoverflow.com/questions/4743127

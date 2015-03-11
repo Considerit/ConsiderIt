@@ -13,10 +13,11 @@
 //= require ../../state_graph
 
 //= require ../../shared
+//= require ../../svg
 //= require ../../form
 //= require ../../browser_hacks
 //= require ../../browser_location
-//= require ../../bubblemouth_svg
+//= require ../../bubblemouth
 //= require ../../dock
 //= require ../../avatar
 //= require ../../histogram

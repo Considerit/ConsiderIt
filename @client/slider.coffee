@@ -1,11 +1,16 @@
-
 ##
 # Slider
+#
 # Manages the slider and the UI elements attached to it. Specifically: 
 #   - a slider base
 #   - labels for the poles of the slider
 #   - a draggable slider handle
 #   - feedback description about the current opinion
+#
+# TODO:
+#   - better documentation
+#   - can we remove histogram dependency?
+#   - factor out into separate functions
 #
 window.Slider = ReactiveComponent
   displayName: 'Slider'
@@ -332,45 +337,10 @@ slider_handles.face = (props) ->
       pointerEvents: 'none'
 
     DEFS null,
-
-      FILTER
+      svg.innerbevel
         id: 'handle-innerbevel'
-        x0: "-50%" 
-        y0: "-50%" 
-        width: "200%" 
-        height: "200%"
-
-        for shadow, idx in [{color: 'black', opacity: 1, dx: 0, dy: -3, stdDeviation: 3}, \
-                            {color: 'white', opacity:  .25, dx:  0, dy: 3, stdDeviation: 3}]
-          [FEGAUSSIANBLUR
-            in: if idx == 0 then 'SourceAlpha' else "result#{idx}"
-            stdDeviation: shadow.stdDeviation 
-            result: "blur#{idx}"
-
-          FEOFFSET
-            dy: shadow.dy
-            dx: shadow.dx
-
-          FECOMPOSITE
-            in2: 'SourceAlpha' #if idx == 0 then 'SourceAlpha' else "result#{idx}"
-            operator: "arithmetic" 
-            k2: "-1" 
-            k3: "1" 
-            result: "shadowDiff"
-
-          FEFLOOD
-            floodColor: shadow.color
-            floodOpacity: shadow.opacity
-
-          FECOMPOSITE
-            in2: "shadowDiff" 
-            operator: "in" 
-
-          FECOMPOSITE
-            in2: if idx == 0 then 'SourceGraphic' else "result#{idx - 1}"
-            operator: "over" 
-            result: "result#{idx}"
-          ]
+        shadows: [{color: 'black', opacity: 1, dx: 0, dy: -3, stdDeviation: 3}, \
+                  {color: 'white', opacity:  .25, dx:  0, dy: 3, stdDeviation: 3}]        
 
     CIRCLE
       fill: focus_blue
@@ -460,44 +430,10 @@ slider_handles.flat = (props) ->
           cy: 50
           r: 48
 
-      FILTER
+      svg.innerbevel
         id: 'handle-innerbevel'
-        x0: "-50%" 
-        y0: "-50%" 
-        width: "200%" 
-        height: "200%"
-
-        for shadow, idx in [{color: 'black', opacity: 1, dx: 0, dy: -3, stdDeviation: 3}, \
-                            {color: 'white', opacity:  .25, dx:  0, dy: 3, stdDeviation: 3}]
-          [FEGAUSSIANBLUR
-            in: if idx == 0 then 'SourceAlpha' else "result#{idx}"
-            stdDeviation: shadow.stdDeviation 
-            result: "blur#{idx}"
-
-          FEOFFSET
-            dy: shadow.dy
-            dx: shadow.dx
-
-          FECOMPOSITE
-            in2: 'SourceAlpha' #if idx == 0 then 'SourceAlpha' else "result#{idx}"
-            operator: "arithmetic" 
-            k2: "-1" 
-            k3: "1" 
-            result: "shadowDiff"
-
-          FEFLOOD
-            floodColor: shadow.color
-            floodOpacity: shadow.opacity
-
-          FECOMPOSITE
-            in2: "shadowDiff" 
-            operator: "in" 
-
-          FECOMPOSITE
-            in2: if idx == 0 then 'SourceGraphic' else "result#{idx - 1}"
-            operator: "over" 
-            result: "result#{idx}"
-          ]
+        shadows: [{color: 'black', opacity: 1, dx: 0, dy: -3, stdDeviation: 3}, \
+                  {color: 'white', opacity:  .25, dx:  0, dy: 3, stdDeviation: 3}]        
 
     CIRCLE
       fill: focus_blue

@@ -69,55 +69,6 @@ window.Slider = ReactiveComponent
                       your_opinion.published )
 
     draw_handle = enable_opining
-    if draw_handle
-
-      handle_style =
-        boxShadow: "0px 1px 0px black, " + \
-                   "inset 0 1px 2px rgba(255,255,255, .4), " + \
-                   "0px 0px 0px 1px #{focus_blue}"            
-        backgroundColor: focus_blue      
-        left: slider.clientX
-        zIndex: 10
-        borderRadius: '50%'
-        width: SLIDER_HANDLE_SIZE
-        height: SLIDER_HANDLE_SIZE
-        marginLeft: -SLIDER_HANDLE_SIZE / 2
-        top: -9
-        position: 'relative'
-        visibility: if @props.backgrounded then 'hidden'
-
-        transition: "transform #{TRANSITION_SPEED}ms"
-        transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
-
-
-      face_style = 
-        position: 'absolute'
-        pointerEvents: 'none'
-        borderRadius: '50%'
-
-      eye_size = .8 + .2 * Math.abs(slider.stance)
-      eye_style = _.extend {}, face_style,
-        backgroundColor: 'white'
-        top: 6
-        width: 3
-        height: 3
-        transform: "scale(#{eye_size}, #{eye_size})"
-
-      mouth_scale_y = .4 * slider.stance
-      mouth_y = if Math.abs(mouth_scale_y) < .08 
-                  (if mouth_scale_y >= 0 then 1 else -1) * .08 
-                else 
-                  mouth_scale_y
-      mouth_style = _.extend {}, face_style,
-        bottom: -1
-        width: SLIDER_HANDLE_SIZE - 4
-        left: 2
-        height: SLIDER_HANDLE_SIZE - 4
-        boxShadow: '3px 3px 0 0 white'
-        transform: 
-          "scale(#{.4 + .3 * Math.abs(slider.stance)}, #{mouth_y}) " + \
-          "translate(0, #{-2 - 5 * Math.abs(slider.stance)}px) " + \
-          "rotate(45deg)"
 
 
     ####
@@ -244,16 +195,22 @@ window.Slider = ReactiveComponent
           onTouchStart: @handleMouseDown
 
           onTouchMove: @handleMouseMove
-          style: css.crossbrowserify handle_style
+          style: css.crossbrowserify
+            width: SLIDER_HANDLE_SIZE
+            height: SLIDER_HANDLE_SIZE
+            transition: "transform #{TRANSITION_SPEED}ms"
+            transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
+            visibility: if @props.backgrounded then 'hidden'
+            top: -9
+            position: 'relative'
+            marginLeft: -SLIDER_HANDLE_SIZE / 2
+            zIndex: 10
+            left: slider.clientX
 
-          if @props.focused
-           [DIV 
-              style: css.crossbrowserify(mouth_style)
-            DIV 
-              style: css.crossbrowserify(_.defaults({left: 6}, eye_style))
-            DIV 
-              style: css.crossbrowserify(_.defaults({right: 6}, eye_style ))
-           ]
+
+          customization('slider_handle')
+            value: (slider.stance + 1) / 2
+            detail: @props.focused
 
           if @props.focused && !slider.has_moved
             for support in [true, false]
@@ -329,7 +286,10 @@ window.Slider = ReactiveComponent
 
     slider = fetch(@props.key)
 
-    clientX = e.clientX or e.touches[0].clientX
+    clientX = if e.clientX?
+                e.clientX
+              else
+                e.touches[0].clientX
 
     # Update position
     slider.clientX = slider.startX + clientX - slider.offsetX
@@ -341,6 +301,228 @@ window.Slider = ReactiveComponent
     slider.stance = translatePixelXToStance(slider.clientX, @props.width)
 
     save slider
+
+
+####
+# Slider handles
+#
+# All slider handles should respect the SLIDER_HANDLE_SIZE width/height.
+# 
+# Slider handles will be passed a props object with:
+# 
+# value: 
+#    ranging from [0, 1] representing a position on the slider. This can 
+#    be used to change the visualization if desired. But the slider handle
+#    doesn't have to worry about positioning itself according to the value. 
+#
+# detail: 
+#    Whether the handle should show the more intricate details. 
+#
+
+if !window.slider_handles
+  window.slider_handles = {}
+
+slider_handles.face = (props) -> 
+
+  SVG
+    height: SLIDER_HANDLE_SIZE
+    width: SLIDER_HANDLE_SIZE
+    viewBox: "-2 -1 104 104"
+    style: 
+      pointerEvents: 'none'
+
+    DEFS null,
+
+      FILTER
+        id: 'handle-innerbevel'
+        x0: "-50%" 
+        y0: "-50%" 
+        width: "200%" 
+        height: "200%"
+
+        for shadow, idx in [{color: 'black', opacity: 1, dx: 0, dy: -3, stdDeviation: 3}, \
+                            {color: 'white', opacity:  .25, dx:  0, dy: 3, stdDeviation: 3}]
+          [FEGAUSSIANBLUR
+            in: if idx == 0 then 'SourceAlpha' else "result#{idx}"
+            stdDeviation: shadow.stdDeviation 
+            result: "blur#{idx}"
+
+          FEOFFSET
+            dy: shadow.dy
+            dx: shadow.dx
+
+          FECOMPOSITE
+            in2: 'SourceAlpha' #if idx == 0 then 'SourceAlpha' else "result#{idx}"
+            operator: "arithmetic" 
+            k2: "-1" 
+            k3: "1" 
+            result: "shadowDiff"
+
+          FEFLOOD
+            floodColor: shadow.color
+            floodOpacity: shadow.opacity
+
+          FECOMPOSITE
+            in2: "shadowDiff" 
+            operator: "in" 
+
+          FECOMPOSITE
+            in2: if idx == 0 then 'SourceGraphic' else "result#{idx - 1}"
+            operator: "over" 
+            result: "result#{idx}"
+          ]
+
+    CIRCLE
+      fill: focus_blue
+      stroke: focus_blue
+      cx: 50
+      cy: 50
+      r: 50
+
+    if props.detail
+      G null,
+        
+        CIRCLE
+          fill: focus_blue
+          filter: "url(#handle-innerbevel)"
+
+          cx: 50
+          cy: 50
+          r: 50
+
+        # brows
+        for is_left in [true, false]
+          # support: closer to center line
+          # oppose: larger eyes, closer to the edge
+
+          direction = if is_left then -1 else 1
+          bw = 15
+          bh = 2
+          x = 50 + direction * ( 28 + 4 * (1 - props.value)) - if is_left then 0 else bw
+          y = 28 - 4 * (1 - props.value)
+          RECT
+            x: x
+            y: y
+            width: bw
+            height: bh
+            transform: "rotate(#{ direction * (5 + 30 * Math.abs(.5 - props.value))} #{x + (if is_left then bw else 0)} #{y + bh})"
+            fill: 'white'
+
+        # eyes
+        for is_left in [true, false]
+          # support: closer to center line, further down
+          # oppose: farther out, raised
+
+          direction = if is_left then -1 else 1
+          CIRCLE
+            cx: 50 + direction * ( 13 + 6 * (1 - props.value))
+            cy: 39
+            r: 3 #+ 1.6 * (1 - props.value)
+            fill: 'white'
+
+        # mouth
+        do =>
+          frowniness = 5
+          mw = 40
+          my = 65
+
+          [x1, y1] = [50 - mw / 2, my + frowniness * (1-props.value)]
+          [x2, y2] = [50 + mw / 2, y1]
+
+          [qx1, qy1] = [50, my + .5 * frowniness + 2 * frowniness * (2 * props.value - 1)]
+
+          PATH
+            stroke: 'white'
+            fill: focus_blue
+            strokeWidth: 3 
+            d: """
+              M #{x1} #{y1}
+              Q #{qx1} #{qy1}
+                #{x2} #{y2}
+            """
+
+
+slider_handles.flat = (props) -> 
+
+  SVG
+    height: SLIDER_HANDLE_SIZE
+    width: SLIDER_HANDLE_SIZE
+    viewBox: "-2 -1 104 104"
+    style: 
+      pointerEvents: 'none'
+
+    DEFS null,
+
+      CLIPPATH
+        id: 'slider-avatar-clip'
+        CIRCLE
+          cx: 50
+          cy: 50
+          r: 48
+
+      FILTER
+        id: 'handle-innerbevel'
+        x0: "-50%" 
+        y0: "-50%" 
+        width: "200%" 
+        height: "200%"
+
+        for shadow, idx in [{color: 'black', opacity: 1, dx: 0, dy: -3, stdDeviation: 3}, \
+                            {color: 'white', opacity:  .25, dx:  0, dy: 3, stdDeviation: 3}]
+          [FEGAUSSIANBLUR
+            in: if idx == 0 then 'SourceAlpha' else "result#{idx}"
+            stdDeviation: shadow.stdDeviation 
+            result: "blur#{idx}"
+
+          FEOFFSET
+            dy: shadow.dy
+            dx: shadow.dx
+
+          FECOMPOSITE
+            in2: 'SourceAlpha' #if idx == 0 then 'SourceAlpha' else "result#{idx}"
+            operator: "arithmetic" 
+            k2: "-1" 
+            k3: "1" 
+            result: "shadowDiff"
+
+          FEFLOOD
+            floodColor: shadow.color
+            floodOpacity: shadow.opacity
+
+          FECOMPOSITE
+            in2: "shadowDiff" 
+            operator: "in" 
+
+          FECOMPOSITE
+            in2: if idx == 0 then 'SourceGraphic' else "result#{idx - 1}"
+            operator: "over" 
+            result: "result#{idx}"
+          ]
+
+    CIRCLE
+      fill: focus_blue
+      stroke: focus_blue
+      filter: 'url(#handle-innerbevel)'
+      cx: 50
+      cy: 50
+      r: 50
+
+    do =>
+      user = fetch(fetch('/current_user').user)
+
+      if user.avatar_file_name
+        IMAGE
+          'xlink:href': avatarUrl user, 'large'
+          x: 2
+          y: 2
+
+          width: 96
+          height: 96
+
+          clipPath: 'url(#slider-avatar-clip)'
+
+
+
 
 
 styles += """

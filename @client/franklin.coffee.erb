@@ -849,8 +849,7 @@ SliderBubblemouth = ReactiveComponent
     DIV 
       key: 'slider_bubblemouth'
       style: css.crossbrowserify
-        left: Math.min DECISION_BOARD_WIDTH - w - 10, \
-                Math.max 10, translateStanceToPixelX slider.stance, DECISION_BOARD_WIDTH - w
+        left: 10 + translateStanceToPixelX slider.stance, DECISION_BOARD_WIDTH - w - 20
         top: -h + 10 + 3 # +10 is because of the decision board translating down 10, 3 is for its border
         position: 'absolute'
         width: w

@@ -9,16 +9,14 @@
 #
 # TODO:
 #   - better documentation
-#   - can we remove histogram dependency?
-#   - factor out into separate functions
-#
+
 window.Slider = ReactiveComponent
   displayName: 'Slider'
 
   render : ->
 
-    slider = fetch(@props.key)
-    hist = fetch('histogram')
+    slider = fetch @props.key
+    your_opinion = fetch @props.your_opinion
 
     # initialize
     if !slider.initialized
@@ -30,7 +28,6 @@ window.Slider = ReactiveComponent
       save slider
 
     # Update the slider position when the server gets back to us
-    your_opinion = fetch(@proposal.your_opinion)
     if slider.stance != your_opinion.stance and !slider.is_moving
       slider.stance = your_opinion.stance
       slider.clientX = @props.width * (slider.stance / 2 + .5)
@@ -49,185 +46,177 @@ window.Slider = ReactiveComponent
     if @props.backgrounded
       css.grayscale slider_style
 
-    ####
-    # Define slider base
+    DIV 
+      className: 'slider'
+      style : slider_style
+
+      # Draw the pole labels of the slider
+      @drawPoleLabels()
+
+      # Draw the base of the slider
+      @drawSliderBase()
+
+      if @props.focused && @props.enabled
+        @drawFeedback()
+
+      if @props.enabled
+        @drawSliderHandle()
+
+  drawPoleLabels: -> 
+    slider = fetch @props.key
+
+    if !slider.docked
+      for pole_label, idx in @props.pole_labels
+        w = widthWhenRendered pole_label, {fontSize: 30}
+        DIV 
+          key: pole_label
+          style: 
+            position: 'absolute'
+            fontSize: 30
+            top: -20
+            pointerEvents: 'none'
+            left: if idx == 0 then -(w + 55)
+            right: if idx == 1 then -(w + 55)
+
+          pole_label
+    else
+      for pole_label, idx in props.pole_labels
+        DIV 
+          key: "small-#{pole_label}"
+          style: 
+            position: 'absolute'
+            fontSize: 20
+            top: -12
+            pointerEvents: 'none'
+            left: if idx == 0 then -15
+            right: if idx == 1 then -20
+
+          if idx == 0 then '–' else '+'
+
+  drawSliderBase: -> 
+    slider = fetch @props.key
+
     slider_base_style = 
       width: @props.width
       height: 6
       backgroundColor: '#BBBFC7'
       position: 'absolute'
 
+    DIV 
+      style : slider_base_style
 
-    ####
-    # Define slider handle
+      if !slider.docked
 
-    # Check whether the user has permission to opine, which affects whether a 
-    # slider handle is shown. 
-    if your_opinion.published
-      can_opine = permit 'update opinion', @proposal, your_opinion
-    else
-      can_opine = permit 'publish opinion', @proposal
+        for support in [true, false]
+          DIV 
+            key: "slider-base-#{support}"
+            style: 
+              position: 'absolute'
+              left: if support then -5
+              right: if !support then -5
+              width: 5
+              height: slider_base_style.height
+              backgroundColor: slider_base_style.backgroundColor
 
-    enable_opining = !(hist.selected_opinions || hist.selected_opinion) &&
-                      (can_opine not in [Permission.DISABLED, \
-                                         Permission.INSUFFICIENT_PRIVILEGES] || 
-                      your_opinion.published )
+            DIV
+              style: cssTriangle \
+                       (if support then 'left' else 'right'), \
+                       slider_base_style.backgroundColor, 12, 6,               
+                          position: 'absolute'
+                          left: if support then -12
+                          right: if !support then -12
 
-    draw_handle = enable_opining
+  drawFeedback: -> 
+    slider = fetch @props.key
 
+    slider_feedback = 
+      if !slider.has_moved 
+        'Slide Your Overall Opinion' 
+      else if isNeutralOpinion(slider.stance)
+        "You are Undecided"
+      else 
+        degree = Math.abs(slider.stance)
+        strength_of_opinion = if degree > .999
+                                "Fully "
+                              else if degree > .5
+                                "Firmly "
+                              else
+                                "Slightly " 
 
-    ####
-    # Define slider feedback
-    draw_feedback = @props.focused && draw_handle
-    
-    if draw_feedback
-      slider_feedback = 
-        if !slider.has_moved 
-          'Slide Your Overall Opinion' 
-        else if isNeutralOpinion(slider.stance)
-          "You are Undecided"
-        else 
-          degree = Math.abs(slider.stance)
-          strength_of_opinion = if degree > .999
-                                  "Fully "
-                                else if degree > .5
-                                  "Firmly "
-                                else
-                                  "Slightly " 
+        valence = customization "slider_pole_labels.individual." + \
+                                if slider.stance > 0 then 'support' else 'oppose'
 
-          valence = customization "slider_pole_labels.individual." + \
-                                  if slider.stance > 0 then 'support' else 'oppose'
+        "You #{strength_of_opinion} #{valence}"
 
-          "You #{strength_of_opinion} #{valence}"
+    feedback_style = 
+      pointerEvents: 'none' 
+      fontSize: 30
+      fontWeight: 700
+      color: focus_blue
+      visibility: if @props.backgrounded then 'hidden'
 
-      feedback_style = 
-        pointerEvents: 'none' 
-        fontSize: 30
-        fontWeight: 700
-        color: focus_blue
-        visibility: if @props.backgrounded then 'hidden'
+    # Keep feedback centered over handle, but keep within the bounds of 
+    # the slider region when the slider is in an extreme position. 
+    feedback_left = @props.width * (slider.stance/2 + .5)
+    feedback_width = widthWhenRendered(slider_feedback, feedback_style) + 10
 
-      # Keep feedback centered over handle, but keep within the bounds of 
-      # the slider region when the slider is in an extreme position. 
-      feedback_left = @props.width * (slider.stance/2 + .5)
-      feedback_width = widthWhenRendered(slider_feedback, feedback_style) + 10
+    if slider.docked 
+      if props.slider > 0
+        feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
+      else
+        feedback_left = Math.max(feedback_width/2, feedback_left)
 
-      if slider.docked 
-        if slider.stance > 0
-          feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
-        else
-          feedback_left = Math.max(feedback_width/2, feedback_left)
-
-      _.extend feedback_style, 
-        position: 'absolute'      
-        top: if slider.docked then -57 else -80      
-        left: feedback_left
-        marginLeft: -feedback_width / 2
-        width: feedback_width
-
+    _.extend feedback_style, 
+      position: 'absolute'      
+      top: if slider.docked then -57 else -80      
+      left: feedback_left
+      marginLeft: -feedback_width / 2
+      width: feedback_width
 
     DIV 
-      className: 'slider'
-      style : slider_style
+      style: feedback_style
+      slider_feedback
 
-      # Draw the pole labels of the slider      
-      if !slider.docked
-        for pole_label, idx in @props.pole_labels
-          w = widthWhenRendered pole_label, {fontSize: 30}
+  drawSliderHandle: -> 
+    slider = fetch @props.key
+    DIV 
+      className: 'the_handle' 
+      onMouseUp: @handleMouseUp
+      onTouchEnd: @handleMouseUp
+      onTouchCancel: @handleMouseUp
+
+      onMouseDown: @handleMouseDown
+      onTouchStart: @handleMouseDown
+
+      onTouchMove: @handleMouseMove
+      style: css.crossbrowserify
+        width: SLIDER_HANDLE_SIZE
+        height: SLIDER_HANDLE_SIZE
+        transition: "transform #{TRANSITION_SPEED}ms"
+        transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
+        visibility: if @props.backgrounded then 'hidden'
+        top: -9
+        position: 'relative'
+        marginLeft: -SLIDER_HANDLE_SIZE / 2
+        zIndex: 10
+        left: slider.clientX
+
+
+      customization('slider_handle')
+        value: (slider.stance + 1) / 2
+        detail: @props.focused
+
+      if @props.focused && !slider.has_moved
+        for support in [true, false]
           DIV 
-            key: pole_label
             style: 
+              right: if support then -15
+              left: if !support then -15
               position: 'absolute'
-              fontSize: 30
-              top: -20
-              pointerEvents: 'none'
-              left: if idx == 0 then -(w + 55)
-              right: if idx == 1 then -(w + 55)
-
-            pole_label
-      else
-        for pole_label, idx in @props.pole_labels
-          DIV 
-            key: "small-#{pole_label}"
-            style: 
-              position: 'absolute'
-              fontSize: 20
-              top: -12
-              pointerEvents: 'none'
-              left: if idx == 0 then -15
-              right: if idx == 1 then -20
-
-            if idx == 0 then '–' else '+'
-
-      # Draw the base of the slider
-      DIV 
-        style : slider_base_style
-
-        if !slider.docked
-
-          for support in [true, false]
-            DIV 
-              key: "slider-base-#{support}"
-              style: 
-                position: 'absolute'
-                left: if support then -5
-                right: if !support then -5
-                width: 5
-                height: slider_base_style.height
-                backgroundColor: slider_base_style.backgroundColor
-
-              DIV
-                style: cssTriangle \
-                         (if support then 'left' else 'right'), \
-                         slider_base_style.backgroundColor, 12, 6,               
-                            position: 'absolute'
-                            left: if support then -12
-                            right: if !support then -12
-
-      if draw_feedback
-        DIV 
-          style: feedback_style
-          slider_feedback
-
-      if draw_handle
-        DIV 
-          className: 'the_handle' 
-          onMouseUp: @handleMouseUp
-          onTouchEnd: @handleMouseUp
-          onTouchCancel: @handleMouseUp
-
-          onMouseDown: @handleMouseDown
-          onTouchStart: @handleMouseDown
-
-          onTouchMove: @handleMouseMove
-          style: css.crossbrowserify
-            width: SLIDER_HANDLE_SIZE
-            height: SLIDER_HANDLE_SIZE
-            transition: "transform #{TRANSITION_SPEED}ms"
-            transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
-            visibility: if @props.backgrounded then 'hidden'
-            top: -9
-            position: 'relative'
-            marginLeft: -SLIDER_HANDLE_SIZE / 2
-            zIndex: 10
-            left: slider.clientX
-
-
-          customization('slider_handle')
-            value: (slider.stance + 1) / 2
-            detail: @props.focused
-
-          if @props.focused && !slider.has_moved
-            for support in [true, false]
-              DIV 
-                style: 
-                  right: if support then -15
-                  left: if !support then -15
-                  position: 'absolute'
-                  top: 3
-                  color: focus_blue
-                  fontSize: 12              
-                if support then '>' else '<'
+              top: 3
+              color: focus_blue
+              fontSize: 12              
+            if support then '>' else '<'    
 
 
 
@@ -260,15 +249,13 @@ window.Slider = ReactiveComponent
 
     e.preventDefault()
 
-    your_opinion = fetch(@proposal.your_opinion)
+    your_opinion = fetch @props.your_opinion
     
     # Clicking on the slider handle should transition us between 
     # crafting <=> results. We should also transition to crafting 
     # when we've been dragging on the results page. 
-    if slider.stance == your_opinion.stance || !@props.focused
-      new_page = if get_proposal_mode() == 'results' then 'crafting' else 'results'
-      updateProposalMode new_page, 'click_slider'
-      e.stopPropagation()
+    if @props.additionalOnMouseUp
+      @props.additionalOnMouseUp e
 
     # We save the slider's position to the server only on mouse-up.
     # This way you can drag it with good performance.
@@ -306,6 +293,7 @@ window.Slider = ReactiveComponent
     slider.stance = translatePixelXToStance(slider.clientX, @props.width)
 
     save slider
+
 
 
 ####

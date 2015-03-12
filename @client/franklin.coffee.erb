@@ -318,17 +318,26 @@ Proposal = ReactiveComponent
                     # that corresponds to the prop for the child, we assure
                     # that the parent will properly pass the prop onto the 
                     # child. 
-            
-            Histogram
-              key: 'histogram'
-              proposal: @proposal
-              width: BODY_WIDTH
-              height: if fetch('histogram-dock').docked then 50 else 170
-              enable_selection: true
-              draw_base: if fetch('histogram-dock').docked then true else false
-              backgrounded: mode == 'crafting'
-              on_click_when_backgrounded: ->
-                updateProposalMode('results', 'click_histogram')
+
+            do =>             
+              options = customization("cluster_options.#{@proposal.cluster}") || {}
+              filter_func = options.homie_histo_filter
+              opinions = fetch('/page/' + @proposal.slug).opinions
+              # We'll only pass SOME opinions to the histogram
+              opinions = (opinion for opinion in opinions when \
+                           not filter_func or filter_func(fetch(opinion.user)))
+
+              Histogram
+                key: 'histogram'
+                
+                opinions: opinions
+                width: BODY_WIDTH
+                height: if fetch('histogram-dock').docked then 50 else 170
+                enable_selection: true
+                draw_base: if fetch('histogram-dock').docked then true else false
+                backgrounded: mode == 'crafting'
+                on_click_when_backgrounded: ->
+                  updateProposalMode('results', 'click_histogram')
 
           Dock
             key: 'slider-dock'

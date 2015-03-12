@@ -80,7 +80,7 @@ window.Slider = ReactiveComponent
 
           pole_label
     else
-      for pole_label, idx in props.pole_labels
+      for pole_label, idx in @props.pole_labels
         DIV 
           key: "small-#{pole_label}"
           style: 
@@ -161,7 +161,7 @@ window.Slider = ReactiveComponent
     feedback_width = widthWhenRendered(slider_feedback, feedback_style) + 10
 
     if slider.docked 
-      if props.slider > 0
+      if slider.stance > 0
         feedback_left = Math.min(@props.width - feedback_width/2, feedback_left)
       else
         feedback_left = Math.max(feedback_width/2, feedback_left)

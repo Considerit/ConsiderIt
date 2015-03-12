@@ -12,8 +12,8 @@
 ##
 # Props
 # 
-#   proposal
-#     The proposal from which the opinions are drawn. 
+#   opinions
+#     The opinions to show in the histogram. 
 #   width, height
 #   enable_selection (default = false)
 #     Whether users can select opinions segments on the histogram
@@ -127,15 +127,7 @@ window.Histogram = ReactiveComponent
           # is treated differently than no selection whatsoever
       save hist
       
-    options = customization("cluster_options.#{@props.proposal.cluster}") || {}
-    filter_func = options.homie_histo_filter
-
-    # We'll only pass SOME opinions to the histogram
-    @opinions = fetch('/page/' + @props.proposal.slug).opinions
-    @opinions = (opinion for opinion in @opinions when \
-                 not filter_func or filter_func(fetch(opinion.user)))
-
-    avatar_radius = calculateAvatarRadius(@props.width, @props.height, @opinions)
+    avatar_radius = calculateAvatarRadius(@props.width, @props.height, @props.opinions)
     if @local.avatar_size != avatar_radius * 2
       @local.avatar_size = avatar_radius * 2
       save @local
@@ -199,7 +191,7 @@ window.Histogram = ReactiveComponent
         height: @props.height + region_selection_vertical_padding
         position: 'relative'
         borderBottom: if @props.draw_base then '1px solid #999'
-        visibility: if @opinions.length == 0 then 'hidden'
+        visibility: if @props.opinions.length == 0 then 'hidden'
         userSelect: 'none'
 
     if @props.enable_selection
@@ -304,7 +296,7 @@ window.Histogram = ReactiveComponent
           cursor: if !@props.backgrounded && 
                       @props.enable_selection then 'pointer'
 
-        for opinion in @opinions
+        for opinion in @props.opinions
           user = opinion.user
           fetch(opinion) # subscribe to changes so physics sim will get rerun...
 
@@ -346,7 +338,7 @@ window.Histogram = ReactiveComponent
       if is_clicking_user
         user_key = "/user/" + ev.target.getAttribute('id')
                                .substring(7, ev.target.getAttribute('id').length)
-        user_opinion = _.findWhere @opinions, {user: user_key}
+        user_opinion = _.findWhere @props.opinions, {user: user_key}
         is_deselection = hist.selected_opinion == user_opinion.key && 
                           !@local.last_selection_via_drag
         if is_deselection
@@ -471,7 +463,7 @@ window.Histogram = ReactiveComponent
     # return the opinions whose stance is within +/- region_selection_width 
     # of the moused over area of the histogram
     hist = fetch @props.key
-    all_opinions = fetch('/page/' + @props.proposal.slug).opinions || []  
+    all_opinions = @props.opinions || []  
     min = @local.mouse_opinion_value - hist.region_selection_width
     max = @local.mouse_opinion_value + hist.region_selection_width
     selected_opinions = (o.key for o in all_opinions when inRange(o.stance, min, max))
@@ -484,18 +476,18 @@ window.Histogram = ReactiveComponent
     # decimals to avoid more frequent recalculations than necessary (one way 
     # this happens is with the server rounding opinion data differently than 
     # the javascript does when moving one's slider)
-    simulation_opinion_hash = JSON.stringify _.map(@opinions, (o) => 
+    simulation_opinion_hash = JSON.stringify _.map(@props.opinions, (o) => 
       Math.round(fetch(o.key).stance * 100) / 100 )
 
     simulation_opinion_hash += " (#{@props.width}, #{@props.height})"
 
     if @refs && @refs.histo && simulation_opinion_hash != @local.simulation_opinion_hash
-      page = fetch('/page/' + @props.proposal.slug)
       histo = @refs.histo.getDOMNode()
 
       icons = histo.childNodes
-      if icons.length == @opinions.length
-        opinions = for opinion, i in @opinions
+
+      if icons.length == @props.opinions.length
+        opinions = for opinion, i in @props.opinions
           {stance: opinion.stance, icon: icons[i], radius: icons[i].style.width/2}
 
         positionAvatars(@props.width, @props.height, opinions)
@@ -505,6 +497,10 @@ window.Histogram = ReactiveComponent
 
   componentDidMount: -> @physicsSimulation()
   componentDidUpdate: -> @physicsSimulation()
+
+
+
+
 
 
 #####

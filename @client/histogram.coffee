@@ -9,6 +9,15 @@
 # The pros and cons can be filtered to specific opinion regions
 # (individual and collective). 
 #
+# TODO: 
+#   - is it correct to store selected_opinion, selected_opinions, 
+#     highlighted_users at the histogram's key? 
+#   - reconsider how "selection" is incorporated. Selection seems 
+#     almost like a mixin. Now it is baked in, with the option to
+#     opt out if necessary, but the code wouldn't be very nice
+#     to work with to extend in a different direction other than
+#     selection. 
+#
 ##
 # Props
 # 
@@ -132,42 +141,13 @@ window.Histogram = ReactiveComponent
       @local.avatar_size = avatar_radius * 2
       save @local
 
-    # There are a few avatar styles that might be applied depending on state:
-    # 1) Regular, for when no user is selected
-    regular_avatar_style =
-      width: @local.avatar_size
-      height: @local.avatar_size
-      position: 'absolute'
-      cursor: if @props.enable_selection then 'pointer' else 'auto'
-
-    # 2) The style of a selected avatar
-    selected_avatar_style = _.extend {}, regular_avatar_style, 
-      zIndex: 9
-      backgroundColor: focus_blue
-    css.crossbrowserify selected_avatar_style
-    # 3) The style of an unselected avatar when some other avatar(s) is selected
-    unselected_avatar_style = css.grayscale _.extend {}, regular_avatar_style, 
-      opacity: .2
-
-    # 4) The style of the avatar when the histogram is backgrounded 
-    #    (e.g. on the crafting page)
-    backgrounded_page_avatar_style = _.extend {}, unselected_avatar_style, 
-      opacity: .1
-
-    # Highlighted users are the users whose avatars are colorized and fully 
-    # opaque in the histogram. It is based on the current opinion selection and 
-    # the highlighted_users state, which can be manipulated by other components. 
-    highlighted_users = hist.highlighted_users
-    selected_users = if hist.selected_opinion 
-                       [hist.selected_opinion] 
-                     else 
-                       hist.selected_opinions
-    if selected_users
-      if highlighted_users
-        highlighted_users = _.intersection highlighted_users, \
-                                          (fetch(o).user for o in selected_users)
-      else 
-        highlighted_users = (fetch(o).user for o in selected_users)
+    # Controls the size of the vertical space at the top of 
+    # the histogram that gives some space for users to hover over 
+    # the most populous areas
+    region_selection_vertical_padding = if @props.enable_selection then 30 else 0
+    if @local.region_selection_vertical_padding != region_selection_vertical_padding
+       @local.region_selection_vertical_padding = region_selection_vertical_padding
+       save @local
 
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = @props.enable_selection &&
@@ -178,17 +158,11 @@ window.Histogram = ReactiveComponent
                                 @local.mouse_opinion_value && 
                                 !@local.hoving_over_avatar))
 
-    # Controls the size of the vertical space at the top of 
-    # the histogram that gives some space for users to hover over 
-    # the most populous areas
-    region_selection_vertical_padding = if @props.enable_selection then 30 else 0
-
-
     histogram_props = 
       className: 'histogram'
       style: css.crossbrowserify
         width: @props.width
-        height: @props.height + region_selection_vertical_padding
+        height: @props.height + @local.region_selection_vertical_padding
         position: 'relative'
         borderBottom: if @props.draw_base then '1px solid #999'
         visibility: if @props.opinions.length == 0 then 'hidden'
@@ -216,109 +190,158 @@ window.Histogram = ReactiveComponent
     DIV histogram_props, 
 
       if @props.draw_base
-        [SPAN
-          style:
-            position: 'absolute'
-            left: -21
-            bottom: -12
-            fontSize: 19
-            fontWeight: 500
-            color: '#999'
-          '–'
-        SPAN
-          style:
-            position: 'absolute'
-            right: -21
-            bottom: -13
-            fontSize: 19
-            fontWeight: 500
-            color: '#999'
-          '+']
+        @drawHistogramBase()
 
       if @props.enable_selection
         # A little padding at the top to give some space for selecting
         # opinion regions with lots of people stacked high      
-        DIV style: {height: region_selection_vertical_padding}
+        DIV style: {height: @local.region_selection_vertical_padding}
 
       # Draw the opinion selection area + region resizing border
       if draw_selection_area
-        anchor = hist.selected_opinion_value or @local.mouse_opinion_value
-        left = ((anchor + 1)/2 - hist.region_selection_width/2) * @props.width
-        base_width = hist.region_selection_width * @props.width
-        selection_width = Math.min( \
-                            Math.min(base_width, base_width + left), \
-                            @props.width - left)
-        selection_left = Math.max 0, left
+        @drawSelectionArea()
 
-        DIV null,
-          if hist.selected_opinions
-            DIV 
-              className: 'selection_region_resizer'
-              style: 
-                borderBottom: "3px solid #{focus_blue}"
-                height: 15
-                width: selection_width
-                position: 'absolute'
-                left: selection_left
-                top: -15
-                cursor: 'col-resize'
+      @drawAvatars()
 
-          DIV 
-            style:
-              height: @props.height + region_selection_vertical_padding
-              position: 'absolute'
-              width: selection_width
-              backgroundColor: "rgb(246, 247, 249)"
-              cursor: 'pointer'
-              left: selection_left
-              top: 0
 
-            if !hist.selected_opinions
-              DIV
-                style: css.crossbrowserify
-                  fontSize: 12
-                  textAlign: 'center'
-                  whiteSpace: 'nowrap'
-                  marginTop: -18
-                  userSelect: 'none'
-                  pointerEvents: 'none'
+  drawHistogramBase: -> 
+    [SPAN
+      style:
+        position: 'absolute'
+        left: -21
+        bottom: -12
+        fontSize: 19
+        fontWeight: 500
+        color: '#999'
+      '–'
+    SPAN
+      style:
+        position: 'absolute'
+        right: -21
+        bottom: -13
+        fontSize: 19
+        fontWeight: 500
+        color: '#999'
+      '+']
 
-                'Select these opinions'
+  drawSelectionArea: -> 
+    hist = fetch @props.key
+    anchor = hist.selected_opinion_value or @local.mouse_opinion_value
+    left = ((anchor + 1)/2 - hist.region_selection_width/2) * @props.width
+    base_width = hist.region_selection_width * @props.width
+    selection_width = Math.min( \
+                        Math.min(base_width, base_width + left), \
+                        @props.width - left)
+    selection_left = Math.max 0, left
 
-      # Draw the avatars in the histogram. Placement will be determined later
-      # by the physics sim
+    DIV null,
+      if hist.selected_opinions
+        DIV 
+          className: 'selection_region_resizer'
+          style: 
+            borderBottom: "3px solid #{focus_blue}"
+            height: 15
+            width: selection_width
+            position: 'absolute'
+            left: selection_left
+            top: -15
+            cursor: 'col-resize'
+
       DIV 
-        ref: 'histo'
-        style: 
-          height: @props.height
-          position: 'relative'
-          top: -1
-          cursor: if !@props.backgrounded && 
-                      @props.enable_selection then 'pointer'
+        style:
+          height: @props.height + @local.region_selection_vertical_padding
+          position: 'absolute'
+          width: selection_width
+          backgroundColor: "rgb(246, 247, 249)"
+          cursor: 'pointer'
+          left: selection_left
+          top: 0
 
-        for opinion in @props.opinions
-          user = opinion.user
-          fetch(opinion) # subscribe to changes so physics sim will get rerun...
+        if !hist.selected_opinions
+          DIV
+            style: css.crossbrowserify
+              fontSize: 12
+              textAlign: 'center'
+              whiteSpace: 'nowrap'
+              marginTop: -18
+              userSelect: 'none'
+              pointerEvents: 'none'
 
-          if @props.backgrounded
-            avatar_style = if fetch('/current_user').user == user 
-                             _.extend({}, regular_avatar_style, {opacity: .25}) 
-                           else 
-                             backgrounded_page_avatar_style
-          else if highlighted_users
-            if _.contains(highlighted_users, opinion.user)   
-              avatar_style = selected_avatar_style
-            else
-              avatar_style = unselected_avatar_style
+            'Select these opinions'
+
+  drawAvatars: -> 
+    hist = fetch @props.key
+
+    # Highlighted users are the users whose avatars are colorized and fully 
+    # opaque in the histogram. It is based on the current opinion selection and 
+    # the highlighted_users state, which can be manipulated by other components. 
+    highlighted_users = hist.highlighted_users
+    selected_users = if hist.selected_opinion 
+                       [hist.selected_opinion] 
+                     else 
+                       hist.selected_opinions
+    if selected_users
+      if highlighted_users
+        highlighted_users = _.intersection highlighted_users, \
+                                          (fetch(o).user for o in selected_users)
+      else 
+        highlighted_users = (fetch(o).user for o in selected_users)
+
+
+    # There are a few avatar styles that might be applied depending on state:
+    # 1) Regular, for when no user is selected
+    regular_avatar_style =
+      width: @local.avatar_size
+      height: @local.avatar_size
+      position: 'absolute'
+      cursor: if @props.enable_selection then 'pointer' else 'auto'
+
+    # 2) The style of a selected avatar
+    selected_avatar_style = _.extend {}, regular_avatar_style, 
+      zIndex: 9
+      backgroundColor: focus_blue
+    css.crossbrowserify selected_avatar_style
+    # 3) The style of an unselected avatar when some other avatar(s) is selected
+    unselected_avatar_style = css.grayscale _.extend {}, regular_avatar_style, 
+      opacity: .2
+    # 4) The style of the avatar when the histogram is backgrounded 
+    #    (e.g. on the crafting page)
+    backgrounded_page_avatar_style = _.extend {}, unselected_avatar_style, 
+      opacity: .1
+
+    # Draw the avatars in the histogram. Placement will be determined later
+    # by the physics sim
+    DIV 
+      ref: 'histo'
+      style: 
+        height: @props.height
+        position: 'relative'
+        top: -1
+        cursor: if !@props.backgrounded && 
+                    @props.enable_selection then 'pointer'
+
+      for opinion in @props.opinions
+        user = opinion.user
+        fetch(opinion) # subscribe to changes so physics sim will get rerun...
+
+        if @props.backgrounded
+          avatar_style = if fetch('/current_user').user == user 
+                           _.extend({}, regular_avatar_style, {opacity: .25}) 
+                         else 
+                           backgrounded_page_avatar_style
+        else if highlighted_users
+          if _.contains(highlighted_users, opinion.user)   
+            avatar_style = selected_avatar_style
           else
-            avatar_style = regular_avatar_style
+            avatar_style = unselected_avatar_style
+        else
+          avatar_style = regular_avatar_style
 
-          Avatar 
-            key: user
-            user: user
-            hide_tooltip: @props.backgrounded
-            style: avatar_style
-
+        Avatar 
+          key: user
+          user: user
+          hide_tooltip: @props.backgrounded
+          style: avatar_style
 
   onClick: (ev) -> 
 
@@ -565,8 +588,6 @@ positionAvatars = (width, height, opinions) ->
       x: x,
       y: y
     }
-
-
 
   # Called after the simulation stops
   end = ->

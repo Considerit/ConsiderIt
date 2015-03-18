@@ -2,6 +2,36 @@
 # Core considerit client code
 #////////////////////////////////////////////////////////////
 
+
+
+require './element_viewport_positioning'
+
+require './vendor/jquery.ui'  # for the drag+drop
+require './vendor/jquery.XDomainRequest' #do we need this?
+
+require './vendor/jquery.touchpunch'
+
+require './vendor/modernizr' 
+require './activerest-m'          
+require './dock'
+require './admin' # for dashes, CreateSubdomain
+require './auth'
+require './avatar'
+require './browser_hacks'
+require './browser_location'
+require './bubblemouth'
+require './customizations'
+require './form'
+require './histogram'
+require './roles'
+require './shared'
+require './slider'
+require './state_dash'
+require './state_graph'
+require './swapables'
+require './tooltip'
+
+
 DO_NOT_COMPRESS_THIS_FILE = true
 
 ## ########################
@@ -43,6 +73,7 @@ window.get_proposal_mode = ->
 
 get_selected_point = -> 
   fetch('location').query_params.selected
+
 ######
 
 window.proposal_url = (proposal) =>
@@ -53,13 +84,11 @@ window.proposal_url = (proposal) =>
 
   if !customization('show_crafting_page_first') && proposal.top_point
     result += '?results=true'
+
   return result
 
 window.isNeutralOpinion = (stance) -> 
   return Math.abs(stance) < 0.05
-
-userOpinion = (user_key) ->
-  window.user_opinions[user_key]
 
 window.updateProposalMode = (proposal_mode, triggered_by) ->
   toggle = -> 
@@ -74,6 +103,7 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
     else
       delete loc.query_params.results
     delete loc.query_params.selected
+
     save loc
 
     window.writeToLog
@@ -90,6 +120,19 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
       callback : toggle
   else
     toggle()
+
+
+window.opinionsForProposal = (proposal) ->       
+  options = customization("cluster_options.#{proposal.cluster}") || {}
+  filter_func = options.homie_histo_filter
+  opinions = fetch('/page/' + proposal.slug).opinions
+  # We'll only pass SOME opinions to the histogram
+  (opinion for opinion in opinions when \
+               not filter_func or filter_func(fetch(opinion.user)))
+
+window.proposal_editor = (proposal) ->
+  editor = proposal.roles.editor.length > 0 and proposal.roles.editor[0]
+  return editor != '-' and editor
 
 
 #####################
@@ -120,10 +163,10 @@ Proposal = ReactiveComponent
 
   render : ->
 
-    loc = fetch('location')
-    if loc.title != @proposal.name
-      loc.title = @proposal.name
-      save loc
+    doc = fetch('document')
+    if doc.title != @proposal.name
+      doc.title = @proposal.name
+      save doc
     
     options = customization("cluster_options.#{@proposal.cluster}") || {}
 
@@ -145,14 +188,6 @@ Proposal = ReactiveComponent
                         Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || 
          (can_opine == Permission.DISABLED && your_opinion.published))
       updateProposalMode('results', 'permission not granted for crafting')
-
-    # Update global references:
-    #  - The current_proposal for this page
-    #  - The user_opinions hash (maps users to their opinions in this proposal)
-    #  - The current user's opinion: your_opinion
-    window.user_opinions = {}
-    for opinion in @page.opinions
-      window.user_opinions[opinion.user] = opinion
 
     proposer = fetch(@proposal.user)
 
@@ -319,18 +354,11 @@ Proposal = ReactiveComponent
                     # that the parent will properly pass the prop onto the 
                     # child. 
 
-            do =>             
-              options = customization("cluster_options.#{@proposal.cluster}") || {}
-              filter_func = options.homie_histo_filter
-              opinions = fetch('/page/' + @proposal.slug).opinions
-              # We'll only pass SOME opinions to the histogram
-              opinions = (opinion for opinion in opinions when \
-                           not filter_func or filter_func(fetch(opinion.user)))
+            do =>       
 
               Histogram
                 key: 'histogram'
-                
-                opinions: opinions
+                opinions: opinionsForProposal(@proposal)
                 width: BODY_WIDTH
                 height: if fetch('histogram-dock').docked then 50 else 170
                 enable_selection: true
@@ -2847,22 +2875,15 @@ EditProposal = ReactiveComponent
 Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
-    loc = fetch('location')
+    doc = fetch('location')
     subdomain = fetch('subdomain')
 
     title = subdomain.app_title or subdomain.name
-    if loc.title != title
-      loc.title = title
-      save loc
+    if doc.title != title
+      doc.title = title
+      save doc
 
     customization('Homepage')()
-
-
-window.proposal_editor = (proposal) ->
-  editor = proposal.roles.editor.length > 0 and proposal.roles.editor[0]
-  return editor != '-' and editor
-
-
 
 
 Header = ReactiveComponent
@@ -3201,12 +3222,7 @@ Root = ReactiveComponent
       if !subdomain.name
         LOADING_INDICATOR
 
-      # if we're showing the static considerit homepage
-      else if subdomain.name == 'homepage' && loc.url == '/'
-        SPAN null
-
       else 
-        avatars = fetch('/avatars')
         auth = fetch('auth')
 
         DIV 
@@ -3215,11 +3231,7 @@ Root = ReactiveComponent
             backgroundColor: 'white'
             overflowX: 'hidden'
 
-          if avatars.avatars
-            STYLE 
-              type: 'text/css'
-              id: 'b64-avatars'
-              dangerouslySetInnerHTML: {__html: avatars.avatars}
+          Avatars()
           
           BrowserHacks()
 
@@ -3267,19 +3279,9 @@ Root = ReactiveComponent
 # exports...
 window.Point = Point
 window.Comment = Comment
+window.Franklin = Root
 
-#######
-# Start the app!
 
-( ->
-  #static consider.it homepage doesn't want this stuff by default
-  is_static_consider_it = !document.getElementById('content')
-  if !is_static_consider_it
-    # add styles
-    $('body').append("<style type='text/css'>#{styles}</style>")
+require './application_loader'
 
-    if 'ontouchend' in document #detect touch support
-      React.initializeTouchEvents(true)
 
-    React.renderComponent Root(), document.getElementById('content')
-)()

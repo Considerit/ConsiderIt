@@ -15,6 +15,11 @@
 # "auth.use_footer"
 #
 
+require './browser_location' # for loadPage
+require './shared'
+require './swapables'
+require './slider'
+
 window.customization = (field) -> 
   subdomain = fetch('/subdomain')
 
@@ -203,7 +208,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
           position: 'relative'
           borderBottom: "2px solid #{ecast_highlight_color}"
           padding: "10px 0"
-          backgroundImage: "url(<%= asset_path 'ecast/bg.png' %>)"
+          backgroundImage: "url(#{asset('ecast/bg.png')})"
           height: 98
 
         A 
@@ -216,7 +221,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
               left: 50
               top: 10
 
-            src: "<%= asset_path 'ecast/ecast.png' %>"
+            src: asset('ecast/ecast.png')
 
         A 
           style: 
@@ -257,7 +262,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
         IMG 
           style: 
             position: 'absolute'
-          src: "<%= asset_path 'ecast/bg.png' %>"
+          src: asset('ecast/bg.png')
 
         # Title of site
         DIV 
@@ -310,7 +315,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
                 display: 'block'
                 marginTop: 4
                 width: 215
-              src: "<%= asset_path 'ecast/ecast.png' %>"
+              src: asset('ecast/ecast.png')
 
           # DIV 
           #   style: 
@@ -329,7 +334,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
           #       marginTop: 4
           #       width: 160
 
-          #     src: "<%= asset_path 'ecast/nasa.png' %>"
+          #     src: asset('ecast/nasa.png')
 
         # Video callout
         DIV
@@ -494,7 +499,7 @@ customizations.bitcoin =
               style:
                 height: if homepage then 40 else 26
                 marginLeft: if homepage then 82 else 106
-              src: "<%= asset_path 'bitcoin/logo.svg' %>"
+              src: asset('bitcoin/logo.svg')
 
           if not homepage
             SPAN
@@ -592,7 +597,7 @@ customizations['bitcoin-demo'] =
       DIV
         style:
           height: 300
-          backgroundImage: "url(<%= asset_path 'bitcoin/bg.jpg' %>)"
+          backgroundImage: "url(#{asset('bitcoin/bg.jpg')})"
           backgroundPosition: 'center'
           backgroundSize: 'cover'
 
@@ -601,7 +606,7 @@ customizations['bitcoin-demo'] =
         # Logo
         IMG
           style: { display: 'block'; margin: 'auto'; height: 150; paddingTop: 45 }
-          src: "<%= asset_path 'bitcoin/logo.svg' %>"
+          src: asset('bitcoin/logo.svg')
 
         # The word "Demo"
         DIV
@@ -680,7 +685,7 @@ customizations.livingvotersguide =
       DIV className: 'header', 
         STYLE null, 
           """
-          .header { height: 275px; background-image: url(<%= asset_path 'livingvotersguide/bg.jpg' %>); background-position: center; background-size: cover; }
+          .header { height: 275px; background-image: url(#{asset('livingvotersguide/bg.jpg')}); background-position: center; background-size: cover; }
           """
 
         DIV
@@ -696,7 +701,7 @@ customizations.livingvotersguide =
 
         # Logo
         A href: (if fetch('location').url == '/' then '/about' else '/'),
-          IMG className: 'logo', src: "<%= asset_path 'livingvotersguide/logo.png' %>", style: logo_style
+          IMG className: 'logo', src: asset('livingvotersguide/logo.png'), style: logo_style
 
         DIV
           style:
@@ -796,7 +801,7 @@ customizations.livingvotersguide =
         DIV style: {margin: '55px 0'},
           DIV 
             style: 
-              backgroundImage: 'url(<%= asset_path("greytriangle_up.png") %>)'
+              backgroundImage: "url(#{asset('greytriangle_up.png')})"
               backgroundRepeat: '(repeat-x)'
               backgroundSize: '18px 9px'
               height: 9
@@ -822,7 +827,7 @@ customizations.livingvotersguide =
 
           DIV 
             style: 
-              backgroundImage: 'url(<%= asset_path("greytriangle_down.png") %>)'
+              backgroundImage: "url(#{asset('greytriangle_down.png')})"
               backgroundRepeat: '(repeat-x)'
               backgroundSize: '18px 9px'
               height: 9
@@ -866,7 +871,7 @@ customizations.livingvotersguide =
 
           DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
             A href: "http://seattlecityclub.org", style: {position: 'relative', top: 3, fontWeight: 400},
-              IMG src: "<%= asset_path 'livingvotersguide/cityclub.svg' %>"
+              IMG src: asset('livingvotersguide/cityclub.svg')
 
           DIV style: {textAlign: 'left', padding: '0 12px', display: 'inline-block', fontSize: 11, position: 'relative', top: -5},
             #"Fact-checking by "
@@ -995,7 +1000,7 @@ customizations.cityoftigard =
 
         DIV style: {height: 24},
           A href: '/', style: {position: 'absolute', top:0, zIndex: 999999},
-            IMG className: 'logo', src: "<%= asset_path 'cityoftigard/logo.png' %>", style: logo_style 
+            IMG className: 'logo', src: asset('cityoftigard/logo.png'), style: logo_style 
 
 
 customizations.cityoftigard.NonHomepageHeader = customizations.cityoftigard.HomepageHeader

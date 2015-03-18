@@ -1,3 +1,8 @@
+require './customizations'
+require './form'
+require './shared'
+
+
 ProposalRoles = ReactiveComponent
   displayName: 'ProposalRoles'
 

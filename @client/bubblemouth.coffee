@@ -22,6 +22,10 @@
 #  apex_xfrac: see diagram. The percent between the p1 & p2 that p3 is. 
 #  fill, stroke, stroke_width, dash_array, box_shadow
 
+require './shared'
+require './svg'
+md5 = require './vendor/md5' 
+
 window.Bubblemouth = (props) -> 
 
   # width/height of bubblemouth in svg coordinate space

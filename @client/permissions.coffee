@@ -18,6 +18,10 @@
 # logic needs to be here and vice versa.
 #
 
+require './browser_location' # for loadPage
+require './customizations'
+
+
 ####
 # Failure cases ENUM
 # This needs to be synchronized with server (see @server/permissions.rb)

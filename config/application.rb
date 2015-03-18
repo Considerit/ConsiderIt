@@ -47,7 +47,7 @@ module ConsiderIt
 
     #config.action_controller.page_cache_directory = Rails.public_path + "/cache"
 
-    config.assets.enabled = true
+    config.assets.enabled = false
 
     config.assets.version = '1.0'
 
@@ -80,7 +80,7 @@ module ConsiderIt
 
     config.paths["config/initializers"] << "@server/emails/notifications"
 
-    asset_paths = ["@client", "@client/assets"]
+    asset_paths = ["@client"]
     for asset_path in asset_paths
         config.paths["app/assets"] << asset_path
         config.assets.paths << Rails.root.join(asset_path)

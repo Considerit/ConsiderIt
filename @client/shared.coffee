@@ -9,7 +9,6 @@ window.styles = ""
 ####
 # Constants, especially used for layout styling
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
-window.BIGGEST_POSSIBLE_AVATAR_SIZE = 50
 
 # layout constants
 # Pictoral summary of layout variables:
@@ -37,8 +36,17 @@ window.COMMUNITY_POINT_MOUTH_WIDTH = 17
 # when doing development. 
 
 window.focus_blue = '#2478CC'
+window.logo_red = "#B03A44"
 window.default_avatar_in_histogram_color = '#d3d3d3'
 #########################
+
+
+# stored in public/images
+window.asset = (name) -> 
+  #fetch('/asset_manifest')[name]
+  "images/#{name}"
+
+
 
 ##
 # logging
@@ -122,7 +130,7 @@ window.splitParagraphs = (user_content) ->
         if text.substring(0,5) == 'link:'
           A key: idx, href: text.substring(5, text.length), target: '_blank',
             text.substring(5, text.length)
-        else
+        else  
           SPAN key: idx, text
 
 # Computes the width of some text given some styles empirically

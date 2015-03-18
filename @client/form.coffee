@@ -3,6 +3,7 @@
 #
 # Components to help build forms.
 #
+require './shared'
 
 window.Button = (props, text, callback) ->
   style =
@@ -60,6 +61,8 @@ window.CharacterCountTextInput = ReactiveComponent
       SPAN className: 'count', @props.maxLength - @local.count
 
 
+
+Quill = require './vendor/quill.js'
 
 window.WysiwygEditor = ReactiveComponent
   displayName: 'WysiwygEditor'

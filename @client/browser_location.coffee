@@ -5,12 +5,13 @@
 # Also responsible for initializing location to the 
 # correct value of window location on initial page load. 
 #
+# Defines a location-aware react link.
+#
 # Assumes html5 pushstate history interface available. Make sure to use a 
 # polyfill to support non-pushstate compatible browsers, such as 
 # https://github.com/devote/HTML5-History-API 
-#
-# Defines a location-aware react link.
-
+require './vendor/html5-history-polyfill'
+require './shared'
 
 ######
 # Public API
@@ -84,11 +85,12 @@ window.BrowserLocation = ReactiveComponent
 
   render : -> 
     loc = fetch 'location'
+    doc = fetch 'document'
 
     # Update the window title if it has changed
-    title = loc.title or document.title
-    if loc.title && document.title != loc.title
-      document.title = loc.title
+    title = doc.title or document.title
+    if doc.title && document.title != doc.title
+      document.title = doc.title
 
     # Respond to a location change
     new_location = relativeURLFromStatebus()

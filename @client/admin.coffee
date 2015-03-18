@@ -1,5 +1,11 @@
 # Admin components, like moderation and factchecking backend
 
+
+require './vendor/jquery.form'
+require './form'
+require './shared'
+
+
 # Experimenting with sharing css styles between components via js objects
 task_area_header_style = {fontSize: 24, fontWeight: 400, margin: '10px 0'}
 task_area_bar = {padding: '4px 30px', fontSize: 24, borderRadius: '8px 8px 0 0', height: 35, backgroundColor: 'rgba(0,0,55,.1)'}

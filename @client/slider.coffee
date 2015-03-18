@@ -10,6 +10,9 @@
 # TODO:
 #   - better documentation
 
+require './customizations'
+require './shared'
+
 window.Slider = ReactiveComponent
   displayName: 'Slider'
 

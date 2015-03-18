@@ -1295,6 +1295,14 @@ Slider = ReactiveComponent
               right: if pole == 'support' then -(w + 55)
 
             customization("slider_pole_labels.#{group}.#{pole}")
+
+            DIV 
+              key: "pole_#{pole}_sub"
+              style: 
+                fontSize: 14
+                textAlign: 'center'
+
+              customization("slider_pole_labels.#{group}.#{pole}_sub")
       else
         for pole in ['oppose', 'support']  
           DIV 

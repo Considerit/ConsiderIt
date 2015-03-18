@@ -13,8 +13,17 @@
 # clearly documented in the render method so that the method doesn't get
 # too complicated to understand and modify.
 
+require './vendor/jquery.form'
+require './admin' # for DashHeader
+require './browser_location' # for loadPage
+require './bubblemouth'
+require './customizations'
+require './form'
+require './shared'
+
 window.auth_ghost_gray = '#a1a1a1' # the gray color for ghost text
 window.auth_text_gray = '#444'    # the gray color for solid text
+
 
 Auth = ReactiveComponent
   displayName: 'Auth'
@@ -508,7 +517,7 @@ Auth = ReactiveComponent
               reader.readAsDataURL input.files[0]
               #current_user.avatar = input.files[0]
             else
-              $("#avatar_preview").attr('src', "<%= asset_path 'no_image_preview.png' %>")
+              $("#avatar_preview").attr('src', asset('no_image_preview.png'))
     else 
       null
 

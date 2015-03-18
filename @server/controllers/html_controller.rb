@@ -53,18 +53,25 @@ class HtmlController < ApplicationController
       })
     end
 
+    @app = current_subdomain.name == 'homepage' ? 'considerit_saas' : 'franklin'
+    manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
+    @js = manifest['franklin']
+    
+
+
+    dirty_key '/asset_manifest'
     response.headers["Strict Transport Security"] = 'max-age=0'
 
-    if current_subdomain.name == 'homepage' && request.path == '/'
-      render "layouts/homepage", :layout => false
-    else
-      render "layouts/application", :layout => false
-    end
-  end
 
 
-  def activemike
-    render "layouts/testmike", :layout => false
+    render "layouts/application", :layout => false
+
+
+    # if current_subdomain.name == 'homepage' && request.path == '/'
+    #   render "layouts/homepage", :layout => false
+    # else
+    #   render "layouts/application", :layout => false
+    # end
   end
 
   private

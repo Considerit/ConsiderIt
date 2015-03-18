@@ -5,6 +5,17 @@
 # 
 # TODO: This abstraction is poor. Find better one. 
 
+require './browser_hacks' # for access to browser object
+require './browser_location' # for loadPage
+require './bubblemouth'
+require './customizations'
+require './dock'
+require './histogram'
+require './permissions'
+require './shared'
+
+
+
 ###########################
 # Homepages
 # 
@@ -173,7 +184,7 @@ window.SimpleHomepage = ReactiveComponent
                     style: secnd_column
                     Histogram
                       key: "histogram-#{proposal.slug}"
-                      proposal: proposal
+                      opinions: opinionsForProposal(proposal)
                       width: 300
                       height: 50
                       enable_selection: false
@@ -392,14 +403,14 @@ window.ProposalSummary = ReactiveComponent
           SPAN style: {position: 'relative', left: 14},
             IMG 
               className: 'summary_opinion_marker'
-              src: "<%= asset_path 'no_x.svg' %>"
+              src: asset('no_x.svg')
               style: {width: 24, position: 'absolute', left: -28}
             SPAN style: {color: 'rgb(239,95,98)', fontSize: 18, fontWeight: 600}, 'No'
         else
           SPAN style: {position: 'relative', left: 14},
             IMG 
               className: 'summary_opinion_marker'
-              src: "<%= asset_path 'yes_check.svg' %>"
+              src: asset('yes_check.svg')
               style: {width: 24, position: 'absolute', left: -28}
 
             SPAN style: {color: 'rgb(166,204,70)', fontSize: 18, fontWeight: 600}, 'Yes'

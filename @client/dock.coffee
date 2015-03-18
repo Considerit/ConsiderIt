@@ -1,3 +1,5 @@
+
+
 ####
 # Dock
 #
@@ -71,6 +73,11 @@
 #     top/height calculation of a docking component...sometimes not. This is an 
 #     ugly prop and I'd like to solve it more elegantly. 
 
+require './browser_hacks' # for access to browser object
+require './shared'
+
+cassowary = require './vendor/cassowary'
+
 window.Dock = ReactiveComponent
   displayName: 'Dock'
 
@@ -102,6 +109,7 @@ window.Dock = ReactiveComponent
         @props.children
 
   componentWillMount : ->
+
     @key = if @props.key? then @props.key else @local.key
     dock = fetch @key,
       docked: false
@@ -110,6 +118,7 @@ window.Dock = ReactiveComponent
     save dock
 
   componentDidMount : -> 
+
     # Register this dock with docker. Send docker a callback that it 
     # can invoke to learn about this dock when making calculations. 
 
@@ -170,7 +179,6 @@ window.Dock = ReactiveComponent
         docked_key    : @props.docked_key
         offset_parent : if browser.is_mobile then $(@getDOMNode()).offsetParent().offset().top 
       }
-
 
   componentWillUnmount : -> 
     docker.unregister @key
@@ -296,6 +304,7 @@ docker =
   # Calculates y values for each docked component using a
   # linear constraint solver. 
   layout : (max_change) ->
+
     # The registered docks with updated context values
     docks = {}
     for own k,v of docker.registry
@@ -406,7 +415,7 @@ docker =
   # since the last time it was laid out. 
   solveForY : (docked, docks, max_change) -> 
     c = cassowary
-    
+
     # cassowary constraint solver
     solver = new c.SimplexSolver()    
 
@@ -589,9 +598,6 @@ docker =
 
 docker.initialize()
 
-# cassowary.js exports to c, which can easily get overwritten. 
-cassowary = c
-
 #####
 # realDimensions
 #
@@ -611,8 +617,8 @@ realDimensions = ($el) ->
     if t + h > max_top
       max_top = t + h
 
-    for c in $e.children()
-      [min_top, max_top] = recurse($(c), min_top, max_top)
+    for child in $e.children()
+      [min_top, max_top] = recurse($(child), min_top, max_top)
 
     [min_top, max_top]
 

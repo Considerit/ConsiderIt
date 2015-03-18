@@ -258,6 +258,12 @@ protected
       elsif key.match '/claim/'
         claim = Assessable::Claim.find(key[7..key.length])
         response.append claim.as_json
+
+      elsif key == '/asset_manifest'
+        manifest = JSON.parse(File.open("public/assets/rev-manifest.json", "rb") {|io| io.read})
+        manifest.key = '/asset_manifest'
+        response.append manifest
+
       end
     end
 

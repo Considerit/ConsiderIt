@@ -1,3 +1,5 @@
+require './shared'
+
 
 # globally accessible method for getting the URL of a user's avatar
 window.avatarUrl = (user, img_size) -> 
@@ -52,7 +54,8 @@ window.Avatar = ReactiveComponent
     show_avatar = !@props.anonymous && user.avatar_file_name
     # Automatically upgrade the avatar size to 'large' if the width of the image is 
     # greater than the size of the b64 encoded image
-    img_size = 'large' if img_size == 'thumb' && style?.width > 50 && !browser.is_ie9
+    if img_size == 'thumb' && style?.width > 50 && !browser.is_ie9
+      img_size = 'large' 
     # ...but we only use a larger image if this user actually has one and isn't anonymous
     use_large_image = img_size != 'thumb' && show_avatar
 
@@ -115,3 +118,18 @@ styles += """
 }
 
 """
+
+
+# Fetches avatar definitions and puts them in a style sheet
+window.Avatars = ReactiveComponent
+  displayName: 'Avatars'
+  render: -> 
+    avatars = fetch('/avatars')
+
+    STYLE 
+      type: 'text/css'
+      id: 'b64-avatars'
+      dangerouslySetInnerHTML: 
+        __html: if avatars.avatars then avatars.avatars else ''
+
+

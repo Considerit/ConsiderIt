@@ -115,6 +115,9 @@
 #   mouse_x_of_last_resize
 #      Stores last mouse position when in selection area resize mode.
 
+require './vendor/d3.v3.min'
+require './shared'
+
 window.Histogram = ReactiveComponent
   displayName : 'Histogram'
 

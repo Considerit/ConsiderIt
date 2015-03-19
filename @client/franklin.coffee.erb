@@ -3388,6 +3388,8 @@ ProfileMenu = ReactiveComponent
   render : -> 
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
+    loc = fetch('location') # should rerender on a location change because background
+                            # color might change
 
     is_evaluator = subdomain.assessment_enabled && current_user.is_evaluator
     is_admin = current_user.is_admin

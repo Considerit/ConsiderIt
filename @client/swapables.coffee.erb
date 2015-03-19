@@ -454,6 +454,52 @@ window.DefaultHomepageHeader = ReactiveComponent
           else
             subdomain.branding.masthead_header_text
 
+
+window.DefaultProposalMasthead = ReactiveComponent
+  displayName: 'DefaultProposalMasthead'
+
+  render: ->
+    subdomain = fetch '/subdomain'   
+
+    masthead_style = 
+      textAlign: 'center'
+      backgroundColor: subdomain.branding.primary_color
+      height: 50
+           
+    DIV style: masthead_style,
+      ProfileMenu()
+
+      if subdomain.branding.masthead_header_text
+        DIV style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
+          if subdomain.external_project_url
+            A href: "#{subdomain.external_project_url}", target: '_blank',
+              subdomain.branding.masthead_header_text
+          else
+            subdomain.branding.masthead_header_text
+
+
+
+      if subdomain.branding.logo || subdomain.branding.masthead
+
+        DIV 
+          style: 
+            width: BODY_WIDTH
+            position: 'relative'
+            margin: 'auto'
+
+          DIV 
+            style:
+              position: 'absolute'
+              left: 0
+              padding: '2px 10px'
+              backgroundColor: 'white'
+
+            IMG 
+              src: subdomain.branding.logo || subdomain.branding.masthead
+              style: 
+                height: 46
+
+
 #########################
 # Footers
 #

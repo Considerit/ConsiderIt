@@ -64,7 +64,174 @@ window.COMMUNITY_POINT_MOUTH_WIDTH = 17
 
 window.focus_blue = '#2478CC'
 window.default_avatar_in_histogram_color = '#d3d3d3'
+
+
+# backgroundColorAtCoord
+#
+# Makes best effort to determine the pixel color at a particular
+# coordinate. "Best" because determining the pixel value of a 
+# IMG or background image is a bit fraught. 
+# 
+# We can return a good answer immediately if there are no images at 
+# the stacked elements at the coords, or all images that contributor 
+# color at that coord are loaded. We must wait until all images are
+# loaded however, which is why there is a callback for returning a 
+# better answer asynchronously. This method will always return an 
+# answer immediately, but if you know that there is an image in the 
+# region of inquiry, make sure you supply a callback. 
+#
+# TODO: 
+#     - We only see background-image if it is 
+#       explicitly set. But you can specify an image via the 
+#       background property. Handle that case. 
+#     - Opacity is NOT handled
+#
+# The answer is returned as { rgb: {r, g, b, a}, hsl: {h, s, l, a} }
+# If an answer couldn't be immediately determined, null is returned
+#
+# callback (optional, but recommended): 
+#   Called when we have the best answer to the question possible. Is 
+#   passed a color object: { rgb: {r, g, b, a}, hsl: {h, s, l, a} }
+#
+# behind_el (optional): 
+#   An element. If specified, we don't examine decendents of behind_el
+#   when determining the background color at a coord. Example use:
+#   if you are determining the background color at a particular place, 
+#   but want to ignore an avatar image or something that might be 
+#   sitting in the vicinity. 
+#   
+window.backgroundColorAtCoord = (x, y, callback, behind_el) -> 
+  hidden_els = []
+
+  el = document.elementFromPoint(x,y)
+
+  while el && el.tagName not in ['BODY', 'HTML']
+
+    is_image = el.tagName == 'IMG' || el.style['background-image']
+
+    # Skip this element if it doesn't contribute to background color
+    # or if it is a decendent of behind_el
+    skip_element = (behind_el && $(behind_el).has($(el)).length > 0) ||
+                    (!is_image && $(el).css('background-color') == 'rgba(0, 0, 0, 0)')
+
+    if skip_element
+      hidden_els.push [el, el.style.visibility]
+      el.style.visibility = 'hidden'
+      el = document.elementFromPoint(x,y)
+
+    else if !is_image
+      rgb = convert_rgb_string $(el).css('background-color')
+      hsl = rgb_to_hsl rgb
+      color = {rgb, hsl} 
+      callback color if callback
+      break
+
+    else 
+      if el.tagName != 'IMG'
+        # we have to extract a background url into a temporary IMG
+        # element so that it can be processed by colorThief
+
+        url = el.style['background-image']
+                .replace(/^url\(["']?/, '').replace(/["']?\)$/, '')
+
+        $('body').append """
+          <IMG 
+            width=500 
+            height=500 
+            id='TEMP_IMG' 
+            src='#{url}' 
+            style='position:absolute; left: 0px' />"""
+
+        img = $('body').find('#TEMP_IMG')
+        remove_img = true
+      else 
+        img = el
+        remove_img = false
+
+      imagePoll = -> 
+        if img[0].complete
+          colorThief = new ColorThief()
+          rgb = colorThief.getColor img[0], 5, true
+          rgb = 
+            r: rgb[0]
+            g: rgb[1]
+            b: rgb[2]
+          hsl = rgb_to_hsl rgb
+          color = {rgb, hsl} 
+          callback color if callback
+          img.remove() if remove_img
+          return color
+        else 
+          setTimeout imagePoll, 50
+          return null
+
+      color = imagePoll()
+      break
+
+  # restore visibility for all elements we've looked at
+  for el in hidden_els
+    el[0].style.visibility = el[1]
+
+  return color
+
+window.rgb_to_hsl = (rgb) ->
+  r = rgb.r / 255
+  g = rgb.g / 255
+  b = rgb.b / 255
+
+  max = Math.max(r, g, b)
+  min = Math.min(r, g, b)
+  l = (max + min) / 2
+  if max is min
+    h = s = 0 # achromatic
+  else
+    d = max - min
+    s = (if l > 0.5 then d / (2 - max - min) else d / (max + min))
+    switch max
+      when r
+        h = (g - b) / d + ((if g < b then 6 else 0))
+      when g
+        h = (b - r) / d + 2
+      when b
+        h = (r - g) / d + 4
+    h /= 6
+  h: h
+  s: s
+  l: l
+
+convert_rgb_string = (rgb_str) ->
+  rgb = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(1|0\.\d+))?\)$/.exec(rgb_str)
+  r: rgb[1]
+  g: rgb[2]
+  b: rgb[3]
+  a: if rgb.length > 4 then rgb[4] else 1
+
+
+window.isLightBackground = (el, callback) -> 
+  coords = getCoords el
+  color = backgroundColorAtCoord coords.cx, coords.cy, (color) -> 
+    callback color.hsl.l > .75
+  , el
+
+  color?.hsl.l > .75
+
 #########################
+
+#### Layout
+
+window.getCoords = (el) ->
+  rect = el.getBoundingClientRect()
+  docEl = document.documentElement
+
+  offset = 
+    top: rect.top + window.pageYOffset - docEl.clientTop
+    left: rect.left + window.pageXOffset - docEl.clientLeft
+  _.extend offset,
+    cx: offset.left + rect.width / 2
+    cy: offset.top + rect.height / 2
+
+
+#### browser
 
 
 # We detect mobile browsers by inspecting the user agent. This check isn't perfect.

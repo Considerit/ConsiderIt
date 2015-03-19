@@ -1703,7 +1703,6 @@ Bubblemouth = ReactiveComponent
       top: -25
       visibility: if @root.selected_point then 'hidden'
 
-    console.log 'boya' if @root.selected_point
     IMG 
       className:'bubblemouth'
       src: bubblemouth_src
@@ -3374,6 +3373,18 @@ window.proposal_editor = (proposal) ->
 ProfileMenu = ReactiveComponent
   displayName: 'ProfileMenu'
 
+  componentDidMount : -> @setBgColor()
+  componentDidUpdate : -> @setBgColor()
+  setBgColor : -> 
+    cb = (is_light) => 
+      if @local.light_background != is_light
+        @local.light_background = is_light
+        save @local
+
+    is_light = isLightBackground @getDOMNode(), cb
+
+    cb is_light
+
   render : -> 
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
@@ -3436,7 +3447,7 @@ ProfileMenu = ReactiveComponent
 
           SPAN 
             style: 
-              color: subdomain.branding.header_text_color
+              color: if !@local.light_background then 'white'
               position: 'relative'
               zIndex: 9999999999
               backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)'
@@ -3460,7 +3471,8 @@ ProfileMenu = ReactiveComponent
           onClick: (e) =>
             @root.auth = {form: 'login', goal: null}
             save @root
-          style: {color: 'white'}
+          style: 
+            color: if !@local.light_background then 'white'
           'Log in'
 
 

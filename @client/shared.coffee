@@ -150,6 +150,7 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
 
       imagePoll = -> 
         if img[0].complete
+          img[0].crossOrigin = "Anonymous"
           colorThief = new ColorThief()
           rgb = colorThief.getColor img[0], 5, true
           rgb = 

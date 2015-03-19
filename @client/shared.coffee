@@ -219,9 +219,6 @@ parseCssRgb = (rgb_str) ->
 window.isLightBackground = (el, callback) -> 
   coords = getCoords el
 
-  # callback(true) if callback
-  # return true
-
   color = backgroundColorAtCoord coords.cx, coords.cy, (color) -> 
     callback color.hsl.l > .75
   , el

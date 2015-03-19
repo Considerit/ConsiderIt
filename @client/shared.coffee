@@ -85,6 +85,8 @@ window.default_avatar_in_histogram_color = '#d3d3d3'
 #       explicitly set. But you can specify an image via the 
 #       background property. Handle that case. 
 #     - Opacity is NOT handled
+#     - Cross-domain images not supported 
+#       http://stackoverflow.com/questions/22097747
 #
 # The answer is returned as { rgb: {r, g, b, a}, hsl: {h, s, l, a} }
 # If an answer couldn't be immediately determined, null is returned
@@ -120,7 +122,7 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
       el = document.elementFromPoint(x,y)
 
     else if !is_image
-      rgb = convert_rgb_string $(el).css('background-color')
+      rgb = parseCssRgb $(el).css('background-color')
       hsl = rgb_to_hsl rgb
       color = {rgb, hsl} 
       callback color if callback
@@ -133,24 +135,27 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
 
         url = el.style['background-image']
                 .replace(/^url\(["']?/, '').replace(/["']?\)$/, '')
-
-        console.log url
-
-        id = "temp-img#{md5(url)}"
-
-        $('body').append """
-          <IMG 
-            width=500 
-            height=500 
-            id='#{id}' 
-            src='#{url}' 
-            style='position:absolute; left: 0px' />"""
-
-        img = $('body').find("##{id}")
-        remove_img = true
       else 
-        img = el
-        remove_img = false
+        url = el.src
+
+      # make sure we only use local images because Cross-domain images 
+      # are not supported -- see http://stackoverflow.com/questions/22097747
+      a = document.createElement("a")
+      a.href = url || el.src
+      url = a.pathname
+
+      id = "temp-img#{md5(url)}"
+
+      $('body').append """
+        <IMG 
+          width=500 
+          height=500 
+          id='#{id}' 
+          src='#{url}' 
+          style='position:absolute; left: 0px' />"""
+
+      img = $('body').find("##{id}")
+
 
       imagePoll = -> 
         if img[0].complete
@@ -163,8 +168,7 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
           hsl = rgb_to_hsl rgb
           color = {rgb, hsl} 
           callback color if callback
-          if id
-            $("##{id}").remove() 
+          $("##{id}").remove() 
           return color
         else 
           setTimeout imagePoll, 50
@@ -204,7 +208,7 @@ window.rgb_to_hsl = (rgb) ->
   s: s
   l: l
 
-convert_rgb_string = (rgb_str) ->
+parseCssRgb = (rgb_str) ->
   rgb = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(1|0\.\d+))?\)$/.exec(rgb_str)
   r: rgb[1]
   g: rgb[2]
@@ -215,15 +219,14 @@ convert_rgb_string = (rgb_str) ->
 window.isLightBackground = (el, callback) -> 
   coords = getCoords el
 
-  callback(true) if callback
-  return true
+  # callback(true) if callback
+  # return true
 
   color = backgroundColorAtCoord coords.cx, coords.cy, (color) -> 
-    callback true #color.hsl.l > .75
+    callback color.hsl.l > .75
   , el
 
-  #color?.hsl.l > .75
-  return true
+  color?.hsl.l > .75
 
 #########################
 

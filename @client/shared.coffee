@@ -134,15 +134,19 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
         url = el.style['background-image']
                 .replace(/^url\(["']?/, '').replace(/["']?\)$/, '')
 
+        console.log url
+
+        id = "temp-img#{md5(url)}"
+
         $('body').append """
           <IMG 
             width=500 
             height=500 
-            id='TEMP_IMG' 
+            id='#{id}' 
             src='#{url}' 
             style='position:absolute; left: 0px' />"""
 
-        img = $('body').find('#TEMP_IMG')
+        img = $('body').find("##{id}")
         remove_img = true
       else 
         img = el
@@ -159,7 +163,8 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
           hsl = rgb_to_hsl rgb
           color = {rgb, hsl} 
           callback color if callback
-          img.remove() if remove_img
+          if id
+            $("##{id}").remove() 
           return color
         else 
           setTimeout imagePoll, 50

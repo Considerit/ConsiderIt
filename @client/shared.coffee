@@ -150,7 +150,6 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
 
       imagePoll = -> 
         if img[0].complete
-          img[0].crossOrigin = "Anonymous"
           colorThief = new ColorThief()
           rgb = colorThief.getColor img[0], 5, true
           rgb = 
@@ -211,10 +210,11 @@ convert_rgb_string = (rgb_str) ->
 window.isLightBackground = (el, callback) -> 
   coords = getCoords el
   color = backgroundColorAtCoord coords.cx, coords.cy, (color) -> 
-    callback color.hsl.l > .75
+    callback true #color.hsl.l > .75
   , el
 
-  color?.hsl.l > .75
+  #color?.hsl.l > .75
+  return true
 
 #########################
 

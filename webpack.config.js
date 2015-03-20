@@ -1,7 +1,16 @@
 var webpack = require('webpack'),
-    path = require('path');
+    path = require('path'), 
+    is_dev = !JSON.parse(process.env.BUILD_PRODUCTION || 'false');
+
+
+console.log("BUILDING FOR " + (is_dev ? "DEVELOPMENT" : "PRODUCTION"))
 
 config = {
+
+  debug : is_dev,
+  displayErrorDetails : true,
+  outputPathinfo : true,
+  devtool : is_dev ? 'eval' : 'sourcemap',
 
   entry: {
     franklin: './@client/franklin.coffee'
@@ -9,7 +18,7 @@ config = {
 
   output: {
     path: './public/build',
-    filename: "[name].js"
+    filename: is_dev ? "[name].js" : "[name].[chunkhash].js"
   },
 
   module: {
@@ -31,6 +40,12 @@ config = {
 
 
   plugins: [
+    new webpack.DefinePlugin({ 
+        // Each instance of a key will be replaced with the 
+        // value in the build.
+      __DEV__: is_dev,
+      __PRODUCTION__: !is_dev
+    }),
 
     new webpack.ProvidePlugin({
         '_': "vendor/underscore",
@@ -57,6 +72,64 @@ config = {
 
   ]
 
+}
+
+if(!is_dev){
+  var s3 = require('s3'),
+      YAML = require('yamljs')
+
+  config.plugins.push(
+    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.OccurenceOrderPlugin(),
+
+    // write to S3
+    function() {
+      this.plugin("done", function(stats) {
+
+        local = YAML.load('config/local_environment.yml').default
+
+        var client = s3.createClient({
+          s3Options: {
+            accessKeyId: local.aws.access_key_id,
+            secretAccessKey: local.aws.secret_access_key,
+          },
+        })
+
+        var upload = function(src, dest) {
+
+          var uploader = client.uploadDir({
+            localDir: src,
+            deleteRemoved: false, // remove s3 objects that have 
+                                  // no corresponding local file. 
+            s3Params: {
+              Bucket: local.aws.s3_bucket,
+              Prefix: dest,
+            },
+          })
+
+          uploader.on('start', function() {
+            console.log('*******/nUploading ' + src + ' to ' + dest + '\n*******')
+          })
+
+          uploader.on('error', function(err) {
+            console.error("unable to sync:", err.stack)
+          })
+          uploader.on('progress', function() {
+            console.log("progress", uploader.progressAmount, uploader.progressTotal)
+          })
+          uploader.on('end', function() {
+            console.log("done uploading")
+          })
+
+
+        }
+
+        upload( 'public/build', 'build2')
+        upload( 'public/images', 'images2')
+
+      })
+    }    
+  )
 }
 
 module.exports = config

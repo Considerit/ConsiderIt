@@ -103,7 +103,6 @@ customizations.default =
 
 #customizations.default.NonHomepageHeader = customizations.default.HomepageHeader
 
-
 ##########################
 # SUBDOMAIN CONFIGURATIONS
 

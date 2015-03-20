@@ -38,7 +38,7 @@ server {
 
   client_max_body_size 5M;
 
-  location ~ ^/(assets)/ {
+  location ~ ^/(assets|images|system)/ {
     proxy_set_header       Host '{{ config.aws.cloudfront }}.cloudfront.net';
     proxy_set_header       Authorization '';
     proxy_hide_header      x-amz-id-2;

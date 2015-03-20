@@ -29,6 +29,7 @@ public/system/icons
 public/system/cache/*.css
 public/system/default_avatar/avatar.sketch*
 public/assets/
+public/build/
 public/sitemaps/*
 public/test/results/*
 

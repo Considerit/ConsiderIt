@@ -568,7 +568,7 @@ window.TechnologyByConsiderit = ReactiveComponent
   render : -> 
     DIV style: {textAlign: 'left', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 20},
       "Technology by "
-      A href: 'http://consider.it', style: {textDecoration: 'underline', color: '#B03B42', fontWeight: 600}, target: '_blank', 'Considerit'
+      A href: 'http://consider.it', style: {textDecoration: 'underline', color: '#B03B42', fontWeight: 600}, target: '_blank', 'Consider.it'
 
 
 ###########################

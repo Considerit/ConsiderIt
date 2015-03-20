@@ -86,11 +86,11 @@ if(!is_dev){
       CompressionPlugin = require("compression-webpack-plugin")
 
   config.plugins.push(
-    new webpack.optimize.UglifyJsPlugin(),
+    //new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
 
     new CompressionPlugin({
-        asset: "{file}.gz",
+        asset: "{file}",
         algorithm: "gzip"
     }),
 
@@ -100,39 +100,41 @@ if(!is_dev){
 
         local = YAML.load('config/local_environment.yml').default
 
-        var client = s3.createClient({
-          s3Options: {
-            accessKeyId: local.aws.access_key_id,
-            secretAccessKey: local.aws.secret_access_key,
-          },
-        })
+        var s3_client = s3.createClient({
+            s3Options : {
+              accessKeyId: local.aws.access_key_id,
+              secretAccessKey: local.aws.secret_access_key,
+            }})
 
         var uploadDir = function(src, dest, is_gzipped) {
 
-          var uploader = client.uploadDir({
+          s3_params = {
+            Bucket: local.aws.s3_bucket,
+            Prefix: dest,
+          }
+
+          if (is_gzipped)
+            s3_params.ContentEncoding = 'gzip'
+
+          var uploader = s3_client.uploadDir({
             localDir: src,
             deleteRemoved: false, // remove s3 objects that have 
                                   // no corresponding local file. 
-            s3Params: {
-              Bucket: local.aws.s3_bucket,
-              Prefix: dest,
-            },
+            s3Params: s3_params
           })
 
           uploader.on('error', function(err) {
             console.error("unable to sync:", err.stack)
           })
-          uploader.on('progress', function() {
-            console.log("progress", uploader.progressAmount, uploader.progressTotal)
-          })
           uploader.on('end', function() {
             console.log("done uploading")
           })
-
-
+          uploader.on('fileUploadEnd', function(fullPath, fullKey) {
+            console.log("UPLOADED ", fullPath)
+          })
         }
 
-        uploadDir( 'public/build', 'build')
+        uploadDir( 'public/build', 'build', true)
         uploadDir( 'public/images', 'images')
 
       })

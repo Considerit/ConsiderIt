@@ -55,9 +55,7 @@ class HtmlController < ApplicationController
 
     @app = current_subdomain.name == 'homepage' ? 'considerit_saas' : 'franklin'
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
-    @js = manifest['franklin']
-
-    pp @js
+    @js = "#{Rails.application.config.action_controller.asset_host}#{manifest['franklin']}"
 
     dirty_key '/asset_manifest'
     response.headers["Strict Transport Security"] = 'max-age=0'

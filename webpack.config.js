@@ -1,3 +1,9 @@
+///////////
+// Webpack.config.js
+//
+// TODO: document
+
+
 var webpack = require('webpack'),
     path = require('path'), 
     is_dev = !JSON.parse(process.env.BUILD_PRODUCTION || 'false');
@@ -16,7 +22,7 @@ config = {
     franklin: './@client/franklin.coffee'
   },
 
-  output: {
+  output: { 
     path: './public/build',
     filename: is_dev ? "[name].js" : "[name].[chunkhash].js"
   },

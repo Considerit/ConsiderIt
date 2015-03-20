@@ -117,7 +117,7 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
     skip_element = (behind_el && $(behind_el).has($(el)).length > 0) ||
                     (!is_image && rgb.a == 0)
 
-    console.log 'checking ', el
+    console.log 'checking ', el, skip_element, is_image
 
     if skip_element
       hidden_els.push [el, el.style.visibility]

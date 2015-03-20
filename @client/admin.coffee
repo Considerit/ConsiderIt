@@ -16,13 +16,25 @@ task_area_style = {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor
 DashHeader = ReactiveComponent
   displayName: 'DashHeader'
 
+  componentDidMount : -> @setBgColor()
+  componentDidUpdate : -> @setBgColor()
+  setBgColor : -> 
+    cb = (is_light) => 
+      if @local.light_background != is_light
+        @local.light_background = is_light
+        save @local
+
+    is_light = isLightBackground @getDOMNode(), cb
+
+    cb is_light
+
   render : ->
     subdomain = fetch '/subdomain'
     DIV 
       style: 
         position: 'relative'
         backgroundColor: subdomain.branding.primary_color
-        color: subdomain.branding.header_text_color
+        color: if !@local.light_background then 'white'
 
       DIV style: {width: CONTENT_WIDTH, margin: 'auto', position: 'relative'},
         A
@@ -30,7 +42,12 @@ DashHeader = ReactiveComponent
           style: {position: 'absolute', display: 'inline-block', top: 25, left: -40},
           I className: 'fa fa-home', style: {fontSize: 28}
         
-        H1 style: {fontSize: 28, padding: '20px 0', color: 'white'}, @props.name   
+        H1 
+          style: 
+            fontSize: 28
+            padding: '20px 0'
+            color: if !@local.light_background then 'white'
+          @props.name   
 
 ImportDataDash = ReactiveComponent
   displayName: 'ImportDataDash'
@@ -246,11 +263,6 @@ AppSettingsDash = ReactiveComponent
                     onChange: (ev) =>
                       @submit_logo = true
 
-              DIV className: 'input_group',
-                INPUT type: 'checkbox', name: 'light_masthead', id: 'light_masthead', defaultChecked: subdomain.branding.light_masthead
-                LABEL htmlFor: 'light_masthead', 
-                  "Is the masthead image a light color (if not specified, is the primary color light)?"
-
 
           DIV className: 'input_group',
             BUTTON className: 'primary_button button', onClick: @submit, 'Save'
@@ -275,7 +287,6 @@ AppSettingsDash = ReactiveComponent
     subdomain.branding =
       primary_color: $('#primary_color').val()
       masthead_header_text: $('#masthead_header_text').val()
-      light_masthead: $('#light_masthead:checked').length > 0
     @local.save_complete = @local.errors = false
     save @local
 

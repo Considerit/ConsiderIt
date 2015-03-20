@@ -47,7 +47,7 @@ config = {
           file = stats.toJson().assetsByChunkName[prop]
           if (typeof file !== 'string')
             file = file[0]
-          manifest[prop] = file 
+          manifest[prop] = path.join("build", file)
         }
         require("fs").writeFileSync(
           path.join(__dirname, "public", "build", "manifest.json"),

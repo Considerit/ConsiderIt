@@ -3,7 +3,7 @@ if defined?(AssetSync)
     config.fog_provider = 'AWS'
     config.aws_access_key_id = APP_CONFIG.has_key?(:aws) ? APP_CONFIG[:aws][:access_key_id] : ''
     config.aws_secret_access_key = APP_CONFIG.has_key?(:aws) ? APP_CONFIG[:aws][:secret_access_key] : ''
-    config.fog_directory = APP_CONFIG.has_key?(:aws) ? APP_CONFIG[:aws][:fog_directory] : ''
+    config.s3_bucket = APP_CONFIG.has_key?(:aws) ? APP_CONFIG[:aws][:s3_bucket] : ''
     
     # Increase upload performance by configuring your region
     #config.fog_region = 'us-west-2'

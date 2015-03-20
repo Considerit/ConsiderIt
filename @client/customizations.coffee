@@ -129,7 +129,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
 
     additional_auth_footer: -> 
 
-      auth = fetch('root').auth
+      auth = fetch('fetch')
       if auth.ask_questions && auth.form != 'edit profile'
         return DIV 
           style:

@@ -1021,8 +1021,9 @@ window.ProfileMenu = ReactiveComponent
           'className': 'profile_anchor login'
           'data-action': 'login'
           onClick: (e) =>
-            @root.auth = {form: 'login', goal: null}
-            save @root
+            reset_key auth,
+              form: 'login'
+
           style: 
             color: if !@local.light_background then 'white'
           'Log in'

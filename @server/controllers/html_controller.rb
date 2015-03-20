@@ -56,13 +56,11 @@ class HtmlController < ApplicationController
     @app = current_subdomain.name == 'homepage' ? 'considerit_saas' : 'franklin'
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
     @js = manifest['franklin']
-    
 
+    pp @js
 
     dirty_key '/asset_manifest'
     response.headers["Strict Transport Security"] = 'max-age=0'
-
-
 
     render "layouts/application", :layout => false
 

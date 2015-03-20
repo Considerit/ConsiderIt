@@ -23,6 +23,7 @@ require './slider'
 window.customization = (field) -> 
   subdomain = fetch('/subdomain')
 
+
   if !customizations[subdomain.name]?
     config = fetch('customizations/default')
   else 
@@ -35,6 +36,8 @@ window.customization = (field) ->
   for f, idx in fields
     if val[f]? || idx == fields.length - 1
       val = val[f]
+
+
     else 
       throw "Could not find customization #{field} for subdomain #{subdomain.name}"
 
@@ -71,9 +74,14 @@ customizations.default =
     individual: 
       support: 'Support'
       oppose: 'Oppose'
+      support_sub: ''
+      oppose_sub: ''
     group: 
       support: 'Supporters'
       oppose: 'Opposers'
+      support_sub: ''
+      oppose_sub: ''
+
     # individual: 
     #   support: '+'
     #   oppose: '–'
@@ -87,13 +95,13 @@ customizations.default =
   docking_proposal_header : false
 
   HomepageHeader : DefaultHomepageHeader
+  NonHomepageHeader: DefaultProposalMasthead
 
   Footer : DefaultFooter
 
   slider_handle: slider_handles.face
 
-customizations.default.NonHomepageHeader = customizations.default.HomepageHeader
-
+#customizations.default.NonHomepageHeader = customizations.default.HomepageHeader
 
 
 ##########################
@@ -998,7 +1006,7 @@ customizations.cityoftigard =
       DIV style: {backgroundColor: '#253967'},
         ProfileMenu()
 
-        DIV style: {height: 24},
+        DIV style: {height: 48},
           A href: '/', style: {position: 'absolute', top:0, zIndex: 999999},
             IMG className: 'logo', src: asset('cityoftigard/logo.png'), style: logo_style 
 
@@ -1006,9 +1014,21 @@ customizations.cityoftigard =
 customizations.cityoftigard.NonHomepageHeader = customizations.cityoftigard.HomepageHeader
 
 
-customizations['evergreen-faculty'] = 
-  HomepageHeader : ReactiveComponent 
+customizations['mos'] = 
 
+  slider_pole_labels :
+    individual: 
+      support: 'Support'
+      support_sub: 'the ban'
+      oppose: 'Oppose'
+      oppose_sub: 'the ban'
+    group: 
+      support: 'Supporters'
+      support_sub: 'of the ban'      
+      oppose: 'Opposers'
+      oppose_sub: 'of the ban'
+
+  show_crafting_page_first: true
 
 ##########
 # Fill in default values for each unspecified field for 

@@ -390,8 +390,10 @@ Proposal = ReactiveComponent
               focused: mode == 'crafting'
               backgrounded: get_selected_point() && mode == 'crafting'
               pole_labels: [ \
-                customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose"), \
-                customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.support")]
+                [customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose"),
+                 customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose_sub")], \
+                [customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.support"),
+                 customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.support_sub")]]
 
               additionalOnMouseUp : (e) ->
                 slider = fetch 'slider'
@@ -875,9 +877,6 @@ DecisionBoard = ReactiveComponent
 
     @last_proposal_mode = mode
 
-
-
-
 SliderBubblemouth = ReactiveComponent
   displayName: 'SliderBubblemouth'
 
@@ -1016,7 +1015,6 @@ GroupSelectionRegion = ReactiveComponent
                   color: 'white'
                   top: -58
                   width: name_width + 10 + 18 + avatar_size * .75 + 10
-
 
                 SPAN 
                   style: 

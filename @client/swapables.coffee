@@ -491,6 +491,52 @@ window.DefaultHomepageHeader = ReactiveComponent
           else
             subdomain.branding.masthead_header_text
 
+
+window.DefaultProposalMasthead = ReactiveComponent
+  displayName: 'DefaultProposalMasthead'
+
+  render: ->
+    subdomain = fetch '/subdomain'   
+
+    masthead_style = 
+      textAlign: 'center'
+      backgroundColor: subdomain.branding.primary_color
+      height: 50
+           
+    DIV style: masthead_style,
+      ProfileMenu()
+
+      if subdomain.branding.masthead_header_text
+        DIV style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
+          if subdomain.external_project_url
+            A href: "#{subdomain.external_project_url}", target: '_blank',
+              subdomain.branding.masthead_header_text
+          else
+            subdomain.branding.masthead_header_text
+
+
+
+      if subdomain.branding.logo || subdomain.branding.masthead
+
+        DIV 
+          style: 
+            width: BODY_WIDTH
+            position: 'relative'
+            margin: 'auto'
+
+          DIV 
+            style:
+              position: 'absolute'
+              left: 0
+              padding: '2px 10px'
+              backgroundColor: 'white'
+
+            IMG 
+              src: subdomain.branding.logo || subdomain.branding.masthead
+              style: 
+                height: 46
+
+
 #########################
 # Footers
 #
@@ -877,9 +923,23 @@ styles += """
 window.ProfileMenu = ReactiveComponent
   displayName: 'ProfileMenu'
 
+  componentDidMount : -> @setBgColor()
+  componentDidUpdate : -> @setBgColor()
+  setBgColor : -> 
+    cb = (is_light) => 
+      if @local.light_background != is_light
+        @local.light_background = is_light
+        save @local
+
+    is_light = isLightBackground @getDOMNode(), cb
+
+    cb is_light
+
   render : -> 
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
+    loc = fetch('location') # should rerender on a location change because background
+                            # color might change
 
     is_evaluator = subdomain.assessment_enabled && current_user.is_evaluator
     is_admin = current_user.is_admin
@@ -939,7 +999,7 @@ window.ProfileMenu = ReactiveComponent
 
           SPAN 
             style: 
-              color: subdomain.branding.header_text_color
+              color: if !@local.light_background then 'white'
               position: 'relative'
               zIndex: 9999999999
               backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)'
@@ -961,8 +1021,10 @@ window.ProfileMenu = ReactiveComponent
           'className': 'profile_anchor login'
           'data-action': 'login'
           onClick: (e) =>
-            reset_key 'auth', {form: 'login', goal: null}
-          style: {color: 'white'}
+            @root.auth = {form: 'login', goal: null}
+            save @root
+          style: 
+            color: if !@local.light_background then 'white'
           'Log in'
 
 

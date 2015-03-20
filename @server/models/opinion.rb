@@ -247,9 +247,9 @@ class Opinion < ActiveRecord::Base
   end
 
   def self.purge
-    Opinion.where('user_id IS NULL').destroy_all
+    #Opinion.where('user_id IS NULL').destroy_all
     
-    User.find_each do |u|
+    User.where('registered=true').each do |u|
       proposals = u.opinions.map {|p| p.proposal_id}.uniq
       proposals.each do |prop|
         pos = u.opinions.where(:proposal_id => prop)

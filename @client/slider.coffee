@@ -70,9 +70,10 @@ window.Slider = ReactiveComponent
 
     if !slider.docked
       for pole_label, idx in @props.pole_labels
+        [main_text, sub_text] = pole_label
         w = widthWhenRendered pole_label, {fontSize: 30}
         DIV 
-          key: pole_label
+          key: main_text
           style: 
             position: 'absolute'
             fontSize: 30
@@ -81,7 +82,16 @@ window.Slider = ReactiveComponent
             left: if idx == 0 then -(w + 55)
             right: if idx == 1 then -(w + 55)
 
-          pole_label
+          main_text
+
+          DIV 
+            key: "pole_#{sub_text}_sub"
+            style: 
+              fontSize: 14
+              textAlign: 'center'
+
+            sub_text
+
     else
       for pole_label, idx in @props.pole_labels
         DIV 

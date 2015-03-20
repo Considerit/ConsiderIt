@@ -54,19 +54,11 @@ class Subdomain < ActiveRecord::Base
   #      image covering the area
   #   logo
   #      A customer's logo. Shown in the footer if set. Isn't sized, just puts in whatever is uploaded. 
-  #   light_masthead
-  #      If the background image is dark or light; used to determine the header_text_color 
   def branding_info
     brands = JSON.parse(self.branding || "{}")
 
     if !brands.has_key?('primary_color') || brands['primary_color'] == ''
       brands['primary_color'] = '#E37765'
-    end
-
-    if brands.has_key?('light_masthead') && brands['light_masthead'] || !brands.has_key?('primary_color')
-      brands['header_text_color'] = 'black'
-    else
-      brands['header_text_color'] = 'white'
     end
 
     brands['masthead'] = self.masthead_file_name ? self.masthead.url : nil

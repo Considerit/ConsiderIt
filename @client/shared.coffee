@@ -117,6 +117,8 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
     skip_element = (behind_el && $(behind_el).has($(el)).length > 0) ||
                     (!is_image && rgb.a == 0)
 
+    console.log 'checking ', el
+
     if skip_element
       hidden_els.push [el, el.style.visibility]
       el.style.visibility = 'hidden'
@@ -160,6 +162,7 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
           callback color if callback
           return color
         else 
+          console.log "timeout"
           setTimeout imagePoll, 50
           return null
 

@@ -113,8 +113,11 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
 
     # Skip this element if it doesn't contribute to background color
     # or if it is a decendent of behind_el
+    bg_color = $(el).css('background-color')
     skip_element = (behind_el && $(behind_el).has($(el)).length > 0) ||
-                    (!is_image && $(el).css('background-color') == 'rgba(0, 0, 0, 0)')
+                    (!is_image && bg_color in ['rgba(0, 0, 0, 0)', 'transparent'])
+
+
 
     if skip_element
       hidden_els.push [el, el.style.visibility]
@@ -122,7 +125,7 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
       el = document.elementFromPoint(x,y)
 
     else if !is_image
-      rgb = parseCssRgb $(el).css('background-color')
+      rgb = parseCssRgb bg_color
       hsl = rgb_to_hsl rgb
       color = {rgb, hsl} 
       callback color if callback
@@ -209,11 +212,12 @@ window.rgb_to_hsl = (rgb) ->
   l: l
 
 parseCssRgb = (rgb_str) ->
-  rgb = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(1|0\.\d+))?\)$/.exec(rgb_str)
+  rgb = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(1|0(\.\d+)?))?\)$/.exec(rgb_str)
+
   r: rgb[1]
   g: rgb[2]
   b: rgb[3]
-  a: if rgb.length > 4 then rgb[4] else 1
+  a: if rgb.length > 4 && rgb[4]? then rgb[4] else 1
 
 
 window.isLightBackground = (el, callback) -> 

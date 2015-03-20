@@ -38,18 +38,7 @@ server {
 
   client_max_body_size 5M;
 
-  location ~ ^/(assets)/ {
-    proxy_set_header       Host '{{ config.aws.cloudfront }}.cloudfront.net';
-    proxy_set_header       Authorization '';
-    proxy_hide_header      x-amz-id-2;
-    proxy_hide_header      x-amz-request-id;
-    proxy_hide_header      Set-Cookie;
-    proxy_ignore_headers   "Set-Cookie";
-    proxy_intercept_errors on;
-    proxy_pass https://{{ config.aws.cloudfront }}.cloudfront.net/;
-    expires 1y;
-    log_not_found off;    
-  }
+
 
   location ~ ^/(sitemaps)/ {
     gzip_static on;
@@ -78,6 +67,18 @@ server {
     break;
   }  
 
+  location ~ ^/(assets)/ {
+    proxy_set_header       Host '{{ config.aws.cloudfront }}.cloudfront.net';
+    proxy_set_header       Authorization '';
+    proxy_hide_header      x-amz-id-2;
+    proxy_hide_header      x-amz-request-id;
+    proxy_hide_header      Set-Cookie;
+    proxy_ignore_headers   "Set-Cookie";
+    proxy_intercept_errors on;
+    proxy_pass https://{{ config.aws.cloudfront }}.cloudfront.net;
+    expires 1y;
+    log_not_found off;    
+  }
 
   #location / {
   #    try_files $uri @prerender;

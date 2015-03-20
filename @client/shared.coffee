@@ -79,6 +79,7 @@ window.default_avatar_in_histogram_color = '#d3d3d3'
 
 md5 = require './vendor/md5'
 require './vendor/colorthief'
+
 window.backgroundColorAtCoord = (x, y, callback, behind_el) -> 
   hidden_els = []
 
@@ -86,12 +87,13 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
 
   while el && el.tagName not in ['BODY', 'HTML']
 
-    is_image = el.tagName == 'IMG' || el.style['background-image']
+    is_image = el.tagName == 'IMG' || $(el).css('background-image') != 'none'
 
     # Skip this element if it doesn't contribute to background color
     # or if it is a decendent of behind_el
+    rgb = parseCssRgb $(el).css('background-color')
     skip_element = (behind_el && $(behind_el).has($(el)).length > 0) ||
-                    (!is_image && $(el).css('background-color') == 'rgba(0, 0, 0, 0)')
+                    (!is_image && rgb.a == 0)
 
     if skip_element
       hidden_els.push [el, el.style.visibility]
@@ -99,7 +101,9 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
       el = document.elementFromPoint(x,y)
 
     else if !is_image
+
       rgb = parseCssRgb $(el).css('background-color')
+
       hsl = rgb_to_hsl rgb
       color = {rgb, hsl} 
       callback color if callback
@@ -110,7 +114,7 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
         # we have to extract a background url into a temporary IMG
         # element so that it can be processed by colorThief
 
-        url = el.style['background-image']
+        url = $(el).css('background-image')
                 .replace(/^url\(["']?/, '').replace(/["']?\)$/, '')
       else 
         url = el.src
@@ -121,23 +125,12 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
       a.href = url || el.src
       url = a.pathname
 
-      id = "temp-img#{md5(url)}"
-
-      $('body').append """
-        <IMG 
-          width=500 
-          height=500 
-          id='#{id}' 
-          src='#{url}' 
-          style='position:absolute; left: 0px' />"""
-
-      img = $('body').find("##{id}")
-
+      img =$("<IMG src='#{url}' />")
 
       imagePoll = -> 
         if img[0].complete
-          thief = new ColorThief()
-          rgb = thief.getColor img[0], 5, true
+          colorThief = new ColorThief()
+          rgb = colorThief.getColor img[0], 5, true
           rgb = 
             r: rgb[0]
             g: rgb[1]
@@ -145,7 +138,6 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
           hsl = rgb_to_hsl rgb
           color = {rgb, hsl} 
           callback color if callback
-          $("##{id}").remove() 
           return color
         else 
           setTimeout imagePoll, 50
@@ -186,12 +178,15 @@ window.rgb_to_hsl = (rgb) ->
   l: l
 
 parseCssRgb = (rgb_str) ->
-  rgb = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(1|0\.\d+))?\)$/.exec(rgb_str)
-  r: rgb[1]
-  g: rgb[2]
-  b: rgb[3]
-  a: if rgb.length > 4 then rgb[4] else 1
+  if rgb_str == 'transparent'
+    {r: 0, g: 0, b: 0, a: 0}
+  else  
+    rgb = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(1|0(\.\d+)?))?\)$/.exec(rgb_str)
 
+    r: parseInt rgb[1]
+    g: parseInt rgb[2]
+    b: parseInt rgb[3]
+    a: if rgb.length > 4 && rgb[4]? then parseInt(rgb[4]) else 1
 
 window.isLightBackground = (el, callback) -> 
   coords = getCoords el
@@ -219,7 +214,6 @@ window.getCoords = (el) ->
 
 
 #### browser
-
 
 # stored in public/images
 window.asset = (name) -> 
@@ -254,7 +248,6 @@ window.writeToLog = (entry) ->
     where: fetch('location').url
 
   save entry
-
 
 
 

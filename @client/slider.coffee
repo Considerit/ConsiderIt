@@ -65,13 +65,15 @@ window.Slider = ReactiveComponent
       if @props.enabled
         @drawSliderHandle()
 
-  drawPoleLabels: -> 
+  drawPoleLabels: ->
     slider = fetch @props.key
 
     if !slider.docked
       for pole_label, idx in @props.pole_labels
         [main_text, sub_text] = pole_label
-        w = widthWhenRendered pole_label, {fontSize: 30}
+
+        w = Math.max( widthWhenRendered(main_text, {fontSize: 30}), \
+                      widthWhenRendered(sub_text, {fontSize: 14}))
         DIV 
           key: main_text
           style: 
@@ -95,7 +97,7 @@ window.Slider = ReactiveComponent
     else
       for pole_label, idx in @props.pole_labels
         DIV 
-          key: "small-#{pole_label}"
+          key: "small-#{pole_label[0]}"
           style: 
             position: 'absolute'
             fontSize: 20

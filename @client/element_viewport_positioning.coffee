@@ -26,11 +26,6 @@ $.fn.ensureInView = (options = {}) ->
   top_inside = el_top > doc_top && (doc_bottom - el_top) > options.fill_threshold * el_height    
   in_viewport = is_onscreen || top_inside || bottom_inside  
 
-  # console.log "amount: #{options.fill_threshold}"
-  # console.log "el_top: #{el_top}, el_bottom: #{el_bottom}"
-  # console.log "doc_top: #{doc_top}, doc_bottom: #{doc_bottom}"
-  # console.log "onscreen: #{is_onscreen}, top_inside: #{top_inside}, bottom_inside: #{bottom_inside}"
-
   if !in_viewport
     switch options.position 
       when 'top'

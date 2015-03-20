@@ -1021,7 +1021,7 @@ window.ProfileMenu = ReactiveComponent
           'className': 'profile_anchor login'
           'data-action': 'login'
           onClick: (e) =>
-            reset_key auth,
+            reset_key 'auth',
               form: 'login'
 
           style: 

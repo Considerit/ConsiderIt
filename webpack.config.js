@@ -124,8 +124,8 @@ if(!is_dev){
 
         }
 
-        upload( 'public/build', 'build2')
-        upload( 'public/images', 'images2')
+        upload( 'public/build', 'build')
+        upload( 'public/images', 'images')
 
       })
     }    

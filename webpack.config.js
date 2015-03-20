@@ -82,11 +82,17 @@ config = {
 
 if(!is_dev){
   var s3 = require('s3'),
-      YAML = require('yamljs')
+      YAML = require('yamljs'),
+      CompressionPlugin = require("compression-webpack-plugin")
 
   config.plugins.push(
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
+
+    new CompressionPlugin({
+        asset: "{file}.gz",
+        algorithm: "gzip"
+    }),
 
     // write to S3
     function() {
@@ -101,7 +107,7 @@ if(!is_dev){
           },
         })
 
-        var upload = function(src, dest) {
+        var uploadDir = function(src, dest, is_gzipped) {
 
           var uploader = client.uploadDir({
             localDir: src,
@@ -111,10 +117,6 @@ if(!is_dev){
               Bucket: local.aws.s3_bucket,
               Prefix: dest,
             },
-          })
-
-          uploader.on('start', function() {
-            console.log('*******/nUploading ' + src + ' to ' + dest + '\n*******')
           })
 
           uploader.on('error', function(err) {
@@ -130,8 +132,8 @@ if(!is_dev){
 
         }
 
-        upload( 'public/build', 'build')
-        upload( 'public/images', 'images')
+        uploadDir( 'public/build', 'build')
+        uploadDir( 'public/images', 'images')
 
       })
     }    

@@ -109,15 +109,13 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
 
   while el && el.tagName not in ['BODY', 'HTML']
 
-    is_image = el.tagName == 'IMG' || el.style['background-image']
+    is_image = el.tagName == 'IMG' || $(el).css('background-image') != 'none'
 
     # Skip this element if it doesn't contribute to background color
     # or if it is a decendent of behind_el
     rgb = parseCssRgb $(el).css('background-color')
     skip_element = (behind_el && $(behind_el).has($(el)).length > 0) ||
                     (!is_image && rgb.a == 0)
-
-    console.log skip_element, is_image or is_image?, el.style['background-image'], el
 
     if skip_element
       hidden_els.push [el, el.style.visibility]
@@ -135,7 +133,7 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
         # we have to extract a background url into a temporary IMG
         # element so that it can be processed by colorThief
 
-        url = el.style['background-image']
+        url = $(el).css('background-image')
                 .replace(/^url\(["']?/, '').replace(/["']?\)$/, '')
       else 
         url = el.src
@@ -158,11 +156,9 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
             b: rgb[2]
           hsl = rgb_to_hsl rgb
           color = {rgb, hsl} 
-          console.log color
           callback color if callback
           return color
         else 
-          console.log "timeout"
           setTimeout imagePoll, 50
           return null
 

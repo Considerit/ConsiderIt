@@ -144,18 +144,7 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
       a.href = url || el.src
       url = a.pathname
 
-      id = "temp-img#{md5(url)}"
-
-      $('body').append """
-        <IMG 
-          width=500 
-          height=500 
-          id='#{id}' 
-          src='#{url}' 
-          style='position:absolute; left: 0px' />"""
-
-      img = $('body').find("##{id}")
-
+      img =$("<IMG src='#{url}' />")
 
       imagePoll = -> 
         if img[0].complete
@@ -167,8 +156,8 @@ window.backgroundColorAtCoord = (x, y, callback, behind_el) ->
             b: rgb[2]
           hsl = rgb_to_hsl rgb
           color = {rgb, hsl} 
+          console.log color
           callback color if callback
-          $("##{id}").remove() 
           return color
         else 
           setTimeout imagePoll, 50

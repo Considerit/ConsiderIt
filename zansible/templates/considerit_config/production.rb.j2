@@ -91,7 +91,7 @@ ConsiderIt::Application.configure do
     :url => ":s3_alias_url",   
     :default_url => "system/default_avatar/:style_default-profile-pic.png",
     :storage => :s3,
-    :bucket => APP_CONFIG[:aws][:fog_directory],
+    :bucket => APP_CONFIG[:aws][:s3_bucket],
     :s3_host_alias => "#{APP_CONFIG[:aws][:cloudfront]}.cloudfront.net",
     :s3_protocol => "https",
     :s3_headers => {'Expires' => 1.year.from_now.httpdate},

@@ -31,9 +31,6 @@ require './state_graph'
 require './swapables'
 require './tooltip'
 
-
-DO_NOT_COMPRESS_THIS_FILE = true
-
 ## ########################
 ## Initialize defaults for client data
 

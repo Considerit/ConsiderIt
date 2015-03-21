@@ -111,7 +111,7 @@ if(!is_dev){
           s3_params = {
             Bucket: local.aws.s3_bucket,
             Prefix: dest,
-            Expires: max,
+            Expires: new Date(new Date().setYear(new Date().getFullYear() + 1)),
             CacheControl: 'public, max-age=31557600'
           }
 

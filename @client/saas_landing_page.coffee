@@ -28,7 +28,7 @@ Header = ReactiveComponent
         height: 52
     
       IMG 
-        src: asset('saas/considerit_logo.svg')
+        src: asset('saas_landing_page/considerit_logo.svg')
         style: 
           position: 'relative'
           top: 8

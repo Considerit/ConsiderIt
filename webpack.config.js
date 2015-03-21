@@ -45,7 +45,7 @@ global_variables = {
 // into the respective build. 
 entry_points = {
   franklin: './@client/franklin.coffee',
-  //saas: './@client/saas.coffee'
+  saas: './@client/saas.coffee'
 }
 
 
@@ -116,16 +116,20 @@ config = {
 
     ////////////
     // Creates a public/build/manifest.json file that maps from
-    // an entry point to the compiled version of it. Useful in 
+    // each entry point to the compiled version of it. Useful in 
     // particular when the compiled filename includes a digest 
     function() {
       this.plugin("done", function(stats) {
         manifest = {}
+        
         for (var prop in config.entry){
-          file = stats.toJson().assetsByChunkName[prop]
-          if (typeof file !== 'string')
-            file = file[0]
-          manifest[prop] = path.join("build", file)
+          if(prop){
+            file = stats.toJson().assetsByChunkName[prop]
+            if (typeof file !== 'string')
+              file = file[0]
+
+            manifest[prop] = path.join("build", file)
+          }
         }
         require("fs").writeFileSync(
           path.join(__dirname, "public", "build", "manifest.json"),

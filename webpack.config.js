@@ -22,6 +22,36 @@
 // This process replaces Rails' asset pipeline.
 
 
+///////////////////////
+// Input
+// 
+// These variables are pulled out because they're most likely to be configured
+// as part of writing an application.
+
+/////
+// Global variables
+// These variables will be made global on Window for use in all js files
+global_variables = {
+  '_': "vendor/underscore",
+  $: "vendor/jquery",
+  jQuery: "vendor/jquery",
+  React: "vendor/react"
+}
+
+/////
+// Entry points
+// These are the different entry points to the application that will be 
+// compiled. All required files starting from the entry point will be compiled
+// into the respective build. 
+entry_points = {
+  franklin: './@client/franklin.coffee',
+  //saas: './@client/saas.coffee'
+}
+
+
+////////////////////////////////////////
+// Innards
+
 var webpack = require('webpack'),
     path = require('path'), 
     is_dev = !JSON.parse(process.env.BUILD_PRODUCTION || 'false');
@@ -33,13 +63,7 @@ config = {
   outputPathinfo : true,
   devtool : is_dev ? 'eval' : 'sourcemap',
 
-  // These are the different entry points to the application
-  // that will be compiled. All required files starting from
-  // the entry point will be compiled into the respective 
-  // build. 
-  entry: {
-    franklin: './@client/franklin.coffee'
-  },
+  entry: entry_points,
 
   // We output build javascript to public/build. 
   // A cache-busting digest is appended when we're in production
@@ -63,7 +87,6 @@ config = {
       /jquery\.js$/,       
       /quill\.js$/
     ]
-
   },
 
   resolve: {
@@ -89,12 +112,7 @@ config = {
     // ProvidePlugin
     //
     // Makes these variables global across all javascript files  
-    new webpack.ProvidePlugin({
-        '_': "vendor/underscore",
-        $: "vendor/jquery",
-        jQuery: "vendor/jquery",
-        React: "vendor/react"
-    }),
+    new webpack.ProvidePlugin(global_variables),
 
     ////////////
     // Creates a public/build/manifest.json file that maps from

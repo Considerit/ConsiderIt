@@ -5,8 +5,8 @@
 #
 # These are the available applications at this time: 
 #
-#     Franklin: The main considerit application
-#     SaaS: The considerit homepage for marketing considerit
+#     franklin: The main considerit application
+#     saas_landing_page: The considerit homepage for marketing considerit
 #
 
 ( ->
@@ -39,7 +39,7 @@
 
       React.renderComponent Franklin({key: 'root'}), document.getElementById('content')
 
-    when 'considerit_saas'
+    when 'saas_landing_page'
       React.renderComponent Saas({key: 'saas_root'}), document.getElementById('content')
 
 )()

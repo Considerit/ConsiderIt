@@ -56,23 +56,17 @@ class HtmlController < ApplicationController
     @app = current_subdomain.name == 'homepage' ? 'considerit_saas' : 'franklin'
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
 
+    entry_point = current_subdomain.name == 'homepage' ? 'saas' : 'franklin'
     if Rails.application.config.action_controller.asset_host
-      @js = "#{Rails.application.config.action_controller.asset_host}/#{manifest['franklin']}"
+      @js = "#{Rails.application.config.action_controller.asset_host}/#{manifest['entry_point']}"
     else 
-      @js = manifest['franklin']
+      @js = manifest[entry_point]
     end
 
     dirty_key '/asset_manifest'
     response.headers["Strict Transport Security"] = 'max-age=0'
 
     render "layouts/application", :layout => false
-
-
-    # if current_subdomain.name == 'homepage' && request.path == '/'
-    #   render "layouts/homepage", :layout => false
-    # else
-    #   render "layouts/application", :layout => false
-    # end
   end
 
   private

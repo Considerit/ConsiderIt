@@ -13,3 +13,6 @@
 - name: install chunk-manifest-webpack-plugin
   npm: name=chunk-manifest-webpack-plugin global=no path={{app_home}}
 
+- name: install compression-webpack-plugin
+  npm: name=compression-webpack-plugin global=no path={{app_home}}
+

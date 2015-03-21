@@ -111,6 +111,8 @@ if(!is_dev){
           s3_params = {
             Bucket: local.aws.s3_bucket,
             Prefix: dest,
+            Expires: max,
+            CacheControl: 'public, max-age=31557600'
           }
 
           if (is_gzipped)

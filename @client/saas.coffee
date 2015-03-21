@@ -1,3 +1,11 @@
+require './activerest-m'
+require './auth'
+require './avatar'
+require './browser_hacks'
+require './browser_location'
+require './tooltip'
+require './shared'
+
 SaasHomepage = ReactiveComponent
   displayName: 'SaasHomepage'
 
@@ -20,7 +28,7 @@ Header = ReactiveComponent
         height: 52
     
       IMG 
-        src: "<%= asset_path 'saas/considerit_logo.svg' %>"
+        src: asset('saas/considerit_logo.svg')
         style: 
           position: 'relative'
           top: 8
@@ -85,8 +93,6 @@ Root = ReactiveComponent
             minWidth: PAGE_WIDTH
             backgroundColor: 'white'
             overflowX: 'hidden'
-
-          Avatars()
           
           BrowserHacks()
 
@@ -101,3 +107,5 @@ Root = ReactiveComponent
 
 # exports...
 window.Saas = Root
+
+require './application_loader'

@@ -16,7 +16,7 @@ window.Tooltip = ReactiveComponent
         position: 'absolute'
         top: coords.top - 20
         left: coords.left
-        fontSize: 14
+        fontSize: 16
         color: 'black'
         backgroundColor: 'white'
         padding: '0 4px'

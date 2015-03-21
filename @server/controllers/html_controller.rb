@@ -10,10 +10,13 @@ class HtmlController < ApplicationController
       return
     end
 
-    if params[:domain] and (Rails.env.development? || request.host == 'chlk.it')
-      session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
-      redirect_to '/'    
-      return
+    if Rails.env.development? || request.host == 'chlk.it'
+      @show_subdomain_changer = true
+      if params[:domain]
+        session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
+        redirect_to '/'    
+        return
+      end
     end
 
     # Storing the full host name on the subdomain object.
@@ -24,10 +27,6 @@ class HtmlController < ApplicationController
       current_subdomain.host = request.host
       current_subdomain.host_with_port = request.host_with_port
       current_subdomain.save
-    end
-
-    if request.host == 'chlk.it'
-      @show_subdomain_changer = true
     end
 
     if !session.has_key?(:search_bot)
@@ -53,14 +52,13 @@ class HtmlController < ApplicationController
       })
     end
 
-    @app = current_subdomain.name == 'homepage' ? 'considerit_saas' : 'franklin'
+    @app = current_subdomain.name == 'homepage' ? 'saas_landing_page' : 'franklin'
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
 
-    entry_point = current_subdomain.name == 'homepage' ? 'saas' : 'franklin'
     if Rails.application.config.action_controller.asset_host
-      @js = "#{Rails.application.config.action_controller.asset_host}/#{manifest['entry_point']}"
+      @js = "#{Rails.application.config.action_controller.asset_host}/#{manifest[@app]}"
     else 
-      @js = manifest[entry_point]
+      @js = manifest[@app]
     end
 
     dirty_key '/asset_manifest'

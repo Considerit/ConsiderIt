@@ -4,7 +4,7 @@ require './shared'
 # globally accessible method for getting the URL of a user's avatar
 window.avatarUrl = (user, img_size) -> 
   user = fetch(user)
-  fetch('/subdomain').asset_host + \
+  fetch('/application').asset_host + \
         "/system/avatars/" + \
         "#{user.key.split('/')[2]}/#{img_size}/#{user.avatar_file_name}"  
 

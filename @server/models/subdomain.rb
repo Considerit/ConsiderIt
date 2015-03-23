@@ -30,7 +30,6 @@ class Subdomain < ActiveRecord::Base
     end
 
     json['branding'] = self.branding_info
-    json['asset_host'] = "#{Rails.application.config.action_controller.asset_host}"
     json
   end
 

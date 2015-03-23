@@ -125,7 +125,7 @@ config = {
         for (var prop in config.entry){
           if(prop){
             file = stats.toJson().assetsByChunkName[prop]
-            if (typeof file !== 'string')
+            if (file && typeof file !== 'string')
               file = file[0]
 
             manifest[prop] = path.join("build", file)

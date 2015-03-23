@@ -57,13 +57,15 @@ window.A = React.createClass
                   # can easily check relative vs absolute url
         
         is_external_link = href.indexOf('//') > -1
+        is_mailto = href.toLowerCase().indexOf('mailto') > -1
+
         opened_in_new_tab = event.altKey || 
                              event.ctrlKey || 
                              event.metaKey || 
                              event.shiftKey
 
         # Allow shift+click for new tabs, etc.
-        if !is_external_link && !opened_in_new_tab
+        if !is_external_link && !opened_in_new_tab && !is_mailto
           event.preventDefault()
           loadPage href
           _onclick event

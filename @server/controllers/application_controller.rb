@@ -1,3 +1,4 @@
+
 require 'digest/md5'
 require 'exception_notifier'
 require Rails.root.join('@server', 'permissions')
@@ -5,7 +6,6 @@ require Rails.root.join('@server', 'permissions')
 
 # Set to true if you're working on the http://consider.it homepage. 
 ENABLE_HOMEPAGE_IN_DEV = false
-
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   skip_before_action :verify_authenticity_token, if: :csrf_skippable?
@@ -20,7 +20,15 @@ class ApplicationController < ActionController::Base
     render :json => result
   end
 
+
+  def application
+    dirty_key '/application'
+    render :json => []
+  end
+
   def render(*args)
+
+    dirty_key '/application'
 
     # if there are dirtied keys, we'll append the corresponding data to the response
     if current_subdomain && Thread.current[:dirtied_keys].keys.length > 0
@@ -180,6 +188,10 @@ protected
         point = Point.find(key[10..key.length])
         response.append Comment.comments_for_point(point)
       
+      elsif key == '/application'
+        response.append({
+                  asset_host: "#{Rails.application.config.action_controller.asset_host}"
+        })
       elsif key == '/subdomain'
         response.append current_subdomain.as_json
 

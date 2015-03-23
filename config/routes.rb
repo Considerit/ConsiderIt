@@ -41,6 +41,8 @@ ConsiderIt::Application.routes.draw do
   resources :comment, :only => [:create, :show, :update, :destroy]
   get '/comments/:point_id' => 'comment#index'
 
+  get '/application' => 'application#application'
+
   get '/subdomain' => 'subdomain#show'
   post '/subdomain' => 'subdomain#create'
   match '/subdomain' => 'subdomain#update', :via => [:put]

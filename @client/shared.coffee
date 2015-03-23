@@ -217,7 +217,7 @@ window.getCoords = (el) ->
 
 # stored in public/images
 window.asset = (name) -> 
-  "#{fetch('/subdomain').asset_host}/images/#{name}"
+  "#{fetch('/application').asset_host or ''}/images/#{name}"
 
 
 

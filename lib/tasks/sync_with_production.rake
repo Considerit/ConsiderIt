@@ -14,7 +14,8 @@ require 'zlib'
 
 # dumps are located in ~/Dropbox/Apps/considerit_backup/xenogear
 # This script assumes a tarball created via the Backup gem. 
-DATABASE_BACKUP_URL = "https://www.dropbox.com/s/v6cgroos5lg7cv9/xenogear.tar?dl=1"
+# Make sure to keep the dl=1
+DATABASE_BACKUP_URL = "https://www.dropbox.com/s/zdr1cfodbatmvnp/xenogear.tar?dl=1"
 
 # Where production assets are served from 
 PRODUCTION_ASSET_HOST = "http://d2rtgkroh5y135.cloudfront.net"

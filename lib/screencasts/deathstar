@@ -1,0 +1,212 @@
+#!/usr/bin/env /Users/travis/.rbenv/versions/2.1.5/lib/ruby/gems/2.1.0/gems/castanaut-1.1.2/bin/castanaut
+
+plugin "safari"
+
+launch "Safari", at(0, 0, 1280, 720)
+
+while_saying "loading page" do
+  url "http://localhost:3000/Death_Star?domain=impacthub"
+  keystroke "f", "control", "command"
+  wait_for_element('.proposal_header')
+end
+
+perform "Let's make sure we're logged in" do
+  wait_for_element('#user_nav')
+  move to_element('.profile_anchor.login') rescue skip
+  pause 1
+  click
+  pause 0.5
+  wait_for_element('#user_email')
+
+  move to_element('#user_email')
+  click
+  type "test@test.dev.ghost", {:applescript => true, :speed => 20}
+  move to_element('#user_password')
+  click
+
+  type "testtest", {:applescript => true, :speed => 20}
+
+  move to_element('.primary_button')
+  click
+  wait_for_element('.proposal_header')
+
+end
+
+
+while_saying "Sometimes an issue comes up that requires some thought" do 
+  scroll_to ".proposal_header", 0, 0
+  pause 2
+end
+
+scroll_to ".histogram", 0, 1000
+
+while_saying "The Pro con list encourages you to think about tradeoffs" do
+  pause 4
+end
+
+
+while_saying "Write singular points that each describe a consideration" do
+  move to_element(".write_cons")
+  click
+  type "Could create brand issues. Do we want to be associated with an overtly imperialistic entity?", {
+    :applescript => true,
+    :speed => 50
+  }
+  move to_element('[data-action="submit-point"]')
+  click
+  pause 1
+end
+
+# TODO: speedup drag, maybe include a couple
+while_saying "Learn and build from other’s thoughts" do 
+  move to_element('[data-id="/point/5397"]')
+  pause 1
+  move to_element('[data-id="/point/5399"]')
+  pause 1
+  move to_element('[data-id="/point/5400"]')
+  drag by(-280, -250)
+  pause 1
+end
+
+while_saying """
+  Use a slider to express your conclusion, allowing more nuance 
+  than a like or dislike""" do 
+
+  move to_element('.the_handle', {:area => ['middle', 'top']})
+  drag by(250, 0)
+  pause 0.25
+  drag by(-100, 0)
+  pause 0.25
+end
+
+while_saying """After creating a considered opinion, 
+  individuals integrate their opinion 
+  with the group""" do 
+  move to_element('.save_opinion_button')
+  click
+end
+
+while_saying "Histogram shows faces of individuals along spectrum of opinion." do
+  move to_element('.histogram', {:area => ['left', 'bottom']})
+end
+
+while_saying "Points are ranked by how salient they are across the whole population" do 
+  move to_element('.points_heading_label')
+end
+
+# TODO: make this a smooth move across the histogram
+while_saying "Now you can explore patterns of thought!" do 
+  move to_element('.histogram', {:area => ['center', 'middle']})
+  click
+  pause 1
+  move to_element('.histogram', {:area => ['right', 'middle']})
+  pause 0.5
+  move to_element('.histogram', {:area => ['center', 'middle']})
+  pause 1
+  move to_element('.histogram', {:area => ['left', 'middle']})
+end
+
+while_saying "Inspect the most important factors to those who have reservations about this idea" do
+  pause 2
+  move by(50, 350)
+  pause 1
+  move to_element ".points_heading_label"
+  click
+  pause 2
+end
+
+while_saying "See what a particular individual believes" do 
+  move to_element("#avatar-251601")
+  click
+  pause 2
+end
+
+while_saying "Figure out who has been persuaded by the top pro points." do 
+  perform 'tricky' do 
+    move to_element(".pros_by_community .points_heading_label")
+    click
+    move to_element(".pros_by_community .includers", {index: 0})
+    pause 1.5
+    move to_element(".pros_by_community .includers", {index: 1}) rescue skip
+    pause 1.5
+    move to_element(".pros_by_community .includers", {index: 0})
+    pause 1.5
+  end
+end
+
+while_saying "Drill into points for focused discussion" do 
+  scroll_to '[data-id="/point/5406"]', 50, 1000
+  move to_element('[data-id="/point/5406"]')
+  click
+  wait_for_element '.comment_entry'
+  move to_element('.comment_entry')
+  pause 1
+  move to_element('.new_comment')
+  click
+  type "Perhaps we need to consider whether the \"Dark Force\" is aligned with our 15 year vision first...", {:applescript => true, :speed => 30} 
+  pause 0.5
+  move to_element('[data-action="save-comment"]')
+  click
+  pause 1
+end
+
+move to_element('[data-id="/point/5406"]')
+click
+
+pause 1
+scroll_to ".proposal_header", 0, 2000
+
+pause 4
+
+# ########
+# # end
+
+while_saying "cleanup comments, points, inclusions" do
+
+  perform "clean up added comments" do 
+    scroll_to '[data-id="/point/5406"]', 50, 0
+    move to_element('[data-id="/point/5406"]')
+    click
+    pause 1
+    while true
+      move to_element('[data-action="delete-comment"]') rescue skip
+      click
+      pause 2
+      hit Enter
+    end
+    move to_element('[data-id="/point/5406"]')
+    click
+  end
+
+  scroll_to ".histogram", 0, 0
+
+  move to_element('.decision_board_body')
+  click
+  pause 2
+
+  perform "clean up written points" do 
+    while true
+      move to_element('.cons_on_decision_board [data-action="delete-point"]') rescue skip
+      move by(0, 3)
+      click
+      pause 2
+      hit Enter
+    end
+  end
+
+  move to_element('[data-id="/point/5400"]')
+  drag by(150, 0)
+
+  scroll_to '.profile_menu_wrap', 0, 0
+  move to_element('.profile_menu_wrap')
+  pause 0.5
+  move to_element('[data-action="logout"]')
+  click
+
+  # remove saved opinion
+  # run "pwd; rake cleanup_deathstar"
+end
+
+at_end_of_movie do 
+  keystroke "f", "control", "command"
+end

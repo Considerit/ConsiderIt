@@ -14,7 +14,7 @@ class HtmlController < ApplicationController
       @show_subdomain_changer = true
       if params[:domain]
         session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
-        redirect_to '/'    
+        redirect_to request.path    
         return
       end
     end

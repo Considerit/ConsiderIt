@@ -956,6 +956,7 @@ window.ProfileMenu = ReactiveComponent
     menu_options = _.compact menu_options
 
     DIV
+      id: 'user_nav'
       style:
         _.extend(
           position: 'absolute'
@@ -992,6 +993,7 @@ window.ProfileMenu = ReactiveComponent
                 option.label
 
             A 
+              'data-action': 'logout'
               className: 'menu_link'
               onClick: @logout
               'Log out'

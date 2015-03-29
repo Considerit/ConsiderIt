@@ -54,7 +54,8 @@ entry_points = {
 
 var webpack = require('webpack'),
     path = require('path'), 
-    is_dev = !JSON.parse(process.env.BUILD_PRODUCTION || 'false');
+    is_dev = !JSON.parse(process.env.BUILD_PRODUCTION || 'false'),
+    directory = __dirname;
 
 config = {
 
@@ -90,7 +91,7 @@ config = {
   },
 
   resolve: {
-    root: [__dirname, '@client'].join('/'),
+    root: [directory, '@client'].join('/'),
     extensions: ['', '.js', '.json', '.coffee'] 
            // don't have to specify .js etc in requires statements
   },
@@ -128,11 +129,15 @@ config = {
             if (file && typeof file !== 'string')
               file = file[0]
 
-            manifest[prop] = path.join("build", file)
+            if (file) {
+              manifest[prop] = path.join("build", file)
+            } else {
+              console.log("BAD FILE", prop, stats.toJson().assetsByChunkName)
+            }
           }
         }
         require("fs").writeFileSync(
-          path.join(__dirname, "public", "build", "manifest.json"),
+          path.join(directory, "public", "build", "manifest.json"),
           JSON.stringify(manifest));
       });
     }

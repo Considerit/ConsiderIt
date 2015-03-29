@@ -746,7 +746,7 @@ DecisionBoard = ReactiveComponent
                 else
                   auth_form = 'create account'
 
-                auth = reset_key auth,
+                reset_key 'auth',
                   form: auth_form
                   goal: 'Save your Opinion'
                   ask_questions: true
@@ -755,7 +755,6 @@ DecisionBoard = ReactiveComponent
                 @root.opinions_to_publish.push(@proposal.your_opinion)
 
                 save @root
-                save auth
 
             if your_opinion.published 
               'See the results' 

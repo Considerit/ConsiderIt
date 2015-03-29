@@ -1,0 +1,3 @@
+#!/bin/sh
+
+~/.rbenv/versions/2.1.5/lib/ruby/gems/2.1.0/gems/castanaut-1.1.2/bin/castanaut lib/screencasts/deathstar

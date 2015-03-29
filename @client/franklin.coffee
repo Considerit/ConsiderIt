@@ -214,14 +214,15 @@ Proposal = ReactiveComponent
 
     DIV key:@props.slug,
 
-      if customization('docking_proposal_header')
-        Dock
-          dock_on_zoomed_screens: false
-          skip_jut: true
-          proposal_header
+      DIV className: 'proposal_header',
+        if customization('docking_proposal_header')
+          Dock
+            dock_on_zoomed_screens: false
+            skip_jut: true
+            proposal_header
 
-      else
-        proposal_header
+        else
+          proposal_header
 
       DIV null,
         #description
@@ -1195,6 +1196,7 @@ YourPoints = ReactiveComponent
               style: {padding: '0 6px'}
               dangerouslySetInnerHTML:{__html: '&bull;'}
             A 
+              className: "write_#{@props.valence}"
               style:
                 textDecoration: 'underline'
                 color: focus_blue
@@ -1392,7 +1394,6 @@ Point = ReactiveComponent
           dx: 2
           dy: 5
           col_gap: 8
-          side_offset: if @props.rendered_as == 'decision_board_point' then 10 else 47
 
         if includers.length == 0
           includers = [point.user]
@@ -1403,11 +1404,14 @@ Point = ReactiveComponent
         for includer in includers
           i -= 1
           curr_column = Math.floor(i / s.rows)
-          side_offset = s.side_offset + curr_column*s.col_gap + i*s.dx
+          side_offset = curr_column * s.col_gap + i * s.dx
           top_offset = (i % s.rows) * s.dy 
-          left_right = if @data().is_pro then 'right' else 'left'
-          style = { top: top_offset }
-          style[left_right] = -side_offset
+          left_right = if @data().is_pro then 'left' else 'right'
+          style = 
+            top: top_offset
+            position: 'absolute'
+
+          style[left_right] = side_offset
 
           # Finally draw the guys
           Avatar
@@ -1508,6 +1512,19 @@ Point = ReactiveComponent
         marginLeft: 9
         padding: '0 18px 0 18px'
 
+
+
+    includers_style = 
+      position: 'absolute'
+      height: 25
+      width: 25
+    left_or_right = if @data().is_pro && @props.rendered_as != 'decision_board_point'  
+                      'right' 
+                    else 
+                      'left'
+    ioffset = if @props.rendered_as == 'decision_board_point' then -10 else -50
+    includers_style[left_or_right] = ioffset
+
     draw_all_includers = @props.rendered_as == 'community_point'
     LI
       key: "point-#{point.id}"
@@ -1524,6 +1541,10 @@ Point = ReactiveComponent
         className:'includers'
         onMouseEnter: @highlightIncluders
         onMouseLeave: @unHighlightIncluders
+        style: includers_style
+          
+
+
 
         renderIncluders(draw_all_includers)
 
@@ -1599,6 +1620,7 @@ Point = ReactiveComponent
           if permit('delete point', point) > 0 && 
               @props.rendered_as == 'decision_board_point'
             A 
+              'data-action': 'delete-point'
               style:
                 fontSize: 12
                 color: '#999'
@@ -1785,9 +1807,6 @@ styles += """
 .point_details p:last-child {
   margin-bottom: 0; }
 
-.point_includer_avatar {
-  position: absolute;}
-
 .under_review .point_includer_avatar {
   top: 0px;
   width: 50px;
@@ -1847,6 +1866,7 @@ Comment = ReactiveComponent
             paddingRight: 10
           DIV style: { marginLeft: 60}, 
             SPAN
+              'data-action' : 'delete-comment'
               style: comment_action_style
               onClick: do (key = comment.key) => (e) =>
                 e.stopPropagation()
@@ -2037,7 +2057,7 @@ EditComment = ReactiveComponent
 
       if permitted > 0
         DIV style: {textAlign: 'right'},
-          Button({style: {marginLeft: 314}}, 'Save comment', (e) =>
+          Button {'data-action': 'save-comment', style: {marginLeft: 314}}, 'Save comment', (e) =>
             e.stopPropagation()
             if @props.fresh
               comment =
@@ -2051,7 +2071,7 @@ EditComment = ReactiveComponent
               comment.editing = false
 
             save(comment)
-            $(@getDOMNode()).find('.new_comment').val(''))
+            $(@getDOMNode()).find('.new_comment').val('')
 
 
 Discussion = ReactiveComponent
@@ -2349,7 +2369,6 @@ EditPoint = ReactiveComponent
 
     textarea_style = 
       width: '100%'
-      minHeight: 100
       overflow: 'hidden'
       fontSize: 14
 
@@ -2376,7 +2395,8 @@ EditPoint = ReactiveComponent
         placeholder:'Make this summary succinct.'
         required:'required'
         defaultValue: if @props.fresh then null else @data().nutshell
-        style: textarea_style
+        style: _.extend {}, textarea_style,
+          minHeight: 75
 
       
       DIV null,
@@ -2403,7 +2423,7 @@ EditPoint = ReactiveComponent
               name:'text'
               placeholder:'Provide background and/or back your point up with evidence.'
               required:'required'
-              min_height: 170
+              min_height: 100
               defaultValue: if @props.fresh then null else @data().text
               style: textarea_style
 
@@ -2441,8 +2461,8 @@ EditPoint = ReactiveComponent
         else
           INPUT 
             className:'button primary_button'
-            action:'submit-point',
-            type:'submit', 
+            'data-action':'submit-point'
+            type:'submit'
             onClick: @savePoint
             value:'Done'
             style: 

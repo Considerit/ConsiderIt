@@ -1,44 +1,90 @@
-#!/usr/bin/env /Users/travis/.rbenv/versions/2.1.5/lib/ruby/gems/2.1.0/gems/castanaut-1.1.2/bin/castanaut
+#!/usr/bin/env ~/Documents/code/castanaut/bin/castanaut
+
+#####
+# Uses castanaut to automate a screencast in safari. The robot voice sections, 
+# as created via while_saying, help to space out the video for timing
+# purposes. 
+#
+#
+# Installation:
+#   - must be installed on a mac
+#   - Castanaut should be installed from https://github.com/tkriplean/castanaut
+#
+# Execution:
+#   - must be run on a mac
+#   - /path/to/castanaut/bin/castanaut /path/to/this/file
+#   - can be invoked from bin/screencast, but the path to in bin/screencast is
+#     hardcoded for Travis...talk to him if you can't get it to run.  
+
+# TODO: 
+#  - refactor into general methods so we can create other screencasts or tests
+#    more easily
+#  - find a way to automatically destroy any opinions created here. 
+
+
+#####
+# config
+
+# By default, this script will only launch and control a safari instance. 
+# Setting 'record_video_with' to "camtasia" or "quicktime" will also launch
+# cause a screen recording to be created. 
+record_video = true
+
+# controls the size and location of the screencast main area
+x, y, width, height = [10, 46, 1280, 720] 
+
+
+#####
+# Screencast guts
 
 plugin "safari"
 
-launch "Safari", at(0, 0, 1280, 720)
+launch "Safari", at(x - 10, y - 46, width + 20, height + 46) #46 is height of safari window bar
 
 while_saying "loading page" do
   url "http://localhost:3000/Death_Star?domain=impacthub"
-  keystroke "f", "control", "command"
+  #keystroke "f", "control", "command"
   wait_for_element('.proposal_header')
+  pause 1
 end
 
 perform "Let's make sure we're logged in" do
   wait_for_element('#user_nav')
-  move to_element('.profile_anchor.login') rescue skip
+  move to_element('.profile_anchor.login'), {:speed => 0.1} rescue skip
   pause 1
   click
-  pause 0.5
   wait_for_element('#user_email')
-
-  move to_element('#user_email')
+  move to_element('#user_email'), {:speed => 0.1}
   click
-  type "test@test.dev.ghost", {:applescript => true, :speed => 20}
-  move to_element('#user_password')
+  type "test@test.dev.ghost", {:applescript => true, :speed => 10}
+  move to_element('#user_password'), {:speed => 0.1}
   click
 
-  type "testtest", {:applescript => true, :speed => 20}
+  type "testtest", {:applescript => true, :speed => 10}
 
-  move to_element('.primary_button')
+  move to_element('.primary_button'), {:speed => 0.1}
   click
   wait_for_element('.proposal_header')
+end
 
+if record_video
+  plugin "quicktime"
+  start_recording(x, y, width, height)
+  pause 4
 end
 
 
-while_saying "Sometimes an issue comes up that requires some thought" do 
+
+while_saying "Sometimes an issue comes up that requires some thought" do   
   scroll_to ".proposal_header", 0, 0
+  move to_element('.proposal_header'), {:speed => 0.01}  
   pause 2
 end
 
-scroll_to ".histogram", 0, 1000
+scroll_to ".proposal_header", 0, 0
+
+wait_for_element('.histogram')
+scroll_to ".histogram", 1000, 0
 
 while_saying "The Pro con list encourages you to think about tradeoffs" do
   pause 4
@@ -57,14 +103,13 @@ while_saying "Write singular points that each describe a consideration" do
   pause 1
 end
 
-# TODO: speedup drag, maybe include a couple
 while_saying "Learn and build from other’s thoughts" do 
   move to_element('[data-id="/point/5397"]')
   pause 1
   move to_element('[data-id="/point/5399"]')
   pause 1
   move to_element('[data-id="/point/5400"]')
-  drag by(-280, -250)
+  drag by(-280, -250), {:speed => 1}
   pause 1
 end
 
@@ -83,6 +128,7 @@ while_saying """After creating a considered opinion,
   individuals integrate their opinion 
   with the group""" do 
   move to_element('.save_opinion_button')
+  pause 0.5
   click
 end
 
@@ -94,16 +140,12 @@ while_saying "Points are ranked by how salient they are across the whole populat
   move to_element('.points_heading_label')
 end
 
-# TODO: make this a smooth move across the histogram
 while_saying "Now you can explore patterns of thought!" do 
-  move to_element('.histogram', {:area => ['center', 'middle']})
+  move to_element('.histogram', {:area => ['center', 'top'], :edge_offset => 25})
   click
   pause 1
-  move to_element('.histogram', {:area => ['right', 'middle']})
-  pause 0.5
-  move to_element('.histogram', {:area => ['center', 'middle']})
-  pause 1
-  move to_element('.histogram', {:area => ['left', 'middle']})
+  move to_element('.histogram', {:area => ['right', 'top'], :edge_offset => 25}), {:speed => 3}
+  move to_element('.histogram', {:area => ['left', 'top'], :edge_offset => 25}), {:speed => 6}
 end
 
 while_saying "Inspect the most important factors to those who have reservations about this idea" do
@@ -116,15 +158,17 @@ while_saying "Inspect the most important factors to those who have reservations 
 end
 
 while_saying "See what a particular individual believes" do 
-  move to_element("#avatar-251601")
+  move to_element("#avatar-251598")
   click
   pause 2
+  move to_element("#avatar-251733")
+  click
+  pause 2  
+  click
 end
 
 while_saying "Figure out who has been persuaded by the top pro points." do 
   perform 'tricky' do 
-    move to_element(".pros_by_community .points_heading_label")
-    click
     move to_element(".pros_by_community .includers", {index: 0})
     pause 1.5
     move to_element(".pros_by_community .includers", {index: 1}) rescue skip
@@ -135,7 +179,7 @@ while_saying "Figure out who has been persuaded by the top pro points." do
 end
 
 while_saying "Drill into points for focused discussion" do 
-  scroll_to '[data-id="/point/5406"]', 50, 1000
+  scroll_to '[data-id="/point/5406"]', 1000, 50
   move to_element('[data-id="/point/5406"]')
   click
   wait_for_element '.comment_entry'
@@ -154,24 +198,30 @@ move to_element('[data-id="/point/5406"]')
 click
 
 pause 1
-scroll_to ".proposal_header", 0, 2000
-
+scroll_to ".proposal_header", 2000, 0
+move to_element('.proposal_header')
 pause 4
 
-# ########
-# # end
+
+if record_video
+  stop_recording()
+end
+
+
+########
+# cleanup
 
 while_saying "cleanup comments, points, inclusions" do
 
   perform "clean up added comments" do 
-    scroll_to '[data-id="/point/5406"]', 50, 0
-    move to_element('[data-id="/point/5406"]')
+    scroll_to '[data-id="/point/5406"]', 0, 50
+    move to_element('[data-id="/point/5406"]'), {:speed => 0.1}
     click
     pause 1
     while true
-      move to_element('[data-action="delete-comment"]') rescue skip
+      move to_element('[data-action="delete-comment"]'), {:speed => 0.1} rescue skip
       click
-      pause 2
+      pause 1
       hit Enter
     end
     move to_element('[data-id="/point/5406"]')
@@ -180,33 +230,30 @@ while_saying "cleanup comments, points, inclusions" do
 
   scroll_to ".histogram", 0, 0
 
-  move to_element('.decision_board_body')
+  move to_element('.decision_board_body'), {:speed => 0.1}
   click
   pause 2
 
   perform "clean up written points" do 
     while true
-      move to_element('.cons_on_decision_board [data-action="delete-point"]') rescue skip
-      move by(0, 3)
+      move to_element('.cons_on_decision_board [data-action="delete-point"]', {:speed => 0.1}) rescue skip
+      move by(0, 3), {:speed => 0.1}
       click
-      pause 2
+      pause 1
       hit Enter
     end
   end
 
-  move to_element('[data-id="/point/5400"]')
-  drag by(150, 0)
+  move to_element('[data-id="/point/5400"]'), {:speed => 0.1}
+  drag by(150, 0), {:speed => 1}
 
   scroll_to '.profile_menu_wrap', 0, 0
-  move to_element('.profile_menu_wrap')
+  move to_element('.profile_menu_wrap'), {:speed => 0.1}
   pause 0.5
-  move to_element('[data-action="logout"]')
+  move to_element('[data-action="logout"]'), {:speed => 0.1}
   click
-
-  # remove saved opinion
-  # run "pwd; rake cleanup_deathstar"
 end
 
 at_end_of_movie do 
-  keystroke "f", "control", "command"
+  #keystroke "f", "control", "command"
 end

@@ -37,6 +37,10 @@ lib/tasks/client_data/data/*
 lib/tasks/client_data/screens/*
 lib/tasks/client_data/export/*
 
+lib/screencasts/exports/*.mov
+lib/screencasts/exports/*.mp4
+lib/screencasts/exports/*.webm
+
 test/data/test.sql.bz2
 test/data/test.sql
 

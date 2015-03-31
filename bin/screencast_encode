@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# Produce the webm
+ffmpeg -i lib/screencasts/exports/$1.mov -threads 16  -keyint_min 0 -g 250 -skip_threshold 0 -qmin 1 -qmax 51 -vcodec libvpx -b:v 1024000 -s 1920x1080 -aspect 16:9 -y lib/screencasts/exports/$1.webm
+
+# Produce the mp4
+HandBrakeCLI --optimize --preset 'High Profile' --height 1080 --two-pass --input lib/screencasts/exports/$1.mov --output lib/screencasts/exports/$1.mp4 --encoder-preset placebo --cfr

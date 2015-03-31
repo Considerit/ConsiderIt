@@ -1,5 +1,8 @@
 #!/usr/bin/env ~/Documents/code/castanaut/bin/castanaut
 
+
+
+
 #####
 # Uses castanaut to automate a screencast in safari. The robot voice sections, 
 # as created via while_saying, help to space out the video for timing
@@ -30,6 +33,8 @@
 # cause a screen recording to be created. 
 record_video = true
 
+export_to = File.absolute_path(File.join(File.dirname(screenplay), 'exports', File.basename(screenplay)))
+
 # controls the size and location of the screencast main area
 x, y, width, height = [10, 46, 1280, 720] 
 
@@ -37,13 +42,19 @@ x, y, width, height = [10, 46, 1280, 720]
 #####
 # Screencast guts
 
+if record_video
+  plugin "quicktime"
+  start_recording(x, y, width, height)
+  pause 2
+end
+
+
 plugin "safari"
 
 launch "Safari", at(x - 10, y - 46, width + 20, height + 46) #46 is height of safari window bar
 
 while_saying "loading page" do
   url "http://localhost:3000/Death_Star?domain=impacthub"
-  #keystroke "f", "control", "command"
   wait_for_element('.proposal_header')
   pause 1
 end
@@ -56,24 +67,16 @@ perform "Let's make sure we're logged in" do
   wait_for_element('#user_email')
   move to_element('#user_email'), {:speed => 0.1}
   click
-  type "test@test.dev.ghost", {:applescript => true, :speed => 10}
+  type "test@test.dev.ghost", {:speed => 10}
   move to_element('#user_password'), {:speed => 0.1}
   click
 
-  type "testtest", {:applescript => true, :speed => 10}
+  type "testtest", {:speed => 10}
 
   move to_element('.primary_button'), {:speed => 0.1}
   click
   wait_for_element('.proposal_header')
 end
-
-if record_video
-  plugin "quicktime"
-  start_recording(x, y, width, height)
-  pause 4
-end
-
-
 
 while_saying "Sometimes an issue comes up that requires some thought" do   
   scroll_to ".proposal_header", 0, 0
@@ -95,7 +98,6 @@ while_saying "Write singular points that each describe a consideration" do
   move to_element(".write_cons")
   click
   type "Could create brand issues. Do we want to be associated with an overtly imperialistic entity?", {
-    :applescript => true,
     :speed => 50
   }
   move to_element('[data-action="submit-point"]')
@@ -187,7 +189,7 @@ while_saying "Drill into points for focused discussion" do
   pause 1
   move to_element('.new_comment')
   click
-  type "Perhaps we need to consider whether the \"Dark Force\" is aligned with our 15 year vision first...", {:applescript => true, :speed => 30} 
+  type "Perhaps we need to consider whether the \"Dark Force\" is aligned with our 15 year vision first...", {:speed => 30} 
   pause 0.5
   move to_element('[data-action="save-comment"]')
   click
@@ -203,9 +205,6 @@ move to_element('.proposal_header')
 pause 4
 
 
-if record_video
-  stop_recording()
-end
 
 
 ########
@@ -254,6 +253,8 @@ while_saying "cleanup comments, points, inclusions" do
   click
 end
 
-at_end_of_movie do 
-  #keystroke "f", "control", "command"
+at_end_of_movie do
+  if record_video
+    stop_recording(export_to)
+  end
 end

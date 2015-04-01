@@ -2415,16 +2415,18 @@ EditPoint = ReactiveComponent
             style: {paddingLeft: 6}
             'Expand on your point'
 
-        if @local.add_details
-          DIV null, 
-            AutoGrowTextArea 
-              id:'text'
-              name:'text'
-              placeholder:'Provide background and/or back your point up with evidence.'
-              required:'required'
-              min_height: 100
-              defaultValue: if @props.fresh then null else @data().text
-              style: textarea_style
+        DIV 
+          style: 
+            display: if @local.add_details then 'block' else 'none'
+          
+          AutoGrowTextArea 
+            id:'text'
+            name:'text'
+            placeholder:'Provide background and/or back your point up with evidence.'
+            required:'required'
+            min_height: 100
+            defaultValue: if @props.fresh then null else @data().text
+            style: textarea_style
 
 
       if @proposal.active

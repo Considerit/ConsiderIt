@@ -1,5 +1,7 @@
 # TODO: document and generalize
 
+require './shared'
+
 window.Tooltip = ReactiveComponent
   displayName: 'Tooltip'
 
@@ -10,18 +12,24 @@ window.Tooltip = ReactiveComponent
     coords = tooltip.coords
     tip = tooltip.tip
 
-    # place the tooltip above the element
-    DIV
-      style: 
-        position: 'absolute'
-        top: coords.top - 20
-        left: coords.left
+    style = 
         fontSize: 16
-        color: 'black'
-        backgroundColor: 'white'
         padding: '0 4px'
         borderRadius: 8
-        zIndex: 9999
         whiteSpace: 'nowrap'
+
+    real_height = heightWhenRendered tip, style
+
+    _.extend style, 
+        top: coords.top - real_height - 5
         pointerEvents: 'none'
+        zIndex: 9999
+        color: 'black'
+        backgroundColor: 'white'
+        position: 'absolute'
+        left: coords.left
+
+    # place the tooltip above the element
+    DIV
+      style: style
       tip

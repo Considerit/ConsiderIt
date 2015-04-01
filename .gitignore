@@ -23,7 +23,8 @@ config/application.rb
 db/schema.rb
 
 public/system/mastheads
-public/system/avatars
+public/system/avatars*
+public/system/homepage_pics
 public/system/logos
 public/system/icons
 public/system/cache/*.css

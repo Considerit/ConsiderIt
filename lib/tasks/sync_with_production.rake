@@ -109,111 +109,57 @@ end
 #
 # This rake task will download all file uploads for the 
 # currently loaded database to the local environment. 
-
-# You need to configure the source asset host from which 
-# the database originated. It will default to the asset host
-# for consider.it.
-
+#
+# This method requires the following:
+#   > sudo apt-get install python-pip
+#   > sudo pip install awscli
+#
+#   and an aws configuration in ~/.aws/config in the format:
+#
+#      [default]
+#      aws_access_key_id=<key>
+#      aws_secret_access_key=<secret>
+#
 
 task :download_files_from_production => :environment do
   download_files_from_production
 end
 
-def download_files_from_production
-  # The attachments to synchronize.
-  attachments = [ 
-    {name: 'avatars', model: User},
-    {name: 'logos', model: Subdomain},
-    {name: 'mastheads', model: Subdomain},
-    {name: 'icons', model: Assessable::Verdict}
-  ]
+def download_files_from_production 
 
-  # find out where we store out assets...
-  has_aws = Rails.env.production? && APP_CONFIG.has_key?(:aws) && APP_CONFIG[:aws].has_key?(:access_key_id) && !APP_CONFIG[:aws][:access_key_id].nil?
-  if has_aws
-    local_asset_host = "http://#{APP_CONFIG[:aws][:cloudfront]}.cloudfront.net"
-    path_template = Paperclip::Attachment.default_options[:path]
-  else
-    # default_options[:url] will look like "/system/:attachment/:id/:style/:filename"
-    path_template = Paperclip::Attachment.default_options[:url]  
-  end
+  puts "sync with production assets on AWS"
+  `aws s3 sync s3://considerit/system/ public/system/`
 
-  attachments.each do |attachment|
-    # for each object of model that has an attachment of this type
-    field = "#{attachment[:name].singularize}_file_name"
-    attachment[:model].where("#{field} IS NOT NULL").each do |obj|
-      url = path_template
-              .gsub(":attachment", attachment[:name])
-              .gsub(":id", obj.id.to_s)
-              .gsub(":style", "original")
-              .gsub(":filename", obj[field])
+  puts "Update avatar thumbnails if necessary"
+  User.where("avatar_file_name IS NOT NULL").each do |user|
+    path = Paperclip::Attachment.default_options[:path]
+            .gsub(':rails_root/', '')
+            .gsub(":attachment", 'avatars')
+            .gsub(":id", user.id.to_s)
+            .gsub(":style", "small")
+            .gsub(":filename", user.avatar_file_name)
 
-      # check if the file is already downloaded
-      if has_aws
-        already_downloaded = url_exist?("#{local_asset_host}/#{url}")
-        url = "#{PRODUCTION_ASSET_HOST}/#{url}"
-      else
-        path = "#{Rails.root.to_s}/public#{url}"
-        already_downloaded = File.exist?(path)
-        url = "#{PRODUCTION_ASSET_HOST}#{url}"
-      end
+    begin
+      f = open(path, 'r') 
+    rescue
+      puts "Couldn't open file #{path}"
+      next
+    end
 
-      if !already_downloaded
-        # if not, download it
-        
+    b64_encoding = Base64.encode64 f.read
+    thumbnail = "data:image/jpeg;base64,#{b64_encoding.gsub(/\n/,' ')}"
 
-        io = URI.parse(url)
-        begin
-          open(io) #trigger an error if url doesn't exist
-        rescue
-          pp "FAILED DOWNLOADING: #{url}"
-        else
-          # now save the attachment
-          begin
-            # for some reason, the following doesn't trigger
-            # the correct paperclip saving mechanim...
-            #
-            # obj.send(attachment[:name].singularize, io)
-            #
-            # ...so we'll just do it manually
-            case attachment[:name].singularize 
-            when 'avatar'
-              data = Base64.encode64(open(io).read)
-              obj.b64_thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
-              obj.avatar = io
-            when 'icon'
-              obj.icon = io
-            when 'masthead'
-              obj.masthead = io
-            when 'logo'
-              obj.logo = io
-            end
-            obj.save
-          rescue => e
-            pp "FAILED SAVING: #{url} because of #{e.to_s}"
-            ActiveRecord::Base.connection.reconnect!
-          else 
-            pp "Saved locally: #{url}"
-          end
-        end
+    if user.b64_thumbnail != thumbnail
+      begin
+        user.b64_thumbnail = thumbnail
+        user.save
+        puts "Set thumbnail for user #{user.name}"
+      rescue
+        puts "Failed to set thumbnail for user #{user.name}"
       end
     end
 
+    f.close()
   end
-  # Avatar attachments are processed as background tasks
-  Delayed::Worker.new.work_off(Delayed::Job.count)
-end
 
-
-
-# from http://stackoverflow.com/questions/5908017/check-if-url-exists-in-ruby
-require "net/http"
-def url_exist?(url_string)
-  url = URI.parse(url_string)
-  req = Net::HTTP.new(url.host, url.port)
-  path = url.path if url.path.present?
-  res = req.request_head(path || '/')
-  !["404", "403"].include? res.code 
-rescue Errno::ENOENT
-  false # false if can't find the server
 end

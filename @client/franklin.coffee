@@ -2527,7 +2527,8 @@ styles += """
 .edit_point .count{
   position: absolute;
   right: 20px;
-  top: -19px;
+  font-size: 12px;
+  top: -17px;
 }
 """
 

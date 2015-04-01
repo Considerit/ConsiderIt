@@ -119,7 +119,7 @@ window.Dock = ReactiveComponent
 
   componentDidMount : -> 
 
-    # Register this dock with docker. Send docker a callback that it 
+    # Register this dock with dockingStation. Send dockingStation a callback that it 
     # can invoke to learn about this dock when making calculations. 
 
     $el = $(@refs.dock_child.getDOMNode()).children()
@@ -145,8 +145,8 @@ window.Dock = ReactiveComponent
     # For caching results of realDimensions (see below)
     serializer = new XMLSerializer()
 
-    docker.register @key, => 
-      # This callback is invoked each time the dock is laid out by docker.
+    dockingStation.register @key, => 
+      # This callback is invoked each time the dock is laid out by dockingStation.
       #
       # We can't use $el.height() to determine the height of the docking
       # component because there may be absolutely positioned elements
@@ -181,30 +181,30 @@ window.Dock = ReactiveComponent
       }
 
   componentWillUnmount : -> 
-    docker.unregister @key
+    dockingStation.unregister @key
 
 
 
 ####
-# docker
+# dockingStation
 #
-# The docker updates on scroll and resize the docked state and location of 
+# The dockingStation updates on scroll and resize the docked state and location of 
 # all registered docks. 
 #
-# The docker will update the state(bus) of the docks so that 
+# The dockingStation will update the state(bus) of the docks so that 
 # they know if they're docked and where they should position.
 
 # For console output: 
 debug = false
 
-docker =
+dockingStation =
 
   ####
   # Internal state
   registry: {} 
           # all registered docks, by key
   listening_to_scroll_events : false
-          # whether docker is bound to scroll event
+          # whether dockingStation is bound to scroll event
   
   component_history: {}
           # caches component location info at t, t-1, and time of docking 
@@ -218,80 +218,83 @@ docker =
   # Make sure we're listening to scroll event only if there is 
   # at least one registered dock. 
   register : (key, info_callback) -> 
-    docker.registry[key] = info_callback
-    docker.component_history[key] = {previous: {}, on_dock: {}}
+    dockingStation.registry[key] = info_callback
+    dockingStation.component_history[key] = {previous: {}, on_dock: {}}
 
-    if !docker.listening_to_scroll_events
+    if !dockingStation.listening_to_scroll_events
       
-      $(window).on "scroll.docker", -> docker.user_scrolled = true
-      $(window).on "resize.docker", docker.onResize
+      $(window).on "scroll.dockingStation", -> dockingStation.user_scrolled = true
+      $(window).on "resize.dockingStation", dockingStation.onResize
 
       # If the height of a docked component changes, we need to recalculate
       # the layout. Unfortunately, it is non-trivial and error prone to detect 
       # when the height of an element changes, so we'll just check periodically. 
-      docker.check_resize_interval = setInterval docker.onCheckStickyResize, 500
+      dockingStation.check_resize_interval = setInterval dockingStation.onCheckStickyResize, 500
 
-      docker.listening_to_scroll_events = true
+      dockingStation.listening_to_scroll_events = true
 
       # Recompute layout if we've seen a scroll in past X ms
-      docker.interval = setInterval -> 
-        if docker.user_scrolled
-          docker.user_scrolled = false
-          docker.onScroll()
+      dockingStation.interval = setInterval -> 
+        if dockingStation.user_scrolled
+          dockingStation.user_scrolled = false
+          dockingStation.onScroll()
       , 100 
 
   unregister : (key) -> 
-    delete docker.registry[key]
-    if _.keys(docker.registry).length == 0
-      $(window).off ".docker"
-      docker.listening_to_scroll_events = false
-      clearInterval docker.check_resize_interval
-      docker.check_resize_interval = null
-      clearInterval docker.interval
-      docker.interval = null
+    delete dockingStation.registry[key]
+    if _.keys(dockingStation.registry).length == 0
+      $(window).off ".dockingStation"
+      dockingStation.listening_to_scroll_events = false
+      clearInterval dockingStation.check_resize_interval
+      dockingStation.check_resize_interval = null
+      clearInterval dockingStation.interval
+      dockingStation.interval = null
 
   #######
   # onScroll
   onScroll : -> 
-    docker.updateViewport()
+    dockingStation.updateViewport()
 
     # At most we will shift the docked components by the distance scrolled
-    max_change = if docker.viewport.last.top?
-                   Math.abs(docker.viewport.top - docker.viewport.last.top)
+    max_change = if dockingStation.viewport.last.top?
+                   Math.abs(dockingStation.viewport.top - dockingStation.viewport.last.top)
                  else
                    Infinity
 
-    docker.layout max_change
+    dockingStation.layout max_change
 
   #######
   # onResize
   onResize : -> 
-    docker.updateViewport()
+    dockingStation.updateViewport()
 
     # Shift the docked components by at most the change in window height
-    max_change = Math.abs(docker.viewport.height - docker.viewport.last.height)
-    docker.layout max_change
+    max_change = Math.abs(dockingStation.viewport.height - dockingStation.viewport.last.height)
+    dockingStation.layout max_change
 
   #######
   # onCheckStickyResize
   onCheckStickyResize : -> 
-    height_changes = 0
+    
 
-    for own k,v of docker.registry
+    for own k,v of dockingStation.registry
       dock = fetch k
-      if dock.docked && v().height != docker.component_history[k].previous.height
-        console.error "HEIGHT RESIZE at most #{height_changes}" if debug
-        docker.layout Infinity
+
+      if dock.docked && v().height != dockingStation.component_history[k].previous.height
+        height_change = v().height - dockingStation.component_history[k].previous.height
+
+        console.log "HEIGHT RESIZE at most #{height_change}" if debug
+        dockingStation.layout Math.abs(height_change)
         break
 
 
   #######
   # updateViewport()
   updateViewport : -> 
-    docker.viewport =  
+    dockingStation.viewport =  
       last: 
-        top: docker.viewport.top
-        height: docker.viewport.height
+        top: dockingStation.viewport.top
+        height: dockingStation.viewport.height
       top: document.documentElement.scrollTop || document.body.scrollTop
       height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 
@@ -307,34 +310,34 @@ docker =
 
     # The registered docks with updated context values
     docks = {}
-    for own k,v of docker.registry
+    for own k,v of dockingStation.registry
       docks[k] = v()
       docks[k].key = k
 
     # Figure out which components are docked
-    [docked, undocked] = docker.determineIfDocked docks
+    [docked, undocked] = dockingStation.determineIfDocked docks
 
     # undock components that were docked
     for k in undocked
       if fetch(k).docked
-        docker.toggleDocked k, docks[k]
+        dockingStation.toggleDocked k, docks[k]
 
     if docked.length > 0
       # Calculate y-positions for all docked components
-      y_pos = docker.solveForY docked, docks, max_change
+      y_pos = dockingStation.solveForY docked, docks, max_change
 
       for k in docked
         dock = fetch k
-        docker.component_history[k].previous = _.extend docks[k], 
+        dockingStation.component_history[k].previous = _.extend docks[k], 
                                                     calculated_y: y_pos[k].value
 
-        [x, y] = docker.adjustForDevice y_pos[k].value, docks[k]
+        [x, y] = dockingStation.adjustForDevice y_pos[k].value, docks[k]
         if dock.y != y || dock.x != x
           console.log "UPDATING #{dock.key}" if debug
           dock.y = y
           dock.x = x
           if !dock.docked
-            docker.toggleDocked k, docks[k]
+            dockingStation.toggleDocked k, docks[k]
           
           save dock
 
@@ -361,11 +364,11 @@ docker =
         is_docked = false 
       else
         dimensions =  if fetch(v.key).docked
-                        docker.component_history[v.key].on_dock
+                        dockingStation.component_history[v.key].on_dock
                       else 
                         {height: v.height, jut_above: v.jut_above}
 
-        is_docked = docker.viewport.top + y_stack + dimensions.jut_above >= v.start
+        is_docked = dockingStation.viewport.top + y_stack + dimensions.jut_above >= v.start
 
       if is_docked
         y_stack += dimensions.height
@@ -387,9 +390,9 @@ docker =
     dock.docked = is_docked
     if !is_docked
       dock.y = dock.x = null
-      docker.component_history[k].previous = {}
+      dockingStation.component_history[k].previous = {}
     else
-      docker.component_history[k].on_dock = v
+      dockingStation.component_history[k].on_dock = v
 
     save dock
 
@@ -420,12 +423,12 @@ docker =
     solver = new c.SimplexSolver()    
 
     # We modify the contraints slightly based on whether we're scrolling up or down
-    scroll_distance = Math.abs(docker.viewport.top - docker.viewport.last.top)
+    scroll_distance = Math.abs(dockingStation.viewport.top - dockingStation.viewport.last.top)
     if scroll_distance > 0
-      docker.scrolling_down = docker.viewport.top > docker.viewport.last.top
+      dockingStation.scrolling_down = dockingStation.viewport.top > dockingStation.viewport.last.top
 
 
-    console.log("viewport height: ", docker.viewport.height) if debug
+    console.log("viewport height: ", dockingStation.viewport.height) if debug
     # We'll iterate through each component in order of their stacking priority
     y_stack = 0
 
@@ -485,7 +488,7 @@ docker =
     for v, i in sorted
       console.log "**#{v.key} constraints**" if debug
       k = v.key; dock = fetch k
-      previous_calculated_y = docker.component_history[k].previous.calculated_y
+      previous_calculated_y = dockingStation.component_history[k].previous.calculated_y
 
       # START
       console.log "\tSTART: #{k} >= #{v.start}, strong" if debug
@@ -515,22 +518,22 @@ docker =
 
       # TOP OF COMPONENT VISIBLE
       # Try to keep it at or below the viewport, especially when scrolling up
-      console.log "\tTOP OF COMPONENT VISIBLE: #{k} >= #{docker.viewport.top} + #{v.jut_above} + #{y_stack}, #{if docker.scrolling_down then 'weak' else 'medium'}" if debug
+      console.log "\tTOP OF COMPONENT VISIBLE: #{k} >= #{dockingStation.viewport.top} + #{v.jut_above} + #{y_stack}, #{if dockingStation.scrolling_down then 'weak' else 'medium'}" if debug
       solver.addConstraint new c.Inequality \
         y_pos[k], \
         c.GEQ, \
-        docker.viewport.top + v.jut_above + y_stack, \
-        if docker.scrolling_down then c.Strength.weak else c.Strength.medium
+        dockingStation.viewport.top + v.jut_above + y_stack, \
+        if dockingStation.scrolling_down then c.Strength.weak else c.Strength.medium
       y_stack += v.height
 
       # BOTTOM OF COMPONENT VISIBLE
       # Try to keep the bottom above the viewport, especially when scrolling down
-      console.log "\tBOTTOM OF COMPONENT VISIBLE: #{k} + #{v.height} <= #{docker.viewport.top} + #{docker.viewport.height}, #{if docker.scrolling_down then 'medium' else 'weak'}" if debug
+      console.log "\tBOTTOM OF COMPONENT VISIBLE: #{k} + #{v.height} <= #{dockingStation.viewport.top} + #{dockingStation.viewport.height}, #{if dockingStation.scrolling_down then 'medium' else 'weak'}" if debug
       solver.addConstraint new c.Inequality \
         y_pos[k], \
         c.LEQ, \
-        docker.viewport.top + docker.viewport.height - v.height, \
-        if docker.scrolling_down then c.Strength.medium else c.Strength.weak
+        dockingStation.viewport.top + dockingStation.viewport.height - v.height, \
+        if dockingStation.scrolling_down then c.Strength.medium else c.Strength.weak
 
       # RELATIONAL
       for sv, j in sorted
@@ -583,7 +586,7 @@ docker =
       x = 0
     else
       # Fixed positioning is relative to the viewport, not the document
-      y -= docker.viewport.top 
+      y -= dockingStation.viewport.top 
 
       # Adjust for horizontal scroll for fixed position elements because they don't 
       # move with the rest of the content (they're fixed to the viewport). 
@@ -594,9 +597,9 @@ docker =
 
 
   initialize : -> 
-    docker.updateViewport()
+    dockingStation.updateViewport()
 
-docker.initialize()
+dockingStation.initialize()
 
 #####
 # realDimensions
@@ -607,11 +610,16 @@ docker.initialize()
 #
 # This method is expensive, use it sparingly.
 realDimensions = ($el) -> 
-
+  tar = $el.is('.opinion_region')
   recurse = ($e, min_top, max_top) -> 
-    return [min_top, max_top] if $e.is('defs') # skip svg defs
+    
     t = $e.offset().top
     h = $e.height()
+
+    return [min_top, max_top] if h == 0 ||
+                                 $e[0].style.display == 'none'
+                              # skip elements that don't take up space
+
     if min_top > t
       min_top = t
     if t + h > max_top

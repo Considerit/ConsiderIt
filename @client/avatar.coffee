@@ -41,6 +41,8 @@ window.Avatar = ReactiveComponent
   displayName: 'Avatar'
   
   render : ->
+    @props.anonymous = @props.anonymous? && @props.anonymous 
+
     user = @data()
 
     id = if @props.anonymous 
@@ -51,7 +53,7 @@ window.Avatar = ReactiveComponent
     style = _.extend {}, @props.style
     img_size = img_size or 'thumb'
 
-    show_avatar = !@props.anonymous && user.avatar_file_name
+    show_avatar = !@props.anonymous && !!user.avatar_file_name
     # Automatically upgrade the avatar size to 'large' if the width of the image is 
     # greater than the size of the b64 encoded image
     if img_size == 'thumb' && style?.width > 50 && !browser.is_ie9
@@ -61,11 +63,17 @@ window.Avatar = ReactiveComponent
 
     if use_large_image
       @props.src = avatarUrl user, img_size
-
     else
-      # prevents a weird webkit outlining issue
-      # http://stackoverflow.com/questions/4743127
-      style.content = "''" 
+
+      current_user = fetch('/current_user')
+      if current_user.user == user.key
+        thumbnail = current_user.b64_thumbnail
+        if thumbnail? && img_size == 'thumb' 
+          @props.src = thumbnail
+      else
+        # prevents a weird webkit outlining issue
+        # http://stackoverflow.com/questions/4743127
+        style.content = "''" 
 
     # Override the gray default avatar color if we're showing an image. 
     # In most cases the white will allow for a transparent look. It 
@@ -94,7 +102,7 @@ window.Avatar = ReactiveComponent
           save tooltip
 
     # IE9 gets confused if there is an image without a src
-    tag = if browser.is_ie9 && img_size == 'thumb' then SPAN else IMG
+    tag = if !thumbnail? && browser.is_ie9 && img_size == 'thumb' then SPAN else IMG
 
     @transferPropsTo tag attrs
 

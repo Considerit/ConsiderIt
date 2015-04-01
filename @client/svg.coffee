@@ -48,7 +48,7 @@ window.svg =
       for shadow, idx in props.shadows
 
         [FEGAUSSIANBLUR
-          in: if idx == 0 then 'SourceAlpha' else "result#{idx}"
+          in: 'SourceAlpha'
           stdDeviation: shadow.stdDeviation 
           result: "blur#{idx}"
 

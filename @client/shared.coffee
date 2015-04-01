@@ -318,6 +318,20 @@ window.widthWhenRendered = (str, style) ->
     width_cache[key] = width
   width_cache[key]
 
+
+height_cache = {}
+window.heightWhenRendered = (str, style) -> 
+  # This DOM manipulation is relatively expensive, so cache results
+  key = JSON.stringify _.extend({str: str}, style)
+  if key not of height_cache
+    $el = $("<span id='height_test'>#{str}</span>").css(style)
+    $('#content').append($el)
+    height = $('#height_test').height()
+    $('#height_test').remove()
+    height_cache[key] = height
+  height_cache[key]
+
+
 # maps an opinion stance in [-1, 1] to a pixel value [0, width]
 window.translateStanceToPixelX = (stance, width) -> (stance + 1) / 2 * width
 

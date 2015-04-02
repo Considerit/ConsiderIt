@@ -464,7 +464,7 @@ Auth = ReactiveComponent
       onChange: onChange || (event) =>
         @local[name] = current_user[name] = event.target.value
         save @local
-      onKeyPress: =>
+      onKeyPress: (event) =>
         # submit on enter
         if event.which == 13
           @submitAuth(event)
@@ -627,7 +627,7 @@ Auth = ReactiveComponent
               @local.tags = @local.tags or {}
               @local.tags[question.tag] = current_user.tags[question.tag] = event.target.value
               save @local
-            onKeyPress: =>
+            onKeyPress: (event) =>
               # submit on enter
               if event.which == 13
                 @submitAuth(event)

@@ -145,7 +145,7 @@ window.proposal_editor = (proposal) ->
 #                          |
 #                       Proposal
 #                   /      |           \            \
-#    CommunityPoints   DecisionBoard   Histogram    Slider
+#    CommunityPoints   DecisionBoard   Histogram   OpinionSlider
 #               |          |
 #               |      YourPoints
 #               |    /            \
@@ -375,7 +375,7 @@ Proposal = ReactiveComponent
               mode == 'crafting'
             dummy: if get_selected_point() && mode == 'crafting' then 1 else 0
 
-            Slider
+            OpinionSlider
               key: 'slider'
               width: BODY_WIDTH - 10
               your_opinion: @proposal.your_opinion
@@ -602,6 +602,7 @@ DecisionBoard = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
     hist = fetch('histogram')
+    db = fetch('decision_board')
     
     your_opinion = fetch(@proposal.your_opinion)
 
@@ -620,7 +621,7 @@ DecisionBoard = ReactiveComponent
                   else
                     'none'
 
-    if @local.user_hovering_on_drop_target
+    if db.user_hovering_on_drop_target
       decision_board_style.borderStyle = 'solid'
 
     if get_proposal_mode() == 'results'
@@ -808,6 +809,7 @@ DecisionBoard = ReactiveComponent
 
   componentDidMount : ->
     @transition 0
+    db = fetch('decision_board')
 
     # make this a drop target
     $el = $(@getDOMNode())
@@ -826,18 +828,18 @@ DecisionBoard = ReactiveComponent
             details: 
               point: ui.draggable.parent().data('id')
 
-          @local.user_hovering_on_drop_target = false
-          save @local
+          db.user_hovering_on_drop_target = false
+          save db
 
       out : (ev, ui) => 
         if ui.draggable.parent().is('.community_point')
-          @local.user_hovering_on_drop_target = false
-          save @local
+          db.user_hovering_on_drop_target = false
+          save db
 
       over : (ev, ui) => 
         if ui.draggable.parent().is('.community_point')
-          @local.user_hovering_on_drop_target = true
-          save @local
+          db.user_hovering_on_drop_target = true
+          save db
 
   transition : (speed) -> 
     mode = get_proposal_mode()
@@ -879,6 +881,8 @@ SliderBubblemouth = ReactiveComponent
 
   render : -> 
     slider = fetch('slider')
+    db = fetch('decision_board')
+
 
     w = 34
     h = 24
@@ -887,7 +891,10 @@ SliderBubblemouth = ReactiveComponent
     if get_proposal_mode() == 'crafting'
       transform = ""
       fill = 'white'
-      dash = "25 10"
+      if db.user_hovering_on_drop_target
+        dash = "0"
+      else
+        dash = "25 10"
     else 
       transform = "translate(0, -25px) scale(.5) "
       fill = focus_blue
@@ -1475,20 +1482,21 @@ Point = ReactiveComponent
           "read less"
         else
           [SPAN key: 1, dangerouslySetInnerHTML: {__html: '&hellip;'}
-          ' ('
+          #' ('
           A key: 2, className: 'select_point',
             "read more"
-          ')']
+          #')'
+          ]
 
     if point.comment_count > 0 || !expand_to_see_details
       select_enticement.push SPAN key: 2, style: {whiteSpace: 'nowrap'},
-        " ("
+        #" ("
         A 
           className: 'select_point'
           point.comment_count 
           " comment"
           if point.comment_count != 1 then 's' else ''
-        ")"
+        #")"
 
     if point.assessment
       select_enticement.push SPAN key: 3,
@@ -1598,7 +1606,11 @@ Point = ReactiveComponent
                 $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
 
             if select_enticement && @props.rendered_as != 'under_review'
-              select_enticement
+              DIV 
+                style: 
+                  fontSize: 12
+
+                select_enticement
 
         DIV null,
           if permit('update point', point) > 0 && 
@@ -2423,7 +2435,6 @@ EditPoint = ReactiveComponent
             id:'text'
             name:'text'
             placeholder:'Provide background and/or back your point up with evidence.'
-            required:'required'
             min_height: 100
             defaultValue: if @props.fresh then null else @data().text
             style: textarea_style

@@ -99,7 +99,7 @@ customizations.default =
 
   Footer : DefaultFooter
 
-  slider_handle: slider_handles.face
+  slider_handle: slider_handle.face
 
 #customizations.default.NonHomepageHeader = customizations.default.HomepageHeader
 

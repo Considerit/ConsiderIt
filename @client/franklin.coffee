@@ -25,7 +25,7 @@ require './form'
 require './histogram'
 require './roles'
 require './shared'
-require './slider'
+require './opinion_slider'
 require './state_dash'
 require './state_graph'
 require './swapables'
@@ -377,7 +377,7 @@ Proposal = ReactiveComponent
 
             OpinionSlider
               key: 'slider'
-              width: BODY_WIDTH - 10
+              width: OPINION_SLIDER_WIDTH
               your_opinion: @proposal.your_opinion
               enabled: !(fetch('histogram').selected_opinions || 
                          fetch('histogram').selected_opinion) &&
@@ -395,7 +395,7 @@ Proposal = ReactiveComponent
 
               additionalOnMouseUp : (e) ->
                 slider = fetch 'slider'
-                if slider.stance == your_opinion.stance || mode == 'results'
+                if slider.value == your_opinion.stance || mode == 'results'
                   new_page = if mode == 'results' then 'crafting' else 'results'
                   updateProposalMode new_page, 'click_slider'
                   e.stopPropagation()
@@ -606,7 +606,7 @@ DecisionBoard = ReactiveComponent
     
     your_opinion = fetch(@proposal.your_opinion)
 
-    register_dependency = fetch('slider').clientX 
+    register_dependency = fetch('slider').value 
                              # to keep bubble mouth in sync with slider
     
     decision_board_style =
@@ -627,10 +627,9 @@ DecisionBoard = ReactiveComponent
     if get_proposal_mode() == 'results'
       give_opinion_button_width = 200
       slider = fetch 'slider'
-      slider_position = slider.clientX
-
       gutter = .1 * give_opinion_button_width
-      opinion_region_x = -gutter + slider_position/BODY_WIDTH * \
+      stance_position = (slider.value + 1) / 2 * OPINION_SLIDER_WIDTH / BODY_WIDTH
+      opinion_region_x = -gutter + stance_position * \
                          (DECISION_BOARD_WIDTH - \
                           give_opinion_button_width + \
                           2 * gutter)
@@ -903,7 +902,7 @@ SliderBubblemouth = ReactiveComponent
     DIV 
       key: 'slider_bubblemouth'
       style: css.crossbrowserify
-        left: 10 + translateStanceToPixelX slider.stance, DECISION_BOARD_WIDTH - w - 20
+        left: 10 + translateStanceToPixelX slider.value, DECISION_BOARD_WIDTH - w - 20
         top: -h + 10 + 3 # +10 is because of the decision board translating down 10, 3 is for its border
         position: 'absolute'
         width: w
@@ -914,7 +913,7 @@ SliderBubblemouth = ReactiveComponent
         transform: transform
 
       Bubblemouth 
-        apex_xfrac: (slider.stance + 1) / 2
+        apex_xfrac: (slider.value + 1) / 2
         width: w
         height: h
         fill: fill, 

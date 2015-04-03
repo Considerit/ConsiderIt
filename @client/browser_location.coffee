@@ -35,7 +35,22 @@ window.loadPage = (url, query_params) ->
       if query_param.length == 2
         loc.query_params[query_param[0]] = query_param[1]
 
+  # ...and parse anchors
+  hash = ''
+  if url.indexOf('#') > -1
+    [url, hash] = url.split('#')
+    url = '/' if url == ''
+
+    # When loading a page with a hash, we need to scroll the page
+    # to proper element represented by that id. This is hard to 
+    # represent in Statebus, as it is more of an event than state.
+    # We'll set seek_to_hash here, then it will get set to null 
+    # after it is processed. 
+    loc.seek_to_hash = true
+
   loc.url = url
+  loc.hash = hash
+
   save loc
 
 ######
@@ -111,6 +126,20 @@ window.BrowserLocation = ReactiveComponent
 
     SPAN null
 
+  componentDidUpdate : -> 
+
+    loc = fetch 'location'
+    if loc.seek_to_hash 
+      loc.seek_to_hash = false
+      save loc
+
+      # TODO: This doesn't work right now on initial page load
+      #       in Chrome & Safari for a return visitor. The 
+      #       browser's remember scroll gets imposed after this 
+      #       runs, and overrides it. 
+      el = document.querySelector("##{loc.hash}")
+      el.scrollIntoView() if el 
+
 relativeURLFromLocation = -> 
   # location.search returns query parameters
   "#{location.pathname}#{location.search}#{location.hash}"
@@ -122,6 +151,8 @@ relativeURLFromStatebus = ->
   if _.keys(loc.query_params).length > 0
     query_params = ("#{k}=#{v}" for own k,v of loc.query_params)
     relative_url += "?#{query_params.join('&')}" 
+  if loc.hash?.length > 0
+    relative_url += "##{loc.hash}"
   relative_url
 
 

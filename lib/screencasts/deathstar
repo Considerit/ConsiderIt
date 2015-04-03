@@ -1,8 +1,5 @@
 #!/usr/bin/env ~/Documents/code/castanaut/bin/castanaut
 
-
-
-
 #####
 # Uses castanaut to automate a screencast in safari. The robot voice sections, 
 # as created via while_saying, help to space out the video for timing
@@ -26,6 +23,11 @@
 
 
 #####
+# Prep for this screencast: 
+# 
+# > rake prep_deathstar
+
+#####
 # config
 
 # By default, this script will only launch and control a safari instance. 
@@ -35,9 +37,15 @@ record_video = true
 
 export_to = File.absolute_path(File.join(File.dirname(screenplay), 'exports', File.basename(screenplay)))
 
-# controls the size and location of the screencast main area
-x, y, width, height = [10, 46, 1280, 720] 
 
+# height of safari window bar + toolbar + apple menu
+y_offset = 63
+
+# shaves off rounded window corners
+window_padding = 15 
+
+# controls the size and location of the screencast main area
+x, y, width, height = [window_padding, y_offset, 1280, 720] 
 
 #####
 # Screencast guts
@@ -51,7 +59,7 @@ end
 
 plugin "safari"
 
-launch "Safari", at(x - 10, y - 46, width + 20, height + 46) #46 is height of safari window bar
+launch "Safari", at(x - window_padding, y - y_offset, width + window_padding * 2, height + y_offset + window_padding) 
 
 while_saying "loading page" do
   url "http://localhost:3000/Death_Star?domain=impacthub"
@@ -183,6 +191,7 @@ end
 while_saying "Drill into points for focused discussion" do 
   scroll_to '[data-id="/point/5406"]', 1000, 50
   move to_element('[data-id="/point/5406"]')
+  pause 1
   click
   wait_for_element '.comment_entry'
   move to_element('.comment_entry')

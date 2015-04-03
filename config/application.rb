@@ -77,6 +77,7 @@ module ConsiderIt
     config.paths["app/models/concerns"] << "@server/models/concerns"
 
     config.paths["lib/tasks"] << "test"
+    config.paths["lib/tasks"] << "lib/screencasts"
 
     config.paths["config/initializers"] << "@server/emails/notifications"
 

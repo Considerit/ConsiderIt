@@ -14,6 +14,198 @@ require './customizations'
 require './shared'
 
 
+window.Slider = ReactiveComponent
+  displayName: 'Slider'
+
+  getDefaultProps : -> 
+    return {
+      base_height: 6
+      base_color: 'rgb(160, 160, 160)'
+      two_way: false
+      draw_helpers: false
+      focused: true
+      enabled: true
+    }
+
+  render : ->
+
+    slider = fetch @props.key
+
+    # initialize
+    if !slider.position?
+      _.defaults slider,
+        position: -1.0 #TODO: make the base slider widget operate from 0 to 1.0
+        has_moved : false
+        is_moving : false
+      save slider
+
+    ####
+    # Define slider layout
+    slider_style = _.defaults {}, (@props.slider_style || {}),
+      width: @props.width
+      height: @props.height
+      position: 'relative'
+
+
+    DIV 
+      className: 'slider'
+      style : slider_style
+
+      # Draw the base of the slider
+      @drawSliderBase()
+
+      if @props.enabled
+        @drawSliderHandle()
+
+
+  drawSliderBase: -> 
+    slider = fetch @props.key
+
+    slider_base_style = 
+      width: @props.width
+      height: @props.base_height
+      backgroundColor: @props.base_color
+      position: 'absolute'
+
+    DIV 
+      style : slider_base_style
+
+      # Draw sharp edge to base
+      if !slider.docked && @props.two_way
+
+        for support in [true, false]
+          DIV 
+            key: "slider-base-#{support}"
+            style: 
+              position: 'absolute'
+              left: if support then -5
+              right: if !support then -5
+              width: 5
+              height: slider_base_style.height
+              backgroundColor: slider_base_style.backgroundColor
+
+            DIV
+              style: cssTriangle \
+                       (if support then 'left' else 'right'), \
+                       slider_base_style.backgroundColor, 12, 6,               
+                          position: 'absolute'
+                          left: if support then -12
+                          right: if !support then -12
+
+
+  drawSliderHandle: -> 
+    handle_width = handle_height = @props.height
+
+    slider = fetch @props.key
+
+    sliderHandle = @props.handle or slider_handle.flat
+
+    DIV 
+      className: 'the_handle' 
+      onMouseUp: @handleMouseUp
+      onTouchEnd: @handleMouseUp
+      onTouchCancel: @handleMouseUp
+
+      onMouseDown: @handleMouseDown
+      onTouchStart: @handleMouseDown
+
+      onTouchMove: @handleMouseMove
+
+      style: css.crossbrowserify _.extend (@props.handle_style || {}), 
+        width: handle_width
+        height: handle_height
+        top: -(handle_height - @props.base_height) / 2
+        position: 'relative'
+        marginLeft: -handle_width / 2
+        zIndex: 10
+        left: slider.clientX
+
+
+      sliderHandle _.extend (@props.handle_props || {}),
+        value: (slider.position + 1) / 2
+        detail: @props.focused
+        handle_height: handle_height
+        handle_width: handle_width
+
+
+      if @props.draw_helpers
+        for support in [true, false]
+          DIV 
+            style: 
+              right: if support then -15
+              left: if !support then -15
+              position: 'absolute'
+              top: 4
+              color: focus_blue
+              fontSize: 12
+              pointerEvents: 'none'
+            if support then '>' else '<'   
+
+
+  # Kick off sliding 
+  handleMouseDown: (e) -> 
+    el = @getDOMNode()
+    # Dragging has to start by dragging the slider handle
+    return if !$(e.target).is('.the_handle')
+
+    e.preventDefault()
+
+    # Initiate dragging
+    slider = fetch(@props.key)
+    slider.is_moving = true
+    slider.offsetX = e.clientX or e.touches[0].clientX
+
+    slider.startX = parseInt($(e.target)[0].style.left, 10) || 0
+    save slider
+
+    @props.onMouseDownCallback(e) if @props.onMouseDownCallback
+
+    $(window).on "mousemove.slider", @handleMouseMove
+    $(window).on "mouseup.slider", @handleMouseUp
+
+  # Stop sliding
+  handleMouseUp: (e) ->
+    # Don't do anything if we're not actually dragging. We only hit this logic
+    # if there is some delay in removing the event handlers.
+    slider = fetch @props.key
+
+    return if !slider.is_moving
+
+    e.preventDefault()
+
+    # Turn off dragging
+    slider.is_moving = false
+    save slider
+
+    @props.onMouseUpCallback(e) if @props.onMouseUpCallback
+
+    $(window).off ".slider" # Remove event handlers
+
+  # While sliding
+  handleMouseMove: (e) ->
+    e.preventDefault() # prevents text selection of surrounding elements
+
+    slider = fetch(@props.key)
+
+    clientX = if e.clientX?
+                e.clientX
+              else
+                e.touches[0].clientX
+
+    # Update position
+    slider.clientX = slider.startX + clientX - slider.offsetX
+    slider.clientX = 0 if slider.clientX < 0
+    slider.clientX = @props.width if slider.clientX > @props.width
+    slider.has_moved = true
+
+    # convert position of handle to a slider value on [1, -1]
+    slider.position = translatePixelXToStance(slider.clientX, @props.width)
+
+    save slider
+
+    @props.onMouseMoveCallback(e) if @props.onMouseMoveCallback
+
+
 ####
 # Slider handles
 #
@@ -30,10 +222,10 @@ require './shared'
 #    Whether the handle should show the more intricate details. 
 #
 
-if !window.slider_handles
-  window.slider_handles = {}
+if !window.slider_handle
+  window.slider_handle = {}
 
-slider_handles.face = (props) -> 
+slider_handle.face = (props) -> 
 
   SVG
     height: props.height
@@ -120,7 +312,7 @@ slider_handles.face = (props) ->
             """
 
 
-slider_handles.flat = (props) -> 
+slider_handle.flat = (props) -> 
   svg_props = 
     height: props.handle_height
     width: props.handle_width
@@ -170,195 +362,7 @@ slider_handles.flat = (props) ->
             clipPath: 'url(#slider-avatar-clip)'
 
 
-window.Slider = ReactiveComponent
-  displayName: 'Slider'
 
-  getDefaultProps : -> 
-    return {
-      base_height: 6
-      base_color: 'rgb(160, 160, 160)'
-      two_way: false
-      draw_helpers: false
-      focused: true
-      enabled: true
-      handle: slider_handles.flat
-    }
-
-  render : ->
-
-    slider = fetch @props.key
-
-    # initialize
-    if !slider.position?
-      _.defaults slider,
-        position: -1.0 #TODO: make the base slider widget operate from 0 to 1.0
-        has_moved : false
-        is_moving : false
-      save slider
-
-    ####
-    # Define slider layout
-    slider_style = _.defaults {}, (@props.slider_style || {}),
-      width: @props.width
-      height: @props.height
-      position: 'relative'
-
-
-    DIV 
-      className: 'slider'
-      style : slider_style
-
-      # Draw the base of the slider
-      @drawSliderBase()
-
-      if @props.enabled
-        @drawSliderHandle()
-
-
-  drawSliderBase: -> 
-    slider = fetch @props.key
-
-    slider_base_style = 
-      width: @props.width
-      height: @props.base_height
-      backgroundColor: @props.base_color
-      position: 'absolute'
-
-    DIV 
-      style : slider_base_style
-
-      # Draw sharp edge to base
-      if !slider.docked && @props.two_way
-
-        for support in [true, false]
-          DIV 
-            key: "slider-base-#{support}"
-            style: 
-              position: 'absolute'
-              left: if support then -5
-              right: if !support then -5
-              width: 5
-              height: slider_base_style.height
-              backgroundColor: slider_base_style.backgroundColor
-
-            DIV
-              style: cssTriangle \
-                       (if support then 'left' else 'right'), \
-                       slider_base_style.backgroundColor, 12, 6,               
-                          position: 'absolute'
-                          left: if support then -12
-                          right: if !support then -12
-
-
-  drawSliderHandle: -> 
-    handle_width = handle_height = @props.height
-
-    slider = fetch @props.key
-
-    DIV 
-      className: 'the_handle' 
-      onMouseUp: @handleMouseUp
-      onTouchEnd: @handleMouseUp
-      onTouchCancel: @handleMouseUp
-
-      onMouseDown: @handleMouseDown
-      onTouchStart: @handleMouseDown
-
-      onTouchMove: @handleMouseMove
-
-      style: css.crossbrowserify _.extend (@props.handle_style || {}), 
-        width: handle_width
-        height: handle_height
-        top: -(handle_height - @props.base_height) / 2
-        position: 'relative'
-        marginLeft: -handle_width / 2
-        zIndex: 10
-        left: slider.clientX
-
-
-      @props.handle _.extend (@props.handle_props || {}),
-        value: (slider.position + 1) / 2
-        detail: @props.focused
-        handle_height: handle_height
-        handle_width: handle_width
-
-
-      if @props.draw_helpers
-        for support in [true, false]
-          DIV 
-            style: 
-              right: if support then -15
-              left: if !support then -15
-              position: 'absolute'
-              top: 4
-              color: focus_blue
-              fontSize: 12
-              pointerEvents: 'none'
-            if support then '>' else '<'   
-
-
-  # Kick off sliding 
-  handleMouseDown: (e) -> 
-    el = @getDOMNode()
-    # Dragging has to start by dragging the slider handle
-    return if !$(e.target).is('.the_handle')
-
-    e.preventDefault()
-
-    # Initiate dragging
-    slider = fetch(@props.key)
-    slider.is_moving = true
-    slider.offsetX = e.clientX or e.touches[0].clientX
-
-    slider.startX = parseInt($(e.target)[0].style.left, 10) || 0
-    save slider
-
-    @props.onMouseDownCallback(e) if @props.onMouseDownCallback
-
-    $(window).on "mousemove.slider", @handleMouseMove
-    $(window).on "mouseup.slider", @handleMouseUp
-
-  # Stop sliding
-  handleMouseUp: (e) ->
-    # Don't do anything if we're not actually dragging. We only hit this logic
-    # if there is some delay in removing the event handlers.
-    slider = fetch @props.key
-
-    return if !slider.is_moving
-
-    e.preventDefault()
-
-    # Turn off dragging
-    slider.is_moving = false
-    save slider
-
-    @props.onMouseUpCallback(e) if @props.onMouseUpCallback
-
-    $(window).off ".slider" # Remove event handlers
-
-  # While sliding
-  handleMouseMove: (e) ->
-    e.preventDefault() # prevents text selection of surrounding elements
-
-    slider = fetch(@props.key)
-
-    clientX = if e.clientX?
-                e.clientX
-              else
-                e.touches[0].clientX
-
-    # Update position
-    slider.clientX = slider.startX + clientX - slider.offsetX
-    slider.clientX = 0 if slider.clientX < 0
-    slider.clientX = @props.width if slider.clientX > @props.width
-    slider.has_moved = true
-
-    # convert position of handle to a slider value on [1, -1]
-    slider.position = translatePixelXToStance(slider.clientX, @props.width)
-
-    save slider
-
-    @props.onMouseMoveCallback(e) if @props.onMouseMoveCallback
 
 
 window.OpinionSlider = ReactiveComponent

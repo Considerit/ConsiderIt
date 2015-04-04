@@ -268,6 +268,7 @@ window.Slider = ReactiveComponent
     if @props.polarized
       slider.value = slider.value * 2 - 1
 
+    slider.value = Math.round(slider.value * 10000) / 10000
     save slider
 
     @props.onMouseMoveCallback(e) if @props.onMouseMoveCallback
@@ -307,7 +308,8 @@ window.Slider = ReactiveComponent
 
       slider = fetch @props.key
       slider.has_moved = true
-      slider.value = val
+
+      slider.value = Math.round(val * 10000) / 10000
 
       save slider
 

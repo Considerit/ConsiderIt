@@ -19,8 +19,13 @@ window.OpinionSlider = ReactiveComponent
 
   render : ->
 
+
     slider = fetch @props.key
+    hist = fetch 'histogram'
+
     your_opinion = fetch @props.your_opinion
+
+    hist_selection = hist.selected_opinions || hist.selected_opinion
 
     # Update the slider value when the server gets back to us
     if slider.value != your_opinion.stance && !slider.has_moved 
@@ -47,7 +52,7 @@ window.OpinionSlider = ReactiveComponent
       # Draw the pole labels of the slider
       @drawPoleLabels()
 
-      if @props.focused && @props.enabled
+      if @props.focused && @props.permitted
         @drawFeedback() 
 
       Slider
@@ -66,9 +71,10 @@ window.OpinionSlider = ReactiveComponent
         handle_style: 
           transition: "transform #{TRANSITION_SPEED}ms"
           transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
-          visibility: if @props.backgrounded then 'hidden'
+          visibility: if @props.backgrounded || hist_selection || !@props.permitted then 'hidden'
         onMouseUpCallback: @handleMouseUp
         respond_to_click: false
+
 
   drawPoleLabels: ->
     slider = fetch @props.key
@@ -168,12 +174,15 @@ window.OpinionSlider = ReactiveComponent
   handleMouseUp: (e) ->
     slider = fetch @props.key
     your_opinion = fetch @props.your_opinion
+    mode = get_proposal_mode()
     
     # Clicking on the slider handle should transition us between 
     # crafting <=> results. We should also transition to crafting 
-    # when we've been dragging on the results page. 
-    if @props.additionalOnMouseUp
-      @props.additionalOnMouseUp e
+    # when we've been dragging on the results page.
+    if slider.value == your_opinion.stance || mode == 'results'
+      new_page = if mode == 'results' then 'crafting' else 'results'
+      updateProposalMode new_page, 'click_slider'
+      e.stopPropagation()
 
     # We save the slider's position to the server only on mouse-up.
     # This way you can drag it with good performance.
@@ -183,6 +192,7 @@ window.OpinionSlider = ReactiveComponent
       window.writeToLog 
         what: 'move slider'
         details: {stance: slider.value}
+
 
 
 

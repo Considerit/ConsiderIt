@@ -67,7 +67,8 @@ window.A = React.createClass
     if @props.href
       _onclick = @props.onClick or (-> null)
       @props.onClick = (event) => 
-        href = @getDOMNode().getAttribute('href') 
+        node = @getDOMNode()
+        href = node.getAttribute('href') 
                   # use getAttribute rather than .href so we 
                   # can easily check relative vs absolute url
         
@@ -80,7 +81,9 @@ window.A = React.createClass
                              event.shiftKey
 
         # Allow shift+click for new tabs, etc.
-        if !is_external_link && !opened_in_new_tab && !is_mailto
+        if !is_external_link && !opened_in_new_tab && !is_mailto \
+           && !node.getAttribute('data-nojax')
+
           event.preventDefault()
           loadPage href
           _onclick event

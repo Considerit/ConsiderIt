@@ -6,6 +6,16 @@ class SubdomainController < ApplicationController
   skip_before_action :verify_authenticity_token, :only => :update_images_hack
   include Invitations
 
+  def index 
+    if Rails.env.development? || request.host == 'chlk.it'
+      subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name}}
+      render :json => [{
+        key: '/subdomains',
+        subs: subdomains
+      }]
+    end
+  end
+
   def create
     authorize! 'create subdomain'
 

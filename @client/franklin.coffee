@@ -380,26 +380,17 @@ Proposal = ReactiveComponent
               key: 'slider'
               width: OPINION_SLIDER_WIDTH
               your_opinion: @proposal.your_opinion
-              enabled: !(fetch('histogram').selected_opinions || 
-                         fetch('histogram').selected_opinion) &&
-                        (can_opine not in [Permission.DISABLED, \
-                                           Permission.INSUFFICIENT_PRIVILEGES] || 
-                         your_opinion.published )
-
               focused: mode == 'crafting'
               backgrounded: get_selected_point() && mode == 'crafting'
+              permitted: (@props.can_opine not in [Permission.DISABLED, \
+                          Permission.INSUFFICIENT_PRIVILEGES]) || \
+                          your_opinion.published
               pole_labels: [ \
                 [customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose"),
                  customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose_sub")], \
                 [customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.support"),
                  customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.support_sub")]]
 
-              additionalOnMouseUp : (e) ->
-                slider = fetch 'slider'
-                if slider.value == your_opinion.stance || mode == 'results'
-                  new_page = if mode == 'results' then 'crafting' else 'results'
-                  updateProposalMode new_page, 'click_slider'
-                  e.stopPropagation()
 
         #reasons
         DIV 

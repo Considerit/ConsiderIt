@@ -30,6 +30,7 @@ require './state_dash'
 require './state_graph'
 require './swapables'
 require './tooltip'
+require './development'
 
 ## ########################
 ## Initialize defaults for client data
@@ -3233,6 +3234,7 @@ Root = ReactiveComponent
 
     subdomain = fetch '/subdomain'
     loc = fetch('location')
+    app = fetch('/application')
 
     DIV 
       onClick: @resetSelection
@@ -3269,6 +3271,9 @@ Root = ReactiveComponent
           customization('Footer')()
 
       Tooltip()
+
+      if app.dev
+        Development()      
 
   resetSelection: (e) ->
     # TODO: This is ugly. Perhaps it would be better to have components 
@@ -3310,5 +3315,4 @@ window.Franklin = Root
 
 
 require './application_loader'
-
 

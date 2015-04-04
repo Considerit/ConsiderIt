@@ -724,37 +724,6 @@ addGradient = (gradient, defs, id, c1, c2) ->
     .attr 'stop-color', c2 
 
 
-########
-# colors
-# adapted from http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
-golden_ratio_conjugate = 0.618033988749895
-
-# fixed saturation & brightness; random hue
-getNiceRandomHues = (num, seed) -> 
-  h = seed
-
-  hues = []
-  i = num
-  while i > 0
-    hues.push h % 1
-    h += golden_ratio_conjugate
-    i -= 1
-  hues
-
-hsv_to_rgb = (h,s,v) -> 
-  h_i = Math.floor(h*6)
-  f = h*6 - h_i
-  p = v * (1 - s)
-  q = v * (1 - f*s)
-  t = v * (1 - (1 - f) * s)
-  [r, g, b] = [v, t, p] if h_i==0
-  [r, g, b] = [q, v, p] if h_i==1
-  [r, g, b] = [p, v, t] if h_i==2
-  [r, g, b] = [p, q, v] if h_i==3
-  [r, g, b] = [t, p, v] if h_i==4
-  [r, g, b] = [v, p, q] if h_i==5
-
-  "rgb(#{Math.round(r*256)}, #{Math.round(g*256)}, #{Math.round(b*256)})"
 
 # Utilities
 

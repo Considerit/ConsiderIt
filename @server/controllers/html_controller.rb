@@ -11,7 +11,6 @@ class HtmlController < ApplicationController
     end
 
     if Rails.env.development? || request.host == 'chlk.it'
-      @show_subdomain_changer = true
       if params[:domain]
         session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
         redirect_to request.path    
@@ -52,7 +51,12 @@ class HtmlController < ApplicationController
       })
     end
 
-    @app = current_subdomain.name == 'homepage' ? 'saas_landing_page' : 'franklin'
+    if !session.has_key? :app
+      session[:app] = 'franklin'
+    end
+
+    @app = session[:app]
+
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
 
     if Rails.application.config.action_controller.asset_host

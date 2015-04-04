@@ -1,14 +1,20 @@
 class DeveloperController < ApplicationController  
   respond_to :html
 
-  def change_default_subdomain
+  def change_subdomain
 
     if Rails.env.development? || request.host == 'chlk.it'
       session[:default_subdomain] = params['id']
     end
 
+    redirect_to '/'
+  end
+
+  def set_app
+    if Rails.env.development? || request.host == 'chlk.it'
+      session[:app] = params['app']
+    end
 
     redirect_to '/'
-
   end
 end

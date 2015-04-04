@@ -3,9 +3,6 @@ require 'digest/md5'
 require 'exception_notifier'
 require Rails.root.join('@server', 'permissions')
 
-
-# Set to true if you're working on the http://consider.it homepage. 
-ENABLE_HOMEPAGE_IN_DEV = true
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   skip_before_action :verify_authenticity_token, if: :csrf_skippable?
@@ -20,10 +17,16 @@ class ApplicationController < ActionController::Base
     render :json => result
   end
 
-
   def application
     dirty_key '/application'
     render :json => []
+  end
+
+  def app_index
+    render :json => [{
+      :key => '/apps',
+      :apps => ['franklin', 'saas_landing_page']
+    }]
   end
 
   def render(*args)
@@ -77,12 +80,20 @@ protected
     rq = request
 
     # when to display a considerit homepage
-    can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || ENABLE_HOMEPAGE_IN_DEV
+    can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || session[:app] == 'saas_landing_page'
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
       candidate_subdomain = Subdomain.find_by_name('homepage')
     else
       default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
-      candidate_subdomain = rq.subdomain.nil? || rq.subdomain.length == 0 ? Subdomain.find(default_subdomain) : Subdomain.find_by_name(rq.subdomain)
+      if rq.subdomain.nil? || rq.subdomain.length == 0
+        begin
+          candidate_subdomain = Subdomain.find(default_subdomain)
+        rescue ActiveRecord::RecordNotFound
+          candidate_subdomain = Subdomain.find(1)
+        end
+      else 
+        candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
+      end
     end
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain
@@ -107,7 +118,7 @@ protected
     end
 
     if [197946, 14897].include?(Thread.current[:current_user_id])
-      raise PermissionDenied.new('Your account has been disabled until the election is over for viaolating the Civility Pledge.')
+      raise PermissionDenied.new('Your account has been disabled until the election is over for violating the Civility Pledge.')
     end
   end
   
@@ -125,7 +136,7 @@ protected
 
   def set_current_user(user)
     ## TODO: delete the existing current user if there's nothing
-    ## important in it
+    ##       important in it
 
     puts("Setting current user to #{user.id}")
     session[:current_user_id] = user.id
@@ -152,9 +163,6 @@ protected
   end
   
   def compile_dirty_objects
-    # Right now this works for points, opinions, proposals, and the
-    # current opinion's proposal if the current opinion is dirty.
-
     response = []
     processed = {}
 
@@ -190,7 +198,10 @@ protected
       
       elsif key == '/application'
         response.append({
-                  asset_host: "#{Rails.application.config.action_controller.asset_host}"
+          key: '/application',
+          app: session[:app],
+          dev: (Rails.env.development? || request.host == 'chlk.it'),
+          asset_host: "#{Rails.application.config.action_controller.asset_host}"
         })
       elsif key == '/subdomain'
         response.append current_subdomain.as_json

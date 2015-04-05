@@ -17,6 +17,9 @@ base_text =
   fontWeight: 400
   fontFamily: "'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
 
+small_text = _.extend {}, base_text,
+  fontSize: 20
+
 h1 = _.extend {}, base_text,
   fontSize: 48
   fontWeight: 400
@@ -43,9 +46,32 @@ a = _.extend {}, base_text,
   textDecoration: 'underline'
 
 
+
+
 SaasHomepage = ReactiveComponent
   displayName: "SaasHomepage"
   render: ->
+
+    ui = fetch('homepage_ui')
+    if !ui.initialized
+      _.extend ui, 
+        initialized: true
+        video_file_name: 'with_screen'
+        video_file_name_instr: "Only available video is 'deathstar-cam'"
+        video_elements_order: "caption,controls,video"
+        video_elements_order_inst: """
+          A list of video elements to show and in which order (top to bottom). 
+          e.g. \"caption,controls,video\"
+          Must contain 'video' somewhere.
+          """
+        frame: 'none'
+        frame_instr: """"
+          Whether to draw a frame around the video, and if so, what it should be. 
+          Supported values: 
+            'gray border', 'mbp', 'windoze', 'laptop', 'app window', 'browser window'
+          """
+      save ui
+
     DIV null, 
       Video()
       usedFor()
@@ -54,6 +80,7 @@ SaasHomepage = ReactiveComponent
       story()
 
 
+HEADER_HEIGHT = 75
 Header = ReactiveComponent
   displayName: "Header"
   render: ->
@@ -65,7 +92,7 @@ Header = ReactiveComponent
           position: "relative"
           margin: "0 auto"
           backgroundColor: logo_red
-          height: 75
+          height: HEADER_HEIGHT
 
         IMG
           src: asset("saas_landing_page/considerit_logo.svg")
@@ -82,7 +109,6 @@ Header = ReactiveComponent
           margin: 'auto'
           position: 'relative'
           top: -34
-
 
         DIV 
           style: 
@@ -107,128 +133,163 @@ Header = ReactiveComponent
           fontSize: 24
           fontWeight: 300
           color: logo_red
-          position: 'relative'
+          position: 'absolute'
           left: 16
-          top: 4
+          top: 4 + HEADER_HEIGHT
         "for thinking together"
 
 
-
 VIDEO_SLIDER_WIDTH = 250
+
 Video = ReactiveComponent
   displayName: "video"
   render: ->
     
-    chapter = fetch("video_chapter")
+    ui = fetch('homepage_ui')
     controls = fetch('video_controls')
 
     if !controls.playing?
       controls.playing = true
       save controls
 
-    DIV null,        
-      DIV
-        id: "homepage_video"
-        style:
-          width: SAAS_PAGE_WIDTH
 
-        VIDEO
-          preload: "auto"
-          loop: true
-          autoPlay: true
-          width: SAAS_PAGE_WIDTH
-          ref: "video"
+    video_drawn = false
+    captions_drawn = false
+    controls_drawn = false
 
-          SOURCE
-            src: asset("saas_landing_page/with_screen.mp4")
-            type: "video/mp4"
-          
-          SOURCE
-            src: asset("saas_landing_page/with_screen.webm")
-            type: "video/webm"   
+    DIV null,
+      for video_el in ui.video_elements_order.split(',')
+        video_el = video_el.trim()
+        if video_el == 'video'
+          video_drawn = true
 
-
-      DIV
-        style:
-          marginTop: 10
-          position: 'relative'
-
-
-        H2
-          style: _.extend {}, h2,
-            textAlign: "center"
-          
-          if chapter.text 
-            chapter.text 
+        switch video_el
+          when 'controls'
+            @drawVideoControls(video_drawn, captions_drawn)
+          when 'video'
+            @drawVideo(controls_drawn, captions_drawn)
+          when 'caption'
+            @drawCaptions(video_drawn, captions_drawn)
           else 
-            "Sometimes a proposal bears careful thought"
+            console.error "#{video_el} is not a valid video element"
 
-        DIV 
-          onMouseEnter: (ev) => @local.hover_player = true; save @local
-          onMouseLeave: (ev) => @local.hover_player = false; save @local
 
-          style: 
-            width: VIDEO_SLIDER_WIDTH + 80
-            margin: 'auto'
-            #padding: '15px 10px'
-            position: 'relative'
-            opacity: if @local.hover_player then 1 else .5
-            top: -10
-          I 
-            className: "fa fa-#{if controls.playing then 'pause' else 'play'}"
-            onClick: (ev) => 
-              controls = fetch('video_controls')
-              controls.playing = !controls.playing
-              save controls
-              if controls.playing 
-                @refs.video.getDOMNode().play()
-              else
-                @refs.video.getDOMNode().pause()
+  drawCaptions : -> 
+    ui = fetch('homepage_ui')
+    chapter = fetch("video_chapter")
 
-            style:       
-              fontSize: 10
-              color: '#ccc'
-              #position: 'relative'
-              padding: '12px 12px'
-              cursor: 'pointer'
-              visibility: if @local.hover_player then 'visible' else 'hidden'
-              left: -12
+    DIV
+      style:
+        marginTop: 10
+        position: 'relative'
 
-          Slider
-            key: 'video_controls'
-            width: VIDEO_SLIDER_WIDTH
-            handle_height: if @local.hover_player then 20 else 4
-            base_height: 4
-            base_color: '#ECECEC'
-            slider_style: 
-              margin: 'auto'
-              position: 'absolute'
-              top: '50%'
-              marginTop: -2
-              left: 40
-            handle_props: 
-              color: logo_red
+      H2
+        style: _.extend {}, h2,
+          textAlign: "center"
+        
+        if chapter.text 
+          chapter.text 
+        else 
+          "Sometimes a proposal bears careful thought"
 
-            onMouseDownCallback: (ev) =>
-              video = @refs.video.getDOMNode()
-              video.pause()
+  drawVideoControls : ->
+    controls = fetch('video_controls')
 
-            onMouseMoveCallback: (ev) => 
-              controls = fetch('video_controls')
-              video = @refs.video.getDOMNode()
-              video.currentTime = controls.value * video.duration
+    DIV 
+      onMouseEnter: (ev) => @local.hover_player = true; save @local
+      onMouseLeave: (ev) => @local.hover_player = false; save @local
 
-            onMouseUpCallback: (ev) => 
-              controls = fetch('video_controls')
-              video = @refs.video.getDOMNode()
-              video.play() if controls.playing
+      style: 
+        width: VIDEO_SLIDER_WIDTH + 80
+        margin: 'auto'
+        position: 'relative'
+        opacity: if @local.hover_player then 1 else .5
+        top: -10
+      I 
+        className: "fa fa-#{if controls.playing then 'pause' else 'play'}"
+        onClick: (ev) => 
+          controls = fetch('video_controls')
+          controls.playing = !controls.playing
+          save controls
+          if controls.playing 
+            @refs.video.getDOMNode().play()
+          else
+            @refs.video.getDOMNode().pause()
 
-            onClickCallback: (ev) =>
-              controls = fetch('video_controls')
-              video = @refs.video.getDOMNode()
-              video.pause()
-              video.currentTime = controls.value * video.duration
-              video.play() if controls.playing
+        style:       
+          fontSize: 10
+          color: '#ccc'
+          #position: 'relative'
+          padding: '12px 12px'
+          cursor: 'pointer'
+          visibility: if @local.hover_player then 'visible' else 'hidden'
+          left: -12
+
+      Slider
+        key: 'video_controls'
+        width: VIDEO_SLIDER_WIDTH
+        handle_height: if @local.hover_player then 20 else 4
+        base_height: 4
+        base_color: '#ECECEC'
+        slider_style: 
+          margin: 'auto'
+          position: 'absolute'
+          top: '50%'
+          marginTop: -2
+          left: 40
+        handle_props: 
+          color: logo_red
+
+        onMouseDownCallback: (ev) =>
+          video = @refs.video.getDOMNode()
+          video.pause()
+
+        onMouseMoveCallback: (ev) => 
+          controls = fetch('video_controls')
+          video = @refs.video.getDOMNode()
+          video.currentTime = controls.value * video.duration
+
+        onMouseUpCallback: (ev) => 
+          controls = fetch('video_controls')
+          video = @refs.video.getDOMNode()
+          video.play() if controls.playing
+
+        onClickCallback: (ev) =>
+          controls = fetch('video_controls')
+          video = @refs.video.getDOMNode()
+          video.pause()
+          video.currentTime = controls.value * video.duration
+          video.play() if controls.playing  
+
+
+  drawVideo : -> 
+    ui = fetch('homepage_ui')
+
+
+    DIV
+      id: "homepage_video"
+      style:
+        width: SAAS_PAGE_WIDTH
+
+      VIDEO
+        preload: "auto"
+        loop: true
+        autoPlay: true
+        width: SAAS_PAGE_WIDTH
+        ref: "video"
+
+        SOURCE
+          src: asset("saas_landing_page/#{ui.video_file_name}.mp4")
+          type: "video/mp4"
+        
+        SOURCE
+          src: asset("saas_landing_page/#{ui.video_file_name}.webm")
+          type: "video/webm"
+
+      
+        
+
+
 
         
 
@@ -323,7 +384,7 @@ usedFor = ->
       marginTop: 60
 
     H1 style: h1,
-      'Consider.it creates focused discussion by:'
+      'The first forum to function better when more people participate'
 
     bullet
       point_style: 'bullet'
@@ -339,11 +400,6 @@ usedFor = ->
       point_style: 'bullet'
       strong: "Producing an interactive summary of group thought"
       body: ". Patterns of thought across the whole group can be identified. Perhaps 80% of opposers have a single con point that can be addressed!"
-
-    bullet
-      point_style: 'bullet'
-      strong: "Scaling to hundreds of people"
-      body: " deliberating an issue together, without becoming overwhelming or requiring strong central leadership/facilitation."
 
 
 pricing = ->
@@ -465,6 +521,192 @@ contact = (local) ->
         email: "toomim@consider.it"
 
 story = ->
+  DIV 
+    id: 'story'
+    style:
+      marginTop: 60
+
+    H1
+      style: _.extend {}, h1, 
+        marginBottom: 30
+
+      "Our story"
+
+    DIV
+      style:
+        marginBottom: 20
+
+      DIV 
+        style: _.extend {}, small_text, 
+          display: 'inline-block'
+          width: 500
+          marginRight: 40
+          verticalAlign: 'top'
+          
+
+        P 
+          style: 
+            paddingBottom: 15
+
+          """
+          Consider.it was invented in 2010 by Travis Kriplean as part of his 
+          Computer Science """
+
+          A 
+            style: _.extend {}, a, small_text
+            href: 'https://www.dropbox.com/s/ycqfoxdl5sghaud/dissertation.pdf?dl=0'
+            "PhD dissertation" 
+
+          """
+          at the University of Washington, in collaboration with fellow graduate 
+          student Michael Toomim, and Professor """
+
+          A
+            style: _.extend {}, a, small_text
+            href: 'http://www.cs.washington.edu/people/faculty/borning'
+            'Alan Borning'
+
+          """. The project was funded by a generous National 
+          Science Foundation grant. Other early contributors to the research project 
+          include Jonathan Morgan (phd...), Deen Freelon, Lance Bennett, Sheetal 
+          Agarwal, and Andrew Hamada.
+          """
+
+        P null,
+          """
+          Kevin Miniter joined Consider.it serindipitously in 2012. Motivated by
+          his experiencing running a ... , and his life philosophy of simply 
+          asking “how can I help?”
+          """
+
+      DIV 
+        style: _.extend {}, small_text, 
+          display: 'inline-block'
+          style: 
+            width: 400
+            verticalAlign: 'top'
+
+        
+        IFRAME
+          width: 347
+          height: 211
+          src: "https://www.youtube.com/embed/RIUD4Ty2ZAE" 
+          frameborder: "0" 
+          allowfullscreen: true
+          
+
+
+    DIV 
+      style:
+        marginBottom: 20
+
+      DIV 
+        style: _.extend {}, small_text, 
+          display: 'inline-block'
+          verticalAlign: 'top'
+          width: 400
+          marginRight: 40
+
+        IFRAME
+          width: 400
+          height: 243
+          src: "https://www.youtube.com/embed/RIUD4Ty2ZAE" 
+          frameborder: "0" 
+          allowfullscreen: true
+          
+
+      DIV 
+        style: _.extend {}, small_text, 
+          display: 'inline-block'
+          width: 500
+          verticalAlign: 'top'
+
+        P 
+          style: 
+            paddingBottom: 15
+
+          """
+          The original and longest-running Consider.it application is the 
+          award-winning Living Voters Guide, a crowd-sourced guide to public
+          thought on Washington State’s ballot measures, with on-demand 
+          fact-checking by Seattle Public Librarians. Our partners Seattle 
+          CityClub have hosted the dialogue for five years and counting.
+          """
+
+        P 
+          style: 
+            paddingBottom: 15
+
+          """
+          We have since generalized Consider.it to apply to a variety of 
+          situations, from helping organizations align behind new strategic 
+          directions to its use in classrooms for teaching critical thinking 
+          skills. 
+          """
+
+    DIV
+      style:
+        marginBottom: 20
+
+      DIV 
+        style: _.extend {}, small_text, 
+          display: 'inline-block'
+          width: 500
+          marginRight: 40
+          verticalAlign: 'top'
+
+        P 
+          style: 
+            paddingBottom: 15
+
+          """
+          We decided to strike out on our own after growing frustrated by the 
+          academic system, leaving our comfortable yet confining ivory tower for the 
+          excitement of the unexplored (for us) jungle of capitalism. 
+          In those wilds we are creating a decentralized R&D laboratory to 
+          bring new social technologies into the world. We call this organization 
+          The Invisible College.
+          """
+
+        P 
+          style: 
+            paddingBottom: 15
+
+          """
+          The Invisible College’s non-profit mission is funded by internal 
+          for-profit companies based on the social technologies we create. 
+          Consider.it is the most mature of these companies. 
+          """
+
+      DIV 
+        style: _.extend {}, small_text, 
+          display: 'inline-block'
+          width: 400
+          verticalAlign: 'top'
+          position: 'relative'
+
+
+        IMG 
+          src: asset('saas_landing_page/b&w_kev_mike.png')
+          style: 
+            width: 300
+            position: 'relative'
+            zIndex: 1
+
+        IMG 
+          src: asset('saas_landing_page/consult.png')
+          style: 
+            width: 300
+            position: 'absolute'
+            top: 200
+            left: 80
+
+
+
+
+
+
+
 
 Page = ReactiveComponent
 
@@ -507,6 +749,7 @@ Root = ReactiveComponent
           backgroundColor: "white"
           margin: "auto"
           paddingBottom: 20
+          marginTop: 20
         BrowserHacks()
         Page(key: "/page" + loc.url)
 
@@ -519,4 +762,4 @@ Root = ReactiveComponent
 
 window.Saas = Root
 
-require './application_loader'
+require './bootstrap_loader'

@@ -3217,7 +3217,6 @@ Page = ReactiveComponent
             else
               LOADING_INDICATOR
 
-
 Root = ReactiveComponent
   displayName: 'Root'
 
@@ -3305,5 +3304,5 @@ window.Comment = Comment
 window.Franklin = Root
 
 
-require './application_loader'
+require './bootstrap_loader'
 

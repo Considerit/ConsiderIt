@@ -1,3 +1,8 @@
+######
+# Development 
+#
+# Adds an invisible development menu in dev environments that shows up when
+# you move the mouse into the upper right of the page
 
 require './shared'
 

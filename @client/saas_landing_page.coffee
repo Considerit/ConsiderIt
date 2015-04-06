@@ -363,61 +363,61 @@ Video = ReactiveComponent
           src: asset("saas_landing_page/#{ui.video_file_name}.webm")
           type: "video/webm"
 
-      
-        
 
+  componentDidUpdate: -> @attachToVideo()
+  componentDidMount: -> @attachToVideo()
 
-
-        
-
-  componentDidMount: ->
-
+  attachToVideo : -> 
     # we use timeupdate rather than tracks / cue changes / vtt
     # because browser implementations are not complete (and often buggy)
     # and polyfills poor. 
+
     v = @refs.video.getDOMNode()
-    v.addEventListener 'timeupdate', (ev) -> 
-      chapter = fetch("video_chapter")
-      controls = fetch('video_controls')
 
-      text = 
-        if v.currentTime < 5.5
-          "Proposals often require careful thought"
-        else if v.currentTime < 10.5
-          "The Pro/Con list encourages thinking about tradeoffs"
-        else if v.currentTime < 18
-          "Singular points describe a consideration"
-        else if v.currentTime < 25
-          "Learn and build from other\’s thoughts"
-        else if v.currentTime < 33.5
-          "Use a slider to express your conclusion"
-        else if v.currentTime < 39
-          "Integrate your considered opinion with the group"
-        else if v.currentTime < 43
-          "Histogram shows the spectrum of opinion"
-        else if v.currentTime < 46
-          "Points ranked by salience across all individuals"
-        else if v.currentTime < 55
-          "Now explore patterns of thought!"
-        else if v.currentTime < 61
-          "Understand the reservations of proposal opposers"
-        else if v.currentTime < 67.5
-          "Inspect what a particular individual believes"
-        else if v.currentTime < 72
-          "Figure out who has been persuaded by the top Pro"
-        else if v.currentTime < 87
-          "Drill into points for focused discussion"
-        else
-          ""
+    if @v != v
+      @v = v
+      v.addEventListener 'timeupdate', (ev) -> 
+        chapter = fetch("video_chapter")
+        controls = fetch('video_controls')
 
-      controls.value = v.currentTime / v.duration
+        text = 
+          if v.currentTime < 5.5
+            "Proposals often require careful thought"
+          else if v.currentTime < 10.5
+            "The Pro/Con list encourages thinking about tradeoffs"
+          else if v.currentTime < 18
+            "Singular points describe a consideration"
+          else if v.currentTime < 25
+            "Learn and build from other\’s thoughts"
+          else if v.currentTime < 33.5
+            "Use a slider to express your conclusion"
+          else if v.currentTime < 39
+            "Integrate your considered opinion with the group"
+          else if v.currentTime < 43
+            "Histogram shows the spectrum of opinion"
+          else if v.currentTime < 46
+            "Points ranked by salience across all individuals"
+          else if v.currentTime < 55
+            "Now explore patterns of thought!"
+          else if v.currentTime < 61
+            "Understand the reservations of proposal opposers"
+          else if v.currentTime < 67.5
+            "Inspect what a particular individual believes"
+          else if v.currentTime < 72
+            "Figure out who has been persuaded by the top Pro"
+          else if v.currentTime < 87
+            "Drill into points for focused discussion"
+          else
+            ""
 
-      save controls
+        controls.value = v.currentTime / v.duration
 
-      if chapter.text != text
-        chapter.text = text
-        save chapter
-    , false
+        save controls
+
+        if chapter.text != text
+          chapter.text = text
+          save chapter
+      , false
 
 
 

@@ -19,6 +19,7 @@ base_text =
 
 small_text = _.extend {}, base_text,
   fontSize: 20
+  fontWeight: 300
 
 h1 = _.extend {}, base_text,
   fontSize: 48
@@ -47,7 +48,6 @@ a = _.extend {}, base_text,
 
 
 
-
 SaasHomepage = ReactiveComponent
   displayName: "SaasHomepage"
   render: ->
@@ -56,19 +56,19 @@ SaasHomepage = ReactiveComponent
     if !ui.initialized
       _.extend ui, 
         initialized: true
-        video_file_name: 'with_screen'
+        video_file_name: 'deathstar-cam'
         video_file_name_instr: "Only available video is 'deathstar-cam'"
-        video_elements_order: "caption,controls,video"
+        video_elements_order: "caption,video"
         video_elements_order_inst: """
           A list of video elements to show and in which order (top to bottom). 
           e.g. \"caption,controls,video\"
           Must contain 'video' somewhere.
           """
-        frame: 'none'
+        frame: 'laptop'
         frame_instr: """"
           Whether to draw a frame around the video, and if so, what it should be. 
           Supported values: 
-            'gray border', 'mbp', 'windoze', 'laptop', 'app window', 'browser window'
+            'laptop', 'browser', 'none'
           """
       save ui
 
@@ -80,63 +80,67 @@ SaasHomepage = ReactiveComponent
       story()
 
 
-HEADER_HEIGHT = 75
+HEADER_HEIGHT = 80
 Header = ReactiveComponent
   displayName: "Header"
   render: ->
     current_user = fetch("/current_user")
 
-    DIV null,
+    DIV
+      style:
+        position: "relative"
+        margin: "0 auto"
+        backgroundColor: logo_red
+        height: HEADER_HEIGHT
+
+
       DIV
         style:
-          position: "relative"
-          margin: "0 auto"
-          backgroundColor: logo_red
-          height: HEADER_HEIGHT
+          width: SAAS_PAGE_WIDTH
+          margin: 'auto'
 
         IMG
           src: asset("saas_landing_page/considerit_logo.svg")
           style:
             position: "relative"
-            top: 23
-            left: 12
-            height: 68
+            top: HEADER_HEIGHT * .05 + 18
+            left: 0
+            height: HEADER_HEIGHT * .95
 
-      # nav menu
-      DIV 
-        style: 
-          width: SAAS_PAGE_WIDTH
-          margin: 'auto'
-          position: 'relative'
-          top: -34
-
+        # nav menu
         DIV 
           style: 
+            width: SAAS_PAGE_WIDTH
+            margin: 'auto'
+            position: 'relative'
+            top: -34
+
+          DIV 
+            style: 
+              position: 'absolute'
+              right: 0
+
+            A 
+              style: nav_link_style
+              href: "#pricing"
+              'pricing'
+            A 
+              style: nav_link_style
+              href: "#contact"
+              'contact'
+            A 
+              style: nav_link_style
+              href: "#story"
+              'story'              
+
+        DIV 
+          style:
+            fontSize: 24
+            fontWeight: 300
+            color: logo_red
             position: 'absolute'
-            right: 0
-
-          A 
-            style: nav_link_style
-            href: "#pricing"
-            'pricing'
-          A 
-            style: nav_link_style
-            href: "#contact"
-            'contact'
-          A 
-            style: nav_link_style
-            href: "#story"
-            'story'              
-
-      DIV 
-        style:
-          fontSize: 24
-          fontWeight: 300
-          color: logo_red
-          position: 'absolute'
-          left: 16
-          top: 4 + HEADER_HEIGHT
-        "for thinking together"
+            top: 4 + HEADER_HEIGHT
+          "for thinking together"
 
 
 VIDEO_SLIDER_WIDTH = 250
@@ -152,26 +156,92 @@ Video = ReactiveComponent
       controls.playing = true
       save controls
 
+    video = DIV null,
+      @drawCaptions()
+      if ui.frame == 'none'
+        @drawVideoControls()
+      @drawVideo()
 
-    video_drawn = false
-    captions_drawn = false
-    controls_drawn = false
+    if ui.frame == 'laptop'
+      @drawInLaptop video
+    else if ui.frame == 'browser'
+      @drawInBrowserWindow video
+    else 
+      @drawWithoutFrame video
 
-    DIV null,
-      for video_el in ui.video_elements_order.split(',')
-        video_el = video_el.trim()
-        if video_el == 'video'
-          video_drawn = true
 
-        switch video_el
-          when 'controls'
-            @drawVideoControls(video_drawn, captions_drawn)
-          when 'video'
-            @drawVideo(controls_drawn, captions_drawn)
-          when 'caption'
-            @drawCaptions(video_drawn, captions_drawn)
-          else 
-            console.error "#{video_el} is not a valid video element"
+  drawInLaptop : (children) -> 
+
+    DIV 
+      style: 
+        marginTop: 70
+        height: 756
+        position: 'relative'
+
+      DIV 
+        style: 
+          position: 'relative'
+          top: 39
+        children    
+
+      IMG
+        src: asset('saas_landing_page/laptop-frame.png')
+        style: 
+          top: 0
+          position: 'absolute'
+          left: -130
+          pointerEvents: 'none'
+
+  drawWithoutFrame : (children) -> 
+
+    DIV 
+      style: 
+        marginTop: 70
+
+      children
+
+  drawInBrowserWindow : (children) ->
+    DIV 
+      style: 
+        border: "1px solid #ccc"
+        borderTop: 'none'
+        borderRadius: 8
+        backgroundColor: 'white'
+        boxShadow: "0 3px 8px rgba(0,0,0,.1)"
+        marginTop: 70
+
+      # window bar / url
+      DIV 
+        style: 
+          height: 31
+          borderRadius: '8px 8px 0 0'
+          backgroundColor: '#ccc'
+          backgroundImage: "linear-gradient(0deg, #D4D3D4, #EEEDEE)"
+          boxShadow: "0 1px 1px rgba(0,0,0,.35)"
+
+        # url area
+        DIV 
+          style: 
+            position: 'relative'
+            width: 300
+            margin: 'auto'
+            height: 20
+            top: (31 - 20) / 2
+            borderRadius: 4
+            backgroundColor: 'white'
+            boxShadow: "0 1px 1px rgba(0,0,0,.1)"
+            textAlign: 'center'
+            fontSize: 12
+
+          SPAN
+            style: 
+              position: 'relative'
+              top: 3
+            'http://video-demo.consider.it'
+
+      DIV null,
+
+        children 
 
 
   drawCaptions : -> 
@@ -180,17 +250,21 @@ Video = ReactiveComponent
 
     DIV
       style:
-        marginTop: 10
         position: 'relative'
+        zIndex: 1
+        top: if ui.frame == 'laptop' then -12
 
       H2
         style: _.extend {}, h2,
           textAlign: "center"
+          fontSize: if ui.frame == 'laptop' then 30 else 36
+          color: if ui.frame == 'laptop' then 'white' else 'black'
+
         
         if chapter.text 
           chapter.text 
         else 
-          "Sometimes a proposal bears careful thought"
+          ""
 
   drawVideoControls : ->
     controls = fetch('video_controls')
@@ -269,14 +343,17 @@ Video = ReactiveComponent
     DIV
       id: "homepage_video"
       style:
-        width: SAAS_PAGE_WIDTH
+        width: SAAS_PAGE_WIDTH - 1
+        height: 551
 
       VIDEO
         preload: "auto"
         loop: true
         autoPlay: true
-        width: SAAS_PAGE_WIDTH
+        width: SAAS_PAGE_WIDTH - 2
+        height: 551
         ref: "video"
+        controls: if ui.frame != 'none' then true
 
         SOURCE
           src: asset("saas_landing_page/#{ui.video_file_name}.mp4")
@@ -304,36 +381,34 @@ Video = ReactiveComponent
       controls = fetch('video_controls')
 
       text = 
-        if v.currentTime < 5
+        if v.currentTime < 5.5
           "Proposals often require careful thought"
-        else if v.currentTime < 10
+        else if v.currentTime < 10.5
           "The Pro/Con list encourages thinking about tradeoffs"
-        else if v.currentTime < 14.5
+        else if v.currentTime < 18
           "Singular points describe a consideration"
-        else if v.currentTime < 15
-          "Singular points describe a consideration"
-        else if v.currentTime < 23
+        else if v.currentTime < 25
           "Learn and build from other\’s thoughts"
-        else if v.currentTime < 32
+        else if v.currentTime < 33.5
           "Use a slider to express your conclusion"
-        else if v.currentTime < 37
+        else if v.currentTime < 39
           "Integrate your considered opinion with the group"
-        else if v.currentTime < 41
+        else if v.currentTime < 43
           "Histogram shows the spectrum of opinion"
         else if v.currentTime < 46
           "Points ranked by salience across all individuals"
-        else if v.currentTime < 53
+        else if v.currentTime < 55
           "Now explore patterns of thought!"
-        else if v.currentTime < 58
+        else if v.currentTime < 61
           "Understand the reservations of proposal opposers"
-        else if v.currentTime < 65
-          "Inspect what a particular individual believes"
         else if v.currentTime < 67.5
+          "Inspect what a particular individual believes"
+        else if v.currentTime < 72
           "Figure out who has been persuaded by the top Pro"
-        else if v.currentTime < 84
+        else if v.currentTime < 87
           "Drill into points for focused discussion"
         else
-          "For small and large groups alike"
+          ""
 
       controls.value = v.currentTime / v.duration
 
@@ -378,27 +453,27 @@ bullet = (props) ->
 
 
 usedFor = ->
-
+  ui = fetch('homepage_ui')
   DIV
     style:
-      marginTop: 60
+      marginTop: if ui.frame == 'laptop' then 30 else 60
 
     H1 style: h1,
       'The first forum to function better when more people participate'
 
     bullet
       point_style: 'bullet'
-      strong: "Collecting opinions on specific ideas"
+      strong: "Collects opinions on specific ideas"
       body: ", proposals, plans of action, or hypotheticals. Even job candidates, products, or designs."
 
     bullet
       point_style: 'bullet'
-      strong: "Fostering considerate interactions"
+      strong: "Fosters considerate interactions"
       body: ". The interface makes it easy to consider all sides without putting people in direct conflict. Personal attacks and trolling don’t fit the format."
 
     bullet
       point_style: 'bullet'
-      strong: "Producing an interactive summary of group thought"
+      strong: "Produces an interactive summary of group thought"
       body: ". Patterns of thought across the whole group can be identified. Perhaps 80% of opposers have a single con point that can be addressed!"
 
 
@@ -521,6 +596,10 @@ contact = (local) ->
         email: "toomim@consider.it"
 
 story = ->
+  story_link = _.extend {}, a, small_text,
+    fontWeight: 500
+    textDecoration: 'none'
+
   DIV 
     id: 'story'
     style:
@@ -539,9 +618,10 @@ story = ->
       DIV 
         style: _.extend {}, small_text, 
           display: 'inline-block'
-          width: 500
+          width: SAAS_PAGE_WIDTH * .6 - 40
           marginRight: 40
           verticalAlign: 'top'
+
           
 
         P 
@@ -553,24 +633,25 @@ story = ->
           Computer Science """
 
           A 
-            style: _.extend {}, a, small_text
+            style: story_link
             href: 'https://www.dropbox.com/s/ycqfoxdl5sghaud/dissertation.pdf?dl=0'
             "PhD dissertation" 
 
-          """
-          at the University of Washington, in collaboration with fellow graduate 
-          student Michael Toomim, and Professor """
+          
+          ' at the University of Washington, in collaboration with fellow graduate '
+          'student Michael Toomim, Professor '
 
           A
-            style: _.extend {}, a, small_text
+            style: story_link
             href: 'http://www.cs.washington.edu/people/faculty/borning'
             'Alan Borning'
 
-          """. The project was funded by a generous National 
-          Science Foundation grant. Other early contributors to the research project 
-          include Jonathan Morgan (phd...), Deen Freelon, Lance Bennett, Sheetal 
-          Agarwal, and Andrew Hamada.
-          """
+          ', Jonathan Morgan, and a team of political communication researchers. The project was funded by a generous '
+          A
+            href: "http://www.nsf.gov/awardsearch/showAward?AWD_ID=0966929"
+            style: story_link
+            "National Science Foundation grant"
+          '.'
 
         P null,
           """
@@ -582,18 +663,22 @@ story = ->
       DIV 
         style: _.extend {}, small_text, 
           display: 'inline-block'
-          style: 
-            width: 400
-            verticalAlign: 'top'
+          width: SAAS_PAGE_WIDTH * .4
+          marginTop: 10
 
         
         IFRAME
-          width: 347
-          height: 211
-          src: "https://www.youtube.com/embed/RIUD4Ty2ZAE" 
+          width: 400
+          height: 243
+          src: "https://www.youtube.com/embed/jl1AsVM_8hk?modestbranding=1&showinfo=0&theme=dark&fs=1" 
           frameborder: "0" 
           allowfullscreen: true
-          
+
+        SPAN
+          style: 
+            fontSize: 14
+            fontWeight: 400
+          'Travis\' Phd defense, from December 2011'
 
 
     DIV 
@@ -603,35 +688,65 @@ story = ->
       DIV 
         style: _.extend {}, small_text, 
           display: 'inline-block'
-          verticalAlign: 'top'
-          width: 400
-          marginRight: 40
+          verticalAlign: 'middle'
+          width: SAAS_PAGE_WIDTH * .4
+          marginTop: 10
 
-        IFRAME
+        IMG 
+          src: asset('saas_landing_page/sifp.jpg')
           width: 400
-          height: 243
-          src: "https://www.youtube.com/embed/RIUD4Ty2ZAE" 
-          frameborder: "0" 
-          allowfullscreen: true
-          
+        SPAN
+          style: 
+            fontSize: 14
+            fontWeight: 400
+          'Travis delivers the '
+          A
+            style: _.extend {}, a, 
+              fontSize: 14
+            href: 'https://www.youtube.com/watch?v=RIUD4Ty2ZAE'
+            'winning talk'
+          ' at Social Innovation Fast Pitch'          
 
       DIV 
         style: _.extend {}, small_text, 
           display: 'inline-block'
-          width: 500
+          width: SAAS_PAGE_WIDTH * .6 - 40
           verticalAlign: 'top'
+          marginLeft: 40
 
         P 
           style: 
             paddingBottom: 15
 
-          """
-          The original and longest-running Consider.it application is the 
-          award-winning Living Voters Guide, a crowd-sourced guide to public
-          thought on Washington State’s ballot measures, with on-demand 
-          fact-checking by Seattle Public Librarians. Our partners Seattle 
-          CityClub have hosted the dialogue for five years and counting.
-          """
+          'The original and longest-running Consider.it application is the '
+          
+          A 
+            style: story_link
+            href: "http://www.evergreenapps.org/congratulations-to-the-winners-of-the-evergreen-apps-challenge/"
+            'award'
+          '-'
+          A 
+            style: story_link
+            href: "http://www.socialventurepartners.org/seattle/2012/10/25/2012-sifp-winners/"
+            'winning'
+          ' '
+          A
+            style: story_link
+            href:'https://livingvotersguide.org'
+            "Living Voters Guide"
+
+          """, a crowd-sourced guide to public
+          thought on Washington State’s ballot measures, with """
+          A
+            style: story_link
+            href: "http://blogs.seattletimes.com/monica-guzman/2012/10/27/seattle-library-fact-check-experiment-risky-but-valuable/"
+            "on-demand fact-checking"
+          ' provided by Seattle Public Librarians. Our partners '
+          A 
+            style: story_link
+            href: 'http://seattlecityclub.org'
+            "Seattle CityClub"
+          ' have hosted the dialogue for five years and counting.'
 
         P 
           style: 
@@ -651,7 +766,7 @@ story = ->
       DIV 
         style: _.extend {}, small_text, 
           display: 'inline-block'
-          width: 500
+          width: SAAS_PAGE_WIDTH * .6 - 40
           marginRight: 40
           verticalAlign: 'top'
 
@@ -660,28 +775,80 @@ story = ->
             paddingBottom: 15
 
           """
-          We decided to strike out on our own after growing frustrated by the 
-          academic system, leaving our comfortable yet confining ivory tower for the 
-          excitement of the unexplored (for us) jungle of capitalism. 
-          In those wilds we are creating a decentralized R&D laboratory to 
-          bring new social technologies into the world. We call this organization 
-          The Invisible College.
+          We decided to leave our comfortable ivory tower for the 
+          excitement of the jungle of capitalism after growing 
+          frustrated by the academic system. Out of the 
+          frying pan and into the fire, right?
           """
 
         P 
           style: 
             paddingBottom: 15
+          """
+          We are creating a decentralized R&D laboratory to 
+          bring new social technologies into the world. We call this organization 
+          The Invisible College. The Invisible College’s non-profit mission is 
+          funded by internal for-profit companies based on the social technologies 
+          we create. Consider.it is the most mature of these companies. 
+          """          
 
+
+        DIV null,
           """
-          The Invisible College’s non-profit mission is funded by internal 
-          for-profit companies based on the social technologies we create. 
-          Consider.it is the most mature of these companies. 
+          Published research about Consider.it:
           """
+          UL
+            style: 
+              listStyle: 'none'
+
+            LI 
+              style: 
+                paddingTop: 5
+
+              A 
+                style:  _.extend {}, story_link, 
+                  textDecoration: 'underline'
+                href: "http://dub.washington.edu/djangosite/media/papers/kriplean-cscw2012.pdf"
+                'Supporting Reflective Public Thought with Consider.it'
+              DIV 
+                style: _.extend {}, small_text, 
+                  fontSize: 16
+                '2012 ACM Conference on Computer Supported Cooperative Work'
+
+
+            LI
+              style: 
+                paddingTop: 15
+              A 
+                style:  _.extend {}, story_link, 
+                  textDecoration: 'underline'
+                href: "http://dx.doi.org/10.1080/19331681.2012.665755"
+                'Facilitating Diverse Political Engagement'
+              DIV 
+                style: _.extend {}, small_text, 
+                  fontSize: 16
+                'Journal of Information Technology & Politics, Volume 9, Issue 3'
+
+            LI 
+              style: 
+                paddingTop: 15
+              A 
+                style:  _.extend {}, story_link, 
+                  textDecoration: 'underline'
+                href: "http://homes.cs.washington.edu/~borning/papers/kriplean-cscw2014.pdf"
+                'On-demand Fact-checking in Public Dialogue'
+
+              DIV 
+                style: _.extend {}, small_text, 
+                  fontSize: 16
+                '2014 ACM Conference on Computer Supported Cooperative Work'
+
+
 
       DIV 
         style: _.extend {}, small_text, 
           display: 'inline-block'
-          width: 400
+          width: SAAS_PAGE_WIDTH * .4
           verticalAlign: 'top'
           position: 'relative'
 
@@ -689,23 +856,40 @@ story = ->
         IMG 
           src: asset('saas_landing_page/b&w_kev_mike.png')
           style: 
-            width: 300
+            width: 250
             position: 'relative'
             zIndex: 1
 
         IMG 
           src: asset('saas_landing_page/consult.png')
           style: 
-            width: 300
+            width: 250
             position: 'absolute'
-            top: 200
+            top: 150
             left: 80
 
+Footer = -> 
 
+  DIV
+    style: 
+      backgroundColor: logo_red
+      padding: '20px 0'
+    DIV
+      style: _.extend {}, h2,
+        width: SAAS_PAGE_WIDTH
+        margin: 'auto'
+        color: 'white'
 
-
-
-
+      'Friend, that is our story.'
+      BR null, 
+      'Tell us '
+      A
+        style: _.extend {}, a, 
+          fontSize: 36
+          color: 'white'
+        href: 'mailto:admin@consider.it'
+        'your story' 
+      '. What led you here?'
 
 
 Page = ReactiveComponent
@@ -745,13 +929,15 @@ Root = ReactiveComponent
       Header()
       DIV
         style:
-          width: 1000
+          width: SAAS_PAGE_WIDTH
           backgroundColor: "white"
           margin: "auto"
           paddingBottom: 20
           marginTop: 20
         BrowserHacks()
         Page(key: "/page" + loc.url)
+
+      Footer()
 
       Tooltip()
 

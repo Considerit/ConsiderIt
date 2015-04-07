@@ -156,7 +156,6 @@ customizations.enviroissues =
 
 customizations.enviroissues.NonHomepageHeader = customizations.enviroissues.HomepageHeader
 
-
 ##############
 # ECAST
 

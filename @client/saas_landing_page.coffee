@@ -64,7 +64,7 @@ SaasHomepage = ReactiveComponent
           e.g. \"caption,controls,video\"
           Must contain 'video' somewhere.
           """
-        frame: 'laptop'
+        frame: 'browser'
         frame_instr: """"
           Whether to draw a frame around the video, and if so, what it should be. 
           Supported values: 
@@ -384,31 +384,37 @@ Video = ReactiveComponent
           if v.currentTime < 5.5
             "Proposals often require careful thought"
           else if v.currentTime < 10.5
-            "The Pro/Con list encourages thinking about tradeoffs"
+            # "The Pro/Con list encourages thinking about tradeoffs"
+            # "The Pro/Con list emphasizes tradeoffs"
+            # "The Pro/Con list emphasizes considering tradeoffs"
+            # "The Pro/Con list focuses thought on tradeoffs"
+            # "The Pro/Con list stresses tradeoffs"
+            "The Pro/Con list focuses attention on tradeoffs"
+
           else if v.currentTime < 18
-            "Singular points describe a consideration"
+            "Each thought becomes a Pro or Con point"
           else if v.currentTime < 25
-            "Learn and build from other\’s thoughts"
+            "Learn and include the thoughts of peers"
           else if v.currentTime < 33.5
-            "Use a slider to express your conclusion"
+            "Express your conclusion on a sliding scale"
           else if v.currentTime < 39
-            "Integrate your considered opinion with the group"
+            "Add your opinion to the group"
           else if v.currentTime < 43
-            "Histogram shows the spectrum of opinion"
+            "The spectrum of opinion is shown on a Histogram"
           else if v.currentTime < 46
-            "Points ranked by salience across all individuals"
+            "Points are ranked by importance for the group"
           else if v.currentTime < 55
             "Now explore patterns of thought!"
           else if v.currentTime < 61
-            "Understand the reservations of proposal opposers"
+            "Learn the reservations of opposers"
           else if v.currentTime < 67.5
-            "Inspect what a particular individual believes"
+            "Inspect a peer's opinion"
           else if v.currentTime < 72
-            "Figure out who has been persuaded by the top Pro"
+            "See who has been persuaded by the top Pro"
           else if v.currentTime < 87
-            "Drill into points for focused discussion"
+            "Have a focused discussion about a single point"
           else
-            ""
+            "...and those are the basics of Consider.it!"
 
         controls.value = v.currentTime / v.duration
 
@@ -880,7 +886,7 @@ Footer = ->
         margin: 'auto'
         color: 'white'
 
-      'Friend, that is our story.'
+      'That is our story, new friend!'
       BR null, 
       'Tell us '
       A

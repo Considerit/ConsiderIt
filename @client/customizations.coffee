@@ -107,6 +107,56 @@ customizations.default =
 # SUBDOMAIN CONFIGURATIONS
 
 
+#################
+# Relief International
+
+customizations.ri = 
+  show_crafting_page_first: true
+
+  slider_pole_labels :
+    individual: 
+      support: 'Agree'
+      oppose: 'Disagree'
+    group: 
+      support: 'Agree'
+      oppose: 'Disagree'
+
+#################
+# Enviroissues
+
+customizations.enviroissues = 
+  show_crafting_page_first: true
+
+  slider_pole_labels :
+    individual: 
+      support: 'Agree'
+      oppose: 'Disagree'
+    group: 
+      support: 'Agree'
+      oppose: 'Disagree'
+
+
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
+
+    render: ->
+      DIV
+        style:
+          height: 130
+          width: PAGE_WIDTH
+          margin: '60px auto'
+
+
+        IMG
+          src: "<%= asset_path('enviroissues/logo.png') %>"
+
+        ProfileMenu()
+
+
+
+customizations.enviroissues.NonHomepageHeader = customizations.enviroissues.HomepageHeader
+
+
 ##############
 # ECAST
 

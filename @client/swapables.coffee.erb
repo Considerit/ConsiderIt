@@ -66,7 +66,7 @@ window.SimpleHomepage = ReactiveComponent
 
         if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
           DIV
-            style: margin: '45px 0 45px 200px'
+            style: margin: "45px 0 45px #{if lefty then '200px' else '0'}"
 
             "#{options.label} "
 
@@ -116,7 +116,7 @@ window.SimpleHomepage = ReactiveComponent
               DIV 
                 style: 
                   width: 700
-                  marginLeft: 200
+                  marginLeft: if lefty then 200
                 H1
                   style: 
                     fontSize: 48

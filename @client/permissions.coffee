@@ -146,7 +146,8 @@ matchSomeRole = (roles, accepted_roles) ->
     return true if matchEmail(roles[role])
   return false
 
-window.recourse = (permission) ->
+window.recourse = (permission, goal) ->
+  goal = goal || 'access this page'
   
   switch permission
     when Permission.INSUFFICIENT_PRIVILEGES
@@ -154,12 +155,12 @@ window.recourse = (permission) ->
 
     when Permission.NOT_LOGGED_IN
       root = fetch 'root'
-      root.auth = {form: 'login', 'Access this page'}
+      root.auth = {form: 'login', goal: goal}
       save root
 
     when Permission.UNVERIFIED_EMAIL
       root = fetch 'root'
-      root.auth = {form: 'verify email', goal: 'Access this page'}
+      root.auth = {form: 'verify email', goal: goal}
       save root
 
       current_user = fetch '/current_user'

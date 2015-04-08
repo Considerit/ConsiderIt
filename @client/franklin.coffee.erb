@@ -3624,7 +3624,7 @@ EditProposal = ReactiveComponent
                   permit('update proposal', proposal)
 
     if permitted < 0
-      recourse permitted 
+      recourse permitted, 'create a proposal'
       return DIV null
 
     block_style = 

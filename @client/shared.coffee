@@ -25,6 +25,10 @@ window.A = React.createClass
               # Instruct Backbone to trigger routing events
               window.app_router.navigate href, { trigger : true }
 
+              # When we navigate to another internal page, we typically want the 
+              # page to be scrolled to the top of the new page. The programmer can
+              # set "data-no-scroll" on the link if they wish to prevent this 
+              # behavior.
               if !@getDOMNode().getAttribute('data-no-scroll')
                 window.scrollTo(0, 0)
               return false

@@ -2534,54 +2534,19 @@ styles += """
 EditProposal = ReactiveComponent
   displayName: 'EditProposal'
 
-  saveProposal : -> 
-    $el = $(@getDOMNode())
-
-    name = $el.find('#name').val()
-    description = fetch("description-#{@data().key}").html
-    slug = $el.find('#slug').val()
-    cluster = $el.find('#cluster').val()
-    cluster = null if cluster == ""
-    active = $el.find('#open_for_discussion:checked').length > 0
-    hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0
-
-    if @props.fresh
-      proposal =
-        key : '/new/proposal'
-        name : name
-        description : description
-        cluster : cluster
-        slug : slug
-        active: active
-        hide_on_homepage: hide_on_homepage
-
-    else 
-      proposal = @data()
-      _.extend proposal, 
-        cluster: cluster
-        name: name
-        slug: slug
-        description: description
-        active: active
-        hide_on_homepage: hide_on_homepage
-
-    if @local.roles
-      proposal.roles = @local.roles
-      proposal.invitations = @local.invitations
-
-    if @local.description_fields
-      for field in @local.description_fields
-        edited_html = fetch("field-#{field.id}-html-#{proposal.key}")
-        field.html = edited_html.html if edited_html.html
-      proposal.description_fields = JSON.stringify(@local.description_fields)
-
-    save proposal, -> 
-      loadPage "/#{slug}"
-
   render : ->
     user = fetch('/current_user')
     proposal = @data()
     subdomain = fetch '/subdomain'
+
+    # defaultValue for React forms conflicts with statebus's method of 
+    # just rerunning until things work. Namely, the default value
+    # that is set before the proposal is loaded entirely sticks
+    # even after the proposal is fully loaded from the server.
+    # This code works around that problem by simply exiting the 
+    # render if the proposal isn't loaded already. 
+    if !@props.fresh && !proposal.id
+      return SPAN null
 
     default_group = if subdomain.name == 'bitcoin'
                       'Member Proposals'
@@ -2595,7 +2560,7 @@ EditProposal = ReactiveComponent
                   permit('update proposal', proposal)
 
     if permitted < 0
-      recourse permitted 
+      recourse permitted, 'create a proposal'
       return DIV null
 
     block_style = 
@@ -3006,7 +2971,27 @@ EditProposal = ReactiveComponent
                   # roles has to be rendered so that default roles 
                   # are set on the proposal
 
-            ProposalRoles key: @local
+            ProposalRoles 
+              key: if @props.fresh then @local else proposal
+
+
+        if proposal.errors?.length > 0
+          
+          DIV
+            style:
+              fontSize: 18
+              color: 'darkred'
+              backgroundColor: '#ffD8D8'
+              padding: 10
+              marginTop: 10
+            for error in proposal.errors
+              DIV null, 
+                I
+                  className: 'fa fa-exclamation-circle'
+                  style: {paddingRight: 9}
+
+                SPAN null, error
+
 
         DIV null,
           INPUT 
@@ -3024,7 +3009,54 @@ EditProposal = ReactiveComponent
             width: 400
             marginTop: 5
 
-          "By publishing, you are accepting responsibility to improve your proposal according to the criteria listed above given input from others." 
+          "You are accepting responsibility for improving your proposal given input from others." 
+
+
+  saveProposal : -> 
+    $el = $(@getDOMNode())
+
+    name = $el.find('#name').val()
+    description = fetch("description-#{@data().key}").html
+    slug = $el.find('#slug').val()
+    cluster = $el.find('#cluster').val()
+    cluster = null if cluster == ""
+    active = $el.find('#open_for_discussion:checked').length > 0
+    hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0
+
+    if @props.fresh
+      proposal =
+        key : '/new/proposal'
+        name : name
+        description : description
+        cluster : cluster
+        slug : slug
+        active: active
+        hide_on_homepage: hide_on_homepage
+
+    else 
+      proposal = @data()
+      _.extend proposal, 
+        cluster: cluster
+        name: name
+        slug: slug
+        description: description
+        active: active
+        hide_on_homepage: hide_on_homepage
+
+    if @local.roles
+      proposal.roles = @local.roles
+      proposal.invitations = @local.invitations
+
+    if @local.description_fields
+      for field in @local.description_fields
+        edited_html = fetch("field-#{field.id}-html-#{proposal.key}")
+        field.html = edited_html.html if edited_html.html
+      proposal.description_fields = JSON.stringify(@local.description_fields)
+
+    save proposal, -> 
+      if !proposal.errors || proposal.errors.length == 0
+        window.scrollTo(0,0)
+        loadPage "/#{slug}"
 
 
 Homepage = ReactiveComponent

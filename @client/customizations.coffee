@@ -495,24 +495,29 @@ customizations.bitcoin =
     # Each cluster can have its own options
 
     
-    'Board and Staff Proposals':   # Options for the "Candidates" cluster
+    'Board Proposals':   # Options for the "Candidates" cluster
       editor_icons: true
-      #homie_histo_filter: (user) -> fetch('ny1').yeah or user.name of bitcoin_foundation_members
       homie_histo_title: "Members' Opinions"
       collapse_descriptions_at: 600
 
     'Member Proposals':   # Options for the "Candidates" cluster
       editor_icons: true
-      #homie_histo_filter: (user) -> fetch('ny1').yeah or user.name of bitcoin_foundation_members
       homie_histo_title: "Members' Opinions"
       collapse_descriptions_at: 600
 
     Candidates:   # Options for the "Candidates" cluster
       editor_icons: true
-      #homie_histo_filter: (user) -> fetch('ny1').yeah or user.name of bitcoin_foundation_members
       homie_histo_title: "Members' Opinions"
       collapse_descriptions_at: 600
-      description: "Winter 2015 board election"
+      label: "Winter 2015 board election"
+      description: 
+        DIV null, 
+          'Thanks for your opinions. Here are the '
+          A
+            href: 'https://blog.bitcoinfoundation.org/election-results/'
+            style: textDecoration: 'underline'
+            "results"
+          '.'
       archived: false
 
 
@@ -614,16 +619,17 @@ customizations.bitcoin =
                 style: 
                   fontWeight: 600
                   fontSize: 35
-                'Member deliberation about the Foundation\'s future.'
+                'We choose our own future.'
 
-              P style: marginTop: 8,
-                "Submit a "
+              P style: marginTop: 14, marginBottom: 20,
+                'We members must decide how we want our Foundation to evolve.'
+                BR null, ''
+                'Give your opinion to influence your peers. '
                 A
                   href: '/proposal/new'
                   style: textDecoration: 'underline', fontWeight: 400
-                  "new proposal"
-                '.'
-
+                  "Submit a proposal"
+                ' to lead a new direction.'
 
         ProfileMenu()
 customizations.bitcoin.NonHomepageHeader = customizations.bitcoin.HomepageHeader

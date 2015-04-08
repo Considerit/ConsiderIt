@@ -54,6 +54,7 @@ sorted_proposals = (cluster) ->
 
 window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'
+
   render : ->
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
@@ -71,9 +72,24 @@ window.SimpleHomepage = ReactiveComponent
 
       # List all clusters
       for cluster, index in proposals.clusters or []
-        if cluster.proposals?.length > 0
-          options = customization("cluster_options.#{cluster.name}") || {}
-                    
+        options = customization("cluster_options.#{cluster.name}") || {}
+
+        if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
+          DIV
+            style: margin: '45px 0 45px 200px'
+
+            "#{options.description} "
+
+            A 
+              style: 
+                textDecoration: 'underline'
+              onClick: do(cluster) => => 
+                @local.show_cluster ||= []
+                @local.show_cluster.push(cluster.name)
+                save(@local)
+              'Show archive'
+
+        else if cluster.proposals?.length > 0
           first_column =
             width: 350
             marginLeft: if lefty then 200
@@ -105,6 +121,14 @@ window.SimpleHomepage = ReactiveComponent
           DIV
             key: cluster.name
             style: margin: '45px 0'
+
+            if options.description
+              H1
+                style: 
+                  fontSize: 48
+                  fontWeight: 200
+                  marginLeft: 200
+                options.description
 
             # Header of cluster
             H1

@@ -150,6 +150,22 @@ matchSomeRole = (roles, accepted_roles) ->
     return true if matchEmail(roles[role])
   return false
 
+window.recourse = (permission) ->
+  
+  switch permission
+
+    when Permission.INSUFFICIENT_PRIVILEGES
+      loadPage '/'
+
+    when Permission.NOT_LOGGED_IN
+      reset_key 'auth', {form: 'login', 'Access this page'}
+
+    when Permission.UNVERIFIED_EMAIL
+      reset_key 'auth', {form: 'verify email', goal: 'Access this page'}
+      current_user.trying_to = 'send_verification_token'
+      save current_user
+
+
 ####
 # AccessControlled
 #
@@ -181,19 +197,7 @@ AccessControlled =
 
     if @data().permission_denied && @data().permission_denied < 0
       # Let's recover, depending on the recourse the server dictates
-      switch @data().permission_denied
-
-        when Permission.INSUFFICIENT_PRIVILEGES
-          loadPage '/'
-
-        when Permission.NOT_LOGGED_IN
-          reset_key 'auth', {form: 'login', 'Access this page'}
-
-        when Permission.UNVERIFIED_EMAIL
-          reset_key 'auth', {form: 'verify email', goal: 'Access this page'}
-          current_user.trying_to = 'send_verification_token'
-          save current_user
-
+      recourse @data().permission_denied
 
     #######
     # Hack! The server will return permission_denied on the page, e.g.: 

@@ -150,7 +150,8 @@ matchSomeRole = (roles, accepted_roles) ->
     return true if matchEmail(roles[role])
   return false
 
-window.recourse = (permission) ->
+window.recourse = (permission, goal) ->
+  goal = goal || 'access this page'
   
   switch permission
 
@@ -158,10 +159,12 @@ window.recourse = (permission) ->
       loadPage '/'
 
     when Permission.NOT_LOGGED_IN
-      reset_key 'auth', {form: 'login', 'Access this page'}
+      reset_key 'auth', {form: 'login', goal: goal}
 
     when Permission.UNVERIFIED_EMAIL
-      reset_key 'auth', {form: 'verify email', goal: 'Access this page'}
+      reset_key 'auth', {form: 'verify email', goal: goal}
+
+      current_user = fetch '/current_user'
       current_user.trying_to = 'send_verification_token'
       save current_user
 

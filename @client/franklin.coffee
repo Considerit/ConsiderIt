@@ -2538,7 +2538,6 @@ styles += """
 
 
 
-# top secret proposal creation component
 EditProposal = ReactiveComponent
   displayName: 'EditProposal'
 
@@ -2590,9 +2589,21 @@ EditProposal = ReactiveComponent
     user = fetch('/current_user')
     proposal = @data()
     subdomain = fetch '/subdomain'
+
+    default_group = if subdomain.name == 'bitcoin'
+                      'Member Proposals'
+                    else
+                      null
     
-    if (permit('update proposal', proposal) < 0) || (!@props.fresh && !proposal.slug )
-      return DIV null, 'Nothing to see here, move on' 
+    # check permissions
+    permitted = if @props.fresh  
+                  permit('create proposal')
+                else
+                  permit('update proposal', proposal)
+
+    if permitted < 0
+      recourse permitted 
+      return DIV null
 
     block_style = 
       width: CONTENT_WIDTH
@@ -2664,32 +2675,143 @@ EditProposal = ReactiveComponent
           margin: 'auto'
           padding: '3em 0'
           position: 'relative'
-        A 
-          style: 
-            color: '#777'
-            position: 'absolute'
-            left: -100
-            top: 54
-          href: "/#{proposal.slug}"
 
-          I
-            className: 'fa fa-arrow-left'
+
+        if proposal.slug
+          A 
             style: 
-              paddingRight: 10
-          'back'
+              color: '#777'
+              position: 'absolute'
+              left: -100
+              top: 54
+            href: "/#{proposal.slug}"
+
+            I
+              className: 'fa fa-arrow-left'
+              style: 
+                paddingRight: 10
+            'back'
+
+        DIV 
+          style: 
+            marginBottom: 20
+
+          DIV 
+            style: 
+              fontSize: 28
+
+            "A good proposal is "
+            SPAN
+              style: 
+                color: focus_blue
+                fontWeight: 600
+              "Actionable"
+            ", " 
+            SPAN
+              style: 
+                color: focus_blue     
+                fontWeight: 600         
+              "Clear"
+            ", "
+            "and "
+            SPAN
+              style: 
+                color: focus_blue
+                fontWeight: 600
+
+              "Unique"
+            '. '
+
+          DIV null
+            A 
+              style: 
+                textDecoration: 'underline'
+              onClick: => @local.show_criteria = !@local.show_criteria; save(@local)
+              if @local.show_criteria
+                "Hide"
+              else
+                "Read more"
+
+          DIV 
+            style: 
+              fontSize: 22
+            if @local.show_criteria
+
+              UL 
+                style: 
+                  marginLeft: 40
+
+                LI 
+                  style:
+                    listStyle: 'none'
+                  'Actionable'
+                  UL 
+                    style: 
+                      marginLeft: 40
+
+                    LI null,
+                      'your proposal should have concrete actions'
+                    LI null,
+                      'the proposed actions should be realistic and on-topic'
+
+                LI
+                  style: 
+                    listStyle: 'none'
+                  'Clear'
+                  UL 
+                    style: 
+                      marginLeft: 40
+                    LI null,
+                      'format your proposal to maximize readability'
+                    LI null,
+                      'eliminate possibilities for misunderstanding'
+                    LI null,
+                      'state your assumptions'
+                    LI null,                  
+                      'describe the situation your proposal addresses'
+                    LI null,                  
+                      'motivate each proposed action'
+
+                LI
+                  style: 
+                    listStyle: 'none'
+
+                  'Unique'
+                  UL 
+                    style: 
+                      marginLeft: 40
+                    LI null,
+                      'browse the site for similar proposals'
+                    LI null,                  
+                      'if you want to improve upon an existing proposal, '
+                      A 
+                        style:
+                          'textDecoration': 'underline'
+                        href: 'mailto:admin@consider.it'
+                        'email us'
+                      '.'
+
 
 
         DIV style: block_style,
           LABEL htmlFor:'slug', style: label_style, 'URL:'
+
+          BR null
+          SPAN
+            style: 
+              fontSize: 20
+              color: '#aaa'
+            "#{location.origin}/"
           INPUT 
             id:'slug'
             name:'slug'
             pattern:'^.{3,}'
-            placeholder: "The URL in #{window.location.origin}/URL. " + \
-                         "Just letters, numbers, underscores, dashes."
+            placeholder: "Just letters, numbers, underscores, dashes."
             required:'required'
             defaultValue: if @props.fresh then null else proposal.slug
-            style: input_style
+            style: _.extend {}, input_style,
+              width: 400
+              display: 'inline-block'
 
         DIV style: block_style,
           LABEL htmlFor:'name', style: label_style, 'Summary:'
@@ -2816,17 +2938,23 @@ EditProposal = ReactiveComponent
                 "Add expandable description section"
 
 
-        DIV style: block_style,
+        DIV
+          style: _.extend {}, block_style,
+            display: if !user.is_admin then 'none'
+
           LABEL htmlFor:'cluster', style: label_style, 'Group (optional):'
           INPUT 
             id:'cluster'
             name:'cluster'
             pattern:'^.{3,}'
             placeholder:'The group to which this proposal belongs, if any.'
-            defaultValue: if @props.fresh then null else proposal.cluster
+            defaultValue: if @props.fresh then default_group else proposal.cluster
             style: input_style
 
-        DIV style: block_style,
+        DIV 
+          style: _.extend {}, block_style,
+            display: if !user.is_admin then 'none'
+
           LABEL htmlFor: 'listed_on_homepage', style: label_style, 'List on homepage?'
 
           INPUT 
@@ -2834,9 +2962,13 @@ EditProposal = ReactiveComponent
             name: 'listed_on_homepage'
             type: 'checkbox'
             defaultChecked: if @props.fresh then true else !proposal.hide_on_homepage
-            style: {fontSize: 24}
+            style: 
+              fontSize: 24
 
-        DIV style: block_style,
+        DIV
+          style: _.extend {}, block_style,
+            display: if !user.is_admin then 'none'
+
           LABEL 
             htmlFor: 'open_for_discussion'
             style: label_style
@@ -2848,9 +2980,12 @@ EditProposal = ReactiveComponent
             type: 'checkbox'
             defaultChecked: if @props.fresh then true else proposal.active
             style: {fontSize: 24}
+          
 
+        DIV 
+          style: 
+            display: if !user.is_admin then 'none'
 
-        DIV null, 
           SPAN 
             style: _.extend {}, label_style,
               textDecoration: 'underline'
@@ -2885,10 +3020,18 @@ EditProposal = ReactiveComponent
             className:'button primary_button'
             type:'submit'
             style: 
-              width: 300
+              width: 400
               marginTop: 35
             value:"#{if @props.fresh then 'Publish' else 'Update'}"
             onClick: @saveProposal
+
+        DIV 
+          style: 
+            fontSize: 18
+            width: 400
+            marginTop: 5
+
+          "By publishing, you are accepting responsibility to improve your proposal according to the criteria listed above given input from others." 
 
 
 Homepage = ReactiveComponent

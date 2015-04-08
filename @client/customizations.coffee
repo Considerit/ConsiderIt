@@ -493,16 +493,28 @@ customizations.bitcoin =
 
   cluster_options :
     # Each cluster can have its own options
-    Candidates:   # Options for the "Candidates" cluster
+
+    
+    'Board and Staff Proposals':   # Options for the "Candidates" cluster
       editor_icons: true
       #homie_histo_filter: (user) -> fetch('ny1').yeah or user.name of bitcoin_foundation_members
       homie_histo_title: "Members' Opinions"
       collapse_descriptions_at: 600
 
-    Debate:       # Options for the "Debate" cluster
-      homie_histo_title: "Candidates' Opinions"
-      #homie_histo_filter: (user) -> user.name of bitcoin_foundation_candidates
+    'Member Proposals':   # Options for the "Candidates" cluster
+      editor_icons: true
+      #homie_histo_filter: (user) -> fetch('ny1').yeah or user.name of bitcoin_foundation_members
+      homie_histo_title: "Members' Opinions"
       collapse_descriptions_at: 600
+
+    Candidates:   # Options for the "Candidates" cluster
+      editor_icons: true
+      #homie_histo_filter: (user) -> fetch('ny1').yeah or user.name of bitcoin_foundation_members
+      homie_histo_title: "Members' Opinions"
+      collapse_descriptions_at: 600
+      description: "Winter 2015 board election"
+      archived: false
+
 
   show_crafting_page_first: true
 
@@ -595,49 +607,25 @@ customizations.bitcoin =
                   color: 'cyan'
                   fontSize: 63
                   fontWeight: 500
-                  marginBottom: 20
+                  marginBottom: 15
                 'The Distributed Opinion'
 
-              DIV style: fontWeight: 600, fontSize: 35,
-                'Who will you vote for in the Board Election?'
-
-              # P style: marginTop: 20,
-              #   "...who are these guys, anyway?"
-
-              P style: marginTop: 20,
-                "Figure it out with this "
-                SPAN style: fontWeight: 600, 'Distributed Election Guide'
-                ".  Like Bitcoin, it's powered by a distributed opinion. Give your opinion to influence other members.  Open a tab to the live "
-                A
-                  href: 'https://soundcloud.com/mindtomatter/ltb-e186-bitcoin-foundation-2015-candidate-debate'
-                  style: textDecoration: 'underline', fontWeight: 600
-                  "audio debate"
-                ' while you think.'
-
-              # UL style: margin: 10,
-              #   LI style: list_style, 'Weigh in and influence other members'
-              #   LI style: list_style, 'Learn what other members think'
-              #   LI style: list_style, 'Make your own choice'
-
-
               P
-                style: margin: '30px 0'
-                # 'The public can participate, but only '
-                # A
-                #   style: textDecoration: 'underline'
-                #   href: 'https://bitcoinfoundation.org/members/'
-                #   'Foundation Members\''
-                # ' opinions appear on the homepage. '
+                style: 
+                  fontWeight: 600
+                  fontSize: 35
+                'Member deliberation about the Foundation\'s future.'
 
+              P style: marginTop: 8,
+                "Submit a "
                 A
-                  # href: 'https://blog.bitcoinfoundation.org/elections-update/'
-                  href: 'https://blog.bitcoinfoundation.org/election-runoff/'
-                  style: textDecoration: 'underline', fontWeight: 600
-                  "The runoff vote has completed." #opens in #{days_remaining} day#{if days_remaining==1 then '' else 's'}!"
+                  href: 'proposal/new'
+                  style: textDecoration: 'underline', fontWeight: 400
+                  "new proposal"
+                '.'
 
 
         ProfileMenu()
-
 customizations.bitcoin.NonHomepageHeader = customizations.bitcoin.HomepageHeader
 
 

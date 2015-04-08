@@ -117,9 +117,9 @@ protected
       new_current_user
     end
 
-    if [197946, 14897].include?(Thread.current[:current_user_id])
-      raise PermissionDenied.new('Your account has been disabled until the election is over for violating the Civility Pledge.')
-    end
+    # if [197946, 14897].include?(Thread.current[:current_user_id])
+    #   raise PermissionDenied.new('Your account has been disabled until the election is over for violating the Civility Pledge.')
+    # end
   end
   
   def new_current_user
@@ -200,7 +200,7 @@ protected
         response.append({
           key: '/application',
           app: session[:app],
-          dev: (Rails.env.development? || request.host == 'chlk.it'),
+          dev: (Rails.env.development? || request.host.end_with?('chlk.it')),
           asset_host: "#{Rails.application.config.action_controller.asset_host}"
         })
       elsif key == '/subdomain'

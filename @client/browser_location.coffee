@@ -87,6 +87,14 @@ window.A = React.createClass
           event.preventDefault()
           loadPage href
           _onclick event
+
+          # When we navigate to another internal page, we typically want the 
+          # page to be scrolled to the top of the new page. The programmer can
+          # set "data-no-scroll" on the link if they wish to prevent this 
+          # behavior.
+          if !@getDOMNode().getAttribute('data-no-scroll')
+            window.scrollTo(0, 0)
+                          
           return false
         else
           _onclick event

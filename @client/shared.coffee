@@ -3,7 +3,6 @@
 for el of React.DOM
   window[el.toUpperCase()] = React.DOM[el]
 
-
 window.styles = ""
 
 ####

@@ -4036,7 +4036,8 @@ EditProposal = ReactiveComponent
                   # roles has to be rendered so that default roles 
                   # are set on the proposal
 
-            ProposalRoles key: @local
+            ProposalRoles 
+              key: if @props.fresh then @local else proposal
 
         DIV null,
           INPUT 

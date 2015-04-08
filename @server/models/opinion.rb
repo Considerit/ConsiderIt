@@ -87,7 +87,7 @@ class Opinion < ActiveRecord::Base
   end
 
   def update_inclusions (points_to_include)
-    points_already_included = inclusions.map {|i| i.point_id}
+    points_already_included = inclusions.map {|i| i.point_id}.compact
     points_to_exclude = points_already_included.select {|point_id| not points_to_include.include? point_id}
     points_to_add    = points_to_include.select {|p_id| not points_already_included.include? p_id }
 

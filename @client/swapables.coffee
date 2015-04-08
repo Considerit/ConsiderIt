@@ -76,9 +76,9 @@ window.SimpleHomepage = ReactiveComponent
 
         if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
           DIV
-            style: margin: '45px 0 45px 200px'
+            style: margin: "45px 0 45px #{if lefty then '200px' else '0'}"
 
-            "#{options.description} "
+            "#{options.label} "
 
             A 
               style: 
@@ -120,15 +120,30 @@ window.SimpleHomepage = ReactiveComponent
           # Cluster of proposals
           DIV
             key: cluster.name
+            id: cluster.name.toLowerCase()
             style: margin: '45px 0'
 
-            if options.description
-              H1
+            if options.label
+              DIV 
                 style: 
-                  fontSize: 48
-                  fontWeight: 200
-                  marginLeft: 200
-                options.description
+                  width: 700
+                  marginLeft: if lefty then 200
+                H1
+                  style: 
+                    fontSize: 48
+                    fontWeight: 200
+                    
+                  options.label
+
+                if options.description
+                  DIV                
+                    style:
+                      fontSize: 22
+                      fontWeight: 200
+                      marginBottom: 10
+                      width: 700
+
+                    options.description
 
             # Header of cluster
             H1
@@ -580,16 +595,16 @@ window.DefaultFooter = ReactiveComponent
         if subdomain.branding.logo
           IMG src: "#{subdomain.branding.logo}", style: {width: 300}
 
-      DIV style: {marginTop: 30, fontSize: '70%'},
+      DIV style: {marginTop: 30},
         TechnologyByConsiderit()
-        DIV style: {color: 'rgb(131,131,131)', marginTop: 5},
+        DIV style: {marginTop: 5},
           'Bug to report? Want to use this technology in your organization? '
-          A style: {textDecoration: 'none', fontWeight: 700}, href: "mailto:admin@consider.it", 'Email us'
+          A style: {textDecoration: 'none', textDecoration: 'underline'}, href: "mailto:admin@consider.it", 'Email us'
 
 window.TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'
   render : -> 
-    DIV style: {textAlign: 'left', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 20},
+    DIV style: {textAlign: 'left', display: 'inline-block', fontSize: 20},
       "Technology by "
       A href: 'http://consider.it', style: {textDecoration: 'underline', color: '#B03B42', fontWeight: 600}, target: '_blank', 'Consider.it'
 

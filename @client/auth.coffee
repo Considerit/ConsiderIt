@@ -218,7 +218,7 @@ Auth = ReactiveComponent
               title: 'cancel'
 
               onClick: =>
-                if auth.form == 'verify email'
+                if auth.form == 'verify email' || location.pathname == '/proposal/new'
                   loadPage '/'
                 reset_key auth
 

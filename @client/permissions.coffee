@@ -146,6 +146,27 @@ matchSomeRole = (roles, accepted_roles) ->
     return true if matchEmail(roles[role])
   return false
 
+window.recourse = (permission) ->
+  
+  switch permission
+    when Permission.INSUFFICIENT_PRIVILEGES
+      window.app_router.navigate("/", {trigger: true})
+
+    when Permission.NOT_LOGGED_IN
+      root = fetch 'root'
+      root.auth = {form: 'login', 'Access this page'}
+      save root
+
+    when Permission.UNVERIFIED_EMAIL
+      root = fetch 'root'
+      root.auth = {form: 'verify email', goal: 'Access this page'}
+      save root
+
+      current_user = fetch '/current_user'
+      current_user.trying_to = 'send_verification_token'
+      save current_user
+
+
 ####
 # AccessControlled
 #
@@ -177,20 +198,7 @@ AccessControlled =
 
     if @data().permission_denied && @data().permission_denied < 0
       # Let's recover, depending on the recourse the server dictates
-      switch @data().permission_denied
-
-        when Permission.INSUFFICIENT_PRIVILEGES
-          window.app_router.navigate("/", {trigger: true})
-
-        when Permission.NOT_LOGGED_IN
-          @root.auth = {form: 'login', 'Access this page'}
-          save @root
-
-        when Permission.UNVERIFIED_EMAIL
-          @root.auth = {form: 'verify email', goal: 'Access this page'}
-          save @root
-          current_user.trying_to = 'send_verification_token'
-          save current_user
+      recourse @data().permission_denied
 
 
     #######

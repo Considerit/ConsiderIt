@@ -24,6 +24,9 @@ window.A = React.createClass
               event.preventDefault()
               # Instruct Backbone to trigger routing events
               window.app_router.navigate href, { trigger : true }
+
+              if !@getDOMNode().getAttribute('data-no-scroll')
+                window.scrollTo(0, 0)
               return false
 
     old_A props, props.children

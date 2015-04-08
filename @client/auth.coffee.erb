@@ -209,8 +209,10 @@ Auth = ReactiveComponent
                 top: 46
                 fontSize: 21
               onClick: =>
-                if root.auth.form == 'verify email'
+
+                if root.auth.form == 'verify email' || location.pathname == '/proposal/new'
                   window.app_router.navigate("/", {trigger: true})
+
                 root.auth = null
                 save root
               ' cancel'

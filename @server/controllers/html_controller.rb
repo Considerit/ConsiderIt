@@ -10,7 +10,7 @@ class HtmlController < ApplicationController
       return
     end
 
-    if Rails.env.development? || request.host == 'chlk.it'
+    if Rails.env.development? || request.host.end_with?('chlk.it')
       if params[:domain]
         session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
         redirect_to request.path    

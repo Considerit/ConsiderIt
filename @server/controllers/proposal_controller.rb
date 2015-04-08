@@ -20,51 +20,77 @@ class ProposalController < ApplicationController
     render :json => []
   end
 
-  def create
-    # TODO: slug should be validated as a legit url
+  def validate_input(attrs, proposal)
+    errors = []
+    if !attrs['slug'] || attrs['slug'].length == 0
+      errors.append 'Url field is missing'
+    end
 
+    if (!proposal || (proposal && proposal.slug != attrs['slug'])) && Proposal.find_by_slug(attrs['slug'])
+      errors.append 'That Url is already taken'
+    end
+
+    if !attrs['name'] || attrs['name'].length == 0
+      errors.append 'A summary is required'
+    end
+
+    return errors
+  end
+
+  def create
     authorize! 'create proposal'
 
     fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
     attrs = params.select{|k,v| fields.include? k}
 
-    if attrs['slug']
+    errors = validate_input attrs
+
+    if attrs['slug'] && attrs['slug'].length > 0
       attrs['slug'] = attrs['slug'].strip
     end
 
-    attrs.update({
-          :published => true,
-          :user_id => current_user.id,
-          :subdomain_id => current_subdomain.id, 
-          :active => true
-        })
 
-    proposal = Proposal.new attrs
+    if errors.length == 0
 
-    proposal.save
+      attrs.update({
+            :published => true,
+            :user_id => current_user.id,
+            :subdomain_id => current_subdomain.id, 
+            :active => true
+          })
 
-    # need to save the proposal before potentially sending out
-    # email invitations via role.
-    update_roles proposal
+      proposal = Proposal.new attrs
 
-    proposal.save
+      proposal.save
 
-    original_id = key_id(params[:key])
-    result = proposal.as_json
-    result['key'] = "/proposal/#{proposal.id}?original_id=#{original_id}"
+      # need to save the proposal before potentially sending out
+      # email invitations via role.
+      update_roles proposal
 
-    dirty_key '/proposals'
+      proposal.save
 
-    ActiveSupport::Notifications.instrument("proposal:published", 
-      :proposal => proposal,
-      :current_subdomain => current_subdomain
-    )
+      original_id = key_id(params[:key])
+      result = proposal.as_json
+      result['key'] = "/proposal/#{proposal.id}?original_id=#{original_id}"
 
-    write_to_log({
-      :what => 'created new proposal',
-      :where => request.fullpath,
-      :details => {:proposal => "/#{proposal.slug}"}
-    })
+      dirty_key '/proposals'
+
+      ActiveSupport::Notifications.instrument("proposal:published", 
+        :proposal => proposal,
+        :current_subdomain => current_subdomain
+      )
+
+      write_to_log({
+        :what => 'created new proposal',
+        :where => request.fullpath,
+        :details => {:proposal => "/#{proposal.slug}"}
+      })
+    else 
+      result = {
+        :key => params[:key],
+        :errors => errors
+      }
+    end
 
     render :json => [result]
 
@@ -73,6 +99,7 @@ class ProposalController < ApplicationController
   def update
 
     proposal = Proposal.find params[:id]
+    errors = []
 
     if params.has_key?(:is_following) 
       follows = proposal.get_explicit_follow(current_user) 
@@ -86,22 +113,38 @@ class ProposalController < ApplicationController
     if permit('update proposal', proposal) > 0
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
       updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}
+      
+      text_updated = updated_fields.include?('name') || updated_fields.include?('description')
+      
+      fields.each do |f|
+        if !updated_fields.has_key?(f)
+          updated_fields[f] = proposal[f]
+        end
+      end
 
-      update_roles(proposal)
+      errors = validate_input(updated_fields, proposal)
 
-      proposal.update_attributes! updated_fields
-      dirty_key('/proposals')
+      if errors.length == 0
 
-      if updated_fields.include?('name') || updated_fields.include?('description')
-        ActiveSupport::Notifications.instrument("proposal:updated", 
-          :model => proposal,
-          :current_subdomain => current_subdomain
-        )
+        update_roles(proposal)
+
+        proposal.update_attributes! updated_fields
+
+        if text_updated
+          ActiveSupport::Notifications.instrument("proposal:updated", 
+            :model => proposal,
+            :current_subdomain => current_subdomain
+          )
+        end
       end
     end
 
-    dirty_key "/proposal/#{proposal.id}"
-    render :json => []
+    response = proposal.as_json
+    if errors.length > 0
+      response[:errors] = errors
+    end
+
+    render :json => [response]
   end
 
   def update_roles(proposal)

@@ -470,13 +470,6 @@ Proposal = ReactiveComponent
         and $('.proposal_details').height() > @max_description_height)
       @local.description_collapsed = true; save(@local)
 
-    # TODO: Hack!! When you go from homepage to a proposal, seek to proposal 
-    # description top, otherwise you can be docked in the middle of the proposal. 
-    # Disabled for apps with a next button until we resolve 
-    # commit/0561b9bdb6ae03705c3718d2283d8d8345fad632
-    if customization('ProposalHeader') != SimpleProposalHeading  
-      $(@getDOMNode()).moveToTop() 
-
   renderDescriptionField : (field) ->
     symbol = if field.expanded then 'fa-minus-circle' else 'fa-plus-circle'
     DIV 

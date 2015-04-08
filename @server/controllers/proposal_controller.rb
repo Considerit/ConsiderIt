@@ -41,7 +41,6 @@ class ProposalController < ApplicationController
 
     proposal = Proposal.new attrs
 
-
     proposal.save
 
     # need to save the proposal before potentially sending out
@@ -53,6 +52,8 @@ class ProposalController < ApplicationController
     original_id = key_id(params[:key])
     result = proposal.as_json
     result['key'] = "/proposal/#{proposal.id}?original_id=#{original_id}"
+
+    dirty_key '/proposals'
 
     ActiveSupport::Notifications.instrument("proposal:published", 
       :proposal => proposal,

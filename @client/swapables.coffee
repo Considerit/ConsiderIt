@@ -667,6 +667,7 @@ window.SimpleProposalHeading = ReactiveComponent
             position: 'absolute'
             right: 74
           href: proposal_url(prev_proposal)
+          'data-no-scroll': true
           '< Prev'
 
       # Home button
@@ -689,6 +690,7 @@ window.SimpleProposalHeading = ReactiveComponent
             position: 'absolute'
             right: if show_home_button then -23 else 0
           href: proposal_url(next_proposal)
+          'data-no-scroll': true
           'Next >'
 
       # Photo

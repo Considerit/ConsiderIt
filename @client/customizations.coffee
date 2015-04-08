@@ -619,7 +619,7 @@ customizations.bitcoin =
               P style: marginTop: 8,
                 "Submit a "
                 A
-                  href: 'proposal/new'
+                  href: '/proposal/new'
                   style: textDecoration: 'underline', fontWeight: 400
                   "new proposal"
                 '.'

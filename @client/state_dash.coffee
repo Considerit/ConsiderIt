@@ -265,7 +265,7 @@ fetch 'state_dash',
 
 recent_keys = [0,0,0,0,0]
 document.onkeypress = (e) ->
-  key = (e and e.keyCode) or event.keyCode
+  key = (e and e.keyCode) or e.keyCode
   recent_keys.push(key)
   recent_keys = recent_keys.slice(1)
 

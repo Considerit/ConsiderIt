@@ -10,6 +10,20 @@ class PointController < ApplicationController
   end
 
 
+  def validate_input(attrs, proposal, point)
+    errors = []
+    if !attrs['nutshell'] || attrs['nutshell'].length == 0
+      errors.append 'You need to write a summary'
+    end
+
+    if (!point || (point && point.nutshell != attrs['nutshell'])) && proposal.points.find_by_nutshell(attrs['nutshell'])
+      errors.append 'Someone has already made that point'
+    end
+
+    return errors
+  end
+
+
   def create
     # Validate by filtering out unwanted fields
     # todo: validate data types too
@@ -24,45 +38,55 @@ class PointController < ApplicationController
 
     authorize! 'create point', proposal
 
-    point = Point.new point
 
-    opinion = Opinion.get_or_make(proposal)
+    errors = validate_input point, proposal, nil
 
-    if !proposal
-      raise "Error! No proposal matching '#{point['proposal']}'"
+    if errors.length == 0
+
+      point = Point.new point
+
+      opinion = Opinion.get_or_make(proposal)
+
+      if !proposal
+        raise "Error! No proposal matching '#{point['proposal']}'"
+      end
+      if !opinion
+        raise "Error! No opinion for user #{current_user.id} and proposal #{proposal.id}"
+      end
+
+      if opinion.published
+        point.publish
+      else
+        point.save
+      end
+
+      # Include into the user's opinion
+      opinion.include(point)
+
+      original_id = key_id(params[:key])
+      result = point.as_json
+      result['key'] = "/point/#{point.id}?original_id=#{original_id}"
+
+      dirty_key "/page/#{proposal.slug}"
+
+      write_to_log({
+        :what => 'wrote new point',
+        :where => request.fullpath,
+        :details => {:point => "/point/#{point.id}"}
+      })
+    else 
+      result = {
+        :key => params[:key],
+        :errors => errors
+      }
     end
-    if !opinion
-      raise "Error! No opinion for user #{current_user.id} and proposal #{proposal.id}"
-    end
 
-    if opinion.published
-      point.publish
-    else
-      point.save
-    end
-
-    # Include into the user's opinion
-    opinion.include(point)
-
-    original_id = key_id(params[:key])
-    result = point.as_json
-    result['key'] = "/point/#{point.id}?original_id=#{original_id}"
-
-    dirty_key "/page/#{proposal.slug}"
-
-    write_to_log({
-      :what => 'wrote new point',
-      :where => request.fullpath,
-      :details => {:point => "/point/#{point.id}"}
-    })
-
-    #TODO: don't know how to dirty and handle the point key in compile_dirty_objects
     render :json => [result]
   end
 
   def update
     point = Point.find params[:id]
-    #authorize! :update, point
+    errors = []
 
     if params.has_key?(:is_following) && params[:is_following] != point.following(current_user)
       # if is following has changed, that means the user has explicitly expressed 
@@ -75,24 +99,39 @@ class PointController < ApplicationController
       fields = ["nutshell", "text", "hide_name"]
       updates = params.select{|k,v| fields.include? k}
 
-      point.update_attributes! ActionController::Parameters.new(updates).permit!
+      fields.each do |f|
+        if !updates.has_key?(f)
+          updates[f] = point[f]
+        end
+      end
 
-      if point.published
-        write_to_log({
-          :what => 'edited a point',
-          :where => request.fullpath,
-          :details => {:point => "/point/#{point.id}"}
-        })
+      errors = validate_input updates, proposal, point
 
-        ActiveSupport::Notifications.instrument("point:updated", 
-          :model => point,
-          :current_subdomain => current_subdomain
-        )
+      if errors.length == 0
+
+        point.update_attributes! updates
+
+        if point.published
+          write_to_log({
+            :what => 'edited a point',
+            :where => request.fullpath,
+            :details => {:point => "/point/#{point.id}"}
+          })
+
+          ActiveSupport::Notifications.instrument("point:updated", 
+            :model => point,
+            :current_subdomain => current_subdomain
+          )
+        end
       end
     end
 
-    dirty_key "/point/#{params[:id]}"
-    render :json => []
+    response = point.as_json
+    if errors.length > 0
+      response[:errors] = errors
+    end
+
+    render :json => [response]
   end
 
   def destroy

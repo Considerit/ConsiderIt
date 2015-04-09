@@ -4344,7 +4344,7 @@ Root = ReactiveComponent
   displayName: 'Root'
   resetSelection: (e) ->
 
-    if !root.auth
+    if !@root.auth
       hist = fetch 'histogram'
 
       if @root.selected_point

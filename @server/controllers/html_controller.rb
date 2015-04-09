@@ -62,7 +62,7 @@ class HtmlController < ApplicationController
     if Rails.application.config.action_controller.asset_host
       @js = "#{Rails.application.config.action_controller.asset_host}/#{manifest[@app]}"
     else 
-      @js = manifest[@app]
+      @js = "/#{manifest[@app]}"
     end
 
     dirty_key '/asset_manifest'

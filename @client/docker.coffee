@@ -605,6 +605,11 @@ realDimensions = ($el) ->
   recurse = ($e, min_top, max_top) -> 
     t = $e.offset().top
     h = $e.height()
+
+    return [min_top, max_top] if h == 0 ||
+                                  $e[0].style.display == 'none'
+                                  # skip elements that don't take up space
+    
     if min_top > t
       min_top = t
     if t + h > max_top

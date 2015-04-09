@@ -43,7 +43,7 @@ class ProposalController < ApplicationController
     fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
     attrs = params.select{|k,v| fields.include? k}
 
-    errors = validate_input attrs
+    errors = validate_input attrs, nil
 
     if attrs['slug'] && attrs['slug'].length > 0
       attrs['slug'] = attrs['slug'].strip

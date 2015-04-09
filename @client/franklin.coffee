@@ -2658,7 +2658,7 @@ EditProposal = ReactiveComponent
             style: 
               fontSize: 28
 
-            "A good proposal is "
+            "A proposal must be "
             SPAN
               style: 
                 color: focus_blue

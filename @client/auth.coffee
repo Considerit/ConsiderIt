@@ -436,6 +436,11 @@ Auth = ReactiveComponent
     current_user = fetch('/current_user')
     auth = fetch('auth')
 
+    if !onChange
+      onChange = (event) =>
+        @local[name] = current_user[name] = event.target.value
+        save @local
+
     if @local[name] != current_user[name]
       @local[name] = current_user[name]
       save @local
@@ -461,9 +466,7 @@ Auth = ReactiveComponent
       placeholder: placeholder
       required: "required"
       type: type || 'text'
-      onChange: onChange || (event) =>
-        @local[name] = current_user[name] = event.target.value
-        save @local
+      onChange: onChange
       onKeyPress: (event) =>
         # submit on enter
         if event.which == 13

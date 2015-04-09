@@ -120,7 +120,7 @@ window.SimpleHomepage = ReactiveComponent
           # Cluster of proposals
           DIV
             key: cluster.name
-            id: cluster.name.toLowerCase()
+            id: if cluster.name && cluster.name then cluster.name.toLowerCase()
             style: margin: '45px 0'
 
             if options.label

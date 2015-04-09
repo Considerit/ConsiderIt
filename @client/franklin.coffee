@@ -2443,7 +2443,24 @@ EditPoint = ReactiveComponent
             htmlFor: "sign_name-#{@props.valence}"
             title:'Signing your name lends your point more weight with other participants.'
             'Sign your name'
+
+      if @local.errors?.length > 0
         
+        DIV
+          style:
+            fontSize: 18
+            color: 'darkred'
+            backgroundColor: '#ffD8D8'
+            padding: 10
+            marginTop: 10
+          for error in @local.errors
+            DIV null, 
+              I
+                className: 'fa fa-exclamation-circle'
+                style: {paddingRight: 9}
+
+              SPAN null, error
+
       DIV 
         style: 
           textAlign: 'right'
@@ -2477,11 +2494,14 @@ EditPoint = ReactiveComponent
     $el.find('.newpoint-cancel').ensureInView {scroll: false, position: 'bottom'}
 
   done : ->
+
     your_points = fetch @props.your_points_key
+
     if @props.fresh
       your_points.adding_new_point = false
     else
       your_points.editing_points = _.without your_points.editing_points, @props.key
+
     save your_points
 
   savePoint : (ev) ->
@@ -2511,23 +2531,28 @@ EditPoint = ReactiveComponent
         text : text
         hide_name : hide_name
 
-    save point
+    point.errors = []
+    save point, => 
+      if point.errors?.length == 0
+        @done()
+      else
+        @local.errors = point.errors
+        save @local
 
-    @done()
+    # # This is a kludge cause activerest sucks for pre-rendering
+    # # changes before the server returns them
+    # fetch(@proposal.your_opinion).point_inclusions.push(point.key)
+    # re_render([@proposal.your_opinion])
 
-    # This is a kludge cause activerest sucks for pre-rendering
-    # changes before the server returns them
-    fetch(@proposal.your_opinion).point_inclusions.push(point.key)
-    re_render([@proposal.your_opinion])
 
 styles += """
 .edit_point .count{
   position: absolute;
   right: 20px;
-  font-size: 12px;
-  top: -17px;
+  top: -19px;
 }
 """
+
 
 
 
@@ -2975,7 +3000,7 @@ EditProposal = ReactiveComponent
               key: if @props.fresh then @local else proposal
 
 
-        if proposal.errors?.length > 0
+        if @local.errors?.length > 0
           
           DIV
             style:
@@ -2984,7 +3009,7 @@ EditProposal = ReactiveComponent
               backgroundColor: '#ffD8D8'
               padding: 10
               marginTop: 10
-            for error in proposal.errors
+            for error in @local.errors
               DIV null, 
                 I
                   className: 'fa fa-exclamation-circle'
@@ -3053,10 +3078,17 @@ EditProposal = ReactiveComponent
         field.html = edited_html.html if edited_html.html
       proposal.description_fields = JSON.stringify(@local.description_fields)
 
-    save proposal, -> 
-      if !proposal.errors || proposal.errors.length == 0
+    proposal.errors = []
+    @local.errors = []
+    save @local
+
+    save proposal, => 
+      if proposal.errors?.length == 0
         window.scrollTo(0,0)
         loadPage "/#{slug}"
+      else
+        @local.errors = proposal.errors
+        save @local
 
 
 Homepage = ReactiveComponent
@@ -3119,10 +3151,6 @@ Header = ReactiveComponent
           padding: '5px 20px'
           display: if @root.server_error then 'block' else 'none'
         'Warning: there was a server error!'
-
-    
-
-
 
 
 About = ReactiveComponent

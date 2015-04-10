@@ -28,7 +28,13 @@ DashHeader = ReactiveComponent
 
     cb is_light
 
-  render : ->
+  render : ->    
+
+    doc = fetch('document')
+    if doc.title != @props.name
+      doc.title = @props.name
+      save doc
+
     subdomain = fetch '/subdomain'
     DIV 
       style: 
@@ -53,6 +59,7 @@ ImportDataDash = ReactiveComponent
   displayName: 'ImportDataDash'
 
   render : ->
+
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 

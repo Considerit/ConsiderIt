@@ -67,7 +67,7 @@ class Proposal < ActiveRecord::Base
       proposals = current_subdomain.proposals.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
     elsif current_subdomain.name == 'bitcoin'
       proposals = current_subdomain.proposals.where(:hide_on_homepage => false)
-      manual_clusters = ['Foundation Goals', 'Board Proposals', 'Member Proposals', 'Proposals', 'Candidates']
+      manual_clusters = ['Our Focus', 'Our Actions', 'Foundation Goals', 'Board Proposals', 'Member Proposals', 'Proposals', 'Candidates']
     else
       proposals = current_subdomain.proposals.where(:hide_on_homepage => false)
     end

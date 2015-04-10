@@ -86,6 +86,7 @@ class PointController < ApplicationController
 
   def update
     point = Point.find params[:id]
+
     errors = []
 
     if params.has_key?(:is_following) && params[:is_following] != point.following(current_user)
@@ -105,7 +106,7 @@ class PointController < ApplicationController
         end
       end
 
-      errors = validate_input updates, proposal, point
+      errors = validate_input updates, point.proposal, point
 
       if errors.length == 0
 

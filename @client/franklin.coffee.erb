@@ -1721,9 +1721,14 @@ YourPoints = ReactiveComponent
       editing_points : []
       adding_new_point : false
 
+    adding_new_point = fetch('your_pro_points').adding_new_point || 
+                       fetch('your_con_points').adding_new_point
+
+
     header_style =           
       fontWeight: 700
       color: if @root.selected_point then "#ccc" else focus_blue
+      opacity: if adding_new_point then 0.3 else 1.0
 
     DIV 
       className: "points_on_decision_board #{@props.valence}_on_decision_board"
@@ -1757,6 +1762,7 @@ YourPoints = ReactiveComponent
           style: 
             padding: '0 0 .25em 9px'
             position: 'relative'
+            visibility: if adding_new_point then 'hidden'
 
           IMG 
             src: "<%= asset_path 'drop_target.png' %>"
@@ -2945,6 +2951,8 @@ EditPoint = ReactiveComponent
       overflow: 'hidden'
       fontSize: 14
 
+    guidelines_w = 235
+
     DIV
       className: 'edit_point'
       style: 
@@ -2952,23 +2960,97 @@ EditPoint = ReactiveComponent
         position: 'relative'
         fontSize: 14
 
-      INPUT 
-        id:'is_pro'
-        name: 'is_pro'
-        type: 'hidden'
-        value: "#{@props.valence == 'pros'}"
-      LABEL 
-        htmlFor:'nutshell'
-        'Your point'
-      CharacterCountTextInput 
-        id:'nutshell'
-        maxLength:140
-        name:'nutshell'
-        pattern:'^.{3,}'
-        placeholder:'Make this summary succinct.'
-        required:'required'
-        defaultValue: if @props.fresh then null else @data().nutshell
-        style: textarea_style
+      if !@props.fresh
+        LABEL 
+          htmlFor:'nutshell'
+          'Your point'
+      else
+        DIV
+          style: 
+            fontSize: 30
+            fontWeight: 700
+            color: focus_blue
+            position: 'absolute'
+            top: -60
+          "New #{if @props.valence == 'pros' then 'Pro' else 'Con'} Point"
+
+
+      DIV
+        style: 
+          position: 'relative'
+
+        # guidelines/tips for good points
+        DIV 
+          style:
+            position: 'absolute'
+            left: if @props.valence == 'pros' then -270 else 250
+            width: 235
+            color: focus_blue
+            
+
+          SVG
+            width: guidelines_w + 20
+            height: 187
+            viewBox: "0 0 #{guidelines_w+20 + 1} 187"
+            style: css.crossbrowserify
+              position: 'absolute'
+              transform: if @props.valence == 'cons' then 'scaleX(-1)'
+              left: if @props.valence == 'cons' then -20
+
+            PATH
+              stroke: '#ccc'
+              strokeWidth: 1
+              fill: "#FFF"
+
+              d: """
+                  M#{guidelines_w},33
+                  L#{guidelines_w},0
+                  L1,0
+                  L1,181 
+                  L#{guidelines_w},181 
+                  L#{guidelines_w},58
+                  L#{guidelines_w + 20},48
+                  L#{guidelines_w},33 
+                  Z
+                 """
+          DIV 
+            style: 
+              padding: '14px 18px'
+              position: 'relative'
+
+
+            SPAN 
+              style: 
+                fontWeight: 600
+              "Write a single #{if @props.valence == 'pros' then 'Pro' else 'Con'} point "
+              BR null
+              '(or question) for this proposal'
+
+            UL 
+              style: 
+                listStylePosition: 'outside'
+                marginLeft: 16
+              LI null,
+                "Be direct. The summary is your main point."
+              LI null,
+                "Review your language. Don’t be careless."
+              LI null,
+                "No personal attacks."
+
+        CharacterCountTextInput 
+          id:'nutshell'
+          maxLength:140
+          name:'nutshell'
+          pattern:'^.{3,}'
+          placeholder:'Make this summary succinct.'
+          required:'required'
+          defaultValue: if @props.fresh then null else @data().nutshell
+          style: textarea_style
+        INPUT 
+          id:'is_pro'
+          name: 'is_pro'
+          type: 'hidden'
+          value: "#{@props.valence == 'pros'}"
 
       
       DIV null,
@@ -2986,7 +3068,7 @@ EditPoint = ReactiveComponent
                          'fa-caret-right fa'
           SPAN
             style: {paddingLeft: 6}
-            'Expand on your point'
+            'Add supporting details'
 
         if @local.add_details
           DIV null, 
@@ -2999,26 +3081,6 @@ EditPoint = ReactiveComponent
               defaultValue: if @props.fresh then null else @data().text
               style: textarea_style
 
-
-      if @proposal.active
-        DIV 
-          style: 
-            position: 'absolute'
-            bottom: 0
-            fontSize: 13
-          INPUT
-            className: 'newpoint-anonymous'
-            type:      'checkbox'
-            id:        "sign_name-#{@props.valence}"
-            name:      "sign_name-#{@props.valence}"
-            checked:   @local.sign_name
-            onChange: =>
-              @local.sign_name = !@local.sign_name
-              save(@local)
-          LABEL 
-            htmlFor: "sign_name-#{@props.valence}"
-            title:'Signing your name lends your point more weight with other participants.'
-            'Sign your name'
 
       if @local.errors?.length > 0
         
@@ -3049,25 +3111,52 @@ EditPoint = ReactiveComponent
             'New points disabled for this proposal'
         else
           INPUT 
-            className:'button primary_button'
-            action:'submit-point',
-            type:'submit', 
+            className: 'button primary_button'
+            action: 'submit-point',
+            type: 'submit', 
             onClick: @savePoint
-            value:'Done'
+            value: 'Done'
             style: 
               marginTop: '.5em'
               width: '100%'
-              fontSize: 18
+              fontSize: 24
+              padding: 4
 
         A 
-          className:'newpoint-cancel primary_cancel_button'
           onClick: @done
+          style:
+            display: 'inline-block'
+            color: '#888888'
+            cursor: 'pointer'
+            position: 'relative'
+            zIndex: 1
+            top: 5
           'cancel'  
+
+      if @proposal.active
+        DIV 
+          style: 
+            position: 'relative'
+            top: -20
+          INPUT
+            className: 'newpoint-anonymous'
+            type:      'checkbox'
+            id:        "sign_name-#{@props.valence}"
+            name:      "sign_name-#{@props.valence}"
+            checked:   @local.sign_name
+            onChange: =>
+              @local.sign_name = !@local.sign_name
+              save(@local)
+          LABEL 
+            htmlFor: "sign_name-#{@props.valence}"
+            title:'Signing your name lends your point more weight with other participants.'
+            'Sign your name'
+
 
   componentDidMount : ->
     $el = $(@getDOMNode())
     $el.find('#nutshell').focus()
-    $el.find('.newpoint-cancel').ensureInView {scroll: false, position: 'bottom'}
+    $el.find('[data-action="submit-point"]').ensureInView {scroll: false, position: 'bottom'}
 
   done : ->
 

@@ -2981,17 +2981,35 @@ EditProposal = ReactiveComponent
 
 
         DIV
-          style: _.extend {}, block_style,
-            display: if !user.is_admin then 'none'
+          style: block_style
 
-          LABEL htmlFor:'cluster', style: label_style, 'Group (optional):'
-          INPUT 
-            id:'cluster'
-            name:'cluster'
-            pattern:'^.{3,}'
-            placeholder:'The group to which this proposal belongs, if any.'
-            defaultValue: if @props.fresh then default_group else proposal.cluster
-            style: input_style
+          if user.is_admin
+
+            [LABEL htmlFor:'cluster', style: label_style, 'Group (optional):'
+            INPUT 
+              id: 'cluster'
+              name: 'cluster'
+              pattern: '^.{3,}'
+              placeholder: 'The group to which this proposal belongs, if any.'
+              defaultValue: if @props.fresh then default_group else proposal.cluster
+              style: input_style
+            ]
+          else  
+            clusters = customization('cluster_options')
+            groups = (p.name for p in fetch('/proposals').clusters when !clusters[p.name].closed)
+            [LABEL 
+              htmlFor:'cluster'
+              style: _.extend {}, label_style,
+                width: 130
+              'Category:'
+
+            SELECT
+              style: 
+                fontSize: 30
+              defaultValue: if @props.fresh then null else @data().group
+              for group,i in groups
+                OPTION key: i, value: group, group
+            ]
 
         DIV 
           style: _.extend {}, block_style,

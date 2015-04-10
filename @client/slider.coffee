@@ -339,8 +339,8 @@ if !window.slider_handle
 slider_handle.face = (props) -> 
 
   SVG
-    height: props.height
-    width: props.width
+    height: props.handle_height
+    width: props.handle_width
     viewBox: "-2 -1 104 104"
     style: 
       pointerEvents: 'none'
@@ -350,8 +350,8 @@ slider_handle.face = (props) ->
     DEFS null,
       svg.innerbevel
         id: 'handle-innerbevel'
-        shadows: [{color: 'black', opacity: 1, dx: 0, dy: -3, stdDeviation: 3}, \
-                  {color: 'white', opacity:  .25, dx:  0, dy: 3, stdDeviation: 3}]        
+        shadows: [{color: 'black', opacity: 1.0, dx: 0, dy: -3, stdDeviation: 3}, \
+                  {color: 'white', opacity: .25, dx: 0, dy:  3, stdDeviation: 3}]        
 
     CIRCLE
       fill: props.color
@@ -444,15 +444,15 @@ slider_handle.flat = (props) ->
           cy: 50
           r: 48
 
-      svg.innerbevel
-        id: 'handle-innerbevel'
-        shadows: [{color: 'black', opacity: 1, dx: 0, dy: -3, stdDeviation: 3}, \
-                  {color: 'white', opacity:  .25, dx:  0, dy: 3, stdDeviation: 3}]        
+      # svg.innerbevel
+      #   id: 'handle-innerbevel'
+      #   shadows: [{color: 'black', opacity: 1, dx: 0, dy: -3, stdDeviation: 3}, \
+      #             {color: 'white', opacity:  .25, dx:  0, dy: 3, stdDeviation: 3}]        
 
     CIRCLE
       fill: props.color
       stroke: props.color
-      filter: 'url(#handle-innerbevel)'
+      #filter: 'url(#handle-innerbevel)'
       cx: 50
       cy: 50
       r: 50

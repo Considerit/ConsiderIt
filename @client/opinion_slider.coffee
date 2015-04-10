@@ -18,8 +18,6 @@ window.OpinionSlider = ReactiveComponent
   displayName: 'OpinionSlider'
 
   render : ->
-
-
     slider = fetch @props.key
     hist = fetch 'histogram'
 
@@ -64,14 +62,14 @@ window.OpinionSlider = ReactiveComponent
         base_endpoint: if slider.docked then 'square' else 'sharp'
         polarized: true
         draw_helpers: @props.focused && !slider.has_moved
-        handle: customization('slider_handle')
+        handle: if @props.backgrounded then slider_handle.flat else customization('slider_handle')
         handle_props: 
-          color: focus_blue
+          color: if @props.backgrounded then '#ccc' else focus_blue
           detail: @props.focused
         handle_style: 
           transition: "transform #{TRANSITION_SPEED}ms"
           transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
-          visibility: if @props.backgrounded || hist_selection || !@props.permitted then 'hidden'
+          visibility: if hist_selection || !@props.permitted then 'hidden'
         onMouseUpCallback: @handleMouseUp
         respond_to_click: false
 
@@ -145,8 +143,8 @@ window.OpinionSlider = ReactiveComponent
       pointerEvents: 'none' 
       fontSize: 30
       fontWeight: 700
-      color: focus_blue
-      visibility: if @props.backgrounded then 'hidden'
+      color: if @props.backgrounded then '#eee' else focus_blue
+      #visibility: if @props.backgrounded then 'hidden'
 
     # Keep feedback centered over handle, but keep within the bounds of 
     # the slider region when the slider is in an extreme position. 

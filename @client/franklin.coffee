@@ -173,6 +173,22 @@ Proposal = ReactiveComponent
     subdomain = fetch '/subdomain'
     @max_description_height = options.collapse_descriptions_at
 
+    has_focus = \
+      if get_selected_point()
+        'point'
+      else if fetch('your_con_points').adding_new_point ||
+              fetch('your_pro_points').adding_new_point ||
+              fetch('your_con_points').editing_points?.length > 0 ||
+              fetch('your_pro_points').editing_points?.length > 0
+        'edit point'
+      else
+        "opinion"
+
+    if @proposal.has_focus != has_focus
+      @proposal.has_focus = has_focus
+      save @proposal
+
+
     mode = get_proposal_mode()
 
     if your_opinion.published
@@ -374,14 +390,14 @@ Proposal = ReactiveComponent
             skip_jut: mode == 'results'
             dockable : => 
               mode == 'crafting'
-            dummy: if get_selected_point() && mode == 'crafting' then 1 else 0
+            dummy: if @proposal.has_focus != 'opinion' && mode == 'crafting' then 1 else 0
 
             OpinionSlider
               key: 'slider'
               width: OPINION_SLIDER_WIDTH
               your_opinion: @proposal.your_opinion
               focused: mode == 'crafting'
-              backgrounded: get_selected_point() && mode == 'crafting'
+              backgrounded: @proposal.has_focus != 'opinion' && mode == 'crafting'
               permitted: (@props.can_opine not in [Permission.DISABLED, \
                           Permission.INSUFFICIENT_PRIVILEGES]) || \
                           your_opinion.published
@@ -598,7 +614,7 @@ DecisionBoard = ReactiveComponent
       borderRadius: 16
       borderStyle: 'dashed'
       borderWidth: 3
-      borderColor: focus_blue
+      borderColor: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
       transition: if @last_proposal_mode != get_proposal_mode() || @transitioning  
                     "transform #{TRANSITION_SPEED}ms, " + \
                     "width #{TRANSITION_SPEED}ms, " + \
@@ -641,7 +657,7 @@ DecisionBoard = ReactiveComponent
         css.grayscale decision_board_style
         decision_board_style.opacity = '.4'
       else
-        decision_board_style.borderColor = "#ccc"
+        decision_board_style.borderColor = "#eee"
 
     if your_opinion.published
       can_opine = permit 'update opinion', @proposal, your_opinion
@@ -715,6 +731,8 @@ DecisionBoard = ReactiveComponent
             className:'save_opinion_button primary_button'
             style:
               display: 'none'
+              backgroundColor: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
+              boxShadow: if @proposal.has_focus != 'opinion' then 'none'
             onClick: => 
               your_opinion = fetch(@proposal.your_opinion)
               if can_opine > 0
@@ -893,7 +911,6 @@ SliderBubblemouth = ReactiveComponent
         width: w
         height: h 
         zIndex: 10
-        visibility: if get_selected_point() then 'hidden'
         transition: "transform #{TRANSITION_SPEED}ms"
         transform: transform
 
@@ -902,7 +919,7 @@ SliderBubblemouth = ReactiveComponent
         width: w
         height: h
         fill: fill, 
-        stroke: focus_blue, 
+        stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee', 
         stroke_width: stroke_width
         dash_array: dash
 
@@ -924,7 +941,7 @@ GroupSelectionRegion = ReactiveComponent
       DIV 
         style: 
           width: BODY_WIDTH + 80
-          border: "3px solid #{if get_selected_point() then '#ccc' else focus_blue }"
+          border: "3px solid #{if get_selected_point() then '#eee' else focus_blue }"
           height: '100%'
           position: 'absolute'
           borderRadius: 16
@@ -939,7 +956,7 @@ GroupSelectionRegion = ReactiveComponent
 
           DIV 
             style: cssTriangle 'top', \
-                               (if get_selected_point() then '#ccc' else focus_blue), \
+                               (if get_selected_point() then '#eee' else focus_blue), \
                                w, h,               
                                   position: 'relative'
                                   top: -32
@@ -1027,13 +1044,16 @@ YourPoints = ReactiveComponent
 
     can_add_new_point = permit 'create point', @proposal
 
-    your_points = @data @props.key,
-      editing_points : []
-      adding_new_point : false
+    your_points = @data()
+    if !your_points.editing_points?
+      _.extend your_points,
+        editing_points : []
+        adding_new_point : false
+      save your_points
 
     header_style =           
       fontWeight: 700
-      color: if get_selected_point() then "#ccc" else focus_blue
+      color: if @proposal.has_focus != 'opinion' then "#eee" else focus_blue
 
     heading = "Give Your " + \
               capitalize(customization('point_labels.' + @props.valence))
@@ -1090,6 +1110,7 @@ YourPoints = ReactiveComponent
         style: 
           padding: '0 0 .25em 24px'
           position: 'relative'
+          visibility: if @proposal.has_focus == 'edit point' then 'hidden'
 
         SVG 
           width: dt_w
@@ -1119,7 +1140,7 @@ YourPoints = ReactiveComponent
                   y1: y1
                   x2: x2 
                   y2: y2 
-                  stroke: focus_blue
+                  stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
                   strokeWidth: 1
                   strokeOpacity: .2
 
@@ -1131,7 +1152,7 @@ YourPoints = ReactiveComponent
             rx: 16
             ry: 16
             fill: "url(#drop-stripes-#{@props.valence})"
-            stroke: focus_blue
+            stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
             strokeWidth: dt_stroke_width
             strokeDasharray: '4 3'
 
@@ -1149,7 +1170,6 @@ YourPoints = ReactiveComponent
             stroke: focus_blue
             stroke_width: 6
             dash_array: '24 18'
-
 
 
         SPAN 
@@ -1171,56 +1191,60 @@ YourPoints = ReactiveComponent
 
       if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES
         if !your_points.adding_new_point
-          DIV 
-            style: 
-              padding: '.25em 0'
-              marginTop: '1em'
-              marginLeft: 20
-              fontSize: 14
-
-            SPAN 
+          if @proposal.has_focus == 'opinion'
+            DIV 
               style: 
-                fontWeight: if browser.high_density_display then 300 else 400
-              'or '
-            SPAN 
-              style: {padding: '0 6px'}
-              dangerouslySetInnerHTML:{__html: '&bull;'}
-            A 
-              className: "write_#{@props.valence}"
-              style:
-                textDecoration: 'underline'
-                color: focus_blue
-              onClick: => 
-                if can_add_new_point == Permission.NOT_LOGGED_IN
-                  reset_key 'auth', 
-                    form: 'create account'
-                    goal: 'write a point'
-                else if can_add_new_point == Permission.UNVERIFIED_EMAIL
-                  reset_key 'auth', 
-                    form: 'verify email'
-                    goal: 'write a point'
-                  save auth
-                  current_user.trying_to = 'send_verification_token'
-                  save current_user
+                padding: '.25em 0'
+                marginTop: '1em'
+                marginLeft: 20
+                fontSize: 14
 
-                else
-                  your_points.adding_new_point = true
-                  save your_points
+              SPAN 
+                style: 
+                  fontWeight: if browser.high_density_display then 300 else 400
+                'or '
+              SPAN 
+                style: {padding: '0 6px'}
+                dangerouslySetInnerHTML:{__html: '&bull;'}
 
-                writeToLog {what: 'click new point'}
 
-              "Write a new "
-              capitalize \
-                if @props.valence == 'pros' 
-                  customization('point_labels.pro')
-                else 
-                  customization('point_labels.con')
+              A 
+                className: "write_#{@props.valence}"
+                style:
+                  textDecoration: 'underline'
+                  color: focus_blue
+                onClick: => 
+                  if can_add_new_point == Permission.NOT_LOGGED_IN
+                    reset_key 'auth', 
+                      form: 'create account'
+                      goal: 'write a point'
+                  else if can_add_new_point == Permission.UNVERIFIED_EMAIL
+                    reset_key 'auth', 
+                      form: 'verify email'
+                      goal: 'write a point'
+                    save auth
+                    current_user.trying_to = 'send_verification_token'
+                    save current_user
+
+                  else
+                    your_points.adding_new_point = true
+                    save your_points
+
+                  writeToLog {what: 'click new point'}
+
+                "Write a new "
+                capitalize \
+                  if @props.valence == 'pros' 
+                    customization('point_labels.pro')
+                  else 
+                    customization('point_labels.con')
         else
           EditPoint
             key: "new_point_#{@props.valence}"
             fresh: true
             valence: @props.valence
             your_points_key: @props.key
+
 
 styles += """
 .points_by_community, .points_on_decision_board {
@@ -2366,32 +2390,133 @@ EditPoint = ReactiveComponent
       width: '100%'
       overflow: 'hidden'
       fontSize: 14
+      padding: '4px 6px'
+
+    guidelines_w = 230
 
     DIV
       className: 'edit_point'
       style: 
-        margin: '0 18px'
+        margin: '0 9px'
         position: 'relative'
         fontSize: 14
+        top: if @props.fresh then -30
 
-      INPUT 
-        id:'is_pro'
-        name: 'is_pro'
-        type: 'hidden'
-        value: "#{@props.valence == 'pros'}"
-      LABEL 
-        htmlFor:'nutshell'
-        'Your point'
-      CharacterCountTextInput 
-        id:'nutshell'
-        maxLength:140
-        name:'nutshell'
-        pattern:'^.{3,}'
-        placeholder:'Make this summary succinct.'
-        required:'required'
-        defaultValue: if @props.fresh then null else @data().nutshell
-        style: _.extend {}, textarea_style,
-          minHeight: 75
+      if !@props.fresh
+        LABEL 
+          htmlFor:'nutshell'
+          'Your point'
+      else
+        DIV
+          style: 
+            fontSize: 30
+            fontWeight: 700
+            color: focus_blue
+            position: 'absolute'
+            top: -48
+          "New "
+          capitalize \
+            if @props.valence == 'pros' 
+              customization('point_labels.pro')
+            else 
+              customization('point_labels.con')
+          " Point"
+
+
+      DIV
+        style: 
+          position: 'relative'
+
+        # guidelines/tips for good points
+        DIV 
+          style:
+            position: 'absolute'
+            left: if @props.valence == 'pros' then -260 else 260
+            width: guidelines_w
+            color: focus_blue
+            zIndex: 1
+            
+
+          SVG
+            width: guidelines_w + 28
+            height: 191
+            viewBox: "-4 0 #{guidelines_w+20 + 9} 191"
+            style: css.crossbrowserify
+              position: 'absolute'
+              transform: if @props.valence == 'cons' then 'scaleX(-1)'
+              left: if @props.valence == 'cons' then -20
+
+            DEFS null,
+              svg.dropShadow 
+                id: "guidelines-shadow"
+                dx: '0'
+                dy: '2'
+                stdDeviation: "3"
+                opacity: .5
+
+            PATH
+              stroke: focus_blue #'#ccc'
+              strokeWidth: 1
+              fill: "#FFF"
+              filter: 'url(#guidelines-shadow)'
+
+              d: """
+                  M#{guidelines_w},33
+                  L#{guidelines_w},0
+                  L1,0
+                  L1,181 
+                  L#{guidelines_w},181 
+                  L#{guidelines_w},58
+                  L#{guidelines_w + 20},48
+                  L#{guidelines_w},33 
+                  Z
+                 """
+          DIV 
+            style: 
+              padding: '14px 18px'
+              position: 'relative'
+
+
+            SPAN 
+              style: 
+                fontWeight: 600
+              "Write a single "
+              capitalize \
+                if @props.valence == 'pros' 
+                  customization('point_labels.pro')
+                else 
+                  customization('point_labels.con')
+              " point "
+              BR null
+              '(or question) for this proposal'
+
+            UL 
+              style: 
+                listStylePosition: 'outside'
+                marginLeft: 16
+                marginTop: 5
+              LI null,
+                "Be direct. The summary is your main point."
+              LI null,
+                "Review your language. Don’t be careless."
+              LI null,
+                "No personal attacks."
+
+        CharacterCountTextInput 
+          id: 'nutshell'
+          maxLength: 140
+          name: 'nutshell'
+          pattern: '^.{3,}'
+          placeholder: 'Make this summary succinct.'
+          required: 'required'
+          defaultValue: if @props.fresh then null else @data().nutshell
+          style: _.extend {}, textarea_style,
+            minHeight: 75
+        INPUT 
+          id:'is_pro'
+          name: 'is_pro'
+          type: 'hidden'
+          value: "#{@props.valence == 'pros'}"
 
       
       DIV null,
@@ -2409,7 +2534,7 @@ EditPoint = ReactiveComponent
                          'fa-caret-right fa'
           SPAN
             style: {paddingLeft: 6}
-            'Expand on your point'
+            'Add supporting details'
 
         DIV 
           style: 
@@ -2423,26 +2548,6 @@ EditPoint = ReactiveComponent
             defaultValue: if @props.fresh then null else @data().text
             style: textarea_style
 
-
-      if @proposal.active
-        DIV 
-          style: 
-            position: 'absolute'
-            bottom: 0
-            fontSize: 13
-          INPUT
-            className: 'newpoint-anonymous'
-            type:      'checkbox'
-            id:        "sign_name-#{@props.valence}"
-            name:      "sign_name-#{@props.valence}"
-            checked:   @local.sign_name
-            onChange: =>
-              @local.sign_name = !@local.sign_name
-              save(@local)
-          LABEL 
-            htmlFor: "sign_name-#{@props.valence}"
-            title:'Signing your name lends your point more weight with other participants.'
-            'Sign your name'
 
       if @local.errors?.length > 0
         
@@ -2473,25 +2578,52 @@ EditPoint = ReactiveComponent
             'New points disabled for this proposal'
         else
           INPUT 
-            className:'button primary_button'
-            'data-action':'submit-point'
-            type:'submit'
+            className: 'button primary_button'
+            'data-action': 'submit-point'
+            type: 'submit'
             onClick: @savePoint
-            value:'Done'
+            value: 'Done'
             style: 
               marginTop: '.5em'
               width: '100%'
-              fontSize: 18
+              fontSize: 24
+              padding: 4
 
         A 
-          className:'newpoint-cancel primary_cancel_button'
           onClick: @done
+          style:
+            display: 'inline-block'
+            color: '#888888'
+            cursor: 'pointer'
+            position: 'relative'
+            zIndex: 1
+            top: 5
           'cancel'  
+
+      if @proposal.active
+        DIV 
+          style: 
+            position: 'relative'
+            top: -20
+          INPUT
+            className: 'newpoint-anonymous'
+            type:      'checkbox'
+            id:        "sign_name-#{@props.valence}"
+            name:      "sign_name-#{@props.valence}"
+            checked:   @local.sign_name
+            onChange: =>
+              @local.sign_name = !@local.sign_name
+              save(@local)
+          LABEL 
+            htmlFor: "sign_name-#{@props.valence}"
+            title:'Signing your name lends your point more weight with peers.'
+            'Sign your name'
+
 
   componentDidMount : ->
     $el = $(@getDOMNode())
     $el.find('#nutshell').focus()
-    $el.find('.newpoint-cancel').ensureInView {scroll: false, position: 'bottom'}
+    $el.find('[data-action="submit-point"]').ensureInView {scroll: false, position: 'bottom'}
 
   done : ->
 
@@ -2548,8 +2680,8 @@ EditPoint = ReactiveComponent
 styles += """
 .edit_point .count{
   position: absolute;
-  right: 20px;
-  top: -19px;
+  right: 0px;
+  bottom: -19px;
 }
 """
 
@@ -2574,7 +2706,7 @@ EditProposal = ReactiveComponent
       return SPAN null
 
     default_group = if subdomain.name == 'bitcoin'
-                      'Member Proposals'
+                      'Proposals'
                     else
                       null
     
@@ -2677,104 +2809,31 @@ EditProposal = ReactiveComponent
 
         DIV 
           style: 
+            fontSize: 28
             marginBottom: 20
 
-          DIV 
+          DIV
             style: 
-              fontSize: 28
-
-            "A proposal must be "
-            SPAN
-              style: 
-                color: focus_blue
-                fontWeight: 600
-              "Actionable"
-            ", " 
-            SPAN
-              style: 
-                color: focus_blue     
-                fontWeight: 600         
-              "Clear"
-            ", "
-            "and "
-            SPAN
-              style: 
-                color: focus_blue
-                fontWeight: 600
-
-              "Unique"
-            '. '
-
-          DIV null
-            A 
-              style: 
-                textDecoration: 'underline'
-              onClick: => @local.show_criteria = !@local.show_criteria; save(@local)
-              if @local.show_criteria
-                "Hide"
-              else
-                "Read more"
+              fontSize: 30
+              fontWeight: 700
+              color: focus_blue
+            "Add a new proposal"
 
           DIV 
             style: 
-              fontSize: 22
-            if @local.show_criteria
+              fontSize: 18
 
-              UL 
-                style: 
-                  marginLeft: 40
-
-                LI 
-                  style:
-                    listStyle: 'none'
-                  'Actionable'
-                  UL 
-                    style: 
-                      marginLeft: 40
-
-                    LI null,
-                      'your proposal should have concrete actions'
-                    LI null,
-                      'the proposed actions should be realistic and on-topic'
-
-                LI
-                  style: 
-                    listStyle: 'none'
-                  'Clear'
-                  UL 
-                    style: 
-                      marginLeft: 40
-                    LI null,
-                      'format your proposal to maximize readability'
-                    LI null,
-                      'eliminate possibilities for misunderstanding'
-                    LI null,
-                      'state your assumptions'
-                    LI null,                  
-                      'describe the situation your proposal addresses'
-                    LI null,                  
-                      'motivate each proposed action'
-
-                LI
-                  style: 
-                    listStyle: 'none'
-
-                  'Unique'
-                  UL 
-                    style: 
-                      marginLeft: 40
-                    LI null,
-                      'browse the site for similar proposals'
-                    LI null,                  
-                      'if you want to improve upon an existing proposal, '
-                      A 
-                        style:
-                          'textDecoration': 'underline'
-                        href: 'mailto:admin@consider.it'
-                        'email us'
-                      '.'
-
-
+            'Make it '
+            SPAN 
+              style: 
+                color: focus_blue
+              "unambiguous"
+            ' and '
+            SPAN 
+              style: 
+                color: focus_blue
+              "free of language errors"
+            '.'
 
         DIV style: block_style,
           LABEL htmlFor:'slug', style: label_style, 'URL:'

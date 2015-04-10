@@ -576,14 +576,6 @@ ModerateItem = ReactiveComponent
           DIV style:{fontSize: 12, marginLeft: 73}, 
             "by #{author.name}"
 
-            if (item.status != 0 && item.status != 2 && class_name != 'Proposal') || class_name == 'Comment'
-              [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
-              A 
-                target: '_blank'
-                href: "/#{proposal.slug}/?selected=#{point.key}"
-                style: {textDecoration: 'underline'}
-                'Read in context']
-
             if !moderatable.hide_name && !@local.messaging
               [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
               A

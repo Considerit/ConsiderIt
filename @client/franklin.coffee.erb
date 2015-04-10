@@ -2959,6 +2959,7 @@ EditPoint = ReactiveComponent
         margin: '0 18px'
         position: 'relative'
         fontSize: 14
+        zIndex: 1
 
       if !@props.fresh
         LABEL 
@@ -3113,7 +3114,7 @@ EditPoint = ReactiveComponent
         else
           INPUT 
             className: 'button primary_button'
-            action: 'submit-point',
+            'data-action': 'submit-point',
             type: 'submit', 
             onClick: @savePoint
             value: 'Done'

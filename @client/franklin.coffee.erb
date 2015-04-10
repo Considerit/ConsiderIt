@@ -3030,6 +3030,7 @@ EditPoint = ReactiveComponent
               style: 
                 listStylePosition: 'outside'
                 marginLeft: 16
+                marginTop: 5
               LI null,
                 "Be direct. The summary is your main point."
               LI null,
@@ -3795,104 +3796,31 @@ EditProposal = ReactiveComponent
 
         DIV 
           style: 
+            fontSize: 28
             marginBottom: 20
 
-          DIV 
+          DIV
             style: 
-              fontSize: 28
-
-            "A proposal must be "
-            SPAN
-              style: 
-                color: focus_blue
-                fontWeight: 600
-              "Actionable"
-            ", " 
-            SPAN
-              style: 
-                color: focus_blue     
-                fontWeight: 600         
-              "Clear"
-            ", "
-            "and "
-            SPAN
-              style: 
-                color: focus_blue
-                fontWeight: 600
-
-              "Unique"
-            '. '
-
-          DIV null
-            A 
-              style: 
-                textDecoration: 'underline'
-              onClick: => @local.show_criteria = !@local.show_criteria; save(@local)
-              if @local.show_criteria
-                "Hide"
-              else
-                "Read more"
+              fontSize: 30
+              fontWeight: 700
+              color: focus_blue
+            "Add a new proposal"
 
           DIV 
             style: 
-              fontSize: 22
-            if @local.show_criteria
+              fontSize: 18
 
-              UL 
-                style: 
-                  marginLeft: 40
-
-                LI 
-                  style:
-                    listStyle: 'none'
-                  'Actionable'
-                  UL 
-                    style: 
-                      marginLeft: 40
-
-                    LI null,
-                      'your proposal should have concrete actions'
-                    LI null,
-                      'the proposed actions should be realistic and on-topic'
-
-                LI
-                  style: 
-                    listStyle: 'none'
-                  'Clear'
-                  UL 
-                    style: 
-                      marginLeft: 40
-                    LI null,
-                      'format your proposal to maximize readability'
-                    LI null,
-                      'eliminate possibilities for misunderstanding'
-                    LI null,
-                      'state your assumptions'
-                    LI null,                  
-                      'describe the situation your proposal addresses'
-                    LI null,                  
-                      'motivate each proposed action'
-
-                LI
-                  style: 
-                    listStyle: 'none'
-
-                  'Unique'
-                  UL 
-                    style: 
-                      marginLeft: 40
-                    LI null,
-                      'browse the site for similar proposals'
-                    LI null,                  
-                      'if you want to improve upon an existing proposal, '
-                      A 
-                        style:
-                          'textDecoration': 'underline'
-                        href: 'mailto:admin@consider.it'
-                        'email us'
-                      '.'
-
-
+            'Make it '
+            SPAN 
+              style: 
+                color: focus_blue
+              "unambiguous"
+            ' and '
+            SPAN 
+              style: 
+                color: focus_blue
+              "free of language errors"
+            '.'
 
         DIV style: block_style,
           LABEL htmlFor:'slug', style: label_style, 'URL:'

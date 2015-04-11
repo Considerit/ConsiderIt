@@ -129,7 +129,9 @@ window.opinionsForProposal = (proposal) ->
                not filter_func or filter_func(fetch(opinion.user)))
 
 window.proposal_editor = (proposal) ->
-  editor = proposal.roles.editor.length > 0 and proposal.roles.editor[0]
+  editors = (e for e in proposal.roles.editor when e != '*')
+  editor = editors.length > 0 and editors[0]
+
   return editor != '-' and editor
 
 

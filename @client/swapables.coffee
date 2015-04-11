@@ -1001,6 +1001,7 @@ window.ProfileMenu = ReactiveComponent
       style:
         _.extend(
           position: 'absolute'
+          zIndex: 1
           right: 50
           top: 17,
           _.clone(@props.style))

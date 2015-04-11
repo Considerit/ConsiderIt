@@ -3699,7 +3699,7 @@ EditProposal = ReactiveComponent
       return SPAN null
 
     default_group = if subdomain.name == 'bitcoin'
-                      'Proposals'
+                      'Our Actions'
                     else
                       null
     
@@ -3997,9 +3997,11 @@ EditProposal = ReactiveComponent
               'Category:'
 
             SELECT
+              id: 'cluster'
+              name: 'cluster'
               style: 
                 fontSize: 30
-              defaultValue: if @props.fresh then null else @data().group
+              defaultValue: if @props.fresh then null else proposal.cluster
               for group,i in groups
                 OPTION key: i, value: group, group
             ]
@@ -4115,6 +4117,7 @@ EditProposal = ReactiveComponent
     slug = $el.find('#slug').val()
     cluster = $el.find('#cluster').val()
     cluster = null if cluster == ""
+
     active = $el.find('#open_for_discussion:checked').length > 0
     hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0
 

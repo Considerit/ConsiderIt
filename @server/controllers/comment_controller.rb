@@ -78,7 +78,6 @@ class CommentController < ApplicationController
 
     comment.update_attributes! comment_vals
 
-
     ActiveSupport::Notifications.instrument("comment:point:updated", 
       :model => comment, 
       :current_subdomain => current_subdomain
@@ -93,8 +92,14 @@ class CommentController < ApplicationController
     comment = Comment.find params[:id]
     authorize! 'delete comment', comment
 
-    dirty_key("/comments/#{comment.point_id}")
     comment.destroy
+
+    point = comment.point
+    point.comment_count = point.comments.count
+    point.save
+
+    dirty_key "/point/#{point.id}"
+    dirty_key("/comments/#{point.id}")
 
     render :json => []
   end

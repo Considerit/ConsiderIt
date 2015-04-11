@@ -483,6 +483,18 @@ if window.location.hostname == 'bitcoin-election.consider.it'
 
 customizations.bitcoin = 
 
+  auth: 
+    user_questions : [
+      {
+        tag: 'bitcoin_foundation_member.editable'
+        question: 'I am a member of the Bitcoin Foundation'
+        input: 'dropdown'
+        options:['No', 'Yes']
+        required: true
+      }]
+
+
+
   cluster_options :
     # Each cluster can have its own options
 

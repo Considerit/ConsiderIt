@@ -491,28 +491,20 @@ if window.location.hostname == 'bitcoin-election.consider.it'
 
 customizations.bitcoin = 
 
+  auth: 
+    user_questions : [
+      {
+        tag: 'bitcoin_foundation_member.editable'
+        question: 'I am a member of the Bitcoin Foundation'
+        input: 'dropdown'
+        options:['No', 'Yes']
+        required: true
+      }]
+
+
+
   cluster_options :
     # Each cluster can have its own options
-
-    'Foundation Goals':   # Options for the "Candidates" cluster
-      editor_icons: true
-      homie_histo_title: "Members' Opinions"
-      collapse_descriptions_at: 600
-    
-    'Proposals':   # Options for the "Candidates" cluster
-      editor_icons: true
-      homie_histo_title: "Members' Opinions"
-      collapse_descriptions_at: 600
-
-    'Board Proposals':   # Options for the "Candidates" cluster
-      editor_icons: true
-      homie_histo_title: "Members' Opinions"
-      collapse_descriptions_at: 600
-
-    'Member Proposals':   # Options for the "Candidates" cluster
-      editor_icons: true
-      homie_histo_title: "Members' Opinions"
-      collapse_descriptions_at: 600
 
     Candidates:   # Options for the "Candidates" cluster
       editor_icons: true
@@ -638,11 +630,17 @@ customizations.bitcoin =
                 A
                   href: '/proposal/new'
                   style: textDecoration: 'underline', fontWeight: 400
-                  "Submit a proposal"
-                ' to lead a new direction.'
+                  "Or submit a new direction."
 
         ProfileMenu()
 customizations.bitcoin.NonHomepageHeader = customizations.bitcoin.HomepageHeader
+bitcoin_clusters =
+  editor_icons: true
+  homie_histo_title: "Members' Opinions"
+  collapse_descriptions_at: 600
+
+for k in ['Proposals', 'Board Proposals', 'Member Proposals', 'Our Focus', 'Our Actions', 'Our Values', 'Our Goals']
+  customizations.bitcoin.cluster_options[k] = bitcoin_clusters
 
 
 ####################

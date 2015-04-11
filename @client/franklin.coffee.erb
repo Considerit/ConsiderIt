@@ -1717,9 +1717,11 @@ YourPoints = ReactiveComponent
 
     can_add_new_point = permit 'create point', @proposal
 
-    your_points = @data @props.key,
-      editing_points : []
-      adding_new_point : false
+    your_points = @data @props.key
+    if !your_points.editing_points?
+      _.extend your_points, 
+        editing_points : []
+        adding_new_point : false
 
     adding_new_point = fetch('your_pro_points').adding_new_point || 
                        fetch('your_con_points').adding_new_point

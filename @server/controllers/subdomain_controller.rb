@@ -102,7 +102,9 @@ module Invitations
       message = invite['message'] && invite['message'].length > 0 ? invite['message'] : nil
       users_with_role = roles[invite['role']]
 
-      for user_or_email in invite['keys_or_emails']
+      invites = invite['keys_or_emails'] or []
+
+      invites.each do |user_or_email|
         next if user_or_email.index('*') # wildcards; no invitations!!
           
         if user_or_email[0] == '/'

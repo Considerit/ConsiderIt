@@ -1207,7 +1207,6 @@ YourPoints = ReactiveComponent
                 style: {padding: '0 6px'}
                 dangerouslySetInnerHTML:{__html: '&bull;'}
 
-
               A 
                 className: "write_#{@props.valence}"
                 style:
@@ -2401,6 +2400,7 @@ EditPoint = ReactiveComponent
         position: 'relative'
         fontSize: 14
         top: if @props.fresh then -30
+        zIndex: 1
 
       if !@props.fresh
         LABEL 
@@ -2619,7 +2619,6 @@ EditPoint = ReactiveComponent
             title:'Signing your name lends your point more weight with peers.'
             'Sign your name'
 
-
   componentDidMount : ->
     $el = $(@getDOMNode())
     $el.find('#nutshell').focus()
@@ -2706,7 +2705,7 @@ EditProposal = ReactiveComponent
       return SPAN null
 
     default_group = if subdomain.name == 'bitcoin'
-                      'Proposals'
+                      'Our Actions'
                     else
                       null
     
@@ -3004,9 +3003,11 @@ EditProposal = ReactiveComponent
               'Category:'
 
             SELECT
+              id: 'cluster'
+              name: 'cluster'
               style: 
                 fontSize: 30
-              defaultValue: if @props.fresh then null else @data().group
+              defaultValue: if @props.fresh then null else proposal.cluster
               for group,i in groups
                 OPTION key: i, value: group, group
             ]
@@ -3122,6 +3123,7 @@ EditProposal = ReactiveComponent
     slug = $el.find('#slug').val()
     cluster = $el.find('#cluster').val()
     cluster = null if cluster == ""
+
     active = $el.find('#open_for_discussion:checked').length > 0
     hide_on_homepage = $el.find('#listed_on_homepage:checked').length == 0
 

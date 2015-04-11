@@ -151,12 +151,6 @@ protected
     new_user.absorb(old_user)
 
     # puts("Deleting old user #{old_user.id}")
-    if current_user.id == old_user.id
-      # puts("Signing out of #{current_user.id} before we delete it")
-
-      # Travis: should we be signing in new_user here? Everytime replace_user is
-      #         called, sign_in follows
-    end
     old_user.destroy()
 
     # puts("Done replacing. current_user=#{current_user}")

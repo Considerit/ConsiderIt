@@ -213,14 +213,14 @@ AppSettingsDash = ReactiveComponent
               defaultValue: subdomain.external_project_url
               placeholder: 'A link to the main project\'s homepage, if any.'
 
-          DIV className: 'input_group',
-            LABEL htmlFor: 'notifications_sender_email', 'Contact email'
-            INPUT 
-              id: 'notifications_sender_email'
-              type: 'text'
-              name: 'notifications_sender_email'
-              defaultValue: subdomain.notifications_sender_email
-              placeholder: 'Sender email address for notification emails. Default is admin@consider.it.'
+          # DIV className: 'input_group',
+          #   LABEL htmlFor: 'notifications_sender_email', 'Contact email'
+          #   INPUT 
+          #     id: 'notifications_sender_email'
+          #     type: 'text'
+          #     name: 'notifications_sender_email'
+          #     defaultValue: subdomain.notifications_sender_email
+          #     placeholder: 'Sender email address for notification emails. Default is admin@consider.it.'
 
           DIV className: 'input_group',
             LABEL htmlFor: 'about_page_url', 'About Page URL'

@@ -1089,7 +1089,9 @@ window.ProfileMenu = ReactiveComponent
 
       # TODO: the server should dirty keys on the client when the
       # current_user logs out
-      arest.clear_matching_objects((key) -> key.match( /\/page\// ))
+      #arest.clear_matching_objects((key) -> key.match( /\/page\// ))
+      location.reload()
+      
 
 
 styles += """

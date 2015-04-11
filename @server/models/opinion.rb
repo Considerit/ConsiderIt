@@ -115,11 +115,16 @@ class Opinion < ActiveRecord::Base
 
     user = User.find(self.user_id)
 
+    if !point.id
+      Rails.logger.error "TRYING TO INCLUDE A POINT THAT DOESN'T EXIST"
+      return
+    end    
+    
     if user.inclusions.where( :point_id => point.id ).count > 0
       Rails.logger.error "Including a point (#{point.id}) for user #{self.user_id} twice!'"
       return
     end
-    
+
     attrs = { 
       :point_id => point.id,
       :user_id => self.user_id,
@@ -212,7 +217,7 @@ class Opinion < ActiveRecord::Base
   end
 
   def inclusions
-    Inclusion.where(:proposal_id => proposal_id, :user_id => user_id)
+    Inclusion.where(:proposal_id => proposal_id, :user_id => user_id).where('point_id is not NULL')
   end
 
   # This is a maintenance function.  You shouldn't need to run it

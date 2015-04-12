@@ -559,7 +559,9 @@ ModerateItem = ReactiveComponent
               DIV null,
                 A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = true; save(@local)),
                   'Show full conversation'
-                Comment key: moderatable
+                Comment 
+                  key: moderatable
+                  under_review: true
 
             else
               DIV null,

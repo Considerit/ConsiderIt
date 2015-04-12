@@ -1878,7 +1878,7 @@ Comment = ReactiveComponent
           splitParagraphs(comment.body)
 
         # Delete/edit button
-        if permit('update comment', comment) > 0
+        if permit('update comment', comment) > 0 && !@props.under_review
           comment_action_style = 
             color: '#444'
             textDecoration: 'underline'

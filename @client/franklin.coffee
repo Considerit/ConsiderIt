@@ -1485,7 +1485,7 @@ Point = ReactiveComponent
 
 
     if expand_to_see_details
-      select_enticement.push SPAN key: 1,
+      select_enticement.push DIV key: 1,
         if is_selected
           "read less"
         else
@@ -1497,7 +1497,7 @@ Point = ReactiveComponent
           ]
 
     if point.comment_count > 0 || !expand_to_see_details
-      select_enticement.push SPAN key: 2, style: {whiteSpace: 'nowrap'},
+      select_enticement.push DIV key: 2, style: {whiteSpace: 'nowrap'},
         #" ("
         A 
           className: 'select_point'
@@ -1507,7 +1507,7 @@ Point = ReactiveComponent
         #")"
 
     if point.assessment
-      select_enticement.push SPAN key: 3,
+      select_enticement.push DIV key: 3,
         I
           className: 'fa fa-search'
           title: 'Click to read a fact-check of this point'

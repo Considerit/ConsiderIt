@@ -525,29 +525,34 @@ ModerateItem = ReactiveComponent
         if item.updated_since_last_evaluation
           SPAN style: {}, "Updated since last moderation"
         else if item.status == 1
-          SPAN style: {}, "Passed moderation #{new Date(item.updated_at).toDateString()}"
+          SPAN style: {}, "Passed by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
         else if item.status == 2
-          SPAN style: {}, "Sitting in quarantine"
+          SPAN style: {}, "Quarantined by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
         else if item.status == 0
-          SPAN style: {}, "Failed moderation"
+          SPAN style: {}, "Failed by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
         else 
           SPAN style: {}, "Is this #{class_name} ok?"
 
-        if item.user
-          SPAN style: {float: 'right', fontSize: 18, verticalAlign: 'bottom'},
-            "Moderated by #{fetch(item.user).name}"
-
       DIV style: {padding: '10px 30px'},
         # content area
-        DIV style: task_area_section_style, 
+        DIV 
+          style: task_area_section_style, 
 
           if class_name == 'Point'
             UL style: {marginLeft: 73}, 
               Point key: point, rendered_as: 'under_review', enable_dragging: false
           else if class_name == 'Proposal'
             DIV null,
-              DIV null, moderatable.name
-              DIV null, moderatable.description
+              DIV 
+                style: 
+                  fontSize: 20
+                  fontWeight: 600
+                moderatable.name
+              DIV 
+                className: 'moderatable_item'
+
+                dangerouslySetInnerHTML: 
+                  __html: moderatable.description
 
           else if class_name == 'Comment'
             if !@local.show_conversation
@@ -654,6 +659,35 @@ ModerateItem = ReactiveComponent
 
             LABEL htmlFor: 'fail', 'Fail'
 
+# TODO: Refactor the below and make sure that the styles applied to the 
+#       user generated fields are in sync with the styling in the 
+#       wysiwyg editor. 
+styles += """
+.moderatable_item br {
+  padding-bottom: 0.5em; }
+.moderatable_item p, 
+.moderatable_item ul, 
+.moderatable_item ol, 
+.moderatable_item table {
+  margin-bottom: 0.5em; }
+.moderatable_item td {
+  padding: 0 3px; }
+.moderatable_item li {
+  list-style: outside; }
+.moderatable_item ol li {
+  list-style-type: decimal; }  
+.moderatable_item ul,
+.moderatable_item ol, {
+  padding-left: 20px;
+  margin-left: 20px; }
+.moderatable_item a {
+  text-decoration: underline; }
+.moderatable_item blockquote {
+  opacity: 0.7;
+  padding: 10px 20px; }
+.moderatable_item table {
+  padding: 20px 0px; }
+"""
 
 FactcheckDash = ReactiveComponent
   displayName: 'FactcheckDash'

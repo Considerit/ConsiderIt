@@ -116,6 +116,7 @@ module Invitations
           if !invitee
             # every invited & fully specified email address who doesn't yet have an account will have one created for them
             invitee = User.create!({
+              :name => user_or_email.split('@')[0],
               :email => user_or_email,
               :registered => true,
               :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password

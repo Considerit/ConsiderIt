@@ -899,6 +899,7 @@ customizations.livingvotersguide =
           position: 'relative'
           padding: '2.5em 0 .5em 0'
           textAlign: 'center'
+          zIndex: 0
 
         DIV style: {color: 'white', backgroundColor: '#93928E', marginTop: 48, padding: 18},
           DIV style: {fontSize: 18, fontStyle: 'italic', textAlign: 'left', width: 690, fontStyle: 'italic', margin: 'auto'},

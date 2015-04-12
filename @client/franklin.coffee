@@ -594,7 +594,6 @@ styles += """
   padding: 20px 0px; }
 """
 
-
 ##
 # DecisionBoard
 # Handles the user's list of important points in crafting page. 
@@ -1421,7 +1420,7 @@ Point = ReactiveComponent
           curr_column = Math.floor(i / s.rows)
           side_offset = curr_column * s.col_gap + i * s.dx
           top_offset = (i % s.rows) * s.dy 
-          left_right = if @data().is_pro then 'left' else 'right'
+          left_right = if @data().is_pro && !@props.rendered_as == 'under_review' then 'left' else 'right'
           style = 
             top: top_offset
             position: 'absolute'
@@ -1534,11 +1533,11 @@ Point = ReactiveComponent
       position: 'absolute'
       height: 25
       width: 25
-    left_or_right = if @data().is_pro && @props.rendered_as != 'decision_board_point'  
+    left_or_right = if @data().is_pro && !(@props.rendered_as in ['decision_board_point', 'under_review'])
                       'right' 
                     else 
                       'left'
-    ioffset = if @props.rendered_as == 'decision_board_point' then -10 else -50
+    ioffset = if @props.rendered_as in ['decision_board_point', 'under_review'] then -10 else -50
     includers_style[left_or_right] = ioffset
 
     draw_all_includers = @props.rendered_as == 'community_point'
@@ -1573,9 +1572,10 @@ Point = ReactiveComponent
             top: 8
             position: 'absolute'
 
-          mouth_style[side] = -COMMUNITY_POINT_MOUTH_WIDTH + if is_selected then 3 else 0
+          mouth_style[side] = -COMMUNITY_POINT_MOUTH_WIDTH + \
+            if is_selected || @props.rendered_as == 'under_review' then 3 else 0
           
-          if !point.is_pro
+          if !point.is_pro || @props.rendered_as == 'under_review'
             mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
           else 
             mouth_style['transform'] = 'rotate(90deg)'
@@ -3196,6 +3196,7 @@ Header = ReactiveComponent
     DIV 
       style: 
         position: 'relative'
+        zIndex: 2
         margin: '0 auto'
         backgroundColor: 'white'
         minWidth: PAGE_WIDTH
@@ -3232,6 +3233,18 @@ Header = ReactiveComponent
           padding: '5px 20px'
           display: if @root.server_error then 'block' else 'none'
         'Warning: there was a server error!'
+
+
+Footer = ReactiveComponent
+  displayName: 'Footer'
+
+  render : ->
+    DIV 
+      style: 
+        position: 'relative'
+        zIndex: 0
+      customization('Footer')()
+
 
 
 About = ReactiveComponent
@@ -3448,9 +3461,10 @@ Page = ReactiveComponent
 
     DIV 
       style: 
+        position: 'relative'
+        zIndex: 1
         minWidth: PAGE_WIDTH
         minHeight: 200
-        zIndex: 2
         margin: 'auto'
         marginLeft: if lefty then 0
 
@@ -3535,7 +3549,7 @@ Root = ReactiveComponent
 
           Page key: "/page#{loc.url}"
 
-          customization('Footer')()
+          Footer()
 
       Tooltip()
 

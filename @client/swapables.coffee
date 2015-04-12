@@ -590,6 +590,7 @@ window.DefaultFooter = ReactiveComponent
         margin: 'auto'
         marginLeft: if lefty then 20 + BODY_WIDTH / 2
         width: BODY_WIDTH
+        zIndex: 0
 
       A href: "#{subdomain.external_project_url}", target: '_blank', style: {display: 'inline-block', margin: 'auto'},
         if subdomain.branding.logo
@@ -604,9 +605,20 @@ window.DefaultFooter = ReactiveComponent
 window.TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'
   render : -> 
-    DIV style: {textAlign: 'left', display: 'inline-block', fontSize: 20},
+    DIV 
+      style: 
+        textAlign: 'left'
+        display: 'inline-block'
+        fontSize: 20
       "Technology by "
-      A href: 'http://consider.it', style: {textDecoration: 'underline', color: '#B03B42', fontWeight: 600}, target: '_blank', 'Consider.it'
+      A 
+        href: 'http://consider.it'
+        style: 
+          textDecoration: 'underline'
+          color: logo_red
+          fontWeight: 600, 
+        target: '_blank'
+        'Consider.it'
 
 
 ###########################

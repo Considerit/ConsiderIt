@@ -123,10 +123,10 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
 window.opinionsForProposal = (proposal) ->       
   options = customization("cluster_options.#{proposal.cluster}") || {}
   filter_func = options.homie_histo_filter
-  opinions = fetch('/page/' + proposal.slug).opinions
+  opinions = fetch('/page/' + proposal.slug).opinions || []
   # We'll only pass SOME opinions to the histogram
   (opinion for opinion in opinions when \
-               not filter_func or filter_func(fetch(opinion.user)))
+               !filter_func or filter_func(fetch(opinion.user)))
 
 window.proposal_editor = (proposal) ->
   editors = (e for e in proposal.roles.editor when e != '*')

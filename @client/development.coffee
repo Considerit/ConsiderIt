@@ -97,4 +97,32 @@ Development = ReactiveComponent
                         display: 'inline-block'            
                       app
 
+  componentDidMount : ->
+
+    # cycle through subdomains 
+    document.addEventListener "keypress", (e) -> 
+      key = (e and e.keyCode) or event.keyCode
+
+      if key==14 # cntrl-N        
+        app = fetch '/application'
+
+        if app.app == 'franklin'
+          subdomains = fetch '/subdomains'
+          subdomain = fetch '/subdomain'
+
+          cur_idx = -1
+          for sub, idx in subdomains.subs
+            if sub.id == subdomain.id
+              cur_idx = idx
+
+          next_idx = cur_idx + 1 
+          if next_idx >= subdomains.subs.length
+            next_idx = 0
+
+          window.location = "/change_subdomain/#{subdomains.subs[next_idx].id}"
+
+
+
+
+
 window.Development = Development

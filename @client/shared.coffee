@@ -39,6 +39,23 @@ window.focus_blue = '#2478CC'
 window.logo_red = "#B03A44"
 window.default_avatar_in_histogram_color = '#d3d3d3'
 
+window.parseColor = (color_str) -> 
+  test = document.createElement('div')
+  test.style.color = color_str
+
+  color = test.style.color
+            .match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i)
+  if color
+    return {
+      r: color[1]
+      g: color[2]
+      b: color[3]
+    }
+    
+  else 
+    throw "Color #{color_str} could not be parsed"
+
+
 # fixed saturation & brightness; random hue
 # adapted from http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 golden_ratio_conjugate = 0.618033988749895

@@ -754,10 +754,12 @@ Auth = ReactiveComponent
 ensureCurrentUserAvatar = (attempts = 0) ->
   
   $.getJSON '/user_avatar_hack', (response) =>
-    if response.b64_thumbnail          
-      current_user = fetch '/current_user'
-      $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{response.b64_thumbnail}');}</style>")
-    
+    current_user = fetch '/current_user'
+
+    if response?[0]?.b64_thumbnail && current_user.b64_thumbnail != response[0].b64_thumbnail
+      $('head').append("<style type=\"text/css\">#avatar-#{current_user.id} { background-image: url('#{response[0].b64_thumbnail}');}</style>")
+      current_user.b64_thumbnail = response[0].b64_thumbnail 
+      save current_user
     else if attempts < 20
       # Ugly: wait a little while for offline avatar processing to complete, then refetch
       _.delay -> 

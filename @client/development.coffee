@@ -12,8 +12,13 @@ Development = ReactiveComponent
   render : -> 
     subdomains = fetch '/subdomains'
     apps = fetch '/apps'
+    app = fetch '/application'
 
     hues = getNiceRandomHues Math.max(subdomains.subs?.length, apps.apps?.length)
+    submenus = if app.app == 'franklin' 
+                ['change subdomain', 'change application']
+               else if app.app == 'saas_landing_page'
+                ['change application']
 
     DIV 
       style: 
@@ -36,7 +41,7 @@ Development = ReactiveComponent
               listStyle: 'none'
               display: 'inline-block'
 
-            for submenu in ['change subdomain', 'change application']
+            for submenu in submenus
               LI
                 style:
                   display: 'inline-block'

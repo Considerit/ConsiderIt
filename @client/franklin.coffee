@@ -1420,7 +1420,7 @@ Point = ReactiveComponent
           curr_column = Math.floor(i / s.rows)
           side_offset = curr_column * s.col_gap + i * s.dx
           top_offset = (i % s.rows) * s.dy 
-          left_right = if @data().is_pro && !@props.rendered_as == 'under_review' then 'left' else 'right'
+          left_right = if @data().is_pro && @props.rendered_as != 'under_review' then 'left' else 'right'
           style = 
             top: top_offset
             position: 'absolute'

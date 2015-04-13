@@ -19,6 +19,7 @@ require './browser_location' # for loadPage
 require './shared'
 require './swapables'
 require './slider'
+require './header'
 
 window.customization = (field) -> 
   subdomain = fetch('/subdomain')
@@ -94,14 +95,15 @@ customizations.default =
 
   docking_proposal_header : false
 
-  HomepageHeader : DefaultHomepageHeader
-  NonHomepageHeader: DefaultProposalMasthead
+  HomepageHeader : DefaultHeader
+  NonHomepageHeader: ShortHeader
 
   Footer : DefaultFooter
 
   slider_handle: slider_handle.face
 
-#customizations.default.NonHomepageHeader = customizations.default.HomepageHeader
+  show_home_button_in_proposal_header: false
+
 
 ##########################
 # SUBDOMAIN CONFIGURATIONS
@@ -148,11 +150,9 @@ customizations.enviroissues =
 
 
         IMG
-          src: "<%= asset_path('enviroissues/logo.png') %>"
+          src: asset('enviroissues/logo.png')
 
         ProfileMenu()
-
-
 
 customizations.enviroissues.NonHomepageHeader = customizations.enviroissues.HomepageHeader
 
@@ -525,8 +525,6 @@ customizations.bitcoin =
 
   show_crafting_page_first: true
 
-  hide_home_button_in_proposal_header: true
-
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'
 
@@ -633,7 +631,9 @@ customizations.bitcoin =
                   "Or submit a new direction."
 
         ProfileMenu()
+
 customizations.bitcoin.NonHomepageHeader = customizations.bitcoin.HomepageHeader
+
 bitcoin_clusters =
   editor_icons: true
   homie_histo_title: "Members' Opinions"
@@ -1041,7 +1041,7 @@ customizations.tigard =
           ', Tigard\'s newest neighborhood' 
 
 
-customizations.tigard.NonHomepageHeader = customizations.tigard.HomepageHeader
+#customizations.tigard.NonHomepageHeader = customizations.tigard.HomepageHeader
 
 
 

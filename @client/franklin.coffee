@@ -8,7 +8,7 @@ require './element_viewport_positioning'
 
 require './vendor/jquery.ui'  # for the drag+drop
 require './vendor/jquery.XDomainRequest' #do we need this?
-
+require './vendor/jquery.form'
 require './vendor/jquery.touchpunch'
 
 require './vendor/modernizr' 

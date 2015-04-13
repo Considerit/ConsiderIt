@@ -498,81 +498,7 @@ window.ProposalSummary = ReactiveComponent
               DIV className:'point_nutshell', style: {fontSize: 15},
                 "#{proposal.top_point.nutshell[0..30]}..."
 
-###########################
-# Homepage headers
-window.DefaultHomepageHeader = ReactiveComponent
-  displayName: 'HomepageHeader'
 
-  render: ->
-    subdomain = fetch '/subdomain'   
-
-    masthead_style = 
-      textAlign: 'center'
-      backgroundColor: subdomain.branding.primary_color
-      height: 45
-
-    if subdomain.branding.masthead
-      _.extend masthead_style, 
-        height: 300
-        backgroundPosition: 'center'
-        backgroundSize: 'cover'
-        backgroundImage: "url(#{subdomain.branding.masthead})"   
-           
-    DIV style: masthead_style,
-      ProfileMenu()
-
-      if subdomain.branding.masthead_header_text
-        DIV style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
-          if subdomain.external_project_url
-            A href: "#{subdomain.external_project_url}", target: '_blank',
-              subdomain.branding.masthead_header_text
-          else
-            subdomain.branding.masthead_header_text
-
-
-window.DefaultProposalMasthead = ReactiveComponent
-  displayName: 'DefaultProposalMasthead'
-
-  render: ->
-    subdomain = fetch '/subdomain'   
-
-    masthead_style = 
-      textAlign: 'center'
-      backgroundColor: subdomain.branding.primary_color
-      height: 50
-           
-    DIV style: masthead_style,
-      ProfileMenu()
-
-      if subdomain.branding.masthead_header_text
-        DIV style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
-          if subdomain.external_project_url
-            A href: "#{subdomain.external_project_url}", target: '_blank',
-              subdomain.branding.masthead_header_text
-          else
-            subdomain.branding.masthead_header_text
-
-
-
-      if subdomain.branding.logo || subdomain.branding.masthead
-
-        DIV 
-          style: 
-            width: BODY_WIDTH
-            position: 'relative'
-            margin: 'auto'
-
-          DIV 
-            style:
-              position: 'absolute'
-              left: 0
-              padding: '2px 10px'
-              backgroundColor: 'white'
-
-            IMG 
-              src: subdomain.branding.logo || subdomain.branding.masthead
-              style: 
-                height: 46
 
 
 #########################
@@ -592,9 +518,9 @@ window.DefaultFooter = ReactiveComponent
         width: BODY_WIDTH
         zIndex: 0
 
-      A href: "#{subdomain.external_project_url}", target: '_blank', style: {display: 'inline-block', margin: 'auto'},
-        if subdomain.branding.logo
-          IMG src: "#{subdomain.branding.logo}", style: {width: 300}
+      # A href: "#{subdomain.external_project_url}", target: '_blank', style: {display: 'inline-block', margin: 'auto'},
+      #   if subdomain.branding.logo
+      #     IMG src: "#{subdomain.branding.logo}", style: {width: 300}
 
       DIV style: {marginTop: 30},
         TechnologyByConsiderit()
@@ -645,7 +571,7 @@ window.SimpleProposalHeading = ReactiveComponent
     proposals = fetch('/proposals')
     heading_fontsize = 45
     options = customization("cluster_options.#{@proposal.cluster}") || {}
-    show_home_button = !customization('hide_home_button_in_proposal_header')
+    show_home_button = customization('show_home_button_in_proposal_header')
 
     mod = (n, m) -> ((n % m) + m) % m
 

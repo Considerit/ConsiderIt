@@ -10,15 +10,17 @@
  */
 /*global ActiveXObject */
 
+require('./jquery')
+
 // AMD support
-(function (factory) {
-    "use strict";
-    require('./jquery')
+// (function (factory) {
+//     "use strict";
+//     
 
-}
+// }
 
-(function($) {
-"use strict";
+// (function($) {
+// "use strict";
 
 /*
     Usage Note:
@@ -1269,4 +1271,4 @@ function log() {
     }
 }
 
-}));
+// }));

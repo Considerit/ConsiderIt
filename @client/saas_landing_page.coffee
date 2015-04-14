@@ -73,14 +73,25 @@ SaasHomepage = ReactiveComponent
       save ui
 
     DIV null, 
+
+      DIV
+        style: _.extend h1,
+          margin: '50px 0'
+
+        'Bring focused discussion to your'
+        BR null,
+        'community, organization or classroom'
+
+
       Video()
       usedFor()
+      enables()
       pricing()
       contact(@local)
       story()
 
 
-HEADER_HEIGHT = 80
+HEADER_HEIGHT = 70
 Header = ReactiveComponent
   displayName: "Header"
   render: ->
@@ -103,7 +114,7 @@ Header = ReactiveComponent
           src: asset("saas_landing_page/considerit_logo.svg")
           style:
             position: "relative"
-            top: HEADER_HEIGHT * .05 + 18
+            top: HEADER_HEIGHT * .05 + 16
             left: 0
             height: HEADER_HEIGHT * .95
 
@@ -133,14 +144,15 @@ Header = ReactiveComponent
               href: "#story"
               'story'              
 
-        DIV 
-          style:
-            fontSize: 24
-            fontWeight: 300
-            color: logo_red
-            position: 'absolute'
-            top: 4 + HEADER_HEIGHT
-          "for thinking together"
+        # DIV 
+        #   style:
+        #     fontSize: 24
+        #     fontWeight: 300
+        #     color: logo_red
+        #     position: 'absolute'
+        #     top: 4 + HEADER_HEIGHT
+        #   "for thinking together"
+
 
 
 VIDEO_SLIDER_WIDTH = 250
@@ -153,7 +165,7 @@ Video = ReactiveComponent
     controls = fetch('video_controls')
 
     if !controls.playing?
-      controls.playing = true
+      controls.playing = false
       save controls
 
     video = DIV null,
@@ -174,7 +186,7 @@ Video = ReactiveComponent
 
     DIV 
       style: 
-        marginTop: 70
+        #marginTop: 70
         height: 756
         position: 'relative'
 
@@ -247,6 +259,9 @@ Video = ReactiveComponent
   drawCaptions : -> 
     ui = fetch('homepage_ui')
     chapter = fetch("video_chapter")
+
+    if !chapter.text?
+      chapter.text = "Proposals often require careful thought"
 
     DIV
       style:
@@ -365,7 +380,19 @@ Video = ReactiveComponent
 
 
   componentDidUpdate: -> @attachToVideo()
-  componentDidMount: -> @attachToVideo()
+  componentDidMount: -> 
+    @attachToVideo()
+
+    # # wait a couple seconds before playing video to give user time to 
+    # # orient to homepage
+    # console.log 'SET'
+    # setTimeout => 
+    #   controls = fetch('video_controls')
+    #   controls.playing = true
+    #   save controls
+    #   @refs.video.getDOMNode().play()
+    #   console.log 'PLAY'
+    # , 1000
 
   attachToVideo : -> 
     # we use timeupdate rather than tracks / cue changes / vtt
@@ -465,7 +492,9 @@ usedFor = ->
       marginTop: if ui.frame == 'laptop' then 30 else 60
 
     H1 style: h1,
-      'The first forum to function better when more people participate'
+      'The first forum to function better'
+      BR null,
+      'when more people participate'
 
     bullet
       point_style: 'bullet'
@@ -482,8 +511,68 @@ usedFor = ->
       strong: "Produces an interactive summary of group thought"
       body: ". Patterns of thought across the whole group can be identified. Perhaps 80% of opposers have a single con point that can be addressed!"
 
+enables = -> 
+  DIV
+    style:
+      marginTop: 60
+
+    H1 style: h1,
+      'Creates new opportunities for...'
+
+    bullet
+      point_style: 'bullet'
+      strong: "Involving 5, 20, 100s of people"
+      body: " deliberating an issue together, without becoming overwhelming."
+
+    bullet
+      point_style: 'bullet'
+      strong: "Leading change"
+      body: """. Collect organized feedback from employees, membership, and stakeholder groups
+                 for strategic planning, process improvement, program evaluation, and other 
+                 change efforts. Strong leaders create change by explaining and evolving plans. 
+                 Weak leaders try to impose them.
+            """
+
+    bullet
+      point_style: 'bullet'
+      strong: "Distributing decision making"
+      body: """. Make decisions as a whole, without resorting to hierarchy. The will of a community, 
+                 and the thoughts behind that will, become visible and actionable.
+            """
+
+    bullet
+      point_style: 'bullet'
+      strong: "Teaching critical thinking"
+      body: """. Students learn how to develop and express a considered opinion while listening 
+                 to and engaging with other’s ideas. Works well for Common Core aligned exercises 
+                 in English and Social Studies.
+            """
+
 
 pricing = ->
+  DIV 
+    id: 'pricing'
+
+    DIV 
+      style: h1
+
+      'Pricing'
+
+    DIV 
+      style: 
+        width: TEXT_WIDTH
+        margin: 'auto'
+
+      'We are offering free pilots for a limited time. '
+
+      A 
+        style: a 
+        'Contact us'
+
+      ' about getting set up. '
+      BR null
+      BR null
+      'If advanced configuration or custom design is needed, we can discuss whether compensation is necessary.'
 
 contact = (local) ->
 
@@ -640,7 +729,7 @@ story = ->
 
           A 
             style: story_link
-            href: 'https://www.dropbox.com/s/ycqfoxdl5sghaud/dissertation.pdf?dl=0'
+            href: 'https://dl.dropboxusercontent.com/u/3403211/papers/dissertation.pdf'
             "PhD dissertation" 
 
           
@@ -661,7 +750,7 @@ story = ->
 
         P null,
           """
-          Kevin Miniter joined Consider.it serindipitously in 2012. Motivated by
+          Kevin Miniter joined Consider.it serendipitously in 2012. Motivated by
           his experiencing running a ... , and his life philosophy of simply 
           asking “how can I help?”
           """
@@ -828,7 +917,7 @@ story = ->
               A 
                 style:  _.extend {}, story_link, 
                   textDecoration: 'underline'
-                href: "http://dx.doi.org/10.1080/19331681.2012.665755"
+                href: "https://dl.dropboxusercontent.com/u/3403211/papers/jitp.pdf"
                 'Facilitating Diverse Political Engagement'
               DIV 
                 style: _.extend {}, small_text, 
@@ -886,7 +975,7 @@ Footer = ->
         margin: 'auto'
         color: 'white'
 
-      'That is our story, new friend!'
+      'That is our story, friend!'
       BR null, 
       'Tell us '
       A

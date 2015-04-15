@@ -78,7 +78,7 @@ SaasHomepage = ReactiveComponent
         style: _.extend h1,
           margin: '50px 0'
 
-        'Bring focused discussion to your'
+        'Champion focused discussion in your'
         BR null,
         'community, organization or classroom'
 
@@ -498,18 +498,24 @@ usedFor = ->
 
     bullet
       point_style: 'bullet'
-      strong: "Collects opinions on specific ideas"
-      body: ", proposals, plans of action, or hypotheticals. Even job candidates, products, or designs."
+      strong: "Collect opinions on specific ideas"
+      body: ", proposals, plans, or hypotheticals. Even job candidates, products, or designs."
 
     bullet
       point_style: 'bullet'
-      strong: "Fosters considerate interactions"
-      body: ". The interface makes it easy to consider all sides without putting people in direct conflict. Personal attacks and trolling don’t fit the format."
+      strong: "Foster considerate interactions"
+      body: """. The interface focuses people on considering all sides 
+                 of the topic, rather than each other. There is little 
+                 opportunity for personal attacks and trolling.
+            """
 
     bullet
       point_style: 'bullet'
-      strong: "Produces an interactive summary of group thought"
-      body: ". Patterns of thought across the whole group can be identified. Perhaps 80% of opposers have a single con point that can be addressed!"
+      strong: "Produce an interactive summary of group thought"
+      body: """. Patterns of thought across the whole group can 
+                 be identified. Perhaps 80% of opposers have a 
+                 single con point that can be addressed!
+            """
 
 enables = -> 
   DIV
@@ -517,32 +523,31 @@ enables = ->
       marginTop: 60
 
     H1 style: h1,
-      'Creates new opportunities for...'
+      'You can use Consider.it to...'
 
     bullet
       point_style: 'bullet'
-      strong: "Involving 5, 20, 100s of people"
-      body: " deliberating an issue together, without becoming overwhelming."
+      strong: "Involve five, fifty, or even hundreds of people"
+      body: " in deliberating an issue together, without becoming overwhelming."
 
     bullet
       point_style: 'bullet'
-      strong: "Leading change"
-      body: """. Collect organized feedback from employees, membership, and stakeholder groups
+      strong: "Lead change"
+      body: """. Collect organized feedback from employees, membership, and stakeholders
                  for strategic planning, process improvement, program evaluation, and other 
                  change efforts. Strong leaders create change by explaining and evolving plans. 
-                 Weak leaders try to impose them.
             """
 
     bullet
       point_style: 'bullet'
-      strong: "Distributing decision making"
+      strong: "Decentralize decision making"
       body: """. Make decisions as a whole, without resorting to hierarchy. The will of a community, 
                  and the thoughts behind that will, become visible and actionable.
             """
 
     bullet
       point_style: 'bullet'
-      strong: "Teaching critical thinking"
+      strong: "Teach critical thinking"
       body: """. Students learn how to develop and express a considered opinion while listening 
                  to and engaging with other’s ideas. Works well for Common Core aligned exercises 
                  in English and Social Studies.
@@ -569,7 +574,7 @@ pricing = ->
         style: a 
         'Contact us'
 
-      ' about getting set up. '
+      ' to get started today! '
       BR null
       BR null
       'If advanced configuration or custom design is needed, we can discuss whether compensation is necessary.'

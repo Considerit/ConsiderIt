@@ -603,7 +603,7 @@ calculateAvatarRadius = (width, height, opinions) ->
   else 
     r = calculateAvatarRadiusOld(width, height, opinions)
 
-  console.log r, calculateAvatarRadiusOld(width, height, opinions)
+  #console.log r, calculateAvatarRadiusOld(width, height, opinions)
 
   r = Math.min(r, width / 2, height / 2)
 
@@ -739,8 +739,8 @@ positionAvatars = (width, height, opinions) ->
         # repel both points equally in opposite directions if they overlap
         if dist < combined_r
           separate_by = if dist == 0 then 1 else ( dist - combined_r ) / dist
-          offset_x = dx * separate_by * .6
-          offset_y = dy * separate_by * .6
+          offset_x = dx * separate_by * .5
+          offset_y = dy * separate_by * .5
 
           node.x -= offset_x
           node.y -= offset_y

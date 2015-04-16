@@ -873,8 +873,9 @@ DecisionBoard = ReactiveComponent
       # wait for css transitions to complete
       @transitioning = true
       _.delay => 
-        perform final_state
-        @transitioning = false
+        if @isMounted()
+          perform final_state
+          @transitioning = false
       , speed
 
     else if !@transitioning

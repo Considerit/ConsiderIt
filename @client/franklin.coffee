@@ -77,10 +77,14 @@ get_selected_point = ->
 window.proposal_url = (proposal) =>
   # The special thing about this function is that it only links to
   # "?results=true" if the proposal has an opinion.
+
+  proposal = fetch proposal
   result = '/' + proposal.slug
   subdomain = fetch('/subdomain')  
 
-  if !customization('show_crafting_page_first') && proposal.top_point
+  if (!customization('show_crafting_page_first') || !proposal.active ) \
+     && proposal.top_point
+
     result += '?results=true'
 
   return result

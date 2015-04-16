@@ -639,7 +639,7 @@ bitcoin_clusters =
   homie_histo_title: "Members' Opinions"
   collapse_descriptions_at: 600
 
-for k in ['Proposals', 'Board Proposals', 'Member Proposals', 'Our Focus', 'Our Actions', 'Our Values', 'Our Goals']
+for k in ['Proposals', 'Board Proposals', 'Member Proposals', 'Our Focus', 'Our Actions', 'Our Values', 'Our Goals', 'Resolutions', 'Our Mission']
   customizations.bitcoin.cluster_options[k] = bitcoin_clusters
 
 

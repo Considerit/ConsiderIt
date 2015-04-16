@@ -527,12 +527,93 @@ window.Histogram = ReactiveComponent
 
 
 
+#####
+# Calculate node radius based on the largest density of avatars in an 
+# area (based on a moving average of # of opinions, mapped across the
+# width and height)
 
+calculateAvatarRadius = (width, height, opinions) -> 
+
+  opinions.sort (a,b) -> a.stance - b.stance
+
+  # first, calculate a moving average of the number of opinions
+  # across around all possible stances
+  window_size = .1
+  avg_inc = .01
+  moving_avg = []
+  idx = 0
+  stance = -1.0
+  sum = 0
+
+  while stance <= 1.0
+
+    o = idx
+    cnt = 0
+    while o < opinions.length
+
+      if opinions[o].stance < stance - window_size
+        idx = o
+      else if opinions[o].stance > stance + window_size
+        break
+      else 
+        cnt += 1
+
+      o += 1
+
+    moving_avg.push cnt
+    stance += avg_inc
+    sum += cnt
+
+  # second, calculate the densest area of opinions, operationalized
+  # as the region with the most opinions amongst all regions of 
+  # opinion space that have contiguous above average opinions. 
+  regions = []
+  avg_avg = sum / moving_avg.length
+
+  current = []
+  for avg, idx in moving_avg
+    reset = idx == moving_avg.length - 1
+    if avg >= avg_avg
+      current.push idx
+    else
+      reset = true
+
+    if reset && current.length > 0
+      regions.push [current[0] * avg_inc - 1.0 - window_size , \
+                    idx * avg_inc - 1.0 + window_size ]      
+      current = []
+
+  max_opinions = 0
+  max_region = null
+  for region in regions
+    cnt = 0
+    for o in opinions
+      if o.stance >= region[0] && \
+         o.stance <= region[1] 
+        cnt += 1
+    if cnt > max_opinions
+      max_opinions = cnt
+      max_region = region
+
+  # Third, calculate the avatar radius we'll use. It is based on 
+  # trying to fill 50% of the densest area of the histogram
+
+  if max_opinions > 0 
+    r = Math.sqrt(Math.abs(max_region[0] - max_region[1]) / 2 * width * height * .5 / max_opinions) / 2
+  else 
+    r = calculateAvatarRadiusOld(width, height, opinions)
+
+  console.log r, calculateAvatarRadiusOld(width, height, opinions)
+
+  r = Math.min(r, width / 2, height / 2)
+
+  r
+  #calculateAvatarRadiusOld(width, height, opinions)
 
 #####
 # Calculate node radius based on size of area and number of nodes
 
-calculateAvatarRadius = (width, height, opinions) -> 
+calculateAvatarRadiusOld = (width, height, opinions) -> 
   ratio_filled = .22
 
   # if window.histogram_ratio_filled

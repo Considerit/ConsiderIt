@@ -485,10 +485,6 @@ styles += """
 ####################
 # Bitcoin
 
-# Redirect for old bitcoin
-if window.location.hostname == 'bitcoin-election.consider.it'
-  window.location.replace(window.location.href.replace('https://bitcoin-election', 'https://bitcoin'))
-
 customizations.bitcoin = 
 
   auth: 

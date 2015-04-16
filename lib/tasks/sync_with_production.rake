@@ -12,18 +12,12 @@ require 'zlib'
 #    to prevent emails being sent to real users in a testing context
 # 5) Migrates the database so it is in sync with current environment
 
-# dumps are located in ~/Dropbox/Apps/considerit_backup/xenogear
-# This script assumes a tarball created via the Backup gem. 
-# Make sure to keep the dl=1
-DATABASE_BACKUP_URL = "https://www.dropbox.com/s/o13axuxkgwv7yrv/xenogear.tar?dl=1"
-
 # Where production assets are served from 
 PRODUCTION_ASSET_HOST = "http://d2rtgkroh5y135.cloudfront.net"
 
 task :sync_with_production, [:sql_url] => :environment do |t, args|
-  sql_url = args[:sql_url] ? args[:sql_url] : DATABASE_BACKUP_URL
+  sql_url = args[:sql_url]
 
-  puts "Preparing local database based on production database #{sql_url}..."
   success = prepare_production_database sql_url
 
   if success
@@ -36,11 +30,19 @@ end
 
 def prepare_production_database(sql_url)
 
-  # Download and extract target production database backup
+  puts "Downloading database dump..."
 
-  open('tmp/production_db.tar', 'wb') do |file|
-    file << open(URI.parse(sql_url)).read
+  # Download and extract target production database backup
+  if sql_url
+    open('tmp/production_db.tar', 'wb') do |file|
+      file << open(URI.parse(sql_url)).read
+    end
+  else 
+    # download latest stored at AWS
+    latest = download_latest_from_s3
   end
+
+  puts "Preparing local database based on production database #{sql_url or latest}..."
 
   # Backup's tarball is a directory xenogear/databases/MySQL.sql.gz
   tar_extract = Gem::Package::TarReader.new(open('tmp/production_db.tar'))
@@ -54,7 +56,7 @@ def prepare_production_database(sql_url)
   end
   tar_extract.close
 
-  puts "...downloaded and extracted production database backup from #{DATABASE_BACKUP_URL}"
+  puts "...downloaded and extracted production database backup"
 
   # Drop existing database
   
@@ -90,6 +92,15 @@ def prepare_production_database(sql_url)
   return true
 end
 
+def download_latest_from_s3
+  path = 's3://considerit-backups/xenogear-considerit/xenogear/'
+  backups = `aws s3 ls #{path}`
+  backups = backups.lines.map {|l| l.strip.gsub('PRE ', '')}
+  latest = File.join path, backups[-1], 'xenogear.tar'  
+  `aws s3 cp #{latest} tmp/production_db.tar`
+
+  return backups[-1]
+end
 
 
 # Serving assets from AWS via Cloudfront and S3 

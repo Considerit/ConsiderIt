@@ -567,25 +567,25 @@ calculateAvatarRadius = (width, height, opinions) ->
   # second, calculate the densest area of opinions, operationalized
   # as the region with the most opinions amongst all regions of 
   # opinion space that have contiguous above average opinions. 
-  regions = []
-  avg_avg = sum / moving_avg.length
+  dense_regions = []
+  avg_of_moving_avg = sum / moving_avg.length
 
-  current = []
+  current_region = []
   for avg, idx in moving_avg
     reset = idx == moving_avg.length - 1
-    if avg >= avg_avg
-      current.push idx
+    if avg >= avg_of_moving_avg
+      current_region.push idx
     else
       reset = true
 
-    if reset && current.length > 0
-      regions.push [current[0] * avg_inc - 1.0 - window_size , \
+    if reset && current_region.length > 0
+      dense_regions.push [current_region[0] * avg_inc - 1.0 - window_size , \
                     idx * avg_inc - 1.0 + window_size ]      
-      current = []
+      current_region = []
 
-  max_opinions = 0
   max_region = null
-  for region in regions
+  max_opinions = 0
+  for region in dense_regions
     cnt = 0
     for o in opinions
       if o.stance >= region[0] && \
@@ -596,41 +596,18 @@ calculateAvatarRadius = (width, height, opinions) ->
       max_region = region
 
   # Third, calculate the avatar radius we'll use. It is based on 
-  # trying to fill 50% of the densest area of the histogram
-
+  # trying to fill ratio_filled of the densest area of the histogram
+  ratio_filled = .5
   if max_opinions > 0 
-    r = Math.sqrt(Math.abs(max_region[0] - max_region[1]) / 2 * width * height * .5 / max_opinions) / 2
+    effective_width = width * Math.abs(max_region[0] - max_region[1]) / 2
+    area_per_avatar = ratio_filled * effective_width * height / max_opinions
+    r = Math.sqrt(area_per_avatar) / 2
   else 
-    r = calculateAvatarRadiusOld(width, height, opinions)
-
-  #console.log r, calculateAvatarRadiusOld(width, height, opinions)
+    r = Math.sqrt(width * height / opinions.length * ratio_filled) / 2
 
   r = Math.min(r, width / 2, height / 2)
 
   r
-  #calculateAvatarRadiusOld(width, height, opinions)
-
-#####
-# Calculate node radius based on size of area and number of nodes
-
-calculateAvatarRadiusOld = (width, height, opinions) -> 
-  ratio_filled = .22
-
-  # if window.histogram_ratio_filled
-  #   ratio_filled = window.histogram_ratio_filled
-
-  r = Math.sqrt(width * height / opinions.length * ratio_filled) / 2
-  r = Math.min(r, width / 2, height / 2)
-
-  # When there are lots of opinions, it's nice if they get all
-  # grid-like.  We'll adjust the size to make it evenly divide the
-  # box into a grid.
-  if opinions.length > 10
-    # Now round r up until it fits perfectly within height
-    times_fit = height / (2*r)
-    r = (height / (Math.floor(times_fit))) / 2 - .001
-
-  return r
 
 
 ######

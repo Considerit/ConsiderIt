@@ -574,7 +574,7 @@ pricing = ->
         style: a 
         'Contact us'
 
-      ' to get started today! '
+      ' to get started with Consider.it today! '
       BR null
       BR null
       'If advanced configuration or custom design is needed, we can discuss whether compensation is necessary.'

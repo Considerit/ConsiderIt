@@ -492,7 +492,7 @@ usedFor = ->
       marginTop: if ui.frame == 'laptop' then 30 else 60
 
     H1 style: h1,
-      'The first forum to function better'
+      'The first forum that works better'
       BR null,
       'when more people participate'
 

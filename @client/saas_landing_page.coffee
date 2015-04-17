@@ -564,7 +564,7 @@ pricing = ->
       'Pricing'
 
     DIV 
-      style: 
+      style: _.extend {}, base_text,
         width: TEXT_WIDTH
         margin: 'auto'
 
@@ -620,7 +620,7 @@ contact = (local) ->
       "We'd love to get to know you!"
 
     DIV 
-      style: 
+      style: _.extend {}, base_text,
         margin: 'auto'
         width: TEXT_WIDTH 
         textAlign: 'center'
@@ -672,11 +672,11 @@ contact = (local) ->
           onMouseLeave: => local.hover_contactme = false; save local
           "Contact me"
 
-      DIV null, 
+      DIV null,
         "We work out of Seattle, WA, Portland, OR, and the Internet."
 
     DIV 
-      style: 
+      style: _.extend {}, base_text,
         textAlign: 'center'
         marginTop: 30
 
@@ -696,9 +696,19 @@ contact = (local) ->
         email: "toomim@consider.it"
 
 story = ->
+  caption_text =
+    fontSize: 14
+    fontWeight: 400   
+    lineHeight: 1.4
+    paddingTop: 5
+
   story_link = _.extend {}, a, small_text,
-    fontWeight: 500
     textDecoration: 'none'
+    borderBottom: "1px solid #{logo_red}"
+
+  section_style = 
+    marginBottom: 20
+    paddingTop: 10
 
   DIV 
     id: 'story'
@@ -712,8 +722,7 @@ story = ->
       "Our story"
 
     DIV
-      style:
-        marginBottom: 20
+      style: section_style
 
       DIV 
         style: _.extend {}, small_text, 
@@ -729,39 +738,60 @@ story = ->
             paddingBottom: 15
 
           """
-          Consider.it was invented in 2010 by Travis Kriplean as part of his 
-          Computer Science """
-
-          A 
-            style: story_link
-            href: 'https://dl.dropboxusercontent.com/u/3403211/papers/dissertation.pdf'
-            "PhD dissertation" 
-
-          
-          ' at the University of Washington, in collaboration with fellow graduate '
-          'student Michael Toomim, Professor '
-
-          A
-            style: story_link
-            href: 'http://www.cs.washington.edu/people/faculty/borning'
-            'Alan Borning'
-
-          ', Jonathan Morgan, and a team of political communication researchers. The project was funded by a generous '
-          A
-            href: "http://www.nsf.gov/awardsearch/showAward?AWD_ID=0966929"
-            style: story_link
-            "National Science Foundation grant"
-          '.'
-
-        P null,
+          The idea for Consider.it struck one cloudy Seattle morning 
+          while Travis sat on the ground outside of a bike shop. He was feeling 
+          morose after spending a few dark hours reading hundreds of comments 
+          on news articles about the Affordable Care Act. So much talking past 
+          one another. So few takeaways. So much effort... wasted. 
           """
-          Kevin Miniter joined Consider.it serendipitously in 2012. Motivated by
-          his experiencing running a ... , and his life philosophy of simply 
-          asking “how can I help?”
+
+        P 
+          style: 
+            paddingBottom: 15
+
+          """
+          The problem is not limited to online comment boards. Email threads 
+          involving close colleagues and even face to face conversations with 
+          loved ones can easily degenerate. Humanity's ability 
+          to listen and learn is ever so fragile, easily broken by poor habits and 
+          flawed tools. Travis knew he was no exception to the problem; 
+          but that day, at least, Travis was happy to have turned frustration 
+          into a blueprint for improvement.
           """
 
       DIV 
-        style: _.extend {}, small_text, 
+        style: 
+          display: 'inline-block'
+          width: SAAS_PAGE_WIDTH * .4
+          marginTop: 10
+
+        IMG
+          style: 
+            width: 400
+            display: 'block'
+            margin: 'auto'
+          src: asset('saas_landing_page/child.png') 
+
+        DIV
+          style: caption_text
+
+          """
+          The Web is only 2.0 years old (or for some pundits, 3.0). 
+          It's social. It's getting good at speaking. But it’s not yet very 
+          good at listening. Our interfaces for communicating are much better 
+          at speaking into than listening through. 
+          """
+
+
+
+    DIV
+      style: section_style
+
+
+
+
+      DIV 
+        style: 
           display: 'inline-block'
           width: SAAS_PAGE_WIDTH * .4
           marginTop: 10
@@ -774,19 +804,145 @@ story = ->
           frameborder: "0" 
           allowfullscreen: true
 
-        SPAN
-          style: 
-            fontSize: 14
-            fontWeight: 400
-          'Travis\' Phd defense, from December 2011'
+        DIV
+          style: caption_text
 
-
-    DIV 
-      style:
-        marginBottom: 20
+          'Travis\' Phd defense, from December 2011. Here is the full '
+          A 
+            style: _.extend {}, story_link, caption_text
+            href: 'https://dl.dropboxusercontent.com/u/3403211/papers/dissertation.pdf'
+            "PhD dissertation"
+          ' for those of you with great '
+          SPAN 
+            style: 
+              textDecoration: 'line-through'
+            'foolishness'
+          ' fortitude.'           
 
       DIV 
         style: _.extend {}, small_text, 
+          display: 'inline-block'
+          width: SAAS_PAGE_WIDTH * .6 - 40
+          verticalAlign: 'top'
+          marginLeft: 40
+
+
+        """
+        Travis was in a privileged position to spend time thinking about these 
+        issues. He was pursuing a PhD in Computer Science at the University of 
+        Washington, with a research agenda grounded in the belief that we can 
+        improve our capacity for collective action. He was supported by a generous 
+        """
+        A
+          href: "http://www.nsf.gov/awardsearch/showAward?AWD_ID=0966929"
+          style: story_link
+          "National Science Foundation grant"
+        ' he had written with his advisor '
+        A
+          style: story_link
+          href: 'http://www.cs.washington.edu/people/faculty/borning'
+          'Alan Borning'
+        ' and political communication expert '
+        A
+          style: story_link
+          href: 'http://www.com.washington.edu/bennett/'
+          'Lance Bennett'
+
+        '. Previously he had spent a couple of years researching how contributors to the 
+        world\'s greatest deliberative project, Wikipedia, '
+        A
+          style: story_link
+          href: 'http://dub.washington.edu/djangosite/media/papers/tmpZ77p1r.pdf'
+          'collaborated together'
+        ' and '
+        A
+          style: story_link
+          href: 'http://www.aaai.org/Papers/ICWSM/2008/ICWSM08-011.pdf'
+          'mediated'
+        ' ' 
+        A
+          style: story_link
+          href: 'https://redesign.cs.washington.edu/sites/default/files/hci/papers/tmpzq4PJB.pdf'
+          'conflict'
+
+        '. Travis was feeling ready to channel this knowledge into invention.'
+
+
+
+    DIV
+      style: section_style
+
+      DIV 
+        style: _.extend {}, small_text, 
+          display: 'inline-block'
+          width: SAAS_PAGE_WIDTH * .45 - 40
+          marginRight: 40
+          verticalAlign: 'top'
+
+          
+
+        P 
+          style: 
+            paddingBottom: 15
+
+          """
+          Travis found a kindred spirit in fellow graduate student Michael Toomim. 
+          Michael's incisive and persistent feedback helped Travis transform his 
+          abstract knowledge and ideas into concrete designs. They started co-advising
+          each other and helping with each others' projects. Bits and pieces of ideas 
+          that Michael and Travis had kicked 
+          around before had suddenly coalesced in that moment Consider.it was born. 
+          """
+
+
+      DIV 
+        style: 
+          display: 'inline-block'
+          width: SAAS_PAGE_WIDTH * .55
+          marginTop: 10
+          position: 'relative'
+          height: 380
+
+        
+        DIV 
+          style: 
+            width: 350
+
+          IMG
+            style: 
+              width: 350
+              display: 'block'
+            src: asset('saas_landing_page/consult.png') 
+
+          DIV
+            style: caption_text
+
+            'Late night collaboration!'
+
+        DIV 
+          style: 
+            position: 'absolute'
+            zIndex: 1
+            width: 208
+            top: 160
+            left: 315
+
+          IMG 
+            src: asset('saas_landing_page/mike_talk.png')
+            style: 
+              width: 208
+
+          DIV
+            style: caption_text
+
+            'Mike making a profound point that has been lost to time.'
+
+
+    DIV 
+      style: section_style
+
+      DIV 
+        style: 
           display: 'inline-block'
           verticalAlign: 'middle'
           width: SAAS_PAGE_WIDTH * .4
@@ -795,17 +951,22 @@ story = ->
         IMG 
           src: asset('saas_landing_page/sifp.jpg')
           width: 400
-        SPAN
-          style: 
-            fontSize: 14
-            fontWeight: 400
+
+
+        DIV
+          style: caption_text
+
           'Travis delivers the '
           A
-            style: _.extend {}, a, 
-              fontSize: 14
+            style: _.extend {}, story_link, caption_text
             href: 'https://www.youtube.com/watch?v=RIUD4Ty2ZAE'
             'winning talk'
-          ' at Social Innovation Fast Pitch'          
+          """ 
+           at Social Innovation Fast Pitch. This excellent experience was a sort of 
+          awkward transitionary point in our history: straddling academia and the 
+          private sector, while representing our non-profit partner in a pitch 
+          competition.
+          """
 
       DIV 
         style: _.extend {}, small_text, 
@@ -818,50 +979,38 @@ story = ->
           style: 
             paddingBottom: 15
 
-          'The original and longest-running Consider.it application is the '
-          
-          A 
-            style: story_link
-            href: "http://www.evergreenapps.org/congratulations-to-the-winners-of-the-evergreen-apps-challenge/"
-            'award'
-          '-'
-          A 
-            style: story_link
-            href: "http://www.socialventurepartners.org/seattle/2012/10/25/2012-sifp-winners/"
-            'winning'
-          ' '
+          'Consider.it debuted in 2010 as the engine behind the '
           A
             style: story_link
             href:'https://livingvotersguide.org'
-            "Living Voters Guide"
-
-          """, a crowd-sourced guide to public
-          thought on Washington State’s ballot measures, with """
-          A
-            style: story_link
-            href: "http://blogs.seattletimes.com/monica-guzman/2012/10/27/seattle-library-fact-check-experiment-risky-but-valuable/"
-            "on-demand fact-checking"
-          ' provided by Seattle Public Librarians. Our partners '
+            "Living Voters Guide"          
+          
+          ', in partnership with the civic non-profit '
           A 
             style: story_link
             href: 'http://seattlecityclub.org'
-            "Seattle CityClub"
-          ' have hosted the dialogue for five years and counting.'
 
-        P 
-          style: 
-            paddingBottom: 15
+            'Seattle CityClub' 
 
           """
-          We have since generalized Consider.it to apply to a variety of 
-          situations, from helping organizations align behind new strategic 
-          directions to its use in classrooms for teaching critical thinking 
-          skills. 
+          . This election season dialogue creates a space for citizens to express 
+          their opinions about difficult ballot initiatives and to hear and learn from 
+          the opinions of their peers. The research team demonstrated 
+          that the technology encouraged voters to listen to both sides, 
+          recognize points by people with whom they disagree and change their opinion 
+          based on something they read. The voters guide has now weathered five election cycles, with 
           """
+
+          A
+            style: story_link
+            href: "http://blogs.seattletimes.com/monica-guzman/2012/10/27/seattle-library-fact-check-experiment-risky-but-valuable/"
+            'on-demand fact-checking' 
+
+          ' delivered by Seattle Public Librarians since 2012.'
+
 
     DIV
-      style:
-        marginBottom: 20
+      style: section_style
 
       DIV 
         style: _.extend {}, small_text, 
@@ -875,23 +1024,169 @@ story = ->
             paddingBottom: 15
 
           """
-          We decided to leave our comfortable ivory tower for the 
-          excitement of the jungle of capitalism after growing 
-          frustrated by the academic system. Out of the 
-          frying pan and into the fire, right?
+          As Travis and Michael approached the end of their PhD programs, they 
+          decided to leave academia. It had become 
+          clear to Travis and Mike that academia's emphasis on prototyping, papers, 
+          and peer review limited how far and in what manner ideas could be 
+          brought into the world. Instead, they would create their own 
+          company/laboratory that supported the form of inquiry they felt would 
+          maximize their ability to contribute. We call this organization The 
+          Invisible College.
+          """          
+
+      DIV 
+        style: 
+          display: 'inline-block'
+          width: SAAS_PAGE_WIDTH * .4
+          verticalAlign: 'top'
+          position: 'relative'
+
+
+
+        IFRAME 
+          src: "https://player.vimeo.com/video/12116723?portrait=0&byline=0&title=0" 
+          width: 300
+          height: 225 
+          style: 
+            display: 'block'
+
+
+        DIV
+          style: caption_text
+
+          A 
+            style: _.extend {}, story_link, caption_text
+            href: 'http://engage.cs.washington.edu/reflect/'
+            'Reflect'
+
           """
+           is Consider.it’s sister project. Reflect promotes 
+          active listening in comment forums. We deployed it in Slashdot 
+          and Wikimedia’s strategic planning process. The project is inactive 
+          currently, though it is still dear to our hearts. 
+          """
+          A
+            style: _.extend {}, story_link, caption_text
+            href: 'http://dub.washington.edu/djangosite/media/papers/tmptxCAiy.pdf'
+            'Learn more'
+          '.'
+
+    DIV 
+      style: section_style
+
+      DIV 
+        style: 
+          display: 'inline-block'
+          verticalAlign: 'middle'
+          width: SAAS_PAGE_WIDTH * .4
+          marginTop: 10
+
+        IMG 
+          src: asset('saas_landing_page/truth.png')
+          width: 400
+
+
+        DIV
+          style: caption_text
+
+          'Kevin standing up for Truth and Justice.'
+
+      DIV 
+        style: _.extend {}, small_text, 
+          display: 'inline-block'
+          width: SAAS_PAGE_WIDTH * .6 - 40
+          verticalAlign: 'top'
+          marginLeft: 40
 
         P 
           style: 
             paddingBottom: 15
+
           """
-          We are creating a decentralized R&D laboratory to 
-          bring new social technologies into the world. We call this organization 
-          The Invisible College. The Invisible College’s non-profit mission is 
-          funded by internal for-profit companies based on the social technologies 
-          we create. Consider.it is the most mature of these companies. 
+          Just as Mike and Travis were wrapping up their academic pursuits, they 
+          met Kevin Miniter. Kevin had just arrived in Seattle, eager for his next 
+          adventure after running the campaign for the """
+          A
+            style: story_link
+            href:'http://www.washingtonpost.com/wp-dyn/content/article/2011/02/02/AR2011020203272.html'
+            "first openly gay presidential candidate"          
+
+          """
+          . The icy mornings in New Hampshire and the afternoons driving a sound 
+          truck blasting reggaeton through Puerto Rico had affirmed his love for 
+          this country, but did little to cure his skepticism about its politics. 
+          Kevin saw that there was a deeper problem of listening and critical 
+          thinking behind our political strife. While trudging through the 
+          startup world, he learned about Consider.it. He badgered Travis for 
+          a meeting and asked the question that always starts an 
+          adventure: "How can I help?"
+          """
+          
+
+    DIV
+      style: section_style
+
+      DIV 
+        style: _.extend {}, small_text, 
+          display: 'inline-block'
+          width: SAAS_PAGE_WIDTH * .6 - 40
+          marginRight: 40
+          verticalAlign: 'top'
+
+        P 
+          style: 
+            paddingBottom: 15
+
+          """
+          And here we are now! We've been adding new functionality and 
+          simplifying the design. We are exploring the ways Consider.it 
+          can be used outside of civic engagement, such as: to smooth 
+          organizational change efforts, to allow decentralized online 
+          communities to deliberate, and to help schools teach critical 
+          thinking skills in classrooms.          
           """          
 
+        P
+          style: 
+            paddingBottom: 15
+
+          'Thanks for listening to our story. If you like our story 
+          and believe in our vision, '
+          A 
+            href: 'mailto:admin@consider.it' 
+            style: story_link
+            'send us a message'
+          '. Maybe we can collaborate!'
+
+
+      DIV 
+        style: 
+          display: 'inline-block'
+          width: SAAS_PAGE_WIDTH * .4
+          verticalAlign: 'top'
+          position: 'relative'
+
+        IMG 
+          src: asset('saas_landing_page/kev_mike.png')
+          style: 
+            width: 400
+            position: 'relative'
+            zIndex: 1
+
+        DIV
+          style: caption_text
+
+          "Kevin and Mike in their natural habitat."
+
+
+    DIV
+      style: section_style
+
+
+      DIV 
+        style: _.extend {}, small_text, 
+          display: 'inline-block'
+          verticalAlign: 'top'
 
         DIV null,
           """
@@ -906,8 +1201,7 @@ story = ->
                 paddingTop: 5
 
               A 
-                style:  _.extend {}, story_link, 
-                  textDecoration: 'underline'
+                style:  _.extend {}, story_link
                 href: "http://dub.washington.edu/djangosite/media/papers/kriplean-cscw2012.pdf"
                 'Supporting Reflective Public Thought with Consider.it'
               DIV 
@@ -920,8 +1214,7 @@ story = ->
               style: 
                 paddingTop: 15
               A 
-                style:  _.extend {}, story_link, 
-                  textDecoration: 'underline'
+                style:  _.extend {}, story_link
                 href: "https://dl.dropboxusercontent.com/u/3403211/papers/jitp.pdf"
                 'Facilitating Diverse Political Engagement'
               DIV 
@@ -933,8 +1226,7 @@ story = ->
               style: 
                 paddingTop: 15
               A 
-                style:  _.extend {}, story_link, 
-                  textDecoration: 'underline'
+                style:  _.extend {}, story_link
                 href: "http://homes.cs.washington.edu/~borning/papers/kriplean-cscw2014.pdf"
                 'On-demand Fact-checking in Public Dialogue'
 
@@ -945,28 +1237,7 @@ story = ->
 
 
 
-      DIV 
-        style: _.extend {}, small_text, 
-          display: 'inline-block'
-          width: SAAS_PAGE_WIDTH * .4
-          verticalAlign: 'top'
-          position: 'relative'
 
-
-        IMG 
-          src: asset('saas_landing_page/b&w_kev_mike.png')
-          style: 
-            width: 250
-            position: 'relative'
-            zIndex: 1
-
-        IMG 
-          src: asset('saas_landing_page/consult.png')
-          style: 
-            width: 250
-            position: 'absolute'
-            top: 150
-            left: 80
 
 Footer = -> 
 
@@ -982,13 +1253,12 @@ Footer = ->
 
       'That is our story, friend!'
       BR null, 
-      'Tell us '
       A
         style: _.extend {}, a, 
           fontSize: 36
           color: 'white'
         href: 'mailto:admin@consider.it'
-        'your story' 
+        'Tell us your story' 
       '. What led you here?'
 
 
@@ -1021,9 +1291,7 @@ Root = ReactiveComponent
     loc = fetch 'location'
     app = fetch '/application'
 
-    DIV
-      style: base_text
-
+    DIV null,
       BrowserLocation()
       StateDash()
       Header()

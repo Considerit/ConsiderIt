@@ -78,7 +78,7 @@ SaasHomepage = ReactiveComponent
         style: _.extend h1,
           margin: '50px 0'
 
-        'Champion focused discussion in your'
+        'Focused discussion for your'
         BR null,
         'community, organization or classroom'
 
@@ -755,8 +755,8 @@ story = ->
           loved ones can easily degenerate. Humanity's ability 
           to listen and learn is ever so fragile, easily broken by poor habits and 
           flawed tools. Travis knew he was no exception to the problem; 
-          but that day, at least, Travis was happy to have turned frustration 
-          into a blueprint for improvement.
+          but that day, at least, Travis was happy to turn his frustration into 
+          a blueprint for improvement.
           """
 
       DIV 
@@ -776,10 +776,9 @@ story = ->
           style: caption_text
 
           """
-          The Web is only 2.0 years old (or for some pundits, 3.0). 
+          The Web is only 2.0 years old (3.0 claim some pundits). 
           It's social. It's getting good at speaking. But it’s not yet very 
-          good at listening. Our interfaces for communicating are much better 
-          at speaking into than listening through. 
+          good at listening.
           """
 
 
@@ -890,8 +889,8 @@ story = ->
           Michael's incisive and persistent feedback helped Travis transform his 
           abstract knowledge and ideas into concrete designs. They started co-advising
           each other and helping with each others' projects. Bits and pieces of ideas 
-          that Michael and Travis had kicked 
-          around before had suddenly coalesced in that moment Consider.it was born. 
+          that Michael and Travis had kicked around before had suddenly coalesced in 
+          that moment Consider.it was born outside the bike shop. 
           """
 
 
@@ -1008,6 +1007,14 @@ story = ->
 
           ' delivered by Seattle Public Librarians since 2012.'
 
+        P 
+          style: 
+            paddingBottom: 15
+          """
+          Travis recognized that the technology had broad applicability 
+          beyond civic engagement, and he generalized the technology.
+          """
+
 
     DIV
       style: section_style
@@ -1111,9 +1118,13 @@ story = ->
             href:'http://www.washingtonpost.com/wp-dyn/content/article/2011/02/02/AR2011020203272.html'
             "first openly gay presidential candidate"          
 
-          """
-          . The icy mornings in New Hampshire and the afternoons driving a sound 
-          truck blasting reggaeton through Puerto Rico had affirmed his love for 
+          '. The icy mornings in New Hampshire and the afternoons driving a sound 
+          truck blasting reggaeton through '
+          A 
+            href: 'http://news.yahoo.com/blogs/ticket/ron-paul-topped-ran-fred-karger-puerto-rican-153210979.html'
+            style: story_link
+            'Puerto Rico' 
+          """ had affirmed his love for 
           this country, but did little to cure his skepticism about its politics. 
           Kevin saw that there was a deeper problem of listening and critical 
           thinking behind our political strife. While trudging through the 
@@ -1138,14 +1149,16 @@ story = ->
             paddingBottom: 15
 
           """
-          And here we are now! We've been adding new functionality and 
-          simplifying the design. We are exploring the ways Consider.it 
-          can be used outside of civic engagement, such as: to smooth 
-          organizational change efforts, to allow decentralized online 
-          communities to deliberate, and to help schools teach critical 
-          thinking skills in classrooms.          
-          """          
-
+          And here we are now! 
+          As a startup, we are exploring different markets beyond civic 
+          engagement. We're using Consider.it to 
+          align the opinions of employees during organizational change 
+          efforts, where Consider.it's ability to surface knowledge and 
+          identify sticking points across a large group of people can help
+          the planning process. We're applying Consider.it to decision-making 
+          and deliberation in decentralized online communities. Finally, 
+          Consider.it's concentration on tradeoffs is a good fit for schools 
+          teaching the new Common Core critical thinking skills."""
         P
           style: 
             paddingBottom: 15
@@ -1156,7 +1169,7 @@ story = ->
             href: 'mailto:admin@consider.it' 
             style: story_link
             'send us a message'
-          '. Maybe we can collaborate!'
+          '. Maybe we can collaborate! Or send us witty hate mail if you wish, we welcome adversaries.'
 
 
       DIV 

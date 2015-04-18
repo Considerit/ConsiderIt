@@ -62,7 +62,7 @@ plugin "safari"
 launch "Safari", at(x - window_padding, y - y_offset, width + window_padding * 2, height + y_offset + window_padding) 
 
 while_saying "loading page" do
-  url "http://localhost:3000/Death_Star?domain=impacthub"
+  url "http://localhost:3000/Death_Star?domain=fun"
   wait_for_element('.proposal_header')
   pause 1
 end
@@ -114,11 +114,11 @@ while_saying "Write singular points that each describe a consideration" do
 end
 
 while_saying "Learn and build from other’s thoughts" do 
-  move to_element('[data-id="/point/5397"]')
+  move to_element('[data-id="/point/5508"]')
   pause 1
-  move to_element('[data-id="/point/5399"]')
+  move to_element('[data-id="/point/5499"]')
   pause 1
-  move to_element('[data-id="/point/5400"]')
+  move to_element('[data-id="/point/5505"]')
   drag by(-280, -250), {:speed => 1}
   pause 1
 end
@@ -168,10 +168,10 @@ while_saying "Inspect the most important factors to those who have reservations 
 end
 
 while_saying "See what a particular individual believes" do 
-  move to_element("#avatar-251598")
+  move to_element("#avatar-282314")
   click
   pause 2
-  move to_element("#avatar-251733")
+  move to_element("#avatar-282161")
   click
   pause 2  
   click
@@ -181,16 +181,16 @@ while_saying "Figure out who has been persuaded by the top pro points." do
   perform 'tricky' do 
     move to_element(".pros_by_community .includers", {index: 0})
     pause 1.5
-    move to_element(".pros_by_community .includers", {index: 1}) rescue skip
+    move to_element("[data-id='/point/5505'] .includers") rescue skip
     pause 1.5
-    move to_element(".pros_by_community .includers", {index: 0})
+    move to_element("[data-id='/point/5513'] .includers") rescue skip
     pause 1.5
   end
 end
 
 while_saying "Drill into points for focused discussion" do 
-  scroll_to '[data-id="/point/5406"]', 1000, 50
-  move to_element('[data-id="/point/5406"]')
+  scroll_to '[data-id="/point/5502"]', 1000, 50
+  move to_element('[data-id="/point/5502"]')
   pause 1
   click
   wait_for_element '.comment_entry'
@@ -205,7 +205,7 @@ while_saying "Drill into points for focused discussion" do
   pause 1
 end
 
-move to_element('[data-id="/point/5406"]')
+move to_element('[data-id="/point/5502"]')
 click
 
 pause 1
@@ -222,8 +222,8 @@ pause 4
 while_saying "cleanup comments, points, inclusions" do
 
   perform "clean up added comments" do 
-    scroll_to '[data-id="/point/5406"]', 0, 50
-    move to_element('[data-id="/point/5406"]'), {:speed => 0.1}
+    scroll_to '[data-id="/point/5502"]', 0, 50
+    move to_element('[data-id="/point/5502"]'), {:speed => 0.1}
     click
     pause 1
     while true
@@ -232,7 +232,7 @@ while_saying "cleanup comments, points, inclusions" do
       pause 1
       hit Enter
     end
-    move to_element('[data-id="/point/5406"]')
+    move to_element('[data-id="/point/5502"]')
     click
   end
 
@@ -252,7 +252,7 @@ while_saying "cleanup comments, points, inclusions" do
     end
   end
 
-  move to_element('[data-id="/point/5400"]'), {:speed => 0.1}
+  move to_element('[data-id="/point/5505"]'), {:speed => 0.1}
   drag by(150, 0), {:speed => 1}
 
   scroll_to '.profile_menu_wrap', 0, 0

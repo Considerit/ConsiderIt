@@ -655,6 +655,7 @@ DecisionBoard = ReactiveComponent
         transform: "translate(0, 10px)"
         minHeight: 275
         width: DECISION_BOARD_WIDTH
+        borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_blue}"
 
 
     if get_selected_point() && get_proposal_mode() == 'crafting'
@@ -706,17 +707,19 @@ DecisionBoard = ReactiveComponent
               updateProposalMode('crafting', 'give_opinion_button')
 
           DIV null, 
+
+            if get_proposal_mode() == 'crafting'
+              DIV 
+                className: 'your_points'
+                style: 
+                  padding: '0 18px'
+                  marginTop: -3 # To undo the 3 pixel border
+
+                YourPoints { key: 'your_con_points', valence: 'cons' }
+                YourPoints { key: 'your_pro_points', valence: 'pros' }
+
+
             # only shown during crafting, but needs to be present always for animation
-            DIV 
-              className: 'your_points'
-              style: 
-                padding: '0 18px'
-                marginTop: -3 # To undo the 3 pixel border
-
-              YourPoints { key: 'your_con_points', valence: 'cons' }
-              YourPoints { key: 'your_pro_points', valence: 'pros' }
-
-
             A 
               className: 'give_opinion_button primary_button'
               style: give_opinion_style
@@ -765,50 +768,52 @@ DecisionBoard = ReactiveComponent
                 save @root
 
             if your_opinion.published 
-              'See the results' 
+              'Opinion updated. See the results' 
             else 
               'Save your opinion and see results'
 
-          if get_proposal_mode() == 'crafting'
-            A 
-              style: 
-                marginTop: '.5em'
-                padding: 3
-                display: 'inline-block'
-
-              INPUT
-                type:      'checkbox'
-                id:        "follow_proposal"
-                name:      "follow_proposal"
-                checked:   @proposal.is_following
+          DIV 
+            className: 'below_save'
+            style: 
+              display: 'none'
+            if get_proposal_mode() == 'crafting'
+              A 
                 style: 
-                  fontSize: 21
-                  cursor: 'pointer'
-                onChange: =>
-                  @proposal.is_following = !@proposal.is_following
-                  save @proposal
-              LABEL 
-                htmlFor: "follow_proposal"
-                title:'''
-                      We\'ll send periodic email notifications summarizing 
-                      activity on the proposal, as well as alerts about new ''' + \
-                      customization('point_labels.pro') + ' and ' + \
-                      customization('point_labels.con') + \
-                      'points. You can easily unsubscribe later.'
-                style: 
-                  marginLeft: 6
-                  fontSize: 16
-                  color: '#888'
-                  cursor: 'pointer'   
-                'Notify me about new activity'
+                  marginTop: '.5em'
+                  padding: 3
+                  display: 'inline-block'
 
-          if !your_opinion.published
-            A 
-              className:'cancel_opinion_button primary_cancel_button'
-              style: 
-                display: 'none'
-              onClick: => updateProposalMode('results', 'cancel_button')
-              'or just skip to the results' ]
+                INPUT
+                  type:      'checkbox'
+                  id:        "follow_proposal"
+                  name:      "follow_proposal"
+                  checked:   @proposal.is_following
+                  style: 
+                    fontSize: 21
+                    cursor: 'pointer'
+                  onChange: =>
+                    @proposal.is_following = !@proposal.is_following
+                    save @proposal
+                LABEL 
+                  htmlFor: "follow_proposal"
+                  title:'''
+                        We\'ll send periodic email notifications summarizing 
+                        activity on the proposal, as well as alerts about new ''' + \
+                        customization('point_labels.pro') + ' and ' + \
+                        customization('point_labels.con') + \
+                        'points. You can easily unsubscribe later.'
+                  style: 
+                    marginLeft: 6
+                    fontSize: 16
+                    color: '#888'
+                    cursor: 'pointer'   
+                  'Notify me about new activity'
+
+            if !your_opinion.published
+              A 
+                className:'cancel_opinion_button primary_cancel_button'
+                onClick: => updateProposalMode('results', 'cancel_button')
+                'or just skip to the results' ]
           
 
   componentDidUpdate : ->
@@ -858,14 +863,14 @@ DecisionBoard = ReactiveComponent
     initial_state = 
       '.give_opinion_button':
         visibility: 'hidden'
-      '.your_points, .save_opinion_button, .cancel_opinion_button': 
+      '.your_points, .save_opinion_button, .below_save': 
         display: 'none'
 
     final_state = JSON.parse JSON.stringify initial_state
     if mode == 'results'
       final_state['.give_opinion_button'].visibility = ''
     else
-      final_state['.your_points, .save_opinion_button, .cancel_opinion_button'].display = ''
+      final_state['.your_points, .save_opinion_button, .below_save'].display = ''
 
     if @last_proposal_mode != mode && speed > 0
       perform initial_state
@@ -876,7 +881,7 @@ DecisionBoard = ReactiveComponent
         if @isMounted()
           perform final_state
           @transitioning = false
-      , speed
+      , speed + 200
 
     else if !@transitioning
       perform initial_state
@@ -884,13 +889,13 @@ DecisionBoard = ReactiveComponent
 
     @last_proposal_mode = mode
 
+
 SliderBubblemouth = ReactiveComponent
   displayName: 'SliderBubblemouth'
 
   render : -> 
     slider = fetch('slider')
     db = fetch('decision_board')
-
 
     w = 34
     h = 24
@@ -900,13 +905,13 @@ SliderBubblemouth = ReactiveComponent
       transform = ""
       fill = 'white'
       if db.user_hovering_on_drop_target
-        dash = "0"
+        dash = "none"
       else
-        dash = "25 10"
+        dash = "25, 10"
     else 
       transform = "translate(0, -25px) scale(.5) "
       fill = focus_blue
-      dash = "0"
+      dash = "none"
 
     DIV 
       key: 'slider_bubblemouth'
@@ -924,9 +929,9 @@ SliderBubblemouth = ReactiveComponent
         apex_xfrac: (slider.value + 1) / 2
         width: w
         height: h
-        fill: fill, 
-        stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee', 
-        stroke_width: stroke_width
+        fill: fill
+        stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
+        stroke_width: if dash != "none" then stroke_width else 0
         dash_array: dash
 
 ####
@@ -1175,7 +1180,7 @@ YourPoints = ReactiveComponent
             fill: "url(#drop-stripes-#{@props.valence})"
             stroke: focus_blue
             stroke_width: 6
-            dash_array: '24 18'
+            dash_array: '24, 18'
 
 
         SPAN 

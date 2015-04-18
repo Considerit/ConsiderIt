@@ -23,10 +23,11 @@
     throw "Application not defined"
 
   # Add defined styles
+
   style = document.createElement('style')
   style.type = 'text/css'
   if style.styleSheet
-    style.styleSheet.cssText = css
+    style.styleSheet.cssText = window.styles
   else
     style.appendChild document.createTextNode(window.styles)
 

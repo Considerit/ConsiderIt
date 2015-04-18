@@ -28,8 +28,8 @@ var CanvasImage = function (image) {
 
     document.body.appendChild(this.canvas);
 
-    this.width  = this.canvas.width  = image.width;
-    this.height = this.canvas.height = image.height;
+    this.width  = this.canvas.width  = image.naturalWidth;
+    this.height = this.canvas.height = image.naturalHeight;
 
     this.context.drawImage(image, 0, 0, this.width, this.height);
 };

@@ -811,7 +811,7 @@ story = ->
           A 
             style: _.extend {}, story_link, caption_text
             href: 'https://dl.dropboxusercontent.com/u/3403211/papers/dissertation.pdf'
-            "PhD dissertation"
+            "dissertation"
           ' for those of you with great '
           SPAN 
             style: 
@@ -862,7 +862,7 @@ story = ->
         ' ' 
         A
           style: story_link
-          href: 'https://redesign.cs.washington.edu/sites/default/files/hci/papers/tmpzq4PJB.pdf'
+          href: 'https://www.cs.ubc.ca/~bestchai/papers/group07.pdf'
           'conflict'
 
         '. Travis was feeling ready to channel this knowledge into invention.'

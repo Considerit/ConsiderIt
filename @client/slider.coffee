@@ -224,9 +224,6 @@ window.Slider = ReactiveComponent
   handleMouseDown: (e) -> 
     el = @getDOMNode()
     
-    # Dragging has to start by dragging the slider handle
-    return if !$(e.target).is('.the_handle')
-
     e.preventDefault()
 
     # Initiate dragging
@@ -235,7 +232,7 @@ window.Slider = ReactiveComponent
     save slider
 
     # adjust for starting location - offset
-    @local.starting_adjustment = (parseInt($(e.target)[0].style.left, 10) || 0) - \
+    @local.starting_adjustment = (parseInt($(e.currentTarget)[0].style.left, 10) || 0) - \
                                  (e.clientX or e.touches[0].clientX)
     save @local
 

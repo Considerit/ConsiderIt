@@ -56,8 +56,8 @@ SaasHomepage = ReactiveComponent
     if !ui.initialized
       _.extend ui, 
         initialized: true
-        video_file_name: 'deathstar-cam'
-        video_file_name_instr: "Only available video is 'deathstar-cam'"
+        video_file_name: 'deathstarcam'
+        video_file_name_instr: "Only available video is 'deathstarcam'"
         video_elements_order: "caption,video"
         video_elements_order_inst: """
           A list of video elements to show and in which order (top to bottom). 
@@ -466,6 +466,7 @@ bullet = (props) ->
       style:
         position: "absolute"
         left: -15
+        top: 6
 
       switch props.point_style
         when "bullet"
@@ -568,13 +569,13 @@ pricing = ->
         width: TEXT_WIDTH
         margin: 'auto'
 
-      'We are offering free pilots for a limited time. '
+      'We are offering free pilots of Consider.it for a limited time. '
 
       A 
         style: a 
         'Contact us'
 
-      ' to get started with Consider.it today! '
+      ' to get started today! '
       BR null
       BR null
       'If advanced configuration or custom design is needed, we can discuss whether compensation is necessary.'
@@ -1110,7 +1111,7 @@ story = ->
             paddingBottom: 15
 
           """
-          Just as Mike and Travis were wrapping up their academic pursuits, they 
+          While Mike and Travis were wrapping up their academic pursuits, they 
           met Kevin Miniter. Kevin had just arrived in Seattle, eager for his next 
           adventure after running the campaign for the """
           A

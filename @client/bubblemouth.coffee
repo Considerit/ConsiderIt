@@ -38,7 +38,7 @@ window.Bubblemouth = (props) ->
     fill: 'white', 
     stroke: focus_blue, 
     stroke_width: 10
-    dash_array: "0"   
+    dash_array: "none"   
     box_shadow: null
 
   full_width = props.svg_w + 4 * props.skew_x * Math.max(.5, Math.abs(.5 - props.apex_xfrac))
@@ -64,9 +64,9 @@ window.Bubblemouth = (props) ->
 
   bubblemouth_path = """
     M  #{x1}  #{y1}
-    Q #{qx1} #{qy1},
+    Q #{qx1} #{qy1}
        #{x2}  #{y2}
-    Q #{qx2} #{qy2},
+    Q #{qx2} #{qy2}
        #{x3}  #{y3}
     
   """

@@ -830,7 +830,7 @@ story = ->
         """
         Travis was in a privileged position to spend time thinking about these 
         issues. He was pursuing a PhD in Computer Science at the University of 
-        Washington, with a research agenda grounded in the belief that we can 
+        Washington, doing research grounded in the belief that we can 
         improve our capacity for collective action. He was supported by a generous 
         """
         A

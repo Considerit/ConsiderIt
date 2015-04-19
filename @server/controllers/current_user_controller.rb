@@ -197,7 +197,7 @@ class CurrentUserController < ApplicationController
       when 'logout'
         if current_user && current_user.logged_in?
           puts("Logging out.")
-          dirty_key '/page/homepage'
+          dirty_key '/page/'
           dirty_key '/proposals'
           new_current_user()
           log('logged out')

@@ -7,9 +7,8 @@
   shell: "{{source}} && bundle install --gemfile={{app_home}}/Gemfile && rbenv rehash"
   sudo: False
 
-- name: Precompile assets
-  shell: "{{source}} && cd {{app_home}} && RAILS_ENV={{code.environment}} bundle exec rake assets:precompile"
-  ignore_errors: yes #if we don't have AWS S3 set up, asset sync will error out unnecessarily
+- name: Precompile and upload assets
+  shell: "{{source}} && cd {{app_home}} && BUILD_PRODUCTION=1 node_modules/webpack/bin/webpack.js"
   sudo: False
   when: code.environment == "production"
 

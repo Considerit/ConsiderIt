@@ -1,0 +1,5 @@
+#!/bin/sh
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+./bin/webpack &
+rails s -b 0.0.0.0

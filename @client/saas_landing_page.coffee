@@ -739,11 +739,18 @@ story = ->
             paddingBottom: 15
 
           """
-          The idea for Consider.it struck one cloudy Seattle morning 
-          while Travis sat on the ground outside of a bike shop. He was feeling 
-          morose after spending a few dark hours reading hundreds of comments 
+          The idea for Consider.it was born on a cloudy Seattle morning 
+          while Travis sat on the ground outside of a """
+          A 
+            href: 'https://www.google.com/maps/place/Montlake+Bicycle+Shop/@47.639382,-122.302025,3a,75y,284.92h,78.85t/data=!3m4!1e1!3m2!1sqE4cgPSn9t_eCx1xr5HsEQ!2e0!4m2!3m1!1s0x549014c486e2f9c1:0x7b96d3f907c7f742'
+            style: story_link
+            'bike shop'
+
+          """
+          . He was feeling 
+          down after spending a few dark hours reading hundreds of comments 
           on news articles about the Affordable Care Act. So much talking past 
-          one another. So few takeaways. So much effort... wasted. 
+          one another. Such wasted effort. 
           """
 
         P 
@@ -751,13 +758,12 @@ story = ->
             paddingBottom: 15
 
           """
-          The problem is not limited to online comment boards. Email threads 
-          involving close colleagues and even face to face conversations with 
-          loved ones can easily degenerate. Humanity's ability 
-          to listen and learn is ever so fragile, easily broken by poor habits and 
-          flawed tools. Travis knew he was no exception to the problem; 
-          but that day, at least, Travis was happy to turn his frustration into 
-          a blueprint for improvement.
+          Humanity's ability to listen and learn is ever so fragile, easily broken 
+          by poor habits and flawed tools. The problem is not limited to online 
+          comment boards. Email threads involving close colleagues and even face 
+          to face conversations with loved ones can easily degenerate. Travis 
+          knew he was no exception to the problem; but that day, at least, Travis 
+          was happy to turn his frustration into a blueprint for improvement.
           """
 
       DIV 
@@ -962,7 +968,7 @@ story = ->
             href: 'https://www.youtube.com/watch?v=RIUD4Ty2ZAE'
             'winning talk'
           """ 
-           at Social Innovation Fast Pitch. This excellent experience was a sort of 
+           at Social Innovation Fast Pitch. This excellent experience was an
           awkward transitionary point in our history: straddling academia and the 
           private sector, while representing our non-profit partner in a pitch 
           competition.
@@ -1111,7 +1117,7 @@ story = ->
             paddingBottom: 15
 
           """
-          While Mike and Travis were wrapping up their academic pursuits, they 
+          While wrapping up their academic pursuits, Mike and Travis 
           met Kevin Miniter. Kevin had just arrived in Seattle, eager for his next 
           adventure after running the campaign for the """
           A

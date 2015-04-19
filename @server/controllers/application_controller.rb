@@ -84,12 +84,12 @@ protected
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
       candidate_subdomain = Subdomain.find_by_name('homepage')
     else
-      default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 2079
+      default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
       if rq.subdomain.nil? || rq.subdomain.length == 0
         begin
           candidate_subdomain = Subdomain.find(default_subdomain)
         rescue ActiveRecord::RecordNotFound
-          candidate_subdomain = Subdomain.find(2079)
+          candidate_subdomain = Subdomain.find(1)
         end
       else 
         candidate_subdomain = Subdomain.find_by_name(rq.subdomain)

@@ -1086,7 +1086,7 @@ YourPoints = ReactiveComponent
       mouth_style['left'] = 11.5
     else 
       mouth_style['transform'] = 'rotate(90deg)'
-      mouth_style['right'] = 11.5
+      mouth_style['right'] = 11
 
     DIV 
       className: "points_on_decision_board #{@props.valence}_on_decision_board"
@@ -1126,9 +1126,7 @@ YourPoints = ReactiveComponent
         SVG 
           width: dt_w
           height: dt_h
-
-          style: css.crossbrowserify
-            transform: if @props.valence == 'cons' then '' else 'scaleX(-1)'
+          
 
           DEFS null,
             PATTERN 
@@ -1142,18 +1140,26 @@ YourPoints = ReactiveComponent
                 height: '100%'
                 fill: 'white'
 
-              for [x1, y1, x2, y2] in [ 
-                [-s_w/2,    0, s_w,   1.5 * s_h], 
-                [0,    -s_h/2,   1.5 * s_w, s_h]]
+              do => 
+                if @props.valence == 'cons'
+                  cross_hatch = [ 
+                    [-s_w/2,    0, s_w,   1.5 * s_h], 
+                    [0,    -s_h/2,   1.5 * s_w, s_h]]
+                else 
+                  cross_hatch = [ 
+                    [1.5 * s_w,    0, 0,   1.5 * s_h], 
+                    [s_w,    -s_h/2,   -s_w/2, s_h]]                  
 
-                LINE 
-                  x1: x1
-                  y1: y1
-                  x2: x2 
-                  y2: y2 
-                  stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
-                  strokeWidth: 1
-                  strokeOpacity: .2
+                for [x1, y1, x2, y2], idx in cross_hatch
+
+                  LINE 
+                    x1: x1
+                    y1: y1
+                    x2: x2 
+                    y2: y2 
+                    stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
+                    strokeWidth: 1
+                    strokeOpacity: .2
 
           RECT
             width: dt_w - 2 * dt_stroke_width
@@ -1165,8 +1171,7 @@ YourPoints = ReactiveComponent
             fill: "url(#drop-stripes-#{@props.valence})"
             stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
             strokeWidth: dt_stroke_width
-            strokeDasharray: '4 3'
-
+            strokeDasharray: '4, 3'
 
 
         DIV 
@@ -1177,18 +1182,17 @@ YourPoints = ReactiveComponent
             apex_xfrac: 0
             width: COMMUNITY_POINT_MOUTH_WIDTH
             height: COMMUNITY_POINT_MOUTH_WIDTH
-            fill: "url(#drop-stripes-#{@props.valence})"
+            fill: '#F9FBFD'  #TODO: somehow make this focus_blue color mixed with white @ .2 opacity
             stroke: focus_blue
             stroke_width: 6
             dash_array: '24, 18'
-
 
         SPAN 
           style:
             fontSize: 14
             position: 'absolute'
             top: '1.4em'
-            left: if @props.valence == 'cons' then 36 else 42
+            left: 42
             width: 180
 
           "Drag a "

@@ -888,10 +888,10 @@ story = ->
           """
           Travis found a kindred spirit in fellow graduate student Michael Toomim. 
           Michael's incisive and persistent feedback helped Travis transform his 
-          abstract knowledge and ideas into concrete designs. They started co-advising
-          each other and helping with each others' projects. Bits and pieces of ideas 
+          abstract knowledge and ideas into concrete designs. They started collaborating 
+          with each other on their respective projects. Bits and pieces of ideas 
           that Michael and Travis had kicked around before had suddenly coalesced in 
-          that moment Consider.it was born outside the bike shop. 
+          that moment when Consider.it was born outside the bike shop. 
           """
 
 
@@ -1038,7 +1038,7 @@ story = ->
           and peer review limited how far and in what manner ideas could be 
           brought into the world. Instead, they would create their own 
           company/laboratory that supported the form of inquiry they felt would 
-          maximize their ability to contribute. We call this organization The 
+          maximize their contributions. We call this organization The 
           Invisible College.
           """          
 

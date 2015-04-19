@@ -3190,7 +3190,7 @@ EditProposal = ReactiveComponent
 Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
-    doc = fetch('location')
+    doc = fetch('document')
     subdomain = fetch('subdomain')
 
     title = subdomain.app_title or subdomain.name

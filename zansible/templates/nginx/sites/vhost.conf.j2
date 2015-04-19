@@ -39,6 +39,12 @@ server {
   client_max_body_size 5M;
 
   location ~ ^/(assets|images|system)/ {
+    gzip_static on;
+    expires     max;
+    add_header  Cache-Control public;
+    add_header  Last-Modified "";
+    add_header  ETag "";
+    break;
     proxy_set_header       Host '{{ config.aws.cloudfront }}.cloudfront.net';
     proxy_set_header       Authorization '';
     proxy_hide_header      x-amz-id-2;
@@ -50,6 +56,15 @@ server {
     expires 1y;
     log_not_found off;    
   }
+  location ~ ^/(javascripts|stylesheets)/ {
+    gzip_static on;
+    expires     max;
+    add_header  Cache-Control public;
+    add_header  Last-Modified "";
+    add_header  ETag "";
+    break;
+  }  
+
 
   location ~ ^/(sitemaps)/ {
     gzip_static on;
@@ -69,14 +84,6 @@ server {
   location ~ (browserconfig.xml)$ {
     return 410;
   }
-  location ~ ^/(assets|images|javascripts|stylesheets|system)/ {
-    gzip_static on;
-    expires     max;
-    add_header  Cache-Control public;
-    add_header  Last-Modified "";
-    add_header  ETag "";
-    break;
-  }  
 
 
   #location / {

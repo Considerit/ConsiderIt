@@ -30,6 +30,7 @@ deps:
   - optipng
   - pngcrush
   - python-apt
+  - python-pip
   - python-mysqldb # for Ansible mysql module
   - redis-server
   - unattended-upgrades

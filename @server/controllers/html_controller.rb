@@ -10,10 +10,12 @@ class HtmlController < ApplicationController
       return
     end
 
-    if params[:domain] and (Rails.env.development? || request.host == 'chlk.it')
-      session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
-      redirect_to '/'    
-      return
+    if Rails.env.development? || request.host.end_with?('chlk.it')
+      if params[:domain]
+        session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
+        redirect_to request.path    
+        return
+      end
     end
 
     # Storing the full host name on the subdomain object.
@@ -24,10 +26,6 @@ class HtmlController < ApplicationController
       current_subdomain.host = request.host
       current_subdomain.host_with_port = request.host_with_port
       current_subdomain.save
-    end
-
-    if request.host == 'chlk.it'
-      @show_subdomain_changer = true
     end
 
     if !session.has_key?(:search_bot)
@@ -53,18 +51,24 @@ class HtmlController < ApplicationController
       })
     end
 
+    if !session.has_key? :app
+      session[:app] = 'franklin'
+    end
+
+    @app = session[:app]
+
+    manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
+
+    if Rails.application.config.action_controller.asset_host
+      @js = "#{Rails.application.config.action_controller.asset_host}/#{manifest[@app]}"
+    else 
+      @js = "/#{manifest[@app]}"
+    end
+
+    dirty_key '/asset_manifest'
     response.headers["Strict Transport Security"] = 'max-age=0'
 
-    if current_subdomain.name == 'homepage' && request.path == '/'
-      render "layouts/homepage", :layout => false
-    else
-      render "layouts/application", :layout => false
-    end
-  end
-
-
-  def activemike
-    render "layouts/testmike", :layout => false
+    render "layouts/application", :layout => false
   end
 
   private

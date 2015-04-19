@@ -1,10 +1,7 @@
+
 require 'digest/md5'
 require 'exception_notifier'
 require Rails.root.join('@server', 'permissions')
-
-
-# Set to true if you're working on the http://consider.it homepage. 
-ENABLE_HOMEPAGE_IN_DEV = false
 
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
@@ -20,7 +17,21 @@ class ApplicationController < ActionController::Base
     render :json => result
   end
 
+  def application
+    dirty_key '/application'
+    render :json => []
+  end
+
+  def app_index
+    render :json => [{
+      :key => '/apps',
+      :apps => ['franklin', 'saas_landing_page']
+    }]
+  end
+
   def render(*args)
+
+    dirty_key '/application'
 
     # if there are dirtied keys, we'll append the corresponding data to the response
     if current_subdomain && Thread.current[:dirtied_keys].keys.length > 0
@@ -69,12 +80,20 @@ protected
     rq = request
 
     # when to display a considerit homepage
-    can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || ENABLE_HOMEPAGE_IN_DEV
+    can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || session[:app] == 'saas_landing_page'
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
       candidate_subdomain = Subdomain.find_by_name('homepage')
     else
-      default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
-      candidate_subdomain = rq.subdomain.nil? || rq.subdomain.length == 0 ? Subdomain.find(default_subdomain) : Subdomain.find_by_name(rq.subdomain)
+      default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 2079
+      if rq.subdomain.nil? || rq.subdomain.length == 0
+        begin
+          candidate_subdomain = Subdomain.find(default_subdomain)
+        rescue ActiveRecord::RecordNotFound
+          candidate_subdomain = Subdomain.find(2079)
+        end
+      else 
+        candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
+      end
     end
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain
@@ -99,7 +118,7 @@ protected
     end
 
     # if [197946, 14897].include?(Thread.current[:current_user_id])
-    #   raise PermissionDenied.new('Your account has been disabled until the election is over for viaolating the Civility Pledge.')
+    #   raise PermissionDenied.new('Your account has been disabled until the election is over for violating the Civility Pledge.')
     # end
   end
   
@@ -117,7 +136,7 @@ protected
 
   def set_current_user(user)
     ## TODO: delete the existing current user if there's nothing
-    ## important in it
+    ##       important in it
 
     puts("Setting current user to #{user.id}")
     session[:current_user_id] = user.id
@@ -138,9 +157,6 @@ protected
   end
   
   def compile_dirty_objects
-    # Right now this works for points, opinions, proposals, and the
-    # current opinion's proposal if the current opinion is dirty.
-
     response = []
     processed = {}
 
@@ -174,6 +190,13 @@ protected
         point = Point.find(key[10..key.length])
         response.append Comment.comments_for_point(point)
       
+      elsif key == '/application'
+        response.append({
+          key: '/application',
+          app: session[:app],
+          dev: (Rails.env.development? || request.host.end_with?('chlk.it')),
+          asset_host: "#{Rails.application.config.action_controller.asset_host}"
+        })
       elsif key == '/subdomain'
         response.append current_subdomain.as_json
 
@@ -186,7 +209,7 @@ protected
       elsif key == '/users'
         response.append User.all_for_subdomain
 
-      elsif key.match '/page/homepage'
+      elsif key == '/page/'
         recent_contributors = ActiveRecord::Base.connection.exec_query( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE opinions.subdomain_id=#{current_subdomain.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
 
         clean = {
@@ -252,6 +275,12 @@ protected
       elsif key.match '/claim/'
         claim = Assessable::Claim.find(key[7..key.length])
         response.append claim.as_json
+
+      elsif key == '/asset_manifest'
+        manifest = JSON.parse(File.open("public/assets/rev-manifest.json", "rb") {|io| io.read})
+        manifest.key = '/asset_manifest'
+        response.append manifest
+
       end
     end
 

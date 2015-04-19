@@ -234,6 +234,9 @@ Proposal = ReactiveComponent
     proposal_header = (customization('ProposalHeader'))()
 
     newpoint_threshold = @buildNewPointThreshold()
+    draw_handle = (can_opine not in [Permission.DISABLED, \
+                          Permission.INSUFFICIENT_PRIVILEGES]) || \
+                          your_opinion.published
 
     DIV key:@props.slug,
 
@@ -404,9 +407,7 @@ Proposal = ReactiveComponent
               your_opinion: @proposal.your_opinion
               focused: mode == 'crafting'
               backgrounded: @proposal.has_focus != 'opinion' && mode == 'crafting'
-              permitted: (@props.can_opine not in [Permission.DISABLED, \
-                          Permission.INSUFFICIENT_PRIVILEGES]) || \
-                          your_opinion.published
+              permitted: draw_handle
               pole_labels: [ \
                 [customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose"),
                  customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose_sub")], \
@@ -421,7 +422,7 @@ Proposal = ReactiveComponent
             width: REASONS_REGION_WIDTH            
             position: 'relative'
             paddingBottom: '4em' #padding instead of margin for docking
-            margin: '24px auto 0 auto'
+            margin: "#{if draw_handle then '24px' else '0'} auto 0 auto"
             marginLeft: if lefty then 65
 
 

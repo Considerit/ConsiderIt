@@ -1,14 +1,14 @@
 ######
 # OpinionSlider
 #
-# Manages the slider and the UI elements attached to it. Specifically: 
-#   - a slider base
+# Manages the slider as connected to an opinion. The main slider in Considerit. 
 #   - labels for the poles of the slider
-#   - a draggable slider handle
 #   - feedback description about the current opinion
+#   - creates a Slider instance
 #
 # TODO:
 #   - better documentation
+#   - refactor the code in light of extracting Slider
 
 require './slider'
 require './shared'
@@ -168,7 +168,6 @@ window.OpinionSlider = ReactiveComponent
       style: feedback_style
       slider_feedback
 
-  # Stop sliding
   handleMouseUp: (e) ->
     slider = fetch @props.key
     your_opinion = fetch @props.your_opinion

@@ -18,6 +18,10 @@
 # logic needs to be here and vice versa.
 #
 
+require './browser_location' # for loadPage
+require './customizations'
+
+
 ####
 # Failure cases ENUM
 # This needs to be synchronized with server (see @server/permissions.rb)
@@ -150,18 +154,15 @@ window.recourse = (permission, goal) ->
   goal = goal || 'access this page'
   
   switch permission
+
     when Permission.INSUFFICIENT_PRIVILEGES
-      window.app_router.navigate("/", {trigger: true})
+      loadPage '/'
 
     when Permission.NOT_LOGGED_IN
-      root = fetch 'root'
-      root.auth = {form: 'login', goal: goal}
-      save root
+      reset_key 'auth', {form: 'login', goal: goal}
 
     when Permission.UNVERIFIED_EMAIL
-      root = fetch 'root'
-      root.auth = {form: 'verify email', goal: goal}
-      save root
+      reset_key 'auth', {form: 'verify email', goal: goal}
 
       current_user = fetch '/current_user'
       current_user.trying_to = 'send_verification_token'
@@ -200,7 +201,6 @@ AccessControlled =
     if @data().permission_denied && @data().permission_denied < 0
       # Let's recover, depending on the recourse the server dictates
       recourse @data().permission_denied
-
 
     #######
     # Hack! The server will return permission_denied on the page, e.g.: 

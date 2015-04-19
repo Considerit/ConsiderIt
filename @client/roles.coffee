@@ -1,3 +1,8 @@
+require './customizations'
+require './form'
+require './shared'
+
+
 ProposalRoles = ReactiveComponent
   displayName: 'ProposalRoles'
 
@@ -6,12 +11,54 @@ ProposalRoles = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
+    pro_label = customization('point_labels.pro')
+    con_label = customization('point_labels.con')
+
+
     roles = [ 
-      {name: 'editor', label: 'Editors', description: 'Can modify the description of the proposal, as well as write, comment, and opine.', icon: 'fa-edit', wildcard: {label: 'Any registered user who can observe can edit', default: false}}, 
-      {name: 'writer', label: 'Writers', description: 'Can write pro and con points that are shared with others. Any writer can comment and opine.', icon: 'fa-th-list', wildcard: {label: 'Any registered user who can observe can write', default: true}},
-      {name: 'commenter', label: 'Commenters', description: 'Can comment on shared pro and con points.', icon: 'fa-comment', wildcard: {label: 'Any registered user who can observe can comment', default: true}},
-      {name: 'opiner', label: 'Opiners', description: 'Can contribute their opinions of this proposal. But not original content.', icon: 'fa-bar-chart', wildcard: {label: 'Any registered user who can observe can opine', default: true}},
-      {name: 'observer', label: 'Observers', description: 'Can access this proposal. But that\'s it.', icon: 'fa-eye', wildcard: {label: "Public. Anyone can view", default: true}}
+      {
+        name: 'editor', 
+        label: 'Editors', 
+        description: 'Can modify the description of the proposal, as well as ' + \
+                     'write, comment, and opine.', 
+        icon: 'fa-edit', 
+        wildcard: 
+          label: 'Any registered user who can observe can edit'
+          default: false
+      },{
+        name: 'writer', 
+        label: 'Writers', 
+        description: "Can write #{pro_label} and #{con_label} points that are " + \
+                     "shared with others. Any writer can comment and opine.", 
+        icon: 'fa-th-list', 
+        wildcard: 
+          label: 'Any registered user who can observe can write'
+          default: true
+      },{
+        name: 'commenter', 
+        label: 'Commenters', 
+        description: "Can comment on #{pro_label} and #{con_label} points.", 
+        icon: 'fa-comment', 
+        wildcard: 
+          label: 'Any registered user who can observe can comment'
+          default: true
+      },{
+        name: 'opiner', 
+        label: 'Opiners', 
+        description: 'Can contribute their opinions of this proposal. But not original content.', 
+        icon: 'fa-bar-chart', 
+        wildcard: 
+          label: 'Any registered user who can observe can opine'
+          default: true
+      },{
+        name: 'observer', 
+        label: 'Observers', 
+        description: 'Can access this proposal. But that\'s it.', 
+        icon: 'fa-eye', 
+        wildcard: 
+          label: "Public. Anyone can view"
+          default: true
+      }
     ]
 
     roles = _.compact roles
@@ -30,7 +77,8 @@ ProposalRoles = ReactiveComponent
           else
             proposal.roles[role.name].push '*'
 
-      proposal.roles['editor'].push "/user/#{current_user.id}" #default proposal author as editor
+      proposal.roles['editor'].push "/user/#{current_user.id}" 
+                            #default proposal author as editor
 
 
     SpecifyRoles proposal, roles
@@ -42,11 +90,35 @@ SubdomainRoles = ReactiveComponent
     subdomain = fetch '/subdomain'
 
     roles = [ 
-      {name: 'admin', label: 'Administrators', description: 'Can configure everything related to this site, including all of the below.', icon: 'fa-wrench'}, 
-      {name: 'moderator', label: 'Moderators', description: 'Can moderate user content. Will receive emails for content needing moderation.', icon: 'fa-fire-extinguisher'},
-      if subdomain.assessment_enabled then {name: 'evaluator', label: 'Fact checkers', description: 'Can validate claims. Will receive emails when a fact-check is requested.', icon: 'fa-flag-checkered'} else null,
-      {name: 'proposer', label: 'Proposers', description: 'Can add new proposals.', icon: 'fa-lightbulb-o', wildcard: {label: 'Any registered visitor can post new proposals', default: false}},
-      {name: 'visitor', label: 'Visitors', description: 'Default users who can view proposals.', icon: 'fa-android', wildcard: {label: 'Proposals are public by default.', default: true}} #'fa-key'
+      {
+        name: 'admin', 
+        label: 'Administrators', 
+        description: 'Can configure everything related to this site, including all of the below.', 
+        icon: 'fa-wrench'
+      }, 
+      {
+        name: 'moderator', 
+        label: 'Moderators', 
+        description: 'Can moderate user content. Will receive emails for content needing moderation.', 
+        icon: 'fa-fire-extinguisher'
+      },
+      if subdomain.assessment_enabled then {
+        name: 'evaluator', 
+        label: 'Fact checkers', 
+        description: 'Can validate claims. Will receive emails when a fact-check is requested.', 
+        icon: 'fa-flag-checkered'} else null,
+      {
+        name: 'proposer', 
+        label: 'Proposers', 
+        description: 'Can add new proposals.', 
+        icon: 'fa-lightbulb-o', 
+        wildcard: {label: 'Any registered visitor can post new proposals', default: false}},
+      {
+        name: 'visitor', 
+        label: 'Visitors', 
+        description: 'Default users who can view proposals.', 
+        icon: 'fa-android', 
+        wildcard: {label: 'Proposals are public by default.', default: true}} 
     ]
 
     roles = _.compact roles
@@ -65,7 +137,13 @@ SpecifyRoles = (target, roles) ->
     for role,idx in roles
       DIV style: {marginTop: 24}, key: idx,
         H1 style: {fontSize: 18, position: 'relative'}, 
-          I className: "fa #{role.icon}", style: {position: 'absolute', top: 2, left: -35, fontSize: 24}
+          I 
+            className: "fa #{role.icon}"
+            style: 
+              position: 'absolute'
+              top: 2
+              left: -35
+              fontSize: 24
           role.label
         
         SPAN style: {fontSize: 14}, role.description
@@ -99,16 +177,29 @@ AddRolesAndInvite = ReactiveComponent
         candidates = candidates.split(',')
         for candidate_email in candidates
           candidate_email = candidate_email.trim()
-          if candidate_email.indexOf(' ') < 0 && candidate_email.indexOf('@') > 0 && candidate_email.indexOf('.') > 0
+          if candidate_email.indexOf(' ') < 0 && 
+              candidate_email.indexOf('@') > 0 && 
+              candidate_email.indexOf('.') > 0
             @local.added.push candidate_email
         save @local
 
 
-    DIV style: {position: 'relative', backgroundColor: '#E7F2FF', padding: '18px 24px'}, 
-      STYLE null, ".invite_menu_item:hover{background-color: #414141; color: white}"
+    DIV 
+      style: 
+        position: 'relative'
+        backgroundColor: '#E7F2FF'
+        padding: '18px 24px'
+      STYLE null, 
+        ".invite_menu_item:hover{background-color: #414141; color: white}"
 
-      # Show (and optionally change) the role currently being modified by the invite component
-      DIV style: {fontWeight: 500, fontSize: 18, marginBottom: 6, display: 'inline-block'}, 
+      # Show (and optionally change) the role currently being modified 
+      # by the invite component
+      DIV 
+        style: 
+          fontWeight: 500
+          fontSize: 18
+          marginBottom: 6
+          display: 'inline-block'
         DIV 
           id: 'select_new_role'
           style: {backgroundColor: 'rgba(100,100,150,.1)'
@@ -122,17 +213,33 @@ AddRolesAndInvite = ReactiveComponent
 
             @local.select_new_role = true
             save @local 
-          I className: "fa #{@local.role.icon}", style: {displayName: 'inline-block', margin: '0 8px 0 0'} 
+          I 
+            className: "fa #{@local.role.icon}"
+            style: 
+              displayName: 'inline-block'
+              margin: '0 8px 0 0'
           "Add #{@local.role.label}"
           I style: {marginLeft: 8}, className: "fa fa-caret-down"
 
         if @local.select_new_role
-          UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
+          UL 
+            style: 
+              width: 500
+              position: 'absolute'
+              zIndex: 99
+              listStyle: 'none'
+              backgroundColor: '#fff'
+              border: '1px solid #eee'
+
             for role,idx in @props.roles
               if role.name != @local.role.name
                 LI 
                   className: 'invite_menu_item'
-                  style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
+                  style: 
+                    padding: '2px 12px'
+                    fontSize: 18
+                    cursor: 'pointer'
+                    borderBottom: '1px solid #fafafa'
                   key: idx
                   onClick: do(role) => (e) => 
                     @local.role = role
@@ -140,7 +247,11 @@ AddRolesAndInvite = ReactiveComponent
                     save @local
                     e.stopPropagation()
 
-                  I className: "fa #{role.icon}", style: {displayName: 'inline-block', margin: '0 8px 0 0'} 
+                  I 
+                    className: "fa #{role.icon}"
+                    style: 
+                      displayName: 'inline-block'
+                      margin: '0 8px 0 0'
                   "Add #{role.label}"
 
       # Show everyone queued for being added/invited to a role
@@ -160,7 +271,9 @@ AddRolesAndInvite = ReactiveComponent
           style: {fontSize: 18, width: 350, padding: '3px 6px'}
           autoComplete: 'off'
           placeholder: "Name or email..."
-          onChange: (=> @local.filtered = $(@getDOMNode()).find('#filter').val(); save(@local);)
+          onChange: => 
+            @local.filtered = $(@getDOMNode()).find('#filter').val()
+            save(@local)
           onKeyPress: (e) => 
             # enter key pressed...
             if e.which == 13
@@ -181,12 +294,28 @@ AddRolesAndInvite = ReactiveComponent
 
       # Dropdown, autocomplete menu for adding existing users
       if @local.selecting
-        UL style: {width: 500, position: 'absolute', zIndex: 99, listStyle: 'none', backgroundColor: '#fff', border: '1px solid #eee'},
-          for user,idx in _.filter(users.users, (u) => 
-            target.roles[@local.role.name].indexOf(u.key) < 0 && (!@local.filtered || "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1) )
+        available_users = _.filter users.users, (u) => 
+            target.roles[@local.role.name].indexOf(u.key) < 0 && 
+             (!@local.filtered || 
+              "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1)
+
+        UL 
+          style: 
+            width: 500
+            position: 'absolute'
+            zIndex: 99
+            listStyle: 'none'
+            backgroundColor: '#fff'
+            border: '1px solid #eee'
+
+          for user,idx in available_users
             LI 
               className: 'invite_menu_item'
-              style: {padding: '2px 12px', fontSize: 18, cursor: 'pointer', borderBottom: '1px solid #fafafa'}
+              style: 
+                padding: '2px 12px'
+                fontSize: 18
+                cursor: 'pointer'
+                borderBottom: '1px solid #fafafa'
               key: idx
 
               onClick: do(user) => (e) => 
@@ -218,7 +347,16 @@ AddRolesAndInvite = ReactiveComponent
 
       # Submit button
       DIV
-        style: {backgroundColor: focus_blue, color: 'white', padding: '8px 14px', fontSize: 16, display: 'inline-block', cursor: 'pointer', borderRadius: 8, marginTop: 12}
+        style: 
+          backgroundColor: focus_blue
+          color: 'white'
+          padding: '8px 14px'
+          fontSize: 16
+          display: 'inline-block'
+          cursor: 'pointer'
+          borderRadius: 8
+          marginTop: 12
+
         onClick: (e) => 
 
           target.roles[@local.role.name] = target.roles[@local.role.name].concat @local.added
@@ -306,7 +444,13 @@ UserWithRole = (user_key, on_remove_from_role) ->
         user = fetch user_key
         SPAN null,
           if user.avatar_file_name
-            Avatar key: user_key, hide_tooltip: true, style: {width: 20, height: 20, marginRight: 5}
+            Avatar 
+              key: user_key
+              hide_tooltip: true
+              style: 
+                width: 20
+                height: 20
+                marginRight: 5
           if user.name 
             user.name 
           else 

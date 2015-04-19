@@ -1,5 +1,11 @@
 # Admin components, like moderation and factchecking backend
 
+
+require './vendor/jquery.form'
+require './form'
+require './shared'
+
+
 # Experimenting with sharing css styles between components via js objects
 task_area_header_style = {fontSize: 24, fontWeight: 400, margin: '10px 0'}
 task_area_bar = {padding: '4px 30px', fontSize: 24, borderRadius: '8px 8px 0 0', height: 35, backgroundColor: 'rgba(0,0,55,.1)'}
@@ -22,7 +28,13 @@ DashHeader = ReactiveComponent
 
     cb is_light
 
-  render : ->
+  render : ->    
+
+    doc = fetch('document')
+    if doc.title != @props.name
+      doc.title = @props.name
+      save doc
+
     subdomain = fetch '/subdomain'
     DIV 
       style: 
@@ -47,6 +59,7 @@ ImportDataDash = ReactiveComponent
   displayName: 'ImportDataDash'
 
   render : ->
+
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
@@ -512,36 +525,43 @@ ModerateItem = ReactiveComponent
         if item.updated_since_last_evaluation
           SPAN style: {}, "Updated since last moderation"
         else if item.status == 1
-          SPAN style: {}, "Passed moderation #{new Date(item.updated_at).toDateString()}"
+          SPAN style: {}, "Passed by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
         else if item.status == 2
-          SPAN style: {}, "Sitting in quarantine"
+          SPAN style: {}, "Quarantined by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
         else if item.status == 0
-          SPAN style: {}, "Failed moderation"
+          SPAN style: {}, "Failed by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
         else 
           SPAN style: {}, "Is this #{class_name} ok?"
 
-        if item.user
-          SPAN style: {float: 'right', fontSize: 18, verticalAlign: 'bottom'},
-            "Moderated by #{fetch(item.user).name}"
-
       DIV style: {padding: '10px 30px'},
         # content area
-        DIV style: task_area_section_style, 
+        DIV 
+          style: task_area_section_style, 
 
           if class_name == 'Point'
             UL style: {marginLeft: 73}, 
-              Point key: point, rendered_as: 'under_review'
+              Point key: point, rendered_as: 'under_review', enable_dragging: false
           else if class_name == 'Proposal'
             DIV null,
-              DIV null, moderatable.name
-              DIV null, moderatable.description
+              DIV 
+                style: 
+                  fontSize: 20
+                  fontWeight: 600
+                moderatable.name
+              DIV 
+                className: 'moderatable_item'
+
+                dangerouslySetInnerHTML: 
+                  __html: moderatable.description
 
           else if class_name == 'Comment'
             if !@local.show_conversation
               DIV null,
                 A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = true; save(@local)),
                   'Show full conversation'
-                Comment key: moderatable
+                Comment 
+                  key: moderatable
+                  under_review: true
 
             else
               DIV null,
@@ -549,7 +569,7 @@ ModerateItem = ReactiveComponent
                   'Hide full conversation'
 
                 UL style: {opacity: .5, marginLeft: 73}, 
-                  Point key: point, rendered_as: 'under_review'
+                  Point key: point, rendered_as: 'under_review', enable_dragging: false
                 for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key))
 
                   if comment != moderatable.key
@@ -562,14 +582,6 @@ ModerateItem = ReactiveComponent
 
           DIV style:{fontSize: 12, marginLeft: 73}, 
             "by #{author.name}"
-
-            if (item.status != 0 && item.status != 2 && class_name != 'Proposal') || class_name == 'Comment'
-              [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
-              A 
-                target: '_blank'
-                href: "/#{proposal.slug}/?selected=#{point.key}"
-                style: {textDecoration: 'underline'}
-                'Read in context']
 
             if !moderatable.hide_name && !@local.messaging
               [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
@@ -649,6 +661,35 @@ ModerateItem = ReactiveComponent
 
             LABEL htmlFor: 'fail', 'Fail'
 
+# TODO: Refactor the below and make sure that the styles applied to the 
+#       user generated fields are in sync with the styling in the 
+#       wysiwyg editor. 
+styles += """
+.moderatable_item br {
+  padding-bottom: 0.5em; }
+.moderatable_item p, 
+.moderatable_item ul, 
+.moderatable_item ol, 
+.moderatable_item table {
+  margin-bottom: 0.5em; }
+.moderatable_item td {
+  padding: 0 3px; }
+.moderatable_item li {
+  list-style: outside; }
+.moderatable_item ol li {
+  list-style-type: decimal; }  
+.moderatable_item ul,
+.moderatable_item ol, {
+  padding-left: 20px;
+  margin-left: 20px; }
+.moderatable_item a {
+  text-decoration: underline; }
+.moderatable_item blockquote {
+  opacity: 0.7;
+  padding: 10px 20px; }
+.moderatable_item table {
+  padding: 20px 0px; }
+"""
 
 FactcheckDash = ReactiveComponent
   displayName: 'FactcheckDash'
@@ -737,7 +778,7 @@ FactcheckPoint = ReactiveComponent
         # point area
         DIV style: task_area_section_style, 
           UL style: {marginLeft: 73}, 
-            Point key: point, rendered_as: 'under_review'
+            Point key: point, rendered_as: 'under_review', enable_dragging: false
 
           DIV style:{fontSize: 12, marginLeft: 73}, 
             "by #{fetch(point.user).name}"

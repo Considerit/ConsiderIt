@@ -10,23 +10,24 @@ end
 
 ConsiderIt::Application.routes.draw do
 
-  if Rails.env.development?
-
-    ## Test controller for nonactiverest
-    get '/activemike' => 'html#activemike'
-  
+  if Rails.env.development?  
     get '/rails/mailers' => "rails/mailers#index"
     get '/rails/mailers/*path'   => "rails/mailers#preview"
   end
 
-  ## Development dashboard; right now it lets you easily switch between subdomains
-  get '/change_subdomain/:id' => 'developer#change_default_subdomain', :as => 'change_subdomain'
+  ######
+  ## Development dashboard
+  #  switch between subdomains
+  get '/change_subdomain/:id' => 'developer#change_subdomain'
+  #  switch between considerit app & the saas landing page
+  get '/set_app/:app' => 'developer#set_app'
 
   # All user-visible URLs go to the html controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
   get '(*url)' => 'html#index', :constraints => NotJSON.new
 
   # Here's the entire JSON API:
+  get '/page' => 'page#show'
   get '/page/*id' => 'page#show'
   resources :user, :only => [:show]
   get '/users' => 'user#index'
@@ -40,9 +41,14 @@ ConsiderIt::Application.routes.draw do
   resources :comment, :only => [:create, :show, :update, :destroy]
   get '/comments/:point_id' => 'comment#index'
 
+  get '/application' => 'application#application'
+  get '/apps' => 'application#app_index'
+
   get '/subdomain' => 'subdomain#show'
   post '/subdomain' => 'subdomain#create'
   match '/subdomain' => 'subdomain#update', :via => [:put]
+  get '/subdomains' => 'subdomain#index'
+
 
   match 'update_images_hack' => 'subdomain#update_images_hack', :via => [:put]
 

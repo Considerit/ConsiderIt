@@ -29,7 +29,6 @@ class Subdomain < ActiveRecord::Base
     end
 
     json['branding'] = self.branding_info
-    json['asset_host'] = "#{Rails.application.config.action_controller.asset_host}"
     json
   end
 
@@ -57,7 +56,7 @@ class Subdomain < ActiveRecord::Base
     brands = JSON.parse(self.branding || "{}")
 
     if !brands.has_key?('primary_color') || brands['primary_color'] == ''
-      brands['primary_color'] = '#E37765'
+      brands['primary_color'] = '#B03A44'
     end
 
     brands['masthead'] = self.masthead_file_name ? self.masthead.url : nil

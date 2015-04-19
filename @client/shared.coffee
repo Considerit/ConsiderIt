@@ -55,6 +55,9 @@ window.parseColor = (color_str) ->
   else 
     throw "Color #{color_str} could not be parsed"
 
+window.addOpacity = (color, opacity) -> 
+  c = parseColor color
+  "rgba(#{c.r},#{c.g},#{c.b},#{opacity}"
 
 # fixed saturation & brightness; random hue
 # adapted from http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/

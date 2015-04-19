@@ -55,7 +55,12 @@ class HtmlController < ApplicationController
       session[:app] = 'franklin'
     end
 
-    @app = session[:app]
+    @app = if current_subdomain.name == 'homepage' || session[:app] == 'saas_landing_page'
+              'saas_landing_page'
+           else
+              'franklin'
+           end
+
 
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
 

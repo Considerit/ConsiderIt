@@ -2594,17 +2594,16 @@ EditPoint = ReactiveComponent
             style: {color: '#777', fontSize: 12}
             'New points disabled for this proposal'
         else
-          INPUT 
-            className: 'button primary_button'
+          DIV 
+            className: 'primary_button'
             'data-action': 'submit-point'
-            type: 'submit'
             onClick: @savePoint
-            value: 'Done'
             style: 
               marginTop: '.5em'
               width: '100%'
               fontSize: 24
               padding: 4
+            'Done'
 
         A 
           onClick: @done

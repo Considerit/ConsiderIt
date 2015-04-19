@@ -37,21 +37,11 @@ gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delaye
 gem "daemons"
 gem 'backup' #https://github.com/meskyanichi/backup
 
-#############
-# BUILD / DEPLOY / ASSET PIPELINE 
-gem 'sprockets'
-gem 'sprockets-rails', :require => 'sprockets/railtie'
-gem "therubyracer", :require => 'v8' #coffeescript dependency that gives Ruby interface to v8 javascript engine 
-gem 'coffee-rails'
-gem 'uglifier'
-gem "asset_sync"
-
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:
 group :development, :test do
   gem 'thin'
-  # gem 'newrelic_rpm'
   # gem 'guard', '>= 2.2.2',       :require => false
   # gem 'guard-livereload',        :require => false
   # gem 'rack-livereload'

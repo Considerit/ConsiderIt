@@ -101,6 +101,12 @@ class HtmlController < ApplicationController
       title = "City of Tigard Dialogue"
       image = view_context.asset_path 'cityoftigard/logo.png'
       description = "Dialogue about City of Tigard"
+    when 'homepage'
+      title = 'Consider.it | Think Better Together'
+      image = view_context.asset_path 'saas_landing_page/logo.png'
+      description = "Focused discussion for your community, organization or classroom. The first forum that works better when more people participate."
+      keywords = "discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,public engagement,impact assessment,strategic planning,process improvement,standards,stakeholder committee,Common Core,listening"
+
     else
       title = current_subdomain.app_title or "#{current_subdomain.name} discussion"
       image = nil

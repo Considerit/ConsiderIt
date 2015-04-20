@@ -634,7 +634,7 @@ contact = (local) ->
       ". Or we can reach out to you:"
 
       FORM
-        action: "http://chalkboard.us7.list-manage1.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
+        action: "//chalkboard.us7.list-manage1.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
         id: "mc-embedded-subscribe-form"
         method: "post"
         name: "mc-embedded-subscribe-form"
@@ -859,19 +859,19 @@ story = ->
         A
           style: story_link
           href: 'http://dub.washington.edu/djangosite/media/papers/tmpZ77p1r.pdf'
-          'collaborated together'
+          'collaborate together'
         ' and '
         A
           style: story_link
           href: 'http://www.aaai.org/Papers/ICWSM/2008/ICWSM08-011.pdf'
-          'mediated'
+          'mediate'
         ' ' 
         A
           style: story_link
           href: 'https://www.cs.ubc.ca/~bestchai/papers/group07.pdf'
           'conflict'
 
-        '. Travis was feeling ready to channel this knowledge into invention.'
+        '. Travis was ready to channel this knowledge into invention.'
 
 
 
@@ -1310,6 +1310,12 @@ Root = ReactiveComponent
   render: ->
     loc = fetch 'location'
     app = fetch '/application'
+    doc = fetch 'document'
+
+    title = 'Consider.it | Think better together'
+    if doc.title != title
+      doc.title = title
+      save doc
 
     DIV null,
       BrowserLocation()

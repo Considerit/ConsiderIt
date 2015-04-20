@@ -11,6 +11,7 @@ require './state_dash'
 
 SAAS_PAGE_WIDTH = 1000
 TEXT_WIDTH = 730
+window.lefty = false
 
 base_text =
   fontSize: 24

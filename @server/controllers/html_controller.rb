@@ -88,6 +88,7 @@ class HtmlController < ApplicationController
     
     proposal = nil
     keywords = title = nil
+    google_verification = nil
 
     # subdomain defaults
     case current_subdomain.name
@@ -106,7 +107,7 @@ class HtmlController < ApplicationController
       image = view_context.asset_path 'saas_landing_page/logo.png'
       description = "Focused discussion for your community, organization or classroom. The first forum that works better when more people participate."
       keywords = "discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,public engagement,impact assessment,strategic planning,process improvement,standards,stakeholder committee,Common Core,listening"
-
+      google_verification = "gd89L8El1xxxBpOUk9czjE9zZF4nh8Dc9izzbxIRmuY"
     else
       title = current_subdomain.app_title or "#{current_subdomain.name} discussion"
       image = nil
@@ -147,6 +148,10 @@ class HtmlController < ApplicationController
       { :property => 'fb:app_id', :content => fb_app_id }
 
     ]
+
+    if google_verification
+      meta.append({:name => "google-site-verification", :content => google_verification })
+    end
 
     return meta, page, title
   end

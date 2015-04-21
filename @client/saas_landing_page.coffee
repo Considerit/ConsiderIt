@@ -75,13 +75,18 @@ SaasHomepage = ReactiveComponent
 
     DIV null, 
 
-      DIV
-        style: _.extend h1,
+      DIV 
+        style: 
           margin: '50px 0'
 
-        'Focused discussion for your'
-        BR null,
-        'community, organization or classroom'
+      DIV
+        style: h1
+        'An Interactive Opinion Space'
+
+      DIV 
+        style: _.extend {}, base_text,
+          textAlign: 'center'
+        'Everyone holds a piece of the truth. Bring that truth together.'
 
 
       Video()
@@ -440,7 +445,7 @@ Video = ReactiveComponent
           else if v.currentTime < 72
             "See who has been persuaded by the top Pro"
           else if v.currentTime < 87
-            "Have a focused discussion about a single point"
+            "Focus on a single point"
           else
             "...and those are the basics of Consider.it!"
 
@@ -500,15 +505,15 @@ usedFor = ->
 
     bullet
       point_style: 'bullet'
-      strong: "Collect opinions on specific ideas"
-      body: ", proposals, plans, or hypotheticals. Even job candidates, products, or designs."
+      strong: "Focus on specific ideas"
+      body: ". Collect opinions on proposals, plans, hypotheticals, job candidates, products, designs, and more."
 
     bullet
       point_style: 'bullet'
       strong: "Foster considerate interactions"
-      body: """. The interface focuses people on considering all sides 
-                 of the topic, rather than each other. There is little 
-                 opportunity for personal attacks and trolling.
+      body: """. The interface orients people to consider the topic, 
+               rather than responding directly to each other. The design limits 
+               opportunities for personal attacks on others.
             """
 
     bullet
@@ -529,8 +534,8 @@ enables = ->
 
     bullet
       point_style: 'bullet'
-      strong: "Involve five, fifty, or even hundreds of people"
-      body: " in deliberating an issue together, without becoming overwhelming."
+      strong: "Involve five, fifty, or even hundreds of people in deliberation"
+      body: ". All voices can be heard without becoming overwhelming."
 
     bullet
       point_style: 'bullet'
@@ -570,16 +575,16 @@ pricing = ->
         width: TEXT_WIDTH
         margin: 'auto'
 
-      'We are offering free pilots of Consider.it for a limited time. '
+      'Free pilots of Consider.it for a limited time! '
 
       A 
         style: a 
         'Contact us'
 
-      ' to get started today! '
+      ' to get started today. '
       BR null
       BR null
-      'If advanced configuration or custom design is needed, we can discuss whether compensation is necessary.'
+      'Advanced configuration and custom design available.'
 
 contact = (local) ->
 

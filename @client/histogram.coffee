@@ -516,7 +516,7 @@ window.Histogram = ReactiveComponent
         opinions = for opinion, i in @props.opinions
           {stance: opinion.stance, icon: icons[i], radius: icons[i].style.width/2}
 
-        positionAvatars(@props.width, @props.height, opinions)
+        positionAvatars(@props.width, @props.height, opinions, @local.avatar_size / 2)
         
         @local.simulation_opinion_hash = simulation_opinion_hash
         save @local
@@ -614,17 +614,18 @@ calculateAvatarRadius = (width, height, opinions) ->
 # Uses a d3-based physics simulation to calculate a reasonable layout
 # of avatars within a given area.
 
-positionAvatars = (width, height, opinions) ->
+positionAvatars = (width, height, opinions, r) ->
   width = width || 400
   height = height || 70
 
   opinions = opinions.slice()
               .sort( (a,b) -> a.stance-b.stance )
   n = opinions.length
-  r = calculateAvatarRadius(width, height, opinions)
   x_force_mult = 2
   y_force_mult = if height <= 100 then 2 else 6
   ticks = 0
+
+  stances = {}
 
   # Initialize positions of each node
   nodes = d3.range(opinions.length).map (i) ->
@@ -633,14 +634,27 @@ positionAvatars = (width, height, opinions) ->
     if parseFloat(opinions[i].icon.style.width) != radius * 2
       opinions[i].icon.style.width = opinions[i].icon.style.height = radius * 2 + 'px'
 
-    opinions[i].x_target = (opinions[i].stance + 1)/2 * width
+    x_target = (opinions[i].stance + 1)/2 * width
+    
+
+    if stances[x_target]
+      if x_target > .99
+        x_target -= .01 * Math.random() 
+      else if x_target < .01
+        x_target += .01 * Math.random() 
+      else 
+        x_target += .01 * ((Math.random() * 2) - 1)
+
+
+    opinions[i].x_target = x_target
+    stances[x_target] = 1
 
     # Travis: I'm finding that different initial conditions work 
     # better at different scales.
     #   - Give large numbers of avatars some good initial spacing
     #   - Small numbers of avatars can be more precisely placed for quick 
     #     convergence with little churn  
-    x = if opinions.length > 10 then radius + (width- 2 * radius) * (i / n) else opinions[i].x_target
+    x = if opinions.length > 10 then radius + (width - 2 * radius) * (i / n) else opinions[i].x_target
     y = if opinions.length == 1 then height - radius else radius + Math.random() * (height - 2 * radius)
 
     return {
@@ -652,6 +666,7 @@ positionAvatars = (width, height, opinions) ->
 
   # Called after the simulation stops
   end = ->
+    return 
     total_energy = calculate_global_energy()
     console.log('Simulation complete after ' + ticks + ' ticks. ' + 
                 'Energy of system could be reduced by at most ' + total_energy + ' by global sort.')

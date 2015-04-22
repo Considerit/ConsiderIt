@@ -152,20 +152,20 @@ Header = ReactiveComponent
               href: "#video"
               'Demo'
 
-            A 
-              style: nav_link_style
-              href: "#uses"
-              'Uses'
+            # A 
+            #   style: nav_link_style
+            #   href: "#uses"
+            #   'Uses'
 
             # A 
             #   style: nav_link_style
             #   href: "#features"
             #   'Features'
 
-            # A 
-            #   style: nav_link_style
-            #   href: "#pricing"
-            #   'Price'
+            A 
+              style: nav_link_style
+              href: "#pricing"
+              'Price'
             A 
               style: nav_link_style
               href: "#contact"
@@ -619,21 +619,21 @@ enables = ->
 uses = -> 
   DIV 
     id: 'situations'
-    style:
-      marginTop: 60
+    # style:
+    #   marginTop: 60
 
 
-    DIV 
-      style: h1
+    # DIV 
+    #   style: h1
 
-      'Use Consider.it when:'
+    #   'Use Consider.it when:'
 
-    DIV 
-      style: _.extend {}, base_text,
-        width: TEXT_WIDTH
-        margin: 'auto'
+    # DIV 
+    #   style: _.extend {}, base_text,
+    #     width: TEXT_WIDTH
+    #     margin: 'auto'
 
-      'Placeholder for uses'
+    #   'Placeholder for uses'
 
 
 
@@ -658,29 +658,29 @@ features = ->
 pricing = ->
   DIV 
     id: 'pricing'
-    # style:
-    #   marginTop: 60
+    style:
+      marginTop: 60
 
-    # DIV 
-    #   style: h1
+    DIV 
+      style: h1
 
-    #   'Pricing'
+      'Pricing'
 
-    # DIV 
-    #   style: _.extend {}, base_text,
-    #     width: TEXT_WIDTH
-    #     margin: 'auto'
+    DIV 
+      style: _.extend {}, base_text,
+        width: TEXT_WIDTH
+        margin: 'auto'
 
-    #   'Free pilots of Consider.it for a limited time! '
+      'Free pilots of Consider.it for a limited time! '
 
-    #   A 
-    #     style: a 
-    #     'Contact us'
+      A 
+        style: a 
+        'Contact us'
 
-    #   ' to get started today. '
-    #   BR null
-    #   BR null
-    #   'Advanced configuration and custom design available.'
+      ' to get started today. '
+      BR null
+      BR null
+      'Advanced configuration and custom design available.'
 
 contact = (local) ->
 

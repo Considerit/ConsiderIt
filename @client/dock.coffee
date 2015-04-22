@@ -315,7 +315,7 @@ dockingStation =
       docks[k].key = k
 
     # Figure out which components are docked
-    [docked, undocked] = dockingStation.determineIfDocked docks
+    [docked, undocked, y_stack] = dockingStation.determineIfDocked docks
 
     # undock components that were docked
     for k in undocked
@@ -340,6 +340,11 @@ dockingStation =
             dockingStation.toggleDocked k, docks[k]
           
           save dock
+
+      docks = fetch('docking_station')
+      if docks.y_stack != y_stack
+        docks.y_stack = y_stack
+        save docks
 
 
   #######
@@ -376,7 +381,7 @@ dockingStation =
       else
         undocked.push v.key
 
-    [docked, undocked]
+    [docked, undocked, y_stack]
 
   ########
   # toggleDocked

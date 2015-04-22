@@ -149,7 +149,14 @@ window.BrowserLocation = ReactiveComponent
       #       browser's remember scroll gets imposed after this 
       #       runs, and overrides it. 
       el = document.querySelector("##{loc.hash}")
-      el.scrollIntoView() if el 
+      if el
+        # If there are docked elements, we want to scroll a bit 
+        # before the element so that the docked elements don't 
+        # obscure the section headings
+        docks = fetch('docking_station')
+        seek_below = docks.y_stack or 0
+        console.log getCoords(el).top - seek_below
+        $(window).scrollTop getCoords(el).top - seek_below
 
 relativeURLFromLocation = -> 
   # location.search returns query parameters

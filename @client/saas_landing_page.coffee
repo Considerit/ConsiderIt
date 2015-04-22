@@ -8,6 +8,8 @@ require './shared'
 require './slider'
 require './development'
 require './state_dash'
+require './dock'
+require './logo'
 
 SAAS_PAGE_WIDTH = 1000
 TEXT_WIDTH = 730
@@ -35,13 +37,6 @@ h2 = _.extend {}, base_text,
 strong = _.extend {}, base_text,
   fontWeight: 600
 
-nav_link_style = _.extend {}, base_text,
-  fontWeight: 600
-  fontSize: 24
-  color: 'white'
-  marginLeft: 40
-  cursor: 'pointer'
-
 a = _.extend {}, base_text,
   color: logo_red
   cursor: 'pointer'
@@ -57,8 +52,8 @@ SaasHomepage = ReactiveComponent
     if !ui.initialized
       _.extend ui, 
         initialized: true
-        video_file_name: 'deathstarcam'
-        video_file_name_instr: "Only available video is 'deathstarcam'"
+        video_file_name: 'slowdeathstarcam'
+        video_file_name_instr: "Only available video is 'slowdeathstarcam'"
         video_elements_order: "caption,video"
         video_elements_order_inst: """
           A list of video elements to show and in which order (top to bottom). 
@@ -73,56 +68,71 @@ SaasHomepage = ReactiveComponent
           """
       save ui
 
-    DIV null, 
+    DIV
+      style: 
+        position: 'relative'
 
       DIV 
         style: 
-          margin: '50px 0'
-
-      DIV
-        style: h1
-        'An Interactive Opinion Space'
+          margin: '35px 0'
 
       DIV 
-        style: _.extend {}, base_text,
-          textAlign: 'center'
-        'Everyone holds a piece of the truth. Bring that truth together.'
+        id: 'video'
+        Video()
 
+      DIV 
+        id: 'tech'
+        tech()
 
-      Video()
-      usedFor()
       enables()
+      uses()
+      features()
       pricing()
       contact(@local)
       story()
 
 
-HEADER_HEIGHT = 70
+HEADER_HEIGHT = 30
+
 Header = ReactiveComponent
   displayName: "Header"
   render: ->
     current_user = fetch("/current_user")
 
+    #docked = fetch('header-dock').docked
+
+    nav_link_style = _.extend {}, base_text,
+      fontWeight: 300
+      fontSize: 20
+      color: if @local.in_red then logo_red else 'white'
+      marginLeft: 25
+      cursor: 'pointer'
+
+    
     DIV
       style:
         position: "relative"
         margin: "0 auto"
-        backgroundColor: logo_red
+        backgroundColor: if @local.in_red then 'white' else logo_red
         height: HEADER_HEIGHT
-
+        #overflow: if $(window).scrollTop() > 0 && !@local.in_red then 'hidden'
+        overflow: if $(window).scrollTop() > 0  then 'hidden'
+        zIndex: 1
 
       DIV
         style:
           width: SAAS_PAGE_WIDTH
           margin: 'auto'
 
-        IMG
-          src: asset("saas_landing_page/considerit_logo.svg")
+        DIV 
           style:
             position: "relative"
-            top: HEADER_HEIGHT * .05 + 16
+            top: 3
             left: 0
-            height: HEADER_HEIGHT * .95
+
+          drawLogo HEADER_HEIGHT + 5, \
+                  (if @local.in_red then logo_red else 'white'), \
+                  (if @local.in_red then 'white' else logo_red)
 
         # nav menu
         DIV 
@@ -130,7 +140,7 @@ Header = ReactiveComponent
             width: SAAS_PAGE_WIDTH
             margin: 'auto'
             position: 'relative'
-            top: -34
+            top: -37
 
           DIV 
             style: 
@@ -139,16 +149,31 @@ Header = ReactiveComponent
 
             A 
               style: nav_link_style
-              href: "#pricing"
-              'pricing'
+              href: "#video"
+              'Demo'
+
+            A 
+              style: nav_link_style
+              href: "#uses"
+              'Uses'
+
+            # A 
+            #   style: nav_link_style
+            #   href: "#features"
+            #   'Features'
+
+            # A 
+            #   style: nav_link_style
+            #   href: "#pricing"
+            #   'Price'
             A 
               style: nav_link_style
               href: "#contact"
-              'contact'
+              'Contact'
             A 
               style: nav_link_style
               href: "#story"
-              'story'              
+              'Bio'              
 
         # DIV 
         #   style:
@@ -159,6 +184,25 @@ Header = ReactiveComponent
         #     top: 4 + HEADER_HEIGHT
         #   "for thinking together"
 
+  componentDidMount : -> 
+    checkBackground = =>   
+      red_regions = [[0, 70 + 2 * HEADER_HEIGHT]]
+      y = $(window).scrollTop()
+
+      in_red = false
+      for region in red_regions
+        if y <= region[1] && region[0] <= y
+          in_red = true
+          break
+      if @local.in_red != in_red
+        @local.in_red = in_red
+        save @local
+
+    $(window).on "scroll.header", => checkBackground()
+    checkBackground()
+
+  componentWillUnmount : -> 
+    $(window).off "scroll.header"
 
 
 VIDEO_SLIDER_WIDTH = 250
@@ -175,17 +219,20 @@ Video = ReactiveComponent
       save controls
 
     video = DIV null,
-      @drawCaptions()
+      
       if ui.frame == 'none'
         @drawVideoControls()
       @drawVideo()
 
-    if ui.frame == 'laptop'
-      @drawInLaptop video
-    else if ui.frame == 'browser'
-      @drawInBrowserWindow video
-    else 
-      @drawWithoutFrame video
+    DIV null,
+      @drawCaptions()
+
+      if ui.frame == 'laptop'
+        @drawInLaptop video
+      else if ui.frame == 'browser'
+        @drawInBrowserWindow video
+      else 
+        @drawWithoutFrame video
 
 
   drawInLaptop : (children) -> 
@@ -226,7 +273,7 @@ Video = ReactiveComponent
         borderRadius: 8
         backgroundColor: 'white'
         boxShadow: "0 3px 8px rgba(0,0,0,.1)"
-        marginTop: 70
+        marginTop: 20
 
       # window bar / url
       DIV 
@@ -236,6 +283,7 @@ Video = ReactiveComponent
           backgroundColor: '#ccc'
           backgroundImage: "linear-gradient(0deg, #D4D3D4, #EEEDEE)"
           boxShadow: "0 1px 1px rgba(0,0,0,.35)"
+          position: 'relative'
 
         # url area
         DIV 
@@ -255,7 +303,8 @@ Video = ReactiveComponent
             style: 
               position: 'relative'
               top: 3
-            'http://video-demo.consider.it'
+              color: '#666'
+            'https://fun.consider.it/Death_Star'
 
       DIV null,
 
@@ -266,8 +315,9 @@ Video = ReactiveComponent
     ui = fetch('homepage_ui')
     chapter = fetch("video_chapter")
 
-    if !chapter.text?
-      chapter.text = "Proposals often require careful thought"
+    if !@local.ready
+      #chapter.text = "Showing what Consider.it does in " + (if @local.time_to_video? then @local.time_to_video else 5)
+      chapter.text = "The tour begins in " + (if @local.time_to_video? then @local.time_to_video else 5)
 
     DIV
       style:
@@ -276,16 +326,13 @@ Video = ReactiveComponent
         top: if ui.frame == 'laptop' then -12
 
       H2
-        style: _.extend {}, h2,
-          textAlign: "center"
+        style: _.extend {}, h1,
+          #textAlign: "left"
           fontSize: if ui.frame == 'laptop' then 30 else 36
-          color: if ui.frame == 'laptop' then 'white' else 'black'
+          color: 'white' #if ui.frame == 'laptop' then 'white' else 'black'
 
         
-        if chapter.text 
-          chapter.text 
-        else 
-          ""
+        chapter.text 
 
   drawVideoControls : ->
     controls = fetch('video_controls')
@@ -370,7 +417,7 @@ Video = ReactiveComponent
       VIDEO
         preload: "auto"
         loop: true
-        autoPlay: true
+        autoPlay: false
         width: SAAS_PAGE_WIDTH - 2
         height: 551
         ref: "video"
@@ -389,16 +436,32 @@ Video = ReactiveComponent
   componentDidMount: -> 
     @attachToVideo()
 
-    # # wait a couple seconds before playing video to give user time to 
-    # # orient to homepage
-    # console.log 'SET'
-    # setTimeout => 
-    #   controls = fetch('video_controls')
-    #   controls.playing = true
-    #   save controls
-    #   @refs.video.getDOMNode().play()
-    #   console.log 'PLAY'
-    # , 1000
+    timer = 6000 # how long to wait before playing video
+
+    setTimeout => 
+
+      # wait a couple seconds before playing video to give user time to 
+      # orient to homepage
+      setTimeout => 
+        controls = fetch('video_controls')
+        controls.playing = true
+        save controls
+        @local.ready = true
+        save @local
+        @refs.video.getDOMNode().play()
+      , timer + 200
+
+      tick = => 
+        if timer > 1000
+          setTimeout tick, 1000
+
+        @local.time_to_video = timer / 1000 - 1
+
+        timer -= 1000        
+        save @local
+
+      tick()
+    , 500
 
   attachToVideo : -> 
     # we use timeupdate rather than tracks / cue changes / vtt
@@ -407,47 +470,39 @@ Video = ReactiveComponent
 
     v = @refs.video.getDOMNode()
 
+    chapters = [
+      {time:  6.0, caption: "Pretend we're considering a proposal"},
+      {time:  5.0, caption: "Consider.it focuses us on analyzing tradeoffs"},
+      {time:  8.5, caption: "Each thought becomes a Pro or Con point"},
+      {time:  7.0, caption: "We can learn from our peers"},
+      {time:  4.0, caption: "...and even build from them!"},
+      
+      {time: 11.0, caption: "Weigh the tradeoffs on a slider to express ourselves"},
+      {time:  4.5, caption: "Seems reasonable. Let's add our opinion to the group."},
+      {time:  4.5, caption: "We see what people think and why, all on a single screen"},
+      {time:  4.0, caption: "The spectrum of opinion is shown on a Histogram"},
+      {time:  4.0, caption: "Points are ranked by importance for the group"},
+
+      {time:  8.5, caption: "Now explore patterns of thought!"},
+      {time:  6.0, caption: "Learn the reservations of opposers"},
+      {time: 12.5, caption: "Inspect a peer's opinion"},
+      {time:  8.0, caption: "See who has been persuaded by the top Pro"},
+      {time: 16.0, caption: "Focus on a single point"},
+      {time:  0.0, caption: "Those are the basics! Scroll down to learn more."},
+    ]
+
     if @v != v
       @v = v
       v.addEventListener 'timeupdate', (ev) -> 
         chapter = fetch("video_chapter")
         controls = fetch('video_controls')
 
-        text = 
-          if v.currentTime < 5.5
-            "Proposals often require careful thought"
-          else if v.currentTime < 10.5
-            # "The Pro/Con list encourages thinking about tradeoffs"
-            # "The Pro/Con list emphasizes tradeoffs"
-            # "The Pro/Con list emphasizes considering tradeoffs"
-            # "The Pro/Con list focuses thought on tradeoffs"
-            # "The Pro/Con list stresses tradeoffs"
-            "The Pro/Con list focuses attention on tradeoffs"
-
-          else if v.currentTime < 18
-            "Each thought becomes a Pro or Con point"
-          else if v.currentTime < 25
-            "Learn and include the thoughts of peers"
-          else if v.currentTime < 33.5
-            "Express your conclusion on a sliding scale"
-          else if v.currentTime < 39
-            "Add your opinion to the group"
-          else if v.currentTime < 43
-            "The spectrum of opinion is shown on a Histogram"
-          else if v.currentTime < 46
-            "Points are ranked by importance for the group"
-          else if v.currentTime < 55
-            "Now explore patterns of thought!"
-          else if v.currentTime < 61
-            "Learn the reservations of opposers"
-          else if v.currentTime < 67.5
-            "Inspect a peer's opinion"
-          else if v.currentTime < 72
-            "See who has been persuaded by the top Pro"
-          else if v.currentTime < 87
-            "Focus on a single point"
-          else
-            "...and those are the basics of Consider.it!"
+        chapter_time = 0
+        for c, idx in chapters
+          if v.currentTime < chapter_time + c.time || idx == chapters.length - 1
+            text = c.caption
+            break
+          chapter_time += c.time
 
         controls.value = v.currentTime / v.duration
 
@@ -492,7 +547,7 @@ bullet = (props) ->
         props.body
 
 
-usedFor = ->
+tech = ->
   ui = fetch('homepage_ui')
   DIV
     style:
@@ -526,11 +581,12 @@ usedFor = ->
 
 enables = -> 
   DIV
+    id: 'uses'
     style:
       marginTop: 60
 
     H1 style: h1,
-      'You can use Consider.it to...'
+      'It can help you...'
 
     bullet
       point_style: 'bullet'
@@ -560,31 +616,71 @@ enables = ->
                  in English and Social Studies.
             """
 
-
-pricing = ->
+uses = -> 
   DIV 
-    id: 'pricing'
+    id: 'situations'
+    style:
+      marginTop: 60
+
 
     DIV 
       style: h1
 
-      'Pricing'
+      'Use Consider.it when:'
 
     DIV 
       style: _.extend {}, base_text,
         width: TEXT_WIDTH
         margin: 'auto'
 
-      'Free pilots of Consider.it for a limited time! '
+      'Placeholder for uses'
 
-      A 
-        style: a 
-        'Contact us'
 
-      ' to get started today. '
-      BR null
-      BR null
-      'Advanced configuration and custom design available.'
+
+features = -> 
+  DIV 
+    id: 'features'
+    # style:
+    #   marginTop: 60
+
+    # DIV 
+    #   style: h1
+
+    #   'Features include:'
+
+    # DIV 
+    #   style: _.extend {}, base_text,
+    #     width: TEXT_WIDTH
+    #     margin: 'auto'
+
+    #   'Placeholder for features section'
+
+pricing = ->
+  DIV 
+    id: 'pricing'
+    # style:
+    #   marginTop: 60
+
+    # DIV 
+    #   style: h1
+
+    #   'Pricing'
+
+    # DIV 
+    #   style: _.extend {}, base_text,
+    #     width: TEXT_WIDTH
+    #     margin: 'auto'
+
+    #   'Free pilots of Consider.it for a limited time! '
+
+    #   A 
+    #     style: a 
+    #     'Contact us'
+
+    #   ' to get started today. '
+    #   BR null
+    #   BR null
+    #   'Advanced configuration and custom design available.'
 
 contact = (local) ->
 
@@ -1326,7 +1422,25 @@ Root = ReactiveComponent
     DIV null,
       BrowserLocation()
       StateDash()
-      Header()
+
+      Dock
+        dock_on_zoomed_screens: false
+        skip_jut: true
+        key: 'header-dock'
+
+        Header()
+  
+      DIV 
+        style: 
+          position: 'absolute'
+          left: 0
+          top: 0
+          width: '100%'
+          height: 622 + HEADER_HEIGHT
+          backgroundColor: logo_red
+
+
+
       DIV
         style:
           width: SAAS_PAGE_WIDTH

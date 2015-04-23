@@ -202,11 +202,13 @@ Video = ReactiveComponent
       DIV 
         style: 
           marginTop: 25
+          width: SAAS_PAGE_WIDTH
 
         # window bar / url
         DIV 
           style: _.extend {}, h1,
             color: 'white'
+            whiteSpace: 'nowrap'
           chapter.text
 
         DIV 

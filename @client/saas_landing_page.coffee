@@ -245,16 +245,20 @@ Video = ReactiveComponent
       style:
         position: 'relative'
         width: SAAS_PAGE_WIDTH - 1
-        height: 551
+        height: (SAAS_PAGE_WIDTH - 2) * 1080/1920 + 2
 
       VIDEO
         preload: "auto"
         loop: true
         autoPlay: false
-        width: SAAS_PAGE_WIDTH - 2
-        height: 551
         ref: "video"
         controls: true
+        style: 
+          marginTop: 1
+          width: SAAS_PAGE_WIDTH - 2
+          height: (SAAS_PAGE_WIDTH - 2) * 1080/1920
+          borderRadius: 8
+
 
         SOURCE
           src: asset("saas_landing_page/#{VIDEO_FILE}.mp4")

@@ -155,7 +155,6 @@ window.BrowserLocation = ReactiveComponent
         # obscure the section headings
         docks = fetch('docking_station')
         seek_below = docks.y_stack or 0
-        console.log getCoords(el).top - seek_below
         $(window).scrollTop getCoords(el).top - seek_below
 
 relativeURLFromLocation = -> 

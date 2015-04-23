@@ -97,14 +97,15 @@ HEADER_HEIGHT = 30
 Header = ReactiveComponent
   displayName: "Header"
   render: ->
+    console.log 'render'
     current_user = fetch("/current_user")
 
-    #docked = fetch('header-dock').docked
+    docked = fetch('header-dock').docked
 
     nav_link_style = _.extend {}, base_text,
       fontWeight: 300
       fontSize: 20
-      color: if @local.in_red then logo_red else 'white'
+      color: 'white' #if @local.in_red then logo_red else 'white'
       marginLeft: 25
       cursor: 'pointer'
 
@@ -113,10 +114,10 @@ Header = ReactiveComponent
       style:
         position: "relative"
         margin: "0 auto"
-        backgroundColor: if @local.in_red then 'white' else logo_red
+        backgroundColor: logo_red #if @local.in_red then 'white' else logo_red
         height: HEADER_HEIGHT
         #overflow: if $(window).scrollTop() > 0 && !@local.in_red then 'hidden'
-        overflow: if $(window).scrollTop() > 0  then 'hidden'
+        #overflow: if $(window).scrollTop() > 0  then 'hidden'
         zIndex: 1
 
       DIV
@@ -127,12 +128,14 @@ Header = ReactiveComponent
         DIV 
           style:
             position: "relative"
-            top: 3
-            left: 0
+            top: 4
+            left: if window.innerWidth > 1055 then -23.5 else 0
 
           drawLogo HEADER_HEIGHT + 5, \
-                  (if @local.in_red then logo_red else 'white'), \
-                  (if @local.in_red then 'white' else logo_red)
+                  'white', \ #(if @local.in_red then logo_red else 'white'), \
+                  (if @local.in_red then 'white' else logo_red), 
+                  !@local.in_red,
+                  !docked
 
         # nav menu
         DIV 
@@ -185,8 +188,18 @@ Header = ReactiveComponent
         #   "for thinking together"
 
   componentDidMount : -> 
+
+    # setTimeout => 
+    #   $('#i_dot')
+    #     .css css.crossbrowserify
+    #       transition: "transform #{1500}ms"
+    #     .css css.crossbrowserify
+    #       transform: "translate(#{252.25 - 142}px, 0)"
+    # , 700
+
+
     checkBackground = =>   
-      red_regions = [[0, 70 + 2 * HEADER_HEIGHT]]
+      red_regions = [[0, 530 + 2 * HEADER_HEIGHT]]
       y = $(window).scrollTop()
 
       in_red = false
@@ -324,6 +337,7 @@ Video = ReactiveComponent
         position: 'relative'
         zIndex: 1
         top: if ui.frame == 'laptop' then -12
+        
 
       H2
         style: _.extend {}, h1,
@@ -436,7 +450,7 @@ Video = ReactiveComponent
   componentDidMount: -> 
     @attachToVideo()
 
-    timer = 6000 # how long to wait before playing video
+    timer = 5000 # how long to wait before playing video
 
     setTimeout => 
 
@@ -461,7 +475,7 @@ Video = ReactiveComponent
         save @local
 
       tick()
-    , 500
+    , 1500
 
   attachToVideo : -> 
     # we use timeupdate rather than tracks / cue changes / vtt
@@ -472,22 +486,22 @@ Video = ReactiveComponent
 
     chapters = [
       {time:  6.0, caption: "Pretend we're considering a proposal"},
-      {time:  5.0, caption: "Consider.it focuses us on analyzing tradeoffs"},
+      {time:  5.0, caption: "Consider.it helps us analyze the tradeoffs"},
       {time:  8.5, caption: "Each thought becomes a Pro or Con point"},
       {time:  7.0, caption: "We can learn from our peers"},
       {time:  4.0, caption: "...and even build from them!"},
       
-      {time: 11.0, caption: "Weigh the tradeoffs on a slider to express ourselves"},
+      {time: 11.0, caption: "Weigh the tradeoffs on a slider."},
       {time:  4.5, caption: "Seems reasonable. Let's add our opinion to the group."},
-      {time:  4.5, caption: "We see what people think and why, all on a single screen"},
-      {time:  4.0, caption: "The spectrum of opinion is shown on a Histogram"},
+      {time:  4.5, caption: "Behold! A summary of what people think and why"},
+      {time:  4.0, caption: "The spectrum of opinions is shown on a Histogram"},
       {time:  4.0, caption: "Points are ranked by importance for the group"},
 
       {time:  8.5, caption: "Now explore patterns of thought!"},
       {time:  6.0, caption: "Learn the reservations of opposers"},
       {time: 12.5, caption: "Inspect a peer's opinion"},
       {time:  8.0, caption: "See who has been persuaded by the top Pro"},
-      {time: 16.0, caption: "Focus on a single point"},
+      {time: 16.0, caption: "Focus on a single point and discuss its merits"},
       {time:  0.0, caption: "Those are the basics! Scroll down to learn more."},
     ]
 
@@ -1436,7 +1450,7 @@ Root = ReactiveComponent
           left: 0
           top: 0
           width: '100%'
-          height: 622 + HEADER_HEIGHT
+          height: 622 - HEADER_HEIGHT
           backgroundColor: logo_red
 
 

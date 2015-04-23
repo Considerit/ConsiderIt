@@ -932,7 +932,7 @@ SliderBubblemouth = ReactiveComponent
         height: h
         fill: fill
         stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
-        stroke_width: if dash != "none" then stroke_width else 0
+        stroke_width: if get_proposal_mode() == 'crafting' then stroke_width else 0
         dash_array: dash
 
 ####

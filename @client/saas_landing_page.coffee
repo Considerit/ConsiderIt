@@ -220,6 +220,24 @@ Video = ReactiveComponent
 
           @drawVideo()
 
+      if @local.ready
+        DIV 
+          style: 
+            position: 'absolute'
+            right: 0
+            marginTop: 5
+
+          A
+            href: 'https://fun.consider.it/Death_Star'
+            target: '_blank'
+            style: 
+              cursor: 'pointer'
+              color: focus_blue
+              textDecoration: 'underline'
+              fontSize: 16
+
+            'Try this example'
+
   drawVideo : -> 
     
     DIV
@@ -335,7 +353,7 @@ Video = ReactiveComponent
       
       {time: 11.0, caption: "Weigh the tradeoffs on a slider"},
       {time:  4.5, caption: "Now let's share our opinion"},
-      {time:  4.5, caption: "Behold! What people think, and why"},
+      {time:  4.5, caption: "Behold: what people think, and why!"},
       {time:  4.0, caption: "A histogram shows the spectrum of opinions"},
       {time:  4.0, caption: "Points are ranked by importance to the group"},
 

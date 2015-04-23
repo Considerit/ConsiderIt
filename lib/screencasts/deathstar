@@ -86,10 +86,16 @@ perform "Let's make sure we're logged in" do
   wait_for_element('.proposal_header')
 end
 
+
+
+
+
+
+
 while_saying "Sometimes an issue comes up that requires some thought" do   
   scroll_to ".proposal_header", 0, 0
   move to_element('.proposal_header'), {:speed => 0.01}  
-  pause 2
+  pause 4
 end
 
 scroll_to ".proposal_header", 0, 0
@@ -98,12 +104,15 @@ wait_for_element('.histogram')
 scroll_to ".histogram", 1000, 0
 
 while_saying "The Pro con list encourages you to think about tradeoffs" do
-  pause 4
+  pause 2
+  move to_element(".cons_on_decision_board .points_heading_label"), {speed: 2}
+  pause 1
 end
 
+pause 1
 
 while_saying "Write singular points that each describe a consideration" do
-  move to_element(".write_cons")
+  move to_element(".write_cons"), {:speed => 2}
   click
   type "Could create brand issues. Do we want to be associated with an overtly imperialistic entity?", {
     :speed => 50
@@ -113,15 +122,22 @@ while_saying "Write singular points that each describe a consideration" do
   pause 1
 end
 
+pause 1
+
 while_saying "Learn and build from other’s thoughts" do 
+  pause 1
+
   move to_element('[data-id="/point/5508"]')
-  pause 1
+  pause 1.5
   move to_element('[data-id="/point/5499"]')
-  pause 1
+  pause 1.5
   move to_element('[data-id="/point/5505"]')
+  pause 1.5  
   drag by(-280, -250), {:speed => 1}
   pause 1
 end
+
+pause 1
 
 while_saying """
   Use a slider to express your conclusion, allowing more nuance 
@@ -134,13 +150,17 @@ while_saying """
   pause 0.25
 end
 
+pause 2
+
 while_saying """After creating a considered opinion, 
   individuals integrate their opinion 
   with the group""" do 
-  move to_element('.save_opinion_button')
+  move to_element('.save_opinion_button'), {:speed => 2}
   pause 0.5
   click
 end
+
+pause 2
 
 while_saying "Histogram shows faces of individuals along spectrum of opinion." do
   move to_element('.histogram', {:area => ['left', 'bottom']})
@@ -149,6 +169,8 @@ end
 while_saying "Points are ranked by how salient they are across the whole population" do 
   move to_element('.points_heading_label')
 end
+
+pause 1.5
 
 while_saying "Now you can explore patterns of thought!" do 
   move to_element('.histogram', {:area => ['center', 'top'], :edge_offset => 25})
@@ -167,19 +189,24 @@ while_saying "Inspect the most important factors to those who have reservations 
   pause 2
 end
 
+pause 1
+
 while_saying "See what a particular individual believes" do 
   move to_element("#avatar-282314")
   click
-  pause 2
-  move to_element("#avatar-282161")
+  pause 4
+  move to_element("#avatar-282161"), {:speed => 2}
   click
-  pause 2  
+  pause 3.5  
   click
+  move to_element(".pros_by_community .points_heading_label"), {speed: 2}
 end
+
+pause 2
 
 while_saying "Figure out who has been persuaded by the top pro points." do 
   perform 'tricky' do 
-    move to_element(".pros_by_community .includers", {index: 0})
+    move to_element(".pros_by_community .includers", {index: 0}), {speed: 2}
     pause 1.5
     move to_element("[data-id='/point/5505'] .includers") rescue skip
     pause 1.5
@@ -188,10 +215,14 @@ while_saying "Figure out who has been persuaded by the top pro points." do
   end
 end
 
+pause 1
+
+move to_element(".pros_by_community .points_heading_label"), {speed: 2}
+
 while_saying "Drill into points for focused discussion" do 
-  scroll_to '[data-id="/point/5502"]', 1000, 50
-  move to_element('[data-id="/point/5502"]')
-  pause 1
+  scroll_to '[data-id="/point/5502"]', 2000, 50
+  move to_element('[data-id="/point/5502"]'), {speed: 2}
+  pause 1.5
   click
   wait_for_element '.comment_entry'
   move to_element('.comment_entry')
@@ -200,7 +231,7 @@ while_saying "Drill into points for focused discussion" do
   click
   type "Perhaps we need to consider whether the \"Dark Force\" is aligned with our 15 year vision first...", {:speed => 30} 
   pause 0.5
-  move to_element('[data-action="save-comment"]')
+  move to_element('[data-action="save-comment"]'), {:speed => 2} 
   click
   pause 1
 end

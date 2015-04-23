@@ -36,7 +36,6 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
           stroke: line_color
           strokeWidth: 1
 
-
       # C
       PATH
         fill: main_text_color

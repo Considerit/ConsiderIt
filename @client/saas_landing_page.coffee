@@ -153,7 +153,7 @@ Header = ReactiveComponent
             A 
               style: nav_link_style
               href: "#video"
-              'Demo'
+              'demo'
 
             # A 
             #   style: nav_link_style
@@ -168,15 +168,15 @@ Header = ReactiveComponent
             A 
               style: nav_link_style
               href: "#pricing"
-              'Price'
+              'price'
             A 
               style: nav_link_style
               href: "#contact"
-              'Contact'
+              'contact'
             A 
               style: nav_link_style
               href: "#story"
-              'Bio'              
+              'story'              
 
         # DIV 
         #   style:
@@ -626,7 +626,7 @@ enables = ->
       point_style: 'bullet'
       strong: "Teach critical thinking"
       body: """. Students learn how to develop and express a considered opinion while listening 
-                 to and engaging with other’s ideas. Works well for Common Core aligned exercises 
+                 to and engaging with others' ideas. Supports Common Core aligned exercises 
                  in English and Social Studies.
             """
 

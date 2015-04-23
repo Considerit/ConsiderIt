@@ -1,21 +1,44 @@
-window.drawLogo = (height, main_text_color, o_text_color) -> 
+window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line) -> 
   main_text_color = main_text_color or 'white'
   o_text_color = o_text_color or logo_red
 
-  height = height or 58
-  width = width or height * 284 / 58
+  height = height or 60
+  width = width or height * 284 / 60
 
   SVG 
+    id: 'considerit_logo'
     width: width 
     height: height 
-    viewBox: "0 0 284 58" 
+    viewBox: "0 0 284 60" 
     version: "1.1" 
     xmlns: "http://www.w3.org/2000/svg" 
 
+    DEFS null,
+      CLIPPATH
+        id: 'logo_clip'
+        RECT
+          x: 0
+          y: 0
+          width: 284
+          height: 45
+
     G null,
 
+      if draw_line
+        LINE
+          id: 'underline'
+          x1: 8
+          y1: 55
+          x2: 284
+          y2: 55
+          stroke: 'white'
+          strokeWidth: 1
+
+
+      # C
       PATH
         fill: main_text_color
+        clipPath: if clip then "url(#logo_clip)"
         d: """
           M18.2811874,48.356 
           C24.1163223,48.3559999 28.0501221,47.5510218 32.5084274,43.599315 
@@ -33,13 +56,20 @@ window.drawLogo = (height, main_text_color, o_text_color) ->
           C8.41026668,10.236 0.0764406792,17.8200837 0.0764406792,29.3558743 
           C0.0764406792,40.2729625 8.41026668,48.3560001 18.2811874,48.356 
           Z 
+          """
+
+      # O
+      PATH
+        fill: main_text_color
+        clipPath: if clip then "url(#logo_clip)"
+        d: """
           M38.1601385,33.164 
           C38.1601385,41.444 44.7841385,48.356 52.9201385,48.356 
           C61.0561385,48.356 67.6801385,41.444 67.6801385,33.164 
           C67.6801385,25.028 61.0561385,18.116 52.9201385,18.116 
           C44.7841385,18.116 38.1601385,25.028 38.1601385,33.164 
           C38.1601385,33.164 38.1601385,25.028 38.1601385,33.164 
-          Z 
+          Z
           M46.0081385,33.164 
           C46.0081385,29.132 49.0321385,25.892 52.9201385,25.892 
           C56.7361385,25.892 59.8321385,29.132 59.8321385,33.164 
@@ -47,6 +77,13 @@ window.drawLogo = (height, main_text_color, o_text_color) ->
           C49.0321385,40.58 46.0081385,37.268 46.0081385,33.164 
           C46.0081385,33.164 46.0081385,37.268 46.0081385,33.164 
           Z 
+          """
+
+      # N
+      PATH
+        fill: main_text_color
+        clipPath: if clip then "url(#logo_clip)"
+        d: """
           M74.0881385,46.268 
           C74.0881385,46.988 74.7361385,47.636 75.4561385,47.636 
           L80.7841385,47.636 
@@ -68,6 +105,13 @@ window.drawLogo = (height, main_text_color, o_text_color) ->
           C74.0881385,20.204 74.0881385,19.412 74.0881385,20.204 
           L74.0881385,46.268 
           Z 
+          """
+
+      # S
+      PATH
+        fill: main_text_color
+        clipPath: if clip then "url(#logo_clip)"
+        d: """         
           M110.304139,45.692 
           C111.816139,46.844 115.128139,48.356 119.880139,48.356 
           C127.152139,48.356 131.328139,44.324 131.328139,39.572 
@@ -89,6 +133,13 @@ window.drawLogo = (height, main_text_color, o_text_color) ->
           C109.584139,44.756 109.872139,45.332 110.304139,45.692 
           C110.304139,45.692 109.872139,45.332 110.304139,45.692 
           Z 
+          """
+
+      # I
+      PATH
+        fill: main_text_color
+        clipPath: if clip then "url(#logo_clip)"
+        d: """
           M137.664139,46.268 
           C137.664139,46.988 138.312139,47.636 139.032139,47.636 
           L145.008139,47.636 
@@ -100,6 +151,13 @@ window.drawLogo = (height, main_text_color, o_text_color) ->
           C137.664139,20.204 137.664139,19.412 137.664139,20.204 
           L137.664139,46.268 
           Z 
+          """
+
+      # D
+      PATH
+        fill: main_text_color
+        clipPath: if clip then "url(#logo_clip)"
+        d: """
           M166.680139,48.356 
           C172.728139,48.356 176.112139,44.036 176.112139,44.036 
           L176.832139,46.268 
@@ -123,6 +181,13 @@ window.drawLogo = (height, main_text_color, o_text_color) ->
           C163.944139,40.58 161.208139,37.268 161.208139,33.236 
           C161.208139,33.236 161.208139,37.268 161.208139,33.236 
           Z 
+          """
+
+      # E
+      PATH
+        fill: main_text_color
+        clipPath: if clip then "url(#logo_clip)"
+        d: """
           M188.856139,33.236 
           C188.856139,41.516 194.976139,48.356 203.616139,48.356 
           C208.296139,48.356 211.968139,46.628 214.344139,44.396 
@@ -143,7 +208,14 @@ window.drawLogo = (height, main_text_color, o_text_color) ->
           C206.064139,24.74 208.368139,26.972 208.584139,29.636 
           C208.584139,29.636 208.368139,26.972 208.584139,29.636 
           L197.712139,29.636 
-          Z 
+          Z           
+          """
+
+      # R
+      PATH
+        fill: main_text_color
+        clipPath: if clip then "url(#logo_clip)"
+        d: """
           M223.056139,46.268 
           C223.056139,46.988 223.704139,47.636 224.424139,47.636 
           L229.968139,47.636 
@@ -162,6 +234,13 @@ window.drawLogo = (height, main_text_color, o_text_color) ->
           C223.056139,20.204 223.056139,19.412 223.056139,20.204 
           L223.056139,46.268 
           Z 
+          """
+
+      # I
+      PATH
+        fill: main_text_color
+        clipPath: if clip then "url(#logo_clip)"
+        d: """
           M247.608139,46.268 
           C247.608139,46.988 248.256139,47.636 248.976139,47.636 
           L254.952139,47.636 
@@ -173,6 +252,13 @@ window.drawLogo = (height, main_text_color, o_text_color) ->
           C247.608139,20.204 247.608139,19.412 247.608139,20.204 
           L247.608139,46.268 
           Z 
+          """
+
+      # T
+      PATH
+        fill: main_text_color
+        clipPath: if clip then "url(#logo_clip)"
+        d: """
           M266.472139,39.068 
           C266.472139,44.9 268.920139,48.356 274.464139,48.356 
           C277.992139,48.356 282.672139,46.7 283.032139,46.484 
@@ -202,7 +288,9 @@ window.drawLogo = (height, main_text_color, o_text_color) ->
         """ 
 
       CIRCLE 
+        id: 'i_dot'
         fill: o_text_color
+        #cx: "142"
         cx: "252.25"
-        cy: "53.25"
+        cy: "55"
         r: "4.25"

@@ -11,6 +11,7 @@ require './state_dash'
 require './dock'
 require './logo'
 
+VIDEO_FILE = 'slowdeathstarcam'
 SAAS_PAGE_WIDTH = 1000
 TEXT_WIDTH = 730
 window.lefty = false
@@ -47,34 +48,9 @@ a = _.extend {}, base_text,
 SaasHomepage = ReactiveComponent
   displayName: "SaasHomepage"
   render: ->
-
-    ui = fetch('homepage_ui')
-    if !ui.initialized
-      _.extend ui, 
-        initialized: true
-        video_file_name: 'slowdeathstarcam'
-        video_file_name_instr: "Only available video is 'slowdeathstarcam'"
-        video_elements_order: "caption,video"
-        video_elements_order_inst: """
-          A list of video elements to show and in which order (top to bottom). 
-          e.g. \"caption,controls,video\"
-          Must contain 'video' somewhere.
-          """
-        frame: 'browser'
-        frame_instr: """"
-          Whether to draw a frame around the video, and if so, what it should be. 
-          Supported values: 
-            'laptop', 'browser', 'none'
-          """
-      save ui
-
     DIV
       style: 
         position: 'relative'
-
-      DIV 
-        style: 
-          margin: '35px 0'
 
       DIV 
         id: 'video'
@@ -88,7 +64,7 @@ SaasHomepage = ReactiveComponent
       uses()
       features()
       pricing()
-      contact(@local)
+      Contact()
       story()
 
 
@@ -97,7 +73,6 @@ HEADER_HEIGHT = 30
 Header = ReactiveComponent
   displayName: "Header"
   render: ->
-    console.log 'render'
     current_user = fetch("/current_user")
 
     docked = fetch('header-dock').docked
@@ -131,8 +106,8 @@ Header = ReactiveComponent
             top: 4
             left: if window.innerWidth > 1055 then -23.5 else 0
 
-          drawLogo HEADER_HEIGHT + 5, \
-                  'white', \ #(if @local.in_red then logo_red else 'white'), \
+          drawLogo HEADER_HEIGHT + 5, 
+                  'white', 
                   (if @local.in_red then 'white' else logo_red), 
                   !@local.in_red,
                   !docked
@@ -189,15 +164,6 @@ Header = ReactiveComponent
 
   componentDidMount : -> 
 
-    # setTimeout => 
-    #   $('#i_dot')
-    #     .css css.crossbrowserify
-    #       transition: "transform #{1500}ms"
-    #     .css css.crossbrowserify
-    #       transform: "translate(#{252.25 - 142}px, 0)"
-    # , 700
-
-
     checkBackground = =>   
       red_regions = [[0, 530 + 2 * HEADER_HEIGHT]]
       y = $(window).scrollTop()
@@ -223,130 +189,186 @@ VIDEO_SLIDER_WIDTH = 250
 Video = ReactiveComponent
   displayName: "video"
   render: ->
-    
-    ui = fetch('homepage_ui')
     controls = fetch('video_controls')
 
-    if !controls.playing?
-      controls.playing = false
-      save controls
-
-    video = DIV null,
-      
-      if ui.frame == 'none'
-        @drawVideoControls()
-      @drawVideo()
-
-    DIV null,
-      @drawCaptions()
-
-      if ui.frame == 'laptop'
-        @drawInLaptop video
-      else if ui.frame == 'browser'
-        @drawInBrowserWindow video
-      else 
-        @drawWithoutFrame video
-
-
-  drawInLaptop : (children) -> 
-
-    DIV 
-      style: 
-        #marginTop: 70
-        height: 756
-        position: 'relative'
-
-      DIV 
-        style: 
-          position: 'relative'
-          top: 39
-        children    
-
-      IMG
-        src: asset('saas_landing_page/laptop-frame.png')
-        style: 
-          top: 0
-          position: 'absolute'
-          left: -130
-          pointerEvents: 'none'
-
-  drawWithoutFrame : (children) -> 
-
-    DIV 
-      style: 
-        marginTop: 70
-
-      children
-
-  drawInBrowserWindow : (children) ->
-    DIV 
-      style: 
-        border: "1px solid #ccc"
-        borderTop: 'none'
-        borderRadius: 8
-        backgroundColor: 'white'
-        boxShadow: "0 3px 8px rgba(0,0,0,.1)"
-        marginTop: 20
-
-      # window bar / url
-      DIV 
-        style: 
-          height: 31
-          borderRadius: '8px 8px 0 0'
-          backgroundColor: '#ccc'
-          backgroundImage: "linear-gradient(0deg, #D4D3D4, #EEEDEE)"
-          boxShadow: "0 1px 1px rgba(0,0,0,.35)"
-          position: 'relative'
-
-        # url area
-        DIV 
-          style: 
-            position: 'relative'
-            width: 300
-            margin: 'auto'
-            height: 20
-            top: (31 - 20) / 2
-            borderRadius: 4
-            backgroundColor: 'white'
-            boxShadow: "0 1px 1px rgba(0,0,0,.1)"
-            textAlign: 'center'
-            fontSize: 12
-
-          SPAN
-            style: 
-              position: 'relative'
-              top: 3
-              color: '#666'
-            'https://fun.consider.it/Death_Star'
-
-      DIV null,
-
-        children 
-
-
-  drawCaptions : -> 
-    ui = fetch('homepage_ui')
     chapter = fetch("video_chapter")
 
     if !@local.ready
-      #chapter.text = "Showing what Consider.it does in " + (if @local.time_to_video? then @local.time_to_video else 5)
-      chapter.text = "The tour begins in " + (if @local.time_to_video? then @local.time_to_video else 5)
+      #chapter.text = 'https://fun.consider.it/Death_Star'
+      chapter.text = 'Get ready for your demo!'
 
+    DIV null,
+      # draw video in browser window
+      DIV 
+        style: 
+          marginTop: 25
+
+        # window bar / url
+        DIV 
+          style: _.extend {}, h1,
+            color: 'white'
+          chapter.text
+
+        DIV 
+          style: 
+            border: "1px solid #ccc"
+            borderTop: 'none'
+            borderRadius: 8
+            backgroundColor: 'white'
+            boxShadow: "0 3px 8px rgba(0,0,0,.1)"
+            marginTop: 8
+
+          @drawVideo()
+
+  drawVideo : -> 
+    
     DIV
+      id: "homepage_video"
       style:
         position: 'relative'
-        zIndex: 1
-        top: if ui.frame == 'laptop' then -12
-        
+        width: SAAS_PAGE_WIDTH - 1
+        height: 551
 
-      H2
-        style: _.extend {}, h1,
-          #textAlign: "left"
-          fontSize: if ui.frame == 'laptop' then 30 else 36
-          color: 'white' #if ui.frame == 'laptop' then 'white' else 'black'
+      VIDEO
+        preload: "auto"
+        loop: true
+        autoPlay: false
+        width: SAAS_PAGE_WIDTH - 2
+        height: 551
+        ref: "video"
+        controls: true
 
+        SOURCE
+          src: asset("saas_landing_page/#{VIDEO_FILE}.mp4")
+          type: "video/mp4"
         
-        chapter.text 
+        SOURCE
+          src: asset("saas_landing_page/#{VIDEO_FILE}.webm")
+          type: "video/webm"
+
+      if !@local.ready      
+        # Draw a white loading if we're not ready to show video
+        DIV 
+          style:
+            top: 0
+            left: 0
+            borderRadius: 8
+            backgroundColor: 'white'
+            position: 'absolute'
+            height: '100%'
+            width: '100%'
+            boxShadow: "0 3px 8px rgba(0,0,0,.1)"
+
+
+          DIV 
+            style: 
+              id: 'loading_logo'
+              position: 'absolute'
+              left: '50%'
+              top: '50%'
+              marginLeft: -(284 / 60 * 100) / 2
+              marginTop: -150
+
+            drawLogo 100, 
+              logo_red,
+              logo_red, 
+              false,
+              true,
+              '#ccc',
+              10
+
+
+          # DIV 
+          #   style: 
+          #     position: 'absolute'
+          #     left: '50%'
+          #     top: '50%'
+          #     marginLeft: -widthWhenRendered("Get ready for your demo!", {fontSize: h1.fontSize, fontWeight: 600}) / 2
+          #     marginTop: 0
+          #     fontSize: h1.fontSize
+          #     fontWeight: 600
+          #     color: logo_red
+
+          #   "Get ready for your demo!"
+
+
+
+  componentDidUpdate: -> @attachToVideo()
+  componentDidMount: -> 
+    setTimeout => 
+      $(@getDOMNode()).find('#i_dot')
+        .css css.crossbrowserify
+          transition: "transform #{3500}ms"
+        .css css.crossbrowserify
+          transform: "translate(241.75px, 0)"
+    , 1000
+
+
+    @attachToVideo()
+
+    timer = 5000 # how long to wait before playing video
+
+    setTimeout => 
+      controls = fetch('video_controls')
+      controls.playing = true
+      @refs.video.getDOMNode().play()
+      @local.ready = true
+      console.log @refs.video.getDOMNode()
+      save controls
+      save @local
+    , timer + 200
+
+
+  attachToVideo : -> 
+    # we use timeupdate rather than tracks / cue changes / vtt
+    # because browser implementations are not complete (and often buggy)
+    # and polyfills poor. 
+
+    v = @refs.video.getDOMNode()
+
+    chapters = [
+      {time:  6.0, caption: "Pretend we're considering a proposal"},
+      {time:  5.0, caption: "Consider.it helps us analyze its tradeoffs"},
+      {time:  8.5, caption: "Each thought becomes a Pro or Con point"},
+      {time:  7.0, caption: "We can learn from our peers"},
+      {time:  4.0, caption: "...and even build from them!"},
+      
+      {time: 11.0, caption: "Weigh the tradeoffs on a slider"},
+      {time:  4.5, caption: "Now let's share our opinion"},
+      {time:  4.5, caption: "Behold! What people think, and why"},
+      {time:  4.0, caption: "A histogram shows the spectrum of opinions"},
+      {time:  4.0, caption: "Points are ranked by importance to the group"},
+
+      {time:  8.5, caption: "Now explore patterns of thought!"},
+      {time:  6.0, caption: "Learn the reservations of opposers"},
+      {time: 12.5, caption: "Inspect a peer's opinion"},
+      {time:  8.0, caption: "See who resonates with the top Pro"},
+      {time:  4.0, caption: "Focus on a single point"},
+      {time: 11.0, caption: "...and discuss its implications"},
+      {time:  0.0, caption: "Those are the basics! Learn more below"},
+    ]
+
+    if @v != v
+      @v = v
+      v.addEventListener 'timeupdate', (ev) -> 
+        chapter = fetch("video_chapter")
+        controls = fetch('video_controls')
+
+        chapter_time = 0
+        for c, idx in chapters
+          if v.currentTime < chapter_time + c.time || idx == chapters.length - 1
+            text = c.caption
+            break
+          chapter_time += c.time
+
+        controls.value = v.currentTime / v.duration
+
+        save controls
+
+        if chapter.text != text
+          chapter.text = text
+          save chapter
+      , false
 
   drawVideoControls : ->
     controls = fetch('video_controls')
@@ -418,116 +440,6 @@ Video = ReactiveComponent
           video.play() if controls.playing  
 
 
-  drawVideo : -> 
-    ui = fetch('homepage_ui')
-
-
-    DIV
-      id: "homepage_video"
-      style:
-        width: SAAS_PAGE_WIDTH - 1
-        height: 551
-
-      VIDEO
-        preload: "auto"
-        loop: true
-        autoPlay: false
-        width: SAAS_PAGE_WIDTH - 2
-        height: 551
-        ref: "video"
-        controls: if ui.frame != 'none' then true
-
-        SOURCE
-          src: asset("saas_landing_page/#{ui.video_file_name}.mp4")
-          type: "video/mp4"
-        
-        SOURCE
-          src: asset("saas_landing_page/#{ui.video_file_name}.webm")
-          type: "video/webm"
-
-
-  componentDidUpdate: -> @attachToVideo()
-  componentDidMount: -> 
-    @attachToVideo()
-
-    timer = 5000 # how long to wait before playing video
-
-    setTimeout => 
-
-      # wait a couple seconds before playing video to give user time to 
-      # orient to homepage
-      setTimeout => 
-        controls = fetch('video_controls')
-        controls.playing = true
-        save controls
-        @local.ready = true
-        save @local
-        @refs.video.getDOMNode().play()
-      , timer + 200
-
-      tick = => 
-        if timer > 1000
-          setTimeout tick, 1000
-
-        @local.time_to_video = timer / 1000 - 1
-
-        timer -= 1000        
-        save @local
-
-      tick()
-    , 1500
-
-  attachToVideo : -> 
-    # we use timeupdate rather than tracks / cue changes / vtt
-    # because browser implementations are not complete (and often buggy)
-    # and polyfills poor. 
-
-    v = @refs.video.getDOMNode()
-
-    chapters = [
-      {time:  6.0, caption: "Pretend we're considering a proposal"},
-      {time:  5.0, caption: "Consider.it helps us analyze the tradeoffs"},
-      {time:  8.5, caption: "Each thought becomes a Pro or Con point"},
-      {time:  7.0, caption: "We can learn from our peers"},
-      {time:  4.0, caption: "...and even build from them!"},
-      
-      {time: 11.0, caption: "Weigh the tradeoffs on a slider."},
-      {time:  4.5, caption: "Seems reasonable. Let's add our opinion to the group."},
-      {time:  4.5, caption: "Behold! A summary of what people think and why"},
-      {time:  4.0, caption: "The spectrum of opinions is shown on a Histogram"},
-      {time:  4.0, caption: "Points are ranked by importance for the group"},
-
-      {time:  8.5, caption: "Now explore patterns of thought!"},
-      {time:  6.0, caption: "Learn the reservations of opposers"},
-      {time: 12.5, caption: "Inspect a peer's opinion"},
-      {time:  8.0, caption: "See who has been persuaded by the top Pro"},
-      {time: 16.0, caption: "Focus on a single point and discuss its merits"},
-      {time:  0.0, caption: "Those are the basics! Scroll down to learn more."},
-    ]
-
-    if @v != v
-      @v = v
-      v.addEventListener 'timeupdate', (ev) -> 
-        chapter = fetch("video_chapter")
-        controls = fetch('video_controls')
-
-        chapter_time = 0
-        for c, idx in chapters
-          if v.currentTime < chapter_time + c.time || idx == chapters.length - 1
-            text = c.caption
-            break
-          chapter_time += c.time
-
-        controls.value = v.currentTime / v.duration
-
-        save controls
-
-        if chapter.text != text
-          chapter.text = text
-          save chapter
-      , false
-
-
 
 bullet = (props) ->
   DIV
@@ -562,10 +474,9 @@ bullet = (props) ->
 
 
 tech = ->
-  ui = fetch('homepage_ui')
   DIV
     style:
-      marginTop: if ui.frame == 'laptop' then 30 else 60
+      marginTop: 60
 
     H1 style: h1,
       'The first forum that works better'
@@ -696,121 +607,123 @@ pricing = ->
       BR null
       'Advanced configuration and custom design available.'
 
-contact = (local) ->
+Contact = ReactiveComponent
+  displayName: 'Contact'
 
-  teamMember = (props) ->
-    DIV
-      style:
-        display: "inline-block"
-        margin: "20px 15px"
-        textAlign: "center"
-      IMG
-        src: props.src
-        style:
-          borderRadius: "50%"
-          display: "inline-block"
-          width: 200
-          textAlign: "center"
-
+  render: -> 
+    teamMember = (props) ->
       DIV
         style:
-          textAlign: "center"
-        props.name
-
-      A
-        href: "mailto:#{props.email}"
-        style: _.extend {}, a, 
-          textAlign: "center"
-        props.email
-
-  DIV 
-    id: 'contact'
-    style:
-      marginTop: 60
-
-    H1
-      style: _.extend {}, h1, 
-        marginBottom: 30
-
-      "Get in touch with us,"
-      BR null
-      "We'd love to get to know you!"
-
-    DIV 
-      style: _.extend {}, base_text,
-        margin: 'auto'
-        width: TEXT_WIDTH 
-        textAlign: 'center'
-      "Write us a "
-      A
-        href: "mailto:admin@consider.it"
-        style: a
-        "nice electronic letter"
-
-      ". Or we can reach out to you:"
-
-      FORM
-        action: "//chalkboard.us7.list-manage1.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
-        id: "mc-embedded-subscribe-form"
-        method: "post"
-        name: "mc-embedded-subscribe-form"
-        novalidate: "true"
-        target: "_blank"
-        style:
           display: "inline-block"
-          margin: "10px 0 20px 0"
-
-        INPUT
-          id: "mce-EMAIL"
-          name: "EMAIL"
-          placeholder: "email address"
-          type: "email"
-          defaultValue: ""
+          margin: "20px 15px"
+          textAlign: "center"
+        IMG
+          src: props.src
           style:
-            fontSize: 24
-            padding: "8px 12px"
-            width: 380
-            border: '1px solid #999'
-
-        BUTTON
-          name: "subscribe"
-          type: "submit"
-          style:
-            fontSize: 24
-            marginLeft: 8
+            borderRadius: "50%"
             display: "inline-block"
-            backgroundColor: if local.hover_contactme then logo_red else 'white'
-            color: if local.hover_contactme then 'white' else '#999'
-            fontWeight: 500
-            border: "1px solid #{if local.hover_contactme then 'transparent' else '#999'}"
-            borderRadius: 16
-            padding: '8px 18px'
-          onMouseEnter: => local.hover_contactme = true; save local
-          onMouseLeave: => local.hover_contactme = false; save local
-          "Contact me"
+            width: 200
+            textAlign: "center"
 
-      DIV null,
-        "We work out of Seattle, WA, Portland, OR, and the Internet."
+        DIV
+          style:
+            textAlign: "center"
+          props.name
+
+        A
+          href: "mailto:#{props.email}"
+          style: _.extend {}, a, 
+            textAlign: "center"
+          props.email
 
     DIV 
-      style: _.extend {}, base_text,
-        textAlign: 'center'
-        marginTop: 30
+      id: 'contact'
+      style:
+        marginTop: 60
 
-      teamMember
-        src: asset("saas_landing_page/travis.jpg")
-        name: "Travis Kriplean"
-        email: "travis@consider.it"
+      H1
+        style: _.extend {}, h1, 
+          marginBottom: 30
 
-      teamMember
-        src: asset("saas_landing_page/kevin.jpg")
-        name: "Kevin Miniter"
-        email: "kevin@consider.it"
-   
-      teamMember
-        src: asset("saas_landing_page/mike.jpg")
-        name: "Michael Toomim"
-        email: "toomim@consider.it"
+        "Get in touch with us,"
+        BR null
+        "We'd love to get to know you!"
+
+      DIV 
+        style: _.extend {}, base_text,
+          margin: 'auto'
+          width: TEXT_WIDTH 
+          textAlign: 'center'
+        "Write us a "
+        A
+          href: "mailto:admin@consider.it"
+          style: a
+          "nice electronic letter"
+
+        ". Or we can reach out to you:"
+
+        FORM
+          action: "//chalkboard.us7.list-manage1.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
+          id: "mc-embedded-subscribe-form"
+          method: "post"
+          name: "mc-embedded-subscribe-form"
+          novalidate: "true"
+          target: "_blank"
+          style:
+            display: "inline-block"
+            margin: "10px 0 20px 0"
+
+          INPUT
+            id: "mce-EMAIL"
+            name: "EMAIL"
+            placeholder: "email address"
+            type: "email"
+            defaultValue: ""
+            style:
+              fontSize: 24
+              padding: "8px 12px"
+              width: 380
+              border: '1px solid #999'
+
+          BUTTON
+            name: "subscribe"
+            type: "submit"
+            style:
+              fontSize: 24
+              marginLeft: 8
+              display: "inline-block"
+              backgroundColor: if @local.hover_contactme then logo_red else 'white'
+              color: if @local.hover_contactme then 'white' else '#999'
+              fontWeight: 500
+              border: "1px solid #{if @local.hover_contactme then 'transparent' else '#999'}"
+              borderRadius: 16
+              padding: '8px 18px'
+            onMouseEnter: => @local.hover_contactme = true; save @local
+            onMouseLeave: => @local.hover_contactme = false; save @local
+            "Contact me"
+
+        DIV null,
+          "We work out of Seattle, WA, Portland, OR, and the Internet."
+
+      DIV 
+        style: _.extend {}, base_text,
+          textAlign: 'center'
+          marginTop: 30
+
+        teamMember
+          src: asset("saas_landing_page/travis.jpg")
+          name: "Travis Kriplean"
+          email: "travis@consider.it"
+
+        teamMember
+          src: asset("saas_landing_page/kevin.jpg")
+          name: "Kevin Miniter"
+          email: "kevin@consider.it"
+     
+        teamMember
+          src: asset("saas_landing_page/mike.jpg")
+          name: "Michael Toomim"
+          email: "toomim@consider.it"
 
 story = ->
   caption_text =
@@ -1419,12 +1332,10 @@ Page = ReactiveComponent
           else
             SaasHomepage key: "homepage"
 
+Computer = ReactiveComponent
+  displayName: 'Computer'
 
-Root = ReactiveComponent
-  displayName: "Root"
-
-  render: ->
-    loc = fetch 'location'
+  render: -> 
     app = fetch '/application'
     doc = fetch 'document'
 
@@ -1433,6 +1344,15 @@ Root = ReactiveComponent
       doc.title = title
       save doc
 
+    if app.dev
+      Development()
+    else
+      SPAN null
+
+Root = ReactiveComponent
+  displayName: "Root"
+
+  render: ->
     DIV null,
       BrowserLocation()
       StateDash()
@@ -1463,14 +1383,13 @@ Root = ReactiveComponent
           paddingBottom: 20
           marginTop: 20
         BrowserHacks()
-        Page(key: "/page" + loc.url)
+        Page()
 
       Footer()
 
       Tooltip()
 
-      if app.dev
-        Development()
+      Computer()
 
 
 

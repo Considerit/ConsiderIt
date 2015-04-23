@@ -1,6 +1,8 @@
-window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line) -> 
+window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_color, i_dot_x) -> 
   main_text_color = main_text_color or 'white'
   o_text_color = o_text_color or logo_red
+  line_color = line_color or 'white'
+  i_dot_x = i_dot_x or 252.25
 
   height = height or 60
   width = width or height * 284 / 60
@@ -31,7 +33,7 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line) ->
           y1: 55
           x2: 284
           y2: 55
-          stroke: 'white'
+          stroke: line_color
           strokeWidth: 1
 
 
@@ -290,7 +292,6 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line) ->
       CIRCLE 
         id: 'i_dot'
         fill: o_text_color
-        #cx: "142"
-        cx: "252.25"
+        cx: i_dot_x
         cy: "55"
         r: "4.25"

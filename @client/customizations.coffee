@@ -24,7 +24,6 @@ require './header'
 window.customization = (field) -> 
   subdomain = fetch('/subdomain')
 
-
   if !customizations[subdomain.name]?
     config = fetch('customizations/default')
   else 
@@ -32,15 +31,28 @@ window.customization = (field) ->
 
   val = config
   fields = field.split('.')
-  found_value = true
 
   for f, idx in fields
-    if val[f]? || idx == fields.length - 1
-      val = val[f]
 
+    if f.indexOf('[') > 0
+      brackets = f.match(/\[(.*?)\]/g)
+      f = f.substring(0, f.indexOf('['))
+
+    if val[f]? || idx == fields.length - 1        
+      val = val[f]      
+
+      if brackets?.length > 0
+        for b in brackets
+          f = b.substring(2,b.length - 2)
+          if val[f]?
+            val = val[f]
+          else
+            console.info "Could not find customization #{field} for subdomain #{subdomain.name}"
+            return undefined
 
     else 
-      throw "Could not find customization #{field} for subdomain #{subdomain.name}"
+      console.info "Could not find customization #{field} for subdomain #{subdomain.name}"
+      return undefined
 
   val
 

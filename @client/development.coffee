@@ -10,15 +10,17 @@ Development = ReactiveComponent
   displayName: 'Development'
 
   render : -> 
-    subdomains = fetch '/subdomains'
+    subdomains = fetch('/subdomains').subs
     apps = fetch '/apps'
     app = fetch '/application'
 
-    hues = getNiceRandomHues Math.max(subdomains.subs?.length, apps.apps?.length)
+    hues = getNiceRandomHues Math.max(subdomains?.length, apps.apps?.length)
     submenus = if app.app == 'franklin' 
                 ['change subdomain', 'change application']
                else if app.app == 'saas_landing_page'
                 ['change application']
+    
+    subdomains.sort((a,b) -> a.name > b.name)
 
     DIV 
       style: 
@@ -62,7 +64,7 @@ Development = ReactiveComponent
             if @local.hover_second == 'change subdomain'
               UL null,              
 
-                for sub, idx in subdomains.subs
+                for sub, idx in subdomains
                   LI
                     style: 
                       display: 'inline-block'

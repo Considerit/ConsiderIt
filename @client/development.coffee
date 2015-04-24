@@ -101,7 +101,7 @@ Development = ReactiveComponent
 
     # cycle through subdomains 
     document.addEventListener "keypress", (e) -> 
-      key = (e and e.keyCode) or event.keyCode
+      key = (e and e.keyCode) or e.keyCode
 
       if key==14 # cntrl-N        
         app = fetch '/application'

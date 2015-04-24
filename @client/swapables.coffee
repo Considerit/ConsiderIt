@@ -44,7 +44,7 @@ proposal_support = (proposal) ->
 
 
 sorted_proposals = (cluster) ->
-  options = customization("cluster_options.#{cluster.name}") || {}
+  options = customization("cluster_options['#{cluster.name}']") || {}
   _.clone(cluster.proposals).sort((a,b) ->
     x_a = proposal_support(a) - 10000 + (if options.editor_icons \
                                          and proposal_editor(a) then 1 else 0)
@@ -72,7 +72,7 @@ window.SimpleHomepage = ReactiveComponent
 
       # List all clusters
       for cluster, index in proposals.clusters or []
-        options = customization("cluster_options.#{cluster.name}") || {}
+        options = customization("cluster_options['#{cluster.name}']") || {}
 
         if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
           DIV
@@ -323,7 +323,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
 
         # Draw the proposal summaries
         for cluster, index in proposals.clusters or []
-          options = customization("cluster_options.#{cluster.name}") || {}
+          options = customization("cluster_options['#{cluster.name}']") || {}
           DIV null,
             if index == 1 and subdomain.name == 'livingvotersguide'
               customization('ZipcodeBox')()

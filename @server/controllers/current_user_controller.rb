@@ -52,27 +52,7 @@ class CurrentUserController < ApplicationController
             current_user.add_to_active_in
             dirty_key '/proposals'
 
-            ########
-            # This user might have have a role waiting for them...either on a subdomain or proposal
-            # We'll look for any places to replace their email address with their key
-            # BUG: unlikely error can occur if this email address has been invited to a role
-            #       across multiple subdomains before creating an account. In this case, 
-            #       only the current subdomain's roles will be migrated.
-            if current_subdomain.roles.index("\"#{current_user.email}\"")
-              pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{current_subdomain.name}"              
-              current_subdomain.roles = current_subdomain.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
-              current_subdomain.save
-            end
-
-            proposals_with_role = current_subdomain.proposals.where("roles like '%\"#{current_user.email}\"%'")
-            if  proposals_with_role.count > 0
-              proposals_with_role.each do |proposal|
-                pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{proposal.name}"
-                proposal.roles = proposal.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
-                proposal.save
-              end 
-            end
-            ########
+            update_roles_and_permissions
 
             log('registered account')
 
@@ -110,6 +90,8 @@ class CurrentUserController < ApplicationController
             current_user.add_to_active_in
             replace_user(current_user, user)
             set_current_user(user)
+            update_roles_and_permissions
+
             dirty_key '/proposals'
 
             if user.is_admin?
@@ -146,6 +128,8 @@ class CurrentUserController < ApplicationController
             set_current_user(user)
             try_update_password 'reset password', errors
             current_user.add_to_active_in
+            update_roles_and_permissions
+            
             if !current_user.verified 
               current_user.verified = true
               current_user.save
@@ -366,6 +350,26 @@ class CurrentUserController < ApplicationController
       end
     end
 
+  end
+
+  # Check to see if this user has been referenced by email in any 
+  # roles or permissions settings. If so, replace the email with the
+  # user's key. 
+  def update_roles_and_permissions
+    if current_subdomain.roles.index("\"#{current_user.email}\"")
+      pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{current_subdomain.name}"              
+      current_subdomain.roles = current_subdomain.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
+      current_subdomain.save
+    end
+
+    proposals_with_role = current_subdomain.proposals.where("roles like '%\"#{current_user.email}\"%'")
+    if  proposals_with_role.count > 0
+      proposals_with_role.each do |proposal|
+        pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{proposal.name}"
+        proposal.roles = proposal.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
+        proposal.save
+      end 
+    end
   end
 
   def log (what)

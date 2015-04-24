@@ -31,6 +31,7 @@ require './state_graph'
 require './swapables'
 require './tooltip'
 require './development'
+require './god'
 
 ## ########################
 ## Initialize defaults for client data
@@ -3530,6 +3531,7 @@ Root = ReactiveComponent
     subdomain = fetch '/subdomain'
     loc = fetch('location')
     app = fetch('/application')
+    current_user = fetch('/current_user')
 
     DIV 
       onClick: @resetSelection
@@ -3568,7 +3570,10 @@ Root = ReactiveComponent
       Tooltip()
 
       if app.dev
-        Development()      
+        Development()
+
+      if current_user.is_super_admin || app.godmode
+        GodMode()
 
   resetSelection: (e) ->
     # TODO: This is ugly. Perhaps it would be better to have components 

@@ -156,8 +156,10 @@ class ImportDataController < ApplicationController
               end
 
               if !user
-                attrs['password'] = SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] 
+
+                attrs['password'] = row.has_key?('password') ? row['password'] : SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] 
                 user = User.new attrs
+                user.registered = true
                 user.save
                 modified[table].push "Created User '#{user.name}'"
               else 

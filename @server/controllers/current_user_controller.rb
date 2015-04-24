@@ -210,7 +210,7 @@ class CurrentUserController < ApplicationController
           session[:godmode] = Time.now.to_i 
         end
 
-        if session[:godmode] && Time.now.to_i - session[:godmode] < 30
+        if session[:godmode] && Time.now.to_i - session[:godmode] < 60 * 60 * 3
 
           user = User.find key_id(params[:switch_to])
           if user

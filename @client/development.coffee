@@ -20,7 +20,7 @@ Development = ReactiveComponent
                else if app.app == 'saas_landing_page'
                 ['change application']
     
-    subdomains.sort((a,b) -> a.name > b.name)
+    subdomains.sort((a,b) -> if a.name.toLowerCase() > b.name.toLowerCase() then 1 else -1)
 
     DIV 
       style: 

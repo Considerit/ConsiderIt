@@ -195,7 +195,8 @@ protected
           key: '/application',
           app: session[:app],
           dev: (Rails.env.development? || request.host.end_with?('chlk.it')),
-          asset_host: "#{Rails.application.config.action_controller.asset_host}"
+          asset_host: "#{Rails.application.config.action_controller.asset_host}",
+          godmode: session[:godmode]
         })
       elsif key == '/subdomain'
         response.append current_subdomain.as_json

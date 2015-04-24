@@ -26,7 +26,7 @@ fetch 'state_graph',
   focus: null
 
 document.addEventListener "keypress", (e) -> 
-  key = (e and e.keyCode) or event.keyCode
+  key = (e and e.keyCode) or e.keyCode
 
   if key==7 # cntrl-G
     graph = fetch('state_graph')

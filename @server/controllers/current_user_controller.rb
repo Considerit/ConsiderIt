@@ -203,6 +203,27 @@ class CurrentUserController < ApplicationController
           log('logged out')
         end
 
+      when 'switch_users'
+        # Only enable god mode for 3 hours since the last time 
+        # the super admin invoked godmode
+        if current_user.super_admin
+          session[:godmode] = Time.now.to_i 
+        end
+
+        if session[:godmode] && Time.now.to_i - session[:godmode] < 30
+
+          user = User.find key_id(params[:switch_to])
+          if user
+            set_current_user(user)
+            dirty_key '/proposals'
+            dirty_key '/application'
+          else
+            errors.append "Could not find a user at #{params[:switch_to]}"
+          end
+        else 
+          errors.append 'You lack permission to switch users'
+        end
+
       when 'edit profile'
         update_user_attrs 'edit profile', errors
         try_update_password 'edit profile', errors

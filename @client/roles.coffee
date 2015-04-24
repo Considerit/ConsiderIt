@@ -359,20 +359,21 @@ AddRolesAndInvite = ReactiveComponent
 
         onClick: (e) => 
 
-          target.roles[@local.role.name] = target.roles[@local.role.name].concat @local.added
+          if @local.added.length > 0
 
-          if @local.send_email_invite
-            if !target.invitations
-              target.invitations = []
+            target.roles[@local.role.name] = target.roles[@local.role.name].concat @local.added
 
-            invitation = {role: @local.role.name, keys_or_emails: @local.added}
-            invitation.message = $('#custom_email_message').val()              
+            if @local.send_email_invite
+              if !target.invitations
+                target.invitations = []
 
-            target.invitations.push invitation
-          
-          @local.added = []
-          save target
-          save @local
+              invitation = {role: @local.role.name, keys_or_emails: @local.added}
+              invitation.message = $('#custom_email_message').val()              
+              target.invitations.push invitation
+            
+            @local.added = []
+            save target
+            save @local
 
         'Done. Add these roles.'
 

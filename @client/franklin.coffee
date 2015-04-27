@@ -495,7 +495,7 @@ Proposal = ReactiveComponent
       @local.description_collapsed = true; save(@local)
 
   renderDescriptionField : (field) ->
-    symbol = if field.expanded then 'fa-minus-circle' else 'fa-plus-circle'
+    symbol = if field.expanded then 'fa-chevron-down' else 'fa-chevron-right'
     DIV 
       className: 'description_field'
       key: field.label
@@ -516,8 +516,10 @@ Proposal = ReactiveComponent
           style: 
             opacity: .7
             position: 'relative'
-            left: -4
+            left: -3
             paddingRight: 6
+            display: 'inline-block'
+            width: 20
 
         SPAN 
           style: {lineHeight: 1.6, fontSize: 18}

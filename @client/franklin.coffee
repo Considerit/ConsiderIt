@@ -12,7 +12,7 @@ require './vendor/jquery.form'
 require './vendor/jquery.touchpunch'
 
 require './vendor/modernizr' 
-require './activerest-m'          
+require './activerest-m'
 require './dock'
 require './admin' # for dashes, CreateSubdomain
 require './auth'
@@ -2807,49 +2807,34 @@ EditProposal = ReactiveComponent
           padding: '3em 0'
           position: 'relative'
 
-
-        if proposal.slug
-          A 
-            style: 
-              color: '#777'
-              position: 'absolute'
-              left: -100
-              top: 54
-            href: "/#{proposal.slug}"
-
-            I
-              className: 'fa fa-arrow-left'
-              style: 
-                paddingRight: 10
-            'back'
-
-        DIV 
-          style: 
-            fontSize: 28
-            marginBottom: 20
-
-          DIV
-            style: 
-              fontSize: 30
-              fontWeight: 700
-              color: focus_blue
-            "Add a new proposal"
-
+        if @props.fresh
           DIV 
             style: 
-              fontSize: 18
+              fontSize: 28
+              marginBottom: 20
 
-            'Make it '
-            SPAN 
+            DIV
               style: 
+                fontSize: 30
+                fontWeight: 700
                 color: focus_blue
-              "unambiguous"
-            ' and '
-            SPAN 
+              "Add a new proposal"
+
+            DIV 
               style: 
-                color: focus_blue
-              "free of language errors"
-            '.'
+                fontSize: 18
+
+              'Make it '
+              SPAN 
+                style: 
+                  color: focus_blue
+                "unambiguous"
+              ' and '
+              SPAN 
+                style: 
+                  color: focus_blue
+                "free of language errors"
+              '.'
 
         DIV style: block_style,
           LABEL htmlFor:'slug', style: label_style, 'URL:'
@@ -2931,11 +2916,11 @@ EditProposal = ReactiveComponent
                     value: field.label
 
                   WysiwygEditor
-                    key:"field-#{field.id}-html-#{proposal.key}"
+                    key:"field-#{field.id}-html-#{if @props.fresh then '/new/proposal' else proposal.key}"
                     name:"field-#{field.id}-html"
                     placeholder:'Text that is shown when expanded'
-                    style: _.extend {}, description_field_style, \
-                                    {width: description_field_style.width - 45}
+                    style: _.extend {}, description_field_style,
+                              width: description_field_style.width - 45
                     html: field.html]
 
                 else
@@ -3133,6 +3118,7 @@ EditProposal = ReactiveComponent
 
 
   saveProposal : -> 
+
     $el = $(@getDOMNode())
 
     name = $el.find('#name').val()

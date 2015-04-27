@@ -57,7 +57,7 @@ SaasHomepage = ReactiveComponent
       Video()
       tech()
       enables()
-      FAQ()
+      #FAQ()
       pricing()
       Contact()
       Story()
@@ -72,7 +72,8 @@ Header = ReactiveComponent
 
     docked = fetch('header-dock').docked
 
-    nav_links = ['demo', 'faq', 'price', 'contact', 'story']
+    #nav_links = ['demo', 'faq', 'price', 'contact', 'story']
+    nav_links = ['demo', 'price', 'contact', 'story']
     
     DIV
       style:
@@ -841,7 +842,7 @@ FAQ = ReactiveComponent
             'You decide to solicit ideas from your employees. '
 
       }, {
-      question: 'Can we use our own URL?"'
+      question: 'Can we use our own URL?'
       answer: ->
         DIV null,
           P style: p,

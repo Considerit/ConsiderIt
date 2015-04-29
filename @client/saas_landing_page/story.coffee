@@ -6,8 +6,8 @@ window.Story = ReactiveComponent
     DIV 
       id: 'story'
       style: _.extend {}, base_text,
-        marginTop: 60
-        marginBottom: 20
+        width: SAAS_PAGE_WIDTH
+        margin: '60px auto 20px auto'
       
 
       H1
@@ -90,7 +90,7 @@ window.Story = ReactiveComponent
           textAlign: 'center'
       
 
-        "Fictional story starring Benjamin Franklin, coming soon."
+        "Coming soon: a fictional founding myth starring Benjamin Franklin."
 
   truth : ->
     caption_text =

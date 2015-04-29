@@ -65,11 +65,14 @@ class Proposal < ActiveRecord::Base
       end
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
       proposals = current_subdomain.proposals.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
-    elsif current_subdomain.name == 'bitcoin'
-      proposals = current_subdomain.proposals.where(:hide_on_homepage => false)
-      manual_clusters = ['Our Mission', 'Our Values',  'Our Goals', 'Our Focus', 'Our Actions', 'Resolutions', 'Foundation Goals', 'Board Proposals', 'Member Proposals', 'Proposals', 'Candidates']
     else
       proposals = current_subdomain.proposals.where(:hide_on_homepage => false)
+      case current_subdomain.name 
+        when 'bitcoin'
+          manual_clusters = ['Our Mission', 'Our Values',  'Our Goals', 'Our Focus', 'Our Actions', 'Resolutions', 'Foundation Goals', 'Board Proposals', 'Member Proposals', 'Proposals', 'Candidates']
+        when 'RANDOM2015'
+          manual_clusters = ['Submissions', 'Under Review',  'Accepted', 'Rejected']
+      end
     end
 
     proposals = proposals.where(moderation_status_check)

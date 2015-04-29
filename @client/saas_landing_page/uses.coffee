@@ -1,57 +1,100 @@
+p = 
+  marginTop: 15
 
+demosList = (demos) -> 
+  P style: p,
+    "Demos: "
+    for demo, idx in demos
+
+      [A
+        href: demo[1]
+        target: '_blank'
+        style: 
+          textDecoration: 'underline' 
+
+        demo[0]
+      if idx < demos.length - 1
+        ', '
+      ]
 
 uses = [
   {
     icon: 'doc'
     strong: 'Collect feedback'
-    body: """
-          You have a draft proposal. Maybe it’s a plan, a policy, or an idea for
-          a new product direction. Whatever it may be, Consider.it can help you 
-          gather organized feedback from anyone you invite to participate. 
-          Improve your proposal with the insights of others, without having to 
-          sort through a long email chain. 
-          """
+    body: -> 
+      """
+      You have a draft proposal. Maybe it’s a plan, a policy, or an idea for
+      a new product direction. Whatever it may be, Consider.it can help you 
+      gather organized feedback from anyone you invite to participate. 
+      Improve your proposal with the insights of others, without having to 
+      sort through a long email chain. 
+      """
   }, {
     icon: 'crossroads'
     strong: "Lead change"
-    body: """
-          Engage employees, membership, and stakeholders about the future. 
-          Strong leaders create change and build buy-in by explaining and 
-          evolving plans, not imposing them. 
-          """
+    body: -> 
+      """
+      Engage employees, membership, and stakeholders about the future. 
+      Strong leaders create change and build buy-in by explaining and 
+      evolving plans, not imposing them. 
+      """
   }, {
     icon: 'teaching'
     strong: "Teach critical thinking"
-    body: """
-          Students learn how to develop and express a considered opinion while listening 
-          to and engaging with others' ideas. Supports Common Core aligned exercises 
-          in English and Social Studies.
-          """
+    body: -> 
+        demos = [
+          ["literature discussion", 'https://schools.consider.it/Gatsby_Wedding?results=true'],
+          ["historical debate", 'https://schools.consider.it/Atomic_Bombs?results=true'],
+          ["civics / bioethics", 'https://schools.consider.it/Genetic_Testing?results=true']
+        ]
+        DIV null,
+          P style: p,
+            """
+            Students learn how to develop and express a considered opinion while listening 
+            to and engaging with others' ideas. Supports Common Core aligned exercises 
+            in English and Social Studies.
+            """
+
+          demosList(demos)
+
+
   }, {
     icon: 'network'
     strong: "Decentralize decision making"
-    body: """
-          Make decisions as a whole, without resorting to hierarchy. The will of a community, 
-          and the thoughts behind that will, become visible and actionable.
-          """
+    body: ->
+      """
+      Make decisions as a whole, without resorting to hierarchy. The will of a community, 
+      and the thoughts behind that will, become visible and actionable with Consider.it.
+      """
 
-  },{
+  }, {
     icon: 'public'
     strong: "Engage the public"
-    body: """
+    body: -> 
+      demos = [
+        ["Voters Guide", 'https://livingvotersguide.org'],
+        ["NASA Asteroid Initiative", 'https://ecastonline.consider.it']
+      ]
+
+      DIV null,
+        P style: p,
+
+          """
           Enable constituents to provide input on an upcoming decision. Consider.it 
           organizes this feedback into a guide to public thought that can be used 
           to refine the proposal or target common misconceptions during outreach. 
           """
+        demosList(demos)
 
   }, {
     icon: 'meeting'
     strong: 'Conduct meetings'
-    body: """
-          Plan more effective meetings by creating agendas on Consider.it. Thresh 
-          through ideas before a meeting. After a meeting, use Consider.it to 
-          close the loose ends!
-          """
+    body: -> 
+      """
+      Plan more effective meetings by creating agendas on Consider.it. Thresh 
+      through ideas before a meeting. After a meeting, use Consider.it to 
+      close the loose ends!
+      """
   }
 ]
 
@@ -127,7 +170,7 @@ use = (props) ->
       DIV 
         style: light_base_text
 
-        props.body
+        props.body()
 
 
     if !props.even

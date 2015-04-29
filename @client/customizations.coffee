@@ -120,6 +120,18 @@ customizations.default =
 ##########################
 # SUBDOMAIN CONFIGURATIONS
 
+#################
+# RANDOM2015
+
+customizations.RANDOM2015 = 
+  slider_pole_labels :
+    individual: 
+      support: 'Accept'
+      oppose: 'Reject'
+    group: 
+      support: 'Accept'
+      oppose: 'Reject'
+
 
 #################
 # Relief International

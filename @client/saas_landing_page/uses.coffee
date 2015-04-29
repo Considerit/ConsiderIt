@@ -5,11 +5,11 @@ uses = [
     icon: 'doc'
     strong: 'Collect feedback'
     body: """
-          You have a draft plan or policy. Or an idea for a new product direction, 
-          architecture, or design. Consider.it can help you gather organized 
-          feedback from anyone you invite to participate. Improve your idea 
-          with the insights of others, without having to sort through a long 
-          email chain.
+          You have a draft proposal. Maybe it’s a plan, a policy, or an idea for
+          a new product direction. Whatever it may be, Consider.it can help you 
+          gather organized feedback from anyone you invite to participate. 
+          Improve your proposal with the insights of others, without having to 
+          sort through a long email chain. 
           """
   }, {
     icon: 'crossroads'
@@ -39,17 +39,18 @@ uses = [
     icon: 'public'
     strong: "Engage the public"
     body: """
-          Make decisions as a whole, without resorting to hierarchy. The will of a community, 
-          and the thoughts behind that will, become visible and actionable.
+          Enable constituents to provide input on an upcoming decision. Consider.it 
+          organizes this feedback into a guide to public thought that can be used 
+          to refine the proposal or target common misconceptions during outreach. 
           """
 
   }, {
     icon: 'meeting'
     strong: 'Conduct meetings'
     body: """
-          Plan more effective meetings by creating agendas on Consider.it. 
-          And after a meeting, don’t set up a followup if you can just use 
-          Consider.it to tie up the loose ends!
+          Plan more effective meetings by creating agendas on Consider.it. Thresh 
+          through ideas before a meeting. After a meeting, use Consider.it to 
+          close the loose ends!
           """
   }
 ]
@@ -80,7 +81,7 @@ window.Uses = ->
         style: _.extend {}, h1,
           color: 'white'
 
-        'What can you do better with Consider.it?'
+        'What can Consider.it help you do better?'
 
       for u, idx in uses
         use _.extend {}, u, 

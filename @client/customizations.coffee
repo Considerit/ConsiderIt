@@ -39,7 +39,7 @@ window.customization = (field) ->
       f = f.substring(0, f.indexOf('['))
 
     if val[f]? || idx == fields.length - 1        
-      val = val[f]      
+      val = val[f]
 
       if brackets?.length > 0
         for b in brackets
@@ -131,6 +131,26 @@ customizations.RANDOM2015 =
     group: 
       support: 'Accept'
       oppose: 'Reject'
+
+  cluster_options :
+    'Under Review':
+      homie_histo_title: "PCs' opinions"
+    'Rejected':
+      homie_histo_title: "PCs' opinions"
+    'Accepted':
+      homie_histo_title: "PCs' opinions"
+
+##################
+# Schools demo
+
+customizations.schools = 
+  cluster_options :
+    'AP English':
+      homie_histo_title: "Students' opinions"
+    'US History':
+      homie_histo_title: "Students' opinions"
+    'Biology 2':
+      homie_histo_title: "Students' opinions"
 
 
 #################

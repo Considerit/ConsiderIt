@@ -8,16 +8,13 @@ window.collaborationSVG = (props) ->
   fill_color = props.fill_color or 'black'
   style = props.style or {}
 
-  attrs = _.extend {}, style, 
+  SVG
     width: props.width 
-    height: props.height 
+    height: props.height
     viewBox: "0 0 #{base_width} #{base_height}" 
     version: "1.1" 
     xmlns: "http://www.w3.org/2000/svg" 
-
-  SVG attrs,
-
-    #DEFS null
+    style: style
 
     G 
       fill: props.fill_color

@@ -163,6 +163,7 @@ use = (props) ->
       fill_color: 'white'
       style:
         verticalAlign: 'top'
+        marginTop: 30
 
 
 

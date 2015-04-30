@@ -44,7 +44,7 @@ window.Contact = ReactiveComponent
             borderBottomColor: 'white'
 
           "Write us"
-        " a nice electronic letter. Or we can write to you from Portland, OR (Travis and Kevin) or Montreal (Mike):"
+        " a nice electronic letter. Or we can write to you:"
 
       @contactForm()
 
@@ -103,14 +103,17 @@ team = ->
       img: 'travis'
       name: "Travis Kriplean"
       email: 'travis@consider.it'
+      location: 'Portland, OR'
     },{
       img: 'kevin'
       name: "Kevin Miniter"
       email: 'kevin@consider.it'
+      location: 'Portland, OR'      
     },{
       img: 'mike'
       name: "Mike Toomim"
       email: 'toomim@consider.it'
+      location: 'Montreal'
     }
   ]
 
@@ -145,9 +148,19 @@ team = ->
           A
             style: _.extend {}, a, 
               textAlign: "center"
-              borderBottom: 'none'
+              #borderBottom: 'none'
+              borderBottomColor: 'white'              
               color: 'white'
             t.name
+
+          BR null
+
+          SPAN 
+            style: _.extend {}, small_text
+
+            t.location
+
+
 
 
 styles += """

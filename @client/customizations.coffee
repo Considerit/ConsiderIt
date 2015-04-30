@@ -134,11 +134,11 @@ customizations.RANDOM2015 =
 
   cluster_options :
     'Under Review':
-      homie_histo_title: "PCs' opinions"
+      homie_histo_title: "PCs' ratings"
     'Rejected':
-      homie_histo_title: "PCs' opinions"
+      homie_histo_title: "PCs' ratings"
     'Accepted':
-      homie_histo_title: "PCs' opinions"
+      homie_histo_title: "PCs' ratings"
 
 ##################
 # Schools demo

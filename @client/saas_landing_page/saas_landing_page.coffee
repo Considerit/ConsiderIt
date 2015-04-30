@@ -14,6 +14,7 @@ require './story'
 require './faq'
 require './demo'
 require './uses'
+require './contact'
 
 window.SAAS_PAGE_WIDTH = 1000
 window.TEXT_WIDTH = 730
@@ -33,7 +34,7 @@ window.small_text = _.extend {}, base_text,
 
 window.h1 = _.extend {}, base_text,
   fontSize: 48
-  fontWeight: 400
+  fontWeight: 600
   textAlign: 'center'
 
 window.h2 = _.extend {}, base_text,
@@ -47,7 +48,8 @@ window.strong = _.extend {}, base_text,
 window.a = _.extend {}, base_text,
   color: logo_red
   cursor: 'pointer'
-  textDecoration: 'underline'
+  #textDecoration: 'underline'
+  borderBottom: "1px solid #{logo_red}"
 
 
 
@@ -63,8 +65,9 @@ SaasHomepage = ReactiveComponent
       Uses()
       #FAQ()
       pricing()
+      Customers()
+      Research()
       Contact()
-      Story()
 
 
 HEADER_HEIGHT = 30
@@ -77,7 +80,7 @@ Header = ReactiveComponent
     docked = fetch('header-dock').docked
 
     #nav_links = ['demo', 'faq', 'price', 'contact', 'story']
-    nav_links = ['demo', 'price', 'contact', 'story']
+    nav_links = ['demo', 'uses', 'price', 'contact']
     
     DIV
       style:
@@ -252,146 +255,155 @@ pricing = ->
       ' to get started today. '
 
 
-Contact = ReactiveComponent
-  displayName: 'Contact'
+Customers = ReactiveComponent
+  displayName: 'Customers'
 
   render: -> 
-    teamMember = (props) ->
-      DIV
-        style:
-          display: "inline-block"
-          margin: "20px 15px"
-          textAlign: "center"
-        IMG
-          src: props.src
-          style:
-            borderRadius: "50%"
-            display: "inline-block"
-            width: 200
-            textAlign: "center"
-
-        DIV
-          style:
-            textAlign: "center"
-          props.name
-
-        A
-          href: "mailto:#{props.email}"
-          style: _.extend {}, a, 
-            textAlign: "center"
-          props.email
+    customers = [{
+        img: 'nasa'
+        url: 'http://www.nasa.gov'
+      },{
+        img: 'spl'
+        url: 'http://spl.org'
+      }, {
+        img: 'ecast'
+        url: 'http://ecastnetwork.org'
+      }, {
+        img: 'cityclub'
+        url: 'http://seattlecityclub.org'      
+      }, {
+        img: 'dialoguepartners'
+        url: 'http://dialoguepartners.ca/'      
+      }, {
+        img: 'mos'
+        url: 'http://www.mos.org/'      
+      }, {
+        img: 'tigard'
+        url: 'http://www.tigard-or.gov/'      
+      }
+    ]
 
     DIV 
-      id: 'contact'
-      style:
-        marginTop: 60
+      style: 
+        width: SAAS_PAGE_WIDTH
+        margin: '60px auto'
+        textAlign: 'center'
 
       H1
         style: _.extend {}, h1, 
-          marginBottom: 30
+          marginBottom: 20
 
-        # "Get in touch with us,"
-        # BR null
-        "We'd love to get to know you!"
+        "Our clients include..."
 
-      DIV 
-        style: _.extend {}, base_text,
-          margin: 'auto'
-          width: TEXT_WIDTH 
-          textAlign: 'center'
-        "Write us a "
-        A
-          href: "mailto:admin@consider.it"
-          style: a
-          "nice electronic letter"
 
-        ". Or we can reach out to you:"
+      for c in customers
+        do (c) => 
+          style = 
+            cursor: 'pointer'
+            padding: "10px 15px"
 
-        FORM
-          action: "//chalkboard.us7.list-manage1.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
-          id: "mc-embedded-subscribe-form"
-          method: "post"
-          name: "mc-embedded-subscribe-form"
-          novalidate: "true"
-          target: "_blank"
-          style:
-            display: "inline-block"
-            margin: "10px 0 20px 0"
+          if @local.hovered != c.img
+            style = css.grayscale style
+            style.opacity = .7
+          A 
+            style: style
+            href: c.url
+            target: '_blank'
+            onMouseEnter: => 
+              @local.hovered = c.img
+              save @local
+            onMouseLeave: => 
+              @local.hovered = null
+              save @local
 
-          INPUT
-            id: "mce-EMAIL"
-            name: "EMAIL"
-            placeholder: "email address"
-            type: "email"
-            defaultValue: ""
-            style:
-              fontSize: 24
-              padding: "8px 12px"
-              width: 380
-              border: '1px solid #999'
+            IMG
+              src: asset("saas_landing_page/#{c.img}.png")
+              style: 
+                height: 90
 
-          BUTTON
-            name: "subscribe"
-            type: "submit"
-            style:
-              fontSize: 24
-              marginLeft: 8
-              display: "inline-block"
-              backgroundColor: if @local.hover_contactme then logo_red else 'white'
-              color: if @local.hover_contactme then 'white' else '#999'
-              fontWeight: 500
-              border: "1px solid #{if @local.hover_contactme then 'transparent' else '#999'}"
-              borderRadius: 16
-              padding: '8px 18px'
-            onMouseEnter: => @local.hover_contactme = true; save @local
-            onMouseLeave: => @local.hover_contactme = false; save @local
-            "Contact me"
 
-        DIV null,
-          "We work out of Seattle, WA, Portland, OR, and the Internet."
+Research = -> 
+  DIV 
+    style: 
+      width: SAAS_PAGE_WIDTH
+      margin: '60px auto'
 
-      DIV 
-        style: _.extend {}, base_text,
-          textAlign: 'center'
-          marginTop: 30
+    H1
+      style: _.extend {}, h1, 
+        margin: '20px'
 
-        teamMember
-          src: asset("saas_landing_page/travis.jpg")
-          name: "Travis Kriplean"
-          email: "travis@consider.it"
+      'Academic Research about Consider.it'
 
-        teamMember
-          src: asset("saas_landing_page/kevin.jpg")
-          name: "Kevin Miniter"
-          email: "kevin@consider.it"
-     
-        teamMember
-          src: asset("saas_landing_page/mike.jpg")
-          name: "Michael Toomim"
-          email: "toomim@consider.it"
+    UL
+      style: 
+        listStyle: 'none'
+        width: 615
+        margin: 'auto'
+
+      LI 
+        style: 
+          paddingTop: 5
+
+        A 
+          style:  _.extend {}, a, base_text
+          href: "http://dub.washington.edu/djangosite/media/papers/kriplean-cscw2012.pdf"
+          'Supporting Reflective Public Thought with Consider.it'
+        DIV 
+          style: _.extend {}, small_text
+          '2012 ACM Conference on Computer Supported Cooperative Work'
+
+
+      LI
+        style: 
+          paddingTop: 15
+        A 
+          style:  _.extend {}, a, base_text
+          href: "https://dl.dropboxusercontent.com/u/3403211/papers/jitp.pdf"
+          'Facilitating Diverse Political Engagement'
+        DIV 
+          style: _.extend {}, small_text
+          'Journal of Information Technology & Politics, Volume 9, Issue 3'
+
+      LI 
+        style: 
+          paddingTop: 15
+        A 
+          style:  _.extend {}, a, base_text
+          href: "http://homes.cs.washington.edu/~borning/papers/kriplean-cscw2014.pdf"
+          'On-demand Fact-checking in Public Dialogue'
+
+        DIV 
+          style: _.extend {}, small_text
+          '2014 ACM Conference on Computer Supported Cooperative Work'
+
 
 
 Footer = -> 
 
   DIV
     style: 
-      backgroundColor: logo_red
+      #backgroundColor: logo_red
       padding: '20px 0'
     DIV
       style: _.extend {}, h2,
         width: SAAS_PAGE_WIDTH
-        margin: 'auto'
-        color: 'white'
+        margin: '60px auto'
+        #color: 'white'
 
-      'That is our story, friend!'
+      'Thanks for listening, friend.'
       BR null, 
       A
         style: _.extend {}, a, 
           fontSize: 36
-          color: 'white'
+          #color: 'white'
+          #borderBottomColor: 'white'
         href: 'mailto:admin@consider.it'
         'Tell us your story' 
       '. What led you here?'
+
+
+    Story()
+
 
 
 Page = ReactiveComponent
@@ -461,8 +473,6 @@ Root = ReactiveComponent
       DIV
         style:
           backgroundColor: "white"
-          paddingBottom: 20
-          marginTop: 20
         BrowserHacks()
         Page()
 

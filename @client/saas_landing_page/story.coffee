@@ -7,79 +7,115 @@ window.Story = ReactiveComponent
       id: 'story'
       style: _.extend {}, base_text,
         width: SAAS_PAGE_WIDTH
-        margin: '60px auto 20px auto'
+        margin: '10px auto 20px auto'
+
+
+      if @local.show_story
+        [H1
+          style: _.extend {}, h1, 
+            marginBottom: 30
+
+          "Our story"
+
+        @truth() ]
+
+      DIV 
+        style: _.extend {}, h2, 
+          width: TEXT_WIDTH
+          backgroundColor: '#F7F7F7'
+          textAlign: 'center'
+          textDecoration: 'underline'
+          cursor: 'pointer'
+          padding: '5px 0'
+          margin: 'auto'
+        onClick: =>
+          @local.show_story = !@local.show_story
+          save @local
+
+        if @local.show_story
+          "Hide our story"
+        else
+          "This is our story"
+
+
+
+    # DIV 
+    #   id: 'story'
+    #   style: _.extend {}, base_text,
+    #     width: SAAS_PAGE_WIDTH
+    #     margin: '60px auto 20px auto'
       
 
-      H1
-        style: _.extend {}, h1, 
-          marginBottom: 30
+    #   H1
+    #     style: _.extend {}, h1, 
+    #       marginBottom: 30
 
-        "Our story"
+    #     "Our story"
 
-        if @local.picked_poison == 'fantasy'
+    #     if @local.picked_poison == 'fantasy'
 
-          ', as Fantasy'
+    #       ', as Fantasy'
 
-        else if @local.picked_poison == 'fact'
-          ', just the Facts'
+    #     else if @local.picked_poison == 'fact'
+    #       ', just the Facts'
 
-        if @local.picked_poison?
-          BR null
-          DIV
-            style: 
-              fontSize: 14
+    #     if @local.picked_poison?
+    #       BR null
+    #       DIV
+    #         style: 
+    #           fontSize: 14
 
-            "switch to "                  
+    #         "switch to "                  
 
-            A
-              style: 
-                textDecoration: 'underline'
-                color: logo_red
+    #         A
+    #           style: 
+    #             textDecoration: 'underline'
+    #             color: logo_red
 
-              onClick: => 
-                @local.picked_poison = if @local.picked_poison == 'fact' then 'fantasy' else 'fact'
-                save @local
-              if @local.picked_poison == 'fact' then 'fantasy' else 'facts'
-
-
+    #           onClick: => 
+    #             @local.picked_poison = if @local.picked_poison == 'fact' then 'fantasy' else 'fact'
+    #             save @local
+    #           if @local.picked_poison == 'fact' then 'fantasy' else 'facts'
 
 
-      if @local.picked_poison == 'fact'
-        @truth()
 
-      else if @local.picked_poison == 'fantasy'
-        @fiction()
 
-      else 
-        DIV 
-          style: _.extend {}, h2,
-            textAlign: 'center'
+    #   if @local.picked_poison == 'fact'
+    #     @truth()
 
-          "Do you prefer "
-          A
-            style: 
-              fontFamily: '"Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace'
-              textDecoration: 'underline'
-              color: logo_red
-            onClick: => 
-              @local.picked_poison = 'fact'
-              save @local
+    #   else if @local.picked_poison == 'fantasy'
+    #     @fiction()
 
-            "Fact"
+    #   else 
+    #     DIV 
+    #       style: _.extend {}, h2,
+    #         textAlign: 'center'
 
-          " or "
+    #       "Do you prefer "
+    #       A
+    #         style: 
+    #           fontFamily: '"Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace'
+    #           textDecoration: 'underline'
+    #           color: logo_red
+    #         onClick: => 
+    #           @local.picked_poison = 'fact'
+    #           save @local
 
-          A
-            style: 
-              fontFamily: 'Papyrus,fantasy'
-              textDecoration: 'underline'
-              color: logo_red
-            onClick: => 
-              @local.picked_poison = 'fantasy'
-              save @local
+    #         "Fact"
 
-            "Fantasy"
-          "?"          
+    #       " or "
+
+    #       A
+    #         style: 
+    #           fontFamily: 'Papyrus,fantasy'
+    #           textDecoration: 'underline'
+    #           color: logo_red
+    #         onClick: => 
+    #           @local.picked_poison = 'fantasy'
+    #           save @local
+
+    #         "Fantasy"
+    #       "?"          
 
   fiction : -> 
 
@@ -168,7 +204,7 @@ window.Story = ReactiveComponent
             style: caption_text
 
             """
-            The Web is only 2.0 years old (3.0 claim some pundits). 
+            The Web is only 2.0 years old.  
             It's social. It's getting good at speaking. But it’s not yet very 
             good at listening.
             """
@@ -580,59 +616,3 @@ window.Story = ReactiveComponent
 
             "Kevin and Mike in their natural habitat."
 
-
-      DIV
-        style: section_style
-
-
-        DIV 
-          style: _.extend {}, small_text, 
-            display: 'inline-block'
-            verticalAlign: 'top'
-
-          DIV null,
-            """
-            Published research about Consider.it:
-            """
-            UL
-              style: 
-                listStyle: 'none'
-
-              LI 
-                style: 
-                  paddingTop: 5
-
-                A 
-                  style:  _.extend {}, story_link
-                  href: "http://dub.washington.edu/djangosite/media/papers/kriplean-cscw2012.pdf"
-                  'Supporting Reflective Public Thought with Consider.it'
-                DIV 
-                  style: _.extend {}, small_text, 
-                    fontSize: 16
-                  '2012 ACM Conference on Computer Supported Cooperative Work'
-
-
-              LI
-                style: 
-                  paddingTop: 15
-                A 
-                  style:  _.extend {}, story_link
-                  href: "https://dl.dropboxusercontent.com/u/3403211/papers/jitp.pdf"
-                  'Facilitating Diverse Political Engagement'
-                DIV 
-                  style: _.extend {}, small_text, 
-                    fontSize: 16
-                  'Journal of Information Technology & Politics, Volume 9, Issue 3'
-
-              LI 
-                style: 
-                  paddingTop: 15
-                A 
-                  style:  _.extend {}, story_link
-                  href: "http://homes.cs.washington.edu/~borning/papers/kriplean-cscw2014.pdf"
-                  'On-demand Fact-checking in Public Dialogue'
-
-                DIV 
-                  style: _.extend {}, small_text, 
-                    fontSize: 16
-                  '2014 ACM Conference on Computer Supported Cooperative Work'

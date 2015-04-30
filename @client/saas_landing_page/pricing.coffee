@@ -34,7 +34,7 @@ window.Pricing = ReactiveComponent
 
   drawPlans : -> 
     plans = [{
-      name: 'Public'
+      name: 'Basic'
       width: 228
       marginTop: 72
       price: 'Free for everyone'

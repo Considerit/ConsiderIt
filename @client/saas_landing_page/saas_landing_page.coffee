@@ -72,6 +72,8 @@ SaasHomepage = ReactiveComponent
       Customers()
       Research()
       Contact()
+      Footer()
+
 
 
 HEADER_HEIGHT = 30
@@ -357,7 +359,7 @@ Footer = ->
   DIV
     style: 
       #backgroundColor: logo_red
-      padding: '20px 0'
+      margin: '20px 0'
     DIV
       style: _.extend {}, h2,
         width: SAAS_PAGE_WIDTH
@@ -449,8 +451,6 @@ Root = ReactiveComponent
           backgroundColor: "white"
         BrowserHacks()
         Page()
-
-      Footer()
 
       Tooltip()
 

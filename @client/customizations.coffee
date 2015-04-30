@@ -47,11 +47,11 @@ window.customization = (field) ->
           if val[f]?
             val = val[f]
           else
-            console.info "Could not find customization #{field} for subdomain #{subdomain.name}"
+            console.log "Could not find customization #{field} for subdomain #{subdomain.name}"
             return undefined
 
     else 
-      console.info "Could not find customization #{field} for subdomain #{subdomain.name}"
+      console.log "Could not find customization #{field} for subdomain #{subdomain.name}"
       return undefined
 
   val

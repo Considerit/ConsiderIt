@@ -1,3 +1,11 @@
+require './svgs/public'
+require './svgs/teaching'
+require './svgs/crossroads'
+require './svgs/network'
+require './svgs/meeting'
+require './svgs/doc'
+
+
 p = 
   marginTop: 15
 
@@ -150,10 +158,13 @@ window.Uses = ->
 use = (props) -> 
 
   icon = 
-    IMG 
-      src: asset("saas_landing_page/#{props.icon}.svg")
+    window["#{props.icon}SVG"]
       width: 200
-      verticalAlign: 'top'
+      fill_color: 'white'
+      style:
+        verticalAlign: 'top'
+
+
 
   DIV 
     style: 

@@ -1,3 +1,8 @@
+require './svgs/collaboration'
+require './svgs/price_tag'
+require './svgs/design'
+require './svgs/features'
+require './svgs/server'
 
 PLAN_WIDTH = 300
 
@@ -138,7 +143,7 @@ window.Pricing = ReactiveComponent
                   deep branding for the header. Or a custom component.
                   """
         }, {
-          icon: 'tag'
+          icon: 'priceTag'
           reason: """
                   The pricing is tricky for your situation and you want to 
                   discuss options. We understand that our customers' needs are
@@ -200,17 +205,16 @@ window.Pricing = ReactiveComponent
               onMouseEnter : => 
                 @local.custom_reason_hover = reason.icon
                 save @local
-              # onMouseLeave : => 
-              #   @local.custom_reason_hover = null
-              #   save @local
 
-              IMG 
-                src: asset("saas_landing_page/#{reason.icon}.svg")
+              DIV 
                 style: 
-                  height: 80
                   cursor: 'pointer'
-                  borderBottom: "3px solid #{if hovering then 'black' else 'transparent'}"
+                  borderBottom: "3px solid #{if hovering then logo_red else 'transparent'}"
                   paddingBottom: 10
+
+                window["#{reason.icon}SVG"]
+                  height: 70
+                  fill_color: if hovering then logo_red else 'black'
 
       DIV 
         style: _.extend {}, base_text, 

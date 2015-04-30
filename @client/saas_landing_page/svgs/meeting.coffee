@@ -8,14 +8,14 @@ window.meetingSVG = (props) ->
   fill_color = props.fill_color or 'black'
   style = props.style or {}
 
-  attrs = _.extend {}, style, 
+  SVG
     width: props.width 
-    height: props.height 
+    height: props.height
     viewBox: "0 0 #{base_width} #{base_height}" 
     version: "1.1" 
     xmlns: "http://www.w3.org/2000/svg" 
+    style: style
 
-  SVG attrs,
     G
       strokeWidth: 1
       fill: fill_color

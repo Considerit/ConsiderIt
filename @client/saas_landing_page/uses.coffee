@@ -1,9 +1,9 @@
 p = 
   marginTop: 15
 
-demosList = (demos) -> 
+demosList = (demos, label) -> 
   P style: p,
-    "Demos: "
+    "#{label}: "
     for demo, idx in demos
 
       [A
@@ -55,24 +55,33 @@ uses = [
             in English and Social Studies.
             """
 
-          demosList(demos)
+          demosList(demos, 'Demos')
 
 
   }, {
     icon: 'network'
     strong: "Decentralize decision making"
+
     body: ->
-      """
-      Make decisions as a whole, without resorting to hierarchy. The will of a community, 
-      and the thoughts behind that will, become visible and actionable with Consider.it.
-      """
+      examples = [
+        ["Bitcoin Foundation", 'https://bitcoin.consider.it']
+      ]
+      
+      DIV null,
+        P style: p,
+
+          """
+          Make decisions as a whole, without resorting to hierarchy. The will of a community, 
+          and the thoughts behind that will, become visible and actionable with Consider.it.
+          """
+        demosList(examples, 'Example')
 
   }, {
     icon: 'public'
     strong: "Engage the public"
     body: -> 
-      demos = [
-        ["Voters Guide", 'https://livingvotersguide.org'],
+      examples = [
+        ["Living Voters Guide", 'https://livingvotersguide.org'],
         ["NASA Asteroid Initiative", 'https://ecastonline.consider.it']
       ]
 
@@ -84,7 +93,7 @@ uses = [
           organizes this feedback into a guide to public thought that can be used 
           to refine the proposal or target common misconceptions during outreach. 
           """
-        demosList(demos)
+        demosList(examples, 'Examples')
 
   }, {
     icon: 'meeting'

@@ -45,12 +45,12 @@ proposal_support = (proposal) ->
 
 sorted_proposals = (cluster) ->
   options = customization("cluster_options['#{cluster.name}']") || {}
-  _.clone(cluster.proposals).sort((a,b) ->
-    x_a = proposal_support(a) - 10000 + (if options.editor_icons \
-                                         and proposal_editor(a) then 1 else 0)
-    x_b = proposal_support(b) - 10000 + (if options.editor_icons \
-                                         and proposal_editor(b) then 1 else 0)
-    return x_b - x_a)
+  _.clone(cluster.proposals).sort (a,b) ->
+    x_a = proposal_support(a) + (if options.editor_icons \
+                                  and proposal_editor(a) then 1 else 0)
+    x_b = proposal_support(b) + (if options.editor_icons \
+                                  and proposal_editor(b) then 1 else 0)
+    return x_b - x_a
 
 window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'

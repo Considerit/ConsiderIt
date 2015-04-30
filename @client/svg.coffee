@@ -4,6 +4,12 @@
 
 window.svg = 
 
+  setSize: (base_height, base_width, props) -> 
+    if props.width && !props.height?
+      props.height = props.width * base_height / base_width
+    else if props.height && !props.width?
+      props.width = props.height * base_width / base_height
+
   dropShadow: (props) -> 
     FILTER 
       id: props.id

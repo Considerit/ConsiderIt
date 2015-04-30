@@ -10,11 +10,6 @@ require '../development'
 require '../state_dash'
 require '../dock'
 require '../logo'
-require './story'
-require './faq'
-require './demo'
-require './uses'
-require './contact'
 
 window.SAAS_PAGE_WIDTH = 1000
 window.TEXT_WIDTH = 730
@@ -53,6 +48,15 @@ window.a = _.extend {}, base_text,
 
 
 
+require './story'
+require './faq'
+require './demo'
+require './uses'
+require './contact'
+require './pricing'
+
+
+
 SaasHomepage = ReactiveComponent
   displayName: "SaasHomepage"
   render: ->
@@ -64,7 +68,7 @@ SaasHomepage = ReactiveComponent
       tech()
       Uses()
       #FAQ()
-      pricing()
+      Pricing()
       Customers()
       Research()
       Contact()
@@ -223,36 +227,6 @@ tech = ->
             be identified. Perhaps 80% of opposers have a 
             single con point that can be addressed!
             """
-
-
-
-pricing = ->
-  DIV 
-    id: 'price'
-    style:
-      marginTop: 60
-
-    DIV 
-      style: h1
-
-      'Pricing'
-
-    DIV 
-      style: _.extend {}, base_text,
-        width: TEXT_WIDTH
-        margin: 'auto'
-
-      """Free pilots of Consider.it for a limited time! 
-      Custom design and advanced configuration available."""
-
-      BR null
-      BR null
-
-      A 
-        style: a 
-        'Contact us'
-
-      ' to get started today. '
 
 
 Customers = ReactiveComponent

@@ -141,7 +141,7 @@ window.Pricing = ReactiveComponent
           icon: 'tag'
           reason: """
                   The pricing is tricky for your situation and you want to 
-                  discuss options. We understand that our customer's needs are
+                  discuss options. We understand that our customers' needs are
                   unique. We are flexible. 
                   """
         }, {
@@ -200,9 +200,9 @@ window.Pricing = ReactiveComponent
               onMouseEnter : => 
                 @local.custom_reason_hover = reason.icon
                 save @local
-              onMouseLeave : => 
-                @local.custom_reason_hover = null
-                save @local
+              # onMouseLeave : => 
+              #   @local.custom_reason_hover = null
+              #   save @local
 
               IMG 
                 src: asset("saas_landing_page/#{reason.icon}.svg")

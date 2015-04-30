@@ -19,7 +19,7 @@ window.Pricing = ReactiveComponent
       DIV 
         style: h1
 
-        'Pricing'
+        'Start Using Consider.it'
 
       DIV 
         style: _.extend {}, base_text,
@@ -216,7 +216,7 @@ window.Pricing = ReactiveComponent
         style: _.extend {}, base_text, 
           width: 600
           height: 96
-          margin: '10px auto 60px auto'   
+          margin: '10px auto 40px auto'   
 
         for reason, idx in plan.reasons
           if @local.custom_reason_hover == reason.icon

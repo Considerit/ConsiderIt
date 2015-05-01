@@ -65,7 +65,7 @@ window.SimpleHomepage = ReactiveComponent
       style: 
         fontSize: 22
         margin: if !lefty then 'auto'
-        width: if !lefty then 705
+        width: if !lefty then 850
 
       STYLE null,
         '''a.proposal:hover {border-bottom: 1px solid grey}'''
@@ -91,7 +91,7 @@ window.SimpleHomepage = ReactiveComponent
 
         else if cluster.proposals?.length > 0
           first_column =
-            width: 350
+            width: if !lefty then 480 else 350
             marginLeft: if lefty then 200
             display: 'inline-block'
             verticalAlign: 'top'

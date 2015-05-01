@@ -140,6 +140,8 @@ customizations.RANDOM2015 =
     'Accepted':
       homie_histo_title: "PCs' ratings"
 
+customizations['program-committee-demo'] = customizations.RANDOM2015
+
 ##################
 # Schools demo
 

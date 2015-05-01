@@ -70,7 +70,9 @@ class Proposal < ActiveRecord::Base
       case current_subdomain.name 
         when 'bitcoin'
           manual_clusters = ['Our Mission', 'Our Values',  'Our Goals', 'Our Focus', 'Our Actions', 'Resolutions', 'Foundation Goals', 'Board Proposals', 'Member Proposals', 'Proposals', 'Candidates']
-        when 'RANDOM2015'
+        
+
+        when 'RANDOM2015', 'program-committee-demo'
           manual_clusters = ['Submissions', 'Under Review',  'Accepted', 'Rejected']
       end
     end

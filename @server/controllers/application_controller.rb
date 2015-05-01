@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
   def app_index
     render :json => [{
       :key => '/apps',
-      :apps => ['franklin', 'saas_landing_page']
+      :apps => ['franklin', 'product_page']
     }]
   end
 
@@ -80,7 +80,7 @@ protected
     rq = request
 
     # when to display a considerit homepage
-    can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || session[:app] == 'saas_landing_page'
+    can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || session[:app] == 'product_page'
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
       candidate_subdomain = Subdomain.find_by_name('homepage')
     else

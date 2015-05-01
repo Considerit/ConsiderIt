@@ -59,11 +59,10 @@ Development = ReactiveComponent
 
           DIV 
             style: 
-              display: 'inline-block'
+              width: '100%'  
 
             if @local.hover_second == 'change subdomain'
-              UL null,              
-
+              UL null,
                 for sub, idx in subdomains
                   LI
                     style: 
@@ -80,8 +79,8 @@ Development = ReactiveComponent
                         display: 'inline-block'            
                       sub.name
 
-            if @local.hover_second == 'change application'
-              UL null,              
+            else if @local.hover_second == 'change application'
+              UL null,
 
                 for app, idx in apps.apps
                   LI

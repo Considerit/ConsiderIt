@@ -267,8 +267,13 @@ window.getCoords = (el) ->
 
 # stored in public/images
 window.asset = (name) -> 
-  "#{fetch('/application').asset_host or ''}/images/#{name}"
+  app = fetch('/application')
 
+  if app.app?
+    "#{app.asset_host or ''}/images/#{name}"
+  else 
+    # app isn't loaded yet...
+    ""
 
 
 ##

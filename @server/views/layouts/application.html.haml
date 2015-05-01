@@ -65,7 +65,7 @@
 
       - if @app == 'product_page' && !@is_search_bot && Rails.env.production?
         :javascript
-        
+
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -94,12 +94,13 @@
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-            - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
+          - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
+            :javascript
               ga('create', '#{APP_CONFIG[:analytics][:google]}', 'consider.it', {'name': 'considerit'});
               ga('considerit.send', 'pageview');
 
 
-            - if current_subdomain.google_analytics_code && current_subdomain.google_analytics_code != ''
-
+          - if current_subdomain.google_analytics_code && current_subdomain.google_analytics_code != ''
+            :javascript
               ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
               ga('customer.send', 'pageview');

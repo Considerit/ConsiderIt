@@ -55,6 +55,7 @@ window.Video = ReactiveComponent
         boxShadow: "0 3px 8px rgba(0,0,0,.1)"
         marginTop: 8
       
+      
       VIDEO
         preload: "auto"
         loop: true
@@ -67,13 +68,13 @@ window.Video = ReactiveComponent
           height: (SAAS_PAGE_WIDTH - 2) * 1080/1920
           borderRadius: 8
 
-        SOURCE
-          src: asset("saas_landing_page/#{VIDEO_FILE}.mp4")
-          type: "video/mp4"
-        
-        SOURCE
-          src: asset("saas_landing_page/#{VIDEO_FILE}.webm")
-          type: "video/webm"
+        for format in ['mp4', 'webm']
+          asset_path = asset("saas_landing_page/#{VIDEO_FILE}.#{format}")
+          if asset_path?.length > 0
+            SOURCE
+              src: asset_path
+              type: "video/#{format}"
+          
 
       if !@local.ready      
         # Draw a white loading if we're not ready to show video

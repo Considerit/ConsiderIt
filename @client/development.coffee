@@ -17,7 +17,7 @@ Development = ReactiveComponent
     hues = getNiceRandomHues Math.max(subdomains?.length, apps.apps?.length)
     submenus = if app.app == 'franklin' 
                 ['change subdomain', 'change application']
-               else if app.app == 'saas_landing_page'
+               else if app.app == 'product_page'
                 ['change application']
     
     subdomains.sort((a,b) -> if a.name.toLowerCase() > b.name.toLowerCase() then 1 else -1)

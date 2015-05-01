@@ -53,10 +53,13 @@ class HtmlController < ApplicationController
 
     if !session.has_key? :app
       session[:app] = 'franklin'
+    elsif session[:app] == 'saas_landing_page'
+      # migration. This can be eliminated Junish
+      session[:app] = 'product_page'
     end
 
-    @app = if current_subdomain.name == 'homepage' || session[:app] == 'saas_landing_page'
-              'saas_landing_page'
+    @app = if current_subdomain.name == 'homepage' || session[:app] == 'product_page'
+              'product_page'
            else
               'franklin'
            end
@@ -104,7 +107,7 @@ class HtmlController < ApplicationController
       description = "Dialogue about City of Tigard"
     when 'homepage'
       title = 'Consider.it | Think Better Together'
-      image = view_context.asset_path 'saas_landing_page/logo.png'
+      image = view_context.asset_path 'product_page/logo.png'
       description = "Focused discussion for your community, organization or classroom. The first forum that works better when more people participate."
       keywords = "discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,public engagement,impact assessment,strategic planning,process improvement,standards,stakeholder committee,Common Core,listening"
       google_verification = "gd89L8El1xxxBpOUk9czjE9zZF4nh8Dc9izzbxIRmuY"

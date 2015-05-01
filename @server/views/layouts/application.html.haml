@@ -93,12 +93,12 @@
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-          - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
-            ga('create', '#{APP_CONFIG[:analytics][:google]}', 'consider.it', {'name': 'considerit'});
-            ga('considerit.send', 'pageview');
+            - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
+              ga('create', '#{APP_CONFIG[:analytics][:google]}', 'consider.it', {'name': 'considerit'});
+              ga('considerit.send', 'pageview');
 
 
-          - if current_subdomain.google_analytics_code && current_subdomain.google_analytics_code != ''
+            - if current_subdomain.google_analytics_code && current_subdomain.google_analytics_code != ''
 
-            ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
-            ga('customer.send', 'pageview');
+              ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
+              ga('customer.send', 'pageview');

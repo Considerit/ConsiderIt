@@ -134,7 +134,7 @@ team = ->
           href: "mailto:#{t.email}"
 
           IMG
-            src: asset("saas_landing_page/#{t.img}.jpg")
+            src: asset("product_page/#{t.img}.jpg")
             style:
               borderRadius: "50%"
               display: "inline-block"

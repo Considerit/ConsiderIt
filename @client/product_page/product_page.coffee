@@ -57,8 +57,8 @@ require './pricing'
 
 
 
-SaasHomepage = ReactiveComponent
-  displayName: "SaasHomepage"
+ProductPage = ReactiveComponent
+  displayName: "ProductPage"
   render: ->
     DIV
       style: 
@@ -293,7 +293,7 @@ Customers = ReactiveComponent
               save @local
 
             IMG
-              src: asset("saas_landing_page/#{c.img}.png")
+              src: asset("product_page/#{c.img}.png")
               style: 
                 height: 90
 
@@ -401,7 +401,7 @@ Page = ReactiveComponent
           when "/dashboard/create_subdomain"
             CreateSubdomain key: "/page/dashboard/create_subdomain"
           else
-            SaasHomepage key: "homepage"
+            ProductPage key: "homepage"
 
 Computer = ReactiveComponent
   displayName: 'Computer'

@@ -198,7 +198,7 @@ window.Story = ReactiveComponent
               width: 400
               display: 'block'
               margin: 'auto'
-            src: asset('saas_landing_page/child.png') 
+            src: asset('product_page/child.png') 
 
           DIV
             style: caption_text
@@ -336,7 +336,7 @@ window.Story = ReactiveComponent
               style: 
                 width: 350
                 display: 'block'
-              src: asset('saas_landing_page/consult.png') 
+              src: asset('product_page/consult.png') 
 
             DIV
               style: caption_text
@@ -352,7 +352,7 @@ window.Story = ReactiveComponent
               left: 315
 
             IMG 
-              src: asset('saas_landing_page/mike_talk.png')
+              src: asset('product_page/mike_talk.png')
               style: 
                 width: 208
 
@@ -373,7 +373,7 @@ window.Story = ReactiveComponent
             marginTop: 10
 
           IMG 
-            src: asset('saas_landing_page/sifp.jpg')
+            src: asset('product_page/sifp.jpg')
             width: 400
 
 
@@ -514,7 +514,7 @@ window.Story = ReactiveComponent
             marginTop: 10
 
           IMG 
-            src: asset('saas_landing_page/truth.png')
+            src: asset('product_page/truth.png')
             width: 400
 
 
@@ -605,7 +605,7 @@ window.Story = ReactiveComponent
             position: 'relative'
 
           IMG 
-            src: asset('saas_landing_page/kev_mike.png')
+            src: asset('product_page/kev_mike.png')
             style: 
               width: 400
               position: 'relative'

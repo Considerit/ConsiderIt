@@ -69,7 +69,7 @@ window.Video = ReactiveComponent
           borderRadius: 8
 
         for format in ['mp4', 'webm']
-          asset_path = asset("saas_landing_page/#{VIDEO_FILE}.#{format}")
+          asset_path = asset("product_page/#{VIDEO_FILE}.#{format}")
           if asset_path?.length > 0
             SOURCE
               src: asset_path

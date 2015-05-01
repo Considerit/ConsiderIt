@@ -45,7 +45,7 @@ global_variables = {
 // into the respective build. 
 entry_points = {
   franklin: './@client/franklin.coffee',
-  saas_landing_page: './@client/saas_landing_page/saas_landing_page.coffee'
+  product_page: './@client/product_page/product_page.coffee'
 }
 
 

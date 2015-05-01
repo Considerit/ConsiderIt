@@ -63,6 +63,19 @@
 
       %script{:src => @js, :type => 'text/javascript'}
 
+      - if @app == 'saas_landing_page' && !@is_search_bot && Rails.env.production?
+        :javascript
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
+          :javascript
+            ga('create', 'UA-55365750-2', 'auto');
+            ga('considerit.send', 'pageview');
+
+
       - if @app == 'franklin'
         // for Facebook social buttons
         #fb-root

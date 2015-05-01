@@ -108,7 +108,7 @@ class HtmlController < ApplicationController
     when 'homepage'
       title = 'Consider.it | Think Better Together'
       image = view_context.asset_path 'product_page/logo.png'
-      description = "Focused discussion for your community, organization or classroom. The first forum that works better when more people participate."
+      description = "Consider.it is the first forum that works better when more people participate. Use it in your community, organization or classroom. "
       keywords = "discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,public engagement,impact assessment,strategic planning,process improvement,standards,stakeholder committee,Common Core,listening"
       google_verification = "gd89L8El1xxxBpOUk9czjE9zZF4nh8Dc9izzbxIRmuY"
     else

@@ -26,8 +26,8 @@ class Proposal < ActiveRecord::Base
 
     if defined?(Rails::Console) || !current_user.super_admin
       # Initialize fields if empty
-      self.description        = '' if not attribute_present?("description")
-      self.description_fields = '[]' if not attribute_present?("description_fields")
+      self.description        = self.description || '' 
+      self.description_fields = self.description_fields || '[]' 
 
       # Sanitize description
       self.description = ActionController::Base.helpers.sanitize(self.description)

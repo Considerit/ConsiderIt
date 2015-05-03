@@ -56,8 +56,8 @@ window.Contact = ReactiveComponent
           bottom: -30      
 
   contactForm: -> 
-    FORM
-      action: "//chalkboard.us7.list-manage1.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
+    FORM    
+      action: "//Consider.us7.list-manage1.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
       id: "mc-embedded-subscribe-form"
       method: "post"
       name: "mc-embedded-subscribe-form"

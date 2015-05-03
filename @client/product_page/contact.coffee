@@ -33,20 +33,25 @@ window.Contact = ReactiveComponent
 
       DIV 
         style: _.extend {}, base_text,
-          margin: '30px auto'
+          margin: '20px auto'
           width: 675 #TEXT_WIDTH 
           #textAlign: 'center'
         "Hi, we’re the Consider.it team and we’d love to hear from you. "
+
+        "Write us a nice electronic letter at "
         A
           href: "mailto:admin@consider.it"
           style: _.extend {}, a, 
             color: 'white'
             borderBottomColor: 'white'
 
-          "Write us"
-        " a nice electronic letter. Or we can write to you:"
+          "admin@consider.it"
+        ". Or "
 
-      @contactForm()
+        @contactForm "we can write to you"
+        '.'
+
+      #@contactForm()
 
       DIV 
         style: cssTriangle 'bottom', logo_red, 133, 30,
@@ -55,48 +60,56 @@ window.Contact = ReactiveComponent
           marginLeft: - 133 / 2
           bottom: -30      
 
-  contactForm: -> 
+  contactForm: (label) -> 
     FORM    
-      action: "//Consider.us7.list-manage1.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
+      action: "//Consider.us7.list-manage.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
       id: "mc-embedded-subscribe-form"
       method: "post"
       name: "mc-embedded-subscribe-form"
       novalidate: "true"
       target: "_blank"
       style:
-        margin: "10px 0 20px 0"
-        textAlign: 'center'
+        # margin: "10px 0 20px 0"
+        # textAlign: 'center'
+        display: 'inline-block'
 
-      INPUT
-        id: "mce-EMAIL"
-        name: "EMAIL"
-        placeholder: "email address"
-        type: "email"
-        defaultValue: ""
-        style:
-          fontSize: 24
-          padding: "8px 12px"
-          width: 380
-          border: '1px solid white'
-          backgroundColor: logo_red
-          color: 'white'
+      # INPUT
+      #   id: "mce-EMAIL"
+      #   name: "EMAIL"
+      #   placeholder: "email address"
+      #   type: "email"
+      #   defaultValue: ""
+      #   style:
+      #     fontSize: 24
+      #     padding: "8px 12px"
+      #     width: 380
+      #     border: '1px solid white'
+      #     backgroundColor: logo_red
+      #     color: 'white'
 
       BUTTON
         name: "subscribe"
         type: "submit"
         style:
+          color: 'white'
+          border: 'none'
+          borderBottom: '1px solid white'
           fontSize: 24
-          marginLeft: 8
-          display: "inline-block"
-          backgroundColor: if @local.hover_contactme then 'white' else logo_red
-          color: if @local.hover_contactme then logo_red else 'white'
-          fontWeight: 500
-          border: "1px solid #{if @local.hover_contactme then 'transparent' else 'white'}"
-          borderRadius: 16
-          padding: '8px 18px'
+          backgroundColor: 'transparent'
+          padding: 0
+
+          # fontSize: 24
+          # marginLeft: 8
+          # display: "inline-block"
+          # backgroundColor: if @local.hover_contactme then 'white' else logo_red
+          # color: if @local.hover_contactme then logo_red else 'white'
+          # fontWeight: 500
+          # border: "1px solid #{if @local.hover_contactme then 'transparent' else 'white'}"
+          # borderRadius: 16
+          # padding: '8px 18px'
         onMouseEnter: => @local.hover_contactme = true; save @local
         onMouseLeave: => @local.hover_contactme = false; save @local
-        "Contact me"
+        label
 
 team = -> 
   members = [{
@@ -145,7 +158,7 @@ team = ->
 
           BR null
 
-          A
+          SPAN
             style: _.extend {}, a, 
               textAlign: "center"
               #borderBottom: 'none'
@@ -159,6 +172,16 @@ team = ->
             style: _.extend {}, small_text
 
             t.location
+
+          BR null
+
+          SPAN 
+            style: _.extend {}, small_text,
+              position: 'relative'
+              top: -7
+
+            t.email
+
 
 
 

@@ -2500,7 +2500,7 @@ EditPoint = ReactiveComponent
                   L#{guidelines_w},33 
                   Z
                  """
-          DI
+          DIV
             style: 
               padding: '14px 18px'
               position: 'relative'

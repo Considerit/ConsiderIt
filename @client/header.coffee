@@ -77,14 +77,17 @@ window.ShortHeader = ReactiveComponent
 
 
       if subdomain.branding.logo
-
-        IMG 
-          src: subdomain.branding.logo
+        A 
+          href: if subdomain.external_project_url then subdomain.external_project_url
           style: 
-            height: 46
             verticalAlign: 'middle'
             marginLeft: 35
             display: 'inline-block'
+
+          IMG 
+            src: subdomain.branding.logo
+            style: 
+              height: 46
 
       if subdomain.branding.masthead_header_text
         SPAN 
@@ -96,7 +99,7 @@ window.ShortHeader = ReactiveComponent
             display: 'inline-block'
             verticalAlign: 'middle'
 
-          if subdomain.external_project_url
+          if subdomain.external_project_url && !subdomain.branding.logo
             A 
               href: "#{subdomain.external_project_url}"
               target: '_blank'

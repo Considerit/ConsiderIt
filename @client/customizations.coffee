@@ -141,6 +141,26 @@ customizations.default =
 #################
 # humanities-los
 
+customizations['allsides'] = 
+  Homepage: LearnDecideShareHomepage
+
+  homepage_heading_columns : [ 
+    {heading: 'Questions', details: null}, \
+    {heading: null}, \
+    {heading: 'Community', details: null}, \
+    {heading: '', details: ''}]
+
+
+  cluster_options :
+    'Classroom Discussion':
+      homie_histo_title: "Students' opinions"
+    'Civics':
+      homie_histo_title: "Citizens' opinions"
+
+
+#################
+# humanities-los
+
 customizations['humanities-los'] = 
   point_labels : 
     pro: 'strength'

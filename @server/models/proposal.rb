@@ -77,7 +77,7 @@ class Proposal < ActiveRecord::Base
           manual_clusters = ['Submissions', 'Under Review',  'Accepted', 'Rejected']
 
         when 'allsides'
-          manual_clusters = ['Proposals', 'Classroom Discussion', 'Civics']
+          manual_clusters = ['Proposals', 'Classroom Discussions', 'Civics']
 
       end
     end

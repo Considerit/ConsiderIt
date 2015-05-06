@@ -23,6 +23,9 @@ class Comment < ActiveRecord::Base
     result
   end
 
+  def proposal
+    point.proposal
+  end
 
   # Fetches all comments associated with this Point. 
   # Because we generally render fact-checks in the comment stream, we also return

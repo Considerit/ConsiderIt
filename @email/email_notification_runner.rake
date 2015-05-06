@@ -1,4 +1,52 @@
 task :send_email_notifications => :environment do
+
+
+  def digest_proposal
+    channels_to_aggregate = ['touched_proposal', 'my_proposal', 'touched_point', 'my_point']
+
+    candidate_notifications = {}
+
+    for notification in Notification.where(sent_email: false).where("event_channel IN (?)", channels_to_aggregate)
+      user = notification.user_id
+      proposal = notification.root_object.proposal.id
+      channel = notification.event_channel
+      etype = notification.event_type
+
+      candidate_notifications[user] ||= {}
+      candidate_notifications[user][proposal] ||= {}
+      candidate_notifications[user][proposal][channel] ||= {}
+      candidate_notifications[user][proposal][channel][etype] ||= []
+
+      candidate_notifications[user][proposal][channel][etype] = 1
+
+    end
+
+    candidate_notifications
+  end
+
+  def digest_point
+    channels_to_aggregate = ['touched_point', 'my_point']
+  end
+
+  pp digest_proposal
+
+  # Aggregate notifications by user, proposal, channel, event_type
+  # These are for notifications related to a particular proposal
+  candidate_notifications = {}
+  for notification in Notification.where(sent_email: false)
+    candidate_notifications[notification.user_id] ||= {}
+
+    candidate_notifications[notification.user_id][notification.event_channel] ||= {}
+
+    candidate_notifications[notification.user_id][notification.event_channel][notification.event_type] ||= []
+
+    candidate_notifications[notification.user_id][notification.event_channel][notification.event_type].push 1 #notification
+
+  end
+
+  pp candidate_notifications
+
+
   for notification in Notification.where(sent_email: false)
     object = notification.root_object
     subdomain = notification.subdomain

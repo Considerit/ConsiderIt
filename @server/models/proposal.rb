@@ -247,16 +247,6 @@ class Proposal < ActiveRecord::Base
     self.seo_keywords += "#{keyword}," if !self.seo_keywords.index("#{keyword},")
   end
 
-  def self.update_scores
-    # for now, order by activity; later, incorporate trending    
-
-    # Proposal.active.each do |p|
-    #   p.update_metrics
-    #   p.save
-    # end
-
-    true
-  end
 
 
 end

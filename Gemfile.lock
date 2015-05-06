@@ -86,6 +86,8 @@ GEM
       climate_control (>= 0.0.3, < 1.0)
     daemons (1.1.9)
     dalli (2.7.2)
+    deep_cloneable (2.1.1)
+      activerecord (>= 3.1.0, < 5.0.0)
     delayed_paperclip (2.9.0)
       paperclip (>= 3.3)
     erubis (2.7.0)
@@ -197,6 +199,7 @@ DEPENDENCIES
   bcrypt
   daemons
   dalli
+  deep_cloneable
   delayed_job!
   delayed_job_active_record!
   delayed_paperclip

@@ -352,15 +352,12 @@ Proposal = ReactiveComponent
 
                   A
                     style: {color: '#888'}
-                    onClick: => 
-                      if confirm('Delete this proposal forever?')
-                        destroy(@proposal.key)
-                        loadPage('/')
                     'Copy to subdomain'
 
                   if @local.copy_to_subdomain
                     subdomains = fetch('/subdomains').subs
                     hues = getNiceRandomHues subdomains?.length
+                    
                     UL 
                       style: 
                         display: 'inline'

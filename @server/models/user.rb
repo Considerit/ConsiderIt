@@ -133,7 +133,7 @@ class User < ActiveRecord::Base
     self.registered
   end
 
-  def add_to_active_in(subdomain)
+  def add_to_active_in(subdomain=nil)
     subdomain = subdomain or Thread.current[:subdomain]
     active_subdomains = JSON.parse(self.active_in) || []
 

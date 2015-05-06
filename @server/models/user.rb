@@ -1,5 +1,4 @@
 require 'open-uri'
-#require 'role_model'
 
 class User < ActiveRecord::Base
   has_secure_password validations: false
@@ -11,6 +10,7 @@ class User < ActiveRecord::Base
   has_many :comments, :dependent => :destroy
   has_many :proposals
   has_many :follows, :dependent => :destroy, :class_name => 'Follow'
+  has_many :notifications, :dependent => :destroy
 
   attr_accessor :avatar_url, :downloaded
 
@@ -71,6 +71,8 @@ class User < ActiveRecord::Base
       is_evaluator: permit('factcheck content', nil) > 0,
       trying_to: nil,
       no_email_notifications: no_email_notifications,
+      subscriptions: subscription_settings,
+      notifications: Notification.where(:user_id => self.id),      
       verified: verified,
       needs_to_set_password: registered && !name #happens for users that were created via email invitation
     }
@@ -153,7 +155,50 @@ class User < ActiveRecord::Base
 
   end
 
+
+  # Which channels this user subscribes. e.g. comments on points i've written
+  def subscription_settings
+    settings = JSON.parse(subscriptions || "{}")
+
+    # subscription types: email, hourly_digest, daily_digest, on_site, none
+
+    channels = [{
+      'name' => 'touched_proposal',
+      'default' => 'daily_digest'
+    },{
+      'name' => 'my_proposal',
+      'default' => 'daily_digest'
+    },{
+      'name' => 'touched_point',
+      'default' => 'daily_digest'
+    },{
+      'name' => 'my_point',
+      'default' => 'hourly_digest'
+    },
+    # {
+    #   'name' => 'proposals',
+    #   'default' => 'hourly_digest'
+    # },
+    ]
+
+    if permit('moderate content', nil) > 0
+      channels.push({
+        'name' => 'moderator',
+        'default' => 'hourly_digest'
+      })
+    end
+ 
+    for channel in channels
+      # initialize channel setting to default if it doesn't exist
+      settings[channel['name']] = channel['default'] if !settings.has_key? channel['name']
+    end
+
+    settings
+  end
+
+
   # get all the items this user gets notifications for
+  # TODO: update for new system!
   def notifications
     current_subdomain = Thread.current[:subdomain]
 

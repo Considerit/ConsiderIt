@@ -1,7 +1,7 @@
 # coding: utf-8
 class Point < ActiveRecord::Base
   
-  include Followable, Moderatable, Assessable
+  include Followable, Moderatable, Assessable, Notifier
     
   belongs_to :user
   belongs_to :proposal
@@ -82,10 +82,8 @@ class Point < ActiveRecord::Base
     recache
     self.save if changed?
 
-    ActiveSupport::Notifications.instrument("point:published", 
-      :point => self,
-      :current_subdomain => Thread.current[:subdomain]
-    )
+    Notifier.create_notification 'published', self
+
   end
 
   # The user is subscribed to the point _implicitly_ if:

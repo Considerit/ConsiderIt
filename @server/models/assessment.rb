@@ -1,4 +1,6 @@
 class Assessment < ActiveRecord::Base
+  include Notifier
+  
   belongs_to :user
 
   belongs_to :assessable, :polymorphic => true

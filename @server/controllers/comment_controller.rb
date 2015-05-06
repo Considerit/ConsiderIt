@@ -21,8 +21,6 @@ class CommentController < ApplicationController
   end
 
   def create
-    
-
     fields = ['body']
     comment = params.select{|k,v| fields.include? k}
 
@@ -41,10 +39,8 @@ class CommentController < ApplicationController
       authorize! 'create comment', comment
 
       if comment.save
-        ActiveSupport::Notifications.instrument("comment:point:created", 
-          :comment => comment, 
-          :current_subdomain => current_subdomain
-        )
+
+        Notifier.create_notification('create', comment)
 
         original_id = key_id(params[:key])
         result = comment.as_json
@@ -78,10 +74,7 @@ class CommentController < ApplicationController
 
     comment.update_attributes! comment_vals
 
-    ActiveSupport::Notifications.instrument("comment:point:updated", 
-      :model => comment, 
-      :current_subdomain => current_subdomain
-    )
+    comment.redo_moderation
 
     dirty_key "/comment/#{comment.id}"
     render :json => []

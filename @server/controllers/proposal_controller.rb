@@ -131,10 +131,7 @@ class ProposalController < ApplicationController
         proposal.update_attributes! updated_fields
 
         if text_updated
-          ActiveSupport::Notifications.instrument("proposal:updated", 
-            :model => proposal,
-            :current_subdomain => current_subdomain
-          )
+          proposal.redo_moderation
         end
       end
     end

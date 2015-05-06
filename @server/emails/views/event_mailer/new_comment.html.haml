@@ -2,11 +2,9 @@
 %p
   #{@comment.user.name} commented on 
   %a{href: full_link(@proposal.slug, {selected: "%2Fpoint%2F#{@point.id}"}), style: 'font-weight: 700; color: #468EE5;'} a point
-  - if @notification_type == 'your point'
+  - if @notification.event_type == 'comment_on_my_point'
     that you wrote:
-  - elsif @notification_type == 'participant'
-    that you also commented:
-  - elsif ['included point', 'lurker'].include?(@notification_type)
+  - else
     that you follow:
 
 %p 
@@ -24,5 +22,4 @@
   Read and discuss this comment
 
 = content_for :footer do
-
   = render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this point'}

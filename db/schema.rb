@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150119041700) do
+ActiveRecord::Schema.define(version: 20150504155502) do
 
   create_table "assessments", force: :cascade do |t|
     t.integer  "user_id",         limit: 4
@@ -148,6 +148,19 @@ ActiveRecord::Schema.define(version: 20150119041700) do
     t.integer  "subdomain_id",                  limit: 4
     t.boolean  "updated_since_last_evaluation", limit: 1,   default: false
     t.boolean  "notification_sent",             limit: 1,   default: false
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.integer  "user_id",       limit: 4
+    t.integer  "notifier_id",   limit: 4
+    t.integer  "subdomain_id",  limit: 4
+    t.string   "notifier_type", limit: 255
+    t.string   "event_type",    limit: 255
+    t.string   "event_channel", limit: 255
+    t.boolean  "sent_email",    limit: 1
+    t.datetime "read_at"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "opinions", force: :cascade do |t|
@@ -324,6 +337,7 @@ ActiveRecord::Schema.define(version: 20150119041700) do
     t.boolean  "no_email_notifications", limit: 1,     default: false
     t.boolean  "verified",               limit: 1,     default: false
     t.text     "groups",                 limit: 65535
+    t.text     "subscriptions",          limit: 65535
   end
 
   add_index "users", ["avatar_file_name"], name: "index_users_on_avatar_file_name", using: :btree

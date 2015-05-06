@@ -1,17 +1,8 @@
-
-
-Hi #{@user.first_name},
-= "\r\n"
-
-- if @notification_type == 'your proposal'
+- if @notification.event_type == 'new_point_on_my_proposal'
 
   #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for your proposal "#{@point.proposal.title}":
 
-- elsif @notification_type == 'opinion submitter'
-
-  #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}":
-
-- elsif @notification_type == 'lurker'
+- else
 
   #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point for "#{@point.proposal.title}":
 

@@ -1,5 +1,5 @@
 class Comment < ActiveRecord::Base
-  include Moderatable
+  include Moderatable, Notifier
 
   class_attribute :my_public_fields
   self.my_public_fields = [:id, :body, :user_id, :created_at, :point_id, :moderation_status ]

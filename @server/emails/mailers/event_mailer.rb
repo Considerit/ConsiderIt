@@ -18,47 +18,21 @@ class EventMailer < Mailer
     mail(:from => from, :to => to, :subject => subject_line(@message['subject'], subdomain), :bcc => from, :reply_to => reply_to)
   end
 
-  def new_point(user, pnt, subdomain, notification_type)
-    @notification_type = notification_type
-    @user = user
+  def new_point(notification, to, from, subject, pnt, notification_type)
+    @notification = notification
     @point = pnt
     @proposal = @point.proposal
-    @subdomain = subdomain
 
-    to = format_email user.email, user.name    
-    from = format_email(default_sender(subdomain), (subdomain.app_title or subdomain.name))
-
-    if notification_type == 'your proposal'
-      subject = "new #{@point.is_pro ? 'pro' : 'con'} point for your proposal \"#{@point.proposal.title}\""
-    else
-      subject = "new #{@point.is_pro ? 'pro' : 'con'} point for \"#{@point.proposal.title}\""
-    end
-
-    mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
+    mail(:from => from, :to => to, :subject => subject)
   end
 
-  def new_comment(user, pnt, comment, subdomain, notification_type)
-    @notification_type = notification_type
-    @user = user
-    @point = pnt
-    @comment = comment
+  def new_comment(notification, to, from, subject, comment, notification_type)
+    @notification = notification
+    @point = comment.point
     @proposal = @point.proposal
-    @subdomain = subdomain
+    @comment = comment
 
-    to = format_email user.email, user.name
-    from = format_email(default_sender(subdomain), (subdomain.app_title or subdomain.name))
-
-    if notification_type == 'your point'
-      subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you wrote"
-    elsif notification_type == 'participant'
-      subject = "#{@comment.user.name} commented on a discussion in which you participated"
-    elsif notification_type == 'included point'
-      subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you follow"
-    else
-      subject = "new comment on a #{@point.is_pro ? 'pro' : 'con'} point you follow"
-    end
-
-    mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
+    mail(:from => from, :to => to, :subject => subject)
   end
 
   def new_assessment(user, pnt, assessment, subdomain, notification_type)

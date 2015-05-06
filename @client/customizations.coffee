@@ -137,6 +137,13 @@ customizations.default =
 ##########################
 # SUBDOMAIN CONFIGURATIONS
 
+################
+# schools
+customizations['schools'] = 
+  cluster_options :
+    'Classroom Discussions':
+      homie_histo_title: "Students' opinions"
+
 
 #################
 # humanities-los

@@ -14,6 +14,7 @@ gem "bcrypt"
 # DATABASE & DATABASE MIDDLEWARE
 gem "mysql2"
 gem 'acts_as_tenant' # https://github.com/ErwinM/acts_as_tenant
+gem 'deep_cloneable'
 
 #############
 # VIEWS / FORMS / CLIENT

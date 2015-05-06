@@ -73,17 +73,6 @@ class Opinion < ActiveRecord::Base
       inc.point.recache
     end
 
-    # ActiveSupport::Notifications.instrument("published_new_opinion", 
-    #                                         :opinion => self,
-    #                                         :current_subdomain => Thread.current[:subdomain])
-    # send out confirmation email if user is not yet confirmed
-    # if !current_user.confirmed? && current_user.opinions.published.count == 1
-    #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
-    #     :user => current_user,
-    #     :proposal => proposal,
-    #     :current_subdomain => current_subdomain
-    #   )
-    # end
   end
 
   def update_inclusions (points_to_include)

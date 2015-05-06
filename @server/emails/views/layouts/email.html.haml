@@ -3,10 +3,10 @@
   %head{ :profile => "http://gmpg.org/xfn/1" }
 
   %body
-    #content{style: "font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; background-color: #{@subdomain.branding_info['primary_color']}; color: white; text-align: center; padding: 10px 0"}
+    #content{style: "font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; background-color: #{@notification.subdomain.branding_info['primary_color']}; color: white; text-align: center; padding: 10px 0"}
       %h1{style: 'font-weight: 600; margin: 0; padding: 0'}
-        %a{href: @subdomain.host_with_port, style: 'color: white'}
-          = @subdomain.app_title
+        %a{href: @notification.subdomain.host_with_port, style: 'color: white'}
+          = @notification.subdomain.app_title
 
       %div{style: "width: 80%; max-width: 800px; margin: 15px auto; padding: 20px 40px; background-color: white; color: #414141; box-shadow: 0 1px 2px rgba(0,0,0,.5); text-align: left"}
 

@@ -119,10 +119,7 @@ class PointController < ApplicationController
             :details => {:point => "/point/#{point.id}"}
           })
 
-          ActiveSupport::Notifications.instrument("point:updated", 
-            :model => point,
-            :current_subdomain => current_subdomain
-          )
+          point.redo_moderation
         end
       end
     end

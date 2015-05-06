@@ -152,7 +152,7 @@ customizations['allsides'] =
 
 
   cluster_options :
-    'Classroom Discussion':
+    'Classroom Discussions':
       homie_histo_title: "Students' opinions"
     'Civics':
       homie_histo_title: "Citizens' opinions"

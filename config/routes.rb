@@ -22,6 +22,9 @@ ConsiderIt::Application.routes.draw do
   #  switch between considerit app & the saas landing page
   get '/set_app/:app' => 'developer#set_app'
 
+  get '/proposal/:id/copy_to/:subdomain_id' => 'proposal#copy_to_subdomain'
+
+
   # All user-visible URLs go to the html controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
   get '(*url)' => 'html#index', :constraints => NotJSON.new
@@ -33,6 +36,8 @@ ConsiderIt::Application.routes.draw do
   get '/users' => 'user#index'
   resources :proposal
   get '/proposals' => 'proposal#index'
+
+
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :show]
   resources :client_error, :only => [:create]

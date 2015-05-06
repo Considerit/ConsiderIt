@@ -338,6 +338,50 @@ Proposal = ReactiveComponent
                       loadPage('/')
                   'Delete'
 
+              if current_user.is_super_admin
+                SPAN 
+                  style:
+                    padding: 10
+
+                  onMouseEnter: => 
+                    @local.copy_to_subdomain = true
+                    save @local
+                  onMouseLeave: => 
+                    @local.copy_to_subdomain = false
+                    save @local
+
+                  A
+                    style: {color: '#888'}
+                    onClick: => 
+                      if confirm('Delete this proposal forever?')
+                        destroy(@proposal.key)
+                        loadPage('/')
+                    'Copy to subdomain'
+
+                  if @local.copy_to_subdomain
+                    subdomains = fetch('/subdomains').subs
+                    hues = getNiceRandomHues subdomains?.length
+                    UL 
+                      style: 
+                        display: 'inline'
+                      for sub, idx in subdomains
+                        LI
+                          style: 
+                            display: 'inline-block'
+                            listStyle: 'none'
+                          A
+                            href: "/proposal/#{@proposal.id}/copy_to/#{sub.id}"
+                            'data-nojax': false
+                            style: 
+                              padding: "4px 8px"
+                              fontSize: 18
+                              backgroundColor: hsv_to_rgb(hues[idx], .7, .5)
+                              color: 'white'
+                              display: 'inline-block'            
+                            sub.name
+
+
+
           if @local.edit_roles
             DIV 
               style:

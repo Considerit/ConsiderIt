@@ -8,21 +8,13 @@ job_type :envcommand, '. ~/.profile; cd :path && RAILS_ENV=:environment :task'
 # on some systems, need to source rvm before running standard rake command
 job_type :rake, '. ~/.profile; cd :path && RAILS_ENV=:environment bundle exec rake :task --silent :output'
 
-every 5.minutes do
+every 30.minutes do
   rake 'compute_metrics'
 end
 
-every 12.hours do
+every 1.day do
   rake 'alerts:check_moderation'
 end
-
-
-{% if backup_data %}
-# backup database
-every :day, :at => '2:00 am' do
-  envcommand 'backup perform --trigger {{ ansible_hostname }} --config-file {{app_home}}/Backup/config.rb'
-end
-{% endif %}
 
 every :reboot do
   envcommand 'bundle exec bin/delayed_job restart'
@@ -32,8 +24,17 @@ every :day, :at => '1:30 am' do
   envcommand 'bundle exec bin/delayed_job restart'
 end
 
-#every 1.minute do
-#  envcommand 'bundle exec bin/delayed_job restart'
-#end
+every 1.hour do
+  rake 'clear_null_inclusions'
+end
 
-# Learn more: http://github.com/javan/whenever
+every 15.minutes do 
+  rake 'send_email_notifications'
+end
+
+{% if backup_data %}
+# backup database
+every :day, :at => '2:00 am' do
+  envcommand 'backup perform --trigger {{ ansible_hostname }} --config-file {{app_home}}/Backup/config.rb'
+end
+{% endif %}

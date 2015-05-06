@@ -78,8 +78,7 @@ module ConsiderIt
 
     config.paths["lib/tasks"] << "test"
     config.paths["lib/tasks"] << "lib/screencasts"
-
-    config.paths["config/initializers"] << "@server/emails/notifications"
+    config.paths["lib/tasks"] << "@server/emails/notifications"
 
     asset_paths = ["@client"]
     for asset_path in asset_paths

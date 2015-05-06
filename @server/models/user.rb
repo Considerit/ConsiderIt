@@ -134,7 +134,10 @@ class User < ActiveRecord::Base
   end
 
   def add_to_active_in(subdomain=nil)
-    subdomain = subdomain or Thread.current[:subdomain]
+    if !subdomain 
+      subdomain = Thread.current[:subdomain]
+    end
+    
     active_subdomains = JSON.parse(self.active_in) || []
 
     if !active_subdomains.include?("#{subdomain.id}")

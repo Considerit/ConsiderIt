@@ -138,6 +138,27 @@ customizations.default =
 # SUBDOMAIN CONFIGURATIONS
 
 ################
+# sosh
+customizations['sosh'] = 
+  point_labels : 
+    pro: 'strength'
+    pros: 'strengths' 
+    con: 'weakness'
+    cons: 'weaknesses'
+    your_header: "--valences-- you observe" 
+    other_header: "--valences-- observed" 
+    top_header: "Foremost --valences--" 
+
+  slider_pole_labels :
+    individual: 
+      support: 'Yes'
+      oppose: 'No'
+    group: 
+      support: 'Yes'
+      oppose: 'No'
+
+
+################
 # schools
 customizations['schools'] = 
   cluster_options :

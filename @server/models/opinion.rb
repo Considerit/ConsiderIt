@@ -2,7 +2,7 @@ class Opinion < ActiveRecord::Base
   belongs_to :user
   belongs_to :proposal, :touch => true 
   
-  include Followable
+  include Followable, Notifier
 
   acts_as_tenant :subdomain
 
@@ -72,6 +72,9 @@ class Opinion < ActiveRecord::Base
     inclusions.each do |inc|
       inc.point.recache
     end
+
+    Notifier.create_notification 'published', self
+
 
   end
 

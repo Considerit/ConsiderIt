@@ -5,6 +5,19 @@ module Moderatable
     has_one :moderation, :as => :moderatable, :class_name => 'Moderation', :dependent => :destroy    
   end
 
+  def okay_to_email_notification
+    mod_setting = []
+
+    if self.subdomain && \
+       self.subdomain.respond_to?("moderate_#{self.class.name.downcase}s_mode")
+
+      mod_setting = self.subdomain.send("moderate_#{self.class.name.downcase}s_mode")
+
+    end
+
+    [nil, 0, 3].include?(mod_setting) || (self.moderation && self.moderation.status == 1)
+  end
+
   def redo_moderation
     if self.moderation
       self.moderation.updated_since_last_evaluation = true
@@ -13,3 +26,4 @@ module Moderatable
   end
 
 end
+

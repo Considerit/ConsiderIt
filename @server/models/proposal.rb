@@ -65,7 +65,8 @@ class Proposal < ActiveRecord::Base
       end
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
       proposals = current_subdomain.proposals.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
-    else
+
+    elsif 
       proposals = current_subdomain.proposals.where(:hide_on_homepage => false)
       case current_subdomain.name 
         when 'bitcoin'
@@ -74,6 +75,10 @@ class Proposal < ActiveRecord::Base
 
         when 'RANDOM2015', 'program-committee-demo'
           manual_clusters = ['Submissions', 'Under Review',  'Accepted', 'Rejected']
+
+        when 'allsides'
+          manual_clusters = ['Proposals', 'Classroom Discussions', 'Civics']
+
       end
     end
 
@@ -242,16 +247,6 @@ class Proposal < ActiveRecord::Base
     self.seo_keywords += "#{keyword}," if !self.seo_keywords.index("#{keyword},")
   end
 
-  def self.update_scores
-    # for now, order by activity; later, incorporate trending    
-
-    # Proposal.active.each do |p|
-    #   p.update_metrics
-    #   p.save
-    # end
-
-    true
-  end
 
 
 end

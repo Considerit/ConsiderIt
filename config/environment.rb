@@ -42,6 +42,10 @@ def current_user
   Thread.current[:current_user]
 end
 
+def current_subdomain
+  Thread.current[:subdomain]
+end
+
 
 # Initialize the rails application
 ConsiderIt::Application.initialize! do |config|

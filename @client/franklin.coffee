@@ -33,6 +33,7 @@ require './swapables'
 require './tooltip'
 require './development'
 require './god'
+require './notification_settings'
 
 ## ########################
 ## Initialize defaults for client data
@@ -240,8 +241,6 @@ Proposal = ReactiveComponent
                           Permission.INSUFFICIENT_PRIVILEGES]) || \
                           your_opinion.published
 
-    other_heading = customization "point_labels.#{if mode == 'results' then 'top' else "other"}_header"
-
     DIV key:@props.slug,
 
       DIV className: 'proposal_header',
@@ -337,47 +336,6 @@ Proposal = ReactiveComponent
                       destroy(@proposal.key)
                       loadPage('/')
                   'Delete'
-
-              if current_user.is_super_admin
-                SPAN 
-                  style:
-                    padding: 10
-
-                  onMouseEnter: => 
-                    @local.copy_to_subdomain = true
-                    save @local
-                  onMouseLeave: => 
-                    @local.copy_to_subdomain = false
-                    save @local
-
-                  A
-                    style: {color: '#888'}
-                    'Copy to subdomain'
-
-                  if @local.copy_to_subdomain
-                    subdomains = fetch('/subdomains').subs
-                    hues = getNiceRandomHues subdomains?.length
-                    
-                    UL 
-                      style: 
-                        display: 'inline'
-                      for sub, idx in subdomains
-                        LI
-                          style: 
-                            display: 'inline-block'
-                            listStyle: 'none'
-                          A
-                            href: "/proposal/#{@proposal.id}/copy_to/#{sub.id}"
-                            'data-nojax': false
-                            style: 
-                              padding: "4px 8px"
-                              fontSize: 18
-                              backgroundColor: hsv_to_rgb(hues[idx], .7, .5)
-                              color: 'white'
-                              display: 'inline-block'            
-                            sub.name
-
-
 
           if @local.edit_roles
             DIV 
@@ -477,9 +435,7 @@ Proposal = ReactiveComponent
           #community cons
           CommunityPoints 
             key: 'cons'
-            heading: other_heading
-                        .replace('--valences--', capitalize(customization('point_labels.cons')))
-                        .replace('--valence--', capitalize(customization('point_labels.con')))
+            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{capitalize(customization('point_labels.cons'))}"
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \
@@ -512,9 +468,7 @@ Proposal = ReactiveComponent
           #community pros
           CommunityPoints 
             key: 'pros'
-            heading: other_heading
-                        .replace('--valences--', capitalize(customization('point_labels.pros')))
-                        .replace('--valence--',  capitalize(customization('point_labels.pro')))
+            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{capitalize(customization('point_labels.pros'))}"            
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \
@@ -1118,18 +1072,16 @@ YourPoints = ReactiveComponent
       fontWeight: 700
       color: if @proposal.has_focus != 'opinion' then "#eee" else focus_blue
 
-    heading = customization("point_labels.your_header")
-                .replace('--valences--', capitalize(customization("point_labels.#{@props.valence}")))
-                .replace('--valence--', capitalize(customization("point_labels.#{@props.valence}")))
+    heading = "Give Your " + \
+              capitalize(customization('point_labels.' + @props.valence))
 
 
     # drop target defs
     dt_stroke_width = 1
     dt_w = POINT_CONTENT_WIDTH + 6
-    dt_h = 73
+    dt_h = 63
     s_w = 8
     s_h = 6
-
 
     mouth_style = 
       top: 8
@@ -1442,7 +1394,7 @@ CommunityPoints = ReactiveComponent
               fontWeight: if browser.high_density_display then '300' else '400'
 
             "No " + \
-            customization('point_labels.' + @props.key ) + \
+            customization('point_labels.' + @props.key.substring(0, @props.key.length - 1) ) + \
             " given"
 
 
@@ -2179,8 +2131,7 @@ Discussion = ReactiveComponent
     if @discussion.assessment
       comments = comments.slice()
       comments.push @discussion.assessment
-
-    comments.sort (a,b) -> a.created_at > b.created_at
+      comments.sort (a,b) -> a.created_at < b.created_at
 
     discussion_style =
       width: DECISION_BOARD_WIDTH
@@ -2542,7 +2493,7 @@ EditPoint = ReactiveComponent
                   L#{guidelines_w},33 
                   Z
                  """
-          DIV
+          DIV 
             style: 
               padding: '14px 18px'
               position: 'relative'
@@ -2557,7 +2508,9 @@ EditPoint = ReactiveComponent
                   customization('point_labels.pro')
                 else 
                   customization('point_labels.con')
-              ' (or question) for this proposal'
+              " point "
+              BR null
+              '(or question) for this proposal'
 
             UL 
               style: 
@@ -2884,75 +2837,6 @@ About = ReactiveComponent
         DIV className: 'embedded_about_html'
 
 
-EmailNotificationSettings = ReactiveComponent
-  displayName: 'EmailNotificationSettings'
-
-  render : -> 
-    data = @data()
-    current_user = fetch('/current_user')
-
-    DIV null,
-      DashHeader name: 'Email Notification Settings'
-      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'}, 
-        DIV style: {position: 'relative'},
-          INPUT 
-            id: 'no_email_notifications'
-            name: 'no_email_notifications'
-            type: 'checkbox'
-            defaultChecked: !current_user.no_email_notifications
-            style: css.crossbrowserify
-              transform: "scale(1.5)"
-              fontSize: 30
-              position: 'absolute'
-              left: -32
-              top: 11
-            onChange: (e) => 
-              current_user.no_email_notifications = \
-                !$('#no_email_notifications').is(':checked')
-              save current_user
-
-          LABEL 
-            htmlFor: 'no_email_notifications'
-            style: 
-              fontSize: 30
- 
-            'Enable email notifications'
-
-        if !current_user.no_email_notifications
-          if _.flatten(_.values(data.follows)).length == 0
-            DIV null, 'You\'re not currently receiving any email notifications'
-          else
-            DIV null,
-              HR null
-              for followable_type in ['Point', 'Proposal']
-                if data.follows[followable_type].length > 0
-                  DIV null,
-                    H1 
-                      style: 
-                        fontSize: 18
-                        marginTop: '18px'
-
-                      if followable_type == 'Point'
-                        "Pro/con points to which you are subscribed"
-                      else
-                        "#{followable_type}s to which you have subscribed"
-                    for follow in data.follows[followable_type]
-                      followable = fetch(follow)
-                      DIV style: {margin: '20px 0'}, 
-                        if followable_type == 'Point'
-                          Point key: followable, rendered_as: 'under_review', enable_dragging: false
-                        else 
-                          BLOCKQUOTE null,
-                            followable.name
-                        BUTTON 
-                          style: {fontSize: 18}
-                          onClick: do(followable) => => 
-                            followable.is_following = false
-                            save followable
-                            arest.serverFetch '/dashboard/email_notifications' 
-                               # don't want to have to dirty this key whenever 
-                               # a point or proposal is updated
-                          'unsubscribe'
 
 LocationTransition = ReactiveComponent
   displayName: 'locationTransition'
@@ -3069,7 +2953,7 @@ Page = ReactiveComponent
           when '/proposal/new'
             EditProposal key: "new_proposal", fresh: true              
           when '/dashboard/email_notifications'
-            EmailNotificationSettings 
+            NotificationSettings 
               key: '/page/dashboard/email_notifications'
           when '/dashboard/assessment'
             FactcheckDash key: "/page/dashboard/assessment"

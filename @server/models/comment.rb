@@ -31,8 +31,6 @@ class Comment < ActiveRecord::Base
   # Because we generally render fact-checks in the comment stream, we also return
   # fact-checks for this point  
   def self.comments_for_point(point)
-    current_subdomain = Thread.current[:subdomain]
-
     if current_subdomain.moderate_comments_mode == 1
       moderation_status_check = 'moderation_status=1'
     else 

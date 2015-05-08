@@ -12,7 +12,6 @@ class Moderation < ActiveRecord::Base
   self.my_public_fields = [:user_id, :id, :status, :moderatable_id, :moderatable_type, :updated_at, :updated_since_last_evaluation]
 
   def self.all_for_subdomain
-    current_subdomain = Thread.current[:subdomain]
 
     moderations = []
 

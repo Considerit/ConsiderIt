@@ -10,7 +10,7 @@ class Inclusion < ActiveRecord::Base
   def check_dupes(purge = false)
     user_points    = Inclusion.where(:user_id => self.user_id, :point_id => self.point_id)
     if user_points.length > 1
-      error_str = "#{created_at} This is a duplicate user_point user #{self.user_id} point #{self.point_id} of n=#{user_points.length} #{user_points.map{|i| i.id}}"
+      error_str = "#{created_at} This is a duplicate user #{self.user_id} point #{self.point_id} of n=#{user_points.length} #{user_points.map{|i| i.id}}"
       if purge
         user_points.map {|i| i.id}[1..99999999].each do |dup|
           Inclusion.find(dup).destroy

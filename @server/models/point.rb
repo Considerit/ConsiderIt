@@ -165,6 +165,14 @@ class Point < ActiveRecord::Base
     Point.published.each {|pnt| pnt.recache }
   end
 
+  def title(max_len = 140)
 
+    if nutshell.length > max_len
+      "#{nutshell[0..max_len]}..."
+    else
+      nutshell
+    end
+    
+  end
 
 end

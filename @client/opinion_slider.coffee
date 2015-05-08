@@ -123,6 +123,8 @@ window.OpinionSlider = ReactiveComponent
     slider_feedback = 
       if !slider.has_moved 
         'Slide Your Overall Opinion' 
+      else if !customization('show_slider_feedback')
+        ""
       else if isNeutralOpinion slider.value
         "You are Undecided"
       else 

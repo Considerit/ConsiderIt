@@ -135,12 +135,15 @@ class User < ActiveRecord::Base
     self.registered
   end
 
-  def add_to_active_in
-    current_subdomain = Thread.current[:subdomain]
+  def add_to_active_in(subdomain=nil)
+    if !subdomain 
+      subdomain = Thread.current[:subdomain]
+    end
+    
     active_subdomains = JSON.parse(self.active_in) || []
 
-    if !active_subdomains.include?("#{current_subdomain.id}")
-      active_subdomains.push "#{current_subdomain.id}"
+    if !active_subdomains.include?("#{subdomain.id}")
+      active_subdomains.push "#{subdomain.id}"
       self.active_in = JSON.dump active_subdomains
       self.save
 
@@ -148,7 +151,7 @@ class User < ActiveRecord::Base
       # regenerate the avatars file. Note that there is still a bug where the avatar won't be there 
       # on initial login to the new subdomain.
       if self.avatar_file_name && active_subdomains.length > 1
-        subdomain_id = Thread.current[:subdomain].id
+        subdomain_id = subdomain.id
         Rails.cache.delete("avatar-digest-#{subdomain_id}")
       end
     end

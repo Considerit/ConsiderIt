@@ -51,17 +51,14 @@ module Notifier
     # Proposal-level channels
     'proposal' => {
       channels: {
-        'my_proposal' => '24_hours', 
-        'active_in_proposal' => '24_hours'},
+        'proposal_in_watchlist' => '1_hour', 
+        'active_in_proposal' => '1_day'},
       events: { 
-        'new_comment_on_my_point' => true, 
-        'new_assessment_on_my_point' => true,
-        'new_comment_on_point_active_in' => true, 
-        'new_assessment_on_point_active_in' => true,
-        'new_comment' => false, 
-        'new_assessment' => false,
         'new_point' => true, 
-        'new_opinion' => false                           
+        'new_opinion' => false,      
+        'new_comment_on_my_point' => true, 
+        'new_comment_on_point_active_in' => true, 
+        'new_comment' => false, 
       }
     }, 
 
@@ -69,7 +66,7 @@ module Notifier
     'assessment' => {
       channels: {'evaluation' => '60_minutes'},
       events: { 'request' => true },
-      constrained_to: lambda {|user| user.has_role?(:evaluator)}
+      constrained_to: lambda {|user, subdomain| user.has_role?(:evaluator, subdomain)}
     },
   }
 
@@ -100,7 +97,7 @@ module Notifier
 
 
   def self.create_notifications_offline(event, object)
-    subdomain = Thread.current[:subdomain]
+    subdomain = current_subdomain
 
     # who should get notified?
 
@@ -109,7 +106,7 @@ module Notifier
 
     proposal_channel = lambda do |user_id, proposal| 
       if proposal.user_id == user_id
-        'my_proposal'
+        'proposal_in_watchlist'
       else
         'active_in_proposal'
       end
@@ -127,18 +124,18 @@ module Notifier
       settings = [
         {
           channel: proposal_channel,          
-          event: "new_#{object_name}_on_my_point",
+          event: "new_comment_on_my_point",
           users: [point.user_id]
         }, {
           channel: proposal_channel,          
-          event: "new_#{object_name}_on_point_active_in",
+          event: "new_comment_on_point_active_in",
           users:  point.inclusions.select(:user_id).map {|x| x.user_id } \
                 + point.comments.select(:user_id).map {|x| x.user_id } \
                 + point.requests.select(:user_id).map {|x| x.user_id } \
                 + subscribed.map {|u| u.id}
         }, {
           channel: proposal_channel,
-          event: "new_#{object_name}",
+          event: "new_comment",
           users:  proposal.opinions.published.select(:user_id).map {|x| x.user_id } \
                 + [proposal.user_id]
         }
@@ -196,7 +193,7 @@ module Notifier
     subscribed = []
     unsubscribed = []
     for user in explicit
-      subs = user.subscription_settings
+      subs = user.subscription_settings[subdomain.id]
       if subs[key]['method'] == 'none'
         unsubscribed.push user
       else 
@@ -210,16 +207,19 @@ module Notifier
   def self.notify_user(object, user, channel, event_type)
     return if !user
 
+    subdomain = current_subdomain
     notifier_type = object.class.name
 
-    if user.subscription_settings.key?("/#{notifier_type.downcase}/#{object.id}")
-      notification_pref = user.subscription_settings["/#{notifier_type.downcase}/#{object.id}"]
+    subs = user.subscription_settings[subdomain.id]
+
+    if subs.key?("/#{notifier_type.downcase}/#{object.id}")
+      notification_pref = subs["/#{notifier_type.downcase}/#{object.id}"]
     else 
-      notification_pref = user.subscription_settings[channel]
+      notification_pref = subs[channel]
     end
 
     if notification_pref != 'none'
-      subdomain = Thread.current[:subdomain]
+      
       notification = Notification.create!({
         user_id: user.id,
         notifier_id: object.id,

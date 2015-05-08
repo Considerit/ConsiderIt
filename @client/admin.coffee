@@ -16,17 +16,17 @@ task_area_style = {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor
 DashHeader = ReactiveComponent
   displayName: 'DashHeader'
 
-  componentDidMount : -> @setBgColor()
-  componentDidUpdate : -> @setBgColor()
-  setBgColor : -> 
-    cb = (is_light) => 
-      if @local.light_background != is_light
-        @local.light_background = is_light
-        save @local
+  # componentDidMount : -> @setBgColor()
+  # componentDidUpdate : -> @setBgColor()
+  # setBgColor : -> 
+  #   cb = (is_light) => 
+  #     if @local.light_background != is_light
+  #       @local.light_background = is_light
+  #       save @local
 
-    is_light = isLightBackground @getDOMNode(), cb
+  #   is_light = isLightBackground @getDOMNode(), cb
 
-    cb is_light
+  #   cb is_light
 
   render : ->    
 
@@ -39,20 +39,21 @@ DashHeader = ReactiveComponent
     DIV 
       style: 
         position: 'relative'
-        backgroundColor: subdomain.branding.primary_color
-        color: if !@local.light_background then 'white'
+        #backgroundColor: subdomain.branding.primary_color
+        #color: if !@local.light_background then 'white'
 
       DIV style: {width: CONTENT_WIDTH, margin: 'auto', position: 'relative'},
-        A
-          href: '/'
-          style: {position: 'absolute', display: 'inline-block', top: 25, left: -40},
-          I className: 'fa fa-home', style: {fontSize: 28}
+        # A
+        #   href: '/'
+        #   style: {position: 'absolute', display: 'inline-block', top: 25, left: -40},
+        #   I className: 'fa fa-home', style: {fontSize: 28}
         
         H1 
           style: 
             fontSize: 28
             padding: '20px 0'
-            color: if !@local.light_background then 'white'
+            #color: if !@local.light_background then 'white'
+            fontWeight: 400
           @props.name   
 
 ImportDataDash = ReactiveComponent

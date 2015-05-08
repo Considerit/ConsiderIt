@@ -2,7 +2,7 @@
 
 %p
   #{@point.user.name} added a new #{@point.is_pro ? 'pro' : 'con'} point
-  - if @notification.event_type == 'new_point_on_my_proposal'
+  - if @notification.event_type == 'new_point_on_proposal_in_watchlist'
     for your proposal:
 
   - else

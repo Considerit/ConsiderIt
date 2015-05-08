@@ -40,19 +40,19 @@ class Proposal < ActiveRecord::Base
     end
   end
 
-  def self.summaries(current_subdomain = nil)
-    current_subdomain = Thread.current[:subdomain] if !current_subdomain
+  def self.summaries(subdomain = nil)
+    subdomain ||= current_subdomain
 
     # if a subdomain wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
 
-    if current_subdomain.moderate_proposals_mode == 1
+    if subdomain.moderate_proposals_mode == 1
       moderation_status_check = 'moderation_status=1'
     else 
       moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
     end
 
-    if current_subdomain.name == 'livingvotersguide'
+    if subdomain.name == 'livingvotersguide'
       year = 2014
       local_jurisdictions = []   
       
@@ -61,14 +61,14 @@ class Proposal < ActiveRecord::Base
         # If the user has a zipcode, we'll want to include all the jurisdictions 
         # associated with that zipcode. We'll also want to insert them between the statewide
         # measures and the advisory votes, since we hate the advisory votes. 
-        local_jurisdictions = ActiveRecord::Base.connection.exec_query( "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{current_subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%' ").map {|r| r['cluster']}
+        local_jurisdictions = ActiveRecord::Base.connection.exec_query( "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%' ").map {|r| r['cluster']}
       end
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
-      proposals = current_subdomain.proposals.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
+      proposals = subdomain.proposals.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
 
     elsif 
-      proposals = current_subdomain.proposals.where(:hide_on_homepage => false)
-      case current_subdomain.name 
+      proposals = subdomain.proposals.where(:hide_on_homepage => false)
+      case subdomain.name 
         when 'bitcoin'
           manual_clusters = ['Our Mission', 'Our Values',  'Our Goals', 'Our Focus', 'Our Actions', 'Resolutions', 'Foundation Goals', 'Board Proposals', 'Member Proposals', 'Proposals', 'Candidates']
         
@@ -181,8 +181,6 @@ class Proposal < ActiveRecord::Base
 
   def fact_check_request_enabled?
     return false # nothing can be requested to be fact-checked currently
-
-    current_subdomain = Thread.current[:subdomain]
 
     enabled = current_subdomain.assessment_enabled
     if current_subdomain.name == 'livingvotersguide'

@@ -119,7 +119,7 @@ class User < ActiveRecord::Base
       return self.super_admin
     else
       roles = Thread.current[:subdomain].roles ? JSON.parse(Thread.current[:subdomain].roles) : {}
-      return roles.has_key?(role) && roles[role] && roles[role].include?("/user/#{id}")
+      return roles.key?(role) && roles[role] && roles[role].include?("/user/#{id}")
     end
   end
 
@@ -155,45 +155,77 @@ class User < ActiveRecord::Base
 
   end
 
+  def emails_received
+    my_emails = JSON.parse self.emails || "{}"
+
+    my_emails
+  end
+
 
   # Which channels this user subscribes. e.g. comments on points i've written
   def subscription_settings
-    settings = JSON.parse(subscriptions || "{}")
+    my_subs = JSON.parse(subscriptions || "{}")
 
-    # subscription types: email, hourly_digest, daily_digest, on_site, none
+    # Make sure the default subscription settings defined in Notifier
+    # are present for this user.     
+    for object, channel_group in Notifier::subscriptions
 
-    channels = [{
-      'name' => 'touched_proposal',
-      'default' => 'daily_digest'
-    },{
-      'name' => 'my_proposal',
-      'default' => 'daily_digest'
-    },{
-      'name' => 'touched_point',
-      'default' => 'daily_digest'
-    },{
-      'name' => 'my_point',
-      'default' => 'hourly_digest'
-    },
-    # {
-    #   'name' => 'proposals',
-    #   'default' => 'hourly_digest'
-    # },
-    ]
+      # Skip if it isn't relevant to this user (e.g. only add moderator settings
+      # if the user is a moderator)
+      next if  channel_group.key?(:constrained_to) && \
+             !(channel_group[:constrained_to].call(self))
 
-    if permit('moderate content', nil) > 0
-      channels.push({
-        'name' => 'moderator',
-        'default' => 'hourly_digest'
-      })
+      # make sure that the default subscription method is set
+      # for each basic channel
+      for channel, channel_default in channel_group[:channels]
+        my_subs[channel] ||= {}
+        my_subs[channel]['method'] ||= channel_default
+      end
+
+      # Make sure all of the default trigger settings for each event type
+      # are present, for... 
+      # the default: 
+      keys = channel_group[:channels].keys
+      # ...and all overriden subscriptions for this object type
+      keys += my_subs.keys.select {|key| key =~ /\/#{object}\//}
+
+      for key in keys
+        my_subs[key].merge!(channel_group[:events]) { |key, v1, v2| v1 }
+      end
+
     end
  
-    for channel in channels
-      # initialize channel setting to default if it doesn't exist
-      settings[channel['name']] = channel['default'] if !settings.has_key? channel['name']
+    my_subs
+  end
+
+  # This user's preference for how long (in seconds) to wait between emails
+  def digest_interval_for(channel, object)
+    prefs = subscription_settings
+    key = "/#{object.class.name.downcase}/#{object.name}"
+
+    interval = subscription_settings[key] \
+                ? subscription_settings[key] \
+                : subscription_settings[channel]
+
+    # interval is in the format {num}_{seconds|minutes|hours|days}
+    num, unit = interval['method'].split('_')
+
+    case unit
+    when 'seconds'
+      multiplier = 1
+    when 'minutes'
+      multiplier = 60
+    when 'hours'
+      multiplier = 60 * 60
+    when 'days'
+      multipler = 24 * 60 * 60
+    when 'months'
+      multipler = 30 * 24 * 60 * 60      
+    else
+      raise "#{unit} is not a supported unit for digests"
     end
 
-    settings
+    num.to_i * multipler
   end
 
 
@@ -291,7 +323,7 @@ class User < ActiveRecord::Base
   #   opinions = 0
 
   #   self.opinions.published.each do |opinion|
-  #     if !referenced_proposals.has_key?(opinion.proposal_id)
+  #     if !referenced_proposals.key?(opinion.proposal_id)
   #       proposal = Proposal.find(opinion.proposal_id) 
   #       #if can?(:read, proposal)  
   #       referenced_proposals[opinion.proposal_id] = proposal
@@ -306,7 +338,7 @@ class User < ActiveRecord::Base
   #   my_points.each do |pnt|
   #     accessible_points.push pnt.id
   #     pnt.inclusions.where("user_id != #{self.id}").each do |inc|
-  #       influenced_users[inc.user_id] = 0 if ! influenced_users.has_key?(inc.user_id)
+  #       influenced_users[inc.user_id] = 0 if ! influenced_users.key?(inc.user_id)
   #       influenced_users[inc.user_id] +=1
   #     end
   #   end

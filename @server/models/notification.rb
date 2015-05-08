@@ -16,4 +16,6 @@ class Notification < ActiveRecord::Base
     notifier_type.constantize.find(notifier_id)
   end
 
+
+
 end

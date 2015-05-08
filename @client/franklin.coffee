@@ -240,6 +240,8 @@ Proposal = ReactiveComponent
                           Permission.INSUFFICIENT_PRIVILEGES]) || \
                           your_opinion.published
 
+    other_heading = customization "point_labels.#{if mode == 'results' then 'top' else "other"}_header"
+
     DIV key:@props.slug,
 
       DIV className: 'proposal_header',
@@ -335,6 +337,47 @@ Proposal = ReactiveComponent
                       destroy(@proposal.key)
                       loadPage('/')
                   'Delete'
+
+              if current_user.is_super_admin
+                SPAN 
+                  style:
+                    padding: 10
+
+                  onMouseEnter: => 
+                    @local.copy_to_subdomain = true
+                    save @local
+                  onMouseLeave: => 
+                    @local.copy_to_subdomain = false
+                    save @local
+
+                  A
+                    style: {color: '#888'}
+                    'Copy to subdomain'
+
+                  if @local.copy_to_subdomain
+                    subdomains = fetch('/subdomains').subs
+                    hues = getNiceRandomHues subdomains?.length
+                    
+                    UL 
+                      style: 
+                        display: 'inline'
+                      for sub, idx in subdomains
+                        LI
+                          style: 
+                            display: 'inline-block'
+                            listStyle: 'none'
+                          A
+                            href: "/proposal/#{@proposal.id}/copy_to/#{sub.id}"
+                            'data-nojax': false
+                            style: 
+                              padding: "4px 8px"
+                              fontSize: 18
+                              backgroundColor: hsv_to_rgb(hues[idx], .7, .5)
+                              color: 'white'
+                              display: 'inline-block'            
+                            sub.name
+
+
 
           if @local.edit_roles
             DIV 
@@ -434,7 +477,9 @@ Proposal = ReactiveComponent
           #community cons
           CommunityPoints 
             key: 'cons'
-            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{capitalize(customization('point_labels.cons'))}"
+            heading: other_heading
+                        .replace('--valences--', capitalize(customization('point_labels.cons')))
+                        .replace('--valence--', capitalize(customization('point_labels.con')))
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \
@@ -467,7 +512,9 @@ Proposal = ReactiveComponent
           #community pros
           CommunityPoints 
             key: 'pros'
-            heading: "#{if mode == 'results' then 'Top' else "Others'"} #{capitalize(customization('point_labels.pros'))}"            
+            heading: other_heading
+                        .replace('--valences--', capitalize(customization('point_labels.pros')))
+                        .replace('--valence--',  capitalize(customization('point_labels.pro')))
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \
@@ -1071,16 +1118,18 @@ YourPoints = ReactiveComponent
       fontWeight: 700
       color: if @proposal.has_focus != 'opinion' then "#eee" else focus_blue
 
-    heading = "Give Your " + \
-              capitalize(customization('point_labels.' + @props.valence))
+    heading = customization("point_labels.your_header")
+                .replace('--valences--', capitalize(customization("point_labels.#{@props.valence}")))
+                .replace('--valence--', capitalize(customization("point_labels.#{@props.valence}")))
 
 
     # drop target defs
     dt_stroke_width = 1
     dt_w = POINT_CONTENT_WIDTH + 6
-    dt_h = 63
+    dt_h = 73
     s_w = 8
     s_h = 6
+
 
     mouth_style = 
       top: 8
@@ -1393,7 +1442,7 @@ CommunityPoints = ReactiveComponent
               fontWeight: if browser.high_density_display then '300' else '400'
 
             "No " + \
-            customization('point_labels.' + @props.key.substring(0, @props.key.length - 1) ) + \
+            customization('point_labels.' + @props.key ) + \
             " given"
 
 
@@ -2130,7 +2179,8 @@ Discussion = ReactiveComponent
     if @discussion.assessment
       comments = comments.slice()
       comments.push @discussion.assessment
-      comments.sort (a,b) -> a.created_at < b.created_at
+
+    comments.sort (a,b) -> a.created_at > b.created_at
 
     discussion_style =
       width: DECISION_BOARD_WIDTH
@@ -2492,7 +2542,7 @@ EditPoint = ReactiveComponent
                   L#{guidelines_w},33 
                   Z
                  """
-          DIV 
+          DIV
             style: 
               padding: '14px 18px'
               position: 'relative'
@@ -2507,9 +2557,7 @@ EditPoint = ReactiveComponent
                   customization('point_labels.pro')
                 else 
                   customization('point_labels.con')
-              " point "
-              BR null
-              '(or question) for this proposal'
+              ' (or question) for this proposal'
 
             UL 
               style: 

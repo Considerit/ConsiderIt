@@ -24,28 +24,40 @@ require './header'
 window.customization = (field) -> 
   subdomain = fetch('/subdomain')
 
+  default_config = fetch('customizations/default')
   if !customizations[subdomain.name]?
-    config = fetch('customizations/default')
+    config = default_config
   else 
     config = fetch("customizations/#{subdomain.name}")
 
   val = config
+  def_val = default_config
+
   fields = field.split('.')
 
   for f, idx in fields
+
+    if !val[f]? && def_val?[f]?
+      val = def_val
 
     if f.indexOf('[') > 0
       brackets = f.match(/\[(.*?)\]/g)
       f = f.substring(0, f.indexOf('['))
 
+
     if val[f]? || idx == fields.length - 1        
       val = val[f]
+      if def_val?
+        def_val = def_val[f]
 
       if brackets?.length > 0
         for b in brackets
           f = b.substring(2,b.length - 2)
-          if val[f]?
+          if val? && val[f]?
             val = val[f]
+            if def_val?
+              def_val = def_val[f]
+
           else
             console.log "Could not find customization #{field} for subdomain #{subdomain.name}"
             return undefined
@@ -82,8 +94,13 @@ customizations.default =
     pros: 'pros' 
     con: 'con'
     cons: 'cons'
+    your_header: "Give your --valences--" 
+    other_header: "Others' --valences--" 
+    top_header: "Top --valences--" 
 
+  show_slider_feedback: true
   slider_pole_labels :
+    
     individual: 
       support: 'Support'
       oppose: 'Oppose'
@@ -119,6 +136,83 @@ customizations.default =
 
 ##########################
 # SUBDOMAIN CONFIGURATIONS
+
+################
+# sosh
+customizations['sosh'] = 
+  point_labels : 
+    pro: 'strength'
+    pros: 'strengths' 
+    con: 'weakness'
+    cons: 'weaknesses'
+    your_header: "--valences-- you observe" 
+    other_header: "--valences-- observed" 
+    top_header: "Foremost --valences--" 
+
+  slider_pole_labels :
+    individual: 
+      support: 'Yes'
+      oppose: 'No'
+    group: 
+      support: 'Yes'
+      oppose: 'No'
+
+
+################
+# schools
+customizations['schools'] = 
+  cluster_options :
+    'Classroom Discussions':
+      homie_histo_title: "Students' opinions"
+
+
+#################
+# humanities-los
+
+customizations['allsides'] = 
+  Homepage: LearnDecideShareHomepage
+
+  homepage_heading_columns : [ 
+    {heading: 'Questions', details: null}, \
+    {heading: null}, \
+    {heading: 'Community', details: null}, \
+    {heading: '', details: ''}]
+
+
+  cluster_options :
+    'Classroom Discussions':
+      homie_histo_title: "Students' opinions"
+    'Civics':
+      homie_histo_title: "Citizens' opinions"
+
+
+#################
+# humanities-los
+
+customizations['humanities-los'] = 
+  point_labels : 
+    pro: 'strength'
+    pros: 'strengths' 
+    con: 'weakness'
+    cons: 'weaknesses'
+    your_header: "--valences-- you observe" 
+    other_header: "--valences-- observed" 
+    top_header: "Foremost --valences--" 
+
+  show_slider_feedback: false
+
+  slider_pole_labels :
+    individual: 
+      support: 'Ready'
+      oppose: 'Not ready'
+    group: 
+      support: 'Ready'
+      oppose: 'Not ready'
+
+  cluster_options :
+    'Monuments':
+      homie_histo_title: "Students' feedback"
+
 
 #################
 # RANDOM2015

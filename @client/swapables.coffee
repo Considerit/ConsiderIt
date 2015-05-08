@@ -259,7 +259,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
 
     # Columns of the docking header for the proposal list.
     columns = customization('homepage_heading_columns') or [ 
-                  {heading: 'Learn', details: 'about the issues'}, \
+                  {heading: 'Question', details: 'about the issues'}, \
                   {heading: 'Decide', details: 'what you think'}, \
                   {heading: 'Share', details: 'your opinion'}, \
                   {heading: 'Join', details: 'the contributors'}]
@@ -277,28 +277,40 @@ window.LearnDecideShareHomepage = ReactiveComponent
           style: 
             backgroundColor: subdomain.branding.primary_color
             color: 'white'
-            height: docking_header_height
+            height: if subdomain.name != 'allsides' then docking_header_height
             minWidth: PAGE_WIDTH #minwidth is for when docking, position fixed mode
 
-          TABLE style: {margin: 'auto', paddingLeft: 242},
+          TABLE 
+            style: 
+              margin: 'auto'
+              paddingLeft: if subdomain.name != 'allsides' then 242
+
             TBODY null,
               TR null,
                 for col in columns
-                  TD style: {display: 'inline-block', width: 250},
-                    DIV 
+                  if col.heading
+                    TD 
                       style: 
-                        fontWeight: 700
-                        fontSize: 42
-                        textAlign: 'center'
-                      col.heading
-                    DIV 
-                      style: 
-                        fontWeight: 300
-                        fontSize: 18
-                        textAlign: 'center'
-                        position: 'relative'
-                        top: -8
-                      col.details
+                        display: 'inline-block'
+                        width: if subdomain.name != 'allsides' then 250 else 350
+
+                      DIV 
+                        style: 
+                          fontWeight: 700
+                          fontSize: 42
+                          textAlign: 'center'
+
+                        col.heading
+
+                      if col.details
+                        DIV 
+                          style: 
+                            fontWeight: 300
+                            fontSize: 18
+                            textAlign: 'center'
+                            position: 'relative'
+                            top: -8
+                          col.details
 
       DIV style: {marginTop: 30},
         if contributors.length > 0
@@ -309,7 +321,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
               margin: 'auto'
             DIV 
               style:
-                left: 1005
+                left: if subdomain.name != 'allsides' then 1005 else 900
                 position: 'absolute'
                 width: 165
                 textAlign: 'left'
@@ -355,6 +367,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
                     ProposalSummary
                       key: proposal.key
                       cluster: cluster.name
+                      columns: columns
             
             # Cluster description
             if options.description 
@@ -400,103 +413,120 @@ window.ProposalSummary = ReactiveComponent
       onMouseEnter: => @local.hovering_on = true; save(@local)
       onMouseLeave: => @local.hovering_on = false; save(@local)
 
-      TD 
-        className: 'summary_name'
-        style: 
-          width: 320
-          display: 'inline-block'
-          fontSize: 18
-          fontWeight: 500
-
-        A 
-          href: proposal_url(proposal)
+      if @props.columns[0].heading
+        TD 
+          className: 'summary_name'
           style: 
-            color: "#{if @local.hovering_on then link_hover_color else ''}" 
-            borderBottom: '1px solid #b1afa7'
+            width: 320
+            display: 'inline-block'
+            fontSize: 18
+            fontWeight: 500
+            marginRight: if subdomain.name == 'allsides' then 20
 
-          if subdomain.name == 'livingvotersguide' && proposal.category 
-            "#{proposal.category[0]}-#{proposal.designator}: "
-          proposal.name
+          A 
+            href: proposal_url(proposal)
+            style: 
+              color: "#{if @local.hovering_on then link_hover_color else ''}" 
+              borderBottom: '1px solid #b1afa7'
 
-      TD
-        style: 
-          borderLeft: cell_border
-          borderRight: cell_border
-          cursor: 'pointer'
-          width: 170
-          textAlign: 'center'
-          display: 'inline-block'
-          height: '100%'
-          minHeight: 66
+            if subdomain.name == 'livingvotersguide' && proposal.category 
+              "#{proposal.category[0]}-#{proposal.designator}: "
+            proposal.name
 
-        onClick: => loadPage "/#{proposal.slug}"
-        if !proposal.your_opinion || !your_opinion.published \
-           || isNeutralOpinion(your_opinion.stance)
-          style = {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}
-          if @local.hovering_on
-            style.color = 'black'
-            style.fontWeight = 600
-          SPAN style: style, '?'
-        else if your_opinion.stance < 0 && !isNeutralOpinion(your_opinion.stance)
-          SPAN style: {position: 'relative', left: 14},
-            IMG 
-              className: 'summary_opinion_marker'
-              src: asset('no_x.svg')
-              style: {width: 24, position: 'absolute', left: -28}
-            SPAN style: {color: 'rgb(239,95,98)', fontSize: 18, fontWeight: 600}, 'No'
-        else
-          SPAN style: {position: 'relative', left: 14},
-            IMG 
-              className: 'summary_opinion_marker'
-              src: asset('yes_check.svg')
-              style: {width: 24, position: 'absolute', left: -28}
+          if !proposal.active
+            DIV
+              style: 
+                fontSize: 14
+                color: '#414141'
+                fontWeight: 200
+                marginBottom: 15
 
-            SPAN style: {color: 'rgb(166,204,70)', fontSize: 18, fontWeight: 600}, 'Yes'
-
-      TD
-        className: 'summary_share'
-        style: 
-          cursor: 'pointer'
-          width: 320
-          display: 'inline-block'
-          paddingLeft: 15
-          marginTop: -4
-
-        onClick: => loadPage proposal_url(proposal)
-        if proposal.top_point
-          mouth_style = 
-            top: 5
-            position: 'absolute'
-            right: -COMMUNITY_POINT_MOUTH_WIDTH + 4
-            transform: 'rotate(90deg)'
-
-          DIV 
-            className: 'top_point community_point pro'
-            style : { width: 270, position: 'relative' }
-
-            DIV className:'point_content',
-
-              DIV 
-                key: 'community_point_mouth'
-                style: css.crossbrowserify mouth_style
-
-                Bubblemouth 
-                  apex_xfrac: 0
-                  width: COMMUNITY_POINT_MOUTH_WIDTH
-                  height: COMMUNITY_POINT_MOUTH_WIDTH
-                  fill: "#f6f7f9", 
-                  stroke: 'transparent', 
-                  stroke_width: 0
-                  box_shadow:
-                    dx: '3'
-                    dy: '0'
-                    stdDeviation: "2"
-                    opacity: .5
+              'closed'
 
 
+      if @props.columns[1].heading
 
-              DIV className:'point_nutshell', style: {fontSize: 15},
-                "#{proposal.top_point.nutshell[0..30]}..."
+        TD
+          style: 
+            borderLeft: cell_border
+            borderRight: cell_border
+            cursor: 'pointer'
+            width: 170
+            textAlign: 'center'
+            display: 'inline-block'
+            height: '100%'
+            minHeight: 66
+
+          onClick: => loadPage "/#{proposal.slug}"
+          if !proposal.your_opinion || !your_opinion.published \
+             || isNeutralOpinion(your_opinion.stance)
+            style = {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}
+            if @local.hovering_on
+              style.color = 'black'
+              style.fontWeight = 600
+            SPAN style: style, '?'
+          else if your_opinion.stance < 0 && !isNeutralOpinion(your_opinion.stance)
+            SPAN style: {position: 'relative', left: 14},
+              IMG 
+                className: 'summary_opinion_marker'
+                src: asset('no_x.svg')
+                style: {width: 24, position: 'absolute', left: -28}
+              SPAN style: {color: 'rgb(239,95,98)', fontSize: 18, fontWeight: 600}, 'No'
+          else
+            SPAN style: {position: 'relative', left: 14},
+              IMG 
+                className: 'summary_opinion_marker'
+                src: asset('yes_check.svg')
+                style: {width: 24, position: 'absolute', left: -28}
+
+              SPAN style: {color: 'rgb(166,204,70)', fontSize: 18, fontWeight: 600}, 'Yes'
+
+      if @props.columns[2].heading
+
+        TD
+          className: 'summary_share'
+          style: 
+            cursor: 'pointer'
+            width: 320
+            display: 'inline-block'
+            paddingLeft: 15
+            marginTop: -4
+
+          onClick: => loadPage proposal_url(proposal)
+          if proposal.top_point
+            mouth_style = 
+              top: 5
+              position: 'absolute'
+              right: -COMMUNITY_POINT_MOUTH_WIDTH + 4
+              transform: 'rotate(90deg)'
+
+            DIV 
+              className: 'top_point community_point pro'
+              style : { width: 270, position: 'relative' }
+
+              DIV className:'point_content',
+
+                DIV 
+                  key: 'community_point_mouth'
+                  style: css.crossbrowserify mouth_style
+
+                  Bubblemouth 
+                    apex_xfrac: 0
+                    width: COMMUNITY_POINT_MOUTH_WIDTH
+                    height: COMMUNITY_POINT_MOUTH_WIDTH
+                    fill: "#f6f7f9", 
+                    stroke: 'transparent', 
+                    stroke_width: 0
+                    box_shadow:
+                      dx: '3'
+                      dy: '0'
+                      stdDeviation: "2"
+                      opacity: .5
+
+
+
+                DIV className:'point_nutshell', style: {fontSize: 15},
+                  "#{proposal.top_point.nutshell[0..30]}..."
 
 
 

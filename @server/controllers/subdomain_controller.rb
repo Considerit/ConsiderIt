@@ -7,13 +7,12 @@ class SubdomainController < ApplicationController
   include Invitations
 
   def index 
-    if Rails.env.development? || request.host.end_with?('chlk.it')
-      subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name}}
-      render :json => [{
-        key: '/subdomains',
-        subs: subdomains
-      }]
-    end
+    subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name}}
+    render :json => [{
+      key: '/subdomains',
+      subs: subdomains
+    }]
+
   end
 
   def create

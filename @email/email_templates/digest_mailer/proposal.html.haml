@@ -1,0 +1,62 @@
+// new_point, new_comment, new_assessment
+
+Hi #{@user.name}, 
+
+%p 
+  Here's an update on 
+  %a{href: full_link(@proposal.slug), style: 'font-weight: 700; color: #468EE5;'}
+    = @proposal.name
+
+
+- if @notifications.has_key? 'new_point'
+  
+  %h2
+    New points
+
+  %ul
+    - for notification in @notifications['new_point']
+      - point = notification.root_object
+      
+      %li
+        #{point.user.name} added a new #{point.is_pro ? 'pro' : 'con'} "#{point.title(40)}"
+
+- if @notifications.has_key? 'new_opinion'
+  
+  %h2
+    New opinions
+
+  %ul
+    - for notification in @notifications['new_opinion']
+      - opinion = notification.root_object
+      
+      %li
+        #{opinion.user.name} added an opinion
+
+
+- comment_sections = [ |
+      ['new_comment_on_my_point', 'New comments on your points'], |
+      ['new_comment_on_point_active_in', 'New comments on point you follow'], |
+      ['new_comment', 'New comments on other points'], |
+  ] |
+
+- for section in comment_sections
+  - key = section[0]
+  - header = section[1]
+
+  - if @notifications.has_key? key
+
+    %h2
+      = header
+
+    %ul
+      - for notification in @notifications[key]
+        - comment = notification.root_object
+        - point = comment.point
+
+        %li
+          #{comment.user.name} commented on "#{point.title(40)}"
+
+
+= content_for :footer do
+  = render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this proposal'}
+    

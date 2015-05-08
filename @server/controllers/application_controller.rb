@@ -103,7 +103,7 @@ protected
   def init_thread_globals
     # Make things to remember changes
     Thread.current[:dirtied_keys] = {}
-    Thread.current[:subdomain] = current_subdomain
+    Thread.current[:subdomain] = ActsAsTenant.current_tenant
 
     # puts("In before: is there a current user? '#{session[:current_user_id]}'")
     # First, reset the thread's current_user values from the session
@@ -295,10 +295,10 @@ protected
 
   #####
   # aliasing current_tenant from acts_as_tenant gem so we can be consistent with subdomain
-  helper_method :current_subdomain
-  def current_subdomain
-    ActsAsTenant.current_tenant
-  end
+  # helper_method :current_subdomain
+  # def current_subdomain
+  #   ActsAsTenant.current_tenant
+  # end
 
 
   #####

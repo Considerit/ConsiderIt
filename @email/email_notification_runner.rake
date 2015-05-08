@@ -11,9 +11,9 @@ task :send_email_notifications => :environment do
     emails_sent = user.emails_received
     emails_sent[channel] ||= {}
 
-    #  Check if there is a valid triggering event that
-    #  has occurred at least T since last triggering event
-    #  where T is the preference set by user
+    # Will we be respecting the user's notification settings if
+    # we send them another message Z time after their last digest was
+    # sent?
     can_send = true
     last_digest_sent_at = emails_sent[channel][key]
 
@@ -25,6 +25,11 @@ task :send_email_notifications => :environment do
 
 
     if can_send
+      # TODO: 
+      # Look through notifications and determine if a valid triggering
+      # event occurred. 
+      std_buffer = 2 * 60 # wait at least 2 min before sending
+
       DigestMailer.proposal(proposal, user, notifications, channel)
       emails_sent[channel][key] = Time.now().to_s
       user.save

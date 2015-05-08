@@ -34,9 +34,6 @@ end
 
 
 def permit(action, object)
-  current_user = Thread.current[:current_user]
-  current_subdomain = Thread.current[:subdomain]
-
   return Permission::PERMITTED if current_user.super_admin
 
   def matchEmail(permission_list)

@@ -67,7 +67,7 @@ class Point < ActiveRecord::Base
     stubify_field(result, 'opinion')
     stubify_field(result, 'user')
 
-    if Thread.current[:subdomain].assessment_enabled
+    if current_subdomain.assessment_enabled
 
       assessment = proposal.assessments.completed.where(:assessable_type => 'Point', :assessable_id => id).first
       result['assessment'] = assessment ? "assessment/#{assessment.id}" : nil

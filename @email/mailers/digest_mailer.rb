@@ -9,7 +9,7 @@ class DigestMailer < Mailer
     @subdomain = proposal.subdomain
     @user = user
 
-    subject = channel == 'my_proposal' \
+    subject = channel == 'proposal_in_watchlist' \
                          ? "New activity on your" \
                          : "New activity on"
 

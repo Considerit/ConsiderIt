@@ -70,8 +70,7 @@ class User < ActiveRecord::Base
       is_moderator: permit('moderate content', nil) > 0,
       is_evaluator: permit('factcheck content', nil) > 0,
       trying_to: nil,
-      no_email_notifications: no_email_notifications,
-      subscriptions: subscription_settings,
+      subscriptions: subscription_settings[current_subdomain.id.to_s],
       notifications: Notification.where(:user_id => self.id),      
       verified: verified,
       needs_to_set_password: registered && !name #happens for users that were created via email invitation
@@ -83,7 +82,6 @@ class User < ActiveRecord::Base
 
   # Gets all of the users active for this subdomain
   def self.all_for_subdomain
-    current_subdomain = Thread.current[:subdomain]
     fields = "CONCAT('\/user\/',id) as 'key',users.name,users.avatar_file_name,users.groups"
     if current_user.is_admin?
       fields += ",email"
@@ -108,24 +106,25 @@ class User < ActiveRecord::Base
     result
   end
 
-  def is_admin?
-    has_any_role? [:admin, :superadmin]
+  def is_admin?(subdomain = nil)
+    has_any_role? [:admin, :superadmin], subdomain
   end
 
-  def has_role?(role)
+  def has_role?(role, subdomain = nil)
     role = role.to_s
 
     if role == 'superadmin'
       return self.super_admin
     else
-      roles = Thread.current[:subdomain].roles ? JSON.parse(Thread.current[:subdomain].roles) : {}
+      subdomain ||= current_subdomain
+      roles = subdomain.roles ? JSON.parse(subdomain.roles) : {}
       return roles.key?(role) && roles[role] && roles[role].include?("/user/#{id}")
     end
   end
 
-  def has_any_role?(roles)
+  def has_any_role?(roles, subdomain = nil)
     roles.each do |role|
-      return true if has_role?(role)
+      return true if has_role?(role, subdomain)
     end
     return false
   end
@@ -137,7 +136,7 @@ class User < ActiveRecord::Base
 
   def add_to_active_in(subdomain=nil)
     if !subdomain 
-      subdomain = Thread.current[:subdomain]
+      subdomain = current_subdomain
     end
     
     active_subdomains = JSON.parse(self.active_in) || []
@@ -167,35 +166,47 @@ class User < ActiveRecord::Base
 
   # Which channels this user subscribes. e.g. comments on points i've written
   def subscription_settings
+    subdomains = JSON.load(self.active_in || '[]') #.map {|s| s.to_i}
+    subdomains.push current_subdomain.id.to_s if current_subdomain
+    subdomains.uniq!
+
     my_subs = JSON.parse(subscriptions || "{}")
 
     # Make sure the default subscription settings defined in Notifier
     # are present for this user.     
-    for object, channel_group in Notifier::subscriptions
 
-      # Skip if it isn't relevant to this user (e.g. only add moderator settings
-      # if the user is a moderator)
-      next if  channel_group.key?(:constrained_to) && \
-             !(channel_group[:constrained_to].call(self))
+    for subdomain_id in subdomains
+      subdomain = Subdomain.find_by id: subdomain_id
+      next if !subdomain
+      for object, channel_group in Notifier::subscriptions
 
-      # make sure that the default subscription method is set
-      # for each basic channel
-      for channel, channel_default in channel_group[:channels]
-        my_subs[channel] ||= {}
-        my_subs[channel]['method'] ||= channel_default
+        # Skip if it isn't relevant to this user (e.g. only add moderator settings
+        # if the user is a moderator)
+        next if  channel_group.key?(:constrained_to) && \
+               !(channel_group[:constrained_to].call(self, subdomain))
+
+        my_subs[subdomain_id] ||= {}
+
+        # make sure that the default subscription method is set
+        # for each basic channel
+        for channel, channel_default in channel_group[:channels]
+          my_subs[subdomain_id][channel] ||= {}
+          my_subs[subdomain_id][channel]['method'] ||= channel_default
+          my_subs[subdomain_id][channel]['default'] = channel_default
+        end
+
+        # Make sure all of the default trigger settings for each event type
+        # are present, for... 
+        # the default: 
+        keys = channel_group[:channels].keys
+        # ...and all overriden subscriptions for this object type
+        keys += my_subs[subdomain_id].keys.select {|key| key =~ /\/#{object}\//}
+
+        for key in keys
+          my_subs[subdomain_id][key].merge!(channel_group[:events]) { |key, v1, v2| v1 }
+        end
+
       end
-
-      # Make sure all of the default trigger settings for each event type
-      # are present, for... 
-      # the default: 
-      keys = channel_group[:channels].keys
-      # ...and all overriden subscriptions for this object type
-      keys += my_subs.keys.select {|key| key =~ /\/#{object}\//}
-
-      for key in keys
-        my_subs[key].merge!(channel_group[:events]) { |key, v1, v2| v1 }
-      end
-
     end
  
     my_subs
@@ -214,28 +225,25 @@ class User < ActiveRecord::Base
     num, unit = interval['method'].split('_')
 
     case unit
-    when 'seconds'
-      multiplier = 1
-    when 'minutes'
+    when 'minute'
       multiplier = 60
-    when 'hours'
+    when 'hour'
       multiplier = 60 * 60
-    when 'days'
+    when 'day'
       multipler = 24 * 60 * 60
-    when 'months'
+    when 'month'
       multipler = 30 * 24 * 60 * 60      
     else
       raise "#{unit} is not a supported unit for digests"
     end
 
-    num.to_i * multipler
+     multipler / num.to_i
   end
 
 
   # get all the items this user gets notifications for
   # TODO: update for new system!
   def notifications
-    current_subdomain = Thread.current[:subdomain]
 
     followable_objects = {
       'Proposal' => {},
@@ -289,12 +297,11 @@ class User < ActiveRecord::Base
   end
 
   def username
-    subdomain = Thread.current[:subdomain]
     name ? 
       name
       : email ? 
         email.split('@')[0]
-        : "#{subdomain.app_title or subdomain.name} participant"
+        : "#{current_subdomain.app_title or current_subdomain.name} participant"
   end
   
   def first_name

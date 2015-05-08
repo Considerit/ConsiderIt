@@ -19,8 +19,6 @@ class Assessment < ActiveRecord::Base
   acts_as_tenant :subdomain
 
   def self.all_for_subdomain
-    current_subdomain = Thread.current[:subdomain]
-
     assessments = current_subdomain.assessments
 
     assessments.each do |assessment|

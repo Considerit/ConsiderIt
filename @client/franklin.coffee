@@ -33,7 +33,7 @@ require './swapables'
 require './tooltip'
 require './development'
 require './god'
-require './notification_settings'
+require './notifications'
 
 ## ########################
 ## Initialize defaults for client data
@@ -2953,7 +2953,7 @@ Page = ReactiveComponent
           when '/proposal/new'
             EditProposal key: "new_proposal", fresh: true              
           when '/dashboard/email_notifications'
-            NotificationSettings 
+            Notifications 
               key: '/page/dashboard/email_notifications'
           when '/dashboard/assessment'
             FactcheckDash key: "/page/dashboard/assessment"

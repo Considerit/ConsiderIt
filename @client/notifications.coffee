@@ -1,37 +1,5 @@
-channels = [
-  {
-    name: 'proposal_in_watchlist',
-    label: 'Proposals in my watchlist'
-  }, {
-    name: 'active_in_proposal',
-    label: 'Proposals in which I’ve participated'
-  }
-]
-
-methods = [
-  {
-    db: 'email', 
-    label: 'Email me'
-    }, {
-    db: 'on-site', 
-    label: 'On-site message'
-  }, {
-    db: 'none', 
-    label: 'Ignore it'
-  }
-]
-
-events =
-  'new_comment_on_my_point': 'Comment on a Pro or Con point I wrote'
-  'new_comment_on_point_active_in': 'Comment on a Pro or Con point I\'ve engaged'
-  'new_comment': 'Comment on any Pro or Con point'
-  'new_point': 'New Pro or Con point'
-  'new_opinion': 'New opinion'
-  'request': 'New fact-check request'
-
-
-window.NotificationSettings = ReactiveComponent
-  displayName: 'NotificationSettings'
+window.Notifications = ReactiveComponent
+  displayName: 'Notifications'
 
   render : -> 
     data = @data()
@@ -39,50 +7,77 @@ window.NotificationSettings = ReactiveComponent
     settings = {}
     current_user = fetch('/current_user')
 
-    for channel, idx in channels
-      setting = current_user.subscriptions[channel.name]['method']
+    prefs = current_user.subscriptions
 
-      if setting.indexOf('_') > -1
-        setting = 'email'
+    for digest, digest_config of prefs
+      continue if digest == 'subscription_options'
 
-      settings[channel.name] = setting
+      settings[digest] ||= {}
+      for digest_relation, relation_config of digest_config
+        setting = relation_config.subscription
+
+        if setting.indexOf('_') > -1
+          setting = 'email'
+
+        settings[digest][digest_relation] = setting
 
     if !@local.settings? || JSON.stringify(@local.settings) != JSON.stringify(settings)
       @local.settings = settings
       save @local
 
 
-    DIV null,
-      DashHeader name: 'When there is activity related to...'
+    DIV 
+      style:
+        width: CONTENT_WIDTH
+        margin: 'auto'
 
       DIV 
         style: 
-          width: CONTENT_WIDTH
-          margin: 'auto'
+          fontSize: 28
+          padding: "40px 0"
+
+        DIV 
+          style: 
+            borderBottom: '1px solid black'
+            marginRight: 80
+            display: 'inline-block'
+          'With activity regarding'
+
+        DIV 
+          style: 
+            borderBottom: '1px solid black'
+            display: 'inline-block'            
+          'Notify me by'
+
+      DIV 
+        style: 
           fontSize: 18
 
+        for digest in ['subdomain', 'proposal']
+          digest_config = prefs[digest]
+          for digest_relation, relation_config of digest_config
+            @drawChannel digest, digest_relation, relation_config, prefs.subscription_options
 
-        for channel in channels
-          @drawChannel channel
 
 
-
-  drawChannel: (channel) ->
+  drawChannel: (digest, digest_relation, relation_config, options) ->
 
     DIV 
       style: 
-        borderBottom: '1px solid #eee'
-        padding: '20px 50px'
+        borderBottom: '1px solid #f2f2f2'
+        padding: '20px 0px'
 
       DIV
         style: 
           display: 'inline-block'
-          width: 200
+          width: 283
           textAlign: 'right'
           verticalAlign: 'top'
           marginRight: 80
           paddingTop: 5
-        channel.label
+          fontSize: 18
+
+        relation_config.ui_label
 
       DIV 
         style: 
@@ -93,32 +88,32 @@ window.NotificationSettings = ReactiveComponent
           style: 
             listStyle: 'none'
 
-          for method in methods
-            @drawMethod channel, method
+          for method, config of options
+            selected = @local.settings[digest][digest_relation] == config.name
+            @drawMethod digest, digest_relation, config, selected
 
-        if @local.settings[channel.name] == 'email'
-          @drawEmailSettings channel
+        if @local.settings[digest][digest_relation] == 'email'
+          @drawEmailSettings digest, digest_relation, relation_config
 
 
-  drawMethod: (channel, method) -> 
+  drawMethod: (digest, digest_relation, method, selected) -> 
     current_user = fetch('/current_user')
-    selected = @local.settings[channel.name] == method.db
 
     LI 
       style: 
         padding: '10px 20px 5px 20px'
         display: 'inline-block'
         cursor: 'pointer'
-        backgroundColor: if selected then '#eee'
+        backgroundColor: if selected then '#f2f2f2'
 
       onClick: => 
         if !selected
-          usetting = current_user.subscriptions[channel.name]
+          usetting = current_user.subscriptions[digest][digest_relation]
           
-          usetting['method'] =  if method.db == 'email'
-                                  usetting['default']
-                                else 
-                                  method.db
+          usetting.subscription = if method.name == 'email'
+                                    usetting.default_subscription
+                                  else 
+                                    method.name
           save current_user
 
 
@@ -148,18 +143,18 @@ window.NotificationSettings = ReactiveComponent
         style: 
           verticalAlign: 'top'
 
-        method.label
+        method.ui_label
 
-  drawEmailSettings : (channel) -> 
+  drawEmailSettings : (digest, digest_relation, relation_config) -> 
     current_user = fetch('/current_user')        
-    settings = current_user.subscriptions[channel.name]
-    [num, unit] = settings['method'].split('_')
+    settings = current_user.subscriptions[digest][digest_relation]
+    [num, unit] = relation_config.subscription.split('_')
 
-    specify_triggers = @local.triggers?[channel.name]
+    specify_triggers = @local.triggers?[digest]?[digest_relation]
 
     DIV 
       style: 
-        backgroundColor: '#eee'
+        backgroundColor: '#f2f2f2'
         padding: '10px 10px 10px 60px'
 
       SPAN 
@@ -178,10 +173,9 @@ window.NotificationSettings = ReactiveComponent
           fontSize: 18
           width: 38
         onChange: (e) =>
-          # TODO: validate number 
           num = parseInt(e.target.value)
           if !isNaN(num)
-            settings['method'] = "#{num}_#{@refs.unit.getDOMNode().value}"
+            relation_config.subscription = "#{num}_#{@refs.unit.getDOMNode().value}"
             save current_user
 
       SPAN 
@@ -198,7 +192,7 @@ window.NotificationSettings = ReactiveComponent
         ref: 'unit'
         value: unit
         onChange: (e) => 
-          settings['method'] = "#{@refs.num.getDOMNode().value}_#{e.target.value}"
+          relation_config.subscription = "#{@refs.num.getDOMNode().value}_#{e.target.value}"
           save current_user
 
         for u in ['minute', 'hour', 'day', 'month']
@@ -216,7 +210,9 @@ window.NotificationSettings = ReactiveComponent
             cursor: 'pointer'            
           onClick: => 
             @local.triggers ||= {}
-            @local.triggers[channel.name] = !@local.triggers[channel.name]
+            @local.triggers[digest] ||= {}
+            @local.triggers[digest][digest_relation] = \
+                !@local.triggers[digest][digest_relation]
             save @local
 
           if specify_triggers
@@ -233,16 +229,17 @@ window.NotificationSettings = ReactiveComponent
               style: 
                 marginBottom: 10
 
-              "Which events should trigger a summary email?"
+              "Which events should trigger an email?"
 
             UL
               style: 
                 listStyle: 'none'
 
-              for event_type, trigger of settings
-                continue if event_type in ['method', 'default']
 
-                do (event_type, trigger) =>
+              for event_name, event_relations of relation_config.events
+                idx = 0
+                for event_relation, event_relation_settings of event_relations
+                  idx += 1
                   LI 
                     style: 
                       display: 'block'
@@ -255,24 +252,26 @@ window.NotificationSettings = ReactiveComponent
                         verticalAlign: 'top'
 
                       INPUT 
-                        id: "#{event_type}_input"
+                        id: "#{event_name}#{idx}_input"
                         type: 'checkbox'
-                        checked: if trigger then true
+                        checked: if event_relation_settings.email_trigger then true
                         style: 
                           fontSize: 24
-                        onChange: => 
-                          settings[event_type] = !settings[event_type]
+                        onChange: do (event_name, event_relation_settings) => => 
+                          console.log event_relation_settings
+                          event_relation_settings.email_trigger = \
+                             !event_relation_settings.email_trigger
                           save current_user
 
                     LABEL
-                      htmlFor: "#{event_type}_input"
+                      htmlFor: "#{event_name}#{idx}_input"
                       style: 
                         display: 'inline-block'
                         verticalAlign: 'top'
                         width: 400
                         marginLeft: 15
 
-                      events[event_type]
+                      event_relation_settings.ui_label
 
 
 

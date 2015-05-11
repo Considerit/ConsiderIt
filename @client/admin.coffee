@@ -97,7 +97,11 @@ ImportDataDash = ReactiveComponent
                   LABEL style: {whiteSpace: 'nowrap'}, htmlFor: "#{table}-file", "#{table} (.csv)"
                   DIV null, A style: {textDecoration: 'underline', fontSize: 12}, href: "/example_import_csvs/#{table.toLowerCase()}.csv", 'Example'
                 TD style: {padding: '20px 0 0 20px'}, 
-                  INPUT id: "#{table}-file", name: "#{table.toLowerCase()}-file", type:'file', style: {backgroundColor: focus_blue, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
+                  INPUT 
+                    id: "#{table}-file"
+                    name: "#{table.toLowerCase()}-file"
+                    type:'file'
+                    style: {backgroundColor: focus_blue, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
             
 
             if current_user.is_super_admin
@@ -446,11 +450,21 @@ ModerationDash = ReactiveComponent
                       onClick: do (idx, model) => => 
                         subdomain["moderate_#{model}_mode"] = idx
                         save subdomain, -> 
-                          #saving the subdomain shouldn't always dirty moderations (which is expensive), so just doing it manually here
+                          #saving the subdomain shouldn't always dirty moderations 
+                          #(which is expensive), so just doing it manually here
                           arest.serverFetch('/page/dashboard/moderate')  
 
-                      INPUT style: {cursor: 'pointer'}, type: 'radio', name: "moderate_#{model}_mode", id: "moderate_#{model}_mode_#{idx}", defaultChecked: subdomain["moderate_#{model}_mode"] == idx
-                      LABEL style: {cursor: 'pointer', paddingLeft: 8 }, htmlFor: "moderate_#{model}_mode_#{idx}", field
+                      INPUT 
+                        style: {cursor: 'pointer'}
+                        type: 'radio'
+                        name: "moderate_#{model}_mode"
+                        id: "moderate_#{model}_mode_#{idx}"
+                        defaultChecked: subdomain["moderate_#{model}_mode"] == idx
+
+                      LABEL 
+                        style: {cursor: 'pointer', paddingLeft: 8 } 
+                        htmlFor: "moderate_#{model}_mode_#{idx}"
+                        field
 
               BUTTON 
                 onClick: => 
@@ -773,7 +787,9 @@ FactcheckPoint = ReactiveComponent
               BUTTON style: {marginLeft: 8, fontSize: 14}, onClick: @toggleResponsibility, "I won't do it"]
           else 
             ['Responsible: '
-            BUTTON style: {backgroundColor: focus_blue, color: 'white', fontSize: 14, border: 'none', borderRadius: 8, fontWeight: 600 }, onClick: @toggleResponsibility, "I'll do it"]
+            BUTTON 
+              style: {backgroundColor: focus_blue, color: 'white', fontSize: 14, border: 'none', borderRadius: 8, fontWeight: 600 }
+              onClick: @toggleResponsibility, "I'll do it"]
 
       DIV style: {padding: '10px 30px'},
         # point area

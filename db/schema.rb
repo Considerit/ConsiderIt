@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150507222742) do
+ActiveRecord::Schema.define(version: 20150504155311) do
 
   create_table "assessments", force: :cascade do |t|
     t.integer  "user_id",         limit: 4
@@ -151,16 +151,18 @@ ActiveRecord::Schema.define(version: 20150507222742) do
   end
 
   create_table "notifications", force: :cascade do |t|
-    t.integer  "user_id",       limit: 4
-    t.integer  "notifier_id",   limit: 4
-    t.integer  "subdomain_id",  limit: 4
-    t.string   "notifier_type", limit: 255
-    t.string   "event_type",    limit: 255
-    t.string   "event_channel", limit: 255
-    t.boolean  "sent_email",    limit: 1
+    t.integer  "subdomain_id",               limit: 4
+    t.integer  "user_id",                    limit: 4
+    t.string   "digest_object_type",         limit: 255
+    t.integer  "digest_object_id",           limit: 4
+    t.string   "event_object_type",          limit: 255
+    t.integer  "event_object_id",            limit: 4
+    t.string   "event_type",                 limit: 255
+    t.string   "digest_object_relationship", limit: 255
+    t.string   "event_object_relationship",  limit: 255
+    t.boolean  "sent_email",                 limit: 1
     t.datetime "read_at"
     t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "opinions", force: :cascade do |t|

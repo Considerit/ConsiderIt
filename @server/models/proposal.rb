@@ -12,7 +12,7 @@ class Proposal < ActiveRecord::Base
 
   acts_as_tenant :subdomain
 
-  include Followable, Moderatable
+  include Followable, Moderatable, Notifier
   
   class_attribute :my_public_fields, :my_summary_fields
   self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :published]

@@ -75,10 +75,8 @@ class ProposalController < ApplicationController
 
       dirty_key '/proposals'
 
-      ActiveSupport::Notifications.instrument("proposal:published", 
-        :proposal => proposal,
-        :current_subdomain => current_subdomain
-      )
+      Notifier.create_notification 'new', proposal
+      proposal.notify_moderator
 
       write_to_log({
         :what => 'created new proposal',

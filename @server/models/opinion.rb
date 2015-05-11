@@ -73,7 +73,7 @@ class Opinion < ActiveRecord::Base
       inc.point.recache
     end
 
-    Notifier.create_notification 'published', self
+    Notifier.create_notification 'new', self
 
 
   end

@@ -1,5 +1,3 @@
-// new_point, new_comment, new_assessment
-
 Hi #{@user.name}, 
 
 %p 
@@ -14,8 +12,8 @@ Hi #{@user.name},
     New points
 
   %ul
-    - for notification in @notifications['new_point']
-      - point = notification.root_object
+    - for notification in @notifications['new_point']['proposal_interested']
+      - point = notification.event_object
       
       %li
         #{point.user.name} added a new #{point.is_pro ? 'pro' : 'con'} "#{point.title(40)}"
@@ -26,35 +24,38 @@ Hi #{@user.name},
     New opinions
 
   %ul
-    - for notification in @notifications['new_opinion']
-      - opinion = notification.root_object
+    - for notification in @notifications['new_opinion']['proposal_interested']
+      - opinion = notification.event_object
       
       %li
         #{opinion.user.name} added an opinion
 
 
-- comment_sections = [ |
-      ['new_comment_on_my_point', 'New comments on your points'], |
-      ['new_comment_on_point_active_in', 'New comments on point you follow'], |
-      ['new_comment', 'New comments on other points'], |
-  ] |
+- for event in ['new_comment', 'new_assessment']
 
-- for section in comment_sections
-  - key = section[0]
-  - header = section[1]
+  - if @notifications.has_key? event
+    - comment_sections = [ |
+          ['point_authored', 'New comments on your points'], |
+          ['point_engaged', 'New comments on points you follow'], |
+          ['proposal_interested', 'New comments on other points'], |
+      ] |
 
-  - if @notifications.has_key? key
+    - for section in comment_sections
+      - key = section[0]
+      - header = section[1]
 
-    %h2
-      = header
+      - if @notifications[event].has_key? key
 
-    %ul
-      - for notification in @notifications[key]
-        - comment = notification.root_object
-        - point = comment.point
+        %h2
+          = header
 
-        %li
-          #{comment.user.name} commented on "#{point.title(40)}"
+        %ul
+          - for notification in @notifications[event][key]
+            - comment = notification.event_object
+            - point = comment.point
+
+            %li
+              #{comment.user.name} commented on "#{point.title(40)}"
 
 
 = content_for :footer do

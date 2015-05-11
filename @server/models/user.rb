@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
       is_moderator: permit('moderate content', nil) > 0,
       is_evaluator: permit('factcheck content', nil) > 0,
       trying_to: nil,
-      subscriptions: subscription_settings[current_subdomain.id.to_s],
+      subscriptions: subscription_settings(current_subdomain),
       notifications: Notification.where(:user_id => self.id),      
       verified: verified,
       needs_to_set_password: registered && !name #happens for users that were created via email invitation
@@ -107,6 +107,7 @@ class User < ActiveRecord::Base
   end
 
   def is_admin?(subdomain = nil)
+    subdomain ||= current_subdomain
     has_any_role? [:admin, :superadmin], subdomain
   end
 
@@ -123,7 +124,8 @@ class User < ActiveRecord::Base
   end
 
   def has_any_role?(roles, subdomain = nil)
-    roles.each do |role|
+    subdomain ||= current_subdomain
+    for role in roles
       return true if has_role?(role, subdomain)
     end
     return false
@@ -158,87 +160,94 @@ class User < ActiveRecord::Base
   end
 
   def emails_received
-    my_emails = JSON.parse self.emails || "{}"
-
-    my_emails
+    JSON.parse(self.emails || "{}")
   end
 
 
-  # Which channels this user subscribes. e.g. comments on points i've written
-  def subscription_settings
-    subdomains = JSON.load(self.active_in || '[]') #.map {|s| s.to_i}
-    subdomains.push current_subdomain.id.to_s if current_subdomain
-    subdomains.uniq!
+  ####
+  # subscription_settings
+  #
+  # Which channels this user subscribes. e.g. comments on points I've written.
+  # Outputs a hash with the following levels: 
+  #   - subdomain_id
+  #     - digest
+  #      - digest relation
+  #        . default
+  #        . description
+  #        . ui_label
+  #        - events
+  #          - event_type
+  #            . true or false
+  #
+  # If you pass a subdomain, it will just return the settings for that subdomain
+  #
+  def subscription_settings(constrain_to_subdomain = nil)
 
     my_subs = JSON.parse(subscriptions || "{}")
+    notifier_config = Notifier::subscription_config
+
+    if constrain_to_subdomain 
+      subdomains = [constrain_to_subdomain.id.to_s]
+    else
+      subdomains = JSON.load(self.active_in || '[]')
+      subdomains.push current_subdomain.id.to_s if current_subdomain
+      subdomains.uniq!
+    end
 
     # Make sure the default subscription settings defined in Notifier
     # are present for this user.     
-
     for subdomain_id in subdomains
       subdomain = Subdomain.find_by id: subdomain_id
       next if !subdomain
-      for object, channel_group in Notifier::subscriptions
 
-        # Skip if it isn't relevant to this user (e.g. only add moderator settings
-        # if the user is a moderator)
-        next if  channel_group.key?(:constrained_to) && \
-               !(channel_group[:constrained_to].call(self, subdomain))
+      my_subs[subdomain_id] ||= {}
 
-        my_subs[subdomain_id] ||= {}
+      for digest, digest_config in notifier_config[:subscription_digests]
+        my_subs[subdomain_id][digest] ||= {}
+        my_digest_config = my_subs[subdomain_id][digest] 
+        
+        for digest_relation, relation_config in digest_config['digest_relations']
+          
+          if !relation_config['allowed'] || relation_config['allowed'].call(self, subdomain)
+            my_digest_config[digest_relation] ||= {}
+            my_relation_config = my_digest_config[digest_relation]
 
-        # make sure that the default subscription method is set
-        # for each basic channel
-        for channel, channel_default in channel_group[:channels]
-          my_subs[subdomain_id][channel] ||= {}
-          my_subs[subdomain_id][channel]['method'] ||= channel_default
-          my_subs[subdomain_id][channel]['default'] = channel_default
+            my_relation_config['ui_label'] = relation_config['ui_label']
+            my_relation_config['default_subscription'] = relation_config['default_subscription']
+            my_relation_config['subscription'] ||= relation_config['default_subscription']
+          
+            my_relation_config['events'] ||= {}
+            for event, event_config in digest_config['events']
+              my_relation_config['events'][event] ||= {}
+              my_event_config = my_relation_config['events'][event]
+              for event_relation, event_relation_config in event_config
+                default_trigger = event_relation_config['email_trigger_default'].call(digest_relation)
+                if default_trigger != nil
+                  my_event_config[event_relation] ||= {}
+                  my_event_relation_config = my_event_config[event_relation]
+                  my_event_relation_config['default_email_trigger'] = default_trigger
+                  if !my_event_relation_config.key?('email_trigger')
+                    my_event_relation_config['email_trigger'] = default_trigger
+                  end
+                  my_event_relation_config['ui_label'] = event_relation_config['ui_label']
+                end
+              end
+            end
+          end
         end
-
-        # Make sure all of the default trigger settings for each event type
-        # are present, for... 
-        # the default: 
-        keys = channel_group[:channels].keys
-        # ...and all overriden subscriptions for this object type
-        keys += my_subs[subdomain_id].keys.select {|key| key =~ /\/#{object}\//}
-
-        for key in keys
-          my_subs[subdomain_id][key].merge!(channel_group[:events]) { |key, v1, v2| v1 }
-        end
-
       end
     end
- 
+
+
+    if constrain_to_subdomain
+      my_subs = my_subs[constrain_to_subdomain.id.to_s]
+    end
+
+    my_subs['subscription_options'] = notifier_config[:subscription_options]
+
     my_subs
   end
 
-  # This user's preference for how long (in seconds) to wait between emails
-  def digest_interval_for(channel, object)
-    prefs = subscription_settings
-    key = "/#{object.class.name.downcase}/#{object.name}"
-
-    interval = subscription_settings[key] \
-                ? subscription_settings[key] \
-                : subscription_settings[channel]
-
-    # interval is in the format {num}_{seconds|minutes|hours|days}
-    num, unit = interval['method'].split('_')
-
-    case unit
-    when 'minute'
-      multiplier = 60
-    when 'hour'
-      multiplier = 60 * 60
-    when 'day'
-      multipler = 24 * 60 * 60
-    when 'month'
-      multipler = 30 * 24 * 60 * 60      
-    else
-      raise "#{unit} is not a supported unit for digests"
-    end
-
-     multipler / num.to_i
-  end
 
 
   # get all the items this user gets notifications for
@@ -328,65 +337,6 @@ class User < ActiveRecord::Base
     end
   end
 
-  # def update_metrics
-  #   referenced_proposals = {}
-  #   opinions = 0
-
-  #   self.opinions.published.each do |opinion|
-  #     if !referenced_proposals.key?(opinion.proposal_id)
-  #       proposal = Proposal.find(opinion.proposal_id) 
-  #       #if can?(:read, proposal)  
-  #       referenced_proposals[opinion.proposal_id] = proposal
-  #       opinions += 1          
-  #     end
-  #   end
-
-  #   influenced_users = {}
-  #   accessible_points = []
-
-  #   my_points = self.points.published.where(:hide_name => false)
-  #   my_points.each do |pnt|
-  #     accessible_points.push pnt.id
-  #     pnt.inclusions.where("user_id != #{self.id}").each do |inc|
-  #       influenced_users[inc.user_id] = 0 if ! influenced_users.key?(inc.user_id)
-  #       influenced_users[inc.user_id] +=1
-  #     end
-  #   end
-
-  #   attrs = {
-  #     :metric_points => my_points.count,
-  #     :metric_opinions => opinions,
-  #     :metric_comments => self.comments.count,
-  #     :metric_influence => influenced_users.keys().count, 
-  #     :metric_conversations => self.proposals.open_to_public.count }
-
-  #   if self.name.blank?
-  #     attrs[:name] = 'Not Specified'
-  #   end
-
-  #   values_changed = false
-  #   attrs.keys.each do |key|
-  #     if self[key] != attrs[key]
-  #       values_changed = true
-  #       break
-  #     end
-  #   end
-  #   self.update_attributes!(ActionController::Parameters.new(attrs).permit!) if values_changed
-
-  # end
-
-  # def self.update_user_metrics
-  #   Account.all.each do |subdomain|
-
-  #     subdomain.users.each do |user|
-  #       begin
-  #         user.update_metrics()
-  #       rescue
-  #         pp "Could not update User #{user.id}"
-  #       end
-  #     end
-  #   end
-  # end
 
   def absorb (user)
     return if not (self and user)

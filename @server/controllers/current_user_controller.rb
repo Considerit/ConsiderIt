@@ -87,9 +87,9 @@ class CurrentUserController < ApplicationController
           elsif !user.authenticate(params[:password])
             errors.append "Wrong password. Click \"I forgot my password\" if you\'re having problems."
           else 
-            current_user.add_to_active_in
             replace_user(current_user, user)
             set_current_user(user)
+            current_user.add_to_active_in
             update_roles_and_permissions
 
             dirty_key '/proposals'
@@ -308,7 +308,19 @@ class CurrentUserController < ApplicationController
 
     if new_params.has_key? :subscriptions
       subs = current_user.subscription_settings
-      subs[current_subdomain.id] = new_params[:subscriptions]
+      subs[current_subdomain.id.to_s] = new_params[:subscriptions]
+
+      # Strip out ui configuration: 
+      clean = proc do |k, v|
+        if v.respond_to?(:delete_if)
+          v.delete_if(&clean) # recurse if v is a hash
+        end
+        ['subscription_options', 'ui_label', \
+         'default_subscription', 'default_email_trigger'].include?(k)
+      end
+
+      subs.delete_if &clean
+
       new_params[:subscriptions] = JSON.dump subs
     end
 

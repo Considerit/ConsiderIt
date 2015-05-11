@@ -40,7 +40,8 @@ class CommentController < ApplicationController
 
       if comment.save
 
-        Notifier.create_notification('create', comment)
+        Notifier.create_notification('new', comment)
+        comment.notify_moderator
 
         original_id = key_id(params[:key])
         result = comment.as_json
@@ -49,6 +50,8 @@ class CommentController < ApplicationController
 
         point.follow!(current_user, :follow => true, :explicit => false)
 
+        # TODO: BUG: comment count won't accurate if this comment has to be 
+        #            moderated first...
         point.comment_count = point.comments.count
         point.save
         dirty_key "/point/#{point.id}"

@@ -82,7 +82,8 @@ class Point < ActiveRecord::Base
     recache
     self.save if changed?
 
-    Notifier.create_notification 'published', self
+    Notifier.create_notification 'new', self
+    notify_moderator
 
   end
 

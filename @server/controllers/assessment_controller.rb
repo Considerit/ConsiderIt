@@ -36,7 +36,7 @@ class AssessmentController < ApplicationController
       assessment.published_at = Time.now.utc      
       assessment.save
 
-      Notifier.create_notification 'published', assessment
+      Notifier.create_notification 'new', assessment
 
     else 
       assessment.save
@@ -74,7 +74,7 @@ class AssessmentController < ApplicationController
         
       assessment = Assessment.create! create_attrs
 
-      Notifier.create_notification 'create', assessment
+      Notifier.create_notification 'new', request
 
     end
 

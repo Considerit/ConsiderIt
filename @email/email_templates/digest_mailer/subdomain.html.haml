@@ -1,0 +1,49 @@
+Hi #{@user.name}, 
+
+%p 
+  Here's an update on 
+  %a{href: full_link(''), style: 'font-weight: 700; color: #468EE5;'}
+    = @subdomain.name
+
+- if @notifications.has_key? 'moderate'
+  
+  %h2
+    Content to moderate
+
+  %ul
+    - for notification in @notifications['moderate']['moderator']
+
+      %li
+        There is new content waiting to be moderated
+
+
+- if @notifications.has_key? 'new_request'
+  
+  %h2
+    New factcheck requests
+
+  %ul
+    - for notification in @notifications['new_request']['evaluator']
+      - request = notification.event_object
+      - point = request.assessment.point
+
+      %li
+        #{request.user.name} requested a fact-check of "#{point.title(40)}"
+
+
+- if @notifications.has_key? 'new_proposal'
+  
+  %h2
+    New proposals
+
+  %ul
+    - for notification in @notifications['new_proposal']['subdomain_interested']
+      - proposal = notification.event_object
+      
+      %li
+        #{proposal.user.name} added a new proposal "#{proposal.title(40)}"
+
+
+= content_for :footer do
+  = render :partial => 'event_mailer/unsubscribe', :locals => {:description => ' to this proposal'}
+    

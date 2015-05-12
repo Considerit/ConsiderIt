@@ -68,9 +68,9 @@ module Notifier
   # combination of a digest (e.g. proposal) and the relationship a user
   # has with that digest (e.g. authored the proposal)
   def self.subscription_channel(digest_object, user)
-    digest_type = digest_object.class.name.downcase
+    digest = digest_object.class.name.downcase
     relation = Notifier.digest_object_relationship(digest_object, user)
-    "#{digest_type}_#{relation}"
+    "#{digest}_#{relation}"
   end
 
   #####
@@ -107,7 +107,8 @@ module Notifier
     for notification in candidates
 
       # Don't announce things prematurely...
-      if notification.event_object.respond_to?(:okay_to_email_notification)
+      if notification.event_object.respond_to?(:okay_to_email_notification) && \
+         notification.event_type != 'moderate'
         next if !notification.event_object.okay_to_email_notification
       end
 
@@ -369,8 +370,7 @@ module Notifier
         }
       },
 
-      # TODO: handle wildcard
-      'moderate_*' => {
+      'moderate' => {
         'moderator' => {
           'ui_label' => 'New content to moderate',
            #   * Returning nil means that this event will not show up as a
@@ -467,7 +467,7 @@ module Notifier
         'ui_label' => 'On-site message'
       }, {
         'name' => 'none',
-        'ui_label' => 'Ignore it'
+        'ui_label' => 'Ignore'
       }],
 
     # The available subscription levels that notifications aggregate into.
@@ -586,7 +586,9 @@ module Notifier
     digest_name = digest_object.class.name.downcase
     digest_key = "/#{digest_name}/#{digest_object.id}"
 
-    subs = user.subscription_settings(digest_object.subdomain)
+    subdomain = digest_object.class.name == 'Subdomain' ? digest_object : digest_object.subdomain
+
+    subs = user.subscription_settings(subdomain)
 
     # Allow subscription overrides, like watching a proposal or unsubscribing
     if subs.key?(digest_key)

@@ -105,6 +105,10 @@ class Subdomain < ActiveRecord::Base
     result
   end
 
+  def title 
+    self.app_title || self.name
+  end
+
   def set_roles(new_roles)
     self.roles = JSON.dump(new_roles)
     self.save

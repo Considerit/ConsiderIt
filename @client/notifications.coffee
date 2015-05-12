@@ -1,3 +1,14 @@
+
+first_column_style = 
+  display: 'inline-block'
+  width: 283
+  textAlign: 'right'
+  verticalAlign: 'top'
+  marginRight: 80
+  paddingTop: 5
+  fontSize: 18
+
+
 window.Notifications = ReactiveComponent
   displayName: 'Notifications'
 
@@ -10,7 +21,7 @@ window.Notifications = ReactiveComponent
     prefs = current_user.subscriptions
 
     for digest, digest_config of prefs
-      continue if digest == 'subscription_options'
+      continue if digest == 'subscription_options' || digest.match(/\//)
 
       settings[digest] ||= {}
       for digest_relation, relation_config of digest_config
@@ -56,8 +67,68 @@ window.Notifications = ReactiveComponent
         for digest in ['subdomain', 'proposal']
           digest_config = prefs[digest]
           for digest_relation, relation_config of digest_config
-            @drawChannel digest, digest_relation, relation_config, prefs.subscription_options
+            @drawChannel digest, digest_relation, \
+                         relation_config, prefs.subscription_options
+              
 
+        @drawOverrides('watched', "You are currently watching these proposals:")
+        @drawOverrides('none', "You have unsubscribed to these proposals:")
+
+  drawOverrides: (digest_relation, label) ->
+    current_user = fetch('/current_user')
+    unsubscribed = {}
+
+    for k,v of current_user.subscriptions
+      # we only match proposals for now 
+      if v == digest_relation && k.match(/\/proposal\//)
+        unsubscribed[k] = v
+
+    if _.keys(unsubscribed).length > 0
+
+      DIV 
+        style: 
+          padding: '20px 0'
+
+        DIV
+          style: first_column_style
+          label
+
+        DIV
+          style: 
+            width: 550
+            display: 'inline-block'
+
+          UL
+            style: 
+              position: 'relative'
+
+            for k,v of unsubscribed
+              do (k) => 
+                obj = fetch(k)
+
+                LI 
+                  style: 
+                    listStyle: 'none'
+                    padding: '5px 0'
+
+                  A 
+                    href: "/#{obj.slug}"
+                    style: 
+                      textDecoration: 'underline'
+
+                    obj.name 
+
+                  A 
+                    style: 
+                      cursor: 'pointer'
+                      display: 'inline-block'
+                      marginLeft: 10
+                      fontSize: 14
+                    onClick: => 
+                      delete current_user.subscriptions[k]
+                      save current_user
+
+                    'remove'   
 
 
   drawChannel: (digest, digest_relation, relation_config, options) ->
@@ -68,14 +139,8 @@ window.Notifications = ReactiveComponent
         padding: '20px 0px'
 
       DIV
-        style: 
-          display: 'inline-block'
-          width: 283
-          textAlign: 'right'
-          verticalAlign: 'top'
-          marginRight: 80
-          paddingTop: 5
-          fontSize: 18
+        style: first_column_style
+          
 
         relation_config.ui_label
 

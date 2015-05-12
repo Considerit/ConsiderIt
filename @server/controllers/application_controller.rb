@@ -350,6 +350,16 @@ protected
         current_user.verified = true
         current_user.save
         dirty_key('/current_user')
+
+        # unsubscribe from this object if that's what they want to do...
+        if params.has_key?('unsubscribe_key')
+          sub_settings = current_user.subscription_settings(current_subdomain)
+          key = params['unsubscribe_key']
+          sub_settings[key] = 'none'
+          current_user.subscriptions = current_user.update_subscriptions(sub_settings)
+          current_user.save
+        end
+
       end
     end
   end

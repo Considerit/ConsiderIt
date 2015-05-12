@@ -8,8 +8,13 @@ def send_digest(user, digest_object, notifications, subscription_settings, email
   subdomain = digest == 'subdomain' ? digest_object : digest_object.subdomain
   key = "/#{digest}/#{digest_object.id}"
 
+  # TODO: remove the digest_relation == 'none' after testing
+  return if digest_relation == 'unsubscribed' || digest_relation == 'none'
+
   prefs = subscription_settings[digest][digest_relation]
+
   if !prefs
+    #pp subscription_settings[digest]
     raise "No subscription settings for #{digest} #{digest_relation} for User #{user.id}"
   end
 

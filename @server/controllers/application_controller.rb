@@ -355,7 +355,7 @@ protected
         if params.has_key?('unsubscribe_key')
           sub_settings = current_user.subscription_settings(current_subdomain)
           key = params['unsubscribe_key']
-          sub_settings[key] = 'none'
+          sub_settings[key] = 'unsubscribed'
           current_user.subscriptions = current_user.update_subscriptions(sub_settings)
           current_user.save
         end

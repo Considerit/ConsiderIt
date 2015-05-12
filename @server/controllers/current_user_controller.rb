@@ -307,21 +307,7 @@ class CurrentUserController < ApplicationController
     end
 
     if new_params.has_key? :subscriptions
-      subs = current_user.subscription_settings
-      subs[current_subdomain.id.to_s] = new_params[:subscriptions]
-
-      # Strip out ui configuration: 
-      clean = proc do |k, v|
-        if v.respond_to?(:delete_if)
-          v.delete_if(&clean) # recurse if v is a hash
-        end
-        ['subscription_options', 'ui_label', \
-         'default_subscription', 'default_email_trigger'].include?(k)
-      end
-
-      subs.delete_if &clean
-
-      new_params[:subscriptions] = JSON.dump subs
+      new_params[:subscriptions] = current_user.update_subscriptions(new_params[:subscriptions])
     end
 
     if current_user.update_attributes(new_params)

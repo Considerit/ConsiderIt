@@ -248,7 +248,25 @@ class User < ActiveRecord::Base
     my_subs
   end
 
+  def update_subscriptions(new_settings, subdomain = nil)
+    subdomain ||= current_subdomain
 
+    subs = self.subscription_settings
+    subs[subdomain.id.to_s] = new_settings
+
+    # Strip out ui configuration: 
+    clean = proc do |k, v|
+      if v.respond_to?(:delete_if)
+        v.delete_if(&clean) # recurse if v is a hash
+      end
+      ['subscription_options', 'ui_label', \
+       'default_subscription', 'default_email_trigger'].include?(k)
+    end
+
+    subs.delete_if &clean
+
+    JSON.dump subs
+  end
 
   # get all the items this user gets notifications for
   # TODO: update for new system!

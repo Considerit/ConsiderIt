@@ -206,23 +206,23 @@ module Notifier
 
       # TODO: This should only be available for subdomains with 
       #       fact-checking enabled
-      'new_assessment' => {
-        'point_authored' => {
-          # a description of this relation for UIs
-          'ui_label' => 'Factcheck of a Pro or Con point you wrote',
+      # 'new_assessment' => {
+      #   'point_authored' => {
+      #     # a description of this relation for UIs
+      #     'ui_label' => 'Factcheck of a Pro or Con point you wrote',
 
-          # Whether this event qualifies for triggering an email by default.
-          'email_trigger_default' => lambda {|digest_relation| true }
-        },
-        'point_engaged' => {
-          'ui_label' => 'Factcheck of a Pro or Con point you\'ve engaged',
-          'email_trigger_default' => lambda {|digest_relation| true }
-        },
-        'proposal_interested' => {
-          'ui_label' => 'Factcheck on other points',
-          'email_trigger_default' => lambda {|digest_relation| false }
-        }
-      },
+      #     # Whether this event qualifies for triggering an email by default.
+      #     'email_trigger_default' => lambda {|digest_relation| true }
+      #   },
+      #   'point_engaged' => {
+      #     'ui_label' => 'Factcheck of a Pro or Con point you\'ve engaged',
+      #     'email_trigger_default' => lambda {|digest_relation| true }
+      #   },
+      #   'proposal_interested' => {
+      #     'ui_label' => 'Factcheck on other points',
+      #     'email_trigger_default' => lambda {|digest_relation| false }
+      #   }
+      # },
 
       'new_opinion' => {
         'proposal_interested' => {

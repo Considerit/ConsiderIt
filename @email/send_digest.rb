@@ -1,7 +1,7 @@
 # wait at least 2 min before sending any notification
 BUFFER = 2 * 60 
 
-def send_digest(user, digest_object, notifications, subscription_settings)
+def send_digest(user, digest_object, notifications, subscription_settings, deliver = true)
   digest = digest_object.class.name.downcase
   digest_relation = Notifier.digest_object_relationship(digest_object, user)
   
@@ -65,6 +65,9 @@ def send_digest(user, digest_object, notifications, subscription_settings)
 
     channel = Notifier.subscription_channel(digest_object, user)
     mail = DigestMailer.send(digest, digest_object, user, notifications, channel)
+    if deliver
+      mail.deliver_now
+    end
 
     # record that we've sent these notifications
     for v in notifications.values

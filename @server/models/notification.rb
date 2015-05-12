@@ -23,7 +23,11 @@ class Notification < ActiveRecord::Base
   end
 
   def event
-    "#{event_type.downcase}_#{event_object_type.downcase}"
+    if event_type == 'moderate'
+      event_type
+    else
+      "#{event_type.downcase}_#{event_object_type.downcase}"
+    end
   end
 
 end

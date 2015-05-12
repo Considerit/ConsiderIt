@@ -778,44 +778,13 @@ DecisionBoard = ReactiveComponent
             else 
               'Save your opinion and see results'
 
-          DIV 
-            className: 'below_save'
-            style: 
-              display: 'none'
-            if get_proposal_mode() == 'crafting'
-              A 
-                style: 
-                  marginTop: '.5em'
-                  padding: 3
-                  display: 'inline-block'
+          if !your_opinion.published
 
-                INPUT
-                  type:      'checkbox'
-                  id:        "follow_proposal"
-                  name:      "follow_proposal"
-                  checked:   @proposal.is_following
-                  style: 
-                    fontSize: 21
-                    cursor: 'pointer'
-                  onChange: =>
-                    @proposal.is_following = !@proposal.is_following
-                    save @proposal
-                LABEL 
-                  htmlFor: "follow_proposal"
-                  title:'''
-                        We\'ll send periodic email notifications summarizing 
-                        activity on the proposal, as well as alerts about new ''' + \
-                        customization('point_labels.pro') + ' and ' + \
-                        customization('point_labels.con') + \
-                        'points. You can easily unsubscribe later.'
-                  style: 
-                    marginLeft: 6
-                    fontSize: 16
-                    color: '#888'
-                    cursor: 'pointer'   
-                  'Notify me about new activity'
-
-            if !your_opinion.published
+            DIV 
+              className: 'below_save'
+              style: 
+                display: 'none'
+                        
               A 
                 className:'cancel_opinion_button primary_cancel_button'
                 onClick: => updateProposalMode('results', 'cancel_button')

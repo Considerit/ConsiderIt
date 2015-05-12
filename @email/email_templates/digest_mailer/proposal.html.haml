@@ -31,7 +31,7 @@ Hi #{@user.name},
         #{opinion.user.name} added an opinion
 
 
-- for event in ['new_comment', 'new_assessment']
+- for event in ['new_comment'] #, 'new_assessment']
 
   - if @notifications.has_key? event
     - comment_sections = [ |

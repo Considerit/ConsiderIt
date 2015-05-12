@@ -8,7 +8,6 @@ def send_digest(user, digest_object, notifications, subscription_settings, email
   subdomain = digest == 'subdomain' ? digest_object : digest_object.subdomain
   key = "/#{digest}/#{digest_object.id}"
 
-
   prefs = subscription_settings[digest][digest_relation]
   if !prefs
     raise "No subscription settings for #{digest} #{digest_relation} for User #{user.id}"
@@ -24,19 +23,19 @@ def send_digest(user, digest_object, notifications, subscription_settings, email
     interval = email_me_no_more_than prefs['subscription']
     can_send = sec_since_last >= interval
   end
+
   return if !can_send
   #####
 
   ####
   # Check notifications to determine if a valid triggering event occurred
   do_send = false
-  channel = Notifier.subscription_channel(digest_object, user)
 
   event_prefs = prefs['events']
-  for event_type, ns in notifications
+  for event, ns in notifications
+
     for event_relation, nss in ns
       for notification in nss
-        event = notification.event
         event_relation = notification.event_object_relationship 
 
         # if !event_prefs[event] || !event_prefs[event][event_relation]
@@ -58,6 +57,7 @@ def send_digest(user, digest_object, notifications, subscription_settings, email
 
   if do_send
 
+    channel = Notifier.subscription_channel(digest_object, user)
     mail = DigestMailer.send(digest, digest_object, user, notifications, channel)
 
     # record that we've sent these notifications

@@ -11,7 +11,7 @@ task :send_email_notifications => :environment do
       for user_id, n_for_user in n_for_subdomain
         user = User.find user_id
         prefs = user.subscription_settings(Subdomain.find(subdomain_id))
-        emails_sent = user.emails_received
+        
 
         for digest_object_type, n_for_type in n_for_user
 

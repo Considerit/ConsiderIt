@@ -2,7 +2,7 @@ Hi #{@user.name},
 
 %p 
   Here's an update on 
-  %a{href: full_link(@proposal.slug), style: 'font-weight: 700; color: #468EE5;'}
+  %a{href: full_link(@proposal.slug), style: "font-weight: 600; color: #{logo_red};"}
     = @proposal.name
 
 
@@ -12,23 +12,31 @@ Hi #{@user.name},
     New points
 
   %ul
-    - for notification in @notifications['new_point']['proposal_interested']
-      - point = notification.event_object
+    - grouped = group_by_user(@notifications['new_point']['proposal_interested'])
+    - for user_id, notifications in grouped
+      - points = notifications.map {|n| n.event_object }
       
       %li
-        #{point.user.name} added a new #{point.is_pro ? 'pro' : 'con'} "#{point.title(40)}"
+        #{User.find(user_id).name} added #{points.length == 1 ? 'a' : 'these'} point#{points.length == 1 ? '' : 's'}:
+        - points.each_with_index do |point, idx|
+          - if idx == points.length - 1 && points.length > 1
+            and
+
+          %a{href: full_link(point.proposal.slug, {selected: "%2Fpoint%2F#{point.id}"}), style: "font-weight: 600; color: #{logo_red}"} 
+            #{point.title(40)}
+
+          - if idx < points.length - 1
+            , 
+
+
 
 - if @notifications.has_key? 'new_opinion'
   
   %h2
     New opinions
 
-  %ul
-    - for notification in @notifications['new_opinion']['proposal_interested']
-      - opinion = notification.event_object
-      
-      %li
-        #{opinion.user.name} added an opinion
+
+  #{get_user_str(@notifications['new_opinion']['proposal_interested'])} added their opinions               
 
 
 - for event in ['new_comment', 'new_assessment']
@@ -50,12 +58,17 @@ Hi #{@user.name},
           = header
 
         %ul
-          - for notification in @notifications[event][key]
-            - comment = notification.event_object
+          - by_event_object = group_by_object(@notifications[event][key])
+          - for event_object_id, notifications in by_event_object
+            // aggregate into event_object
+            - comment = notifications[0].event_object
             - point = comment.point
 
             %li
-              #{comment.user.name} commented on "#{point.title(40)}"
+              #{get_user_str(notifications)} commented on 
+
+              %a{href: full_link(point.proposal.slug, {selected: "%2Fpoint%2F#{point.id}"}), style: "font-weight: 600; color: #{logo_red}"} 
+                #{point.title(40)}
 
 
 = content_for :footer do

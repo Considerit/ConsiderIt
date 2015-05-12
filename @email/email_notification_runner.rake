@@ -17,7 +17,7 @@ task :send_email_notifications => :environment do
 
           for digest_object_id, notifications_to_digest in n_for_type
             digest_object = digest_object_type.capitalize.constantize.find(digest_object_id) 
-            send_digest(user, digest_object, notifications_to_digest, prefs, emails_sent)
+            send_digest(user, digest_object, notifications_to_digest, prefs)
           end
         end
       end

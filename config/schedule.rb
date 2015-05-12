@@ -28,6 +28,6 @@ every 1.hour do
   rake 'clear_null_inclusions'
 end
 
-every 15.minutes do 
+every 5.minutes do 
   rake 'send_email_notifications'
 end

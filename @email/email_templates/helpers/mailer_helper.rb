@@ -49,7 +49,6 @@ module MailerHelper
     str = ""
     named = [max_users, users.length].min
     users[0..named-1].each_with_index do |user, idx|
-      pp 'HOLA', "#{idx}, #{named - 1}"
       if idx == named - 1 && over <= 0 && named > 1
         str += ' and '
       end
@@ -65,7 +64,6 @@ module MailerHelper
       str += " and #{over} other#{over > 1 ? 's' : ''}"
     end
 
-    pp str
     str.gsub('  ', ' ')
   end
 

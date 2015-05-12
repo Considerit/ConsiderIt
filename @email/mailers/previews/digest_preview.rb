@@ -14,9 +14,7 @@ class DigestPreview < ActionMailer::Preview
     notifications = digest_objects[digest_object_id]
 
     mail = send_digest(user, proposal, notifications, 
-        user.subscription_settings(Subdomain.find(subdomain_id)), 
-        user.emails_received
-        )
+        user.subscription_settings(Subdomain.find(subdomain_id)))
 
     if !mail 
       mail = proposal()
@@ -39,9 +37,7 @@ class DigestPreview < ActionMailer::Preview
     user = User.find(user_id)
     notifications = digest_objects[digest_object_id]
     mail = send_digest(user, subdomain, notifications, 
-        user.subscription_settings(Subdomain.find(subdomain_id)), 
-        user.emails_received
-        )
+        user.subscription_settings(Subdomain.find(subdomain_id)))
 
     if !mail 
       mail = subdomain()

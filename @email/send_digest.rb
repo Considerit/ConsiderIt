@@ -1,7 +1,7 @@
 # wait at least 2 min before sending any notification
 BUFFER = 2 * 60 
 
-def send_digest(user, digest_object, notifications, subscription_settings, emails_sent)
+def send_digest(user, digest_object, notifications, subscription_settings)
   digest = digest_object.class.name.downcase
   digest_relation = Notifier.digest_object_relationship(digest_object, user)
   
@@ -22,7 +22,8 @@ def send_digest(user, digest_object, notifications, subscription_settings, email
   # Respect the user's notification settings. Compare with time since we last
   # sent them a similar digest email.
   can_send = true
-  last_digest_sent_at = emails_sent[key]
+  
+  last_digest_sent_at = user.emails_received[key]
   if last_digest_sent_at
     sec_since_last = Time.now() - Time.parse(last_digest_sent_at)
     interval = email_me_no_more_than prefs['subscription']
@@ -66,16 +67,16 @@ def send_digest(user, digest_object, notifications, subscription_settings, email
     mail = DigestMailer.send(digest, digest_object, user, notifications, channel)
 
     # record that we've sent these notifications
-    # TODO: Enable this when appropriate
     for v in notifications.values
       for vv in v.values
         for n in vv      
-          n.sent_email = true; n.save
+          n.sent_email = true
+          n.save
         end
       end
     end
 
-    emails_sent[key] = Time.now().to_s
+    user.emails_received[key] = Time.now().to_s
     user.save
   end
 

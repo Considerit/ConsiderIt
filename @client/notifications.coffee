@@ -260,7 +260,7 @@ window.Notifications = ReactiveComponent
           relation_config.subscription = "#{num}_#{e.target.value}"
           save current_user
 
-        for u in ['minute', 'hour', 'day', 'month']
+        for u in ['hour', 'day', 'month']
           OPTION
             value: u
             u

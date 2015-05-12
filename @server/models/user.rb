@@ -254,13 +254,26 @@ class User < ActiveRecord::Base
     subs = self.subscription_settings
     subs[subdomain.id.to_s] = new_settings
 
-    # Strip out ui configuration: 
-    clean = proc do |k, v|
-      if v.respond_to?(:delete_if)
+    # Strip out unnecessary items that we can reconstruct from the 
+    # notification configuration 
+    clean = proc do |k, v|        
+
+      if v.respond_to?(:key?)
+        if v.key?('default_subscription') && 
+            v['default_subscription'] == v['subscription']
+          v.delete('subscription')
+        elsif v.key?('default_email_trigger') && 
+            v['default_email_trigger'] == v['email_trigger']
+          v.delete('email_trigger')
+        end
+
         v.delete_if(&clean) # recurse if v is a hash
       end
+
+      v.respond_to?(:key) && v.keys().length == 0 || \
       ['subscription_options', 'ui_label', \
        'default_subscription', 'default_email_trigger'].include?(k)
+
     end
 
     subs.delete_if &clean

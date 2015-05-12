@@ -97,13 +97,13 @@ def email_me_no_more_than(interval)
   when 'hour'
     multiplier = 60 * 60
   when 'day'
-    multipler = 24 * 60 * 60
+    multiplier = 24 * 60 * 60
   when 'month'
-    multipler = 30 * 24 * 60 * 60      
+    multiplier = 30 * 24 * 60 * 60      
   else
     raise "#{unit} is not a supported unit for digests"
   end
 
-   multipler / num.to_i
+   multiplier / num.to_i
 end
 

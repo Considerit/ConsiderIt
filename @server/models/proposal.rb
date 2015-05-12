@@ -87,11 +87,15 @@ class Proposal < ActiveRecord::Base
     clustered_proposals = {}
 
     # group all proposals into clusters
-
+    most_recent = {}
     proposals.each do |proposal|
 
       # Impose access control restrictions for current user
       next if permit('read proposal', proposal) < 0
+
+      if !most_recent[proposal.cluster] || most_recent[proposal.cluster] < proposal.created_at
+        most_recent[proposal.cluster] = proposal.created_at
+      end
 
       clustered_proposals[proposal.cluster] = [] if !clustered_proposals.has_key? proposal.cluster
       clustered_proposals[proposal.cluster].append proposal.as_json
@@ -99,8 +103,12 @@ class Proposal < ActiveRecord::Base
 
     # now order the clusters
     if !manual_clusters
-      #TODO: order the group for the general case. Probably sort groups by the most recent Opinion.
-      ordered_clusters = clustered_proposals.keys()
+      
+      # order the group by most recent proposal
+      ordered_clusters = clustered_proposals.keys().sort {|c1,c2|      
+        most_recent[c1] < most_recent[c2] ? 1 : -1
+      }
+
     else 
       ordered_clusters = manual_clusters
     end

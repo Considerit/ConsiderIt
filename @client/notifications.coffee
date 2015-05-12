@@ -72,7 +72,7 @@ window.Notifications = ReactiveComponent
               
 
         @drawOverrides('watched', "You are currently watching these proposals:")
-        @drawOverrides('none', "You have unsubscribed to these proposals:")
+        @drawOverrides('unsubscribed', "You have unsubscribed to these proposals:")
 
   drawOverrides: (digest_relation, label) ->
     current_user = fetch('/current_user')

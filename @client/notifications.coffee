@@ -240,7 +240,7 @@ window.Notifications = ReactiveComponent
         onChange: (e) =>
           num = parseInt(e.target.value)
           if !isNaN(num)
-            relation_config.subscription = "#{num}_#{@refs.unit.getDOMNode().value}"
+            relation_config.subscription = "#{num}_#{unit}"
             save current_user
 
       SPAN 
@@ -257,7 +257,7 @@ window.Notifications = ReactiveComponent
         ref: 'unit'
         value: unit
         onChange: (e) => 
-          relation_config.subscription = "#{@refs.num.getDOMNode().value}_#{e.target.value}"
+          relation_config.subscription = "#{num}_#{e.target.value}"
           save current_user
 
         for u in ['minute', 'hour', 'day', 'month']

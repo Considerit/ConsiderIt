@@ -1,7 +1,7 @@
 
 require 'exception_notification'
 
-Rails.root.join("@email", "send_digest")
+require Rails.root.join("@email", "send_digest")
 
 task :send_email_notifications => :environment do
   begin 
@@ -16,7 +16,7 @@ task :send_email_notifications => :environment do
         for digest_object_type, n_for_type in n_for_user
 
           for digest_object_id, notifications_to_digest in n_for_type
-            digest_object = digest_object_type.constantize.find(digest_object_id) 
+            digest_object = digest_object_type.capitalize.constantize.find(digest_object_id) 
             send_digest(user, digest_object, notifications_to_digest, prefs, emails_sent)
           end
         end

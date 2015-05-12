@@ -166,8 +166,8 @@ class User < ActiveRecord::Base
   def sent_email_about(key, time=nil)
     time ||= Time.now().to_s
     settings = emails_received
-    emails_received[key] = time
-    self.emails = JSON.dump emails_received
+    settings[key] = time
+    self.emails = JSON.dump settings
     save
   end
 

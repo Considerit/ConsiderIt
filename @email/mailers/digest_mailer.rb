@@ -9,6 +9,8 @@ class DigestMailer < Mailer
     @subdomain = proposal.subdomain
     @user = user
 
+    @digest_object = proposal
+
     subject = relation == 'authored' \
                          ? "New activity on your" \
                          : "New activity on"
@@ -22,6 +24,8 @@ class DigestMailer < Mailer
     @notifications = notifications
     @subdomain = subdomain
     @user = user
+
+    @digest_object = subdomain
 
     case relation
     when 'admin', 'moderator', 'evaluator', 'subdomain_interested'

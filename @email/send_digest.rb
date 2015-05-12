@@ -62,9 +62,13 @@ def send_digest(user, digest_object, notifications, subscription_settings, email
 
     # record that we've sent these notifications
     # TODO: Enable this when appropriate
-    # for v in notifications.values
-    #   for ns in v.values
-    #     ns.sent_email = true; save ns
+    for v in notifications.values
+      for vv in v.values
+        for n in vv      
+          n.sent_email = true; n.save
+        end
+      end
+    end
 
     emails_sent[key] = Time.now().to_s
     user.save

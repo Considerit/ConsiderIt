@@ -58,8 +58,7 @@ module Notifier
     digest_object = hash[:digest_object] || \
                     Notifier.infer_digest_object(event_object, event_type)
 
-    # TODO: when confident, delay the generation
-    Notifier.create_notifications_offline(event_type, event_object, 
+    Notifier.delay.create_notifications_offline(event_type, event_object, 
                                           current_subdomain, protagonist, 
                                           digest_object)
   end

@@ -22,7 +22,7 @@ def send_digest(user, digest_object, notifications, subscription_settings)
   # Respect the user's notification settings. Compare with time since we last
   # sent them a similar digest email.
   can_send = true
-  
+
   last_digest_sent_at = user.emails_received[key]
   if last_digest_sent_at
     sec_since_last = Time.now() - Time.parse(last_digest_sent_at)
@@ -76,8 +76,7 @@ def send_digest(user, digest_object, notifications, subscription_settings)
       end
     end
 
-    user.emails_received[key] = Time.now().to_s
-    user.save
+    user.sent_email_about(key)
   end
 
   mail 

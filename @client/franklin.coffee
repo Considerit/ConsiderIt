@@ -2991,7 +2991,7 @@ Root = ReactiveComponent
           
           BrowserHacks()
 
-          Header() if !auth.form        
+          Header() if !auth.form || auth.form == 'edit profile'       
 
           Page key: "/page#{loc.url}"
 

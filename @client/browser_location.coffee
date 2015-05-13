@@ -161,7 +161,7 @@ relativeURLFromLocation = ->
   # location.search returns query parameters
 
   # fix url encoding of /
-  search = location.search?.replace(/\%2f/g, '/')
+  search = location.search?.replace(/\%2[fF]/g, '/')
   "#{location.pathname}#{search}#{location.hash}"
 
 relativeURLFromStatebus = ->  

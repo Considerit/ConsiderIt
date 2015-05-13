@@ -319,13 +319,15 @@ module Notifier
           'default_subscription' => '1_hour',
           'ui_label' => "The site as a whole, like new content to moderate",
           'allowed' => lambda {|user, subdomain| 
-                                user.has_role?(:moderator, subdomain)}          
+                                !user.is_admin?(subdomain) &&
+                                 user.has_role?(:moderator, subdomain)}          
           }, 
         'evaluator' => {
           'default_subscription' => '1_hour',
           'ui_label' => "The site as a whole, like new factcheck requests",
           'allowed' => lambda {|user, subdomain| 
-                                user.has_role?(:evaluator, subdomain)}          
+                                !user.is_admin?(subdomain) &&
+                                 user.has_role?(:evaluator, subdomain)}          
           },
         'subdomain_interested' => {
           'default_subscription' => '1_day',

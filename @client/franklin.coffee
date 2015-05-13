@@ -2110,7 +2110,8 @@ Discussion = ReactiveComponent
     if @discussion.assessment
       comments = comments.slice()
       comments.push @discussion.assessment
-      comments.sort (a,b) -> a.created_at < b.created_at
+    
+    comments.sort (a,b) -> a.created_at < b.created_at
 
     discussion_style =
       width: DECISION_BOARD_WIDTH

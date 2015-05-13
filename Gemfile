@@ -38,6 +38,8 @@ gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delaye
 gem "daemons"
 gem 'backup' #https://github.com/meskyanichi/backup
 
+gem 'mechanize'
+
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:

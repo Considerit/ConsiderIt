@@ -19,7 +19,7 @@ window.OpinionSlider = ReactiveComponent
 
   render : ->
     slider = fetch @props.key
-    hist = fetch 'histogram'
+    hist = fetch namespaced_key('histogram', @proposal)
 
     your_opinion = fetch @props.your_opinion
 

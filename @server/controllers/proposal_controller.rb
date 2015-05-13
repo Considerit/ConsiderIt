@@ -162,6 +162,7 @@ class ProposalController < ApplicationController
   def destroy
     proposal = Proposal.find(params[:id])
     authorize! 'delete proposal', proposal
+    dirty_key '/proposals'
     proposal.destroy
     render :json => {:success => true}
   end

@@ -142,8 +142,9 @@ window.opinionsForProposal = (proposal) ->
   filter_func = options.homie_histo_filter
   opinions = fetch('/page/' + proposal.slug).opinions || []
   # We'll only pass SOME opinions to the histogram
-  (opinion for opinion in opinions when \
+  opinions = (opinion for opinion in opinions when \
                !filter_func or filter_func(fetch(opinion.user)))
+  opinions
 
 window.proposal_editor = (proposal) ->
   editors = (e for e in proposal.roles.editor when e != '*')
@@ -381,6 +382,7 @@ Proposal = ReactiveComponent
 
             dummy:  if fetch('histogram-dock').docked then 1 else -1
             dummy2: if mode == 'crafting' then 1 else -1
+            dummy3: opinionsForProposal(@proposal)
                     # TODO: Dummy is a shallow patch for an odd problem. 
                     # If you have a nested component (in this case Histogram) 
                     # which passes a prop based on a Statebus value, then 

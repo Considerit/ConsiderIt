@@ -76,6 +76,16 @@ get_selected_point = ->
   fetch('location').query_params.selected
 
 ######
+# Expands a key like 'slider' to one that is namespaced to a parent object, 
+# like the current proposal. Will return a local key like 'proposal/345/slider' 
+window.namespaced_key = (base_key, base_object) ->
+  namespace_key = fetch(base_object).key 
+
+  # don't store this on the server
+  if namespace_key[0] == '/'
+    namespace_key = namespace_key.substring(1, namespace_key.length)
+  
+  "#{namespace_key}_#{base_key}"
 
 window.proposal_url = (proposal) =>
   # The special thing about this function is that it only links to
@@ -358,7 +368,7 @@ Proposal = ReactiveComponent
 
           Dock
             key: 'histogram-dock'
-            docked_key: 'histogram'
+            docked_key: namespaced_key('histogram', @proposal)
             dock_on_zoomed_screens: true
             constraints : ['slider-dock']
             dockable : => 
@@ -384,7 +394,7 @@ Proposal = ReactiveComponent
             do =>       
 
               Histogram
-                key: 'histogram'
+                key: namespaced_key('histogram', @proposal)
                 opinions: opinionsForProposal(@proposal)
                 width: BODY_WIDTH
                 height: if fetch('histogram-dock').docked then 50 else 170
@@ -396,7 +406,7 @@ Proposal = ReactiveComponent
 
           Dock
             key: 'slider-dock'
-            docked_key: 'slider'          
+            docked_key: namespaced_key('slider', @proposal)          
             dock_on_zoomed_screens: true
             constraints : ['decisionboard-dock', 'histogram-dock']
             skip_jut: mode == 'results'
@@ -405,7 +415,7 @@ Proposal = ReactiveComponent
             dummy: if @proposal.has_focus != 'opinion' && mode == 'crafting' then 1 else 0
 
             OpinionSlider
-              key: 'slider'
+              key: namespaced_key('slider', @proposal)
               width: OPINION_SLIDER_WIDTH
               your_opinion: @proposal.your_opinion
               focused: mode == 'crafting'
@@ -613,12 +623,12 @@ DecisionBoard = ReactiveComponent
   render : ->
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
-    hist = fetch('histogram')
+    hist = fetch(namespaced_key('histogram', @proposal))
     db = fetch('decision_board')
     
     your_opinion = fetch(@proposal.your_opinion)
 
-    register_dependency = fetch('slider').value 
+    register_dependency = fetch(namespaced_key('slider', @proposal)).value 
                              # to keep bubble mouth in sync with slider
     
     decision_board_style =
@@ -638,7 +648,7 @@ DecisionBoard = ReactiveComponent
 
     if get_proposal_mode() == 'results'
       give_opinion_button_width = 200
-      slider = fetch 'slider'
+      slider = fetch namespaced_key('slider', @proposal)
       gutter = .1 * give_opinion_button_width
       stance_position = (slider.value + 1) / 2 * OPINION_SLIDER_WIDTH / BODY_WIDTH
       opinion_region_x = -gutter + stance_position * \
@@ -869,7 +879,7 @@ SliderBubblemouth = ReactiveComponent
   displayName: 'SliderBubblemouth'
 
   render : -> 
-    slider = fetch('slider')
+    slider = fetch(namespaced_key('slider', @proposal))
     db = fetch('decision_board')
 
     w = 34
@@ -920,7 +930,7 @@ GroupSelectionRegion = ReactiveComponent
   displayName: 'GroupSelectionRegion'
 
   render : -> 
-    hist = fetch 'histogram'
+    hist = fetch namespaced_key('histogram', @proposal)
 
     has_histogram_focus = hist.selected_opinions || hist.selected_opinion
     if has_histogram_focus
@@ -1260,7 +1270,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included) ->
     points = (pnt for pnt in points when !_.contains(included_points, pnt.key) )
 
   # Filter down to the points included in the selection opinions, if set. 
-  hist = fetch('histogram')
+  hist = fetch(namespaced_key('histogram', proposal))
   selected_opinions = if hist.selected_opinion 
                         [hist.selected_opinion] 
                       else 
@@ -1735,13 +1745,13 @@ Point = ReactiveComponent
     # anyone to discover who wrote this point. 
     if point.hide_name
       includers = _.without includers, point.user
-    hist = fetch 'histogram'
+    hist = fetch namespaced_key('histogram', @proposal)
     if hist.highlighted_users != includers
       hist.highlighted_users = includers
       save(hist)
 
   unHighlightIncluders : -> 
-    hist = fetch 'histogram'
+    hist = fetch namespaced_key('histogram', @proposal)
     hist.highlighted_users = null
     save(hist)
 
@@ -1751,7 +1761,7 @@ Point = ReactiveComponent
 
     includers = point.includers
 
-    hist = fetch('histogram')
+    hist = fetch(namespaced_key('histogram', @proposal))
     selected_opinions = if hist.selected_opinion
                           [hist.selected_opinion] 
                         else 
@@ -2824,10 +2834,10 @@ LocationTransition = ReactiveComponent
       else if auth.form
         reset_key auth
 
-      hist = fetch('histogram')
-      if hist.selected_opinion || hist.selected_opinions || hist.selected_opinion_value
-        hist.selected_opinion = hist.selected_opinions = hist.selected_opinion_value = null
-        save hist
+      # hist = fetch(namespaced_key('histogram', @proposal))
+      # if hist.selected_opinion || hist.selected_opinions || hist.selected_opinion_value
+      #   hist.selected_opinion = hist.selected_opinions = hist.selected_opinion_value = null
+      #   save hist
       #######
 
       @last_location = loc.url
@@ -3000,7 +3010,7 @@ Root = ReactiveComponent
     #       top. There are global interdependencies to unwind as well.
 
     if !fetch('auth').form
-      hist = fetch 'histogram'
+      hist = fetch namespaced_key('histogram', @proposal)
 
       if get_selected_point()
         window.writeToLog

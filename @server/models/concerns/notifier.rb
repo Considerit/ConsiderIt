@@ -387,19 +387,19 @@ module Notifier
         }
       },
 
-      'new_request' => {
-        'evaluator' => {
-          'ui_label' => 'New factcheck request',
-          'email_trigger_default' => lambda {|digest_relation| 
-                                      case digest_relation
-                                      when 'admin', 'evaluator' 
-                                        true
-                                      else 
-                                        nil
-                                      end
-                                    },
-        },
-      },
+      # 'new_request' => {
+      #   'evaluator' => {
+      #     'ui_label' => 'New factcheck request',
+      #     'email_trigger_default' => lambda {|digest_relation| 
+      #                                 case digest_relation
+      #                                 when 'admin', 'evaluator' 
+      #                                   true
+      #                                 else 
+      #                                   nil
+      #                                 end
+      #                               },
+      #   },
+      # },
 
     },
 

@@ -67,19 +67,21 @@ def send_digest(user, digest_object, notifications, subscription_settings, deliv
     mail = DigestMailer.send(digest, digest_object, user, notifications, channel)
     if deliver
       mail.deliver_now
-    end
 
-    # record that we've sent these notifications
-    for v in notifications.values
-      for vv in v.values
-        for n in vv      
-          n.sent_email = true
-          n.save
+      # record that we've sent these notifications
+      for v in notifications.values
+        for vv in v.values
+          for n in vv      
+            n.sent_email = true
+            n.save
+          end
         end
       end
+
+      user.sent_email_about(key)
+
     end
 
-    user.sent_email_about(key)
   end
 
   mail 

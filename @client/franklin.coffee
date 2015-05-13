@@ -3010,8 +3010,12 @@ Root = ReactiveComponent
     #       register a callback when a click bubbles all the way to the
     #       top. There are global interdependencies to unwind as well.
 
-    if !fetch('auth').form
-      hist = fetch namespaced_key('histogram', @proposal)
+    loc = fetch('location')
+    page = fetch("/page#{loc.url}")
+
+    if !fetch('auth').form && page.proposal
+
+      hist = fetch namespaced_key('histogram', page.proposal)
 
       if get_selected_point()
         window.writeToLog
@@ -3019,7 +3023,7 @@ Root = ReactiveComponent
           details:
             point: get_selected_point()
 
-        loc = fetch('location')
+        
         delete loc.query_params.selected
         save loc
 

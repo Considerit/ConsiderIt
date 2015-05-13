@@ -24,7 +24,7 @@ class Proposal < ActiveRecord::Base
   # We allow superadmins to post arbitrary HTML though. 
   before_validation(on: [:create, :update]) do
 
-    if !defined?(Rails::Console) && !current_user.is_admin?
+    if !defined?(Rails::Console) && current_user && !current_user.is_admin?
       # Initialize fields if empty
       self.description        = self.description || '' 
       self.description_fields = self.description_fields || '[]' 

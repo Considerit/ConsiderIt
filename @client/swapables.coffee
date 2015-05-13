@@ -190,18 +190,18 @@ window.SimpleHomepage = ReactiveComponent
 
                   DIV style: first_column,
                     if current_user
-                      # ability to add to watchlist
+                      # ability to watch proposal
 
-                      in_watchlist = current_user.subscriptions[proposal.key] == 'watched'
+                      watching = current_user.subscriptions[proposal.key] == 'watched'
                       I 
-                        className: "fa #{if in_watchlist then 'fa-star' else 'fa-star-o'}"
-                        title:  if in_watchlist 
-                                  "Remove from your watchlist" 
+                        className: "fa #{if watching then 'fa-star' else 'fa-star-o'}"
+                        title:  if watching 
+                                  "You are watching this proposal" 
                                 else 
-                                  "Add this proposal to your watchlist"
+                                  "Watch this proposal"
                         style:
-                          opacity: if @local.hover_watch != proposal.key && !in_watchlist then .35
-                          color: if in_watchlist then logo_red else "#888"
+                          opacity: if @local.hover_watch != proposal.key && !watching then .35
+                          color: if watching then logo_red else "#888"
                           width: 30
                           height: 30
                           position: 'absolute'

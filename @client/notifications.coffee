@@ -301,9 +301,12 @@ window.Notifications = ReactiveComponent
                 listStyle: 'none'
 
 
-              for event_name, event_relations of relation_config.events
+              for event_name in _.keys(relation_config.events).sort()
+                event_relations = relation_config.events[event_name]
                 idx = 0
-                for event_relation, event_relation_settings of event_relations
+                for event_relation in _.keys(event_relations).sort()
+                  event_relation_settings = event_relations[event_relation]
+
                   idx += 1
                   LI 
                     style: 

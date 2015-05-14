@@ -58,6 +58,8 @@ window.SimpleHomepage = ReactiveComponent
   render : ->
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
+    current_user = fetch('/current_user')
+
     line_height = '1.8em'
 
     DIV
@@ -95,6 +97,7 @@ window.SimpleHomepage = ReactiveComponent
             marginLeft: if lefty then 200
             display: 'inline-block'
             verticalAlign: 'top'
+            position: 'relative'
 
           secnd_column =
             width: 300
@@ -177,56 +180,87 @@ window.SimpleHomepage = ReactiveComponent
             for proposal in sorted_proposals(cluster)
               icons = options.editor_icons
 
-              # Proposal
-              DIV
-                key: proposal.key
-                style:
-                  minHeight: 70
+              do (proposal) => 
 
-                DIV style: first_column,
+                # Proposal
+                DIV
+                  key: proposal.key
+                  style:
+                    minHeight: 70
 
-                  if icons
-                    editor = proposal_editor(proposal)
+                  DIV style: first_column,
+                    if current_user && current_user.logged_in
+                      # ability to watch proposal
 
-                    # Person's icon
-                    A
-                      href: proposal_url(proposal)
-                      Avatar
-                        key: editor
-                        user: editor
+                      watching = current_user.subscriptions[proposal.key] == 'watched'
+                      I 
+                        className: "fa #{if watching then 'fa-star' else 'fa-star-o'}"
+                        title:  if watching 
+                                  "You are watching this proposal" 
+                                else 
+                                  "Watch this proposal"
                         style:
-                          height: 50
-                          width: 50
-                          borderRadius: 0
-                          backgroundColor: '#ddd'
+                          opacity: if @local.hover_watch != proposal.key && !watching then .35
+                          color: if watching then logo_red else "#888"
+                          width: 30
+                          height: 30
+                          position: 'absolute'
+                          left: -40
+                          top: 5
+                          cursor: 'pointer'
+                        onMouseEnter: => 
+                          @local.hover_watch = proposal.key; save @local
+                        onMouseLeave: => 
+                          @local.hover_watch = null; save @local
+                        onClick: => 
+                          if !current_user.subscriptions[proposal.key]
+                            current_user.subscriptions[proposal.key] = 'watched'
+                          else 
+                            current_user.subscriptions[proposal.key] = null
+                          save current_user
 
-                  # Name of Proposal
-                  DIV
-                    style:
-                      display: 'inline-block'
-                      fontWeight: 400
-                      marginLeft: if icons then 18
-                      paddingBottom: 20
-                      width: first_column.width - 50 + (if icons then -18 else 0)
-                      marginTop: if icons then 9
-                    A
-                      className: 'proposal'
-                      style: if not icons then {borderBottom: '1px solid grey'}
-                      href: proposal_url(proposal)
-                      proposal.name
+                    if icons
+                      editor = proposal_editor(proposal)
 
-                # Histogram for Proposal
-                A
-                  href: proposal_url(proposal)
-                  DIV
-                    style: secnd_column
-                    Histogram
-                      key: "histogram-#{proposal.slug}"
-                      opinions: opinionsForProposal(proposal)
-                      width: 300
-                      height: 50
-                      enable_selection: false
-                      draw_base: true
+                      # Person's icon
+                      A
+                        href: proposal_url(proposal)
+                        Avatar
+                          key: editor
+                          user: editor
+                          style:
+                            height: 50
+                            width: 50
+                            borderRadius: 0
+                            backgroundColor: '#ddd'
+
+                    # Name of Proposal
+                    DIV
+                      style:
+                        display: 'inline-block'
+                        fontWeight: 400
+                        marginLeft: if icons then 18
+                        paddingBottom: 20
+                        width: first_column.width - 50 + (if icons then -18 else 0)
+                        marginTop: if icons then 0 #9
+                      A
+                        className: 'proposal'
+                        style: if not icons then {borderBottom: '1px solid grey'}
+                        href: proposal_url(proposal)
+                        proposal.name
+
+                  # Histogram for Proposal
+                  A
+                    href: proposal_url(proposal)
+                    DIV
+                      style: secnd_column
+                      Histogram
+                        key: "histogram-#{proposal.slug}"
+                        opinions: opinionsForProposal(proposal)
+                        width: 300
+                        height: 50
+                        enable_selection: false
+                        draw_base: true
 
 
 

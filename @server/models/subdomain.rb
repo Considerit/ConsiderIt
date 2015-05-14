@@ -16,6 +16,15 @@ class Subdomain < ActiveRecord::Base
 
   scope :public_fields, -> { select(self.my_public_fields) }
 
+  def users(registered=true)
+    qry = User
+    if registered
+      qry = qry.where(registered: true)
+    end
+
+    qry.where("active_in like '%\"#{self.id}\"%'")
+  end
+
   def as_json(options={})
     options[:only] ||= Subdomain.my_public_fields
     json = super(options)
@@ -94,6 +103,10 @@ class Subdomain < ActiveRecord::Base
     end
 
     result
+  end
+
+  def title 
+    self.app_title || self.name
   end
 
   def set_roles(new_roles)

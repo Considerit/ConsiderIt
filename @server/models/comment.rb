@@ -1,5 +1,5 @@
 class Comment < ActiveRecord::Base
-  include Moderatable
+  include Moderatable, Notifier
 
   class_attribute :my_public_fields
   self.my_public_fields = [:id, :body, :user_id, :created_at, :point_id, :moderation_status ]
@@ -23,13 +23,14 @@ class Comment < ActiveRecord::Base
     result
   end
 
+  def proposal
+    point.proposal
+  end
 
   # Fetches all comments associated with this Point. 
   # Because we generally render fact-checks in the comment stream, we also return
   # fact-checks for this point  
   def self.comments_for_point(point)
-    current_subdomain = Thread.current[:subdomain]
-
     if current_subdomain.moderate_comments_mode == 1
       moderation_status_check = 'moderation_status=1'
     else 

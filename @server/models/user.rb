@@ -1,5 +1,4 @@
 require 'open-uri'
-#require 'role_model'
 
 class User < ActiveRecord::Base
   has_secure_password validations: false
@@ -11,6 +10,7 @@ class User < ActiveRecord::Base
   has_many :comments, :dependent => :destroy
   has_many :proposals
   has_many :follows, :dependent => :destroy, :class_name => 'Follow'
+  has_many :notifications, :dependent => :destroy
 
   attr_accessor :avatar_url, :downloaded
 
@@ -70,7 +70,8 @@ class User < ActiveRecord::Base
       is_moderator: permit('moderate content', nil) > 0,
       is_evaluator: permit('factcheck content', nil) > 0,
       trying_to: nil,
-      no_email_notifications: no_email_notifications,
+      subscriptions: subscription_settings(current_subdomain),
+      notifications: Notification.where(:user_id => self.id),      
       verified: verified,
       needs_to_set_password: registered && !name #happens for users that were created via email invitation
     }
@@ -81,7 +82,6 @@ class User < ActiveRecord::Base
 
   # Gets all of the users active for this subdomain
   def self.all_for_subdomain
-    current_subdomain = Thread.current[:subdomain]
     fields = "CONCAT('\/user\/',id) as 'key',users.name,users.avatar_file_name,users.groups"
     if current_user.is_admin?
       fields += ",email"
@@ -106,24 +106,27 @@ class User < ActiveRecord::Base
     result
   end
 
-  def is_admin?
-    has_any_role? [:admin, :superadmin]
+  def is_admin?(subdomain = nil)
+    subdomain ||= current_subdomain
+    has_any_role? [:admin, :superadmin], subdomain
   end
 
-  def has_role?(role)
+  def has_role?(role, subdomain = nil)
     role = role.to_s
 
     if role == 'superadmin'
       return self.super_admin
     else
-      roles = Thread.current[:subdomain].roles ? JSON.parse(Thread.current[:subdomain].roles) : {}
-      return roles.has_key?(role) && roles[role] && roles[role].include?("/user/#{id}")
+      subdomain ||= current_subdomain
+      roles = subdomain.roles ? JSON.parse(subdomain.roles) : {}
+      return roles.key?(role) && roles[role] && roles[role].include?("/user/#{id}")
     end
   end
 
-  def has_any_role?(roles)
-    roles.each do |role|
-      return true if has_role?(role)
+  def has_any_role?(roles, subdomain = nil)
+    subdomain ||= current_subdomain
+    for role in roles
+      return true if has_role?(role, subdomain)
     end
     return false
   end
@@ -135,7 +138,7 @@ class User < ActiveRecord::Base
 
   def add_to_active_in(subdomain=nil)
     if !subdomain 
-      subdomain = Thread.current[:subdomain]
+      subdomain = current_subdomain
     end
     
     active_subdomains = JSON.parse(self.active_in) || []
@@ -156,9 +159,139 @@ class User < ActiveRecord::Base
 
   end
 
+  def emails_received
+    JSON.parse(self.emails || "{}")
+  end
+
+  def sent_email_about(key, time=nil)
+    time ||= Time.now().to_s
+    settings = emails_received
+    settings[key] = time
+    self.emails = JSON.dump settings
+    save
+  end
+
+
+  ####
+  # subscription_settings
+  #
+  # Which channels this user subscribes. e.g. comments on points I've written.
+  # Outputs a hash with the following levels: 
+  #   - subdomain_id
+  #     - digest
+  #      - digest relation
+  #        . default
+  #        . description
+  #        . ui_label
+  #        - events
+  #          - event_type
+  #            . true or false
+  #
+  # If you pass a subdomain, it will just return the settings for that subdomain
+  #
+  def subscription_settings(constrain_to_subdomain = nil)
+
+    my_subs = JSON.parse(subscriptions || "{}")
+    notifier_config = Notifier::subscription_config
+
+    if constrain_to_subdomain 
+      subdomains = [constrain_to_subdomain.id.to_s]
+    else
+      subdomains = JSON.load(self.active_in || '[]')
+      subdomains.push current_subdomain.id.to_s if current_subdomain
+      subdomains.uniq!
+    end
+
+    # Make sure the default subscription settings defined in Notifier
+    # are present for this user.     
+    for subdomain_id in subdomains
+      subdomain = Subdomain.find_by id: subdomain_id
+      next if !subdomain
+
+      my_subs[subdomain_id] ||= {}
+
+      for digest, digest_config in notifier_config[:subscription_digests]
+        my_subs[subdomain_id][digest] ||= {}
+        my_digest_config = my_subs[subdomain_id][digest] 
+        
+        for digest_relation, relation_config in digest_config['digest_relations']
+          
+          if !relation_config['allowed'] || relation_config['allowed'].call(self, subdomain)
+            my_digest_config[digest_relation] ||= {}
+            my_relation_config = my_digest_config[digest_relation]
+
+            my_relation_config['ui_label'] = relation_config['ui_label']
+            my_relation_config['default_subscription'] = relation_config['default_subscription']
+            my_relation_config['subscription'] ||= relation_config['default_subscription']
+          
+            my_relation_config['events'] ||= {}
+            for event, event_config in digest_config['events']
+              my_relation_config['events'][event] ||= {}
+              my_event_config = my_relation_config['events'][event]
+              for event_relation, event_relation_config in event_config
+                default_trigger = event_relation_config['email_trigger_default'].call(digest_relation)
+                if default_trigger != nil
+                  my_event_config[event_relation] ||= {}
+                  my_event_relation_config = my_event_config[event_relation]
+                  my_event_relation_config['default_email_trigger'] = default_trigger
+                  if !my_event_relation_config.key?('email_trigger')
+                    my_event_relation_config['email_trigger'] = default_trigger
+                  end
+                  my_event_relation_config['ui_label'] = event_relation_config['ui_label']
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+
+
+    if constrain_to_subdomain
+      my_subs = my_subs[constrain_to_subdomain.id.to_s]
+    end
+
+    my_subs['subscription_options'] = notifier_config[:subscription_options]
+
+    my_subs
+  end
+
+  def update_subscriptions(new_settings, subdomain = nil)
+    subdomain ||= current_subdomain
+
+    subs = self.subscription_settings
+    subs[subdomain.id.to_s] = new_settings
+
+    # Strip out unnecessary items that we can reconstruct from the 
+    # notification configuration 
+    clean = proc do |k, v|        
+
+      if v.respond_to?(:key?)
+        if v.key?('default_subscription') && 
+            v['default_subscription'] == v['subscription']
+          v.delete('subscription')
+        elsif v.key?('default_email_trigger') && 
+            v['default_email_trigger'] == v['email_trigger']
+          v.delete('email_trigger')
+        end
+
+        v.delete_if(&clean) # recurse if v is a hash
+      end
+
+      v.respond_to?(:key) && v.keys().length == 0 || \
+      ['subscription_options', 'ui_label', \
+       'default_subscription', 'default_email_trigger'].include?(k)
+
+    end
+
+    subs.delete_if &clean
+
+    JSON.dump subs
+  end
+
   # get all the items this user gets notifications for
+  # TODO: update for new system!
   def notifications
-    current_subdomain = Thread.current[:subdomain]
 
     followable_objects = {
       'Proposal' => {},
@@ -212,12 +345,11 @@ class User < ActiveRecord::Base
   end
 
   def username
-    subdomain = Thread.current[:subdomain]
     name ? 
       name
       : email ? 
         email.split('@')[0]
-        : "#{subdomain.app_title or subdomain.name} participant"
+        : "#{current_subdomain.app_title or current_subdomain.name} participant"
   end
   
   def first_name
@@ -244,65 +376,6 @@ class User < ActiveRecord::Base
     end
   end
 
-  # def update_metrics
-  #   referenced_proposals = {}
-  #   opinions = 0
-
-  #   self.opinions.published.each do |opinion|
-  #     if !referenced_proposals.has_key?(opinion.proposal_id)
-  #       proposal = Proposal.find(opinion.proposal_id) 
-  #       #if can?(:read, proposal)  
-  #       referenced_proposals[opinion.proposal_id] = proposal
-  #       opinions += 1          
-  #     end
-  #   end
-
-  #   influenced_users = {}
-  #   accessible_points = []
-
-  #   my_points = self.points.published.where(:hide_name => false)
-  #   my_points.each do |pnt|
-  #     accessible_points.push pnt.id
-  #     pnt.inclusions.where("user_id != #{self.id}").each do |inc|
-  #       influenced_users[inc.user_id] = 0 if ! influenced_users.has_key?(inc.user_id)
-  #       influenced_users[inc.user_id] +=1
-  #     end
-  #   end
-
-  #   attrs = {
-  #     :metric_points => my_points.count,
-  #     :metric_opinions => opinions,
-  #     :metric_comments => self.comments.count,
-  #     :metric_influence => influenced_users.keys().count, 
-  #     :metric_conversations => self.proposals.open_to_public.count }
-
-  #   if self.name.blank?
-  #     attrs[:name] = 'Not Specified'
-  #   end
-
-  #   values_changed = false
-  #   attrs.keys.each do |key|
-  #     if self[key] != attrs[key]
-  #       values_changed = true
-  #       break
-  #     end
-  #   end
-  #   self.update_attributes!(ActionController::Parameters.new(attrs).permit!) if values_changed
-
-  # end
-
-  # def self.update_user_metrics
-  #   Account.all.each do |subdomain|
-
-  #     subdomain.users.each do |user|
-  #       begin
-  #         user.update_metrics()
-  #       rescue
-  #         pp "Could not update User #{user.id}"
-  #       end
-  #     end
-  #   end
-  # end
 
   def absorb (user)
     return if not (self and user)

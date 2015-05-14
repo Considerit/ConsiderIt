@@ -159,7 +159,10 @@ window.BrowserLocation = ReactiveComponent
 
 relativeURLFromLocation = -> 
   # location.search returns query parameters
-  "#{location.pathname}#{location.search}#{location.hash}"
+
+  # fix url encoding of /
+  search = location.search?.replace(/\%2[fF]/g, '/')
+  "#{location.pathname}#{search}#{location.hash}"
 
 relativeURLFromStatebus = ->  
   loc = fetch 'location'

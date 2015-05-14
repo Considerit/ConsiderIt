@@ -87,9 +87,9 @@ class CurrentUserController < ApplicationController
           elsif !user.authenticate(params[:password])
             errors.append "Wrong password. Click \"I forgot my password\" if you\'re having problems."
           else 
-            current_user.add_to_active_in
             replace_user(current_user, user)
             set_current_user(user)
+            current_user.add_to_active_in
             update_roles_and_permissions
 
             dirty_key '/proposals'
@@ -173,7 +173,7 @@ class CurrentUserController < ApplicationController
           user.reset_password_sent_at = Time.now.utc
           user.save(:validate => false)
           
-          UserMailer.reset_password_instructions(user, raw_token, Thread.current[:subdomain]).deliver_now
+          UserMailer.reset_password_instructions(user, raw_token, current_subdomain).deliver_now
 
           log('requested password reset')
         end
@@ -272,9 +272,15 @@ class CurrentUserController < ApplicationController
 
 
   def update_user_attrs(trying_to, errors)
-    types = {:avatar => ActionDispatch::Http::UploadedFile, :bio => String, :name => String,
-             :hide_name => 'boolean',
-             :email => String, :no_email_notifications => 'boolean'}
+    types = { 
+      :avatar => ActionDispatch::Http::UploadedFile, 
+      :bio => String, 
+      :name => String,
+      :hide_name => 'boolean',
+      :email => String
+    }
+
+
     types.each do |field, type| 
       value = params[field]
       error = "Field #{field} is wrong type #{value.class}"
@@ -285,7 +291,7 @@ class CurrentUserController < ApplicationController
       end
     end
 
-    fields = ['avatar', 'bio', 'name', 'hide_name', 'tags', 'no_email_notifications']
+    fields = ['avatar', 'bio', 'name', 'hide_name', 'tags', 'subscriptions']
     new_params = params.select{|k,v| fields.include? k}
     new_params[:name] = '' if !new_params[:name] #TODO: Do we really want to allow blank names?...
 
@@ -298,6 +304,10 @@ class CurrentUserController < ApplicationController
       new_tags.update non_editable_old_tags
 
       new_params[:tags] = JSON.dump new_tags
+    end
+
+    if new_params.has_key? :subscriptions
+      new_params[:subscriptions] = current_user.update_subscriptions(new_params[:subscriptions])
     end
 
     if current_user.update_attributes(new_params)

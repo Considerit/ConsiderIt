@@ -189,7 +189,7 @@ window.SimpleHomepage = ReactiveComponent
                     minHeight: 70
 
                   DIV style: first_column,
-                    if current_user
+                    if current_user && current_user.logged_in
                       # ability to watch proposal
 
                       watching = current_user.subscriptions[proposal.key] == 'watched'

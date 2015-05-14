@@ -17,7 +17,7 @@ class DigestMailer < Mailer
 
     subject = subject_line "#{subject} \"#{proposal.title(50)}\"", @subdomain
 
-    mail from: from_field(@subdomain), to: to_field(user), subject: subject
+    send_mail from: from_field(@subdomain), to: to_field(user), subject: subject
   end
 
   def subdomain(subdomain, user, notifications, relation)
@@ -27,16 +27,24 @@ class DigestMailer < Mailer
 
     @digest_object = subdomain
 
-    case relation
-    when 'admin', 'moderator', 'evaluator', 'subdomain_interested'
-      subject = "New activity at \"#{subdomain.title}\""
-    end
+    subject = nil
+
+    subject = "New activity"
 
     subject = subject_line subject, @subdomain
 
-    mail from: from_field(@subdomain), to: to_field(user), subject: subject
+    send_mail from: from_field(@subdomain), to: to_field(user), subject: subject
   end
 
+
+  def send_mail(**message_params) 
+    mail message_params do |format|
+      @part = 'text'
+      format.text
+      @part = 'html'
+      format.html
+    end
+  end
 
   def to_field(user)
     format_email user.email, user.name

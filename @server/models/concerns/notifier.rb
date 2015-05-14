@@ -93,7 +93,7 @@ module Notifier
   #
   # This could probably be refactored as a group_by query.
 
-  def self.aggregate(filter=nil)
+  def self.aggregate(options={})
 
     levels = [:subdomain_id, :user_id, 
               :digest_object_type, :digest_object_id, 
@@ -101,14 +101,16 @@ module Notifier
 
     aggregation = {}
 
-    candidates = filter ? Notification.where(filter) : Notification.all
+    candidates = options[:filter] ? Notification.where(options[:filter]) : Notification.all
 
     for notification in candidates
 
       # Don't announce things prematurely...
-      if notification.event_object.respond_to?(:okay_to_email_notification) && \
-         notification.event_type != 'moderate'
-        next if !notification.event_object.okay_to_email_notification
+      if !options[:skip_moderation_filter]
+        if notification.event_object.respond_to?(:okay_to_email_notification) && \
+           notification.event_type != 'moderate'
+          next if !notification.event_object.okay_to_email_notification
+        end
       end
 
       obj = aggregation

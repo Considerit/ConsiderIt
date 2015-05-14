@@ -157,9 +157,9 @@ ActiveRecord::Schema.define(version: 20150504155311) do
     t.integer  "digest_object_id",           limit: 4
     t.string   "event_object_type",          limit: 255
     t.integer  "event_object_id",            limit: 4
-    t.string   "event_type",                 limit: 255
     t.string   "digest_object_relationship", limit: 255
     t.string   "event_object_relationship",  limit: 255
+    t.string   "event_type",                 limit: 255
     t.boolean  "sent_email",                 limit: 1
     t.datetime "read_at"
     t.datetime "created_at"

@@ -28,6 +28,3 @@ task :send_email_notifications => :environment do
     raise e
   end    
 end
-
-# AdminMailer.content_to_assess(assessment, user, subdomain).deliver_now
-

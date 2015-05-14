@@ -1,5 +1,6 @@
 module MailerHelper
-  def full_link(relative_path, query_params = {})
+  def full_link(relative_path, query_params = nil)
+    query_params ||= {}
     user = @user || @notification.user
     subdomain = @subdomain || @notification.subdomain
 
@@ -71,8 +72,6 @@ module MailerHelper
     "#B03A44"
   end
 
-
-
   def paragraph(text)
 
     if @part == 'text'
@@ -99,12 +98,12 @@ module MailerHelper
     end
   end
 
-  def styled_link(href, anchor, text_options = {})
+  def styled_link(href, anchor, options = {})
     anchor ||= href
     if @part == 'text'
-      "#{text_options[:text_preceding]}#{text_options[:text_instead] ? anchor : full_link(href)}"
+      "#{options[:text_preceding]}#{options[:text_instead] ? anchor : full_link(href, options[:search_params])}"
     else
-      "<a href=#{full_link(href)} style='font-weight: 700; color:#{logo_red};'>#{anchor}</a>".html_safe
+      "<a href=#{full_link(href, options[:search_params])} style='font-weight: 700; color:#{logo_red};'>#{anchor}</a>".html_safe
     end
   end
 

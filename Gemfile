@@ -33,10 +33,13 @@ gem 'oj_mimic_json' # we need this for Rails 4.1.x
 #############
 # BACKGROUND PROCESSING / EMAIL
 gem 'whenever' # https://github.com/javan/whenever
-gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' # https://github.com/collectiveidea/delayed_job
+gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' 
 gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delayed_job_active_record.git'
 gem "daemons"
 gem 'backup' #https://github.com/meskyanichi/backup
+
+
+gem 'mechanize' # for webscraping; only used for RANDOM2015 deployment
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

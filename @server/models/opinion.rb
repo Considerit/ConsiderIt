@@ -2,7 +2,7 @@ class Opinion < ActiveRecord::Base
   belongs_to :user
   belongs_to :proposal, :touch => true 
   
-  include Followable
+  include Followable, Notifier
 
   acts_as_tenant :subdomain
 
@@ -27,7 +27,7 @@ class Opinion < ActiveRecord::Base
 
   def self.get_or_make(proposal)
     # Each (user,proposal) should have only one opinion.
-    user = Thread.current[:current_user] 
+    user = current_user
     
     # First try to find a published opinion for this user
     your_opinion = Opinion.where(:proposal_id => proposal.id, 
@@ -41,7 +41,7 @@ class Opinion < ActiveRecord::Base
     if your_opinion.nil?
       your_opinion = Opinion.create(:proposal_id => proposal.id,
                                     :user => user ? user : nil,
-                                    :subdomain_id => Thread.current[:subdomain].id,
+                                    :subdomain_id => current_subdomain.id,
                                     :published => false,
                                     :stance => 0,
                                     :point_inclusions => '[]',
@@ -73,17 +73,9 @@ class Opinion < ActiveRecord::Base
       inc.point.recache
     end
 
-    # ActiveSupport::Notifications.instrument("published_new_opinion", 
-    #                                         :opinion => self,
-    #                                         :current_subdomain => Thread.current[:subdomain])
-    # send out confirmation email if user is not yet confirmed
-    # if !current_user.confirmed? && current_user.opinions.published.count == 1
-    #   ActiveSupport::Notifications.instrument("first_opinion_by_new_user", 
-    #     :user => current_user,
-    #     :proposal => proposal,
-    #     :current_subdomain => current_subdomain
-    #   )
-    # end
+    Notifier.create_notification 'new', self
+
+
   end
 
   def update_inclusions (points_to_include)
@@ -129,7 +121,7 @@ class Opinion < ActiveRecord::Base
       :point_id => point.id,
       :user_id => self.user_id,
       :proposal_id => self.proposal_id,
-      :subdomain_id => Thread.current[:subdomain].id
+      :subdomain_id => current_subdomain.id
     }
     Inclusion.create! attrs
 

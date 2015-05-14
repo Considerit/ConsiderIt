@@ -161,10 +161,19 @@ class Proposal < ActiveRecord::Base
   # TODO: consolidate with subdomain.user_roles
   def user_roles(filter = false)
     result = JSON.parse(roles || "{}")
+
+
     ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|
 
-      # Initialize empty role to []
-      result[role] = [] if !result.has_key?(role) || !result[role]
+      # Initialize empty role
+      if !result[role]
+        if role == 'observer'
+          # default to subdomain setting
+          result[role] = subdomain.user_roles['visitor']
+        else
+          result[role] = [] 
+        end
+      end
 
       # Filter role if the client isn't supposed to see it
       if filter && role != 'editor'   # FIND BETTER FIX: mike added

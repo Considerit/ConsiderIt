@@ -75,10 +75,8 @@ class ProposalController < ApplicationController
 
       dirty_key '/proposals'
 
-      ActiveSupport::Notifications.instrument("proposal:published", 
-        :proposal => proposal,
-        :current_subdomain => current_subdomain
-      )
+      Notifier.create_notification 'new', proposal
+      proposal.notify_moderator
 
       write_to_log({
         :what => 'created new proposal',
@@ -131,10 +129,7 @@ class ProposalController < ApplicationController
         proposal.update_attributes! updated_fields
 
         if text_updated
-          ActiveSupport::Notifications.instrument("proposal:updated", 
-            :model => proposal,
-            :current_subdomain => current_subdomain
-          )
+          proposal.redo_moderation
         end
       end
     end
@@ -167,6 +162,7 @@ class ProposalController < ApplicationController
   def destroy
     proposal = Proposal.find(params[:id])
     authorize! 'delete proposal', proposal
+    dirty_key '/proposals'
     proposal.destroy
     render :json => {:success => true}
   end

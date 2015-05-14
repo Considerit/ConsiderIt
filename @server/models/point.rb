@@ -1,7 +1,7 @@
 # coding: utf-8
 class Point < ActiveRecord::Base
   
-  include Followable, Moderatable, Assessable
+  include Followable, Moderatable, Assessable, Notifier
     
   belongs_to :user
   belongs_to :proposal
@@ -67,7 +67,7 @@ class Point < ActiveRecord::Base
     stubify_field(result, 'opinion')
     stubify_field(result, 'user')
 
-    if Thread.current[:subdomain].assessment_enabled
+    if current_subdomain.assessment_enabled
 
       assessment = proposal.assessments.completed.where(:assessable_type => 'Point', :assessable_id => id).first
       result['assessment'] = assessment ? "assessment/#{assessment.id}" : nil
@@ -82,10 +82,9 @@ class Point < ActiveRecord::Base
     recache
     self.save if changed?
 
-    ActiveSupport::Notifications.instrument("point:published", 
-      :point => self,
-      :current_subdomain => Thread.current[:subdomain]
-    )
+    Notifier.create_notification 'new', self
+    notify_moderator
+
   end
 
   # The user is subscribed to the point _implicitly_ if:
@@ -167,6 +166,14 @@ class Point < ActiveRecord::Base
     Point.published.each {|pnt| pnt.recache }
   end
 
+  def title(max_len = 140)
 
+    if nutshell.length > max_len
+      "#{nutshell[0..max_len]}..."
+    else
+      nutshell
+    end
+    
+  end
 
 end

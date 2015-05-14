@@ -1,0 +1,29 @@
+Hi #{@user.first_name}, 
+
+= paragraph("Just a quick update on #{styled_link('', @subdomain.title, text_instead: true)}.")
+
+- if @notifications.has_key? 'moderate'
+  
+  There is new content #{styled_link('dashboard/moderate', 'waiting to be moderated', :text_preceding => 'waiting to be moderated at ')}.
+
+
+- if @notifications.has_key? 'new_request'
+    
+  There are new #{styled_link('dashboard/assessment', 'requests for fact-checks', :text_preceding => 'requests for fact-checks at ')}.
+
+
+- if @notifications.has_key? 'new_proposal'
+  - count = @notifications['new_proposal']['subdomain_interested'].length
+  
+  - if count > 1
+    = section_header("New proposals")
+
+  - for notification in @notifications['new_proposal']['subdomain_interested']
+    - proposal = notification.event_object
+    - proposal_link = styled_link(proposal.slug, "\"#{proposal.title(40)}\"", :text_preceding => "'#{proposal.title(40)}'. View at ")
+    = list_item("#{proposal.user.name} proposes: #{proposal_link}")
+      
+
+
+= content_for :footer do
+  = render :partial => 'event_mailer/unsubscribe'

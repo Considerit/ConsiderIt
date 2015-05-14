@@ -38,8 +38,6 @@ lib/tasks/client_data/data/*
 lib/tasks/client_data/screens/*
 lib/tasks/client_data/export/*
 
-lib/tasks/random2015
-
 lib/screencasts/exports/*.mov
 lib/screencasts/exports/*.mp4
 lib/screencasts/exports/*.webm

@@ -36,10 +36,8 @@ class AssessmentController < ApplicationController
       assessment.published_at = Time.now.utc      
       assessment.save
 
-      ActiveSupport::Notifications.instrument("assessment_completed", 
-        :assessment => assessment,
-        :current_subdomain => current_subdomain,
-      )
+      Notifier.create_notification 'new', assessment
+
     else 
       assessment.save
     end
@@ -56,7 +54,6 @@ class AssessmentController < ApplicationController
     point = Point.find(key_id(params['point']))
 
     authorize! 'request factcheck', point.proposal
-
 
     request = {
       'suggestion' => params['suggestion'],
@@ -77,10 +74,8 @@ class AssessmentController < ApplicationController
         
       assessment = Assessment.create! create_attrs
 
-      ActiveSupport::Notifications.instrument("new_assessment_request", 
-        :assessment => assessment,
-        :current_subdomain => current_subdomain
-      )
+      Notifier.create_notification 'new', request
+
     end
 
     request.assessment = assessment

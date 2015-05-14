@@ -103,7 +103,7 @@ protected
   def init_thread_globals
     # Make things to remember changes
     Thread.current[:dirtied_keys] = {}
-    Thread.current[:subdomain] = current_subdomain
+    Thread.current[:subdomain] = ActsAsTenant.current_tenant
 
     # puts("In before: is there a current user? '#{session[:current_user_id]}'")
     # First, reset the thread's current_user values from the session
@@ -295,10 +295,10 @@ protected
 
   #####
   # aliasing current_tenant from acts_as_tenant gem so we can be consistent with subdomain
-  helper_method :current_subdomain
-  def current_subdomain
-    ActsAsTenant.current_tenant
-  end
+  # helper_method :current_subdomain
+  # def current_subdomain
+  #   ActsAsTenant.current_tenant
+  # end
 
 
   #####
@@ -350,6 +350,16 @@ protected
         current_user.verified = true
         current_user.save
         dirty_key('/current_user')
+
+        # unsubscribe from this object if that's what they want to do...
+        if params.has_key?('unsubscribe_key')
+          sub_settings = current_user.subscription_settings(current_subdomain)
+          key = params['unsubscribe_key']
+          sub_settings[key] = 'unsubscribed'
+          current_user.subscriptions = current_user.update_subscriptions(sub_settings)
+          current_user.save
+        end
+
       end
     end
   end

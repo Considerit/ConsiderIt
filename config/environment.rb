@@ -5,7 +5,6 @@ require File.expand_path('../application', __FILE__)
 
 def stubify_field(hash, name)
   id = hash[name + '_id']
-  #hash[name] = (id and { :key => "/#{name}/#{id}?stub" })
   hash[name] = (id && "/#{name}/#{id}")
   hash.delete(name + '_id')
 end
@@ -13,17 +12,6 @@ end
 def make_key(hash, name)
   id = hash["id"]
   hash['key'] = hash['key'] || (id && "/#{name}/#{id}")
-end
-
-def jsonify_objects(objects, name, reference_names=[], delete_names=[], parse_names=[])
-  objects.map {|object|
-    object = object.as_json
-    make_key(object, name)
-    reference_names.each {|n| stubify_field(object, n)}
-    delete_names.each    {|n| object.delete(n)}
-    parse_names.each     {|n| object[n] = JSON.parse(object[n])}
-    object
-  }
 end
 
 def key_id(object_or_key)
@@ -52,6 +40,10 @@ def current_user
     Thread.current[:current_user] = User.find_by_id(Thread.current[:current_user_id])
   end
   Thread.current[:current_user]
+end
+
+def current_subdomain
+  Thread.current[:subdomain]
 end
 
 

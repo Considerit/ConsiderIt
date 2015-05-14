@@ -22,6 +22,34 @@ module Permission
   UNVERIFIED_EMAIL = -2 # can take action once email is verified 
   NOT_LOGGED_IN = -3 # not sure if action can be taken
   INSUFFICIENT_PRIVILEGES = -4 # we know this user can't do this
+
+end
+
+module Permitted
+  def self.matchEmail(permission_list, user=nil)
+    user ||= current_user
+    return true if permission_list.index('*')
+    return true if permission_list.index(user.key)
+    permission_list.each do |email_or_key| 
+      if email_or_key.index('*')
+        allowed_domain = email_or_key.split('@')[1]
+        next if !user.email
+        return true if user.email.split('@')[1] == allowed_domain
+      end
+    end
+    return false
+  end
+
+  def self.matchSomeRole(roles, accepted_roles, user=nil)
+    user ||= current_user
+
+    accepted_roles.each do |role|
+      return true if matchEmail(roles[role], user)
+    end
+    return false
+  end
+
+
 end
 
 class PermissionDenied < StandardError
@@ -33,31 +61,22 @@ class PermissionDenied < StandardError
 end
 
 
-def permit(action, object)
-  current_user = Thread.current[:current_user]
-  current_subdomain = Thread.current[:subdomain]
 
+# TODO: 
+#   extend interface to allow for passing user and subdomain so that
+#   permit interface can be used for offline processing, such as 
+#   the notifications subsystem.
+def permit(action, object)
   return Permission::PERMITTED if current_user.super_admin
 
-  def matchEmail(permission_list)
-    return true if permission_list.index('*')
-    return true if permission_list.index(current_user.key)
-    permission_list.each do |email_or_key| 
-      if email_or_key.index('*')
-        allowed_domain = email_or_key.split('@')[1]
-        next if !current_user.email
-        return true if current_user.email.split('@')[1] == allowed_domain
-      end
-    end
-    return false
-  end
+  # def matchEmail(permission_list)
+  #   pp "YOYO"
+  #   Permission::matchEmail(permission_list)
+  # end
 
-  def matchSomeRole(roles, accepted_roles)
-    accepted_roles.each do |role|
-      return true if matchEmail(roles[role])
-    end
-    return false
-  end
+  # def matchSomeRole(roles, accepted_roles)
+  #   Permission::matchSomeRole(roles, accepted_roles)
+  # end
 
   case action
   when 'create subdomain'
@@ -70,14 +89,14 @@ def permit(action, object)
 
   when 'create proposal'
     return Permission::NOT_LOGGED_IN if !current_user.registered
-    if !current_user.is_admin? && !matchEmail(current_subdomain.user_roles['proposer'])
+    if !current_user.is_admin? && !Permitted::matchEmail(current_subdomain.user_roles['proposer'])
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
   when 'read proposal'
     proposal = object
 
-    if !matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter', 'opiner', 'observer'])
+    if !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter', 'opiner', 'observer'])
       if !current_user.registered
         return Permission::NOT_LOGGED_IN 
       else
@@ -97,7 +116,7 @@ def permit(action, object)
     can_read = permit('read proposal', object)
     return can_read if can_read < 0
 
-    if !current_user.is_admin? && !matchEmail(proposal.user_roles['editor'])
+    if !current_user.is_admin? && !Permitted::matchEmail(proposal.user_roles['editor'])
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
@@ -109,7 +128,7 @@ def permit(action, object)
     proposal = object
     return Permission::DISABLED if !proposal.active
     return Permission::NOT_LOGGED_IN if !current_user.registered
-    if !current_user.is_admin? && !matchSomeRole(proposal.user_roles, ['editor', 'writer', 'opiner'])
+    if !current_user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'opiner'])
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
@@ -131,7 +150,7 @@ def permit(action, object)
     proposal = object
     return Permission::DISABLED if !proposal.active
 
-    if !current_user.is_admin? && !matchSomeRole(proposal.user_roles, ['editor', 'writer'])
+    if !current_user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer'])
       if !current_user.registered
         return Permission::NOT_LOGGED_IN  
       else 
@@ -164,7 +183,7 @@ def permit(action, object)
     return Permission.DISABLED if !proposal.active
     return Permission::NOT_LOGGED_IN if !current_user.registered
   
-    if !current_user.is_admin? && !matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter'])
+    if !current_user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter'])
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 

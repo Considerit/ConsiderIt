@@ -12,7 +12,7 @@ class Proposal < ActiveRecord::Base
 
   acts_as_tenant :subdomain
 
-  include Followable, Moderatable
+  include Followable, Moderatable, Notifier
   
   class_attribute :my_public_fields, :my_summary_fields
   self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :published]
@@ -24,7 +24,7 @@ class Proposal < ActiveRecord::Base
   # We allow superadmins to post arbitrary HTML though. 
   before_validation(on: [:create, :update]) do
 
-    if !defined?(Rails::Console) && !current_user.is_admin?
+    if !defined?(Rails::Console) && current_user && !current_user.is_admin?
       # Initialize fields if empty
       self.description        = self.description || '' 
       self.description_fields = self.description_fields || '[]' 
@@ -40,19 +40,19 @@ class Proposal < ActiveRecord::Base
     end
   end
 
-  def self.summaries(current_subdomain = nil)
-    current_subdomain = Thread.current[:subdomain] if !current_subdomain
+  def self.summaries(subdomain = nil)
+    subdomain ||= current_subdomain
 
     # if a subdomain wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
 
-    if current_subdomain.moderate_proposals_mode == 1
+    if subdomain.moderate_proposals_mode == 1
       moderation_status_check = 'moderation_status=1'
     else 
       moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
     end
 
-    if current_subdomain.name == 'livingvotersguide'
+    if subdomain.name == 'livingvotersguide'
       year = 2014
       local_jurisdictions = []   
       
@@ -61,14 +61,14 @@ class Proposal < ActiveRecord::Base
         # If the user has a zipcode, we'll want to include all the jurisdictions 
         # associated with that zipcode. We'll also want to insert them between the statewide
         # measures and the advisory votes, since we hate the advisory votes. 
-        local_jurisdictions = ActiveRecord::Base.connection.exec_query( "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{current_subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%' ").map {|r| r['cluster']}
+        local_jurisdictions = ActiveRecord::Base.connection.exec_query( "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%' ").map {|r| r['cluster']}
       end
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
-      proposals = current_subdomain.proposals.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
+      proposals = subdomain.proposals.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
 
     elsif 
-      proposals = current_subdomain.proposals.where(:hide_on_homepage => false)
-      case current_subdomain.name 
+      proposals = subdomain.proposals.where(:hide_on_homepage => false)
+      case subdomain.name 
         when 'bitcoin'
           manual_clusters = ['Our Mission', 'Our Values',  'Our Goals', 'Our Focus', 'Our Actions', 'Resolutions', 'Foundation Goals', 'Board Proposals', 'Member Proposals', 'Proposals', 'Candidates']
         
@@ -87,11 +87,15 @@ class Proposal < ActiveRecord::Base
     clustered_proposals = {}
 
     # group all proposals into clusters
-
+    most_recent = {}
     proposals.each do |proposal|
 
       # Impose access control restrictions for current user
       next if permit('read proposal', proposal) < 0
+
+      if !most_recent[proposal.cluster] || most_recent[proposal.cluster] < proposal.created_at
+        most_recent[proposal.cluster] = proposal.created_at
+      end
 
       clustered_proposals[proposal.cluster] = [] if !clustered_proposals.has_key? proposal.cluster
       clustered_proposals[proposal.cluster].append proposal.as_json
@@ -99,8 +103,12 @@ class Proposal < ActiveRecord::Base
 
     # now order the clusters
     if !manual_clusters
-      #TODO: order the group for the general case. Probably sort groups by the most recent Opinion.
-      ordered_clusters = clustered_proposals.keys()
+      
+      # order the group by most recent proposal
+      ordered_clusters = clustered_proposals.keys().sort {|c1,c2|      
+        most_recent[c1] < most_recent[c2] ? 1 : -1
+      }
+
     else 
       ordered_clusters = manual_clusters
     end
@@ -181,8 +189,6 @@ class Proposal < ActiveRecord::Base
 
   def fact_check_request_enabled?
     return false # nothing can be requested to be fact-checked currently
-
-    current_subdomain = Thread.current[:subdomain]
 
     enabled = current_subdomain.assessment_enabled
     if current_subdomain.name == 'livingvotersguide'

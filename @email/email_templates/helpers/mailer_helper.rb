@@ -72,4 +72,41 @@ module MailerHelper
   end
 
 
+
+  def paragraph(text)
+
+    if @part == 'text'
+      "\r\n#{text}\r\n"
+    else
+      "<p>#{text}</p>".html_safe
+    end
+
+  end
+
+  def list_item(text)
+    if @part == 'text'
+      "\r\n - #{text}\r\n"
+    else 
+      "<div style='margin: 5px 0; padding: 10px 20px; background-color: #fff;'>#{text}</div>".html_safe
+    end
+  end
+
+  def section_header(text)
+    if @part == 'text'
+      "\r\n#{text}\r\n#{'-'*text.length}\r\n"
+    else 
+      "<div style=''>* #{text} *</div>".html_safe
+    end
+  end
+
+  def styled_link(href, anchor, text_options = {})
+    anchor ||= href
+    if @part == 'text'
+      "#{text_options[:text_preceding]}#{text_options[:text_instead] ? anchor : full_link(href)}"
+    else
+      "<a href=#{full_link(href)} style='font-weight: 700; color:#{logo_red};'>#{anchor}</a>".html_safe
+    end
+  end
+
+
 end

@@ -5,7 +5,7 @@ require Rails.root.join("@email", "send_digest")
 
 task :send_email_notifications => :environment do
   begin 
-    notifications = Notifier.aggregate({'sent_email' => false})
+    notifications = Notifier.aggregate(filter: {'sent_email' => false})
 
     for subdomain_id, n_for_subdomain in notifications
       for user_id, n_for_user in n_for_subdomain

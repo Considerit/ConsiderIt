@@ -3,7 +3,10 @@ require Rails.root.join("@email", "send_digest")
 class DigestPreview < ActionMailer::Preview
   def proposal
 
-    notifications = Notifier.aggregate({'sent_email' => false, 'digest_object_type' => 'Proposal'})
+    notifications = Notifier.aggregate(
+        skip_moderation_filter: true, 
+        filter: {'sent_email' => false, 'digest_object_type' => 'Proposal'})
+
     subdomain_id = notifications.keys.sample   
     user_id = notifications[subdomain_id].keys.sample
     digest_objects = notifications[subdomain_id][user_id]['proposal']
@@ -27,7 +30,8 @@ class DigestPreview < ActionMailer::Preview
   def subdomain
 
     notifications = Notifier.aggregate(
-        {'sent_email' => false, 'digest_object_type' => 'Subdomain'})
+        skip_moderation_filter: true,
+        filter: {'sent_email' => false, 'digest_object_type' => 'Subdomain'})
     
     subdomain_id = notifications.keys.sample
     user_id = notifications[subdomain_id].keys.sample
@@ -36,6 +40,7 @@ class DigestPreview < ActionMailer::Preview
     subdomain = Subdomain.find(digest_object_id)
     user = User.find(user_id)
     notifications = digest_objects[digest_object_id]
+
     mail = send_digest(user, subdomain, notifications, 
         user.subscription_settings(Subdomain.find(subdomain_id)), false)
 

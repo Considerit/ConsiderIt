@@ -343,3 +343,129 @@ window.Notifications = ReactiveComponent
 
 
 
+window.ActivityFeed = ReactiveComponent
+  displayName: 'ActivityFeed'
+
+  render: ->      
+    current_user = fetch('/current_user')
+    DIV 
+      style: 
+        width: DESCRIPTION_WIDTH
+        position: 'relative'
+        margin: 'auto'
+        marginLeft: if lefty then 300
+        marginBottom: 18
+
+      DIV
+        style: 
+          backgroundColor: logo_red
+          textDecoration: 'underline'
+          padding: 10
+          fontSize: 18
+          color: 'white'
+          textAlign: 'center'
+          cursor: 'pointer'
+
+        onClick: => 
+          @local.show_notifications = !@local.show_notifications
+          save @local
+
+        if @local.show_notifications
+          'Hide activity feed'
+        else
+          'Show activity feed'
+
+      if @local.show_notifications
+        notifications = []
+
+        UL
+          style: 
+            border: "1px solid #{logo_red}"
+            listStyle: 'none'
+            padding: 20
+
+          for notification in current_user.all_notifications
+            if notification.digest_object_type == 'Proposal' && 
+                notification.digest_object_id == @proposal.id
+
+              @drawNotification(notification)
+
+  drawNotification: (notification) -> 
+    event_object = fetch "/#{notification.event_object_type.toLowerCase()}/#{notification.event_object_id}"
+    protagonist = fetch(event_object.user)
+
+    date = prettyDate(notification.created_at)
+
+    action = switch notification.event_object_type
+
+      when 'Comment'
+        point = fetch(event_object.point)
+        SPAN
+          style: {}
+          "commented on "
+          if notification.event_object_relationship == 'point_authored'
+            SPAN 
+              style: 
+                fontWeight: 600
+              'your point '
+
+          A 
+            href: "/#{@proposal.slug}/point/#{point.id}"
+            style: 
+              color: logo_red
+              fontWeight: 600
+
+            shorten(point.nutshell)
+
+      when 'Point'
+        SPAN
+          style: {}
+          "added a new point "
+          A 
+            style:
+              color: logo_red
+              fontWeight: 600                         
+            href: "/#{@proposal.slug}/point/#{event_object.id}"
+            shorten(event_object.nutshell)
+
+        
+      when 'Opinion'
+        'added their opinion'
+
+
+
+    LI 
+      style: 
+        display: 'block'
+        padding: '10px 0'
+
+
+
+      DIV 
+        style: {}
+
+        Avatar
+          key: protagonist
+          user: protagonist
+          hide_tooltip: true
+          style: 
+            height: 35
+            width: 35
+            display: 'inline-block'
+            verticalAlign: 'top'
+
+
+        DIV 
+          style:
+            display: 'inline-block'
+            verticalAlign: 'top'
+            marginLeft: 20
+            width: '80%'
+
+          DIV 
+            style: 
+              color: '#999'
+            date
+
+          "#{protagonist.name} "
+          action

@@ -265,6 +265,7 @@ Proposal = ReactiveComponent
           proposal_header
 
       DIV null,
+
         #description
         DIV 
           style: 
@@ -357,6 +358,12 @@ Proposal = ReactiveComponent
                 padding: '10px 60px'
                 marginLeft: (if lefty then 0)
               ProposalRoles key: @proposal
+
+
+        # notifications
+        if current_user && current_user.logged_in && current_user.notifications?.proposal[@proposal.id]          
+          ActivityFeed()
+
             
         #feelings
         DIV

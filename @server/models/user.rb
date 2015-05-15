@@ -51,6 +51,11 @@ class User < ActiveRecord::Base
   # This will output the data for this user _as if this user is currently logged in_
   # So make sure to only send this data to the client if the client is authorized. 
   def current_user_hash(form_authenticity_token)
+    notes = Notifier.aggregate(filter: {:user_id => self.id, subdomain_id: current_subdomain.id})[current_subdomain.id]
+    if notes
+      notes = notes[self.id]
+    end
+
     data = {
       id: id, #leave the id in for now for backwards compatability with Dash
       key: '/current_user',
@@ -71,7 +76,8 @@ class User < ActiveRecord::Base
       is_evaluator: permit('factcheck content', nil) > 0,
       trying_to: nil,
       subscriptions: subscription_settings(current_subdomain),
-      notifications: Notification.where(:user_id => self.id),      
+      all_notifications: notifications.order('created_at desc'),
+      notifications: notes,      
       verified: verified,
       needs_to_set_password: registered && !name #happens for users that were created via email invitation
     }
@@ -291,35 +297,35 @@ class User < ActiveRecord::Base
 
   # get all the items this user gets notifications for
   # TODO: update for new system!
-  def notifications
+  # def notifications
 
-    followable_objects = {
-      'Proposal' => {},
-      'Point' => {}
-    }
+  #   followable_objects = {
+  #     'Proposal' => {},
+  #     'Point' => {}
+  #   }
 
-    for followable_type in followable_objects.keys
+  #   for followable_type in followable_objects.keys
 
-      if followable_type == 'Point'
-        following = self.inclusions.map {|i| "/point/#{i.point_id}"} + \
-                 self.comments.map {|c| "/point/#{c.point_id}" } 
-      elsif followable_type == 'Proposal'
-        following = self.opinions.published.map {|o| "/proposal/#{o.proposal_id}"}
-      end
+  #     if followable_type == 'Point'
+  #       following = self.inclusions.map {|i| "/point/#{i.point_id}"} + \
+  #                self.comments.map {|c| "/point/#{c.point_id}" } 
+  #     elsif followable_type == 'Proposal'
+  #       following = self.opinions.published.map {|o| "/proposal/#{o.proposal_id}"}
+  #     end
 
-      following += self.follows.where(:follow => true, :followable_type => followable_type, :subdomain_id => current_subdomain.id).map {|f| "/#{f.followable_type.downcase}/#{f.followable_id}" }
+  #     following += self.follows.where(:follow => true, :followable_type => followable_type, :subdomain_id => current_subdomain.id).map {|f| "/#{f.followable_type.downcase}/#{f.followable_id}" }
 
-      followable_objects[followable_type] = following.uniq.compact #remove dupes and nils
+  #     followable_objects[followable_type] = following.uniq.compact #remove dupes and nils
 
-      # remove objs that have been explicitly unfollowed already
-      self.follows.where(:follow => false, :followable_type => followable_type).each do |f|
-        followable_objects[f.followable_type].delete("/#{f.followable_type.downcase}/#{f.followable_id}")
-      end
+  #     # remove objs that have been explicitly unfollowed already
+  #     self.follows.where(:follow => false, :followable_type => followable_type).each do |f|
+  #       followable_objects[f.followable_type].delete("/#{f.followable_type.downcase}/#{f.followable_id}")
+  #     end
 
-    end
+  #   end
 
-    followable_objects
-  end
+  #   followable_objects
+  # end
 
   def avatar_url_provided?
     !self.avatar_url.blank?

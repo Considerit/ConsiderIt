@@ -24,13 +24,12 @@ class UserController < ApplicationController
   def avatars
     
     respond_to do |format|
-      @user = User
 
       if !session[:search_bot]        
         cache_key = "avatar-digest-#{current_subdomain.id}"
         avatars = Rails.cache.read(cache_key)
         if avatars.nil? || avatars == 0
-          users = @user.where("registered=1 AND b64_thumbnail IS NOT NULL AND INSTR(active_in, '\"#{current_subdomain.id}\"')")
+          users = User.where("registered=1 AND b64_thumbnail IS NOT NULL AND INSTR(active_in, '\"#{current_subdomain.id}\"')")
           avatars = users.select([:id,:b64_thumbnail]).map {|user| "#avatar-#{user.id} { background-image: url('#{user.b64_thumbnail}');}"}.join(' ')
           Rails.cache.write(cache_key, avatars)
         end

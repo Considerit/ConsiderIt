@@ -216,7 +216,8 @@ window.SimpleHomepage = ReactiveComponent
                           if !current_user.subscriptions[proposal.key]
                             current_user.subscriptions[proposal.key] = 'watched'
                           else 
-                            current_user.subscriptions[proposal.key] = null
+                            delete current_user.subscriptions[proposal.key]
+
                           save current_user
 
                     if icons

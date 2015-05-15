@@ -181,7 +181,6 @@ window.SimpleHomepage = ReactiveComponent
               icons = options.editor_icons
 
               do (proposal) => 
-
                 # Proposal
                 DIV
                   key: proposal.key
@@ -189,6 +188,21 @@ window.SimpleHomepage = ReactiveComponent
                     minHeight: 70
 
                   DIV style: first_column,
+
+
+                    if current_user && current_user.logged_in && current_user.notifications?.proposal?[proposal.id]
+
+                      A
+                        title: 'New activity'
+                        href: proposal_url(proposal)
+                        style: 
+                          position: 'absolute'
+                          left: -65
+                          top: 0
+                          cursor: 'pointer'
+                          color: logo_red
+                        '•'
+
                     if current_user && current_user.logged_in
                       # ability to watch proposal
 

@@ -1,4 +1,14 @@
 
+# Toggle homepage filter to watched proposals
+document.addEventListener "keypress", (e) -> 
+  key = (e and e.keyCode) or e.keyCode
+
+  if key==23 # cntrl-W
+    filter = fetch 'homepage_filter'
+    filter.watched = !filter.watched
+    save filter
+
+
 first_column_style = 
   display: 'inline-block'
   width: 283

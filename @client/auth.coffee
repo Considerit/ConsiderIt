@@ -503,7 +503,12 @@ Auth = ReactiveComponent
           IMG 
             id: 'avatar_preview'
             style: {width: 60}
-            src: if current_user.avatar_remote_url then current_user.avatar_remote_url else if current_user.b64_thumbnail then current_user.b64_thumbnail else null
+            src: if current_user.b64_thumbnail 
+                    current_user.b64_thumbnail 
+                 else if current_user.avatar_remote_url 
+                    current_user.avatar_remote_url 
+                 else 
+                    null
 
         INPUT 
           id: 'user_avatar'

@@ -182,7 +182,12 @@ window.SimpleHomepage = ReactiveComponent
               icons = options.editor_icons
 
               do (proposal) => 
+
                 # Proposal
+                watching = current_user.subscriptions[proposal.key] == 'watched'
+
+                return if !watching && fetch('homepage_filter').watched
+
                 DIV
                   key: proposal.key
                   style:
@@ -209,7 +214,7 @@ window.SimpleHomepage = ReactiveComponent
                     if current_user && current_user.logged_in
                       # ability to watch proposal
 
-                      watching = current_user.subscriptions[proposal.key] == 'watched'
+                      
                       I 
                         className: "fa #{if watching then 'fa-star' else 'fa-star-o'}"
                         title:  if watching 

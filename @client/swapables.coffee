@@ -174,7 +174,8 @@ window.SimpleHomepage = ReactiveComponent
               SPAN 
                 style: 
                   position: 'relative'
-                  marginLeft: -(widthWhenRendered(options.homie_histo_title || 'Opinions', {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
+                  marginLeft: -(widthWhenRendered(options.homie_histo_title || 
+                                'Opinions', {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
                 options.homie_histo_title || 'Opinions'
 
             for proposal in sorted_proposals(cluster)
@@ -190,7 +191,9 @@ window.SimpleHomepage = ReactiveComponent
                   DIV style: first_column,
 
 
-                    if current_user && current_user.logged_in && current_user.notifications?.proposal?[proposal.id]
+                    if current_user && 
+                       current_user.logged_in && 
+                       hasUnreadNotifications(proposal)
 
                       A
                         title: 'New activity'

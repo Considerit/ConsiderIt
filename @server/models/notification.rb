@@ -9,7 +9,7 @@ class Notification < ActiveRecord::Base
   def as_json(options={})
     options[:only] ||= [:digest_object_id, :digest_object_type, :event_object_id, :event_object_type, :digest_object_relationship, :event_object_relationship, :event_type, :read_at, :created_at]
     result = super(options)
-    result['key'] = "notification/#{id}"
+    result['key'] = "/notification/#{id}"
     result['channel'] = Notifier.subscription_channel(self.digest_object, self.user)
     result
   end

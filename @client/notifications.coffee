@@ -343,11 +343,35 @@ window.Notifications = ReactiveComponent
 
 
 
+
+window.hasUnreadNotifications = (proposal) ->
+  current_user = fetch '/current_user'
+  return false unless current_user.notifications?.proposal?[proposal.id]
+
+  unread = (n for n in notificationsFor(proposal) when !n.read_at)
+  unread.length > 0
+
+notificationsFor = (proposal) -> 
+  current_user = fetch '/current_user'
+
+  ( n for n in current_user.all_notifications when \
+        n.digest_object_type == 'Proposal' && 
+          n.digest_object_id == proposal.id )
+
 window.ActivityFeed = ReactiveComponent
   displayName: 'ActivityFeed'
 
-  render: ->      
+  render: ->
+
     current_user = fetch('/current_user')
+
+    # just mark everything as read when you've opened the proposal
+    if hasUnreadNotifications(@proposal)
+      for n in notificationsFor(@proposal)
+        if !n.read_at
+          n.read_at = Date.now()
+          n.save    
+
     DIV 
       style: 
         width: DESCRIPTION_WIDTH
@@ -373,7 +397,7 @@ window.ActivityFeed = ReactiveComponent
         if @local.show_notifications
           'Hide activity feed'
         else
-          'Show activity feed'
+          'Show new activity feed'
 
       if @local.show_notifications
         notifications = []
@@ -384,11 +408,9 @@ window.ActivityFeed = ReactiveComponent
             listStyle: 'none'
             padding: 20
 
-          for notification in current_user.all_notifications
-            if notification.digest_object_type == 'Proposal' && 
-                notification.digest_object_id == @proposal.id
+          for notification in notificationsFor(@proposal) 
 
-              @drawNotification(notification)
+            @drawNotification(notification)
 
   drawNotification: (notification) -> 
     event_object = fetch "/#{notification.event_object_type.toLowerCase()}/#{notification.event_object_id}"

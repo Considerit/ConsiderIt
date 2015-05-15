@@ -395,6 +395,7 @@ window.ActivityFeed = ReactiveComponent
     protagonist = fetch(event_object.user)
 
     date = prettyDate(notification.created_at)
+    loc = fetch('location')
 
     action = switch notification.event_object_type
 
@@ -410,10 +411,13 @@ window.ActivityFeed = ReactiveComponent
               'your point '
 
           A 
-            href: "/#{@proposal.slug}/point/#{point.id}"
             style: 
               color: logo_red
               fontWeight: 600
+            onClick: (ev) => 
+              ev.stopPropagation()
+              loc.query_params.selected = point.key
+              save loc
 
             shorten(point.nutshell)
 
@@ -424,8 +428,12 @@ window.ActivityFeed = ReactiveComponent
           A 
             style:
               color: logo_red
-              fontWeight: 600                         
-            href: "/#{@proposal.slug}/point/#{event_object.id}"
+              fontWeight: 600    
+            onClick: (ev) => 
+              ev.stopPropagation()
+              loc.query_params.selected = event_object.key
+              save loc
+
             shorten(event_object.nutshell)
 
         

@@ -17,6 +17,9 @@
 
 require Rails.root.join('@server', 'permissions')
 
+
+DEBUG = false
+
 module Notifier
   extend ActiveSupport::Concern
 
@@ -53,14 +56,21 @@ module Notifier
       pp "WARNING: Model #{event_object.class.name} does not include Notifier"
     end
 
+    subdomain = hash[:subdomain] || current_subdomain
     protagonist = hash[:protagonist] || event_object.user
 
     digest_object = hash[:digest_object] || \
                     Notifier.infer_digest_object(event_object, event_type)
 
-    Notifier.delay.create_notifications_offline(event_type, event_object, 
-                                          current_subdomain, protagonist, 
+    if DEBUG
+      Notifier.create_notifications_offline(event_type, event_object, 
+                                          subdomain, protagonist, 
                                           digest_object)
+    else
+      Notifier.delay.create_notifications_offline(event_type, event_object, 
+                                            subdomain, protagonist, 
+                                            digest_object)
+    end
   end
 
   # An identifier for a channel to which a user can subscribe. This is a 
@@ -188,6 +198,7 @@ module Notifier
       # for this event, define all of the different relationships that
       # the notified user might have with event object
       'new_comment' => {
+
         'point_authored' => {
           # a description of this relation for UIs
           'ui_label' => 'Comment on a Pro or Con point you wrote',
@@ -229,6 +240,13 @@ module Notifier
         'proposal_interested' => {
           'ui_label' => 'New opinion',
           'email_trigger_default' => lambda {|digest_relation| false }
+        }
+      },
+
+      'edited_proposal' => {
+        'proposal_interested' => {
+          'ui_label' => nil,
+          'email_trigger_default' => lambda {|digest_relation| true }
         }
       },
 
@@ -279,8 +297,8 @@ module Notifier
             },
           ]
 
-        when 'new_point', 'new_opinion'
-          proposal = event_object.proposal
+        when 'new_point', 'new_opinion', 'edited_proposal'
+          proposal = event_object.class.name == 'Proposal' ? event_object : event_object.proposal
           subdomain = proposal.subdomain      
 
           watchers = Notifier.subscribed_users "/proposal/#{proposal.id}", subdomain
@@ -554,9 +572,10 @@ module Notifier
   def self.subscribed_users(key, subdomain)
     explicit = subdomain.users.where("subscriptions like '%#{key}%'")
     subscribed = []
+
     for user in explicit
       subs = user.subscription_settings(subdomain)
-      if subs.key?(key) && subs[key] == 'none'
+      if subs.key?(key) && subs[key] == 'watched'
         subscribed.push user
       end
     end
@@ -572,7 +591,11 @@ module Notifier
     when 'point', 'opinion'
       event_object.proposal
     when 'proposal'
-      event_object.subdomain
+      if event_type == 'edited'
+        event_object
+      else
+        event_object.subdomain
+      end
     when 'assessment'
       event_object.point.proposal
     when 'request'

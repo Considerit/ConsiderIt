@@ -129,6 +129,8 @@ class ProposalController < ApplicationController
         proposal.update_attributes! updated_fields
 
         if text_updated
+          # Perhaps we shouldn't enable this until we have an edit history
+          # Notifier.create_notification 'edited', proposal, protagonist: current_user
           proposal.redo_moderation
         end
       end

@@ -67,7 +67,7 @@ def import_into_considerit(papers)
     #pp paper
     if proposal.changed? || is_new
       if proposal.description_changed? || proposal.description_fields_changed?
-        # TODO: send notification!! new review (probably)!!
+        Notifier.create_notification 'edited', proposal, protagonist: user, subdomain: subdomain
         pp "#{proposal.slug} CHANGED!"
       end
       proposal.save
@@ -121,7 +121,7 @@ def parse_paper(number, text)
 
   data = {
     'url' => url,
-    'topic' => title + " [#{num_r or 0}_reviews]", 
+    'topic' => title, #+ " [#{num_r or 0}_reviews]", 
     'description' => description,
     'description_fields' => fields
   }

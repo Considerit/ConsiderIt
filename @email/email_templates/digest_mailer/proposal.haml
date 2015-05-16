@@ -2,6 +2,12 @@ Hi #{@user.first_name},
 
 = paragraph("A quick update on #{styled_link(@proposal.slug, @proposal.name, text_instead: true)}.")
 
+- if @notifications.has_key? 'edited_proposal'
+  - if @subdomain.name == 'RANDOM2015'
+    = paragraph "A review was uploaded from EasyChair"
+  - else 
+    = paragraph "This proposal has been edited."
+
 
 - if @notifications.has_key? 'new_opinion'
   = paragraph "#{get_user_str(@notifications['new_opinion']['proposal_interested'])} contributed their opinions"

@@ -1,16 +1,15 @@
 class NotificationController < ApplicationController
 
   def update
+    notification = Notification.find key_id(params[:key])
 
-    notification = Notification.find params[:id] 
+    if params['read_at']
 
-    updates = {
-      'read_at' => params['read_at']
-    }
+      notification.read_at = Time.now()
+      notification.save
 
-    notification.update_attributes! updates
-
-    dirty_key '/current_user'
+      dirty_key '/current_user'
+    end
 
     render :json => []
 

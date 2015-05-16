@@ -228,11 +228,11 @@ customizations.RANDOM2015 =
 
   cluster_options :
     'Under Review':
-      homie_histo_title: "PCs' ratings"
+      homie_histo_title: "PC's ratings"
     'Rejected':
-      homie_histo_title: "PCs' ratings"
+      homie_histo_title: "PC's ratings"
     'Accepted':
-      homie_histo_title: "PCs' ratings"
+      homie_histo_title: "PC's ratings"
 
 customizations['program-committee-demo'] = customizations.RANDOM2015
 

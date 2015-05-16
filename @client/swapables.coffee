@@ -188,6 +188,8 @@ window.SimpleHomepage = ReactiveComponent
 
                 return if !watching && fetch('homepage_filter').watched
 
+                unread = hasUnreadNotifications(proposal)
+
                 DIV
                   key: proposal.key
                   style:
@@ -196,24 +198,32 @@ window.SimpleHomepage = ReactiveComponent
                   DIV style: first_column,
 
 
-                    if current_user && 
-                       current_user.logged_in && 
-                       hasUnreadNotifications(proposal)
-
+                    if current_user?.logged_in && unread
                       A
                         title: 'New activity'
                         href: proposal_url(proposal)
                         style: 
                           position: 'absolute'
-                          left: -65
-                          top: 0
+                          left: -75
+                          top: 5
+                          width: 22
+                          height: 22
+                          textAlign: 'center'
+                          display: 'inline-block'
                           cursor: 'pointer'
-                          color: logo_red
-                        '•'
+                          backgroundColor: logo_red
+                          color: 'white'
+                          fontSize: 14
+                          borderRadius: '50%'
+                          padding: 2
+                          fontWeight: 600
 
-                    if current_user && current_user.logged_in
+                        I 
+                          className: 'fa-bell fa'
+
+
+                    if current_user?.logged_in
                       # ability to watch proposal
-
                       
                       I 
                         className: "fa #{if watching then 'fa-star' else 'fa-star-o'}"

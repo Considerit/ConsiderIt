@@ -361,7 +361,7 @@ Proposal = ReactiveComponent
 
 
         # notifications
-        if current_user && current_user.logged_in && current_user.notifications?.proposal[@proposal.id]          
+        if current_user?.logged_in && current_user.notifications?.proposal?[@proposal.id]          
           ActivityFeed()
 
             

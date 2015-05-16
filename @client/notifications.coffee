@@ -362,7 +362,7 @@ window.hasUnreadNotifications = (proposal) ->
 
   unread = (n for n in notificationsFor(proposal) when !n.read_at)
 
-  unread.length > 0
+  unread.length
 
 notificationsFor = (proposal) -> 
   current_user = fetch '/current_user'

@@ -15,7 +15,7 @@ def send_digest(user, digest_object, notifications, subscription_settings, deliv
 
   if !prefs
     #pp subscription_settings[digest]
-    raise "No subscriptions for #{digest} regarding #{digest_object.id} relation -#{digest_relation}-#{digest_relation == nil}- for User #{user.id} on Subdomain #{subdomain.name}"
+    raise "No subscriptions for #{digest}-#{digest_object.id} relation -#{digest_relation}-#{digest_relation == nil} User-#{user.id} Subdomain-#{subdomain.name}"
   end
 
   ####

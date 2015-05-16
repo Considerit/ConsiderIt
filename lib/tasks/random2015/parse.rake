@@ -68,7 +68,7 @@ def import_into_considerit(papers)
     if proposal.changed? || is_new
       text_updated = proposal.description_changed? || proposal.description_fields_changed?
       proposal.save
-      
+
       if text_updated
         Notifier.create_notification 'edited', proposal, protagonist: user, subdomain: subdomain
         pp "#{proposal.slug} CHANGED!"
@@ -115,7 +115,7 @@ def parse_paper(number, text)
 
   url = number.gsub(' ', '_').downcase
 
-  if title.index('WITHDRAWN') || ['paper_51','paper_52'].include?(url)
+  if title.index('WITHDRAWN') || ['paper_51'].include?(url)
     return nil
   end
 

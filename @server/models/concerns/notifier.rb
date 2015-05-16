@@ -62,15 +62,15 @@ module Notifier
     digest_object = hash[:digest_object] || \
                     Notifier.infer_digest_object(event_object, event_type)
 
+    caller = Notifier
     if DEBUG
-      Notifier.create_notifications_offline(event_type, event_object, 
-                                          subdomain, protagonist, 
-                                          digest_object)
-    else
-      Notifier.delay.create_notifications_offline(event_type, event_object, 
-                                            subdomain, protagonist, 
-                                            digest_object)
+      caller = caller.delay
     end
+
+    caller.create_notifications_offline(event_type, 
+                                        event_object.class.name, event_object.id, 
+                                        subdomain.id, protagonist.id, 
+                                        digest_object.class.name, digest_object.id)
   end
 
   # An identifier for a channel to which a user can subscribe. This is a 
@@ -511,8 +511,13 @@ module Notifier
   # Stay out of here unless you've got to extend the notifications system or debug!
 
 
-  def self.create_notifications_offline(event_type, event_object, subdomain, 
-                                        protagonist, digest_object)
+  def self.create_notifications_offline(event_type, event_object_type, event_object_id, subdomain_id, 
+                                        protagonist_id, digest_object_type, digest_object_id)
+
+    event_object = event_object_type.constantize.find(event_object_id)
+    subdomain = Subdomain.find(subdomain_id)
+    protagonist = User.find(protagonist_id)
+    digest_object = digest_object_type.constantize.find(digest_object_id)
 
     digest_name = digest_object.class.name.downcase
     digest_object_key = "/#{digest_name}/#{digest_object.id}"

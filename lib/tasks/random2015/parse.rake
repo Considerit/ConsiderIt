@@ -61,12 +61,14 @@ def import_into_considerit(papers)
     fields = paper['description_fields']
 
     proposal.name = paper['topic']
-    proposal.description = paper['description']
+    #proposal.description = paper['description']
     proposal.description_fields = JSON.dump(fields)
 
     #pp paper
     if proposal.changed? || is_new
-      text_updated = proposal.description_changed? || proposal.description_fields_changed?
+      #text_updated = proposal.description_changed? || proposal.description_fields_changed?
+
+      text_updated = proposal.description_fields_changed?
       proposal.save
 
       if text_updated

@@ -40,7 +40,7 @@ end
 
 def import_into_considerit(papers)
   subdomain = Subdomain.find_by_name('RANDOM2015')
-  user = User.find(210277) #find_by_email('anup.rao@gmail.com')
+  user = User.find(311595) #210277) #find_by_email('anup.rao@gmail.com')
 
   for paper in papers
 
@@ -66,11 +66,13 @@ def import_into_considerit(papers)
 
     #pp paper
     if proposal.changed? || is_new
-      if proposal.description_changed? || proposal.description_fields_changed?
+      text_updated = proposal.description_changed? || proposal.description_fields_changed?
+      proposal.save
+      
+      if text_updated
         Notifier.create_notification 'edited', proposal, protagonist: user, subdomain: subdomain
         pp "#{proposal.slug} CHANGED!"
       end
-      proposal.save
     end
 
   end

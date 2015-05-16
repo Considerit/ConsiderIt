@@ -315,6 +315,8 @@ window.Notifications = ReactiveComponent
                 event_relations = relation_config.events[event_name]
                 idx = 0
                 for event_relation in _.keys(event_relations).sort()
+                  continue if not event_relation_settings.ui_label
+
                   event_relation_settings = event_relations[event_relation]
 
                   idx += 1
@@ -359,6 +361,7 @@ window.hasUnreadNotifications = (proposal) ->
   return false unless current_user.notifications?.proposal?[proposal.id]
 
   unread = (n for n in notificationsFor(proposal) when !n.read_at)
+
   unread.length > 0
 
 notificationsFor = (proposal) -> 
@@ -379,8 +382,9 @@ window.ActivityFeed = ReactiveComponent
     if hasUnreadNotifications(@proposal)
       for n in notificationsFor(@proposal)
         if !n.read_at
+          console.log 'MARKING UNREAD', n.key
           n.read_at = Date.now()
-          n.save    
+          save n
 
     DIV 
       style: 
@@ -426,8 +430,11 @@ window.ActivityFeed = ReactiveComponent
     event_object = fetch "/#{notification.event_object_type.toLowerCase()}/#{notification.event_object_id}"
     protagonist = fetch(event_object.user)
 
+    subdomain = fetch '/subdomain'
+
     date = prettyDate(notification.created_at)
     loc = fetch('location')
+
 
     action = switch notification.event_object_type
 
@@ -452,6 +459,17 @@ window.ActivityFeed = ReactiveComponent
               save loc
 
             shorten(point.nutshell)
+
+      when 'Proposal'
+        SPAN
+          style: {}
+
+          if subdomain.name == 'RANDOM2015'
+            "uploaded a review from EasyChair"
+
+          else
+            "edited this proposal"
+
 
       when 'Point'
         SPAN

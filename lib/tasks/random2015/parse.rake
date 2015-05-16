@@ -115,7 +115,7 @@ def parse_paper(number, text)
 
   url = number.gsub(' ', '_').downcase
 
-  if title.index('WITHDRAWN') || ['paper_51'].include?(url)
+  if title.index('WITHDRAWN') || ['paper_51', 'paper_3'].include?(url)
     return nil
   end
 

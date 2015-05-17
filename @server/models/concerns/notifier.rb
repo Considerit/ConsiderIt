@@ -63,7 +63,7 @@ module Notifier
                     Notifier.infer_digest_object(event_object, event_type)
 
     caller = Notifier
-    if DEBUG
+    if !DEBUG
       caller = caller.delay
     end
 
@@ -545,8 +545,17 @@ module Notifier
 
         # Does this user _want_ to get notifications for this event??
         channel = subscription_channel digest_object, user
+        
+        digest_object_relation = digest_object_relationship(digest_object, user)
+
         subscriptions = user.subscription_settings(subdomain)
-        method = subscriptions[digest_object_key] || subscriptions[channel]
+
+        if subscriptions.key? digest_object_key
+          method = subscriptions[digest_name][subscriptions[digest_object_key]]['subscription']
+        else 
+          method = subscriptions[digest_name][digest_object_relation]['subscription']
+        end
+
         next if method == 'none'
 
         # Finally, let's create that Notification for this user!

@@ -9,14 +9,17 @@ def send_digest(user, digest_object, notifications, subscription_settings, deliv
   key = "/#{digest}/#{digest_object.id}"
 
   # TODO: remove the digest_relation == 'none' after testing
-  return if digest_relation == 'unsubscribed' || digest_relation == 'none'
+  return if digest_relation == 'unsubscribed' || digest_relation == 'none' 
 
   prefs = subscription_settings[digest][digest_relation]
 
-  if !prefs || !prefs['subscription']
+  return if prefs['subscription'] == 'on-site'
+
+  if !prefs
     #pp subscription_settings[digest]
     raise "No subscriptions for #{digest}-#{digest_object.id} relation -#{digest_relation}-#{digest_relation == nil} User-#{user.id} Subdomain-#{subdomain.name}"
   end
+
 
   ####
   # Respect the user's notification settings. Compare with time since we last

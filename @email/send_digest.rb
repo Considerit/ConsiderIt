@@ -103,7 +103,7 @@ def email_me_no_more_than(interval)
   when 'month'
     multiplier = 30 * 24 * 60 * 60      
   else
-    raise "#{unit} is not a supported unit for digests"
+    raise "#{unit} (#{interval}) is not a supported unit for digests"
   end
 
    multiplier / num.to_i

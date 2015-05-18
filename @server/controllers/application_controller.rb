@@ -221,7 +221,7 @@ protected
         response.append clean
 
       elsif key == '/page/dashboard/email_notifications'
-        response.append({:follows => current_user.notifications, :key => key})
+        response.append({:key => key})
 
       elsif key == '/page/dashboard/moderate'
         response.append Moderation.all_for_subdomain

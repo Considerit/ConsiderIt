@@ -51,10 +51,6 @@ class User < ActiveRecord::Base
   # This will output the data for this user _as if this user is currently logged in_
   # So make sure to only send this data to the client if the client is authorized. 
   def current_user_hash(form_authenticity_token)
-    notes = Notifier.aggregate(filter: {:user_id => self.id, subdomain_id: current_subdomain.id})[current_subdomain.id]
-    if notes
-      notes = notes[self.id]
-    end
 
     data = {
       id: id, #leave the id in for now for backwards compatability with Dash
@@ -76,8 +72,7 @@ class User < ActiveRecord::Base
       is_evaluator: permit('factcheck content', nil) > 0,
       trying_to: nil,
       subscriptions: subscription_settings(current_subdomain),
-      all_notifications: notifications.order('created_at desc'),
-      notifications: notes,      
+      notifications: notifications.order('created_at desc'),
       verified: verified,
       needs_to_set_password: registered && !name #happens for users that were created via email invitation
     }
@@ -197,7 +192,7 @@ class User < ActiveRecord::Base
       end
     end
 
-    my_subs['default_subscription'] = '1_day'
+    my_subs['default_subscription'] = Notifier.default_subscription
     if !my_subs.key?('send_emails')
       my_subs['send_emails'] = my_subs['default_subscription']
     end

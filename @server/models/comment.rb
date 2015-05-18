@@ -12,6 +12,8 @@ class Comment < ActiveRecord::Base
   belongs_to :user
   belongs_to :point
 
+  has_one :proposal, :through => :point
+
   acts_as_tenant :subdomain
 
   def as_json(options={})

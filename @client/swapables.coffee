@@ -152,6 +152,9 @@ window.SimpleHomepage = ReactiveComponent
             H1
               style: first_header
               cluster.name || 'Proposals'
+
+              if cluster.proposals.length > 5
+                " (#{cluster.proposals.length})"
             H1
               style: secnd_header
               SPAN

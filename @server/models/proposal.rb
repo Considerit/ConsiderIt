@@ -150,6 +150,10 @@ class Proposal < ActiveRecord::Base
     json
   end
 
+  def key
+    "/proposal/#{id}"
+  end
+
   # Returns a hash of all the roles. Each role is expressed
   # as a list of (1) user keys, (2) email addresses (for users w/o an account)
   # and (3) email wildcards ('*', '*@consider.it'). 

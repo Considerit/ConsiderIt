@@ -3,7 +3,7 @@ require 'mail'
 class DigestMailer < Mailer
 
 
-  def proposal(proposal, user, notifications, relation)
+  def proposal(proposal, user, notifications)
     @notifications = notifications
     @proposal = proposal
     @subdomain = proposal.subdomain
@@ -11,7 +11,7 @@ class DigestMailer < Mailer
 
     @digest_object = proposal
 
-    subject = relation == 'authored' \
+    subject = user.id == proposal.id \
                          ? "New activity on your" \
                          : "New activity on"
 
@@ -20,7 +20,7 @@ class DigestMailer < Mailer
     send_mail from: from_field(@subdomain), to: to_field(user), subject: subject
   end
 
-  def subdomain(subdomain, user, notifications, relation)
+  def subdomain(subdomain, user, notifications)
     @notifications = notifications
     @subdomain = subdomain
     @user = user

@@ -3,20 +3,12 @@ BUFFER = 2 * 60
 
 def send_digest(user, digest_object, notifications, subscription_settings, deliver = true)
   digest = digest_object.class.name.downcase
-  digest_relation = Notifier.digest_object_relationship(digest_object, user)
   
   subdomain = digest == 'subdomain' ? digest_object : digest_object.subdomain
   key = "/#{digest}/#{digest_object.id}"
 
-  # TODO: remove the digest_relation == 'none' after testing
-  return if digest_relation == 'unsubscribed' || digest_relation == 'none'
-
-  prefs = subscription_settings[digest][digest_relation]
-
-  if !prefs || !prefs['subscription']
-    #pp subscription_settings[digest]
-    raise "No subscriptions for #{digest}-#{digest_object.id} relation -#{digest_relation}-#{digest_relation == nil} User-#{user.id} Subdomain-#{subdomain.name}"
-  end
+  send_emails = subscription_settings['send_emails']
+  return if !send_emails
 
   ####
   # Respect the user's notification settings. Compare with time since we last
@@ -26,7 +18,7 @@ def send_digest(user, digest_object, notifications, subscription_settings, deliv
   last_digest_sent_at = user.emails_received[key]
   if last_digest_sent_at
     sec_since_last = Time.now() - Time.parse(last_digest_sent_at)
-    interval = email_me_no_more_than prefs['subscription']
+    interval = email_me_no_more_than send_emails
     can_send = sec_since_last >= interval
   end
 
@@ -37,19 +29,24 @@ def send_digest(user, digest_object, notifications, subscription_settings, deliv
   # Check notifications to determine if a valid triggering event occurred
   do_send = false
 
-  event_prefs = prefs['events']
   for event, ns in notifications
 
     for event_relation, nss in ns
+
       for notification in nss
         event_relation = notification.event_object_relationship 
 
-        # if !event_prefs[event] || !event_prefs[event][event_relation]
-        #   pp 'missing event prefs for', event, event_relation
-        # end
+        if subscription_settings.key? "#{event}:#{event_relation}"
+          key = "#{event}:#{event_relation}"
+        else 
+          key = event
+        end
 
-        if event_prefs[event] && event_prefs[event][event_relation] && \
-           event_prefs[event][event_relation]['email_trigger']
+        if !subscription_settings[key]
+          raise 'missing event prefs for', event, event_relation
+        end
+
+        if subscription_settings[key] && subscription_settings[key]['email_trigger']
 
           do_send = !notification.read_at && \
                     Time.now() - notification.created_at > BUFFER
@@ -63,8 +60,7 @@ def send_digest(user, digest_object, notifications, subscription_settings, deliv
 
   if do_send
 
-    channel = Notifier.subscription_channel(digest_object, user)
-    mail = DigestMailer.send(digest, digest_object, user, notifications, channel)
+    mail = DigestMailer.send(digest, digest_object, user, notifications)
     if deliver
       mail.deliver_now
 
@@ -100,6 +96,8 @@ def email_me_no_more_than(interval)
     multiplier = 60 * 60
   when 'day'
     multiplier = 24 * 60 * 60
+  when 'week'
+    multiplier = 7 * 24 * 60 * 60
   when 'month'
     multiplier = 30 * 24 * 60 * 60      
   else

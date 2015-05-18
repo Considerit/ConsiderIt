@@ -20,7 +20,7 @@ module Moderatable
 
   def notify_moderator
     if moderation_enabled
-      Notifier.create_notification 'moderate', self, 
+      Notifier.create_notification 'content_to_moderate', self, 
                                    :digest_object => self.subdomain
     end
   end

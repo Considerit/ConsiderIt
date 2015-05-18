@@ -10,11 +10,11 @@ Hi #{@user.first_name},
 
 
 - if @notifications.has_key? 'new_opinion'
-  = paragraph "#{get_user_str(@notifications['new_opinion']['proposal_interested'])} contributed their opinions"
+  = paragraph "#{get_user_str(@notifications['new_opinion']['watched'])} contributed their opinions"
 
 - if @notifications.has_key? 'new_point'
 
-  - grouped = group_by_user(@notifications['new_point']['proposal_interested'])
+  - grouped = group_by_user(@notifications['new_point']['watched'])
 
   - count = grouped.keys.length
   
@@ -49,7 +49,7 @@ Hi #{@user.first_name},
     - comment_sections = [ |
           ['point_authored', ' your point '], |
           ['point_engaged', ' a point you\'ve engaged '], |
-          ['proposal_interested', ''], |
+          ['watched', ''], |
       ] |
 
     - for section in comment_sections

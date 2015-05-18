@@ -353,11 +353,7 @@ protected
 
         # unsubscribe from this object if that's what they want to do...
         if params.has_key?('unsubscribe_key')
-          sub_settings = current_user.subscription_settings(current_subdomain)
-          key = params['unsubscribe_key']
-          sub_settings[key] = 'unsubscribed'
-          current_user.subscriptions = current_user.update_subscriptions(sub_settings)
-          current_user.save
+          current_user.update_subscription_key(params['unsubscribe_key'], 'unsubscribed', :force => true)
         end
 
       end

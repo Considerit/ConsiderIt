@@ -90,30 +90,25 @@ module Notifier
   #
   # This could probably be refactored as a group_by query.
 
+
   def self.aggregate(options={})
 
     levels = [:subdomain_id, :user_id, 
               :digest_object_type, :digest_object_id, 
-              :event, :event_object_relationship]
+              :event]
 
     aggregation = {}
 
     candidates = options[:filter] ? Notification.where(options[:filter]) : Notification.all
 
+    if !options[:skip_moderation_filter]
+      candidates = Notifier.filter_unmoderated(candidates)
+    end
+
     for notification in candidates
-
-      # Don't announce things prematurely...
-      if !options[:skip_moderation_filter]
-        if notification.event_object.respond_to?(:okay_to_email_notification) && \
-           notification.event_type != 'content_to_moderate'
-          next if !notification.event_object.okay_to_email_notification
-        end
-      end
-
       obj = aggregation
       levels.each_with_index do |level, idx|
         key = notification.send(level)
-        key = key.downcase if key.respond_to?(:downcase)
 
         obj[key] ||= idx == levels.length - 1 ? [] : {}
         obj = obj[key]
@@ -125,6 +120,13 @@ module Notifier
     aggregation
   end
 
+  def self.filter_unmoderated(notifications)
+    notifications.select {|n|
+      !n.event_object.respond_to?(:okay_to_email_notification) ||
+      n.event_type == 'content_to_moderate' ||
+      n.event_object.okay_to_email_notification
+    }
+  end
 
 
   #######################################
@@ -132,18 +134,17 @@ module Notifier
   #
   # This is where you come to configure new events, digests, defaults, etc. 
 
+  def self.default_subscription 
+    '1_day'
+  end
+
   def self.config
 
     {
 
       'new_proposal' => {
         'ui_label' => 'New proposal',
-        'email_trigger_default' => true,
-        'allowed' => lambda {|user, subdomain| 
-                #permit('create proposal', subdomain) > 0
-                user.is_admin?(subdomain) || \
-                Permitted.matchEmail(subdomain.user_roles['proposer'], user)
-              }
+        'email_trigger_default' => true
         
       },
 

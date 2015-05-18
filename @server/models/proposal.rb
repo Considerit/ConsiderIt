@@ -135,8 +135,6 @@ class Proposal < ActiveRecord::Base
 
     make_key(json, 'proposal')
     stubify_field(json, 'user')
-    follows = get_explicit_follow(current_user) 
-    json["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 
     json['assessment_enabled'] = fact_check_request_enabled?
 
@@ -147,7 +145,17 @@ class Proposal < ActiveRecord::Base
       json['roles'] = self.user_roles(filter = true)
     end
 
+    json['notifications'] = Notifier.filter_unmoderated(notifications)
+
     json
+  end
+
+  def notifications
+    current_user.notifications
+      .where(
+        digest_object_type: 'Proposal', 
+        digest_object_id: self.id)
+      .order('created_at DESC')
   end
 
   def key

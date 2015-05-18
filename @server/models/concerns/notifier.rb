@@ -229,7 +229,7 @@ module Notifier
   end
 
   # ... And how is a user related to a specific event?
-  def event_relationship_mapper(event_object, user)
+  def self.event_relationship_mapper(event_object, user)
 
     if ['Comment', 'Assessment'].include?(event_object.class.name)
       point = event_object.point
@@ -270,14 +270,14 @@ module Notifier
       # doesn't get notified
       next if user.id == protagonist_id
 
-      event_object_relationship = event_relationship_mapper(event_object, user)
+      event_object_relationship = Notifier.event_relationship_mapper(event_object, user)
 
       method = user.subscription_settings(subdomain)['send_emails']
 
       # Finally, let's create that Notification for this user!
       notification = Notification.create!({
         subdomain_id: subdomain.id,
-        user_id: user_id,
+        user_id: user.id,
 
         digest_object_id: digest_object.id,
         digest_object_type: digest_object.class.name,

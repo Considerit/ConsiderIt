@@ -23,13 +23,10 @@ window.Notifications = ReactiveComponent
 
     prefs = current_user.subscriptions
 
-    console.log prefs
-
     DIV 
       style:
         width: CONTENT_WIDTH
         margin: '50px auto'
-
 
       DIV
         style: 
@@ -162,31 +159,25 @@ window.Notifications = ReactiveComponent
 
 window.hasUnreadNotifications = (proposal) ->
   current_user = fetch '/current_user'
-  return false unless current_user.notifications?.proposal?[proposal.id]
+  return false unless proposal.notifications?
 
-  unread = (n for n in notificationsFor(proposal) when !n.read_at)
+  unread = (n for n in proposal.notifications when !n.read_at)
 
   unread.length
-
-notificationsFor = (proposal) -> 
-  current_user = fetch '/current_user'
-
-  ( n for n in current_user.all_notifications when \
-        n.digest_object_type == 'Proposal' && 
-          n.digest_object_id == proposal.id )
 
 window.ActivityFeed = ReactiveComponent
   displayName: 'ActivityFeed'
 
   render: ->
+    console.log '2423432'
 
+    console.log @proposal.notifications
     current_user = fetch('/current_user')
 
     # just mark everything as read when you've opened the proposal
     if hasUnreadNotifications(@proposal)
-      for n in notificationsFor(@proposal)
+      for n in @proposal.notifications
         if !n.read_at
-          console.log 'MARKING UNREAD', n.key
           n.read_at = Date.now()
           save n
 
@@ -200,11 +191,10 @@ window.ActivityFeed = ReactiveComponent
 
       DIV
         style: 
-          backgroundColor: logo_red
+          backgroundColor: "#eee"
           textDecoration: 'underline'
           padding: 10
           fontSize: 18
-          color: 'white'
           textAlign: 'center'
           cursor: 'pointer'
 
@@ -212,21 +202,27 @@ window.ActivityFeed = ReactiveComponent
           @local.show_notifications = !@local.show_notifications
           save @local
 
+        I 
+          className: 'fa-bell-o fa'
+          style: 
+            display: 'inline-block'
+            marginRight: 15
+
         if @local.show_notifications
-          'Hide activity feed'
+          'Hide notifications'
         else
-          'Show new activity feed'
+          'Show notifications'
 
       if @local.show_notifications
         notifications = []
 
         UL
           style: 
-            border: "1px solid #{logo_red}"
+            border: "1px solid #eee"
             listStyle: 'none'
             padding: 20
 
-          for notification in notificationsFor(@proposal) 
+          for notification in @proposal.notifications
 
             @drawNotification(notification)
 

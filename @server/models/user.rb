@@ -143,9 +143,7 @@ class User < ActiveRecord::Base
   end
 
   def add_to_active_in(subdomain=nil)
-    if !subdomain 
-      subdomain = current_subdomain
-    end
+    subdomain ||= current_subdomain
     
     active_subdomains = JSON.parse(self.active_in) || []
 

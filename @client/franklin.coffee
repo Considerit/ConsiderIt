@@ -405,7 +405,7 @@ Proposal = ReactiveComponent
 
 
         # notifications
-        if current_user?.logged_in && current_user.notifications?.proposal?[@proposal.id]          
+        if current_user?.logged_in          
           ActivityFeed()
 
             
@@ -2578,7 +2578,6 @@ EditPoint = ReactiveComponent
       
       DIV null,
         A 
-          className: 'add_details'
           onClick: =>
             @local.add_details = !@local.add_details
             save(@local)            
@@ -2591,7 +2590,7 @@ EditPoint = ReactiveComponent
                          'fa-caret-right fa'
           SPAN
             style: {paddingLeft: 6}
-            'Add supporting details'
+            'Add more description'
 
         DIV 
           style: 

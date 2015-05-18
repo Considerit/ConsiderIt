@@ -7,10 +7,9 @@ class Notification < ActiveRecord::Base
   acts_as_tenant :subdomain
 
   def as_json(options={})
-    options[:only] ||= [:digest_object_id, :digest_object_type, :event_object_id, :event_object_type, :digest_object_relationship, :event_object_relationship, :event_type, :read_at, :created_at]
+    options[:only] ||= [:digest_object_id, :digest_object_type, :event_object_id, :event_object_type, :event_object_relationship, :event_type, :read_at, :created_at]
     result = super(options)
     result['key'] = "/notification/#{id}"
-    result['channel'] = Notifier.subscription_channel(self.digest_object, self.user)
     result
   end
 
@@ -23,7 +22,7 @@ class Notification < ActiveRecord::Base
   end
 
   def event
-    if event_type == 'moderate'
+    if event_type == 'content_to_moderate'
       event_type
     else
       "#{event_type.downcase}_#{event_object_type.downcase}"

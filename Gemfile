@@ -46,6 +46,7 @@ gem 'mechanize' # for webscraping; only used for RANDOM2015 deployment
 # and rake tasks are available in development mode:
 group :development, :test do
   gem 'thin'
+  gem 'ruby-prof'
   # gem 'guard', '>= 2.2.2',       :require => false
   # gem 'guard-livereload',        :require => false
   # gem 'rack-livereload'

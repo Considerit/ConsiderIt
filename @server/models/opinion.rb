@@ -75,6 +75,8 @@ class Opinion < ActiveRecord::Base
 
     Notifier.create_notification 'new', self
 
+    current_user.update_subscription_key(proposal.key, 'watched', :force => false)
+    dirty_key "/current_user"
 
   end
 

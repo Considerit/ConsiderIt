@@ -2,7 +2,7 @@ Hi #{@user.first_name},
 
 = paragraph("Just a quick update on #{styled_link('', @subdomain.title, text_instead: true)}.")
 
-- if @notifications.has_key? 'moderate'
+- if @notifications.has_key? 'content_to_moderate'
   
   There is new content #{styled_link('dashboard/moderate', 'waiting to be moderated', :text_preceding => 'waiting to be moderated at ')}.
 
@@ -13,12 +13,12 @@ Hi #{@user.first_name},
 
 
 - if @notifications.has_key? 'new_proposal'
-  - count = @notifications['new_proposal']['subdomain_interested'].length
+  - count = @notifications['new_proposal']['watched'].length
   
   - if count > 1
     = section_header("New proposals")
 
-  - for notification in @notifications['new_proposal']['subdomain_interested']
+  - for notification in @notifications['new_proposal']['watched']
     - proposal = notification.event_object
     - proposal_link = styled_link(proposal.slug, "\"#{proposal.title(40)}\"", :text_preceding => "'#{proposal.title(40)}'. View at ")
     = list_item("#{proposal.user.name} proposes: #{proposal_link}")

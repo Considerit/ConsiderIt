@@ -29,28 +29,32 @@ def send_digest(user, digest_object, notifications, subscription_settings, deliv
   # Check notifications to determine if a valid triggering event occurred
   do_send = false
 
-  for event, ns in notifications
+  for digest_type, digest_types in notifications
+    for digest_id, digest_ids in digest_types
+      for event, ns in digest_ids
 
-    for event_relation, nss in ns
+        for notification in ns
 
-      for notification in nss
-        event_relation = notification.event_object_relationship 
+          event_relation = notification.event_object_relationship 
 
-        if subscription_settings.key? "#{event}:#{event_relation}"
-          key = "#{event}:#{event_relation}"
-        else 
-          key = event
-        end
+          if subscription_settings.key? "#{event}:#{event_relation}"
+            key = "#{event}:#{event_relation}"
+          else 
+            key = event
+          end
 
-        if !subscription_settings[key]
-          raise 'missing event prefs for', event, event_relation
-        end
+          if !subscription_settings[key]
+            pp "missing event prefs for #{key}", subscription_settings
+            raise "missing event prefs for #{key}"
+          end
 
-        if subscription_settings[key] && subscription_settings[key]['email_trigger']
+          if subscription_settings[key] && subscription_settings[key]['email_trigger']
 
-          do_send = !notification.read_at && \
-                    Time.now() - notification.created_at > BUFFER
-          break if do_send
+            do_send = !notification.read_at && \
+                      Time.now() - notification.created_at > BUFFER
+            break if do_send
+          end
+
         end
       end
     end
@@ -60,7 +64,7 @@ def send_digest(user, digest_object, notifications, subscription_settings, deliv
 
   if do_send
 
-    mail = DigestMailer.send(digest, digest_object, user, notifications)
+    mail = DigestMailer.digest(subdomain, user, notifications)
     if deliver
       mail.deliver_now
 

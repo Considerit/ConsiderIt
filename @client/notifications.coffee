@@ -169,10 +169,11 @@ window.ActivityFeed = ReactiveComponent
   displayName: 'ActivityFeed'
 
   render: ->
-    console.log '2423432'
 
-    console.log @proposal.notifications
     current_user = fetch('/current_user')
+
+    if @proposal.notifications?.length == 0
+      return SPAN null
 
     # just mark everything as read when you've opened the proposal
     if hasUnreadNotifications(@proposal)

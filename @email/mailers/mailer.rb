@@ -18,7 +18,7 @@ private
   end
 
   def subject_line(subject, subdomain)
-    title = subdomain.app_title or subdomain.name
+    title = subdomain.app_title || subdomain.name
     "[#{title}] #{subject}"
   end
 

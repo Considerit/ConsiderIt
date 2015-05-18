@@ -179,6 +179,7 @@ GEM
     responders (2.0.2)
       railties (>= 4.2.0.alpha, < 5)
     ruby-imagespec (0.3.1)
+    ruby-prof (0.15.8)
     sitemap_generator (5.0.5)
       builder
     sprockets (2.12.3)
@@ -235,6 +236,7 @@ DEPENDENCIES
   prerender_rails
   rails (~> 4)
   responders (~> 2.0)
+  ruby-prof
   sitemap_generator
   thin
   whenever

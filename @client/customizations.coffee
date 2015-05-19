@@ -18,6 +18,7 @@
 require './browser_location' # for loadPage
 require './shared'
 require './swapables'
+require './profile_menu'
 require './slider'
 require './header'
 

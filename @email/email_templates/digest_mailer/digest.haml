@@ -1,5 +1,6 @@
-= paragraph("Hi #{@user.first_name}, a summary for you. ")
-
+Hi #{@user.first_name}, a summary for you.
+= linebreak
+= linebreak
   
 - if @subdomain_notifications
   - if @subdomain_notifications.key? 'content_to_moderate'
@@ -9,20 +10,20 @@
 
   - if @subdomain_notifications.key? 'new_request'
       
-    = paragraph("There are new #{styled_link('dashboard/assessment', 'requests for fact-checks', :text_preceding => 'requests for fact-checks at ')}.")
+    = list_item("There are new #{styled_link('dashboard/assessment', 'requests for fact-checks', :text_preceding => 'requests for fact-checks at ')}.")
 
 
   - if @subdomain_notifications.key? 'new_proposal'
     - count = @subdomain_notifications['new_proposal'].length
     
-    - if count > 1
-      = section_header_major("New proposals")
+    // - if count > 1
+    //   = section_header_major("New proposals")
 
     - for notification in @subdomain_notifications['new_proposal']
       - proposal = notification.event_object
       - proposal_link = styled_link(proposal.slug, "\"#{proposal.title(40)}\"", :text_preceding => "'#{proposal.title(40)}'. View at ")
       = list_item("#{proposal.user.name} proposes: #{proposal_link}")
-      = item_divider
+      // = item_divider
 
 
 - for proposal_id, notifications in @proposal_notifications
@@ -32,13 +33,13 @@
 
   - if notifications.key? 'edited_proposal'
     - if @subdomain.name == 'RANDOM2015'
-      = paragraph "A review was uploaded from EasyChair"
+      = list_item "A review was uploaded from EasyChair"
     - else 
-      = paragraph "This proposal has been edited."
+      = list_item "This proposal has been edited."
 
 
   - if notifications.key? 'new_opinion'
-    = paragraph "#{get_user_str(notifications['new_opinion'])} opined on this proposal"
+    = list_item "#{get_user_str(notifications['new_opinion'])} opined"
 
   - if notifications.key? 'new_point'
 
@@ -46,12 +47,12 @@
 
     - count = grouped.keys.length
     
-    = section_header("New points")
+    //= section_header("New points")
 
     - for user_id, ns in grouped
       - points = ns.map {|n| n.event_object }
-      
-      - txt = "#{User.find(user_id).name} adds: "
+
+      - txt = "#{User.find(user_id).name} adds a new point: "
       - points.each_with_index do |point, idx|
 
         - point_link = styled_link(point.proposal.slug, "\"#{point.title(40)}\"", :search_params => {selected: "%2Fpoint%2F#{point.id}"}, :text_preceding => "'#{point.title(40)}'. View at ")
@@ -72,7 +73,7 @@
 
     - if notifications.key? event
 
-      = section_header("New comments")
+      //= section_header("New comments")
 
       - relations = { |
           'point_authored' => ' your point ', |
@@ -91,9 +92,10 @@
         - txt += styled_link(point.proposal.slug, "\"#{point.title(40)}\"", :search_params => {selected: "%2Fpoint%2F#{point.id}"}, :text_preceding => "'#{point.title(40)}'. View at ")
 
         = list_item(txt)
-        = item_divider
 
-  = item_divider
+  // = item_divider
+  = linebreak
+
 
 
 

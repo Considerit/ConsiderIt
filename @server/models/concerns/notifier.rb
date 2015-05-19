@@ -143,13 +143,13 @@ module Notifier
     {
 
       'new_proposal' => {
-        'ui_label' => 'New proposal',
+        'ui_label' => 'If someone adds a new proposal',
         'email_trigger_default' => true
         
       },
 
       'content_to_moderate' => {
-        'ui_label' => 'New content to moderate',
+        'ui_label' => 'When there is new content to help moderate',
          #   * Returning nil means that this event will not show up as a
          #     preference
         'email_trigger_default' => true,
@@ -174,24 +174,24 @@ module Notifier
       # the notified user might have with event object
       'new_comment:point_authored' => {
         # a description of this relation for UIs
-        'ui_label' => 'Comment on a Pro or Con point you wrote',
+        'ui_label' => 'Someone comments on a Pro or Con point you wrote',
 
         # Whether this event qualifies for triggering an email by default.
         'email_trigger_default' => true
       },
 
       'new_comment:point_engaged' => {
-        'ui_label' => 'Comment on a Pro or Con point you\'ve engaged',
+        'ui_label' => 'Comments on a Pro or Con point you\'ve engaged',
         'email_trigger_default' => true
       },
 
       'new_comment' => {
-        'ui_label' => 'Comment on other points',
+        'ui_label' => 'A comment on any Pro or Con point of a proposal you watch',
         'email_trigger_default' => false
       },
 
       'new_opinion' => {
-        'ui_label' => 'New opinion',
+        'ui_label' => 'New opinions on a proposal you watch',
         'email_trigger_default' => false
       },
 
@@ -201,7 +201,7 @@ module Notifier
       },
 
       'new_point' => {
-        'ui_label' => 'New Pro or Con point',
+        'ui_label' => 'New Pro or Con point on a watched proposal',
         'email_trigger_default' => true
       },
 

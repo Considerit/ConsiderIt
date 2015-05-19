@@ -79,12 +79,20 @@ module MailerHelper
 
   end
 
+  def linebreak
+    if @part == 'text'
+      "\r\n\r\n"
+    else 
+      "<div style='height: 10px'> </div>".html_safe
+    end
+  end
+
   def paragraph(text)
 
     if @part == 'text'
       "\r\n#{text}\r\n"
     else
-      "<p>#{text}</p>".html_safe
+      "<p style='padding: 0px 20px;' >#{text}</p>".html_safe
     end
 
   end
@@ -93,7 +101,7 @@ module MailerHelper
     if @part == 'text'
       "\r\n - #{text}\r\n"
     else 
-      "<div style='margin: 5px 0; padding: 10px 20px; background-color: #fff;'>#{text}</div>".html_safe
+      "<div style='margin: 5px 0; padding: 0px 20px; background-color: #fff;'>#{text}</div>".html_safe
     end
   end
 

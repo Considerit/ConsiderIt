@@ -8,12 +8,12 @@ task :send_email_notifications => :environment do
 
   begin
     for subdomain_id, n_for_subdomain in notifications
-      for user_id, n_for_user in n_for_subdomain
+      for user_id, notifications_for_user in n_for_subdomain
         user = User.find user_id
         prefs = user.subscription_settings(Subdomain.find(subdomain_id))
 
         begin 
-          send_digest(Subdomain.find(subdomain_id), user, notifications_to_digest, prefs)
+          send_digest(Subdomain.find(subdomain_id), user, notifications_for_user, prefs)
         rescue => e
           pp 'WE FAILED', e
           ExceptionNotifier.notify_exception(e)      

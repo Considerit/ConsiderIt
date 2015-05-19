@@ -26,6 +26,10 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
   return if !can_send
   #####
 
+  if user.id == 1701
+    pp subscription_settings
+  end
+
   ####
   # Check notifications to determine if a valid triggering event occurred
   do_send = false
@@ -48,6 +52,8 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
             pp "missing event prefs for #{key}", subscription_settings
             raise "missing event prefs for #{key}"
           end
+
+          pp "#{key} #{subscription_settings[key]} #{subscription_settings[key]['email_trigger']}"
 
           if subscription_settings[key] && subscription_settings[key]['email_trigger']
 

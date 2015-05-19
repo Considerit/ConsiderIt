@@ -67,9 +67,11 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
       # record that we've sent these notifications
       for v in notifications.values
         for vv in v.values
-          for n in vv      
-            n.sent_email = true
-            n.save
+          for vvv in vv.values
+            for n in vvv      
+              n.sent_email = true
+              n.save
+            end
           end
         end
       end

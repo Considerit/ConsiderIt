@@ -319,7 +319,10 @@ Proposal = ReactiveComponent
 
 
           if @local.description_fields
-            DIV style: {marginTop: '1em'},
+            DIV 
+              id: 'description_fields'
+              style: 
+                marginTop: '1em'
               for item in @local.description_fields
                 if item.group
                   @renderDescriptionFieldGroup item
@@ -556,6 +559,10 @@ Proposal = ReactiveComponent
     # the height of the decision board (which is absolutely positioned) 
     # is taller than either of the wing point columns
     $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height()} 
+
+    subdomain = fetch('/subdomain')
+    if subdomain.name == 'RANDOM2015' && @local.description_fields && $('#description_fields').find('.MathJax').length == 0
+      MathJax.Hub.Typeset '#description_fields', -> console.log "typeset"
 
 
   componentDidMount : ->

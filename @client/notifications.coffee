@@ -205,7 +205,7 @@ window.Notifications = ReactiveComponent
 
                   WatchStar
                     proposal: obj
-                    icon: 'fa-bell-slash'
+                    #icon: 'fa-bell-slash'
                     watch_color: "#777"
                     label: (watching) -> 
                       "Unwatch this proposal"

@@ -187,16 +187,17 @@ class User < ActiveRecord::Base
       else 
         my_subs[event] = config
       end
+
       if !my_subs[event].key?('email_trigger')
         my_subs[event]['email_trigger'] = my_subs[event]['email_trigger_default']
       end
+
     end
 
     my_subs['default_subscription'] = Notifier.default_subscription
     if !my_subs.key?('send_emails')
       my_subs['send_emails'] = my_subs['default_subscription']
     end
-
 
     my_subs
   end
@@ -232,8 +233,10 @@ class User < ActiveRecord::Base
         v.delete_if(&clean) # recurse if v is a hash
       end
 
+      # 'proposal' and 'subdomain' in the list below is temporary for some migrations...
+      # feel free to remove junish
       v.respond_to?(:key) && v.keys().length == 0 || \
-      ['subscription_options', 'ui_label', \
+      ['proposal', 'subdomain', 'subscription_options', 'ui_label', \
        'default_subscription', 'default_email_trigger'].include?(k)
 
     end

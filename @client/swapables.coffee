@@ -13,6 +13,7 @@ require './dock'
 require './histogram'
 require './permissions'
 require './shared'
+require './watch_star'
 
 
 ###########################
@@ -228,32 +229,14 @@ window.SimpleHomepage = ReactiveComponent
                     if current_user?.logged_in
                       # ability to watch proposal
                       
-                      I 
-                        className: "fa #{if watching then 'fa-star' else 'fa-star-o'}"
-                        title:  if watching 
-                                  "You are watching this proposal" 
-                                else 
-                                  "Watch this proposal"
-                        style:
-                          opacity: if @local.hover_watch != proposal.key && !watching then .35
-                          color: if watching then logo_red else "#888"
-                          width: 30
-                          height: 30
+                      WatchStar
+                        proposal: proposal
+                        size: 30
+                        style: 
                           position: 'absolute'
                           left: -40
                           top: 5
-                          cursor: 'pointer'
-                        onMouseEnter: => 
-                          @local.hover_watch = proposal.key; save @local
-                        onMouseLeave: => 
-                          @local.hover_watch = null; save @local
-                        onClick: => 
-                          if !current_user.subscriptions[proposal.key]
-                            current_user.subscriptions[proposal.key] = 'watched'
-                          else 
-                            delete current_user.subscriptions[proposal.key]
 
-                          save current_user
 
                     if icons
                       editor = proposal_editor(proposal)

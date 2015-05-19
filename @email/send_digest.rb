@@ -53,8 +53,10 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
             raise "missing event prefs for #{key}"
           end
 
-          pp "#{key} #{subscription_settings[key]} #{subscription_settings[key]['email_trigger']}"
-
+          if user.id == 1701
+            pp "#{key} #{subscription_settings[key]} #{subscription_settings[key]['email_trigger']}"
+          end
+          
           if subscription_settings[key] && subscription_settings[key]['email_trigger']
 
             do_send = !notification.read_at && \

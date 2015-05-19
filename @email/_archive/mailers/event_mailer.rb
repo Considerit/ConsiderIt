@@ -28,7 +28,7 @@ class EventMailer < Mailer
     @subdomain = subdomain
 
     to = format_email user.email, user.name
-    from = format_email(default_sender(subdomain), (subdomain.app_title or subdomain.name))
+    from = format_email(default_sender(subdomain), (subdomain.title))
 
     if notification_type == 'your point'
       subject = "a point you wrote has been fact checked"

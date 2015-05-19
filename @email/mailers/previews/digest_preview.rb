@@ -16,7 +16,7 @@ class DigestPreview < ActionMailer::Preview
 
     notifications = notifications[subdomain_id][user_id]
 
-    mail = send_digest(user, subdomain, notifications, 
+    mail = send_digest(subdomain, user, notifications, 
         user.subscription_settings(subdomain), false)
 
     if !mail 

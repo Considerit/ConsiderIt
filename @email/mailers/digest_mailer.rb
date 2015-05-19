@@ -33,7 +33,7 @@ class DigestMailer < Mailer
 
   def from_field(subdomain)
     format_email default_sender(subdomain), \
-                (subdomain.app_title or subdomain.name)
+                (subdomain.title)
   end
 
 end

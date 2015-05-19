@@ -112,7 +112,12 @@ class Proposal < ActiveRecord::Base
     else 
       ordered_clusters = manual_clusters
     end
-    clusters = ordered_clusters.map {|cluster| {:name => cluster, :proposals => clustered_proposals[cluster] } }.select {|c| c[:proposals]}
+    clusters = ordered_clusters.map {|cluster| 
+      { 
+        :name => cluster, 
+        :proposals => clustered_proposals[cluster] } 
+      }.select {|c| c[:proposals]}
+
     proposals = {
       key: '/proposals',
       clusters: clusters
@@ -122,6 +127,43 @@ class Proposal < ActiveRecord::Base
 
   end
 
+  def full_data
+
+    if self.subdomain.moderate_points_mode == 1
+      moderation_status_check = 'moderation_status=1'
+    else 
+      moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+    end
+
+    pointz = self.points.where("(published=1 AND #{moderation_status_check}) OR user_id=#{current_user.id}")
+    pointz = pointz.public_fields.map {|p| p.as_json}
+
+    published_opinions = self.opinions.published
+    ops = published_opinions.public_fields.map {|x| x.as_json}
+
+    if published_opinions.where(:user_id => nil).count > 0
+      throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
+    end
+
+    data = { 
+      your_opinions: current_user.opinions.map {|o| o.as_json},
+      key: "/page/#{self.slug}",
+      proposal: self.as_json,
+      points: pointz,
+      opinions: ops
+    }
+
+    if self.subdomain.assessment_enabled
+      data.update({
+        :assessments => self.assessments.completed,
+        :claims => self.assessments.completed.map {|a| a.claims}.compact.flatten,
+        :verdicts => Assessable::Verdict.all
+      })
+    end
+
+    data
+
+  end
 
   def as_json(options={})
     options[:only] ||= Proposal.my_public_fields

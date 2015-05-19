@@ -63,7 +63,7 @@ window.Notifications = ReactiveComponent
             DIV
               style: 
                 fontSize: 18
-              "summarizing new activity at #{subdomain.app_title or subdomain.name}"
+              "summarizing new activity at #{subdomain.title}"
 
 
       if prefs['send_emails']

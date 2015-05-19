@@ -1,4 +1,7 @@
 
+require './watch_star'
+
+
 # Toggle homepage filter to watched proposals
 document.addEventListener "keypress", (e) -> 
   key = (e and e.keyCode) or e.keyCode
@@ -67,7 +70,10 @@ window.Notifications = ReactiveComponent
 
 
       if prefs['send_emails']
-        @drawEmailSettings()
+        [@drawEmailSettings()
+
+        @drawWatched()]
+
 
 
   drawEmailSettings : () -> 
@@ -154,6 +160,79 @@ window.Notifications = ReactiveComponent
                   marginLeft: 15
 
                 config.ui_label
+
+  drawWatched: ->
+    current_user = fetch('/current_user')
+    unsubscribed = {}
+
+    for k,v of current_user.subscriptions
+      # we only match proposals for now 
+      if v == 'watched' && k.match(/\/proposal\//)
+        unsubscribed[k] = v
+
+    if _.keys(unsubscribed).length > 0
+
+      DIV 
+        style: 
+          padding: '20px 0'
+          marginLeft: 63
+
+        DIV
+          style: 
+            position: 'relative'
+            paddingBottom: 10
+          'The proposals you are watching for new activity:'
+
+        DIV
+          style: 
+            width: 550
+            display: 'inline-block'
+
+          UL
+            style: 
+              position: 'relative'
+              paddingLeft: 37
+
+            for k,v of unsubscribed
+              do (k) => 
+                obj = fetch(k)
+
+                LI 
+                  style: 
+                    listStyle: 'none'
+                    padding: '5px 0'
+                    position: 'relative'
+
+                  WatchStar
+                    proposal: obj
+                    icon: 'fa-bell-slash'
+                    watch_color: "#777"
+                    label: (watching) -> 
+                      "Unwatch this proposal"
+                    style: 
+                      position: 'absolute'
+                      left: -35
+                      top: 8
+                  A 
+                    href: "/#{obj.slug}"
+                    style: 
+                      textDecoration: 'underline'
+
+                    obj.name 
+
+                  # A 
+                  #   style: 
+                  #     cursor: 'pointer'
+                  #     display: 'inline-block'
+                  #     marginLeft: 10
+                  #     fontSize: 14
+                  #   onClick: => 
+                  #     delete current_user.subscriptions[k]
+                  #     save current_user
+
+                  #   'stop watching'   
+
+
 
 
 

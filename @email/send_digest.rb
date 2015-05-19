@@ -1,12 +1,8 @@
 # wait at least 2 min before sending any notification
 BUFFER = 2 * 60 
 
-def send_digest(user, digest_object, notifications, subscription_settings, deliver = true)
-  digest = digest_object.class.name.downcase
+def send_digest(subdomain, user, notifications, subscription_settings, deliver = true)
   
-  subdomain = digest == 'subdomain' ? digest_object : digest_object.subdomain
-  key = "/#{digest}/#{digest_object.id}"
-
   send_emails = subscription_settings['send_emails']
   return if !send_emails
 
@@ -15,7 +11,7 @@ def send_digest(user, digest_object, notifications, subscription_settings, deliv
   # sent them a similar digest email.
   can_send = true
 
-  last_digest_sent_at = user.emails_received[key]
+  last_digest_sent_at = user.emails_received["/subdomain/#{subdomain.id}"]
   if last_digest_sent_at
     sec_since_last = Time.now() - Time.parse(last_digest_sent_at)
     interval = email_me_no_more_than send_emails

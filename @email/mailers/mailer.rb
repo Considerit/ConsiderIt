@@ -18,7 +18,12 @@ private
   end
 
   def subject_line(subject, subdomain)
-    title = subdomain.app_title || subdomain.name
+    title = subdomain.title
+
+    if !title || title == ''
+      raise "huh?? #{subdomain.id} #{subdomain.name}"
+    end
+
     "[#{title}] #{subject}"
   end
 

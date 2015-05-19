@@ -10,8 +10,9 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
   # Respect the user's notification settings. Compare with time since we last
   # sent them a similar digest email.
   can_send = true
+  send_key = "/subdomain/#{subdomain.id}"
 
-  last_digest_sent_at = user.emails_received["/subdomain/#{subdomain.id}"]
+  last_digest_sent_at = user.emails_received[send_key]
   if last_digest_sent_at
     sec_since_last = Time.now() - Time.parse(last_digest_sent_at)
     interval = email_me_no_more_than send_emails
@@ -76,7 +77,7 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
         end
       end
 
-      user.sent_email_about(key)
+      user.sent_email_about(send_key)
 
     end
 

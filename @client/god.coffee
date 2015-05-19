@@ -90,10 +90,6 @@ window.GodMode = ReactiveComponent
                 fetch(user).name
 
 
-
-
-
-
   componentDidMount : ->
     document.addEventListener "keypress", (e) -> 
       key = (e and e.keyCode) or e.keyCode

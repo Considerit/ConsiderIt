@@ -63,7 +63,7 @@ window.Notifications = ReactiveComponent
             DIV
               style: 
                 fontSize: 18
-              "summarizing new activity at #{subdomain.title}"
+              "summarizing relevant new activity for you at #{subdomain.app_title || subdomain.name}"
 
 
       if prefs['send_emails']
@@ -84,7 +84,7 @@ window.Notifications = ReactiveComponent
           marginRight: 10
           display: 'inline-block'
 
-        'At most'
+        'Send summaries at most'
 
 
       SELECT 
@@ -150,7 +150,7 @@ window.Notifications = ReactiveComponent
                 style: 
                   display: 'inline-block'
                   verticalAlign: 'top'
-                  width: 400
+                  width: 450
                   marginLeft: 15
 
                 config.ui_label

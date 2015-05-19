@@ -2746,7 +2746,7 @@ Homepage = ReactiveComponent
     doc = fetch('document')
     subdomain = fetch('subdomain')
 
-    title = subdomain.title
+    title = subdomain.app_title || subdomain.name
     if doc.title != title
       doc.title = title
       save doc

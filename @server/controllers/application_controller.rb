@@ -221,7 +221,7 @@ protected
         response.append clean
 
       elsif key == '/page/dashboard/email_notifications'
-        response.append({:follows => current_user.notifications, :key => key})
+        response.append({:key => key})
 
       elsif key == '/page/dashboard/moderate'
         response.append Moderation.all_for_subdomain
@@ -237,37 +237,7 @@ protected
         slug = key[6..key.length]
         proposal = Proposal.find_by_slug slug
 
-        if current_subdomain.moderate_points_mode == 1
-          moderation_status_check = 'moderation_status=1'
-        else 
-          moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
-        end
-
-        pointz = proposal.points.where("(published=1 AND #{moderation_status_check}) OR user_id=#{current_user.id}")
-        pointz = pointz.public_fields.map {|p| p.as_json}
-
-        published_opinions = proposal.opinions.published
-        ops = published_opinions.public_fields.map {|x| x.as_json}
-
-        if published_opinions.where(:user_id => nil).count > 0
-          throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
-        end
-
-        clean = { 
-          your_opinions: current_user.opinions.map {|o| o.as_json},
-          key: key,
-          proposal: proposal.as_json,
-          points: pointz,
-          opinions: ops
-        }
-
-        if current_subdomain.assessment_enabled
-          clean.update({
-            :assessments => proposal.assessments.completed,
-            :claims => proposal.assessments.completed.map {|a| a.claims}.compact.flatten,
-            :verdicts => Assessable::Verdict.all
-          })
-        end
+        clean = proposal.full_data
 
         response.append clean
       elsif key.match '/assessment/'
@@ -353,11 +323,7 @@ protected
 
         # unsubscribe from this object if that's what they want to do...
         if params.has_key?('unsubscribe_key')
-          sub_settings = current_user.subscription_settings(current_subdomain)
-          key = params['unsubscribe_key']
-          sub_settings[key] = 'unsubscribed'
-          current_user.subscriptions = current_user.update_subscriptions(sub_settings)
-          current_user.save
+          current_user.update_subscription_key(params['unsubscribe_key'], 'unsubscribed', :force => true)
         end
 
       end

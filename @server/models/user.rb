@@ -51,10 +51,6 @@ class User < ActiveRecord::Base
   # This will output the data for this user _as if this user is currently logged in_
   # So make sure to only send this data to the client if the client is authorized. 
   def current_user_hash(form_authenticity_token)
-    notes = Notifier.aggregate(filter: {:user_id => self.id, subdomain_id: current_subdomain.id})[current_subdomain.id]
-    if notes
-      notes = notes[self.id]
-    end
 
     data = {
       id: id, #leave the id in for now for backwards compatability with Dash
@@ -76,8 +72,7 @@ class User < ActiveRecord::Base
       is_evaluator: permit('factcheck content', nil) > 0,
       trying_to: nil,
       subscriptions: subscription_settings(current_subdomain),
-      all_notifications: notifications.order('created_at desc'),
-      notifications: notes,      
+      notifications: notifications.order('created_at desc'),
       verified: verified,
       needs_to_set_password: registered && !name #happens for users that were created via email invitation
     }
@@ -176,94 +171,50 @@ class User < ActiveRecord::Base
   end
 
 
-  ####
-  # subscription_settings
-  #
-  # Which channels this user subscribes. e.g. comments on points I've written.
-  # Outputs a hash with the following levels: 
-  #   - subdomain_id
-  #     - digest
-  #      - digest relation
-  #        . default
-  #        . description
-  #        . ui_label
-  #        - events
-  #          - event_type
-  #            . true or false
-  #
-  # If you pass a subdomain, it will just return the settings for that subdomain
-  #
-  def subscription_settings(constrain_to_subdomain = nil)
+  # Notification preferences. 
+  def subscription_settings(subdomain)
 
-    my_subs = JSON.parse(subscriptions || "{}")
-    notifier_config = Notifier::subscription_config
+    notifier_config = Notifier::config
+    my_subs = JSON.parse(subscriptions || "{}")[subdomain.id.to_s] || {}
 
-    if constrain_to_subdomain 
-      subdomains = [constrain_to_subdomain.id.to_s]
-    else
-      subdomains = JSON.load(self.active_in || '[]')
-      subdomains.push current_subdomain.id.to_s if current_subdomain
-      subdomains.uniq!
-    end
-
-    # Make sure the default subscription settings defined in Notifier
-    # are present for this user.     
-    for subdomain_id in subdomains
-      subdomain = Subdomain.find_by id: subdomain_id
-      next if !subdomain
-
-      my_subs[subdomain_id] ||= {}
-
-      for digest, digest_config in notifier_config[:subscription_digests]
-        my_subs[subdomain_id][digest] ||= {}
-        my_digest_config = my_subs[subdomain_id][digest] 
-        
-        for digest_relation, relation_config in digest_config['digest_relations']
-          
-          if !relation_config['allowed'] || relation_config['allowed'].call(self, subdomain)
-            my_digest_config[digest_relation] ||= {}
-            my_relation_config = my_digest_config[digest_relation]
-
-            my_relation_config['ui_label'] = relation_config['ui_label']
-            my_relation_config['default_subscription'] = relation_config['default_subscription']
-            my_relation_config['subscription'] ||= relation_config['default_subscription']
-          
-            my_relation_config['events'] ||= {}
-            for event, event_config in digest_config['events']
-              my_relation_config['events'][event] ||= {}
-              my_event_config = my_relation_config['events'][event]
-              for event_relation, event_relation_config in event_config
-                default_trigger = event_relation_config['email_trigger_default'].call(digest_relation)
-                if default_trigger != nil
-                  my_event_config[event_relation] ||= {}
-                  my_event_relation_config = my_event_config[event_relation]
-                  my_event_relation_config['default_email_trigger'] = default_trigger
-                  if !my_event_relation_config.key?('email_trigger')
-                    my_event_relation_config['email_trigger'] = default_trigger
-                  end
-                  my_event_relation_config['ui_label'] = event_relation_config['ui_label']
-                end
-              end
-            end
-          end
-        end
+    for event, config in notifier_config
+      if config.key? 'allowed'
+        next if !config['allowed'].call(self, subdomain)
       end
+      
+      if my_subs.key?(event)
+        my_subs[event].merge! config
+      else 
+        my_subs[event] = config
+      end
+
+      if !my_subs[event].key?('email_trigger')
+        my_subs[event]['email_trigger'] = my_subs[event]['email_trigger_default']
+      end
+
     end
 
-
-    if constrain_to_subdomain
-      my_subs = my_subs[constrain_to_subdomain.id.to_s]
+    my_subs['default_subscription'] = Notifier.default_subscription
+    if !my_subs.key?('send_emails')
+      my_subs['send_emails'] = my_subs['default_subscription']
     end
-
-    my_subs['subscription_options'] = notifier_config[:subscription_options]
 
     my_subs
+  end
+
+  def update_subscription_key(key, value, hash={})
+    sub_settings = subscription_settings(current_subdomain)
+    return if !hash[:force] && sub_settings.key?(key)
+
+    sub_settings[key] = value
+    self.subscriptions = update_subscriptions(sub_settings)
+    save
   end
 
   def update_subscriptions(new_settings, subdomain = nil)
     subdomain ||= current_subdomain
 
-    subs = self.subscription_settings
+    subs = JSON.parse(subscriptions || "{}")
     subs[subdomain.id.to_s] = new_settings
 
     # Strip out unnecessary items that we can reconstruct from the 
@@ -282,8 +233,10 @@ class User < ActiveRecord::Base
         v.delete_if(&clean) # recurse if v is a hash
       end
 
+      # 'proposal' and 'subdomain' in the list below is temporary for some migrations...
+      # feel free to remove junish
       v.respond_to?(:key) && v.keys().length == 0 || \
-      ['subscription_options', 'ui_label', \
+      ['proposal', 'subdomain', 'subscription_options', 'ui_label', \
        'default_subscription', 'default_email_trigger'].include?(k)
 
     end
@@ -292,38 +245,6 @@ class User < ActiveRecord::Base
 
     JSON.dump subs
   end
-
-  # get all the items this user gets notifications for
-  # TODO: update for new system!
-  # def notifications
-
-  #   followable_objects = {
-  #     'Proposal' => {},
-  #     'Point' => {}
-  #   }
-
-  #   for followable_type in followable_objects.keys
-
-  #     if followable_type == 'Point'
-  #       following = self.inclusions.map {|i| "/point/#{i.point_id}"} + \
-  #                self.comments.map {|c| "/point/#{c.point_id}" } 
-  #     elsif followable_type == 'Proposal'
-  #       following = self.opinions.published.map {|o| "/proposal/#{o.proposal_id}"}
-  #     end
-
-  #     following += self.follows.where(:follow => true, :followable_type => followable_type, :subdomain_id => current_subdomain.id).map {|f| "/#{f.followable_type.downcase}/#{f.followable_id}" }
-
-  #     followable_objects[followable_type] = following.uniq.compact #remove dupes and nils
-
-  #     # remove objs that have been explicitly unfollowed already
-  #     self.follows.where(:follow => false, :followable_type => followable_type).each do |f|
-  #       followable_objects[f.followable_type].delete("/#{f.followable_type.downcase}/#{f.followable_id}")
-  #     end
-
-  #   end
-
-  #   followable_objects
-  # end
 
   def avatar_url_provided?
     !self.avatar_url.blank?

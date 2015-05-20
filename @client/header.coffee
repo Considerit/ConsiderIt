@@ -1,3 +1,6 @@
+require './profile_menu'
+
+
 window.DefaultHeader = ReactiveComponent
   displayName: 'DefaultHeader'
 

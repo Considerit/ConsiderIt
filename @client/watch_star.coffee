@@ -1,3 +1,6 @@
+require './tooltip'
+
+
 window.WatchStar = ReactiveComponent
   displayName: 'WatchStar'
 
@@ -10,7 +13,7 @@ window.WatchStar = ReactiveComponent
 
     label = @props.label || (watching) -> 
       if watching     
-        "You are watching this proposal" 
+        "Stop watching this proposal" 
       else 
         "Watch this proposal"
 
@@ -25,13 +28,22 @@ window.WatchStar = ReactiveComponent
 
     I 
       className: "fa #{if watching then icon else "#{icon}-o"}"
-      title:  label(watching)
       style: _.extend {}, style, (@props.style || {})
 
       onMouseEnter: => 
         @local.hover_watch = proposal.key; save @local
+
+        tooltip = fetch 'tooltip'
+        tooltip.coords = $(@getDOMNode()).offset()
+        tooltip.tip = label(watching)
+        save tooltip
+
       onMouseLeave: => 
         @local.hover_watch = null; save @local
+        tooltip = fetch 'tooltip'
+        tooltip.coords = null
+        save tooltip
+
       onClick: => 
         if !current_user.subscriptions[proposal.key]
           current_user.subscriptions[proposal.key] = 'watched'

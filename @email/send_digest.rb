@@ -19,16 +19,8 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
     can_send = sec_since_last >= interval
   end
 
-  if user.id == 1701 && !can_send
-    pp "CANT SEND BECAUSE #{last_digest_sent_at} < #{email_me_no_more_than send_emails}"
-  end
-
   return if !can_send
   #####
-
-  if user.id == 1701
-    pp subscription_settings
-  end
 
   ####
   # Check notifications to determine if a valid triggering event occurred
@@ -53,10 +45,6 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
             raise "missing event prefs for #{key}"
           end
 
-          if user.id == 1701
-            pp "#{key} #{subscription_settings[key]} #{subscription_settings[key]['email_trigger']}"
-          end
-          
           if subscription_settings[key] && subscription_settings[key]['email_trigger']
 
             do_send = !notification.read_at && \
@@ -67,10 +55,6 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
         end
       end
     end
-  end
-
-  if user.id == 1701 && !do_send
-    pp "NAH, wont send because no triggering events"
   end
 
 

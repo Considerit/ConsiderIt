@@ -263,7 +263,7 @@ window.SimpleHomepage = ReactiveComponent
                         width: first_column.width - 50 + (if icons then -18 else 0)
                         marginTop: if icons then 0 #9
                       A
-                        className: 'proposal'
+                        className: 'proposal proposal_homepage_name'
                         style: if not icons then {borderBottom: '1px solid grey'}
                         href: proposal_url(proposal)
                         proposal.name
@@ -280,6 +280,15 @@ window.SimpleHomepage = ReactiveComponent
                         height: 50
                         enable_selection: false
                         draw_base: true
+
+
+  typeset : -> 
+    subdomain = fetch('/subdomain')
+    if subdomain.name == 'RANDOM2015' && $('.proposal_homepage_name').find('.MathJax').length == 0
+      MathJax.Hub.Typeset '.proposal_homepage_name', -> console.log "typeset"
+
+  componentDidUpdate : -> 
+    @typeset()
 
 
 
@@ -740,11 +749,26 @@ window.SimpleProposalHeading = ReactiveComponent
 
       # Proposal name
       DIV
+        id: 'proposal_name'
         style:
           lineHeight: 1.2
           fontWeight: 700
           fontSize: heading_fontsize
-        @proposal.name
+
+        dangerouslySetInnerHTML:{__html: @proposal.name}
+
+        
+
+
+  componentDidUpdate : -> @typeset()
+  componentDidMount : -> @typeset()
+
+  typeset : -> 
+    subdomain = fetch('/subdomain')
+    if subdomain.name == 'RANDOM2015' && $('#proposal_name').find('.MathJax').length == 0
+      MathJax.Hub.Typeset '#proposal_name', -> console.log "typeset"
+
+
 
 
 ####

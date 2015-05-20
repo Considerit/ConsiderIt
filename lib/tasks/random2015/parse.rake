@@ -53,14 +53,14 @@ def import_into_considerit(papers)
         slug: paper['url'],
         user_id: user.id,
         published: true,
-        cluster: 'Under Review'
+        cluster: 'Under Review',
+        name: paper['topic']
       )
       is_new = true
     end
 
     fields = paper['description_fields']
 
-    proposal.name = paper['topic']
     #proposal.description = paper['description']
     proposal.description_fields = JSON.dump(fields)
 

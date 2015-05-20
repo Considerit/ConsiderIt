@@ -95,7 +95,7 @@ window.proposal_url = (proposal) =>
   result = '/' + proposal.slug
   subdomain = fetch('/subdomain')  
 
-  if (!customization('show_crafting_page_first') || !proposal.active ) \
+  if (!customization('show_crafting_page_first', proposal) || !proposal.active ) \
      && proposal.top_point
 
     result += '?results=true'
@@ -138,20 +138,12 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
 
 
 window.opinionsForProposal = (proposal) ->       
-  options = customization("cluster_options.#{proposal.cluster}") || {}
-  filter_func = options.homie_histo_filter
+  filter_func = customization("homie_histo_filter", proposal)
   opinions = fetch('/page/' + proposal.slug).opinions || []
   # We'll only pass SOME opinions to the histogram
   opinions = (opinion for opinion in opinions when \
                !filter_func or filter_func(fetch(opinion.user)))
   opinions
-
-window.proposal_editor = (proposal) ->
-  editors = (e for e in proposal.roles.editor when e != '*')
-  editor = editors.length > 0 and editors[0]
-
-  return editor != '-' and editor
-
 
 #####################
 # These are some of the major components and their relationships 
@@ -185,13 +177,12 @@ Proposal = ReactiveComponent
     if doc.title != @proposal.name
       doc.title = @proposal.name
       save doc
-    
-    options = customization("cluster_options.#{@proposal.cluster}") || {}
 
     your_opinion = fetch @proposal.your_opinion
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
-    @max_description_height = options.collapse_descriptions_at
+
+    @max_description_height = customization('collapse_descriptions_at', @proposal)
 
     has_focus = \
       if get_selected_point()
@@ -245,19 +236,20 @@ Proposal = ReactiveComponent
       catch
         @local.description_fields = null
     
-    proposal_header = (customization('ProposalHeader'))()
+    proposal_header = (customization('ProposalHeader', @proposal))()
 
     newpoint_threshold = @buildNewPointThreshold()
     draw_handle = (can_opine not in [Permission.DISABLED, \
                           Permission.INSUFFICIENT_PRIVILEGES]) || \
                           your_opinion.published
 
-    other_heading = customization "point_labels.#{if mode == 'results' then 'top' else "other"}_header"
+    area = if mode == 'results' then 'top' else "other"
+    other_heading = customization "point_labels.#{area}_header", @proposal
 
     DIV key:@props.slug,
 
       DIV className: 'proposal_header',
-        if customization('docking_proposal_header')
+        if customization('docking_proposal_header', @proposal)
           Dock
             dock_on_zoomed_screens: false
             skip_jut: true
@@ -470,18 +462,20 @@ Proposal = ReactiveComponent
               mode == 'crafting'
             dummy: if @proposal.has_focus != 'opinion' && mode == 'crafting' then 1 else 0
 
-            OpinionSlider
-              key: namespaced_key('slider', @proposal)
-              width: OPINION_SLIDER_WIDTH
-              your_opinion: @proposal.your_opinion
-              focused: mode == 'crafting'
-              backgrounded: @proposal.has_focus != 'opinion' && mode == 'crafting'
-              permitted: draw_handle
-              pole_labels: [ \
-                [customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose"),
-                 customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.oppose_sub")], \
-                [customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.support"),
-                 customization("slider_pole_labels.#{if mode == 'crafting' then 'individual' else 'group'}.support_sub")]]
+            do => 
+              plurality = if mode == 'crafting' then 'individual' else 'group'
+              OpinionSlider
+                key: namespaced_key('slider', @proposal)
+                width: OPINION_SLIDER_WIDTH
+                your_opinion: @proposal.your_opinion
+                focused: mode == 'crafting'
+                backgrounded: @proposal.has_focus != 'opinion' && mode == 'crafting'
+                permitted: draw_handle
+                pole_labels: [ \
+                  [customization("slider_pole_labels.#{plurality}.oppose", @proposal),
+                   customization("slider_pole_labels.#{plurality}.oppose_sub", @proposal)], \
+                  [customization("slider_pole_labels.#{plurality}.support", @proposal),
+                   customization("slider_pole_labels.#{plurality}.support_sub", @proposal)]]
 
 
         #reasons
@@ -502,8 +496,8 @@ Proposal = ReactiveComponent
           CommunityPoints 
             key: 'cons'
             heading: other_heading
-                        .replace('--valences--', capitalize(customization('point_labels.cons')))
-                        .replace('--valence--', capitalize(customization('point_labels.con')))            
+                        .replace('--valences--', capitalize(customization('point_labels.cons', @proposal)))
+                        .replace('--valence--', capitalize(customization('point_labels.con', @proposal)))            
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \
@@ -537,8 +531,8 @@ Proposal = ReactiveComponent
           CommunityPoints 
             key: 'pros'
             heading: other_heading
-                        .replace('--valences--', capitalize(customization('point_labels.pros')))
-                        .replace('--valence--',  capitalize(customization('point_labels.pro')))            
+                        .replace('--valences--', capitalize(customization('point_labels.pros', @proposal)))
+                        .replace('--valence--',  capitalize(customization('point_labels.pro', @proposal)))            
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             points: buildPointsList \
@@ -549,8 +543,8 @@ Proposal = ReactiveComponent
 
       if mode == 'results' && 
           your_opinion.published && 
-          customization('ThanksForYourOpinion')
-        customization('ThanksForYourOpinion')()
+          customization('ThanksForYourOpinion', @proposal)
+        customization('ThanksForYourOpinion', @proposal)()
 
   componentDidUpdate : ->
     $el = $(@getDOMNode())
@@ -1114,9 +1108,9 @@ YourPoints = ReactiveComponent
       fontWeight: 700
       color: if @proposal.has_focus != 'opinion' then "#eee" else focus_blue
 
-    heading = customization("point_labels.your_header")
-                .replace('--valences--', capitalize(customization("point_labels.#{@props.valence}")))
-                .replace('--valence--', capitalize(customization("point_labels.#{@props.valence}")))
+    heading = customization("point_labels.your_header", @proposal)
+                .replace('--valences--', capitalize(customization("point_labels.#{@props.valence}", @proposal)))
+                .replace('--valence--', capitalize(customization("point_labels.#{@props.valence}", @proposal)))
 
     # drop target defs
     dt_stroke_width = 1
@@ -1246,9 +1240,9 @@ YourPoints = ReactiveComponent
           "Drag a "
           capitalize \
             if @props.valence == 'pros' 
-              customization('point_labels.pro')
+              customization('point_labels.pro', @proposal)
             else 
-              customization('point_labels.con')
+              customization('point_labels.con', @proposal)
 
           " from the #{left_or_right}"
 
@@ -1297,9 +1291,9 @@ YourPoints = ReactiveComponent
                 "Write a new "
                 capitalize \
                   if @props.valence == 'pros' 
-                    customization('point_labels.pro')
+                    customization('point_labels.pro', @proposal)
                   else 
-                    customization('point_labels.con')
+                    customization('point_labels.con', @proposal)
         else
           EditPoint
             key: "new_point_#{@props.valence}"
@@ -1436,7 +1430,7 @@ CommunityPoints = ReactiveComponent
               fontWeight: if browser.high_density_display then '300' else '400'
 
             "No " + \
-            customization('point_labels.' + @props.key ) + \
+            customization('point_labels.' + @props.key, @proposal ) + \
             " given"
 
 
@@ -2482,9 +2476,9 @@ EditPoint = ReactiveComponent
           "New "
           capitalize \
             if @props.valence == 'pros' 
-              customization('point_labels.pro')
+              customization('point_labels.pro', @proposal)
             else 
-              customization('point_labels.con')
+              customization('point_labels.con', @proposal)
           " Point"
 
 
@@ -2548,9 +2542,9 @@ EditPoint = ReactiveComponent
               "Write a single "
               capitalize \
                 if @props.valence == 'pros' 
-                  customization('point_labels.pro')
+                  customization('point_labels.pro', @proposal)
                 else 
-                  customization('point_labels.con')
+                  customization('point_labels.con', @proposal)
               '(or question) for this proposal'
 
             UL 

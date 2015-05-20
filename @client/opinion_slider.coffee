@@ -58,11 +58,17 @@ window.OpinionSlider = ReactiveComponent
         width: @props.width
         handle_height: SLIDER_HANDLE_SIZE
         base_height: 6
-        base_color: if @props.focused then 'rgb(175, 215, 255)' else 'rgb(200, 200, 200)'
+        base_color: if @props.focused 
+                      'rgb(175, 215, 255)' 
+                    else 
+                      'rgb(200, 200, 200)'
         base_endpoint: if slider.docked then 'square' else 'sharp'
         polarized: true
         draw_helpers: @props.focused && !slider.has_moved
-        handle: if @props.backgrounded then slider_handle.flat else customization('slider_handle')
+        handle: if @props.backgrounded 
+                  slider_handle.flat 
+                else 
+                  customization('slider_handle', @proposal)
         handle_props: 
           color: if @props.backgrounded then '#ccc' else focus_blue
           detail: @props.focused
@@ -123,7 +129,7 @@ window.OpinionSlider = ReactiveComponent
     slider_feedback = 
       if !slider.has_moved 
         'Slide Your Overall Opinion' 
-      else if !customization('show_slider_feedback')
+      else if !customization('show_slider_feedback', @proposal)
         ""
       else if isNeutralOpinion slider.value
         "You are Undecided"
@@ -137,7 +143,8 @@ window.OpinionSlider = ReactiveComponent
                                 "Slightly " 
 
         valence = customization "slider_pole_labels.individual." + \
-                                if slider.value > 0 then 'support' else 'oppose'
+                                (if slider.value > 0 then 'support' else 'oppose'), \
+                                @proposal
 
         "You #{strength_of_opinion} #{valence}"
 

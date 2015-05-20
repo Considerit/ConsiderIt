@@ -285,7 +285,7 @@ customizations['sosh'] =
 # schools
 customizations['schools'] = 
   homie_histo_title: "Students' opinions"
-  point_labels : challenge_justify
+  #point_labels : challenge_justify
   slider_pole_labels : agree_disagree
 
 #################

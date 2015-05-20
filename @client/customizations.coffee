@@ -405,7 +405,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
           position: 'relative'
           borderBottom: "2px solid #{ecast_highlight_color}"
           padding: "10px 0"
-          backgroundImage: "url(#{asset('ecast/bg.png')})"
+          backgroundImage: "url(#{asset('ecast/bg-small.png')})"
           height: 98
 
         A 
@@ -418,7 +418,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
               left: 50
               top: 10
 
-            src: asset('ecast/ecast.png')
+            src: asset('ecast/ecast-small.png')
 
         A 
           style: 

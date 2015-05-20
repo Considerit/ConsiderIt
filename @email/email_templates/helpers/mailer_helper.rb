@@ -57,8 +57,6 @@ module MailerHelper
       if idx < named - 1 && named != 2
         str += ', '
       end
-
-
     end
 
     if over > 0
@@ -72,12 +70,29 @@ module MailerHelper
     "#B03A44"
   end
 
+  def item_divider
+    if @part == 'text'
+      "\r\n      ----     \r\n"
+    else
+      "<hr style='border: 0; height: 1px; background-color: #ccc; background-image: linear-gradient(to right, rgb(255, 255, 255), rgb(200, 200, 200), rgb(255, 255, 255));' />".html_safe
+    end
+
+  end
+
+  def linebreak
+    if @part == 'text'
+      "\r\n\r\n"
+    else 
+      "<div style='height: 10px'> </div>".html_safe
+    end
+  end
+
   def paragraph(text)
 
     if @part == 'text'
       "\r\n#{text}\r\n"
     else
-      "<p>#{text}</p>".html_safe
+      "<p style='padding: 0px 20px;' >#{text}</p>".html_safe
     end
 
   end
@@ -86,7 +101,15 @@ module MailerHelper
     if @part == 'text'
       "\r\n - #{text}\r\n"
     else 
-      "<div style='margin: 5px 0; padding: 10px 20px; background-color: #fff;'>#{text}</div>".html_safe
+      "<div style='margin: 5px 0; padding: 0px 20px; background-color: #fff;'>#{text}</div>".html_safe
+    end
+  end
+
+  def section_header_major(text)
+    if @part == 'text'
+      "\r\n\r\n#{'='*(text.length*2)}\r\n#{'='*text.length}#{text}#{'='*text.length}\r\n#{'='*(text.length*2)}\r\n\r\n"
+    else 
+      "<div style='font-weight: 600;'>#{text}</div>".html_safe
     end
   end
 

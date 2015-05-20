@@ -2,40 +2,21 @@ require 'mail'
 
 class DigestMailer < Mailer
 
+  def digest(subdomain, user, notifications)
 
-  def proposal(proposal, user, notifications, relation)
-    @notifications = notifications
-    @proposal = proposal
-    @subdomain = proposal.subdomain
-    @user = user
+    @subdomain_notifications = (notifications['Subdomain'] || {})[subdomain.id]
+    @proposal_notifications = notifications['Proposal'] || {}
 
-    @digest_object = proposal
-
-    subject = relation == 'authored' \
-                         ? "New activity on your" \
-                         : "New activity on"
-
-    subject = subject_line "#{subject} \"#{proposal.title(50)}\"", @subdomain
-
-    send_mail from: from_field(@subdomain), to: to_field(user), subject: subject
-  end
-
-  def subdomain(subdomain, user, notifications, relation)
-    @notifications = notifications
     @subdomain = subdomain
     @user = user
 
-    @digest_object = subdomain
-
-    subject = nil
-
-    subject = "New activity"
+    subject = "Summary of recent activity"
 
     subject = subject_line subject, @subdomain
 
     send_mail from: from_field(@subdomain), to: to_field(user), subject: subject
-  end
 
+  end
 
   def send_mail(**message_params) 
     mail message_params do |format|
@@ -52,7 +33,7 @@ class DigestMailer < Mailer
 
   def from_field(subdomain)
     format_email default_sender(subdomain), \
-                (subdomain.app_title or subdomain.name)
+                (subdomain.title)
   end
 
 end

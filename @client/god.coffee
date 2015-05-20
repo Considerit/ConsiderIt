@@ -10,6 +10,10 @@ window.GodMode = ReactiveComponent
 
     users = fetch '/users'
 
+    if !@local.switch_user?
+      @local.switch_user = true
+      save @local
+
     DIV 
       style: 
         position: 'absolute'
@@ -61,7 +65,9 @@ window.GodMode = ReactiveComponent
                 current_user = fetch '/current_user'
                 current_user.trying_to = 'switch_users'
                 current_user.switch_to = user
-                save current_user
+                save current_user, -> 
+                  location.reload()
+
                 @local.switch_user = false
                 save @local
                 godmode.enabled = false
@@ -82,10 +88,6 @@ window.GodMode = ReactiveComponent
                   display: 'inline-block'
 
                 fetch(user).name
-
-
-
-
 
 
   componentDidMount : ->

@@ -319,7 +319,10 @@ Proposal = ReactiveComponent
 
 
           if @local.description_fields
-            DIV style: {marginTop: '1em'},
+            DIV 
+              id: 'description_fields'
+              style: 
+                marginTop: '1em'
               for item in @local.description_fields
                 if item.group
                   @renderDescriptionFieldGroup item
@@ -405,7 +408,7 @@ Proposal = ReactiveComponent
 
 
         # notifications
-        if current_user?.logged_in && current_user.notifications?.proposal?[@proposal.id]          
+        if current_user?.logged_in          
           ActivityFeed()
 
             
@@ -556,6 +559,10 @@ Proposal = ReactiveComponent
     # the height of the decision board (which is absolutely positioned) 
     # is taller than either of the wing point columns
     $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height()} 
+
+    subdomain = fetch('/subdomain')
+    if subdomain.name == 'RANDOM2015' && @local.description_fields && $('#description_fields').find('.MathJax').length == 0
+      MathJax.Hub.Typeset '#description_fields', -> console.log "typeset"
 
 
   componentDidMount : ->
@@ -2578,7 +2585,6 @@ EditPoint = ReactiveComponent
       
       DIV null,
         A 
-          className: 'add_details'
           onClick: =>
             @local.add_details = !@local.add_details
             save(@local)            
@@ -2591,7 +2597,7 @@ EditPoint = ReactiveComponent
                          'fa-caret-right fa'
           SPAN
             style: {paddingLeft: 6}
-            'Add supporting details'
+            'Add more description'
 
         DIV 
           style: 
@@ -2747,7 +2753,7 @@ Homepage = ReactiveComponent
     doc = fetch('document')
     subdomain = fetch('subdomain')
 
-    title = subdomain.app_title or subdomain.name
+    title = subdomain.app_title || subdomain.name
     if doc.title != title
       doc.title = title
       save doc

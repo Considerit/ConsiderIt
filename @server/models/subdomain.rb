@@ -106,7 +106,11 @@ class Subdomain < ActiveRecord::Base
   end
 
   def title 
-    self.app_title || self.name
+    if self.app_title && self.app_title.length > 0
+      self.app_title
+    else 
+      self.name
+    end
   end
 
   def set_roles(new_roles)

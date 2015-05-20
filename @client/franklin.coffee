@@ -1235,7 +1235,7 @@ YourPoints = ReactiveComponent
             position: 'absolute'
             top: '1.4em'
             left: 42
-            width: 180
+            width: 170
 
           "Drag a "
           capitalize \

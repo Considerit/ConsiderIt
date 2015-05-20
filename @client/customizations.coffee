@@ -66,9 +66,6 @@ window.customization = (field, object_or_key) ->
   # global default config
   chain_of_configs.push fetch('customizations/default')
 
-  if field == 'homie_histo_title'
-    console.log chain_of_configs, object_or_key, subdomain.name
-
   for config in chain_of_configs
     value = customization_value(field, config)
     break if value?

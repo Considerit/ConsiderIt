@@ -699,7 +699,7 @@ Auth = ReactiveComponent
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
     if auth.ask_questions
-      questions = customization('auth.user_questions') or []
+      questions = customization('auth.user_questions')
       @local.errors = []
       for question in questions
         if question.required

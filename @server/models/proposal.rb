@@ -74,7 +74,7 @@ class Proposal < ActiveRecord::Base
         
 
         when 'RANDOM2015', 'program-committee-demo'
-          manual_clusters = ['Submissions', 'Under Review',  'Accepted', 'Rejected']
+          manual_clusters = ['Submissions', 'Under Review', 'Probably Accept', 'Accepted', 'Probably Reject', 'Rejected']
 
         when 'allsides'
           manual_clusters = ['Proposals', 'Classroom Discussions', 'Civics']
@@ -112,7 +112,12 @@ class Proposal < ActiveRecord::Base
     else 
       ordered_clusters = manual_clusters
     end
-    clusters = ordered_clusters.map {|cluster| {:name => cluster, :proposals => clustered_proposals[cluster] } }.select {|c| c[:proposals]}
+    clusters = ordered_clusters.map {|cluster| 
+      { 
+        :name => cluster, 
+        :proposals => clustered_proposals[cluster] } 
+      }.select {|c| c[:proposals]}
+
     proposals = {
       key: '/proposals',
       clusters: clusters
@@ -122,6 +127,43 @@ class Proposal < ActiveRecord::Base
 
   end
 
+  def full_data
+
+    if self.subdomain.moderate_points_mode == 1
+      moderation_status_check = 'moderation_status=1'
+    else 
+      moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+    end
+
+    pointz = self.points.where("(published=1 AND #{moderation_status_check}) OR user_id=#{current_user.id}")
+    pointz = pointz.public_fields.map {|p| p.as_json}
+
+    published_opinions = self.opinions.published
+    ops = published_opinions.public_fields.map {|x| x.as_json}
+
+    if published_opinions.where(:user_id => nil).count > 0
+      throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
+    end
+
+    data = { 
+      your_opinions: current_user.opinions.map {|o| o.as_json},
+      key: "/page/#{self.slug}",
+      proposal: self.as_json,
+      points: pointz,
+      opinions: ops
+    }
+
+    if self.subdomain.assessment_enabled
+      data.update({
+        :assessments => self.assessments.completed,
+        :claims => self.assessments.completed.map {|a| a.claims}.compact.flatten,
+        :verdicts => Assessable::Verdict.all
+      })
+    end
+
+    data
+
+  end
 
   def as_json(options={})
     options[:only] ||= Proposal.my_public_fields
@@ -135,8 +177,6 @@ class Proposal < ActiveRecord::Base
 
     make_key(json, 'proposal')
     stubify_field(json, 'user')
-    follows = get_explicit_follow(current_user) 
-    json["is_following"] = follows ? follows.follow : true #default the user to being subscribed 
 
     json['assessment_enabled'] = fact_check_request_enabled?
 
@@ -147,7 +187,21 @@ class Proposal < ActiveRecord::Base
       json['roles'] = self.user_roles(filter = true)
     end
 
+    json['notifications'] = Notifier.filter_unmoderated(notifications)
+
     json
+  end
+
+  def notifications
+    current_user.notifications
+      .where(
+        digest_object_type: 'Proposal', 
+        digest_object_id: self.id)
+      .order('created_at DESC')
+  end
+
+  def key
+    "/proposal/#{id}"
   end
 
   # Returns a hash of all the roles. Each role is expressed

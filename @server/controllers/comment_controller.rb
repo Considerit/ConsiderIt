@@ -54,8 +54,11 @@ class CommentController < ApplicationController
         #            moderated first...
         point.comment_count = point.comments.count
         point.save
-        dirty_key "/point/#{point.id}"
+        dirty_key "/point/#{point.id}"  
 
+        current_user.update_subscription_key(point.proposal.key, 'watched', :force => false)
+        dirty_key "/current_user"
+        
       else 
         result = {errors: ['could not save comment']}
       end

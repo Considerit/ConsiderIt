@@ -42,7 +42,9 @@
         %script{:type => "text/javascript"}
           window.location = "http://windows.microsoft.com/en-us/internet-explorer/download-ie";
 
-
+      - if current_subdomain.name == 'RANDOM2015'
+        %script{type: "text/javascript", src:"//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"}
+        
     %body
 
       #content.content{ subdomain: current_subdomain.name }
@@ -104,3 +106,4 @@
             :javascript
               ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
               ga('customer.send', 'pageview');
+

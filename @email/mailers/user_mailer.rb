@@ -9,7 +9,7 @@ class UserMailer < Mailer
     @subdomain = subdomain
 
     to = format_email @user.email, @user.name
-    from = format_email(default_sender(subdomain), (subdomain.app_title or subdomain.name))
+    from = format_email(default_sender(subdomain), (subdomain.title))
     mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
   end
 
@@ -21,7 +21,7 @@ class UserMailer < Mailer
 
     puts "And the token is ", @token
     to = format_email @user.email, @user.name
-    from = format_email(default_sender(subdomain), (subdomain.app_title or subdomain.name))
+    from = format_email(default_sender(subdomain), (subdomain.title))
     mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
   end
 

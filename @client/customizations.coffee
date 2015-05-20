@@ -168,7 +168,7 @@ customizations.default =
   # default cluster options
   # TODO: put them in their own object
   homie_histo_title: 'Opinions'
-  manual_clusters: false
+  cluster_order: ['*']
   archived: false
   closed: false
   label: false
@@ -189,43 +189,77 @@ customizations.default =
 
 
 
+
+#####
+# common options
+
+
+# pro/con labels
+strengths_weaknesses = 
+  pro: 'strength'
+  pros: 'strengths' 
+  con: 'weakness'
+  cons: 'weaknesses'
+  your_header: "--valences-- you observe" 
+  other_header: "--valences-- observed" 
+  top_header: "Foremost --valences--" 
+
+# slider poles
+yes_no = 
+  individual: 
+    support: 'Yes'
+    oppose: 'No'
+  group: 
+    support: 'Yes'
+    oppose: 'No'
+
+ready_not_ready = 
+  individual: 
+    support: 'Ready'
+    oppose: 'Not ready'
+  group: 
+    support: 'Ready'
+    oppose: 'Not ready'  
+
+agree_disagree = 
+  individual: 
+    support: 'Agree'
+    oppose: 'Disagree'
+  group: 
+    support: 'Agree'
+    oppose: 'Disagree'  
+
+# application options
+conference_config = 
+  slider_pole_labels :
+    individual: 
+      support: 'Accept'
+      oppose: 'Reject'
+    group: 
+      support: 'Accept'
+      oppose: 'Reject'
+
+  homie_histo_title: "PC's ratings"
+
+
 ##########################
 # SUBDOMAIN CONFIGURATIONS
 
 ################
 # sosh
 customizations['sosh'] = 
-  point_labels : 
-    pro: 'strength'
-    pros: 'strengths' 
-    con: 'weakness'
-    cons: 'weaknesses'
-    your_header: "--valences-- you observe" 
-    other_header: "--valences-- observed" 
-    top_header: "Foremost --valences--" 
-
-  slider_pole_labels :
-    individual: 
-      support: 'Yes'
-      oppose: 'No'
-    group: 
-      support: 'Yes'
-      oppose: 'No'
-
+  point_labels : strengths_weaknesses
+  slider_pole_labels : yes_no
 
 ################
 # schools
 customizations['schools'] = 
-
   homie_histo_title: "Students' opinions"
-
 
 #################
 # allsides
 
 customizations['allsides'] = 
-
-
   'cluster/Classroom Discussions':
     homie_histo_title: "Students' opinions"
   'cluster/Civics':
@@ -244,41 +278,16 @@ customizations['allsides'] =
 
 customizations['humanities-los'] = 
 
-  point_labels : 
-    pro: 'strength'
-    pros: 'strengths' 
-    con: 'weakness'
-    cons: 'weaknesses'
-    your_header: "--valences-- you observe" 
-    other_header: "--valences-- observed" 
-    top_header: "Foremost --valences--" 
-
+  point_labels : strengths_weaknesses
   show_slider_feedback: false
 
-  slider_pole_labels :
-    individual: 
-      support: 'Ready'
-      oppose: 'Not ready'
-    group: 
-      support: 'Ready'
-      oppose: 'Not ready'
+  slider_pole_labels : ready_not_ready
 
   homie_histo_title: "Students' feedback"
 
 
 #################
 # RANDOM2015
-
-conference_config = 
-  slider_pole_labels :
-    individual: 
-      support: 'Accept'
-      oppose: 'Reject'
-    group: 
-      support: 'Accept'
-      oppose: 'Reject'
-
-  homie_histo_title: "PC's ratings"
 
 customizations['random2015'] = conference_config
 customizations['program-committee-demo'] = conference_config
@@ -296,13 +305,7 @@ customizations.schools =
 customizations.ri = 
   show_crafting_page_first: true
 
-  slider_pole_labels :
-    individual: 
-      support: 'Agree'
-      oppose: 'Disagree'
-    group: 
-      support: 'Agree'
-      oppose: 'Disagree'
+  slider_pole_labels : agree_disagree
 
 #################
 # Enviroissues
@@ -310,13 +313,7 @@ customizations.ri =
 customizations.enviroissues = 
   show_crafting_page_first: true
 
-  slider_pole_labels :
-    individual: 
-      support: 'Agree'
-      oppose: 'Disagree'
-    group: 
-      support: 'Agree'
-      oppose: 'Disagree'
+  slider_pole_labels : agree_disagree
 
 
   HomepageHeader : ReactiveComponent
@@ -344,13 +341,7 @@ ecast_highlight_color =  "#73B3B9"  #"#CB7833"
 customizations.ecastonline = customizations['ecast-demo'] = 
   show_crafting_page_first: true
 
-  slider_pole_labels :
-    individual: 
-      support: 'Agree'
-      oppose: 'Disagree'
-    group: 
-      support: 'Agree'
-      oppose: 'Disagree'
+  slider_pole_labels : agree_disagree
 
   ProposalHeader: ProposalHeaderWithMenu
   docking_proposal_header : true

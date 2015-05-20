@@ -1,4 +1,5 @@
 require './shared'
+require './tooltip'
 
 
 # globally accessible method for getting the URL of a user's avatar

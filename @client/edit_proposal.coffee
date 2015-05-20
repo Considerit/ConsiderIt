@@ -290,11 +290,11 @@ window.EditProposal = ReactiveComponent
               style: input_style
             ]
           else  
-            clusters = customization('cluster_options')
-            if _.keys(clusters).length == 0
-              groups = (p.name for p in fetch('/proposals').clusters)
-            else
-              groups = (p.name for p in fetch('/proposals').clusters when clusters[p.name]? && !clusters[p.name].closed)
+            groups = customization('manual_clusters')
+
+            if !groups
+              groups = (p.name for p in fetch('/proposals').clusters \
+                       when clusters[p.name]? && !clusters[p.name].closed)
 
             [LABEL 
               htmlFor:'cluster'

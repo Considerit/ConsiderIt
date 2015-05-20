@@ -29,9 +29,6 @@ require './watch_star'
 #
 # Two column layout, with proposal name and mini histogram. 
 # Divided into clusters. 
-#
-# Customizations: 
-#   cluster_options
 
 proposal_support = (proposal) ->
   opinions = fetch('/page/' + proposal.slug).opinions
@@ -40,16 +37,23 @@ proposal_support = (proposal) ->
     return null
   sum = 0
   for o in opinions
-    sum += customization("opinion_value")(o)
+    sum += customization("opinion_value", proposal)(o)
   return sum
+
+proposal_editor = (proposal) ->
+  editors = (e for e in proposal.roles.editor when e != '*')
+  editor = editors.length > 0 and editors[0]
+
+  return editor != '-' and editor
 
 
 sorted_proposals = (cluster) ->
-  options = customization("cluster_options['#{cluster.name}']") || {}
+  cluster_key = "cluster/#{cluster.name}"
+  show_icon = customization('show_proposer_icon', cluster_key)
   _.clone(cluster.proposals).sort (a,b) ->
-    x_a = proposal_support(a) + (if options.editor_icons \
+    x_a = proposal_support(a) + (if show_icon \
                                   and proposal_editor(a) then 1 else 0)
-    x_b = proposal_support(b) + (if options.editor_icons \
+    x_b = proposal_support(b) + (if show_icon \
                                   and proposal_editor(b) then 1 else 0)
     return x_b - x_a
 
@@ -75,7 +79,14 @@ window.SimpleHomepage = ReactiveComponent
 
       # List all clusters
       for cluster, index in proposals.clusters or []
-        options = customization("cluster_options['#{cluster.name}']") || {}
+        cluster_key = "cluster/#{cluster.name}"
+
+        options =   
+          archived: customization("archived", cluster_key)
+          label: customization("label", cluster_key)
+          description: customization("description", cluster_key)
+          homie_histo_title: customization("homie_histo_title", cluster_key)
+          show_proposer_icon: customization("show_proposer_icon", cluster_key)
 
         if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
           DIV
@@ -165,7 +176,7 @@ window.SimpleHomepage = ReactiveComponent
                   fontSize: 21
                   color: '#444'
                   fontWeight: 300
-                customization("slider_pole_labels.individual.oppose")
+                customization("slider_pole_labels.individual.oppose", cluster_key)
               SPAN
                 style:
                   position: 'absolute'
@@ -174,16 +185,16 @@ window.SimpleHomepage = ReactiveComponent
                   color: '#444'
                   right: 0
                   fontWeight: 300
-                customization("slider_pole_labels.individual.support")
+                customization("slider_pole_labels.individual.support", cluster_key)
               SPAN 
                 style: 
                   position: 'relative'
-                  marginLeft: -(widthWhenRendered(options.homie_histo_title || 
-                                'Opinions', {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
-                options.homie_histo_title || 'Opinions'
+                  marginLeft: -(widthWhenRendered(options.homie_histo_title, 
+                               {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
+                options.homie_histo_title
 
             for proposal in sorted_proposals(cluster)
-              icons = options.editor_icons
+              icons = options.show_proposer_icon
 
               do (proposal) => 
 
@@ -304,7 +315,6 @@ window.SimpleHomepage = ReactiveComponent
 #
 #  homepage_heading_columns
 #    The labels of the four columns
-#  cluster_options
 
 window.LearnDecideShareHomepage = ReactiveComponent
   displayName: 'Homepage'
@@ -397,7 +407,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
 
         # Draw the proposal summaries
         for cluster, index in proposals.clusters or []
-          options = customization("cluster_options['#{cluster.name}']") || {}
+          description = customization "description", "cluster/#{cluster.name}"
           DIV null,
             if index == 1 and subdomain.name == 'livingvotersguide'
               customization('ZipcodeBox')()
@@ -432,7 +442,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
                       columns: columns
             
             # Cluster description
-            if options.description 
+            if description 
               DIV
                 style:
                   color: 'rgb(108,107,98)'
@@ -440,7 +450,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
                   paddingTop: 12
                   margin: 'auto'
                   width: PAGE_WIDTH
-                options.description
+                description
 
       if permit('create proposal') > 0
         # lazily styled & positioned...
@@ -653,7 +663,6 @@ window.TechnologyByConsiderit = ReactiveComponent
 # A header that displays a prev/next proposal button & cluster name
 #
 # Customizations:
-#  cluster_options
 #  hide_home_button_in_proposal_header
 
 window.SimpleProposalHeading = ReactiveComponent
@@ -662,8 +671,7 @@ window.SimpleProposalHeading = ReactiveComponent
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
     heading_fontsize = 45
-    options = customization("cluster_options.#{@proposal.cluster}") || {}
-    show_home_button = customization('show_home_button_in_proposal_header')
+    show_proposer_icon = customization('show_proposer_icon', "cluster/#{@proposal.cluster}")
 
     mod = (n, m) -> ((n % m) + m) % m
 
@@ -700,31 +708,19 @@ window.SimpleProposalHeading = ReactiveComponent
           'data-no-scroll': true
           '< Prev'
 
-      # Home button
-      if show_home_button
-        A
-          href: '/'
-          style: 
-            position: 'absolute'
-            right: 41
-
-          I 
-            className: 'fa fa-home'
-            style: 
-              fontSize: 20
 
       # Next button
       if next_proposal
         A
           style:
             position: 'absolute'
-            right: if show_home_button then -23 else 0
+            right: 0
           href: proposal_url(next_proposal)
           'data-no-scroll': true
           'Next >'
 
       # Photo
-      if options.editor_icons
+      if show_proposer_icon
         editor = proposal_editor(@proposal)
         if editor
           Avatar

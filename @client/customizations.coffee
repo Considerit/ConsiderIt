@@ -4,17 +4,6 @@
 # Tailor considerit applications by subdomain
 #
 
-#######
-# PUBLIC API
-#
-# The customization method is the Public API. It returns the proper value 
-# of the field for this subdomain, or the default value if it hasn't been 
-# defined for the subdomain.
-#
-# Nested customizations can be fetched with . notation, by passing e.g. 
-# "auth.use_footer"
-#
-
 require './browser_location' # for loadPage
 require './shared'
 require './swapables'
@@ -22,52 +11,104 @@ require './profile_menu'
 require './slider'
 require './header'
 
-window.customization = (field) -> 
+
+#######
+# PUBLIC API
+#
+# The customization method returns the proper value of the field for this 
+# subdomain, or the default value if it hasn't been defined for the subdomain.
+#
+# Nested customizations can be fetched with . notation, by passing e.g. 
+# "auth.use_footer" or with a bracket, like "auth.use_footer['on good days']"
+#
+# Object is optional. If passed, customization will additionally check for 
+# special configs for that object.
+
+window.customization = (field, object_or_key) -> 
   subdomain = fetch('/subdomain')
 
-  default_config = fetch('customizations/default')
-  if !customizations[subdomain.name]?
-    config = default_config
-  else 
-    config = fetch("customizations/#{subdomain.name}")
+  subdomain_name = subdomain.name.toLowerCase()
 
+  value = undefined
+
+  key = if object_or_key 
+          if object_or_key.key then object_or_key.key else object_or_key
+        else 
+          null
+
+  ########
+  # The chain of customizations: 
+  #  1) any object-specific configuration
+  #  2) subdomain configuration
+  #  3) global default configuration
+
+  chain_of_configs = []
+
+  if customizations[subdomain_name]?
+
+    subdomain_config = fetch("customizations/#{subdomain_name}")
+
+    # object-specific config
+    if key 
+
+      if subdomain_config[key]?
+        chain_of_configs.push subdomain_config[key]
+      # cluster-level config for proposals
+      if key.match(/\/proposal\//)
+        proposal = object_or_key
+        cluster_key = "cluster/#{proposal.cluster}"
+        if subdomain_config[cluster_key]?
+          chain_of_configs.push subdomain_config[cluster_key]
+
+    # subdomain config
+    chain_of_configs.push subdomain_config
+
+  # global default config
+  chain_of_configs.push fetch('customizations/default')
+
+  if field == 'homie_histo_title'
+    console.log chain_of_configs, object_or_key, subdomain.name
+
+  for config in chain_of_configs
+    value = customization_value(field, config)
+    break if value?
+
+  if !value?
+    console.error "Could not find a value for #{field} #{if key then key else ''}"
+
+  value
+
+
+# Checks to see if this configuration is defined for a customization field
+customization_value = (field, config) -> 
   val = config
-  def_val = default_config
 
   fields = field.split('.')
 
   for f, idx in fields
 
-    if !val[f]? && def_val?[f]?
-      val = def_val
-
     if f.indexOf('[') > 0
       brackets = f.match(/\[(.*?)\]/g)
       f = f.substring(0, f.indexOf('['))
 
-
     if val[f]? || idx == fields.length - 1        
       val = val[f]
-      if def_val?
-        def_val = def_val[f]
 
       if brackets?.length > 0
         for b in brackets
           f = b.substring(2,b.length - 2)
           if val? && val[f]?
             val = val[f]
-            if def_val?
-              def_val = def_val[f]
 
           else
-            console.log "Could not find customization #{field} for subdomain #{subdomain.name}"
             return undefined
 
     else 
-      console.log "Could not find customization #{field} for subdomain #{subdomain.name}"
       return undefined
 
   val
+
+
 
 ###########
 # Private storage
@@ -81,12 +122,10 @@ customizations = {}
 
 customizations.default = 
 
-  cluster_options : {}
-  opinion_value: (o) -> o.stance
 
-  auth: 
-    additional_auth_footer: null
-    user_questions: null
+  # Proposal options
+
+  opinion_value: (o) -> o.stance
 
   show_crafting_page_first: false
 
@@ -120,19 +159,36 @@ customizations.default =
     #   support: '+'
     #   oppose: '–'
 
+  docking_proposal_header : false
+
+  slider_handle: slider_handle.face
+
+  show_proposer_icon: false
+  collapse_descriptions_at: false
+  homie_histo_filter: false
+
+  # default cluster options
+  # TODO: put them in their own object
+  homie_histo_title: 'Opinions'
+  manual_clusters: false
+  archived: false
+  closed: false
+  label: false
+  description: false
+
+  # Other options
+  auth: 
+    additional_auth_footer: null
+    user_questions: null
+
   Homepage : SimpleHomepage
   ProposalHeader : SimpleProposalHeading
-
-  docking_proposal_header : false
 
   HomepageHeader : DefaultHeader
   NonHomepageHeader: ShortHeader
 
   Footer : DefaultFooter
 
-  slider_handle: slider_handle.face
-
-  show_home_button_in_proposal_header: false
 
 
 ##########################
@@ -162,15 +218,21 @@ customizations['sosh'] =
 ################
 # schools
 customizations['schools'] = 
-  cluster_options :
-    'Classroom Discussions':
-      homie_histo_title: "Students' opinions"
+
+  homie_histo_title: "Students' opinions"
 
 
 #################
-# humanities-los
+# allsides
 
 customizations['allsides'] = 
+
+
+  'cluster/Classroom Discussions':
+    homie_histo_title: "Students' opinions"
+  'cluster/Civics':
+    homie_histo_title: "Citizens' opinions"
+
   Homepage: LearnDecideShareHomepage
 
   homepage_heading_columns : [ 
@@ -178,14 +240,6 @@ customizations['allsides'] =
     {heading: null}, \
     {heading: 'Community', details: null}, \
     {heading: '', details: ''}]
-
-
-  cluster_options :
-    'Classroom Discussions':
-      homie_histo_title: "Students' opinions"
-    'Civics':
-      homie_histo_title: "Citizens' opinions"
-
 
 #################
 # humanities-los
@@ -210,15 +264,13 @@ customizations['humanities-los'] =
       support: 'Ready'
       oppose: 'Not ready'
 
-  cluster_options :
-    'Monuments':
-      homie_histo_title: "Students' feedback"
+  homie_histo_title: "Students' feedback"
 
 
 #################
 # RANDOM2015
 
-customizations.RANDOM2015 = 
+conference_config = 
   slider_pole_labels :
     individual: 
       support: 'Accept'
@@ -227,27 +279,16 @@ customizations.RANDOM2015 =
       support: 'Accept'
       oppose: 'Reject'
 
-  cluster_options :
-    'Under Review':
-      homie_histo_title: "PC's ratings"
-    'Rejected':
-      homie_histo_title: "PC's ratings"
-    'Accepted':
-      homie_histo_title: "PC's ratings"
+  homie_histo_title: "PC's ratings"
 
-customizations['program-committee-demo'] = customizations.RANDOM2015
+customizations['random2015'] = conference_config
+customizations['program-committee-demo'] = conference_config
 
 ##################
 # Schools demo
 
 customizations.schools = 
-  cluster_options :
-    'AP English':
-      homie_histo_title: "Students' opinions"
-    'US History':
-      homie_histo_title: "Students' opinions"
-    'Biology 2':
-      homie_histo_title: "Students' opinions"
+  homie_histo_title: "Students' opinions"
 
 
 #################
@@ -385,14 +426,8 @@ customizations.ecastonline = customizations['ecast-demo'] =
         required: true
       }]
 
+  homie_histo_title: "Citizens' opinions"
 
-  cluster_options :
-    Recommendations:
-      homie_histo_title: "Citizens' opinions"
-    Mitigation:
-      homie_histo_title: "Citizens' opinions"
-    Detection:
-      homie_histo_title: "Citizens' opinions"
 
   NonHomepageHeader : ReactiveComponent
     displayName: 'NonHomepageHeader'
@@ -640,25 +675,23 @@ customizations.bitcoin =
       }]
 
 
+  # default proposal options
+  show_proposer_icon: true
+  homie_histo_title: "Members' Opinions"
+  collapse_descriptions_at: 600
 
-  cluster_options :
-    # Each cluster can have its own options
-
-    Candidates:   # Options for the "Candidates" cluster
-      editor_icons: true
-      homie_histo_title: "Members' Opinions"
-      collapse_descriptions_at: 600
-      label: "Winter 2015 board election"
-      description: 
-        DIV null, 
-          'Thanks for your opinions. Here are the '
-          A
-            href: 'https://blog.bitcoinfoundation.org/election-results/'
-            style: textDecoration: 'underline'
-            "results"
-          '.'
-      archived: false
-      closed: true
+  'cluster/Candidates': 
+    label: "Winter 2015 board election"
+    description: 
+      DIV null, 
+        'Thanks for your opinions. Here are the '
+        A
+          href: 'https://blog.bitcoinfoundation.org/election-results/'
+          style: textDecoration: 'underline'
+          "results"
+        '.'
+    archived: false
+    closed: true
 
 
   show_crafting_page_first: true
@@ -772,13 +805,6 @@ customizations.bitcoin =
 
 customizations.bitcoin.NonHomepageHeader = customizations.bitcoin.HomepageHeader
 
-bitcoin_clusters =
-  editor_icons: true
-  homie_histo_title: "Members' Opinions"
-  collapse_descriptions_at: 600
-
-for k in ['Proposals', 'Board Proposals', 'Member Proposals', 'Our Focus', 'Our Actions', 'Our Values', 'Our Goals', 'Resolutions', 'Our Mission']
-  customizations.bitcoin.cluster_options[k] = bitcoin_clusters
 
 
 ####################
@@ -832,9 +858,8 @@ customizations.livingvotersguide =
     {heading: 'Share', details: 'your opinion'}, \
     {heading: 'Join', details: 'the contributors'}]
 
-  cluster_options : 
-    'Advisory votes': 
-      description: "* Advisory Votes are not binding. They are a consequence of Initiative 960 passing in 2007"
+  'cluster/Advisory votes': 
+    description: "* Advisory Votes are not binding. They are a consequence of Initiative 960 passing in 2007"
 
   ThanksForYourOpinion: ReactiveComponent
     displayName: 'ThanksForYourOpinion'
@@ -1203,7 +1228,7 @@ customizations.cityoftigard =
 customizations.cityoftigard.NonHomepageHeader = customizations.cityoftigard.HomepageHeader
 
 
-customizations['mos'] = 
+customizations.mos = 
 
   slider_pole_labels :
     individual: 

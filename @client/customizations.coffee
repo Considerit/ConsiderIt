@@ -459,6 +459,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
         IMG 
           style: 
             position: 'absolute'
+            width: 1300
           src: asset('ecast/bg.png')
 
         # Title of site

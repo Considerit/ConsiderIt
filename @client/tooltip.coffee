@@ -20,16 +20,16 @@ window.Tooltip = ReactiveComponent
 
     real_height = heightWhenRendered tip, style
 
+    # place the tooltip above the element
     _.extend style, 
         top: coords.top - real_height - 5
+        left: coords.left
         pointerEvents: 'none'
         zIndex: 9999
         color: 'black'
         backgroundColor: 'white'
         position: 'absolute'
-        left: coords.left
 
-    # place the tooltip above the element
     DIV
       style: style
       tip

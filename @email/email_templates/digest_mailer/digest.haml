@@ -1,0 +1,103 @@
+Hi #{@user.first_name}, a summary for you.
+= linebreak
+= linebreak
+  
+- if @subdomain_notifications
+  - if @subdomain_notifications.key? 'content_to_moderate'
+    
+    = paragraph("There is new content #{styled_link('dashboard/moderate', 'waiting to be moderated', :text_preceding => 'waiting to be moderated at ')}.")
+
+
+  - if @subdomain_notifications.key? 'new_request'
+      
+    = list_item("There are new #{styled_link('dashboard/assessment', 'requests for fact-checks', :text_preceding => 'requests for fact-checks at ')}.")
+
+
+  - if @subdomain_notifications.key? 'new_proposal'
+    - count = @subdomain_notifications['new_proposal'].length
+    
+    // - if count > 1
+    //   = section_header_major("New proposals")
+
+    - for notification in @subdomain_notifications['new_proposal']
+      - proposal = notification.event_object
+      - proposal_link = styled_link(proposal.slug, "\"#{proposal.title(40)}\"", :text_preceding => "'#{proposal.title(40)}'. View at ")
+      = list_item("#{proposal.user.name} proposes: #{proposal_link}")
+      // = item_divider
+
+
+- for proposal_id, notifications in @proposal_notifications
+  - proposal = Proposal.find(proposal_id)
+
+  = section_header_major(styled_link(proposal.slug, proposal.name, text_instead: true))
+
+  - if notifications.key? 'edited_proposal'
+    - if @subdomain.name == 'RANDOM2015'
+      = list_item "A review was uploaded from EasyChair"
+    - else 
+      = list_item "This proposal has been edited."
+
+
+  - if notifications.key? 'new_opinion'
+    = list_item "#{get_user_str(notifications['new_opinion'])} opined"
+
+  - if notifications.key? 'new_point'
+
+    - grouped = group_by_user(notifications['new_point'])
+
+    - count = grouped.keys.length
+    
+    //= section_header("New points")
+
+    - for user_id, ns in grouped
+      - points = ns.map {|n| n.event_object }
+
+      - txt = "#{User.find(user_id).name} adds a new point: "
+      - points.each_with_index do |point, idx|
+
+        - point_link = styled_link(point.proposal.slug, "\"#{point.title(40)}\"", :search_params => {selected: "%2Fpoint%2F#{point.id}"}, :text_preceding => "'#{point.title(40)}'. View at ")
+
+        - if idx == points.length - 1 && points.length > 1
+          - txt += 'and '
+
+        - txt += point_link
+
+        - if idx < points.length - 1
+          - txt += ', '
+    
+      = list_item(txt)
+
+
+  - for event in ['new_comment', 'new_assessment']
+
+
+    - if notifications.key? event
+
+      //= section_header("New comments")
+
+      - relations = { |
+          'point_authored' => ' your point ', |
+          'point_engaged' => ' a point you\'ve engaged ', |
+          'watched' => '', |
+        } |
+
+      - by_event_object = group_by_object(notifications[event])
+      - for event_object_id, ns in by_event_object
+
+        - comment = ns[0].event_object
+        - point = comment.point
+        - relation = relations[ns[0].event_object_relationship]
+
+        - txt = "#{get_user_str(ns)} commented on#{relation}"
+        - txt += styled_link(point.proposal.slug, "\"#{point.title(40)}\"", :search_params => {selected: "%2Fpoint%2F#{point.id}"}, :text_preceding => "'#{point.title(40)}'. View at ")
+
+        = list_item(txt)
+
+  // = item_divider
+  = linebreak
+
+
+
+
+= content_for :footer do
+  = render :partial => 'event_mailer/unsubscribe'

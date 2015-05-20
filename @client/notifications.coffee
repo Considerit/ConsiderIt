@@ -1,4 +1,7 @@
 
+require './watch_star'
+
+
 # Toggle homepage filter to watched proposals
 document.addEventListener "keypress", (e) -> 
   key = (e and e.keyCode) or e.keyCode
@@ -8,15 +11,6 @@ document.addEventListener "keypress", (e) ->
     filter.watched = !filter.watched
     save filter
 
-
-first_column_style = 
-  display: 'inline-block'
-  width: 283
-  textAlign: 'right'
-  verticalAlign: 'top'
-  marginRight: 80
-  paddingTop: 5
-  fontSize: 18
 
 
 window.Notifications = ReactiveComponent
@@ -28,69 +22,152 @@ window.Notifications = ReactiveComponent
     settings = {}
     current_user = fetch('/current_user')
 
+    subdomain = fetch('/subdomain')
+
     prefs = current_user.subscriptions
-
-    for digest, digest_config of prefs
-      continue if digest == 'subscription_options' || digest.match(/\//)
-
-      settings[digest] ||= {}
-      for digest_relation, relation_config of digest_config
-        setting = relation_config.subscription
-
-        if setting.indexOf('_') > -1
-          setting = 'email'
-
-        settings[digest][digest_relation] = setting
-
-    if !@local.settings? || JSON.stringify(@local.settings) != JSON.stringify(settings)
-      @local.settings = settings
-      save @local
-
 
     DIV 
       style:
         width: CONTENT_WIDTH
-        margin: 'auto'
+        margin: '50px auto'
 
-      DIV 
+      DIV
         style: 
-          fontSize: 28
-          padding: "40px 0"
-
-        DIV 
+          fontSize: 24
+          marginBottom: 10
+          
+        INPUT 
+          type: 'checkbox'
+          defaultChecked: !!prefs['send_emails']
+          id: 'enable_email'
           style: 
-            borderBottom: '1px solid black'
-            marginRight: 80
+            verticalAlign: 'top'
             display: 'inline-block'
-          'With activity regarding'
+            marginTop: 12
+
+          onChange: => 
+
+            if prefs['send_emails'] 
+              current_user.subscriptions['send_emails'] = null
+            else
+              current_user.subscriptions['send_emails'] = settings['default_subscription']
+            save current_user
 
         DIV 
           style: 
-            borderBottom: '1px solid black'
-            display: 'inline-block'            
-          'Notify me by'
+            display: 'inline-block'
+            paddingLeft: 20
+
+          LABEL
+            htmlFor: 'enable_email'              
+
+            'Send me email digests'
+
+            DIV
+              style: 
+                fontSize: 18
+              "summarizing relevant new activity for you at #{subdomain.app_title || subdomain.name}"
+
+
+      if prefs['send_emails']
+        [@drawEmailSettings()
+
+        @drawWatched()]
+
+
+
+  drawEmailSettings : () -> 
+    current_user = fetch('/current_user')
+    settings = current_user.subscriptions
+
+    DIV 
+      style: 
+        #backgroundColor: '#f2f2f2'
+        padding: '10px 10px 10px 60px'
+
+      SPAN 
+        style: 
+          marginRight: 10
+          display: 'inline-block'
+
+        'Send summaries at most'
+
+
+      SELECT 
+        style: 
+          width: 80
+          fontSize: 18
+        value: settings['send_emails']
+        onChange: (e) => 
+          current_user.subscriptions['send_emails'] = e.target.value
+          save current_user
+
+        for u in ['hour', 'day', 'week', 'month']
+          OPTION
+            value: "1_#{u}"
+            if u == 'day'
+              'daily'
+            else
+              "#{u}ly"
 
       DIV 
         style: 
-          fontSize: 18
+          marginTop: 15
 
-        for digest in ['subdomain', 'proposal']
-          digest_config = prefs[digest]
-          for digest_relation, relation_config of digest_config
-            @drawChannel digest, digest_relation, \
-                         relation_config, prefs.subscription_options
-              
+        DIV
+          style: 
+            marginBottom: 10
 
-        @drawOverrides('watched', "You are currently watching these proposals:")
-        @drawOverrides('unsubscribed', "You have unsubscribed to these proposals:")
+          "Emails are only sent if a notable event occurred. Which events are notable to you?"
 
-  drawOverrides: (digest_relation, label) ->
+        UL
+          style: 
+            listStyle: 'none'
+
+          # prefs contains keys of objects being watched, and event trigger
+          # preferences for different events
+          for event in _.keys(settings).sort()
+            config = settings[event]
+
+            continue if not config.ui_label
+
+            LI 
+              style: 
+                display: 'block'
+                padding: '5px 0'
+
+              SPAN 
+                style: 
+                  display: 'inline-block'
+                  verticalAlign: 'top'
+
+                INPUT 
+                  id: "#{event}_input"
+                  type: 'checkbox'
+                  checked: if config.email_trigger then true
+                  style: 
+                    fontSize: 24
+                  onChange: do (config) => => 
+                    config.email_trigger = !config.email_trigger
+                    save current_user
+
+              LABEL
+                htmlFor: "#{event}_input"
+                style: 
+                  display: 'inline-block'
+                  verticalAlign: 'top'
+                  width: 450
+                  marginLeft: 15
+
+                config.ui_label
+
+  drawWatched: ->
     current_user = fetch('/current_user')
     unsubscribed = {}
 
     for k,v of current_user.subscriptions
       # we only match proposals for now 
-      if v == digest_relation && k.match(/\/proposal\//)
+      if v == 'watched' && k.match(/\/proposal\//)
         unsubscribed[k] = v
 
     if _.keys(unsubscribed).length > 0
@@ -98,10 +175,13 @@ window.Notifications = ReactiveComponent
       DIV 
         style: 
           padding: '20px 0'
+          marginLeft: 63
 
         DIV
-          style: first_column_style
-          label
+          style: 
+            position: 'relative'
+            paddingBottom: 10
+          'The proposals you are watching for new activity:'
 
         DIV
           style: 
@@ -111,6 +191,7 @@ window.Notifications = ReactiveComponent
           UL
             style: 
               position: 'relative'
+              paddingLeft: 37
 
             for k,v of unsubscribed
               do (k) => 
@@ -120,7 +201,18 @@ window.Notifications = ReactiveComponent
                   style: 
                     listStyle: 'none'
                     padding: '5px 0'
+                    position: 'relative'
 
+                  WatchStar
+                    proposal: obj
+                    #icon: 'fa-bell-slash'
+                    watch_color: "#777"
+                    label: (watching) -> 
+                      "Unwatch this proposal"
+                    style: 
+                      position: 'absolute'
+                      left: -35
+                      top: 8
                   A 
                     href: "/#{obj.slug}"
                     style: 
@@ -128,248 +220,29 @@ window.Notifications = ReactiveComponent
 
                     obj.name 
 
-                  A 
-                    style: 
-                      cursor: 'pointer'
-                      display: 'inline-block'
-                      marginLeft: 10
-                      fontSize: 14
-                    onClick: => 
-                      delete current_user.subscriptions[k]
-                      save current_user
+                  # A 
+                  #   style: 
+                  #     cursor: 'pointer'
+                  #     display: 'inline-block'
+                  #     marginLeft: 10
+                  #     fontSize: 14
+                  #   onClick: => 
+                  #     delete current_user.subscriptions[k]
+                  #     save current_user
 
-                    'remove'   
+                  #   'stop watching'   
 
-
-  drawChannel: (digest, digest_relation, relation_config, options) ->
-
-    DIV 
-      style: 
-        borderBottom: '1px solid #f2f2f2'
-        padding: '20px 0px'
-
-      DIV
-        style: first_column_style
-          
-
-        relation_config.ui_label
-
-      DIV 
-        style: 
-          display: 'inline-block'
-          width: 550
-
-        UL
-          style: 
-            listStyle: 'none'
-
-          for method, config of options
-            selected = @local.settings[digest][digest_relation] == config.name
-            @drawMethod digest, digest_relation, config, selected
-
-        if @local.settings[digest][digest_relation] == 'email'
-          @drawEmailSettings digest, digest_relation, relation_config
-
-
-  drawMethod: (digest, digest_relation, method, selected) -> 
-    current_user = fetch('/current_user')
-
-    LI 
-      style: 
-        padding: '10px 20px 5px 20px'
-        display: 'inline-block'
-        cursor: 'pointer'
-        backgroundColor: if selected then '#f2f2f2'
-
-      onClick: => 
-        if !selected
-          usetting = current_user.subscriptions[digest][digest_relation]
-          
-          usetting.subscription = if method.name == 'email'
-                                    usetting.default_subscription
-                                  else 
-                                    method.name
-          save current_user
-
-
-      DIV
-        style: 
-          width: 25
-          height: 25
-          borderRadius: '50%'
-          border: '1px solid #ccc'
-          display: 'inline-block'
-          marginRight: 15
-          position: 'relative'
-          backgroundColor: 'white'
-
-        if selected
-          DIV
-            style: 
-              width: 15
-              height: 15
-              borderRadius: '50%'
-              backgroundColor: focus_blue
-              position: 'absolute'
-              left: 4
-              top: 4
-
-      SPAN
-        style: 
-          verticalAlign: 'top'
-
-        method.ui_label
-
-  drawEmailSettings : (digest, digest_relation, relation_config) -> 
-    current_user = fetch('/current_user')        
-    settings = current_user.subscriptions[digest][digest_relation]
-    [num, unit] = relation_config.subscription.split('_')
-
-    specify_triggers = @local.triggers?[digest]?[digest_relation]
-
-    DIV 
-      style: 
-        backgroundColor: '#f2f2f2'
-        padding: '10px 10px 10px 60px'
-
-      SPAN 
-        style: 
-          marginRight: 20
-          display: 'inline-block'
-
-        'No more frequently than:'
-
-      INPUT
-        type: 'text'
-        value: num
-        ref: 'num'
-        style: 
-          padding: 5
-          fontSize: 18
-          width: 38
-        onChange: (e) =>
-          num = parseInt(e.target.value)
-          if !isNaN(num)
-            relation_config.subscription = "#{num}_#{unit}"
-            save current_user
-
-      SPAN 
-        style: 
-          display: 'inline-block'
-          margin: '0 15px'
-
-        'per'
-
-      SELECT 
-        style: 
-          width: 80
-          fontSize: 18
-        ref: 'unit'
-        value: unit
-        onChange: (e) => 
-          relation_config.subscription = "#{num}_#{e.target.value}"
-          save current_user
-
-        for u in ['hour', 'day', 'month']
-          OPTION
-            value: u
-            u
-
-      DIV 
-        style: 
-          marginTop: 5
-
-        DIV 
-          style: 
-            textDecoration: 'underline'
-            cursor: 'pointer'            
-          onClick: => 
-            @local.triggers ||= {}
-            @local.triggers[digest] ||= {}
-            @local.triggers[digest][digest_relation] = \
-                !@local.triggers[digest][digest_relation]
-            save @local
-
-          if specify_triggers
-            'close'
-          else
-            'advanced'
-
-        if specify_triggers
-          DIV 
-            style: 
-              margin: '20px 0' 
-
-            DIV
-              style: 
-                marginBottom: 10
-
-              "Which events should trigger an email?"
-
-            UL
-              style: 
-                listStyle: 'none'
-
-
-              for event_name in _.keys(relation_config.events).sort()
-                event_relations = relation_config.events[event_name]
-                idx = 0
-                for event_relation in _.keys(event_relations).sort()
-                  continue if not event_relation_settings.ui_label
-
-                  event_relation_settings = event_relations[event_relation]
-
-                  idx += 1
-                  LI 
-                    style: 
-                      display: 'block'
-                      borderBottom: '1px solid #f1f1f1'
-                      padding: '5px 0'
-
-                    SPAN 
-                      style: 
-                        display: 'inline-block'
-                        verticalAlign: 'top'
-
-                      INPUT 
-                        id: "#{event_name}#{idx}_input"
-                        type: 'checkbox'
-                        checked: if event_relation_settings.email_trigger then true
-                        style: 
-                          fontSize: 24
-                        onChange: do (event_name, event_relation_settings) => => 
-                          console.log event_relation_settings
-                          event_relation_settings.email_trigger = \
-                             !event_relation_settings.email_trigger
-                          save current_user
-
-                    LABEL
-                      htmlFor: "#{event_name}#{idx}_input"
-                      style: 
-                        display: 'inline-block'
-                        verticalAlign: 'top'
-                        width: 400
-                        marginLeft: 15
-
-                      event_relation_settings.ui_label
 
 
 
 
 window.hasUnreadNotifications = (proposal) ->
   current_user = fetch '/current_user'
-  return false unless current_user.notifications?.proposal?[proposal.id]
+  return false unless proposal.notifications?
 
-  unread = (n for n in notificationsFor(proposal) when !n.read_at)
+  unread = (n for n in proposal.notifications when !n.read_at)
 
   unread.length
-
-notificationsFor = (proposal) -> 
-  current_user = fetch '/current_user'
-
-  ( n for n in current_user.all_notifications when \
-        n.digest_object_type == 'Proposal' && 
-          n.digest_object_id == proposal.id )
 
 window.ActivityFeed = ReactiveComponent
   displayName: 'ActivityFeed'
@@ -378,11 +251,13 @@ window.ActivityFeed = ReactiveComponent
 
     current_user = fetch('/current_user')
 
+    if @proposal.notifications?.length == 0
+      return SPAN null
+
     # just mark everything as read when you've opened the proposal
     if hasUnreadNotifications(@proposal)
-      for n in notificationsFor(@proposal)
+      for n in @proposal.notifications
         if !n.read_at
-          console.log 'MARKING UNREAD', n.key
           n.read_at = Date.now()
           save n
 
@@ -396,11 +271,10 @@ window.ActivityFeed = ReactiveComponent
 
       DIV
         style: 
-          backgroundColor: logo_red
+          backgroundColor: "#eee"
           textDecoration: 'underline'
           padding: 10
           fontSize: 18
-          color: 'white'
           textAlign: 'center'
           cursor: 'pointer'
 
@@ -408,21 +282,27 @@ window.ActivityFeed = ReactiveComponent
           @local.show_notifications = !@local.show_notifications
           save @local
 
+        I 
+          className: 'fa-bell-o fa'
+          style: 
+            display: 'inline-block'
+            marginRight: 15
+
         if @local.show_notifications
-          'Hide activity feed'
+          'Hide notifications'
         else
-          'Show new activity feed'
+          'Show notifications'
 
       if @local.show_notifications
         notifications = []
 
         UL
           style: 
-            border: "1px solid #{logo_red}"
+            border: "1px solid #eee"
             listStyle: 'none'
             padding: 20
 
-          for notification in notificationsFor(@proposal) 
+          for notification in @proposal.notifications
 
             @drawNotification(notification)
 

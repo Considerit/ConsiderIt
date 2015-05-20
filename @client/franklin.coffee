@@ -562,8 +562,7 @@ Proposal = ReactiveComponent
 
     subdomain = fetch('/subdomain')
     if subdomain.name == 'RANDOM2015' && @local.description_fields && $('#description_fields').find('.MathJax').length == 0
-      MathJax.Hub.Typeset '#description_fields', -> console.log "typeset"
-
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"description_fields"])
 
   componentDidMount : ->
     if (@max_description_height and @local.description_collapsed == undefined \

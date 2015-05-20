@@ -284,11 +284,11 @@ window.SimpleHomepage = ReactiveComponent
 
   typeset : -> 
     subdomain = fetch('/subdomain')
-    if subdomain.name == 'RANDOM2015' && $('.proposal_homepage_name').find('.MathJax').length == 0
-      MathJax.Hub.Typeset '.proposal_homepage_name', -> console.log "typeset"
+    if subdomain.name == 'RANDOM2015' && $('.MathJax').length == 0
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub,".proposal_homepage_name"])
 
-  componentDidUpdate : -> 
-    @typeset()
+  componentDidMount : -> @typeset()
+  componentDidUpdate : -> @typeset()
 
 
 
@@ -765,9 +765,9 @@ window.SimpleProposalHeading = ReactiveComponent
 
   typeset : -> 
     subdomain = fetch('/subdomain')
-    if subdomain.name == 'RANDOM2015' && $('#proposal_name').find('.MathJax').length == 0
-      MathJax.Hub.Typeset '#proposal_name', -> console.log "typeset"
 
+    if subdomain.name == 'RANDOM2015' && $('#proposal_name').find('.MathJax').length == 0
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"proposal_name"])
 
 
 

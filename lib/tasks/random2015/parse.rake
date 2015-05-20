@@ -617,7 +617,6 @@ def abstracts
   is Metric entropy, where we switch quantifiers, and only require that 
   for every distinguisher of size \\(s\\), such a \\(Y\\) exists. 
 
-
   We first describe our result concerning transformations. By definition, HILL implies Metric without any loss in quality. 
   Metric entropy often comes up in applications, but must be transformed to HILL for meaningful security guarantees. 
   The best known result states that if a variable \\(X\\) has \\(k\\) bits of Metric entropy of quality \\((\epsilon,s)\\), then 

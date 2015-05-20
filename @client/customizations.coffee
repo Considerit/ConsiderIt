@@ -460,7 +460,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
           style: 
             position: 'absolute'
             width: 1300
-          src: asset('ecast/bg.png')
+          src: asset('ecast/bg-small.png')
 
         # Title of site
         DIV 
@@ -513,7 +513,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
                 display: 'block'
                 marginTop: 4
                 width: 215
-              src: asset('ecast/ecast.png')
+              src: asset('ecast/ecast-small.png')
 
           # DIV 
           #   style: 

@@ -113,88 +113,22 @@ customization_value = (field, config) ->
 customizations = {}
 
 
-################################
-# DEFAULT CUSTOMIZATIONS
-# 
-# TODO: refactor config & document
-
-customizations.default = 
-
-
-  # Proposal options
-
-  opinion_value: (o) -> o.stance
-
-  show_crafting_page_first: false
-
-  point_labels : 
-    pro: 'pro'
-    pros: 'pros' 
-    con: 'con'
-    cons: 'cons'
-    your_header: "Give your --valences--" 
-    other_header: "Others' --valences--" 
-    top_header: "Top --valences--" 
-
-  show_slider_feedback: true
-  slider_pole_labels :
-    
-    individual: 
-      support: 'Support'
-      oppose: 'Oppose'
-      support_sub: ''
-      oppose_sub: ''
-    group: 
-      support: 'Supporters'
-      oppose: 'Opposers'
-      support_sub: ''
-      oppose_sub: ''
-
-    # individual: 
-    #   support: '+'
-    #   oppose: '–'
-    # group: 
-    #   support: '+'
-    #   oppose: '–'
-
-  docking_proposal_header : false
-
-  slider_handle: slider_handle.face
-
-  show_proposer_icon: false
-  collapse_descriptions_at: false
-  homie_histo_filter: false
-
-  # default cluster options
-  # TODO: put them in their own object
-  homie_histo_title: 'Opinions'
-  cluster_order: ['*']
-  archived: false
-  closed: false
-  label: false
-  description: false
-
-  # Other options
-  auth: 
-    additional_auth_footer: null
-    user_questions: []
-
-  Homepage : SimpleHomepage
-  ProposalHeader : SimpleProposalHeading
-
-  HomepageHeader : DefaultHeader
-  NonHomepageHeader: ShortHeader
-
-  Footer : DefaultFooter
-
-
-
 
 #####
 # common options
 
 
 # pro/con labels
+
+pro_con = 
+  pro: 'pro'
+  pros: 'pros' 
+  con: 'con'
+  cons: 'cons'
+  your_header: "Give your --valences--" 
+  other_header: "Others' --valences--" 
+  top_header: "Top --valences--" 
+
 strengths_weaknesses = 
   pro: 'strength'
   pros: 'strengths' 
@@ -204,7 +138,30 @@ strengths_weaknesses =
   other_header: "--valences-- observed" 
   top_header: "Foremost --valences--" 
 
+challenge_justify = 
+  pro: 'justification'
+  pros: 'justifications' 
+  con: 'challenge'
+  cons: 'challenges'
+  your_header: "--valences-- you recognize" 
+  other_header: "--valences-- identified" 
+  top_header: "Foremost --valences--" 
+
+
 # slider poles
+
+support_oppose = 
+  individual: 
+    support: 'Support'
+    oppose: 'Oppose'
+    support_sub: ''
+    oppose_sub: ''
+  group: 
+    support: 'Supporters'
+    oppose: 'Opposers'
+    support_sub: ''
+    oppose_sub: ''
+
 yes_no = 
   individual: 
     support: 'Yes'
@@ -229,6 +186,14 @@ agree_disagree =
     support: 'Agree'
     oppose: 'Disagree'  
 
+plus_minus = 
+  individual: 
+    support: '+'
+    oppose: '–'
+  group: 
+    support: '+'
+    oppose: '–'
+
 # application options
 conference_config = 
   slider_pole_labels :
@@ -240,6 +205,62 @@ conference_config =
       oppose: 'Reject'
 
   homie_histo_title: "PC's ratings"
+
+
+################################
+# DEFAULT CUSTOMIZATIONS
+# 
+# TODO: refactor config & document
+
+customizations.default = 
+
+
+  # Proposal options
+
+  opinion_value: (o) -> o.stance
+
+  show_crafting_page_first: false
+
+  point_labels : pro_con
+
+
+  show_slider_feedback: true
+  slider_pole_labels : support_oppose
+
+
+  docking_proposal_header : false
+
+  slider_handle: slider_handle.face
+
+  show_proposer_icon: false
+  collapse_descriptions_at: false
+  homie_histo_filter: false
+
+  # default cluster options
+  # TODO: put them in their own object
+  homie_histo_title: 'Opinions'
+  archived: false
+  closed: false
+  label: false
+  description: false
+
+  # Other options
+  auth: 
+    additional_auth_footer: null
+    user_questions: []
+
+  Homepage : SimpleHomepage
+  ProposalHeader : SimpleProposalHeading
+
+  HomepageHeader : DefaultHeader
+  NonHomepageHeader: ShortHeader
+
+  Footer : DefaultFooter
+
+
+
+
+
 
 
 ##########################
@@ -276,15 +297,31 @@ customizations['allsides'] =
 #################
 # humanities-los
 
-customizations['humanities-los'] = 
+essential_questions = 
+  homie_histo_title: "Student responses"
+  slider_pole_labels: agree_disagree
+  point_labels: challenge_justify
 
+monuments = 
   point_labels : strengths_weaknesses
-  show_slider_feedback: false
-
   slider_pole_labels : ready_not_ready
-
   homie_histo_title: "Students' feedback"
 
+
+customizations['humanities-los'] = 
+
+  show_slider_feedback: false
+
+  point_labels : strengths_weaknesses
+  slider_pole_labels : ready_not_ready
+  homie_histo_title: "Students' feedback"
+
+  "cluster/Essential Questions 8-2": essential_questions
+
+  "cluster/Essential Questions 8-1": essential_questions
+
+  "Monuments 8-2" : monuments
+  "Monuments 8-1" : monuments
 
 #################
 # RANDOM2015

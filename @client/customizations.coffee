@@ -69,6 +69,7 @@ window.customization = (field, object_or_key) ->
 
   for config in chain_of_configs
     value = customization_value(field, config)
+
     break if value?
 
   if !value?
@@ -143,10 +144,18 @@ challenge_justify =
   pros: 'justifications' 
   con: 'challenge'
   cons: 'challenges'
+  your_header: "Give your --valences--" 
+  other_header: "--valences-- identified" 
+  top_header: "Top --valences--" 
+
+support_challenge_claim = 
+  pro: 'supporting claim'
+  pros: 'supporting claims' 
+  con: 'challenging claim'
+  cons: 'challenging claims'
   your_header: "--valences-- you recognize" 
   other_header: "--valences-- identified" 
-  top_header: "Foremost --valences--" 
-
+  top_header: "Top --valences--" 
 
 # slider poles
 
@@ -257,7 +266,7 @@ customizations.default =
 
   Footer : DefaultFooter
 
-
+  ThanksForYourOpinion: false
 
 
 
@@ -276,6 +285,8 @@ customizations['sosh'] =
 # schools
 customizations['schools'] = 
   homie_histo_title: "Students' opinions"
+  point_labels : challenge_justify
+  slider_pole_labels : agree_disagree
 
 #################
 # allsides
@@ -328,12 +339,6 @@ customizations['humanities-los'] =
 
 customizations['random2015'] = conference_config
 customizations['program-committee-demo'] = conference_config
-
-##################
-# Schools demo
-
-customizations.schools = 
-  homie_histo_title: "Students' opinions"
 
 
 #################

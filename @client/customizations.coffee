@@ -21,8 +21,8 @@ require './header'
 # Nested customizations can be fetched with . notation, by passing e.g. 
 # "auth.use_footer" or with a bracket, like "auth.use_footer['on good days']"
 #
-# Object is optional. If passed, customization will additionally check for 
-# special configs for that object.
+# object_or_key is optional. If passed, customization will additionally check for 
+# special configs for that object (object.key) or key.
 
 window.customization = (field, object_or_key) -> 
   subdomain = fetch('/subdomain')
@@ -53,6 +53,7 @@ window.customization = (field, object_or_key) ->
 
       if subdomain_config[key]?
         chain_of_configs.push subdomain_config[key]
+
       # cluster-level config for proposals
       if key.match(/\/proposal\//)
         proposal = object_or_key
@@ -176,7 +177,7 @@ customizations.default =
   # Other options
   auth: 
     additional_auth_footer: null
-    user_questions: null
+    user_questions: []
 
   Homepage : SimpleHomepage
   ProposalHeader : SimpleProposalHeading
@@ -242,6 +243,7 @@ customizations['allsides'] =
 # humanities-los
 
 customizations['humanities-los'] = 
+
   point_labels : 
     pro: 'strength'
     pros: 'strengths' 

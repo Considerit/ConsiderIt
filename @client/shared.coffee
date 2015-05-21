@@ -5,9 +5,10 @@ for el of React.DOM
 
 window.styles = ""
 
-####
-# Constants, especially used for layout styling
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
+
+window.LIVE_UPDATE_INTERVAL = 1000 * 60
+
 
 # layout constants
 # Pictoral summary of layout variables:

@@ -411,7 +411,7 @@ window.Histogram = ReactiveComponent
     translatePixelXToStance m_x - h_x, h_w
 
   onMouseMove: (ev) -> 
-    return if fetch(namespaced_key('slider', @proposal)).is_moving
+    return if fetch(namespaced_key('slider', @props.proposal)).is_moving
 
     if @props.enable_selection && !@props.backgrounded
       hist = fetch @props.key
@@ -450,7 +450,7 @@ window.Histogram = ReactiveComponent
         save @local
 
   onMouseLeave: (ev) -> 
-    return if fetch(namespaced_key('slider', @proposal)).is_moving
+    return if fetch(namespaced_key('slider', @props.proposal)).is_moving
     @local.mouse_opinion_value = null
     save @local
 
@@ -461,7 +461,7 @@ window.Histogram = ReactiveComponent
 
 
   onMouseUp: (ev) -> 
-    return if fetch(namespaced_key('slider', @proposal)).is_moving
+    return if fetch(namespaced_key('slider', @props.proposal)).is_moving
     hist = fetch @props.key   
     
     if hist.dragging
@@ -469,7 +469,7 @@ window.Histogram = ReactiveComponent
       save hist
 
   onMouseDown: (ev) -> 
-    return if fetch(namespaced_key('slider', @proposal)).is_moving
+    return if fetch(namespaced_key('slider', @props.proposal)).is_moving
     ev.stopPropagation()
 
     hist = fetch @props.key
@@ -521,9 +521,20 @@ window.Histogram = ReactiveComponent
         @local.simulation_opinion_hash = simulation_opinion_hash
         save @local
 
-  componentDidMount: -> @physicsSimulation()
-  componentDidUpdate: -> @physicsSimulation()
+  componentDidMount: ->     
+    @physicsSimulation()
 
+    if @props.live_update
+      @live_update = setInterval => 
+        arest.serverFetch("/page/#{@props.proposal.slug}")
+      , LIVE_UPDATE_INTERVAL
+
+  componentDidUpdate: -> 
+    @physicsSimulation()
+
+  componentWillUnmount : -> 
+    if @live_update
+      clearInterval @live_update
 
 
 

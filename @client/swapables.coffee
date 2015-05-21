@@ -73,9 +73,71 @@ window.SimpleHomepage = ReactiveComponent
         fontSize: 22
         margin: if !lefty then 'auto'
         width: if !lefty then 850
+        marginTop: 10
+        position: 'relative'
 
       STYLE null,
         '''a.proposal:hover {border-bottom: 1px solid grey}'''
+
+
+      do => 
+        filter = fetch 'homepage_filter'
+
+        DIV 
+          id: 'watching_filter'
+          style: 
+            position: 'absolute'
+            left: if lefty then 112 else -100  
+            top: 5
+            border: "1px solid #bbb"
+            opacity: if !filter.watched && !@local.hover_watch_filter then .3
+            padding: '3px 10px'
+            cursor: 'pointer'
+            display: 'inline-block'
+            backgroundColor: '#fafafa'
+            borderRadius: 8
+
+          onMouseEnter: => 
+            @local.hover_watch_filter = true
+
+            tooltip = fetch 'tooltip'
+            tooltip.coords = $(@getDOMNode()).find('#watching_filter').offset()
+            tooltip.tip = "Filter proposals to those you're watching"
+            save tooltip
+
+            save @local
+          onMouseLeave: => 
+            @local.hover_watch_filter = false
+            save @local
+            tooltip = fetch 'tooltip'
+            tooltip.coords = null
+            save tooltip
+
+          onClick: => 
+            filter.watched = !filter.watched
+            save filter
+
+          SPAN
+            style: 
+              fontSize: 16
+              verticalAlign: 'text-bottom'
+              color: '#666'
+            "only "
+
+          I 
+            className: "fa fa-star"
+            style: 
+              color: logo_red
+              verticalAlign: 'text-bottom'
+
+              # width: 30
+              # height: 30
+
+
+
+
+
+
 
       # List all clusters
       for cluster, index in proposals.clusters or []

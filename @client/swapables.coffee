@@ -286,11 +286,13 @@ window.SimpleHomepage = ReactiveComponent
                       style: secnd_column
                       Histogram
                         key: "histogram-#{proposal.slug}"
+                        proposal: proposal
                         opinions: opinionsForProposal(proposal)
                         width: 300
                         height: 50
                         enable_selection: false
                         draw_base: true
+                        live_update: true
 
 
   typeset : -> 

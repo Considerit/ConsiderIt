@@ -2777,7 +2777,6 @@ Homepage = ReactiveComponent
     , LIVE_UPDATE_INTERVAL
   
   componentWillUnmount : -> 
-    @clear_placeholder()
     clearInterval(@live_update)
 
 Header = ReactiveComponent

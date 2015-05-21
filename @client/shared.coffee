@@ -18,6 +18,7 @@ setInterval ->
 
       if key != '/current_user' || fetch('/current_user').logged_in
         arest.serverFetch(key)
+        #console.log "FETCHING #{key}"
 
 , LIVE_UPDATE_INTERVAL 
 

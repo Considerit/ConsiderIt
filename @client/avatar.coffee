@@ -141,12 +141,3 @@ window.Avatars = ReactiveComponent
       dangerouslySetInnerHTML: 
         __html: if avatars.avatars then avatars.avatars else ''
 
-  componentDidMount : -> 
-    @live_update = setInterval => 
-      arest.serverFetch('/avatars')
-    , LIVE_UPDATE_INTERVAL * 5
-  
-  componentWillUnmount : -> 
-    @clear_placeholder()
-    clearInterval(@live_update)
-

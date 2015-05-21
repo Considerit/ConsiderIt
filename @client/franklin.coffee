@@ -35,6 +35,8 @@ require './development'
 require './god'
 require './notifications'
 
+
+
 ## ########################
 ## Initialize defaults for client data
 
@@ -43,19 +45,6 @@ fetch 'decisionboard',
   
 fetch 'root',
   opinions_to_publish : []
-
-# Fetch current user every minute so that if the user gets
-# logged out (e.g. by server deploy after letting a browser window stay open), 
-# their browser will accurately reflect reality. 
-# Only do this if user is already logged in, so that we don't 
-# accidently interfere with a login process.
-# BONUS: fetches on-site notifications
-fetch '/current_user'
-setInterval -> 
-  current_user = fetch '/current_user'
-  if current_user.logged_in
-    arest.serverFetch('/current_user')
-, LIVE_UPDATE_INTERVAL
 
 window.lefty = false
 
@@ -563,13 +552,6 @@ Proposal = ReactiveComponent
     if (@max_description_height and @local.description_collapsed == undefined \
         and $('.proposal_details').height() > @max_description_height)
       @local.description_collapsed = true; save(@local)
-
-    @live_update = setInterval => 
-      arest.serverFetch(@page.key)
-    , LIVE_UPDATE_INTERVAL
-
-  componentWillUnmount : -> 
-    clearInterval(@live_update)
 
   renderDescriptionField : (field) ->
     symbol = if field.expanded then 'fa-chevron-down' else 'fa-chevron-right'
@@ -2260,13 +2242,9 @@ Discussion = ReactiveComponent
   componentDidUpdate : -> @fixBodyHeight()
   componentDidMount : -> 
     @fixBodyHeight()
-    @live_update = setInterval => 
-      arest.serverFetch(@props.key)
-    , LIVE_UPDATE_INTERVAL
   
   componentWillUnmount : -> 
     @clear_placeholder()
-    clearInterval(@live_update)
 
   clear_placeholder : -> 
     $body = $('.reasons_region')
@@ -2770,15 +2748,7 @@ Homepage = ReactiveComponent
       save doc
 
     customization('Homepage')()
-
-  componentDidMount : -> 
-    @live_update = setInterval => 
-      arest.serverFetch('/proposals')
-    , LIVE_UPDATE_INTERVAL
   
-  componentWillUnmount : -> 
-    clearInterval(@live_update)
-
 Header = ReactiveComponent
   displayName: 'Header'
 

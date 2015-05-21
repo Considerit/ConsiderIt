@@ -292,7 +292,6 @@ window.SimpleHomepage = ReactiveComponent
                         height: 50
                         enable_selection: false
                         draw_base: true
-                        live_update: true
 
 
   typeset : -> 

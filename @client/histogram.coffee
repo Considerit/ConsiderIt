@@ -524,18 +524,8 @@ window.Histogram = ReactiveComponent
   componentDidMount: ->     
     @physicsSimulation()
 
-    if @props.live_update
-      @live_update = setInterval => 
-        arest.serverFetch("/page/#{@props.proposal.slug}")
-      , LIVE_UPDATE_INTERVAL
-
   componentDidUpdate: -> 
     @physicsSimulation()
-
-  componentWillUnmount : -> 
-    if @live_update
-      clearInterval @live_update
-
 
 
 #####

@@ -7,7 +7,19 @@ window.styles = ""
 
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 
-window.LIVE_UPDATE_INTERVAL = 1000 * 60
+window.LIVE_UPDATE_INTERVAL = 1000  #1000 * 60
+
+# live updating
+setInterval ->
+  dependent_keys = []
+  for key of arest.components_4_key.hash
+    if key[0] == '/' && arest.components_4_key.get(key).length > 0 && \
+       !key.match(/\/(user|opinion|proposal|point)\//)
+
+      if key != '/current_user' || fetch('/current_user').logged_in
+        arest.serverFetch(key)
+
+, LIVE_UPDATE_INTERVAL 
 
 
 # layout constants

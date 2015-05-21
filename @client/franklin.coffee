@@ -44,18 +44,18 @@ fetch 'decisionboard',
 fetch 'root',
   opinions_to_publish : []
 
-# Fetch current user every 2 minutes so that if the user gets
+# Fetch current user every minute so that if the user gets
 # logged out (e.g. by server deploy after letting a browser window stay open), 
 # their browser will accurately reflect reality. 
 # Only do this if user is already logged in, so that we don't 
 # accidently interfere with a login process.
-# TODO: Remove this after we have true realtime updates
+# BONUS: fetches on-site notifications
 fetch '/current_user'
 setInterval -> 
   current_user = fetch '/current_user'
   if current_user.logged_in
     arest.serverFetch('/current_user')
-, 2 * 60 * 1000
+, LIVE_UPDATE_INTERVAL
 
 window.lefty = false
 
@@ -443,6 +443,7 @@ Proposal = ReactiveComponent
 
               Histogram
                 key: namespaced_key('histogram', @proposal)
+                proposal: @proposal
                 opinions: opinionsForProposal(@proposal)
                 width: BODY_WIDTH
                 height: if fetch('histogram-dock').docked then 50 else 170
@@ -562,6 +563,13 @@ Proposal = ReactiveComponent
     if (@max_description_height and @local.description_collapsed == undefined \
         and $('.proposal_details').height() > @max_description_height)
       @local.description_collapsed = true; save(@local)
+
+    @live_update = setInterval => 
+      arest.serverFetch(@page.key)
+    , LIVE_UPDATE_INTERVAL
+
+  componentWillUnmount : -> 
+    clearInterval(@live_update)
 
   renderDescriptionField : (field) ->
     symbol = if field.expanded then 'fa-chevron-down' else 'fa-chevron-right'
@@ -2250,8 +2258,16 @@ Discussion = ReactiveComponent
   # also add the space to the decision board (so that scrolling
   # to bottom of discussion can occur)
   componentDidUpdate : -> @fixBodyHeight()
-  componentDidMount : -> @fixBodyHeight()
-  componentWillUnmount : -> @clear_placeholder()
+  componentDidMount : -> 
+    @fixBodyHeight()
+    @live_update = setInterval => 
+      arest.serverFetch(@props.key)
+    , LIVE_UPDATE_INTERVAL
+  
+  componentWillUnmount : -> 
+    @clear_placeholder()
+    clearInterval(@live_update)
+
   clear_placeholder : -> 
     $body = $('.reasons_region')
     $body.find('.discussion_placeholder').remove()
@@ -2266,6 +2282,8 @@ Discussion = ReactiveComponent
     $body.append(placeholder)
     if $(@getDOMNode()).parents('.opinion_region').length > 0
       $('.decision_board_body').append placeholder
+    
+
 
 
 SubmitFactCheck = ReactiveComponent
@@ -2753,6 +2771,14 @@ Homepage = ReactiveComponent
 
     customization('Homepage')()
 
+  componentDidMount : -> 
+    @live_update = setInterval => 
+      arest.serverFetch('/proposals')
+    , LIVE_UPDATE_INTERVAL
+  
+  componentWillUnmount : -> 
+    @clear_placeholder()
+    clearInterval(@live_update)
 
 Header = ReactiveComponent
   displayName: 'Header'

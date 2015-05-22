@@ -286,7 +286,7 @@ customizations['seattle2035'] =
   point_labels : pro_con
   slider_pole_labels : agree_disagree
   homie_histo_title: "Citizen opinions"
-
+  show_proposer_icon: true
 
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'

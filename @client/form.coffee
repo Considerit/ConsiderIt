@@ -98,10 +98,10 @@ window.WysiwygEditor = ReactiveComponent
         title: 'Numbered list'
       },{
         className: "ql-bold fa fa-bold", 
-        title: 'Bold'
+        title: 'Bold selected text'
       },{
         className: "ql-link fa fa-link", 
-        title: 'Link'
+        title: 'Hyperlink selected text'
       }, 
       # {
       #   className: "ql-image fa fa-image", 
@@ -197,17 +197,16 @@ window.WysiwygEditor = ReactiveComponent
 
       if source == 'user' && my_data.html.indexOf(' style') > -1
         # strip out any style tags the user may have pasted into the html
+
         removeStyles = (el) ->
           el.removeAttribute 'style'
           if el.childNodes.length > 0
             for child in el.childNodes
               removeStyles child if child.nodeType == 1
 
-        node = $(my_data.html)[0]
+        node = @editor.root
         removeStyles node
-        @editor.setHTML $(node).html()
-        return # the above line will trigger this text-change event 
-               # again, w/o the style html
+        my_data.html = @editor.getHTML()
 
       save my_data
 

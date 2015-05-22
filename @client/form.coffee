@@ -87,21 +87,40 @@ window.WysiwygEditor = ReactiveComponent
       @local.initialized = true
       save @local; save my_data
 
-    toolbar_button_style = 
-      cursor: 'pointer'
-      padding: 8
-      backgroundColor: 'white'
-      color: '#414141'
-      margin: '3px 3px'
-      border: '1px solid #aaa'
-      borderRadius: 3
-      boxShadow: '0 1px 2px rgba(0,0,0,.2)'
-
     show_placeholder = (!my_data.html || (@editor?.getText().trim().length == 0)) && !!@props.placeholder
+
+    toolbar_items = [
+      {
+        className: "ql-bullet fa fa-list-ul", 
+        title: 'Bulleted list'
+      },{
+        className: "ql-list fa fa-list-ol", 
+        title: 'Numbered list'
+      },{
+        className: "ql-bold fa fa-bold", 
+        title: 'Bold'
+      },{
+        className: "ql-link fa fa-link", 
+        title: 'Link'
+      }, 
+      # {
+      #   className: "ql-image fa fa-image", 
+      #   title: 'Insert image'
+      # },
+    ]
+
+    if fetch('/current_user').is_super_admin
+      toolbar_items.push 
+        className: 'fa fa-code'
+        title: 'Directly edit HTML'
+        onClick: => @local.edit_code = true; save @local
+
 
     DIV 
       id: @props.key
-      style: @props.style
+      style: _.extend {}, @props.style,
+        position: 'relative'
+
       onClick: (ev) -> 
         # Catch any clicks within the editor area to prevent the 
         # toolbar from being hidden via the root level 
@@ -125,44 +144,25 @@ window.WysiwygEditor = ReactiveComponent
         [DIV 
           id: 'toolbar'
           style: 
-            position: 'fixed'
+            position: 'absolute'
+            width: 30
+            left: -32
             top: 0
-            backgroundColor: '#e7e7e7'
-            boxShadow: '0 1px 2px RGBA(0,0,0,.2)'
-            zIndex: 999
-            padding: '0 12px'
             display: if wysiwyg_editor.showing == @props.key then 'block' else 'none'
 
-          I 
-            className: "ql-bullet fa fa-list-ul"
-            style: toolbar_button_style
-            title: 'Bulleted list'
-
-          I 
-            className: "ql-list fa fa-list-ol"
-            style: toolbar_button_style
-            title: 'Numbered list'
-
-          I 
-            className: "ql-bold fa fa-bold"
-            style: toolbar_button_style
-            title: 'Bold'
-
-          I 
-            className: "ql-link fa fa-link"
-            style: toolbar_button_style
-            title: 'Link'
-
-          # I 
-          #   className: "ql-image fa fa-image"
-          #   style: toolbar_button_style
-          #   title: 'Insert image'
-
-          if fetch('/current_user').is_super_admin
-            I
-              className: 'fa fa-code'
-              style: toolbar_button_style
-              onClick: => @local.edit_code = true; save @local
+          for button in toolbar_items
+            I 
+              className: button.className
+              style: 
+                fontSize: 14
+                width: 28
+                textAlign: 'center'
+                cursor: 'pointer'
+                padding: 2
+                border: '1px solid #aaa'
+                borderRadius: 3
+              title: button.title
+              onClick: if button.onClick then button.onClick
 
 
         DIV 
@@ -220,6 +220,9 @@ html .ql-container{
   padding: 0;
   overflow-x: visible;
   overflow-y: visible;
+}
+.ql-editor {
+  min-height: 120px;
 }
 .ql-container:after{
   content: attr(data-placeholder);

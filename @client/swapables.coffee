@@ -88,7 +88,7 @@ window.SimpleHomepage = ReactiveComponent
             id: 'watching_filter'
             style: 
               position: 'absolute'
-              left: if lefty then 112 else -100  
+              left: if lefty then 112 else -87  
               top: 5
               border: "1px solid #bbb"
               opacity: if !filter.watched && !@local.hover_watch_filter then .3
@@ -105,8 +105,8 @@ window.SimpleHomepage = ReactiveComponent
               tooltip.coords = $(@getDOMNode()).find('#watching_filter').offset()
               tooltip.tip = "Filter proposals to those you're watching"
               save tooltip
-
               save @local
+
             onMouseLeave: => 
               @local.hover_watch_filter = false
               save @local

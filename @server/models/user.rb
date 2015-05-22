@@ -36,10 +36,17 @@ class User < ActiveRecord::Base
 
   after_post_process do 
     img_data = self.avatar.queued_for_write[:small].read
+
     self.avatar.queued_for_write[:small].rewind
     data = Base64.encode64(img_data)
-    self.b64_thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
-    
+
+    begin
+      self.b64_thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
+      save
+    rescue => e
+      raise "Could not process image for user #{self.id}, it is too large!"
+    end
+
     JSON.parse(self.active_in).each do |subdomain_id|
       Rails.cache.delete("avatar-digest-#{subdomain_id}") 
     end

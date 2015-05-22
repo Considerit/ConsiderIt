@@ -234,7 +234,7 @@ customizations.default =
 
 
   show_slider_feedback: true
-  slider_pole_labels : support_oppose
+  slider_pole_labels : agree_disagree
 
 
   docking_proposal_header : false
@@ -274,6 +274,96 @@ customizations.default =
 
 ##########################
 # SUBDOMAIN CONFIGURATIONS
+
+
+################
+# seattle2035
+
+seattle2035_cream = "#FCFBE6"
+seattle2035_pink = '#F06668'
+
+customizations['seattle2035'] = 
+  point_labels : pro_con
+  slider_pole_labels : agree_disagree
+  homie_histo_title: "Citizen opinions"
+
+
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
+
+    render: ->
+      DIV
+        style:
+          position: 'relative'
+
+        A 
+          href: 'http://2035.seattle.gov/'
+          target: '_blank'
+          style: 
+            display: 'block'
+            position: 'absolute'
+            top: 10
+            left: 20
+            color: seattle2035_pink
+
+          I 
+            className: 'fa fa-chevron-left'
+            style: 
+              display: 'inline-block'
+              marginRight: 5
+
+          '2035.seattle.gov'
+
+        IMG
+          style: 
+            width: '100%'
+            display: 'block'
+
+          src: asset('seattle2035/banner.png')
+
+        ProfileMenu()
+
+        DIV 
+          style: 
+            backgroundColor: seattle2035_pink
+            color: seattle2035_cream
+            padding: '20px 0'
+
+          DIV 
+            style: 
+              width: CONTENT_WIDTH - 100
+              margin: 'auto'
+
+            DIV 
+              style: 
+                fontSize: 48
+                fontWeight: 600
+
+              'How should Seattle grow? You tell us!'
+
+            DIV 
+              style: 
+                fontSize: 24
+
+              "The "
+
+              A 
+                href: 'google.com'
+                target: '_blank'
+
+                "Draft Environmental Impact Statement"
+
+              " is available for review."
+
+              BR null
+              "Please leave your feedback on some of the pivotal questions listed below."
+
+
+
+
+
+
+
 
 ################
 # sosh
@@ -696,7 +786,7 @@ styles += """
 
 customizations.bitcoin = 
 
-  auth: 
+  auth:   
     user_questions : [
       {
         tag: 'bitcoin_foundation_member.editable'
@@ -713,6 +803,7 @@ customizations.bitcoin =
   collapse_descriptions_at: 600
 
   'cluster/Candidates': 
+    slider_pole_labels: support_oppose
     label: "Winter 2015 board election"
     description: 
       DIV null, 
@@ -878,6 +969,8 @@ customizations['bitcoin-demo'] =
 # Living Voters Guide
 
 customizations.livingvotersguide = 
+
+  slider_pole_labels: support_oppose
 
   Homepage: LearnDecideShareHomepage
 

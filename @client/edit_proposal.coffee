@@ -121,12 +121,12 @@ window.EditProposal = ReactiveComponent
               'Make it '
               SPAN 
                 style: 
-                  color: focus_blue
+                  fontWeight: 600
                 "unambiguous"
               ' and '
               SPAN 
                 style: 
-                  color: focus_blue
+                  fontWeight: 600
                 "free of language errors"
               '.'
 
@@ -403,14 +403,6 @@ window.EditProposal = ReactiveComponent
               marginTop: 35
             value:"#{if @props.fresh then 'Publish' else 'Update'}"
             onClick: @saveProposal
-
-        DIV 
-          style: 
-            fontSize: 18
-            width: 400
-            marginTop: 5
-
-          "You are accepting responsibility for improving your proposal given input from others." 
 
 
   saveProposal : -> 

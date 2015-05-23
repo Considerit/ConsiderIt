@@ -318,6 +318,7 @@ customizations['seattle2035'] =
           style: 
             width: '100%'
             display: 'block'
+            paddingTop: 50
 
           src: asset('seattle2035/banner.png')
 
@@ -325,9 +326,9 @@ customizations['seattle2035'] =
 
         DIV 
           style: 
-            backgroundColor: seattle2035_pink
-            color: seattle2035_cream
+            borderTop: "5px solid #{seattle2035_pink}"
             padding: '20px 0'
+            #marginTop: 50
 
           DIV 
             style: 
@@ -336,6 +337,7 @@ customizations['seattle2035'] =
 
             DIV 
               style: 
+                color: seattle2035_pink
                 fontSize: 48
                 fontWeight: 600
 
@@ -345,17 +347,17 @@ customizations['seattle2035'] =
               style: 
                 fontSize: 24
 
-              "The "
+              # "The "
 
-              A 
-                href: 'google.com'
-                target: '_blank'
+              # A 
+              #   href: 'google.com'
+              #   target: '_blank'
 
-                "Draft Environmental Impact Statement"
+              #   "Draft Environmental Impact Statement"
 
-              " is available for review."
+              # " is available for review."
 
-              BR null
+              # BR null
               "Please leave your feedback on some of the pivotal questions listed below."
 
 

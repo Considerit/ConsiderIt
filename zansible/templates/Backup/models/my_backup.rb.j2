@@ -52,7 +52,7 @@ Backup::Model.new(:'{{ ansible_hostname }}-dump', 'Backups up considerit databas
     # s3.region            = "us-east-1"
     s3.bucket            = "considerit-backups"
     s3.path              = "{{ ansible_hostname }}-considerit"
-    s3.keep              = 10
+    s3.keep              = 50
   end
 
   store_with Dropbox do |db|
@@ -65,7 +65,7 @@ Backup::Model.new(:'{{ ansible_hostname }}-dump', 'Backups up considerit databas
     # :app_folder (default) or :dropbox
     db.access_type = :app_folder
     db.path        = "{{ ansible_hostname }}-considerit"
-    db.keep        = 10
+    db.keep        = 4
   end
 
   ##

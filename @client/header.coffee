@@ -1,4 +1,56 @@
 require './profile_menu'
+require './customizations'
+
+
+window.Header = ReactiveComponent
+  displayName: 'Header'
+
+  render : ->
+    current_user = fetch('/current_user')
+    subdomain = fetch('/subdomain')
+
+    DIV 
+      style: 
+        position: 'relative'
+        zIndex: 2
+        margin: '0 auto'
+        backgroundColor: 'white'
+        minWidth: PAGE_WIDTH
+
+      if fetch('location').url == '/'
+        customization('HomepageHeader')()
+      else 
+        customization('NonHomepageHeader')()
+
+      DIV null, 
+        if fetch('location').url == '/about'
+          A 
+            href: '/'
+            style: 
+              position: 'absolute'
+              display: 'inline-block'
+              zIndex: 999
+              marginTop: 8
+              marginLeft: 16
+              fontWeight: 600
+            I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
+            SPAN 
+              style: 
+                fontSize: 15
+                paddingLeft: 6
+                color: '#777'
+                verticalAlign: 'text-bottom'
+              'Home'
+
+      DIV 
+        style: 
+          backgroundColor: '#eee'
+          color: '#f00'
+          padding: '5px 20px'
+          display: if @root.server_error then 'block' else 'none'
+        'Warning: there was a server error!'
+
+
 
 
 window.DefaultHeader = ReactiveComponent

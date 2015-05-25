@@ -25,11 +25,11 @@ require './customizations'
 require './form'
 require './histogram'
 require './roles'
+require './homepage'
 require './shared'
 require './opinion_slider'
 require './state_dash'
 require './state_graph'
-require './swapables'
 require './tooltip'
 require './development'
 require './god'
@@ -201,7 +201,7 @@ Proposal = ReactiveComponent
          (can_opine == Permission.DISABLED && your_opinion.published))
       updateProposalMode('results', 'permission not granted for crafting')
     
-    proposal_header = (customization('ProposalHeader', @proposal))()
+    proposal_header = (customization('ProposalNavigation', @proposal))()
 
     newpoint_threshold = @buildNewPointThreshold()
     draw_handle = (can_opine not in [Permission.DISABLED, \
@@ -396,9 +396,6 @@ Proposal = ReactiveComponent
       new Date()
 
 
-
-
-
 ##
 # ProposalDescription
 #
@@ -419,17 +416,11 @@ ProposalDescription = ReactiveComponent
     #   [ {"group": "group name", 
     #      "items": [ {"label": "field one", "html": "<p>some details</p>"}, ... ]}, 
     #   ...]
-    if !@local.description_fields
-      # Deserialize the description fields. 
-      # TODO: Do this on the server.
-      # This will fail for proposals that are not using the serialized JSON format; 
-      # For now, we'll just catch the error and carry on 
-      try 
-        @local.description_fields = $.parseJSON(@proposal.description_fields)
-        @local.expanded_field = null
-      catch
-        @local.description_fields = null
 
+    if !@local.description_fields
+      @local.description_fields = @proposal.description_fields
+      @local.expanded_field = null
+      save @local
 
     @max_description_height = customization('collapse_descriptions_at', @proposal)
 
@@ -496,7 +487,7 @@ ProposalDescription = ReactiveComponent
         SPAN dangerouslySetInnerHTML:{__html: @proposal.description}
 
 
-      if @local.description_fields
+      if @local.description_fields.length > 0
         DIV 
           id: 'description_fields'
           style: 
@@ -594,7 +585,7 @@ ProposalDescription = ReactiveComponent
 
   componentDidUpdate : ->
     subdomain = fetch('/subdomain')
-    if subdomain.name == 'RANDOM2015' && @local.description_fields && $('#description_fields').find('.MathJax').length == 0
+    if subdomain.name == 'RANDOM2015' && @local.description_fields.length > 0 && $('#description_fields').find('.MathJax').length == 0
       MathJax.Hub.Queue(["Typeset",MathJax.Hub,"description_fields"])
 
   renderDescriptionField : (field) ->
@@ -2769,81 +2760,6 @@ styles += """
   bottom: -19px;
 }
 """
-
-
-Homepage = ReactiveComponent
-  displayName: 'Homepage'
-  render: ->
-    doc = fetch('document')
-    subdomain = fetch('subdomain')
-
-    title = subdomain.app_title || subdomain.name
-    if doc.title != title
-      doc.title = title
-      save doc
-
-    customization('Homepage')()
-  
-Header = ReactiveComponent
-  displayName: 'Header'
-
-  render : ->
-    current_user = fetch('/current_user')
-    subdomain = fetch('/subdomain')
-
-    DIV 
-      style: 
-        position: 'relative'
-        zIndex: 2
-        margin: '0 auto'
-        backgroundColor: 'white'
-        minWidth: PAGE_WIDTH
-
-      if fetch('location').url == '/'
-        customization('HomepageHeader')()
-      else 
-        customization('NonHomepageHeader')()
-
-      DIV null, 
-        if fetch('location').url == '/about'
-          A 
-            href: '/'
-            style: 
-              position: 'absolute'
-              display: 'inline-block'
-              zIndex: 999
-              marginTop: 8
-              marginLeft: 16
-              fontWeight: 600
-            I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
-            SPAN 
-              style: 
-                fontSize: 15
-                paddingLeft: 6
-                color: '#777'
-                verticalAlign: 'text-bottom'
-              'Home'
-
-      DIV 
-        style: 
-          backgroundColor: '#eee'
-          color: '#f00'
-          padding: '5px 20px'
-          display: if @root.server_error then 'block' else 'none'
-        'Warning: there was a server error!'
-
-
-Footer = ReactiveComponent
-  displayName: 'Footer'
-
-  render : ->
-    DIV 
-      style: 
-        position: 'relative'
-        zIndex: 0
-      customization('Footer')()
-
-
 
 About = ReactiveComponent
   displayName: 'About'

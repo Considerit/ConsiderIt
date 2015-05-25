@@ -48,8 +48,6 @@ class CommentController < ApplicationController
         result['key'] = "/comment/#{comment.id}?original_id=#{original_id}"
         dirty_key "/comments/#{point.id}"
 
-        point.follow!(current_user, :follow => true, :explicit => false)
-
         # TODO: BUG: comment count won't accurate if this comment has to be 
         #            moderated first...
         point.comment_count = point.comments.count

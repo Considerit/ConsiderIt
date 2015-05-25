@@ -6,10 +6,12 @@
 
 require './browser_location' # for loadPage
 require './shared'
-require './swapables'
+require './footer'
 require './profile_menu'
 require './slider'
 require './header'
+require './homepage'
+require './proposal_navigation'
 
 
 #######
@@ -175,33 +177,51 @@ yes_no =
   individual: 
     support: 'Yes'
     oppose: 'No'
+    support_sub: ''
+    oppose_sub: ''    
   group: 
     support: 'Yes'
     oppose: 'No'
+    support_sub: ''
+    oppose_sub: ''
 
 ready_not_ready = 
   individual: 
     support: 'Ready'
     oppose: 'Not ready'
+    support_sub: ''
+    oppose_sub: ''
   group: 
     support: 'Ready'
     oppose: 'Not ready'  
+    support_sub: ''
+    oppose_sub: ''
 
 agree_disagree = 
   individual: 
     support: 'Agree'
     oppose: 'Disagree'
+    support_sub: ''
+    oppose_sub: ''
+
   group: 
     support: 'Agree'
     oppose: 'Disagree'  
+    support_sub: ''
+    oppose_sub: ''
 
 plus_minus = 
   individual: 
     support: '+'
     oppose: '–'
+    support_sub: ''
+    oppose_sub: ''
+
   group: 
     support: '+'
     oppose: '–'
+    support_sub: ''
+    oppose_sub: ''
 
 # application options
 conference_config = 
@@ -259,7 +279,7 @@ customizations.default =
     user_questions: []
 
   Homepage : SimpleHomepage
-  ProposalHeader : SimpleProposalHeading
+  ProposalNavigation : DefaultProposalNavigation
   docking_proposal_header : false
 
   HomepageHeader : DefaultHeader
@@ -478,7 +498,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
 
   slider_pole_labels : agree_disagree
 
-  ProposalHeader: ProposalHeaderWithMenu
+  ProposalNavigation: ProposalNavigationWithMenu
   docking_proposal_header : true
 
   auth: 
@@ -977,7 +997,7 @@ customizations.livingvotersguide =
 
   Homepage: LearnDecideShareHomepage
 
-  ProposalHeader: ProposalHeaderWithMenu
+  ProposalNavigation: ProposalNavigationWithMenu
   docking_proposal_header : true
 
   homepage_heading_columns : [ 

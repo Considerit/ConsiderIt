@@ -71,7 +71,6 @@ class Proposal < ActiveRecord::Base
       case subdomain.name 
         when 'bitcoin'
           manual_clusters = ['Our Mission', 'Our Values',  'Our Goals', 'Our Focus', 'Our Actions', 'Resolutions', 'Foundation Goals', 'Board Proposals', 'Member Proposals', 'Proposals', 'Candidates']
-        
 
         when 'RANDOM2015', 'program-committee-demo'
           manual_clusters = ['Submissions', 'Under Review', 'Probably Accept', 'Accepted', 'Probably Reject', 'Rejected']
@@ -188,7 +187,7 @@ class Proposal < ActiveRecord::Base
     end
 
     json['notifications'] = Notifier.filter_unmoderated(notifications)
-
+    json['description_fields'] = JSON.parse(json['description_fields'] || '[]')
     json
   end
 

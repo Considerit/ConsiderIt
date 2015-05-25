@@ -48,9 +48,6 @@ class OpinionController < ApplicationController
       })
     end
 
-    # Need to add following in somewhere else
-    #proposal.follow!(current_user, :follow => params[:follow_proposal], :explicit => true)
-
     #proposal.delay.update_metrics()
     
     dirty_key "/opinion/#{opinion.id}"

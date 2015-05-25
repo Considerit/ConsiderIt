@@ -12,7 +12,7 @@ class Proposal < ActiveRecord::Base
 
   acts_as_tenant :subdomain
 
-  include Followable, Moderatable, Notifier
+  include Moderatable, Notifier
   
   class_attribute :my_public_fields, :my_summary_fields
   self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :published]
@@ -260,34 +260,7 @@ class Proposal < ActiveRecord::Base
     end
     enabled && active
   end
-
-  # The user is subscribed to proposal notifications _implicitly_ if:
-  #   • they have an opinion (published or not)
-  def following(follower)
-    explicit = get_explicit_follow follower #using the Followable polymophic method
-    if explicit
-      return explicit.follow
-    else
-      return opinions.where(:user_id => follower.id, :published => true).count > 0
-    end
-  end
   
-  def followers
-    explicit = Follow.where(:followable_type => self.class.name, :followable_id => self.id, :explicit => true)
-    explicit_no = explicit.all.select {|f| !f.follow}.map {|f| f.user_id}
-    explicit_yes = explicit.all.select {|f| f.follow}.map {|f| f.user}
-
-    implicit_yes = opinions.where(:published => true)
-    if explicit_no.count > 0 
-      implicit_yes = implicit_yes.where("user_id NOT IN (?)", explicit_no).all.map {|o| o}
-    end
-    implicit_yes = implicit_yes.map {|o| o.user}
-
-    all_followers = explicit_yes + implicit_yes
-
-    all_followers.uniq
-  end
-
   def title(max_len = 140)
     if name && name.length > 0
       my_title = name

@@ -82,7 +82,7 @@ class AssessmentController < ApplicationController
     request.save
 
     begin
-      assessment.root_object.follow!(current_user, :follow => true, :explicit => false)
+      current_user.update_subscription_key(assessment.proposal.key, 'watched', :force => false)
     rescue
     end
 

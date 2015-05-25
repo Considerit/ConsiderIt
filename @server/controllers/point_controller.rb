@@ -89,12 +89,6 @@ class PointController < ApplicationController
 
     errors = []
 
-    if params.has_key?(:is_following) && params[:is_following] != point.following(current_user)
-      # if is following has changed, that means the user has explicitly expressed 
-      # whether they want to be subscribed or not
-      point.follow! current_user, {:follow => params[:is_following], :explicit => true}
-    end
-
     if permit('update point', point) > 0
 
       fields = ["nutshell", "text", "hide_name"]

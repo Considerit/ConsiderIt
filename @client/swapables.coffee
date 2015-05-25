@@ -734,7 +734,6 @@ window.SimpleProposalHeading = ReactiveComponent
   render : ->
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
-    heading_fontsize = 45
     show_proposer_icon = customization('show_proposer_icon', "cluster/#{@proposal.cluster}")
 
     mod = (n, m) -> ((n % m) + m) % m
@@ -756,7 +755,6 @@ window.SimpleProposalHeading = ReactiveComponent
 
     DIV
       style:
-        paddingBottom: 15
         margin: if lefty then "30px 0 0 300px" else "30px auto 0 auto"
         width: BODY_WIDTH + 20
         position: 'relative'
@@ -806,18 +804,6 @@ window.SimpleProposalHeading = ReactiveComponent
           visibility: if !@proposal.cluster then 'hidden'
 
         @proposal.cluster or '-'
-
-      # Proposal name
-      DIV
-        id: 'proposal_name'
-        style:
-          lineHeight: 1.2
-          fontWeight: 700
-          fontSize: heading_fontsize
-
-        dangerouslySetInnerHTML:{__html: @proposal.name}
-
-        
 
 
   componentDidUpdate : -> @typeset()
@@ -893,6 +879,7 @@ window.ProposalHeaderWithMenu = ReactiveComponent
         color: 'white'
         zIndex: 999
         position: 'relative'
+        marginBottom: 20
       A
         href: '/'
         style: {position: 'absolute', display: 'inline-block', top: 10, left: 12},

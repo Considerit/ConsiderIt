@@ -260,6 +260,7 @@ customizations.default =
 
   Homepage : SimpleHomepage
   ProposalHeader : SimpleProposalHeading
+  docking_proposal_header : false
 
   HomepageHeader : DefaultHeader
   NonHomepageHeader: ShortHeader
@@ -565,7 +566,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
           borderBottom: "2px solid #{ecast_highlight_color}"
           padding: "10px 0"
           backgroundImage: "url(#{asset('ecast/bg-small.png')})"
-          height: 98
+          height: 94
 
         A 
           href: "http://ecastonline.org/"
@@ -1025,16 +1026,22 @@ customizations.livingvotersguide =
     render: ->
       logo_style =
         position: 'absolute'
-        left: 40
+        left: 60
         top: 11
         width: 252
         zIndex: 1
 
-      DIV className: 'header', 
-        STYLE null, 
-          """
-          .header { height: 275px; background-image: url(#{asset('livingvotersguide/bg.jpg')}); background-position: center; background-size: cover; }
-          """
+      homepage = true #fetch('location').url == '/'
+
+      DIV 
+        className: 'header'
+        style: 
+          height: if !homepage then 290 else 275 
+          backgroundImage: "url(#{asset('livingvotersguide/bg.jpg')})"
+          backgroundPosition: 'center'
+          backgroundSize: 'cover'
+          borderBottom: if !homepage then "15px solid #a5ce3a"
+
 
         DIV
           style:
@@ -1055,21 +1062,22 @@ customizations.livingvotersguide =
           style:
             color: 'white'
             height: 137
-            #marginBottom: 10
             clear: 'both'
             paddingTop: 69
 
-          # Online Intelligence for Washington Voters
+          # Tagline
           DIV
             style:
               fontSize: 32
-              padding: '22px 40px 0 332px'
-              width: 838
+              padding: '22px 40px 0 352px'
+              width: 858
               height: '100%'
               float: 'left'
               fontWeight: 600
-            SPAN null, 'Created by the people '
-            'and for the people of Washington state'
+
+            SPAN null, 
+              'Created by the people and for the people of Washington state'
+
             DIV
               style: 
                 marginBottom: 15
@@ -1312,8 +1320,6 @@ styles += """
 #####################
 # Tigard
 customizations.tigard = 
-  Homepage: LearnDecideShareHomepage
-  ProposalHeader: ProposalHeaderWithMenu
 
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'

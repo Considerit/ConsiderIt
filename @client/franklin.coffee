@@ -171,8 +171,6 @@ Proposal = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
-    @max_description_height = customization('collapse_descriptions_at', @proposal)
-
     has_focus = \
       if get_selected_point()
         'point'
@@ -202,28 +200,6 @@ Proposal = ReactiveComponent
                         Permission.NOT_LOGGED_IN, Permission.INSUFFICIENT_INFORMATION] || 
          (can_opine == Permission.DISABLED && your_opinion.published))
       updateProposalMode('results', 'permission not granted for crafting')
-
-    proposer = fetch(@proposal.user)
-
-    # Description fields are the expandable details that help people drill
-    # into the proposal. They are very specific to the type of proposal (e.g. for
-    # an LVG ballot measure, one of the fields might be "fiscal impact statement").  
-    # We're now storing all these fields in proposal.description_fields
-    # as a serialized JSON object of one of the following structures:
-    #   [ {"label": "field one", "html": "<p>some details</p>"}, ... ] 
-    #   [ {"group": "group name", 
-    #      "items": [ {"label": "field one", "html": "<p>some details</p>"}, ... ]}, 
-    #   ...]
-    if !@local.description_fields
-      # Deserialize the description fields. 
-      # TODO: Do this on the server.
-      # This will fail for proposals that are not using the serialized JSON format; 
-      # For now, we'll just catch the error and carry on 
-      try 
-        @local.description_fields = $.parseJSON(@data().description_fields)
-        @local.expanded_field = null
-      catch
-        @local.description_fields = null
     
     proposal_header = (customization('ProposalHeader', @proposal))()
 
@@ -237,7 +213,9 @@ Proposal = ReactiveComponent
 
     DIV key:@props.slug,
 
-      DIV className: 'proposal_header',
+      DIV 
+        className: 'proposal_header'
+
         if customization('docking_proposal_header', @proposal)
           Dock
             dock_on_zoomed_screens: false
@@ -249,150 +227,12 @@ Proposal = ReactiveComponent
 
       DIV null,
 
-        #description
-        DIV 
-          style: 
-            width: DESCRIPTION_WIDTH
-            position: 'relative'
-            margin: 'auto'
-            marginLeft: if lefty then 300
-            #marginRight: if lefty then 0
-            fontSize: 16
-            marginBottom: 18
-
-          if !@proposal.active
-            SPAN 
-              style: 
-                display: 'inline-block'
-                color: 'rgb(250, 146, 45)'
-                padding: '4px 0px'
-                marginTop: 10
-              I className: 'fa fa-info-circle', style: {paddingRight: 7}
-              'Closed to new contributions at this time.'
-
-          # TODO: now that we're accepting user contributed proposals, we need 
-          # to SANITIZE the description
-          DIV
-            className: 'proposal_details'
-            style:
-              paddingTop: '1em'
-              fontSize: 18
-              position: 'relative'
-              maxHeight: if @local.description_collapsed then @max_description_height
-              overflowY: 'hidden'
-            if @local.description_collapsed
-              DIV
-                style:
-                  backgroundColor: 'white'
-                  backgroundColor: '#f9f9f9'
-                  width: '100%'
-                  position: 'absolute'
-                  bottom: 0
-                  textDecoration: 'underline'
-                  cursor: 'pointer'
-                  paddingTop: 10
-                  paddingBottom: 10
-                  fontWeight: 600
-                  textAlign: 'center'
-                onMouseDown: => @local.description_collapsed = false; save(@local)
-                'Expand full text'
-            SPAN dangerouslySetInnerHTML:{__html: @proposal.description}
-
-
-          if @local.description_fields
-            DIV 
-              id: 'description_fields'
-              style: 
-                marginTop: '1em'
-              for item in @local.description_fields
-                if item.group
-                  @renderDescriptionFieldGroup item
-                else
-                  @renderDescriptionField item
-
-          if permit('update proposal', @proposal) > 0
-            DIV null,
-              A 
-                style: {color: '#888'}
-                href: "#{@proposal.key}/edit"
-                'Edit'
-              A 
-                style: 
-                  color: '#888'
-                  padding: 10
-                  backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'
-                onClick: => 
-                  @local.edit_roles = !@local.edit_roles
-                  save @local
-                'Share'
-
-              if permit('delete proposal', @proposal) > 0
-                A
-                  style: {color: '#888'}
-                  onClick: => 
-                    if confirm('Delete this proposal forever?')
-                      destroy(@proposal.key)
-                      loadPage('/')
-                  'Delete'
-
-              if current_user.is_super_admin
-                SPAN 
-                  style:
-                    padding: 10
-
-                  onMouseEnter: => 
-                    @local.copy_to_subdomain = true
-                    save @local
-                  onMouseLeave: => 
-                    @local.copy_to_subdomain = false
-                    save @local
-
-                  A
-                    style: {color: '#888'}
-                    'Copy to subdomain'
-
-                  if @local.copy_to_subdomain
-                    subdomains = fetch('/subdomains').subs
-                    hues = getNiceRandomHues subdomains?.length
-                    
-                    UL 
-                      style: 
-                        display: 'inline'
-                      for sub, idx in subdomains
-                        LI
-                          style: 
-                            display: 'inline-block'
-                            listStyle: 'none'
-                          A
-                            href: "/proposal/#{@proposal.id}/copy_to/#{sub.id}"
-                            'data-nojax': false
-                            style: 
-                              padding: "4px 8px"
-                              fontSize: 18
-                              backgroundColor: hsv_to_rgb(hues[idx], .7, .5)
-                              color: 'white'
-                              display: 'inline-block'            
-                            sub.name
-
-
-
-
-          if @local.edit_roles
-            DIV 
-              style:
-                width: BODY_WIDTH
-                margin: 'auto'
-                backgroundColor: '#fafafa'
-                padding: '10px 60px'
-                marginLeft: (if lefty then 0)
-              ProposalRoles key: @proposal
-
+        ProposalDescription()
 
         # notifications
         if current_user?.logged_in          
           ActivityFeed()
 
-            
         #feelings
         DIV
           style:
@@ -544,14 +384,218 @@ Proposal = ReactiveComponent
     # is taller than either of the wing point columns
     $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height()} 
 
-    subdomain = fetch('/subdomain')
-    if subdomain.name == 'RANDOM2015' && @local.description_fields && $('#description_fields').find('.MathJax').length == 0
-      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"description_fields"])
+
+  buildNewPointThreshold : ->
+    # Grab the 10th percentile
+    points = @page.points || []
+    newpoint_threshold = 
+      (_.sortBy points, \
+                (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
+
+    (newpoint_threshold and Date.parse(newpoint_threshold.created_at)) or 
+      new Date()
+
+
+
+
+
+##
+# ProposalDescription
+#
+ProposalDescription = ReactiveComponent
+  displayName: 'ProposalDescription'
+
+  render : ->
+
+    current_user = fetch('/current_user')
+    subdomain = fetch '/subdomain'
+
+    # Description fields are the expandable details that help people drill
+    # into the proposal. They are very specific to the type of proposal (e.g. for
+    # an LVG ballot measure, one of the fields might be "fiscal impact statement").  
+    # We're now storing all these fields in proposal.description_fields
+    # as a serialized JSON object of one of the following structures:
+    #   [ {"label": "field one", "html": "<p>some details</p>"}, ... ] 
+    #   [ {"group": "group name", 
+    #      "items": [ {"label": "field one", "html": "<p>some details</p>"}, ... ]}, 
+    #   ...]
+    if !@local.description_fields
+      # Deserialize the description fields. 
+      # TODO: Do this on the server.
+      # This will fail for proposals that are not using the serialized JSON format; 
+      # For now, we'll just catch the error and carry on 
+      try 
+        @local.description_fields = $.parseJSON(@proposal.description_fields)
+        @local.expanded_field = null
+      catch
+        @local.description_fields = null
+
+
+    @max_description_height = customization('collapse_descriptions_at', @proposal)
+
+
+    DIV           
+      style: 
+        width: DESCRIPTION_WIDTH
+        position: 'relative'
+        margin: 'auto'
+        marginLeft: if lefty then 300
+        #marginRight: if lefty then 0
+        fontSize: 16
+        marginBottom: 18
+
+
+      # Proposal name
+      DIV
+        id: 'proposal_name'
+        style:
+          lineHeight: 1.2
+          fontWeight: 700
+          fontSize: 45
+          paddingBottom: 15
+
+        @proposal.name
+
+
+      if !@proposal.active
+        SPAN 
+          style: 
+            display: 'inline-block'
+            color: 'rgb(250, 146, 45)'
+            padding: '4px 0px'
+            marginTop: 10
+          I className: 'fa fa-info-circle', style: {paddingRight: 7}
+          'Closed to new contributions at this time.'
+
+      # TODO: now that we're accepting user contributed proposals, we need 
+      # to SANITIZE the description
+      DIV
+        className: 'proposal_details'
+        style:
+          paddingTop: '1em'
+          fontSize: 18
+          position: 'relative'
+          maxHeight: if @local.description_collapsed then @max_description_height
+          overflowY: 'hidden'
+        if @local.description_collapsed
+          DIV
+            style:
+              backgroundColor: 'white'
+              backgroundColor: '#f9f9f9'
+              width: '100%'
+              position: 'absolute'
+              bottom: 0
+              textDecoration: 'underline'
+              cursor: 'pointer'
+              paddingTop: 10
+              paddingBottom: 10
+              fontWeight: 600
+              textAlign: 'center'
+            onMouseDown: => @local.description_collapsed = false; save(@local)
+            'Expand full text'
+        SPAN dangerouslySetInnerHTML:{__html: @proposal.description}
+
+
+      if @local.description_fields
+        DIV 
+          id: 'description_fields'
+          style: 
+            marginTop: '1em'
+          for item in @local.description_fields
+            if item.group
+              @renderDescriptionFieldGroup item
+            else
+              @renderDescriptionField item
+
+      if permit('update proposal', @proposal) > 0
+        DIV null,
+          A 
+            style: {color: '#888'}
+            href: "#{@proposal.key}/edit"
+            'Edit'
+          A 
+            style: 
+              color: '#888'
+              padding: 10
+              backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'
+            onClick: => 
+              @local.edit_roles = !@local.edit_roles
+              save @local
+            'Share'
+
+          if permit('delete proposal', @proposal) > 0
+            A
+              style: {color: '#888'}
+              onClick: => 
+                if confirm('Delete this proposal forever?')
+                  destroy(@proposal.key)
+                  loadPage('/')
+              'Delete'
+
+          if current_user.is_super_admin
+            SPAN 
+              style:
+                padding: 10
+
+              onMouseEnter: => 
+                @local.copy_to_subdomain = true
+                save @local
+              onMouseLeave: => 
+                @local.copy_to_subdomain = false
+                save @local
+
+              A
+                style: {color: '#888'}
+                'Copy to subdomain'
+
+              if @local.copy_to_subdomain
+                subdomains = fetch('/subdomains').subs
+                hues = getNiceRandomHues subdomains?.length
+                
+                UL 
+                  style: 
+                    display: 'inline'
+                  for sub, idx in subdomains
+                    LI
+                      style: 
+                        display: 'inline-block'
+                        listStyle: 'none'
+                      A
+                        href: "/proposal/#{@proposal.id}/copy_to/#{sub.id}"
+                        'data-nojax': false
+                        style: 
+                          padding: "4px 8px"
+                          fontSize: 18
+                          backgroundColor: hsv_to_rgb(hues[idx], .7, .5)
+                          color: 'white'
+                          display: 'inline-block'            
+                        sub.name
+
+
+
+
+      if @local.edit_roles
+        DIV 
+          style:
+            width: BODY_WIDTH
+            margin: 'auto'
+            backgroundColor: '#fafafa'
+            padding: '10px 60px'
+            marginLeft: (if lefty then 0)
+          ProposalRoles key: @proposal
+
+
+
 
   componentDidMount : ->
     if (@max_description_height and @local.description_collapsed == undefined \
         and $('.proposal_details').height() > @max_description_height)
       @local.description_collapsed = true; save(@local)
+
+  componentDidUpdate : ->
+    subdomain = fetch('/subdomain')
+    if subdomain.name == 'RANDOM2015' && @local.description_fields && $('#description_fields').find('.MathJax').length == 0
+      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"description_fields"])
 
   renderDescriptionField : (field) ->
     symbol = if field.expanded then 'fa-chevron-down' else 'fa-chevron-right'
@@ -616,16 +660,6 @@ Proposal = ReactiveComponent
       for field in group.items
         @renderDescriptionField field
 
-  buildNewPointThreshold : ->
-    # Grab the 10th percentile
-    points = @page.points || []
-    newpoint_threshold = 
-      (_.sortBy points, \
-                (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
-
-    (newpoint_threshold and Date.parse(newpoint_threshold.created_at)) or 
-      new Date()
-
 
 # TODO: Refactor the below and make sure that the styles applied to the 
 #       user generated fields are in sync with the styling in the 
@@ -660,6 +694,7 @@ styles += """
 .proposal_details table, .description_field table {
   padding: 20px 0px; }
 """
+
 
 ##
 # DecisionBoard

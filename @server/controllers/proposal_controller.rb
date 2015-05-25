@@ -102,15 +102,6 @@ class ProposalController < ApplicationController
     proposal = Proposal.find params[:id]
     errors = []
 
-    if params.has_key?(:is_following) 
-      follows = proposal.get_explicit_follow(current_user) 
-      if params[:is_following] != (follows ? follows.follow : true)
-        # if is following has changed, that means the user has explicitly expressed 
-        # whether they want to be subscribed or not
-        proposal.follow! current_user, {:follow => params[:is_following], :explicit => true}
-      end
-    end
-
     if permit('update proposal', proposal) > 0
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
       updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}

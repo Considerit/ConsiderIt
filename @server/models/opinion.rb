@@ -2,7 +2,7 @@ class Opinion < ActiveRecord::Base
   belongs_to :user
   belongs_to :proposal, :touch => true 
   
-  include Followable, Notifier
+  include Notifier
 
   acts_as_tenant :subdomain
 
@@ -127,7 +127,6 @@ class Opinion < ActiveRecord::Base
     }
     Inclusion.create! attrs
 
-    point.follow! user, :follow => true, :explicit => false
     point.recache
     self.recache
 
@@ -146,7 +145,6 @@ class Opinion < ActiveRecord::Base
     inclusion = user.inclusions.find_by_point_id point.id
 
     inclusion.destroy
-    point.follow! user, :follow => false, :explicit => false
     point.recache
     self.recache
   end

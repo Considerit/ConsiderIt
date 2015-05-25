@@ -402,51 +402,52 @@ window.LearnDecideShareHomepage = ReactiveComponent
 
     docking_header_height = 79
 
-    DIV className: 'homepage',
+    DIV 
+      className: 'homepage'
 
-      Dock
-        container_selector: '.homepage'
-        dock_on_zoomed_screens: false
-        parent_key: @local.key
+      # Dock
+      #   container_selector: '.homepage'
+      #   dock_on_zoomed_screens: false
+      #   parent_key: @local.key
 
-        DIV 
+      DIV 
+        style: 
+          backgroundColor: subdomain.branding.primary_color
+          color: 'white'
+          height: if subdomain.name != 'allsides' then docking_header_height
+          minWidth: PAGE_WIDTH #minwidth is for when docking, position fixed mode
+
+        TABLE 
           style: 
-            backgroundColor: subdomain.branding.primary_color
-            color: 'white'
-            height: if subdomain.name != 'allsides' then docking_header_height
-            minWidth: PAGE_WIDTH #minwidth is for when docking, position fixed mode
+            margin: 'auto'
+            paddingLeft: if subdomain.name != 'allsides' then 242
 
-          TABLE 
-            style: 
-              margin: 'auto'
-              paddingLeft: if subdomain.name != 'allsides' then 242
+          TBODY null,
+            TR null,
+              for col in columns
+                if col.heading
+                  TD 
+                    style: 
+                      display: 'inline-block'
+                      width: if subdomain.name != 'allsides' then 250 else 350
 
-            TBODY null,
-              TR null,
-                for col in columns
-                  if col.heading
-                    TD 
+                    DIV 
                       style: 
-                        display: 'inline-block'
-                        width: if subdomain.name != 'allsides' then 250 else 350
+                        fontWeight: 700
+                        fontSize: 42
+                        textAlign: 'center'
 
+                      col.heading
+
+                    if col.details
                       DIV 
                         style: 
-                          fontWeight: 700
-                          fontSize: 42
+                          fontWeight: 300
+                          fontSize: 18
                           textAlign: 'center'
-
-                        col.heading
-
-                      if col.details
-                        DIV 
-                          style: 
-                            fontWeight: 300
-                            fontSize: 18
-                            textAlign: 'center'
-                            position: 'relative'
-                            top: -8
-                          col.details
+                          position: 'relative'
+                          top: -8
+                        col.details
 
       DIV style: {marginTop: 30},
         if contributors.length > 0

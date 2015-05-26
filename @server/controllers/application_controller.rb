@@ -116,10 +116,6 @@ protected
       puts("That current_user '#{session[:current_user_id]}' is bad. Making a new one.")
       new_current_user
     end
-
-    # if [197946, 14897].include?(Thread.current[:current_user_id])
-    #   raise PermissionDenied.new('Your account has been disabled until the election is over for violating the Civility Pledge.')
-    # end
   end
   
   def new_current_user
@@ -211,7 +207,14 @@ protected
         response.append User.all_for_subdomain
 
       elsif key == '/page/'
-        recent_contributors = ActiveRecord::Base.connection.exec_query( "SELECT DISTINCT(u.id) FROM users as u, opinions WHERE opinions.subdomain_id=#{current_subdomain.id} AND opinions.published=1 AND opinions.user_id = u.id AND opinions.created_at > '#{9.months.ago.to_date}'")      
+        recent_contributors = ActiveRecord::Base.connection
+          .exec_query( """
+            SELECT DISTINCT(u.id) FROM users as u, opinions 
+                   WHERE opinions.subdomain_id=#{current_subdomain.id} AND 
+                         opinions.published=1 AND 
+                         opinions.user_id = u.id AND 
+                         opinions.created_at > '#{9.months.ago.to_date}'
+            """)      
 
         clean = {
           contributors: recent_contributors.map {|u| "/user/#{u['id']}"},

@@ -49,7 +49,7 @@ Auth = ReactiveComponent
 
       DIV
         style:
-          margin: "0 auto 0 #{if lefty then '300px' else 'auto'}"
+          margin: "0 auto 0 #{if customization('lefty') then '300px' else 'auto'}"
           padding: '4em 0'
           position: 'relative'
           zIndex: 0

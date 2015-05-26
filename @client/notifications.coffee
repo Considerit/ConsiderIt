@@ -266,7 +266,7 @@ window.ActivityFeed = ReactiveComponent
         width: DESCRIPTION_WIDTH
         position: 'relative'
         margin: 'auto'
-        marginLeft: if lefty then 300
+        marginLeft: if customization('lefty') then 300
         marginBottom: 18
 
       DIV

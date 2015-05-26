@@ -14,7 +14,7 @@ class Proposal < ActiveRecord::Base
 
   include Moderatable, Notifier
   
-  class_attribute :my_public_fields, :my_summary_fields
+  class_attribute :my_public_fields
   self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :published]
 
   scope :active, -> {where( :active => true, :published => true )}
@@ -61,7 +61,9 @@ class Proposal < ActiveRecord::Base
         # If the user has a zipcode, we'll want to include all the jurisdictions 
         # associated with that zipcode. We'll also want to insert them between the statewide
         # measures and the advisory votes, since we hate the advisory votes. 
-        local_jurisdictions = ActiveRecord::Base.connection.exec_query( "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%' ").map {|r| r['cluster']}
+        local_jurisdictions = ActiveRecord::Base.connection.exec_query( 
+          "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%' ")
+          .map {|r| r['cluster']}
       end
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
       proposals = subdomain.proposals.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
@@ -70,10 +72,14 @@ class Proposal < ActiveRecord::Base
       proposals = subdomain.proposals.where(:hide_on_homepage => false)
       case subdomain.name 
         when 'bitcoin'
-          manual_clusters = ['Our Mission', 'Our Values',  'Our Goals', 'Our Focus', 'Our Actions', 'Resolutions', 'Foundation Goals', 'Board Proposals', 'Member Proposals', 'Proposals', 'Candidates']
+          manual_clusters = ['Our Mission', 'Our Values', 'Our Goals', 'Our Focus', 
+                             'Our Actions', 'Resolutions', 'Foundation Goals', 
+                             'Board Proposals', 'Member Proposals', 
+                             'Proposals', 'Candidates']
 
         when 'RANDOM2015', 'program-committee-demo'
-          manual_clusters = ['Submissions', 'Under Review', 'Probably Accept', 'Accepted', 'Probably Reject', 'Rejected']
+          manual_clusters = ['Submissions', 'Under Review', 'Probably Accept', 
+                             'Accepted', 'Probably Reject', 'Rejected']
 
         when 'allsides'
           manual_clusters = ['Proposals', 'Classroom Discussions', 'Civics']
@@ -145,7 +151,6 @@ class Proposal < ActiveRecord::Base
     end
 
     data = { 
-      your_opinions: current_user.opinions.map {|o| o.as_json},
       key: "/page/#{self.slug}",
       proposal: self.as_json,
       points: pointz,
@@ -169,7 +174,7 @@ class Proposal < ActiveRecord::Base
     json = super(options)
 
     # Find an existing opinion for this user
-    your_opinion = Opinion.where(:proposal_id => self.id, :user => current_user).first
+    your_opinion = Opinion.find_by(:proposal => self, :user => current_user)
     json['your_opinion'] = "/opinion/#{your_opinion.id}" if your_opinion
 
     json['top_point'] = self.points.published.order(:score).last

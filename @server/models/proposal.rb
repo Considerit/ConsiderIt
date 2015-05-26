@@ -192,7 +192,7 @@ class Proposal < ActiveRecord::Base
     end
 
     json['notifications'] = Notifier.filter_unmoderated(notifications)
-    json['description_fields'] = JSON.parse(json['description_fields'] || '[]')
+    #json['description_fields'] = JSON.parse(json['description_fields'] || '[]')
     json
   end
 

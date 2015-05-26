@@ -33,10 +33,10 @@ window.DefaultProposalNavigation = ReactiveComponent
 
     DIV
       style:
-        margin: if lefty then "30px 0 0 300px" else "30px auto 0 auto"
+        margin: if customization('lefty') then "30px 0 0 300px" else "30px auto 0 auto"
         width: BODY_WIDTH + 20
         position: 'relative'
-        left: if !lefty then 10
+        left: if !customization('lefty') then 10
 
       # Previous button
       if prev_proposal
@@ -179,8 +179,8 @@ window.ProposalNavigationWithMenu = ReactiveComponent
           width: DESCRIPTION_WIDTH
           textAlign: 'left'
           margin: 'auto'
-          marginLeft: if lefty then 300
-          #marginRight: if lefty then 0
+          marginLeft: if customization('lefty') then 300
+          #marginRight: if customization('lefty') then 0
 
         DIV style: {width: CONTENT_WIDTH}, # ...but let the stuff inside be big
           DIV

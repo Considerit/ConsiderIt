@@ -4,16 +4,6 @@
 # Tailor considerit applications by subdomain
 #
 
-require './browser_location' # for loadPage
-require './shared'
-require './footer'
-require './profile_menu'
-require './slider'
-require './header'
-require './homepage'
-require './proposal_navigation'
-
-
 #######
 # PUBLIC API
 #
@@ -29,7 +19,7 @@ require './proposal_navigation'
 window.customization = (field, object_or_key) -> 
   subdomain = fetch('/subdomain')
 
-  subdomain_name = subdomain.name.toLowerCase()
+  subdomain_name = subdomain.name?.toLowerCase()
 
   value = undefined
 
@@ -110,10 +100,20 @@ customization_value = (field, config) ->
   val
 
 
-
 ###########
 # Private storage
 customizations = {}
+
+
+
+require './browser_location' # for loadPage
+require './shared'
+require './footer'
+require './profile_menu'
+require './slider'
+require './header'
+require './homepage'
+require './proposal_navigation'
 
 
 
@@ -277,6 +277,8 @@ customizations.default =
   auth: 
     additional_auth_footer: null
     user_questions: []
+
+  lefty: false
 
   Homepage : SimpleHomepage
   ProposalNavigation : DefaultProposalNavigation
@@ -616,12 +618,11 @@ customizations.ecastonline = customizations['ecast-demo'] =
 
         ProfileMenu()
 
+  lefty: true
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'
 
     render : ->
-      window.lefty = true
-
       paragraph_style = 
         marginBottom: 20
         textShadow: '0 1px 1px rgba(255,255,255,.5)'
@@ -836,18 +837,19 @@ customizations.bitcoin =
           style: textDecoration: 'underline'
           "results"
         '.'
-    archived: false
+    archived: true
     closed: true
 
 
   show_crafting_page_first: true
+
+  lefty: true
 
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'
 
     render: ->
       homepage = fetch('location').url == '/'
-      window.lefty = true
 
       # Entire header (the grey area)
       DIV

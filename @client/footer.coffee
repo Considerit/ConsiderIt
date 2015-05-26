@@ -21,7 +21,7 @@ window.DefaultFooter = ReactiveComponent
         padding: '2.5em 0 .5em 0'
         textAlign: 'center'
         margin: 'auto'
-        marginLeft: if lefty then 20 + BODY_WIDTH / 2
+        marginLeft: if customization('lefty') then 20 + BODY_WIDTH / 2
         width: BODY_WIDTH
         zIndex: 0
 

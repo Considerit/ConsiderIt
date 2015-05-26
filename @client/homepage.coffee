@@ -39,7 +39,7 @@ proposal_support = (proposal) ->
     sum += customization("opinion_value", proposal)(o)
   return sum
 
-proposal_editor = (proposal) ->
+window.proposal_editor = (proposal) ->
   editors = (e for e in proposal.roles.editor when e != '*')
   editor = editors.length > 0 and editors[0]
 
@@ -56,6 +56,39 @@ window.sorted_proposals = (cluster) ->
                                   and proposal_editor(b) then 1 else 0)
     return x_b - x_a
 
+
+cluster_styles = ->
+  first_column =
+    width: if !customization('lefty') then 480 else 350
+    marginLeft: if customization('lefty') then 200
+    display: 'inline-block'
+    verticalAlign: 'top'
+    position: 'relative'
+
+  secnd_column =
+    width: 300
+    display: 'inline-block'
+    verticalAlign: 'top'
+    marginLeft: 50
+
+  first_header =
+    fontSize: 36
+    marginBottom: 40
+    fontWeight: 600
+  _.extend(first_header, first_column)
+
+  secnd_header =
+    fontSize: 36
+    marginBottom: 45
+    fontWeight: 600
+    position: 'relative'
+    whiteSpace: 'nowrap'
+  _.extend(secnd_header, secnd_column)
+
+  [first_column, secnd_column, first_header, secnd_header]
+
+
+
 window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'
 
@@ -70,8 +103,8 @@ window.SimpleHomepage = ReactiveComponent
       className: 'simplehomepage'
       style: 
         fontSize: 22
-        margin: if !lefty then 'auto'
-        width: if !lefty then 850
+        margin: if !customization('lefty') then 'auto'
+        width: if !customization('lefty') then 850
         marginTop: 10
         position: 'relative'
 
@@ -80,59 +113,7 @@ window.SimpleHomepage = ReactiveComponent
 
 
       if current_user.logged_in
-        do => 
-          filter = fetch 'homepage_filter'
-
-          DIV 
-            id: 'watching_filter'
-            style: 
-              position: 'absolute'
-              left: if lefty then 112 else -87  
-              top: 5
-              border: "1px solid #bbb"
-              opacity: if !filter.watched && !@local.hover_watch_filter then .3
-              padding: '3px 10px'
-              cursor: 'pointer'
-              display: 'inline-block'
-              backgroundColor: '#fafafa'
-              borderRadius: 8
-
-            onMouseEnter: => 
-              @local.hover_watch_filter = true
-
-              tooltip = fetch 'tooltip'
-              tooltip.coords = $(@getDOMNode()).find('#watching_filter').offset()
-              tooltip.tip = "Filter proposals to those you're watching"
-              save tooltip
-              save @local
-
-            onMouseLeave: => 
-              @local.hover_watch_filter = false
-              save @local
-              tooltip = fetch 'tooltip'
-              tooltip.coords = null
-              save tooltip
-
-            onClick: => 
-              filter.watched = !filter.watched
-              save filter
-
-            SPAN
-              style: 
-                fontSize: 16
-                verticalAlign: 'text-bottom'
-                color: '#666'
-              "only "
-
-            I 
-              className: "fa fa-star"
-              style: 
-                color: logo_red
-                verticalAlign: 'text-bottom'
-
-                # width: 30
-                # height: 30
-
+        @drawWatchFilter()
 
       # List all clusters
       for cluster, index in proposals.clusters or []
@@ -147,7 +128,7 @@ window.SimpleHomepage = ReactiveComponent
 
         if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
           DIV
-            style: margin: "45px 0 45px #{if lefty then '200px' else '0'}"
+            style: margin: "45px 0 45px #{if customization('lefty') then '200px' else '0'}"
 
             "#{options.label} "
 
@@ -159,196 +140,10 @@ window.SimpleHomepage = ReactiveComponent
                 @local.show_cluster.push(cluster.name)
                 save(@local)
               'Show archive'
-
         else if cluster.proposals?.length > 0
-          first_column =
-            width: if !lefty then 480 else 350
-            marginLeft: if lefty then 200
-            display: 'inline-block'
-            verticalAlign: 'top'
-            position: 'relative'
-
-          secnd_column =
-            width: 300
-            display: 'inline-block'
-            verticalAlign: 'top'
-            marginLeft: 50
-
-          first_header =
-            fontSize: 36
-            marginBottom: 40
-            fontWeight: 600
-          _.extend(first_header, first_column)
-
-          secnd_header =
-            fontSize: 36
-            marginBottom: 45
-            fontWeight: 600
-            position: 'relative'
-            whiteSpace: 'nowrap'
-          _.extend(secnd_header, secnd_column)
-
-          #
-          # Cluster of proposals
-          DIV
-            key: cluster.name
-            id: if cluster.name && cluster.name then cluster.name.toLowerCase()
-            style: margin: '45px 0'
-
-            if options.label
-              DIV 
-                style: 
-                  width: 700
-                  marginLeft: if lefty then 200
-                H1
-                  style: 
-                    fontSize: 48
-                    fontWeight: 200
-                    
-                  options.label
-
-                if options.description
-                  DIV                
-                    style:
-                      fontSize: 22
-                      fontWeight: 200
-                      marginBottom: 10
-                      width: 700
-
-                    options.description
-
-            # Header of cluster
-            H1
-              style: first_header
-              cluster.name || 'Proposals'
-
-              if cluster.proposals.length > 5
-                " (#{cluster.proposals.length})"
-            H1
-              style: secnd_header
-              SPAN
-                style:
-                  position: 'absolute'
-                  bottom: -43
-                  fontSize: 21
-                  color: '#444'
-                  fontWeight: 300
-                customization("slider_pole_labels.individual.oppose", cluster_key)
-              SPAN
-                style:
-                  position: 'absolute'
-                  bottom: -43
-                  fontSize: 21
-                  color: '#444'
-                  right: 0
-                  fontWeight: 300
-                customization("slider_pole_labels.individual.support", cluster_key)
-              SPAN 
-                style: 
-                  position: 'relative'
-                  marginLeft: -(widthWhenRendered(options.homie_histo_title, 
-                               {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
-                options.homie_histo_title
-
-            for proposal in sorted_proposals(cluster)
-              icons = options.show_proposer_icon
-
-              do (proposal) => 
-
-                # Proposal
-                watching = current_user.subscriptions[proposal.key] == 'watched'
-
-                return if !watching && fetch('homepage_filter').watched
-
-                unread = hasUnreadNotifications(proposal)
-
-                DIV
-                  key: proposal.key
-                  style:
-                    minHeight: 70
-
-                  DIV style: first_column,
+          @drawCluster cluster, options
 
 
-                    if current_user?.logged_in && unread
-                      A
-                        title: 'New activity'
-                        href: proposal_url(proposal)
-                        style: 
-                          position: 'absolute'
-                          left: -75
-                          top: 5
-                          width: 22
-                          height: 22
-                          textAlign: 'center'
-                          display: 'inline-block'
-                          cursor: 'pointer'
-                          backgroundColor: logo_red
-                          color: 'white'
-                          fontSize: 14
-                          borderRadius: '50%'
-                          padding: 2
-                          fontWeight: 600
-
-                        I 
-                          className: 'fa-bell fa'
-
-
-                    if current_user?.logged_in
-                      # ability to watch proposal
-                      
-                      WatchStar
-                        proposal: proposal
-                        size: 30
-                        style: 
-                          position: 'absolute'
-                          left: -40
-                          top: 5
-
-
-                    if icons
-                      editor = proposal_editor(proposal)
-
-                      # Person's icon
-                      A
-                        href: proposal_url(proposal)
-                        Avatar
-                          key: editor
-                          user: editor
-                          style:
-                            height: 50
-                            width: 50
-                            borderRadius: 0
-                            backgroundColor: '#ddd'
-
-                    # Name of Proposal
-                    DIV
-                      style:
-                        display: 'inline-block'
-                        fontWeight: 400
-                        marginLeft: if icons then 18
-                        paddingBottom: 20
-                        width: first_column.width - 50 + (if icons then -18 else 0)
-                        marginTop: if icons then 0 #9
-                      A
-                        className: 'proposal proposal_homepage_name'
-                        style: if not icons then {borderBottom: '1px solid grey'}
-                        href: proposal_url(proposal)
-                        proposal.name
-
-                  # Histogram for Proposal
-                  A
-                    href: proposal_url(proposal)
-                    DIV
-                      style: secnd_column
-                      Histogram
-                        key: "histogram-#{proposal.slug}"
-                        proposal: proposal
-                        opinions: opinionsForProposal(proposal)
-                        width: 300
-                        height: 50
-                        enable_selection: false
-                        draw_base: true
 
 
   typeset : -> 
@@ -359,6 +154,232 @@ window.SimpleHomepage = ReactiveComponent
   componentDidMount : -> @typeset()
   componentDidUpdate : -> @typeset()
 
+  # cluster of proposals
+  drawCluster: (cluster, options) -> 
+    current_user = fetch '/current_user'
+
+    DIV
+      key: cluster.name
+      id: if cluster.name && cluster.name then cluster.name.toLowerCase()
+      style: margin: '45px 0'
+
+      @drawClusterHeading cluster, options
+
+      for proposal in sorted_proposals(cluster)
+        @drawProposal proposal, options.show_proposer_icon
+
+  drawClusterHeading : (cluster, options) -> 
+    [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+
+    cluster_key = "cluster/#{cluster.name}"
+
+    DIV null,
+      if options.label
+        DIV 
+          style: 
+            width: 700
+            marginLeft: if customization('lefty') then 200
+          H1
+            style: 
+              fontSize: 48
+              fontWeight: 200
+              
+            options.label
+
+          if options.description
+            DIV                
+              style:
+                fontSize: 22
+                fontWeight: 200
+                marginBottom: 10
+                width: 700
+
+              options.description
+
+      # Header of cluster
+      H1
+        style: first_header
+        cluster.name || 'Proposals'
+
+        if cluster.proposals.length > 5
+          " (#{cluster.proposals.length})"
+      H1
+        style: secnd_header
+        SPAN
+          style:
+            position: 'absolute'
+            bottom: -43
+            fontSize: 21
+            color: '#444'
+            fontWeight: 300
+          customization("slider_pole_labels.individual.oppose", cluster_key)
+        SPAN
+          style:
+            position: 'absolute'
+            bottom: -43
+            fontSize: 21
+            color: '#444'
+            right: 0
+            fontWeight: 300
+          customization("slider_pole_labels.individual.support", cluster_key)
+        SPAN 
+          style: 
+            position: 'relative'
+            marginLeft: -(widthWhenRendered(options.homie_histo_title, 
+                         {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
+          options.homie_histo_title
+
+  drawProposal : (proposal, icons) ->
+    current_user = fetch '/current_user'
+
+    watching = current_user.subscriptions[proposal.key] == 'watched'
+
+    return if !watching && fetch('homepage_filter').watched
+
+    [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+
+    unread = hasUnreadNotifications(proposal)
+
+    DIV
+      key: proposal.key
+      style:
+        minHeight: 70
+
+      DIV style: first_column,
+
+
+        if current_user?.logged_in && unread
+          A
+            title: 'New activity'
+            href: proposal_url(proposal)
+            style: 
+              position: 'absolute'
+              left: -75
+              top: 5
+              width: 22
+              height: 22
+              textAlign: 'center'
+              display: 'inline-block'
+              cursor: 'pointer'
+              backgroundColor: logo_red
+              color: 'white'
+              fontSize: 14
+              borderRadius: '50%'
+              padding: 2
+              fontWeight: 600
+
+            I 
+              className: 'fa-bell fa'
+
+
+        if current_user?.logged_in
+          # ability to watch proposal
+          
+          WatchStar
+            proposal: proposal
+            size: 30
+            style: 
+              position: 'absolute'
+              left: -40
+              top: 5
+
+
+        if icons
+          editor = proposal_editor(proposal)
+
+          # Person's icon
+          A
+            href: proposal_url(proposal)
+            Avatar
+              key: editor
+              user: editor
+              style:
+                height: 50
+                width: 50
+                borderRadius: 0
+                backgroundColor: '#ddd'
+
+        # Name of Proposal
+        DIV
+          style:
+            display: 'inline-block'
+            fontWeight: 400
+            marginLeft: if icons then 18
+            paddingBottom: 20
+            width: first_column.width - 50 + (if icons then -18 else 0)
+            marginTop: if icons then 0 #9
+          A
+            className: 'proposal proposal_homepage_name'
+            style: if not icons then {borderBottom: '1px solid grey'}
+            href: proposal_url(proposal)
+            proposal.name
+
+      # Histogram for Proposal
+      A
+        href: proposal_url(proposal)
+        DIV
+          style: secnd_column
+          Histogram
+            key: "histogram-#{proposal.slug}"
+            proposal: proposal
+            opinions: opinionsForProposal(proposal)
+            width: 300
+            height: 50
+            enable_selection: false
+            draw_base: true    
+
+  drawWatchFilter: -> 
+    filter = fetch 'homepage_filter'
+
+    DIV 
+      id: 'watching_filter'
+      style: 
+        position: 'absolute'
+        left: if customization('lefty') then 112 else -87  
+        top: 5
+        border: "1px solid #bbb"
+        opacity: if !filter.watched && !@local.hover_watch_filter then .3
+        padding: '3px 10px'
+        cursor: 'pointer'
+        display: 'inline-block'
+        backgroundColor: '#fafafa'
+        borderRadius: 8
+
+      onMouseEnter: => 
+        @local.hover_watch_filter = true
+
+        tooltip = fetch 'tooltip'
+        tooltip.coords = $(@getDOMNode()).find('#watching_filter').offset()
+        tooltip.tip = "Filter proposals to those you're watching"
+        save tooltip
+        save @local
+
+      onMouseLeave: => 
+        @local.hover_watch_filter = false
+        save @local
+        tooltip = fetch 'tooltip'
+        tooltip.coords = null
+        save tooltip
+
+      onClick: => 
+        filter.watched = !filter.watched
+        save filter
+
+      SPAN
+        style: 
+          fontSize: 16
+          verticalAlign: 'text-bottom'
+          color: '#666'
+        "only "
+
+      I 
+        className: "fa fa-star"
+        style: 
+          color: logo_red
+          verticalAlign: 'text-bottom'
+
+          # width: 30
+          # height: 30
 
 
 ####

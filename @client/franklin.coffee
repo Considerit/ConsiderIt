@@ -46,8 +46,6 @@ fetch 'decisionboard',
 fetch 'root',
   opinions_to_publish : []
 
-window.lefty = false
-
 
 #######
 # State stored in query params
@@ -238,7 +236,7 @@ Proposal = ReactiveComponent
           style:
             width: BODY_WIDTH
             margin: '0 auto'
-            marginLeft: if lefty then 300
+            marginLeft: if customization('lefty') then 300
             position: 'relative'
             zIndex: 1
 
@@ -316,7 +314,7 @@ Proposal = ReactiveComponent
             position: 'relative'
             paddingBottom: '4em' #padding instead of margin for docking
             margin: "#{if draw_handle then '24px' else '0'} auto 0 auto"
-            marginLeft: if lefty then 65
+            marginLeft: if customization('lefty') then 65
 
 
           # Border + bubblemouth that is shown when there is a histogram selection
@@ -430,8 +428,8 @@ ProposalDescription = ReactiveComponent
         width: DESCRIPTION_WIDTH
         position: 'relative'
         margin: 'auto'
-        marginLeft: if lefty then 300
-        #marginRight: if lefty then 0
+        marginLeft: if customization('lefty') then 300
+        #marginRight: if customization('lefty') then 0
         fontSize: 16
         marginBottom: 18
 
@@ -572,7 +570,7 @@ ProposalDescription = ReactiveComponent
             margin: 'auto'
             backgroundColor: '#fafafa'
             padding: '10px 60px'
-            marginLeft: (if lefty then 0)
+            marginLeft: (if customization('lefty') then 0)
           ProposalRoles key: @proposal
 
 
@@ -1014,8 +1012,8 @@ GroupSelectionRegion = ReactiveComponent
           height: '100%'
           position: 'absolute'
           borderRadius: 16
-          marginLeft: if lefty then 200 else -BODY_WIDTH/2 - 40
-          left: if lefty then 0 else '50%'
+          marginLeft: if customization('lefty') then 200 else -BODY_WIDTH/2 - 40
+          left: if customization('lefty') then 0 else '50%'
           top: 18
 
         # draw a bubble mouth
@@ -2911,7 +2909,7 @@ Page = ReactiveComponent
         minWidth: PAGE_WIDTH
         minHeight: 200
         margin: 'auto'
-        marginLeft: if lefty then 0
+        marginLeft: if customization('lefty') then 0
 
       if auth.form
         Auth()

@@ -136,6 +136,8 @@ class CurrentUserController < ApplicationController
             end
             dirty_key '/proposals'
 
+            log('sign in by password reset')
+
           else
             errors.append "Sorry, that's the wrong verification code."
           end  

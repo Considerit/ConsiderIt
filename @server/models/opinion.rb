@@ -11,7 +11,7 @@ class Opinion < ActiveRecord::Base
 
   def as_json(options={})
     pubs = ['created_at', 'updated_at', 'id', 'point_inclusions',
-            'proposal_id', 'stance', 'user_id', 'explanation',
+            'proposal_id', 'stance', 'user_id',
             'published']
 
     result = super(options)
@@ -45,7 +45,6 @@ class Opinion < ActiveRecord::Base
                                     :published => false,
                                     :stance => 0,
                                     :point_inclusions => '[]',
-                                    :explanation => ''
                                    )
     end
     your_opinion

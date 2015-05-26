@@ -143,9 +143,6 @@ window.SimpleHomepage = ReactiveComponent
         else if cluster.proposals?.length > 0
           @drawCluster cluster, options
 
-
-
-
   typeset : -> 
     subdomain = fetch('/subdomain')
     if subdomain.name == 'RANDOM2015' && $('.MathJax').length == 0

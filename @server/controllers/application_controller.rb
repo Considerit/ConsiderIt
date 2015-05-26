@@ -215,7 +215,6 @@ protected
 
         clean = {
           contributors: recent_contributors.map {|u| "/user/#{u['id']}"},
-          your_opinions: current_user.opinions.map {|o| o.as_json},
           key: key
         } 
         response.append clean

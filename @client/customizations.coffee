@@ -439,7 +439,7 @@ customizations['humanities-los'] =
   show_slider_feedback: false
 
   point_labels : strengths_weaknesses
-  slider_pole_labels : ready_not_ready
+  slider_pole_labels : yes_no
   homie_histo_title: "Students' feedback"
 
   "cluster/Essential Questions 8-2": essential_questions

@@ -416,9 +416,15 @@ ProposalDescription = ReactiveComponent
     #   ...]
 
     if !@local.description_fields
-      @local.description_fields = @proposal.description_fields
-      @local.expanded_field = null
-      save @local
+      # Deserialize the description fields. 
+      # TODO: Do this on the server.
+      # This will fail for proposals that are not using the serialized JSON format; 
+      # For now, we'll just catch the error and carry on 
+      try 
+        @local.description_fields = $.parseJSON(@proposal.description_fields)
+        @local.expanded_field = null
+      catch
+        @local.description_fields = null
 
     @max_description_height = customization('collapse_descriptions_at', @proposal)
 
@@ -485,7 +491,7 @@ ProposalDescription = ReactiveComponent
         SPAN dangerouslySetInnerHTML:{__html: @proposal.description}
 
 
-      if @local.description_fields.length > 0
+      if @local.description_fields
         DIV 
           id: 'description_fields'
           style: 
@@ -583,7 +589,7 @@ ProposalDescription = ReactiveComponent
 
   componentDidUpdate : ->
     subdomain = fetch('/subdomain')
-    if subdomain.name == 'RANDOM2015' && @local.description_fields.length > 0 && $('#description_fields').find('.MathJax').length == 0
+    if subdomain.name == 'RANDOM2015' && @local.description_fields && $('#description_fields').find('.MathJax').length == 0
       MathJax.Hub.Queue(["Typeset",MathJax.Hub,"description_fields"])
 
   renderDescriptionField : (field) ->

@@ -446,8 +446,8 @@ customizations['humanities-los'] =
 
   "cluster/Essential Questions 8-1": essential_questions
 
-  "Monuments 8-2" : monuments
-  "Monuments 8-1" : monuments
+  "cluster/Monuments 8-2" : monuments
+  "cluster/Monuments 8-1" : monuments
 
 #################
 # RANDOM2015

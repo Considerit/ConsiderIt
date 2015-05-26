@@ -13,7 +13,6 @@ require '../logo'
 
 window.SAAS_PAGE_WIDTH = 1000
 window.TEXT_WIDTH = 730
-window.lefty = false
 
 window.base_text =
   fontSize: 24

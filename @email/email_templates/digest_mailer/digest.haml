@@ -32,10 +32,7 @@ Hi #{@user.first_name}, a summary for you.
   = section_header_major(styled_link(proposal.slug, proposal.name, text_instead: true))
 
   - if notifications.key? 'edited_proposal'
-    - if @subdomain.name == 'RANDOM2015'
-      = list_item "A review was uploaded from EasyChair"
-    - else 
-      = list_item "This proposal has been edited."
+    = list_item "This proposal has been edited."
 
 
   - if notifications.key? 'new_opinion'

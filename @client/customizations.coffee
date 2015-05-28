@@ -334,6 +334,7 @@ customizations['monitorinstitute'] =
   slider_pole_labels : strong_weak
   homie_histo_title: "Opinions"
   #show_proposer_icon: true
+  show_slider_feedback: false
 
   NonHomepageHeader : ReactiveComponent
     displayName: 'NonHomepageHeader'

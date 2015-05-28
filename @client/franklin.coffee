@@ -471,7 +471,8 @@ ProposalDescription = ReactiveComponent
           fontSize: 18
           position: 'relative'
           maxHeight: if @local.description_collapsed then @max_description_height
-          overflowY: 'hidden'
+          #overflowY: 'hidden'
+          overflowX: 'visible'
         if @local.description_collapsed
           DIV
             style:
@@ -1128,9 +1129,11 @@ YourPoints = ReactiveComponent
       fontWeight: 700
       color: if @proposal.has_focus != 'opinion' then "#eee" else focus_blue
 
-    heading = customization("point_labels.your_header", @proposal)
-                .replace('--valences--', capitalize(customization("point_labels.#{@props.valence}", @proposal)))
-                .replace('--valence--', capitalize(customization("point_labels.#{@props.valence}", @proposal)))
+    heading = customization("point_labels.your_#{@props.valence}_header", @proposal)
+    if !heading 
+      heading = customization("point_labels.your_header", @proposal)
+                  .replace('--valences--', capitalize(customization("point_labels.#{@props.valence}", @proposal)))
+                  .replace('--valence--', capitalize(customization("point_labels.#{@props.valence}", @proposal)))
 
     # drop target defs
     dt_stroke_width = 1
@@ -2571,7 +2574,7 @@ EditPoint = ReactiveComponent
                   customization('point_labels.pro', @proposal)
                 else 
                   customization('point_labels.con', @proposal)
-              '(or question) for this proposal'
+              ' (or question) for this proposal'
 
             UL 
               style: 

@@ -104,7 +104,7 @@ window.SimpleHomepage = ReactiveComponent
       style: 
         fontSize: 22
         margin: if !customization('lefty') then 'auto'
-        width: if !customization('lefty') then 850
+        width: if !customization('lefty') then SIMPLEHOMEPAGEWIDTH
         marginTop: 10
         position: 'relative'
 

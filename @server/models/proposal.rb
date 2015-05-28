@@ -84,6 +84,9 @@ class Proposal < ActiveRecord::Base
         when 'allsides'
           manual_clusters = ['Proposals', 'Classroom Discussions', 'Civics']
 
+        when 'monitorinstitute'
+          manual_clusters = ['Intellectual Agenda Items', 'Overall']
+
       end
     end
 

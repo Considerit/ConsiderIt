@@ -154,6 +154,7 @@ window.SimpleHomepage = ReactiveComponent
   # cluster of proposals
   drawCluster: (cluster, options) -> 
     current_user = fetch '/current_user'
+    subdomain = fetch '/subdomain'
 
     DIV
       key: cluster.name
@@ -162,8 +163,38 @@ window.SimpleHomepage = ReactiveComponent
 
       @drawClusterHeading cluster, options
 
-      for proposal in sorted_proposals(cluster)
-        @drawProposal proposal, options.show_proposer_icon
+      for proposal,idx in sorted_proposals(cluster)
+        [@drawProposal proposal, options.show_proposer_icon
+
+        if subdomain.name == 'RANDOM2015' && cluster.name == 'Under Review' && idx == 28
+          DIV 
+            style:
+              borderTop: "4px solid green"
+              borderBottom: "4px solid #{logo_red}"
+              padding: "4px 0"
+              textAlign: 'center'
+              
+              fontWeight: 600
+              margin: "16px 0 32px 0"
+
+            I
+              style: 
+                color: 'green'
+                display: 'block'
+              className: 'fa fa-thumbs-o-up'
+
+
+            "Acceptance threshold for 28 papers"
+
+            I
+              style: 
+                display: 'block'
+                color: logo_red
+              className: 'fa fa-thumbs-o-down'
+
+        ]
+
+
 
   drawClusterHeading : (cluster, options) -> 
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()

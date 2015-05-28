@@ -29,15 +29,6 @@ window.Homepage = ReactiveComponent
 # Two column layout, with proposal name and mini histogram. 
 # Divided into clusters. 
 
-proposal_support = (proposal) ->
-  opinions = fetch('/page/' + proposal.slug).opinions
-
-  if not opinions
-    return null
-  sum = 0
-  for o in opinions
-    sum += customization("opinion_value", proposal)(o)
-  return sum
 
 window.proposal_editor = (proposal) ->
   editors = (e for e in proposal.roles.editor when e != '*')
@@ -49,13 +40,9 @@ window.proposal_editor = (proposal) ->
 window.sorted_proposals = (cluster) ->
   cluster_key = "cluster/#{cluster.name}"
   show_icon = customization('show_proposer_icon', cluster_key)
+  proposal_support = customization("proposal_support")
   _.clone(cluster.proposals).sort (a,b) ->
-    x_a = proposal_support(a) + (if show_icon \
-                                  and proposal_editor(a) then 1 else 0)
-    x_b = proposal_support(b) + (if show_icon \
-                                  and proposal_editor(b) then 1 else 0)
-    return x_b - x_a
-
+    return proposal_support(b) - proposal_support(a)
 
 cluster_styles = ->
   first_column =

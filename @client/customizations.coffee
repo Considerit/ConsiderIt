@@ -274,6 +274,17 @@ customizations.default =
   # Proposal options
 
   opinion_value: (o) -> o.stance
+  proposal_support: (proposal) ->
+    opinions = fetch('/page/' + proposal.slug).opinions
+    if !opinions || opinions.length == 0
+      return null
+    opinion_value = customization("opinion_value", proposal)
+
+    sum = 0
+    for opinion in opinions
+      sum += opinion_value(opinion)
+
+    sum
 
   show_crafting_page_first: false
 
@@ -703,9 +714,53 @@ customizations['humanities-los'] =
 #################
 # RANDOM2015
 
-customizations['random2015'] = conference_config
+customizations['random2015'] = _.extend {}, conference_config,
+  opinion_value: (o) -> 3 * o.stance
+
 customizations['program-committee-demo'] = conference_config
 
+
+# compute avg & std deviation of reviews & opinions
+window.paper_scores = (paper) -> 
+  stats = (vals) -> 
+    sum = 0
+    for o in vals
+      sum += o
+    avg = sum / vals.length
+    diffs = vals.map (o) -> (o - avg) * (o - avg)
+
+    sum = 0
+    for diff in diffs
+      sum += diff
+
+    stddev = Math.sqrt(sum)
+
+    {
+      cnt: vals.length
+      avg: avg
+      stddev: stddev
+    }
+
+  scores = {}
+  paper = fetch(paper)
+
+  opinions = fetch("/page/#{paper.slug}").opinions
+  opinion_value = customization("opinion_value", paper)
+
+  opinion_vals = opinions.map (o) -> opinion_value(o)
+
+  scores.pc = stats(opinion_vals)
+
+
+  reviews = []
+  for field in $.parseJSON(paper.description_fields)
+    continue if !field.label.match /Review/
+    score = field.html.match(/Overall evaluation: ((-)?\d)/)
+    reviews.push parseInt(score[1])
+
+  scores.reviews = stats(reviews)
+
+  scores
 
 #################
 # Relief International

@@ -41,6 +41,7 @@ window.DESCRIPTION_WIDTH = BODY_WIDTH
 window.SLIDER_HANDLE_SIZE = 25
 window.COMMUNITY_POINT_MOUTH_WIDTH = 17
 window.OPINION_SLIDER_WIDTH = BODY_WIDTH - 10
+window.SIMPLEHOMEPAGEWIDTH = 850
 
 ##################
 # Colors
@@ -67,7 +68,13 @@ window.parseColor = (color_str) ->
     }
     
   else 
-    throw "Color #{color_str} could not be parsed"
+
+    console.error "Color #{color_str} could not be parsed"
+    return {
+      r: 0
+      g: 0
+      b: 0
+    }    
 
 window.addOpacity = (color, opacity) -> 
   c = parseColor color

@@ -292,7 +292,7 @@ window.EditProposal = ReactiveComponent
           else  
             clusters = fetch('/proposals').clusters
             groups = (c.name for c in clusters \
-                     when !!c.name && !customization("closed", "cluster/#{c.name}"))
+                     when !!c.name && !customization("archived", "cluster/#{c.name}"))
 
             [LABEL 
               htmlFor:'cluster'

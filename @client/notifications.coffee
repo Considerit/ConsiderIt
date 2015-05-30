@@ -345,7 +345,7 @@ window.ActivityFeed = ReactiveComponent
           style: {}
 
           if subdomain.name == 'RANDOM2015'
-            "uploaded a review from EasyChair"
+            "uploaded a review from EasyChair, edited the description, or changed the category"
 
           else
             "edited this proposal"

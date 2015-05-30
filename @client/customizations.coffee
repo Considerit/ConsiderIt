@@ -306,7 +306,6 @@ customizations.default =
   # TODO: put them in their own object
   homie_histo_title: 'Opinions'
   archived: false
-  closed: false
   label: false
   description: false
 
@@ -319,7 +318,6 @@ customizations.default =
 
   Homepage : SimpleHomepage
   ProposalNavigation : DefaultProposalNavigation
-  docking_proposal_header : false
 
   HomepageHeader : DefaultHeader
   NonHomepageHeader: ShortHeader
@@ -1144,7 +1142,6 @@ customizations.bitcoin =
           "results"
         '.'
     archived: true
-    closed: true
 
 
   show_crafting_page_first: true

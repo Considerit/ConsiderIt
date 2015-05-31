@@ -5945,7 +5945,7 @@ Editor = (function() {
   Editor.prototype.focus = function() {
     if (this.selection.range != null) {
       return this.selection.setRange(this.selection.range);
-    } else {
+    } else {      
       return this.root.focus();
     }
   };
@@ -7059,6 +7059,8 @@ Selection = (function() {
 
   Selection.prototype.setRange = function(range, source) {
     var endNode, endOffset, ref, ref1, ref2, startNode, startOffset;
+
+
     if (range != null) {
       ref = this._indexToPosition(range.start), startNode = ref[0], startOffset = ref[1];
       if (range.isCollapsed()) {
@@ -7192,16 +7194,27 @@ Selection = (function() {
   };
 
   Selection.prototype._setNativeRange = function(startNode, startOffset, endNode, endOffset) {
+
     var nativeRange, selection;
     selection = document.getSelection();
     if (!selection) {
       return;
     }
     if (startNode != null) {
+
       if (!this.checkFocus()) {
+        // TRAVIS: The focus was causing a scroll event that moved us to the top of the element
+        //         in chrome and safari. But without it in Firefox, the system doesn't 
+        //         work (though it doesn't cause the scroll problem). 
+        ///        So we now save the current scroll position and restore it.
+        var x = window.scrollX, y = window.scrollY;
         this.doc.root.focus();
+        if(window.scrollTo)
+          window.scrollTo(x, y);
       }
+
       nativeRange = this._getNativeRange();
+      
       if ((nativeRange == null) || startNode !== nativeRange.startContainer || startOffset !== nativeRange.startOffset || endNode !== nativeRange.endContainer || endOffset !== nativeRange.endOffset) {
         selection.removeAllRanges();
         nativeRange = document.createRange();
@@ -9224,6 +9237,7 @@ Toolbar = (function() {
           callback(range, value);
         }
         _this.preventUpdate = false;
+
         return true;
       };
     })(this));

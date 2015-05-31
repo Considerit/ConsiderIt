@@ -4,6 +4,7 @@
 # Components to help build forms.
 #
 require './shared'
+require './dock'
 
 window.Button = (props, text, callback) ->
   style =
@@ -118,7 +119,7 @@ window.WysiwygEditor = ReactiveComponent
 
     DIV 
       id: @props.key
-      style: _.extend {}, @props.style,
+      style: 
         position: 'relative'
 
       onClick: (ev) -> 
@@ -140,46 +141,56 @@ window.WysiwygEditor = ReactiveComponent
 
       else
 
-        # Toolbar
-        [DIV 
-          id: 'toolbar'
-          style: 
-            position: 'absolute'
-            width: 30
-            left: -32
-            top: 0
-            display: if wysiwyg_editor.showing == @props.key then 'block' else 'none'
 
-          for button in toolbar_items
-            I 
-              className: button.className
+
+        DIV null,
+
+          Dock
+            dock_on_zoomed_screens: true
+            skip_jut: true
+            dummy: wysiwyg_editor.showing
+              
+            # Toolbar
+            DIV 
+              id: 'toolbar'
               style: 
-                fontSize: 14
-                width: 28
-                textAlign: 'center'
-                cursor: 'pointer'
-                padding: 2
-                border: '1px solid #aaa'
-                borderRadius: 3
-              title: button.title
-              onClick: if button.onClick then button.onClick
+                position: 'absolute'
+                width: 30
+                left: -32
+                top: 0
+                display: if wysiwyg_editor.showing == @props.key then 'block' else 'none'
+
+              for button in toolbar_items
+                I 
+                  className: button.className
+                  style: 
+                    fontSize: 14
+                    width: 28
+                    textAlign: 'center'
+                    cursor: 'pointer'
+                    padding: 2
+                    border: '1px solid #aaa'
+                    borderRadius: 3
+                  title: button.title
+                  onClick: if button.onClick then button.onClick
 
 
-        DIV 
-          id: 'editor'
-          dangerouslySetInnerHTML:{__html: @props.html}
-          'data-placeholder': if show_placeholder then @props.placeholder else ''
-          onFocus: => 
-            # Show the toolbar on focus
-            # showing is global state for the toolbar to be 
-            # shown. It gets set to null when someone clicks outside the 
-            # editor area. This is handled at the root level
-            # in the same way that clicking outside a point closes it. 
-            # See Root.resetSelection.
-            wysiwyg_editor = fetch 'wysiwyg_editor'
-            wysiwyg_editor.showing = @props.key
-            save wysiwyg_editor
-        ]
+          DIV 
+            id: 'editor'
+            dangerouslySetInnerHTML:{__html: @props.html}
+            'data-placeholder': if show_placeholder then @props.placeholder else ''
+            onFocus: => 
+              # Show the toolbar on focus
+              # showing is global state for the toolbar to be 
+              # shown. It gets set to null when someone clicks outside the 
+              # editor area. This is handled at the root level
+              # in the same way that clicking outside a point closes it. 
+              # See Root.resetSelection.
+              wysiwyg_editor = fetch 'wysiwyg_editor'
+              wysiwyg_editor.showing = @props.key
+              save wysiwyg_editor
+            style: @props.style
+        
 
   componentDidMount : -> 
     # Attach the Quill wysiwyg editor

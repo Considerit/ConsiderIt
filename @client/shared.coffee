@@ -339,6 +339,7 @@ window.prettyDate = (time) ->
 
   return if isNaN(day_diff) || day_diff < 0 || day_diff >= 31
 
+  # TODO: pluralize properly (e.g. 1 days ago, 1 weeks ago...)
   day_diff == 0 && (
     diff < 60 && "just now" || 
     diff < 120 && "1 minute ago" || 

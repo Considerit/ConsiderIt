@@ -62,7 +62,7 @@ window.EditProposal = ReactiveComponent
       display: 'block'      
 
 
-    if !@local.description_fields
+    if !@local.description_fields && @data().description_fields
       @local.description_fields = if @data().description_fields 
                                     $.parseJSON(@data().description_fields) || [] 
                                   else 

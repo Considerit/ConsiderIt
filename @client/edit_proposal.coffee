@@ -64,7 +64,7 @@ window.EditProposal = ReactiveComponent
 
 
 
-    if !@local.description_fields && (@props.fresh || @data().description_fields)
+    if !@local.description_fields && (@props.fresh || @data().slug)
       @local.description_fields = if @data().description_fields 
                                     $.parseJSON(@data().description_fields) || [] 
                                   else 

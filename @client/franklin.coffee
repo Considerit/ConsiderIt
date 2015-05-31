@@ -661,7 +661,9 @@ ProposalDescription = ReactiveComponent
 #       user generated fields are in sync with the styling in the 
 #       wysiwyg editor. 
 styles += """
-.proposal_details br, .description_field br {
+.proposal_details code, .proposal_details pre {
+  font-family: "Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace;
+},.proposal_details br, .description_field br {
   padding-bottom: 0.5em; }
 .proposal_details p, 
 .proposal_details ul, 

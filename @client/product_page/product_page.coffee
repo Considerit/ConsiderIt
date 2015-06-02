@@ -63,6 +63,7 @@ ProductPage = ReactiveComponent
       style: 
         position: 'relative'
 
+      Heading()
       Video()
       tech()
       Uses()
@@ -140,7 +141,7 @@ Header = ReactiveComponent
   componentDidMount : -> 
 
     checkBackground = =>   
-      red_regions = [[0, 530 + 2 * HEADER_HEIGHT]]
+      red_regions = [] #[[0, 530 + 2 * HEADER_HEIGHT]]
       y = $(window).scrollTop()
 
       in_red = false
@@ -159,6 +160,32 @@ Header = ReactiveComponent
     $(window).off "scroll.header"
 
 
+
+Heading = -> 
+  DIV 
+    style:
+      width: SAAS_PAGE_WIDTH
+      margin: "60px auto 0 auto"
+      position: 'relative'
+      textAlign: 'center'
+
+    DIV
+      style: 
+        fontSize: 66
+        marginBottom: 10
+      'Think Better Together.'
+
+    DIV
+      style:
+        marginBottom: 50
+        fontSize: 24
+        width: TEXT_WIDTH
+        margin: 'auto'
+
+      """
+      Consider.it can help you collect feedback, make group decisions, 
+      engage stakeholders, teach critical thinking, and more.
+      """
 
 
 
@@ -198,7 +225,7 @@ tech = ->
   DIV
     id: 'tech'
     style:
-      marginTop: 60
+      marginTop: 80
 
     H1 style: h1,
       'The first forum that works better'
@@ -441,7 +468,7 @@ Root = ReactiveComponent
           top: 0
           width: '100%'
           height: 622 - HEADER_HEIGHT
-          backgroundColor: logo_red
+          #backgroundColor: logo_red
 
 
 

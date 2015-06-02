@@ -329,6 +329,17 @@ window.SimpleHomepage = ReactiveComponent
             href: proposal_url(proposal)
             proposal.name
 
+          if !proposal.active
+            DIV
+              style: 
+                fontSize: 14
+                color: '#414141'
+                fontWeight: 200
+                marginTop: 5
+
+              'closed'
+
+
       # Histogram for Proposal
       A
         href: proposal_url(proposal)

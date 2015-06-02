@@ -334,7 +334,7 @@ Research = ->
       style: _.extend {}, h1, 
         margin: '20px'
 
-      'Academic Research about Consider.it'
+      'Academic research about Consider.it'
 
     UL
       style: 

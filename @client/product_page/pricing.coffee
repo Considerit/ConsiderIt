@@ -24,7 +24,7 @@ window.Pricing = ReactiveComponent
       DIV 
         style: h1
 
-        'Start Using Consider.it'
+        'Start using Consider.it'
 
       DIV 
         style: _.extend {}, base_text,
@@ -170,6 +170,7 @@ window.Pricing = ReactiveComponent
         body: "Hi, I'm _____ and I'd like to discuss a custom Consider.it plan because ____"      
 
 
+    position = 0
     if !@local.custom_reason_hover
       @local.custom_reason_hover = plan.reasons[0].icon
       save @local
@@ -195,13 +196,17 @@ window.Pricing = ReactiveComponent
           listStyle: 'none'
           textAlign: 'center'
 
-        for reason in plan.reasons
-          do (reason) => 
+        for reason, idx in plan.reasons
+          do (reason, idx) => 
             hovering = @local.custom_reason_hover == reason.icon
+            if hovering
+              position = idx
             LI 
               style: 
-                padding: 20
+                padding: '10px 20px'
                 display: 'inline-block'
+                opacity: if !hovering then .25
+
               onMouseEnter : => 
                 @local.custom_reason_hover = reason.icon
                 save @local
@@ -209,25 +214,44 @@ window.Pricing = ReactiveComponent
               DIV 
                 style: 
                   cursor: 'pointer'
-                  borderBottom: "3px solid #{if hovering then logo_red else 'transparent'}"
+                  #borderBottom: "3px solid #{if hovering then logo_red else 'transparent'}"
                   paddingBottom: 10
 
                 window["#{reason.icon}SVG"]
                   height: 70
                   fill_color: if hovering then logo_red else 'black'
 
+
       DIV 
         style: _.extend {}, base_text, 
           width: 600
           height: 96
-          margin: '10px auto 40px auto'   
+          margin: '0px auto 40px auto'   
+          paddingTop: 10
+          borderTop: "1px solid #{logo_red}"
+          position: 'relative'
+
+        SVG 
+          height: 8
+          width: 30
+
+          style:
+            position: 'absolute'
+            left: "#{position / plan.reasons.length * 100 + .5 * 100 / plan.reasons.length}%"
+            marginLeft: - 30 / 2
+            top: -8
+
+          POLYGON
+            points: "0,8 15,0 30,8" 
+            fill: logo_red
+
+          POLYGON
+            points: "0,9 15,1 30,9" 
+            fill: 'white'
 
         for reason, idx in plan.reasons
           if @local.custom_reason_hover == reason.icon
             reason.reason
-
-
-
 
       @drawCallToAction plan
 

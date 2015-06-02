@@ -143,6 +143,16 @@ strengths_weaknesses =
   other_header: "--valences-- observed" 
   top_header: "Foremost --valences--" 
 
+strengths_limitations = 
+  pro: 'strength'
+  pros: 'strengths' 
+  con: 'limitation'
+  cons: 'limitations'
+  your_header: "--valences-- you observed" 
+  other_header: "--valences-- observed" 
+  top_header: "Foremost --valences--" 
+
+
 challenge_justify = 
   pro: 'justification'
   pros: 'justifications' 
@@ -713,8 +723,14 @@ customizations['humanities-los'] =
 # RANDOM2015
 
 customizations['random2015'] = _.extend {}, conference_config,
-  opinion_value: (o) -> 3 * o.stance
-
+  opinion_value: (o) -> 3 * o.stance,
+  "/proposal/2638" : 
+    point_labels: strengths_limitations
+    slider_pole_labels: yes_no
+  "/proposal/2639" : 
+    point_labels: strengths_weaknesses
+    slider_pole_labels: yes_no
+    
 customizations['program-committee-demo'] = conference_config
 
 

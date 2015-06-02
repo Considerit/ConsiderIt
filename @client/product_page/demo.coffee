@@ -92,7 +92,7 @@ window.Video = ReactiveComponent
 
     DIV 
       style: _.extend {}, h1,
-        #fontWeight: 400
+        fontWeight: 400
         whiteSpace: 'nowrap'
         paddingBottom: 5
         position: 'relative'

@@ -213,7 +213,7 @@ window.Pricing = ReactiveComponent
 
               DIV 
                 style: 
-                  cursor: 'pointer'
+                  #cursor: 'pointer'
                   #borderBottom: "3px solid #{if hovering then logo_red else 'transparent'}"
                   paddingBottom: 10
 

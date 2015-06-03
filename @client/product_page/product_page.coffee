@@ -183,8 +183,8 @@ Heading = ->
         margin: 'auto'
 
       """
-      Consider.it can help you collect feedback, make group decisions, 
-      engage stakeholders, teach critical thinking, and more.
+      Consider.it can help you collect feedback, engage stakeholders, make group decisions, 
+      teach critical thinking, and more.
       """
 
 
@@ -252,7 +252,7 @@ tech = ->
       strong: "Automatically produces an interactive summary of opinions"
       body: """
             . Patterns of thought across the whole group can 
-            be identified. Perhaps 80% of opposers have a 
+            be identified. Perhaps 80% have a 
             single con point that can be addressed!
             """
 
@@ -377,6 +377,19 @@ Research = ->
         DIV 
           style: _.extend {}, small_text
           '2014 ACM Conference on Computer Supported Cooperative Work'
+
+      LI 
+        style: 
+          paddingTop: 15
+        A 
+          style:  _.extend {}, a, base_text
+          href: "http://www.sciencedirect.com/science/article/pii/S0747563215003891"
+          'Facilitating Personal Deliberation Online: Immediate Effects of Two Consider.it Variations'
+
+        DIV 
+          style: _.extend {}, small_text
+          'Forthcoming, Computers in Human Behavior, Volume 51, Part A'
+
 
 
 

@@ -153,7 +153,7 @@ window.Pricing = ReactiveComponent
           icon: 'collaboration'
           reason: """
                   You are leading a project and want to collaborate with us. 
-                  We enjoy high-impact work. We like visionaries.
+                  We enjoy partnering.
                   """
         }, {
           icon: 'server'

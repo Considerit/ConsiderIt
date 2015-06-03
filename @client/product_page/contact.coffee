@@ -113,17 +113,17 @@ window.Contact = ReactiveComponent
 
 team = -> 
   members = [{
-      img: 'travis'
+      img: 'travis1'
       name: "Travis Kriplean"
       email: 'travis@consider.it'
       location: 'Portland, OR'
     },{
-      img: 'kevin'
+      img: 'kevin1'
       name: "Kevin Miniter"
       email: 'kevin@consider.it'
       location: 'Portland, OR'      
     },{
-      img: 'mike'
+      img: 'mike1'
       name: "Mike Toomim"
       email: 'toomim@consider.it'
       location: 'Montreal'
@@ -141,6 +141,7 @@ team = ->
           display: "inline-block"
           margin: "20px 30px"
           textAlign: "center"
+          width: 180
 
 
         A

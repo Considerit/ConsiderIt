@@ -31,6 +31,8 @@ DEMO_AUTOPLAY_DELAY = 5000
 
 video_width = Math.min(SAAS_PAGE_WIDTH, window.innerWidth - 320)
 
+caption_color = focus_blue #"black" #logo_red
+
 window.Video = ReactiveComponent
   displayName: "video"
   render: ->
@@ -76,7 +78,7 @@ window.Video = ReactiveComponent
         position: 'relative'
         width: video_width
         height: video_width * 1080/1920
-        border: "2px solid #{logo_red}"
+        border: "1px solid #{caption_color}"
         borderRadius: 8
 
 
@@ -98,7 +100,7 @@ window.Video = ReactiveComponent
         position: 'relative'
         zIndex: 1
         width: video_width - 1
-        color: logo_red #if @local.ready then 'white'
+        color: caption_color #if @local.ready then 'white'
 
       if !@local.ready  || !chapter.caption
         'This demo shows how Consider.it works'
@@ -118,10 +120,10 @@ window.Video = ReactiveComponent
 
         POLYGON
           points: "0,0 30,10 60,0" 
-          fill: logo_red
+          fill: caption_color
 
         POLYGON
-          points: "0,-2 30,8 60,-2" 
+          points: "0,-1 30,9 60,-1" 
           fill: 'white'
 
 
@@ -133,7 +135,7 @@ window.Video = ReactiveComponent
           right: -56
           top: 0
           cursor: 'pointer'
-          color: logo_red
+          color: caption_color
           opacity: if @local.hover_reset || !@local.ready then 1 else .5
 
         onMouseEnter: => 
@@ -170,7 +172,7 @@ window.Video = ReactiveComponent
         top: 100
         right: -130
         listStyle: 'none'
-        width: 115
+        width: 120
 
       for menu in _.uniq (chapter.menu for chapter in chapters)
         do (menu) =>
@@ -205,7 +207,7 @@ window.Video = ReactiveComponent
               save chapter
 
             style: 
-              color: if (highlighted || @local.hover_chapter == menu) then logo_red else 'black'
+              color: if (highlighted || @local.hover_chapter == menu) then caption_color else 'black'
               fontSize: 14
               fontWeight: if highlighted then 700
               padding: '10px 0'

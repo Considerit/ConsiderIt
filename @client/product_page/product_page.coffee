@@ -66,10 +66,10 @@ ProductPage = ReactiveComponent
       Heading()
       Video()
       tech()
+      Customers()      
       Uses()
       #FAQ()
       Pricing()
-      Customers()
       Research()
       Contact()
       Footer()
@@ -234,26 +234,33 @@ tech = ->
 
     bullet
       point_style: 'bullet'
-      strong: "Focuses on specific ideas"
+      strong: "Think together about specific ideas."
       body: """
-            . Collect opinions on proposals, plans, hypotheticals, 
+             Collect opinions on proposals, plans, hypotheticals, 
             job candidates, products, designs, and more.
             """
     bullet
       point_style: 'bullet'
-      strong: "Fosters considerate interactions"
+      strong: "Maintain focus."
       body: """
-            . The design orients people to consider the topic, 
-            rather than responding directly to each other. 
-            Opportunities for personal attacks on others are limited.
+             The design keeps participants focused on the topic, rather 
+            than each other. Long tangents are contained and don't 
+            hijack the conversation.
             """
+            # . The design orients people to consider the topic, 
+            # rather than responding directly to each other. 
+            # Opportunities for personal attacks on others are limited, 
+            # unlike online commenting and email threads.
+
+
     bullet
       point_style: 'bullet'
-      strong: "Automatically produces an interactive summary of opinions"
+      strong: "Identify patterns of thought across the whole group."
       body: """
-            . Patterns of thought across the whole group can 
-            be identified. Perhaps 80% have a 
-            single con point that can be addressed!
+             A visual, interactive summary of opinions helps everyone 
+            analyze and understand what the 
+            group thinks. Perhaps 80% of those with reservations
+            share a couple con points that can be addressed!
             """
 
 
@@ -292,10 +299,10 @@ Customers = ReactiveComponent
         textAlign: 'center'
 
       H1
-        style: _.extend {}, h1, 
+        style: _.extend {}, h2, 
           marginBottom: 20
 
-        "Our clients include..."
+        "Used by:"
 
 
       for c in customers
@@ -419,6 +426,102 @@ Footer = ->
 
     Story()
 
+
+# props is:
+#    tabs: [{icon, label, description}]
+#    stroke_color
+#    text_color
+window.VisualTab = ReactiveComponent
+  displayName: 'VisualTab'
+
+  render : ->
+    position = 0
+    if !@local.custom_reason_hover
+      @local.custom_reason_hover = @props.tabs[0].icon
+      save @local
+
+    bg_color = @props.bg_color or 'white'
+    stroke_width = @props.stroke_width or 1
+
+    select_tab = (tab) => 
+      @local.custom_reason_hover = tab.icon
+      save @local
+
+    DIV 
+      style: @props.style
+      UL 
+        style: 
+          listStyle: 'none'
+          textAlign: 'center'
+
+        for tab, idx in @props.tabs
+          do (tab, idx) => 
+            hovering = @local.custom_reason_hover == tab.icon
+            if hovering
+              position = idx
+            LI 
+              style: 
+                padding: '10px 20px'
+                display: 'inline-block'
+                opacity: if !hovering then .25
+                verticalAlign: 'top'
+
+              onMouseEnter : => select_tab(tab)
+              onClick : => select_tab(tab)
+              onTouchStart: => select_tab(tab)
+
+              DIV 
+                style: 
+                  paddingBottom: 10
+                  textAlign: 'center'
+
+                window["#{tab.icon}SVG"]
+                  height: @props.icon_height
+                  fill_color: if hovering then @props.stroke_color else 'black'
+
+                if tab.label
+                  DIV 
+                    style: 
+                      textAlign: 'center'
+                      fontSize: 30
+                      maxWidth: 180
+                    tab.label
+
+
+
+      DIV 
+        style: _.extend {}, base_text, 
+          height: if @props.description_height then @props.description_height
+          margin: '0px auto 40px auto'   
+          paddingTop: 25
+          borderTop: "#{stroke_width}px solid #{@props.stroke_color}"
+          position: 'relative'
+
+        SVG 
+          height: 8
+          width: 30
+
+          style:
+            position: 'absolute'
+            left: "#{position / @props.tabs.length * 100 + .5 * 100 / @props.tabs.length}%"
+            marginLeft: - 30 / 2
+            top: -8
+
+          POLYGON
+            points: "0,8 15,0 30,8" 
+            fill: @props.stroke_color
+
+          POLYGON
+            points: "0,#{8 + stroke_width} 15,#{stroke_width} 30,#{8 + stroke_width}" 
+            fill: bg_color
+
+        for tab, idx in @props.tabs
+          if @local.custom_reason_hover == tab.icon
+
+            if _.isFunction(tab.description)
+              tab.description()
+            else 
+              tab.description
 
 
 Page = ReactiveComponent

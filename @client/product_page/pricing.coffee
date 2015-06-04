@@ -132,32 +132,32 @@ window.Pricing = ReactiveComponent
       reasons: [
         {
           icon: 'features'
-          reason: """
+          description: """
                   We don’t advertise a feature or service integration that you 
                   need. We may already have it, or may be able to make it for you.
                   """
         }, {
           icon: 'design'
-          reason: """
+          description: """
                   You want custom design work done. For example, maybe you want 
                   deep branding for the header. Or a custom component.
                   """
         }, {
           icon: 'priceTag'
-          reason: """
+          description: """
                   The pricing is tricky for your situation and you want to 
                   discuss options. We understand that our customers' needs are
                   unique. We are flexible. 
                   """
         }, {
           icon: 'collaboration'
-          reason: """
+          description: """
                   You are leading a project and want to collaborate with us. 
                   We enjoy partnering.
                   """
         }, {
           icon: 'server'
-          reason: """
+          description: """
                   You have special hosting needs, like a private server 
                   or one hosted in a particular country. We prefer not to do 
                   self-hosting, but maybe we can work something out. 
@@ -167,7 +167,7 @@ window.Pricing = ReactiveComponent
       ]
       email:
         subject: "Consider.it custom plan"
-        body: "Hi, I'm _____ and I'd like to discuss a custom Consider.it plan because ____"      
+        body: "Hi, my name is _____, and I'd like to discuss a custom Consider.it plan because ____"      
 
 
     position = 0
@@ -191,67 +191,13 @@ window.Pricing = ReactiveComponent
 
         plan.price
 
-      UL 
-        style: 
-          listStyle: 'none'
-          textAlign: 'center'
-
-        for reason, idx in plan.reasons
-          do (reason, idx) => 
-            hovering = @local.custom_reason_hover == reason.icon
-            if hovering
-              position = idx
-            LI 
-              style: 
-                padding: '10px 20px'
-                display: 'inline-block'
-                opacity: if !hovering then .25
-
-              onMouseEnter : => 
-                @local.custom_reason_hover = reason.icon
-                save @local
-
-              DIV 
-                style: 
-                  #cursor: 'pointer'
-                  #borderBottom: "3px solid #{if hovering then logo_red else 'transparent'}"
-                  paddingBottom: 10
-
-                window["#{reason.icon}SVG"]
-                  height: 70
-                  fill_color: if hovering then logo_red else 'black'
+      VisualTab
+        tabs: plan.reasons
+        stroke_color: logo_red
+        description_height: 100
+        icon_height: 70
 
 
-      DIV 
-        style: _.extend {}, base_text, 
-          width: 600
-          height: 96
-          margin: '0px auto 40px auto'   
-          paddingTop: 10
-          borderTop: "1px solid #{logo_red}"
-          position: 'relative'
-
-        SVG 
-          height: 8
-          width: 30
-
-          style:
-            position: 'absolute'
-            left: "#{position / plan.reasons.length * 100 + .5 * 100 / plan.reasons.length}%"
-            marginLeft: - 30 / 2
-            top: -8
-
-          POLYGON
-            points: "0,8 15,0 30,8" 
-            fill: logo_red
-
-          POLYGON
-            points: "0,9 15,1 30,9" 
-            fill: 'white'
-
-        for reason, idx in plan.reasons
-          if @local.custom_reason_hover == reason.icon
-            reason.reason
 
       @drawCallToAction plan
 

@@ -68,11 +68,16 @@ uses = [{
 
         """
         Consider.it collects and organizes both quantitative and qualitative 
-        data -- what people think and why. It is like a survey and a focus group combined. 
+        data – what people think and why. It is like a survey and a focus group combined. 
         Furthermore, you can ask simple questions of participants that can be used to 
-        cross-tabulate the opinions gathered on your main questions. Note that a 
-        traditional survey is more appropriate if independent responses are required.
-        """
+        cross-tabulate the opinions gathered on your main questions."""
+        
+        DIV 
+          style: 
+            marginTop: 8
+          """Note that a 
+          traditional survey is more appropriate if independent responses are required.
+          """
   }, {
     icon: 'dialogue'
     label: "Host a dialogue"

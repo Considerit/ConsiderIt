@@ -10,6 +10,7 @@ require '../development'
 require '../state_dash'
 require '../dock'
 require '../logo'
+require '../bubblemouth'
 
 window.SAAS_PAGE_WIDTH = 1000
 window.TEXT_WIDTH = 730
@@ -85,7 +86,6 @@ Header = ReactiveComponent
 
     docked = fetch('header-dock').docked
 
-    #nav_links = ['demo', 'faq', 'price', 'contact', 'story']
     nav_links = ['demo', 'uses', 'price', 'contact']
     
     DIV
@@ -243,7 +243,7 @@ tech = ->
       point_style: 'bullet'
       strong: "Maintain focus."
       body: """
-             The design keeps participants focused on the topic, rather 
+             The design helps participants focus on the topic, rather 
             than each other. Long tangents are contained and don't 
             hijack the conversation.
             """
@@ -332,6 +332,72 @@ Customers = ReactiveComponent
 
 
 Research = -> 
+
+  # | 323666 | Travis Kriplean, PhD, Computer Science, University of Washington                |
+  # | 324669 | Deen Freelon, Assistant Professor of Communication Studies, American University |
+  # | 324670 | Alan Borning, Professor of Computer Science, University of Washington           |
+  # | 324671 | Lance Bennett, Professor of Political Science, University of Washington         |
+  # | 324672 | Jonathan Morgan, PhD, Human Centered Design, University of Washington           |
+  # | 324673 | Caitlin Bonnar, Computer Science, University of Washington                      |
+  # | 324674 | Brian Gill, Professor of Statistics, Seattle Pacific University                 |
+  # | 324675 | Bo Kinney, Librarian, Seattle Public Library                                    |
+  # | 324678 | Menno De Jong, Professor of Behavioral Sciences, University of Twente           |
+  # | 324679 | Hans Stiegler, Behavioral Sciences, University of Twente                        |
+
+  authors = (author_list) -> 
+    DIV 
+      style:
+        position: 'absolute'
+        top: 5
+        right: -40
+
+      UL 
+        style:
+          display: 'inline'
+
+        for author,idx in author_list
+          LI 
+            style: 
+              display: 'inline-block'
+              listStyle: 'none'
+              zIndex: 10 - idx
+              position: 'absolute'
+              left: 25 * idx
+              top: 25 * idx
+
+            Avatar
+              key: "/user/#{author}"
+              user: "/user/#{author}"
+              img_size: 'large'
+              style: 
+                width: 50
+                height: 50
+
+
+  papers = [
+    {
+      url: "http://dub.washington.edu/djangosite/media/papers/kriplean-cscw2012.pdf"
+      title: 'Supporting Reflective Public Thought with Consider.it'
+      venue: '2012 ACM Conference on Computer Supported Cooperative Work'
+      authors: [323666, 324672, 324669, 324670, 324671]
+    },    {
+      url: "https://dl.dropboxusercontent.com/u/3403211/papers/jitp.pdf"
+      title: 'Facilitating Diverse Political Engagement'
+      venue: 'Journal of Information Technology & Politics, Volume 9, Issue 3'
+      authors: [324669, 323666, 324672, 324671, 324670]
+    },    {
+      url: "http://homes.cs.washington.edu/~borning/papers/kriplean-cscw2014.pdf"
+      title: 'On-demand Fact-checking in Public Dialogue'
+      venue: '2014 ACM Conference on Computer Supported Cooperative Work'
+      authors: [324673, 323666, 324670, 324675, 324674]
+    },    {
+      url: "http://www.sciencedirect.com/science/article/pii/S0747563215003891"
+      title: 'Facilitating Personal Deliberation Online: Immediate Effects of Two Consider.it Variations'
+      venue: 'Forthcoming, Computers in Human Behavior, Volume 51, Part A'
+      authors: [324679, 324678]
+    }
+  ]
+
   DIV 
     style: 
       width: SAAS_PAGE_WIDTH
@@ -346,59 +412,51 @@ Research = ->
     UL
       style: 
         listStyle: 'none'
-        width: 615
-        margin: 'auto'
+        width: TEXT_WIDTH - 50
+        position: 'relative'
+        left: '50%'
+        marginLeft: -TEXT_WIDTH / 2 - 50
 
-      LI 
-        style: 
-          paddingTop: 5
+      for paper in papers
+        LI 
+          style: 
+            padding: '16px 32px'
+            position: 'relative'
+            backgroundColor: '#f6f7f9'
+            boxShadow: '#b5b5b5 0 1px 1px 0px'
+            borderRadius: 32
+            marginBottom: 20
 
-        A 
-          style:  _.extend {}, a, base_text
-          href: "http://dub.washington.edu/djangosite/media/papers/kriplean-cscw2012.pdf"
-          'Supporting Reflective Public Thought with Consider.it'
-        DIV 
-          style: _.extend {}, small_text
-          '2012 ACM Conference on Computer Supported Cooperative Work'
+          A 
+            style:  _.extend {}, a, base_text
+            href: paper.url
+            paper.title
+          DIV 
+            style: _.extend {}, small_text
+            paper.venue
 
+          DIV
+            style: css.crossbrowserify
+              transform: 'rotate(90deg)'
+              position: 'absolute'
+              right: -27
+              top: 20
 
-      LI
-        style: 
-          paddingTop: 15
-        A 
-          style:  _.extend {}, a, base_text
-          href: "https://dl.dropboxusercontent.com/u/3403211/papers/jitp.pdf"
-          'Facilitating Diverse Political Engagement'
-        DIV 
-          style: _.extend {}, small_text
-          'Journal of Information Technology & Politics, Volume 9, Issue 3'
-
-      LI 
-        style: 
-          paddingTop: 15
-        A 
-          style:  _.extend {}, a, base_text
-          href: "http://homes.cs.washington.edu/~borning/papers/kriplean-cscw2014.pdf"
-          'On-demand Fact-checking in Public Dialogue'
-
-        DIV 
-          style: _.extend {}, small_text
-          '2014 ACM Conference on Computer Supported Cooperative Work'
-
-      LI 
-        style: 
-          paddingTop: 15
-        A 
-          style:  _.extend {}, a, base_text
-          href: "http://www.sciencedirect.com/science/article/pii/S0747563215003891"
-          'Facilitating Personal Deliberation Online: Immediate Effects of Two Consider.it Variations'
-
-        DIV 
-          style: _.extend {}, small_text
-          'Forthcoming, Computers in Human Behavior, Volume 51, Part A'
+            Bubblemouth 
+              apex_xfrac: 0
+              width: 30
+              height: 30
+              fill: "#f6f7f9"              
+              stroke: 'transparent'
+              stroke_width: 0
+              box_shadow:   
+                dx: '3'
+                dy: '0'
+                stdDeviation: "2"
+                opacity: .5
 
 
-
+          authors paper.authors
 
 Footer = -> 
 
@@ -435,16 +493,18 @@ window.VisualTab = ReactiveComponent
   displayName: 'VisualTab'
 
   render : ->
-    position = 0
-    if !@local.custom_reason_hover
-      @local.custom_reason_hover = @props.tabs[0].icon
+    if !@local.selected
+      @local.selected = @props.tabs[0].icon
       save @local
 
     bg_color = @props.bg_color or 'white'
     stroke_width = @props.stroke_width or 1
 
     select_tab = (tab) => 
-      @local.custom_reason_hover = tab.icon
+      @local.selected = tab.icon
+      save @local
+    hover_tab = (tab) => 
+      @local.hovering = tab.icon
       save @local
 
     DIV 
@@ -456,17 +516,19 @@ window.VisualTab = ReactiveComponent
 
         for tab, idx in @props.tabs
           do (tab, idx) => 
-            hovering = @local.custom_reason_hover == tab.icon
-            if hovering
-              position = idx
+            selected = @local.selected == tab.icon
+            hovering = @local.hovering == tab.icon
             LI 
               style: 
                 padding: '10px 20px'
-                display: 'inline-block'
-                opacity: if !hovering then .25
+                display: 'table-cell'
+                opacity: if selected then 1.0 else if hovering then .6 else .25
                 verticalAlign: 'top'
+                cursor: 'pointer'
+                position: 'relative'
 
-              onMouseEnter : => select_tab(tab)
+              onMouseEnter : => hover_tab(tab)
+              onMouseLeave : => @local.hovering = null; save @local
               onClick : => select_tab(tab)
               onTouchStart: => select_tab(tab)
 
@@ -477,7 +539,7 @@ window.VisualTab = ReactiveComponent
 
                 window["#{tab.icon}SVG"]
                   height: @props.icon_height
-                  fill_color: if hovering then @props.stroke_color else 'black'
+                  fill_color: if selected || hovering then @props.stroke_color else 'black'
 
                 if tab.label
                   DIV 
@@ -486,6 +548,29 @@ window.VisualTab = ReactiveComponent
                       fontSize: 30
                       maxWidth: 180
                     tab.label
+
+              if selected
+                SVG 
+                  height: 8
+                  width: 30
+
+                  style:
+                    position: 'absolute'
+                    left: '50%'
+                    marginLeft: - 30 / 2
+                    bottom: -stroke_width
+                    zIndex: 1
+
+                  POLYGON
+                    points: "0,8 15,0 30,8" 
+                    fill: @props.stroke_color
+
+                  POLYGON
+                    points: "0,#{8 + stroke_width} 15,#{stroke_width} 30,#{8 + stroke_width}" 
+                    fill: bg_color
+
+
+
 
 
 
@@ -497,26 +582,9 @@ window.VisualTab = ReactiveComponent
           borderTop: "#{stroke_width}px solid #{@props.stroke_color}"
           position: 'relative'
 
-        SVG 
-          height: 8
-          width: 30
-
-          style:
-            position: 'absolute'
-            left: "#{position / @props.tabs.length * 100 + .5 * 100 / @props.tabs.length}%"
-            marginLeft: - 30 / 2
-            top: -8
-
-          POLYGON
-            points: "0,8 15,0 30,8" 
-            fill: @props.stroke_color
-
-          POLYGON
-            points: "0,#{8 + stroke_width} 15,#{stroke_width} 30,#{8 + stroke_width}" 
-            fill: bg_color
 
         for tab, idx in @props.tabs
-          if @local.custom_reason_hover == tab.icon
+          if @local.selected == tab.icon
 
             if _.isFunction(tab.description)
               tab.description()

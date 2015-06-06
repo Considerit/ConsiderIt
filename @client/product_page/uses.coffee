@@ -56,7 +56,7 @@ uses = [{
         Choosing the right vendor or product. Choosing the right office space to 
         move your growing company. Choosing the right person or technology for 
         the job, or which grant applications to fund. Consider.it helps 
-        teams evaluate the options, putting their best thinking forward on 
+        teams evaluate the options, applying their best thinking to 
         important decisions. 
         """
   }, {
@@ -93,8 +93,8 @@ uses = [{
         Host a dialogue about an interesting and/or contentious topic! 
         Consider.it provides a constructive environment for many people to 
         learn about an issue and share their opinion.
-        The design minimizes personal attacks, and if they happen, are easily 
-        handled with our moderation system. 
+        The design minimizes personal attacks; and if they happen, our moderation 
+        system puts you in a position to easily handle them.
         """
         demosList(examples, 'Example')
   }, 
@@ -225,7 +225,7 @@ window.Uses = ->
         stroke_color: 'white'
         stroke_width: 2        
         bg_color: logo_red
-        icon_height: 120
+        icon_height: 130
         description_height: 280
 
         style: 
@@ -244,7 +244,7 @@ window.Uses = ->
         tabs: applications
         stroke_color: 'white'
         bg_color: logo_red
-        icon_height: 120
+        icon_height: 130
         description_height: 220
         stroke_width: 2
         style: 

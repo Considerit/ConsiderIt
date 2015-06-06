@@ -52,7 +52,7 @@ window.Avatar = ReactiveComponent
            "avatar-#{user.key.split('/')[2]}"
 
     style = _.extend {}, @props.style
-    img_size = img_size or 'thumb'
+    img_size = @props.img_size or 'thumb'
 
     show_avatar = !@props.anonymous && !!user.avatar_file_name
     # Automatically upgrade the avatar size to 'large' if the width of the image is 

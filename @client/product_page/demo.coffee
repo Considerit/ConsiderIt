@@ -170,9 +170,10 @@ window.Video = ReactiveComponent
       style:
         position: 'absolute'
         top: 100
-        right: -130
+        left: -130
         listStyle: 'none'
         width: 120
+        textAlign: 'right'
 
       for menu in _.uniq (chapter.menu for chapter in chapters)
         do (menu) =>

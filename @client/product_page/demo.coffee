@@ -31,7 +31,8 @@ DEMO_AUTOPLAY_DELAY = 5000
 
 video_width = Math.min(SAAS_PAGE_WIDTH, window.innerWidth - 320)
 
-caption_color = focus_blue #"black" #logo_red
+caption_color =  "black" #logo_red focus_blue
+current_chapter_color = logo_red #caption_color
 
 window.Video = ReactiveComponent
   displayName: "video"
@@ -208,7 +209,7 @@ window.Video = ReactiveComponent
               save chapter
 
             style: 
-              color: if (highlighted || @local.hover_chapter == menu) then caption_color else 'black'
+              color: if (highlighted || @local.hover_chapter == menu) then current_chapter_color else 'black'
               fontSize: 14
               fontWeight: if highlighted then 700
               padding: '10px 0'

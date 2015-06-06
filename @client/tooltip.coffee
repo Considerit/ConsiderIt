@@ -14,20 +14,21 @@ window.Tooltip = ReactiveComponent
 
     style = 
         fontSize: 16
-        padding: '0 4px'
+        padding: '2px 4px'
         borderRadius: 8
-        whiteSpace: 'nowrap'
+        #whiteSpace: 'nowrap'
+        maxWidth: 200
 
     real_height = heightWhenRendered tip, style
 
     # place the tooltip above the element
     _.extend style, 
-        top: coords.top - real_height - 5
+        top: coords.top - real_height - 9
         left: coords.left
         pointerEvents: 'none'
         zIndex: 9999
-        color: 'black'
-        backgroundColor: 'white'
+        color: 'white'
+        backgroundColor: focus_blue
         position: 'absolute'
 
     DIV

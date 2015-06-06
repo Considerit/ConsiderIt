@@ -1071,7 +1071,11 @@ GroupSelectionRegion = ReactiveComponent
               paddingLeft: avatar_size * .75
               paddingRight: 18
                 
-          DIV style: {left: left, position: 'absolute'},
+          DIV 
+            style: 
+              left: left
+              position: 'absolute'
+              zIndex: 1
 
             DIV null,
               Avatar 
@@ -1639,9 +1643,6 @@ Point = ReactiveComponent
         onMouseLeave: @unHighlightIncluders
         style: includers_style
           
-
-
-
         renderIncluders(draw_all_includers)
 
       DIV className:'point_content', style : point_content_style,

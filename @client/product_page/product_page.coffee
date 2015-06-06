@@ -71,9 +71,10 @@ ProductPage = ReactiveComponent
       Uses()
       #FAQ()
       Pricing()
-      Research()
       Contact()
+      Research()      
       Footer()
+      Story()
 
 
 
@@ -109,7 +110,7 @@ Header = ReactiveComponent
 
           drawLogo HEADER_HEIGHT + 5, 
                   'white', 
-                  (if @local.in_red then 'white' else logo_red), 
+                  (if @local.in_red then 'transparent' else logo_red), 
                   !@local.in_red,
                   !docked
 
@@ -141,12 +142,16 @@ Header = ReactiveComponent
   componentDidMount : -> 
 
     checkBackground = =>   
-      red_regions = [] #[[0, 530 + 2 * HEADER_HEIGHT]]
-      y = $(window).scrollTop()
+      red_regions = ['#uses', '#contact', '#footer'] #[[0, 530 + 2 * HEADER_HEIGHT]]
+      y = $(window).scrollTop() + $(@getDOMNode()).outerHeight()
 
       in_red = false
       for region in red_regions
-        if y <= region[1] && region[0] <= y
+        el = $(region)
+        start = el.offset().top
+        end = start + el.outerHeight()
+
+        if y <= end && start <= y
           in_red = true
           break
       if @local.in_red != in_red
@@ -173,6 +178,7 @@ Heading = ->
       style: 
         fontSize: 66
         marginBottom: 10
+        color: logo_red
       'Think Better Together.'
 
     DIV
@@ -461,28 +467,44 @@ Research = ->
 Footer = -> 
 
   DIV
-    style: 
-      #backgroundColor: logo_red
-      margin: '20px 0'
+    id: 'footer'
+    style:
+      marginTop: 80
+      backgroundColor: logo_red
+      color: 'white'
+      padding: '80px 0'
+      position: 'relative'
+
+    DIV 
+      style: cssTriangle 'bottom', 'white', 133, 30,
+        position: 'absolute'
+        left: '50%'
+        marginLeft: - 133 / 2
+        top: 0
     DIV
       style: _.extend {}, h2,
         width: SAAS_PAGE_WIDTH
-        margin: '60px auto'
-        #color: 'white'
+        margin: 'auto'
+        color: 'white'
 
       'Thanks for listening, friend.'
       BR null, 
       A
         style: _.extend {}, a, 
           fontSize: 36
-          #color: 'white'
-          #borderBottomColor: 'white'
+          color: 'white'
+          borderBottomColor: 'white'
         href: 'mailto:admin@consider.it'
         'Tell us your story' 
       '. What led you here?'
 
 
-    Story()
+    DIV 
+      style: cssTriangle 'bottom', logo_red, 133, 30,
+        position: 'absolute'
+        left: '50%'
+        marginLeft: - 133 / 2
+        bottom: -30      
 
 
 # props is:

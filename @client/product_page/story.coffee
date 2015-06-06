@@ -1,3 +1,6 @@
+require '../element_viewport_positioning'
+
+
 window.Story = ReactiveComponent
   displayName: 'Story'
 
@@ -7,7 +10,7 @@ window.Story = ReactiveComponent
       id: 'story'
       style: _.extend {}, base_text,
         width: SAAS_PAGE_WIDTH
-        margin: '10px auto 20px auto'
+        margin: '80px auto 20px auto'
 
 
       if @local.show_story
@@ -22,20 +25,26 @@ window.Story = ReactiveComponent
       DIV 
         style: _.extend {}, h2, 
           width: TEXT_WIDTH
-          backgroundColor: '#F7F7F7'
+          backgroundColor: 'rgba(0,0,0,.1)'
           textAlign: 'center'
-          textDecoration: 'underline'
           cursor: 'pointer'
           padding: '5px 0'
-          margin: 'auto'
+          margin: '40px auto 0 auto'
         onClick: =>
           @local.show_story = !@local.show_story
           save @local
 
-        if @local.show_story
-          "Hide our story"
-        else
-          "This is our story"
+          if @local.show_story
+            $(@getDOMNode()).moveToTop(100, true)
+
+        SPAN
+          style: 
+            borderBottom: '1px solid black'
+
+          if @local.show_story
+            "Hide our story"
+          else
+            "Still want more? Read our story"
 
 
 

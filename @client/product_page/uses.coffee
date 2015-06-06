@@ -47,7 +47,7 @@ uses = [{
 
   }, {
     icon: 'review'
-    label: "Review Options"
+    label: "Review options"
     description: -> 
       DIV 
         style: use_style
@@ -98,6 +98,19 @@ uses = [{
         """
         demosList(examples, 'Example')
   }, 
+  {
+    icon: 'meeting'
+    label: 'Organize a meeting'
+    description: -> 
+      DIV 
+        style: use_style
+
+        """
+        Groups can provide their opinions on agenda items before a meeting.  
+        This allows the facilitator to focus the meeting on areas of contention. 
+        Groups can continue unresolved conversations after a meeting.
+        """
+  }
 ]
 
 applications = [{
@@ -154,7 +167,7 @@ applications = [{
 
   }, {
     icon: 'public'
-    label: "Engage the public"
+    label: "Engage citizens"
     description: -> 
       examples = [
         ["NASA Asteroid Initiative", 'https://ecastonline.consider.it']
@@ -171,16 +184,6 @@ applications = [{
         demosList(examples, 'Example')
 
   },
-  # {
-  #   icon: 'meeting'
-  #   strong: 'Conduct meetings'
-  #   body: -> 
-  #     """
-  #     Plan more effective meetings by creating agendas on Consider.it. Thresh 
-  #     through ideas before a meeting. After a meeting, use Consider.it to 
-  #     close the loose ends!
-  #     """
-  # }
 ]
 
 for lst in [uses, applications]
@@ -225,8 +228,8 @@ window.Uses = ->
         stroke_color: 'white'
         stroke_width: 2        
         bg_color: logo_red
-        icon_height: 130
-        description_height: 280
+        icon_height: 110
+        description_height: 305
 
         style: 
           width: 900

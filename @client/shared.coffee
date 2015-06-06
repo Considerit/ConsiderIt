@@ -424,11 +424,12 @@ window.heightWhenRendered = (str, style) ->
   # This DOM manipulation is relatively expensive, so cache results
   key = JSON.stringify _.extend({str: str}, style)
   if key not of height_cache
-    $el = $("<span id='height_test'>#{str}</span>").css(style)
+    $el = $("<div id='height_test'>#{str}</div>").css(style)
     $('#content').append($el)
     height = $('#height_test').height()
     $('#height_test').remove()
     height_cache[key] = height
+
   height_cache[key]
 
 

@@ -41,13 +41,13 @@ window.Pricing = ReactiveComponent
     plans = [{
       name: 'Basic'
       width: 228
-      marginTop: 72
+      marginTop: 35 #72
       price: 'Free for everyone'
       call_to_action: 'Get me started!'  
       features: [
         'Unlimited users',
         'Unlimited questions',
-        'One Consider.it site',
+        #'One Consider.it site',
         'Basic branding',
         'Content moderation',
         'Idea grouping'
@@ -64,10 +64,10 @@ window.Pricing = ReactiveComponent
       call_to_action: 'Start Free 30 day trial!'  
       features: [
         'Private conversations',
-        'Unlimited administrators',
-        'Up to five Consider.it sites',
+        #'Unlimited administrators',
+        #'Up to five Consider.it sites',
         'Export data to a spreadsheet',
-        'Demographic questions',
+        'Advanced opinion analytics',
         'Priority customer service',
         'One hour training'
       ]
@@ -133,8 +133,9 @@ window.Pricing = ReactiveComponent
         {
           icon: 'features'
           description: """
-                  We don’t advertise a feature or service integration that you 
-                  need. We may already have it, or may be able to make it for you.
+                  If there is a feature that you need that is not advertised, 
+                  contact us. We often already have an experimental implementation, 
+                  or may be able to build it for you.
                   """
         }, {
           icon: 'design'
@@ -153,14 +154,13 @@ window.Pricing = ReactiveComponent
           icon: 'collaboration'
           description: """
                   You are leading a project and want to collaborate with us. 
-                  We enjoy partnering.
+                  We enjoy partnering. Let us know what you're thinking about.
                   """
         }, {
           icon: 'server'
           description: """
                   You have special hosting needs, like a private server 
-                  or one hosted in a particular country. We prefer not to do 
-                  self-hosting, but maybe we can work something out. 
+                  or one hosted in a particular country. Maybe we can work something out. 
                   """
         },
 
@@ -177,7 +177,8 @@ window.Pricing = ReactiveComponent
 
     DIV 
       style: 
-        marginTop: 60
+        width: 580
+        margin: '60px auto 0 auto'
 
       H2
         style: plan_header
@@ -194,7 +195,7 @@ window.Pricing = ReactiveComponent
       VisualTab
         tabs: plan.reasons
         stroke_color: logo_red
-        description_height: 100
+        description_height: 130
         icon_height: 70
 
 

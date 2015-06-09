@@ -4,8 +4,6 @@ require './svgs/design'
 require './svgs/features'
 require './svgs/server'
 
-PLAN_WIDTH = 300
-
 
 plan_header = _.extend {}, h2, 
   color: logo_red
@@ -22,68 +20,116 @@ window.Pricing = ReactiveComponent
         marginTop: 60
 
       DIV 
-        style: h1
+        style: _.extend {}, h1,
+          marginBottom: 30
+
 
         'Start using Consider.it'
 
       DIV 
         style: _.extend {}, base_text,
-          width: PLAN_WIDTH * 2 + 62
+          width: SAAS_PAGE_WIDTH
           margin: 'auto'
 
         @drawPlans()
 
-        @drawCustomPlan()
-
-
 
   drawPlans : -> 
-    plans = [{
-      name: 'Basic'
-      width: 228
-      marginTop: 35 #72
-      price: 'Free for everyone'
-      call_to_action: 'Get me started!'  
-      features: [
-        'Unlimited users',
-        'Unlimited questions',
-        #'One Consider.it site',
-        'Basic branding',
-        'Content moderation',
-        'Idea grouping'
-      ]
-      email:
-        subject: "I'd like to start Consider.it's Free Public plan"
-        body: "Hi, I'm _____ and I'd like to use Consider.it at https://_____.consider.it..."
+    plans = [
+      {
+        name: 'Basic'
+        width: SAAS_PAGE_WIDTH / 3 - 70
+        price: 'Free for everyone'
+        call_to_action: 'Get me started'  
+        features: [
+          'Unlimited users',
+          'Unlimited questions',
+          #'One Consider.it site',
+          'Basic branding',
+          'Content moderation',
+          'Idea grouping'
+        ]
+        email:
+          subject: "I'd like to start Consider.it's Free Public plan"
+          body: "Hi, I'm _____ and I'd like to use Consider.it at https://_____.consider.it..."
 
-    }, {
-      name: 'Professional'
-      width: PLAN_WIDTH
-      marginTop: 35
-      price: '$150 / month'
-      call_to_action: 'Start Free 30 day trial!'  
-      features: [
-        'Private conversations',
-        #'Unlimited administrators',
-        #'Up to five Consider.it sites',
-        'Export data to a spreadsheet',
-        'Advanced opinion analytics',
-        'Priority customer service',
-        'One hour training'
-      ]
-      email:
-        subject: "I'd like to start my 30 day trial of Consider.it's Professional plan"
-        body: "Hi, I'm _____ and I'd like to use Consider.it at https://_____.consider.it..."      
-    }]
+      }, {
+        name: 'Professional'
+        highlight: true
+        width: SAAS_PAGE_WIDTH / 3 + 60
+        price: '$150 / month'
+        call_to_action: 'Start free 30 day trial'  
+        features: [
+          'Private conversations',
+          #'Unlimited administrators',
+          #'Up to five Consider.it sites',
+          'Export to spreadsheet',
+          'Advanced opinion analytics',
+          'Priority customer service',
+          'One hour training'
+        ]
+        email:
+          subject: "I'd like to start my 30 day trial of Consider.it's Professional plan"
+          body: "Hi, I'm _____ and I'd like to use Consider.it at https://_____.consider.it..."      
+      },{
+        name: 'Custom'
+        price: 'Why a custom plan?'
+        call_to_action: "Contact us"
+        width: SAAS_PAGE_WIDTH / 3 - 70
+        reasons: [
+          {
+            icon: 'features'
+            description: -> 
+              DIV style: _.extend({}, small_text, {fontWeight: 400}),
+                """
+                If there is a feature you need developed that is not advertised. 
+                 """
+          }, {
+            icon: 'design'
+            description: 
+              DIV style: _.extend({}, small_text, {fontWeight: 400}),
+                """
+                If you want custom design work done, such as a custom homepage. 
+                """
+          }, {
+            icon: 'priceTag'
+            description: 
+              DIV style: _.extend({}, small_text, {fontWeight: 400}),
+                """
+                If our pricing model doesn't work for you. We are flexible. 
+                """
+          }, {
+            icon: 'collaboration'
+            description: 
+              DIV style: _.extend({}, small_text, {fontWeight: 400}),
+                """
+                If you want to collaborate with us. 
+                Let us know what you're thinking.
+                """
+          }, {
+            icon: 'server'
+            description: 
+              DIV style: _.extend({}, small_text, {fontWeight: 400}),
+                """
+                If you have special hosting needs, like a private server.  
+                """
+          },
+        ]
+        email:
+          subject: "Consider.it custom plan"
+          body: "Hi, my name is _____, and I'd like to discuss a custom Consider.it plan because ____"      
+        }
+    ]
 
     for plan, idx in plans
       DIV 
         style: 
-          width: PLAN_WIDTH
-          marginRight: if idx == 0 then 60 
-          marginTop: 40
+          width: plan.width
+          margin: if plan.highlight then '0px 40px' else '80px 0'
           display: 'inline-block'
           verticalAlign: 'top'
+          border: if plan.highlight then '1px solid #bbb'
+          padding: if plan.highlight then '40px 40px'
 
         H2
           style: plan_header
@@ -92,133 +138,60 @@ window.Pricing = ReactiveComponent
 
         DIV 
           style: 
-            margin: '40px 0'
+            margin: '30px 0'
             textAlign: 'center'
 
           plan.price
 
-        UL
-          style: 
-            listStyle: 'none'
-            textAlign: 'left'
-            width: plan.width 
-            margin: 'auto'
+        if plan.name != 'Custom'
+          UL
+            style: 
+              listStyle: 'none'
+              textAlign: 'left'
+              margin: 'auto'
 
-          for feature in plan.features
-            LI
-              style: _.extend {}, small_text,
-                fontWeight: 400
-                position: 'relative'
-                marginBottom: 10
-
-              I
-                className: 'fa fa-check'
-                style: 
+            for feature in plan.features
+              LI
+                style: _.extend {}, small_text,
+                  fontWeight: 400
                   position: 'relative'
-                  left: 0
-                  top: 0
-                  width: 30
+                  marginBottom: 10
 
-              feature
+                I
+                  className: 'fa fa-check'
+                  style: 
+                    position: 'relative'
+                    left: 0
+                    top: 0
+                    width: 30
 
-        @drawCallToAction(plan)
-
-  drawCustomPlan : -> 
-    plan =
-      name: 'Custom plan'
-      price: 'Common reasons for a custom plan:'
-      call_to_action: 'I want to discuss a custom plan'  
-      width: 450
-      reasons: [
-        {
-          icon: 'features'
-          description: """
-                  If there is a feature that you need that is not advertised, 
-                  contact us. We often already have an experimental implementation, 
-                  or may be able to build it for you.
-                  """
-        }, {
-          icon: 'design'
-          description: """
-                  You want custom design work done. For example, maybe you want 
-                  deep branding for the header. Or a custom component.
-                  """
-        }, {
-          icon: 'priceTag'
-          description: """
-                  The pricing is tricky for your situation and you want to 
-                  discuss options. We understand that our customers' needs are
-                  unique. We are flexible. 
-                  """
-        }, {
-          icon: 'collaboration'
-          description: """
-                  You are leading a project and want to collaborate with us. 
-                  We enjoy partnering. Let us know what you're thinking about.
-                  """
-        }, {
-          icon: 'server'
-          description: """
-                  You have special hosting needs, like a private server 
-                  or one hosted in a particular country. Maybe we can work something out. 
-                  """
-        },
-
-      ]
-      email:
-        subject: "Consider.it custom plan"
-        body: "Hi, my name is _____, and I'd like to discuss a custom Consider.it plan because ____"      
+                feature
+        else
+          VisualTab
+            tabs: plan.reasons
+            stroke_color: logo_red
+            description_height: 100
+            icon_height: 40
+            svg_padding: '10px 5px'
 
 
-    position = 0
-    if !@local.custom_reason_hover
-      @local.custom_reason_hover = plan.reasons[0].icon
-      save @local
+        do (plan) => 
 
-    DIV 
-      style: 
-        width: 580
-        margin: '60px auto 0 auto'
-
-      H2
-        style: plan_header
-
-        plan.name
-
-      DIV 
-        style: 
-          margin: '30px 0'
-          textAlign: 'center'
-
-        plan.price
-
-      VisualTab
-        tabs: plan.reasons
-        stroke_color: logo_red
-        description_height: 130
-        icon_height: 70
-
-
-
-      @drawCallToAction plan
-
-  drawCallToAction : (plan) -> 
-    hovering = @local.hover_call == plan.name
-    A
-      href: "mailto:admin@consider.it?subject=#{plan.email.subject}&body=#{plan.email.body}"
-      style:
-        backgroundColor: if hovering then logo_red else 'white'
-        color: if hovering then 'white' else logo_red
-        fontWeight: 500
-        border: "1px solid #{if hovering then 'white' else logo_red}"
-        borderRadius: 16
-        padding: '8px 18px'
-        fontSize: 24
-        margin: 'auto'
-        width: plan.width
-        display: 'block'
-        marginTop: plan.marginTop
-        textAlign: 'center'
-      onMouseEnter: => @local.hover_call = plan.name; save @local
-      onMouseLeave: => @local.hover_call = null; save @local
-      plan.call_to_action
+          hovering = @local.hover_call == plan.name
+          A
+            href: "mailto:admin@consider.it?subject=#{plan.email.subject}&body=#{plan.email.body}"
+            style:
+              backgroundColor: if hovering then logo_red else 'white'
+              color: if hovering then 'white' else logo_red
+              fontWeight: 500
+              border: "1px solid #{if hovering then 'white' else logo_red}"
+              borderRadius: 16
+              padding: '8px 18px'
+              fontSize: 24
+              margin: 'auto'
+              display: 'block'
+              marginTop: 35
+              textAlign: 'center'
+            onMouseEnter: => @local.hover_call = plan.name; save @local
+            onMouseLeave: => @local.hover_call = null; save @local
+            plan.call_to_action

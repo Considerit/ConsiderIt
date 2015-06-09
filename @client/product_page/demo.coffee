@@ -44,26 +44,35 @@ window.Video = ReactiveComponent
         width: video_width
         margin: "60px auto 0 auto"
         position: 'relative'
+        textAlign: 'right'
 
       @drawCaptions()
       @drawVideo()
       @drawChapterMenu()
 
-      if @local.ready
-        A
-          href: 'https://fun.consider.it/Death_Star'
-          target: '_blank'
-          style: 
-            cursor: 'pointer'
-            color: focus_blue
-            textDecoration: 'underline'
-            fontSize: 16
-            position: 'absolute'
-            marginTop: 5
-            right: 0
-            bottom: -20
-            display: 'inline-block'
-          'Explore this example yourself'
+      A
+        href: 'https://fun.consider.it/Death_Star'
+        target: '_blank'
+        onMouseEnter: => 
+          @local.hover_interact_death_star = true
+          save @local
+        onMouseLeave: => 
+          @local.hover_interact_death_star = false
+          save @local
+
+        style: 
+          cursor: 'pointer'
+          color:  logo_red #if @local.hover_interact_death_star then 'white' else logo_red
+          fontSize: 24
+          marginTop: 5
+          display: 'inline-block'
+          padding: '4px 4px'
+          textDecoration: 'underline'
+          #border: "1px solid #{logo_red}"
+          #borderRadius: 16
+          #backgroundColor: if @local.hover_interact_death_star then logo_red
+
+        'Explore this example yourself'
 
 
   drawVideo : -> 

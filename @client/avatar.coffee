@@ -81,7 +81,12 @@ window.Avatar = ReactiveComponent
     # isn't set to transparent because a transparent icon in many cases
     # will reveal content behind it that is undesirable to show.  
     style.backgroundColor = 'white' if show_avatar
-      
+
+    add_initials = !@props.anonymous && !user.avatar_file_name
+    
+    if add_initials
+      style.textAlign = 'center'
+
     attrs =
       className: "avatar #{@props.className or ''}"
       id: id
@@ -103,9 +108,30 @@ window.Avatar = ReactiveComponent
           save tooltip
 
     # IE9 gets confused if there is an image without a src
-    tag = if !thumbnail? && browser.is_ie9 && img_size == 'thumb' then SPAN else IMG
+    tag = if !thumbnail? && browser.is_ie9 && img_size == 'thumb' || add_initials then SPAN else IMG
 
-    @transferPropsTo tag attrs
+
+    @transferPropsTo tag attrs,
+      if add_initials
+        name = (user.name.trim() or 'Anonymous').split(' ')
+        fontsize = style.width / 2
+        ff = 'monaco,Consolas,"Lucida Console",monospace'
+        if name.length == 2
+          name = "#{name[0][0]}#{name[1][0]}"
+        else 
+          name = "#{name[0][0]}"
+        SPAN 
+          style: 
+            color: 'white'
+            pointerEvents: 'none'
+            fontSize: fontsize
+            display: 'block'
+            position: 'relative'
+            fontFamily: ff
+            top: style.height / 2 - heightWhenRendered(name, {fontSize: fontsize, fontFamily: ff}) / 2
+
+          name
+          
 
 styles += """
 .avatar {

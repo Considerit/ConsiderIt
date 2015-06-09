@@ -216,9 +216,10 @@ bullet = (props) ->
         when "con"
           "–"
 
-    P null,
+    P style: base_text,
       SPAN
-        style: strong
+        style: 
+          fontWeight: 500
         props.strong
       SPAN 
         style: light_base_text
@@ -229,7 +230,7 @@ tech = ->
   DIV
     id: 'tech'
     style:
-      marginTop: 80
+      marginTop: 50
 
     H1 style: h1,
       'The first forum that works better'
@@ -674,16 +675,6 @@ Root = ReactiveComponent
           width: '100%'
 
         Header()
-  
-      # DIV 
-      #   style: 
-      #     position: 'absolute'
-      #     left: 0
-      #     top: 0
-      #     width: '100%'
-      #     height: 622 - HEADER_HEIGHT
-      #     #backgroundColor: logo_red
-
 
 
       DIV

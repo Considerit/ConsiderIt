@@ -30,11 +30,11 @@ window.groupSVG = (props) ->
 
       TEXT
         fontSize: "12" 
-        fontWeight: "420" 
+        fontWeight: "800" 
 
         TSPAN 
           x: "0.93002083" 
-          y: "12"
+          y: "15"
 
-          "How should we…"
+          "How can we...?"
 

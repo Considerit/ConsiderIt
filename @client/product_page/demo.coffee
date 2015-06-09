@@ -211,7 +211,7 @@ window.Video = ReactiveComponent
             style: 
               color: if (highlighted || @local.hover_chapter == menu) then current_chapter_color else 'black'
               fontSize: 14
-              fontWeight: if highlighted then 700
+              fontWeight: if highlighted then 700 else 300
               padding: '10px 0'
               cursor: 'pointer'
             menu

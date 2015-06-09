@@ -25,7 +25,7 @@ window.Story = ReactiveComponent
       DIV 
         style: _.extend {}, h2, 
           width: TEXT_WIDTH
-          backgroundColor: 'rgba(0,0,0,.1)'
+          backgroundColor: '#f6f7f9'
           textAlign: 'center'
           cursor: 'pointer'
           padding: '5px 0'

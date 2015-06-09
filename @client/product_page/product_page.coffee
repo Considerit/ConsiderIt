@@ -8,7 +8,6 @@ require '../shared'
 require '../slider'
 require '../development'
 require '../state_dash'
-require '../dock'
 require '../logo'
 require '../bubblemouth'
 
@@ -29,7 +28,7 @@ window.small_text = _.extend {}, base_text,
 
 window.h1 = _.extend {}, base_text,
   fontSize: 48
-  fontWeight: 600
+  fontWeight: 400
   textAlign: 'center'
 
 window.h2 = _.extend {}, base_text,
@@ -54,7 +53,7 @@ require './demo'
 require './uses'
 require './contact'
 require './pricing'
-
+require './features'
 
 
 ProductPage = ReactiveComponent
@@ -70,6 +69,7 @@ ProductPage = ReactiveComponent
       Customers()      
       Uses()
       #FAQ()
+      Features()
       Pricing()
       Contact()
       Research()      
@@ -85,9 +85,7 @@ Header = ReactiveComponent
   render: ->
     current_user = fetch("/current_user")
 
-    docked = fetch('header-dock').docked
-
-    nav_links = ['demo', 'uses', 'price', 'contact']
+    nav_links = ['demo', 'uses', 'features', 'price', 'contact']
     
     DIV
       style:
@@ -112,7 +110,7 @@ Header = ReactiveComponent
                   'white', 
                   (if @local.in_red then 'transparent' else logo_red), 
                   !@local.in_red,
-                  !docked
+                  false
 
         # nav menu
         DIV 
@@ -170,7 +168,7 @@ Heading = ->
   DIV 
     style:
       width: SAAS_PAGE_WIDTH
-      margin: "60px auto 0 auto"
+      margin: "80px auto 0 auto"
       position: 'relative'
       textAlign: 'center'
 
@@ -515,6 +513,8 @@ window.VisualTab = ReactiveComponent
   displayName: 'VisualTab'
 
   render : ->
+    svg_padding = @props.svg_padding or '10px 20px'
+
     if !@local.selected
       @local.selected = @props.tabs[0].icon
       save @local
@@ -542,7 +542,7 @@ window.VisualTab = ReactiveComponent
             hovering = @local.hovering == tab.icon
             LI 
               style: 
-                padding: '10px 20px'
+                padding: svg_padding
                 display: 'table-cell'
                 opacity: if selected then 1.0 else if hovering then .6 else .25
                 verticalAlign: 'top'
@@ -660,21 +660,29 @@ Root = ReactiveComponent
       BrowserLocation()
       StateDash()
 
-      Dock
-        dock_on_zoomed_screens: false
-        skip_jut: true
-        key: 'header-dock'
+      # Dock
+      #   dock_on_zoomed_screens: false
+      #   skip_jut: true
+      #   key: 'header-dock'
+
+      DIV 
+        style: 
+          position: 'fixed'
+          top: 0
+          left: 0
+          zIndex: 999
+          width: '100%'
 
         Header()
   
-      DIV 
-        style: 
-          position: 'absolute'
-          left: 0
-          top: 0
-          width: '100%'
-          height: 622 - HEADER_HEIGHT
-          #backgroundColor: logo_red
+      # DIV 
+      #   style: 
+      #     position: 'absolute'
+      #     left: 0
+      #     top: 0
+      #     width: '100%'
+      #     height: 622 - HEADER_HEIGHT
+      #     #backgroundColor: logo_red
 
 
 

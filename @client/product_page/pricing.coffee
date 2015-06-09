@@ -86,21 +86,21 @@ window.Pricing = ReactiveComponent
                  """
           }, {
             icon: 'design'
-            description: 
+            description: ->
               DIV style: _.extend({}, small_text, {fontWeight: 400}),
                 """
                 If you want custom design work done, such as a custom homepage. 
                 """
           }, {
             icon: 'priceTag'
-            description: 
+            description: ->
               DIV style: _.extend({}, small_text, {fontWeight: 400}),
                 """
                 If our pricing model doesn't work for you. We are flexible. 
                 """
           }, {
             icon: 'collaboration'
-            description: 
+            description: ->
               DIV style: _.extend({}, small_text, {fontWeight: 400}),
                 """
                 If you want to collaborate with us. 
@@ -108,7 +108,7 @@ window.Pricing = ReactiveComponent
                 """
           }, {
             icon: 'server'
-            description: 
+            description: ->
               DIV style: _.extend({}, small_text, {fontWeight: 400}),
                 """
                 If you have special hosting needs, like a private server.  
@@ -128,7 +128,7 @@ window.Pricing = ReactiveComponent
           margin: if plan.highlight then '0px 40px' else '80px 0'
           display: 'inline-block'
           verticalAlign: 'top'
-          border: if plan.highlight then '1px solid #bbb'
+          border: if plan.highlight then "1px solid #{logo_red}"
           padding: if plan.highlight then '40px 40px'
 
         H2
@@ -138,7 +138,7 @@ window.Pricing = ReactiveComponent
 
         DIV 
           style: 
-            margin: '30px 0'
+            margin: '0px 0 30px 0'
             textAlign: 'center'
 
           plan.price
@@ -174,24 +174,31 @@ window.Pricing = ReactiveComponent
             icon_height: 40
             svg_padding: '10px 5px'
 
+        @drawCallForAction plan
 
-        do (plan) => 
+  drawCallForAction: (plan) -> 
 
-          hovering = @local.hover_call == plan.name
-          A
-            href: "mailto:admin@consider.it?subject=#{plan.email.subject}&body=#{plan.email.body}"
-            style:
-              backgroundColor: if hovering then logo_red else 'white'
-              color: if hovering then 'white' else logo_red
-              fontWeight: 500
-              border: "1px solid #{if hovering then 'white' else logo_red}"
-              borderRadius: 16
-              padding: '8px 18px'
-              fontSize: 24
-              margin: 'auto'
-              display: 'block'
-              marginTop: 35
-              textAlign: 'center'
-            onMouseEnter: => @local.hover_call = plan.name; save @local
-            onMouseLeave: => @local.hover_call = null; save @local
-            plan.call_to_action
+    hovering = @local.hover_call == plan.name
+    A
+      href: "mailto:admin@consider.it?subject=#{plan.email.subject}&body=#{plan.email.body}"
+      style:
+        backgroundColor: if hovering then logo_red else 'white'
+        color: if hovering then 'white' else logo_red
+        fontWeight: 500
+        border: "1px solid #{if hovering then 'white' else logo_red}"
+        borderRadius: 16
+        padding: '8px 18px'
+        fontSize: 24
+        margin: 'auto'
+        display: 'block'
+        marginTop: 35
+        textAlign: 'center'
+      onMouseEnter: => 
+        @local.hover_call = plan.name
+        save @local
+
+      onMouseLeave: => 
+        @local.hover_call = null
+        save @local
+
+      plan.call_to_action

@@ -36,8 +36,7 @@ uses = [{
         """
         You have a plan, a policy, or an idea for a new product direction. 
         Or maybe you're collecting feedback on a new program your organization 
-        recently implemented. Consider.it can help you gather organized feedback 
-        from anyone you invite to participate. Make improvements based on the 
+        recently implemented. Consider.it can help you make improvements based on the 
         insights of others, without having to sort through a long email chain or 
         free-form survey responses.
         """
@@ -229,7 +228,7 @@ window.Uses = ->
         stroke_width: 2        
         bg_color: logo_red
         icon_height: 110
-        description_height: 305
+        description_height: 250
 
         style: 
           width: 900
@@ -247,7 +246,7 @@ window.Uses = ->
         tabs: applications
         stroke_color: 'white'
         bg_color: logo_red
-        icon_height: 130
+        icon_height: 110
         description_height: 220
         stroke_width: 2
         style: 

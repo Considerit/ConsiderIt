@@ -37,8 +37,8 @@ features = [{
       style: feature_style
 
       """
-      Choose to make a conversation private, inviting only select participants. 
-      You can also configure who is allowed to contribute their opinion.
+      Invite only select people to participate in a conversation. 
+      You can also specify who is allowed to contribute their opinion.
       """
 },{
   icon: 'analyze',

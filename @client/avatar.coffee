@@ -113,7 +113,7 @@ window.Avatar = ReactiveComponent
 
     @transferPropsTo tag attrs,
       if add_initials
-        name = (user.name.trim() or 'Anonymous').split(' ')
+        name = (user.name?.trim() or 'Anonymous').split(' ')
         fontsize = style.width / 2
         ff = 'monaco,Consolas,"Lucida Console",monospace'
         if name.length == 2

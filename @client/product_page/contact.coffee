@@ -46,12 +46,10 @@ window.Contact = ReactiveComponent
             borderBottomColor: 'white'
 
           "admin@consider.it"
-        ". Or "
+        "."
 
-        @contactForm "we can write to you"
-        '.'
+        @mailchimpForm "we can write to you", "write to me"
 
-      #@contactForm()
 
       DIV 
         style: cssTriangle 'bottom', logo_red, 133, 30,
@@ -60,56 +58,70 @@ window.Contact = ReactiveComponent
           marginLeft: - 133 / 2
           bottom: -30      
 
-  contactForm: (label) -> 
-    FORM    
-      action: "//Consider.us7.list-manage.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
-      id: "mc-embedded-subscribe-form"
-      method: "post"
-      name: "mc-embedded-subscribe-form"
-      novalidate: "true"
-      target: "_blank"
-      style:
-        # margin: "10px 0 20px 0"
-        # textAlign: 'center'
-        display: 'inline-block'
+  mailchimpForm: (prompt, label) -> 
 
-      # INPUT
-      #   id: "mce-EMAIL"
-      #   name: "EMAIL"
-      #   placeholder: "email address"
-      #   type: "email"
-      #   defaultValue: ""
-      #   style:
-      #     fontSize: 24
-      #     padding: "8px 12px"
-      #     width: 380
-      #     border: '1px solid white'
-      #     backgroundColor: logo_red
-      #     color: 'white'
+    DIV 
+      style: {}
 
-      BUTTON
-        name: "subscribe"
-        type: "submit"
+
+      " Or "
+
+      A  
         style:
           color: 'white'
           border: 'none'
           borderBottom: '1px solid white'
           fontSize: 24
-          backgroundColor: 'transparent'
-          padding: 0
+        onClick: => @local.click_contactme = !@local.click_contactme; save @local
 
-          # fontSize: 24
-          # marginLeft: 8
-          # display: "inline-block"
-          # backgroundColor: if @local.hover_contactme then 'white' else logo_red
-          # color: if @local.hover_contactme then logo_red else 'white'
-          # fontWeight: 500
-          # border: "1px solid #{if @local.hover_contactme then 'transparent' else 'white'}"
-          # borderRadius: 16
-          # padding: '8px 18px'
-        onMouseEnter: => @local.hover_contactme = true; save @local
-        onMouseLeave: => @local.hover_contactme = false; save @local
-        label
+        prompt
+      if @local.click_contactme then ':' else '.'
+
+      if @local.click_contactme
+        FORM    
+          action: "//Consider.us7.list-manage.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
+          id: "mc-embedded-subscribe-form"
+          method: "post"
+          name: "mc-embedded-subscribe-form"
+          novalidate: "true"
+          target: "_blank"
+          style:
+            margin: "10px 0 20px 0"
+            # textAlign: 'center'
+            display: 'inline-block'
+
+          INPUT
+            id: "mce-EMAIL"
+            name: "EMAIL"
+            placeholder: "email address"
+            type: "email"
+            defaultValue: ""
+            style:
+              fontSize: 24
+              padding: "8px 12px"
+              width: 380
+              border: '1px solid white'
+              backgroundColor: logo_red
+              color: 'white'
+
+          BUTTON
+            name: "subscribe"
+            type: "submit"
+            style:
+              fontSize: 24
+              marginLeft: 8
+              display: "inline-block"
+              backgroundColor: if @local.hover_contactme then 'white' else logo_red
+              color: if @local.hover_contactme then logo_red else 'white'
+              fontWeight: 500
+              border: "1px solid #{if @local.hover_contactme then 'transparent' else 'white'}"
+              borderRadius: 16
+              padding: '8px 18px'
+            onMouseEnter: => @local.hover_contactme = true; save @local
+            onMouseLeave: => @local.hover_contactme = false; save @local
+
+            label
+
 
 team = -> 
   members = [{
@@ -208,6 +220,5 @@ styles += """
 #contact input[type=email]:focus {
   border-color: white;
   outline: none;
-  box-shadow: 0px 1px 12px rgba(255,255,255,.8);
 }
 """

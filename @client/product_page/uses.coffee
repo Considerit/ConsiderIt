@@ -76,8 +76,8 @@ uses = [{
         """
         Consider.it combines attributes of surveys and focus groups. 
         Like a survey, it can tally what people believe about fixed 
-        questions. Like a focus group, it can collect their underlying 
-        reasons and their influence across the respondents.
+        questions. Like a focus group, it can collect respondents' underlying 
+        reasons and the reasons' influence across the respondents.
         """
 
 
@@ -149,8 +149,8 @@ uses = [{
               "Before: "
 
             """The group can provide feedback on, or add to, 
-            the agenda. During the meeting, the facilitator 
-            can focus on unsettled areas."""
+            the agenda. The facilitator can then prepare a
+            focused discussion on the unsettled areas."""
 
           LI
             style: li_style

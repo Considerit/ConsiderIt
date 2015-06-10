@@ -224,8 +224,8 @@ applications = [{
         DIV 
           style: use_style
           """
-          Consider.it makes students' thinking visible to themselves and other students, 
-          in a way that enables them to reflect on the strength of their arguments, 
+          Consider.it makes students' thinking visible to themselves and other students. 
+          This enables them to reflect on the strength of their arguments, 
           engage and build on each other's ideas, and express a considered 
           opinion. Supports Common Core aligned exercises in English and Social Studies.
           """

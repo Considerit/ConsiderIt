@@ -265,7 +265,7 @@ tech = ->
              A visual, interactive summary of opinions helps everyone 
             analyze and understand what the 
             group thinks. Perhaps 80% of those with reservations
-            share a couple con points that can be addressed!
+            share two con points that can be addressed!
             """
 
 
@@ -406,7 +406,7 @@ Research = ->
   DIV 
     style: 
       width: SAAS_PAGE_WIDTH
-      margin: '60px auto'
+      margin: '80px auto'
 
     H1
       style: _.extend {}, h1, 

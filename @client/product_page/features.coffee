@@ -49,7 +49,7 @@ features = [{
 
       """
       Cross-tabulate opinions based on user attributes like job title, age, 
-      or a response to an arbitrary question. User attributes can be imported, 
+      or a response to a question you define. User attributes can be imported, 
       or you can prompt participants with custom questions.
       """
 },{
@@ -93,7 +93,7 @@ window.Features = ReactiveComponent
         style: _.extend {}, h1, 
           marginBottom: '50px'
 
-        'Advanced features'
+        'Additional features'
 
 
       UL

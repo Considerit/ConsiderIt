@@ -34,11 +34,11 @@ uses = [{
       DIV 
         style: use_style
         """
-        You have a plan, a policy, or an idea for a new product direction. 
-        Or maybe you're collecting feedback on a new program your organization 
-        recently implemented. Consider.it can help you make improvements based on the 
-        insights of others, without having to sort through a long email chain or 
-        free-form survey responses.
+        You have a plan, a policy, or an idea for a new product. 
+        Or maybe you're evaluating a new program you helped implement. 
+        Consider.it can help you efficiently collect the insights of 
+        others, without having to sort through a long email thread or 
+        responses to open-ended survey questions.
         """
 
         demosList(demos, 'Demo')
@@ -46,18 +46,26 @@ uses = [{
 
   }, {
     icon: 'review'
-    label: "Review options"
+    label: "Make a choice"
     description: -> 
       DIV 
         style: use_style
 
         """
-        Choosing the right vendor or product. Choosing the right office space to 
-        move your growing company. Choosing the right person or technology for 
-        the job, or which grant applications to fund. Consider.it helps 
-        teams evaluate the options, applying their best thinking to 
-        important decisions. 
+        Choosing the right vendor or product. Choosing the right office space for 
+        your growing company. Choosing the right technology or person for 
+        the job, or which grant applications to fund.
         """
+
+        DIV 
+          style: 
+            marginTop: 8
+
+          """      
+          Consider.it helps 
+          teams evaluate the options, applying their best thinking to 
+          important decisions. 
+          """
   }, {
     icon: 'survey'
     label: "Survey a group"
@@ -66,17 +74,33 @@ uses = [{
         style: use_style
 
         """
-        Consider.it collects and organizes both quantitative and qualitative 
-        data – what people think and why. It is like a survey and a focus group combined. 
-        Furthermore, you can ask simple questions of participants that can be used to 
-        cross-tabulate the opinions gathered on your main questions."""
-        
+        Consider.it combines attributes of surveys and focus groups. 
+        Like a survey, it can tally what people believe about fixed 
+        questions. Like a focus group, it can collect their underlying 
+        reasons and their influence across the respondents.
+        """
+
+
         DIV 
           style: 
             marginTop: 8
-          """Note that a 
-          traditional survey is more appropriate if independent responses are required.
+
+          """Beyond surveys and focus groups, Consider.it outputs organized 
+          open-ended data that is easier to visualize and code. But if 
+          you require strict independence, then a traditional survey or 
+          one-on-one interview is more appropriate.
           """
+
+        # DIV 
+        #   style: 
+        #     marginTop: 8
+
+        #   """
+        #   Highlighted feature: Consider.it enables you to ask simple 
+        #   questions of participants (like demographics) that can be used to 
+        #   cross-tabulate the opinions gathered on your fixed questions.
+        #   """
+
   }, {
     icon: 'dialogue'
     label: "Host a dialogue"
@@ -89,7 +113,7 @@ uses = [{
         style: use_style
 
         """
-        Host a dialogue about an interesting and/or contentious topic! 
+        Start a discussion about an interesting and/or contentious topic! 
         Consider.it provides a constructive environment for many people to 
         learn about an issue and share their opinion.
         The design minimizes personal attacks; and if they happen, our moderation 
@@ -101,14 +125,59 @@ uses = [{
     icon: 'meeting'
     label: 'Organize a meeting'
     description: -> 
+      li_style =
+        paddingTop: 10
+
       DIV 
         style: use_style
 
         """
-        Groups can provide their opinions on agenda items before a meeting.  
-        This allows the facilitator to focus the meeting on areas of contention. 
-        Groups can continue unresolved conversations after a meeting.
+        Consider.it can help make meetings more efficient:
         """
+        UL 
+          style: _.extend {}, small_text,
+            paddingLeft: 40
+            listStyle: 'outside'
+
+          LI
+            style: li_style
+
+            SPAN 
+              style: 
+                fontWeight: 600
+
+              "Before: "
+
+            """The group can provide feedback on, or add to, 
+            the agenda. During the meeting, the facilitator 
+            can focus on unsettled areas."""
+
+          LI
+            style: li_style
+
+            SPAN 
+              style: 
+                fontWeight: 600
+
+              "During: "
+
+            """Create visual straw polls to bring clarity 
+            to a discussion. This can be especially powerful 
+            for conference calls and virtual meetings."""
+
+          LI 
+            style: li_style
+            SPAN 
+              style: 
+                fontWeight: 600
+
+              "After: "
+
+            """Summarize the meeting and make it available 
+            for comment or wider circulation. Furthermore, groups can continue 
+            unresolved conversations on Consider.it after a meeting, 
+            potentially avoiding followup meetings.
+            """
   }
 ]
 

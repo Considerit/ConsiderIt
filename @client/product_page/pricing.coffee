@@ -47,7 +47,7 @@ window.Pricing = ReactiveComponent
           #'One Consider.it site',
           'Basic branding',
           'Content moderation',
-          'Idea grouping'
+          'Question grouping'
         ]
         email:
           subject: "I'd like to start Consider.it's Free Public plan"

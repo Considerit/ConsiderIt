@@ -24,22 +24,20 @@ window.Story = ReactiveComponent
 
       DIV 
         style: _.extend {}, h2, 
-          width: TEXT_WIDTH
-          backgroundColor: '#f6f7f9'
           textAlign: 'center'
-          cursor: 'pointer'
-          padding: '5px 0'
-          margin: '40px auto 0 auto'
-        onClick: =>
-          @local.show_story = !@local.show_story
-          save @local
-
-          if @local.show_story
-            $(@getDOMNode()).moveToTop(100, true)
 
         SPAN
+        
+          onClick: =>
+            @local.show_story = !@local.show_story
+            save @local
+
+            if @local.show_story
+              $(@getDOMNode()).moveToTop(100, true)        
+
           style: 
             borderBottom: '1px solid black'
+            cursor: 'pointer'
 
           if @local.show_story
             "Hide our story"

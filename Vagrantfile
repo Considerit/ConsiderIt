@@ -25,15 +25,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # end
 
   # parallels box...
-  config.vm.box_url = "https://atlas.hashicorp.com/parallels/boxes/ubuntu-12.04"
-  config.vm.box = "parallels/ubuntu-12.04"
+  config.vm.box_url = "https://atlas.hashicorp.com/parallels/boxes/ubuntu-14.04"
+  config.vm.box = "parallels/ubuntu-14.04"
   config.vm.provider "parallels" do |v|
     v.memory = 2048
     v.cpus = 4
-    #v.gui = false
     v.update_guest_tools = true
   end
-  #config.vm.synced_folder "./", "/vagrant" #, id: "some_id"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
@@ -63,7 +61,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.synced_folder "../data", "/vagrant_data"
 
   # Required for NFS to work, pick any local IP
-  #config.vm.network :private_network, ip: "10.211.55.3"
+  config.vm.network :private_network, ip: "10.211.55.3"
 
   # Use NFS for shared folders for better performance
   config.vm.synced_folder '.', '/vagrant', nfs: true
@@ -87,9 +85,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #ansible.hosts = "ubuntu"
 
     ansible.extra_vars = { 
-      ansible_ssh_user: 'vagrant', 
       ansible_ssh_host: '10.211.55.3',
-      raw_ssh_args: ["-o Port=22", "-o Compression=yes", "-o DSAAuthentication=yes", "-o LogLevel=FATAL", "-o StrictHostKeyChecking=no", "-o UserKnownHostsFile=/dev/null", "-o IdentitiesOnly=yes", "-i /Users/travis/Documents/code/ConsiderIt/.vagrant/machines/default/parallels/private_key"]
     }
     ansible.verbose = 'vvvv'
   end

@@ -240,3 +240,6 @@ DEPENDENCIES
   sitemap_generator
   thin
   whenever
+
+BUNDLED WITH
+   1.10.3

@@ -427,7 +427,7 @@ Research = ->
           style: 
             padding: '16px 32px'
             position: 'relative'
-            backgroundColor: '#f6f7f9'
+            backgroundColor: considerit_gray
             boxShadow: '#b5b5b5 0 1px 1px 0px'
             borderRadius: 32
             marginBottom: 20
@@ -451,7 +451,7 @@ Research = ->
               apex_xfrac: 0
               width: 30
               height: 30
-              fill: "#f6f7f9"              
+              fill: considerit_gray
               stroke: 'transparent'
               stroke_width: 0
               box_shadow:   

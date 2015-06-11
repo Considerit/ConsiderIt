@@ -28,6 +28,7 @@ every 5.minutes do
   rake 'send_email_notifications'
 end
 
+
 # For RANDOM2015 deployment, can be removed once that's done.
 every 10.minutes do
   envcommand "rake 'import_from_easychair'"

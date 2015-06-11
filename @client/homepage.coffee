@@ -692,7 +692,7 @@ window.ProposalSummary = ReactiveComponent
                     apex_xfrac: 0
                     width: COMMUNITY_POINT_MOUTH_WIDTH
                     height: COMMUNITY_POINT_MOUTH_WIDTH
-                    fill: "#f6f7f9", 
+                    fill: considerit_gray, 
                     stroke: 'transparent', 
                     stroke_width: 0
                     box_shadow:

@@ -15,7 +15,7 @@
 // To compile for production, set the environment variable 
 //      BUILD_PRODUCTION
 //
-// In production, if we're using a non-local asset host like Cloudfront, 
+// In production, if we're using a remote asset host like Cloudfront, 
 // this will also upload the built javascript (and images) to the configured
 // host. 
 // 
@@ -62,7 +62,7 @@ config = {
   debug : is_dev,
   displayErrorDetails : true,
   outputPathinfo : true,
-  devtool : is_dev ? 'eval' : 'sourcemap',
+  devtool : is_dev ? 'cheap-eval-source-map' : 'source-map',
 
   entry: entry_points,
 
@@ -75,9 +75,9 @@ config = {
 
   module: {
 
-    // Enables compilation of coffee into java
+    // Enables compilation of coffee into javascript
     loaders: [
-      { test: /\.coffee$/, loader: 'coffee-loader' },
+      { test: /\.coffee$/, loader: 'coffee-loader', include: path.resolve(__dirname, "@client") },
     ],
 
     // Files that have already been compiled with webpack
@@ -234,5 +234,4 @@ if(!is_dev){
 }
 
 console.log("BUILDING FOR " + (is_dev ? "DEVELOPMENT" : "PRODUCTION"))
-
 module.exports = config

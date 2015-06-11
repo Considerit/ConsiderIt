@@ -1670,7 +1670,7 @@ Point = ReactiveComponent
               apex_xfrac: 0
               width: COMMUNITY_POINT_MOUTH_WIDTH
               height: COMMUNITY_POINT_MOUTH_WIDTH
-              fill: "#f6f7f9"
+              fill: considerit_gray
               stroke: if is_selected then focus_blue else 'transparent'
               stroke_width: if is_selected then 20 else 0
               box_shadow:   
@@ -1875,7 +1875,7 @@ styles += """
   border-radius: 16px;
   padding: 0.5em 9px;
   margin-bottom: 0.5em;
-  background-color: #f6f7f9;
+  background-color: #{considerit_gray};
   box-shadow: #b5b5b5 0 1px 1px 0px;
   min-height: 34px; }
 

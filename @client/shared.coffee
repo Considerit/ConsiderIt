@@ -53,6 +53,7 @@ window.SIMPLEHOMEPAGEWIDTH = 850
 window.focus_blue = '#2478CC'
 window.logo_red = "#B03A44"
 window.default_avatar_in_histogram_color = '#d3d3d3'
+window.considerit_gray = '#f6f7f9'
 
 window.parseColor = (color_str) -> 
   test = document.createElement('div')

@@ -1,4 +1,4 @@
 #!/bin/sh
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
-./node_modules/webpack/bin/webpack.js --progress --colors -d --watch --config webpack.config.js
+./node_modules/webpack/bin/webpack.js --progress --colors --watch --config webpack.config.js

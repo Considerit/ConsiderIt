@@ -1,5 +1,5 @@
 user: vagrant
-ansible_ssh_user: $user
+ansible_ssh_user: vagrant
 app_name: ConsiderIt
 app_home: /vagrant
 allow_indexing: false

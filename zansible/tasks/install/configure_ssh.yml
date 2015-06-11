@@ -10,7 +10,7 @@
 
 # THIS WILL FAIL UNLESS YOU HAVE ACCESS TO THE CONSIDERIT DROPBOX & ARE ON A MAC
 - name: Make .ssh directory
-  local_action: file path=zansible/templates/ssh state=directory
+  local_action: file path=templates/ssh state=directory
   sudo: False
 
 # note: local_action's current working directory is the location of the top level playbook

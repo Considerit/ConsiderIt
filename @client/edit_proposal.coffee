@@ -94,8 +94,6 @@ window.EditProposal = ReactiveComponent
       save @local
 
     DIV null, 
-      DashHeader 
-        name: if @props.fresh then "New Proposal" else "Edit #{proposal.name}"
       DIV 
         style: 
           width: CONTENT_WIDTH
@@ -103,34 +101,32 @@ window.EditProposal = ReactiveComponent
           padding: '3em 0'
           position: 'relative'
 
-        if @props.fresh
+        DIV 
+          style: 
+            fontSize: 28
+            marginBottom: 20
+
+          DIV
+            style: 
+              fontSize: 30
+              fontWeight: 700
+            if @props.fresh then "Add a new proposal" else "Edit '#{proposal.name}'"
+
           DIV 
             style: 
-              fontSize: 28
-              marginBottom: 20
+              fontSize: 18
 
-            DIV
+            'Make it '
+            SPAN 
               style: 
-                fontSize: 30
-                fontWeight: 700
-                color: focus_blue
-              "Add a new proposal"
-
-            DIV 
+                fontWeight: 600
+              "unambiguous"
+            ' and '
+            SPAN 
               style: 
-                fontSize: 18
-
-              'Make it '
-              SPAN 
-                style: 
-                  fontWeight: 600
-                "unambiguous"
-              ' and '
-              SPAN 
-                style: 
-                  fontWeight: 600
-                "free of language errors"
-              '.'
+                fontWeight: 600
+              "free of language errors"
+            '.'
 
         DIV style: block_style,
           LABEL htmlFor:'slug', style: label_style, 'URL:'
@@ -164,11 +160,10 @@ window.EditProposal = ReactiveComponent
             style: input_style
 
         DIV style: block_style,
-          LABEL htmlFor:'description', style: label_style, 'Description:'
+          LABEL htmlFor:'description', style: label_style, 'Details:'
           
           WysiwygEditor
             key:"description-#{proposal.key}"
-            placeholder:'Clearly describe the details.'
             style: input_style
             html: if @props.fresh then null else proposal.description
 

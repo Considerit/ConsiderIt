@@ -1,3 +1,5 @@
+# previewable at /rails/mailers
+
 require Rails.root.join("@email", "send_digest")
 
 class DigestPreview < ActionMailer::Preview

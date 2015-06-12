@@ -1,3 +1,5 @@
+# previewable at /rails/mailers
+
 class EventPreview < ActionMailer::Preview
 
   def send_message

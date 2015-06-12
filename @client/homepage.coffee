@@ -13,7 +13,7 @@ window.Homepage = ReactiveComponent
   displayName: 'Homepage'
   render: ->
     doc = fetch('document')
-    subdomain = fetch('subdomain')
+    subdomain = fetch('/subdomain')
 
     title = subdomain.app_title || subdomain.name
     if doc.title != title
@@ -99,8 +99,16 @@ window.SimpleHomepage = ReactiveComponent
         '''a.proposal:hover {border-bottom: 1px solid grey}'''
 
 
-      if current_user.logged_in
-        @drawWatchFilter()
+      if permit('create proposal') > 0 && customization('show_new_proposal_button')
+        A 
+          style: 
+            color: logo_red
+            marginTop: 35
+            display: 'inline-block'
+            borderBottom: "1px solid #{logo_red}"
+
+          href: '/proposal/new'
+          'Create new proposal'
 
       # List all clusters
       for cluster, index in proposals.clusters or []
@@ -113,22 +121,30 @@ window.SimpleHomepage = ReactiveComponent
           homie_histo_title: customization("homie_histo_title", cluster_key)
           show_proposer_icon: customization("show_proposer_icon", cluster_key)
 
-        if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
-          DIV
-            style: margin: "45px 0 45px #{if customization('lefty') then '200px' else '0'}"
+        DIV 
+          style: 
+            position: 'relative'
 
-            "#{options.label} "
+          if current_user.logged_in && index == 0
+            @drawWatchFilter()
 
-            A 
-              style: 
-                textDecoration: 'underline'
-              onClick: do(cluster) => => 
-                @local.show_cluster ||= []
-                @local.show_cluster.push(cluster.name)
-                save(@local)
-              'Show archive'
-        else if cluster.proposals?.length > 0
-          @drawCluster cluster, options
+
+          if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
+            DIV
+              style: margin: "45px 0 45px #{if customization('lefty') then '200px' else '0'}"
+
+              "#{options.label} "
+
+              A 
+                style: 
+                  textDecoration: 'underline'
+                onClick: do(cluster) => => 
+                  @local.show_cluster ||= []
+                  @local.show_cluster.push(cluster.name)
+                  save(@local)
+                'Show archive'
+          else if cluster.proposals?.length > 0
+            @drawCluster cluster, options
 
   typeset : -> 
     subdomain = fetch('/subdomain')
@@ -558,7 +574,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
                   width: PAGE_WIDTH
                 description
 
-      if permit('create proposal') > 0
+      if permit('create proposal') > 0 && customization('show_new_proposal_button')
         # lazily styled & positioned...
         DIV style: {width: 871, margin: 'auto'}, 
           A 

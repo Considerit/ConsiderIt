@@ -2,6 +2,31 @@ require 'mail'
 
 class UserMailer < Mailer
 
+  def welcome_new_customer(user, subdomain, plan)
+    @user = user
+    subject = "Welcome to Consider.it!"
+    @subdomain = subdomain
+    @plan = plan
+
+    to = format_email @user.email, @user.name
+    from = format_email('admin@consider.it', 'Consider.it')
+    
+    params = {
+      :from => from, 
+      :to => to, 
+      :bcc => ['travis@consider.it', 'kevin@consider.it', 'toomim@consider.it'], 
+      :subject => subject_line(subject, subdomain)
+    }
+    mail params do |format|
+      @part = 'text'
+      format.text
+      @part = 'html'
+      format.html
+    end
+
+  end
+
+
   def reset_password_instructions(user, token, subdomain)
     @user = user
     @token = token 

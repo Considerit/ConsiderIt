@@ -296,6 +296,8 @@ customizations.default =
 
     sum
 
+  show_new_proposal_button: true
+
   show_crafting_page_first: false
 
   point_labels : pro_con
@@ -320,8 +322,10 @@ customizations.default =
   description: false
 
   # Other options
+  additional_auth_footer: false
+
   auth: 
-    additional_auth_footer: null
+    
     user_questions: []
 
   lefty: false
@@ -823,36 +827,36 @@ customizations.ecastonline = customizations['ecast-demo'] =
   ProposalNavigation: ProposalNavigationWithMenu
   docking_proposal_header : true
 
+  additional_auth_footer: -> 
+
+    auth = fetch('fetch')
+    if auth.ask_questions && auth.form != 'edit profile'
+      return DIV 
+        style:
+          fontSize: 13
+          color: auth_text_gray
+          padding: '16px 0' 
+        """
+        The demographic data collected from participants in this project will be used for research purposes, for 
+        example, to identify the demographic and other characteristics of the people who participated in the 
+        deliberation.  This information can be used in analyzing the results of this online forum.  
+        No email addresses, demographic data, or personally-identifying information will be displayed to 
+        other visitors to this site.  Any comments you submit will be identified only by the display name 
+        you enter below.  By completing this registration, you acknowledge that your participation in this 
+        project is entirely voluntary and you agree that the data provided may be used for research. If you 
+        have any questions or concerns at any time, please 
+        """
+        A 
+          href: 'mailto:info@ecastonline.org'
+          target: "_blank"
+          style: 
+            textDecoration: 'underline'
+           "Contact Us"
+        "."
+    else 
+      SPAN null, ''
+
   auth: 
-
-    additional_auth_footer: -> 
-
-      auth = fetch('fetch')
-      if auth.ask_questions && auth.form != 'edit profile'
-        return DIV 
-          style:
-            fontSize: 13
-            color: auth_text_gray
-            padding: '16px 0' 
-          """
-          The demographic data collected from participants in this project will be used for research purposes, for 
-          example, to identify the demographic and other characteristics of the people who participated in the 
-          deliberation.  This information can be used in analyzing the results of this online forum.  
-          No email addresses, demographic data, or personally-identifying information will be displayed to 
-          other visitors to this site.  Any comments you submit will be identified only by the display name 
-          you enter below.  By completing this registration, you acknowledge that your participation in this 
-          project is entirely voluntary and you agree that the data provided may be used for research. If you 
-          have any questions or concerns at any time, please 
-          """
-          A 
-            href: 'mailto:info@ecastonline.org'
-            target: "_blank"
-            style: 
-              textDecoration: 'underline'
-             "Contact Us"
-          "."
-      else 
-        SPAN null, ''
 
     user_questions : [
       { 
@@ -1129,6 +1133,7 @@ styles += """
 # Bitcoin
 
 customizations.bitcoin = 
+  show_new_proposal_button: false
 
   auth:   
     user_questions : [

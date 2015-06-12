@@ -368,7 +368,7 @@ class CurrentUserController < ApplicationController
   # roles or permissions settings. If so, replace the email with the
   # user's key. 
   def update_roles_and_permissions
-    if current_subdomain.roles.index("\"#{current_user.email}\"")
+    if current_subdomain.roles && current_subdomain.roles.index("\"#{current_user.email}\"")
       pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{current_subdomain.name}"              
       current_subdomain.roles = current_subdomain.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
       current_subdomain.save

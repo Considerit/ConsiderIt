@@ -18,16 +18,6 @@ class HtmlController < ApplicationController
       end
     end
 
-    # Storing the full host name on the subdomain object.
-    # This is needed because we don't have a request
-    # when sending emails out at later points. 
-    # This is ugly, would be nice to eliminate this. 
-    if current_subdomain.host.nil?
-      current_subdomain.host = request.host
-      current_subdomain.host_with_port = request.host_with_port
-      current_subdomain.save
-    end
-
     if !session.has_key?(:search_bot)
       session[:search_bot] = !!request.fullpath.match('_escaped_fragment_')  \
                              || !request.user_agent

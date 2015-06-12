@@ -14,7 +14,7 @@ require './vendor/jquery.touchpunch'
 require './vendor/modernizr' 
 require './activerest-m'
 require './dock'
-require './admin' # for dashes, CreateSubdomain
+require './admin' # for dashes
 require './auth'
 require './avatar'
 require './browser_hacks'
@@ -2947,8 +2947,6 @@ Page = ReactiveComponent
               key: '/page/dashboard/email_notifications'
           when '/dashboard/assessment'
             FactcheckDash key: "/page/dashboard/assessment"
-          when '/dashboard/create_subdomain'
-            CreateSubdomain key: "/page/dashboard/create_subdomain"
           when '/dashboard/import_data'
             ImportDataDash key: "/page/dashboard/import_data"
           when '/dashboard/moderate'

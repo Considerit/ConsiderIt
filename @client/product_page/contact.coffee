@@ -75,7 +75,11 @@ window.Contact = ReactiveComponent
         onClick: => @local.click_contactme = !@local.click_contactme; save @local
 
         prompt
-      if @local.click_contactme then ':' else '.'
+
+      if @local.click_contactme 
+        ':' 
+      else 
+        '.'
 
       if @local.click_contactme
         FORM    
@@ -147,8 +151,9 @@ team = ->
       textAlign: 'center'
       marginTop: 30
 
-    for t in members
+    for t, idx in members
       DIV
+        key: idx
         style:
           display: "inline-block"
           margin: "20px 30px"

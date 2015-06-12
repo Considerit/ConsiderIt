@@ -21,6 +21,29 @@ require './customizations'
 require './form'
 require './shared'
 
+
+window.logout = -> 
+  current_user = fetch('/current_user')
+  current_user.logged_in = false
+  current_user.trying_to = 'logout'
+
+  auth = fetch 'auth'
+
+  if auth.form && auth.form == 'edit profile'
+    loadPage '/'
+
+  reset_key auth
+
+  save current_user, =>
+    # We need to get a fresh your_opinion object
+    # after logging out. 
+
+    # TODO: the server should dirty keys on the client when the
+    # current_user logs out
+    #arest.clear_matching_objects((key) -> key.match( /\/page\// ))
+    location.reload()
+
+
 window.auth_ghost_gray = '#a1a1a1' # the gray color for ghost text
 window.auth_text_gray = '#444'    # the gray color for solid text
 
@@ -50,7 +73,7 @@ Auth = ReactiveComponent
       DIV
         style:
           margin: "0 auto 0 #{if customization('lefty') then '300px' else 'auto'}"
-          padding: '4em 0'
+          padding: if !@props.naked then '4em 0'
           position: 'relative'
           zIndex: 0
           width: DECISION_BOARD_WIDTH
@@ -167,6 +190,9 @@ Auth = ReactiveComponent
   #
   headerAndBorder : (goal, task, body) ->
     auth = fetch('auth')
+
+    if @props.naked
+      return body
 
     real_task_width = widthWhenRendered(task, {fontSize: 61, fontWeight: 600})
     DIV null,
@@ -386,8 +412,8 @@ Auth = ReactiveComponent
 
           toggle_to
       
-      if customization('auth.additional_auth_footer')
-        additional = customization('auth.additional_auth_footer')()
+      if customization('additional_auth_footer')
+        additional = customization('additional_auth_footer')()
 
 
 
@@ -402,15 +428,16 @@ Auth = ReactiveComponent
   submitButton : (action, inline) ->
     # this is gross code
     el =  DIV
-        style:
-          fontSize: 24
-          display: if inline then 'inline-block' else 'block'
-        className:'primary_button' + (if @local.submitting then ' disabled' else '')
-        onClick: @submitAuth
-        action
+      style:
+        fontSize: 24
+        display: if inline then 'inline-block' else 'block'
+      className:'primary_button' + (if @local.submitting then ' disabled' else '')
+      onClick: @submitAuth
+      
+      action
 
-    if !inline && customization('auth.additional_auth_footer')
-      additional = customization('auth.additional_auth_footer')()
+    if !inline && customization('additional_auth_footer')
+      additional = customization('additional_auth_footer')()
 
     if additional
       DIV null, 
@@ -578,7 +605,12 @@ Auth = ReactiveComponent
   #
   # "I forgot my password!"
   resetPasswordLink : -> 
-    DIV style: {textAlign: 'right'}, 
+    DIV 
+      style: 
+        textAlign: 'right'
+        fontSize: 18
+        width: 300
+
       A 
         style: 
           textDecoration: 'underline'

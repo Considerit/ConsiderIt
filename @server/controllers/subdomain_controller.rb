@@ -25,15 +25,57 @@ class SubdomainController < ApplicationController
 
     existing = Subdomain.find_by_name(subdomain)
     if existing
-      errors.push "The #{subdomain} subdomain already exists. Contact us for more information."
+      errors.push "That site already exists. Please choose a different name."
     else
-      new_subdomain = Subdomain.new :name => subdomain
+      new_subdomain = Subdomain.new name: subdomain, app_title: params[:app_title]
       roles = new_subdomain.user_roles
       roles['admin'].push "/user/#{current_user.id}"
       roles['visitor'].push "*"
       new_subdomain.roles = JSON.dump roles
+      new_subdomain.host = "#{new_subdomain.name}.#{request.host}"
+      new_subdomain.host_with_port = "#{new_subdomain.name}.#{request.host_with_port}"
       new_subdomain.save
+
+
+      set_current_tenant(new_subdomain)
+
+      # Seed a new proposal
+      proposal = Proposal.new({
+        subdomain_id: new_subdomain.id, 
+        slug: 'considerit_can_help', 
+               # if you change the slug, be sure to update the 
+               # welcome_new_customer email template
+        name: 'Consider.it can help me',
+        description: '',
+        user: current_user,
+        cluster: 'Test question',
+        active: true,
+        published: true, 
+        moderation_status: 1
+
+      })
+      proposal.save
+
+      opinion = Opinion.create!({
+        user: current_user,
+        subdomain_id: new_subdomain.id, 
+        proposal: proposal,
+        stance: 0.0
+      })
+      opinion.publish
+
+      set_current_tenant(Subdomain.find_by_name('homepage'))
+
+
+      # Send welcome email to subdomain creator
+      UserMailer.welcome_new_customer(current_user, new_subdomain, params[:plan]).deliver_later
+
+
     end
+
+
+
+
 
     if errors.length > 0
       render :json => [{errors: errors}]
@@ -48,6 +90,8 @@ class SubdomainController < ApplicationController
   end
 
   def update
+    errors = []
+
     subdomain = Subdomain.find(params[:id])
     authorize! 'update subdomain', subdomain
 
@@ -71,8 +115,11 @@ class SubdomainController < ApplicationController
     current_user.add_to_active_in
     current_subdomain.update_attributes! attrs
 
-    dirty_key '/subdomain'
-    render :json => []
+    response = current_subdomain.as_json
+    if errors.length > 0
+      response[:errors] = errors
+    end
+    render :json => [response]
 
   end
 

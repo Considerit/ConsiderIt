@@ -75,7 +75,7 @@ window.ProfileMenu = ReactiveComponent
             A 
               'data-action': 'logout'
               className: 'menu_link'
-              onClick: @logout
+              onClick: logout
               'Log out'
 
           SPAN 
@@ -108,29 +108,7 @@ window.ProfileMenu = ReactiveComponent
           style: 
             color: if !@local.light_background then 'white'
           'Log in'
-
-
-  logout : -> 
-    current_user = fetch('/current_user')
-    current_user.logged_in = false
-    current_user.trying_to = 'logout'
-
-    auth = fetch 'auth'
-
-    if auth.form && auth.form == 'edit profile'
-      loadPage '/'
-
-    reset_key auth
-
-    save current_user, =>
-      # We need to get a fresh your_opinion object
-      # after logging out. 
-
-      # TODO: the server should dirty keys on the client when the
-      # current_user logs out
-      #arest.clear_matching_objects((key) -> key.match( /\/page\// ))
-      location.reload()
-      
+    
 
 
 styles += """

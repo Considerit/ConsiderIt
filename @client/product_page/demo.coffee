@@ -35,7 +35,7 @@ caption_color =  "black" #logo_red focus_blue
 current_chapter_color = logo_red #caption_color
 
 window.Video = ReactiveComponent
-  displayName: "video"
+  displayName: "Video"
   render: ->
 
     DIV 
@@ -96,6 +96,7 @@ window.Video = ReactiveComponent
         asset_path = asset("product_page/#{VIDEO_FILE}.#{format}")
         if asset_path?.length > 0
           SOURCE
+            key: format
             src: asset_path
             type: "video/#{format}"
 
@@ -185,10 +186,11 @@ window.Video = ReactiveComponent
         width: 120
         textAlign: 'right'
 
-      for menu in _.uniq (chapter.menu for chapter in chapters)
+      for menu, idx in _.uniq (chapter.menu for chapter in chapters)
         do (menu) =>
           highlighted = menu == current_chapter.menu
           LI
+            key: idx
             onMouseEnter: => 
               @local.hover_chapter = menu 
               save @local

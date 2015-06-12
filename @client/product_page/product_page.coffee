@@ -56,28 +56,6 @@ require './pricing'
 require './features'
 
 
-ProductPage = ReactiveComponent
-  displayName: "ProductPage"
-  render: ->
-    DIV
-      style: 
-        position: 'relative'
-
-      Heading()
-      Video()
-      tech()
-      Customers()      
-      Uses()
-      #FAQ()
-      Features()
-      Pricing()
-      Contact()
-      Research()      
-      Footer()
-      Story()
-
-
-
 HEADER_HEIGHT = 30
 
 Header = ReactiveComponent
@@ -125,8 +103,9 @@ Header = ReactiveComponent
               position: 'absolute'
               right: 0
 
-            for nav in nav_links
+            for nav,idx in nav_links
               A 
+                key: idx
                 style: _.extend {}, base_text,
                   fontWeight: if nav == 'faq' then 400 else 300
                   fontSize: 20
@@ -320,6 +299,7 @@ Customers = ReactiveComponent
             style = css.grayscale style
             style.opacity = .7
           A 
+            key: c.url
             style: style
             href: c.url
             target: '_blank'
@@ -362,6 +342,7 @@ Research = ->
 
         for author,idx in author_list
           LI 
+            key: idx
             style: 
               display: 'inline-block'
               listStyle: 'none'
@@ -424,6 +405,7 @@ Research = ->
 
       for paper in papers
         LI 
+          key: paper.title
           style: 
             padding: '16px 32px'
             position: 'relative'
@@ -542,6 +524,7 @@ window.VisualTab = ReactiveComponent
             selected = @local.selected == tab.icon
             hovering = @local.hovering == tab.icon
             LI 
+              key: idx
               style: 
                 padding: svg_padding
                 display: 'table-cell'
@@ -608,11 +591,12 @@ window.VisualTab = ReactiveComponent
 
         for tab, idx in @props.tabs
           if @local.selected == tab.icon
-
-            if _.isFunction(tab.description)
-              tab.description()
-            else 
-              tab.description
+            DIV 
+              key: idx
+              if _.isFunction(tab.description)
+                tab.description()
+              else 
+                tab.description
 
 
 Page = ReactiveComponent
@@ -621,20 +605,22 @@ Page = ReactiveComponent
   mixins: [ AccessControlled ]
 
   render: ->
-    loc = fetch("location")
-    auth = fetch("auth")
+    DIV
+      style: 
+        position: 'relative'
 
-    DIV null,
-      if auth.form
-        Auth()
-      else unless @accessGranted()
-        SPAN null
-      else
-        switch loc.url
-          when "/dashboard/create_subdomain"
-            CreateSubdomain key: "/page/dashboard/create_subdomain"
-          else
-            ProductPage key: "homepage"
+      Heading()
+      Video()
+      tech()
+      Customers()      
+      Uses()
+      #FAQ()
+      Features()
+      Pricing()
+      Contact()
+      Research()      
+      Footer()
+      Story()
 
 Computer = ReactiveComponent
   displayName: 'Computer'

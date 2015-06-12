@@ -227,16 +227,18 @@ AppSettingsDash = ReactiveComponent
           #     defaultValue: subdomain.notifications_sender_email
           #     placeholder: 'Sender email address for notification emails. Default is admin@consider.it.'
 
-          DIV className: 'input_group',
-            LABEL htmlFor: 'about_page_url', 'About Page URL'
-            INPUT 
-              id: 'about_page_url'
-              type: 'text'
-              name: 'about_page_url'
-              defaultValue: subdomain.about_page_url
-              placeholder: 'The about page will then contain a window to this url.'
 
           if current_user.is_super_admin
+            DIV className: 'input_group',
+              LABEL htmlFor: 'about_page_url', 'About Page URL'
+              INPUT 
+                id: 'about_page_url'
+                type: 'text'
+                name: 'about_page_url'
+                defaultValue: subdomain.about_page_url
+                placeholder: 'The about page will then contain a window to this url.'
+
+
             DIV null,
               DIV className: 'input_group',
                 LABEL htmlFor: 'masthead_header_text', 'Masthead header text'
@@ -256,35 +258,57 @@ AppSettingsDash = ReactiveComponent
                   defaultValue: subdomain.branding.primary_color
                   placeholder: 'The primary brand color. Needs to be dark.'
 
-              FORM id: 'subdomain_files', action: '/update_images_hack',
-                DIV className: 'input_group',
-                  DIV null, LABEL htmlFor: 'masthead', 'Masthead background image. Should be pretty large.'
-                  INPUT 
-                    id: 'masthead'
-                    type: 'file'
-                    name: 'masthead'
-                    onChange: (ev) =>
-                      @submit_masthead = true
+          FORM id: 'subdomain_files', action: '/update_images_hack',
+            DIV className: 'input_group',
+              if current_user.is_super_admin
+                DIV null, LABEL htmlFor: 'masthead', 'Masthead background image. Should be pretty large.'
+                INPUT 
+                  id: 'masthead'
+                  type: 'file'
+                  name: 'masthead'
+                  onChange: (ev) =>
+                    @submit_masthead = true
 
-                DIV className: 'input_group',
-                  DIV null, LABEL htmlFor: 'logo', 'Organization\'s logo'
-                  INPUT 
-                    id: 'logo'
-                    type: 'file'
-                    name: 'logo'
-                    onChange: (ev) =>
-                      @submit_logo = true
+            DIV className: 'input_group',
+              DIV null, LABEL htmlFor: 'logo', 'Logo'
+              INPUT 
+                id: 'logo'
+                type: 'file'
+                name: 'logo'
+                onChange: (ev) =>
+                  @submit_logo = true
 
 
-          DIV className: 'input_group',
-            BUTTON className: 'primary_button button', onClick: @submit, 'Save'
+          DIV 
+            className: 'input_group'
+            BUTTON 
+              className: 'primary_button button'
+              onClick: @submit
+
+              'Save'
 
           if @local.save_complete
             DIV style: {color: 'green'}, 'Saved.'
 
-          if @local.errors
+          if @local.file_errors
             DIV style: {color: 'red'}, 'Error uploading files!'
 
+          if @local.errors
+            if @local.errors && @local.errors.length > 0
+              DIV 
+                style: 
+                  borderRadius: 8
+                  margin: 20
+                  padding: 20
+                  backgroundColor: '#FFE2E2'
+
+                H1 style: {fontSize: 18}, 'Ooops!'
+
+                for error in @local.errors
+                  DIV 
+                    style: 
+                      marginTop: 10
+                    error
 
   submit : -> 
     submitting_files = @submit_logo || @submit_masthead
@@ -299,10 +323,13 @@ AppSettingsDash = ReactiveComponent
     subdomain.branding =
       primary_color: $('#primary_color').val()
       masthead_header_text: $('#masthead_header_text').val()
-    @local.save_complete = @local.errors = false
+
+    @local.save_complete = @local.file_errors = false
     save @local
 
     save subdomain, => 
+      if subdomain.errors
+        @local.errors = subdomain.errors
 
       @local.save_complete = true if !submitting_files
       save @local
@@ -316,7 +343,7 @@ AppSettingsDash = ReactiveComponent
           success: =>
             location.reload()
           error: => 
-            @local.errors = true
+            @local.file_errors = true
             save @local
 
 AdminTaskList = ReactiveComponent
@@ -1057,58 +1084,9 @@ EditClaim = ReactiveComponent
     save @props.parent
 
 
-# Creates a new subdomain / subdomain. This is meant to only be accessed from 
-# the considerit homepage, but will work from any subdomain.
-CreateSubdomain = ReactiveComponent
-  displayName: 'CreateSubdomain'
-
-  render : -> 
-    current_user = fetch('/current_user')
-
-    DIV null, 
-      DashHeader name: 'Create new subdomain (secret, you so special!!!)'
-
-      DIV style: {width: CONTENT_WIDTH, margin: 'auto', marginTop: 20},
-        LABEL htmlFor: 'subdomain', 
-          'Name of the new subdomain'
-        INPUT id: 'subdomain', name: 'subdomain', type: 'text', style: {fontSize: 28, padding: '8px 12px', width: CONTENT_WIDTH}, placeholder: 'Don\'t be silly with weird characters'
-
-        DIV style: {fontSize: 14}, 
-          "You will be redirected to the new subdomain where you can configure the application. You will automatically be added as an administrator."
-
-        BUTTON 
-          className: 'button primary_button' 
-          onClick: => 
-            $.ajax '/subdomain', 
-              data: 
-                subdomain: $(@getDOMNode()).find('#subdomain').val()
-                authenticity_token: current_user.csrf
-              type: 'POST'
-              success: (data) => 
-                if data[0].errors
-                  @local.errors = data[0].errors
-                else
-                  @local.successful = data[0].name
-                save @local
-          'Create'
-
-        if @local.errors && @local.errors.length > 0
-          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#FFE2E2'}, 
-            H1 style: {fontSize: 18}, 'Ooops! There were errors:'
-            for error in @local.errors
-              DIV style: {marginTop: 10}, error
-
-        if @local.successful
-          DIV style: {borderRadius: 8, margin: 20, padding: 20, backgroundColor: '#E2FFE2', fontSize: 20}, 
-            "Success! "
-            A style: {textDecoration: 'underline'}, href: "#{location.protocol}//#{@local.successful}.#{location.hostname}/dashboard/application", "Configure your shiny new subdomain"
-
-
-
 ## Export...
 window.FactcheckDash = FactcheckDash
 window.ModerationDash = ModerationDash
 window.AppSettingsDash = AppSettingsDash
 window.ImportDataDash = ImportDataDash
-window.CreateSubdomain = CreateSubdomain
 window.DashHeader = DashHeader

@@ -1,5 +1,10 @@
+# previewable at /rails/mailers
+
 class UserPreview < ActionMailer::Preview
-  
+   def welcome_new_customer
+    UserMailer.welcome_new_customer(User.where('registered').last, Subdomain.last, 'Basic')
+  end
+
   def reset_password_instructions
     UserMailer.reset_password_instructions(User.where('registered').last, 'easfdjklsjffasdf', Subdomain.first)
   end

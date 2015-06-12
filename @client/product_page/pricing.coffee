@@ -3,6 +3,7 @@ require './svgs/price_tag'
 require './svgs/design'
 require './svgs/features'
 require './svgs/server'
+require './customer_signup'
 
 
 plan_header = _.extend {}, h2, 
@@ -32,6 +33,10 @@ window.Pricing = ReactiveComponent
           margin: 'auto'
 
         @drawPlans()
+
+        if @local.sign_up_for
+          CustomerSignup
+            plan: @local.sign_up_for
 
 
   drawPlans : -> 
@@ -123,6 +128,7 @@ window.Pricing = ReactiveComponent
 
     for plan, idx in plans
       DIV 
+        key: idx
         style: 
           width: plan.width
           margin: if plan.highlight then '0px 40px' else '80px 0'
@@ -152,6 +158,7 @@ window.Pricing = ReactiveComponent
 
             for feature in plan.features
               LI
+                key: feature
                 style: _.extend {}, small_text,
                   fontWeight: 400
                   position: 'relative'
@@ -176,11 +183,12 @@ window.Pricing = ReactiveComponent
 
         @drawCallForAction plan
 
+
   drawCallForAction: (plan) -> 
 
     hovering = @local.hover_call == plan.name
     A
-      href: "mailto:admin@consider.it?subject=#{plan.email.subject}&body=#{plan.email.body}"
+      href: if plan.name == 'Custom' then "mailto:admin@consider.it?subject=#{plan.email.subject}&body=#{plan.email.body}"
       style:
         backgroundColor: if hovering then logo_red else 'white'
         color: if hovering then 'white' else logo_red
@@ -199,6 +207,10 @@ window.Pricing = ReactiveComponent
 
       onMouseLeave: => 
         @local.hover_call = null
+        save @local
+
+      onClick: if plan.name != 'custom' then =>         
+        @local.sign_up_for = plan.name
         save @local
 
       plan.call_to_action

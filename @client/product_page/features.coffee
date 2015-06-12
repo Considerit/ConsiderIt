@@ -102,6 +102,7 @@ window.Features = ReactiveComponent
 
         for feature, idx in features 
           LI 
+            key: idx
             style: 
               display: 'inline-block'
               width: SAAS_PAGE_WIDTH / 2 - 30

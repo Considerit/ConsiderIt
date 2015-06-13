@@ -58,12 +58,12 @@ class SubdomainController < ApplicationController
       proposal.save
 
       opinion = Opinion.create!({
+        published: true,         
         user: current_user,
         subdomain_id: new_subdomain.id, 
         proposal: proposal,
         stance: 0.0
       })
-      opinion.publish
 
       set_current_tenant(Subdomain.find_by_name('homepage'))
 

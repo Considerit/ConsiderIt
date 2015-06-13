@@ -1,3 +1,8 @@
+- name: Checkout modified files to enable pulling
+  shell: "{{source}} && cd {{app_home}} && git checkout config/environments/production.rb; git checkout public/robots.txt"
+  sudo: False
+
+
 - name: Installs ConsiderIt
   git: repo={{code.repo}} dest={{app_home}} version={{code.branch}} accept_hostkey=true
   sudo: False

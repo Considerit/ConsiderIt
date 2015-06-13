@@ -101,7 +101,7 @@ window.CustomerSignup = ReactiveComponent
           fontSize: 48
           borderBottom: '2px solid white'
 
-          href: "#{location.protocol}//#{@local.successful}.#{location.hostname}"
+        href: "#{location.protocol}//#{@local.successful}.#{location.hostname}"
 
         "#{location.protocol}//#{@local.successful}.#{location.hostname}"
 

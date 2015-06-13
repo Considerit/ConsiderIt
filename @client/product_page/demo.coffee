@@ -1,4 +1,5 @@
 require "../bubblemouth"
+require "../svg"
 
 VIDEO_FILE = 'slowdeathstarcam'
 
@@ -31,6 +32,7 @@ DEMO_AUTOPLAY_DELAY = 5000
 
 video_width = Math.min(SAAS_PAGE_WIDTH, window.innerWidth - 320)
 
+hover_caption_color = logo_red
 caption_color =  "black" #logo_red focus_blue
 current_chapter_color = logo_red #caption_color
 
@@ -47,7 +49,15 @@ window.Video = ReactiveComponent
         textAlign: 'right'
 
       @drawCaptions()
-      @drawVideo()
+      DIV
+        style: 
+          position: 'relative'
+
+        if !@local.playing         
+          @drawPlayOverlay()
+
+        @drawVideo()
+
       @drawChapterMenu()
 
       A
@@ -74,6 +84,95 @@ window.Video = ReactiveComponent
 
         'Explore this example yourself'
 
+  drawPlayOverlay : -> 
+    svg_width = 300
+
+    DIV 
+      style: 
+        position: 'absolute'
+        top: 0
+        left: 0
+        color: caption_color
+        zIndex: 1
+        height: '100%'
+        width: '100%'
+
+        
+      onClick: => @startVideo()
+
+      DIV 
+        style:
+          opacity: .7
+          backgroundColor: 'white'
+          height: '100%'
+          width: '100%'
+          position: 'absolute'
+          top: 0
+          left: 0
+
+
+      DIV 
+        style: 
+          textAlign: 'center'
+          position: 'relative'
+          top: '50%'
+          marginTop: -svg_width/2
+
+        SVG 
+          width: svg_width
+          height: svg_width
+          viewBox: "0 0 994 994"
+          style: 
+            cursor: 'pointer'
+
+
+          onMouseEnter: => 
+            @local.hover_reset = true 
+            save @local
+          onMouseLeave: => 
+            @local.hover_reset = false 
+            save @local
+
+
+          DEFS null,
+            LINEARGRADIENT
+              x1: "102.7236%" 
+              y1: "47.76417%" 
+              x2: "102.7235%" 
+              y2: "52.0908547%" 
+              id: "linearGradient-1"
+              STOP 
+                stopColor: "#FFFFFF" 
+                offset: "0%"
+              STOP 
+                stopColor: "#F1F1F1" 
+                offset: "100%"
+
+          G
+            transform: "translate(11.000000, 11.000000)"
+
+            PATH 
+              d: "M971.068184,486.008279 C971.068184,753.910234 753.890228,971.088189 485.988273,971.088189 C218.085614,971.088189 0.907681374,753.910234 0.907681374,486.008279 C0.907681374,218.106323 218.085637,0.928367889 485.988273,0.928367889 C753.890228,0.928367889 971.068184,218.106323 971.068184,486.008279 L971.068184,486.008279 Z" 
+              stroke: if @local.hover_reset then "#8B2D35" else 'black' 
+              strokeWidth: "22.7004705" 
+              fill: if @local.hover_reset then logo_red else 'black'
+            PATH 
+              d: "M16.5991926,475.870686 C15.8680504,568.330151 327.172182,401.307945 466.725597,402.876963 C604.062695,404.421022 955.377354,583.532395 955.377354,459.649713 C955.377354,288.513685 799.788703,19.4377378 491.057058,17.6331137 C182.319894,15.8298522 18.2049076,272.702997 16.5991699,475.870709 L16.5991926,475.870686 Z" 
+              fillOpacity: "0.517857" 
+              fill: "#FFFFFF"
+            PATH 
+              d: "M346.005249,700.096069 L346.005249,271.904846 L716.830139,486.001434 L346.005249,700.096069 L346.005249,700.096069 Z" 
+              fill: "url(#linearGradient-1)"
+
+        DIV 
+          style: 
+            padding: 20
+            backgroundColor: 'white'
+            fontSize: 24
+            width: '50%'
+            margin: 'auto'
+          'This demo is silent. Library friendly!'
+
 
   drawVideo : -> 
         
@@ -82,7 +181,7 @@ window.Video = ReactiveComponent
       loop: true
       autoPlay: false
       ref: "video"
-      controls: @local.ready
+      controls: @local.playing
       style: 
         marginTop: 1
         position: 'relative'
@@ -113,10 +212,14 @@ window.Video = ReactiveComponent
         width: video_width - 1
         color: caption_color #if @local.ready then 'white'
 
-      if !@local.ready  || !chapter.caption
-        'This demo shows how Consider.it works'
-      else
-        chapter.caption
+      DIV 
+        style: 
+          height: 70
+  
+        if @local.ready && chapter.caption         
+          chapter.caption
+        else 
+          "Watch the demo to learn more"
 
 
       SVG 
@@ -139,39 +242,39 @@ window.Video = ReactiveComponent
 
 
 
-      # restart video
-      DIV 
-        style: 
-          position: 'absolute'
-          right: -56
-          top: 0
-          cursor: 'pointer'
-          color: caption_color
-          opacity: if @local.hover_reset || !@local.ready then 1 else .5
+      # # restart video
+      # DIV 
+      #   style: 
+      #     position: 'absolute'
+      #     right: -56
+      #     top: 0
+      #     cursor: 'pointer'
+      #     color: caption_color
+      #     opacity: if @local.hover_reset || !@local.ready then 1 else .5
 
-        onMouseEnter: => 
-          @local.hover_reset = true 
-          save @local
-        onMouseLeave: => 
-          @local.hover_reset = false 
-          save @local
+      #   onMouseEnter: => 
+      #     @local.hover_reset = true 
+      #     save @local
+      #   onMouseLeave: => 
+      #     @local.hover_reset = false 
+      #     save @local
           
 
-        onClick: => @startVideo()
+      #   onClick: => @startVideo()
 
-        I 
-          className: "fa #{if @local.ready then 'fa-refresh' else 'fa-play'}"
-          style:
-            fontSize: 42
+      #   I 
+      #     className: "fa #{if @local.ready then 'fa-refresh' else 'fa-play'}"
+      #     style:
+      #       fontSize: 42
 
 
-        if @local.ready
-          DIV 
-            style: 
-              fontSize: 14
-              lineHeight: 0
+      #   if @local.ready
+      #     DIV 
+      #       style: 
+      #         fontSize: 14
+      #         lineHeight: 0
 
-            'restart'
+      #       'restart'
 
 
   drawChapterMenu : -> 
@@ -232,9 +335,9 @@ window.Video = ReactiveComponent
   componentDidMount: -> 
     @attachToVideo()
 
-    setTimeout => 
-      @startVideo()
-    , DEMO_AUTOPLAY_DELAY
+    # setTimeout => 
+    #   @startVideo()
+    # , DEMO_AUTOPLAY_DELAY
 
   startVideo : -> 
     controls = fetch('video_controls')
@@ -246,6 +349,7 @@ window.Video = ReactiveComponent
     video.play()
 
     @local.ready = true
+    @local.playing = true
 
     save controls
     save @local

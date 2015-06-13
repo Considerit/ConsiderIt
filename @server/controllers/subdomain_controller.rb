@@ -26,6 +26,7 @@ class SubdomainController < ApplicationController
     existing = Subdomain.find_by_name(subdomain)
     if existing
       errors.push "That site already exists. Please choose a different name."
+      render :json => [{errors: errors}]
     else
       new_subdomain = Subdomain.new name: subdomain, app_title: params[:app_title]
       roles = new_subdomain.user_roles
@@ -70,18 +71,9 @@ class SubdomainController < ApplicationController
       # Send welcome email to subdomain creator
       UserMailer.welcome_new_customer(current_user, new_subdomain, params[:plan]).deliver_later
 
-
-    end
-
-
-
-
-
-    if errors.length > 0
-      render :json => [{errors: errors}]
-    else
       render :json => [{name: new_subdomain.name}]
     end
+
   end
 
   def show

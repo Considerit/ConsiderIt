@@ -171,6 +171,7 @@ window.Video = ReactiveComponent
             fontSize: 24
             width: '50%'
             margin: 'auto'
+            fontWeight: 600
           'This demo is silent. Library friendly!'
 
 

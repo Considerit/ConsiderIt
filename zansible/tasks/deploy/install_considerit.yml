@@ -1,5 +1,5 @@
 - name: Checkout modified files to enable pulling
-  shell: "{{source}} && cd {{app_home}} && git checkout config/environments/production.rb; git checkout public/robots.txt"
+  shell: "{{source}} && cd {{app_home}} && git checkout config/environments/production.rb; git checkout public/robots.txt; git checkout config/schedule.rb"
   sudo: False
 
 

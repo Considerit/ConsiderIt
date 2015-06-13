@@ -78,6 +78,9 @@ window.CustomerSignup = ReactiveComponent
         naked: true
 
   drawGotoSubdomain: -> 
+
+    new_sub = fetch('new_subdomain')
+    current_user = fetch('/current_user')
     
     DIV
       style:
@@ -101,7 +104,7 @@ window.CustomerSignup = ReactiveComponent
           fontSize: 48
           borderBottom: '2px solid white'
 
-        href: "#{location.protocol}//#{@local.successful}.#{location.hostname}"
+        href: "#{location.protocol}//#{@local.successful}.#{location.hostname}?u=#{current_user.email}&t=#{new_sub.t}"
 
         "#{location.protocol}//#{@local.successful}.#{location.hostname}"
 
@@ -182,6 +185,7 @@ window.CustomerSignup = ReactiveComponent
                 @local.errors = data[0].errors
               else
                 @local.successful = data[0].name
+                save data[0]
               save @local
 
 

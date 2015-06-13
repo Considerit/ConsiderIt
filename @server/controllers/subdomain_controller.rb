@@ -71,7 +71,8 @@ class SubdomainController < ApplicationController
       # Send welcome email to subdomain creator
       UserMailer.welcome_new_customer(current_user, new_subdomain, params[:plan]).deliver_later
 
-      render :json => [{name: new_subdomain.name}]
+      render :json => [{key: 'new_subdomain', name: new_subdomain.name, t: ApplicationController.MD5_hexdigest("#{current_user.email}#{current_user.unique_token}#{new_subdomain.name}")}]
+
     end
 
   end

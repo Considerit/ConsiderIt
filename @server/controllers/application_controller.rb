@@ -310,7 +310,8 @@ protected
         token_valid = encrypted == auth_token
       end
 
-      if token_valid 
+      came_from_product_homepage = request.referer == 'https://consider.it/'
+      if token_valid && !came_from_product_homepage
 
         # Try to login if the tokens match a valid user
         if current_user.id != target_user.id

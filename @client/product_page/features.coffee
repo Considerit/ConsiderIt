@@ -20,7 +20,7 @@ features = [{
       """Configure whether you wish to police content on your Consider.it site."""
 },{
   icon: 'frame',
-  label: 'Frame the discussion as you like',
+  label: 'Frame the discussion',
   description: -> 
     DIV 
       style: feature_style

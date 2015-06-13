@@ -310,8 +310,8 @@ protected
         token_valid = encrypted == auth_token
       end
 
-      came_from_product_homepage = request.referer == 'https://consider.it/'
-      if token_valid && !came_from_product_homepage
+      
+      if token_valid
 
         # Try to login if the tokens match a valid user
         if current_user.id != target_user.id
@@ -320,7 +320,9 @@ protected
           current_user.add_token() # Logging in via email token is dangerous, so we'll only allow it once per token          
         end
 
-        current_user.verified = true
+        if !params.has_key?('nvn')
+          current_user.verified = true
+        end
         current_user.save
         dirty_key('/current_user')
 

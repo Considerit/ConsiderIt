@@ -131,7 +131,7 @@ window.Pricing = ReactiveComponent
         key: idx
         style: 
           width: plan.width
-          margin: if plan.highlight then '0px 40px' else '80px 0'
+          margin: if plan.highlight then '0px 40px' else '40px 0'
           display: 'inline-block'
           verticalAlign: 'top'
           border: if plan.highlight then "1px solid #{logo_red}"
@@ -185,7 +185,6 @@ window.Pricing = ReactiveComponent
 
 
   drawCallForAction: (plan) -> 
-
     hovering = @local.hover_call == plan.name
     A
       href: if plan.name == 'Custom' then "mailto:admin@consider.it?subject=#{plan.email.subject}&body=#{plan.email.body}"
@@ -209,8 +208,10 @@ window.Pricing = ReactiveComponent
         @local.hover_call = null
         save @local
 
-      onClick: if plan.name != 'custom' then =>         
+      onClick: if plan.name != 'Custom' then =>         
         @local.sign_up_for = plan.name
         save @local
+        if @local.sign_up_for
+          $(@getDOMNode()).moveToTop(-400, true)        
 
       plan.call_to_action

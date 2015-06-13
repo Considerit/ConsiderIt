@@ -17,6 +17,7 @@ window.CustomerSignup = ReactiveComponent
         borderRadius: 16
         boxShadow: "0 1px 2px rgba(0,0,0,.2)"
         padding: "20px 40px"
+        marginTop: 60
 
 
       if !@local.successful

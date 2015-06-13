@@ -20,20 +20,30 @@ window.DefaultFooter = ReactiveComponent
         position: 'relative'
         padding: '2.5em 0 .5em 0'
         textAlign: 'center'
-        margin: 'auto'
-        marginLeft: if customization('lefty') then 20 + BODY_WIDTH / 2
-        width: BODY_WIDTH
         zIndex: 0
 
       # A href: "#{subdomain.external_project_url}", target: '_blank', style: {display: 'inline-block', margin: 'auto'},
       #   if subdomain.branding.logo
       #     IMG src: "#{subdomain.branding.logo}", style: {width: 300}
 
-      DIV style: {marginTop: 30},
+      DIV 
+        style: 
+          marginTop: 30
+
         TechnologyByConsiderit()
-        DIV style: {marginTop: 5},
-          'Bug to report? Want to use this technology in your organization? '
-          A style: {textDecoration: 'none', textDecoration: 'underline'}, href: "mailto:admin@consider.it", 'Email us'
+
+        DIV 
+          style: 
+            marginTop: 5
+
+          'Bug to report? Want to use this technology yourself? '
+          A 
+            style: 
+              textDecoration: 'underline'
+            href: "mailto:admin@consider.it"
+
+            'Email us'
+          ' at admin@consider.it'
 
 window.TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'

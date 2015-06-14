@@ -10,6 +10,31 @@ window.avatarUrl = (user, img_size) ->
         "#{user.key.split('/')[2]}/#{img_size}/#{user.avatar_file_name}"  
 
 
+
+##########
+# Performance hack.
+# Was seeing major slowdown on pages with lots of avatars simply because we
+# were attaching a mouseover and mouseout event on each and every Avatar for
+# the purpose of showing a tooltip name. So we use event delegation instead. 
+document.addEventListener "mouseover", (e) ->
+  if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
+    user = fetch(e.target.getAttribute('data-user'))
+    anon = e.target.getAttribute('data-anonymous') == 'true'
+    name = if anon || user.name?.length == 0 
+             'Anonymous' 
+           else 
+             user.name
+    tooltip = fetch 'tooltip'
+    tooltip.coords = $(e.target).offset()
+    tooltip.tip = name
+    save tooltip
+
+document.addEventListener "mouseout", (e) ->
+  if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
+    tooltip = fetch 'tooltip'
+    tooltip.coords = null
+    save tooltip
+
 ##
 # Avatar
 # Displays a user's avatar
@@ -37,6 +62,7 @@ window.avatarUrl = (user, img_size) ->
 #      Suppress the tooltip on hover. 
 #   anonymous (default = false)
 #      Don't show a real picture and show "anonymous" in the tooltip. 
+
 
 window.Avatar = ReactiveComponent
   displayName: 'Avatar'
@@ -90,22 +116,11 @@ window.Avatar = ReactiveComponent
     attrs =
       className: "avatar #{@props.className or ''}"
       id: id
+      'data-user': user.key
+      'data-showtooltip': !@props.hide_tooltip
+      'data-anon': @props.anonymous      
       style: style
-      onMouseEnter: => 
-        if !@props.hide_tooltip
-          name = if @props.anonymous || user.name?.length == 0 
-                   'Anonymous' 
-                 else 
-                   user.name
-          tooltip = fetch 'tooltip'
-          tooltip.coords = $(@getDOMNode()).offset()
-          tooltip.tip = name
-          save tooltip
-      onMouseLeave: => 
-        if !@props.hide_tooltip      
-          tooltip = fetch 'tooltip'
-          tooltip.coords = null
-          save tooltip
+
 
     # IE9 gets confused if there is an image without a src
     tag = if !thumbnail? && browser.is_ie9 && img_size == 'thumb' || add_initials then SPAN else IMG

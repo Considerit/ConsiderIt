@@ -136,7 +136,7 @@ window.Dock = ReactiveComponent
     placeholder_height = if $el[0].style.position in ['absolute', 'fixed'] 
                            0 
                          else 
-                           $el.height()
+                           $el.outerHeight()
 
     @local.placeholder_height = placeholder_height
     save @local

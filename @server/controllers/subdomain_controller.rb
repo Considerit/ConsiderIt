@@ -40,6 +40,7 @@ class SubdomainController < ApplicationController
 
       set_current_tenant(new_subdomain)
 
+
       # Seed a new proposal
       proposal = Proposal.new({
         subdomain_id: new_subdomain.id, 
@@ -64,6 +65,7 @@ class SubdomainController < ApplicationController
         proposal: proposal,
         stance: 0.0
       })
+      current_user.add_to_active_in(new_subdomain)
 
       set_current_tenant(Subdomain.find_by_name('homepage'))
 

@@ -288,7 +288,7 @@ Proposal = ReactiveComponent
             skip_jut: mode == 'results'
             dockable : => 
               mode == 'crafting'
-            dummy: if @proposal.has_focus != 'opinion' && mode == 'crafting' then 1 else 0
+            dummy: get_proposal_mode() == 'crafting'
 
             do => 
               plurality = if mode == 'crafting' then 'individual' else 'group'
@@ -297,7 +297,7 @@ Proposal = ReactiveComponent
                 width: OPINION_SLIDER_WIDTH
                 your_opinion: @proposal.your_opinion
                 focused: mode == 'crafting'
-                backgrounded: @proposal.has_focus != 'opinion' && mode == 'crafting'
+                backgrounded: false
                 permitted: draw_handle
                 pole_labels: [ \
                   [customization("slider_pole_labels.#{plurality}.oppose", @proposal),
@@ -713,7 +713,7 @@ DecisionBoard = ReactiveComponent
       borderRadius: 16
       borderStyle: 'dashed'
       borderWidth: 3
-      borderColor: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
+      borderColor: focus_blue
       transition: if @last_proposal_mode != get_proposal_mode() || @transitioning  
                     "transform #{TRANSITION_SPEED}ms, " + \
                     "width #{TRANSITION_SPEED}ms, " + \
@@ -752,12 +752,12 @@ DecisionBoard = ReactiveComponent
         borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_blue}"
 
 
-    if get_selected_point() && get_proposal_mode() == 'crafting'
-      if !_.contains(your_opinion.point_inclusions, get_selected_point())
-        css.grayscale decision_board_style
-        decision_board_style.opacity = '.4'
-      else
-        decision_board_style.borderColor = "#eee"
+    # if get_selected_point() && get_proposal_mode() == 'crafting'
+    #   if !_.contains(your_opinion.point_inclusions, get_selected_point())
+    #     css.grayscale decision_board_style
+    #     decision_board_style.opacity = '.4'
+    #   else
+    #     decision_board_style.borderColor = "#eee"
 
     if your_opinion.published
       can_opine = permit 'update opinion', @proposal, your_opinion
@@ -833,8 +833,7 @@ DecisionBoard = ReactiveComponent
             className:'save_opinion_button primary_button'
             style:
               display: 'none'
-              backgroundColor: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
-              boxShadow: if @proposal.has_focus != 'opinion' then 'none'
+              backgroundColor: focus_blue
             onClick: => 
               your_opinion = fetch(@proposal.your_opinion)
               if can_opine > 0
@@ -993,7 +992,7 @@ SliderBubblemouth = ReactiveComponent
         width: w
         height: h
         fill: fill
-        stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
+        stroke: focus_blue
         stroke_width: if get_proposal_mode() == 'crafting' then stroke_width else 0
         dash_array: dash
 
@@ -1131,7 +1130,7 @@ YourPoints = ReactiveComponent
 
     header_style =           
       fontWeight: 700
-      color: if @proposal.has_focus != 'opinion' then "#eee" else focus_blue
+      color: focus_blue
 
     heading = customization("point_labels.your_#{@props.valence}_header", @proposal)
     if !heading 
@@ -1190,7 +1189,7 @@ YourPoints = ReactiveComponent
         style: 
           padding: '0 0 .25em 24px'
           position: 'relative'
-          visibility: if @proposal.has_focus == 'edit point' then 'hidden'
+          opacity: if @proposal.has_focus == 'edit point' then .1
 
         SVG 
           width: dt_w
@@ -1226,7 +1225,7 @@ YourPoints = ReactiveComponent
                     y1: y1
                     x2: x2 
                     y2: y2 
-                    stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
+                    stroke: focus_blue
                     strokeWidth: 1
                     strokeOpacity: .2
 
@@ -1238,7 +1237,7 @@ YourPoints = ReactiveComponent
             rx: 16
             ry: 16
             fill: "url(#drop-stripes-#{@props.valence})"
-            stroke: if @proposal.has_focus == 'opinion' then focus_blue else '#eee'
+            stroke: focus_blue
             strokeWidth: dt_stroke_width
             strokeDasharray: '4, 3'
 
@@ -1275,52 +1274,51 @@ YourPoints = ReactiveComponent
 
       if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES
         if !your_points.adding_new_point
-          if @proposal.has_focus == 'opinion'
-            DIV 
+          DIV 
+            style: 
+              padding: '.25em 0'
+              marginTop: '1em'
+              marginLeft: 20
+              fontSize: 14
+
+            SPAN 
               style: 
-                padding: '.25em 0'
-                marginTop: '1em'
-                marginLeft: 20
-                fontSize: 14
+                fontWeight: if browser.high_density_display then 300 else 400
+              'or '
+            SPAN 
+              style: {padding: '0 6px'}
+              dangerouslySetInnerHTML:{__html: '&bull;'}
 
-              SPAN 
-                style: 
-                  fontWeight: if browser.high_density_display then 300 else 400
-                'or '
-              SPAN 
-                style: {padding: '0 6px'}
-                dangerouslySetInnerHTML:{__html: '&bull;'}
+            A 
+              className: "write_#{@props.valence}"
+              style:
+                textDecoration: 'underline'
+                color: focus_blue
+              onClick: => 
+                if can_add_new_point == Permission.NOT_LOGGED_IN
+                  reset_key 'auth', 
+                    form: 'create account'
+                    goal: 'write a point'
+                else if can_add_new_point == Permission.UNVERIFIED_EMAIL
+                  reset_key 'auth', 
+                    form: 'verify email'
+                    goal: 'write a point'
+                  save auth
+                  current_user.trying_to = 'send_verification_token'
+                  save current_user
 
-              A 
-                className: "write_#{@props.valence}"
-                style:
-                  textDecoration: 'underline'
-                  color: focus_blue
-                onClick: => 
-                  if can_add_new_point == Permission.NOT_LOGGED_IN
-                    reset_key 'auth', 
-                      form: 'create account'
-                      goal: 'write a point'
-                  else if can_add_new_point == Permission.UNVERIFIED_EMAIL
-                    reset_key 'auth', 
-                      form: 'verify email'
-                      goal: 'write a point'
-                    save auth
-                    current_user.trying_to = 'send_verification_token'
-                    save current_user
+                else
+                  your_points.adding_new_point = true
+                  save your_points
 
-                  else
-                    your_points.adding_new_point = true
-                    save your_points
+                writeToLog {what: 'click new point'}
 
-                  writeToLog {what: 'click new point'}
-
-                "Write a new "
-                capitalize \
-                  if @props.valence == 'pros' 
-                    customization('point_labels.pro', @proposal)
-                  else 
-                    customization('point_labels.con', @proposal)
+              "Write a new "
+              capitalize \
+                if @props.valence == 'pros' 
+                  customization('point_labels.pro', @proposal)
+                else 
+                  customization('point_labels.con', @proposal)
         else
           EditPoint
             key: "new_point_#{@props.valence}"

@@ -3,6 +3,7 @@ require './form'
 require './shared'
 
 
+
 ProposalRoles = ReactiveComponent
   displayName: 'ProposalRoles'
 
@@ -45,7 +46,7 @@ ProposalRoles = ReactiveComponent
       },{
         name: 'opiner', 
         label: 'Opiners', 
-        description: 'Can contribute their opinions of this proposal. But not original content.', 
+        description: 'Can drag the slider and build a list of other people\'s Pros/Cons, but can\'t write new Pros, Cons or Comments.'
         icon: 'fa-bar-chart', 
         wildcard: 
           label: 'Any registered user who can observe can opine'
@@ -64,6 +65,7 @@ ProposalRoles = ReactiveComponent
     roles = _.compact roles
 
     proposal = fetch @props.key
+
 
     # initialize default roles for a new proposal
     if !proposal.roles
@@ -135,7 +137,11 @@ SubdomainRoles = ReactiveComponent
 SpecifyRoles = (target, roles) ->  
   DIV null,
     for role,idx in roles
-      DIV style: {marginTop: 24}, key: idx,
+      DIV 
+        key: role.name
+        style: 
+          marginTop: 24
+
         H1 style: {fontSize: 18, position: 'relative'}, 
           I 
             className: "fa #{role.icon}"
@@ -148,10 +154,20 @@ SpecifyRoles = (target, roles) ->
         
         SPAN style: {fontSize: 14}, role.description
 
-        UsersWithRole key: role.name, target: target, role: role
+        UsersWithRole 
+          key: role.name
+          target: target
+          role: role
     
-    DIV style: {marginLeft: -35, marginTop: 12},
-      AddRolesAndInvite roles: roles, target: target
+    DIV 
+      style: 
+        marginLeft: -35
+        marginTop: 12
+
+      AddRolesAndInvite 
+        key: 'roles_and_invite'
+        roles: roles
+        target: target
 
 
 # AddRolesAndInvite is the block at the bottom of roles editing that controls
@@ -202,8 +218,11 @@ AddRolesAndInvite = ReactiveComponent
           display: 'inline-block'
         DIV 
           id: 'select_new_role'
-          style: {backgroundColor: 'rgba(100,100,150,.1)'
-          padding: '8px 12px', borderRadius: 8, cursor: 'pointer'}
+          style: 
+            backgroundColor: 'rgba(100,100,150,.1)'
+            padding: '8px 12px'
+            borderRadius: 8
+            cursor: 'pointer'
           onClick: =>
             $(document).on 'click.select_new_role', (e) =>
               if e.target.id != 'select_new_role'
@@ -243,7 +262,7 @@ AddRolesAndInvite = ReactiveComponent
                   key: idx
                   onClick: do(role) => (e) => 
                     @local.role = role
-                    @local.added = []
+                    #@local.added = []
                     save @local
                     e.stopPropagation()
 
@@ -296,34 +315,35 @@ AddRolesAndInvite = ReactiveComponent
       if @local.selecting
         available_users = _.filter users.users, (u) => 
             target.roles[@local.role.name].indexOf(u.key) < 0 && 
+            @local.added.indexOf(u.key) < 0 &&
              (!@local.filtered || 
               "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1)
+        if available_users.length > 0
+          UL 
+            style: 
+              width: 500
+              position: 'absolute'
+              zIndex: 99
+              listStyle: 'none'
+              backgroundColor: '#fff'
+              border: '1px solid #eee'
 
-        UL 
-          style: 
-            width: 500
-            position: 'absolute'
-            zIndex: 99
-            listStyle: 'none'
-            backgroundColor: '#fff'
-            border: '1px solid #eee'
+            for user,idx in available_users
+              LI 
+                className: 'invite_menu_item'
+                style: 
+                  padding: '2px 12px'
+                  fontSize: 18
+                  cursor: 'pointer'
+                  borderBottom: '1px solid #fafafa'
+                key: idx
 
-          for user,idx in available_users
-            LI 
-              className: 'invite_menu_item'
-              style: 
-                padding: '2px 12px'
-                fontSize: 18
-                cursor: 'pointer'
-                borderBottom: '1px solid #fafafa'
-              key: idx
+                onClick: do(user) => (e) => 
+                  @local.added.push user.key
+                  save @local
+                  e.stopPropagation()
 
-              onClick: do(user) => (e) => 
-                @local.added.push user.key
-                save @local
-                e.stopPropagation()
-
-              "#{user.name} <#{user.email}>"
+                "#{user.name} <#{user.email}>"
 
       # Email invite area
       DIV style: {marginTop: 20},

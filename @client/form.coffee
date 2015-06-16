@@ -56,10 +56,11 @@ window.CharacterCountTextInput = ReactiveComponent
   render : -> 
     class_name = "is_counted"
     DIV style: {position: 'relative'}, 
+      SPAN className: 'count', @props.maxLength - @local.count
+
       @transferPropsTo TEXTAREA className: class_name, onChange: (=>
          @local.count = $(@getDOMNode()).find('textarea').val().length
          save(@local))
-      SPAN className: 'count', @props.maxLength - @local.count
 
 
 

@@ -428,7 +428,6 @@ ProposalDescription = ReactiveComponent
 
     @max_description_height = customization('collapse_descriptions_at', @proposal)
 
-
     DIV           
       style: 
         width: DESCRIPTION_WIDTH
@@ -567,9 +566,6 @@ ProposalDescription = ReactiveComponent
                           display: 'inline-block'            
                         sub.name
 
-
-
-
       if @local.edit_roles
         DIV 
           style:
@@ -578,7 +574,9 @@ ProposalDescription = ReactiveComponent
             backgroundColor: '#fafafa'
             padding: '10px 60px'
             marginLeft: (if customization('lefty') then 0)
-          ProposalRoles key: @proposal
+
+          ProposalRoles 
+            key: @proposal.key
 
 
 

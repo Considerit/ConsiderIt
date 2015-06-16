@@ -277,12 +277,12 @@ window.EditProposal = ReactiveComponent
 
           if user.is_admin
 
-            [LABEL htmlFor:'cluster', style: label_style, 'Group (optional):'
+            [LABEL htmlFor:'cluster', style: label_style, 'Category (optional):'
             INPUT 
               id: 'cluster'
               name: 'cluster'
               pattern: '^.{3,}'
-              placeholder: 'The group to which this proposal belongs, if any.'
+              placeholder: 'The proposal will be shown on the homepage under this category. (Default="Proposals")'
               defaultValue: if @props.fresh then default_group else proposal.cluster
               style: input_style
             ]

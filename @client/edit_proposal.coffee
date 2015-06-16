@@ -370,7 +370,7 @@ window.EditProposal = ReactiveComponent
                   # are set on the proposal
 
             ProposalRoles 
-              key: if @props.fresh then @local else proposal
+              key: if @props.fresh then @local.key else proposal.key
 
 
         if @local.errors?.length > 0

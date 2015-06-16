@@ -2481,14 +2481,26 @@ EditPoint = ReactiveComponent
       padding: '4px 6px'
 
     guidelines_w = 230
+    guidelines_h = 238
+
+    singular =  if @props.valence == 'pros' 
+                  customization('point_labels.pro', @proposal)
+                else 
+                  customization('point_labels.con', @proposal)
+
+    plural =  if @props.valence == 'pros' 
+                customization('point_labels.pros', @proposal)
+              else 
+                customization('point_labels.cons', @proposal)
+
 
     DIV
       className: 'edit_point'
       style: 
-        margin: '0 9px'
+        #margin: '0 9px'
         position: 'relative'
         fontSize: 14
-        top: if @props.fresh then -30
+        #top: if @props.fresh then -30
         zIndex: 1
 
       if !@props.fresh
@@ -2498,18 +2510,16 @@ EditPoint = ReactiveComponent
       else
         DIV
           style: 
-            fontSize: 30
-            fontWeight: 700
+            #fontWeight: 700
             color: focus_blue
             position: 'absolute'
-            top: -48
-          "New "
+            top: -22
+          "Write a new "
           capitalize \
             if @props.valence == 'pros' 
               customization('point_labels.pro', @proposal)
             else 
               customization('point_labels.con', @proposal)
-          " Point"
 
 
       DIV
@@ -2520,7 +2530,7 @@ EditPoint = ReactiveComponent
         DIV 
           style:
             position: 'absolute'
-            left: if @props.valence == 'pros' then -260 else 260
+            left: if @props.valence == 'pros' then -280 else 280
             width: guidelines_w
             color: focus_blue
             zIndex: 1
@@ -2528,8 +2538,8 @@ EditPoint = ReactiveComponent
 
           SVG
             width: guidelines_w + 28
-            height: 191
-            viewBox: "-4 0 #{guidelines_w+20 + 9} 191"
+            height: guidelines_h
+            viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
             style: css.crossbrowserify
               position: 'absolute'
               transform: if @props.valence == 'cons' then 'scaleX(-1)'
@@ -2553,8 +2563,8 @@ EditPoint = ReactiveComponent
                   M#{guidelines_w},33
                   L#{guidelines_w},0
                   L1,0
-                  L1,181 
-                  L#{guidelines_w},181 
+                  L1,#{guidelines_h} 
+                  L#{guidelines_w},#{guidelines_h} 
                   L#{guidelines_w},58
                   L#{guidelines_w + 20},48
                   L#{guidelines_w},33 
@@ -2564,17 +2574,14 @@ EditPoint = ReactiveComponent
             style: 
               padding: '14px 18px'
               position: 'relative'
+              marginLeft: 5
 
 
             SPAN 
               style: 
                 fontWeight: 600
-              "Write a single "
-              capitalize \
-                if @props.valence == 'pros' 
-                  customization('point_labels.pro', @proposal)
-                else 
-                  customization('point_labels.con', @proposal)
+              "Write a "
+              capitalize singular
               ' (or question) for this proposal'
 
             UL 
@@ -2582,11 +2589,21 @@ EditPoint = ReactiveComponent
                 listStylePosition: 'outside'
                 marginLeft: 16
                 marginTop: 5
-              LI null,
+              LI 
+                style: 
+                  paddingBottom: 3
+                "Make one coherent point. Add multiple #{capitalize(plural)} if you have more."                
+              LI
+                style: 
+                  paddingBottom: 3              
                 "Be direct. The summary is your main point."
-              LI null,
+              LI 
+                style: 
+                  paddingBottom: 3              
                 "Review your language. Don’t be careless."
-              LI null,
+              LI 
+                style: 
+                  paddingBottom: 3              
                 "No personal attacks."
 
         CharacterCountTextInput 
@@ -2594,7 +2611,7 @@ EditPoint = ReactiveComponent
           maxLength: 140
           name: 'nutshell'
           pattern: '^.{3,}'
-          placeholder: 'Make this summary succinct.'
+          placeholder: 'A succinct summary of your point.'
           required: 'required'
           defaultValue: if @props.fresh then null else @data().nutshell
           style: _.extend {}, textarea_style,
@@ -2607,32 +2624,32 @@ EditPoint = ReactiveComponent
 
       
       DIV null,
-        A 
-          onClick: =>
-            @local.add_details = !@local.add_details
-            save(@local)            
-          title: 'Provide background and/or back your point up with evidence.'
-          style: { fontSize: 14 }
+        # A 
+        #   onClick: =>
+        #     @local.add_details = !@local.add_details
+        #     save(@local)            
+        #   title: 'Provide background and/or back your point up with evidence.'
+        #   style: { fontSize: 14 }
 
-          I className: if @local.add_details 
-                         'fa-caret-down fa' 
-                       else 
-                         'fa-caret-right fa'
-          SPAN
-            style: {paddingLeft: 6}
-            'Add more description'
+        #   I className: if @local.add_details 
+        #                  'fa-caret-down fa' 
+        #                else 
+        #                  'fa-caret-right fa'
+        #   SPAN
+        #     style: {paddingLeft: 6}
+        #     'Add details'
 
-        DIV 
-          style: 
-            display: if @local.add_details then 'block' else 'none'
+        # DIV 
+        #   style: 
+        #     display: if @local.add_details then 'block' else 'none'
           
-          AutoGrowTextArea 
-            id:'text'
-            name:'text'
-            placeholder:'Provide background and/or back your point up with evidence.'
-            min_height: 100
-            defaultValue: if @props.fresh then null else @data().text
-            style: textarea_style
+        AutoGrowTextArea 
+          id:'text'
+          name:'text'
+          placeholder:'Provide background and/or back your point up with evidence.'
+          min_height: 100
+          defaultValue: if @props.fresh then null else @data().text
+          style: textarea_style
 
 
       if @local.errors?.length > 0
@@ -2765,7 +2782,7 @@ styles += """
 .edit_point .count{
   position: absolute;
   right: 0px;
-  bottom: -19px;
+  top: -21px;
 }
 """
 

@@ -706,6 +706,17 @@ DecisionBoard = ReactiveComponent
     
     your_opinion = fetch(@proposal.your_opinion)
 
+    if your_opinion.published
+      can_opine = permit 'update opinion', @proposal, your_opinion
+    else
+      can_opine = permit 'publish opinion', @proposal
+
+    enable_opining = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
+                      (can_opine != Permission.DISABLED || your_opinion.published ) && 
+                      !(hist.selected_opinions || hist.selected_opinion)
+
+    return DIV null if !enable_opining
+
     register_dependency = fetch(namespaced_key('slider', @proposal)).value 
                              # to keep bubble mouth in sync with slider
     
@@ -759,124 +770,111 @@ DecisionBoard = ReactiveComponent
     #   else
     #     decision_board_style.borderColor = "#eee"
 
-    if your_opinion.published
-      can_opine = permit 'update opinion', @proposal, your_opinion
-    else
-      can_opine = permit 'publish opinion', @proposal
 
-    enable_opining = can_opine != Permission.INSUFFICIENT_PRIVILEGES && 
-                      (can_opine != Permission.DISABLED || your_opinion.published ) && 
-                      !(hist.selected_opinions || hist.selected_opinion)
-
+    if get_proposal_mode() == 'results'
+      give_opinion_style = 
+        display: 'block'
+        color: 'white'
+        padding: '.25em 18px'
+        margin: 0
+        fontSize: 16
+        boxShadow: 'none'
+    else 
+      give_opinion_style =
+        visibility: 'hidden'
 
     DIV 
       className:'opinion_region'
       style:
         width: DECISION_BOARD_WIDTH
 
-      if enable_opining        
-        SliderBubblemouth()
+      SliderBubblemouth()
+
+      [DIV
+        key: 'body' 
+        className:'decision_board_body'
+        style: css.crossbrowserify decision_board_style
+        onClick: => 
+          if get_proposal_mode() == 'results' 
+            updateProposalMode('crafting', 'give_opinion_button')
+
+        DIV null, 
+
+          if get_proposal_mode() == 'crafting'
+            DIV 
+              className: 'your_points'
+              style: 
+                padding: '0 18px'
+                marginTop: -3 # To undo the 3 pixel border
+
+              YourPoints { key: 'your_con_points', valence: 'cons' }
+              YourPoints { key: 'your_pro_points', valence: 'pros' }
 
 
-      if enable_opining
-        # only shown during results, but needs to be present for animation
-        if get_proposal_mode() == 'results'
-          give_opinion_style = 
-            display: 'block'
-            color: 'white'
-            padding: '.25em 18px'
-            margin: 0
-            fontSize: 16
-            boxShadow: 'none'
-        else 
-          give_opinion_style =
-            visibility: 'hidden'
-
-        [DIV
-          key: 'body' 
-          className:'decision_board_body'
-          style: css.crossbrowserify decision_board_style
-          onClick: => 
-            if get_proposal_mode() == 'results' 
-              updateProposalMode('crafting', 'give_opinion_button')
-
-          DIV null, 
-
-            if get_proposal_mode() == 'crafting'
-              DIV 
-                className: 'your_points'
-                style: 
-                  padding: '0 18px'
-                  marginTop: -3 # To undo the 3 pixel border
-
-                YourPoints { key: 'your_con_points', valence: 'cons' }
-                YourPoints { key: 'your_pro_points', valence: 'pros' }
-
-
-            # only shown during crafting, but needs to be present always for animation
-            A 
-              className: 'give_opinion_button primary_button'
-              style: give_opinion_style
-
-              if your_opinion.published 
-                'Update your Opinion' 
-              else 
-                'Give your Opinion'
-
-        DIV 
-          key: 'footer'
-          style:
-            width: DECISION_BOARD_WIDTH
-
-          # Big bold button at the bottom of the crafting page
-          DIV 
-            className:'save_opinion_button primary_button'
-            style:
-              display: 'none'
-              backgroundColor: focus_blue
-            onClick: => 
-              your_opinion = fetch(@proposal.your_opinion)
-              if can_opine > 0
-                your_opinion.published = true
-                save your_opinion
-                updateProposalMode('results', 'save_button')
-              else
-                if can_opine == Permission.UNVERIFIED_EMAIL
-                  auth_form = 'verify email'
-                  current_user.trying_to = 'send_verification_token'
-                  save current_user
-                else if can_opine == Permission.INSUFFICIENT_INFORMATION
-                  auth_form = 'user questions'
-                else
-                  auth_form = 'create account'
-
-                reset_key 'auth',
-                  form: auth_form
-                  goal: 'Save your Opinion'
-                  ask_questions: true
-
-                # We'll need to publish this opinion after auth is completed
-                @root.opinions_to_publish.push(@proposal.your_opinion)
-
-                save @root
+          # only shown during crafting, but needs to be present always for animation
+          A 
+            className: 'give_opinion_button primary_button'
+            style: give_opinion_style
 
             if your_opinion.published 
-              'Opinion updated. See the results' 
+              'Update your Opinion' 
             else 
-              'Save your opinion and see results'
+              'Give your Opinion'
 
-          if !your_opinion.published
+      DIV 
+        key: 'footer'
+        style:
+          width: DECISION_BOARD_WIDTH
 
-            DIV 
-              className: 'below_save'
-              style: 
-                display: 'none'
-                        
-              A 
-                className:'cancel_opinion_button primary_cancel_button'
-                onClick: => updateProposalMode('results', 'cancel_button')
-                'or just skip to the results' ]
-          
+        # Big bold button at the bottom of the crafting page
+        DIV 
+          className:'save_opinion_button primary_button'
+          style:
+            display: 'none'
+            backgroundColor: focus_blue
+          onClick: => 
+            your_opinion = fetch(@proposal.your_opinion)
+            if can_opine > 0
+              your_opinion.published = true
+              save your_opinion
+              updateProposalMode('results', 'save_button')
+            else
+              if can_opine == Permission.UNVERIFIED_EMAIL
+                auth_form = 'verify email'
+                current_user.trying_to = 'send_verification_token'
+                save current_user
+              else if can_opine == Permission.INSUFFICIENT_INFORMATION
+                auth_form = 'user questions'
+              else
+                auth_form = 'create account'
+
+              reset_key 'auth',
+                form: auth_form
+                goal: 'Save your Opinion'
+                ask_questions: true
+
+              # We'll need to publish this opinion after auth is completed
+              @root.opinions_to_publish.push(@proposal.your_opinion)
+
+              save @root
+
+          if your_opinion.published 
+            'Opinion updated. See the results' 
+          else 
+            'Save your opinion and see results'
+
+        if !your_opinion.published
+
+          DIV 
+            className: 'below_save'
+            style: 
+              display: 'none'
+                      
+            A 
+              className:'cancel_opinion_button primary_cancel_button'
+              onClick: => updateProposalMode('results', 'cancel_button')
+              'or just skip to the results' ]
+        
 
   componentDidUpdate : ->
     @transition if !Modernizr.csstransitions then 0 else TRANSITION_SPEED
@@ -1416,7 +1414,7 @@ CommunityPoints = ReactiveComponent
       style: css.crossbrowserify
         width: POINT_CONTENT_WIDTH
         minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
-        zIndex: if contains_selection then 6 else 2
+        zIndex: if contains_selection then 6
         margin: '38px 18px 0 18px'
         position: 'relative'
 
@@ -1541,6 +1539,8 @@ Point = ReactiveComponent
       borderColor: 'transparent'
       left: -3
       top: -3
+      position: 'relative'
+      zIndex: 1
 
     if is_selected
       _.extend point_content_style,
@@ -1555,7 +1555,7 @@ Point = ReactiveComponent
         left: point_content_style.left - 8
         width: point_content_style.width + 16
 
-    if @props.rendered_as == 'under_review'
+    else if @props.rendered_as == 'under_review'
       _.extend point_content_style, {width: 500}
 
 
@@ -2720,9 +2720,10 @@ EditPoint = ReactiveComponent
             'Sign your name'
 
   componentDidMount : ->
-    $el = $(@getDOMNode())
-    $el.find('#nutshell').focus()
-    $el.find('[data-action="submit-point"]').ensureInView {scroll: false, position: 'bottom'}
+    if @proposal.active 
+      $el = $(@getDOMNode())
+      $el.find('#nutshell').focus()
+      $el.find('[data-action="submit-point"]').ensureInView {scroll: false, position: 'bottom'}
 
   done : ->
 

@@ -50,7 +50,7 @@ window.OpinionSlider = ReactiveComponent
       # Draw the pole labels of the slider
       @drawPoleLabels()
 
-      if @props.focused && @props.permitted
+      if (@props.focused || TWO_COL) && @props.permitted
         @drawFeedback() 
 
       Slider
@@ -150,8 +150,8 @@ window.OpinionSlider = ReactiveComponent
 
     feedback_style = 
       pointerEvents: 'none' 
-      fontSize: 30
-      fontWeight: 700
+      fontSize: if TWO_COL then 22 else 30
+      fontWeight: if !TWO_COL then 700
       color: if @props.backgrounded then '#eee' else focus_blue
       #visibility: if @props.backgrounded then 'hidden'
 
@@ -168,7 +168,7 @@ window.OpinionSlider = ReactiveComponent
 
     _.extend feedback_style, 
       position: 'absolute'      
-      top: if slider.docked then -57 else -80      
+      top: if slider.docked then -57 else if !TWO_COL then -80 else 30
       left: feedback_left
       marginLeft: -feedback_width / 2
       width: feedback_width
@@ -182,13 +182,14 @@ window.OpinionSlider = ReactiveComponent
     your_opinion = fetch @props.your_opinion
     mode = get_proposal_mode()
     
+    e.stopPropagation()
+
     # Clicking on the slider handle should transition us between 
     # crafting <=> results. We should also transition to crafting 
     # when we've been dragging on the results page.
-    if slider.value == your_opinion.stance || mode == 'results'
+    if !TWO_COL && (slider.value == your_opinion.stance || mode == 'results')
       new_page = if mode == 'results' then 'crafting' else 'results'
       updateProposalMode new_page, 'click_slider'
-      e.stopPropagation()
 
     # We save the slider's position to the server only on mouse-up.
     # This way you can drag it with good performance.

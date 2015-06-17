@@ -82,8 +82,8 @@ window.proposal_url = (proposal) =>
   result = '/' + proposal.slug
   subdomain = fetch('/subdomain')  
 
-  if (!customization('show_crafting_page_first', proposal) || !proposal.active ) \
-     && proposal.top_point
+  if TWO_COL || ((!customization('show_crafting_page_first', proposal) || !proposal.active ) \
+     && proposal.top_point)
 
     result += '?results=true'
 
@@ -313,7 +313,7 @@ Proposal = ReactiveComponent
             width: REASONS_REGION_WIDTH            
             position: 'relative'
             paddingBottom: '4em' #padding instead of margin for docking
-            margin: "#{if draw_handle then '24px' else '0'} auto 0 auto"
+            margin: "#{if draw_handle && !TWO_COL then '24px' else '0'} auto 0 auto"
             marginLeft: if customization('lefty') then 65
 
 
@@ -333,27 +333,29 @@ Proposal = ReactiveComponent
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
               mode == 'crafting'
 
-          Dock
-            key: 'decisionboard-dock'
-            docked_key: 'decisionboard'            
-            constraints : ['slider-dock']
-            dock_on_zoomed_screens: true
-            dockable : => 
-              mode == 'crafting'
 
-            start: -24
+          if !TWO_COL
+            Dock
+              key: 'decisionboard-dock'
+              docked_key: 'decisionboard'            
+              constraints : ['slider-dock']
+              dock_on_zoomed_screens: true
+              dockable : => 
+                mode == 'crafting'
 
-            stop : -> 
-              $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
+              start: -24
 
-            style: 
-              position: 'absolute'
-              width: DECISION_BOARD_WIDTH
-              zIndex: 0 #so that points being dragged are above opinion region
-              display: 'inline-block'
-              verticalAlign: 'top'
+              stop : -> 
+                $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
 
-            DecisionBoard { key: 'decisionboard' }
+              style: 
+                position: 'absolute'
+                width: DECISION_BOARD_WIDTH
+                zIndex: 0 #so that points being dragged are above opinion region
+                display: 'inline-block'
+                verticalAlign: 'top'
+
+              DecisionBoard { key: 'decisionboard' }
 
           #community pros
           CommunityPoints 
@@ -1603,10 +1605,14 @@ Point = ReactiveComponent
       position: 'relative'
       listStyle: 'none outside none'
 
+
+
     if @props.rendered_as == 'decision_board_point'
       _.extend point_style, 
         marginLeft: 9
         padding: '0 18px 0 18px'
+    else if @props.rendered_as in ['community_point', 'under_review']
+      point_style.marginBottom = '0.5em'
 
 
 
@@ -1729,6 +1735,50 @@ Point = ReactiveComponent
                   destroy @props.key
               SPAN null, 'delete'
 
+      if TWO_COL
+        included = @included()
+        DIV 
+          style: 
+            border: "1px solid #{ if included || @local.hover_important then focus_blue else '#aaa'}"
+            borderTopColor: if included then focus_blue else 'transparent'
+            color: if included then 'white' else if @local.hover_important then focus_blue else "#888"
+            width: point_content_style.width - 24
+            position: 'relative'
+            left: 12
+            top: -3
+            padding: '5px'
+            textAlign: 'center'
+            borderRadius: '0 0 16px 16px'
+            cursor: 'pointer'
+            backgroundColor: if included then focus_blue else 'white'
+            fontSize: 14  
+            zIndex: 0
+
+
+          onMouseEnter: => 
+            @local.hover_important = true
+            save @local
+          onMouseLeave: => 
+            @local.hover_important = false
+            save @local
+
+          onClick: (e) => 
+            if included
+              @remove()
+            else 
+              @include()
+
+            e.stopPropagation()
+
+          I
+            className: 'fa fa-thumbs-o-up'
+            style: 
+              display: 'inline-block'
+              marginRight: 10
+
+          "This is a good point"
+
+
       if is_selected
         Discussion
           key:"/comments/#{point.id}"
@@ -1765,15 +1815,7 @@ Point = ReactiveComponent
         'invalid' 
       else (valid) =>
         if !valid
-          your_opinion = fetch(@proposal.your_opinion)
-          your_opinion.point_inclusions = _.without your_opinion.point_inclusions, \
-                                                    @props.key
-          save(your_opinion)
-          window.writeToLog
-            what: 'removed point'
-            details: 
-              point: @props.key
-
+          @remove()
         valid
 
     if $point_content.hasClass "ui-draggable"
@@ -1782,6 +1824,31 @@ Point = ReactiveComponent
       $point_content.draggable
         revert: revert
         disabled: !@props.enable_dragging
+
+  included: -> 
+    your_opinion = fetch(@proposal.your_opinion)
+    your_opinion.point_inclusions.indexOf(@props.key) > -1
+
+  remove: -> 
+    your_opinion = fetch(@proposal.your_opinion)
+    your_opinion.point_inclusions = _.without your_opinion.point_inclusions, \
+                                              @props.key
+    save(your_opinion)
+    window.writeToLog
+      what: 'removed point'
+      details: 
+        point: @props.key
+
+  include: -> 
+    your_opinion = fetch(@proposal.your_opinion)
+
+    your_opinion.point_inclusions.push @data().key
+    save(your_opinion)
+
+    window.writeToLog
+      what: 'included point'
+      details: 
+        point: ui.draggable.parent().data('id')
 
 
   selectPoint: (e) ->
@@ -1870,7 +1937,6 @@ styles += """
 .community_point .point_content, .under_review .point_content {
   border-radius: 16px;
   padding: 0.5em 9px;
-  margin-bottom: 0.5em;
   background-color: #{considerit_gray};
   box-shadow: #b5b5b5 0 1px 1px 0px;
   min-height: 34px; }

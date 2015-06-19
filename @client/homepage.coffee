@@ -46,8 +46,7 @@ window.sorted_proposals = (cluster) ->
 
 cluster_styles = ->
   first_column =
-    width: if !customization('lefty') then 480 else 350
-    marginLeft: if customization('lefty') then 200
+    width: CONTENT_WIDTH() - 300 - 50
     display: 'inline-block'
     verticalAlign: 'top'
     position: 'relative'
@@ -90,8 +89,8 @@ window.SimpleHomepage = ReactiveComponent
       className: 'simplehomepage'
       style: 
         fontSize: 22
-        margin: if !customization('lefty') then 'auto'
-        width: if !customization('lefty') then SIMPLEHOMEPAGEWIDTH
+        margin: 'auto'
+        width: CONTENT_WIDTH()
         marginTop: 10
         position: 'relative'
 
@@ -131,7 +130,7 @@ window.SimpleHomepage = ReactiveComponent
 
           if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
             DIV
-              style: margin: "45px 0 45px #{if customization('lefty') then '200px' else '0'}"
+              style: margin: "45px 0"
 
               "#{options.label} "
 
@@ -208,8 +207,7 @@ window.SimpleHomepage = ReactiveComponent
       if options.label
         DIV 
           style: 
-            width: 700
-            marginLeft: if customization('lefty') then 200
+            width: CONTENT_WIDTH()
           H1
             style: 
               fontSize: 48
@@ -223,7 +221,6 @@ window.SimpleHomepage = ReactiveComponent
                 fontSize: 22
                 fontWeight: 200
                 marginBottom: 10
-                width: 700
 
               options.description
 
@@ -377,7 +374,7 @@ window.SimpleHomepage = ReactiveComponent
       id: 'watching_filter'
       style: 
         position: 'absolute'
-        left: if customization('lefty') then 112 else -87  
+        left: -87  
         top: 5
         border: "1px solid #bbb"
         opacity: if !filter.watched && !@local.hover_watch_filter then .3
@@ -472,7 +469,6 @@ window.LearnDecideShareHomepage = ReactiveComponent
           backgroundColor: subdomain.branding.primary_color
           color: 'white'
           height: if subdomain.name != 'allsides' then docking_header_height
-          minWidth: PAGE_WIDTH #minwidth is for when docking, position fixed mode
 
         TABLE 
           style: 
@@ -510,7 +506,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
         if contributors.length > 0
           DIV 
             style: 
-              width: PAGE_WIDTH
+              #width: PAGE_WIDTH
               position: 'relative'
               margin: 'auto'
             DIV 
@@ -571,7 +567,6 @@ window.LearnDecideShareHomepage = ReactiveComponent
                   paddingLeft: 164
                   paddingTop: 12
                   margin: 'auto'
-                  width: PAGE_WIDTH
                 description
 
       if permit('create proposal') > 0 && customization('show_new_proposal_button')
@@ -691,7 +686,7 @@ window.ProposalSummary = ReactiveComponent
             mouth_style = 
               top: 5
               position: 'absolute'
-              right: -COMMUNITY_POINT_MOUTH_WIDTH + 4
+              right: -POINT_MOUTH_WIDTH + 4
               transform: 'rotate(90deg)'
 
             DIV 
@@ -706,8 +701,8 @@ window.ProposalSummary = ReactiveComponent
 
                   Bubblemouth 
                     apex_xfrac: 0
-                    width: COMMUNITY_POINT_MOUTH_WIDTH
-                    height: COMMUNITY_POINT_MOUTH_WIDTH
+                    width: POINT_MOUTH_WIDTH
+                    height: POINT_MOUTH_WIDTH
                     fill: considerit_gray, 
                     stroke: 'transparent', 
                     stroke_width: 0

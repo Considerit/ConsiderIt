@@ -328,8 +328,6 @@ customizations.default =
     
     user_questions: []
 
-  lefty: false
-
   Homepage : SimpleHomepage
   ProposalNavigation : DefaultProposalNavigation
 
@@ -372,35 +370,31 @@ customizations['monitorinstitute'] =
       DIV
         style:
           position: 'relative'
+          width: CONTENT_WIDTH()
+          paddingTop: 20
+          margin: 'auto'
 
         A
           href: '/'
           style: 
-            display: 'inline-block'
-            marginLeft: 50
             fontSize: 43
-            verticalAlign: 'middle'
             position: 'absolute'
-            left: 60
-            top: 5
+            marginRight: 30
+            left: -60
+            top: 3
 
-          '<'
-
-
-        DIV 
+          '<'            
+            
+        A 
+          href: 'http://monitorinstitute.com/'
+          target: '_blank'
           style: 
-            width: SIMPLEHOMEPAGEWIDTH
-            margin: 'auto'
-            paddingTop: 20
+            display: 'inline-block'
 
-          A 
-            href: 'http://monitorinstitute.com/'
-            target: '_blank'
+          IMG 
+            src: asset("monitorinstitute/logo.jpg")
 
-            IMG 
-              src: asset("monitorinstitute/logo.jpg")
-
-          ProfileMenu()
+        ProfileMenu()
 
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'
@@ -416,7 +410,7 @@ customizations['monitorinstitute'] =
 
         DIV 
           style: 
-            width: SIMPLEHOMEPAGEWIDTH
+            width: CONTENT_WIDTH()
             margin: 'auto'
             paddingTop: 20
 
@@ -629,7 +623,7 @@ customizations['seattle2035'] =
 
           DIV 
             style: 
-              width: CONTENT_WIDTH - 100
+              width: CONTENT_WIDTH() - 100
               margin: 'auto'
 
             DIV 
@@ -804,7 +798,7 @@ customizations.enviroissues =
       DIV
         style:
           height: 130
-          width: PAGE_WIDTH
+          width: CONTENT_WIDTH()
           margin: '60px auto'
 
 
@@ -942,7 +936,6 @@ customizations.ecastonline = customizations['ecast-demo'] =
 
         ProfileMenu()
 
-  lefty: true
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'
 
@@ -1166,8 +1159,6 @@ customizations.bitcoin =
 
 
   show_crafting_page_first: true
-
-  lefty: true
 
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'
@@ -1512,7 +1503,7 @@ customizations.livingvotersguide =
             DIV
               style:
                 fontSize: 24
-                width: PAGE_WIDTH
+                width: CONTENT_WIDTH()
                 color: 'white'
                 margin: 'auto'
                 padding: '35px 0'

@@ -72,11 +72,11 @@ Auth = ReactiveComponent
 
       DIV
         style:
-          margin: "0 auto 0 #{if customization('lefty') then '300px' else 'auto'}"
+          margin: "0 auto"
           padding: if !@props.naked then '4em 0'
           position: 'relative'
           zIndex: 0
-          width: DECISION_BOARD_WIDTH
+          width: DECISION_BOARD_WIDTH()
 
         @buildAuthForm()
 
@@ -200,7 +200,7 @@ Auth = ReactiveComponent
       # The auth form's header
       DIV
         style :
-          width: BODY_WIDTH
+          width: BODY_WIDTH()
           position: 'relative'
           margin: 'auto'
           top: 5 # to overlap bubblemouth with enclosure
@@ -230,7 +230,7 @@ Auth = ReactiveComponent
             SPAN
               style: 
                 position: 'relative'
-                marginLeft: -(real_task_width - BODY_WIDTH) / 2
+                marginLeft: -(real_task_width - BODY_WIDTH()) / 2
               task
 
             SPAN
@@ -254,7 +254,7 @@ Auth = ReactiveComponent
 
         DIV
           style:
-            left: BODY_WIDTH / 2
+            left: BODY_WIDTH() / 2
             height: 50
             width: 50
             top: 0
@@ -268,7 +268,7 @@ Auth = ReactiveComponent
         DIV 
           key: 'auth_bubblemouth'
           style: css.crossbrowserify
-            left: BODY_WIDTH / 2 - 34/2
+            left: BODY_WIDTH() / 2 - 34/2
             top: 10 + 3 + 1 # +10 is because of the decision board translating down 10, 3 is for its border
             position: 'relative'
 

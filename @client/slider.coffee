@@ -316,8 +316,6 @@ window.Slider = ReactiveComponent
 
 ####
 # Slider handles
-#
-# All slider handles should respect the SLIDER_HANDLE_SIZE width/height.
 # 
 # Slider handles will be passed a props object with:
 # 
@@ -357,67 +355,68 @@ slider_handle.face = (props) ->
       cy: 50
       r: 50
 
-    if props.detail
-      G null,
-        
-        CIRCLE
-          fill: props.color
-          filter: "url(#handle-innerbevel)"
+    G null,
+      
+      CIRCLE
+        fill: props.color
+        filter: "url(#handle-innerbevel)"
 
-          cx: 50
-          cy: 50
-          r: 50
+        cx: 50
+        cy: 50
+        r: 50
 
-        # brows
-        for is_left in [true, false]
-          # support: closer to center line
-          # oppose: larger eyes, closer to the edge
+      if props.detail
+        G null,
+          # brows
+          for is_left in [true, false]
+            # support: closer to center line
+            # oppose: larger eyes, closer to the edge
 
-          direction = if is_left then -1 else 1
-          bw = 15
-          bh = 2
-          x = 50 + direction * ( 28 + 4 * (1 - props.value)) - if is_left then 0 else bw
-          y = 28 - 4 * (1 - props.value)
-          RECT
-            x: x
-            y: y
-            width: bw
-            height: bh
-            transform: "rotate(#{ direction * (5 + 30 * Math.abs(.5 - props.value))} #{x + (if is_left then bw else 0)} #{y + bh})"
-            fill: 'white'
+            direction = if is_left then -1 else 1
+            bw = 15
+            bh = 2
+            x = 50 + direction * ( 28 + 4 * (1 - props.value)) - if is_left then 0 else bw
+            y = 28 - 4 * (1 - props.value)
+            RECT
+              x: x
+              y: y
+              width: bw
+              height: bh
+              transform: "rotate(#{ direction * (5 + 30 * Math.abs(.5 - props.value))} #{x + (if is_left then bw else 0)} #{y + bh})"
+              fill: 'white'
 
-        # eyes
-        for is_left in [true, false]
-          # support: closer to center line, further down
-          # oppose: farther out, raised
+          # eyes
+          for is_left in [true, false]
+            # support: closer to center line, further down
+            # oppose: farther out, raised
 
-          direction = if is_left then -1 else 1
-          CIRCLE
-            cx: 50 + direction * ( 13 + 6 * (1 - props.value))
-            cy: 39
-            r: 3 #+ 1.6 * (1 - props.value)
-            fill: 'white'
+            direction = if is_left then -1 else 1
+            CIRCLE
+              cx: 50 + direction * ( 13 + 6 * (1 - props.value))
+              cy: 39
+              r: 3 #+ 1.6 * (1 - props.value)
+              fill: 'white'
 
-        # mouth
-        do =>
-          frowniness = 5
-          mw = 40
-          my = 65
+          # mouth
+          do =>
+            frowniness = 5
+            mw = 40
+            my = 65
 
-          [x1, y1] = [50 - mw / 2, my + frowniness * (1-props.value)]
-          [x2, y2] = [50 + mw / 2, y1]
+            [x1, y1] = [50 - mw / 2, my + frowniness * (1-props.value)]
+            [x2, y2] = [50 + mw / 2, y1]
 
-          [qx1, qy1] = [50, my + .5 * frowniness + 2 * frowniness * (2 * props.value - 1)]
+            [qx1, qy1] = [50, my + .5 * frowniness + 2 * frowniness * (2 * props.value - 1)]
 
-          PATH
-            stroke: 'white'
-            fill: focus_blue
-            strokeWidth: 3 
-            d: """
-              M #{x1} #{y1}
-              Q #{qx1} #{qy1}
-                #{x2} #{y2}
-            """
+            PATH
+              stroke: 'white'
+              fill: focus_blue
+              strokeWidth: 3 
+              d: """
+                M #{x1} #{y1}
+                Q #{qx1} #{qy1}
+                  #{x2} #{y2}
+              """
 
 
 slider_handle.flat = (props) -> 

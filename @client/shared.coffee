@@ -1,3 +1,5 @@
+require './responsive_vars'
+
 ####
 # Make the DIV, SPAN, etc.
 for el of React.DOM
@@ -8,9 +10,6 @@ window.styles = ""
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 
 window.LIVE_UPDATE_INTERVAL = 1000 * 60
-
-window.TWO_COL = true
-
 
 # live updating
 setInterval ->
@@ -25,26 +24,7 @@ setInterval ->
 
 , LIVE_UPDATE_INTERVAL 
 
-
-# layout constants
-# Pictoral summary of layout variables:
-# 
-#    |                                        $page_width                                           |   
-#    |  content_gutter |                    $content_width                       |   content_gutter |
-#                      |      gutter   |      $body_width        |       gutter  |             
-
-window.PAGE_WIDTH = 1152
-window.CONTENT_WIDTH = 960
-window.BODY_WIDTH = 540
-window.POINT_WIDTH = 250
-window.POINT_CONTENT_WIDTH = 197
-window.DECISION_BOARD_WIDTH = BODY_WIDTH + 4 # the four is for the border
-window.REASONS_REGION_WIDTH = DECISION_BOARD_WIDTH + 2 * POINT_CONTENT_WIDTH + 76
-window.DESCRIPTION_WIDTH = BODY_WIDTH
-window.SLIDER_HANDLE_SIZE = if TWO_COL then 50 else 25
-window.COMMUNITY_POINT_MOUTH_WIDTH = 17
-window.OPINION_SLIDER_WIDTH = BODY_WIDTH - 10
-window.SIMPLEHOMEPAGEWIDTH = 850
+window.POINT_MOUTH_WIDTH = 17
 
 ##################
 # Colors

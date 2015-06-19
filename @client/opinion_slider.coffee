@@ -19,10 +19,9 @@ window.OpinionSlider = ReactiveComponent
 
   render : ->
     slider = fetch @props.key
-    hist = fetch namespaced_key('histogram', @proposal)
-
     your_opinion = fetch @props.your_opinion
 
+    hist = fetch namespaced_key('histogram', @proposal)
     hist_selection = hist.selected_opinions || hist.selected_opinion
 
     # Update the slider value when the server gets back to us
@@ -36,9 +35,9 @@ window.OpinionSlider = ReactiveComponent
     # Define slider layout
     slider_style = 
       position: 'relative'
-      left: - (@props.width - BODY_WIDTH) / 2
+      left: - (@props.width - BODY_WIDTH()) / 2
       width: @props.width
-      height: SLIDER_HANDLE_SIZE
+      height: SLIDER_HANDLE_SIZE()
 
     if @props.backgrounded
       css.grayscale slider_style
@@ -50,13 +49,13 @@ window.OpinionSlider = ReactiveComponent
       # Draw the pole labels of the slider
       @drawPoleLabels()
 
-      if (@props.focused || TWO_COL) && @props.permitted
+      if (@props.focused || TWO_COL()) && @props.permitted && !hist_selection
         @drawFeedback() 
 
       Slider
         key: @props.key
         width: @props.width
-        handle_height: SLIDER_HANDLE_SIZE
+        handle_height: SLIDER_HANDLE_SIZE()
         base_height: 6
         base_color: if @props.focused 
                       'rgb(175, 215, 255)' 
@@ -130,7 +129,7 @@ window.OpinionSlider = ReactiveComponent
       if !slider.has_moved 
         'Slide Your Overall Opinion' 
       else if !customization('show_slider_feedback', @proposal)
-        ""
+        "Your opinion"
       else if isNeutralOpinion slider.value
         "You are Undecided"
       else 
@@ -150,8 +149,8 @@ window.OpinionSlider = ReactiveComponent
 
     feedback_style = 
       pointerEvents: 'none' 
-      fontSize: if TWO_COL then 22 else 30
-      fontWeight: if !TWO_COL then 700
+      fontSize: if TWO_COL() then 22 else 30
+      fontWeight: if !TWO_COL() then 700
       color: if @props.backgrounded then '#eee' else focus_blue
       #visibility: if @props.backgrounded then 'hidden'
 
@@ -168,7 +167,7 @@ window.OpinionSlider = ReactiveComponent
 
     _.extend feedback_style, 
       position: 'absolute'      
-      top: if slider.docked then -57 else if !TWO_COL then -80 else 30
+      top: if slider.docked then -57 else if !TWO_COL() then -80 else 30
       left: feedback_left
       marginLeft: -feedback_width / 2
       width: feedback_width
@@ -187,7 +186,7 @@ window.OpinionSlider = ReactiveComponent
     # Clicking on the slider handle should transition us between 
     # crafting <=> results. We should also transition to crafting 
     # when we've been dragging on the results page.
-    if !TWO_COL && (slider.value == your_opinion.stance || mode == 'results')
+    if !TWO_COL() && (slider.value == your_opinion.stance || mode == 'results')
       new_page = if mode == 'results' then 'crafting' else 'results'
       updateProposalMode new_page, 'click_slider'
 

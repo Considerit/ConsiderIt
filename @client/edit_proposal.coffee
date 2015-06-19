@@ -31,14 +31,14 @@ window.EditProposal = ReactiveComponent
       return DIV null
 
     block_style = 
-      width: CONTENT_WIDTH
+      width: CONTENT_WIDTH()
       padding: '2px 0px'
       marginBottom: 12
       position: 'relative'
 
     description_field_style =
       fontSize: 18
-      width: CONTENT_WIDTH - 200
+      width: CONTENT_WIDTH() - 200
       padding: 12
       marginBottom: 8
       border: '1px solid #ccc'
@@ -96,7 +96,7 @@ window.EditProposal = ReactiveComponent
     DIV null, 
       DIV 
         style: 
-          width: CONTENT_WIDTH
+          width: CONTENT_WIDTH()
           margin: 'auto'
           padding: '3em 0'
           position: 'relative'
@@ -362,7 +362,7 @@ window.EditProposal = ReactiveComponent
 
           DIV 
             style: 
-              width: CONTENT_WIDTH
+              width: CONTENT_WIDTH()
               backgroundColor: '#fafafa'
               padding: '10px 60px'
               display: if @local.edit_roles then 'block' else 'none' 

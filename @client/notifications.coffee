@@ -28,7 +28,7 @@ window.Notifications = ReactiveComponent
 
     DIV 
       style:
-        width: CONTENT_WIDTH
+        width: CONTENT_WIDTH()
         margin: '50px auto'
 
       DIV
@@ -263,10 +263,9 @@ window.ActivityFeed = ReactiveComponent
 
     DIV 
       style: 
-        width: DESCRIPTION_WIDTH
+        width: BODY_WIDTH()
         position: 'relative'
         margin: 'auto'
-        marginLeft: if customization('lefty') then 300
         marginBottom: 18
 
       DIV

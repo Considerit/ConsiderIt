@@ -167,7 +167,7 @@ window.OpinionSlider = ReactiveComponent
 
     _.extend feedback_style, 
       position: 'absolute'      
-      top: if slider.docked then -57 else if !TWO_COL() then -80 else 30
+      top: if slider.docked then -57 else if !TWO_COL() then -80 else 37
       left: feedback_left
       marginLeft: -feedback_width / 2
       width: feedback_width

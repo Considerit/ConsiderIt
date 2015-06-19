@@ -10,7 +10,7 @@ require './shared'
 task_area_header_style = {fontSize: 24, fontWeight: 400, margin: '10px 0'}
 task_area_bar = {padding: '4px 30px', fontSize: 24, borderRadius: '8px 8px 0 0', height: 35, backgroundColor: 'rgba(0,0,55,.1)'}
 task_area_section_style = {margin: '10px 0px 20px 0px', position: 'relative'}
-task_area_style = {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor: '#F4F0E9', position: 'absolute', left: CONTENT_WIDTH/4, top: -35, borderRadius: 8}
+task_area_style = {cursor: 'auto', width: 3 * CONTENT_WIDTH() / 4, backgroundColor: '#F4F0E9', position: 'absolute', left: CONTENT_WIDTH()/4, top: -35, borderRadius: 8}
 
 
 DashHeader = ReactiveComponent
@@ -42,7 +42,7 @@ DashHeader = ReactiveComponent
         #backgroundColor: subdomain.branding.primary_color
         #color: if !@local.light_background then 'white'
 
-      DIV style: {width: CONTENT_WIDTH, margin: 'auto', position: 'relative'},
+      DIV style: {width: CONTENT_WIDTH(), margin: 'auto', position: 'relative'},
         # A
         #   href: '/'
         #   style: {position: 'absolute', display: 'inline-block', top: 25, left: -40},
@@ -73,7 +73,7 @@ ImportDataDash = ReactiveComponent
 
       DashHeader name: 'Import Data'
 
-      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'},
+      DIV style: {width: CONTENT_WIDTH(), margin: '15px auto'},
         P style: {marginBottom: 6}, 
           "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
 
@@ -198,7 +198,7 @@ AppSettingsDash = ReactiveComponent
       DashHeader name: 'Application Settings'
 
       if subdomain.name
-        DIV style: {width: CONTENT_WIDTH, margin: '20px auto'}, 
+        DIV style: {width: CONTENT_WIDTH(), margin: '20px auto'}, 
 
           DIV className: 'input_group',
             LABEL htmlFor: 'app_title', 'The name of this application'
@@ -381,7 +381,7 @@ AdminTaskList = ReactiveComponent
             UL style: {},
               for item in items
                 background_color = if item.key == dash.selected_task then '#F4F0E9' else ''
-                LI key: item.key, style: {position: 'relative', listStyle: 'none', width: CONTENT_WIDTH / 4},
+                LI key: item.key, style: {position: 'relative', listStyle: 'none', width: CONTENT_WIDTH() / 4},
 
                   DIV 
                     className: 'task_tab',
@@ -455,7 +455,7 @@ ModerationDash = ReactiveComponent
     DIV null,
       DashHeader name: 'Moderate user contributions'
 
-      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'}, 
+      DIV style: {width: CONTENT_WIDTH(), margin: '15px auto'}, 
         DIV className: 'moderation_settings',
           if subdomain.moderated_classes.length == 0 || @local.edit_settings
             DIV null,             
@@ -760,7 +760,7 @@ FactcheckDash = ReactiveComponent
     DIV null,
       DashHeader name: 'Fact check user contributions'
 
-      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'}, 
+      DIV style: {width: CONTENT_WIDTH(), margin: '15px auto'}, 
         AdminTaskList 
           items: items
           key: 'factcheck_dash'

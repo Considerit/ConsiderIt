@@ -15,15 +15,14 @@ window.Header = ReactiveComponent
         zIndex: 2
         margin: '0 auto'
         backgroundColor: 'white'
-        minWidth: PAGE_WIDTH
 
       if fetch('location').url == '/'
         customization('HomepageHeader')()
       else 
         customization('NonHomepageHeader')()
 
-      DIV null, 
-        if fetch('location').url == '/about'
+      if fetch('location').url == '/about'
+        DIV null, 
           A 
             href: '/'
             style: 

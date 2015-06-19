@@ -28,7 +28,7 @@ setResponsive = ->
 
   w = window.innerWidth
 
-  two_col = w < 1080
+  two_col = w < 1080 || browser.is_mobile
 
   gutter = Math.max(25, w / 10)
   whitespace = Math.max(100, w/10)

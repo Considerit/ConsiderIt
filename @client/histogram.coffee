@@ -505,7 +505,7 @@ window.Histogram = ReactiveComponent
     simulation_opinion_hash = JSON.stringify _.map(@props.opinions, (o) => 
       Math.round(fetch(o.key).stance * 100) / 100 )
 
-    simulation_opinion_hash += " (#{@props.width}, #{@props.height})"
+    simulation_opinion_hash += " (#{@props.width}, #{@props.height}, #{@props.width})"
 
     if @refs && @refs.histo && simulation_opinion_hash != @local.simulation_opinion_hash
       histo = @refs.histo.getDOMNode()

@@ -77,7 +77,7 @@ setResponsive = ->
     REASONS_REGION_WIDTH: reasons_region_width
     POINT_FONT_SIZE: point_font_size
     TWO_COL: two_col
-    SLIDER_HANDLE_SIZE: if two_col then 50 else 25
+    SLIDER_HANDLE_SIZE: if two_col then 65 else 25
 
   save responsive
 

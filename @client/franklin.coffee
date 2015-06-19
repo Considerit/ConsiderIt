@@ -1906,7 +1906,7 @@ Point = ReactiveComponent
             position: 'relative'
             left: 12
             top: -3
-            padding: '5px'
+            padding: '10px 5px'
             textAlign: 'center'
             borderRadius: '0 0 16px 16px'
             cursor: 'pointer'

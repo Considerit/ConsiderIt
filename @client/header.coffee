@@ -122,7 +122,7 @@ window.ShortHeader = ReactiveComponent
 
       DIV
         style: 
-          width: (if homepage then Math.min(CONTENT_WIDTH(), 850) else BODY_WIDTH() ) + 130
+          width: (if homepage then SIMPLE_HOMEPAGE_WIDTH() else BODY_WIDTH() ) + 130
           margin: 'auto'
 
         A
@@ -152,7 +152,7 @@ window.ShortHeader = ReactiveComponent
               style: 
                 height: 56
 
-        if subdomain.branding.masthead_header_text || subdomain.app_title
+        if subdomain.branding.masthead_header_text || (if !subdomain.branding.logo then subdomain.app_title else null)
           text = subdomain.branding.masthead_header_text || subdomain.app_title
           SPAN 
             style: 

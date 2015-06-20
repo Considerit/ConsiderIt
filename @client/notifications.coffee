@@ -28,13 +28,14 @@ window.Notifications = ReactiveComponent
 
     DIV 
       style:
-        width: CONTENT_WIDTH()
+        width: BODY_WIDTH()
         margin: '50px auto'
 
       DIV
         style: 
           fontSize: 24
           marginBottom: 10
+          position: 'relative'
           
         INPUT 
           type: 'checkbox'
@@ -44,6 +45,9 @@ window.Notifications = ReactiveComponent
             verticalAlign: 'top'
             display: 'inline-block'
             marginTop: 12
+            fontSize: 24
+            position: 'absolute'
+            left: -40
 
           onChange: => 
 
@@ -56,7 +60,6 @@ window.Notifications = ReactiveComponent
         DIV 
           style: 
             display: 'inline-block'
-            paddingLeft: 20
 
           LABEL
             htmlFor: 'enable_email'              
@@ -83,7 +86,7 @@ window.Notifications = ReactiveComponent
     DIV 
       style: 
         #backgroundColor: '#f2f2f2'
-        padding: '10px 10px 10px 60px'
+        padding: '10px 10px 10px 30px'
 
       SPAN 
         style: 
@@ -140,6 +143,7 @@ window.Notifications = ReactiveComponent
                 style: 
                   display: 'inline-block'
                   verticalAlign: 'top'
+                  position: 'relative'
 
                 INPUT 
                   id: "#{event}_input"
@@ -147,6 +151,9 @@ window.Notifications = ReactiveComponent
                   checked: if config.email_trigger then true
                   style: 
                     fontSize: 24
+                    position: 'absolute'
+                    left: -40
+                    top: 2
                   onChange: do (config) => => 
                     config.email_trigger = !config.email_trigger
                     save current_user
@@ -156,8 +163,6 @@ window.Notifications = ReactiveComponent
                 style: 
                   display: 'inline-block'
                   verticalAlign: 'top'
-                  width: 450
-                  marginLeft: 15
 
                 config.ui_label
 

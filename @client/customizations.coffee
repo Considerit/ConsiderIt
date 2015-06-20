@@ -799,7 +799,7 @@ customizations.enviroissues =
         style:
           height: 130
           width: CONTENT_WIDTH()
-          margin: '60px auto'
+          margin: '20px auto'
 
 
         IMG
@@ -1182,40 +1182,51 @@ customizations.bitcoin =
         DIV
           style:
             cursor: if not homepage then 'pointer'
-            paddingTop: if homepage then 18 else 17
+            paddingTop: if homepage then 18
           onClick: if not homepage then => loadPage('/')
 
-          # Back arrow
-          if not homepage
-            DIV
-              style:
-                position: 'absolute'
-                left: 20
-                top: 0
-                color: '#eee'
-                fontSize: 43
-                fontWeight: 400
-                paddingLeft: 25 # Make the clickable target bigger
-                width: 180      # Make the clickable target bigger
-              '<'
+          DIV 
+            style: 
+              width: BODY_WIDTH() + 281
+              margin: 'auto'
+            # Back arrow
+            if not homepage
+              SPAN
+                style:
+                  display: 'inline-block'
+                  color: '#eee'
+                  marginLeft: -10
+                  fontSize: 43
+                  fontWeight: 400
+                  paddingLeft: 25 # Make the clickable target bigger
+                  paddingRight: 25 # Make the clickable target bigger
+                '<'
 
-          # Logo
-          A
-            href: if homepage then 'https://bitcoinfoundation.org'
-            IMG
-              style:
-                height: if homepage then 40 else 26
-                marginLeft: if homepage then 82 else 106
-              src: asset('bitcoin/logo.svg')
+            # Logo
+            A
+              href: if homepage then 'https://bitcoinfoundation.org'
+              style: 
+                margin: if homepage then 'auto' else '0 0 0 -4px'
+                width: if homepage then Math.min(CONTENT_WIDTH(), 850)                
+                position: if homepage then 'relative'
+                left: if homepage then -121
+                display: if homepage then 'block'
 
-          if not homepage
-            SPAN
-              style:
-                color: 'cyan'
-                fontSize: 26
-                fontWeight: 500
-                marginLeft: 40
-              'The Distributed Opinion'
+              IMG
+                style:
+                  height: if homepage then 40 else 26
+                src: asset('bitcoin/logo.svg')
+
+            if not homepage
+              SPAN
+                style:
+                  color: 'cyan'
+                  fontSize: 26
+                  fontWeight: 500
+                  marginLeft: 40
+                'The Distributed Opinion'
+
+
 
           # Text
           if homepage
@@ -1233,13 +1244,15 @@ customizations.bitcoin =
 
             DIV
               style:
-                paddingLeft: 200
+                #paddingLeft: 200
                 color: 'white'
                 fontSize: 22
                 fontWeight: 300
                 paddingTop: 23
                 paddingBottom: 20
-                maxWidth: 915
+                #maxWidth: 915
+                width: Math.min(CONTENT_WIDTH(), 850)
+                margin: 'auto'
 
               DIV
                 style:
@@ -1675,27 +1688,6 @@ customizations.tigard =
 
 
 #customizations.tigard.NonHomepageHeader = customizations.tigard.HomepageHeader
-
-
-
-#####################
-# City of Tigard
-customizations.cityoftigard = 
-  
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: -> 
-      logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
-      DIV style: {backgroundColor: '#253967'},
-        ProfileMenu()
-
-        DIV style: {height: 48},
-          A href: '/', style: {position: 'absolute', top:0, zIndex: 999999},
-            IMG className: 'logo', src: asset('cityoftigard/logo.png'), style: logo_style 
-
-
-customizations.cityoftigard.NonHomepageHeader = customizations.cityoftigard.HomepageHeader
 
 
 customizations.mos = 

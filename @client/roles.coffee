@@ -130,7 +130,7 @@ SubdomainRoles = ReactiveComponent
 
     DIV null, 
       DashHeader name: 'User Roles'
-      DIV style: {width: CONTENT_WIDTH(), margin: 'auto'},
+      DIV style: {width: BODY_WIDTH(), margin: 'auto'},
         SpecifyRoles subdomain, roles
 
 

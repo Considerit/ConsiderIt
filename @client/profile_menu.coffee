@@ -40,7 +40,7 @@ window.ProfileMenu = ReactiveComponent
         _.extend(
           position: 'absolute'
           zIndex: 1
-          right: 70
+          right: 30
           fontSize: 26
           top: 17,
           _.clone(@props.style))
@@ -62,8 +62,8 @@ window.ProfileMenu = ReactiveComponent
               paddingTop: 70
               paddingRight: 14
               backgroundColor: '#eee'
-              left: -82
-              textAlign: 'left'
+              left: -122
+              textAlign: 'right'
               zIndex: 999999
 
             for option in menu_options

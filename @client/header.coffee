@@ -106,63 +106,71 @@ window.ShortHeader = ReactiveComponent
     subdomain = fetch '/subdomain'   
     loc = fetch 'location'
 
-    masthead_style = 
-      backgroundColor: subdomain.branding.primary_color
-      minHeight: 50
-
     rgb = parseColor(subdomain.branding.primary_color)
     hsl = rgb_to_hsl(rgb)
     is_light = hsl.l > .75
 
-    DIV style: masthead_style,
+    homepage = loc.url == '/'
+
+    DIV 
+      style:
+        backgroundColor: subdomain.branding.primary_color
+        minHeight: 70
+
       ProfileMenu()
 
-      A
-        href: '/'
+
+      DIV
         style: 
-          display: 'inline-block'
-          marginLeft: 50
-          color: if !is_light then 'white'
-          fontSize: 43
-          visibility: if loc.url == '/' then 'hidden'
-          verticalAlign: 'middle'
+          width: (if homepage then Math.min(CONTENT_WIDTH(), 850) else BODY_WIDTH() ) + 130
+          margin: 'auto'
 
-        '<'
-
-
-      if subdomain.branding.logo
-        A 
-          href: if subdomain.external_project_url then subdomain.external_project_url
+        A
+          href: '/'
           style: 
-            verticalAlign: 'middle'
-            marginLeft: 35
             display: 'inline-block'
-            fontSize: 0
-            cursor: if !subdomain.external_project_url then 'default'
-
-          IMG 
-            src: subdomain.branding.logo
-            style: 
-              height: 46
-
-      if subdomain.branding.masthead_header_text || subdomain.app_title
-        text = subdomain.branding.masthead_header_text || subdomain.app_title
-        SPAN 
-          style: 
             color: if !is_light then 'white'
-            marginLeft: 35
-            fontSize: 32
-            fontWeight: 400
-            display: 'inline-block'
+            fontSize: 43
+            visibility: if homepage then 'hidden'
             verticalAlign: 'middle'
+            marginTop: 5
+          '<'
 
-          if subdomain.external_project_url && !subdomain.branding.logo
-            A 
-              href: "#{subdomain.external_project_url}"
-              target: '_blank'
+
+        if subdomain.branding.logo
+          A 
+            href: if subdomain.external_project_url then subdomain.external_project_url
+            style: 
+              verticalAlign: 'middle'
+              marginLeft: 35
+              display: 'inline-block'
+              fontSize: 0
+              cursor: if !subdomain.external_project_url then 'default'
+
+            IMG 
+              src: subdomain.branding.logo
+              style: 
+                height: 56
+
+        if subdomain.branding.masthead_header_text || subdomain.app_title
+          text = subdomain.branding.masthead_header_text || subdomain.app_title
+          SPAN 
+            style: 
+              color: if !is_light then 'white'
+              marginLeft: 35
+              fontSize: 32
+              fontWeight: 400
+              display: 'inline-block'
+              verticalAlign: 'middle'
+              marginTop: 5
+
+            if subdomain.external_project_url && !subdomain.branding.logo
+              A 
+                href: "#{subdomain.external_project_url}"
+                target: '_blank'
+                text
+            else
               text
-          else
-            text
 
 
 

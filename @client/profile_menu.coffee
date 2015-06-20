@@ -40,7 +40,8 @@ window.ProfileMenu = ReactiveComponent
         _.extend(
           position: 'absolute'
           zIndex: 1
-          right: 50
+          right: 70
+          fontSize: 26
           top: 17,
           _.clone(@props.style))
 
@@ -58,7 +59,7 @@ window.ProfileMenu = ReactiveComponent
               marginTop: -8
               marginLeft: -8
               padding: 8
-              paddingTop: 50
+              paddingTop: 70
               paddingRight: 14
               backgroundColor: '#eee'
               left: -82
@@ -92,14 +93,18 @@ window.ProfileMenu = ReactiveComponent
               key: current_user.user
               hide_tooltip: true
               className: 'userbar_avatar'
-              style: {height: 20, width: 20, marginRight: 7, marginTop: 1}
+              style: 
+                height: 35
+                width: 35
+                marginRight: 7
+                marginTop: 1
             I 
               className: 'fa fa-caret-down'
               style: 
                 visibility: if @local.menu then 'hidden'
       else
         A
-          'className': 'profile_anchor login'
+          className: 'profile_anchor login'
           'data-action': 'login'
           onClick: (e) =>
             reset_key 'auth',

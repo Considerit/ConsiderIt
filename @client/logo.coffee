@@ -1,4 +1,4 @@
-window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_color, i_dot_x) -> 
+window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_color, i_dot_x, transition) -> 
   main_text_color = main_text_color or 'white'
   o_text_color = o_text_color or logo_red
   line_color = line_color or 'white'
@@ -294,3 +294,6 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
         cx: i_dot_x
         cy: "55"
         r: "4.25"
+        style: if transition then css.crossbrowserify({transition: 'cx 1000ms'}) 
+          
+

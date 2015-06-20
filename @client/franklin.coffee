@@ -985,23 +985,22 @@ SaveYourOpinionFooter = ReactiveComponent
     slider = fetch namespaced_key('slider', @proposal)
 
     return SPAN null if (!TWO_COL() && get_proposal_mode() == 'crafting') || \
-                        ( TWO_COL() && (\
-                          your_opinion.published || \
+                        ( your_opinion.published || \
                           (!slider.has_moved && your_opinion.point_inclusions.length == 0)\
-                        ))
-    # 
+                        )
+    
     DIV 
       style: 
         position: 'fixed'
         left: 0
         bottom: 0
-        width: '100%'
+        width: PAGE_WIDTH()
         backgroundColor: focus_blue
-        padding: '5px 10px'
+        padding: 10
         color: 'white'
         zIndex: 999
         textAlign: 'center'
-        fontSize: 20
+        fontSize: 24
 
       'Your opinion hasn’t been added yet! '
       SPAN 
@@ -1895,7 +1894,7 @@ Point = ReactiveComponent
                   destroy @props.key
               SPAN null, 'delete'
 
-      if TWO_COL()
+      if TWO_COL() && @props.rendered_as != 'under_review'
         included = @included()
         DIV 
           style: 
@@ -1906,12 +1905,12 @@ Point = ReactiveComponent
             position: 'relative'
             left: 12
             top: -3
-            padding: '10px 5px'
+            padding: '8px 5px'
             textAlign: 'center'
             borderRadius: '0 0 16px 16px'
             cursor: 'pointer'
             backgroundColor: if included then focus_blue else 'white'
-            fontSize: 14  
+            fontSize: 18  
             zIndex: 0
 
 
@@ -1936,7 +1935,7 @@ Point = ReactiveComponent
               display: 'inline-block'
               marginRight: 10
 
-          "This is a good point"
+          "Important point"
 
 
       if is_selected

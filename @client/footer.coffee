@@ -34,7 +34,7 @@ window.DefaultFooter = ReactiveComponent
 
         DIV 
           style: 
-            marginTop: 15
+            marginTop: 7
 
           'Bug to report? Want to use this technology yourself? '
           A 
@@ -67,10 +67,10 @@ window.TechnologyByConsiderit = ReactiveComponent
         target: '_blank'
         style: 
           position: 'relative'
-          top: 8
+          top: 6
           left: 3
         
-        drawLogo 30, logo_red, logo_red, false, true, logo_red, (if @local.hover then 142 else null), true
+        drawLogo 25, logo_red, logo_red, false, true, logo_red, (if @local.hover then 142 else null), true
 
 
 

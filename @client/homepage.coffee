@@ -46,13 +46,13 @@ window.sorted_proposals = (cluster) ->
 
 cluster_styles = ->
   first_column =
-    width: simpleHomepageWidth() * .6 - 50
+    width: SIMPLE_HOMEPAGE_WIDTH() * .6 - 50
     display: 'inline-block'
     verticalAlign: 'top'
     position: 'relative'
 
   secnd_column =
-    width: simpleHomepageWidth() * .4
+    width: SIMPLE_HOMEPAGE_WIDTH() * .4
     display: 'inline-block'
     verticalAlign: 'top'
     marginLeft: 50
@@ -73,10 +73,6 @@ cluster_styles = ->
 
   [first_column, secnd_column, first_header, secnd_header]
 
-simpleHomepageWidth = -> 
-  Math.min CONTENT_WIDTH(), 850
-
-
 window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'
 
@@ -92,7 +88,7 @@ window.SimpleHomepage = ReactiveComponent
       style: 
         fontSize: 22
         margin: 'auto'
-        width: simpleHomepageWidth()
+        width: SIMPLE_HOMEPAGE_WIDTH()
         marginTop: 10
         position: 'relative'
 
@@ -603,8 +599,11 @@ window.ProposalSummary = ReactiveComponent
         display: 'block'
         borderLeft: cell_border
         minHeight: 60
+        cursor: 'pointer'
       onMouseEnter: => @local.hovering_on = true; save(@local)
       onMouseLeave: => @local.hovering_on = false; save(@local)
+      onClick: => loadPage "/#{proposal.slug}"
+
 
       if @props.columns[0].heading
         TD 

@@ -1,3 +1,5 @@
+require './browser_hacks'
+
 #########
 #  Responsive
 #
@@ -67,6 +69,7 @@ setResponsive = ->
   #   SLIDER_HANDLE_SIZE: 25
 
   _.extend responsive, 
+    WINDOW_WIDTH: w  
     GUTTER: gutter
     WHITESPACE: whitespace
     PAGE_WIDTH: content_width + 2 * gutter
@@ -76,8 +79,10 @@ setResponsive = ->
     POINT_CONTENT_WIDTH: point_content_width
     REASONS_REGION_WIDTH: reasons_region_width
     POINT_FONT_SIZE: point_font_size
+    AUTH_WIDTH: Math.max decision_board_width, 544
     TWO_COL: two_col
     SLIDER_HANDLE_SIZE: if two_col then 65 else 25
+    SIMPLE_HOMEPAGE_WIDTH: Math.min content_width, 850
 
   save responsive
 

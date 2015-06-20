@@ -46,13 +46,13 @@ window.sorted_proposals = (cluster) ->
 
 cluster_styles = ->
   first_column =
-    width: CONTENT_WIDTH() - 300 - 50
+    width: simpleHomepageWidth() * .6 - 50
     display: 'inline-block'
     verticalAlign: 'top'
     position: 'relative'
 
   secnd_column =
-    width: 300
+    width: simpleHomepageWidth() * .4
     display: 'inline-block'
     verticalAlign: 'top'
     marginLeft: 50
@@ -73,6 +73,8 @@ cluster_styles = ->
 
   [first_column, secnd_column, first_header, secnd_header]
 
+simpleHomepageWidth = -> 
+  Math.min CONTENT_WIDTH(), 850
 
 
 window.SimpleHomepage = ReactiveComponent
@@ -90,7 +92,7 @@ window.SimpleHomepage = ReactiveComponent
       style: 
         fontSize: 22
         margin: 'auto'
-        width: CONTENT_WIDTH()
+        width: simpleHomepageWidth()
         marginTop: 10
         position: 'relative'
 
@@ -168,31 +170,7 @@ window.SimpleHomepage = ReactiveComponent
       for proposal,idx in sorted_proposals(cluster)
         [@drawProposal proposal, options.show_proposer_icon
 
-        if subdomain.name == 'RANDOM2015' && cluster.name == 'Under Review' && idx == 28
-          DIV 
-            style:
-              borderTop: "4px solid green"
-              borderBottom: "4px solid #{logo_red}"
-              padding: "4px 0"
-              textAlign: 'center'
-              
-              fontWeight: 600
-              margin: "16px 0 32px 0"
-
-            I
-              style: 
-                color: 'green'
-                display: 'block'
-              className: 'fa fa-thumbs-o-up'
-
-
-            "Acceptance threshold for 28 papers"
-
-            I
-              style: 
-                display: 'block'
-                color: logo_red
-              className: 'fa fa-thumbs-o-down'
+        @drawThreshold(subdomain, cluster, idx)
 
         ]
 
@@ -362,7 +340,7 @@ window.SimpleHomepage = ReactiveComponent
             key: "histogram-#{proposal.slug}"
             proposal: proposal
             opinions: opinionsForProposal(proposal)
-            width: 300
+            width: secnd_column.width
             height: 50
             enable_selection: false
             draw_base: true    
@@ -420,6 +398,32 @@ window.SimpleHomepage = ReactiveComponent
           # width: 30
           # height: 30
 
+  drawThreshold: (subdomain, cluster, idx) -> 
+    if subdomain.name == 'RANDOM2015' && cluster.name == 'Under Review' && idx == 28
+      DIV 
+        style:
+          borderTop: "4px solid green"
+          borderBottom: "4px solid #{logo_red}"
+          padding: "4px 0"
+          textAlign: 'center'
+          
+          fontWeight: 600
+          margin: "16px 0 32px 0"
+
+        I
+          style: 
+            color: 'green'
+            display: 'block'
+          className: 'fa fa-thumbs-o-up'
+
+
+        "Acceptance threshold for 28 papers"
+
+        I
+          style: 
+            display: 'block'
+            color: logo_red
+          className: 'fa fa-thumbs-o-down'    
 
 ####
 # LearnDecideShareHomepage

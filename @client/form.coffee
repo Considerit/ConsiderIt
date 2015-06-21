@@ -53,18 +53,20 @@ window.AutoGrowTextArea = ReactiveComponent
 
 window.CharacterCountTextInput = ReactiveComponent
   displayName: 'CharacterCountTextInput'
-  
+
   componentWillMount : -> 
     fetch(@local_key).count = 0
     save @local_key
 
   render : -> 
+    count_style = @props.count_style or {}
+
     class_name = "is_counted"
     DIV 
       style: 
         position: 'relative' 
       SPAN 
-        className: 'count'
+        style: count_style
         @props.maxLength - @local.count
 
       @transferPropsTo TEXTAREA 

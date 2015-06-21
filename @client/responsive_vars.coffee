@@ -56,7 +56,7 @@ setResponsive = ->
                     else
                       14
 
-  _.extend responsive, 
+  new_vals = 
     WINDOW_WIDTH: w  
     GUTTER: gutter
     WHITESPACE: whitespace
@@ -72,8 +72,14 @@ setResponsive = ->
     SLIDER_HANDLE_SIZE: if two_col then 65 else 25
     SIMPLE_HOMEPAGE_WIDTH: Math.min content_width, 850
 
-  save responsive
-
+  # only update if we have a change
+  # (something like this should go into statebus)
+  for k,v of new_vals
+    if responsive[k] != v
+      _.extend responsive, new_vals
+      save responsive
+      break
+      
 # Initialize the responsive variables on page load.
 setResponsive()
 

@@ -401,6 +401,21 @@ window.EditProposal = ReactiveComponent
             value:"#{if @props.fresh then 'Publish' else 'Update'}"
             onClick: @saveProposal
 
+          A 
+            
+            type:'submit'
+            style: 
+              marginTop: 10
+              padding: 25
+              marginLeft: 10
+
+            onClick: =>
+              if @props.fresh 
+                loadPage "/"
+              else 
+                loadPage "/#{proposal.slug}"
+
+            'cancel'
 
   saveProposal : -> 
 

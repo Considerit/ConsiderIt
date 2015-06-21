@@ -33,7 +33,9 @@ window.Story = ReactiveComponent
             save @local
 
             if @local.show_story
-              $(@getDOMNode()).moveToTop(100, true)        
+              $(@getDOMNode()).moveToTop
+                offset_buffer: 100
+                scroll: true
 
           style: 
             borderBottom: '1px solid black'

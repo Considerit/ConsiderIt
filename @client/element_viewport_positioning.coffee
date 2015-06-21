@@ -48,14 +48,18 @@ $.fn.ensureInView = (options = {}) ->
   else
     options.callback()
 
-$.fn.moveToTop = (offset_buffer = 50, scroll = false) ->
+$.fn.moveToTop = (options = {}) ->
+  _.defaults options, 
+    offset_buffer: 50
+    scroll: false
+
   $el = $(this)
   el_top = $el.offset().top
   el_bottom = 
-  target = el_top - offset_buffer
-  doc_top = $(window).scrollTop()
+  target = el_top - options.offset_buffer
+  doc_top = $(document).scrollTop()
 
-  if scroll
+  if options.scroll
     distance_to_travel = Math.abs( doc_top - target )
     $('body').animate {scrollTop: target}, distance_to_travel
   else

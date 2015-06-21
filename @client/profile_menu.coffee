@@ -50,6 +50,11 @@ window.ProfileMenu = ReactiveComponent
           className: 'profile_menu_wrap'
           style:
             position: 'relative'
+
+          onTouchEnd: => 
+            @local.menu = !@local.menu
+            save(@local)
+
           onMouseEnter: => @local.menu = true; save(@local)
           onMouseLeave: => @local.menu = false; save(@local)
           DIV 

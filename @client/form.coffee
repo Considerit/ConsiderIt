@@ -172,7 +172,8 @@ window.WysiwygEditor = ReactiveComponent
                 width: 30
                 left: -32
                 top: 0
-                display: if wysiwyg_editor.showing == @props.key then 'block' else 'none'
+                display: 'block'
+                visibility: if wysiwyg_editor.showing != @props.key then 'hidden'
 
               for button in toolbar_items
                 I 

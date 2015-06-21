@@ -101,6 +101,7 @@ Auth = ReactiveComponent
         [ @headerAndBorder goal, 'Introduce Yourself',
             @body [['Hi, I log in as:',
                     [ @inputBox('email', 'email@address'),
+                      DIV(null),
                       @inputBox('password', "password", 'password'),
                       @resetPasswordLink() ]]].concat @userQuestionInputs()
           @footerForRegistrationAndLogin() ]
@@ -480,10 +481,11 @@ Auth = ReactiveComponent
       className: 'auth_text_input'
       style:
         marginBottom: 6
-        width: 300
+        width: Math.max 300, AUTH_WIDTH() * .55
         border: "1px solid #{auth_ghost_gray}"
         padding: '5px 10px'
-        fontSize: 18
+        fontSize: if browser.is_mobile then 36 else 18
+        display: 'inline-block'
       value: if auth.form == 'edit profile' then @local[name] else null
       name: "user[#{name}]"
       key: "#{name}_inputBox"

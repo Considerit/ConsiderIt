@@ -47,20 +47,31 @@ window.AutoGrowTextArea = ReactiveComponent
 
     @transferPropsTo TEXTAREA
       onChange: @onChange
-      style: {height: @local.height}
+      style: 
+        height: @local.height
 
 
 window.CharacterCountTextInput = ReactiveComponent
   displayName: 'CharacterCountTextInput'
-  componentWillMount : -> fetch(@local_key).count = 0
+  
+  componentWillMount : -> 
+    fetch(@local_key).count = 0
+    save @local_key
+
   render : -> 
     class_name = "is_counted"
-    DIV style: {position: 'relative'}, 
-      SPAN className: 'count', @props.maxLength - @local.count
+    DIV 
+      style: 
+        position: 'relative' 
+      SPAN 
+        className: 'count'
+        @props.maxLength - @local.count
 
-      @transferPropsTo TEXTAREA className: class_name, onChange: (=>
+      @transferPropsTo TEXTAREA 
+        className: class_name
+        onChange: =>
          @local.count = $(@getDOMNode()).find('textarea').val().length
-         save(@local))
+         save(@local)
 
 
 

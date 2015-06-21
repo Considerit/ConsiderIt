@@ -831,7 +831,7 @@ customizations.enviroissues =
             position: 'absolute'
             top: 18
             right: 0
-            width: 100
+            width: 110
 
           ProfileMenu()
 
@@ -965,7 +965,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
             position: 'absolute'
             right: 0
             top: 14
-            width: 100
+            width: 110
           ProfileMenu()
 
   HomepageHeader : ReactiveComponent
@@ -1149,7 +1149,7 @@ customizations.ecastonline = customizations['ecast-demo'] =
             position: 'absolute'
             top: 30
             right: 0
-            width: 100
+            width: 110
           ProfileMenu()
 
 styles += """

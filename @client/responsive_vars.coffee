@@ -56,18 +56,6 @@ setResponsive = ->
                     else
                       14
 
-  # classic_settings = 
-  #   GUTTER: gutter
-  #   WHITESPACE: whitespace
-  #   CONTENT_WIDTH: content_width
-  #   BODY_WIDTH: body_width
-  #   DECISION_BOARD_WIDTH: decision_board_width
-  #   POINT_CONTENT_WIDTH: point_content_width
-  #   REASONS_REGION_WIDTH: reasons_region_width
-  #   POINT_FONT_SIZE: 14
-  #   TWO_COL: false
-  #   SLIDER_HANDLE_SIZE: 25
-
   _.extend responsive, 
     WINDOW_WIDTH: w  
     GUTTER: gutter
@@ -79,7 +67,7 @@ setResponsive = ->
     POINT_CONTENT_WIDTH: point_content_width
     REASONS_REGION_WIDTH: reasons_region_width
     POINT_FONT_SIZE: point_font_size
-    AUTH_WIDTH: Math.max decision_board_width, 544
+    AUTH_WIDTH: if browser.is_mobile then content_width else Math.max decision_board_width, 544
     TWO_COL: two_col
     SLIDER_HANDLE_SIZE: if two_col then 65 else 25
     SIMPLE_HOMEPAGE_WIDTH: Math.min content_width, 850

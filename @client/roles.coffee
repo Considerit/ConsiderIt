@@ -363,7 +363,7 @@ AddRolesAndInvite = ReactiveComponent
               id: 'custom_email_message'
               name: 'custom_email_message'
               placeholder: '(optional) custom message'
-              style: {width: 375, fontSize: 14, padding: '8px 14px'}
+              style: {width: '90%', fontSize: 18, padding: '8px 14px'}
 
       # Submit button
       DIV

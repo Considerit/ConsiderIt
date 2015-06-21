@@ -1030,10 +1030,11 @@ SaveYourOpinionFooter = ReactiveComponent
 
       'Your opinion hasn’t been added yet! '
 
-      SPAN 
+      A 
         style: 
           fontWeight: 700
           textDecoration: 'underline'
+          cursor: 'pointer'
         onClick: => saveOpinion(@proposal)
 
         'Save your opinion'

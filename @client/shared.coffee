@@ -458,6 +458,9 @@ css.crossbrowserify = (props, as_str = false) ->
   if as_str then css_as_str(props) else props
 
 css.grayscale = (props) ->
+  if browser.is_mobile
+    console.log "CAUTION: grayscale filter on mobile can cause crashes"
+    
   _.extend props,
     WebkitFilter: 'grayscale(100%)'
     filter: 'grayscale(100%)'  

@@ -213,7 +213,12 @@ Proposal = ReactiveComponent
                           Permission.INSUFFICIENT_PRIVILEGES]) || \
                           your_opinion.published
 
-    DIV key:@props.slug,
+    DIV 
+      id: "proposal-#{@proposal.id}"
+      key: @props.slug
+      style: 
+        paddingBottom: if browser.is_mobile && has_focus == 'edit point' then 200
+          # make room for add new point button
 
       DIV 
         className: 'proposal_header'
@@ -1435,9 +1440,11 @@ PointsList = ReactiveComponent
 
   drawAddNewPointInCommunityCol: ->
     DIV 
+      id: "add-point-#{@props.valence}"
       style: 
         cursor: 'pointer'
         marginTop: 20
+
 
       @drawGhostedPoint
         width: POINT_CONTENT_WIDTH()

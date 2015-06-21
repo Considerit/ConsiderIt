@@ -35,7 +35,7 @@ require './development'
 require './god'
 require './notifications'
 require './edit_point'
-
+require './edit_comment'
 
 
 ## ########################
@@ -382,14 +382,13 @@ Proposal = ReactiveComponent
                     'cons'
         pc = fetch edit_mode
 
-        console.log "PROPOSAL RENDER"
         EditPoint 
           key: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
           fresh: pc.adding_new_point
           valence: valence
           your_points_key: edit_mode
 
-      else if !edit_mode
+      else if has_focus == 'opinion'
         SaveYourOpinionFooter()
 
       else if mode == 'results' && 
@@ -1989,7 +1988,11 @@ Point = ReactiveComponent
   #     discussion & click a new point below it
   ensureDiscussionIsInViewPort : ->
     if get_selected_point() == @props.key
-      $(@getDOMNode()).ensureInView {scroll: false}
+
+      if browser.is_mobile
+        $(@getDOMNode()).moveToTop {scroll: false}
+      else
+        $(@getDOMNode()).ensureInView {scroll: false}
 
   setDraggability : ->
     # Ability to drag include this point if a community point, 
@@ -2315,107 +2318,6 @@ styles += """
   margin-top: -2px;
   color: #5e6b9e; }
 """
-
-EditComment = ReactiveComponent
-  displayName: 'EditComment'
-
-  render : -> 
-    permitted = permit 'create comment', @proposal
-
-    DIV className: 'comment_entry',
-
-      # Comment author name
-      DIV
-        style:
-          fontWeight: 'bold'
-          color: '#666'
-        (fetch('/current_user').name or 'You') + ':'
-
-      # Icon
-      Avatar
-        style:
-          position: 'absolute'
-          width: 50
-          height: 50
-          backgroundColor: if permitted < 0 then 'transparent'
-          border:          if permitted < 0 then '1px dashed grey'
-
-        key: fetch('/current_user').user
-        hide_tooltip: true
-
-      if permitted == Permission.DISABLED
-        SPAN 
-          style: {position: 'absolute', margin: '14px 0 0 70px'}
-          'Comments closed'
-
-      else if permitted == Permission.INSUFFICIENT_PRIVILEGES
-        SPAN 
-          style: {position: 'absolute', margin: '14px 0 0 70px'}
-          'Sorry, you do not have permission to comment'
-
-      else if permitted < 0
-        SPAN
-          style:
-            position: 'absolute'
-            margin: '14px 0 0 70px'
-            cursor: 'pointer'
-
-          onClick: =>
-
-            if permitted == Permission.NOT_LOGGED_IN
-              reset_key 'auth', {form: 'login', goal: 'Write a Comment'}
-            else if permitted == Permission.UNVERIFIED_EMAIL
-              reset_key 'auth', {form: 'verify email', goal: 'Write a Comment'}
-              current_user.trying_to = 'send_verification_token'
-              save current_user
-
-          if permitted == Permission.NOT_LOGGED_IN
-            DIV null,
-              SPAN 
-                style: { textDecoration: 'underline', color: focus_blue }
-                'Log in to write a comment'
-              if '*' not in @proposal.roles.commenter
-                DIV style: {fontSize: 11},
-                  'Only some email addresses are authorized to comment.'
-
-          else if permitted == Permission.UNVERIFIED_EMAIL
-            DIV null,
-              SPAN
-                style: { textDecoration: 'underline', color: focus_blue }
-               'Verify your account'
-              SPAN null, 'to write a comment'
-
-      AutoGrowTextArea
-        className: 'new_comment'
-        placeholder: if permitted > 0 then 'Write a new comment' else ''
-        disabled: permitted < 0
-        onChange: (e) => @local.new_comment = e.target.value; save(@local)
-        defaultValue: if @props.fresh then null else @data().body
-        min_height: 60
-        style:
-          marginLeft: 60
-          width: 390
-          lineHeight: 1.4
-          fontSize: 16
-          border: if permitted < 0 then 'dashed 1px'
-
-      if permitted > 0
-        DIV style: {textAlign: 'right'},
-          Button {'data-action': 'save-comment', style: {marginLeft: 314}}, 'Save comment', (e) =>
-            e.stopPropagation()
-            if @props.fresh
-              comment =
-                key: '/new/comment'
-                body: @local.new_comment
-                user: fetch('/current_user').user
-                point: "/point/#{@props.point}"
-            else
-              comment = @data()
-              comment.body = @local.new_comment
-              comment.editing = false
-
-            save(comment)
-            $(@getDOMNode()).find('.new_comment').val('')
 
 
 Discussion = ReactiveComponent

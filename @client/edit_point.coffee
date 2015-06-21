@@ -21,6 +21,8 @@ window.EditPoint = ReactiveComponent
 
     if mobile
       # full page mode if we're on mobile
+      parent = $("#proposal-#{@proposal.id}")
+      parent_offset = if parent.length > 0 then parent.offset().top else 0
       style = 
         position: 'absolute'
         top: 0
@@ -30,7 +32,7 @@ window.EditPoint = ReactiveComponent
         backgroundColor: 'rgba(255,255,255,.85)'
         fontSize: 16
         zIndex: 99999999
-        padding: "#{@scrollY}px 50px 100px 50px"
+        padding: "#{@scrollY - parent_offset}px 50px 100px 50px"
 
     else 
       style = 

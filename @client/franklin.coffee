@@ -169,13 +169,19 @@ Proposal = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
+
+    point_cols = ['your_con_points', 'your_pro_points', 'community_cons', 'community_pros']
+    edit_mode = false
+    for pc in point_cols
+      col = fetch(pc)
+      if col.adding_new_point || col.editing_points?.length > 0
+        edit_mode = pc
+        break
+
     has_focus = \
       if get_selected_point()
         'point'
-      else if fetch('your_con_points').adding_new_point ||
-              fetch('your_pro_points').adding_new_point ||
-              fetch('your_con_points').editing_points?.length > 0 ||
-              fetch('your_pro_points').editing_points?.length > 0
+      else if edit_mode
         'edit point'
       else
         "opinion"
@@ -367,10 +373,23 @@ Proposal = ReactiveComponent
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
               mode == 'crafting'
 
+      if edit_mode && browser.is_mobile
+        # full screen edit point mode for mobile
+        valence = if edit_mode in ['community_pros', 'your_pro_points'] 
+                    'pros' 
+                  else 
+                    'cons'
+        pc = fetch edit_mode
+        EditPoint 
+          key: if edit_mode.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
+          fresh: edit_mode.adding_new_point
+          valence: valence
+          your_points_key: edit_mode
 
+      else if !edit_mode
+        SaveYourOpinionFooter()
 
-      SaveYourOpinionFooter()
-      if mode == 'results' && 
+      else if mode == 'results' && 
           your_opinion.published && 
           customization('ThanksForYourOpinion', @proposal)
         customization('ThanksForYourOpinion', @proposal)()
@@ -1003,6 +1022,7 @@ SaveYourOpinionFooter = ReactiveComponent
         fontSize: 24
 
       'Your opinion hasn’t been added yet! '
+
       SPAN 
         style: 
           fontWeight: 700
@@ -1678,7 +1698,6 @@ Point = ReactiveComponent
       borderWidth: 3
       borderStyle: 'solid'
       borderColor: 'transparent'
-      left: -3
       top: -3
       position: 'relative'
       zIndex: 1
@@ -1693,7 +1712,15 @@ Point = ReactiveComponent
         padding: 8
         borderRadius: 8
         top: point_content_style.top - 8
-        left: point_content_style.left - 8
+        left: -11
+        #width: point_content_style.width + 16
+
+    else if @props.rendered_as == 'community_point'
+      _.extend point_content_style,
+        padding: 8
+        borderRadius: if TWO_COL() then "16px 16px 0 0" else 16
+        top: point_content_style.top - 8
+        #left: point_content_style.left - 8
         #width: point_content_style.width + 16
 
     else if @props.rendered_as == 'under_review'
@@ -1783,9 +1810,9 @@ Point = ReactiveComponent
           style: 
             position: 'absolute'
             left: 0
-            top: -3
+            top: 0
 
-          if @data().is_pro then '+' else '–'
+          if @data().is_pro then '•' else '•'
 
       else
         DIV 
@@ -1869,9 +1896,9 @@ Point = ReactiveComponent
               @props.rendered_as == 'decision_board_point' || TWO_COL()
             A
               style:
-                fontSize: 12
-                color: '#999'
-                paddingRight: 8
+                fontSize: if browser.is_mobile then 18 else 14
+                color: focus_blue
+                padding: '3px 12px 3px 0'
 
               onClick: ((e) =>
                 e.stopPropagation()
@@ -1885,9 +1912,9 @@ Point = ReactiveComponent
             A 
               'data-action': 'delete-point'
               style:
-                fontSize: 12
-                color: '#999'
-                paddingRight: 8
+                fontSize: if browser.is_mobile then 18 else 14
+                color: focus_blue
+                padding: '3px 8px'
               onClick: (e) =>
                 e.stopPropagation()
                 if confirm('Delete this point forever?')
@@ -1898,13 +1925,11 @@ Point = ReactiveComponent
         included = @included()
         DIV 
           style: 
-            border: "1px solid #{ if included || @local.hover_important then focus_blue else '#aaa'}"
+            border: "1px solid #{ if included || @local.hover_important then focus_blue else '#414141'}"
             borderTopColor: if included then focus_blue else 'transparent'
-            color: if included then 'white' else if @local.hover_important then focus_blue else "#888"
-            width: point_content_style.width - 24
+            color: if included then 'white' else if @local.hover_important then focus_blue else "#414141"
             position: 'relative'
-            left: 12
-            top: -3
+            top: -13
             padding: '8px 5px'
             textAlign: 'center'
             borderRadius: '0 0 16px 16px'
@@ -1935,7 +1960,7 @@ Point = ReactiveComponent
               display: 'inline-block'
               marginRight: 10
 
-          "Important point"
+          "Important point#{if included then '' else '?'}" 
 
 
       if is_selected
@@ -2687,132 +2712,69 @@ EditPoint = ReactiveComponent
       sign_name : if @props.fresh then true else !@data().hide_name
       add_details : false
 
+    mobile = browser.is_mobile
+
     textarea_style = 
       width: '100%'
       overflow: 'hidden'
-      fontSize: 14
+      fontSize: if mobile then 30 else 14
       padding: '4px 6px'
 
-    guidelines_w = 230
-    guidelines_h = 238
 
-    singular =  if @props.valence == 'pros' 
-                  customization('point_labels.pro', @proposal)
-                else 
-                  customization('point_labels.con', @proposal)
+    if mobile
+      # full page adding a point if we're on mobile
+      style = 
+        position: 'fixed'
+        top: 0
+        left: 0
+        height: '100%'
+        width: WINDOW_WIDTH()
+        backgroundColor: 'white'
+        fontSize: 16
+        zIndex: 99999999
+        padding: if mobile then '20px 50px'
 
-    plural =  if @props.valence == 'pros' 
-                customization('point_labels.pros', @proposal)
-              else 
-                customization('point_labels.cons', @proposal)
-
-
-    DIV
-      className: 'edit_point'
-      style: 
+    else 
+      style = 
         position: 'relative'
         fontSize: 14
         zIndex: 1
         marginTop: if TWO_COL() then 40
+        marginBottom: 15
 
-      if !@props.fresh
-        LABEL 
-          htmlFor:'nutshell'
-          'Your point'
-      else
-        DIV
-          style: 
-            color: focus_blue
-            position: 'absolute'
-            top: -22
-          "Write a new "
-          capitalize \
-            if @props.valence == 'pros' 
-              customization('point_labels.pro', @proposal)
-            else 
-              customization('point_labels.con', @proposal)
+
+    DIV
+      className: 'edit_point'
+      style: style
+
+      onTouchMove: (e) -> 
+        e.preventDefault()
+
+
+      if !mobile
+        if !@props.fresh
+          LABEL 
+            htmlFor:'nutshell'
+            'Your point'
+        else
+          DIV
+            style: 
+              color: focus_blue
+              position: 'absolute'
+              top: -22
+            "Write a new "
+            capitalize \
+              if @props.valence == 'pros' 
+                customization('point_labels.pro', @proposal)
+              else 
+                customization('point_labels.con', @proposal)
 
 
       DIV
         style: 
           position: 'relative'
 
-        # guidelines/tips for good points
-        DIV 
-          style:
-            position: 'absolute'
-            left: if @props.valence == 'pros' then -280 else 280
-            width: guidelines_w
-            color: focus_blue
-            zIndex: 1
-            
-
-          SVG
-            width: guidelines_w + 28
-            height: guidelines_h
-            viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
-            style: css.crossbrowserify
-              position: 'absolute'
-              transform: if @props.valence == 'cons' then 'scaleX(-1)'
-              left: if @props.valence == 'cons' then -20
-
-            DEFS null,
-              svg.dropShadow 
-                id: "guidelines-shadow"
-                dx: '0'
-                dy: '2'
-                stdDeviation: "3"
-                opacity: .5
-
-            PATH
-              stroke: focus_blue #'#ccc'
-              strokeWidth: 1
-              fill: "#FFF"
-              filter: 'url(#guidelines-shadow)'
-
-              d: """
-                  M#{guidelines_w},33
-                  L#{guidelines_w},0
-                  L1,0
-                  L1,#{guidelines_h} 
-                  L#{guidelines_w},#{guidelines_h} 
-                  L#{guidelines_w},58
-                  L#{guidelines_w + 20},48
-                  L#{guidelines_w},33 
-                  Z
-                 """
-          DIV 
-            style: 
-              padding: '14px 18px'
-              position: 'relative'
-              marginLeft: 5
-
-
-            SPAN 
-              style: 
-                fontWeight: 600
-              "Write a "
-              capitalize singular
-              ' (or question) for this proposal'
-
-            UL 
-              style: 
-                listStylePosition: 'outside'
-                marginLeft: 16
-                marginTop: 5
-
-              do ->
-                tips = ["Make one coherent point. Add multiple #{capitalize(plural)} if you have more.",
-                        "Be direct. The summary is your main point.",
-                        "Review your language. Don’t be careless.",
-                        "No personal attacks."
-                       ]
-
-                for tip in tips
-                  LI 
-                    style: 
-                      paddingBottom: 3
-                    tip                                  
+        @drawTips()                                
 
 
         CharacterCountTextInput 
@@ -2825,6 +2787,7 @@ EditPoint = ReactiveComponent
           defaultValue: if @props.fresh then null else @data().nutshell
           style: _.extend {}, textarea_style,
             minHeight: 75
+
         INPUT 
           id:'is_pro'
           name: 'is_pro'
@@ -2833,24 +2796,6 @@ EditPoint = ReactiveComponent
 
       
       DIV null,
-        # A 
-        #   onClick: =>
-        #     @local.add_details = !@local.add_details
-        #     save(@local)            
-        #   title: 'Provide background and/or back your point up with evidence.'
-        #   style: { fontSize: 14 }
-
-        #   I className: if @local.add_details 
-        #                  'fa-caret-down fa' 
-        #                else 
-        #                  'fa-caret-right fa'
-        #   SPAN
-        #     style: {paddingLeft: 6}
-        #     'Add details'
-
-        # DIV 
-        #   style: 
-        #     display: if @local.add_details then 'block' else 'none'
           
         AutoGrowTextArea 
           id:'text'
@@ -2880,7 +2825,6 @@ EditPoint = ReactiveComponent
 
       DIV 
         style: 
-          textAlign: 'right'
           marginTop: 3
           marginBottom: '.5em'
 
@@ -2894,28 +2838,37 @@ EditPoint = ReactiveComponent
             'data-action': 'submit-point'
             onClick: @savePoint
             style: 
-              marginTop: '.5em'
-              width: '100%'
-              fontSize: 24
-              padding: 4
+              marginTop: 0
+              display: 'inline-block'
+              fontSize: if mobile then 36 else 24
+              padding: '4px 30px'
+              float: 'left'
             'Done'
 
         A 
+          onTouchEnd: @done
           onClick: @done
           style:
             display: 'inline-block'
             color: '#888888'
             cursor: 'pointer'
-            position: 'relative'
             zIndex: 1
-            top: 5
+            top: if mobile then 5 else 12
+            fontSize: if mobile then 30 else 16
+            right: 20
+            position: 'relative'
+            float: 'right'
           'cancel'  
+
+        DIV 
+          style: 
+            clear: 'both'
 
       if @proposal.active
         DIV 
           style: 
             position: 'relative'
-            top: -20
+
           INPUT
             className: 'newpoint-anonymous'
             type:      'checkbox'
@@ -2935,6 +2888,103 @@ EditPoint = ReactiveComponent
       $el = $(@getDOMNode())
       $el.find('#nutshell').focus()
       $el.find('[data-action="submit-point"]').ensureInView {scroll: false, position: 'bottom'}
+
+  drawTips : -> 
+    # guidelines/tips for good points
+    mobile = browser.is_mobile
+
+    guidelines_w = if mobile then 'auto' else 230
+    guidelines_h = 238
+
+    singular =  if @props.valence == 'pros' 
+                  customization('point_labels.pro', @proposal)
+                else 
+                  customization('point_labels.con', @proposal)
+
+    plural =  if @props.valence == 'pros' 
+                customization('point_labels.pros', @proposal)
+              else 
+                customization('point_labels.cons', @proposal)
+
+
+    DIV 
+      style:
+        position: if mobile then 'relative' else 'absolute'
+        left: if !mobile then (if @props.valence == 'pros' then -265 else 265)
+        width: guidelines_w
+        color: focus_blue
+        zIndex: 1
+        marginBottom: if mobile then 20
+
+
+      if !mobile
+        SVG
+          width: guidelines_w + 28
+          height: guidelines_h
+          viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
+          style: css.crossbrowserify
+            position: 'absolute'
+            transform: if @props.valence == 'cons' then 'scaleX(-1)'
+            left: if @props.valence == 'cons' then -20
+
+          DEFS null,
+            svg.dropShadow 
+              id: "guidelines-shadow"
+              dx: '0'
+              dy: '2'
+              stdDeviation: "3"
+              opacity: .5
+
+          PATH
+            stroke: focus_blue #'#ccc'
+            strokeWidth: 1
+            fill: "#FFF"
+            filter: 'url(#guidelines-shadow)'
+
+            d: """
+                M#{guidelines_w},33
+                L#{guidelines_w},0
+                L1,0
+                L1,#{guidelines_h} 
+                L#{guidelines_w},#{guidelines_h} 
+                L#{guidelines_w},58
+                L#{guidelines_w + 20},48
+                L#{guidelines_w},33 
+                Z
+               """
+      DIV 
+        style: 
+          padding: if !mobile then '14px 18px'
+          position: 'relative'
+          marginLeft: 5
+
+        SPAN 
+          style: 
+            fontWeight: 600
+            fontSize: if mobile then 36
+          "Write a "
+          capitalize singular
+          ' (or question) for this proposal'
+
+        UL 
+          style: 
+            listStylePosition: 'outside'
+            marginLeft: 16
+            marginTop: 5
+
+          do ->
+            tips = ["Make one coherent point. Add multiple #{capitalize(plural)} if you have more.",
+                    "Be direct. The summary is your main point.",
+                    "Review your language. Don’t be careless.",
+                    "No personal attacks."
+                   ]
+
+            for tip in tips
+              LI 
+                style: 
+                  paddingBottom: 3
+                  fontSize: if mobile then 14
+                tip  
 
   done : ->
 

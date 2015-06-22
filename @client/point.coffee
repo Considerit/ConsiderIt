@@ -272,7 +272,7 @@ window.Point = ReactiveComponent
 
         DIV null,
           if permit('update point', point) > 0 && 
-              @props.rendered_as == 'decision_board_point' || TWO_COL()
+              (@props.rendered_as == 'decision_board_point' || TWO_COL())
             A
               style:
                 fontSize: if browser.is_mobile then 18 else 14
@@ -287,7 +287,7 @@ window.Point = ReactiveComponent
               SPAN null, 'edit'
 
           if permit('delete point', point) > 0 && 
-              @props.rendered_as == 'decision_board_point' || TWO_COL()
+              (@props.rendered_as == 'decision_board_point' || TWO_COL())
             A 
               'data-action': 'delete-point'
               style:

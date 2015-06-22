@@ -572,9 +572,12 @@ window.Comment = ReactiveComponent
 
         # Comment author icon
         Avatar
-          className: 'comment_entry_avatar'
           key: comment.user
           hide_tooltip: true
+          style: 
+            position: 'absolute'
+            width: 50
+            height: 50
 
         # Comment body
         DIV className: 'comment_entry_body',
@@ -615,11 +618,6 @@ styles += """
 .comment_entry_name {
   font-weight: bold;
   color: #666666; }
-
-.comment_entry_avatar {
-  position: absolute;
-  width: 50px;
-  height: 50px; }
 
 .comment_entry_body {
   margin-left: 60px;

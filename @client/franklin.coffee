@@ -1461,6 +1461,8 @@ PointsList = ReactiveComponent
         text_style:
           color: focus_blue
           textDecoration: 'underline'
+          fontSize: 24
+
 
 
   drawAddNewPointInDecisionBoard: -> 
@@ -1606,7 +1608,7 @@ PointsList = ReactiveComponent
           strokeDasharray: '4, 3'
 
       SPAN 
-        style: _.extend {}, text_style, 
+        style: _.defaults {}, text_style, 
           fontSize: POINT_FONT_SIZE()
           position: 'absolute'
           top: padding_y

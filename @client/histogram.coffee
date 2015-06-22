@@ -185,12 +185,28 @@ window.Histogram = ReactiveComponent
         _.extend histogram_props,
 
           onTouchStart: (ev) => 
-            ev.preventDefault()
-            @local.touched = true
-            save @local
-            @onClick(ev)
+            curr_time = new Date().getTime()
+            # activation by double tap
+            if @local.last_tapped_at && curr_time - @local.last_tapped_at < 300
+              ev.preventDefault()
+              @local.touched = true
+              save @local
+              @onClick(ev)
+            else 
+              @local.last_tapped_at = curr_time
+              save @local
+
           onTouchMove: (ev) => ev.preventDefault(); @onMouseMove(ev)
-          onTouchEnd: (ev) => ev.preventDefault(); @onMouseUp(ev)
+          onTouchEnd: (ev) => 
+            curr_time = new Date().getTime()
+            # activation by double tap
+            if @local.last_tapped_at && curr_time - @local.last_tapped_at < 300          
+              ev.preventDefault()
+              @onMouseUp(ev)
+            else 
+              @local.last_tapped_at = curr_time
+              save @local
+
           onTouchCancel: (ev) => ev.preventDefault(); @onMouseUp(ev)
 
     DIV histogram_props, 

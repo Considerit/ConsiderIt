@@ -1,4 +1,6 @@
-#######################
+ama-rfs#######################
+
+ama-rfs
 # Customizations.coffee
 #
 # Tailor considerit applications by subdomain
@@ -656,7 +658,6 @@ customizations['seattle2035'] =
 
               # BR null
               "Please leave your feedback on some of the pivotal questions listed below."
-
 
 
 
@@ -1722,6 +1723,10 @@ customizations.mos =
       oppose_sub: 'of the ban'
 
   show_crafting_page_first: true
+
+customizations['ama-rfs'] = 
+  show_proposer_icon: true
+
 
 ##########
 # Fill in default values for each unspecified field for 

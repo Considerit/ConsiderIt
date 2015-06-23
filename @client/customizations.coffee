@@ -1,6 +1,4 @@
-ama-rfs#######################
-
-ama-rfs
+#######################
 # Customizations.coffee
 #
 # Tailor considerit applications by subdomain

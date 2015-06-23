@@ -1,23 +1,9 @@
 window.ProfileMenu = ReactiveComponent
   displayName: 'ProfileMenu'
 
-  componentDidMount : -> @setBgColor()
-  componentDidUpdate : -> @setBgColor()
-  setBgColor : -> 
-    cb = (is_light) => 
-      if @local.light_background != is_light
-        @local.light_background = is_light
-        save @local
-
-    is_light = isLightBackground @getDOMNode(), cb
-
-    cb is_light
-
   render : -> 
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
-    loc = fetch('location') # should rerender on a location change because background
-                            # color might change
 
     is_evaluator = subdomain.assessment_enabled && current_user.is_evaluator
     is_admin = current_user.is_admin
@@ -33,6 +19,9 @@ window.ProfileMenu = ReactiveComponent
     ]
 
     menu_options = _.compact menu_options
+
+    hsl = parseCssHsl(subdomain.branding.primary_color)
+    light_background = hsl.l > .75
 
     DIV
       id: 'user_nav'
@@ -86,7 +75,7 @@ window.ProfileMenu = ReactiveComponent
 
           SPAN 
             style: 
-              color: if !@local.light_background then 'white'
+              color: if !light_background then 'white'
               position: 'relative'
               zIndex: 9999999999
               backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)'
@@ -116,7 +105,7 @@ window.ProfileMenu = ReactiveComponent
               form: 'login'
 
           style: 
-            color: if !@local.light_background then 'white'
+            color: if !light_background then 'white'
           'Log in'
     
 

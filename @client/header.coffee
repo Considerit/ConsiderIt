@@ -106,8 +106,7 @@ window.ShortHeader = ReactiveComponent
     subdomain = fetch '/subdomain'   
     loc = fetch 'location'
 
-    rgb = parseColor(subdomain.branding.primary_color)
-    hsl = rgb_to_hsl(rgb)
+    hsl = parseCssHsl(subdomain.branding.primary_color)
     is_light = hsl.l > .75
 
     homepage = loc.url == '/'

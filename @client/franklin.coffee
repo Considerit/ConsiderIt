@@ -582,7 +582,7 @@ ProposalDescription = ReactiveComponent
                         style: 
                           padding: "4px 8px"
                           fontSize: 18
-                          backgroundColor: hsv_to_rgb(hues[idx], .7, .5)
+                          backgroundColor: hsv2rgb(hues[idx], .7, .5)
                           color: 'white'
                           display: 'inline-block'            
                         sub.name

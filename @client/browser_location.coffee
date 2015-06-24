@@ -154,7 +154,7 @@ window.BrowserLocation = ReactiveComponent
         # before the element so that the docked elements don't 
         # obscure the section headings
         docks = fetch('docking_station')
-        seek_below = docks.y_stack or 0
+        seek_below = docks.y_stack or 50
         $(window).scrollTop getCoords(el).top - seek_below
 
 relativeURLFromLocation = -> 

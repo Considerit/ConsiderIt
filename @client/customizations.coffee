@@ -1546,6 +1546,8 @@ customizations.livingvotersguide =
               backgroundRepeat: '(repeat-x)'
               backgroundSize: '18px 9px'
               height: 9
+              position: 'relative'
+              top: 1
 
           DIV style: {backgroundColor: '#93928E' },
             DIV
@@ -1572,7 +1574,8 @@ customizations.livingvotersguide =
               backgroundRepeat: '(repeat-x)'
               backgroundSize: '18px 9px'
               height: 9
-
+              position: 'relative'
+              top: -1
 
   Footer : ReactiveComponent
     displayName: 'Footer'

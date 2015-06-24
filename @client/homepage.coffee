@@ -474,7 +474,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
           TBODY null,
             TR null,
               for col in columns
-                if col.heading
+                if col.heading 
                   TD 
                     style: 
                       display: 'inline-block'
@@ -486,17 +486,20 @@ window.LearnDecideShareHomepage = ReactiveComponent
                         fontSize: 42
                         textAlign: 'center'
 
-                      col.heading
+                      if !browser.is_mobile || col.heading != 'Join' 
+                        col.heading
 
                     if col.details
                       DIV 
                         style: 
-                          fontWeight: 300
+                          fontWeight: if !browser.is_mobile && browser.high_density_display then 300
                           fontSize: 18
                           textAlign: 'center'
                           position: 'relative'
                           top: -8
-                        col.details
+
+                        if !browser.is_mobile || col.heading != 'Join' 
+                          col.details
 
       DIV style: {marginTop: 30},
 
@@ -535,7 +538,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
                       key: proposal.key
                       cluster: cluster.name
                       columns: columns
-                      addContributors: index == 0 && proposal_idx == 0
+                      addContributors: index == 0 && proposal_idx == 0 && !browser.is_mobile
             
             # Cluster description
             if description 

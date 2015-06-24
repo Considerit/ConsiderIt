@@ -70,6 +70,8 @@ window.A = React.createClass
 
       if browser.is_mobile
         @props.onTouchStart = @handleClick
+        if browser.is_android_browser
+          @props.onClick = (e) -> e.preventDefault(); e.stopPropagation()
       else
         @props.onClick = @handleClick
 

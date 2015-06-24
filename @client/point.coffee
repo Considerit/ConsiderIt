@@ -302,6 +302,17 @@ window.Point = ReactiveComponent
 
       if TWO_COL() && @props.rendered_as != 'under_review'
         included = @included()
+        includePoint = (e) => 
+          e.stopPropagation()
+          e.preventDefault()
+
+          return unless e.type != 'click' || \
+                        (!browser.is_android_browser && e.type == 'click')
+          if included
+            @remove()
+          else 
+            @include()
+
         DIV 
           style: 
             border: "1px solid #{ if included || @local.hover_important then focus_blue else '#414141'}"
@@ -325,13 +336,10 @@ window.Point = ReactiveComponent
             @local.hover_important = false
             save @local
 
-          onClick: (e) => 
-            if included
-              @remove()
-            else 
-              @include()
+          onTouchEnd: includePoint
+          onClick: includePoint
 
-            e.stopPropagation()
+            
 
           I
             className: 'fa fa-thumbs-o-up'
@@ -419,14 +427,17 @@ window.Point = ReactiveComponent
 
 
   selectPoint: (e) ->
-    # android browser needs to respond to this via a touch event;
-    # all other browsers via click event. iOS fails to select 
-    # a point if both touch and click are handled...sigh...
-    return unless browser.is_android_browser || e.type == 'click'
-
     return if @props.rendered_as == 'under_review'
 
     e.stopPropagation()
+    e.preventDefault()
+
+    # android browser needs to respond to this via a touch event;
+    # all other browsers via click event. iOS fails to select 
+    # a point if both touch and click are handled...sigh...
+
+    return unless e.type != 'click' || \
+                  (!browser.is_android_browser && e.type == 'click')
 
     loc = fetch('location')
 

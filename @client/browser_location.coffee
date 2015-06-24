@@ -12,6 +12,7 @@
 # https://github.com/devote/HTML5-History-API 
 require './vendor/html5-history-polyfill'
 require './shared'
+require './browser_hacks'
 
 ######
 # Public API
@@ -65,42 +66,51 @@ window.A = React.createClass
 
     props = @props
     if @props.href
-      _onclick = @props.onClick or (-> null)
-      @props.onClick = (event) => 
-        node = @getDOMNode()
-        href = node.getAttribute('href') 
-                  # use getAttribute rather than .href so we 
-                  # can easily check relative vs absolute url
-        
-        is_external_link = href.indexOf('//') > -1
-        is_mailto = href.toLowerCase().indexOf('mailto') > -1
+      @_onclick = @props.onClick or (-> null)
 
-        opened_in_new_tab = event.altKey || 
-                             event.ctrlKey || 
-                             event.metaKey || 
-                             event.shiftKey
-
-        # Allow shift+click for new tabs, etc.
-        if !is_external_link && !opened_in_new_tab && !is_mailto \
-           && !node.getAttribute('data-nojax')
-
-          event.preventDefault()
-          loadPage href
-          _onclick event
-
-          # When we navigate to another internal page, we typically want the 
-          # page to be scrolled to the top of the new page. The programmer can
-          # set "data-no-scroll" on the link if they wish to prevent this 
-          # behavior.
-          if !@getDOMNode().getAttribute('data-no-scroll')
-            window.scrollTo(0, 0)
-                          
-          return false
-        else
-          _onclick event
+      if browser.is_mobile
+        @props.onTouchStart = @handleClick
+        if browser.is_android_browser
+          @props.onClick = (e) -> e.preventDefault(); e.stopPropagation()
+      else
+        @props.onClick = @handleClick
 
 
     old_A props, props.children
+
+  handleClick: (event) -> 
+    node = @getDOMNode()
+    href = node.getAttribute('href') 
+              # use getAttribute rather than .href so we 
+              # can easily check relative vs absolute url
+    
+    is_external_link = href.indexOf('//') > -1
+    is_mailto = href.toLowerCase().indexOf('mailto') > -1
+
+    opened_in_new_tab = event.altKey || 
+                         event.ctrlKey || 
+                         event.metaKey || 
+                         event.shiftKey
+
+    # Allow shift+click for new tabs, etc.
+    if !is_external_link && !opened_in_new_tab && !is_mailto \
+       && !node.getAttribute('data-nojax')
+
+      event.preventDefault()
+      event.stopPropagation()
+      loadPage href
+      @_onclick event
+
+      # When we navigate to another internal page, we typically want the 
+      # page to be scrolled to the top of the new page. The programmer can
+      # set "data-no-scroll" on the link if they wish to prevent this 
+      # behavior.
+      if !@getDOMNode().getAttribute('data-no-scroll')
+        window.scrollTo(0, 0)
+                      
+      return false
+    else
+      @_onclick event
 
 #####
 # BrowserLocation

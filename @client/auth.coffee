@@ -22,6 +22,8 @@ require './form'
 require './shared'
 
 
+
+
 window.logout = -> 
   current_user = fetch('/current_user')
   current_user.logged_in = false
@@ -67,16 +69,13 @@ Auth = ReactiveComponent
     return SPAN null if !auth.form
 
     DIV null,
-      if auth.form == 'edit profile'
-        DashHeader(name: 'Edit Profile')
-
       DIV
         style:
-          margin: "0 auto 0 #{if customization('lefty') then '300px' else 'auto'}"
+          margin: "0 auto"
           padding: if !@props.naked then '4em 0'
           position: 'relative'
           zIndex: 0
-          width: DECISION_BOARD_WIDTH
+          width: AUTH_WIDTH()
 
         @buildAuthForm()
 
@@ -102,6 +101,7 @@ Auth = ReactiveComponent
         [ @headerAndBorder goal, 'Introduce Yourself',
             @body [['Hi, I log in as:',
                     [ @inputBox('email', 'email@address'),
+                      DIV(null),
                       @inputBox('password', "password", 'password'),
                       @resetPasswordLink() ]]].concat @userQuestionInputs()
           @footerForRegistrationAndLogin() ]
@@ -143,13 +143,14 @@ Auth = ReactiveComponent
         if avatar_field = @avatarInput()
           avatar_field = ['I look like:', avatar_field]
 
-        [ @body [
-            ['Hi, I log in as:',
-              [ @inputBox('email', 'email@address'),
-                @inputBox('password', "password", 'password')]
-            ],
-            ['My name is:', @inputBox('name', 'first and last name')],
-            avatar_field].concat @userQuestionInputs()
+        [ @headerAndBorder null, 'Your Profile', 
+            @body [
+              ['Hi, I log in as:',
+                [ @inputBox('email', 'email@address'),
+                  @inputBox('password', "password", 'password')]
+              ],
+              ['My name is:', @inputBox('name', 'first and last name')],
+              avatar_field].concat @userQuestionInputs()
           @submitButton('Update')
           if @local.saved_successfully
             SPAN style: {color: 'green'}, "Updated successfully"
@@ -194,13 +195,12 @@ Auth = ReactiveComponent
     if @props.naked
       return body
 
-    real_task_width = widthWhenRendered(task, {fontSize: 61, fontWeight: 600})
     DIV null,
 
       # The auth form's header
       DIV
         style :
-          width: BODY_WIDTH
+          width: AUTH_WIDTH()
           position: 'relative'
           margin: 'auto'
           top: 5 # to overlap bubblemouth with enclosure
@@ -230,31 +230,32 @@ Auth = ReactiveComponent
             SPAN
               style: 
                 position: 'relative'
-                marginLeft: -(real_task_width - BODY_WIDTH) / 2
               task
 
-            SPAN
-              style:
-                color: auth_ghost_gray
-                position: 'absolute'
-                cursor: 'pointer'
-                right: -133
-                top: 46
-                fontSize: 21
-              title: 'cancel'
+            if auth.form != 'edit profile'
 
-              onClick: =>
-                if auth.form == 'verify email' || location.pathname == '/proposal/new'
-                  loadPage '/'
-                reset_key auth
+              SPAN
+                style:
+                  color: auth_ghost_gray
+                  position: 'absolute'
+                  cursor: 'pointer'
+                  right: 0
+                  top: 80
+                  fontSize: 21
+                title: 'cancel'
 
-              I className: 'fa-close fa'
+                onClick: =>
+                  if auth.form == 'verify email' || location.pathname == '/proposal/new'
+                    loadPage '/'
+                  reset_key auth
 
-              ' cancel'
+                I className: 'fa-close fa'
+
+                ' cancel'
 
         DIV
           style:
-            left: BODY_WIDTH / 2
+            left: AUTH_WIDTH() / 2
             height: 50
             width: 50
             top: 0
@@ -268,7 +269,7 @@ Auth = ReactiveComponent
         DIV 
           key: 'auth_bubblemouth'
           style: css.crossbrowserify
-            left: BODY_WIDTH / 2 - 34/2
+            left: AUTH_WIDTH() / 2 - 34/2
             top: 10 + 3 + 1 # +10 is because of the decision board translating down 10, 3 is for its border
             position: 'relative'
 
@@ -367,23 +368,20 @@ Auth = ReactiveComponent
     if auth.form == 'create account'
       toggle_to = 'Log in'
       button = 'Create new account'
-      left = 421
     else
       button = 'Log in'
       toggle_to = 'Create new account'
-      left = 349
 
     DIV
       style:
         position: 'relative'
-        textAlign: 'center'
+        left: '50%'
+        marginLeft: -(widthWhenRendered(button, {fontSize: 24}) + 36*2) / 2
 
       @submitButton button, true
 
       SPAN
         style: 
-          position: 'absolute'
-          left: left
           marginTop: 23
           textAlign: 'left'
           width: '100%'
@@ -483,10 +481,11 @@ Auth = ReactiveComponent
       className: 'auth_text_input'
       style:
         marginBottom: 6
-        width: 300
+        width: Math.max 300, AUTH_WIDTH() * .55
         border: "1px solid #{auth_ghost_gray}"
         padding: '5px 10px'
-        fontSize: 18
+        fontSize: if browser.is_mobile then 36 else 18
+        display: 'inline-block'
       value: if auth.form == 'edit profile' then @local[name] else null
       name: "user[#{name}]"
       key: "#{name}_inputBox"

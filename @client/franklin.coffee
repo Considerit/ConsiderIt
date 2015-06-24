@@ -34,7 +34,9 @@ require './tooltip'
 require './development'
 require './god'
 require './notifications'
-
+require './edit_point'
+require './edit_comment'
+require './point'
 
 
 ## ########################
@@ -54,12 +56,12 @@ window.get_proposal_mode = ->
   loc = fetch('location')
   if loc.url == '/'
     return null
-  else if loc.query_params?.results 
+  else if loc.query_params?.results || TWO_COL()
     'results' 
   else 
     'crafting'
 
-get_selected_point = -> 
+window.get_selected_point = -> 
   fetch('location').query_params.selected
 
 ######
@@ -82,8 +84,8 @@ window.proposal_url = (proposal) =>
   result = '/' + proposal.slug
   subdomain = fetch('/subdomain')  
 
-  if (!customization('show_crafting_page_first', proposal) || !proposal.active ) \
-     && proposal.top_point
+  if TWO_COL() || ((!customization('show_crafting_page_first', proposal) || !proposal.active ) \
+     && proposal.top_point)
 
     result += '?results=true'
 
@@ -169,13 +171,19 @@ Proposal = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
+
+    point_cols = ['your_con_points', 'your_pro_points', 'community_cons', 'community_pros']
+    edit_mode = false
+    for pc in point_cols
+      col = fetch(pc)
+      if col.adding_new_point || col.editing_points?.length > 0
+        edit_mode = pc
+        break
+
     has_focus = \
       if get_selected_point()
         'point'
-      else if fetch('your_con_points').adding_new_point ||
-              fetch('your_pro_points').adding_new_point ||
-              fetch('your_con_points').editing_points?.length > 0 ||
-              fetch('your_pro_points').editing_points?.length > 0
+      else if edit_mode
         'edit point'
       else
         "opinion"
@@ -206,10 +214,12 @@ Proposal = ReactiveComponent
                           Permission.INSUFFICIENT_PRIVILEGES]) || \
                           your_opinion.published
 
-    area = if mode == 'results' then 'top' else "other"
-    other_heading = customization "point_labels.#{area}_header", @proposal
-
-    DIV key:@props.slug,
+    DIV 
+      id: "proposal-#{@proposal.id}"
+      key: @props.slug
+      style: 
+        paddingBottom: if browser.is_mobile && has_focus == 'edit point' then 200
+          # make room for add new point button
 
       DIV 
         className: 'proposal_header'
@@ -234,9 +244,8 @@ Proposal = ReactiveComponent
         #feelings
         DIV
           style:
-            width: BODY_WIDTH
+            width: BODY_WIDTH()
             margin: '0 auto'
-            marginLeft: if customization('lefty') then 300
             position: 'relative'
             zIndex: 1
 
@@ -256,6 +265,7 @@ Proposal = ReactiveComponent
             dummy:  if fetch('histogram-dock').docked then 1 else -1
             dummy2: if mode == 'crafting' then 1 else -1
             dummy3: opinionsForProposal(@proposal)
+            dummy4: BODY_WIDTH()
                     # TODO: Dummy is a shallow patch for an odd problem. 
                     # If you have a nested component (in this case Histogram) 
                     # which passes a prop based on a Statebus value, then 
@@ -272,7 +282,7 @@ Proposal = ReactiveComponent
                 key: namespaced_key('histogram', @proposal)
                 proposal: @proposal
                 opinions: opinionsForProposal(@proposal)
-                width: BODY_WIDTH
+                width: BODY_WIDTH()
                 height: if fetch('histogram-dock').docked then 50 else 170
                 enable_selection: true
                 draw_base: if fetch('histogram-dock').docked then true else false
@@ -289,12 +299,12 @@ Proposal = ReactiveComponent
             dockable : => 
               mode == 'crafting'
             dummy: get_proposal_mode() == 'crafting'
-
-            do => 
+            dummy2: BODY_WIDTH()
+            do =>   
               plurality = if mode == 'crafting' then 'individual' else 'group'
               OpinionSlider
                 key: namespaced_key('slider', @proposal)
-                width: OPINION_SLIDER_WIDTH
+                width: BODY_WIDTH() - 10
                 your_opinion: @proposal.your_opinion
                 focused: mode == 'crafting'
                 backgrounded: false
@@ -310,66 +320,84 @@ Proposal = ReactiveComponent
         DIV 
           className:'reasons_region'
           style : 
-            width: REASONS_REGION_WIDTH            
+            width: REASONS_REGION_WIDTH()            
             position: 'relative'
             paddingBottom: '4em' #padding instead of margin for docking
-            margin: "#{if draw_handle then '24px' else '0'} auto 0 auto"
-            marginLeft: if customization('lefty') then 65
+            margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
 
 
           # Border + bubblemouth that is shown when there is a histogram selection
           GroupSelectionRegion()
 
-          #community cons
-          CommunityPoints 
-            key: 'cons'
-            heading: other_heading
-                        .replace('--valences--', capitalize(customization('point_labels.cons', @proposal)))
-                        .replace('--valence--', capitalize(customization('point_labels.con', @proposal)))            
+          PointsList 
+            key: 'community_cons'
+            rendered_as: 'community_point'
+            points_editable: TWO_COL()
+            valence: 'cons'
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
+            drop_target: false
             points: buildPointsList \
               @proposal, 'cons', \
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
               mode == 'crafting'
 
-          Dock
-            key: 'decisionboard-dock'
-            docked_key: 'decisionboard'            
-            constraints : ['slider-dock']
-            dock_on_zoomed_screens: true
-            dockable : => 
-              mode == 'crafting'
+          if !TWO_COL()
+            Dock
+              key: 'decisionboard-dock'
+              docked_key: 'decisionboard'            
+              constraints : ['slider-dock']
+              dock_on_zoomed_screens: true
+              dockable : => 
+                mode == 'crafting'
 
-            start: -24
+              start: -24
 
-            stop : -> 
-              $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
+              stop : -> 
+                $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
 
-            style: 
-              position: 'absolute'
-              width: DECISION_BOARD_WIDTH
-              zIndex: 0 #so that points being dragged are above opinion region
-              display: 'inline-block'
-              verticalAlign: 'top'
+              style: 
+                position: 'absolute'
+                width: DECISION_BOARD_WIDTH()
+                zIndex: 0 #so that points being dragged are above opinion region
+                display: 'inline-block'
+                verticalAlign: 'top'
 
-            DecisionBoard { key: 'decisionboard' }
+              DecisionBoard
+                key: 'decisionboard'
 
           #community pros
-          CommunityPoints 
-            key: 'pros'
-            heading: other_heading
-                        .replace('--valences--', capitalize(customization('point_labels.pros', @proposal)))
-                        .replace('--valence--',  capitalize(customization('point_labels.pro', @proposal)))            
+          PointsList 
+            key: 'community_pros'
+            rendered_as: 'community_point'
+            points_editable: TWO_COL()
+            valence: 'pros'
             newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
+            drop_target: false
             points: buildPointsList \
               @proposal, 'pros', \
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
               mode == 'crafting'
 
+      if edit_mode && browser.is_mobile
+        # full screen edit point mode for mobile
+        valence = if edit_mode in ['community_pros', 'your_pro_points'] 
+                    'pros' 
+                  else 
+                    'cons'
+        pc = fetch edit_mode
 
-      if mode == 'results' && 
+        EditPoint 
+          key: if pc.adding_new_point then "new_point_#{valence}" else pc.editing_points[0]
+          fresh: pc.adding_new_point
+          valence: valence
+          your_points_key: edit_mode
+
+      else if has_focus == 'opinion'
+        SaveYourOpinionFooter()
+
+      else if mode == 'results' && 
           your_opinion.published && 
           customization('ThanksForYourOpinion', @proposal)
         customization('ThanksForYourOpinion', @proposal)()
@@ -380,7 +408,7 @@ Proposal = ReactiveComponent
     # Resizing the reasons region to solve a layout error when 
     # the height of the decision board (which is absolutely positioned) 
     # is taller than either of the wing point columns
-    $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height()} 
+    $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height() + 100} 
 
 
   buildNewPointThreshold : ->
@@ -430,12 +458,10 @@ ProposalDescription = ReactiveComponent
 
     DIV           
       style: 
-        width: DESCRIPTION_WIDTH
+        width: BODY_WIDTH()
         position: 'relative'
         margin: 'auto'
-        marginLeft: if customization('lefty') then 300
-        #marginRight: if customization('lefty') then 0
-        fontSize: 16
+        fontSize: 18
         marginBottom: 18
 
 
@@ -467,7 +493,6 @@ ProposalDescription = ReactiveComponent
         className: 'proposal_details'
         style:
           paddingTop: '1em'
-          fontSize: 18
           position: 'relative'
           maxHeight: if @local.description_collapsed then @max_description_height
           #overflowY: 'hidden'
@@ -532,11 +557,8 @@ ProposalDescription = ReactiveComponent
               style:
                 padding: 10
 
-              onMouseEnter: => 
-                @local.copy_to_subdomain = true
-                save @local
-              onMouseLeave: => 
-                @local.copy_to_subdomain = false
+              onClick: => 
+                @local.copy_to_subdomain = !@local.copy_to_subdomain
                 save @local
 
               A
@@ -548,8 +570,7 @@ ProposalDescription = ReactiveComponent
                 hues = getNiceRandomHues subdomains?.length
                 
                 UL 
-                  style: 
-                    display: 'inline'
+                  style: {}
                   for sub, idx in subdomains
                     LI
                       style: 
@@ -561,7 +582,7 @@ ProposalDescription = ReactiveComponent
                         style: 
                           padding: "4px 8px"
                           fontSize: 18
-                          backgroundColor: hsv_to_rgb(hues[idx], .7, .5)
+                          backgroundColor: hsv2rgb(hues[idx], .7, .5)
                           color: 'white'
                           display: 'inline-block'            
                         sub.name
@@ -569,11 +590,10 @@ ProposalDescription = ReactiveComponent
       if @local.edit_roles
         DIV 
           style:
-            width: BODY_WIDTH
+            width: BODY_WIDTH()
             margin: 'auto'
             backgroundColor: '#fafafa'
             padding: '10px 60px'
-            marginLeft: (if customization('lefty') then 0)
 
           ProposalRoles 
             key: @proposal.key
@@ -626,7 +646,6 @@ ProposalDescription = ReactiveComponent
         DIV 
           style: 
             padding: '10px 0'
-            width: 700
             overflow: 'hidden'
           dangerouslySetInnerHTML:{__html: field.html}
 
@@ -739,9 +758,11 @@ DecisionBoard = ReactiveComponent
       give_opinion_button_width = 200
       slider = fetch namespaced_key('slider', @proposal)
       gutter = .1 * give_opinion_button_width
-      stance_position = (slider.value + 1) / 2 * OPINION_SLIDER_WIDTH / BODY_WIDTH
+
+      opinion_slider_width = BODY_WIDTH() - 10
+      stance_position = (slider.value + 1) / 2 * opinion_slider_width / BODY_WIDTH()
       opinion_region_x = -gutter + stance_position * \
-                         (DECISION_BOARD_WIDTH - \
+                         (DECISION_BOARD_WIDTH() - \
                           give_opinion_button_width + \
                           2 * gutter)
 
@@ -759,7 +780,7 @@ DecisionBoard = ReactiveComponent
       _.extend decision_board_style,
         transform: "translate(0, 10px)"
         minHeight: 275
-        width: DECISION_BOARD_WIDTH
+        width: DECISION_BOARD_WIDTH()
         borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_blue}"
 
 
@@ -786,7 +807,7 @@ DecisionBoard = ReactiveComponent
     DIV 
       className:'opinion_region'
       style:
-        width: DECISION_BOARD_WIDTH
+        width: DECISION_BOARD_WIDTH()
 
       SliderBubblemouth()
 
@@ -807,8 +828,27 @@ DecisionBoard = ReactiveComponent
                 padding: '0 18px'
                 marginTop: -3 # To undo the 3 pixel border
 
-              YourPoints { key: 'your_con_points', valence: 'cons' }
-              YourPoints { key: 'your_pro_points', valence: 'pros' }
+              PointsList 
+                key: 'your_con_points'
+                valence: 'cons'
+                rendered_as: 'decision_board_point'
+                points_editable: true
+                points_draggable: true
+                drop_target: true
+                points: (p for p in fetch(@proposal.your_opinion).point_inclusions \
+                              when !fetch(p).is_pro)
+
+              PointsList 
+                key: 'your_pro_points'
+                valence: 'pros'
+                rendered_as: 'decision_board_point'
+                points_editable: true
+                points_draggable: true
+                drop_target: true
+                points: (p for p in fetch(@proposal.your_opinion).point_inclusions \
+                              when fetch(p).is_pro)
+
+              DIV style: {clear: 'both'}
 
 
           # only shown during crafting, but needs to be present always for animation
@@ -824,7 +864,7 @@ DecisionBoard = ReactiveComponent
       DIV 
         key: 'footer'
         style:
-          width: DECISION_BOARD_WIDTH
+          width: DECISION_BOARD_WIDTH()
 
         # Big bold button at the bottom of the crafting page
         DIV 
@@ -832,31 +872,7 @@ DecisionBoard = ReactiveComponent
           style:
             display: 'none'
             backgroundColor: focus_blue
-          onClick: => 
-            your_opinion = fetch(@proposal.your_opinion)
-            if can_opine > 0
-              your_opinion.published = true
-              save your_opinion
-              updateProposalMode('results', 'save_button')
-            else
-              if can_opine == Permission.UNVERIFIED_EMAIL
-                auth_form = 'verify email'
-                current_user.trying_to = 'send_verification_token'
-                save current_user
-              else if can_opine == Permission.INSUFFICIENT_INFORMATION
-                auth_form = 'user questions'
-              else
-                auth_form = 'create account'
-
-              reset_key 'auth',
-                form: auth_form
-                goal: 'Save your Opinion'
-                ask_questions: true
-
-              # We'll need to publish this opinion after auth is completed
-              @root.opinions_to_publish.push(@proposal.your_opinion)
-
-              save @root
+          onClick: => saveOpinion(@proposal)
 
           if your_opinion.published 
             'Opinion updated. See the results' 
@@ -878,13 +894,19 @@ DecisionBoard = ReactiveComponent
 
   componentDidUpdate : ->
     @transition if !Modernizr.csstransitions then 0 else TRANSITION_SPEED
+    @makeDroppable()
 
   componentDidMount : ->
     @transition 0
+    @makeDroppable()
+
+  makeDroppable: -> 
     db = fetch('decision_board')
 
-    # make this a drop target
     $el = $(@getDOMNode())
+
+    return if $el.is('.ui-droppable')
+
     $el.droppable
       accept: ".point_content"
       drop : (ev, ui) =>
@@ -949,6 +971,76 @@ DecisionBoard = ReactiveComponent
 
     @last_proposal_mode = mode
 
+saveOpinion = (proposal) -> 
+  root = fetch('root')
+  your_opinion = fetch(proposal.your_opinion)
+
+  if your_opinion.published
+    can_opine = permit 'update opinion', proposal, your_opinion
+  else
+    can_opine = permit 'publish opinion', proposal
+
+  if can_opine > 0
+    your_opinion.published = true
+    save your_opinion
+    updateProposalMode('results', 'save_button')
+  else
+    if can_opine == Permission.UNVERIFIED_EMAIL
+      auth_form = 'verify email'
+      current_user.trying_to = 'send_verification_token'
+      save current_user
+    else if can_opine == Permission.INSUFFICIENT_INFORMATION
+      auth_form = 'user questions'
+    else
+      auth_form = 'create account'
+
+    reset_key 'auth',
+      form: auth_form
+      goal: 'Save your Opinion'
+      ask_questions: true
+
+    # We'll need to publish this opinion after auth is completed
+    root.opinions_to_publish.push(proposal.your_opinion)
+
+    save root
+
+SaveYourOpinionFooter = ReactiveComponent
+  displayName: 'SaveYourOpinionFooter'
+
+  render : -> 
+    your_opinion = your_opinion = fetch(@proposal.your_opinion)
+    slider = fetch namespaced_key('slider', @proposal)
+
+    return SPAN null if (!TWO_COL() && get_proposal_mode() == 'crafting') || \
+                        ( your_opinion.published || \
+                          (!slider.has_moved && your_opinion.point_inclusions.length == 0)\
+                        )
+    
+    DIV 
+      style: 
+        position: 'fixed'
+        left: 0
+        top: 0
+        width: PAGE_WIDTH()
+        backgroundColor: focus_blue
+        padding: 10
+        color: 'white'
+        zIndex: 999
+        textAlign: 'center'
+        fontSize: 28
+
+      'Your opinion hasn’t been added yet! '
+
+      A 
+        style: 
+          fontWeight: 700
+          textDecoration: 'underline'
+          cursor: 'pointer'
+        onClick: => saveOpinion(@proposal)
+
+        'Save your opinion'
+
+
 
 SliderBubblemouth = ReactiveComponent
   displayName: 'SliderBubblemouth'
@@ -976,7 +1068,7 @@ SliderBubblemouth = ReactiveComponent
     DIV 
       key: 'slider_bubblemouth'
       style: css.crossbrowserify
-        left: 10 + translateStanceToPixelX slider.value, DECISION_BOARD_WIDTH - w - 20
+        left: 10 + translateStanceToPixelX slider.value, DECISION_BOARD_WIDTH() - w - 20
         top: -h + 10 + 3 # +10 is because of the decision board translating down 10, 3 is for its border
         position: 'absolute'
         width: w
@@ -1011,19 +1103,19 @@ GroupSelectionRegion = ReactiveComponent
     if has_histogram_focus
       DIV 
         style: 
-          width: BODY_WIDTH + 80
+          width: BODY_WIDTH() + 80
           border: "3px solid #{if get_selected_point() then '#eee' else focus_blue }"
           height: '100%'
           position: 'absolute'
           borderRadius: 16
-          marginLeft: if customization('lefty') then 200 else -BODY_WIDTH/2 - 40
-          left: if customization('lefty') then 0 else '50%'
+          marginLeft: -BODY_WIDTH()/2 - 40
+          left: '50%'
           top: 18
 
         # draw a bubble mouth
         if hist.selected_opinions
           w = 40; h = 30
-          left = translateStanceToPixelX(hist.selected_opinion_value, BODY_WIDTH) + 10
+          left = translateStanceToPixelX(hist.selected_opinion_value, BODY_WIDTH()) + 10
 
           DIV 
             style: cssTriangle 'top', \
@@ -1043,7 +1135,7 @@ GroupSelectionRegion = ReactiveComponent
         else 
           place_avatar_opinion_value = \
                if hist.selected_opinion_value > 0 then .8 else -.8
-          left = translateStanceToPixelX(place_avatar_opinion_value, BODY_WIDTH) + 20
+          left = translateStanceToPixelX(place_avatar_opinion_value, BODY_WIDTH()) + 20
 
           avatar_size = 80
           user = fetch(fetch(hist.selected_opinion).user)
@@ -1104,239 +1196,7 @@ GroupSelectionRegion = ReactiveComponent
     else 
       SPAN null
 
-##
-# YourPoints
-# List of important points for the active user. 
-# Two instances used for Pro and Con columns. Shown as part of DecisionBoard. 
-# Creates NewPoint instances.
-YourPoints = ReactiveComponent
-  displayName: 'YourPoints'
 
-  render : ->
-    included_points = fetch(@proposal.your_opinion).point_inclusions    
-
-    left_or_right = if @props.valence == 'pros' then 'right' else 'left'
-
-    can_add_new_point = permit 'create point', @proposal
-
-    your_points = @data()
-    if !your_points.editing_points?
-      _.extend your_points,
-        editing_points : []
-        adding_new_point : false
-      save your_points
-
-    header_style =           
-      fontWeight: 700
-      color: focus_blue
-
-    heading = customization("point_labels.your_#{@props.valence}_header", @proposal)
-    if !heading 
-      heading = customization("point_labels.your_header", @proposal)
-                  .replace('--valences--', capitalize(customization("point_labels.#{@props.valence}", @proposal)))
-                  .replace('--valence--', capitalize(customization("point_labels.#{@props.valence}", @proposal)))
-
-    # drop target defs
-    dt_stroke_width = 1
-    dt_w = POINT_CONTENT_WIDTH + 6
-    dt_h = 73
-    s_w = 8
-    s_h = 6
-
-    mouth_style = 
-      top: 8
-      position: 'absolute'
-    
-    if @props.valence == 'cons'
-      mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
-      mouth_style['left'] = 11.5
-    else 
-      mouth_style['transform'] = 'rotate(90deg)'
-      mouth_style['right'] = 11
-
-    DIV 
-      className: "points_on_decision_board #{@props.valence}_on_decision_board"
-      style: 
-        width: POINT_WIDTH
-        marginTop: 28
-
-      DIV 
-        className:'points_heading_label'
-        style: header_style
-        heading 
-
-      UL null,
-        for point in included_points
-
-          if fetch(point).is_pro == (@props.valence == 'pros')
-            if point in your_points.editing_points
-              EditPoint 
-                key: point
-                fresh: false
-                valence: @props.valence
-                your_points_key: @props.key
-            else
-              Point
-                key: point
-                rendered_as: 'decision_board_point'
-                your_points_key: @props.key
-                enable_dragging: true
-
-      #drop target
-      DIV
-        style: 
-          padding: '0 0 .25em 24px'
-          position: 'relative'
-          opacity: if @proposal.has_focus == 'edit point' then .1
-
-        SVG 
-          width: dt_w
-          height: dt_h
-          
-
-          DEFS null,
-            PATTERN 
-              id: "drop-stripes-#{@props.valence}"
-              width: s_w
-              height: s_h 
-              patternUnits: "userSpaceOnUse"
-
-              RECT 
-                width: '100%'
-                height: '100%'
-                fill: 'white'
-
-              do => 
-                if @props.valence == 'cons'
-                  cross_hatch = [ 
-                    [-s_w/2,    0, s_w,   1.5 * s_h], 
-                    [0,    -s_h/2,   1.5 * s_w, s_h]]
-                else 
-                  cross_hatch = [ 
-                    [1.5 * s_w,    0, 0,   1.5 * s_h], 
-                    [s_w,    -s_h/2,   -s_w/2, s_h]]                  
-
-                for [x1, y1, x2, y2], idx in cross_hatch
-
-                  LINE 
-                    x1: x1
-                    y1: y1
-                    x2: x2 
-                    y2: y2 
-                    stroke: focus_blue
-                    strokeWidth: 1
-                    strokeOpacity: .2
-
-          RECT
-            width: dt_w - 2 * dt_stroke_width
-            height: dt_h - 2 * dt_stroke_width
-            x: dt_stroke_width
-            y: dt_stroke_width
-            rx: 16
-            ry: 16
-            fill: "url(#drop-stripes-#{@props.valence})"
-            stroke: focus_blue
-            strokeWidth: dt_stroke_width
-            strokeDasharray: '4, 3'
-
-
-        DIV 
-          key: 'drop_point_mouth'
-          style: css.crossbrowserify mouth_style
-
-          Bubblemouth 
-            apex_xfrac: 0
-            width: COMMUNITY_POINT_MOUTH_WIDTH
-            height: COMMUNITY_POINT_MOUTH_WIDTH
-            fill: '#F9FBFD'  #TODO: somehow make this focus_blue color mixed with white @ .2 opacity
-            stroke: focus_blue
-            stroke_width: 6
-            dash_array: '24, 18'
-
-        SPAN 
-          style:
-            fontSize: 14
-            position: 'absolute'
-            top: '1.4em'
-            left: 42
-            width: 170
-
-          "Drag a "
-          capitalize \
-            if @props.valence == 'pros' 
-              customization('point_labels.pro', @proposal)
-            else 
-              customization('point_labels.con', @proposal)
-
-          " from the #{left_or_right}"
-
-      if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES
-        if !your_points.adding_new_point
-          DIV 
-            style: 
-              padding: '.25em 0'
-              marginTop: '1em'
-              marginLeft: 20
-              fontSize: 14
-
-            SPAN 
-              style: 
-                fontWeight: if browser.high_density_display then 300 else 400
-              'or '
-            SPAN 
-              style: {padding: '0 6px'}
-              dangerouslySetInnerHTML:{__html: '&bull;'}
-
-            A 
-              className: "write_#{@props.valence}"
-              style:
-                textDecoration: 'underline'
-                color: focus_blue
-              onClick: => 
-                if can_add_new_point == Permission.NOT_LOGGED_IN
-                  reset_key 'auth', 
-                    form: 'create account'
-                    goal: 'write a point'
-                else if can_add_new_point == Permission.UNVERIFIED_EMAIL
-                  reset_key 'auth', 
-                    form: 'verify email'
-                    goal: 'write a point'
-                  save auth
-                  current_user.trying_to = 'send_verification_token'
-                  save current_user
-
-                else
-                  your_points.adding_new_point = true
-                  save your_points
-
-                writeToLog {what: 'click new point'}
-
-              "Write a new "
-              capitalize \
-                if @props.valence == 'pros' 
-                  customization('point_labels.pro', @proposal)
-                else 
-                  customization('point_labels.con', @proposal)
-        else
-          EditPoint
-            key: "new_point_#{@props.valence}"
-            fresh: true
-            valence: @props.valence
-            your_points_key: @props.key
-
-
-styles += """
-.points_by_community, .points_on_decision_board {
-  display: inline-block;
-  vertical-align: top; }
-
-.points_heading_label {
-  text-align: center;
-  margin-bottom: 18px;
-  margin-top: 7px;
-  font-size: 30px; }
-
-"""
 
 buildPointsList = (proposal, valence, sort_field, filter_included) ->
   sort_field = sort_field or 'score'
@@ -1378,71 +1238,91 @@ buildPointsList = (proposal, valence, sort_field, filter_included) ->
       -pnt[sort_field]
 
   points = _.sortBy points, sort
-  points
+  (pnt.key for pnt in points)
 
 
+PointsList = ReactiveComponent
+  displayName: 'PointsList'
 
-##
-# CommunityPoints
-# List of points contributed by others. 
-# Shown in wing during crafting, in middle on results. 
-CommunityPoints = ReactiveComponent
-  displayName: 'CommunityPoints'
+  render: -> 
+    points = (fetch(pnt) for pnt in @props.points)
+    mode = get_proposal_mode()
 
-  render : ->
+    your_points = @data()
 
-    #filter to pros or cons & down to points that haven't been included
-    points = @props.points
-    
-    label = capitalize @props.key
-    contains_selection = get_selected_point() && 
-                          fetch(get_selected_point()).is_pro == (@props.key == 'pros')
+    if @props.points_editable && !your_points.editing_points
+      _.extend your_points,
+        editing_points : []
+        adding_new_point : false
+      save your_points
 
-    x_pos = if @props.points_draggable
-              if @props.key == 'cons' then 0 else DECISION_BOARD_WIDTH
-            else
-              DECISION_BOARD_WIDTH / 2
-
-    # TODO: The minheight below is not a principled or complete solution to two
-    #       sizing issues: 
-    #           1) resizing the reasons region when the height of the decision board 
-    #              (which is absolutely positioned) grows taller the wing points
-    #           2) when filtering the points on result page to a group of opinions 
-    #              with few inclusions, the document height can jarringly fluctuate
-    DIV
-      className: "points_by_community #{@props.key}_by_community"
-      style: css.crossbrowserify
-        width: POINT_CONTENT_WIDTH
-        minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
-        zIndex: if contains_selection then 6
-        margin: '38px 18px 0 18px'
+    if @props.rendered_as == 'community_point'
+      header_prefix = if mode == 'results' then 'top' else "other"
+      header_style = 
+        width: POINT_CONTENT_WIDTH()
+        fontSize: 30        
         position: 'relative'
+        left: if @props.valence == 'cons' then -20 else 20
+          # Mike: I wanted the headers to be centered over the ENTIRE
+          # points including avatars, not just bubbles.  But the
+          # avatars are sticking out on their own, so I simulated
+          # a centered look with these -20px and +20px offsets
+      wrapper = @drawCommunityPoints
+    else
+      header_prefix = 'your' 
+      header_style = 
+        width: POINT_CONTENT_WIDTH()
+        fontWeight: 700
+        color: focus_blue
+        fontSize: 30
 
-        transition: "transform #{TRANSITION_SPEED}ms"
-        transform: "translate(#{x_pos}px, 0)"
+      wrapper = @drawYourPoints
 
 
+    get_heading = (valence) => 
+      heading = customization "point_labels.#{header_prefix}_#{valence}_header", @proposal
+      if !heading
+        heading = customization "point_labels.#{header_prefix}_header", @proposal
+          .replace('--valences--', capitalize(customization("point_labels.#{valence}", @proposal)))
+          .replace('--valence--', capitalize(customization("point_labels.#{valence.substring(0, 3)}", @proposal)))
+      heading
+
+    heading = get_heading(@props.valence)
+    other_heading = get_heading(if @props.valence == 'pros' then 'cons' else 'pros')
+    # Calculate the other header height so that if they break differently,
+    # at least they'll have same height
+    header_height = Math.max heightWhenRendered(heading,       header_style), \
+                             heightWhenRendered(other_heading, header_style)
+
+    wrapper [
       DIV 
         className:'points_heading_label'
-        style: 
-          position: 'relative'
-          left: if @props.key == 'cons' then -20 else 20
-            # Mike: I wanted the headers to be centered over the ENTIRE
-            # points including avatars, not just bubbles.  But the
-            # avatars are sticking out on their own, so I simulated
-            # a centered look with these -20px and +20px offsets
-
-        @props.heading
+        style: _.extend header_style,
+          textAlign: 'center'
+          marginBottom: 18
+          marginTop: 7
+          height: header_height
+        heading 
 
       UL null,
-        if points.length > 0
+        if points.length > 0 || @props.rendered_as == 'decision_board_point'
           for point in points
-            Point
-              key: point.key,
-              is_new: @props.newpoint_threshold &&
-                       Date.parse(point.created_at) > @props.newpoint_threshold
-              rendered_as : 'community_point'
-              enable_dragging : @props.points_draggable
+            if @props.points_editable && \
+               point.key in your_points.editing_points && \
+               !browser.is_mobile
+              EditPoint 
+                key: point.key
+                fresh: false
+                valence: @props.valence
+                your_points_key: @props.key
+            else
+              Point
+                key: point.key
+                rendered_as: @props.rendered_as
+                your_points_key: @props.key
+                enable_dragging: @props.points_draggable
+                is_new: @props.newpoint_threshold &&
+                         Date.parse(point.created_at) > @props.newpoint_threshold
         else
           LI 
             style: 
@@ -1453,1337 +1333,308 @@ CommunityPoints = ReactiveComponent
               fontWeight: if browser.high_density_display then '300' else '400'
 
             "No " + \
-            customization('point_labels.' + @props.key, @proposal ) + \
+            customization('point_labels.' + @props.valence, @proposal ) + \
             " given"
 
+      if @props.drop_target
+        @drawDropTarget()
+
+      if @props.points_editable
+        @drawAddNewPoint()
+      ]
+
+  columnStandsOut: -> 
+    your_points = @data()
+
+    contains_selection = get_selected_point() && \
+                         fetch(get_selected_point()).is_pro == (@props.valence == 'pros')
+    is_editing = @props.points_editable && \
+                 (your_points.editing_points.length > 0 || your_points.adding_new_point)
+
+    contains_selection || is_editing
+
+
+  drawCommunityPoints: (children) -> 
+
+    x_pos = if @props.points_draggable
+              if @props.valence == 'cons' then 0 else DECISION_BOARD_WIDTH()
+            else if !TWO_COL()
+              DECISION_BOARD_WIDTH() / 2
+            else
+              0
+
+    # TODO: The minheight below is not a principled or complete solution to two
+    #       sizing issues: 
+    #           1) resizing the reasons region when the height of the decision board 
+    #              (which is absolutely positioned) grows taller the wing points
+    #           2) when filtering the points on result page to a group of opinions 
+    #              with few inclusions, the document height can jarringly fluctuate
+    DIV
+      className: "points_by_community #{@props.valence}_by_community"
+      style: css.crossbrowserify
+        display: 'inline-block'
+        verticalAlign: 'top'
+        width: POINT_CONTENT_WIDTH()
+        minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
+        zIndex: if @columnStandsOut() then 6 else 1
+        margin: '38px 18px 0 18px'
+        position: 'relative'
+
+        transition: "transform #{TRANSITION_SPEED}ms"
+        transform: "translate(#{x_pos}px, 0)"
+
+      children
+
+  drawYourPoints: (children) -> 
+    DIV 
+      className: "points_on_decision_board #{@props.valence}_on_decision_board"
+      style: 
+        display: 'inline-block'
+        verticalAlign: 'top'        
+        width: POINT_CONTENT_WIDTH()
+        marginTop: 28
+        position: 'relative'
+        zIndex: if @columnStandsOut() then 6 else 1        
+        float: if @props.valence == 'pros' then 'right' else 'left'
+
+      children
+
+  drawAddNewPoint: -> 
+    
+    your_points = @data()
+    can_add_new_point = permit 'create point', @proposal
 
-
-
-##
-# Point
-# A single point in a list. 
-Point = ReactiveComponent
-  displayName: 'Point'
-
-  render : ->
-    point = @data()
-
-    is_selected = get_selected_point() == @props.key
-
-    current_user = fetch('/current_user')
-
-
-    renderIncluders = (draw_all_includers) =>
-
-      if @data().includers
-
-        if !draw_all_includers
-          includers = [point.user]
-        else 
-          includers = @buildIncluders()
-
-        s = #includers_style
-          rows: 8
-          dx: 2
-          dy: 5
-          col_gap: 8
-
-        if includers.length == 0
-          includers = [point.user]
-
-        # Now we'll go through the list from back to front
-        i = includers.length
-
-        for includer in includers
-          i -= 1
-          curr_column = Math.floor(i / s.rows)
-          side_offset = curr_column * s.col_gap + i * s.dx
-          top_offset = (i % s.rows) * s.dy 
-          left_right = if @data().is_pro && @props.rendered_as != 'under_review' then 'left' else 'right'
-          style = 
-            top: top_offset
-            position: 'absolute'
-
-          style[left_right] = side_offset
-
-          # Finally draw the guys
-          Avatar
-            key: includer
-            className: "point_includer_avatar"
-            style: style
-            hide_tooltip: @props.rendered_as == 'under_review' 
-            anonymous: point.user == includer && point.hide_name
-
-    renderNewIndicator = =>
-      if @data().includers
-        side_offset = 48
-        left_right = if @data().is_pro then 'right' else 'left'
-        style = 
-          position: 'absolute'
-          color: 'rgb(255,22,3)'
-          fontSize: '11px'
-          top: -14
-          #backgroundColor: 'white'
-          zIndex: 5
-          fontVariant: 'small-caps'
-          fontWeight: 'bold'
-
-        style[left_right] = "#{-side_offset}"
-        SPAN {style: style}, '-new-'
-
-
-    point_content_style = 
-      width: POINT_CONTENT_WIDTH + 6
-      borderWidth: 3
-      borderStyle: 'solid'
-      borderColor: 'transparent'
-      left: -3
-      top: -3
-      position: 'relative'
-      zIndex: 1
-
-    if is_selected
-      _.extend point_content_style,
-        borderColor: focus_blue
-        backgroundColor: 'white'
-
-    if @props.rendered_as == 'decision_board_point'
-      _.extend point_content_style,
-        padding: 8
-        borderRadius: 8
-        top: point_content_style.top - 8
-        left: point_content_style.left - 8
-        width: point_content_style.width + 16
-
-    else if @props.rendered_as == 'under_review'
-      _.extend point_content_style, {width: 500}
-
-
-    expand_to_see_details = point.text && 
-                             (point.nutshell.length + point.text.length) > 210
-
-    select_enticement = []
-
-
-    if expand_to_see_details
-      select_enticement.push DIV key: 1,
-        if is_selected
-          "read less"
-        else
-          [SPAN key: 1, dangerouslySetInnerHTML: {__html: '&hellip;'}
-          #' ('
-          A key: 2, className: 'select_point',
-            "read more"
-          #')'
-          ]
-
-    if point.comment_count > 0 || !expand_to_see_details
-      select_enticement.push DIV key: 2, style: {whiteSpace: 'nowrap'},
-        #" ("
-        A 
-          className: 'select_point'
-          point.comment_count 
-          " comment"
-          if point.comment_count != 1 then 's' else ''
-        #")"
-
-    if point.assessment
-      select_enticement.push DIV key: 3,
-        I
-          className: 'fa fa-search'
-          title: 'Click to read a fact-check of this point'
-          style: 
-            color: '#5E6B9E'
-            fontSize: 14
-            cursor: 'help'
-            paddingLeft: 4
-
-
-    point_style = 
-      position: 'relative'
-      listStyle: 'none outside none'
-
-    if @props.rendered_as == 'decision_board_point'
-      _.extend point_style, 
-        marginLeft: 9
-        padding: '0 18px 0 18px'
-
-
-
-    includers_style = 
-      position: 'absolute'
-      height: 25
-      width: 25
-    left_or_right = if @data().is_pro && !(@props.rendered_as in ['decision_board_point', 'under_review'])
-                      'right' 
-                    else 
-                      'left'
-    ioffset = if @props.rendered_as in ['decision_board_point', 'under_review'] then -10 else -50
-    includers_style[left_or_right] = ioffset
-
-    draw_all_includers = @props.rendered_as == 'community_point'
-    LI
-      key: "point-#{point.id}"
-      'data-id': @props.key
-      className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'}"
-      onClick: @selectPoint
-      onTouchEnd: @selectPoint
-      style: point_style
-
-      if @props.rendered_as == 'community_point' && @props.is_new
-        renderNewIndicator()
-
-      DIV 
-        className:'includers'
-        onMouseEnter: @highlightIncluders
-        onMouseLeave: @unHighlightIncluders
-        style: includers_style
-          
-        renderIncluders(draw_all_includers)
-
-      DIV className:'point_content', style : point_content_style,
-
-        if @props.rendered_as != 'decision_board_point'
-
-          side = if point.is_pro && @props.rendered_as != 'under_review' then 'right' else 'left'
-          mouth_style = 
-            top: 8
-            position: 'absolute'
-
-          mouth_style[side] = -COMMUNITY_POINT_MOUTH_WIDTH + \
-            if is_selected || @props.rendered_as == 'under_review' then 3 else 0
-          
-          if !point.is_pro || @props.rendered_as == 'under_review'
-            mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
-          else 
-            mouth_style['transform'] = 'rotate(90deg)'
-
-          DIV 
-            key: 'community_point_mouth'
-            style: css.crossbrowserify mouth_style
-
-            Bubblemouth 
-              apex_xfrac: 0
-              width: COMMUNITY_POINT_MOUTH_WIDTH
-              height: COMMUNITY_POINT_MOUTH_WIDTH
-              fill: considerit_gray
-              stroke: if is_selected then focus_blue else 'transparent'
-              stroke_width: if is_selected then 20 else 0
-              box_shadow:   
-                dx: '3'
-                dy: '0'
-                stdDeviation: "2"
-                opacity: .5
-
-        DIV className:'point_nutshell',
-          splitParagraphs point.nutshell
-
-          DIV 
-            className: "point_details" + \
-                       if is_selected || @props.rendered_as == 'under_review' 
-                         ''
-                       else 
-                         '_tease'
-            if point.text && point.text.length > 0
-              if is_selected || 
-                  !expand_to_see_details || 
-                  @props.rendered_as == 'under_review'
-                splitParagraphs(point.text)
-              else 
-                $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
-
-            if select_enticement && @props.rendered_as != 'under_review'
-              DIV 
-                style: 
-                  fontSize: 12
-
-                select_enticement
-
-        DIV null,
-          if permit('update point', point) > 0 && 
-              @props.rendered_as == 'decision_board_point'
-            A
-              style:
-                fontSize: 12
-                color: '#999'
-                paddingRight: 8
-
-              onClick: ((e) =>
-                e.stopPropagation()
-                points = fetch(@props.your_points_key)
-                points.editing_points.push(@props.key)
-                save(points))
-              SPAN null, 'edit'
-
-          if permit('delete point', point) > 0 && 
-              @props.rendered_as == 'decision_board_point'
-            A 
-              'data-action': 'delete-point'
-              style:
-                fontSize: 12
-                color: '#999'
-                paddingRight: 8
-              onClick: (e) =>
-                e.stopPropagation()
-                if confirm('Delete this point forever?')
-                  destroy @props.key
-              SPAN null, 'delete'
-
-      if is_selected
-        Discussion
-          key:"/comments/#{point.id}"
-          point: point
-
-
-  componentDidMount : ->    
-    @setDraggability()
-    @ensureDiscussionIsInViewPort()
-
-  componentDidUpdate : -> 
-    @setDraggability()
-    @ensureDiscussionIsInViewPort()
-
-  # Hack that fixes a couple problems:
-  #   - Scroll to the point when following a link from an email 
-  #     notification to a point
-  #   - Scroll to new point when scrolled down to bottom of long 
-  #     discussion & click a new point below it
-  ensureDiscussionIsInViewPort : ->
-    if get_selected_point() == @props.key
-      $(@getDOMNode()).ensureInView {scroll: false}
-
-  setDraggability : ->
-    # Ability to drag include this point if a community point, 
-    # or drag remove for point on decision board
-    # also: disable for results page
-
-    return if @props.rendered_as == 'under_review'
-
-    $point_content = $(@getDOMNode()).find('.point_content')
-    revert = 
-      if @props.rendered_as == 'community_point' 
-        'invalid' 
-      else (valid) =>
-        if !valid
-          your_opinion = fetch(@proposal.your_opinion)
-          your_opinion.point_inclusions = _.without your_opinion.point_inclusions, \
-                                                    @props.key
-          save(your_opinion)
-          window.writeToLog
-            what: 'removed point'
-            details: 
-              point: @props.key
-
-        valid
-
-    if $point_content.hasClass "ui-draggable"
-      $point_content.draggable(if @props.enable_dragging then 'enable' else 'disable' ) 
-    else
-      $point_content.draggable
-        revert: revert
-        disabled: !@props.enable_dragging
-
-
-  selectPoint: (e) ->
-    # android browser needs to respond to this via a touch event;
-    # all other browsers via click event. iOS fails to select 
-    # a point if both touch and click are handled...sigh...
-    return unless browser.is_android_browser || e.type == 'click'
-
-    return if @props.rendered_as == 'under_review'
-
-    e.stopPropagation()
-
-    loc = fetch('location')
-
-    if get_selected_point() == @props.key # deselect
-      delete loc.query_params.selected
-      what = 'deselected a point'
-    else
-      what = 'selected a point'
-      loc.query_params.selected = @props.key
-
-    save loc
-
-    window.writeToLog
-      what: what
-      details: 
-        point: @props.key
-
-
-  ## ##
-  # On hovering over a point, highlight the people who included this 
-  # point in the Histogram.
-  highlightIncluders : -> 
-    point = @data()
-    includers = point.includers
-
-    # For point authors who chose not to sign their points, remove them from 
-    # the users to highlight. This is particularly important if the author 
-    # is the only one who "included" the point. Then it is very eash for 
-    # anyone to discover who wrote this point. 
-    if point.hide_name
-      includers = _.without includers, point.user
     hist = fetch namespaced_key('histogram', @proposal)
-    if hist.highlighted_users != includers
-      hist.highlighted_users = includers
-      save(hist)
+    hist_selection = hist.selected_opinions || hist.selected_opinion
 
-  unHighlightIncluders : -> 
-    hist = fetch namespaced_key('histogram', @proposal)
-    hist.highlighted_users = null
-    save(hist)
-
-  buildIncluders : -> 
-    point = @data()
-    author_has_included = _.contains point.includers, point.user
-
-    includers = point.includers
-
-    hist = fetch(namespaced_key('histogram', @proposal))
-    selected_opinions = if hist.selected_opinion
-                          [hist.selected_opinion] 
-                        else 
-                          hist.selected_opinions
-
-    if selected_opinions?.length > 0      
-      # only show includers from the current opinion selection
-      selected_users = (fetch(o).user for o in selected_opinions)
-      includers = _.intersection includers, selected_users
-      author_has_included = _.contains selected_users, point.user
-
-    if author_has_included 
-      includers = _.without includers, point.user
-      includers.push point.user
-
-    _.uniq includers
-        
-
-styles += """
-
-/* war! disabled jquery UI draggable class defined with !important */
-.point_content.ui-draggable-disabled {
-  cursor: pointer !important; }
-
-#{css.grab_cursor('.point_content.ui-draggable')}
-
-.community_point .point_content, .under_review .point_content {
-  border-radius: 16px;
-  padding: 0.5em 9px;
-  margin-bottom: 0.5em;
-  background-color: #{considerit_gray};
-  box-shadow: #b5b5b5 0 1px 1px 0px;
-  min-height: 34px; }
-
-.point_nutshell {
-  word-wrap: break-word;
-  font-size: 14px; }
-
-.point_details_tease, .point_details {
-  margin-top: 0.5em;
-  font-size: 14px;
-  word-wrap: break-word; 
-  font-weight: #{if browser.high_density_display then 300 else 400}; }
-  .point_details_tease a, .point_details a {
-    text-decoration: underline;
-    word-break: break-all; }
-  .point_details a.select_point{text-decoration: none;}
-
-.point_details {
-  display: block; }
-
-.point_details_tease {
-  cursor: pointer; }
-  .point_details_tease a.select_point {
-    text-decoration: none; }
-    .point_details_tease a.select_point:hover {
-      text-decoration: underline; }
-
-.point_details p {
-  margin-bottom: 1em; }
-
-.point_details p:last-child {
-  margin-bottom: 0; }
-
-.under_review .point_includer_avatar {
-  top: 0px;
-  width: 50px;
-  height: 50px;
-  left: -73px;
-  box-shadow: -1px 2px 0 0 #eeeeee; }
-
-.point_includer_avatar {
-  width: 22px;
-  height: 22px; }
-
-.community_point.con .point_includer_avatar {
-  box-shadow: -1px 2px 0 0 #eeeeee; }
-
-.community_point.pro .point_includer_avatar {
-  box-shadow: 1px 2px 0 0 #eeeeee; }
-
-.decision_board_point.pro .point_includer_avatar {
-  left: -10px; }
-
-"""
-
-Comment = ReactiveComponent
-  displayName: 'Comment'
-
-  render: -> 
-    comment = @data()
-
-    if comment.editing
-      # Sharing keys, with some non-persisted client data getting saved...
-      EditComment fresh: false, point: comment.point, key: comment.key
-
-    else
-
-      DIV className: 'comment_entry',
-
-        # Comment author name
-        DIV className: 'comment_entry_name',
-          fetch(comment.user).name + ':'
-
-        # Comment author icon
-        Avatar
-          className: 'comment_entry_avatar'
-          key: comment.user
-          hide_tooltip: true
-
-        # Comment body
-        DIV className: 'comment_entry_body',
-          splitParagraphs(comment.body)
-
-        # Delete/edit button
-        if permit('update comment', comment) > 0 && !@props.under_review
-          comment_action_style = 
-            color: '#444'
-            textDecoration: 'underline'
-            cursor: 'pointer',
-            paddingRight: 10
-          DIV style: { marginLeft: 60}, 
-            SPAN
-              'data-action' : 'delete-comment'
-              style: comment_action_style
-              onClick: do (key = comment.key) => (e) =>
-                e.stopPropagation()
-                if confirm('Delete this comment forever?')
-                  destroy(key)
-              'delete'
-
-            SPAN
-              style: comment_action_style
-              onClick: do (key = comment.key) => (e) =>
-                e.stopPropagation()
-                comment.editing = true
-                save comment
-              'edit'          
-
-# fact-checks, edit comments, comments...
-styles += """
-.comment_entry {
-  margin-bottom: 45px;
-  min-height: 60px;
-  position: relative; }
-
-.comment_entry_name {
-  font-weight: bold;
-  color: #666666; }
-
-.comment_entry_avatar {
-  position: absolute;
-  width: 50px;
-  height: 50px; }
-
-.comment_entry_body {
-  margin-left: 60px;
-  word-wrap: break-word;
-  position: relative; }
-  .comment_entry_body a {
-    text-decoration: underline; }
-  .comment_entry_body strong {
-    font-weight: 600; }
-  .comment_entry_body p {
-    margin-bottom: 1em; }
-"""
-
-FactCheck = ReactiveComponent
-  displayName: 'FactCheck'
-
-  render : -> 
-    assessment = @data()
-    DIV className: 'comment_entry',
-
-      # Comment author name
-      DIV className: 'comment_entry_name',
-        'Seattle Public Library Fact check:'
-
-      # Comment author icon
-      DIV className: 'magnifying_glass',
-        I className: 'fa fa-search'
-
-      # Comment body
-      DIV className: 'comment_entry_body',
-        DIV style: {margin: '10px 0 20px 0'},
-          "A citizen requested research into the claims made by this point. "
-          SPAN style: {fontSize: 12},
-            A 
-              style: {fontWeight: 700}
-              href: '/about#fact_check'
-              'Learn more'
-            ' about the service.'
-
-        for claim in assessment.claims
-          claim = fetch(claim.key)
-          verdict = fetch(claim.verdict)
-
-          [DIV style: {margin: '10px 0'}, 
-            IMG 
-              style: {position: 'absolute', width: 25, left: -40}, 
-              src: verdict.icon
-            'Claim: '
-            SPAN style: {fontWeight: 600}, claim.claim_restatement
-          DIV null, 
-            SPAN null,
-              'Rating: '
-              SPAN style: {fontStyle: 'italic'}, verdict.name
-              SPAN 
-                style: 
-                  marginLeft: 20
-                  fontSize: 12
-                  textDecoration: 'underline'
-                  cursor: 'help'
-                title: verdict.desc
-                'help'
-          DIV 
-            style: {margin: '10px 0'}
-            dangerouslySetInnerHTML:{__html: claim.result}]
-
-styles += """
-.magnifying_glass {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  font-size: 50px;
-  margin-top: -2px;
-  color: #5e6b9e; }
-"""
-
-EditComment = ReactiveComponent
-  displayName: 'EditComment'
-
-  render : -> 
-    permitted = permit 'create comment', @proposal
-
-    DIV className: 'comment_entry',
-
-      # Comment author name
-      DIV
-        style:
-          fontWeight: 'bold'
-          color: '#666'
-        (fetch('/current_user').name or 'You') + ':'
-
-      # Icon
-      Avatar
-        style:
-          position: 'absolute'
-          width: 50
-          height: 50
-          backgroundColor: if permitted < 0 then 'transparent'
-          border:          if permitted < 0 then '1px dashed grey'
-
-        key: fetch('/current_user').user
-        hide_tooltip: true
-
-      if permitted == Permission.DISABLED
-        SPAN 
-          style: {position: 'absolute', margin: '14px 0 0 70px'}
-          'Comments closed'
-
-      else if permitted == Permission.INSUFFICIENT_PRIVILEGES
-        SPAN 
-          style: {position: 'absolute', margin: '14px 0 0 70px'}
-          'Sorry, you do not have permission to comment'
-
-      else if permitted < 0
-        SPAN
-          style:
-            position: 'absolute'
-            margin: '14px 0 0 70px'
-            cursor: 'pointer'
-
-          onClick: =>
-
-            if permitted == Permission.NOT_LOGGED_IN
-              reset_key 'auth', {form: 'login', goal: 'Write a Comment'}
-            else if permitted == Permission.UNVERIFIED_EMAIL
-              reset_key 'auth', {form: 'verify email', goal: 'Write a Comment'}
+    if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES && !hist_selection
+      if !your_points.adding_new_point
+        DIV 
+          onClick: => 
+            if can_add_new_point == Permission.NOT_LOGGED_IN
+              reset_key 'auth', 
+                form: 'create account'
+                goal: 'write a point'
+            else if can_add_new_point == Permission.UNVERIFIED_EMAIL
+              reset_key 'auth', 
+                form: 'verify email'
+                goal: 'write a point'
+              save auth
               current_user.trying_to = 'send_verification_token'
               save current_user
 
-          if permitted == Permission.NOT_LOGGED_IN
-            DIV null,
-              SPAN 
-                style: { textDecoration: 'underline', color: focus_blue }
-                'Log in to write a comment'
-              if '*' not in @proposal.roles.commenter
-                DIV style: {fontSize: 11},
-                  'Only some email addresses are authorized to comment.'
-
-          else if permitted == Permission.UNVERIFIED_EMAIL
-            DIV null,
-              SPAN
-                style: { textDecoration: 'underline', color: focus_blue }
-               'Verify your account'
-              SPAN null, 'to write a comment'
-
-      AutoGrowTextArea
-        className: 'new_comment'
-        placeholder: if permitted > 0 then 'Write a new comment' else ''
-        disabled: permitted < 0
-        onChange: (e) => @local.new_comment = e.target.value; save(@local)
-        defaultValue: if @props.fresh then null else @data().body
-        min_height: 60
-        style:
-          marginLeft: 60
-          width: 390
-          lineHeight: 1.4
-          fontSize: 16
-          border: if permitted < 0 then 'dashed 1px'
-
-      if permitted > 0
-        DIV style: {textAlign: 'right'},
-          Button {'data-action': 'save-comment', style: {marginLeft: 314}}, 'Save comment', (e) =>
-            e.stopPropagation()
-            if @props.fresh
-              comment =
-                key: '/new/comment'
-                body: @local.new_comment
-                user: fetch('/current_user').user
-                point: "/point/#{@props.point}"
             else
-              comment = @data()
-              comment.body = @local.new_comment
-              comment.editing = false
+              your_points.adding_new_point = true
+              save your_points
 
-            save(comment)
-            $(@getDOMNode()).find('.new_comment').val('')
+            writeToLog {what: 'click new point'}
 
-
-Discussion = ReactiveComponent
-  displayName: 'Discussion'
-
-  render : -> 
-
-    point = fetch @props.point
-    proposal = fetch point.proposal
-    is_pro = point.is_pro
-
-    your_opinion = fetch(proposal.your_opinion)
-    point_included = _.contains(your_opinion.point_inclusions, point.key)
-    in_wings = get_proposal_mode() == 'crafting' && !point_included
-
-    comments = @discussion.comments
-    if @discussion.assessment
-      comments = comments.slice()
-      comments.push @discussion.assessment
-    
-    comments.sort (a,b) -> a.created_at > b.created_at
-
-    discussion_style =
-      width: DECISION_BOARD_WIDTH
-      border: "3px solid #{focus_blue}"
-      position: 'absolute'
-      zIndex: 100
-      padding: '20px 40px'
-      borderRadius: 16
-      backgroundColor: 'white'
-
-    # Reconfigure discussion board position
-    side = if is_pro then 'right' else 'left'
-    if in_wings
-      discussion_style[side] = 215
-      discussion_style['top'] = 44
-    else
-      discussion_style[side] = if is_pro then -23 else -30
-      discussion_style['marginTop'] = 18
-
-    # Reconfigure bubble mouth position
-    mouth_style =
-      position: 'absolute'
-
-    if in_wings
-      mouth_style[side] = -29
-
-      trans_func = 'rotate(270deg)'
-      if is_pro
-        trans_func += ' scaleY(-1)'
-
-      _.extend mouth_style, 
-        transform: trans_func
-        top: 19
-
-    else
-      _.extend mouth_style, 
-        left: if is_pro then 335 else 100
-        top: -28
-        transform: if !is_pro then 'scaleX(-1)'
-
-    DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
-
-      DIV 
-        style: css.crossbrowserify mouth_style
-
-        Bubblemouth 
-          apex_xfrac: 1.1
-          width: 36
-          height: 28
-          fill: 'white', 
-          stroke: focus_blue, 
-          stroke_width: 11
-
-      H1
-        style:
-          textAlign: 'left'
-          fontSize: 38
-          color: focus_blue
-          marginLeft: 60
-          marginBottom: 25
-          marginTop: 24
-          fontWeight: 600
-        'Discuss this Point'
-      
-      SubmitFactCheck()
-
-      DIV className: 'comments',
-        for comment in comments
-          if comment.key.match /(comment)/
-            Comment key: comment.key
+          if @props.rendered_as == 'decision_board_point'
+            @drawAddNewPointInDecisionBoard()
           else 
-            FactCheck key: comment.key
+            @drawAddNewPointInCommunityCol()
+      else if !browser.is_mobile
+        EditPoint
+          key: "new_point_#{@props.valence}"
+          fresh: true
+          valence: @props.valence
+          your_points_key: @props.key
 
-      # Write a new comment
-      EditComment fresh: true, point: arest.key_id(@props.key)
-
-  # HACK! Insert a placeholder to add enough height to accommodate the 
-  # overlaid point. And if it is a point on the decision board,
-  # also add the space to the decision board (so that scrolling
-  # to bottom of discussion can occur)
-  componentDidUpdate : -> @fixBodyHeight()
-  componentDidMount : -> 
-    @fixBodyHeight()
-  
-  componentWillUnmount : -> 
-    @clear_placeholder()
-
-  clear_placeholder : -> 
-    $body = $('.reasons_region')
-    $body.find('.discussion_placeholder').remove()
-
-  fixBodyHeight : -> 
-    @clear_placeholder()
-
-    $body = $('.reasons_region')
-    height_of_discussion = $(@getDOMNode()).height()
-    placeholder = "<div class='discussion_placeholder' style='height: " + \
-                    height_of_discussion + "px'></div>"
-    $body.append(placeholder)
-    if $(@getDOMNode()).parents('.opinion_region').length > 0
-      $('.decision_board_body').append placeholder
-    
+  drawAddNewPointInCommunityCol: ->
+    DIV 
+      id: "add-point-#{@props.valence}"
+      style: 
+        cursor: 'pointer'
+        marginTop: 20
 
 
+      @drawGhostedPoint
+        width: POINT_CONTENT_WIDTH()
+        text: "Write a new #{capitalize \
+                    if @props.valence == 'pros' 
+                      customization('point_labels.pro', @proposal)
+                    else 
+                      customization('point_labels.con', @proposal)}"
 
-SubmitFactCheck = ReactiveComponent
-  displayName: 'SubmitFactCheck'
-
-  # States
-  # - Blank
-  # - Clicked request
-  # - Contains request from you already
-  # - Contains a verdict
-
-  render: ->
-    return SPAN(null) if !@proposal.assessment_enabled
-
-    logged_in = fetch('/current_user').logged_in
-
-    request_a_fact_check = =>
-      [
-        DIV null,
-          'You can'
-        DIV
-          style:
-            fontSize: 22
-            fontWeight: 600
-            textDecoration: 'underline'
-            color: '#474747'
-            marginTop: -4
-            marginBottom: -1
-            cursor: 'pointer'
-          onClick: (=>
-            if @local.state == 'blank slate'
-              @local.state = 'clicked'
-            else if @local.state == 'clicked'
-              @local.state = 'blank slate'
-            save(@local))
-          'Request a Fact Check'
-        DIV null,
-          'from The Seattle Public Library'
-      ]
-
-    a_librarian_will_respond = (width) =>
-      DIV style: {maxWidth: width},
-        'A '
-        A
-          style: {textDecoration: 'underline'}
-          href: '/about/#fact_check'
-          'librarian will respond'
-        ' to your request within 48 hours'
-
-    request_a_factcheck = =>
-      if permit('request factcheck', @proposal) > 0
-        [
-          DIV style: {marginTop: 12},
-            'What factual claim do you want researched?'
-          AutoGrowTextArea
-            className: 'new_request'
-            style:
-              width: 390
-              height: 60
-              lineHeight: 1.4
-              fontSize: 16
-            placeholder: (logged_in and 'Your research question') or ''
-            disabled: not logged_in
-            onChange: (e) =>
-              @local.research_question = e.target.value
-              save(@local)
-          Button
-            style: {float: 'right'}
-            onClick => (e) =>
-              e.stopPropagation()
-              request =
-                key: '/new/request'
-                suggestion: @local.research_question
-                point: "/point/#{arest.key_id(@discussion.key)}"
-              save(request)
-              $(@getDOMNode()).find('.new_request').val('')
-            'submit'
-
-          a_librarian_will_respond(255)
-        ]
-      else
-        DIV
-          onClick: =>
-            reset_key 'auth', {form: 'login', goal: 'Request a Fact Check'}
-            save(auth)
-          style:
-            marginTop: 14
-            textDecoration: 'underline'
-            color: focus_blue
-            cursor: 'pointer'
-          'Log in to request a fact check'
+        is_left: @props.valence == 'cons'
+        style: {}
+        text_style:
+          color: focus_blue
+          textDecoration: 'underline'
+          fontSize: 24
 
 
-    top_message_style = {maxWidth: 274, marginBottom: 10}
-    request_in_progress = =>
-      DIV null,
-        DIV style: top_message_style,
-          'You have requested a Fact Check from The Seattle Public Library'
-        a_librarian_will_respond()
-          
-    request_completed = =>
-      overall_verdict = fetch(@discussion.assessment.verdict)
 
-      [
-        DIV style: top_message_style,
-          'This point has been Fact-Checked by The Seattle Public Library'
-        DIV style: {marginBottom: 10},
-          switch overall_verdict.id
-            when 1
-              "They found some claims inconsistent with reliable sources."
-            when 2
-              "They found some sources that agreed with claims and some that didn't."
-            when 3
-              "They found the claims to be consistent with reliable sources."
-            when 4
-              '''Unfortunately, the claims made are outside the research scope of 
-              the fact-checking service.'''
+  drawAddNewPointInDecisionBoard: -> 
+    your_points = @data()
 
-        DIV style: {marginBottom: 10},
-          A style: {textDecoration: 'underline'},
-            ''
-          "See the details"
-          " of the librarians' research below."
-      ]
+    DIV 
+      style: 
+        padding: '.25em 0'
+        marginTop: '1em'
+        marginLeft: 20
+        fontSize: POINT_FONT_SIZE()
 
+      SPAN 
+        style: 
+          fontWeight: if browser.high_density_display then 300 else 400
+        'or '
+      SPAN 
+        style: {padding: '0 6px'}
+        dangerouslySetInnerHTML:{__html: '&bull;'}
 
-    # Determine our current state
-    @local.state = @local.state or 'blank slate'
-    your_requests = (r for r in @discussion.requests or [] \
-                     when r.user == fetch('/current_user').user)
-    fact_check_completed = @discussion.claims?.length > 0
-    if fact_check_completed
-      @local.state = 'verdict'
-    else if your_requests.length > 0
-      @local.state = 'requested'
-
-
-    show_request = @local.state != 'blank slate'
-    
-    request_style = if show_request then { marginBottom: 45, minHeight: 60 } else {}
-
-    # Now let's draw
-    DIV style: request_style,
-
-      # Magnifying glass
-      if show_request
-
-        DIV className: 'magnifying_glass',
-          I
-            className: 'fa fa-search'
-
-      # Text to the right
-      DIV
+      A 
+        className: "write_#{@props.valence}"
         style:
-          marginLeft: 60
-        switch @local.state
-          when 'blank slate'
-            request_a_fact_check()
-          when 'clicked'
-            [request_a_fact_check()
-            request_a_factcheck()]
-          when 'requested'
-            request_in_progress()
-          when 'verdict'
-            request_completed()
+          textDecoration: 'underline'
+          color: focus_blue
 
-##
-# EditPoint
-# Form for editing or creating a point. Used by NewPoint component & when someone
-# edits their point. 
-EditPoint = ReactiveComponent
-  displayName: 'EditPoint'
+        "Write a new "
+        capitalize \
+          if @props.valence == 'pros' 
+            customization('point_labels.pro', @proposal)
+          else 
+            customization('point_labels.con', @proposal)    
 
-  render : ->
-    @local = @data @local_key,
-      sign_name : if @props.fresh then true else !@data().hide_name
-      add_details : false
+  drawDropTarget: -> 
+    left_or_right = if @props.valence == 'pros' then 'right' else 'left'
 
-    textarea_style = 
-      width: '100%'
-      overflow: 'hidden'
-      fontSize: 14
-      padding: '4px 6px'
+    drop_target_text = "Drag a #{capitalize \
+                  if @props.valence == 'pros' 
+                    customization('point_labels.pro', @proposal)
+                  else 
+                    customization('point_labels.con', @proposal)} from the #{left_or_right}"
 
-    guidelines_w = 230
-    guidelines_h = 238
+    dt_w = POINT_CONTENT_WIDTH() - 24
 
-    singular =  if @props.valence == 'pros' 
-                  customization('point_labels.pro', @proposal)
-                else 
-                  customization('point_labels.con', @proposal)
+    DIV 
+      style: 
+        marginLeft: if @props.valence == 'cons' then 24 else 0
+        marginRight: if @props.valence == 'pros' then 24 else 0
+        position: 'relative'
+        left: if @props.valence == 'cons' then -18 else 18
 
-    plural =  if @props.valence == 'pros' 
-                customization('point_labels.pros', @proposal)
-              else 
-                customization('point_labels.cons', @proposal)
+      @drawGhostedPoint
+        width: POINT_CONTENT_WIDTH() - 24
+        text: drop_target_text
+        is_left: @props.valence == 'cons'
+        style: 
+          #padding: "0 #{if @props.valence == 'pros' then '24px' else '0px'} .25em #{if @props.valence == 'cons' then '24px' else '0px'}"        
+          opacity: if @proposal.has_focus == 'edit point' then .1
+        text_style: {}
+
+
+  drawGhostedPoint: (props) ->     
+    text_style = props.text_style or {}
+    style = props.style or {}
+    width = props.width
+    text = props.text
+    is_left = props.is_left
+
+    w = width
+    padding_x = 18
+    padding_y = 12
+    text_height = heightWhenRendered(text, {'font-size': POINT_FONT_SIZE(), 'width': w - 2 * padding_x})
+    stroke_width = 1
+    h = Math.max text_height + 2 * padding_y, 85
+    s_w = 8
+    s_h = 6
+
+    mouth_style = 
+      top: 8
+      position: 'absolute'
+    
+    if is_left
+      mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
+      mouth_style['left'] = -POINT_MOUTH_WIDTH + stroke_width + 1
+    else 
+      mouth_style['transform'] = 'rotate(90deg)'
+      mouth_style['right'] = -POINT_MOUTH_WIDTH  + stroke_width + 1
 
 
     DIV
-      className: 'edit_point'
-      style: 
-        #margin: '0 9px'
+      style: _.defaults style, 
         position: 'relative'
-        fontSize: 14
-        #top: if @props.fresh then -30
-        zIndex: 1
+        opacity: if @proposal.has_focus == 'edit point' then .1
 
-      if !@props.fresh
-        LABEL 
-          htmlFor:'nutshell'
-          'Your point'
-      else
-        DIV
-          style: 
-            #fontWeight: 700
-            color: focus_blue
-            position: 'absolute'
-            top: -22
-          "Write a new "
-          capitalize \
-            if @props.valence == 'pros' 
-              customization('point_labels.pro', @proposal)
-            else 
-              customization('point_labels.con', @proposal)
-
-
-      DIV
-        style: 
-          position: 'relative'
-
-        # guidelines/tips for good points
-        DIV 
-          style:
-            position: 'absolute'
-            left: if @props.valence == 'pros' then -280 else 280
-            width: guidelines_w
-            color: focus_blue
-            zIndex: 1
-            
-
-          SVG
-            width: guidelines_w + 28
-            height: guidelines_h
-            viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
-            style: css.crossbrowserify
-              position: 'absolute'
-              transform: if @props.valence == 'cons' then 'scaleX(-1)'
-              left: if @props.valence == 'cons' then -20
-
-            DEFS null,
-              svg.dropShadow 
-                id: "guidelines-shadow"
-                dx: '0'
-                dy: '2'
-                stdDeviation: "3"
-                opacity: .5
-
-            PATH
-              stroke: focus_blue #'#ccc'
-              strokeWidth: 1
-              fill: "#FFF"
-              filter: 'url(#guidelines-shadow)'
-
-              d: """
-                  M#{guidelines_w},33
-                  L#{guidelines_w},0
-                  L1,0
-                  L1,#{guidelines_h} 
-                  L#{guidelines_w},#{guidelines_h} 
-                  L#{guidelines_w},58
-                  L#{guidelines_w + 20},48
-                  L#{guidelines_w},33 
-                  Z
-                 """
-          DIV 
-            style: 
-              padding: '14px 18px'
-              position: 'relative'
-              marginLeft: 5
-
-
-            SPAN 
-              style: 
-                fontWeight: 600
-              "Write a "
-              capitalize singular
-              ' (or question) for this proposal'
-
-            UL 
-              style: 
-                listStylePosition: 'outside'
-                marginLeft: 16
-                marginTop: 5
-              LI 
-                style: 
-                  paddingBottom: 3
-                "Make one coherent point. Add multiple #{capitalize(plural)} if you have more."                
-              LI
-                style: 
-                  paddingBottom: 3              
-                "Be direct. The summary is your main point."
-              LI 
-                style: 
-                  paddingBottom: 3              
-                "Review your language. Don’t be careless."
-              LI 
-                style: 
-                  paddingBottom: 3              
-                "No personal attacks."
-
-        CharacterCountTextInput 
-          id: 'nutshell'
-          maxLength: 140
-          name: 'nutshell'
-          pattern: '^.{3,}'
-          placeholder: 'A succinct summary of your point.'
-          required: 'required'
-          defaultValue: if @props.fresh then null else @data().nutshell
-          style: _.extend {}, textarea_style,
-            minHeight: 75
-        INPUT 
-          id:'is_pro'
-          name: 'is_pro'
-          type: 'hidden'
-          value: "#{@props.valence == 'pros'}"
-
-      
-      DIV null,
-        # A 
-        #   onClick: =>
-        #     @local.add_details = !@local.add_details
-        #     save(@local)            
-        #   title: 'Provide background and/or back your point up with evidence.'
-        #   style: { fontSize: 14 }
-
-        #   I className: if @local.add_details 
-        #                  'fa-caret-down fa' 
-        #                else 
-        #                  'fa-caret-right fa'
-        #   SPAN
-        #     style: {paddingLeft: 6}
-        #     'Add details'
-
-        # DIV 
-        #   style: 
-        #     display: if @local.add_details then 'block' else 'none'
-          
-        AutoGrowTextArea 
-          id:'text'
-          name:'text'
-          placeholder:'Provide background and/or back your point up with evidence.'
-          min_height: 100
-          defaultValue: if @props.fresh then null else @data().text
-          style: textarea_style
-
-
-      if @local.errors?.length > 0
+      SVG 
+        width: w
+        height: h
         
-        DIV
-          style:
-            fontSize: 18
-            color: 'darkred'
-            backgroundColor: '#ffD8D8'
-            padding: 10
-            marginTop: 10
-          for error in @local.errors
-            DIV null, 
-              I
-                className: 'fa fa-exclamation-circle'
-                style: {paddingRight: 9}
 
-              SPAN null, error
+        DEFS null,
+          PATTERN 
+            id: "drop-stripes-#{is_left}-#{width}"
+            width: s_w
+            height: s_h 
+            patternUnits: "userSpaceOnUse"
 
-      DIV 
-        style: 
-          textAlign: 'right'
-          marginTop: 3
-          marginBottom: '.5em'
-
-        if !@proposal.active
-          DIV 
-            style: {color: '#777', fontSize: 12}
-            'New points disabled for this proposal'
-        else
-          DIV 
-            className: 'primary_button'
-            'data-action': 'submit-point'
-            onClick: @savePoint
-            style: 
-              marginTop: '.5em'
+            RECT 
               width: '100%'
-              fontSize: 24
-              padding: 4
-            'Done'
+              height: '100%'
+              fill: 'white'
 
-        A 
-          onClick: @done
-          style:
-            display: 'inline-block'
-            color: '#888888'
-            cursor: 'pointer'
-            position: 'relative'
-            zIndex: 1
-            top: 5
-          'cancel'  
+            do => 
+              if is_left
+                cross_hatch = [ 
+                  [-s_w/2,    0, s_w,   1.5 * s_h], 
+                  [0,    -s_h/2,   1.5 * s_w, s_h]]
+              else 
+                cross_hatch = [ 
+                  [1.5 * s_w,    0, 0,   1.5 * s_h], 
+                  [s_w,    -s_h/2,   -s_w/2, s_h]]                  
 
-      if @proposal.active
-        DIV 
-          style: 
-            position: 'relative'
-            top: -20
-          INPUT
-            className: 'newpoint-anonymous'
-            type:      'checkbox'
-            id:        "sign_name-#{@props.valence}"
-            name:      "sign_name-#{@props.valence}"
-            checked:   @local.sign_name
-            onChange: =>
-              @local.sign_name = !@local.sign_name
-              save(@local)
-          LABEL 
-            htmlFor: "sign_name-#{@props.valence}"
-            title:'Signing your name lends your point more weight with peers.'
-            'Sign your name'
+              for [x1, y1, x2, y2], idx in cross_hatch
 
-  componentDidMount : ->
-    if @proposal.active 
-      $el = $(@getDOMNode())
-      $el.find('#nutshell').focus()
-      $el.find('[data-action="submit-point"]').ensureInView {scroll: false, position: 'bottom'}
+                LINE 
+                  x1: x1
+                  y1: y1
+                  x2: x2 
+                  y2: y2 
+                  stroke: focus_blue
+                  strokeWidth: 1
+                  strokeOpacity: .2
 
-  done : ->
+        RECT
+          width: w - 2 * stroke_width
+          height: h - 2 * stroke_width
+          x: stroke_width
+          y: stroke_width
+          rx: 16
+          ry: 16
+          fill: "url(#drop-stripes-#{is_left}-#{width})"
+          stroke: focus_blue
+          strokeWidth: stroke_width
+          strokeDasharray: '4, 3'
 
-    your_points = fetch @props.your_points_key
-
-    if @props.fresh
-      your_points.adding_new_point = false
-    else
-      your_points.editing_points = _.without your_points.editing_points, @props.key
-
-    save your_points
-
-  savePoint : (ev) ->
-    $form = $(@getDOMNode())
-
-    nutshell = $form.find('#nutshell').val()
-    text = $form.find('#text').val()
-    hide_name = !$form.find("#sign_name-#{@props.valence}").is(':checked')
-
-    if !@props.fresh
-      # If we're updating an existing point, we just have to update
-      # some of the fields from the form
-      point = @data()
-      point.nutshell = nutshell
-      point.text = text
-      point.hide_name = hide_name
-    else
-      current_user = fetch('/current_user').user
-      point =
-        key : '/new/point'
-        is_pro : @props.valence == 'pros'
-        user : current_user
-        comment_count : 0
-        includers : [current_user]
-        proposal : @proposal.key
-        nutshell : nutshell
-        text : text
-        hide_name : hide_name
-
-    point.errors = []
-    save point, => 
-      if point.errors?.length == 0
-        @done()
-      else
-        @local.errors = point.errors
-        save @local
-
-    # # This is a kludge cause activerest sucks for pre-rendering
-    # # changes before the server returns them
-    # fetch(@proposal.your_opinion).point_inclusions.push(point.key)
-    # re_render([@proposal.your_opinion])
+      SPAN 
+        style: _.defaults {}, text_style, 
+          fontSize: POINT_FONT_SIZE()
+          position: 'absolute'
+          top: padding_y
+          left: padding_x #+ if is_left then 24 else 0
+          width: w - 2 * padding_x
+          # padding: """0 
+          #             #{if @props.valence == 'cons' then 18 else 18+24}px 
+          #             0 
+          #             #{if @props.valence == 'pros' then 18 else 18+24}px"""
+          
+        text
 
 
-styles += """
-.edit_point .count{
-  position: absolute;
-  right: 0px;
-  top: -21px;
-}
-"""
+
+      Bubblemouth 
+        apex_xfrac: 0
+        width: POINT_MOUTH_WIDTH
+        height: POINT_MOUTH_WIDTH
+        fill: '#F9FBFD'  #TODO: somehow make this focus_blue color mixed with white @ .2 opacity
+        stroke: focus_blue
+        stroke_width: 6
+        dash_array: '24, 18'
+        style: css.crossbrowserify mouth_style
+
+
+
 
 About = ReactiveComponent
   displayName: 'About'
@@ -2804,7 +1655,7 @@ About = ReactiveComponent
       # because scripts in the about page html won't get executed
       # when using dangerouslysetinnerhtml
       if @local.html
-        $el.find('.embedded_about_html').append @local.html
+        $el.find('.embedded_about_html').html @local.html
 
     else
       # REACT iframes don't support onLoad, so we need to figure out when 
@@ -2835,7 +1686,7 @@ About = ReactiveComponent
       else if !@local.embed_html_directly
         IFRAME 
           src: subdomain.about_page_url
-          width: PAGE_WIDTH
+          width: CONTENT_WIDTH()
           style: {display: 'block', margin: 'auto'}
       else
         DIV className: 'embedded_about_html'
@@ -2932,10 +1783,8 @@ Page = ReactiveComponent
       style: 
         position: 'relative'
         zIndex: 1
-        minWidth: PAGE_WIDTH
         minHeight: 200
         margin: 'auto'
-        marginLeft: if customization('lefty') then 0
 
       if auth.form
         Auth()
@@ -2986,6 +1835,9 @@ Root = ReactiveComponent
     current_user = fetch('/current_user')
 
     DIV 
+      style: 
+        width: PAGE_WIDTH()
+      
       onClick: @resetSelection
 
       StateDash()
@@ -3005,7 +1857,6 @@ Root = ReactiveComponent
 
         DIV 
           style:
-            minWidth: PAGE_WIDTH
             backgroundColor: 'white'
             overflowX: 'hidden'
 

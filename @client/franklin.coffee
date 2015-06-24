@@ -1020,14 +1020,14 @@ SaveYourOpinionFooter = ReactiveComponent
       style: 
         position: 'fixed'
         left: 0
-        bottom: 0
+        top: 0
         width: PAGE_WIDTH()
         backgroundColor: focus_blue
         padding: 10
         color: 'white'
         zIndex: 999
         textAlign: 'center'
-        fontSize: 24
+        fontSize: 28
 
       'Your opinion hasn’t been added yet! '
 

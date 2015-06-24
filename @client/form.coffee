@@ -47,20 +47,33 @@ window.AutoGrowTextArea = ReactiveComponent
 
     @transferPropsTo TEXTAREA
       onChange: @onChange
-      style: {height: @local.height}
+      style: 
+        height: @local.height
 
 
 window.CharacterCountTextInput = ReactiveComponent
   displayName: 'CharacterCountTextInput'
-  componentWillMount : -> fetch(@local_key).count = 0
-  render : -> 
-    class_name = "is_counted"
-    DIV style: {position: 'relative'}, 
-      SPAN className: 'count', @props.maxLength - @local.count
 
-      @transferPropsTo TEXTAREA className: class_name, onChange: (=>
+  componentWillMount : -> 
+    fetch(@local_key).count = 0
+    save @local_key
+
+  render : -> 
+    count_style = @props.count_style or {}
+
+    class_name = "is_counted"
+    DIV 
+      style: 
+        position: 'relative' 
+      SPAN 
+        style: count_style
+        @props.maxLength - @local.count
+
+      @transferPropsTo TEXTAREA 
+        className: class_name
+        onChange: =>
          @local.count = $(@getDOMNode()).find('textarea').val().length
-         save(@local))
+         save(@local)
 
 
 
@@ -159,7 +172,8 @@ window.WysiwygEditor = ReactiveComponent
                 width: 30
                 left: -32
                 top: 0
-                display: if wysiwyg_editor.showing == @props.key then 'block' else 'none'
+                display: 'block'
+                visibility: if wysiwyg_editor.showing != @props.key then 'hidden'
 
               for button in toolbar_items
                 I 

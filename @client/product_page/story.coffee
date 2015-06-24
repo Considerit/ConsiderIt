@@ -15,7 +15,9 @@ window.Story = ReactiveComponent
     story = fetch 'story'
 
     if story.show_story && story.scroll_to
-      $(@getDOMNode()).moveToTop(100, true)
+      $(@getDOMNode()).moveToTop
+        offset_buffer: 100
+        scroll: true
       story.scroll_to = false
       save story
 

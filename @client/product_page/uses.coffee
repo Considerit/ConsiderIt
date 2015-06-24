@@ -3,6 +3,38 @@ use_style =
   width: TEXT_WIDTH
   margin: 'auto'
 
+testimonial = (name, org, img, text) -> 
+
+  DIV 
+    style:
+      position: 'relative'
+      marginTop: 40
+
+    IMG 
+      src: asset(img)
+      style: 
+        width: 50
+        borderRadius: '50%'
+        position: 'absolute'
+        left: -70
+        top: 20
+
+
+    DIV 
+      style: 
+        marginBottom: 10
+        textDecoration: 'italics'
+      "#{name}, #{org}"
+
+    DIV
+      style:
+        backgroundColor: 'rgba(255,255,255,.2)'
+        borderRadius: 16
+        padding: '10px 20px'
+      text
+
+
+
 demosList = (demos, label) -> 
   P 
     style:
@@ -102,8 +134,8 @@ uses = [{
         #   """
 
   }, {
-    icon: 'dialogue'
-    label: "Host a dialogue"
+    icon: 'converge'
+    label: "Focus a dialogue"
     description: -> 
       examples = [
         ["Living Voters Guide", 'https://livingvotersguide.org'],
@@ -113,7 +145,7 @@ uses = [{
         style: use_style
 
         """
-        Start a discussion about an interesting and/or contentious topic! 
+        Start a focused discussion about an interesting and/or contentious topic! 
         Consider.it provides a constructive environment for many people to 
         learn about an issue and share their opinion.
         The design minimizes personal attacks; and if they happen, our moderation 
@@ -225,13 +257,22 @@ applications = [{
           style: use_style
           """
           Consider.it makes students' thinking visible to themselves and other students. 
-          This enables them to reflect on the strength of their arguments, 
+          Students can then reflect on the strength of their arguments, 
           engage and build on each other's ideas, and express a considered 
           opinion. Supports Common Core aligned exercises in English and Social Studies.
           """
 
           demosList(demos, 'Demos')
 
+          # testimonial("Emma Peat", "Live Oak School", "product_page/emma_peat.jpg", """
+          #   As an 8th grade humanities teacher, I spend a great deal of energy getting my 
+          #   students to talk to each other. Each student has her/his own learning style 
+          #   and comfort when it comes to sharing ideas, and I am always looking for new 
+          #   ways for students to "talk." Consider.it is a flexible tool that can be 
+          #   adapted in the classroom in many ways, including peer editing, looking at 
+          #   issues from different perspectives, and answering big questions. It has been 
+          #   an exciting addition to our classroom and I look forward to finding even 
+          #   more ways of using it. """)
 
   }, {
     icon: 'public'
@@ -268,6 +309,7 @@ window.Uses = ->
       color: 'white'
       padding: '80px 0'
       position: 'relative'
+      zIndex: 1
 
     DIV 
       style: cssTriangle 'bottom', 'white', 133, 30,
@@ -287,9 +329,6 @@ window.Uses = ->
 
         'What can Consider.it help you do better?'
 
-      # for u, idx in uses
-      #   use _.extend {}, u, 
-      #     even: idx % 2 == 0
 
       VisualTab
         tabs: uses
@@ -297,7 +336,7 @@ window.Uses = ->
         stroke_width: 2        
         bg_color: logo_red
         icon_height: 110
-        description_height: 250
+        description_height: 286
 
         style: 
           width: 900

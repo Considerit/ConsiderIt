@@ -93,7 +93,7 @@ window.Features = ReactiveComponent
         style: _.extend {}, h1, 
           marginBottom: '50px'
 
-        'Additional features'
+        'Features'
 
 
       UL
@@ -139,12 +139,3 @@ window.Features = ReactiveComponent
               BR null
               SPAN null,
                 feature.description()
-                
-
-
-
-
-
-
-
-      

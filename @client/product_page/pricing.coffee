@@ -155,6 +155,7 @@ window.Pricing = ReactiveComponent
               listStyle: 'none'
               textAlign: 'left'
               margin: 'auto'
+              marginBottom: 46
 
             for feature in plan.features
               LI

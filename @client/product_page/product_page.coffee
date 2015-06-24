@@ -63,7 +63,7 @@ Header = ReactiveComponent
   render: ->
     current_user = fetch("/current_user")
 
-    nav_links = ['demo', 'uses', 'features', 'price', 'contact']
+    nav_links = ['demo', 'uses', 'features', 'price', 'contact', 'about']
     
     DIV
       style:
@@ -113,13 +113,17 @@ Header = ReactiveComponent
                   marginLeft: 25
                   cursor: 'pointer'
                   fontVariant: if nav == 'faq' then 'small-caps'
+                onClick: do (nav) => => 
+                  if nav == 'about'
+                    showStory()
+
                 href: "##{nav}"
                 nav
 
   componentDidMount : -> 
 
     checkBackground = =>   
-      red_regions = ['#uses', '#contact', '#footer'] #[[0, 530 + 2 * HEADER_HEIGHT]]
+      red_regions = ['#uses', '#contact', '#footer', '#collaborate'] #[[0, 530 + 2 * HEADER_HEIGHT]]
       y = $(window).scrollTop() + $(@getDOMNode()).outerHeight()
 
       in_red = false
@@ -582,7 +586,7 @@ window.VisualTab = ReactiveComponent
 
       DIV 
         style: _.extend {}, base_text, 
-          height: if @props.description_height then @props.description_height
+          minHeight: if @props.description_height then @props.description_height
           margin: '0px auto 40px auto'   
           paddingTop: 25
           borderTop: "#{stroke_width}px solid #{@props.stroke_color}"
@@ -597,6 +601,69 @@ window.VisualTab = ReactiveComponent
                 tab.description()
               else 
                 tab.description
+
+Collaborate = ReactiveComponent
+  displayName: 'Collaborate'
+
+  render: -> 
+
+    DIV 
+      id: 'collaborate'
+      style:
+        marginTop: 1
+        backgroundColor: considerit_gray
+        #color: 'white'
+        padding: '30px 0'
+        paddingBottom: 80
+        position: 'relative'
+
+      DIV 
+        style: cssTriangle 'bottom', 'white', 133, 30,
+          position: 'absolute'
+          left: '50%'
+          marginLeft: - 133 / 2
+          top: 0
+
+      DIV 
+        style: 
+          width: SAAS_PAGE_WIDTH
+          margin: 'auto'
+          textAlign: 'center'           
+
+        DIV 
+          style: 
+            position: 'relative'
+            left: 9
+            top: -4
+
+          collaborationSVG
+            height: 100
+            fill_color: '#414141'
+
+
+        DIV
+          style: 
+            textAlign: 'center'
+            width: 570
+            margin: 'auto'
+            fontSize: 24
+            marginTop: 10
+            color: '#414141'
+
+          "Have something else in mind? Want to collaborate on a larger project? We'd love to "
+          A
+            href: '#contact'
+            style: 
+              textDecoration: "underline"
+            'hear from you'
+          "."
+
+      DIV 
+        style: cssTriangle 'bottom', considerit_gray, 133, 30,
+          position: 'absolute'
+          left: '50%'
+          marginLeft: - 133 / 2
+          bottom: -30      
 
 
 Page = ReactiveComponent
@@ -615,6 +682,7 @@ Page = ReactiveComponent
       Customers()      
       Uses()
       #FAQ()
+      Collaborate()
       Features()
       Pricing()
       Contact()

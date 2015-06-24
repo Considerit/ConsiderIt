@@ -58,7 +58,8 @@ window.Video = ReactiveComponent
 
         @drawVideo()
 
-      @drawChapterMenu()
+      if @local.playing
+        @drawChapterMenu()
 
       A
         href: 'https://fun.consider.it/Death_Star'
@@ -216,6 +217,7 @@ window.Video = ReactiveComponent
       DIV 
         style: 
           height: 70
+          color: if @local.playing then logo_red
   
         if @local.ready && chapter.caption         
           chapter.caption

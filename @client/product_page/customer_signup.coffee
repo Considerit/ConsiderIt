@@ -73,7 +73,7 @@ window.CustomerSignup = ReactiveComponent
     DIV 
       style:
         margin: '30px auto'
-        width: DECISION_BOARD_WIDTH
+        width: DECISION_BOARD_WIDTH()
 
       Auth
         naked: true
@@ -143,7 +143,7 @@ window.CustomerSignup = ReactiveComponent
     DIV 
       style:
         margin: '30px auto'
-        width: DECISION_BOARD_WIDTH
+        width: DECISION_BOARD_WIDTH()
 
       DIV 
         style: 
@@ -159,7 +159,7 @@ window.CustomerSignup = ReactiveComponent
           border: "1px solid #{auth_ghost_gray}"
           padding: '8px 16px'
           fontSize: 20
-          width: DECISION_BOARD_WIDTH
+          width: DECISION_BOARD_WIDTH()
          
         placeholder: 'Name your Consider.it site'
 

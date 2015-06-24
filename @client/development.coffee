@@ -31,9 +31,9 @@ Development = ReactiveComponent
         opacity: if @local.hover_top then 1 else 0
         backgroundColor: 'black'
         color: 'white'
-        padding: 20
+        padding: 30
 
-      onClick: (e) => @local.hover_top = true; save @local
+      onTouchEnd: (e) => @local.hover_top = true; save @local
       onMouseEnter: (e) => @local.hover_top = true; save @local
       onMouseLeave: (e) => @local.hover_top = @local.hover_second = false; save @local
 
@@ -52,6 +52,9 @@ Development = ReactiveComponent
                   backgroundColor: 'black'
                   color: 'white'
                   fontWeight: 600
+                onTouchEnd: do(submenu) => (e) => 
+                  @local.hover_second = submenu
+                  save @local
                 onMouseEnter: do(submenu) => (e) => 
                   @local.hover_second = submenu
                   save @local
@@ -75,7 +78,7 @@ Development = ReactiveComponent
                       style: 
                         padding: "4px 8px"
                         fontSize: 18
-                        backgroundColor: hsv_to_rgb(hues[idx], .7, .5)
+                        backgroundColor: hsv2rgb(hues[idx], .7, .5)
                         color: 'white'
                         display: 'inline-block'            
                       sub.name
@@ -94,7 +97,7 @@ Development = ReactiveComponent
                       style: 
                         padding: "4px 8px"
                         fontSize: 18
-                        backgroundColor: hsv_to_rgb(hues[idx], .7, .5)
+                        backgroundColor: hsv2rgb(hues[idx], .7, .5)
                         color: 'white'
                         display: 'inline-block'            
                       app

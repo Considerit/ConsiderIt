@@ -11,6 +11,13 @@ window.avatarUrl = (user, img_size) ->
 
 
 
+user_name = (user, anon) -> 
+  user = fetch user
+  if anon || !user.name || user.name.trim().length == 0 
+    'Anonymous' 
+  else 
+    user.name
+
 ##########
 # Performance hack.
 # Was seeing major slowdown on pages with lots of avatars simply because we
@@ -19,11 +26,9 @@ window.avatarUrl = (user, img_size) ->
 document.addEventListener "mouseover", (e) ->
   if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
     user = fetch(e.target.getAttribute('data-user'))
-    anon = e.target.getAttribute('data-anonymous') == 'true'
-    name = if anon || user.name?.length == 0 
-             'Anonymous' 
-           else 
-             user.name
+
+    name = user_name user, e.target.getAttribute('data-anonymous') == 'true'
+
     tooltip = fetch 'tooltip'
     tooltip.coords = $(e.target).offset()
     tooltip.tip = name
@@ -68,11 +73,11 @@ window.Avatar = ReactiveComponent
   displayName: 'Avatar'
   
   render : ->
-    @props.anonymous = @props.anonymous? && @props.anonymous 
+    anonymous = @props.anonymous? && @props.anonymous 
 
     user = @data()
 
-    id = if @props.anonymous 
+    id = if anonymous 
            "avatar-hidden" 
          else 
            "avatar-#{user.key.split('/')[2]}"
@@ -80,7 +85,7 @@ window.Avatar = ReactiveComponent
     style = _.extend {}, @props.style
     img_size = @props.img_size or 'thumb'
 
-    show_avatar = !@props.anonymous && !!user.avatar_file_name
+    show_avatar = !anonymous && !!user.avatar_file_name
     # Automatically upgrade the avatar size to 'large' if the width of the image is 
     # greater than the size of the b64 encoded image
     if img_size == 'thumb' && style?.width > 50 && !browser.is_ie9
@@ -108,7 +113,7 @@ window.Avatar = ReactiveComponent
     # will reveal content behind it that is undesirable to show.  
     style.backgroundColor = 'white' if show_avatar
 
-    add_initials = !@props.anonymous && !user.avatar_file_name
+    add_initials = !user.avatar_file_name
     
     if add_initials
       style.textAlign = 'center'
@@ -118,7 +123,7 @@ window.Avatar = ReactiveComponent
       id: id
       'data-user': user.key
       'data-showtooltip': !@props.hide_tooltip
-      'data-anon': @props.anonymous      
+      'data-anon': anonymous      
       style: style
 
 
@@ -128,7 +133,9 @@ window.Avatar = ReactiveComponent
 
     @transferPropsTo tag attrs,
       if add_initials
-        name = (user.name?.trim() or 'Anonymous').split(' ')
+        name = user_name user, anonymous
+        if name == 'Anonymous'
+          name = '?'
         fontsize = style.width / 2
         ff = 'monaco,Consolas,"Lucida Console",monospace'
         if name.length == 2
@@ -170,7 +177,7 @@ styles += """
 """
 
 
-# Fetches avatar definitions and puts them in a style sheet
+# Fetches b64 encoded avatar thumbnails and puts them in a style sheet
 window.Avatars = ReactiveComponent
   displayName: 'Avatars'
   render: -> 

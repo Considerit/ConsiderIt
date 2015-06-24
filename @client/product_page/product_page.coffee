@@ -650,7 +650,7 @@ Collaborate = ReactiveComponent
             marginTop: 10
             color: '#414141'
 
-          "Have something else in mind? Want to collaborate on a larger project? We'd love to "
+          "Have a different use in mind? Want to collaborate on a larger project? We'd love to "
           A
             href: '#contact'
             style: 

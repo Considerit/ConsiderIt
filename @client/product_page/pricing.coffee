@@ -213,6 +213,8 @@ window.Pricing = ReactiveComponent
         @local.sign_up_for = plan.name
         save @local
         if @local.sign_up_for
-          $(@getDOMNode()).moveToTop(-400, true)        
+          $(@getDOMNode()).moveToTop
+            offset_buffer: -400
+            scroll: true
 
       plan.call_to_action

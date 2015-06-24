@@ -122,7 +122,7 @@ window.Dock = ReactiveComponent
     # Register this dock with dockingStation. Send dockingStation a callback that it 
     # can invoke to learn about this dock when making calculations. 
 
-    $el = $(@refs.dock_child.getDOMNode()).children()
+    $el = $(@refs.dock_child.getDOMNode()).children(':visible')
 
     # The stacking order of this dock. Used to determine 
     # how docking components stack up. The initial y position seems to be 
@@ -160,17 +160,28 @@ window.Dock = ReactiveComponent
       # realDimensions. This proves to work quite well in practice
       # as the docked element changes rarely compared to the 
       # frequency of scroll events. 
+
+      $el = $(@refs.dock_child.getDOMNode()).children(':visible')
       current_dom = serializer.serializeToString($el[0]) + @props.skip_jut
 
       if current_dom != last_dom
 
-        [element_height, jut_above, jut_below] = if !@props.skip_jut then realDimensions($el) else [$el.height(), 0, 0]
+        [element_height, jut_above, jut_below] = if !@props.skip_jut 
+                                                   realDimensions($el) 
+                                                 else 
+                                                   [$el.height(), 0, 0]
         last_dom = current_dom
-          
+      
       return {
-        start         : if _.isFunction(@props.start) then @props.start() else $(@getDOMNode()).offset().top + (@props.start || 0)
+        start         : if _.isFunction(@props.start) 
+                          @props.start() 
+                        else 
+                          $(@getDOMNode()).offset().top + (@props.start || 0)
         stop          : @props.stop?() or Infinity
-        dock_on_zoom  : if @props.dock_on_zoomed_screens? then @props.dock_on_zoomed_screens else true
+        dock_on_zoom  : if @props.dock_on_zoomed_screens?
+                          @props.dock_on_zoomed_screens 
+                        else 
+                          true
         skip_docking  : @props.dockable && !@props.dockable()
         stack_priority: @local.stack_priority
         jut_above     : jut_above
@@ -502,7 +513,7 @@ dockingStation =
 
       if v.stop != Infinity
         # STOP
-        console.log "\tSTOP: #{k} <= #{v.stop - (v.height)}, strong" if debug
+        console.log "\tSTOP: #{k} <= #{v.stop} - #{v.height}, strong" if debug
         solver.addConstraint new c.Inequality \
           y_pos[k], c.LEQ, v.stop - v.height, c.Strength.strong
 
@@ -523,7 +534,9 @@ dockingStation =
 
       # TOP OF COMPONENT VISIBLE
       # Try to keep it at or below the viewport, especially when scrolling up
-      console.log "\tTOP OF COMPONENT VISIBLE: #{k} >= #{dockingStation.viewport.top} + #{v.jut_above} + #{y_stack}, #{if dockingStation.scrolling_down then 'weak' else 'medium'}" if debug
+      console.log """\tTOP OF COMPONENT VISIBLE: 
+                          #{k} >= #{dockingStation.viewport.top} + #{v.jut_above} + #{y_stack}, 
+                          #{if dockingStation.scrolling_down then 'weak' else 'medium'}""" if debug
       solver.addConstraint new c.Inequality \
         y_pos[k], \
         c.GEQ, \
@@ -533,7 +546,9 @@ dockingStation =
 
       # BOTTOM OF COMPONENT VISIBLE
       # Try to keep the bottom above the viewport, especially when scrolling down
-      console.log "\tBOTTOM OF COMPONENT VISIBLE: #{k} + #{v.height} <= #{dockingStation.viewport.top} + #{dockingStation.viewport.height}, #{if dockingStation.scrolling_down then 'medium' else 'weak'}" if debug
+      console.log """\tBOTTOM OF COMPONENT VISIBLE: 
+                         #{k} + #{v.height} <= #{dockingStation.viewport.top} + #{dockingStation.viewport.height}, 
+                         #{if dockingStation.scrolling_down then 'medium' else 'weak'}""" if debug
       solver.addConstraint new c.Inequality \
         y_pos[k], \
         c.LEQ, \
@@ -544,7 +559,8 @@ dockingStation =
       for sv, j in sorted
         sk = sv.key
         if j < i && sk in v.constraints
-          console.log "\tRELATIONAL: #{k} >= #{sk} + #{sv.height} + #{v.jut_above} - #{sv.jut_above}}, required" if debug
+          console.log """\tRELATIONAL: 
+                         #{k} >= #{sk} + #{sv.height} + #{v.jut_above} - #{sv.jut_above}}, required""" if debug
           
           solver.addConstraint new c.Inequality \
                                 y_pos[k], \

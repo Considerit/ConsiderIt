@@ -34,7 +34,7 @@ window.DefaultFooter = ReactiveComponent
 
         DIV 
           style: 
-            marginTop: 5
+            marginTop: 7
 
           'Bug to report? Want to use this technology yourself? '
           A 
@@ -45,6 +45,8 @@ window.DefaultFooter = ReactiveComponent
             'Email us'
           ' at admin@consider.it'
 
+
+require './logo'
 window.TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'
   render : -> 
@@ -55,13 +57,21 @@ window.TechnologyByConsiderit = ReactiveComponent
         fontSize: 20
       "Technology by "
       A 
+        onMouseEnter: => 
+          @local.hover = true
+          save @local
+        onMouseLeave: => 
+          @local.hover = false
+          save @local
         href: 'http://consider.it'
-        style: 
-          textDecoration: 'underline'
-          color: logo_red
-          fontWeight: 600, 
         target: '_blank'
-        'Consider.it'
+        style: 
+          position: 'relative'
+          top: 6
+          left: 3
+        
+        drawLogo 25, logo_red, logo_red, false, true, logo_red, (if @local.hover then 142 else null), true
+
 
 
 

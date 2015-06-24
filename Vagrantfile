@@ -61,7 +61,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.synced_folder "../data", "/vagrant_data"
 
   # Required for NFS to work, pick any local IP
-  config.vm.network :private_network, ip: "10.211.55.3"
+  #config.vm.network :private_network, ip: "10.211.55.3"
 
   # Use NFS for shared folders for better performance
   config.vm.synced_folder '.', '/vagrant', nfs: true
@@ -69,6 +69,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.synced_folder ".", "/vagrant", type: "rsync",
   #   rsync__exclude: [".git/", "node_modules/"]
 
+  #config.ssh.host = '10.211.55.4'
   config.ssh.port = 22
 
   config.vm.provision :ansible do |ansible|
@@ -85,7 +86,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #ansible.hosts = "ubuntu"
 
     ansible.extra_vars = { 
-      ansible_ssh_host: '10.211.55.3',
+      ansible_ssh_host: '10.211.55.4',
     }
     ansible.verbose = 'vvvv'
   end

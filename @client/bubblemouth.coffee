@@ -80,6 +80,7 @@ window.Bubblemouth = (props) ->
     height: props.height
     viewBox: "0 0 #{full_width} #{svg_h}"
     preserveAspectRatio: "none"
+    style: if props.style then props.style
 
     DEFS null,
 

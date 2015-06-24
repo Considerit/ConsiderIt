@@ -695,14 +695,14 @@ addSVGDefs = (defs, nodes) ->
   for own k,v of cache_prefixes
     h = hues[i]
     s = .8
-    addGradient 'linearGradient', defs, "radial-cache-key-#{k}", hsv_to_rgb(h,1.0,1.0), hsv_to_rgb(h,1.0,.8) 
+    addGradient 'linearGradient', defs, "radial-cache-key-#{k}", hsv2rgb(h,1.0,1.0), hsv2rgb(h,1.0,.8) 
     i += 1
 
   hues = getNiceRandomHues Object.keys(component_names).length, .5
   i = 0
   for own k,v of component_names
     h = hues[i]
-    addGradient 'linearGradient', defs, "radial-component-#{k}", hsv_to_rgb(h,.8,.6), hsv_to_rgb(h,.8,.5)
+    addGradient 'linearGradient', defs, "radial-component-#{k}", hsv2rgb(h,.8,.6), hsv2rgb(h,.8,.5)
     i += 1
 
 addGradient = (gradient, defs, id, c1, c2) ->

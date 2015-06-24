@@ -1426,7 +1426,7 @@ customizations.livingvotersguide =
           backgroundPosition: 'center'
           backgroundSize: 'cover'
           borderBottom: if !homepage then "15px solid #a5ce3a"
-
+          minWidth: 1152
 
         DIV
           style:
@@ -1551,7 +1551,7 @@ customizations.livingvotersguide =
             DIV
               style:
                 fontSize: 24
-                width: CONTENT_WIDTH()
+                width: 1152 #CONTENT_WIDTH()
                 color: 'white'
                 margin: 'auto'
                 padding: '35px 0'

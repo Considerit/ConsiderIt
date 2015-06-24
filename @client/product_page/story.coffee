@@ -1,19 +1,32 @@
 require '../element_viewport_positioning'
 
 
+window.showStory = -> 
+  story = fetch 'story'
+  story.show_story = !story.show_story
+  story.scroll_to = true
+  save story
+            
+
 window.Story = ReactiveComponent
   displayName: 'Story'
 
   render: -> 
+    story = fetch 'story'
+
+    if story.show_story && story.scroll_to
+      $(@getDOMNode()).moveToTop(100, true)
+      story.scroll_to = false
+      save story
 
     DIV 
-      id: 'story'
+      id: 'about'
       style: _.extend {}, base_text,
         width: SAAS_PAGE_WIDTH
         margin: '80px auto 20px auto'
 
 
-      if @local.show_story
+      if story.show_story
         [H1
           style: _.extend {}, h1, 
             marginBottom: 30
@@ -28,18 +41,13 @@ window.Story = ReactiveComponent
 
         SPAN
         
-          onClick: =>
-            @local.show_story = !@local.show_story
-            save @local
-
-            if @local.show_story
-              $(@getDOMNode()).moveToTop(100, true)        
+          onClick: showStory
 
           style: 
             borderBottom: '1px solid black'
             cursor: 'pointer'
 
-          if @local.show_story
+          if story.show_story
             "Hide our story"
           else
             "Still want more? Read our story"

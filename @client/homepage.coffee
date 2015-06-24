@@ -441,12 +441,6 @@ window.LearnDecideShareHomepage = ReactiveComponent
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
 
-    homepage = fetch('/page/')
-    
-    # The "Welcome to the community!" people
-    contributors = homepage.contributors.filter((u)-> !!fetch(u).avatar_file_name)
-    contributors_without_avatar_count = homepage.contributors.filter((u)-> !fetch(u).avatar_file_name).length
-
     # Columns of the docking header for the proposal list.
     columns = customization('homepage_heading_columns') or [ 
                   {heading: 'Question', details: 'about the issues'}, \
@@ -458,6 +452,8 @@ window.LearnDecideShareHomepage = ReactiveComponent
 
     DIV 
       className: 'homepage'
+      style: 
+        minWidth: 1250
 
       # Dock
       #   container_selector: '.homepage'
@@ -503,25 +499,6 @@ window.LearnDecideShareHomepage = ReactiveComponent
                         col.details
 
       DIV style: {marginTop: 30},
-        if contributors.length > 0
-          DIV 
-            style: 
-              #width: PAGE_WIDTH
-              position: 'relative'
-              margin: 'auto'
-            DIV 
-              style:
-                left: if subdomain.name != 'allsides' then 1005 else 900
-                position: 'absolute'
-                width: 165
-                textAlign: 'left'
-                zIndex: 1
-
-              for user in _(contributors).first(90)
-                Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
-              if contributors_without_avatar_count > 0
-                others = if contributors_without_avatar_count != 1 then 'others' else 'other'
-                DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} #{others}"
 
         # Draw the proposal summaries
         for cluster, index in proposals.clusters or []
@@ -553,11 +530,12 @@ window.LearnDecideShareHomepage = ReactiveComponent
                       cluster.name                
 
                   # Draw each proposal summary
-                  for proposal in cluster.proposals
+                  for proposal, proposal_idx in cluster.proposals
                     ProposalSummary
                       key: proposal.key
                       cluster: cluster.name
                       columns: columns
+                      addContributors: index == 0 && proposal_idx == 0
             
             # Cluster description
             if description 
@@ -577,6 +555,8 @@ window.LearnDecideShareHomepage = ReactiveComponent
             href: '/proposal/new'
             'Create new proposal'
 
+
+
 # Used by the LearnDecideShare homepage
 window.ProposalSummary = ReactiveComponent
   displayName: 'ProposalSummary'
@@ -591,6 +571,7 @@ window.ProposalSummary = ReactiveComponent
 
     link_hover_color = focus_blue
     cell_border = "1px solid #{if @local.hovering_on then link_hover_color else 'rgb(191, 192, 194)'}"
+
     TR 
       className: "proposal_summary " + hover_class
       style:
@@ -720,3 +701,32 @@ window.ProposalSummary = ReactiveComponent
                 DIV className:'point_nutshell', style: {fontSize: 15},
                   "#{proposal.top_point.nutshell[0..30]}..."
 
+      if @props.columns[2].heading && @props.addContributors
+        @drawContributors()
+
+
+
+  drawContributors : -> 
+    homepage = fetch('/page/')
+    
+    # The "Welcome to the community!" people
+    contributors = homepage.contributors.filter((u)-> !!fetch(u).avatar_file_name)
+    contributors_without_avatar_count = homepage.contributors.filter((u)-> !fetch(u).avatar_file_name).length
+
+    if contributors.length > 0
+
+      TD 
+        style:
+          # left: if subdomain.name != 'allsides' then 1005 else 900
+          right: -145
+          top: -10
+          position: 'absolute'
+          width: 165
+          textAlign: 'left'
+          zIndex: 1
+
+        for user in _(contributors).first(90)
+          Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
+        if contributors_without_avatar_count > 0
+          others = if contributors_without_avatar_count != 1 then 'others' else 'other'
+          DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} #{others}"

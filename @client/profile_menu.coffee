@@ -1,23 +1,9 @@
 window.ProfileMenu = ReactiveComponent
   displayName: 'ProfileMenu'
 
-  componentDidMount : -> @setBgColor()
-  componentDidUpdate : -> @setBgColor()
-  setBgColor : -> 
-    cb = (is_light) => 
-      if @local.light_background != is_light
-        @local.light_background = is_light
-        save @local
-
-    is_light = isLightBackground @getDOMNode(), cb
-
-    cb is_light
-
   render : -> 
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
-    loc = fetch('location') # should rerender on a location change because background
-                            # color might change
 
     is_evaluator = subdomain.assessment_enabled && current_user.is_evaluator
     is_admin = current_user.is_admin
@@ -34,13 +20,17 @@ window.ProfileMenu = ReactiveComponent
 
     menu_options = _.compact menu_options
 
+    hsl = parseCssHsl(subdomain.branding.primary_color)
+    light_background = hsl.l > .75
+
     DIV
       id: 'user_nav'
       style:
         _.extend(
           position: 'absolute'
           zIndex: 1
-          right: 50
+          right: 30
+          fontSize: 26
           top: 17,
           _.clone(@props.style))
 
@@ -49,6 +39,11 @@ window.ProfileMenu = ReactiveComponent
           className: 'profile_menu_wrap'
           style:
             position: 'relative'
+
+          onTouchEnd: => 
+            @local.menu = !@local.menu
+            save(@local)
+
           onMouseEnter: => @local.menu = true; save(@local)
           onMouseLeave: => @local.menu = false; save(@local)
           DIV 
@@ -58,11 +53,11 @@ window.ProfileMenu = ReactiveComponent
               marginTop: -8
               marginLeft: -8
               padding: 8
-              paddingTop: 50
+              paddingTop: 70
               paddingRight: 14
               backgroundColor: '#eee'
-              left: -82
-              textAlign: 'left'
+              left: -122
+              textAlign: 'right'
               zIndex: 999999
 
             for option in menu_options
@@ -80,7 +75,7 @@ window.ProfileMenu = ReactiveComponent
 
           SPAN 
             style: 
-              color: if !@local.light_background then 'white'
+              color: if !light_background then 'white'
               position: 'relative'
               zIndex: 9999999999
               backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)'
@@ -92,21 +87,25 @@ window.ProfileMenu = ReactiveComponent
               key: current_user.user
               hide_tooltip: true
               className: 'userbar_avatar'
-              style: {height: 20, width: 20, marginRight: 7, marginTop: 1}
+              style: 
+                height: 35
+                width: 35
+                marginRight: 7
+                marginTop: 1
             I 
               className: 'fa fa-caret-down'
               style: 
                 visibility: if @local.menu then 'hidden'
       else
         A
-          'className': 'profile_anchor login'
+          className: 'profile_anchor login'
           'data-action': 'login'
           onClick: (e) =>
             reset_key 'auth',
               form: 'login'
 
           style: 
-            color: if !@local.light_background then 'white'
+            color: if !light_background then 'white'
           'Log in'
     
 

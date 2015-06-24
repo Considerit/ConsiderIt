@@ -1,3 +1,5 @@
+require './browser_hacks'
+
 ##
 # Histogram
 #
@@ -172,23 +174,40 @@ window.Histogram = ReactiveComponent
         userSelect: 'none'
 
     if @props.enable_selection
-      _.extend histogram_props,
-        onClick: @onClick
-        onMouseMove: @onMouseMove
-        onMouseLeave: @onMouseLeave
-        onMouseUp: @onMouseUp
-        onMouseDown: @onMouseDown
+      if !browser.is_mobile
+        _.extend histogram_props,
+          onClick: @onClick
+          onMouseMove: @onMouseMove
+          onMouseLeave: @onMouseLeave
+          onMouseUp: @onMouseUp
+          onMouseDown: @onMouseDown
+      else 
+        _.extend histogram_props,
 
-        onTouchStart: (ev) => 
-          ev.preventDefault()
-          @local.touched = true
-          save hist
-          save @local
-          @onClick(ev)
+          onTouchStart: (ev) => 
+            curr_time = new Date().getTime()
+            # activation by double tap
+            if @local.last_tapped_at && curr_time - @local.last_tapped_at < 300
+              ev.preventDefault()
+              @local.touched = true
+              save @local
+              @onClick(ev)
+            else 
+              @local.last_tapped_at = curr_time
+              save @local
 
-        onTouchMove: (ev) => ev.preventDefault(); @onMouseMove(ev)
-        onTouchEnd: (ev) => ev.preventDefault(); @onMouseUp(ev)
-        onTouchCancel: (ev) => ev.preventDefault(); @onMouseUp(ev)
+          onTouchMove: (ev) => ev.preventDefault(); @onMouseMove(ev)
+          onTouchEnd: (ev) => 
+            curr_time = new Date().getTime()
+            # activation by double tap
+            if @local.last_tapped_at && curr_time - @local.last_tapped_at < 300          
+              ev.preventDefault()
+              @onMouseUp(ev)
+            else 
+              @local.last_tapped_at = curr_time
+              save @local
+
+          onTouchCancel: (ev) => ev.preventDefault(); @onMouseUp(ev)
 
     DIV histogram_props, 
 
@@ -305,8 +324,10 @@ window.Histogram = ReactiveComponent
       backgroundColor: focus_blue
     css.crossbrowserify selected_avatar_style
     # 3) The style of an unselected avatar when some other avatar(s) is selected
-    unselected_avatar_style = css.grayscale _.extend {}, regular_avatar_style, 
+    unselected_avatar_style = _.extend {}, regular_avatar_style,  
       opacity: .2
+    if !browser.is_mobile
+      unselected_avatar_style = css.grayscale _.extend unselected_avatar_style
     # 4) The style of the avatar when the histogram is backgrounded 
     #    (e.g. on the crafting page)
     backgrounded_page_avatar_style = _.extend {}, unselected_avatar_style, 
@@ -505,7 +526,7 @@ window.Histogram = ReactiveComponent
     simulation_opinion_hash = JSON.stringify _.map(@props.opinions, (o) => 
       Math.round(fetch(o.key).stance * 100) / 100 )
 
-    simulation_opinion_hash += " (#{@props.width}, #{@props.height})"
+    simulation_opinion_hash += " (#{@props.width}, #{@props.height}, #{@props.width})"
 
     if @refs && @refs.histo && simulation_opinion_hash != @local.simulation_opinion_hash
       histo = @refs.histo.getDOMNode()

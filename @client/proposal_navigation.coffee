@@ -33,10 +33,9 @@ window.DefaultProposalNavigation = ReactiveComponent
 
     DIV
       style:
-        margin: if customization('lefty') then "30px 0 0 300px" else "30px auto 0 auto"
-        width: BODY_WIDTH + 20
+        margin: "30px auto 0 auto"
+        width: BODY_WIDTH()
         position: 'relative'
-        left: if !customization('lefty') then 10
 
       # Previous button
       if prev_proposal
@@ -116,7 +115,6 @@ window.ProposalNavigationWithMenu = ReactiveComponent
     if not use_navigation_bar
       heading_style =
         textAlign: 'center'
-        minWidth: PAGE_WIDTH # for width consistency when docking
         backgroundColor: subdomain.branding.primary_color
         fontSize: 26
         padding: '4px 90px'
@@ -150,7 +148,6 @@ window.ProposalNavigationWithMenu = ReactiveComponent
       
       style:
         height: heading_height
-        minWidth: PAGE_WIDTH # for width consistency when docking
         backgroundColor: subdomain.branding.primary_color
         textAlign: 'center'
         width: '100%'
@@ -176,13 +173,11 @@ window.ProposalNavigationWithMenu = ReactiveComponent
       DIV
         # Set the width so we can align it perfectly with the proposal description text:
         style: 
-          width: DESCRIPTION_WIDTH
+          width: BODY_WIDTH()
           textAlign: 'left'
           margin: 'auto'
-          marginLeft: if customization('lefty') then 300
-          #marginRight: if customization('lefty') then 0
 
-        DIV style: {width: CONTENT_WIDTH}, # ...but let the stuff inside be big
+        DIV style: {width: CONTENT_WIDTH()}, # ...but let the stuff inside be big
           DIV
             style:
               fontSize: 22

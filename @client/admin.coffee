@@ -6,27 +6,33 @@ require './form'
 require './shared'
 
 
-# Experimenting with sharing css styles between components via js objects
-task_area_header_style = {fontSize: 24, fontWeight: 400, margin: '10px 0'}
-task_area_bar = {padding: '4px 30px', fontSize: 24, borderRadius: '8px 8px 0 0', height: 35, backgroundColor: 'rgba(0,0,55,.1)'}
-task_area_section_style = {margin: '10px 0px 20px 0px', position: 'relative'}
-task_area_style = {cursor: 'auto', width: 3 * CONTENT_WIDTH / 4, backgroundColor: '#F4F0E9', position: 'absolute', left: CONTENT_WIDTH/4, top: -35, borderRadius: 8}
-
+adminStyles = -> 
+  {
+    task_area_header_style:
+      fontSize: 24
+      fontWeight: 400
+      margin: '10px 0'
+    task_area_bar: 
+      padding: '4px 30px'
+      fontSize: 24
+      borderRadius: '8px 8px 0 0'
+      height: 35
+      backgroundColor: 'rgba(0,0,55,.1)'
+    task_area_section_style: 
+      margin: '10px 0px 20px 0px'
+      position: 'relative'
+    task_area_style: 
+      cursor: 'auto'
+      width: CONTENT_WIDTH() * .75
+      backgroundColor: '#F4F0E9'
+      position: 'absolute'
+      left: CONTENT_WIDTH()/4
+      top: -35
+      borderRadius: 8
+  }
 
 DashHeader = ReactiveComponent
   displayName: 'DashHeader'
-
-  # componentDidMount : -> @setBgColor()
-  # componentDidUpdate : -> @setBgColor()
-  # setBgColor : -> 
-  #   cb = (is_light) => 
-  #     if @local.light_background != is_light
-  #       @local.light_background = is_light
-  #       save @local
-
-  #   is_light = isLightBackground @getDOMNode(), cb
-
-  #   cb is_light
 
   render : ->    
 
@@ -39,20 +45,16 @@ DashHeader = ReactiveComponent
     DIV 
       style: 
         position: 'relative'
-        #backgroundColor: subdomain.branding.primary_color
-        #color: if !@local.light_background then 'white'
 
-      DIV style: {width: CONTENT_WIDTH, margin: 'auto', position: 'relative'},
-        # A
-        #   href: '/'
-        #   style: {position: 'absolute', display: 'inline-block', top: 25, left: -40},
-        #   I className: 'fa fa-home', style: {fontSize: 28}
-        
+      DIV 
+        style: 
+          width: BODY_WIDTH()
+          margin: 'auto'
+          position: 'relative'    
         H1 
           style: 
             fontSize: 28
             padding: '20px 0'
-            #color: if !@local.light_background then 'white'
             fontWeight: 400
           @props.name   
 
@@ -73,7 +75,7 @@ ImportDataDash = ReactiveComponent
 
       DashHeader name: 'Import Data'
 
-      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'},
+      DIV style: {width: BODY_WIDTH(), margin: '15px auto'},
         P style: {marginBottom: 6}, 
           "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
 
@@ -198,7 +200,7 @@ AppSettingsDash = ReactiveComponent
       DashHeader name: 'Application Settings'
 
       if subdomain.name
-        DIV style: {width: CONTENT_WIDTH, margin: '20px auto'}, 
+        DIV style: {width: BODY_WIDTH(), margin: '20px auto'}, 
 
           DIV className: 'input_group',
             LABEL htmlFor: 'app_title', 'The name of this application'
@@ -259,8 +261,8 @@ AppSettingsDash = ReactiveComponent
                   placeholder: 'The primary brand color. Needs to be dark.'
 
           FORM id: 'subdomain_files', action: '/update_images_hack',
-            DIV className: 'input_group',
-              if current_user.is_super_admin
+            if current_user.is_super_admin
+              DIV className: 'input_group',
                 DIV null, LABEL htmlFor: 'masthead', 'Masthead background image. Should be pretty large.'
                 INPUT 
                   id: 'masthead'
@@ -381,7 +383,7 @@ AdminTaskList = ReactiveComponent
             UL style: {},
               for item in items
                 background_color = if item.key == dash.selected_task then '#F4F0E9' else ''
-                LI key: item.key, style: {position: 'relative', listStyle: 'none', width: CONTENT_WIDTH / 4},
+                LI key: item.key, style: {position: 'relative', listStyle: 'none', width: CONTENT_WIDTH() / 4},
 
                   DIV 
                     className: 'task_tab',
@@ -455,7 +457,7 @@ ModerationDash = ReactiveComponent
     DIV null,
       DashHeader name: 'Moderate user contributions'
 
-      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'}, 
+      DIV style: {width: CONTENT_WIDTH(), margin: '15px auto'}, 
         DIV className: 'moderation_settings',
           if subdomain.moderated_classes.length == 0 || @local.edit_settings
             DIV null,             
@@ -545,6 +547,7 @@ ModerateItem = ReactiveComponent
   render : ->
     item = @data()
 
+
     class_name = item.moderatable_type
     moderatable = fetch(item.moderatable)
     author = fetch(moderatable.user)
@@ -560,10 +563,10 @@ ModerateItem = ReactiveComponent
 
     current_user = fetch('/current_user')
     
-    DIV style: task_area_style,
+    DIV style: adminStyles().task_area_style,
       
       # status area
-      DIV style: task_area_bar,
+      DIV style: adminStyles().task_area_bar,
         if item.updated_since_last_evaluation
           SPAN style: {}, "Updated since last moderation"
         else if item.status == 1
@@ -578,7 +581,7 @@ ModerateItem = ReactiveComponent
       DIV style: {padding: '10px 30px'},
         # content area
         DIV 
-          style: task_area_section_style, 
+          style: adminStyles().task_area_section_style, 
 
           if class_name == 'Point'
             UL style: {marginLeft: 73}, 
@@ -637,7 +640,7 @@ ModerateItem = ReactiveComponent
 
 
         # moderation area
-        DIV style: task_area_section_style, 
+        DIV style: adminStyles().task_area_section_style, 
           STYLE null, 
             """
             .moderation { padding: 6px 8px; display: inline-block; }
@@ -760,7 +763,7 @@ FactcheckDash = ReactiveComponent
     DIV null,
       DashHeader name: 'Fact check user contributions'
 
-      DIV style: {width: CONTENT_WIDTH, margin: '15px auto'}, 
+      DIV style: {width: CONTENT_WIDTH(), margin: '15px auto'}, 
         AdminTaskList 
           items: items
           key: 'factcheck_dash'
@@ -795,11 +798,11 @@ FactcheckPoint = ReactiveComponent
       if !claim.approver
         all_claims_approved = false
 
-    DIV style: task_area_style,
+    DIV style: adminStyles().task_area_style,
       STYLE null, '.claim_result a{text-decoration: underline;}'
       
       # status area
-      DIV style: task_area_bar,
+      DIV style: adminStyles().task_area_bar,
         if assessment.complete
           SPAN style: {}, "Published #{new Date(assessment.published_at).toDateString()}"
         else if assessment.reviewable
@@ -820,7 +823,7 @@ FactcheckPoint = ReactiveComponent
 
       DIV style: {padding: '10px 30px'},
         # point area
-        DIV style: task_area_section_style, 
+        DIV style: adminStyles().task_area_section_style, 
           UL style: {marginLeft: 73}, 
             Point key: point, rendered_as: 'under_review', enable_dragging: false
 
@@ -844,8 +847,8 @@ FactcheckPoint = ReactiveComponent
 
 
         # requests area
-        DIV style: task_area_section_style, 
-          H1 style: task_area_header_style, 'Fact check requests'
+        DIV style: adminStyles().task_area_section_style, 
+          H1 style: adminStyles().task_area_header_style, 'Fact check requests'
           DIV style: {}, 
             for request in assessment.requests
               DIV className: 'comment_entry', key: request.key,
@@ -871,8 +874,8 @@ FactcheckPoint = ReactiveComponent
                     DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Fact-checker'
 
         # claims area
-        DIV style: task_area_section_style, 
-          H1 style: task_area_header_style, 'Claims under review'
+        DIV style: adminStyles().task_area_section_style, 
+          H1 style: adminStyles().task_area_header_style, 'Claims under review'
 
 
           DIV style: {}, 
@@ -915,8 +918,8 @@ FactcheckPoint = ReactiveComponent
             else if !@local.editing
               Button {style: {marginLeft: 73, marginTop: 15}}, '+ Add new claim', => @local.editing = 'new'; save(@local)
 
-        DIV style: task_area_section_style,
-          H1 style: task_area_header_style, 'Private notes'
+        DIV style: adminStyles().task_area_section_style,
+          H1 style: adminStyles().task_area_header_style, 'Private notes'
           AutoGrowTextArea
             className: 'assessment_notes'
             placeholder: 'Private notes about this fact check'
@@ -929,7 +932,7 @@ FactcheckPoint = ReactiveComponent
 
           BUTTON style: {fontSize: 14}, onClick: @saveNotes, 'Save notes'
 
-          DIV style: task_area_header_style,
+          DIV style: adminStyles().task_area_header_style,
             if assessment.complete
               'Congrats, this one is finished.'
             else if all_claims_answered && !assessment.reviewable

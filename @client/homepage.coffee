@@ -46,14 +46,13 @@ window.sorted_proposals = (cluster) ->
 
 cluster_styles = ->
   first_column =
-    width: if !customization('lefty') then 480 else 350
-    marginLeft: if customization('lefty') then 200
+    width: SIMPLE_HOMEPAGE_WIDTH() * .6 - 50
     display: 'inline-block'
     verticalAlign: 'top'
     position: 'relative'
 
   secnd_column =
-    width: 300
+    width: SIMPLE_HOMEPAGE_WIDTH() * .4
     display: 'inline-block'
     verticalAlign: 'top'
     marginLeft: 50
@@ -74,8 +73,6 @@ cluster_styles = ->
 
   [first_column, secnd_column, first_header, secnd_header]
 
-
-
 window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'
 
@@ -90,8 +87,8 @@ window.SimpleHomepage = ReactiveComponent
       className: 'simplehomepage'
       style: 
         fontSize: 22
-        margin: if !customization('lefty') then 'auto'
-        width: if !customization('lefty') then SIMPLEHOMEPAGEWIDTH
+        margin: 'auto'
+        width: SIMPLE_HOMEPAGE_WIDTH()
         marginTop: 10
         position: 'relative'
 
@@ -131,7 +128,7 @@ window.SimpleHomepage = ReactiveComponent
 
           if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
             DIV
-              style: margin: "45px 0 45px #{if customization('lefty') then '200px' else '0'}"
+              style: margin: "45px 0"
 
               "#{options.label} "
 
@@ -169,31 +166,7 @@ window.SimpleHomepage = ReactiveComponent
       for proposal,idx in sorted_proposals(cluster)
         [@drawProposal proposal, options.show_proposer_icon
 
-        if subdomain.name == 'RANDOM2015' && cluster.name == 'Under Review' && idx == 28
-          DIV 
-            style:
-              borderTop: "4px solid green"
-              borderBottom: "4px solid #{logo_red}"
-              padding: "4px 0"
-              textAlign: 'center'
-              
-              fontWeight: 600
-              margin: "16px 0 32px 0"
-
-            I
-              style: 
-                color: 'green'
-                display: 'block'
-              className: 'fa fa-thumbs-o-up'
-
-
-            "Acceptance threshold for 28 papers"
-
-            I
-              style: 
-                display: 'block'
-                color: logo_red
-              className: 'fa fa-thumbs-o-down'
+        @drawThreshold(subdomain, cluster, idx)
 
         ]
 
@@ -208,8 +181,7 @@ window.SimpleHomepage = ReactiveComponent
       if options.label
         DIV 
           style: 
-            width: 700
-            marginLeft: if customization('lefty') then 200
+            width: CONTENT_WIDTH()
           H1
             style: 
               fontSize: 48
@@ -223,7 +195,6 @@ window.SimpleHomepage = ReactiveComponent
                 fontSize: 22
                 fontWeight: 200
                 marginBottom: 10
-                width: 700
 
               options.description
 
@@ -365,7 +336,7 @@ window.SimpleHomepage = ReactiveComponent
             key: "histogram-#{proposal.slug}"
             proposal: proposal
             opinions: opinionsForProposal(proposal)
-            width: 300
+            width: secnd_column.width
             height: 50
             enable_selection: false
             draw_base: true    
@@ -377,7 +348,7 @@ window.SimpleHomepage = ReactiveComponent
       id: 'watching_filter'
       style: 
         position: 'absolute'
-        left: if customization('lefty') then 112 else -87  
+        left: -87  
         top: 5
         border: "1px solid #bbb"
         opacity: if !filter.watched && !@local.hover_watch_filter then .3
@@ -423,6 +394,32 @@ window.SimpleHomepage = ReactiveComponent
           # width: 30
           # height: 30
 
+  drawThreshold: (subdomain, cluster, idx) -> 
+    if subdomain.name == 'RANDOM2015' && cluster.name == 'Under Review' && idx == 28
+      DIV 
+        style:
+          borderTop: "4px solid green"
+          borderBottom: "4px solid #{logo_red}"
+          padding: "4px 0"
+          textAlign: 'center'
+          
+          fontWeight: 600
+          margin: "16px 0 32px 0"
+
+        I
+          style: 
+            color: 'green'
+            display: 'block'
+          className: 'fa fa-thumbs-o-up'
+
+
+        "Acceptance threshold for 28 papers"
+
+        I
+          style: 
+            display: 'block'
+            color: logo_red
+          className: 'fa fa-thumbs-o-down'    
 
 ####
 # LearnDecideShareHomepage
@@ -444,12 +441,6 @@ window.LearnDecideShareHomepage = ReactiveComponent
     subdomain = fetch('/subdomain')
     proposals = fetch('/proposals')
 
-    homepage = fetch('/page/')
-    
-    # The "Welcome to the community!" people
-    contributors = homepage.contributors.filter((u)-> !!fetch(u).avatar_file_name)
-    contributors_without_avatar_count = homepage.contributors.filter((u)-> !fetch(u).avatar_file_name).length
-
     # Columns of the docking header for the proposal list.
     columns = customization('homepage_heading_columns') or [ 
                   {heading: 'Question', details: 'about the issues'}, \
@@ -461,6 +452,8 @@ window.LearnDecideShareHomepage = ReactiveComponent
 
     DIV 
       className: 'homepage'
+      style: 
+        minWidth: 1250
 
       # Dock
       #   container_selector: '.homepage'
@@ -472,7 +465,6 @@ window.LearnDecideShareHomepage = ReactiveComponent
           backgroundColor: subdomain.branding.primary_color
           color: 'white'
           height: if subdomain.name != 'allsides' then docking_header_height
-          minWidth: PAGE_WIDTH #minwidth is for when docking, position fixed mode
 
         TABLE 
           style: 
@@ -482,7 +474,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
           TBODY null,
             TR null,
               for col in columns
-                if col.heading
+                if col.heading 
                   TD 
                     style: 
                       display: 'inline-block'
@@ -494,38 +486,22 @@ window.LearnDecideShareHomepage = ReactiveComponent
                         fontSize: 42
                         textAlign: 'center'
 
-                      col.heading
+                      if !browser.is_mobile || col.heading != 'Join' 
+                        col.heading
 
                     if col.details
                       DIV 
                         style: 
-                          fontWeight: 300
+                          fontWeight: if !browser.is_mobile && browser.high_density_display then 300
                           fontSize: 18
                           textAlign: 'center'
                           position: 'relative'
                           top: -8
-                        col.details
+
+                        if !browser.is_mobile || col.heading != 'Join' 
+                          col.details
 
       DIV style: {marginTop: 30},
-        if contributors.length > 0
-          DIV 
-            style: 
-              width: PAGE_WIDTH
-              position: 'relative'
-              margin: 'auto'
-            DIV 
-              style:
-                left: if subdomain.name != 'allsides' then 1005 else 900
-                position: 'absolute'
-                width: 165
-                textAlign: 'left'
-                zIndex: 1
-
-              for user in _(contributors).first(90)
-                Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
-              if contributors_without_avatar_count > 0
-                others = if contributors_without_avatar_count != 1 then 'others' else 'other'
-                DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} #{others}"
 
         # Draw the proposal summaries
         for cluster, index in proposals.clusters or []
@@ -557,11 +533,12 @@ window.LearnDecideShareHomepage = ReactiveComponent
                       cluster.name                
 
                   # Draw each proposal summary
-                  for proposal in cluster.proposals
+                  for proposal, proposal_idx in cluster.proposals
                     ProposalSummary
                       key: proposal.key
                       cluster: cluster.name
                       columns: columns
+                      addContributors: index == 0 && proposal_idx == 0 && !browser.is_mobile
             
             # Cluster description
             if description 
@@ -571,7 +548,6 @@ window.LearnDecideShareHomepage = ReactiveComponent
                   paddingLeft: 164
                   paddingTop: 12
                   margin: 'auto'
-                  width: PAGE_WIDTH
                 description
 
       if permit('create proposal') > 0 && customization('show_new_proposal_button')
@@ -581,6 +557,8 @@ window.LearnDecideShareHomepage = ReactiveComponent
             style: {color: '#888', textDecoration: 'underline', fontSize: 18, marginLeft: 30}
             href: '/proposal/new'
             'Create new proposal'
+
+
 
 # Used by the LearnDecideShare homepage
 window.ProposalSummary = ReactiveComponent
@@ -596,6 +574,7 @@ window.ProposalSummary = ReactiveComponent
 
     link_hover_color = focus_blue
     cell_border = "1px solid #{if @local.hovering_on then link_hover_color else 'rgb(191, 192, 194)'}"
+
     TR 
       className: "proposal_summary " + hover_class
       style:
@@ -604,8 +583,11 @@ window.ProposalSummary = ReactiveComponent
         display: 'block'
         borderLeft: cell_border
         minHeight: 60
+        cursor: 'pointer'
       onMouseEnter: => @local.hovering_on = true; save(@local)
       onMouseLeave: => @local.hovering_on = false; save(@local)
+      onClick: => loadPage "/#{proposal.slug}"
+
 
       if @props.columns[0].heading
         TD 
@@ -691,7 +673,7 @@ window.ProposalSummary = ReactiveComponent
             mouth_style = 
               top: 5
               position: 'absolute'
-              right: -COMMUNITY_POINT_MOUTH_WIDTH + 4
+              right: -POINT_MOUTH_WIDTH + 4
               transform: 'rotate(90deg)'
 
             DIV 
@@ -706,8 +688,8 @@ window.ProposalSummary = ReactiveComponent
 
                   Bubblemouth 
                     apex_xfrac: 0
-                    width: COMMUNITY_POINT_MOUTH_WIDTH
-                    height: COMMUNITY_POINT_MOUTH_WIDTH
+                    width: POINT_MOUTH_WIDTH
+                    height: POINT_MOUTH_WIDTH
                     fill: considerit_gray, 
                     stroke: 'transparent', 
                     stroke_width: 0
@@ -722,3 +704,32 @@ window.ProposalSummary = ReactiveComponent
                 DIV className:'point_nutshell', style: {fontSize: 15},
                   "#{proposal.top_point.nutshell[0..30]}..."
 
+      if @props.columns[2].heading && @props.addContributors
+        @drawContributors()
+
+
+
+  drawContributors : -> 
+    homepage = fetch('/page/')
+    
+    # The "Welcome to the community!" people
+    contributors = homepage.contributors.filter((u)-> !!fetch(u).avatar_file_name)
+    contributors_without_avatar_count = homepage.contributors.filter((u)-> !fetch(u).avatar_file_name).length
+
+    if contributors.length > 0
+
+      TD 
+        style:
+          # left: if subdomain.name != 'allsides' then 1005 else 900
+          right: -145
+          top: -10
+          position: 'absolute'
+          width: 165
+          textAlign: 'left'
+          zIndex: 1
+
+        for user in _(contributors).first(90)
+          Avatar key: user, className: 'welcome_avatar', style: {height: 32, width: 32, margin: 1}
+        if contributors_without_avatar_count > 0
+          others = if contributors_without_avatar_count != 1 then 'others' else 'other'
+          DIV style: {fontSize: 14, color: "#666"}, "...and #{contributors_without_avatar_count} #{others}"

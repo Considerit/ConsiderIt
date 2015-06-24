@@ -64,8 +64,8 @@ window.customization = (field, object_or_key) ->
 
     break if value?
 
-  if !value?
-    console.error "Could not find a value for #{field} #{if key then key else ''}"
+  # if !value?
+  #   console.error "Could not find a value for #{field} #{if key then key else ''}"
 
   value
 
@@ -328,8 +328,6 @@ customizations.default =
     
     user_questions: []
 
-  lefty: false
-
   Homepage : SimpleHomepage
   ProposalNavigation : DefaultProposalNavigation
 
@@ -356,7 +354,6 @@ customizations['monitorinstitute'] =
   point_labels : strengths_improvements
   slider_pole_labels : strong_weak
   homie_histo_title: "Opinions"
-  #show_proposer_icon: true
   show_slider_feedback: false
 
   NonHomepageHeader : ReactiveComponent
@@ -372,34 +369,36 @@ customizations['monitorinstitute'] =
       DIV
         style:
           position: 'relative'
+          width: BODY_WIDTH()
+          paddingTop: 20
+          margin: '0 auto 15px auto'
 
         A
           href: '/'
           style: 
-            display: 'inline-block'
-            marginLeft: 50
             fontSize: 43
-            verticalAlign: 'middle'
             position: 'absolute'
-            left: 60
-            top: 5
+            marginRight: 30
+            left: -60
+            top: 3
 
-          '<'
+          '<'            
+            
+        A 
+          href: 'http://monitorinstitute.com/'
+          target: '_blank'
+          style: 
+            display: 'inline-block'
 
+          IMG 
+            src: asset("monitorinstitute/logo.jpg")
 
         DIV 
           style: 
-            width: SIMPLEHOMEPAGEWIDTH
-            margin: 'auto'
-            paddingTop: 20
-
-          A 
-            href: 'http://monitorinstitute.com/'
-            target: '_blank'
-
-            IMG 
-              src: asset("monitorinstitute/logo.jpg")
-
+            position: 'absolute'
+            right: -70
+            top: 0
+            width: 200
           ProfileMenu()
 
   HomepageHeader : ReactiveComponent
@@ -416,9 +415,10 @@ customizations['monitorinstitute'] =
 
         DIV 
           style: 
-            width: SIMPLEHOMEPAGEWIDTH
+            width: SIMPLE_HOMEPAGE_WIDTH()
             margin: 'auto'
             paddingTop: 20
+            position: 'relative'
 
           A 
             href: 'http://monitorinstitute.com/'
@@ -449,7 +449,7 @@ customizations['monitorinstitute'] =
 
             DIV 
               style: 
-                width: 620
+                width: SIMPLE_HOMEPAGE_WIDTH() * .7
                 borderRight: "1px solid #ddd"
                 display: 'inline-block'
                 paddingRight: 25
@@ -561,7 +561,7 @@ customizations['monitorinstitute'] =
             DIV 
               style: 
                 display: 'inline-block'
-                width: 225
+                width: SIMPLE_HOMEPAGE_WIDTH() * .25
                 verticalAlign: 'top'
                 marginTop: 200
                 paddingLeft: 25
@@ -629,7 +629,7 @@ customizations['seattle2035'] =
 
           DIV 
             style: 
-              width: CONTENT_WIDTH - 100
+              width: CONTENT_WIDTH() - 100
               margin: 'auto'
 
             DIV 
@@ -800,17 +800,39 @@ customizations.enviroissues =
     displayName: 'HomepageHeader'
 
     render: ->
+      loc = fetch 'location'
+      homepage = loc.url == '/'
+
       DIV
         style:
-          height: 130
-          width: PAGE_WIDTH
-          margin: '60px auto'
+          width: CONTENT_WIDTH()
+          margin: '20px auto'
+          position: 'relative'
+
+        A
+          href: '/'
+          style: 
+            display: 'inline-block'
+            fontSize: 43
+            visibility: if homepage then 'hidden'
+            verticalAlign: 'top'
+            marginTop: 22
+            marginRight: 15
+            color: '#888'
+          '<'
 
 
         IMG
           src: asset('enviroissues/logo.png')
 
-        ProfileMenu()
+        DIV 
+          style: 
+            position: 'absolute'
+            top: 18
+            right: 0
+            width: 110
+
+          ProfileMenu()
 
 customizations.enviroissues.NonHomepageHeader = customizations.enviroissues.HomepageHeader
 
@@ -935,13 +957,16 @@ customizations.ecastonline = customizations['ecast-demo'] =
             top: 20
             left: 250 
           href: '/'
-          "Informing NASA's Asteroid Initiative: A Citizen Forum"
+          "Informing NASA's Asteroid Initiative"
 
+        DIV 
+          style: 
+            position: 'absolute'
+            right: 0
+            top: 14
+            width: 110
+          ProfileMenu()
 
-
-        ProfileMenu()
-
-  lefty: true
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'
 
@@ -1118,7 +1143,13 @@ customizations.ecastonline = customizations['ecast-demo'] =
           P style: paragraph_style, 
             "Please take a few moments to review the background materials and the recommendations, and tell us what you think! Your input is important as we analyze the outcomes of the forums and make our final report to NASA." 
 
-        ProfileMenu()
+        DIV 
+          style: 
+            position: 'absolute'
+            top: 30
+            right: 0
+            width: 110
+          ProfileMenu()
 
 styles += """
 [subdomain="ecastonline"] .simplehomepage a.proposal, [subdomain="ecast-demo"] .simplehomepage a.proposal{
@@ -1166,8 +1197,6 @@ customizations.bitcoin =
 
   show_crafting_page_first: true
 
-  lefty: true
-
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'
 
@@ -1190,40 +1219,51 @@ customizations.bitcoin =
         DIV
           style:
             cursor: if not homepage then 'pointer'
-            paddingTop: if homepage then 18 else 17
+            paddingTop: if homepage then 18
           onClick: if not homepage then => loadPage('/')
 
-          # Back arrow
-          if not homepage
-            DIV
-              style:
-                position: 'absolute'
-                left: 20
-                top: 0
-                color: '#eee'
-                fontSize: 43
-                fontWeight: 400
-                paddingLeft: 25 # Make the clickable target bigger
-                width: 180      # Make the clickable target bigger
-              '<'
+          DIV 
+            style: 
+              width: (if homepage then SIMPLE_HOMEPAGE_WIDTH() else BODY_WIDTH()) + 281
+              margin: 'auto'
+            # Back arrow
+            if not homepage
+              SPAN
+                style:
+                  display: 'inline-block'
+                  color: '#eee'
+                  marginLeft: -10
+                  fontSize: 43
+                  fontWeight: 400
+                  paddingLeft: 25 # Make the clickable target bigger
+                  paddingRight: 25 # Make the clickable target bigger
+                '<'
 
-          # Logo
-          A
-            href: if homepage then 'https://bitcoinfoundation.org'
-            IMG
-              style:
-                height: if homepage then 40 else 26
-                marginLeft: if homepage then 82 else 106
-              src: asset('bitcoin/logo.svg')
+            # Logo
+            A
+              href: if homepage then 'https://bitcoinfoundation.org'
+              style: 
+                margin: if homepage then 'auto' else '0 0 0 -4px'
+                width: if homepage then SIMPLE_HOMEPAGE_WIDTH()
+                position: if homepage then 'relative'
+                left: if homepage then -121
+                display: if homepage then 'block'
 
-          if not homepage
-            SPAN
-              style:
-                color: 'cyan'
-                fontSize: 26
-                fontWeight: 500
-                marginLeft: 40
-              'The Distributed Opinion'
+              IMG
+                style:
+                  height: if homepage then 40 else 26
+                src: asset('bitcoin/logo.svg')
+
+            if not homepage
+              SPAN
+                style:
+                  color: 'cyan'
+                  fontSize: 26
+                  fontWeight: 500
+                  marginLeft: 40
+                'The Distributed Opinion'
+
+
 
           # Text
           if homepage
@@ -1241,13 +1281,13 @@ customizations.bitcoin =
 
             DIV
               style:
-                paddingLeft: 200
                 color: 'white'
                 fontSize: 22
                 fontWeight: 300
                 paddingTop: 23
                 paddingBottom: 20
-                maxWidth: 915
+                width: SIMPLE_HOMEPAGE_WIDTH()
+                margin: 'auto'
 
               DIV
                 style:
@@ -1386,7 +1426,7 @@ customizations.livingvotersguide =
           backgroundPosition: 'center'
           backgroundSize: 'cover'
           borderBottom: if !homepage then "15px solid #a5ce3a"
-
+          minWidth: 1152
 
         DIV
           style:
@@ -1506,12 +1546,14 @@ customizations.livingvotersguide =
               backgroundRepeat: '(repeat-x)'
               backgroundSize: '18px 9px'
               height: 9
+              position: 'relative'
+              top: 1
 
           DIV style: {backgroundColor: '#93928E' },
             DIV
               style:
                 fontSize: 24
-                width: PAGE_WIDTH
+                width: 1152 #CONTENT_WIDTH()
                 color: 'white'
                 margin: 'auto'
                 padding: '35px 0'
@@ -1532,7 +1574,8 @@ customizations.livingvotersguide =
               backgroundRepeat: '(repeat-x)'
               backgroundSize: '18px 9px'
               height: 9
-
+              position: 'relative'
+              top: -1
 
   Footer : ReactiveComponent
     displayName: 'Footer'
@@ -1675,35 +1718,23 @@ customizations.tigard =
           '.banner_link {color: #78d18b; font-weight: 600; text-decoration: underline;}'
 
         ProfileMenu()
-          
-        DIV style: {color: '#707070', fontSize: 32, padding: '20px 0', margin: '0px auto 0 auto', fontWeight: 800, textTransform: 'uppercase', position: 'relative'}, 
+
+        DIV 
+          style: 
+            color: '#707070'
+            fontSize: 32
+            padding: '20px 0'
+            margin: '0px auto 0 auto'
+            fontWeight: 800
+            textTransform: 'uppercase'
+            position: 'relative'
+            width: SIMPLE_HOMEPAGE_WIDTH()
           'Help plan '
           A className: 'banner_link', href: 'http://riverterracetigard.com/', 'River Terrace'
           ', Tigard\'s newest neighborhood' 
 
 
 #customizations.tigard.NonHomepageHeader = customizations.tigard.HomepageHeader
-
-
-
-#####################
-# City of Tigard
-customizations.cityoftigard = 
-  
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: -> 
-      logo_style = {height: 117, backgroundColor: 'white', borderRight: '2px solid white'}
-      DIV style: {backgroundColor: '#253967'},
-        ProfileMenu()
-
-        DIV style: {height: 48},
-          A href: '/', style: {position: 'absolute', top:0, zIndex: 999999},
-            IMG className: 'logo', src: asset('cityoftigard/logo.png'), style: logo_style 
-
-
-customizations.cityoftigard.NonHomepageHeader = customizations.cityoftigard.HomepageHeader
 
 
 customizations.mos = 

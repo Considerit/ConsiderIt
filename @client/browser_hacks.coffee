@@ -1,7 +1,9 @@
 # We detect mobile browsers by inspecting the user agent. This check isn't perfect.
 rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/ 
+
+is_android_browser = !!(rxaosp && rxaosp[1]<537)
 window.browser = 
-  is_android_browser : !!(rxaosp && rxaosp[1]<537)  # stock android browser (not chrome)
+  is_android_browser : is_android_browser  # stock android browser (not chrome)
   is_opera_mini : !!navigator.userAgent.match /Opera Mini/
   is_ie9 : !!(document.documentMode && document.documentMode == 9)
   is_iOS : !!navigator.platform.match(/(iPad|iPhone)/)
@@ -18,7 +20,8 @@ window.browser =
                               only screen and (min-device-pixel-ratio: 1.3)''').matches
                             )) || 
                           (window.devicePixelRatio && window.devicePixelRatio > 1.3))
-  is_mobile :  navigator.userAgent.match(/Android/i) || 
+  is_mobile :  is_android_browser ||
+                navigator.userAgent.match(/Android/i) || 
                 navigator.userAgent.match(/webOS/i) ||
                 navigator.userAgent.match(/iPhone/i) ||
                 navigator.userAgent.match(/iPad/i) ||

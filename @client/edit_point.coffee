@@ -12,29 +12,36 @@ window.EditPoint = ReactiveComponent
 
     mobile = browser.is_mobile
 
-    textarea_style = 
-      width: '100%'
-      overflow: 'hidden'
-      fontSize: if mobile then 30 else 14
-      padding: '4px 6px'
 
 
     if mobile
-      # full page mode if we're on mobile
+      textarea_style = 
+        width: '100%'
+        overflow: 'hidden'
+        fontSize: if PORTRAIT_MOBILE() then 50 else 30
+        padding: '4px 6px'
+
+      # full page mode if we're on mobile      
       parent = $("#proposal-#{@proposal.id}")
       parent_offset = if parent.length > 0 then parent.offset().top else 0
       style = 
         position: 'absolute'
         top: 0
-        left: 0
+        left: 50
         height: '100%'
-        width: WINDOW_WIDTH()
+        width: WINDOW_WIDTH() - 100
         backgroundColor: 'rgba(255,255,255,.85)'
-        fontSize: 16
+        fontSize: 20
         zIndex: 99999999
         padding: "#{@scrollY - parent_offset}px 50px 100px 50px"
 
     else 
+      textarea_style = 
+        width: if mobile then '75%' else '100%'
+        overflow: 'hidden'
+        fontSize: if mobile then 30 else 14
+        padding: '4px 6px'
+
       style = 
         position: 'relative'
         fontSize: 14
@@ -100,8 +107,8 @@ window.EditPoint = ReactiveComponent
         AutoGrowTextArea 
           id:'text'
           name:'text'
-          placeholder:'Provide background and/or back your point up with evidence.'
-          min_height: 100
+          placeholder:'Add background or evidence.'
+          min_height: if PORTRAIT_MOBILE() then 150 else 100
           defaultValue: if @props.fresh then null else @data().text
           style: textarea_style
 
@@ -140,8 +147,8 @@ window.EditPoint = ReactiveComponent
             style: 
               marginTop: 0
               display: 'inline-block'
-              fontSize: if mobile then 36 else 24
-              padding: '4px 30px'
+              fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 24
+              padding: '4px 50px'
               float: 'left'
             'Done'
 
@@ -153,11 +160,12 @@ window.EditPoint = ReactiveComponent
             color: '#888888'
             cursor: 'pointer'
             zIndex: 1
-            top: if mobile then 5 else 12
-            fontSize: if mobile then 30 else 16
-            right: 20
+            top: if mobile then 0 else 12
+            fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 16
+            right: if mobile then -10 else 20
             position: 'relative'
-            float: 'right'
+            float: if mobile then 'left' else 'right'
+            padding: if mobile then 10
           'cancel'  
 
         DIV 
@@ -268,7 +276,7 @@ window.EditPoint = ReactiveComponent
         SPAN 
           style: 
             fontWeight: 600
-            fontSize: if mobile then 36
+            fontSize: if PORTRAIT_MOBILE() then 70 else if LANDSCAPE_MOBILE() then 36
           "Write a "
           capitalize singular
           ' (or question) for this proposal'
@@ -290,7 +298,7 @@ window.EditPoint = ReactiveComponent
               LI 
                 style: 
                   paddingBottom: 3
-                  fontSize: if mobile then 14
+                  fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
                 tip  
 
   done : ->

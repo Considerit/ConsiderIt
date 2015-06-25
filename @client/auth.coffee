@@ -240,8 +240,9 @@ Auth = ReactiveComponent
                   position: 'absolute'
                   cursor: 'pointer'
                   right: 0
-                  top: 80
-                  fontSize: 21
+                  top: 70
+                  padding: 10
+                  fontSize: 24
                 title: 'cancel'
 
                 onClick: =>

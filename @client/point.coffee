@@ -126,13 +126,11 @@ window.Point = ReactiveComponent
 
     if point.comment_count > 0 || !expand_to_see_details
       select_enticement.push DIV key: 2, style: {whiteSpace: 'nowrap'},
-        #" ("
         A 
           className: 'select_point'
           point.comment_count 
           " comment"
           if point.comment_count != 1 then 's' else ''
-        #")"
 
     if point.assessment
       select_enticement.push DIV key: 3,
@@ -172,7 +170,7 @@ window.Point = ReactiveComponent
     ioffset = if @props.rendered_as in ['under_review'] then -10 else -50
     includers_style[left_or_right] = ioffset
 
-    draw_all_includers = @props.rendered_as == 'community_point'
+    draw_all_includers = @props.rendered_as == 'community_point' || TWO_COL()
     LI
       key: "point-#{point.id}"
       'data-id': @props.key
@@ -253,7 +251,7 @@ window.Point = ReactiveComponent
               wordWrap: 'break-word'
               marginTop: '0.5em'
               fontSize: POINT_FONT_SIZE()
-              fontWeight: if browser.high_density_display then 300 else 400
+              fontWeight: if browser.high_density_display && !browser.is_mobile then 300 else 400
 
             if point.text && point.text.length > 0
               if is_selected || 
@@ -275,10 +273,11 @@ window.Point = ReactiveComponent
               (@props.rendered_as == 'decision_board_point' || TWO_COL())
             A
               style:
-                fontSize: if browser.is_mobile then 18 else 14
+                fontSize: if browser.is_mobile then 24 else 14
                 color: focus_blue
                 padding: '3px 12px 3px 0'
 
+              onTouchEnd: (e) -> e.stopPropagation()
               onClick: ((e) =>
                 e.stopPropagation()
                 points = fetch(@props.your_points_key)
@@ -291,9 +290,10 @@ window.Point = ReactiveComponent
             A 
               'data-action': 'delete-point'
               style:
-                fontSize: if browser.is_mobile then 18 else 14
+                fontSize: if browser.is_mobile then 24 else 14
                 color: focus_blue
                 padding: '3px 8px'
+              onTouchEnd: (e) -> e.stopPropagation()       
               onClick: (e) =>
                 e.stopPropagation()
                 if confirm('Delete this point forever?')
@@ -353,8 +353,7 @@ window.Point = ReactiveComponent
       if is_selected
         Discussion
           key:"/comments/#{point.id}"
-          point: point
-
+          point: point.key
 
   componentDidMount : ->    
     @setDraggability()
@@ -364,18 +363,24 @@ window.Point = ReactiveComponent
     @setDraggability()
     @ensureDiscussionIsInViewPort()
 
+
   # Hack that fixes a couple problems:
   #   - Scroll to the point when following a link from an email 
   #     notification to a point
   #   - Scroll to new point when scrolled down to bottom of long 
   #     discussion & click a new point below it
   ensureDiscussionIsInViewPort : ->
-    if get_selected_point() == @props.key
+    is_selected = get_selected_point() == @props.key
+    if @local.is_selected != is_selected
+      if is_selected
 
-      if browser.is_mobile
-        $(@getDOMNode()).moveToTop {scroll: false}
-      else
-        $(@getDOMNode()).ensureInView {scroll: false}
+        if browser.is_mobile
+          $(@getDOMNode()).moveToTop {scroll: false}
+        else
+          $(@getDOMNode()).ensureInView {scroll: false}
+
+      @local.is_selected = is_selected
+      save @local
 
   setDraggability : ->
     # Ability to drag include this point if a community point, 
@@ -430,14 +435,14 @@ window.Point = ReactiveComponent
     return if @props.rendered_as == 'under_review'
 
     e.stopPropagation()
-    e.preventDefault()
 
     # android browser needs to respond to this via a touch event;
     # all other browsers via click event. iOS fails to select 
     # a point if both touch and click are handled...sigh...
 
-    return unless e.type != 'click' || \
-                  (!browser.is_android_browser && e.type == 'click')
+    return unless ( browser.is_mobile && e.type != 'click' ) || \
+                  (!browser.is_mobile && e.type == 'click')
+
 
     loc = fetch('location')
 
@@ -447,7 +452,7 @@ window.Point = ReactiveComponent
     else
       what = 'selected a point'
       loc.query_params.selected = @props.key
-
+    
     save loc
 
     window.writeToLog
@@ -764,8 +769,10 @@ window.Discussion = ReactiveComponent
         top: -28
         transform: if !is_pro then 'scaleX(-1)'
 
-    DIV style: discussion_style, onClick: ((e) -> e.stopPropagation()),
-
+    DIV 
+      style: discussion_style
+      onClick: (e) -> e.stopPropagation()
+      onTouchEnd: (e) -> e.stopPropagation()
       DIV 
         style: css.crossbrowserify mouth_style
 
@@ -804,8 +811,11 @@ window.Discussion = ReactiveComponent
   # overlaid point. And if it is a point on the decision board,
   # also add the space to the decision board (so that scrolling
   # to bottom of discussion can occur)
-  componentDidUpdate : -> @fixBodyHeight()
-  componentDidMount : -> @fixBodyHeight()
+  componentDidUpdate : -> 
+    @fixBodyHeight()
+
+  componentDidMount : -> 
+    @fixBodyHeight()
   
   componentWillUnmount : -> 
     @clear_placeholder()
@@ -824,9 +834,6 @@ window.Discussion = ReactiveComponent
     $body.append(placeholder)
     if $(@getDOMNode()).parents('.opinion_region').length > 0
       $('.decision_board_body').append placeholder
-    
-
-
 
 window.SubmitFactCheck = ReactiveComponent
   displayName: 'SubmitFactCheck'
@@ -908,7 +915,8 @@ window.SubmitFactCheck = ReactiveComponent
         ]
       else
         DIV
-          onClick: =>
+          onClick: (e) =>
+            e.stopPropagation()
             reset_key 'auth', {form: 'login', goal: 'Request a Fact Check'}
             save(auth)
           style:

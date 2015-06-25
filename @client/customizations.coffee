@@ -584,6 +584,11 @@ customizations['seattle2035'] =
   homie_histo_title: "Citizen opinions"
   show_proposer_icon: true
 
+  "/proposal/2706" : 
+    point_labels: strengths_weaknesses
+    slider_pole_labels: yes_no
+
+
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'
 

@@ -29,6 +29,9 @@ setResponsive = ->
   responsive = fetch('responsive_vars')
 
   w = window.innerWidth
+  h = window.innerHeight
+
+  portrait = h > w
 
   two_col = w < 1080 || browser.is_mobile
 
@@ -56,6 +59,9 @@ setResponsive = ->
                     else
                       14
 
+  if browser.is_mobile && portrait
+    point_font_size += 4
+
   new_vals = 
     WINDOW_WIDTH: w  
     GUTTER: gutter
@@ -71,6 +77,8 @@ setResponsive = ->
     TWO_COL: two_col
     SLIDER_HANDLE_SIZE: if two_col then 65 else 25
     SIMPLE_HOMEPAGE_WIDTH: Math.min content_width, 850
+    PORTRAIT_MOBILE: portrait && browser.is_mobile
+    LANDSCAPE_MOBILE: !portrait && browser.is_mobile
 
   # only update if we have a change
   # (something like this should go into statebus)

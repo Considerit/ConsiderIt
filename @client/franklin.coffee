@@ -241,6 +241,9 @@ Proposal = ReactiveComponent
         if current_user?.logged_in          
           ActivityFeed()
 
+        if has_focus == 'opinion'
+          SaveYourOpinionNotice()
+
         #feelings
         DIV
           style:
@@ -394,9 +397,6 @@ Proposal = ReactiveComponent
           valence: valence
           your_points_key: edit_mode
 
-      else if has_focus == 'opinion'
-        SaveYourOpinionFooter()
-
       else if mode == 'results' && 
           your_opinion.published && 
           customization('ThanksForYourOpinion', @proposal)
@@ -495,7 +495,7 @@ ProposalDescription = ReactiveComponent
           paddingTop: '1em'
           position: 'relative'
           maxHeight: if @local.description_collapsed then @max_description_height
-          #overflowY: 'hidden'
+          overflowY: if @local.description_collapsed then 'hidden'
           overflowX: 'visible'
         if @local.description_collapsed
           DIV
@@ -511,7 +511,9 @@ ProposalDescription = ReactiveComponent
               paddingBottom: 10
               fontWeight: 600
               textAlign: 'center'
-            onMouseDown: => @local.description_collapsed = false; save(@local)
+            onMouseDown: => 
+              @local.description_collapsed = false
+              save(@local)
             'Expand full text'
         SPAN dangerouslySetInnerHTML:{__html: @proposal.description}
 
@@ -1004,11 +1006,11 @@ saveOpinion = (proposal) ->
 
     save root
 
-SaveYourOpinionFooter = ReactiveComponent
-  displayName: 'SaveYourOpinionFooter'
+SaveYourOpinionNotice = ReactiveComponent
+  displayName: 'SaveYourOpinionNotice'
 
   render : -> 
-    your_opinion = your_opinion = fetch(@proposal.your_opinion)
+    your_opinion = fetch(@proposal.your_opinion)
     slider = fetch namespaced_key('slider', @proposal)
 
     return SPAN null if (!TWO_COL() && get_proposal_mode() == 'crafting') || \
@@ -1016,29 +1018,31 @@ SaveYourOpinionFooter = ReactiveComponent
                           (!slider.has_moved && your_opinion.point_inclusions.length == 0)\
                         )
     
-    DIV 
+    Dock 
+      dock_on_zoomed_screens: true
+      skip_jut: true
+
       style: 
-        position: 'fixed'
-        left: 0
-        top: 0
         width: PAGE_WIDTH()
-        backgroundColor: focus_blue
-        padding: 10
-        color: 'white'
-        zIndex: 999
-        textAlign: 'center'
-        fontSize: 28
 
-      'Your opinion hasn’t been added yet! '
-
-      A 
+      DIV 
         style: 
-          fontWeight: 700
-          textDecoration: 'underline'
-          cursor: 'pointer'
-        onClick: => saveOpinion(@proposal)
+          backgroundColor: focus_blue
+          padding: 10
+          color: 'white'
+          textAlign: 'center'
+          fontSize: 28
 
-        'Save your opinion'
+        'Your opinion hasn’t been added yet! '
+
+        A 
+          style: 
+            fontWeight: 700
+            textDecoration: 'underline'
+            cursor: 'pointer'
+          onClick: => saveOpinion(@proposal)
+
+          'Save your opinion'
 
 
 
@@ -1896,7 +1900,6 @@ Root = ReactiveComponent
           details:
             point: get_selected_point()
 
-        
         delete loc.query_params.selected
         save loc
 

@@ -71,6 +71,7 @@ window.ProfileMenu = ReactiveComponent
               'data-action': 'logout'
               className: 'menu_link'
               onClick: logout
+              onTouchEnd: logout
               'Log out'
 
           SPAN 

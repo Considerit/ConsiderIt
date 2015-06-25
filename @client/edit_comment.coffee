@@ -46,8 +46,11 @@ window.EditComment = ReactiveComponent
             cursor: 'pointer'
             zIndex: 1
 
-          onClick: =>
-            console.log 'CLICK'
+          onTouchEnd: (e) => 
+            e.stopPropagation()
+
+          onClick: (e) =>
+            e.stopPropagation()
 
             if permitted == Permission.NOT_LOGGED_IN
               reset_key 'auth', {form: 'login', goal: 'Write a Comment'}
@@ -59,7 +62,10 @@ window.EditComment = ReactiveComponent
           if permitted == Permission.NOT_LOGGED_IN
             DIV null,
               SPAN 
-                style: { textDecoration: 'underline', color: focus_blue }
+                style: 
+                  textDecoration: 'underline'
+                  color: focus_blue
+                  fontSize: if browser.is_mobile then 18
                 'Log in to write a comment'
               if '*' not in @proposal.roles.commenter
                 DIV style: {fontSize: 11},
@@ -72,19 +78,22 @@ window.EditComment = ReactiveComponent
                'Verify your account'
               SPAN null, 'to write a comment'
 
-      AutoGrowTextArea
-        className: 'new_comment'
-        placeholder: if permitted > 0 then 'Write a new comment' else ''
-        disabled: permitted < 0
-        onChange: (e) => @local.new_comment = e.target.value; save(@local)
-        defaultValue: if @props.fresh then null else @data().body
-        min_height: 60
-        style:
-          marginLeft: 60
-          width: 390
-          lineHeight: 1.4
-          fontSize: if browser.is_mobile then 24 else 16
-          border: if permitted < 0 then 'dashed 1px'
+      DIV 
+        style: 
+          marginLeft: 60   
+                 
+        AutoGrowTextArea
+          ref: 'comment_input'
+          placeholder: if permitted > 0 then 'Write a new comment' else ''
+          disabled: permitted < 0
+          onChange: (e) => @local.new_comment = e.target.value; save(@local)
+          defaultValue: if @props.fresh then null else @data().body
+          min_height: 80
+          style:
+            width: '100%'
+            lineHeight: 1.4
+            fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 30 else 16
+            border: if permitted < 0 then 'dashed 1px'
 
       if permitted > 0
 
@@ -109,5 +118,5 @@ window.EditComment = ReactiveComponent
               comment.editing = false
 
             save(comment)
-            $(@getDOMNode()).find('.new_comment').val('')            
+            $(@refs.comment_input.getDOMNode()).val('')            
 

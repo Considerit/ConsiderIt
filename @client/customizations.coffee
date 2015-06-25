@@ -629,7 +629,7 @@ customizations['seattle2035'] =
 
           DIV 
             style: 
-              width: CONTENT_WIDTH() - 100
+              width: SIMPLE_HOMEPAGE_WIDTH()
               margin: 'auto'
 
             DIV 
@@ -644,18 +644,43 @@ customizations['seattle2035'] =
               style: 
                 fontSize: 24
 
-              # "The "
+              "What do you think of the draft "
+              A 
+                target: '_blank'
+                href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2273574.pdf'
+                style: 
+                  textDecoration: 'underline'
+                "Seattle 2035 comprehensive plan"
+              "? "
 
-              # A 
-              #   href: 'google.com'
-              #   target: '_blank'
+              "We've listed pivotal proposals from the draft below for your consideration. Email us at "
+              A
+                href: "mailto:[email]@seattle.gov"
+                style: 
+                  textDecoration: 'underline'
 
-              #   "Draft Environmental Impact Statement"
+                "[email]@seattle.gov"
+              " to suggest other parts of the draft plan to post here."
 
-              # " is available for review."
+            DIV 
+              style: 
+                textDecoration: 'italics'
+                float: 'left'
+                marginTop: 20
+                fontSize: 20
 
-              # BR null
-              "Please leave your feedback on some of the pivotal questions listed below."
+              "Thanks for your time,"
+
+              DIV 
+                style: 
+                  marginLeft: 0
+
+                "Department of Planning & Development"
+                BR()
+                "City of Seattle"
+            DIV 
+              style: 
+                clear: 'both'
 
 
 

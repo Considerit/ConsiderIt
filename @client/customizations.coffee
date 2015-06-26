@@ -587,6 +587,7 @@ customizations['seattle2035'] =
   "/proposal/2706" : 
     point_labels: strengths_weaknesses
     slider_pole_labels: yes_no
+    show_slider_feedback: false
 
 
   HomepageHeader : ReactiveComponent

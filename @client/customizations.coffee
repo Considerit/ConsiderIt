@@ -345,6 +345,11 @@ customizations.default =
 ##########################
 # SUBDOMAIN CONFIGURATIONS
 
+
+customizations['us'] = 
+  show_proposer_icon: true
+
+
 ###############
 # Monitorinstitute
 

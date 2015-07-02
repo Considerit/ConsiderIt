@@ -56,8 +56,8 @@ class CurrentUserController < ApplicationController
 
             # if this user was created via the invitation process, note that
             # they've gone through the registration process
-            if current_user.needs_to_complete_profile
-              current_user.needs_to_complete_profile = false
+            if current_user.complete_profile
+              current_user.complete_profile = false
               current_user.save
             end
 
@@ -110,7 +110,7 @@ class CurrentUserController < ApplicationController
             log('sign in by email')
           end
         end
-        
+
       when 'reset password'
 
         # puts("Signing in by password reset.  min_pass is #{@min_pass}")

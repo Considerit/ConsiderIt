@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150518181953) do
+ActiveRecord::Schema.define(version: 20150702151911) do
 
   create_table "assessments", force: :cascade do |t|
     t.integer  "user_id",         limit: 4
@@ -19,10 +19,10 @@ ActiveRecord::Schema.define(version: 20150518181953) do
     t.integer  "assessable_id",   limit: 4
     t.string   "assessable_type", limit: 255
     t.integer  "verdict_id",      limit: 4
-    t.boolean  "complete",        limit: 1,     default: false
+    t.boolean  "complete",                      default: false
     t.datetime "created_at",                                    null: false
     t.datetime "updated_at",                                    null: false
-    t.boolean  "reviewable",      limit: 1,     default: false
+    t.boolean  "reviewable",                    default: false
     t.datetime "published_at"
     t.text     "notes",           limit: 65535
   end
@@ -107,8 +107,8 @@ ActiveRecord::Schema.define(version: 20150518181953) do
     t.integer  "user_id",         limit: 4
     t.integer  "followable_id",   limit: 4
     t.string   "followable_type", limit: 255
-    t.boolean  "follow",          limit: 1,   default: true
-    t.boolean  "explicit",        limit: 1,   default: false
+    t.boolean  "follow",                      default: true
+    t.boolean  "explicit",                    default: false
     t.integer  "subdomain_id",    limit: 4
     t.datetime "created_at",                                  null: false
     t.datetime "updated_at",                                  null: false
@@ -146,8 +146,8 @@ ActiveRecord::Schema.define(version: 20150518181953) do
     t.datetime "created_at",                                                null: false
     t.datetime "updated_at",                                                null: false
     t.integer  "subdomain_id",                  limit: 4
-    t.boolean  "updated_since_last_evaluation", limit: 1,   default: false
-    t.boolean  "notification_sent",             limit: 1,   default: false
+    t.boolean  "updated_since_last_evaluation",             default: false
+    t.boolean  "notification_sent",                         default: false
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -159,7 +159,7 @@ ActiveRecord::Schema.define(version: 20150518181953) do
     t.integer  "event_object_id",           limit: 4
     t.string   "event_object_relationship", limit: 255
     t.string   "event_type",                limit: 255
-    t.boolean  "sent_email",                limit: 1
+    t.boolean  "sent_email"
     t.datetime "read_at"
     t.datetime "created_at"
   end
@@ -170,7 +170,7 @@ ActiveRecord::Schema.define(version: 20150518181953) do
     t.text     "explanation",      limit: 65535
     t.float    "stance",           limit: 24
     t.integer  "stance_segment",   limit: 4
-    t.boolean  "published",        limit: 1,     default: false
+    t.boolean  "published",                      default: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "subdomain_id",     limit: 4
@@ -189,14 +189,14 @@ ActiveRecord::Schema.define(version: 20150518181953) do
     t.integer  "user_id",           limit: 4
     t.text     "nutshell",          limit: 65535
     t.text     "text",              limit: 65535
-    t.boolean  "is_pro",            limit: 1
+    t.boolean  "is_pro"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "num_inclusions",    limit: 4
     t.float    "score",             limit: 24
     t.float    "appeal",            limit: 24
-    t.boolean  "published",         limit: 1,     default: true
-    t.boolean  "hide_name",         limit: 1,     default: false
+    t.boolean  "published",                       default: true
+    t.boolean  "hide_name",                       default: false
     t.integer  "subdomain_id",      limit: 4
     t.integer  "comment_count",     limit: 4,     default: 0
     t.text     "includers",         limit: 65535
@@ -236,12 +236,12 @@ ActiveRecord::Schema.define(version: 20150518181953) do
     t.integer  "num_opposers",                           limit: 4
     t.integer  "followable_last_notification_milestone", limit: 4
     t.datetime "followable_last_notification"
-    t.boolean  "active",                                 limit: 1,        default: true
+    t.boolean  "active",                                                  default: true
     t.integer  "moderation_status",                      limit: 4
     t.integer  "publicity",                              limit: 4,        default: 2
     t.binary   "access_list",                            limit: 16777215
-    t.boolean  "published",                              limit: 1,        default: false
-    t.boolean  "hide_on_homepage",                       limit: 1,        default: false
+    t.boolean  "published",                                               default: false
+    t.boolean  "hide_on_homepage",                                        default: false
     t.string   "seo_title",                              limit: 255
     t.string   "seo_description",                        limit: 255
     t.string   "seo_keywords",                           limit: 255
@@ -284,10 +284,10 @@ ActiveRecord::Schema.define(version: 20150518181953) do
     t.string   "app_title",                  limit: 255
     t.string   "notifications_sender_email", limit: 255
     t.string   "google_analytics_code",      limit: 255
-    t.boolean  "has_civility_pledge",        limit: 1,     default: false
+    t.boolean  "has_civility_pledge",                      default: false
     t.string   "host",                       limit: 255
     t.string   "host_with_port",             limit: 255
-    t.boolean  "assessment_enabled",         limit: 1,     default: false
+    t.boolean  "assessment_enabled",                       default: false
     t.integer  "moderate_points_mode",       limit: 4,     default: 0
     t.integer  "moderate_comments_mode",     limit: 4,     default: 0
     t.integer  "moderate_proposals_mode",    limit: 4,     default: 0
@@ -329,17 +329,18 @@ ActiveRecord::Schema.define(version: 20150518181953) do
     t.string   "openid_uid",             limit: 255
     t.string   "twitter_uid",            limit: 255
     t.string   "twitter_handle",         limit: 255
-    t.boolean  "registered",             limit: 1,     default: false
+    t.boolean  "registered",                           default: false
     t.datetime "reset_password_sent_at"
     t.text     "b64_thumbnail",          limit: 65535
     t.text     "tags",                   limit: 65535
     t.text     "active_in",              limit: 65535
-    t.boolean  "super_admin",            limit: 1,     default: false
-    t.boolean  "no_email_notifications", limit: 1,     default: false
-    t.boolean  "verified",               limit: 1,     default: false
+    t.boolean  "super_admin",                          default: false
+    t.boolean  "no_email_notifications",               default: false
+    t.boolean  "verified",                             default: false
     t.text     "groups",                 limit: 65535
     t.text     "subscriptions",          limit: 65535
     t.text     "emails",                 limit: 65535
+    t.boolean  "complete_profile",                     default: false
   end
 
   add_index "users", ["avatar_file_name"], name: "index_users_on_avatar_file_name", using: :btree

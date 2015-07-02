@@ -57,7 +57,6 @@ class User < ActiveRecord::Base
   # This will output the data for this user _as if this user is currently logged in_
   # So make sure to only send this data to the client if the client is authorized. 
   def current_user_hash(form_authenticity_token)
-
     data = {
       id: id, #leave the id in for now for backwards compatability with Dash
       key: '/current_user',
@@ -80,7 +79,8 @@ class User < ActiveRecord::Base
       subscriptions: subscription_settings(current_subdomain),
       notifications: notifications.order('created_at desc'),
       verified: verified,
-      needs_to_set_password: registered && !name #happens for users that were created via email invitation
+      needs_to_complete_profile: self.registered && (self.complete_profile || !self.name) 
+                                #happens for users that were created via email invitation
     }
 
     data

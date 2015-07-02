@@ -173,6 +173,7 @@ module Invitations
               :name => user_or_email.split('@')[0],
               :email => user_or_email,
               :registered => true,
+              :complete_profile => true,
               :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
             })
             invitee.add_to_active_in

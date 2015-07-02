@@ -1760,8 +1760,8 @@ AuthTransition = ReactiveComponent
 
     # users following an email invitation need to complete 
     # registration (name + password)
-    if current_user.needs_to_set_password
-      reset_key auth,
+    if current_user.needs_to_complete_profile
+      reset_key 'auth',
         key: 'auth'
         form: 'create account via invitation'
         goal: 'complete registration'

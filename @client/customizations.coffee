@@ -643,35 +643,95 @@ customizations['seattle2035'] =
               width: SIMPLE_HOMEPAGE_WIDTH()
               margin: 'auto'
 
+
             DIV 
               style: 
                 color: seattle2035_pink
                 fontSize: 48
                 fontWeight: 600
+                margin: '10px 0'
 
-              'How should Seattle grow? You tell us!'
+              'Seattle 2035 Draft Plan Conversation – a place to consider Big Changes.'
 
             DIV 
               style: 
-                fontSize: 24
+                fontSize: 22
 
-              "What do you think of the draft "
-              A 
-                target: '_blank'
-                href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2273574.pdf'
+
+              P 
                 style: 
-                  textDecoration: 'underline'
-                "Seattle 2035 comprehensive plan"
-              "? "
+                  marginTop: 20
 
-              "We've listed pivotal proposals from the draft below for your consideration. Email us at "
-              A
-                href: "mailto:[email]@seattle.gov"
+                """
+                Seattle is one of the fastest growing cities in America, and more growth is 
+                coming– 120,000 more people and 115,000 more jobs by 2035. The time to plan 
+                for how and where that growth occurs is now. After months of working with city 
+                departments and the Seattle Planning Commission, we are pleased to present 
+                a Draft Plan for public discussion. The full Draft Plan can be found """
+                A 
+                  target: '_blank'
+                  href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2273574.pdf'
+                  style: 
+                    textDecoration: 'underline'
+
+                  'here'
+                "."
+
+              P
                 style: 
-                  textDecoration: 'underline'
+                  marginTop: 20
 
-                "[email]@seattle.gov"
-              " to suggest other parts of the draft plan to post here."
+                """
+                The Draft Plan contains hundreds of goals and policies. Many are not much 
+                different than our current plan. Over the last year, people have suggested 
+                bigger changes in the direction of planning for our city. The Draft Plan is 
+                an opportunity to discuss the pros and cons of these directions, and 
+                determine if they make sense for Seattle over the coming twenty years."""
+
+              P 
+                style: 
+                  marginTop: 20
+
+                """
+                Is there another Big Change you would like to add to the Draft Plan 
+                Conversation? Email us at """
+                A
+                  href: "mailto:[email]@seattle.gov"
+                  style: 
+                    textDecoration: 'underline'
+
+                  "[email]@seattle.gov"
+
+
+            # DIV 
+            #   style: 
+            #     color: seattle2035_pink
+            #     fontSize: 48
+            #     fontWeight: 600
+
+            #   'How should Seattle grow? You tell us!'
+
+            # DIV 
+            #   style: 
+            #     fontSize: 24
+
+            #   "What do you think of the draft "
+            #   A 
+            #     target: '_blank'
+            #     href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2273574.pdf'
+            #     style: 
+            #       textDecoration: 'underline'
+            #     "Seattle 2035 comprehensive plan"
+            #   "? "
+
+            #   "We've listed pivotal proposals from the draft below for your consideration. Email us at "
+            #   A
+            #     href: "mailto:[email]@seattle.gov"
+            #     style: 
+            #       textDecoration: 'underline'
+
+            #     "[email]@seattle.gov"
+            #   " to suggest other parts of the draft plan to post here."
 
             DIV 
               style: 

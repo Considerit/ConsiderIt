@@ -582,6 +582,7 @@ customizations['monitorinstitute'] =
 
 seattle2035_cream = "#FCFBE6"
 seattle2035_pink = '#F06668'
+seattle2035_dark = '#5C1517'
 
 customizations['seattle2035'] = 
   point_labels : pro_con
@@ -599,6 +600,28 @@ customizations['seattle2035'] =
     displayName: 'HomepageHeader'
 
     render: ->
+
+
+
+      header_style = 
+        color: seattle2035_pink
+        fontSize: 44
+        #fontWeight: 600
+        marginTop: 10
+
+      section_style = 
+        marginBottom: 20
+        color: seattle2035_dark
+
+      paragraph_heading_style = 
+        display: 'block'
+        #fontWeight: 600
+        fontSize: 28
+        color: seattle2035_pink
+
+      paragraph_style = 
+        fontSize: 18
+
       DIV
         style:
           position: 'relative'
@@ -609,7 +632,7 @@ customizations['seattle2035'] =
           style: 
             display: 'block'
             position: 'absolute'
-            top: 10
+            top: 22
             left: 20
             color: seattle2035_pink
 
@@ -643,64 +666,142 @@ customizations['seattle2035'] =
               width: SIMPLE_HOMEPAGE_WIDTH()
               margin: 'auto'
 
+            DIV 
+              style: header_style
+
+              'We need Big Changes to address growth'
 
             DIV 
-              style: 
-                color: seattle2035_pink
-                fontSize: 48
-                fontWeight: 600
-                margin: '10px 0'
+              style: section_style
 
-              'Seattle 2035 Draft Plan Conversation – a place to consider Big Changes.'
+              # SPAN 
+              #   style: paragraph_heading_style
 
-            DIV 
-              style: 
-                fontSize: 22
-
-
-              P 
-                style: 
-                  marginTop: 20
-
+              #   'Seattle is one of the fastest growing cities in America.'
+              
+              SPAN 
+                style: paragraph_style
+                  
                 """
-                Seattle is one of the fastest growing cities in America, and more growth is 
-                coming– 120,000 more people and 115,000 more jobs by 2035. The time to plan 
-                for how and where that growth occurs is now. After months of working with city 
-                departments and the Seattle Planning Commission, we are pleased to present 
-                a Draft Plan for public discussion. The full Draft Plan can be found """
+                Seattle is one of the fastest growing cities in America, 
+                adding 120,000 people and 115,000 jobs by 2035. We 
+                must plan for how and where that growth occurs now.
+                """
+
+            DIV 
+              style: section_style
+
+
+              SPAN 
+                style: paragraph_heading_style
+                'The Seattle 2035 draft plan addresses Seattle’s growth'
+              
+              SPAN 
+                style: paragraph_style
+                'We are pleased to present a '
+
                 A 
                   target: '_blank'
                   href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2273574.pdf'
                   style: 
                     textDecoration: 'underline'
 
-                  'here'
-                "."
-
-              P
-                style: 
-                  marginTop: 20
+                  'Draft Plan'
 
                 """
-                The Draft Plan contains hundreds of goals and policies. Many are not much 
-                different than our current plan. Over the last year, people have suggested 
-                bigger changes in the direction of planning for our city. The Draft Plan is 
-                an opportunity to discuss the pros and cons of these directions, and 
-                determine if they make sense for Seattle over the coming twenty years."""
+                 for public discussion. The draft is the result of months 
+                of working with city departments and the Seattle Planning Commission. It contains
+                hundreds of goals and policies, including a number of Big Changes in how we plan 
+                for our city."""
 
-              P 
-                style: 
-                  marginTop: 20
+
+            DIV 
+              style: section_style
+
+              SPAN 
+                style: paragraph_heading_style
+                'Please give feedback on the Big Changes proposed in the draft'
+
+              SPAN 
+                style: paragraph_style
 
                 """
-                Is there another Big Change you would like to add to the Draft Plan 
-                Conversation? Email us at """
-                A
-                  href: "mailto:[email]@seattle.gov"
-                  style: 
-                    textDecoration: 'underline'
+                We have listed below some of the Big Changes proposed in the draft.
+                Add your opinion about whether each change makes sense for 
+                Seattle over the coming twenty years. Your input will inform the next draft!
+                """
 
-                  "[email]@seattle.gov"
+            # DIV 
+            #   style: section_style
+
+            #   """
+            #   Is there another Big Change you would like to add to the Draft Plan 
+            #   Conversation? Email us at """
+            #   A
+            #     href: "mailto:[email]@seattle.gov"
+            #     style: 
+            #       textDecoration: 'underline'
+
+            #     "[email]@seattle.gov"
+
+
+            # DIV 
+            #   style: 
+            #     color: seattle2035_pink
+            #     fontSize: 48
+            #     fontWeight: 600
+            #     margin: '10px 0'
+
+            #   'Seattle 2035 Draft Plan Conversation – a place to consider Big Changes.'
+
+            # DIV 
+            #   style: 
+            #     fontSize: 22
+
+
+            #   P 
+            #     style: 
+            #       marginTop: 20
+
+            #     """
+            #     Seattle is one of the fastest growing cities in America, and more growth is 
+            #     coming– 120,000 more people and 115,000 more jobs by 2035. The time to plan 
+            #     for how and where that growth occurs is now. After months of working with city 
+            #     departments and the Seattle Planning Commission, we are pleased to present 
+            #     a Draft Plan for public discussion. The full Draft Plan can be found """
+            #     A 
+            #       target: '_blank'
+            #       href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2273574.pdf'
+            #       style: 
+            #         textDecoration: 'underline'
+
+            #       'here'
+            #     "."
+
+            #   P
+            #     style: 
+            #       marginTop: 20
+
+            #     """
+            #     The Draft Plan contains hundreds of goals and policies. Many are not much 
+            #     different than our current plan. Over the last year, people have suggested 
+            #     bigger changes in the direction of planning for our city. The Draft Plan is 
+            #     an opportunity to discuss the pros and cons of these directions, and 
+            #     determine if they make sense for Seattle over the coming twenty years."""
+
+            #   P 
+            #     style: 
+            #       marginTop: 20
+
+            #     """
+            #     Is there another Big Change you would like to add to the Draft Plan 
+            #     Conversation? Email us at """
+            #     A
+            #       href: "mailto:[email]@seattle.gov"
+            #       style: 
+            #         textDecoration: 'underline'
+
+            #       "[email]@seattle.gov"
 
 
             # DIV 
@@ -735,10 +836,10 @@ customizations['seattle2035'] =
 
             DIV 
               style: 
-                textDecoration: 'italics'
-                float: 'left'
+                fontStyle: 'italic'
                 marginTop: 20
-                fontSize: 20
+                fontSize: 18
+                color: seattle2035_dark
 
               "Thanks for your time,"
 
@@ -749,11 +850,22 @@ customizations['seattle2035'] =
                 "Department of Planning & Development"
                 BR()
                 "City of Seattle"
+
+
             DIV 
-              style: 
-                clear: 'both'
+              style: _.extend {}, section_style,
+                margin: 0
+                marginTop: 10
+                fontSize: 18
 
+              'p.s. Email us at '
+              A
+                href: "mailto:[email]@seattle.gov"
+                style: 
+                  textDecoration: 'underline'
 
+                "[email]@seattle.gov"
+              " if there is another Big Change you would like us to add below."
 
 
 

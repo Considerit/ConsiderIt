@@ -70,19 +70,23 @@ class Proposal < ActiveRecord::Base
 
     elsif 
       proposals = subdomain.proposals.where(:hide_on_homepage => false)
-      case subdomain.name 
+      case subdomain.name.downcase
         when 'bitcoin'
           manual_clusters = ['Our Mission', 'Our Values', 'Our Goals', 'Our Focus', 
                              'Our Actions', 'Resolutions', 'Foundation Goals', 
                              'Board Proposals', 'Member Proposals', 
                              'Proposals', 'Candidates']
 
-        when 'RANDOM2015', 'program-committee-demo'
+        when 'random2015', 'program-committee-demo'
           manual_clusters = ['Submissions', 'Under Review', 'Probably Accept', 
                              'Accepted', 'Probably Reject', 'Rejected']
 
         when 'allsides'
           manual_clusters = ['Proposals', 'Classroom Discussions', 'Civics']
+        
+        when 'seattle2035'
+
+          manual_clusters = ['Key Proposals', 'Big Changes', 'Overall']
 
         when 'monitorinstitute'
           manual_clusters = ['Intellectual Agenda Items', 'Overall']

@@ -534,11 +534,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
 
                   # Draw each proposal summary
                   for proposal, proposal_idx in cluster.proposals
-                    ProposalSummary
-                      key: proposal.key
-                      cluster: cluster.name
-                      columns: columns
-                      addContributors: index == 0 && proposal_idx == 0 && !browser.is_mobile
+                    @drawProposalSummary proposal, columns, index == 0 && proposal_idx == 0 && !browser.is_mobile
             
             # Cluster description
             if description 
@@ -560,23 +556,18 @@ window.LearnDecideShareHomepage = ReactiveComponent
 
 
 
-# Used by the LearnDecideShare homepage
-window.ProposalSummary = ReactiveComponent
-  displayName: 'ProposalSummary'
-
-  render : ->
+  drawProposalSummary : (proposal, columns, add_contributors) ->
     subdomain = fetch('/subdomain')
 
-    proposal = @data()
     your_opinion = fetch(proposal.your_opinion)
-    
-    hover_class = if @local.hovering_on == proposal.id then 'hovering' else ''
 
+
+    hovering_on = @local.hovering_on == proposal.id
     link_hover_color = focus_blue
-    cell_border = "1px solid #{if @local.hovering_on then link_hover_color else 'rgb(191, 192, 194)'}"
+    cell_border = "1px solid #{if hovering_on then link_hover_color else 'rgb(191, 192, 194)'}"
 
     TR 
-      className: "proposal_summary " + hover_class
+      className: "proposal_summary"
       style:
         height: ''
         padding: '0 30px'
@@ -584,12 +575,12 @@ window.ProposalSummary = ReactiveComponent
         borderLeft: cell_border
         minHeight: 60
         cursor: 'pointer'
-      onMouseEnter: => @local.hovering_on = true; save(@local)
-      onMouseLeave: => @local.hovering_on = false; save(@local)
+      onMouseEnter: => @local.hovering_on = proposal.id; save(@local)
+      onMouseLeave: => @local.hovering_on = null; save(@local)
       onClick: => loadPage "/#{proposal.slug}"
 
 
-      if @props.columns[0].heading
+      if columns[0].heading
         TD 
           className: 'summary_name'
           style: 
@@ -602,7 +593,7 @@ window.ProposalSummary = ReactiveComponent
           A 
             href: proposal_url(proposal)
             style: 
-              color: "#{if @local.hovering_on then link_hover_color else ''}" 
+              color: "#{if hovering_on then link_hover_color else ''}" 
               borderBottom: '1px solid #b1afa7'
 
             if subdomain.name == 'livingvotersguide' && proposal.category 
@@ -620,7 +611,7 @@ window.ProposalSummary = ReactiveComponent
               'closed'
 
 
-      if @props.columns[1].heading
+      if columns[1].heading
 
         TD
           style: 
@@ -637,7 +628,7 @@ window.ProposalSummary = ReactiveComponent
           if !proposal.your_opinion || !your_opinion.published \
              || isNeutralOpinion(your_opinion.stance)
             style = {fontWeight: 400, color: 'rgb(158,158,158)', fontSize: 21}
-            if @local.hovering_on
+            if hovering_on
               style.color = 'black'
               style.fontWeight = 600
             SPAN style: style, '?'
@@ -657,7 +648,7 @@ window.ProposalSummary = ReactiveComponent
 
               SPAN style: {color: 'rgb(166,204,70)', fontSize: 18, fontWeight: 600}, 'Yes'
 
-      if @props.columns[2].heading
+      if columns[2].heading
 
         TD
           className: 'summary_share'
@@ -704,7 +695,7 @@ window.ProposalSummary = ReactiveComponent
                 DIV className:'point_nutshell', style: {fontSize: 15},
                   "#{proposal.top_point.nutshell[0..30]}..."
 
-      if @props.columns[2].heading && @props.addContributors
+      if columns[2].heading && add_contributors
         @drawContributors()
 
 

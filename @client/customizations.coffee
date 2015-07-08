@@ -780,36 +780,38 @@ customizations['seattle2035'] =
                 """
             DIV 
               style: 
-                fontStyle: 'italic'
+                #fontStyle: 'italic'
                 marginTop: 20
                 fontSize: 18
                 color: seattle2035_dark
 
-              "Thanks for your time,"
-
               DIV 
                 style: 
-                  marginLeft: 0
+                  marginBottom: 18
+                "Thanks for your time,"
 
-                "Department of Planning & Development"
-                BR()
-                "City of Seattle"
-
-
-            DIV 
-              style: _.extend {}, section_style,
-                margin: 0
-                marginTop: 10
-                fontSize: 18
-
-              'p.s. Email us at '
-              A
-                href: "mailto:2035@seattle.gov"
+              IMG
+                src: asset('seattle2035/DPDLogo.svg')
                 style: 
-                  textDecoration: 'underline'
+                  height: 50
+                  display: 'block'
+                  marginBottom: 8
 
-                "2035@seattle.gov"
-              " if there is another Key Proposal you would like us to add below."
+
+              DIV 
+                style: _.extend {}, section_style,
+                  margin: 0
+                  marginTop: 10
+                  fontSize: 18
+
+                'p.s. Email us at '
+                A
+                  href: "mailto:2035@seattle.gov"
+                  style: 
+                    textDecoration: 'underline'
+
+                  "2035@seattle.gov"
+                " if there is another Key Proposal you would like us to add below."
 
 
 

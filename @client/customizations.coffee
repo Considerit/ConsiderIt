@@ -681,14 +681,14 @@ customizations['seattle2035'] =
           style: 
             position: 'absolute'
             left: '50%'
-            width: 600
-            marginLeft: -300
+            width: 650
+            marginLeft: -325
             top: 25
             fontSize: 41
             textAlign: 'center'
             borderBottom: '1px solid black'
 
-          "The discussion will begin soon!"
+          "The Discussion will begin July 10!"
 
 
         IMG
@@ -790,12 +790,17 @@ customizations['seattle2035'] =
                   marginBottom: 18
                 "Thanks for your time,"
 
-              IMG
-                src: asset('seattle2035/DPDLogo.svg')
+              A 
+                href: 'http://www.seattle.gov/dpd/cityplanning/default.htm'
+                target: '_blank'
                 style: 
-                  height: 50
                   display: 'block'
                   marginBottom: 8
+
+                IMG
+                  src: asset('seattle2035/DPDLogo.svg')
+                  style: 
+                    height: 60
 
 
               DIV 

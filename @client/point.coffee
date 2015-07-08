@@ -807,33 +807,23 @@ window.Discussion = ReactiveComponent
       # Write a new comment
       EditComment fresh: true, point: arest.key_id(@props.key)
 
-  # HACK! Insert a placeholder to add enough height to accommodate the 
-  # overlaid point. And if it is a point on the decision board,
-  # also add the space to the decision board (so that scrolling
-  # to bottom of discussion can occur)
+  # HACK! Save the height of the open point, which will be added 
+  # to the min height of the reasons region to accommodate the
+  # absolutely positioned element. 
+
   componentDidUpdate : -> 
-    @fixBodyHeight()
+    @setHeight()
 
   componentDidMount : -> 
-    @fixBodyHeight()
-  
-  componentWillUnmount : -> 
-    @clear_placeholder()
+    @setHeight()
 
-  clear_placeholder : -> 
-    $body = $('.reasons_region')
-    $body.find('.discussion_placeholder').remove()
+  setHeight : -> 
+    s = fetch('reasons_height_adjustment')
 
-  fixBodyHeight : -> 
-    @clear_placeholder()
+    dist_from_parent = $(@getDOMNode()).offset().top - $('.reasons_region').offset().top
 
-    $body = $('.reasons_region')
-    height_of_discussion = $(@getDOMNode()).height()
-    placeholder = "<div class='discussion_placeholder' style='height: " + \
-                    height_of_discussion + "px'></div>"
-    $body.append(placeholder)
-    if $(@getDOMNode()).parents('.opinion_region').length > 0
-      $('.decision_board_body').append placeholder
+    s.open_point_height = $(@getDOMNode()).height() + dist_from_parent
+    save s
 
 window.SubmitFactCheck = ReactiveComponent
   displayName: 'SubmitFactCheck'

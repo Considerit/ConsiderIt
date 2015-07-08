@@ -681,13 +681,14 @@ customizations['seattle2035'] =
           style: 
             position: 'absolute'
             left: '50%'
-            width: 500
-            marginLeft: -250
+            width: 600
+            marginLeft: -300
             top: 25
-            fontSize: 40
+            fontSize: 41
             textAlign: 'center'
+            borderBottom: '1px solid black'
 
-          "Discussion will open soon!"
+          "The discussion will begin soon!"
 
 
         IMG
@@ -715,7 +716,7 @@ customizations['seattle2035'] =
             DIV 
               style: header_style
 
-              'We need Big Changes to address growth'
+              'We need to address growth'
 
             DIV 
               style: section_style
@@ -729,9 +730,9 @@ customizations['seattle2035'] =
                 style: paragraph_style
                   
                 """
-                Seattle is one of the fastest growing cities in America, 
-                adding 120,000 people and 115,000 jobs by 2035. We 
-                must plan for how and where that growth occurs now.
+                Seattle is one of the fastest growing cities in America, adding 
+                120,000 people and 115,000 jobs by 2035. We must plan for how 
+                and where that growth occurs.
                 """
 
             DIV 
@@ -755,26 +756,27 @@ customizations['seattle2035'] =
                   'Draft Plan'
 
                 """
-                 for public discussion. The draft is the result of months 
-                of working with city departments and the Seattle Planning Commission. It contains
-                hundreds of goals and policies, including a number of Big Changes in how we plan 
-                for our city."""
-
+                  for public discussion. The Draft Plan contains hundreds of policies. Over 
+                 the last year, people have suggested changes in planning for our city. 
+                 The Draft Plan is an opportunity to discuss the pros and cons of these 
+                 changes and determine if they make sense for Seattle. 
+                """
 
             DIV 
               style: section_style
 
               SPAN 
                 style: paragraph_heading_style
-                'Please give feedback on the Big Changes proposed in the draft'
+                'Please give feedback on the Key Proposals proposed in the draft'
 
               SPAN 
                 style: paragraph_style
 
                 """
-                We have listed below some of the Big Changes proposed in the draft.
-                Add your opinion about whether each change makes sense for 
-                Seattle over the coming twenty years. Your input will inform the next draft!
+                We have listed below some Key Proposals in the draft.
+                Add your opinion about whether each proposal makes sense for 
+                Seattle over the coming twenty years. Your input will inform the Mayor's 
+                Recommended Plan!
                 """
             DIV 
               style: 
@@ -807,7 +809,7 @@ customizations['seattle2035'] =
                   textDecoration: 'underline'
 
                 "2035@seattle.gov"
-              " if there is another Big Change you would like us to add below."
+              " if there is another Key Proposal you would like us to add below."
 
 
 

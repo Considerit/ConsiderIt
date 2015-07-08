@@ -214,6 +214,19 @@ Proposal = ReactiveComponent
                           Permission.INSUFFICIENT_PRIVILEGES]) || \
                           your_opinion.published
 
+
+    # A number of elements controlled by other components are absolutely 
+    # positioned within the reasons region (e.g. discussions, decision
+    # board, new point). We need to set a minheight that is large enough to 
+    # encompass these elements. 
+    adjustments = fetch('reasons_height_adjustment')
+    minheight = 100 + adjustments.opinion_region_height
+    if get_selected_point()
+      minheight += adjustments.open_point_height
+    if adjustments.edit_point_height
+      minheight += adjustments.edit_point_height
+
+
     DIV 
       id: "proposal-#{@proposal.id}"
       key: @props.slug
@@ -323,7 +336,8 @@ Proposal = ReactiveComponent
         DIV 
           className:'reasons_region'
           style : 
-            width: REASONS_REGION_WIDTH()            
+            width: REASONS_REGION_WIDTH()    
+            minHeight: minheight        
             position: 'relative'
             paddingBottom: '4em' #padding instead of margin for docking
             margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
@@ -400,15 +414,7 @@ Proposal = ReactiveComponent
       else if mode == 'results' && 
           your_opinion.published && 
           customization('ThanksForYourOpinion', @proposal)
-        customization('ThanksForYourOpinion', @proposal)()
-
-  componentDidUpdate : ->
-    $el = $(@getDOMNode())
-
-    # Resizing the reasons region to solve a layout error when 
-    # the height of the decision board (which is absolutely positioned) 
-    # is taller than either of the wing point columns
-    $el.find('.reasons_region').css {minHeight: $el.find('.opinion_region').height() + 100} 
+        customization('ThanksForYourOpinion', @proposal)()    
 
 
   buildNewPointThreshold : ->
@@ -785,15 +791,6 @@ DecisionBoard = ReactiveComponent
         width: DECISION_BOARD_WIDTH()
         borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_blue}"
 
-
-    # if get_selected_point() && get_proposal_mode() == 'crafting'
-    #   if !_.contains(your_opinion.point_inclusions, get_selected_point())
-    #     css.grayscale decision_board_style
-    #     decision_board_style.opacity = '.4'
-    #   else
-    #     decision_board_style.borderColor = "#eee"
-
-
     if get_proposal_mode() == 'results'
       give_opinion_style = 
         display: 'block'
@@ -965,12 +962,21 @@ DecisionBoard = ReactiveComponent
         if @isMounted()
           perform final_state
           @transitioning = false
+
+          s = fetch('reasons_height_adjustment')
+          s.opinion_region_height = $(@getDOMNode()).height()
+          save s
+
       , speed + 200
 
     else if !@transitioning
       perform initial_state
       perform final_state
 
+      s = fetch('reasons_height_adjustment')
+      s.opinion_region_height = $(@getDOMNode()).height()
+      save s
+          
     @last_proposal_mode = mode
 
 saveOpinion = (proposal) -> 

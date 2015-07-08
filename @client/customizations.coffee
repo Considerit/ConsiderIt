@@ -677,6 +677,18 @@ customizations['seattle2035'] =
 
           '2035.seattle.gov'
 
+        DIV 
+          style: 
+            position: 'absolute'
+            left: '50%'
+            width: 500
+            marginLeft: -250
+            top: 25
+            fontSize: 40
+            textAlign: 'center'
+
+          "Discussion will open soon!"
+
 
         IMG
           style: 

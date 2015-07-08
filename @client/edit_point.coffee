@@ -12,8 +12,6 @@ window.EditPoint = ReactiveComponent
 
     mobile = browser.is_mobile
 
-
-
     if mobile
       textarea_style = 
         width: '100%'
@@ -111,7 +109,10 @@ window.EditPoint = ReactiveComponent
           min_height: if PORTRAIT_MOBILE() then 150 else 100
           defaultValue: if @props.fresh then null else @data().text
           style: textarea_style
-
+          onHeightChange: => 
+            s = fetch('reasons_height_adjustment')
+            s.edit_point_height = $(@getDOMNode()).height()            
+            save s
 
       if @local.errors?.length > 0
         
@@ -196,12 +197,16 @@ window.EditPoint = ReactiveComponent
     if browser.is_mobile
       @scrollY = window.scrollY
 
-
   componentDidMount : ->
     if @proposal.active 
       $el = $(@getDOMNode())
       $el.find('#nutshell').focus() if !browser.is_mobile # iOS messes this up
       $el.find('[data-action="submit-point"]').ensureInView {scroll: false, position: 'bottom'}
+
+  componentWillUnmount : -> 
+    s = fetch('reasons_height_adjustment')
+    s.edit_point_height = 0       
+    save s    
 
   drawTips : -> 
     # guidelines/tips for good points

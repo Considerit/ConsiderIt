@@ -38,8 +38,14 @@ window.AutoGrowTextArea = ReactiveComponent
     scroll_height = @getDOMNode().scrollHeight
     max_height = @props.max_height or 600
     if scroll_height > @getDOMNode().clientHeight
-      @local.height = Math.min scroll_height + 5, max_height
-      save(@local)
+
+      h = Math.min scroll_height + 5, max_height
+      if h != @local.height
+        @local.height = h
+
+        if @props.onHeightChange
+          @props.onHeightChange()
+        save(@local)
 
   render : -> 
     if !@local.height

@@ -609,22 +609,34 @@ customizations['seattle2035'] =
         validation: (zip) ->
           return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip)
       }, {
+        tag: 'age.editable'
+        question: 'My age is'
+        input: 'text'
+        input_style: 
+          width: 85        
+        required: false
+      }, {
         tag: 'race.editable'
         question: 'My race is'
-        input: 'dropdown'
-        options:['Black', 'White', 'Asian', 'Mixed']
+        input: 'text'
         required: false
       }, {
         tag: 'hispanic.editable'
-        question: "I'm hispanic"
+        question: "I'm of Hispanic origin"
         input: 'dropdown'
         options:['No', 'Yes']
+        required: false
+      }, {
+        tag: 'gender.editable'
+        question: "My gender is"
+        input: 'dropdown'
+        options:['Female', 'Male', 'Transgender', 'Other']
         required: false
       }, {
         tag: 'home.editable'
         question: "My home is"
         input: 'dropdown'
-        options:['Rented', 'Owned by me']
+        options:['Rented', 'Owned by me', 'Other']
         required: false
       }]
 
@@ -716,7 +728,7 @@ customizations['seattle2035'] =
             DIV 
               style: header_style
 
-              'We need to address growth'
+              'Let’s talk about how Seattle is changing'
 
             DIV 
               style: section_style
@@ -730,7 +742,7 @@ customizations['seattle2035'] =
                 style: paragraph_style
                   
                 """
-                Seattle is one of the fastest growing cities in America, adding 
+                Seattle is one of the fastest growing cities in America, expecting to add 
                 120,000 people and 115,000 jobs by 2035. We must plan for how 
                 and where that growth occurs.
                 """
@@ -749,17 +761,37 @@ customizations['seattle2035'] =
 
                 A 
                   target: '_blank'
-                  href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2273574.pdf'
+                  href: 'http://2035.seattle.gov'
                   style: 
                     textDecoration: 'underline'
 
                   'Draft Plan'
 
                 """
-                  for public discussion. The Draft Plan contains hundreds of policies. Over 
-                 the last year, people have suggested changes in planning for our city. 
-                 The Draft Plan is an opportunity to discuss the pros and cons of these 
-                 changes and determine if they make sense for Seattle. 
+                   for public discussion. The Draft Plan contains hundreds of 
+                  policies that guide decisions about our city, including a 
+                  number of Key Proposals for addressing growth and change. 
+                  These Key Proposals have emerged from conversations among 
+                  City agencies and through """
+                A 
+                  target: '_blank'
+                  href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2262500.pdf'
+                  style: 
+                    textDecoration: 'underline'
+
+                  'public input' 
+                '. This dialogue is an '
+
+                A
+                  target: '_blank'
+                  href: 'http://2035.seattle.gov/about/faqs/#how-long'
+                  style: 
+                    textDecoration: 'underline'
+                  'opportunity' 
+
+                """
+                 to discuss the pros and cons of these Key Proposals and 
+                determine if they make sense for Seattle. 
                 """
 
             DIV 
@@ -767,16 +799,16 @@ customizations['seattle2035'] =
 
               SPAN 
                 style: paragraph_heading_style
-                'Please give feedback on the Key Proposals proposed in the draft'
+                'We need your feedback on the Key Proposals in the Draft Plan'
 
               SPAN 
                 style: paragraph_style
 
                 """
                 We have listed below some Key Proposals in the draft.
-                Add your opinion about whether each proposal makes sense for 
-                Seattle over the coming twenty years. Your input will inform the Mayor's 
-                Recommended Plan!
+                Do these Key Proposals make sense for Seattle over the coming twenty years? 
+                Please tell us by adding your opinion below. Your input will influence 
+                the Mayor’s Recommended Plan, coming in December 2015!
                 """
             DIV 
               style: 
@@ -816,7 +848,10 @@ customizations['seattle2035'] =
                     textDecoration: 'underline'
 
                   "2035@seattle.gov"
-                " if there is another Key Proposal you would like us to add below."
+                """
+                 if you would like us to add another Key Proposal below for 
+                discussion or you have a comment about another issue in the Draft Plan.
+                """
 
 
 

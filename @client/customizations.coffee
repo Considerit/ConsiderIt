@@ -830,7 +830,7 @@ customizations['seattle2035'] =
                   marginBottom: 8
 
                 IMG
-                  src: asset('seattle2035/DPDLogo.svg')
+                  src: asset('seattle2035/DPD Logo.svg')
                   style: 
                     height: 60
 

@@ -95,7 +95,7 @@ class SubdomainController < ApplicationController
       raise PermissionDenied.new Permission::DISABLED
     end
 
-    fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'has_civility_pledge']
+    fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url']
     attrs = params.select{|k,v| fields.include? k}
 
     update_roles

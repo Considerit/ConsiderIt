@@ -804,6 +804,8 @@ DecisionBoard = ReactiveComponent
       style:
         width: DECISION_BOARD_WIDTH()
 
+
+
       SliderBubblemouth()
 
       [DIV
@@ -813,6 +815,8 @@ DecisionBoard = ReactiveComponent
         onClick: => 
           if get_proposal_mode() == 'results' 
             updateProposalMode('crafting', 'give_opinion_button')
+
+
 
         DIV null, 
 
@@ -949,31 +953,38 @@ DecisionBoard = ReactiveComponent
     else
       final_state['.your_points, .save_opinion_button, .below_save'].display = ''
 
-    if @last_proposal_mode != mode && speed > 0
-      perform initial_state
+    if @last_proposal_mode != mode 
 
-      # wait for css transitions to complete
-      @transitioning = true
-      _.delay => 
-        if @isMounted()
-          perform final_state
-          @transitioning = false
+      if speed > 0      
+        perform initial_state
 
-          s = fetch('reasons_height_adjustment')
-          s.opinion_region_height = $(@getDOMNode()).height()
-          save s
+        # wait for css transitions to complete
+        @transitioning = true
+        _.delay => 
+          if @isMounted()
+            perform final_state
+            @transitioning = false
 
-      , speed + 200
+            s = fetch('reasons_height_adjustment')
+            s.opinion_region_height = $(@getDOMNode()).height()
+            save s
 
-    else if !@transitioning
-      perform initial_state
-      perform final_state
+        , speed + 200
 
-      s = fetch('reasons_height_adjustment')
-      s.opinion_region_height = $(@getDOMNode()).height()
-      save s
-          
-    @last_proposal_mode = mode
+      else if !@transitioning
+        if !@hi? || @hi < 10
+          console.trace()
+          @hi = if !@hi? then 1 else (@hi + 1)
+          console.log @hi
+
+        perform initial_state
+        perform final_state
+
+        s = fetch('reasons_height_adjustment')
+        s.opinion_region_height = $(@getDOMNode()).height()
+        save s
+            
+      @last_proposal_mode = mode
 
 saveOpinion = (proposal) -> 
   root = fetch('root')

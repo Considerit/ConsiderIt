@@ -336,7 +336,7 @@ Auth = ReactiveComponent
                   field[0]
               TD
                 style:
-                  verticalAlign: 'top'
+                  verticalAlign: 'bottom'
                   width: '100%'
                   paddingLeft: 18
                 field[1]

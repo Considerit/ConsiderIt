@@ -323,6 +323,7 @@ customizations.default =
 
   # Other options
   additional_auth_footer: false
+  civility_pledge: false
 
   auth: 
     
@@ -589,6 +590,7 @@ customizations['seattle2035'] =
   slider_pole_labels : agree_disagree
   homie_histo_title: "Citizen opinions"
   show_proposer_icon: true
+  civility_pledge: true
 
   "cluster/Overall" : 
     point_labels: strengths_weaknesses
@@ -1365,7 +1367,7 @@ customizations.bitcoin =
         options:['No', 'Yes']
         required: true
       }]
-
+  civility_pledge: true
 
   # default proposal options
   show_proposer_icon: true
@@ -1548,6 +1550,8 @@ customizations['bitcoin-demo'] =
 # Living Voters Guide
 
 customizations.livingvotersguide = 
+
+  civility_pledge: true
 
   slider_pole_labels: support_oppose
 

@@ -889,14 +889,13 @@ DecisionBoard = ReactiveComponent
               className:'cancel_opinion_button primary_cancel_button'
               onClick: => updateProposalMode('results', 'cancel_button')
               'or just skip to the results' ]
-        
 
   componentDidUpdate : ->
-    @transition if !Modernizr.csstransitions then 0 else TRANSITION_SPEED
+    @transition()
     @makeDroppable()
 
   componentDidMount : ->
-    @transition 0
+    @transition()
     @makeDroppable()
 
   makeDroppable: -> 
@@ -934,8 +933,12 @@ DecisionBoard = ReactiveComponent
           db.user_hovering_on_drop_target = true
           save db
 
-  transition : (speed) -> 
+  transition : -> 
+    return if @is_waiting()
+
+    speed = if !Modernizr.csstransitions || !@last_proposal_mode then 0 else TRANSITION_SPEED
     mode = get_proposal_mode()
+
 
     perform = (transitions) => 
       for own k,v of transitions
@@ -952,6 +955,8 @@ DecisionBoard = ReactiveComponent
       final_state['.give_opinion_button'].visibility = ''
     else
       final_state['.your_points, .save_opinion_button, .below_save'].display = ''
+
+    
 
     if @last_proposal_mode != mode 
 
@@ -1022,7 +1027,7 @@ SaveYourOpinionNotice = ReactiveComponent
     your_opinion = fetch(@proposal.your_opinion)
     slider = fetch namespaced_key('slider', @proposal)
 
-    return SPAN null if (!TWO_COL() && get_proposal_mode() == 'crafting') || \
+    return SPAN null if !TWO_COL()  || \
                         ( your_opinion.published || \
                           (!slider.has_moved && your_opinion.point_inclusions.length == 0)\
                         )

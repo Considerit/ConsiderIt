@@ -564,7 +564,7 @@ Auth = ReactiveComponent
   pledgeInput : -> 
     subdomain = fetch('/subdomain')
 
-    if !subdomain.has_civility_pledge
+    if !customization('civility_pledge')
       return null
     else
       pledges = ['Use only one account', 

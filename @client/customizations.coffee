@@ -689,18 +689,18 @@ customizations['seattle2035'] =
 
           '2035.seattle.gov'
 
-        DIV 
-          style: 
-            position: 'absolute'
-            left: '50%'
-            width: 650
-            marginLeft: -325
-            top: 25
-            fontSize: 41
-            textAlign: 'center'
-            borderBottom: '1px solid black'
+        # DIV 
+        #   style: 
+        #     position: 'absolute'
+        #     left: '50%'
+        #     width: 650
+        #     marginLeft: -325
+        #     top: 25
+        #     fontSize: 41
+        #     textAlign: 'center'
+        #     borderBottom: '1px solid black'
 
-          "The Discussion will begin July 10!"
+        #   "The Discussion will begin July 10!"
 
 
         IMG
@@ -769,8 +769,8 @@ customizations['seattle2035'] =
 
                 """
                    for public discussion. The Draft Plan contains hundreds of 
-                  policies that guide decisions about our city, including a 
-                  number of Key Proposals for addressing growth and change. 
+                  policies that guide decisions about our city, including 
+                  Key Proposals for addressing growth and change. 
                   These Key Proposals have emerged from conversations among 
                   City agencies and through """
                 A 
@@ -780,19 +780,8 @@ customizations['seattle2035'] =
                     textDecoration: 'underline'
 
                   'public input' 
-                '. This dialogue is an '
+                '.'
 
-                A
-                  target: '_blank'
-                  href: 'http://2035.seattle.gov/about/faqs/#how-long'
-                  style: 
-                    textDecoration: 'underline'
-                  'opportunity' 
-
-                """
-                 to discuss the pros and cons of these Key Proposals and 
-                determine if they make sense for Seattle. 
-                """
 
             DIV 
               style: section_style
@@ -808,8 +797,16 @@ customizations['seattle2035'] =
                 We have listed below some Key Proposals in the draft.
                 Do these Key Proposals make sense for Seattle over the coming twenty years? 
                 Please tell us by adding your opinion below. Your input will influence 
-                the Mayor’s Recommended Plan, coming in December 2015!
+                the Mayor’s Recommended Plan, 
                 """
+                A
+                  target: '_blank'
+                  href: 'http://2035.seattle.gov/about/faqs/#how-long'
+                  style: 
+                    textDecoration: 'underline'
+                  'coming in December 2015'
+                '!'
+
             DIV 
               style: 
                 #fontStyle: 'italic'
@@ -832,7 +829,7 @@ customizations['seattle2035'] =
                 IMG
                   src: asset('seattle2035/DPD Logo.svg')
                   style: 
-                    height: 60
+                    height: 70
 
 
               DIV 

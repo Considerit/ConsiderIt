@@ -689,18 +689,18 @@ customizations['seattle2035'] =
 
           '2035.seattle.gov'
 
-        # DIV 
-        #   style: 
-        #     position: 'absolute'
-        #     left: '50%'
-        #     width: 650
-        #     marginLeft: -325
-        #     top: 25
-        #     fontSize: 41
-        #     textAlign: 'center'
-        #     borderBottom: '1px solid black'
+        DIV 
+          style: 
+            position: 'absolute'
+            left: '50%'
+            width: 650
+            marginLeft: -325
+            top: 25
+            fontSize: 41
+            textAlign: 'center'
+            borderBottom: '1px solid black'
 
-        #   "The Discussion will begin July 10!"
+          "The Discussion will begin July 10!"
 
 
         IMG

@@ -95,36 +95,32 @@ window.isNeutralOpinion = (stance) ->
   return Math.abs(stance) < 0.05
 
 window.updateProposalMode = (proposal_mode, triggered_by) ->
-  toggle = -> 
-    loc = fetch('location')
+  loc = fetch('location')
 
-    if proposal_mode == 'results' && loc.query_params.results ||
-        proposal_mode == 'crafting' && !loc.query_params.results
-      return
+  if proposal_mode == 'results' && loc.query_params.results ||
+      proposal_mode == 'crafting' && !loc.query_params.results
+    return
 
-    if proposal_mode == 'results'
-      loc.query_params.results = true
-    else
-      delete loc.query_params.results
-    delete loc.query_params.selected
+  if proposal_mode == 'results'
+    loc.query_params.results = true
+  else
+    delete loc.query_params.results
 
-    save loc
+  delete loc.query_params.selected
 
-    window.writeToLog
-      what: 'toggle proposal mode'
-      details: 
-        from: get_proposal_mode()
-        to: proposal_mode
-        triggered_by: triggered_by 
-
+  save loc
 
   if proposal_mode == 'results' && $('.histogram').length > 0
     $('.histogram').ensureInView
       offset_buffer: -50
-      callback : toggle
-  else
-    toggle()
 
+  window.writeToLog
+    what: 'toggle proposal mode'
+    details: 
+      from: get_proposal_mode()
+      to: proposal_mode
+      triggered_by: triggered_by 
+  
 
 window.opinionsForProposal = (proposal) ->       
   filter_func = customization("homie_histo_filter", proposal)

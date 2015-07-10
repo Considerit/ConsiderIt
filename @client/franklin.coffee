@@ -972,10 +972,6 @@ DecisionBoard = ReactiveComponent
         , speed + 200
 
       else if !@transitioning
-        if !@hi? || @hi < 10
-          console.trace()
-          @hi = if !@hi? then 1 else (@hi + 1)
-          console.log @hi
 
         perform initial_state
         perform final_state

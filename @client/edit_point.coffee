@@ -52,30 +52,11 @@ window.EditPoint = ReactiveComponent
       className: 'edit_point'
       style: style
 
-      if !mobile
-        if !@props.fresh
-          LABEL 
-            htmlFor:'nutshell'
-            'Your point'
-        else
-          DIV
-            style: 
-              color: focus_blue
-              position: 'absolute'
-              top: -22
-            "Write a new "
-            capitalize \
-              if @props.valence == 'pros' 
-                customization('point_labels.pro', @proposal)
-              else 
-                customization('point_labels.con', @proposal)
-
-
       DIV
         style: 
           position: 'relative'
 
-        @drawTips()                                
+        @drawTips()
 
 
         CharacterCountTextInput 
@@ -149,7 +130,7 @@ window.EditPoint = ReactiveComponent
               marginTop: 0
               display: 'inline-block'
               fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 24
-              padding: '4px 50px'
+              padding: '4px 35px'
               float: 'left'
             'Done'
 

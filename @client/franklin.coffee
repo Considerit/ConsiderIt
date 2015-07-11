@@ -1147,12 +1147,12 @@ GroupSelectionRegion = ReactiveComponent
     if has_histogram_focus
       DIV 
         style: 
-          width: BODY_WIDTH() + 80
+          width: BODY_WIDTH() + 160
           border: "3px solid #{if get_selected_point() then '#eee' else focus_blue }"
           height: '100%'
           position: 'absolute'
           borderRadius: 16
-          marginLeft: -BODY_WIDTH()/2 - 40
+          marginLeft: -BODY_WIDTH()/2 - 80
           left: '50%'
           top: 18
 
@@ -1178,8 +1178,8 @@ GroupSelectionRegion = ReactiveComponent
         # draw a name + avatar display for the selected opinion
         else 
           place_avatar_opinion_value = \
-               if hist.selected_opinion_value > 0 then .8 else -.8
-          left = translateStanceToPixelX(place_avatar_opinion_value, BODY_WIDTH()) + 20
+               if hist.selected_opinion_value > 0 then .66 else -.8
+          left = translateStanceToPixelX(place_avatar_opinion_value, BODY_WIDTH() + 160)
 
           avatar_size = 80
           user = fetch(fetch(hist.selected_opinion).user)

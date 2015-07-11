@@ -60,6 +60,7 @@ window.loadPage = (url, query_params) ->
 # History-aware link
 # Limitation: if an absolute url is specified as the href, 
 # it will reload the page, even if the link is internal to this site
+
 old_A = A
 window.A = React.createClass
   render : -> 
@@ -69,9 +70,14 @@ window.A = React.createClass
       @_onclick = @props.onClick or (-> null)
 
       if browser.is_mobile
-        @props.onTouchStart = @handleClick
+        @props.onTouchEnd = (e) => 
+          # don't follow the link if the user is in the middle of swipping
+          if !is_swipping
+            @handleClick(e)
+
         if browser.is_android_browser
           @props.onClick = (e) -> e.preventDefault(); e.stopPropagation()
+
       else
         @props.onClick = @handleClick
 

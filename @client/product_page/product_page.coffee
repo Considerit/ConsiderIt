@@ -710,6 +710,14 @@ Computer = ReactiveComponent
 Root = ReactiveComponent
   displayName: "Root"
 
+  # Track whether the user is currently swipping. Used to determine whether
+  # a touchend event should trigger a click on a link.
+  # TODO: I'd like to have this defined at a higher level  
+  onTouchMove: -> 
+    window.is_swipping = true
+  onTouchEnd: -> 
+    window.is_swipping = false
+
   render: ->
     DIV null,
       BrowserLocation()

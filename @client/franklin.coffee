@@ -1859,8 +1859,10 @@ Root = ReactiveComponent
       # TODO: I'd like to have this defined at a higher level  
       onTouchMove: -> 
         window.is_swipping = true
+        true
       onTouchEnd: -> 
         window.is_swipping = false
+        true
 
       style: 
         width: PAGE_WIDTH()

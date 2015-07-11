@@ -13,9 +13,9 @@ window.WatchStar = ReactiveComponent
 
     label = @props.label || (watching) -> 
       if watching     
-        "Stop watching this proposal" 
+        "Stop getting notifications" 
       else 
-        "Watch this proposal"
+        "Get notifications about this topic"
 
     watching = current_user.subscriptions[proposal.key] == 'watched'
 

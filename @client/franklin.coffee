@@ -1853,6 +1853,15 @@ Root = ReactiveComponent
     current_user = fetch('/current_user')
 
     DIV 
+
+      # Track whether the user is currently swipping. Used to determine whether
+      # a touchend event should trigger a click on a link.
+      # TODO: I'd like to have this defined at a higher level  
+      onTouchMove: -> 
+        window.is_swipping = true
+      onTouchEnd: -> 
+        window.is_swipping = false
+
       style: 
         width: PAGE_WIDTH()
       

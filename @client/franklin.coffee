@@ -223,6 +223,14 @@ Proposal = ReactiveComponent
       minheight += adjustments.edit_point_height
 
 
+    # if there aren't community_points, then we won't bother showing them
+    community_points = fetch("/page/#{@proposal.slug}").points  
+    if mode == 'crafting'
+      included_points = fetch(@proposal.your_opinion).point_inclusions
+      community_points = (pnt for pnt in community_points when !_.contains(included_points, pnt.key) )
+    has_community_points = community_points.length > 0 
+
+
     DIV 
       id: "proposal-#{@proposal.id}"
       key: @props.slug
@@ -354,6 +362,8 @@ Proposal = ReactiveComponent
               @proposal, 'cons', \
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
               mode == 'crafting'
+            style: 
+              visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
           if !TWO_COL()
             Dock
@@ -392,6 +402,8 @@ Proposal = ReactiveComponent
               @proposal, 'pros', \
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
               mode == 'crafting'
+            style: 
+              visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
       if edit_mode && browser.is_mobile
         # full screen edit point mode for mobile
@@ -742,6 +754,15 @@ DecisionBoard = ReactiveComponent
 
     register_dependency = fetch(namespaced_key('slider', @proposal)).value 
                              # to keep bubble mouth in sync with slider
+
+    # if there aren't points in the wings, then we won't bother showing 
+    # the drop target
+    wing_points = fetch("/page/#{@proposal.slug}").points  
+    included_points = fetch(@proposal.your_opinion).point_inclusions
+    wing_points = (pnt for pnt in wing_points when !_.contains(included_points, pnt.key) )
+    are_points_in_wings = wing_points.length > 0 
+
+
     
     decision_board_style =
       borderRadius: 16
@@ -783,7 +804,7 @@ DecisionBoard = ReactiveComponent
     else 
       _.extend decision_board_style,
         transform: "translate(0, 10px)"
-        minHeight: 275
+        minHeight: if are_points_in_wings then 275 else 170
         width: DECISION_BOARD_WIDTH()
         borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_blue}"
 
@@ -798,6 +819,11 @@ DecisionBoard = ReactiveComponent
     else 
       give_opinion_style =
         visibility: 'hidden'
+
+
+
+
+
 
     DIV 
       className:'opinion_region'
@@ -833,7 +859,7 @@ DecisionBoard = ReactiveComponent
                 rendered_as: 'decision_board_point'
                 points_editable: true
                 points_draggable: true
-                drop_target: true
+                drop_target: are_points_in_wings
                 points: (p for p in fetch(@proposal.your_opinion).point_inclusions \
                               when !fetch(p).is_pro)
 
@@ -843,7 +869,7 @@ DecisionBoard = ReactiveComponent
                 rendered_as: 'decision_board_point'
                 points_editable: true
                 points_draggable: true
-                drop_target: true
+                drop_target: are_points_in_wings
                 points: (p for p in fetch(@proposal.your_opinion).point_inclusions \
                               when fetch(p).is_pro)
 
@@ -874,9 +900,9 @@ DecisionBoard = ReactiveComponent
           onClick: => saveOpinion(@proposal)
 
           if your_opinion.published 
-            'Opinion updated. See the results' 
+            'Return to results' 
           else 
-            'Save your opinion and see results'
+            'Save your opinion'
 
         if !your_opinion.published
 
@@ -1341,18 +1367,7 @@ PointsList = ReactiveComponent
                 enable_dragging: @props.points_draggable
                 is_new: @props.newpoint_threshold &&
                          Date.parse(point.created_at) > @props.newpoint_threshold
-        else
-          LI 
-            style: 
-              marginTop: 50
-              fontStyle: 'italic'
-              listStyle: 'none'
-              textAlign: 'center'
-              fontWeight: if browser.high_density_display then '300' else '400'
 
-            "No " + \
-            customization('point_labels.' + @props.valence, @proposal ) + \
-            " given"
 
       if @props.drop_target
         @drawDropTarget()
@@ -1389,7 +1404,7 @@ PointsList = ReactiveComponent
     #              with few inclusions, the document height can jarringly fluctuate
     DIV
       className: "points_by_community #{@props.valence}_by_community"
-      style: css.crossbrowserify
+      style: css.crossbrowserify _.defaults (@props.style or {}),
         display: 'inline-block'
         verticalAlign: 'top'
         width: POINT_CONTENT_WIDTH()
@@ -1406,7 +1421,7 @@ PointsList = ReactiveComponent
   drawYourPoints: (children) -> 
     DIV 
       className: "points_on_decision_board #{@props.valence}_on_decision_board"
-      style: 
+      style: _.defaults (@props.style or {}),
         display: 'inline-block'
         verticalAlign: 'top'        
         width: POINT_CONTENT_WIDTH()
@@ -1477,9 +1492,9 @@ PointsList = ReactiveComponent
         is_left: @props.valence == 'cons'
         style: {}
         text_style:
-          color: focus_blue
+          #color: focus_blue
           textDecoration: 'underline'
-          fontSize: 24
+          fontSize: if browser.is_mobile then 24
 
 
 
@@ -1490,15 +1505,18 @@ PointsList = ReactiveComponent
       style: 
         padding: '.25em 0'
         marginTop: '1em'
-        marginLeft: 20
+        marginLeft: if @props.drop_target then 20 else 9
         fontSize: POINT_FONT_SIZE()
 
+      if @props.drop_target
+        SPAN 
+          style: 
+            fontWeight: if browser.high_density_display then 300 else 400
+          'or '
       SPAN 
         style: 
-          fontWeight: if browser.high_density_display then 300 else 400
-        'or '
-      SPAN 
-        style: {padding: '0 6px'}
+          padding: if @props.drop_target then '0 6px' else '0 11px 0 0'
+
         dangerouslySetInnerHTML:{__html: '&bull;'}
 
       A 
@@ -1506,6 +1524,7 @@ PointsList = ReactiveComponent
         style:
           textDecoration: 'underline'
           color: focus_blue
+
 
         "Write a new "
         capitalize \

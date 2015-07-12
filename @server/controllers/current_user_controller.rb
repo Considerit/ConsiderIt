@@ -376,20 +376,18 @@ class CurrentUserController < ApplicationController
   # roles or permissions settings. If so, replace the email with the
   # user's key. 
   def update_roles_and_permissions
-    if current_subdomain.roles && current_subdomain.roles.index("\"#{current_user.email}\"")
-      pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{current_subdomain.name}"              
-      current_subdomain.roles = current_subdomain.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
-      current_subdomain.save
+    for cls in [Subdomain, Proposal]
+      objs_with_user_in_role = cls.where("roles like '%\"#{current_user.email}\"%'") 
+                                       # this is case insensitive
+
+      for obj in objs_with_user_in_role
+        pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{obj.name}"
+        obj.roles = obj.roles.gsub /\"#{current_user.email}\"/i, "\"/user/#{current_user.id}\""
+        obj.save
+      end
+
     end
 
-    proposals_with_role = current_subdomain.proposals.where("roles like '%\"#{current_user.email}\"%'")
-    if  proposals_with_role.count > 0
-      proposals_with_role.each do |proposal|
-        pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{proposal.name}"
-        proposal.roles = proposal.roles.gsub "\"#{current_user.email}\"", "\"/user/#{current_user.id}\""
-        proposal.save
-      end 
-    end
   end
 
   def log (what)

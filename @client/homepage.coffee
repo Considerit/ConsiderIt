@@ -507,7 +507,7 @@ window.LearnDecideShareHomepage = ReactiveComponent
         for cluster, index in proposals.clusters or []
           description = customization "description", "cluster/#{cluster.name}"
           DIV null,
-            if index == 1 and subdomain.name == 'livingvotersguide'
+            if index == 0 and subdomain.name == 'livingvotersguide'
               customization('ZipcodeBox')()
 
             if cluster.proposals?.length > 0 

@@ -1748,7 +1748,7 @@ customizations.livingvotersguide =
                 style: {margin: '0 0 0 12px', fontSize: 24, height: 42, width: 152, padding: '4px 20px'}
                 onChange: onChange
               BR null
-              SPAN style: {fontSize: 18}, 'Your local congressional race and measures will be revealed!'
+              SPAN style: {fontSize: 18}, 'Your city council candidates will be revealed!'
 
           DIV 
             style: 

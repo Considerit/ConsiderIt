@@ -97,7 +97,15 @@ ImportDataDash = ReactiveComponent
               TR null,
                 TD style: {paddingTop: 20, textAlign: 'right'}, 
                   LABEL style: {whiteSpace: 'nowrap'}, htmlFor: "#{table}-file", "#{table} (.csv)"
-                  DIV null, A style: {textDecoration: 'underline', fontSize: 12}, href: "/example_import_csvs/#{table.toLowerCase()}.csv", 'Example'
+                  DIV null
+                    A 
+                      style: 
+                        textDecoration: 'underline'
+                        fontSize: 12
+                      href: "/example_import_csvs/#{table.toLowerCase()}.csv"
+                      'data-nojax': true
+                      'Example'
+
                 TD style: {padding: '20px 0 0 20px'}, 
                   INPUT 
                     id: "#{table}-file"

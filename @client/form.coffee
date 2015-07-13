@@ -130,7 +130,7 @@ window.WysiwygEditor = ReactiveComponent
       # },
     ]
 
-    if fetch('/current_user').is_super_admin
+    if fetch('/current_user').is_admin
       toolbar_items.push 
         className: 'fa fa-code'
         title: 'Directly edit HTML'

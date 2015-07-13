@@ -53,7 +53,7 @@ class Proposal < ActiveRecord::Base
     end
 
     if subdomain.name == 'livingvotersguide'
-      year = 2014
+      year = 2015
       local_jurisdictions = []   
       
       user_tags = current_user.tags ? JSON.load(current_user.tags) : nil

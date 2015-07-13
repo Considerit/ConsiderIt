@@ -1651,7 +1651,7 @@ customizations.livingvotersguide =
                 marginTop: 10
                 fontSize: 18
                 fontWeight: 300
-              "Thanks Washington! We'll see you again in 2015."
+              "Seattle City Council Primary dialogue coming in mid July!"
 
           DIV
             style:

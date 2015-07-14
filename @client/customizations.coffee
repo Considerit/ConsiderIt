@@ -1706,8 +1706,8 @@ customizations.livingvotersguide =
 
   slider_pole_labels: support_oppose
 
-  ProposalNavigation: ProposalNavigationWithMenu
-  docking_proposal_header : true
+  #ProposalNavigation: ProposalNavigationWithMenu
+  #docking_proposal_header : true
 
   'cluster/Advisory votes': 
     label: 'Advisory Votes'
@@ -1778,13 +1778,24 @@ customizations.livingvotersguide =
             A href:'/about', style: {color: 'white', cursor: 'pointer'},
               'About'
             
+          if !homepage 
+            A
+              href: '/'
+              style: 
+                position: 'absolute'
+                display: 'inline-block'
+                top: 40
+                left: 22
+                fontSize: 43
+                color: 'white'
+              '<' 
 
           # Logo
           A 
             style: 
               marginTop: if homepage then 40 else 10
               display: 'inline-block'
-              marginLeft: if !homepage then 20
+              marginLeft: if !homepage then 80
               marginRight: if !homepage then 30
 
             href: (if fetch('location').url == '/' then '/about' else '/'),
@@ -1910,6 +1921,12 @@ customizations.livingvotersguide =
                 paddingBottom: 15
 
               ZipcodeBox()
+
+        else
+          DIV 
+            style: 
+              backgroundColor: LVG_green
+              paddingTop: 20
 
 
   Footer : ReactiveComponent

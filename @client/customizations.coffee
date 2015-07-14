@@ -139,7 +139,7 @@ strengths_weaknesses =
   pros: 'strengths' 
   con: 'weakness'
   cons: 'weaknesses'
-  your_header: "--valences-- you observe" 
+  your_header: "--valences--" 
   other_header: "--valences-- observed" 
   top_header: "Foremost --valences--" 
 
@@ -913,7 +913,7 @@ FoodcorpsHeader = ReactiveComponent
 
 customizations['foodcorps'] = 
   point_labels : strengths_weaknesses
-  slider_pole_labels : yes_no
+  slider_pole_labels : ready_not_ready
   show_slider_feedback: false
 
   HomepageHeader : FoodcorpsHeader
@@ -1926,7 +1926,7 @@ customizations.livingvotersguide =
           DIV 
             style: 
               backgroundColor: LVG_green
-              paddingTop: 20
+              paddingTop: 5
 
 
   Footer : ReactiveComponent

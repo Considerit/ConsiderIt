@@ -184,6 +184,16 @@ support_challenge_claim =
   other_header: "--valences-- identified" 
   top_header: "Top --valences--" 
 
+delta_pluses = 
+  pro: 'plus'
+  pros: 'pluses' 
+  con: 'delta'
+  cons: 'deltas'
+  your_header: "--valences-- you recognize" 
+  other_header: "--valences-- identified" 
+  top_header: "Top --valences--" 
+
+
 # slider poles
 
 support_oppose = 
@@ -840,8 +850,73 @@ customizations['seattle2035'] =
                 """
 
 
+###################
+# Foodcorps
 
 
+FoodcorpsHeader = ReactiveComponent
+  displayName: 'FoodcorpsHeader'
+
+  render: -> 
+    loc = fetch('location')
+
+    homepage = loc.url == '/'
+
+    DIV 
+      style: 
+        position: 'relative'
+        height: 200
+
+      IMG
+        src: asset('foodcorps/logo.png')
+        style:
+          height: 160
+          position: 'absolute'
+          top: 10
+          left: (WINDOW_WIDTH() - SIMPLE_HOMEPAGE_WIDTH()) / 2
+          zIndex: 5
+
+
+      DIV
+        style:
+          background: "url(#{asset('foodcorps/bg.gif')}) repeat-x"
+          height: 68
+          width: '100%'
+          position: 'relative'
+          top: 116
+          left: 0
+
+      A
+        href: '/'
+        style: 
+          display: 'inline-block'
+          fontSize: 43
+          visibility: if homepage then 'hidden'
+          verticalAlign: 'top'
+          marginTop: 52
+          marginLeft: 15
+          color: 'white'
+          zIndex: 10
+          position: 'relative'
+        '<'
+
+      DIV 
+        style: 
+          position: 'absolute'
+          top: 18
+          right: 0
+          width: 110
+
+        ProfileMenu()
+      
+
+
+customizations['foodcorps'] = 
+  point_labels : delta_pluses
+  slider_pole_labels : ready_not_ready
+
+  HomepageHeader : FoodcorpsHeader
+  NonHomepageHeader: FoodcorpsHeader
 
 ################
 # sosh

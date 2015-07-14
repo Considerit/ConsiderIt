@@ -912,8 +912,9 @@ FoodcorpsHeader = ReactiveComponent
 
 
 customizations['foodcorps'] = 
-  point_labels : delta_pluses
-  slider_pole_labels : ready_not_ready
+  point_labels : strengths_weaknesses
+  slider_pole_labels : yes_no
+  show_slider_feedback: false
 
   HomepageHeader : FoodcorpsHeader
   NonHomepageHeader: FoodcorpsHeader
@@ -923,6 +924,7 @@ customizations['foodcorps'] =
 customizations['sosh'] = 
   point_labels : strengths_weaknesses
   slider_pole_labels : yes_no
+  show_slider_feedback: false
 
 ################
 # schools

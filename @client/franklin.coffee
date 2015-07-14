@@ -443,7 +443,8 @@ ProposalDescription = ReactiveComponent
   displayName: 'ProposalDescription'
 
   render : ->
-
+    console.log BODY_WIDTH()
+    
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
@@ -516,7 +517,7 @@ ProposalDescription = ReactiveComponent
             style:
               backgroundColor: 'white'
               backgroundColor: '#f9f9f9'
-              width: '100%'
+              width: BODY_WIDTH()
               position: 'absolute'
               bottom: 0
               textDecoration: 'underline'
@@ -544,14 +545,15 @@ ProposalDescription = ReactiveComponent
               @renderDescriptionField item
 
       if permit('update proposal', @proposal) > 0
-        DIV null,
+        DIV 
+          style:
+            marginTop: 15
+            color: '#666'
           A 
-            style: {color: '#888'}
             href: "#{@proposal.key}/edit"
             'Edit'
           A 
             style: 
-              color: '#888'
               padding: 10
               backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'
             onClick: => 
@@ -561,7 +563,6 @@ ProposalDescription = ReactiveComponent
 
           if permit('delete proposal', @proposal) > 0
             A
-              style: {color: '#888'}
               onClick: => 
                 if confirm('Delete this proposal forever?')
                   destroy(@proposal.key)
@@ -577,8 +578,7 @@ ProposalDescription = ReactiveComponent
                 @local.copy_to_subdomain = !@local.copy_to_subdomain
                 save @local
 
-              A
-                style: {color: '#888'}
+              A null,
                 'Copy to subdomain'
 
               if @local.copy_to_subdomain
@@ -1820,7 +1820,7 @@ Page = ReactiveComponent
       style: 
         position: 'relative'
         zIndex: 1
-        minHeight: 200
+        minHeight: if subdomain.name != 'livingvotersguide' then 200
         margin: 'auto'
 
       if auth.form

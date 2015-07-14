@@ -40,6 +40,8 @@ setResponsive = ->
 
   content_width = Math.max(900, w) - 2 * gutter
 
+  console.log content_width, whitespace, content_width - 2 * whitespace
+
   body_width = if two_col then content_width - 2 * whitespace else content_width - 4 * whitespace
   body_width = Math.min(body_width, 700)
 

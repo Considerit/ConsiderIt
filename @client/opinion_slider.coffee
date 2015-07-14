@@ -129,7 +129,7 @@ window.OpinionSlider = ReactiveComponent
       if !slider.has_moved 
         'Slide Your Overall Opinion' 
       else if !customization('show_slider_feedback', @proposal)
-        "Your opinion"
+        if TWO_COL() then "Your opinion" else ''
       else if isNeutralOpinion slider.value
         "You are Undecided"
       else 

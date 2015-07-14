@@ -203,7 +203,7 @@ window.SimpleHomepage = ReactiveComponent
         style: first_header
         cluster.name || 'Proposals'
 
-        if cluster.proposals.length > 5
+        if cluster.proposals.length > 10
           " (#{cluster.proposals.length})"
       H1
         style: secnd_header
@@ -502,8 +502,6 @@ window.LearnDecideShareHomepage = ReactiveComponent
                           col.details
 
       DIV style: {marginTop: 30},
-        if subdomain.name == 'livingvotersguide'
-          customization('ZipcodeBox')()
 
         # Draw the proposal summaries
         for cluster, index in proposals.clusters or []

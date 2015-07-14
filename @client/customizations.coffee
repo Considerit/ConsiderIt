@@ -1613,25 +1613,107 @@ customizations['bitcoin-demo'] =
 #####################
 # Living Voters Guide
 
+ZipcodeBox = ReactiveComponent
+  displayName: 'ZipcodeBox'
+  render: ->
+    current_user = fetch('/current_user')
+    extra_text = if Modernizr.input.placeholder then '' else ' Zip Code'
+    onChange = (event) =>
+      if event.target.value.match(/\d\d\d\d\d/)
+        current_user.tags['zip.editable'] = event.target.value
+        save(current_user)
+
+      else if event.target.value.length == 0
+        current_user.tags['zip.editable'] = undefined
+        @local.stay_around = true
+        save(current_user)
+        save(@local)
+
+    if current_user.tags['zip.editable'] or @local.stay_around
+      # Render the completed zip code box
+
+      DIV
+        style: 
+          textAlign: 'center'
+          padding: '13px 23px'
+          fontSize: 20
+          fontWeight: 400
+          margin: 'auto'
+          color: 'white'
+        className: 'filled_zip'
+
+        'Customized for:'
+        INPUT
+
+          style: 
+            fontSize: 20
+            fontWeight: 600
+            border: '1px solid transparent'
+            borderColor: if @local.focused || @local.hovering then '#767676' else 'transparent'
+            backgroundColor: if @local.focused || @local.hovering then 'white' else 'transparent'
+            width: 70
+            marginLeft: 7
+            color: if @local.focused || @local.hovering then 'black' else 'white'
+          type: 'text'
+          key: 'zip_input'
+          defaultValue: current_user.tags['zip.editable'] or ''
+          onChange: onChange
+          onFocus: => 
+            @local.focused = true
+            save(@local)
+          onBlur: =>
+            @local.focused = false
+            @local.stay_around = false
+            save(@local)
+          onMouseEnter: => 
+            @local.hovering = true
+            save @local
+          onMouseLeave: => 
+            @local.hovering = false
+            save @local
+
+    else
+      # zip code entry
+      DIV 
+        style: 
+          backgroundColor: 'rgba(0,0,0,.1)'
+          fontSize: 32
+          fontWeight: 700
+          width: 720
+          color: 'white'
+          padding: '15px 40px'
+          marginLeft: (WINDOW_WIDTH() - 720) / 2
+          #borderRadius: 16
+
+        'Customize this guide for your' + extra_text
+        INPUT
+          type: 'text'
+          key: 'zip_input'
+          placeholder: 'Zip Code'
+          style: {margin: '0 0 0 12px', fontSize: 24, height: 42, width: 152, padding: '4px 20px'}
+          onChange: onChange
+        BR null
+        SPAN 
+          style: 
+            fontSize: 20
+            fontWeight: 400
+          'Your city council candidates will be revealed!'
+
+
 customizations.livingvotersguide = 
 
   civility_pledge: true
 
   slider_pole_labels: support_oppose
 
-  Homepage: LearnDecideShareHomepage
-
   ProposalNavigation: ProposalNavigationWithMenu
   docking_proposal_header : true
 
-  homepage_heading_columns : [ 
-    {heading: 'Learn', details: 'about your ballot'}, \
-    {heading: 'Decide', details: 'how you\'ll vote'}, \
-    {heading: 'Share', details: 'your opinion'}, \
-    {heading: 'Join', details: 'the contributors'}]
-
   'cluster/Advisory votes': 
-    description: "* Advisory Votes are not binding. They are a consequence of Initiative 960 passing in 2007"
+    label: 'Advisory Votes'
+    description: 
+      DIV null,
+        "Advisory Votes are not binding. They are a consequence of Initiative 960 passing in 2007"
 
   ThanksForYourOpinion: ReactiveComponent
     displayName: 'ThanksForYourOpinion'
@@ -1668,173 +1750,167 @@ customizations.livingvotersguide =
     displayName: 'HomepageHeader'
 
     render: ->
-      logo_style =
-        position: 'absolute'
-        left: 60
-        top: 11
-        width: 252
-        zIndex: 1
+      LVG_blue = '#063D72'
+      LVG_green = '#A5CE39'
 
-      homepage = true #fetch('location').url == '/'
+      homepage = fetch('location').url == '/'
 
       DIV 
-        className: 'header'
         style: 
-          height: if !homepage then 290 else 275 
-          backgroundImage: "url(#{asset('livingvotersguide/bg.jpg')})"
-          backgroundPosition: 'center'
-          backgroundSize: 'cover'
-          borderBottom: if !homepage then "15px solid #a5ce3a"
-          minWidth: 1152
+          position: 'relative'
 
-        DIV
-          style:
-            position: 'absolute'
-            right: 17
-            top: 17
-          ProfileMenu({style: {height: 69, left: 0; top: 0, position: 'relative', display: 'inline-block'}})
-          SPAN style: {color: 'white'}, '   |   '
-          A href:'/about', style: {color: 'white', cursor: 'pointer'},
-            'About'
-          
+        DIV 
+          style: 
+            height: if !homepage then 150 else 455 
+            backgroundImage: "url(#{asset('livingvotersguide/bg.png')})"
+            backgroundPosition: 'center'
+            backgroundSize: 'cover'
+            backgroundColor: LVG_blue
+            textAlign: if homepage then 'center'
 
-        # Logo
-        A href: (if fetch('location').url == '/' then '/about' else '/'),
-          IMG className: 'logo', src: asset('livingvotersguide/logo.png'), style: logo_style
+          DIV
+            style:
+              position: 'absolute'
+              right: 17
+              top: 17
+            ProfileMenu({style: {height: 69, left: 0; top: 0, position: 'relative', display: 'inline-block'}})
+            SPAN style: {color: 'white'}, '   |   '
+            A href:'/about', style: {color: 'white', cursor: 'pointer'},
+              'About'
+            
 
-        DIV
-          style:
-            color: 'white'
-            height: 137
-            clear: 'both'
-            paddingTop: 69
+          # Logo
+          A 
+            style: 
+              marginTop: if homepage then 40 else 10
+              display: 'inline-block'
+              marginLeft: if !homepage then 20
+              marginRight: if !homepage then 30
+
+            href: (if fetch('location').url == '/' then '/about' else '/'),
+            IMG 
+              src: asset('livingvotersguide/logo.svg')
+              style:
+                width: if homepage then 220 else 120
+
 
           # Tagline
-          DIV
-            style:
-              fontSize: 32
-              padding: '22px 40px 0 352px'
-              width: 858
-              height: '100%'
-              float: 'left'
-              fontWeight: 600
-
-            SPAN null, 
-              'Created by the people and for the people of Washington state'
-
-            DIV
-              style: 
-                marginBottom: 15
-                marginTop: 10
-                fontSize: 18
-                fontWeight: 300
-              "Seattle City Council Primary dialogue coming in mid July!"
-
-          DIV
-            style:
-              fontSize: 18
-              padding: '14px 40px 0 36px'
-              float: 'left'
-              width: 290
-              height: '100%'
-            DIV null, 'Hosted by'
-            A {href: 'http://seattlecityclub.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'Seattle CityClub')
-            DIV style: {marginTop: 8}, 'with fact-checks from'
-            A {href: 'http://spl.org'}, B(style:{fontWeight:'bold', color: 'white'}, 'The Seattle Public Library')
-
-  ZipcodeBox : ReactiveComponent
-    displayName: 'ZipcodeBox'
-    render: ->
-      current_user = fetch('/current_user')
-      extra_text = if Modernizr.input.placeholder then '' else ' Zip Code'
-      onChange = (event) =>
-        if event.target.value.match(/\d\d\d\d\d/)
-          current_user.tags['zip.editable'] = event.target.value
-          save(current_user)
-
-        else if event.target.value.length == 0
-          current_user.tags['zip.editable'] = undefined
-          @local.stay_around = true
-          save(current_user)
-          save(@local)
-
-      onBlur = =>
-        @local.stay_around = false
-        save(@local)
-
-      if current_user.tags['zip.editable'] or @local.stay_around
-        STYLE null,
-          """
-          .filled_zip:hover input, .filled_zip input:focus{
-            border: 1px solid #767676;
-            background-color: white;}
-          """
-
-        # Render the completed zip code box
-        DIV 
-          className: 'filled_zip'
-          style: 
-            padding: '13px 23px'
-            backgroundColor: '#F5F4ED'
-            fontSize: 18
-            fontWeight: 400
-            width: 245
-            margin: 'auto'
-
-          'Customized for:'
-          INPUT
-            style: 
-              fontSize: 18
-              fontWeight: 600
-              border: '1px solid transparent'
-              backgroundColor: 'transparent'
-              width: 60
-              marginLeft: 7
-            type: 'text'
-            key: 'zip_input'
-            defaultValue: current_user.tags['zip.editable'] or ''
-            onChange: onChange
-            onBlur: onBlur
-
-      else
-        # Render the ragged input box
-        DIV style: {margin: '55px 0'},
           DIV 
-            style: 
-              backgroundImage: "url(#{asset('greytriangle_up.png')})"
-              backgroundRepeat: '(repeat-x)'
-              backgroundSize: '18px 9px'
-              height: 9
+            style:
+              display: if !homepage then 'inline-block'
               position: 'relative'
-              top: 1
-
-          DIV style: {backgroundColor: '#93928E' },
+              top: if !homepage then -32
             DIV
               style:
-                fontSize: 24
-                width: 1152 #CONTENT_WIDTH()
-                color: 'white'
-                margin: 'auto'
-                padding: '35px 0'
-                paddingLeft: '170px'
-              'Customize this guide for your' + extra_text
-              INPUT
-                type: 'text'
-                key: 'zip_input'
-                placeholder: 'Zip Code'
-                style: {margin: '0 0 0 12px', fontSize: 24, height: 42, width: 152, padding: '4px 20px'}
-                onChange: onChange
-              BR null
-              SPAN style: {fontSize: 18}, 'Your city council candidates will be revealed!'
+                fontSize: if homepage then 32 else 24
+                fontWeight: 700
+                color: LVG_green
+                margin: '12px 0 4px 0'
 
+              SPAN null, 
+                'Washington\'s Citizen Powered Voters Guide'
+
+            DIV 
+              style: 
+                color: 'white'
+                fontSize: if homepage then 20 else 18
+
+              SPAN style: {fontWeight: 700},
+                'Learn' 
+              ' about your ballot, '
+              SPAN style: {fontWeight: 700},
+                'decide' 
+              ' how you’ll vote, and '
+              SPAN style: {fontWeight: 700},
+                'share'
+              ' your opinion.'
+
+          if homepage
+            DIV
+              style:
+                color: 'white'
+                fontSize: 20
+                marginTop: 30
+
+              DIV
+                style: 
+                  position: 'relative'
+                  display: 'inline'
+                  marginRight: 50
+                  height: 46
+
+                SPAN 
+                  style: 
+                    paddingRight: 12
+                    position: 'relative'
+                    top: 4
+                    verticalAlign: 'top'
+                  'brought to you by'
+                A 
+                  style: 
+                    verticalAlign: 'top'
+
+                  href: 'http://seattlecityclub.org'
+                  IMG 
+                    src: asset('livingvotersguide/cityclub.svg')
+
+              DIV 
+                style: 
+                  position: 'relative'
+                  display: 'inline'
+                  height: 46
+                  display: 'none'
+
+                SPAN 
+                  style: 
+                    paddingRight: 12
+                    verticalAlign: 'top'
+                    position: 'relative'
+                    top: 4
+
+                  'fact-checks by'
+                
+                A 
+                  style: 
+                    verticalAlign: 'top'
+                    position: 'relative'
+                    top: -6
+
+                  href: 'http://spl.org'
+                  IMG
+                    style: 
+                      height: 31
+
+                    src: asset('livingvotersguide/spl.png')
+
+        if homepage
           DIV 
             style: 
-              backgroundImage: "url(#{asset('greytriangle_down.png')})"
-              backgroundRepeat: '(repeat-x)'
-              backgroundSize: '18px 9px'
-              height: 9
-              position: 'relative'
-              top: -1
+              backgroundColor: LVG_green
+
+            DIV 
+              style: 
+                fontSize: 32
+                color: 'white'
+                textAlign: 'center'
+                padding: '12px 0'
+              SPAN 
+                style: {}
+
+                'Current focus: '
+
+              SPAN
+                style: 
+                  fontWeight: 700
+
+                'Seattle City Council Primaries'
+
+            DIV 
+              style: 
+                paddingBottom: 15
+
+              ZipcodeBox()
+
 
   Footer : ReactiveComponent
     displayName: 'Footer'
@@ -1842,7 +1918,6 @@ customizations.livingvotersguide =
       DIV 
         style: 
           position: 'relative'
-          padding: '2.5em 0 .5em 0'
           textAlign: 'center'
           zIndex: 0
 
@@ -1866,24 +1941,7 @@ customizations.livingvotersguide =
               url: 'https%3A%2F%2Flivingvotersguide.org%2F'
 
 
-        DIV style: {paddingTop: 24, paddingBottom: 12, fontSize: 18, fontWeight: 500, color: 'rgb(77,76,71)'},
-          'Bug to report? Have a comment? Confused? '
-          A href: "mailto:admin@livingvotersguide.org", style: {color: 'rgb(77,76,71)'},
-            'Email us'
-
-        DIV style: {paddingBottom: 18},
-
-          DIV style: {textAlign: 'left', padding: '0 12px', color: 'rgb(131,131,131)', display: 'inline-block', fontSize: 15},
-            A href: "http://seattlecityclub.org", style: {position: 'relative', top: 3, fontWeight: 400},
-              IMG src: asset('livingvotersguide/cityclub.svg')
-
-          DIV style: {textAlign: 'left', padding: '0 12px', display: 'inline-block', fontSize: 11, position: 'relative', top: -5},
-            #"Fact-checking by "
-            A href: 'http://spl.org', style: {textTransform: 'uppercase', textDecoration: 'none', color: 'rgb(6, 61, 114)', display: 'block', fontWeight: 600, width: 100}, target: '_blank', 
-              'The Seattle Public Library'
-
-        DIV style: {padding: 9},
-          TechnologyByConsiderit()
+        DefaultFooter()
 
 customizations.livingvotersguide.NonHomepageHeader = customizations.livingvotersguide.HomepageHeader
 

@@ -15,14 +15,14 @@ class Point < ActiveRecord::Base
     #self.nutshell = self.nutshell.sanitize
     #self.text = self.text.sanitize
 
-    if self.nutshell.length > 140 
+    if self.nutshell.length > 180 
       self.text = self.text ? "#{self.nutshell[139..-1]} #{self.text}" : self.nutshell[139..-1]
-      self.nutshell = self.nutshell[0..139]
+      self.nutshell = self.nutshell[0..179]
     end
 
     if self.nutshell.length == 0 && !self.text.nil? && self.text.length > 0
-      self.text =  self.text[139..self.text.length]
-      self.nutshell = self.text[0..139]
+      self.text =  self.text[179..self.text.length]
+      self.nutshell = self.text[0..179]
     end
 
   end
@@ -136,7 +136,7 @@ class Point < ActiveRecord::Base
     Point.published.each {|pnt| pnt.recache }
   end
 
-  def title(max_len = 140)
+  def title(max_len = 180)
 
     if nutshell.length > max_len
       "#{nutshell[0..max_len]}..."

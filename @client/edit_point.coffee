@@ -61,7 +61,7 @@ window.EditPoint = ReactiveComponent
 
         CharacterCountTextInput 
           id: 'nutshell'
-          maxLength: 140
+          maxLength: 180
           name: 'nutshell'
           pattern: '^.{3,}'
           placeholder: 'A succinct summary of your point.'

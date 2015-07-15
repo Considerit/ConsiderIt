@@ -86,8 +86,12 @@ window.OpinionSlider = ReactiveComponent
       for pole_label, idx in @props.pole_labels
         [main_text, sub_text] = pole_label
 
-        w = Math.max( widthWhenRendered(main_text, {fontSize: 30}), \
-                      widthWhenRendered(sub_text, {fontSize: 14}))
+
+        available_x = WHITESPACE() + GUTTER() - 55
+
+        w = Math.max( widthWhenRendered(main_text, {fontSize: 30, maxWidth: available_x}), \
+                      widthWhenRendered(sub_text, {fontSize: 14, maxWidth: available_x}))
+
         DIV 
           key: main_text
           style: 
@@ -97,6 +101,7 @@ window.OpinionSlider = ReactiveComponent
             pointerEvents: 'none'
             left: if idx == 0 then -(w + 55)
             right: if idx == 1 then -(w + 55)
+            width: w
 
           main_text
 

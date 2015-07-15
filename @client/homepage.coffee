@@ -45,14 +45,15 @@ window.sorted_proposals = (cluster) ->
     return proposal_support(b) - proposal_support(a)
 
 cluster_styles = ->
+
   first_column =
-    width: SIMPLE_HOMEPAGE_WIDTH() * .6 - 50
+    width: HOMEPAGE_WIDTH() * .6 - 50
     display: 'inline-block'
     verticalAlign: 'top'
     position: 'relative'
 
   secnd_column =
-    width: SIMPLE_HOMEPAGE_WIDTH() * .4
+    width: HOMEPAGE_WIDTH() * .4
     display: 'inline-block'
     verticalAlign: 'top'
     marginLeft: 50
@@ -88,7 +89,7 @@ window.SimpleHomepage = ReactiveComponent
       style: 
         fontSize: 22
         margin: 'auto'
-        width: SIMPLE_HOMEPAGE_WIDTH()
+        width: HOMEPAGE_WIDTH()
         marginTop: 10
         position: 'relative'
 
@@ -124,7 +125,6 @@ window.SimpleHomepage = ReactiveComponent
 
           if current_user.logged_in && index == 0
             @drawWatchFilter()
-
 
           if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
             DIV

@@ -333,6 +333,7 @@ Auth = ReactiveComponent
                   style:
                     color: focus_blue
                     fontWeight: 600
+                    fontSize: if browser.is_mobile then 24
                   field[0]
               TD
                 style:

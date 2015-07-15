@@ -1,4 +1,4 @@
-SitemapGenerator::Sitemap.sitemaps_host = "http:consider.it"
+SitemapGenerator::Sitemap.sitemaps_host = "https://consider.it"
 
 Subdomain.find_each do |subdomain|
 

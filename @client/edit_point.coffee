@@ -210,7 +210,7 @@ window.EditPoint = ReactiveComponent
     DIV 
       style:
         position: if mobile then 'relative' else 'absolute'
-        left: if !mobile then (if @props.valence == 'pros' then -guidelines_w - 25 else POINT_CONTENT_WIDTH() + 15)
+        left: if !mobile then (if @props.valence == 'pros' then -guidelines_w - 25 else POINT_WIDTH() + 15)
         width: guidelines_w
         color: focus_blue
         zIndex: 1

@@ -38,7 +38,7 @@ window.EditProposal = ReactiveComponent
 
     description_field_style =
       fontSize: 18
-      width: CONTENT_WIDTH() - 200
+      width: CONTENT_WIDTH()
       padding: 12
       marginBottom: 8
       border: '1px solid #ccc'
@@ -408,6 +408,7 @@ window.EditProposal = ReactiveComponent
               marginTop: 10
               padding: 25
               marginLeft: 10
+              fontSize: 22
 
             onClick: =>
               if @props.fresh 

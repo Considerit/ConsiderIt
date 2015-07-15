@@ -88,8 +88,8 @@ class HtmlController < ApplicationController
     when 'livingvotersguide'
       title = 'Washington Voters Guide for the 2014 Election'
       image = view_context.asset_path 'livingvotersguide/logo.png'
-      description = "Washington's Citizen-powered Voters Guide. Decide for yourself about the issues on your 2014 ballot, with a little help from your neighbors."
-      keywords = "voting,voters guide,online voters guide,2014,ballot,washington,washington state,election,pamphlet,voters pamphlet,ballot measures,citizen,initiatives,propositions,2014 elections,online voter pamphlet,voting facts,voters information,voting ballot 2014,voting information 2014,information about voting,election dates,electoral ballot,wa,seattle,tacoma,spokane,yakima,vancouver"
+      description = "Washington's Citizen-powered Voters Guide: learn about your ballot, decide how you’ll vote, and share your opinion. Currently focused on the 2015 Seattle City Council primary election."
+      keywords = "voting,voters guide,online voters guide,2014,ballot,washington,primary election, primaries, general election, washington state,election,pamphlet,voters pamphlet,ballot measures,citizen,initiatives,propositions,2014 elections,online voter pamphlet,voting facts,voters information,voting ballot 2014,voting information 2014,information about voting,election dates,electoral ballot,wa,seattle,tacoma,spokane,yakima,vancouver"
       fb_app_id = '159147864098005'
     when 'cityoftigard'
       title = "City of Tigard Dialogue"

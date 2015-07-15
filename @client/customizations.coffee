@@ -1804,6 +1804,7 @@ customizations.livingvotersguide =
               src: asset('livingvotersguide/logo.svg')
               style:
                 width: if homepage then 220 else 120
+                height: if homepage then 220 else 120
 
 
           # Tagline

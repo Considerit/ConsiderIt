@@ -442,9 +442,7 @@ Proposal = ReactiveComponent
 ProposalDescription = ReactiveComponent
   displayName: 'ProposalDescription'
 
-  render : ->
-    console.log BODY_WIDTH()
-    
+  render : ->    
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
@@ -1063,7 +1061,7 @@ SaveYourOpinionNotice = ReactiveComponent
       skip_jut: true
 
       style: 
-        width: PAGE_WIDTH()
+        width: DOCUMENT_WIDTH()
 
       DIV 
         style: 
@@ -1303,7 +1301,7 @@ PointsList = ReactiveComponent
     if @props.rendered_as == 'community_point'
       header_prefix = if mode == 'results' then 'top' else "other"
       header_style = 
-        width: POINT_CONTENT_WIDTH()
+        width: POINT_WIDTH()
         fontSize: 30        
         position: 'relative'
         left: if @props.valence == 'cons' then -20 else 20
@@ -1315,7 +1313,7 @@ PointsList = ReactiveComponent
     else
       header_prefix = 'your' 
       header_style = 
-        width: POINT_CONTENT_WIDTH()
+        width: POINT_WIDTH()
         fontWeight: 700
         color: focus_blue
         fontSize: 30
@@ -1407,7 +1405,7 @@ PointsList = ReactiveComponent
       style: css.crossbrowserify _.defaults (@props.style or {}),
         display: 'inline-block'
         verticalAlign: 'top'
-        width: POINT_CONTENT_WIDTH()
+        width: POINT_WIDTH()
         minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
         zIndex: if @columnStandsOut() then 6 else 1
         margin: '38px 18px 0 18px'
@@ -1424,7 +1422,7 @@ PointsList = ReactiveComponent
       style: _.defaults (@props.style or {}),
         display: 'inline-block'
         verticalAlign: 'top'        
-        width: POINT_CONTENT_WIDTH()
+        width: POINT_WIDTH()
         marginTop: 28
         position: 'relative'
         zIndex: if @columnStandsOut() then 6 else 1        
@@ -1482,7 +1480,7 @@ PointsList = ReactiveComponent
 
 
       @drawGhostedPoint
-        width: POINT_CONTENT_WIDTH()
+        width: POINT_WIDTH()
         text: "Write a new #{capitalize \
                     if @props.valence == 'pros' 
                       customization('point_labels.pro', @proposal)
@@ -1542,7 +1540,7 @@ PointsList = ReactiveComponent
                   else 
                     customization('point_labels.con', @proposal)} from the #{left_or_right}"
 
-    dt_w = POINT_CONTENT_WIDTH() - 24
+    dt_w = POINT_WIDTH() - 24
 
     DIV 
       style: 
@@ -1552,7 +1550,7 @@ PointsList = ReactiveComponent
         left: if @props.valence == 'cons' then -18 else 18
 
       @drawGhostedPoint
-        width: POINT_CONTENT_WIDTH() - 24
+        width: POINT_WIDTH() - 24
         text: drop_target_text
         is_left: @props.valence == 'cons'
         style: 
@@ -1884,7 +1882,7 @@ Root = ReactiveComponent
         true
 
       style: 
-        width: PAGE_WIDTH()
+        width: DOCUMENT_WIDTH()
       
       onClick: @resetSelection
 

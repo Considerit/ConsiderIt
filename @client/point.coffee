@@ -73,7 +73,7 @@ window.Point = ReactiveComponent
 
 
     point_content_style = 
-      width: POINT_CONTENT_WIDTH() #+ 6
+      width: POINT_WIDTH() #+ 6
       borderWidth: 3
       borderStyle: 'solid'
       borderColor: 'transparent'
@@ -742,7 +742,7 @@ window.Discussion = ReactiveComponent
     # Reconfigure discussion board position
     side = if is_pro then 'right' else 'left'
     if in_wings
-      discussion_style[side] = POINT_CONTENT_WIDTH() + 10
+      discussion_style[side] = POINT_WIDTH() + 10
       discussion_style['top'] = 44
     else
       discussion_style[side] = if is_pro then -23 else -30

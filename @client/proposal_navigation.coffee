@@ -61,6 +61,7 @@ window.DefaultProposalNavigation = ReactiveComponent
       # Photo
       if show_proposer_icon
         editor = proposal_editor(@proposal)
+        width = Math.min(GUTTER() + WHITESPACE(), 225)
         if editor
           Avatar
             key: editor
@@ -69,8 +70,9 @@ window.DefaultProposalNavigation = ReactiveComponent
             style:
               position: 'absolute'
               #height: 225
-              width: 225
-              marginLeft: -225 - 35
+              width: width
+              maxWidth: width - 35
+              marginLeft: -width - 35
               borderRadius: 0
               backgroundColor: 'transparent'
 

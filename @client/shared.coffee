@@ -170,9 +170,11 @@ window.widthWhenRendered = (str, style) ->
   # This DOM manipulation is relatively expensive, so cache results
   key = JSON.stringify _.extend({str: str}, style)
   if key not of width_cache
-    $el = $("<span id='width_test'>#{str}</span>").css(style)
+    _.defaults style, 
+      display: 'inline-block'
+    $el = $("<span id='width_test'><span>#{str}</span></span>").css(style)
     $('#content').append($el)
-    width = $('#width_test').width()
+    width = $('#width_test span').width()
     $('#width_test').remove()
     width_cache[key] = width
   width_cache[key]

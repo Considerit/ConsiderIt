@@ -20,11 +20,18 @@ require './browser_hacks'
 # whenever there is a relevant system event that would demand the variables to be 
 # recalculated (e.g. window resizing)
 #
-# layout constants
-# 
-#    |    whitespace   |                    $content_width                       |   whitespace  |
-#                      |      $gutter  |      $body_width        |      $gutter  |
-
+# layout variables
+#    |                                 document_width                                   |
+#    |    gutter   |                    content_width                       |   gutter  |
+#                  |   whitespace  |     body_width    |      whitespace    |
+#
+# layout constraints:
+#    whitespace >= 100
+#    gutter >= 25
+#    content_width <= 1300
+#    body_width <= 700
+#    
+#
 setResponsive = -> 
   responsive = fetch('responsive_vars')
 
@@ -32,55 +39,65 @@ setResponsive = ->
   h = window.innerHeight
 
   portrait = h > w
-
   two_col = w < 1080 || browser.is_mobile
 
-  gutter = Math.max(25, w / 10)
-  whitespace = Math.max(100, w/10)
+  # The document will be at least 900px
+  document_width = Math.max(900, w)
 
-  content_width = Math.max(900, w) - 2 * gutter
+  # There will be at least 80px of whitespace on either side of the document
+  gutter = Math.max(80, w / 10)
+  content_width = document_width - 2 * gutter
 
-  console.log content_width, whitespace, content_width - 2 * whitespace
+  whitespace = Math.max(100, w / 10)
 
-  body_width = if two_col then content_width - 2 * whitespace else content_width - 4 * whitespace
+  body_width = if two_col 
+                 content_width - 2 * gutter
+               else 
+                 content_width - 2 * gutter - 2 * whitespace
+
   body_width = Math.min(body_width, 700)
 
+
+  # UI components
   decision_board_width = body_width + 4 # the four is for the border
 
-  point_content_width = if two_col then body_width / 2 - 38 else decision_board_width / 2 - 30
+  point_width = if two_col then body_width / 2 - 38 else decision_board_width / 2 - 30
 
   reasons_region_width = if !two_col
-                           decision_board_width + 2 * point_content_width + 76
+                           decision_board_width + 2 * point_width + 76
                          else 
                            decision_board_width
 
-  point_font_size = if point_content_width > 300
+  point_font_size = if point_width > 300
                       18
-                    else if point_content_width > 250
+                    else if point_width > 250
                       16
                     else
                       14
+
+
+  homepage_width = Math.min content_width, 900
 
   if browser.is_mobile && portrait
     point_font_size += 4
 
   new_vals = 
-    WINDOW_WIDTH: w  
+    DOCUMENT_WIDTH: document_width
+    WINDOW_WIDTH: w
     GUTTER: gutter
     WHITESPACE: whitespace
-    PAGE_WIDTH: content_width + 2 * gutter
-    CONTENT_WIDTH: content_width
     BODY_WIDTH: body_width
     DECISION_BOARD_WIDTH: decision_board_width
-    POINT_CONTENT_WIDTH: point_content_width
+    POINT_WIDTH: point_width
     REASONS_REGION_WIDTH: reasons_region_width
     POINT_FONT_SIZE: point_font_size
     AUTH_WIDTH: if browser.is_mobile then content_width else Math.max decision_board_width, 544
     TWO_COL: two_col
     SLIDER_HANDLE_SIZE: if two_col then 65 else 25
-    SIMPLE_HOMEPAGE_WIDTH: Math.min content_width, 850
+    CONTENT_WIDTH: content_width
     PORTRAIT_MOBILE: portrait && browser.is_mobile
     LANDSCAPE_MOBILE: !portrait && browser.is_mobile
+    HOMEPAGE_WIDTH: homepage_width
 
   # only update if we have a change
   # (something like this should go into statebus)

@@ -121,7 +121,7 @@ window.ShortHeader = ReactiveComponent
 
       DIV
         style: 
-          width: (if homepage then SIMPLE_HOMEPAGE_WIDTH() else BODY_WIDTH() ) + 130
+          width: (if homepage then CONTENT_WIDTH() else BODY_WIDTH() ) + 130
           margin: 'auto'
 
         A

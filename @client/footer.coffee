@@ -21,6 +21,8 @@ window.DefaultFooter = ReactiveComponent
         padding: '2.5em 0 .5em 0'
         textAlign: 'center'
         zIndex: 0
+        width: CONTENT_WIDTH()
+        margin: 'auto'
 
       # A href: "#{subdomain.external_project_url}", target: '_blank', style: {display: 'inline-block', margin: 'auto'},
       #   if subdomain.branding.logo
@@ -35,6 +37,7 @@ window.DefaultFooter = ReactiveComponent
         DIV 
           style: 
             marginTop: 7
+            maxHeight: if browser.is_mobile then 30
 
           'Bug to report? Want to use this technology yourself? '
           A 

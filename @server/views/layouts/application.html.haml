@@ -109,4 +109,13 @@
             :javascript
               ga('create', '#{current_subdomain.google_analytics_code}', 'auto', {'name': 'customer'});
               ga('customer.send', 'pageview');
+        
+          - if current_subdomain.name == 'seattle2035'
+            :javascript
+              ga('create', 'UA-12611411-24', 'auto');
+              ga('send', 'pageview');
+
+             
+
+            </script>          
 

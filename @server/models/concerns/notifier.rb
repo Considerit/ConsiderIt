@@ -262,7 +262,12 @@ module Notifier
     digest_object = digest_object_type.constantize.find(digest_object_id)
 
     # Who is watching this object?
-    watchers = Notifier.subscribed_users(digest_object)
+    if event_type == 'content_to_moderate'
+      watchers = User.where("id in (?)", subdomain.user_roles['moderator'].map {|key| key_id(key)})
+
+    else
+      watchers = Notifier.subscribed_users(digest_object)
+    end
 
     for user in watchers
 

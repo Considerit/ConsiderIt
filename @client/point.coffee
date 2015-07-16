@@ -170,7 +170,7 @@ window.Point = ReactiveComponent
     ioffset = if @props.rendered_as in ['under_review'] then -10 else -50
     includers_style[left_or_right] = ioffset
 
-    draw_all_includers = @props.rendered_as == 'community_point' || TWO_COL()
+    draw_all_includers = @props.rendered_as == 'community_point' || (@props.rendered_as != 'under_review' && TWO_COL())
     LI
       key: "point-#{point.id}"
       'data-id': @props.key

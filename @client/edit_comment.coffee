@@ -117,6 +117,8 @@ window.EditComment = ReactiveComponent
               comment.body = @local.new_comment
               comment.editing = false
 
-            save(comment)
+            save comment, =>
+              @local.new_comment = null
+              save @local
             $(@refs.comment_input.getDOMNode()).val('')            
 

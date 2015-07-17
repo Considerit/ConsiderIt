@@ -50,7 +50,7 @@ class Opinion < ActiveRecord::Base
     your_opinion
   end
 
-  def publish(previously_published)
+  def publish(previously_published = false)
     return if self.published
 
     self.published = true

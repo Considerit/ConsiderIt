@@ -49,7 +49,7 @@ class User < ActiveRecord::Base
         raise "Could not store image for user #{self.id}, it is too large!"
       end
 
-      JSON.parse(self.active_in).each do |subdomain_id|
+      JSON.parse((self.active_in or '[]')).each do |subdomain_id|
         Rails.cache.delete("avatar-digest-#{subdomain_id}") 
       end
     end

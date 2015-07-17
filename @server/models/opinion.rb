@@ -50,7 +50,7 @@ class Opinion < ActiveRecord::Base
     your_opinion
   end
 
-  def publish
+  def publish(previously_published)
     return if self.published
 
     self.published = true
@@ -72,7 +72,9 @@ class Opinion < ActiveRecord::Base
       inc.point.recache
     end
 
-    Notifier.create_notification 'new', self
+    if !previously_published
+      Notifier.create_notification 'new', self
+    end
 
     current_user.update_subscription_key(proposal.key, 'watched', :force => false)
     dirty_key "/current_user"
@@ -195,7 +197,7 @@ class Opinion < ActiveRecord::Base
     end
 
     # If something was published, ensure everything is published
-    self.publish() if self.published or opinion.published
+    self.publish(opinion.published) if self.published or opinion.published
 
     opinion.destroy()
     recache

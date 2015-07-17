@@ -8,7 +8,7 @@ class Point < ActiveRecord::Base
   has_many :inclusions, :dependent => :destroy
   has_many :comments, :dependent=>:destroy  
   
-  validates :nutshell, :presence => true, :length => { :maximum => 141 }
+  validates :nutshell, :presence => true, :length => { :maximum => 181 }
 
 
   before_validation do 
@@ -16,7 +16,7 @@ class Point < ActiveRecord::Base
     #self.text = self.text.sanitize
 
     if self.nutshell.length > 180 
-      self.text = self.text ? "#{self.nutshell[139..-1]} #{self.text}" : self.nutshell[139..-1]
+      self.text = self.text ? "#{self.nutshell[179..-1]} #{self.text}" : self.nutshell[179..-1]
       self.nutshell = self.nutshell[0..179]
     end
 

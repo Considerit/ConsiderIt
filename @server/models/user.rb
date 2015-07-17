@@ -35,16 +35,18 @@ class User < ActiveRecord::Base
 
   after_post_process do 
     if self.avatar.queued_for_write[:small]
+
       img_data = self.avatar.queued_for_write[:small].read
 
       self.avatar.queued_for_write[:small].rewind
       data = Base64.encode64(img_data)
+      b64_thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
 
-      begin
-        self.b64_thumbnail = "data:image/jpeg;base64,#{data.gsub(/\n/,' ')}"
-        save
+      begin        
+        qry = "UPDATE users SET b64_thumbnail='#{b64_thumbnail}' WHERE id=#{self.id}"
+        ActiveRecord::Base.connection.execute(qry)
       rescue => e
-        raise "Could not process image for user #{self.id}, it is too large!"
+        raise "Could not store image for user #{self.id}, it is too large!"
       end
 
       JSON.parse(self.active_in).each do |subdomain_id|

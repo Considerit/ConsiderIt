@@ -100,7 +100,7 @@ Auth = ReactiveComponent
       when 'login'
         [ @headerAndBorder goal, 'Introduce Yourself',
             @body [['Hi, I log in as:',
-                    [ @inputBox('email', 'email@address'),
+                    [ @inputBox('email', 'email@address', 'email'),
                       DIV(null),
                       @inputBox('password', "password", 'password'),
                       @resetPasswordLink() ]]].concat @userQuestionInputs()
@@ -119,7 +119,7 @@ Auth = ReactiveComponent
           pledges_field = ['I pledge to:', pledges]
 
         if auth.form == 'create account'
-          email_field = @inputBox('email', 'email@address')
+          email_field = @inputBox('email', 'email@address', 'email')
           footer = @footerForRegistrationAndLogin()
         else
           email_field = DIV
@@ -146,7 +146,7 @@ Auth = ReactiveComponent
         [ @headerAndBorder null, 'Your Profile', 
             @body [
               ['Hi, I log in as:',
-                [ @inputBox('email', 'email@address'),
+                [ @inputBox('email', 'email@address', 'email'),
                   @inputBox('password', "password", 'password')]
               ],
               ['My name is:', @inputBox('name', 'first and last name')],

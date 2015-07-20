@@ -720,7 +720,7 @@ customizations['seattle2035'] =
 
           DIV 
             style: 
-              width: CONTENT_WIDTH()
+              width: HOMEPAGE_WIDTH()
               margin: 'auto'
 
 

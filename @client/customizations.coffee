@@ -194,6 +194,16 @@ delta_pluses =
   top_header: "Top --valences--" 
 
 
+pros_contras = 
+  pro: 'pro'
+  pros: 'pros' 
+  con: 'contra'
+  cons: 'contras'
+  your_header: "Ingresa tus --valences--" 
+  other_header: "Otros --valences--" 
+  top_header: "Top --valences--" 
+
+
 # slider poles
 
 support_oppose = 
@@ -270,6 +280,22 @@ plus_minus =
     support_sub: ''
     oppose_sub: ''
 
+
+desacuerdo_acuerdo = 
+  individual: 
+    support: 'Acuerdo'
+    oppose: 'Desacuerdo'
+    support_sub: ''
+    oppose_sub: ''
+
+  group: 
+    support: 'Acuerdo'
+    oppose: 'Desacuerdo'
+    support_sub: ''
+    oppose_sub: ''
+
+
+
 # application options
 conference_config = 
   slider_pole_labels :
@@ -281,6 +307,8 @@ conference_config =
       oppose: 'Reject'
 
   homie_histo_title: "PC's ratings"
+
+
 
 
 ################################
@@ -359,6 +387,13 @@ customizations.default =
 
 customizations['us'] = 
   show_proposer_icon: true
+
+
+
+customizations['villagb'] = 
+  point_labels : pros_contras
+  slider_pole_labels : desacuerdo_acuerdo
+  homie_histo_title: "Opiniones"
 
 
 ###############

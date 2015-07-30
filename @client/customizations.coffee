@@ -280,6 +280,19 @@ plus_minus =
     support_sub: ''
     oppose_sub: ''
 
+effective_ineffective = 
+  individual: 
+    support: 'Effective'
+    oppose: 'Ineffective'
+    support_sub: ''
+    oppose_sub: ''
+
+  group: 
+    support: 'Effective'
+    oppose: 'Ineffective'
+    support_sub: ''
+    oppose_sub: ''
+
 
 desacuerdo_acuerdo = 
   individual: 
@@ -388,6 +401,8 @@ customizations.default =
 customizations['us'] = 
   show_proposer_icon: true
 
+customizations['cimsec'] = 
+  slider_pole_labels : effective_ineffective
 
 
 customizations['villagb'] = 

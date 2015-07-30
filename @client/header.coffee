@@ -70,6 +70,11 @@ window.ImageHeader = ReactiveComponent
 
   render: ->
     subdomain = fetch '/subdomain'   
+    loc = fetch 'location'    
+    homepage = loc.url == '/'
+
+    hsl = parseCssHsl(subdomain.branding.primary_color)
+    is_light = hsl.l > .75
 
     masthead_style = 
       textAlign: 'center'
@@ -82,10 +87,28 @@ window.ImageHeader = ReactiveComponent
         backgroundPosition: 'center'
         backgroundSize: 'cover'
         backgroundImage: "url(#{subdomain.branding.masthead})"
+
     else 
       throw 'ImageHeader can\'t be used with a branding masthead'
            
-    DIV style: masthead_style,
+    DIV
+      style: masthead_style 
+
+      if subdomain.external_project_url 
+        A
+          href: subdomain.external_project_url
+          style: 
+            display: 'block'
+            position: 'absolute'
+            left: 10
+            top: 17
+            color: if !is_light then 'white'
+            fontSize: 24
+
+          '< project homepage'
+
+       
+
       ProfileMenu()
 
       # if subdomain.branding.masthead_header_text

@@ -2,6 +2,8 @@ require './customizations'
 require './shared'
 
 
+
+
 ##
 # DefaultProposalNavigation
 #
@@ -11,25 +13,25 @@ window.DefaultProposalNavigation = ReactiveComponent
   displayName: 'ProposalNavigation'
   render : ->
     subdomain = fetch('/subdomain')
-    proposals = fetch('/proposals')
+    all_proposals = fetch('/proposals')
     show_proposer_icon = customization('show_proposer_icon', "cluster/#{@proposal.cluster}")
 
     mod = (n, m) -> ((n % m) + m) % m
 
     # Determine the next proposal
     next_proposal = prev_proposal = null
-    if proposals.clusters  # In case /proposals isn't loaded
-      curr_cluster = _.findWhere proposals.clusters, {name: @proposal.cluster}
-      if curr_cluster?.proposals.length > 1
-        proposals = sorted_proposals(curr_cluster)
-        # Now find the current proposal in the cluster, and return the next one
-        for proposal, index in proposals
-          if @proposal == proposal
-            break
-        next_index = mod(index + 1, proposals.length)
-        prev_index = mod(index - 1, proposals.length)
-        next_proposal = proposals[next_index]
-        prev_proposal = proposals[prev_index]
+    if all_proposals.clusters  # In case /proposals isn't loaded
+
+      all_proposals_flat = _.flatten (sorted_proposals(c) for c in all_proposals.clusters)
+
+      for proposal, idx in all_proposals_flat
+        if proposal == @proposal
+          break
+
+      next_idx = mod(idx + 1, all_proposals_flat.length)
+      prev_idx = mod(idx - 1, all_proposals_flat.length)
+      next_proposal = all_proposals_flat[next_idx]
+      prev_proposal = all_proposals_flat[prev_idx]
 
     DIV
       style:

@@ -45,6 +45,7 @@ class Proposal < ActiveRecord::Base
 
     # if a subdomain wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
+    randomize_cluster_order = false
 
     if subdomain.moderate_proposals_mode == 1
       moderation_status_check = 'moderation_status=1'
@@ -91,6 +92,8 @@ class Proposal < ActiveRecord::Base
         when 'monitorinstitute'
           manual_clusters = ['Intellectual Agenda Items', 'Overall']
 
+        when 'cimsec'
+          randomize_cluster_order = true
       end
     end
 
@@ -114,16 +117,17 @@ class Proposal < ActiveRecord::Base
     end
 
     # now order the clusters
-    if !manual_clusters
-      
+    if manual_clusters
+      ordered_clusters = manual_clusters
+    elsif randomize_cluster_order
+      ordered_clusters = clustered_proposals.keys().shuffle
+    else
       # order the group by most recent proposal
       ordered_clusters = clustered_proposals.keys().sort {|c1,c2|      
         most_recent[c1] < most_recent[c2] ? 1 : -1
-      }
-
-    else 
-      ordered_clusters = manual_clusters
+      }      
     end
+
     clusters = ordered_clusters.map {|cluster| 
       { 
         :name => cluster, 

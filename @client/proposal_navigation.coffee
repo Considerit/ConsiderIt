@@ -158,15 +158,17 @@ window.ProposalNavigationWithMenu = ReactiveComponent
         zIndex: 999
         position: 'relative'
         marginBottom: 20
-      A
-        href: '/'
-        style: 
-          position: 'absolute'
-          display: 'inline-block'
-          top: -8
-          left: 12
-          fontSize: 43
-        '<' 
+
+      if customization('has_homepage')
+        A
+          href: '/'
+          style: 
+            position: 'absolute'
+            display: 'inline-block'
+            top: -8
+            left: 12
+            fontSize: 43
+          '<' 
 
       SPAN
         style: 

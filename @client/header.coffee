@@ -147,13 +147,14 @@ window.ShortHeader = ReactiveComponent
           width: (if homepage then CONTENT_WIDTH() else BODY_WIDTH() ) + 130
           margin: 'auto'
 
+
         A
           href: '/'
           style: 
             display: 'inline-block'
             color: if !is_light then 'white'
             fontSize: 43
-            visibility: if homepage then 'hidden'
+            visibility: if homepage || !customization('has_homepage') then 'hidden'
             verticalAlign: 'middle'
             marginTop: 5
           '<'

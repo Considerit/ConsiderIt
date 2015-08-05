@@ -351,6 +351,8 @@ customizations.default =
 
   show_crafting_page_first: false
 
+  show_histogram_on_crafting: true
+
   point_labels : pro_con
 
   show_slider_feedback: true
@@ -375,6 +377,8 @@ customizations.default =
   # Other options
   additional_auth_footer: false
   civility_pledge: false
+  has_homepage: true
+
 
   auth: 
     
@@ -992,7 +996,9 @@ customizations['allsides'] =
   'cluster/Civics':
     homie_histo_title: "Citizens' opinions"
 
-  Homepage: LearnDecideShareHomepage
+  show_crafting_page_first: true
+  show_histogram_on_crafting: false
+  has_homepage: false
 
   homepage_heading_columns : [ 
     {heading: 'Questions', details: null}, \

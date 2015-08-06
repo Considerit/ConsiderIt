@@ -879,10 +879,14 @@ DecisionBoard = ReactiveComponent
             className: 'give_opinion_button primary_button'
             style: give_opinion_style
 
-            if your_opinion.published 
-              'Update your Opinion' 
+            if subdomain.name == 'VillaGB'
+              'Deja tu opinion'
             else 
-              'Give your Opinion'
+
+              if your_opinion.published 
+                'Update your Opinion' 
+              else 
+                'Give your Opinion'
 
       DIV 
         key: 'footer'

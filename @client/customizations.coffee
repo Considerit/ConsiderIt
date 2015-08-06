@@ -413,6 +413,7 @@ customizations['villagb'] =
   point_labels : pros_contras
   slider_pole_labels : desacuerdo_acuerdo
   homie_histo_title: "Opiniones"
+  show_slider_feedback: false
 
 
 ###############

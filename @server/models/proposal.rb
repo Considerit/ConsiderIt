@@ -81,9 +81,6 @@ class Proposal < ActiveRecord::Base
         when 'random2015', 'program-committee-demo'
           manual_clusters = ['Submissions', 'Under Review', 'Probably Accept', 
                              'Accepted', 'Probably Reject', 'Rejected']
-
-        when 'allsides'
-          manual_clusters = ['Proposals', 'Classroom Discussions', 'Civics']
         
         when 'seattle2035'
 

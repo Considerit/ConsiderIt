@@ -10,12 +10,14 @@ class ApplicationController < ActionController::Base
   set_current_tenant_through_filter
   prepend_before_action :get_current_subdomain
   before_action :init_thread_globals
+  before_action :allow_iframe_requests
 
   rescue_from PermissionDenied do |exception|
     result = { :permission_denied => exception.reason } 
     result[:key] = exception.key if exception.key
     render :json => result
   end
+
 
   def application
     dirty_key '/application'
@@ -334,6 +336,15 @@ protected
       end
     end
   end
+
+
+  
+  def allow_iframe_requests
+    enable_iframing = ['allsides']
+    if enable_iframing.include?(current_tenant.name)
+      response.headers.delete('X-Frame-Options')
+    end
+  end  
 
 end
 

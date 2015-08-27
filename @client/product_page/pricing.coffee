@@ -62,7 +62,7 @@ window.Pricing = ReactiveComponent
         name: 'Professional'
         highlight: true
         width: SAAS_PAGE_WIDTH / 3 + 60
-        price: '$150 / month'
+        price: '$500 / month'
         call_to_action: 'Start free 30 day trial'  
         features: [
           'Private conversations',

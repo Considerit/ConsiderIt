@@ -266,8 +266,9 @@ Customers = ReactiveComponent
         img: 'ecast'
         url: 'http://ecastnetwork.org'
       }, {
-        img: 'cityclub'
-        url: 'http://seattlecityclub.org'      
+        img: 'seattle'
+        url: 'http://2035.seattle.gov' 
+        type: 'svg'     
       }, {
         img: 'dialoguepartners'
         url: 'http://dialoguepartners.ca/'      
@@ -275,9 +276,13 @@ Customers = ReactiveComponent
         img: 'mos'
         url: 'http://www.mos.org/'      
       }, {
-        img: 'tigard'
-        url: 'http://www.tigard-or.gov/'      
-      }
+        img: 'cityclub'
+        url: 'http://seattlecityclub.org'      
+      },
+      # , {
+      #   img: 'tigard'
+      #   url: 'http://www.tigard-or.gov/'      
+      # }
     ]
 
     DIV 
@@ -315,7 +320,7 @@ Customers = ReactiveComponent
               save @local
 
             IMG
-              src: asset("product_page/#{c.img}.png")
+              src: asset("product_page/#{c.img}.#{c.type || 'png'}")
               style: 
                 height: 90
 

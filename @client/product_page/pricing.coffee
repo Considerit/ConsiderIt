@@ -42,8 +42,9 @@ window.Pricing = ReactiveComponent
   drawPlans : -> 
     plans = [
       {
-        name: 'Basic'
-        width: SAAS_PAGE_WIDTH / 3 - 70
+        name: 'Beta'
+        highlight: true
+        width: SAAS_PAGE_WIDTH / 3 + 60 #SAAS_PAGE_WIDTH / 3 - 70
         price: 'Free for everyone'
         call_to_action: 'Get me started'  
         features: [
@@ -52,33 +53,39 @@ window.Pricing = ReactiveComponent
           #'One Consider.it site',
           'Basic branding',
           'Content moderation',
-          'Question grouping'
-        ]
-        email:
-          subject: "I'd like to start Consider.it's Free Public plan"
-          body: "Hi, I'm _____ and I'd like to use Consider.it at https://_____.consider.it..."
-
-      }, {
-        name: 'Professional'
-        highlight: true
-        width: SAAS_PAGE_WIDTH / 3 + 60
-        price: '$500 / month'
-        call_to_action: 'Start free 30 day trial'  
-        features: [
+          #'Question grouping',
           'Private conversations',
           #'Unlimited administrators',
           #'Up to five Consider.it sites',
-          'Export to spreadsheet',
-          'Advanced opinion analytics',
-          'Priority customer service',
-          'One hour training'
+          #'Customer support'
         ]
         email:
-          subject: "I'd like to start my 30 day trial of Consider.it's Professional plan"
-          body: "Hi, I'm _____ and I'd like to use Consider.it at https://_____.consider.it..."      
-      },{
+          subject: "I'd like to use Consider.it"
+          body: "Hi, I'm _____ and I'd like to use Consider.it at https://_____.consider.it..."
+
+      }, 
+      # {
+      #   name: 'Professional'
+      #   highlight: true
+      #   width: SAAS_PAGE_WIDTH / 3 + 60
+      #   price: '$500 / month'
+      #   call_to_action: 'Start free 30 day trial'  
+      #   features: [
+      #     'Private conversations',
+      #     #'Unlimited administrators',
+      #     #'Up to five Consider.it sites',
+      #     'Export to spreadsheet',
+      #     'Advanced opinion analytics',
+      #     'Priority customer service',
+      #     'One hour training'
+      #   ]
+      #   email:
+      #     subject: "I'd like to start my 30 day trial of Consider.it's Professional plan"
+      #     body: "Hi, I'm _____ and I'd like to use Consider.it at https://_____.consider.it..."      
+      # },
+      {
         name: 'Custom'
-        price: 'Why a custom plan?'
+        price: 'Variable $'
         call_to_action: "Contact us"
         width: SAAS_PAGE_WIDTH / 3 - 70
         reasons: [
@@ -94,16 +101,18 @@ window.Pricing = ReactiveComponent
             description: ->
               DIV style: _.extend({}, small_text, {fontWeight: 400}),
                 """
-                If you want custom design work done, such as a custom homepage. 
+                If you want custom design work done, such as a branded homepage. 
                 """
-          }, {
-            icon: 'priceTag'
-            description: ->
-              DIV style: _.extend({}, small_text, {fontWeight: 400}),
-                """
-                If our pricing model doesn't work for you. We are flexible. 
-                """
-          }, {
+          }, 
+          # {
+          #   icon: 'priceTag'
+          #   description: ->
+          #     DIV style: _.extend({}, small_text, {fontWeight: 400}),
+          #       """
+          #       If our pricing model doesn't work for you. We are flexible. 
+          #       """
+          # }, 
+          {
             icon: 'collaboration'
             description: ->
               DIV style: _.extend({}, small_text, {fontWeight: 400}),
@@ -131,7 +140,7 @@ window.Pricing = ReactiveComponent
         key: idx
         style: 
           width: plan.width
-          margin: if plan.highlight then '0px 40px' else '40px 0'
+          margin: if plan.highlight then '0px 40px 0px 300px' else '40px 0'
           display: 'inline-block'
           verticalAlign: 'top'
           border: if plan.highlight then "1px solid #{logo_red}"

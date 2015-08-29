@@ -63,6 +63,10 @@ uses = [{
         ["Feedback on an event", 'https://event.consider.it/Morning_Gloryville?results=true'],
       ]
 
+      examples = [
+        ["Seattle Comprehensive Plan update", 'https://seattle2035.consider.it'],
+      ]
+
       DIV 
         style: use_style
         """
@@ -74,6 +78,7 @@ uses = [{
         """
 
         demosList(demos, 'Demo')
+        demosList(examples, 'Example')
 
 
   }, {
@@ -139,6 +144,7 @@ uses = [{
     description: -> 
       examples = [
         ["Living Voters Guide", 'https://livingvotersguide.org'],
+        ["Seattle Comprehensive Plan update", 'https://seattle2035.consider.it'],        
       ]
 
       DIV 
@@ -151,7 +157,7 @@ uses = [{
         The design minimizes personal attacks; and if they happen, our moderation 
         system puts you in a position to easily handle them.
         """
-        demosList(examples, 'Example')
+        demosList(examples, 'Examples')
   }, 
   {
     icon: 'meeting'
@@ -217,6 +223,10 @@ applications = [{
     icon: 'crossroads'
     label: "Lead change"
     description: -> 
+      examples = [
+        ["SWOT analysis", 'https://swotconsultants.consider.it'],
+      ]
+
       DIV 
         style: use_style
 
@@ -225,6 +235,9 @@ applications = [{
         Strong leaders create change and build buy-in by explaining and 
         evolving plans, not imposing them. 
         """
+
+        demosList(examples, 'Example')
+
   }, {
     icon: 'network'
     label: "Govern as a community"
@@ -279,7 +292,8 @@ applications = [{
     label: "Engage citizens"
     description: -> 
       examples = [
-        ["NASA Asteroid Initiative", 'https://ecastonline.consider.it']
+        ["NASA Asteroid Initiative", 'https://ecastonline.consider.it'],
+        ["Seattle Comprehensive Plan update", 'https://seattle2035.consider.it'],        
       ]
 
       DIV 
@@ -290,7 +304,7 @@ applications = [{
         organizes this feedback into a guide to public thought that can be used 
         to refine the proposal or target common misconceptions during outreach. 
         """
-        demosList(examples, 'Example')
+        demosList(examples, 'Examples')
 
   },
 ]

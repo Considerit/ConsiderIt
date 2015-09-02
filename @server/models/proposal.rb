@@ -89,6 +89,9 @@ class Proposal < ActiveRecord::Base
         when 'monitorinstitute'
           manual_clusters = ['Intellectual Agenda Items', 'Overall']
 
+        when 'swotconsultants'
+          manual_clusters = ['Strengths', 'Weaknesses', 'Opportunities', 'Threats']
+
         when 'cimsec'
           randomize_cluster_order = true
       end

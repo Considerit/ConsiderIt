@@ -89,7 +89,7 @@ class Proposal < ActiveRecord::Base
         when 'monitorinstitute'
           manual_clusters = ['Intellectual Agenda Items', 'Overall']
 
-        when 'swotconsultants'
+        when 'swotconsultants', 'swotconsultants1'
           manual_clusters = ['Strengths', 'Weaknesses', 'Opportunities', 'Threats']
 
         when 'cimsec'

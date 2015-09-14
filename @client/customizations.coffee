@@ -1971,13 +1971,13 @@ customizations.livingvotersguide =
               SPAN 
                 style: {}
 
-                'Current focus: '
+                'Coming soon: '
 
               SPAN
                 style: 
                   fontWeight: 700
 
-                'Seattle City Council Primaries'
+                '2015 General Election'
 
             DIV 
               style: 

@@ -173,7 +173,7 @@ window.EditProposal = ReactiveComponent
             style: 
               marginBottom: 20
               marginLeft: 45
-              display: if not fetch('/current_user').is_super_admin then 'none'
+              display: if not fetch('/current_user').is_admin then 'none'
 
             for field in @local.description_fields
               field_open = field.id in @local.open_fields

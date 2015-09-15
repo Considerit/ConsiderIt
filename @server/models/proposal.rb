@@ -93,7 +93,7 @@ class Proposal < ActiveRecord::Base
           manual_clusters = ['Strengths', 'Weaknesses', 'Opportunities', 'Threats']
 
         when 'cimsec'
-          randomize_cluster_order = true
+          randomize_cluster_order = false
       end
     end
 

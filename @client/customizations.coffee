@@ -1929,7 +1929,7 @@ customizations.livingvotersguide =
                   position: 'relative'
                   display: 'inline'
                   height: 46
-                  display: 'none'
+                  #display: 'none'
 
                 SPAN 
                   style: 

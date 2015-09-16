@@ -53,8 +53,9 @@ window.AutoGrowTextArea = ReactiveComponent
 
     @transferPropsTo TEXTAREA
       onChange: @onChange
-      style: 
+      style: _.extend (@props.style || {}),
         height: @local.height
+        padding: '4px 8px'
 
 
 window.CharacterCountTextInput = ReactiveComponent

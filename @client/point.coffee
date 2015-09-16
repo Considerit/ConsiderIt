@@ -191,11 +191,11 @@ window.Point = ReactiveComponent
 
           if @data().is_pro then '•' else '•'
 
-      else
+      else 
         DIV 
           className:'includers'
-          onMouseEnter: @highlightIncluders
-          onMouseLeave: @unHighlightIncluders
+          onMouseEnter: if @props.rendered_as != 'under_review' then @highlightIncluders
+          onMouseLeave: if @props.rendered_as != 'under_review' then @unHighlightIncluders
           style: includers_style
             
           renderIncluders(draw_all_includers)
@@ -549,7 +549,7 @@ styles += """
   top: 0px;
   width: 50px;
   height: 50px;
-  left: -73px;
+  left: -64px;
   box-shadow: -1px 2px 0 0 #eeeeee; }
 
 .point_includer_avatar {
@@ -632,7 +632,7 @@ styles += """
   position: relative; }
 
 .comment_entry_name {
-  font-weight: bold;
+  font-weight: 600;
   color: #666666; }
 
 .comment_entry_body {
@@ -656,7 +656,7 @@ window.FactCheck = ReactiveComponent
 
       # Comment author name
       DIV className: 'comment_entry_name',
-        'Seattle Public Library Fact check:'
+        'Fact check by Seattle Public Library:'
 
       # Comment author icon
       DIV className: 'magnifying_glass',
@@ -664,14 +664,9 @@ window.FactCheck = ReactiveComponent
 
       # Comment body
       DIV className: 'comment_entry_body',
-        DIV style: {margin: '10px 0 20px 0'},
-          "A citizen requested research into the claims made by this point. "
-          SPAN style: {fontSize: 12},
-            A 
-              style: {fontWeight: 700}
-              href: '/about#fact_check'
-              'Learn more'
-            ' about the service.'
+        # DIV style: {margin: '10px 0 20px 0'},
+        #   "A citizen requested research into the claims made by this point. "
+
 
         for claim in assessment.claims
           claim = fetch(claim.key)
@@ -684,17 +679,13 @@ window.FactCheck = ReactiveComponent
             'Claim: '
             SPAN style: {fontWeight: 600}, claim.claim_restatement
           DIV null, 
-            SPAN null,
+            SPAN 
+              style: 
+                cursor: 'help'
+              title: verdict.desc
               'Rating: '
               SPAN style: {fontStyle: 'italic'}, verdict.name
-              SPAN 
-                style: 
-                  marginLeft: 20
-                  fontSize: 12
-                  textDecoration: 'underline'
-                  cursor: 'help'
-                title: verdict.desc
-                'help'
+
           DIV 
             style: {margin: '10px 0'}
             dangerouslySetInnerHTML:{__html: claim.result}]
@@ -705,7 +696,7 @@ styles += """
   width: 50px;
   height: 50px;
   font-size: 50px;
-  margin-top: -2px;
+  margin-top: -9px;
   color: #5e6b9e; }
 """
 
@@ -731,7 +722,7 @@ window.Discussion = ReactiveComponent
     comments.sort (a,b) -> a.created_at > b.created_at
 
     discussion_style =
-      width: DECISION_BOARD_WIDTH()
+      width: DECISION_BOARD_WIDTH() #+ POINT_WIDTH() / 2
       border: "3px solid #{focus_blue}"
       position: 'absolute'
       zIndex: 100
@@ -784,10 +775,12 @@ window.Discussion = ReactiveComponent
           stroke: focus_blue, 
           stroke_width: 11
 
+      SubmitFactCheck()
+
       H1
         style:
           textAlign: 'left'
-          fontSize: 38
+          fontSize: 30
           color: focus_blue
           marginLeft: 60
           marginBottom: 25
@@ -795,7 +788,6 @@ window.Discussion = ReactiveComponent
           fontWeight: 600
         'Discuss this Point'
       
-      SubmitFactCheck()
 
       DIV className: 'comments',
         for comment in comments
@@ -841,26 +833,28 @@ window.SubmitFactCheck = ReactiveComponent
 
     request_a_fact_check = =>
       [
-        DIV null,
-          'You can'
         DIV
           style:
-            fontSize: 22
-            fontWeight: 600
-            textDecoration: 'underline'
-            color: '#474747'
-            marginTop: -4
-            marginBottom: -1
+            #fontSize: 18
+            fontStyle: 'italic'
             cursor: 'pointer'
-          onClick: (=>
-            if @local.state == 'blank slate'
-              @local.state = 'clicked'
-            else if @local.state == 'clicked'
-              @local.state = 'blank slate'
-            save(@local))
-          'Request a Fact Check'
-        DIV null,
-          'from The Seattle Public Library'
+          'Confused by a claim that this point makes? '
+          SPAN 
+            style: 
+              textDecoration: 'underline'
+              color: logo_red
+              fontWeight: 600
+            onClick: (=>
+              if @local.state == 'blank slate'
+                @local.state = 'clicked'
+              else if @local.state == 'clicked'
+                @local.state = 'blank slate'
+              save(@local))
+            'Request a Fact Check'
+          ' from The Seattle Public Library'
+        # DIV null,
+        #   'from The Seattle Public Library'
+
       ]
 
     a_librarian_will_respond = (width) =>
@@ -868,9 +862,10 @@ window.SubmitFactCheck = ReactiveComponent
         'A '
         A
           style: {textDecoration: 'underline'}
+          target: '_blank'
           href: '/about/#fact_check'
           'librarian will respond'
-        ' to your request within 48 hours'
+        ' within 48 hours'
 
     request_a_factcheck = =>
       if permit('request factcheck', @proposal) > 0
@@ -880,18 +875,31 @@ window.SubmitFactCheck = ReactiveComponent
           AutoGrowTextArea
             className: 'new_request'
             style:
-              width: 390
+              width: '100%'
               height: 60
               lineHeight: 1.4
               fontSize: 16
+              padding: '3px 8px'
             placeholder: (logged_in and 'Your research question') or ''
             disabled: not logged_in
             onChange: (e) =>
               @local.research_question = e.target.value
               save(@local)
-          Button
-            style: {float: 'right'}
-            onClick => (e) =>
+
+          BUTTON
+            style: 
+              backgroundColor: focus_blue
+              borderRadius: 8
+              color: 'white'
+              padding: '3px 10px'
+              display: 'inline-block'
+              fontWeight: 600
+              textAlign: 'center'
+              cursor: 'pointer'
+              float: 'right'
+              fontSize: 18
+              border: 'none'
+            onClick: (e) =>
               e.stopPropagation()
               request =
                 key: '/new/request'
@@ -899,9 +907,12 @@ window.SubmitFactCheck = ReactiveComponent
                 point: "/point/#{arest.key_id(@discussion.key)}"
               save(request)
               $(@getDOMNode()).find('.new_request').val('')
+              @local.state = 'requested'
+              save @local
+
             'submit'
 
-          a_librarian_will_respond(255)
+          a_librarian_will_respond(300)
         ]
       else
         DIV
@@ -917,7 +928,7 @@ window.SubmitFactCheck = ReactiveComponent
           'Log in to request a fact check'
 
 
-    top_message_style = {maxWidth: 274, marginBottom: 10}
+    top_message_style = {marginBottom: 0, fontStyle: 'italic'}
     request_in_progress = =>
       DIV null,
         DIV style: top_message_style,
@@ -929,24 +940,31 @@ window.SubmitFactCheck = ReactiveComponent
 
       [
         DIV style: top_message_style,
-          'This point has been Fact-Checked by The Seattle Public Library'
-        DIV style: {marginBottom: 10},
-          switch overall_verdict.id
-            when 1
-              "They found some claims inconsistent with reliable sources."
-            when 2
-              "They found some sources that agreed with claims and some that didn't."
-            when 3
-              "They found the claims to be consistent with reliable sources."
-            when 4
-              '''Unfortunately, the claims made are outside the research scope of 
-              the fact-checking service.'''
+          'This point has been '
+          A 
+            style: 
+              textDecoration: 'underline'
+            target: '_blank'
+            href: '/about#fact_check'
+            'Fact-checked'       
+          ' by The Seattle Public Library. See the librarians\' research below.'
+
+        # DIV style: {marginBottom: 10},
+        #   switch overall_verdict.id
+        #     when 1
+        #       "They found some claims inconsistent with reliable sources."
+        #     when 2
+        #       "They found some sources that agreed with claims and some that didn't."
+        #     when 3
+        #       "They found the claims to be consistent with reliable sources."
+        #     when 4
+        #       '''Unfortunately, the claims made are outside the research scope of 
+        #       the fact-checking service.'''
 
         DIV style: {marginBottom: 10},
           A style: {textDecoration: 'underline'},
             ''
-          "See the details"
-          " of the librarians' research below."
+             
       ]
 
 
@@ -961,24 +979,22 @@ window.SubmitFactCheck = ReactiveComponent
       @local.state = 'requested'
 
 
-    show_request = @local.state != 'blank slate'
+    # show_request = @local.state != 'blank slate'
     
-    request_style = if show_request then { marginBottom: 45, minHeight: 60 } else {}
-
     # Now let's draw
-    DIV style: request_style,
+    DIV style: {},
 
       # Magnifying glass
-      if show_request
+      # if show_request
 
-        DIV className: 'magnifying_glass',
-          I
-            className: 'fa fa-search'
+      # DIV className: 'magnifying_glass',
+      #   I
+      #     className: 'fa fa-search'
 
       # Text to the right
       DIV
         style:
-          marginLeft: 60
+          marginLeft: 0
         switch @local.state
           when 'blank slate'
             request_a_fact_check()

@@ -24,6 +24,7 @@ adminStyles = ->
     task_area_style: 
       cursor: 'auto'
       width: CONTENT_WIDTH() * .75
+      minWidth: 700
       backgroundColor: '#F4F0E9'
       position: 'absolute'
       left: CONTENT_WIDTH()/4
@@ -840,7 +841,7 @@ FactcheckPoint = ReactiveComponent
             SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
             A 
               target: '_blank'
-              href: "/#{proposal.slug}/?selected=#{point.key}"
+              href: "/#{proposal.slug}?selected=#{point.key}"
               style: {textDecoration: 'underline'}
               'Read point in context'
 
@@ -849,7 +850,7 @@ FactcheckPoint = ReactiveComponent
               A
                 style: {textDecoration: 'underline'}
                 onClick: (=> @local.messaging = point; save(@local)),
-                'Message author']
+                'Email author']
             else if @local.messaging == point
               DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Fact-checker'
 
@@ -866,20 +867,28 @@ FactcheckPoint = ReactiveComponent
                   tag: DIV
                   key: request.user
                   hide_tooltip: true
+                  style: 
+                    width: 50
+                    height: 50
 
-                DIV style: {marginLeft: 73},
-                  splitParagraphs(request.suggestion)
+                DIV 
+                  style: 
+                    display: 'inline-block'
+                    width: '80%'
 
-                DIV style:{fontSize: 12, marginLeft: 73}, 
-                  "by #{fetch(request.user).name}"
-                  if @local.messaging != request
-                    [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
-                    A
-                      style: {textDecoration: 'underline'}
-                      onClick: (=> @local.messaging = request; save(@local)),
-                      'Message requester']
-                  else if @local.messaging == request
-                    DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Fact-checker'
+                  DIV style: {marginLeft: 20},
+                    splitParagraphs(request.suggestion)
+
+                  DIV style:{fontSize: 12, marginLeft: 20}, 
+                    "by #{fetch(request.user).name || 'anonymous'}"
+                    if @local.messaging != request
+                      [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
+                      A
+                        style: {textDecoration: 'underline'}
+                        onClick: (=> @local.messaging = request; save(@local)),
+                        'Email requester']
+                    else if @local.messaging == request
+                      DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Fact-checker'
 
         # claims area
         DIV style: adminStyles().task_area_section_style, 
@@ -894,8 +903,8 @@ FactcheckPoint = ReactiveComponent
               else 
 
                 verdict = fetch(claim.verdict)
-                DIV key: claim.key, style: {marginLeft: 73, marginBottom: 18, position: 'relative'}, 
-                  IMG style: {position: 'absolute', width: 50, left: -73}, src: verdict.icon
+                DIV key: claim.key, style: {marginLeft: 60, marginBottom: 18, position: 'relative'}, 
+                  IMG style: {position: 'absolute', width: 50, left: -60}, src: verdict.icon
 
                   DIV style: {fontSize: 18}, claim.claim_restatement
                   DIV style: {fontSize: 12}, verdict.name
@@ -912,19 +921,27 @@ FactcheckPoint = ReactiveComponent
                       if claim.approver
                         DIV null, "Approved by #{fetch(claim.approver).name}"
 
-                    DIV style: {fontSize: 14},
-                      if claim.result && claim.verdict && !claim.approver #&& current_user.id != claim.creator
-                        BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @toggleClaimApproval(claim)), 'Approve'
-                      else if claim.approver
-                        BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @toggleClaimApproval(claim)), 'Unapprove'
+                    do => 
+                      button_style = 
+                        marginRight: 5
+                        fontSize: 14
 
-                      BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @local.editing = claim.key; save(@local)), 'Edit'
-                      BUTTON style: {marginRight: 5}, onClick: (do (claim) => => @deleteClaim(claim)), 'Delete'
+                      DIV 
+                        style: 
+                          marginTop: 10
+                          
+                        if claim.result && claim.verdict && !claim.approver #&& current_user.id != claim.creator
+                          BUTTON style: button_style, onClick: (do (claim) => => @toggleClaimApproval(claim)), 'Approve'
+                        else if claim.approver
+                          BUTTON style: button_style, onClick: (do (claim) => => @toggleClaimApproval(claim)), 'Unapprove'
+
+                        BUTTON style: button_style, onClick: (do (claim) => => @local.editing = claim.key; save(@local)), 'Edit'
+                        BUTTON style: button_style, onClick: (do (claim) => => @deleteClaim(claim)), 'Delete'
 
             if @local.editing == 'new'
               EditClaim fresh: true, key: '/new/claim', parent: @local, assessment: @data()
             else if !@local.editing
-              Button {style: {marginLeft: 73, marginTop: 15}}, '+ Add new claim', => @local.editing = 'new'; save(@local)
+              Button {style: {marginLeft: 0, marginTop: 15}}, '+ Add new claim', => @local.editing = 'new'; save(@local)
 
         DIV style: adminStyles().task_area_section_style,
           H1 style: adminStyles().task_area_header_style, 'Private notes'
@@ -934,9 +951,11 @@ FactcheckPoint = ReactiveComponent
             defaultValue: assessment.notes
             min_height: 60
             style: 
-              width: 550
-              fontSize: 14
+              width: 500
+              fontSize: 16
               display: 'block'
+              padding: '4px 8px'
+
 
           BUTTON style: {fontSize: 14}, onClick: @saveNotes, 'Save notes'
 
@@ -996,8 +1015,9 @@ DirectMessage = ReactiveComponent
   render : -> 
     text_style = 
       width: 500
-      fontSize: 14
+      fontSize: 16
       display: 'block'
+      padding: '4px 8px'
 
     DIV style: {marginTop: 18, padding: '15px 20px', backgroundColor: 'white', width: 550, border: '#999', boxShadow: "0 1px 2px rgba(0,0,0,.2)"}, 
       DIV style: {marginBottom: 8},
@@ -1042,10 +1062,11 @@ EditClaim = ReactiveComponent
   render : -> 
     text_style = 
       width: 550
-      fontSize: 14
+      fontSize: 16
       display: 'block'
+      padding: '4px 8px'
 
-    DIV style: {padding: '8px 12px', backgroundColor: "rgba(0,0,0,.1)", marginLeft: 73, marginBottom: 18 },
+    DIV style: {padding: '8px 12px', backgroundColor: "rgba(0,0,0,.1)", marginLeft: 0, marginBottom: 18 },
       DIV style: {marginBottom: 8},
         LABEL null, 'Restate the claim'
         AutoGrowTextArea

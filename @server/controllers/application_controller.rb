@@ -341,7 +341,8 @@ protected
   
   def allow_iframe_requests
     enable_iframing = ['allsides']
-    if enable_iframing.include?(current_tenant.name)
+
+    if current_tenant && enable_iframing.include?(current_tenant.name)
       response.headers.delete('X-Frame-Options')
     end
   end  

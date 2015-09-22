@@ -721,7 +721,7 @@ styles += """
   opacity: 0.7;
   padding: 10px 20px; }
 .proposal_details table, .description_field table {
-  padding: 20px 0px; }
+  padding: 20px 0px; font-size: 11px; }
 """
 
 

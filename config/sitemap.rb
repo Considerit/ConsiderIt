@@ -9,9 +9,7 @@ Subdomain.find_each do |subdomain|
   # Set the host name for URL creation
   SitemapGenerator::Sitemap.default_host = "https://#{subdomain.host}"
 
-  subdomain = subdomain.name  
-
-  SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain}"
+  SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain.name}"
 
   SitemapGenerator::Sitemap.create do
     # Put links creation logic here.

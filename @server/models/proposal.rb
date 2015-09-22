@@ -63,11 +63,12 @@ class Proposal < ActiveRecord::Base
         # associated with that zipcode. We'll also want to insert them between the statewide
         # measures and the advisory votes, since we hate the advisory votes. 
         local_jurisdictions = ActiveRecord::Base.connection.exec_query( 
-          "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%' ")
+          "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%' AND YEAR(created_at)=#{year}")
           .map {|r| r['cluster']}
       end
+      pp 'jur', local_jurisdictions
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
-      proposals = subdomain.proposals.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
+      proposals = subdomain.proposals.active.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
 
     elsif 
       proposals = subdomain.proposals.where(:hide_on_homepage => false)
@@ -128,7 +129,9 @@ class Proposal < ActiveRecord::Base
       }      
     end
 
+    pp clustered_proposals.keys(), manual_clusters
     clusters = ordered_clusters.map {|cluster| 
+      pp cluster, (clustered_proposals[cluster] || []).length
       { 
         :name => cluster, 
         :proposals => clustered_proposals[cluster] } 
@@ -138,6 +141,8 @@ class Proposal < ActiveRecord::Base
       key: '/proposals',
       clusters: clusters
     }
+
+    #pp clustered_proposals['City of Seattle'].count, manual_clusters, clusters.length
 
     proposals
 

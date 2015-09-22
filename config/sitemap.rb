@@ -6,9 +6,10 @@ Subdomain.find_each do |subdomain|
   indexed = indexability.has_key?(subdomain.name.intern) ? indexability[subdomain.name.intern] : indexability[:default]  
   next if !indexed
 
-  subdomain = subdomain.name  
   # Set the host name for URL creation
   SitemapGenerator::Sitemap.default_host = "https://#{subdomain.host}"
+
+  subdomain = subdomain.name  
 
   SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain}"
 

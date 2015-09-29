@@ -66,7 +66,6 @@ class Proposal < ActiveRecord::Base
           "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%' AND YEAR(created_at)=#{year}")
           .map {|r| r['cluster']}
       end
-      pp 'jur', local_jurisdictions
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
       proposals = subdomain.proposals.active.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
 
@@ -129,9 +128,7 @@ class Proposal < ActiveRecord::Base
       }      
     end
 
-    pp clustered_proposals.keys(), manual_clusters
     clusters = ordered_clusters.map {|cluster| 
-      pp cluster, (clustered_proposals[cluster] || []).length
       { 
         :name => cluster, 
         :proposals => clustered_proposals[cluster] } 
@@ -141,8 +138,6 @@ class Proposal < ActiveRecord::Base
       key: '/proposals',
       clusters: clusters
     }
-
-    #pp clustered_proposals['City of Seattle'].count, manual_clusters, clusters.length
 
     proposals
 
@@ -271,12 +266,13 @@ class Proposal < ActiveRecord::Base
 
 
   def fact_check_request_enabled?
-    return false # nothing can be requested to be fact-checked currently
+    #return false # nothing can be requested to be fact-checked currently
 
     enabled = current_subdomain.assessment_enabled
     if current_subdomain.name == 'livingvotersguide'
       # only some issues in LVG are fact-checkable
-      enabled = ['I-1351_Modify_K-12_funding', 'I-591_Match_state_gun_regulation_to_national_standards', 'I-594_Increase_background_checks_on_gun_purchases'].include? slug
+      enabled = ['i_1366_state_taxes_and_fees', 'i_1401_trafficking_of_animal_species']  
+      #['I-1351_Modify_K-12_funding', 'I-591_Match_state_gun_regulation_to_national_standards', 'I-594_Increase_background_checks_on_gun_purchases'].include? slug
     end
     enabled && active
   end

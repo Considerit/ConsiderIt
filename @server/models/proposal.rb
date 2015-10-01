@@ -271,7 +271,7 @@ class Proposal < ActiveRecord::Base
     enabled = current_subdomain.assessment_enabled
     if current_subdomain.name == 'livingvotersguide'
       # only some issues in LVG are fact-checkable
-      enabled = ['i_1366_state_taxes_and_fees', 'i_1401_trafficking_of_animal_species']  
+      enabled = ['i_1366_state_taxes_and_fees', 'i_1401_trafficking_of_animal_species'].include? slug
       #['I-1351_Modify_K-12_funding', 'I-591_Match_state_gun_regulation_to_national_standards', 'I-594_Increase_background_checks_on_gun_purchases'].include? slug
     end
     enabled && active

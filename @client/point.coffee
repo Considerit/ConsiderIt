@@ -863,7 +863,7 @@ window.SubmitFactCheck = ReactiveComponent
         A
           style: {textDecoration: 'underline'}
           target: '_blank'
-          href: '/about/#fact_check'
+          href: '/about#fact_check'
           'librarian will respond'
         ' within 48 hours'
 
@@ -919,7 +919,6 @@ window.SubmitFactCheck = ReactiveComponent
           onClick: (e) =>
             e.stopPropagation()
             reset_key 'auth', {form: 'login', goal: 'Request a Fact Check'}
-            save(auth)
           style:
             marginTop: 14
             textDecoration: 'underline'

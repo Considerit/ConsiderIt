@@ -1968,10 +1968,10 @@ customizations.livingvotersguide =
                 width: CONTENT_WIDTH()
                 maxHeight: if browser.is_mobile then 50
 
-              SPAN 
-                style: {}
+              # SPAN 
+              #   style: {}
 
-                'Coming soon: '
+              #   'Coming soon: '
 
               SPAN
                 style: 

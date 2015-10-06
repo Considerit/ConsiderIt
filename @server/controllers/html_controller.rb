@@ -86,10 +86,10 @@ class HtmlController < ApplicationController
     # subdomain defaults
     case current_subdomain.name
     when 'livingvotersguide'
-      title = 'Washington Voters Guide for the 2014 Election'
+      title = 'Washington Voters Guide for the 2015 Election'
       image = view_context.asset_path 'livingvotersguide/logo.png'
       description = "Washington's Citizen-powered Voters Guide: learn about your ballot, decide how you’ll vote, and share your opinion. Currently focused on the 2015 Seattle City Council primary election."
-      keywords = "voting,voters guide,online voters guide,2014,ballot,washington,primary election, primaries, general election, washington state,election,pamphlet,voters pamphlet,ballot measures,citizen,initiatives,propositions,2014 elections,online voter pamphlet,voting facts,voters information,voting ballot 2014,voting information 2014,information about voting,election dates,electoral ballot,wa,seattle,tacoma,spokane,yakima,vancouver"
+      keywords = "voting,voters guide,online voters guide,2015,ballot,washington,primary election, primaries, general election, washington state,election,pamphlet,voters pamphlet,ballot measures,citizen,initiatives,propositions,2015 elections,online voter pamphlet,voting facts,voters information,voting ballot 2015,voting information 2015,information about voting,election dates,electoral ballot,wa,seattle,tacoma,spokane,yakima,vancouver"
       fb_app_id = '159147864098005'
     when 'cityoftigard'
       title = "City of Tigard Dialogue"

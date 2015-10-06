@@ -1977,7 +1977,7 @@ customizations.livingvotersguide =
                 style: 
                   fontWeight: 700
 
-                '2015 General Election'
+                '2015 General Election: Ballots due November 3rd!'
 
             DIV 
               style: 

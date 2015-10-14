@@ -409,7 +409,7 @@ customizations['cimsec'] =
   slider_pole_labels : effective_ineffective
 
 
-customizations['villagb'] = 
+customizations['villagb'] = customizations['citysens'] = 
   point_labels : pros_contras
   slider_pole_labels : desacuerdo_acuerdo
   homie_histo_title: "Opiniones"

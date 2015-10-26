@@ -1,6 +1,9 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+#VM environment option :virtualbox || :parallels
+VM = :virtualbox
+
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
@@ -9,28 +12,31 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
+  if VM == :virtualbox
 
+    # virtualbox box...
+    ## Every Vagrant virtual environment requires a box to build off of.
+    config.vm.box= "ubuntu14"
 
-  # virtualbox box...
-  ## Every Vagrant virtual environment requires a box to build off of.
-  #config.vm.box = "ubuntu12"
+    ## The url from where the 'config.vm.box' box will be fetched if it
+    ## doesn't already exist on the user's system.
+    config.vm.box_url = "https://github.com/kraksoft/vagrant-box-ubuntu/releases/download/14.04/ubuntu-14.04-amd64.box"	
+    config.vm.network :private_network, ip: "192.168.33.10"
+    config.vm.provider "virtualbox" do |v|
+      v.memory = 2048
+      # v.gui = true
+    end
+  end
 
-  ## The url from where the 'config.vm.box' box will be fetched if it
-  ## doesn't already exist on the user's system.
-  # config.vm.box_url = "https://dl.dropboxusercontent.com/u/3403211/considerit/ubuntu12.box"
-
-  # config.vm.provider "virtualbox" do |v|
-  #   v.memory = 2048
-  #   # v.gui = true
-  # end
-
-  # parallels box...
-  config.vm.box_url = "https://atlas.hashicorp.com/parallels/boxes/ubuntu-14.04"
-  config.vm.box = "parallels/ubuntu-14.04"
-  config.vm.provider "parallels" do |v|
-    v.memory = 2048
-    v.cpus = 4
-    v.update_guest_tools = true
+  if VM == :parallels
+    # parallels box...
+    config.vm.box_url = "https://atlas.hashicorp.com/parallels/boxes/ubuntu-14.04"
+    config.vm.box = "parallels/ubuntu-14.04"
+    config.vm.provider "parallels" do |v|
+      v.memory = 2048
+      v.cpus = 4
+      v.update_guest_tools = true
+    end
   end
 
   # Create a forwarded port mapping which allows access to a specific port
@@ -39,8 +45,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 80, host: 8080
   config.vm.network :forwarded_port, guest: 3000, host: 3000
   config.vm.network :forwarded_port, guest: 4000, host: 4000
-  config.vm.network :forwarded_port, guest: 2222, host: 22
-
+  if VM == :parallels
+    config.vm.network :forwarded_port, guest: 2222, host: 22
+  end
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
   # config.vm.network :hostonly, "192.168.33.10"
@@ -70,8 +77,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #   rsync__exclude: [".git/", "node_modules/"]
 
   #config.ssh.host = '10.211.55.4'
-  config.ssh.port = 22
-
+  
+  if VM == :parallels
+    config.ssh.port = 22
+  end
+  
   config.vm.provision :ansible do |ansible|
     # point Vagrant at the location of your playbook you want to run
 
@@ -84,11 +94,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # the Vagrant VM will be put in this host group change this should
     # match the host group in your playbook you want to test
     #ansible.hosts = "ubuntu"
-
-    ansible.extra_vars = { 
-      ansible_ssh_host: '10.211.55.4',
-    }
-    ansible.verbose = 'vvvv'
+    if VM == :parallels
+      ansible.extra_vars = { 
+        ansible_ssh_host: '10.211.55.4',
+      }
+      ansible.verbose = 'vvvv'
+    end
   end
-
 end

@@ -89,7 +89,7 @@ window.ImageHeader = ReactiveComponent
         backgroundImage: "url(#{subdomain.branding.masthead})"
 
     else 
-      throw 'ImageHeader can\'t be used with a branding masthead'
+      throw 'ImageHeader can\'t be used without a branding masthead'
            
     DIV
       style: masthead_style 
@@ -103,7 +103,7 @@ window.ImageHeader = ReactiveComponent
             left: 10
             top: 17
             color: if !is_light then 'white'
-            fontSize: 24
+            fontSize: 18
 
           '< project homepage'
 

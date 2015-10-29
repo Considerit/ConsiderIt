@@ -409,11 +409,45 @@ customizations['cimsec'] =
   slider_pole_labels : effective_ineffective
 
 
-customizations['villagb'] = customizations['citysens'] = customizations['iniciativasciudadanas'] = customizations['alcala'] = 
+customizations['villagb'] = customizations['citysens'] = customizations['iniciativasciudadanas'] = 
   point_labels : pros_contras
   slider_pole_labels : desacuerdo_acuerdo
   homie_histo_title: "Opiniones"
   show_slider_feedback: false
+
+
+customizations['alcala'] = _.extend {}, customizations['citysens'],
+
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
+
+    render: ->
+      subdomain = fetch '/subdomain'
+      console.log subdomain.branding.masthead
+
+      DIV
+        style:
+          position: 'relative'
+
+        IMG
+          style: 
+            width: '100%'
+            display: 'block'
+
+          src: subdomain.branding.masthead
+
+        ProfileMenu()
+
+        DIV 
+          style: 
+            padding: '20px 0'
+
+          DIV 
+            style: 
+              width: HOMEPAGE_WIDTH()
+              margin: 'auto'
+
+
 
 
 ###############

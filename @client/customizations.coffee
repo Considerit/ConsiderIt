@@ -330,7 +330,7 @@ conference_config =
 # TODO: refactor config & document
 
 customizations.default = 
-
+  lang: 'en'
 
   # Proposal options
 
@@ -410,6 +410,7 @@ customizations['cimsec'] =
 
 
 customizations['villagb'] = customizations['citysens'] = customizations['iniciativasciudadanas'] = 
+  lang: 'spa'
   point_labels : pros_contras
   slider_pole_labels : desacuerdo_acuerdo
   homie_histo_title: "Opiniones"
@@ -417,7 +418,6 @@ customizations['villagb'] = customizations['citysens'] = customizations['iniciat
 
 
 customizations['alcala'] = _.extend {}, customizations['citysens'],
-
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'
 

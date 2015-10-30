@@ -98,7 +98,7 @@ Auth = ReactiveComponent
 
       # The LOGIN form, with easy switch to register
       when 'login'
-        [ @headerAndBorder goal, 'Introduce Yourself',
+        [ @headerAndBorder goal, t('Introduce Yourself'),
             @body [['Hi, I log in as:',
                     [ @inputBox('email', 'email@address', 'email'),
                       DIV(null),
@@ -368,11 +368,11 @@ Auth = ReactiveComponent
   footerForRegistrationAndLogin : ->
     auth = fetch 'auth'
     if auth.form == 'create account'
-      toggle_to = 'Log in'
-      button = 'Create new account'
+      toggle_to = t('Log in')
+      button = t('Create new account')
     else
-      button = 'Log in'
-      toggle_to = 'Create new account'
+      button = t('Log in')
+      toggle_to = t('Create new account')
 
     DIV
       style:

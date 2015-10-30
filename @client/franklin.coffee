@@ -37,6 +37,7 @@ require './notifications'
 require './edit_point'
 require './edit_comment'
 require './point'
+require './translations'
 
 
 ## ########################
@@ -1502,6 +1503,12 @@ PointsList = ReactiveComponent
 
   drawAddNewPointInDecisionBoard: -> 
     your_points = @data()
+    noun = \
+        capitalize \
+          if @props.valence == 'pros' 
+            customization('point_labels.pro', @proposal)
+          else 
+            customization('point_labels.con', @proposal)    
 
     DIV 
       style: 
@@ -1514,7 +1521,7 @@ PointsList = ReactiveComponent
         SPAN 
           style: 
             fontWeight: if browser.high_density_display then 300 else 400
-          'or '
+          "#{t('or')} "
       SPAN 
         style: 
           padding: if @props.drop_target then '0 6px' else '0 11px 0 0'
@@ -1527,22 +1534,18 @@ PointsList = ReactiveComponent
           textDecoration: 'underline'
           color: focus_blue
 
-
-        "Write a new "
-        capitalize \
-          if @props.valence == 'pros' 
-            customization('point_labels.pro', @proposal)
-          else 
-            customization('point_labels.con', @proposal)    
+        t('write_a_new_point', {noun}) 
 
   drawDropTarget: -> 
     left_or_right = if @props.valence == 'pros' then 'right' else 'left'
 
-    drop_target_text = "Drag a #{capitalize \
-                  if @props.valence == 'pros' 
-                    customization('point_labels.pro', @proposal)
-                  else 
-                    customization('point_labels.con', @proposal)} from the #{left_or_right}"
+    noun = capitalize \
+        if @props.valence == 'pros' 
+          customization('point_labels.pro', @proposal)
+        else 
+          customization('point_labels.con', @proposal)
+
+    drop_target_text = t("drag_from_#{left_or_right}", {noun})
 
     dt_w = POINT_WIDTH() - 24
 

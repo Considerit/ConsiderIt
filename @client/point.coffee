@@ -120,7 +120,7 @@ window.Point = ReactiveComponent
           [SPAN key: 1, dangerouslySetInnerHTML: {__html: '&hellip;'}
           #' ('
           A key: 2, className: 'select_point',
-            "read more"
+            t("read_more")
           #')'
           ]
 
@@ -129,8 +129,8 @@ window.Point = ReactiveComponent
         A 
           className: 'select_point'
           point.comment_count 
-          " comment"
-          if point.comment_count != 1 then 's' else ''
+          " "
+          if point.comment_count != 1 then t('comments') else t('comment')
 
     if point.assessment
       select_enticement.push DIV key: 3,

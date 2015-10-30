@@ -47,7 +47,7 @@ window.DefaultProposalNavigation = ReactiveComponent
             right: 74
           href: proposal_url(prev_proposal)
           'data-no-scroll': true
-          '< Prev'
+          "< #{t('prev')}"
 
 
       # Next button
@@ -58,7 +58,7 @@ window.DefaultProposalNavigation = ReactiveComponent
             right: 0
           href: proposal_url(next_proposal)
           'data-no-scroll': true
-          'Next >'
+          "#{t('next')} >"
 
       # Photo
       if show_proposer_icon

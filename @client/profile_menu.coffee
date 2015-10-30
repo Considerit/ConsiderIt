@@ -9,8 +9,8 @@ window.ProfileMenu = ReactiveComponent
     is_admin = current_user.is_admin
     is_moderator = current_user.is_moderator
     menu_options = [
-      {href: '/edit_profile', label: 'Edit Profile'},
-      {href: '/dashboard/email_notifications', label: 'Email Settings'},
+      {href: '/edit_profile', label: t('Edit Profile')},
+      {href: '/dashboard/email_notifications', label: t('Email Settings')},
       if is_admin then {href: '/dashboard/import_data', label: 'Import Data'} else null,
       if is_admin then {href: '/dashboard/application', label: 'App Settings'} else null,
       if is_admin then {href: '/dashboard/roles', label: 'User Roles'} else null,
@@ -72,7 +72,7 @@ window.ProfileMenu = ReactiveComponent
               className: 'menu_link'
               onClick: logout
               onTouchEnd: logout
-              'Log out'
+              t('Log out')
 
           SPAN 
             style: 
@@ -107,7 +107,7 @@ window.ProfileMenu = ReactiveComponent
 
           style: 
             color: if !light_background then 'white'
-          'Log in'
+          t('Log in')
     
 
 

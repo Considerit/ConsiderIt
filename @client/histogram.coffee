@@ -289,7 +289,7 @@ window.Histogram = ReactiveComponent
               userSelect: 'none'
               pointerEvents: 'none'
 
-            'Select these opinions'
+            t('select_these_opinions')
 
   drawAvatars: -> 
     hist = fetch @props.key

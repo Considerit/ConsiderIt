@@ -892,7 +892,7 @@ customizations['seattle2035'] =
                   href: 'http://2035.seattle.gov/about/faqs/#how-long'
                   style: 
                     textDecoration: 'underline'
-                  'coming in December 2015'
+                  'coming in 2016 '
                 '!'
 
             DIV 

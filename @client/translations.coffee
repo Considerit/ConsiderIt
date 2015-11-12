@@ -19,7 +19,7 @@ window.t = (label, args) ->
 
   dictionary = dict[lang]
 
-  label = label.replace(/\ /g, '_')
+  label = label.replace(/\ /g, '_').toLowerCase()
 
   if !dictionary[label]?
     throw "Can't translate #{label} for language #{lang}"
@@ -54,7 +54,46 @@ dict = {}
 #       On the other hand, having all translations in a single file might 
 #       make it easier to ask others to add/update necessary translations.  
 
+
+#########
+# General
 dict.en = 
+  or: 'or'
+  and: 'and'
+
+  done: 'Done'
+  cancel: 'cancel'
+  edit: 'edit'
+  share: 'share'
+  delete: 'delete'
+  close: 'close'
+  update: 'Update'
+  publish: 'Publish'
+  closed: 'closed'
+
+
+dict.spa = 
+  or: 'ó'
+
+  # Alejandro, please translate:
+  # and: '~and'
+  # done: '~Done'
+  # cancel: '~cancel'
+  # edit: '~edit'
+  # share: '~share'
+  # delete: '~delete'
+  # close: '~close'
+  # update: '~Update'
+  # publish: '~Publish'
+  # closed: 'closed'
+
+
+
+
+#########
+# Considerit opining
+
+_.extend dict.en, 
   comment: 'comment'
   comments: 'comments'
   read_more: 'read more'
@@ -67,9 +106,30 @@ dict.en =
     "Drag a #{args.noun} from the right"
   write_a_new_point: (args) -> 
     "Write a new #{args.noun}"    
-  or: 'or'
 
-dict.spa = 
+  slide_your_overall_opinion: 'Slide Your Overall Opinion'
+  your_opinion: "Your opinion"
+  save_your_opinion: 'Save your opinion'
+  return_to_results: 'Return to results'
+  skip_to_results: 'or just skip to the results'
+  login_to_comment: 'Log in to write a comment'
+  discuss_this_point: 'Discuss this Point'
+  save_comment: 'Save comment'
+  write_a_comment: 'Write a comment'
+  write_a_point: 'Write a point'
+  summary_placeholder: 'A succinct summary of your point.'
+  description_placeholder: 'Add background or evidence.'
+  sign_name: 'Sign your name'
+
+  tip_single: (args) -> 
+    "Make one single point. Add multiple #{args.noun} if you have more."
+  tip_direct: "Be direct. The summary is your main point."
+  tip_review: "Review your language. Don’t be careless."
+  tip_attacks: "No personal attacks."
+
+  filter_to_watched: "Filter proposals to those you're watching"
+
+_.extend dict.spa, 
   comment: 'comentario'
   comments: 'comentarios'
   read_more: 'ver más'
@@ -84,26 +144,176 @@ dict.spa =
 
   write_a_new_point: (args) ->
     return "Escribe un nuevo #{args.noun}"
-  or: 'ó'
+
+  # Alejandro, please translate:
+  # slide_your_overall_opinion: '~Slide Your Overall Opinion'
+  # your_opinion: "~Your opinion"
+  # save_your_opinion: '~Save your opinion'
+  # return_to_results: '~Return to results'
+  # skip_to_results: '~or just skip to the results'
+  # login_to_comment: '~Log in to write a comment'
+  # discuss_this_point: '~Discuss this Point'
+  # save_comment: '~Save comment'
+  # write_a_comment: '~Write a comment'
+  # write_a_point: '~Write a point'
+  # summary_placeholder: '~A succinct summary of your point.'
+  # description_placeholder: '~Add background or evidence.'
+  # sign_name: '~Sign your name'
+  # tip_single: (args) -> 
+  #   "~Make one single point. Add multiple #{args.noun} if you have more."
+  # tip_direct: "~Be direct. The summary is your main point."
+  # tip_review: "~Review your language. Don’t be careless."
+  # tip_attacks: "~No personal attacks."
+  # filter_to_watched: "~Filter proposals to those you're watching"
+
+#########
+# Creating proposal
+
+
+_.extend dict.en, 
+  create_new_proposal: 'Create new proposal'
+  error_free: "free of language errors"
+  unambiguous: 'unambiguous'
+  make_it: 'Make it'
+  url_instr: "Just letters, numbers, underscores, dashes."
+  summary: 'Summary'
+  proposal_summary_instr: 'Aim for 3-8 words with a verb and noun.'
+  details: 'Details'
+  label: 'Label'
+  expandable_body_instr: 'Text that is shown when expanded'
+  add_expandable: "Add expandable description section"
+  category: 'Category'
+  optional: 'optional'
+  show_on_homepage: 'List on homepage?'
+  open_for_discussion: 'Open for discussion?'
+  permissions_and_invites: 'Permissions and invitations'
+
+# Alejandro, please translate:
+# _.extend dict.spa, 
+#   create_new_proposal: '~Create new proposal'
+#   error_free: "~free of language errors"
+#   unambiguous: '~unambiguous'
+#   make_it: '~Make it'
+#   url_instr: "~Just letters, numbers, underscores, dashes."
+#   summary: '~Summary'
+#   proposal_summary_instr: '~Aim for 3-8 words with a verb and noun.'
+#   details: '~Details'
+#   label: '~Label'
+#   expandable_body_instr: '~Text that is shown when expanded'
+#   add_expandable: "~Add expandable description section"
+#   category: '~Category'
+#   optional: '~optional'
+#   show_on_homepage: '~List on homepage?'
+#   open_for_discussion: '~Open for discussion?'
+#   permissions_and_invites: '~Permissions and invitations'
+
+
 
 ########
 # authentication / user account related translations
 
 _.extend dict.en, 
-  Log_in: 'Log in'
-  Create_new_account: 'Create new account'
-  Log_out: 'Log out'
-  Edit_Profile: 'Edit Profile'
-  Email_Settings: 'Email Settings'
-  Introduce_Yourself: 'Introduce Yourself'
+  log_in: 'Log in'
+  create_new_account: 'Create new account'
+  log_out: 'Log out'
+  edit_profile: 'Edit Profile'
+  email_settings: 'Email Settings'
+  introduce_yourself: 'Introduce Yourself'
+
+  complete_registration: 'Complete registration'
+  login_as: 'Hi, I log in as'
+  password: 'password'
+  name_prompt: 'My name is'
+  full_name: 'first and last name'
+  pic_prompt: 'I look like'
+  your_profile: 'Your Profile'
+  updated_successfully: "Updated successfully"
+  reset_your_password: "Reset Your Password"
+  code: 'Code'
+  new_password: 'New password'
+  verification_sent: 'We sent you a verification code via email.'
+  verify: 'Verify'
+  choose_password: "choose a new password"
+  code_from_email: 'verification code from email'
+  verify_your_email: 'Verify Your Email'
+  more_info: 'Please give some info'
+  forgot_password: 'I forgot my password!'
+
 
 _.extend dict.spa, 
-  Log_in: 'Entrar'
-  Create_new_account: 'Registrarse'
-  Log_out: 'Salir'
-  Edit_Profile: 'Editar Perfil'
-  Email_Settings: 'Configuración de Email'
-  Introduce_Yourself: 'Descríbete'
+  log_in: 'Entrar'
+  create_new_account: 'Registrarse'
+  log_out: 'Salir'
+  edit_profile: 'Editar Perfil'
+  email_settings: 'Configuración de Email'
+  introduce_yourself: 'Descríbete'
+
+  # Alejandro, please translate:
+  # complete_registration: '~Complete registration'
+  # login_as: '~Hi, I log in as'
+  # password: '~password'
+  # name_prompt: '~My name is'
+  # full_name: '~first and last name'
+  # pic_prompt: '~I look like'
+  # your_profile: '~Your Profile'
+  # updated_successfully: "~Updated successfully"
+  # reset_your_password: "~Reset Your Password"
+  # code: '~Code'
+  # new_password: '~New password'
+  # verification_sent: '~We sent you a verification code via email.'
+  # verify: '~Verify'
+  # choose_password: "~choose a new password"
+  # code_from_email: '~verification code from email'
+  # verify_your_email: '~Verify Your Email'
+  # more_info: '~Please give some info'
+  # forgot_password: '~I forgot my password!'
+
+
+########
+# email notification settings
+
+_.extend dict.en, 
+
+  send_email: 'Send me email digests'
+  email_digest_purpose: (args) ->
+    "The digests summarize relevant new activity for you regarding #{args.project}"
+  digest_timing: "Send summaries at most"
+  daily: 'daily'
+  hourly: 'hourly'
+  weekly: 'weekly'
+  monthly: 'monthly'
+  notable_events: "Emails are only sent if a notable event occurred. Which events are notable to you?"
+  watched_proposals: 'The proposals you are watching for new activity:'
+  unwatch: "Unwatch this proposal"
+  hide_notifications: 'Hide notifications'
+  show_notifications: 'Show notifications'
+  commented_on: "commented on"
+  your_point: 'your point'
+  edited_proposal: 'edited this proposal'
+  added_new_point: 'added a new point'
+  added_opinion: 'added their opinion'
+
+
+# Alejandro, please translate:
+# _.extend dict.spa, 
+#   send_email: '~Send me email digests'
+#   email_digest_purpose: (args) ->
+#     "~The digests summarize relevant new activity for you regarding #{args.project}"
+#   digest_timing: "~Send summaries at most"
+#   daily: '~daily'
+#   hourly: '~hourly'
+#   weekly: '~weekly'
+#   monthly: '~monthly'
+#   notable_events: "~Emails are only sent if a notable event occurred. Which events are notable to you?"
+#   watched_proposals: '~The proposals you are watching for new activity:'
+#   unwatch: "~Unwatch this proposal"
+#   hide_notifications: '~Hide notifications'
+#   show_notifications: '~Show notifications'
+#   commented_on: "~commented on"
+#   your_point: '~your point'
+#   edited_proposal: '~edited this proposal'
+#   added_new_point: '~added a new point'
+#   added_opinion: '~added their opinion'
 
 
 # fill in missing spanish translations with english equivalents

@@ -283,7 +283,7 @@ window.Point = ReactiveComponent
                 points = fetch(@props.your_points_key)
                 points.editing_points.push(@props.key)
                 save(points))
-              SPAN null, 'edit'
+              SPAN null, t('edit')
 
           if permit('delete point', point) > 0 && 
               (@props.rendered_as == 'decision_board_point' || TWO_COL())
@@ -298,7 +298,7 @@ window.Point = ReactiveComponent
                 e.stopPropagation()
                 if confirm('Delete this point forever?')
                   destroy @props.key
-              SPAN null, 'delete'
+              SPAN null, t('delete')
 
       if TWO_COL() && @props.rendered_as != 'under_review'
         included = @included()
@@ -614,7 +614,7 @@ window.Comment = ReactiveComponent
                 e.stopPropagation()
                 if confirm('Delete this comment forever?')
                   destroy(key)
-              'delete'
+              t('delete')
 
             SPAN
               style: comment_action_style
@@ -622,7 +622,7 @@ window.Comment = ReactiveComponent
                 e.stopPropagation()
                 comment.editing = true
                 save comment
-              'edit'          
+              t('edit')
 
 # fact-checks, edit comments, comments...
 styles += """
@@ -786,7 +786,7 @@ window.Discussion = ReactiveComponent
           marginBottom: 25
           marginTop: 24
           fontWeight: 600
-        'Discuss this Point'
+        t('Discuss this Point')
       
 
       DIV className: 'comments',

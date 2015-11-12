@@ -106,7 +106,7 @@ window.SimpleHomepage = ReactiveComponent
             borderBottom: "1px solid #{logo_red}"
 
           href: '/proposal/new'
-          'Create new proposal'
+          t('Create new proposal')
 
       # List all clusters
       for cluster, index in proposals.clusters or []
@@ -324,7 +324,7 @@ window.SimpleHomepage = ReactiveComponent
                 fontWeight: 200
                 marginTop: 5
 
-              'closed'
+              t('closed')
 
 
       # Histogram for Proposal
@@ -363,7 +363,7 @@ window.SimpleHomepage = ReactiveComponent
 
         tooltip = fetch 'tooltip'
         tooltip.coords = $(@getDOMNode()).find('#watching_filter').offset()
-        tooltip.tip = "Filter proposals to those you're watching"
+        tooltip.tip = t('filter_to_watched')
         save tooltip
         save @local
 

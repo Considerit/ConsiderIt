@@ -10,6 +10,8 @@ require '../development'
 require '../state_dash'
 require '../logo'
 require '../bubblemouth'
+require '../translations'
+
 
 window.SAAS_PAGE_WIDTH = 1000
 window.TEXT_WIDTH = 730

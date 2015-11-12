@@ -89,14 +89,14 @@ task :export_proposal_data => :environment do
 end
 
 task :export_all_comments => :environment do
-  subdomain = Subdomain.find_by_name('tigard')
+  subdomain = Subdomain.find_by_name('seattle2035')
 
   CSV.open("lib/tasks/client_data/export/#{subdomain.name}-opinions.csv", "w") do |csv|
-    csv << ["proposal", "username", "email", "date joined", "opinion", "#points"]
+    csv << ["proposal", 'created', "username", "email", "date joined", "opinion", "#points"]
   end
 
   CSV.open("lib/tasks/client_data/export/#{subdomain.name}-points.csv", "w") do |csv|
-    csv << ['proposal', 'type', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
+    csv << ['proposal', 'type', 'created', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
   end
 
   subdomain.proposals.each do |proposal|
@@ -104,7 +104,7 @@ task :export_all_comments => :environment do
     CSV.open("lib/tasks/client_data/export/#{subdomain.name}-opinions.csv", "a") do |csv|
       proposal.opinions.published.each do |opinion|
         user = opinion.user
-        csv << [proposal.slug, user.name, user.email.gsub('.ghost', ''), user.created_at, opinion.stance, user.points.where(:proposal_id => proposal.id).count]
+        csv << [proposal.slug, opinion.created_at, user.name, user.email.gsub('.ghost', ''), user.created_at, opinion.stance, user.points.where(:proposal_id => proposal.id).count]
       end
     end
 
@@ -112,11 +112,11 @@ task :export_all_comments => :environment do
 
       proposal.points.published.each do |pnt|
         opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
-        csv << [pnt.proposal.slug, 'POINT', pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
+        csv << [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
 
         pnt.comments.each do |comment|
           opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
-          csv << [pnt.proposal.slug, 'COMMENT', comment.user.email.gsub('.ghost', ''), "", comment.body, '', opinion ? opinion.stance : '-', '', '']
+          csv << [pnt.proposal.slug, 'COMMENT', comment.created_at, comment.user.email.gsub('.ghost', ''), "", comment.body, '', opinion ? opinion.stance : '-', '', '']
         end
       end
     end

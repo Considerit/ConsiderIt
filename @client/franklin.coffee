@@ -550,7 +550,7 @@ ProposalDescription = ReactiveComponent
             color: '#666'
           A 
             href: "#{@proposal.key}/edit"
-            'Edit'
+            t('edit')
           A 
             style: 
               padding: 10
@@ -558,7 +558,7 @@ ProposalDescription = ReactiveComponent
             onClick: => 
               @local.edit_roles = !@local.edit_roles
               save @local
-            'Share'
+            t('share')
 
           if permit('delete proposal', @proposal) > 0
             A
@@ -566,7 +566,7 @@ ProposalDescription = ReactiveComponent
                 if confirm('Delete this proposal forever?')
                   destroy(@proposal.key)
                   loadPage('/')
-              'Delete'
+              t('delete')
 
           if current_user.is_super_admin
             SPAN 
@@ -903,9 +903,9 @@ DecisionBoard = ReactiveComponent
           onClick: => saveOpinion(@proposal)
 
           if your_opinion.published 
-            'Return to results' 
+            t('Return to results')
           else 
-            'Save your opinion'
+            t('Save your opinion')
 
         if !your_opinion.published
 
@@ -917,7 +917,7 @@ DecisionBoard = ReactiveComponent
             A 
               className:'cancel_opinion_button primary_cancel_button'
               onClick: => updateProposalMode('results', 'cancel_button')
-              'or just skip to the results' ]
+              t('skip_to_results') ]
 
   componentDidUpdate : ->
     @transition()
@@ -1041,7 +1041,7 @@ saveOpinion = (proposal) ->
 
     reset_key 'auth',
       form: auth_form
-      goal: 'Save your Opinion'
+      goal: 'Save your opinion'
       ask_questions: true
 
     # We'll need to publish this opinion after auth is completed
@@ -1085,7 +1085,7 @@ SaveYourOpinionNotice = ReactiveComponent
             cursor: 'pointer'
           onClick: => saveOpinion(@proposal)
 
-          'Save your opinion'
+          t('Save your opinion')
 
 
 
@@ -1450,11 +1450,11 @@ PointsList = ReactiveComponent
             if can_add_new_point == Permission.NOT_LOGGED_IN
               reset_key 'auth', 
                 form: 'create account'
-                goal: 'write a point'
+                goal: 'Write a point'
             else if can_add_new_point == Permission.UNVERIFIED_EMAIL
               reset_key 'auth', 
                 form: 'verify email'
-                goal: 'write a point'
+                goal: 'Write a point'
               save auth
               current_user.trying_to = 'send_verification_token'
               save current_user
@@ -1802,7 +1802,7 @@ AuthTransition = ReactiveComponent
       reset_key 'auth',
         key: 'auth'
         form: 'create account via invitation'
-        goal: 'complete registration'
+        goal: 'Complete registration'
 
     SPAN null
 

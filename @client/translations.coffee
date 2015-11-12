@@ -78,7 +78,7 @@ dict.spa =
   next: 'siguiente'
   drag_from_left: (args) ->
     return "Arrastra un #{args.noun} de la izquierda"
-  },
+
   drag_from_right: (args) ->
     return "Arrastra un #{args.noun} de la derecha"
 

@@ -92,17 +92,22 @@ Auth = ReactiveComponent
     auth = fetch('auth')
     current_user = fetch('/current_user')
     
-    goal = if auth.goal then "To #{auth.goal}" else null
+    goal = null
+    if auth.goal 
+      try 
+        goal = "To #{t(auth.goal)}"
+      catch 
+        goal = "To #{auth.goal}" 
 
     switch auth.form
 
       # The LOGIN form, with easy switch to register
       when 'login'
         [ @headerAndBorder goal, t('Introduce Yourself'),
-            @body [['Hi, I log in as:',
+            @body [["#{t('login_as')}:",
                     [ @inputBox('email', 'email@address', 'email'),
                       DIV(null),
-                      @inputBox('password', "password", 'password'),
+                      @inputBox('password', t("password"), 'password'),
                       @resetPasswordLink() ]]].concat @userQuestionInputs()
           @footerForRegistrationAndLogin() ]
 
@@ -113,7 +118,7 @@ Auth = ReactiveComponent
       when 'create account', 'create account via invitation'
         
         if avatar_field = @avatarInput()
-          avatar_field = ['I look like:', avatar_field]
+          avatar_field = ["#{t('pic_prompt')}:", avatar_field]
 
         if pledges = @pledgeInput()
           pledges_field = ['I pledge to:', pledges]
@@ -125,14 +130,14 @@ Auth = ReactiveComponent
           email_field = DIV
             style: {color: auth_text_gray, padding: '4px 8px'},
             current_user.email
-          footer = @submitButton('Create new account')
+          footer = @submitButton(t('Create new account'))
 
-        [ @headerAndBorder goal, 'Introduce Yourself',
-            @body [['Hi, I log in as:',
+        [ @headerAndBorder goal, t('Introduce Yourself'),
+            @body [["#{t('login_as')}:",
                       [ email_field,
-                        @inputBox('password', "password", 'password')]],
+                        @inputBox('password', t("password"), 'password')]],
                     avatar_field,
-                    ['My name is:', @inputBox('name', 'first and last name')],
+                    [t('name_prompt'), @inputBox('name', t('full_name'))],
                     pledges_field].concat @userQuestionInputs()
           footer ]
 
@@ -141,40 +146,40 @@ Auth = ReactiveComponent
       # and add feedback when the user is updated.
       when 'edit profile'
         if avatar_field = @avatarInput()
-          avatar_field = ['I look like:', avatar_field]
+          avatar_field = ["#{t('pic_prompt')}:", avatar_field]
 
-        [ @headerAndBorder null, 'Your Profile', 
+        [ @headerAndBorder null, t('Your Profile'),
             @body [
-              ['Hi, I log in as:',
+              ["#{t('login_as')}:",
                 [ @inputBox('email', 'email@address', 'email'),
-                  @inputBox('password', "password", 'password')]
+                  @inputBox('password', t("password"), 'password')]
               ],
-              ['My name is:', @inputBox('name', 'first and last name')],
+              ["#{t('name_prompt')}:", @inputBox('name', t('full_name'))],
               avatar_field].concat @userQuestionInputs()
-          @submitButton('Update')
+          @submitButton(t('Update'))
           if @local.saved_successfully
-            SPAN style: {color: 'green'}, "Updated successfully"
+            SPAN style: {color: 'green'}, t("Updated successfully")
         ]
 
       # The RESET PASSWORD form
       when 'reset password'
-        [ @headerAndBorder null, 'Reset Your Password',
-            @body [['Code:', @inputBox('verification_code', 'verification code from email')],
-                   ['New password:', @inputBox('password', "choose a new password", 'password')]
-                  ], 'We sent you a verification code via email.'
-          @submitButton('Log in') ]
+        [ @headerAndBorder null, t('Reset Your Password'),
+            @body [["#{t('Code')}:", @inputBox('verification_code', t('code_from_email'))],
+                   ["#{t('New password')}:", @inputBox('password', t("choose a new password"), 'password')]
+                  ], t('verification_sent')
+          @submitButton(t('Log in')) ]
 
       # The email VERIFICATION form
       when 'verify email'
-        [ @headerAndBorder goal, 'Verify Your Email',
-            @body [['Code:', @inputBox('verification_code', 'verification code from email')]],
-                  'We sent you a verification code via email.'
-          @submitButton('Verify') ]
+        [ @headerAndBorder goal, t('Verify Your Email'),
+            @body [["#{t('Code')}:", @inputBox('verification_code', t('code_from_email'))]],
+                  t('verification_sent')
+          @submitButton(t('Verify')) ]
 
       when 'user questions'
-        [ @headerAndBorder goal, 'Please give some info',
+        [ @headerAndBorder goal, t('more_info'),
             @body @userQuestionInputs()
-          @submitButton('Done!') ]
+          @submitButton("#{t('Done')}!") ]
 
       else
         throw "Unrecognized authentication form #{auth.form}"
@@ -243,7 +248,7 @@ Auth = ReactiveComponent
                   top: 70
                   padding: 10
                   fontSize: 24
-                title: 'cancel'
+                title: t('cancel')
 
                 onClick: =>
                   if auth.form == 'verify email' || location.pathname == '/proposal/new'
@@ -252,7 +257,7 @@ Auth = ReactiveComponent
 
                 I className: 'fa-close fa'
 
-                ' cancel'
+                ' ' + t('cancel')
 
         DIV
           style:
@@ -627,7 +632,7 @@ Auth = ReactiveComponent
               # Switch to reset_password mode
               reset_key 'auth', {form : 'reset password'}
 
-        'I forgot my password!'
+        t('forgot_password') 
 
   ####
   # userQuestionInputs
@@ -638,7 +643,7 @@ Auth = ReactiveComponent
     current_user = fetch('/current_user')
     auth = fetch('auth')
 
-    questions = if auth.ask_questions then customization 'auth.user_questions'
+    questions = if auth.ask_questions then customization('auth.user_questions')
     questions = questions or []
 
     if @local.tags != current_user.tags

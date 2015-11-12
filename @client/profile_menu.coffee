@@ -56,7 +56,7 @@ window.ProfileMenu = ReactiveComponent
               paddingTop: 70
               paddingRight: 14
               backgroundColor: '#eee'
-              left: -122
+              right: 0
               textAlign: 'right'
               zIndex: 999999
 

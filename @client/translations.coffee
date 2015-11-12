@@ -70,19 +70,21 @@ dict.en =
   or: 'or'
 
 dict.spa = 
-  comment: 'comment'
-  comments: 'comments'
-  read_more: 'read more'
-  select_these_opinions: 'Select these opinions'
-  prev: 'prev'
-  next: 'next'
+  comment: 'comentario'
+  comments: 'comentarios'
+  read_more: 'ver más'
+  select_these_opinions: 'Selecciona estas opiniones'
+  prev: 'anterior'
+  next: 'siguiente'
   drag_from_left: (args) ->
-    "Drag a #{args.noun} from the left"
-  drag_from_right: (args) -> 
-    "Drag a #{args.noun} from the right"
-  write_a_new_point: (args) -> 
-    "Write a new #{args.noun}"    
-  or: 'or'
+    return "Arrastra un #{args.noun} de la izquierda"
+  },
+  drag_from_right: (args) ->
+    return "Arrastra un #{args.noun} de la derecha"
+
+  write_a_new_point: (args) ->
+    return "Escribe un nuevo #{args.noun}"
+  or: 'ó'
 
 ########
 # authentication / user account related translations
@@ -96,12 +98,12 @@ _.extend dict.en,
   Introduce_Yourself: 'Introduce Yourself'
 
 _.extend dict.spa, 
-  Log_in: 'Log in'
-  Create_new_account: 'Create new account'
-  Log_out: 'Log out'
-  Edit_Profile: 'Edit Profile'
-  Email_Settings: 'Email Settings'
-  Introduce_Yourself: 'Introduce Yourself'
+  Log_in: 'Entrar'
+  Create_new_account: 'Registrarse'
+  Log_out: 'Salir'
+  Edit_Profile: 'Editar Perfil'
+  Email_Settings: 'Configuración de Email'
+  Introduce_Yourself: 'Descríbete'
 
 
 # fill in missing spanish translations with english equivalents

@@ -53,9 +53,9 @@ window.EditComment = ReactiveComponent
             e.stopPropagation()
 
             if permitted == Permission.NOT_LOGGED_IN
-              reset_key 'auth', {form: 'login', goal: 'Write a Comment'}
+              reset_key 'auth', {form: 'login', goal: 'Write a comment'}
             else if permitted == Permission.UNVERIFIED_EMAIL
-              reset_key 'auth', {form: 'verify email', goal: 'Write a Comment'}
+              reset_key 'auth', {form: 'verify email', goal: 'Write a comment'}
               current_user.trying_to = 'send_verification_token'
               save current_user
 
@@ -66,7 +66,7 @@ window.EditComment = ReactiveComponent
                   textDecoration: 'underline'
                   color: focus_blue
                   fontSize: if browser.is_mobile then 18
-                'Log in to write a comment'
+                t('login_to_comment')
               if '*' not in @proposal.roles.commenter
                 DIV style: {fontSize: 11},
                   'Only some email addresses are authorized to comment.'
@@ -76,7 +76,7 @@ window.EditComment = ReactiveComponent
               SPAN
                 style: { textDecoration: 'underline', color: focus_blue }
                'Verify your account'
-              SPAN null, 'to write a comment'
+              SPAN null, "to #{t('write a comment')}"
 
       DIV 
         style: 
@@ -84,7 +84,7 @@ window.EditComment = ReactiveComponent
                  
         AutoGrowTextArea
           ref: 'comment_input'
-          placeholder: if permitted > 0 then 'Write a new comment' else ''
+          placeholder: if permitted > 0 then t('Write a comment') else ''
           disabled: permitted < 0
           onChange: (e) => @local.new_comment = e.target.value; save(@local)
           defaultValue: if @props.fresh then null else @data().body
@@ -103,7 +103,9 @@ window.EditComment = ReactiveComponent
             padding: '8px 16px'
             fontSize: if browser.is_mobile then 24
           'data-action': 'save-comment'
-          'Save comment'
+
+          t('Save comment')
+          
           (e) =>
             e.stopPropagation()
             if @props.fresh

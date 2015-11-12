@@ -39,26 +39,33 @@ window.DefaultProposalNavigation = ReactiveComponent
         width: BODY_WIDTH()
         position: 'relative'
 
-      # Previous button
-      if prev_proposal
-        A
-          style:
-            position: 'absolute'
-            right: 74
-          href: proposal_url(prev_proposal)
-          'data-no-scroll': true
-          "< #{t('prev')}"
+      DIV 
+        style: 
+          position: 'absolute'
+          right: 0
+
+        # Next button
+        if next_proposal
+          A
+            style:
+              display: 'inline-block'
+              float: 'right'
+            href: proposal_url(next_proposal)
+            'data-no-scroll': true
+            "#{t('next')} >"
+
+        # Previous button
+        if prev_proposal
+          A
+            style:
+              display: 'inline-block'
+              float: 'right'
+              marginRight: if next_proposal then 10
+            href: proposal_url(prev_proposal)
+            'data-no-scroll': true
+            "< #{t('prev')}"
 
 
-      # Next button
-      if next_proposal
-        A
-          style:
-            position: 'absolute'
-            right: 0
-          href: proposal_url(next_proposal)
-          'data-no-scroll': true
-          "#{t('next')} >"
 
       # Photo
       if show_proposer_icon

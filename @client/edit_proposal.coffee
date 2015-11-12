@@ -110,22 +110,22 @@ window.EditProposal = ReactiveComponent
             style: 
               fontSize: 30
               fontWeight: 700
-            if @props.fresh then "Add a new proposal" else "Edit '#{proposal.name}'"
+            if @props.fresh then t('create_new_proposal') else "#{capitalize(t('edit'))} '#{proposal.name}'"
 
           DIV 
             style: 
               fontSize: 18
 
-            'Make it '
+            t('make_it') + ' ' 
             SPAN 
               style: 
                 fontWeight: 600
-              "unambiguous"
-            ' and '
+              t("unambiguous")
+            ' ' + t('and') + ' '
             SPAN 
               style: 
                 fontWeight: 600
-              "free of language errors"
+              t('error_free')
             '.'
 
         DIV style: block_style,
@@ -141,7 +141,7 @@ window.EditProposal = ReactiveComponent
             id:'slug'
             name:'slug'
             pattern:'^.{3,}'
-            placeholder: "Just letters, numbers, underscores, dashes."
+            placeholder: t('url_instr')
             required:'required'
             defaultValue: if @props.fresh then null else proposal.slug
             style: _.extend {}, input_style,
@@ -149,18 +149,18 @@ window.EditProposal = ReactiveComponent
               display: 'inline-block'
 
         DIV style: block_style,
-          LABEL htmlFor:'name', style: label_style, 'Summary:'
+          LABEL htmlFor:'name', style: label_style, t('Summary') + ':'
           INPUT 
             id:'name'
             name:'name'
             pattern:'^.{3,}'
-            placeholder:'Aim for 3-8 words with a verb and noun.'
+            placeholder: t('proposal_summary_instr')
             required:'required'
             defaultValue: if @props.fresh then null else proposal.name
             style: input_style
 
         DIV style: block_style,
-          LABEL htmlFor:'description', style: label_style, 'Details:'
+          LABEL htmlFor:'description', style: label_style, t('details') + ':'
           
           WysiwygEditor
             key:"description-#{proposal.key}"
@@ -200,7 +200,7 @@ window.EditProposal = ReactiveComponent
                     id:"field-#{field.id}-label"
                     name:"field-#{field.id}-label"
                     pattern:'^.{3,}'
-                    placeholder:'Label'
+                    placeholder:t('Label')
                     required:'required'
                     onChange: do(field) => (e) => 
                       field.label = e.target.value; save(@local)
@@ -209,7 +209,7 @@ window.EditProposal = ReactiveComponent
                   WysiwygEditor
                     key:"field-#{field.id}-html-#{if @props.fresh then '/new/proposal' else proposal.key}"
                     name:"field-#{field.id}-html"
-                    placeholder:'Text that is shown when expanded'
+                    placeholder: t('expandable_body_instr')
                     style: _.extend {}, description_field_style,
                               width: description_field_style.width - 45
                     html: field.html]
@@ -237,7 +237,7 @@ window.EditProposal = ReactiveComponent
                     style: operation_style
                     onClick: do (field, field_open) => => 
                       toggleDescriptionFieldOpen(field, field_open)
-                    if field_open then 'close' else 'edit'
+                    if field_open then t('close') else t('edit')
 
                   A
                     style: operation_style
@@ -246,7 +246,7 @@ window.EditProposal = ReactiveComponent
                         _.filter @local.description_fields, \
                                  (fld) -> fld.id != field.id
                       save @local
-                    'delete'
+                    t('delete')
 
             SPAN
               style: 
@@ -269,7 +269,7 @@ window.EditProposal = ReactiveComponent
                 style: 
                   textDecoration: 'underline'
                   marginLeft: 7
-                "Add expandable description section"
+                t('add_expandable')
 
 
         DIV
@@ -277,7 +277,7 @@ window.EditProposal = ReactiveComponent
 
           if user.is_admin
 
-            [LABEL htmlFor:'cluster', style: label_style, 'Category (optional):'
+            [LABEL htmlFor:'cluster', style: label_style, t('category') + ' (' + t('optional') + '):'
             INPUT 
               id: 'cluster'
               name: 'cluster'
@@ -295,7 +295,7 @@ window.EditProposal = ReactiveComponent
               htmlFor:'cluster'
               style: _.extend {}, label_style,
                 width: 130
-              'Category:'
+              t('Category') + ':'
 
             SELECT
               id: 'cluster'
@@ -311,7 +311,7 @@ window.EditProposal = ReactiveComponent
           style: _.extend {}, block_style,
             display: if !user.is_admin then 'none'
 
-          LABEL htmlFor: 'listed_on_homepage', style: label_style, 'List on homepage?'
+          LABEL htmlFor: 'listed_on_homepage', style: label_style, t('show_on_homepage')
 
           INPUT 
             id: 'listed_on_homepage'
@@ -328,7 +328,7 @@ window.EditProposal = ReactiveComponent
           LABEL 
             htmlFor: 'open_for_discussion'
             style: label_style
-            'Open for discussion?'
+            t('open_for_discussion')
 
           INPUT 
             id: 'open_for_discussion'
@@ -358,7 +358,7 @@ window.EditProposal = ReactiveComponent
                 left: -25
                 top: 5
 
-            'Permissions and invitations'
+            t('permissions_and_invites')
 
           DIV 
             style: 
@@ -398,7 +398,7 @@ window.EditProposal = ReactiveComponent
             style: 
               width: 400
               marginTop: 35
-            value:"#{if @props.fresh then 'Publish' else 'Update'}"
+            value:"#{if @props.fresh then t('Publish') else t('Update')}"
             onClick: @saveProposal
 
           A 
@@ -416,7 +416,7 @@ window.EditProposal = ReactiveComponent
               else 
                 loadPage "/#{proposal.slug}"
 
-            'cancel'
+            t('cancel')
 
   saveProposal : -> 
 

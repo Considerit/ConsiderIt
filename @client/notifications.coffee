@@ -64,12 +64,19 @@ window.Notifications = ReactiveComponent
           LABEL
             htmlFor: 'enable_email'              
 
-            'Send me email digests'
+            SPAN 
+              style: 
+                color: focus_blue
+                fontWeight: 600
+
+              t('send_email')
 
             DIV
               style: 
-                fontSize: 18
-              "summarizing relevant new activity for you at #{subdomain.app_title || subdomain.name}"
+                fontSize: 14
+                color: '#888'
+
+              t('email_digest_purpose', {project: subdomain.app_title or subdomain.name})
 
 
       if prefs['send_emails']
@@ -93,7 +100,7 @@ window.Notifications = ReactiveComponent
           marginRight: 10
           display: 'inline-block'
 
-        'Send summaries at most'
+        t('digest_timing')
 
 
       SELECT 
@@ -109,9 +116,9 @@ window.Notifications = ReactiveComponent
           OPTION
             value: "1_#{u}"
             if u == 'day'
-              'daily'
+              t('daily')
             else
-              "#{u}ly"
+              t("#{u}ly")
 
       DIV 
         style: 
@@ -121,7 +128,7 @@ window.Notifications = ReactiveComponent
           style: 
             marginBottom: 10
 
-          "Emails are only sent if a notable event occurred. Which events are notable to you?"
+          t('notable_events')
 
         UL
           style: 
@@ -186,7 +193,8 @@ window.Notifications = ReactiveComponent
           style: 
             position: 'relative'
             paddingBottom: 10
-          'The proposals you are watching for new activity:'
+          t('watched_proposals')
+
 
         DIV
           style: 
@@ -212,8 +220,8 @@ window.Notifications = ReactiveComponent
                     proposal: obj
                     #icon: 'fa-bell-slash'
                     watch_color: "#777"
-                    label: (watching) -> 
-                      "Unwatch this proposal"
+                    label: (watching) -> t('unwatch')
+                      
                     style: 
                       position: 'absolute'
                       left: -35
@@ -293,9 +301,9 @@ window.ActivityFeed = ReactiveComponent
             marginRight: 15
 
         if @local.show_notifications
-          'Hide notifications'
+          t('Hide notifications')
         else
-          'Show notifications'
+          t('Show notifications')
 
       if @local.show_notifications
         notifications = []
@@ -326,12 +334,12 @@ window.ActivityFeed = ReactiveComponent
         point = fetch(event_object.point)
         SPAN
           style: {}
-          "commented on "
+          "#{t(commented_on)} "
           if notification.event_object_relationship == 'point_authored'
             SPAN 
               style: 
                 fontWeight: 600
-              'your point '
+              t('your point') + ' '
 
           A 
             style: 
@@ -352,13 +360,13 @@ window.ActivityFeed = ReactiveComponent
             "uploaded a review from EasyChair, edited the description, or changed the category"
 
           else
-            "edited this proposal"
+            t("edited this proposal")
 
 
       when 'Point'
         SPAN
           style: {}
-          "added a new point "
+          t('added_new_point') + " "
           A 
             style:
               color: logo_red
@@ -372,7 +380,7 @@ window.ActivityFeed = ReactiveComponent
 
         
       when 'Opinion'
-        'added their opinion'
+        t('added_opinion') 
 
 
 

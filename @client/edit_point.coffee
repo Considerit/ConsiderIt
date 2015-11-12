@@ -64,7 +64,7 @@ window.EditPoint = ReactiveComponent
           maxLength: 180
           name: 'nutshell'
           pattern: '^.{3,}'
-          placeholder: 'A succinct summary of your point.'
+          placeholder: t('summary_placeholder')
           required: 'required'
           defaultValue: if @props.fresh then null else @data().nutshell
           style: _.extend {}, textarea_style,
@@ -86,7 +86,7 @@ window.EditPoint = ReactiveComponent
         AutoGrowTextArea 
           id:'text'
           name:'text'
-          placeholder:'Add background or evidence.'
+          placeholder: t('description_placeholder') 
           min_height: if PORTRAIT_MOBILE() then 150 else 100
           defaultValue: if @props.fresh then null else @data().text
           style: textarea_style
@@ -132,7 +132,7 @@ window.EditPoint = ReactiveComponent
               fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 24
               padding: '4px 35px'
               float: 'left'
-            'Done'
+            t('Done')
 
         A 
           onTouchEnd: @done
@@ -148,7 +148,7 @@ window.EditPoint = ReactiveComponent
             position: 'relative'
             float: if mobile then 'left' else 'right'
             padding: if mobile then 10
-          'cancel'  
+          t('cancel')
 
         DIV 
           style: 
@@ -171,7 +171,7 @@ window.EditPoint = ReactiveComponent
           LABEL 
             htmlFor: "sign_name-#{@props.valence}"
             title:'Signing your name lends your point more weight with peers.'
-            'Sign your name'
+            t('sign_name')  
 
   componentWillMount : ->
     # save scroll position and keep it there
@@ -263,9 +263,7 @@ window.EditPoint = ReactiveComponent
           style: 
             fontWeight: 600
             fontSize: if PORTRAIT_MOBILE() then 70 else if LANDSCAPE_MOBILE() then 36
-          "Write a "
-          capitalize singular
-          ' (or question) for this proposal'
+          t('write_a_new_point', {noun: capitalize(singular)})
 
         UL 
           style: 
@@ -274,10 +272,10 @@ window.EditPoint = ReactiveComponent
             marginTop: 5
 
           do ->
-            tips = ["Make one coherent point. Add multiple #{capitalize(plural)} if you have more.",
-                    "Be direct. The summary is your main point.",
-                    "Review your language. Don’t be careless.",
-                    "No personal attacks."
+            tips = [t('tip_single', {noun: capitalize(plural)}),
+                    t('tip_direct'),
+                    t('tip_review'),
+                    t('tip_attacks')
                    ]
 
             for tip in tips

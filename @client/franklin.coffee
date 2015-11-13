@@ -1961,12 +1961,15 @@ Root = ReactiveComponent
           hist.selected_opinion_value = null
         save hist
 
+
     wysiwyg_editor = fetch 'wysiwyg_editor'
     if wysiwyg_editor.showing
       # We don't want to close the editor if there was a selection event whose click event
       # bubbled all the way up here.
-      selected = if document.all then document.selection.createRange().text else document.getSelection()
-      if !document.getSelection() || selected.anchorNode.textContent == ''
+      
+      selected = document.getSelection()
+
+      if selected.isCollapsed
         wysiwyg_editor.showing = false
         save wysiwyg_editor
 

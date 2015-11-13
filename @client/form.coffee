@@ -196,22 +196,28 @@ window.WysiwygEditor = ReactiveComponent
                   title: button.title
                   onClick: if button.onClick then button.onClick
 
-
           DIV 
-            id: 'editor'
-            dangerouslySetInnerHTML:{__html: @props.html}
-            'data-placeholder': if show_placeholder then @props.placeholder else ''
-            onFocus: => 
-              # Show the toolbar on focus
-              # showing is global state for the toolbar to be 
-              # shown. It gets set to null when someone clicks outside the 
-              # editor area. This is handled at the root level
-              # in the same way that clicking outside a point closes it. 
-              # See Root.resetSelection.
-              wysiwyg_editor = fetch 'wysiwyg_editor'
-              wysiwyg_editor.showing = @props.key
-              save wysiwyg_editor
-            style: @props.style
+            style: @props.container_style
+            
+            DIV 
+              id: 'editor'
+              dangerouslySetInnerHTML:{__html: @props.html}
+              'data-placeholder': if show_placeholder then @props.placeholder else ''
+              onFocus: => 
+                # Show the toolbar on focus
+                # showing is global state for the toolbar to be 
+                # shown. It gets set to null when someone clicks outside the 
+                # editor area. This is handled at the root level
+                # in the same way that clicking outside a point closes it. 
+                # See Root.resetSelection.
+                wysiwyg_editor = fetch 'wysiwyg_editor'
+                wysiwyg_editor.showing = @props.key
+                save wysiwyg_editor
+              # onBlur: => 
+              #   wysiwyg_editor = fetch 'wysiwyg_editor'
+              #   wysiwyg_editor.showing = false
+              #   save wysiwyg_editor
+              style: @props.style
         
 
   componentDidMount : -> 

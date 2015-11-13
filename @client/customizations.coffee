@@ -468,9 +468,9 @@ carcd_header = ReactiveComponent
           position: 'relative'
           top: 166
           left: 0
-          border: '1px solid'
-          borderTopColor: '#7D9DB5'
-          borderBottomColor: '#7D9DB5'
+          border: '1px solid #7D9DB5'
+          borderLeftColor: 'transparent'
+          borderRightColor: 'transparent'
 
       if homepage 
         DIV
@@ -501,21 +501,6 @@ carcd_header = ReactiveComponent
               src: asset('carcd/solidground.png')
               style: 
                 width: 103
-
-
-      # A
-      #   href: '/'
-      #   style: 
-      #     display: 'inline-block'
-      #     fontSize: 43
-      #     visibility: if homepage then 'hidden'
-      #     verticalAlign: 'top'
-      #     marginTop: 52
-      #     marginLeft: 15
-      #     color: 'white'
-      #     zIndex: 10
-      #     position: 'relative'
-      #   '<'
 
       DIV 
         style: 

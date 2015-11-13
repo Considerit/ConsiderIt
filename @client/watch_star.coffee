@@ -15,7 +15,7 @@ window.WatchStar = ReactiveComponent
       if watching     
         "Stop getting notifications" 
       else 
-        "Get notifications about this topic"
+        "Get notifications"
 
     watching = current_user.subscriptions[proposal.key] == 'watched'
 

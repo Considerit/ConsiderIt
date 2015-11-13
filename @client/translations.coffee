@@ -70,6 +70,7 @@ dict.en =
   update: 'Update'
   publish: 'Publish'
   closed: 'closed'
+  add_new: 'add new'
 
 
 dict.spa = 
@@ -86,6 +87,7 @@ dict.spa =
   update: 'Actualizar'
   publish: 'Publicar'
   closed: 'cerrado'
+  add_new: 'crear nueva'
 
 
 

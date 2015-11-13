@@ -76,16 +76,16 @@ dict.spa =
   or: 'ó'
 
   # Alejandro, please translate:
-  # and: '~and'
-  # done: '~Done'
-  # cancel: '~cancel'
-  # edit: '~edit'
-  # share: '~share'
-  # delete: '~delete'
-  # close: '~close'
-  # update: '~Update'
-  # publish: '~Publish'
-  # closed: 'closed'
+  and: 'y'
+  done: 'Hecho'
+  cancel: 'cancelar'
+  edit: 'editar'
+  share: 'compartir'
+  delete: 'eliminar'
+  close: 'cerrar'
+  update: 'Actualizar'
+  publish: 'Publicar'
+  closed: 'cerrado'
 
 
 
@@ -146,25 +146,25 @@ _.extend dict.spa,
     return "Escribe un nuevo #{args.noun}"
 
   # Alejandro, please translate:
-  # slide_your_overall_opinion: '~Slide Your Overall Opinion'
-  # your_opinion: "~Your opinion"
-  # save_your_opinion: '~Save your opinion'
-  # return_to_results: '~Return to results'
-  # skip_to_results: '~or just skip to the results'
-  # login_to_comment: '~Log in to write a comment'
-  # discuss_this_point: '~Discuss this Point'
-  # save_comment: '~Save comment'
-  # write_a_comment: '~Write a comment'
-  # write_a_point: '~Write a point'
-  # summary_placeholder: '~A succinct summary of your point.'
-  # description_placeholder: '~Add background or evidence.'
-  # sign_name: '~Sign your name'
-  # tip_single: (args) -> 
-  #   "~Make one single point. Add multiple #{args.noun} if you have more."
-  # tip_direct: "~Be direct. The summary is your main point."
-  # tip_review: "~Review your language. Don’t be careless."
-  # tip_attacks: "~No personal attacks."
-  # filter_to_watched: "~Filter proposals to those you're watching"
+  slide_your_overall_opinion: 'Desliza Tu Opinión General'
+  your_opinion: "Tu opinión"
+  save_your_opinion: 'Guarda tu opinión'
+  return_to_results: 'Volver a los resultados'
+  skip_to_results: 'o ir directamente a los resultados'
+  login_to_comment: 'Inicia sesión para comentar'
+  discuss_this_point: 'Debatir este Punto'
+  save_comment: 'Guardar comentario'
+  write_a_comment: 'Escribir comentario'
+  write_a_point: 'Escribir un punto de vista'
+  summary_placeholder: 'Un breve resumen de tu punto de vista.'
+  description_placeholder: 'Añadir antecedentes o pruebas'
+  sign_name: 'Firmar con tu nombre'
+  tip_single: (args) -> 
+    "Escribe una única opinión. Añade multiples #{args.noun} si tienes más."
+  tip_direct: "Se directo. El resumen será tu punto de vista principal."
+  tip_review: "Revisa tu lenguaje. No seas descuidado."
+  tip_attacks: "No ataques personales."
+  filter_to_watched: "Filtrar propuestas por las que estás observando"
 
 #########
 # Creating proposal
@@ -189,23 +189,23 @@ _.extend dict.en,
   permissions_and_invites: 'Permissions and invitations'
 
 # Alejandro, please translate:
-# _.extend dict.spa, 
-#   create_new_proposal: '~Create new proposal'
-#   error_free: "~free of language errors"
-#   unambiguous: '~unambiguous'
-#   make_it: '~Make it'
-#   url_instr: "~Just letters, numbers, underscores, dashes."
-#   summary: '~Summary'
-#   proposal_summary_instr: '~Aim for 3-8 words with a verb and noun.'
-#   details: '~Details'
-#   label: '~Label'
-#   expandable_body_instr: '~Text that is shown when expanded'
-#   add_expandable: "~Add expandable description section"
-#   category: '~Category'
-#   optional: '~optional'
-#   show_on_homepage: '~List on homepage?'
-#   open_for_discussion: '~Open for discussion?'
-#   permissions_and_invites: '~Permissions and invitations'
+_.extend dict.spa, 
+  create_new_proposal: 'Crear nueva propuesta'
+  error_free: "libre de errores ortográficos"
+  unambiguous: 'sin ambiguedades'
+  make_it: 'Hazlo'
+  url_instr: "Solo letras, numeros, subrayados, guiones."
+  summary: 'Resumen'
+  proposal_summary_instr: 'Que sean 3-8 palabras con un verbo y un sustantivo.'
+  details: 'Detalles'
+  label: 'Etiqueta'
+  expandable_body_instr: 'Texto mostrado al expandir'
+  add_expandable: "Añadir una sección de descripción expandible"
+  category: 'Categoría'
+  optional: 'opcional'
+  show_on_homepage: '¿Mostrar en portada?'
+  open_for_discussion: '¿Abierta a debate?'
+  permissions_and_invites: 'Permisos e invitaciones'
 
 
 
@@ -249,24 +249,24 @@ _.extend dict.spa,
   introduce_yourself: 'Descríbete'
 
   # Alejandro, please translate:
-  # complete_registration: '~Complete registration'
-  # login_as: '~Hi, I log in as'
-  # password: '~password'
-  # name_prompt: '~My name is'
-  # full_name: '~first and last name'
-  # pic_prompt: '~I look like'
-  # your_profile: '~Your Profile'
-  # updated_successfully: "~Updated successfully"
-  # reset_your_password: "~Reset Your Password"
-  # code: '~Code'
-  # new_password: '~New password'
-  # verification_sent: '~We sent you a verification code via email.'
-  # verify: '~Verify'
-  # choose_password: "~choose a new password"
-  # code_from_email: '~verification code from email'
-  # verify_your_email: '~Verify Your Email'
-  # more_info: '~Please give some info'
-  # forgot_password: '~I forgot my password!'
+  complete_registration: 'Completar registro'
+  login_as: 'Hola, inicio sesión como'
+  password: 'contraseña'
+  name_prompt: 'Mi nombre es'
+  full_name: 'nombre completo'
+  pic_prompt: 'mi foto'
+  your_profile: 'Tu Perfil'
+  updated_successfully: "Actualizado correctamente"
+  reset_your_password: "Reestablecer Contraseña"
+  code: 'Codigo'
+  new_password: 'Nueva contraseña'
+  verification_sent: 'Te hemos enviado un código de verificación via email.'
+  verify: 'Verificar'
+  choose_password: "elige una nueva contraseña"
+  code_from_email: 'código de verificación recibido'
+  verify_your_email: 'Verifica Tu Email'
+  more_info: 'Por favor, proporciona alguna información'
+  forgot_password: '¡He olvidado mi contraseña!'
 
 
 ########
@@ -295,25 +295,25 @@ _.extend dict.en,
 
 
 # Alejandro, please translate:
-# _.extend dict.spa, 
-#   send_email: '~Send me email digests'
-#   email_digest_purpose: (args) ->
-#     "~The digests summarize relevant new activity for you regarding #{args.project}"
-#   digest_timing: "~Send summaries at most"
-#   daily: '~daily'
-#   hourly: '~hourly'
-#   weekly: '~weekly'
-#   monthly: '~monthly'
-#   notable_events: "~Emails are only sent if a notable event occurred. Which events are notable to you?"
-#   watched_proposals: '~The proposals you are watching for new activity:'
-#   unwatch: "~Unwatch this proposal"
-#   hide_notifications: '~Hide notifications'
-#   show_notifications: '~Show notifications'
-#   commented_on: "~commented on"
-#   your_point: '~your point'
-#   edited_proposal: '~edited this proposal'
-#   added_new_point: '~added a new point'
-#   added_opinion: '~added their opinion'
+_.extend dict.spa, 
+  send_email: 'Envíame resúmenes por correo electrónico'
+  email_digest_purpose: (args) ->
+    "Los resumenes proporcionan información de actividad sobre #{args.project}"
+  digest_timing: "Envíame resúmenes como máximo"
+  daily: 'diariamente'
+  hourly: 'cada hora'
+  weekly: 'semanalmente'
+  monthly: 'mensualmente'
+  notable_events: "Los Emails únicamente se envían si ocurre algo importante. ¿Qué eventos son importantes para tí?"
+  watched_proposals: 'Las propuestas que estás observando:'
+  unwatch: "Dejar de seguir esta propuesta"
+  hide_notifications: 'Ocultar notificaciones'
+  show_notifications: 'Mostrar notificaciones'
+  commented_on: "comentado"
+  your_point: 'tu punto de vista'
+  edited_proposal: 'ha editado esta propuesta'
+  added_new_point: 'ha añadido un nuevo punto de vista'
+  added_opinion: 'ha añadido su opinión'
 
 
 # fill in missing spanish translations with english equivalents

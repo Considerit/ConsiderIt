@@ -123,6 +123,9 @@ window.ProposalNavigationWithMenu = ReactiveComponent
     # deep thought. Right now we'll just show the nav bar if the proposal belongs to a group
     use_navigation_bar = @proposal.cluster && proposals
 
+    hsl = parseCssHsl(subdomain.branding.primary_color)
+    is_light = hsl.l > .75
+
     if not use_navigation_bar
       heading_style =
         textAlign: 'center'
@@ -130,7 +133,7 @@ window.ProposalNavigationWithMenu = ReactiveComponent
         fontSize: 26
         padding: '4px 90px'
         width: '100%'
-        color: 'white'
+        color: if is_light then 'black' else 'white'
         zIndex: 999
         position: 'relative'
 
@@ -161,7 +164,7 @@ window.ProposalNavigationWithMenu = ReactiveComponent
         height: heading_height
         backgroundColor: subdomain.branding.primary_color
         width: '100%'
-        color: 'white'
+        color: if is_light then 'black' else 'white'
         zIndex: 999
         position: 'relative'
         marginBottom: 20

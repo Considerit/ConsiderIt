@@ -395,7 +395,12 @@ window.SimpleHomepage = ReactiveComponent
           # height: 30
 
   drawThreshold: (subdomain, cluster, idx) -> 
-    if subdomain.name == 'RANDOM2015' && cluster.name == 'Under Review' && idx == 28
+
+    cutoff = 28 
+    if subdomain.name == 'ANUP2015'
+      cutoff = 7
+
+    if subdomain.name in ['ANUP2015', 'RANDOM2015'] && cluster.name == 'Under Review' && idx == cutoff
       DIV 
         style:
           borderTop: "4px solid green"
@@ -413,7 +418,7 @@ window.SimpleHomepage = ReactiveComponent
           className: 'fa fa-thumbs-o-up'
 
 
-        "Acceptance threshold for 28 papers"
+        "Acceptance threshold for #{cutoff} papers"
 
         I
           style: 

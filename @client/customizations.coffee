@@ -541,15 +541,20 @@ customizations['cimsec'] =
   slider_pole_labels : effective_ineffective
 
 
-customizations['villagb'] = customizations['citysens'] = customizations['iniciativasciudadanas'] = 
-  lang: 'spa'
-  point_labels : pros_contras
-  slider_pole_labels : desacuerdo_acuerdo
-  homie_histo_title: "Opiniones"
-  show_slider_feedback: false
+
+spanish = ['alcala', 'villagb', 'citysens', 'iniciativasciudadanas', \
+           'movilidadcdmx']
+
+for spa in spanish
+  customizations[spa] = 
+    lang: 'spa'
+    point_labels : pros_contras
+    slider_pole_labels : desacuerdo_acuerdo
+    homie_histo_title: "Opiniones"
+    show_slider_feedback: false
 
 
-customizations['alcala'] = _.extend {}, customizations['citysens'],
+customizations['alcala'] = _.extend {}, customizations['alcala'],
   HomepageHeader : ReactiveComponent
     displayName: 'HomepageHeader'
 

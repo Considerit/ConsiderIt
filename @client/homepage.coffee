@@ -8,6 +8,7 @@ require './browser_hacks' # for access to browser object
 require './browser_location' # for loadPage
 require './bubblemouth'
 
+default_cluster_name = 'Proposals'
 
 window.Homepage = ReactiveComponent
   displayName: 'Homepage'
@@ -84,6 +85,29 @@ window.SimpleHomepage = ReactiveComponent
 
     line_height = '1.8em'
 
+    # make sure that proposals w/o a cluster use the default cluster
+    clusters = {}
+    for c in proposals.clusters
+      if c.name 
+        clusters[c.name] = {}
+        for own k,v of c
+          clusters[c.name][k] = v
+      else 
+        unnamed = {}
+        for own k,v of c 
+          unnamed[k] = v 
+
+    if unnamed 
+      if clusters[default_cluster_name]
+        c = clusters[default_cluster_name]
+        c.proposals = c.proposals.concat unnamed.proposals
+      else 
+        unnamed.name = default_cluster_name
+        clusters[default_cluster_name] = unnamed
+
+    clusters = _.values clusters
+    console.log (c.proposals for c in clusters)
+
     DIV
       className: 'simplehomepage'
       style: 
@@ -109,7 +133,8 @@ window.SimpleHomepage = ReactiveComponent
           t('Create new proposal')
 
       # List all clusters
-      for cluster, index in proposals.clusters or []
+
+      for cluster, index in clusters or []
         cluster_key = "cluster/#{cluster.name}"
 
         options =   
@@ -170,7 +195,155 @@ window.SimpleHomepage = ReactiveComponent
 
         ]
 
+      if permit('create proposal') > 0 && customization('show_new_proposal_button')
+        @drawAddNew cluster, options
 
+  drawAddNew : (cluster, options) -> 
+    cluster_name = cluster.name or default_cluster_name
+    icons = options.show_proposer_icon
+    current_user = fetch '/current_user'
+
+    adding = @local.adding_new_proposal == cluster_name 
+    cluster_slug = slugify(cluster_name)
+
+    DIV null,
+
+
+      if !adding 
+
+        SPAN 
+          style: 
+            marginLeft: if icons then 50 + 18
+            color: logo_red
+            cursor: 'pointer'
+            fontWeight: 500
+          onClick: => @local.adding_new_proposal = cluster_name; save(@local)
+
+          t("add new")
+
+      else 
+        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+        w = first_column.width - 50 + (if icons then -18 else 0)
+        
+        DIV null, 
+
+          if icons
+            editor = current_user.user
+            # Person's icon
+            Avatar
+              key: editor
+              user: editor
+              style:
+                height: 50
+                width: 50
+                borderRadius: 0
+                backgroundColor: '#ddd'
+
+
+          DIV 
+            style: 
+              marginLeft: if icons then 18 - 8
+              display: 'inline-block'
+            TEXTAREA 
+              id:"#{cluster_slug}-name"
+              name:'name'
+              pattern:'^.{3,}'
+              placeholder: t('proposal_summary_instr')
+              required:'required'
+              resize: 'none'
+              style: 
+                fontSize: 22
+                width: w
+                borderColor: '#ccc'
+                outline: 'none'
+                padding: '6px 8px'
+
+            WysiwygEditor
+              key:"description-new-proposal-#{cluster_slug}"
+              placeholder: "Add #{t('details')} here"
+              container_style: 
+                padding: '6px 8px'
+                border: '1px solid #ccc'
+
+              style: 
+                fontSize: 16
+                width: w - 8 * 2
+                marginBottom: 8
+                minHeight: 120
+
+
+            if @local.errors?.length > 0
+              
+              DIV
+                style:
+                  fontSize: 18
+                  color: 'darkred'
+                  backgroundColor: '#ffD8D8'
+                  padding: 10
+                  marginTop: 10
+                for error in @local.errors
+                  DIV null, 
+                    I
+                      className: 'fa fa-exclamation-circle'
+                      style: {paddingRight: 9}
+
+                    SPAN null, error
+
+            DIV 
+              style: 
+                marginTop: 8
+
+              SPAN 
+                style: 
+                  backgroundColor: focus_blue
+                  color: 'white'
+                  cursor: 'pointer'
+                  borderRadius: 16
+                  padding: '4px 16px'
+                  display: 'inline-block'
+                  marginRight: 12
+
+
+                onClick: => 
+                  name = $(@getDOMNode()).find("##{cluster_slug}-name").val()
+                  description = fetch("description-new-proposal-#{cluster_slug}").html
+                  slug = slugify(name)
+                  active = true 
+                  hide_on_homepage = false
+
+                  proposal =
+                    key : '/new/proposal'
+                    name : name
+                    description : description
+                    cluster : cluster_name
+                    slug : slug
+                    active: active
+                    hide_on_homepage: hide_on_homepage
+
+                  InitializeProposalRoles(proposal)
+                  
+                  proposal.errors = []
+                  @local.errors = []
+                  save @local
+
+                  save proposal, => 
+                    if proposal.errors?.length == 0
+                      @local.adding_new_proposal = null 
+                    else
+                      @local.errors = proposal.errors
+                    save @local
+
+
+
+                t('Done')
+
+              SPAN 
+                style: 
+                  color: '#888'
+                  cursor: 'pointer'
+                onClick: => @local.adding_new_proposal = null; save(@local)
+
+                t('cancel')
 
   drawClusterHeading : (cluster, options) -> 
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
@@ -201,7 +374,7 @@ window.SimpleHomepage = ReactiveComponent
       # Header of cluster
       H1
         style: first_header
-        cluster.name || 'Proposals'
+        cluster.name || default_cluster_name
 
         if cluster.proposals.length > 10
           " (#{cluster.proposals.length})"
@@ -288,7 +461,6 @@ window.SimpleHomepage = ReactiveComponent
 
         if icons
           editor = proposal_editor(proposal)
-
           # Person's icon
           A
             href: proposal_url(proposal)

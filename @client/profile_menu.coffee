@@ -79,7 +79,7 @@ window.ProfileMenu = ReactiveComponent
               color: if !light_background then 'white'
               position: 'relative'
               zIndex: 9999999999
-              backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)'
+              backgroundColor: if !@local.menu then 'rgba(255,255,255, .25)'
               boxShadow: if !@local.menu then '0px 1px 1px rgba(0,0,0,.1)'
               borderRadius: 8
               padding: '3px 4px'
@@ -94,9 +94,11 @@ window.ProfileMenu = ReactiveComponent
                 marginRight: 7
                 marginTop: 1
             I 
+
               className: 'fa fa-caret-down'
               style: 
                 visibility: if @local.menu then 'hidden'
+                color: 'black'
       else
         A
           className: 'profile_anchor login'

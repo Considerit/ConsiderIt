@@ -216,8 +216,11 @@ window.SimpleHomepage = ReactiveComponent
             marginLeft: if icons then 50 + 18
             color: logo_red
             cursor: 'pointer'
-            fontWeight: 500
+            #fontWeight: 500
+            borderBottom: "1px solid #{logo_red}"
+
           onClick: => @local.adding_new_proposal = cluster_name; save(@local)
+
 
           t("add new")
 

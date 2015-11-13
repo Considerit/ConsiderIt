@@ -218,6 +218,19 @@ support_oppose =
     support_sub: ''
     oppose_sub: ''
 
+important_unimportant = 
+  individual: 
+    support: 'Important'
+    oppose: 'Unimportant'
+    support_sub: ''
+    oppose_sub: ''    
+  group: 
+    support: 'Important'
+    oppose: 'Unimportant'
+    support_sub: ''
+    oppose_sub: ''
+
+
 yes_no = 
   individual: 
     support: 'Yes'
@@ -241,6 +254,19 @@ strong_weak =
     oppose: 'Weak'
     support_sub: ''
     oppose_sub: ''
+
+promising_weak = 
+  individual: 
+    support: 'Promising'
+    oppose: 'Weak'
+    support_sub: ''
+    oppose_sub: ''    
+  group: 
+    support: 'Promising'
+    oppose: 'Weak'
+    support_sub: ''
+    oppose_sub: ''
+
 
 ready_not_ready = 
   individual: 
@@ -402,6 +428,127 @@ customizations.default =
 # SUBDOMAIN CONFIGURATIONS
 
 
+
+####
+# CARCD 
+
+carcd_header = ReactiveComponent
+  displayName: 'Carcd_header'
+
+  render: -> 
+    loc = fetch('location')
+
+    homepage = loc.url == '/'
+
+    DIV 
+      style: 
+        position: 'relative'
+        height: if homepage then 310 else 248
+
+      A
+        href: 'http://www.carcd.org/'
+        target: '_blank'
+        style:
+          position: 'absolute'
+          top: 20
+          left: (WINDOW_WIDTH() - 276) / 2
+          zIndex: 5
+
+        IMG
+          src: asset('carcd/logo.png')
+          style:
+            height: 225
+
+
+      DIV
+        style:
+          backgroundColor: "#E9F2F9"
+          height: 82
+          width: '100%'
+          position: 'relative'
+          top: 166
+          left: 0
+          border: '1px solid'
+          borderTopColor: '#7D9DB5'
+          borderBottomColor: '#7D9DB5'
+
+      if homepage 
+        DIV
+          style:
+            position: 'absolute'
+            left: (WINDOW_WIDTH() - 201) / 2
+            zIndex: 5
+            top: 166 + 82 + 12
+            paddingLeft: 12
+
+          SPAN 
+            style: 
+              fontSize: 12
+              fontWeight: 400
+              color: '#627E90'
+              #fontVariant: 'small-caps'
+              position: 'relative'
+              top: -18
+            'facilitated by'
+
+          A 
+            href: 'http://solidgroundconsulting.com'
+            target: '_blank'
+            style: 
+              padding: '0 5px'
+
+            IMG
+              src: asset('carcd/solidground.png')
+              style: 
+                width: 103
+
+
+      # A
+      #   href: '/'
+      #   style: 
+      #     display: 'inline-block'
+      #     fontSize: 43
+      #     visibility: if homepage then 'hidden'
+      #     verticalAlign: 'top'
+      #     marginTop: 52
+      #     marginLeft: 15
+      #     color: 'white'
+      #     zIndex: 10
+      #     position: 'relative'
+      #   '<'
+
+      DIV 
+        style: 
+          position: 'absolute'
+          top: 18
+          right: 0
+          width: 110
+
+        ProfileMenu()
+
+
+customizations['carcd'] = 
+  show_proposer_icon: true
+
+  "cluster/Questions" : 
+    point_labels: delta_pluses
+    slider_pole_labels: important_unimportant
+    show_slider_feedback: false
+
+  point_labels: pro_con
+  slider_pole_labels: promising_weak
+  show_slider_feedback: false
+
+  HomepageHeader: carcd_header
+  NonHomepageHeader: carcd_header
+
+  ProposalNavigation: ProposalNavigationWithMenu
+
+
+
+
+
+
 customizations['us'] = 
   show_proposer_icon: true
 
@@ -423,7 +570,6 @@ customizations['alcala'] = _.extend {}, customizations['citysens'],
 
     render: ->
       subdomain = fetch '/subdomain'
-      console.log subdomain.branding.masthead
 
       DIV
         style:
@@ -673,7 +819,8 @@ customizations['monitorinstitute'] =
                 color: monitorinstitute_red
                 fontWeight: 600
 
-              "This is the intro to the draft intellectual agenda. Please provide feedback on each proposed intellectual agenda item below."
+              """This is the intro to the draft intellectual agenda. Please provide 
+                 feedback on each proposed intellectual agenda item below."""
 
 
 
@@ -1073,6 +1220,9 @@ customizations['humanities-los'] =
 #################
 # RANDOM2015
 
+customizations['anup2015'] = conference_config
+
+
 customizations['random2015'] = _.extend {}, conference_config,
   opinion_value: (o) -> 3 * o.stance,
   "/proposal/2638" : 
@@ -1262,7 +1412,11 @@ customizations.ecastonline = customizations['ecast-demo'] =
         tag: 'education.editable'
         question: 'My formal education is'
         input: 'dropdown'
-        options:['Did not graduate from high school', 'Graduated from high school or equivalent', 'Attended, but did not graduate from college', 'College degree', 'Graduate professional degree']
+        options:['Did not graduate from high school', \
+                 'Graduated from high school or equivalent', \
+                 'Attended, but did not graduate from college', \
+                 'College degree', \
+                 'Graduate professional degree']
         required: true
       }]
 
@@ -1477,19 +1631,30 @@ customizations.ecastonline = customizations['ecast-demo'] =
             width: 600
 
           P style: paragraph_style, 
-            "In its history, the Earth has been repeatedly struck by asteroids, large chunks of rock from space that can cause considerable damage in a collision. Can we—or should we—try to protect Earth from potentially hazardous impacts?"
+            """In its history, the Earth has been repeatedly struck by asteroids, 
+               large chunks of rock from space that can cause considerable damage 
+               in a collision. Can we—or should we—try to protect Earth from 
+               potentially hazardous impacts?"""
 
           P style: paragraph_style, 
-            "Sounds like stuff just for rocket scientists. But how would you like to be part of this discussion?"
+            """Sounds like stuff just for rocket scientists. But how would you like 
+               to be part of this discussion?"""
 
           P style: paragraph_style, 
-            "Now you can! NASA is collaborating with ECAST—Expert and Citizen Assessment of Science and Technology—to give citizens a say in decisions about the future of space exploration."
+            """Now you can! NASA is collaborating with ECAST—Expert and Citizen 
+               Assessment of Science and Technology—to give citizens a say in 
+               decisions about the future of space exploration."""
 
           P style: paragraph_style, 
-            "Join the dialogue below about detecting asteroids and mitigating their potential impact. The five recommendations below emerged from ECAST public forums held in Phoenix and Boston last November." 
+            """Join the dialogue below about detecting asteroids and mitigating their 
+               potential impact. The five recommendations below emerged from ECAST 
+               public forums held in Phoenix and Boston last November."""
 
           P style: paragraph_style, 
-            "Please take a few moments to review the background materials and the recommendations, and tell us what you think! Your input is important as we analyze the outcomes of the forums and make our final report to NASA." 
+            """Please take a few moments to review the background materials and the 
+               recommendations, and tell us what you think! Your input is important 
+               as we analyze the outcomes of the forums and make our final report 
+               to NASA."""
 
         DIV 
           style: 
@@ -1813,9 +1978,11 @@ customizations.livingvotersguide =
     render: ->
 
       if @proposal.category && @proposal.designator
-        tweet = "Flex your civic muscle on #{@proposal.category.substring(0,1)}-#{@proposal.designator}! Learn about the issue and decide here: "
+        tweet = """Flex your civic muscle on #{@proposal.category.substring(0,1)}-
+                   #{@proposal.designator}! Learn about the issue and decide here: """
       else 
-        tweet = "Learn and decide whether you will support \'#{@proposal.name}\' on your Washington ballot here:"
+        tweet = """Learn and decide whether you will support \'#{@proposal.name}\' 
+                   on your Washington ballot here:"""
       DIV 
         style: 
           position: 'fixed'
@@ -2037,11 +2204,14 @@ customizations.livingvotersguide =
 
         DIV style: {color: 'white', backgroundColor: '#93928E', marginTop: 48, padding: 18, maxHeight: 400},
           DIV style: {fontSize: 18, textAlign: 'left', width: 690, margin: 'auto'},
-            'Unlike voter guides generated by government, newspapers or advocacy organizations, Living Voters Guide is created '
+            """Unlike voter guides generated by government, newspapers or 
+               advocacy organizations, Living Voters Guide is created """
             SPAN style: {fontWeight: 600}, 'by the people'
             ' and '
             SPAN style: {fontWeight: 600}, 'for the people'
-            ' of Washington State. It\'s your platform to learn about candidate and ballot measures, decide how to vote and express your ideas. We believe that sharing our diverse opinions leads to making wiser decisions together. '
+            """ of Washington State. It\'s your platform to learn about candidate and ballot measures, 
+                decide how to vote and express your ideas. We believe that sharing our diverse opinions 
+                leads to making wiser decisions together."""
             A style: {color: 'white', textDecoration: 'underline', fontWeight: 'normal'}, href: '/about', 'Learn more'
             '.'
 
@@ -2078,7 +2248,8 @@ FBLike = ReactiveComponent
     page = 'http://www.facebook.com/pages/Living-Voters-Guide/157151824312366'
     IFRAME 
       style: {border: 'none', overflow: 'hidden', width: 90, height: 21}
-      src: "//www.facebook.com/plugins/like.php?href=#{page}&send=false&layout=button_count&width=450&show_faces=false&action=like&colorscheme=light&font=lucida+grande&height=21"
+      src: """//www.facebook.com/plugins/like.php?href=#{page}&send=false&layout=button_count&width=450&
+              show_faces=false&action=like&colorscheme=light&font=lucida+grande&height=21"""
       scrolling: "no"
       frameBorder: "0"
       allowTransparency: "true"
@@ -2087,7 +2258,8 @@ Tweet = ReactiveComponent
   displayName: 'Tweet'
 
   render: ->
-    url = "https://platform.twitter.com/widgets/tweet_button.1410542722.html#?_=1410827370943&count=none&id=twitter-widget-0&lang=en&size=m"
+    url = """https://platform.twitter.com/widgets/tweet_button.1410542722.html#?_=
+          1410827370943&count=none&id=twitter-widget-0&lang=en&size=m"""
     for url_param in ['hashtags', 'original_referer', 'related', 'text', 'url']
       if @props[url_param]
         url += "&#{url_param}=#{@props[url_param]}"

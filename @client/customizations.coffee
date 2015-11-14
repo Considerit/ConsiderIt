@@ -558,7 +558,7 @@ customizations['cimsec'] =
 
 
 spanish = ['alcala', 'villagb', 'citysens', 'iniciativasciudadanas', \
-           'movilidadcdmx']
+           'movilidadcdmx', 'zonaq', 'valenciaencomu']
 
 for spa in spanish
   customizations[spa] = 

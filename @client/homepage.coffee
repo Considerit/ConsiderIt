@@ -274,6 +274,12 @@ Cluster = ReactiveComponent
     adding = @local.adding_new_proposal == cluster_name 
     cluster_slug = slugify(cluster_name)
 
+    permitted = permit('create proposal')
+    needs_to_login = permitted == Permission.NOT_LOGGED_IN
+    permitted = permitted > 0
+
+    return SPAN null if !permitted && !needs_to_login
+
     DIV null,
 
 
@@ -288,13 +294,13 @@ Cluster = ReactiveComponent
             borderBottom: "1px solid #{logo_red}"
 
           onClick: (e) => 
-            if permit('create proposal') > 0
+            if permitted
               @local.adding_new_proposal = cluster_name; save(@local)
             else 
               e.stopPropagation()
               reset_key 'auth', {form: 'login', goal: ''}
           
-          if permit('create proposal') > 0
+          if permitted
             t("add new")
           else 
             t("login_to_add_new")

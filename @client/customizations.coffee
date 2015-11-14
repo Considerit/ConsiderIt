@@ -455,7 +455,7 @@ carcd_header = ReactiveComponent
           zIndex: 5
 
         IMG
-          src: asset('carcd/logo.png')
+          src: asset('carcd/logo2.png')
           style:
             height: 145
 

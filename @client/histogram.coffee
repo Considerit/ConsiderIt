@@ -146,6 +146,8 @@ window.Histogram = ReactiveComponent
       @local.avatar_size = avatar_radius * 2
       save @local
 
+    @props.enable_selection &&= @props.opinions.length > 0
+
     # Controls the size of the vertical space at the top of 
     # the histogram that gives some space for users to hover over 
     # the most populous areas
@@ -170,7 +172,7 @@ window.Histogram = ReactiveComponent
         height: @props.height + @local.region_selection_vertical_padding
         position: 'relative'
         borderBottom: if @props.draw_base then '1px solid #999'
-        visibility: if @props.opinions.length == 0 then 'hidden'
+        #visibility: if @props.opinions.length == 0 then 'hidden'
         userSelect: 'none'
 
     if @props.enable_selection

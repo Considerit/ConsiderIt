@@ -91,10 +91,10 @@ window.GodMode = ReactiveComponent
 
 
   componentDidMount : ->
-    document.addEventListener "keypress", (e) -> 
-      key = (e and e.keyCode) or e.keyCode
+    document.addEventListener "keyup", (e) -> 
 
-      if key==21 # cntrl-U       
+      key = (e and e.keyCode) or e.keyCode
+      if key==85 && e.ctrlKey # cntrl-U       
         godmode = fetch 'godmode'
         godmode.enabled = !godmode.enabled
         save godmode 

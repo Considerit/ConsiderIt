@@ -192,7 +192,7 @@ window.Slider = ReactiveComponent
       style: css.crossbrowserify _.extend (@props.handle_style || {}), 
         width: handle_width
         height: handle_height
-        top: -(handle_height - @props.base_height) / 2
+        top: if @props.offset then 0 else -(handle_height - @props.base_height) / 2
         position: 'relative'
         marginLeft: -handle_width / 2
         zIndex: 10
@@ -264,6 +264,7 @@ window.Slider = ReactiveComponent
     slider.value = x / @props.width
     if @props.polarized
       slider.value = slider.value * 2 - 1
+
 
     slider.value = Math.round(slider.value * 10000) / 10000
     save slider
@@ -418,6 +419,85 @@ slider_handle.face = (props) ->
                   #{x2} #{y2}
               """
 
+slider_handle.triangley = (props) ->
+  svg_props = 
+    height: props.handle_height
+    width: props.handle_width
+    viewBox: "0 0 21 18"
+    style: 
+      pointerEvents: 'none'
+      position: 'absolute'
+      top: 0
+      zIndex: 10
+
+  SVG svg_props,
+    DEFS null, 
+      FILTER 
+        id: "triangley_filter"
+        x: "-50%" 
+        y: "-50%" 
+        width: "200%" 
+        height: "200%" 
+        filterUnits: "objectBoundingBox" 
+
+        FEOFFSET 
+          dx: "0" 
+          dy: "1" 
+          'in': "SourceAlpha" 
+          result: "shadowOffsetOuter1"
+
+        FEGAUSSIANBLUR 
+          stdDeviation: "0.5" 
+          'in': "shadowOffsetOuter1" 
+          result: "shadowBlurOuter1"
+
+        FECOLORMATRIX 
+          values: "0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.16479563 0" 
+          'in': "shadowBlurOuter1" 
+          type: "matrix" 
+          result: "shadowMatrixOuter1"
+
+        FEOFFSET
+          dx: "0"
+          dy: "-1"
+          'in': "SourceAlpha"
+          result: "shadowOffsetInner1"
+
+        FEGAUSSIANBLUR
+          stdDeviation: "1" 
+          'in': "shadowOffsetInner1" 
+          result: "shadowBlurInner1"
+
+        FECOMPOSITE
+          'in': "shadowBlurInner1" 
+          in2: "SourceAlpha" 
+          operator: "arithmetic" 
+          k2: "-1" 
+          k3: "1" 
+          result: "shadowInnerInner1"
+
+        FECOLORMATRIX
+          values: "0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" 
+          'in': "shadowInnerInner1" 
+          type: "matrix" 
+          result: "shadowMatrixInner1"
+
+        FEMERGE null, 
+          FEMERGENODE 'in': "shadowMatrixOuter1"
+          FEMERGENODE 'in': "SourceGraphic"
+          FEMERGENODE 'in': "shadowMatrixInner1"
+
+    G 
+      stroke: "none" 
+      strokeWidth: "0" 
+      fill: focus_blue 
+      fillRule: "evenodd"
+
+      PATH 
+        d: "M1,6 L20,6 L20,16 L1,16 L1,6 Z M10.5,0 L20,6 L1,6 L10.5,0 Z"
+        fill: focus_blue
+        filter: "url(#triangley_filter)" 
+
 
 slider_handle.flat = (props) -> 
   svg_props = 
@@ -428,6 +508,7 @@ slider_handle.flat = (props) ->
       pointerEvents: 'none'
       position: 'absolute'
       top: 0
+      zIndex: 10
 
   SVG svg_props,
 

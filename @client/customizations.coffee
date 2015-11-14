@@ -443,34 +443,34 @@ carcd_header = ReactiveComponent
     DIV 
       style: 
         position: 'relative'
-        height: if homepage then 310 else 248
+        height: if homepage then 262 else 200
 
       A
         href: 'http://www.carcd.org/'
         target: '_blank'
         style:
           position: 'absolute'
-          top: 20
-          left: (WINDOW_WIDTH() - 276) / 2
+          top: 70
+          left: (WINDOW_WIDTH() - 391) / 2
           zIndex: 5
 
         IMG
           src: asset('carcd/logo.png')
           style:
-            height: 225
+            height: 145
 
 
       DIV
         style:
-          backgroundColor: "#E9F2F9"
+          backgroundColor: "#F0F0F0"
           height: 82
           width: '100%'
           position: 'relative'
-          top: 166
+          top: 100
           left: 0
-          border: '1px solid #7D9DB5'
-          borderLeftColor: 'transparent'
-          borderRightColor: 'transparent'
+          #border: '1px solid #7D9DB5'
+          #borderLeftColor: 'transparent'
+          #borderRightColor: 'transparent'
 
         A
           href: '/'
@@ -491,16 +491,16 @@ carcd_header = ReactiveComponent
         DIV
           style:
             position: 'absolute'
-            left: (WINDOW_WIDTH() - 201) / 2
+            left: (WINDOW_WIDTH() + 8) / 2
             zIndex: 5
-            top: 166 + 82 + 12
+            top: 188
             paddingLeft: 12
 
           SPAN 
             style: 
-              fontSize: 12
+              fontSize: 14
               fontWeight: 400
-              color: '#627E90'
+              color: '#7D9DB5'
               #fontVariant: 'small-caps'
               position: 'relative'
               top: -18

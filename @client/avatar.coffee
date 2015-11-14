@@ -88,7 +88,7 @@ window.Avatar = ReactiveComponent
     show_avatar = !anonymous && !!user.avatar_file_name
     # Automatically upgrade the avatar size to 'large' if the width of the image is 
     # greater than the size of the b64 encoded image
-    if img_size == 'thumb' && style?.width > 50 && !browser.is_ie9
+    if img_size == 'thumb' && style?.width >= 50 && !browser.is_ie9
       img_size = 'large' 
     # ...but we only use a larger image if this user actually has one and isn't anonymous
     use_large_image = img_size != 'thumb' && show_avatar

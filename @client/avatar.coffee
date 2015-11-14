@@ -128,7 +128,8 @@ window.Avatar = ReactiveComponent
 
 
     # IE9 gets confused if there is an image without a src
-    tag = if !thumbnail? && browser.is_ie9 && img_size == 'thumb' || add_initials then SPAN else IMG
+    # Chrome puts a weird gray border around IMGs without a src
+    tag = if img_size == 'thumb' || add_initials then SPAN else IMG
 
 
     @transferPropsTo tag attrs,

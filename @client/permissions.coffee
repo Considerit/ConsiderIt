@@ -52,9 +52,9 @@ permit = (action) ->
     when 'create proposal'
       subdomain = fetch '/subdomain'
 
-      return Permission.NOT_LOGGED_IN if !current_user.logged_in
       if !current_user.is_admin && !matchEmail(subdomain.roles.proposer)
         return Permission.INSUFFICIENT_PRIVILEGES 
+      return Permission.NOT_LOGGED_IN if !current_user.logged_in
 
     when 'update proposal', 'delete proposal'
       proposal = fetch arguments[1]

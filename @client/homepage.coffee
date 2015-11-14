@@ -325,7 +325,7 @@ Cluster = ReactiveComponent
               style: 
                 fontSize: 22
                 width: w
-                borderColor: '#ccc'
+                border: "1px solid #ccc"
                 outline: 'none'
                 padding: '6px 8px'
 
@@ -671,7 +671,9 @@ window.CollapsedProposal = ReactiveComponent
             enable_selection: false
             draw_base: true    
 
-          if draw_slider && @local.hover_proposal == proposal.key
+          if draw_slider && ( \
+               @local.hover_proposal == proposal.key || browser.is_mobile)
+          
             Slider 
               base_height: 0
               key: slider.key

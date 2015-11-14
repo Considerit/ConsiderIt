@@ -263,7 +263,7 @@ Cluster = ReactiveComponent
 
           @drawThreshold(subdomain, cluster, idx)
 
-      if permit('create proposal') > 0 && customization('show_new_proposal_button')
+      if customization('show_new_proposal_button')
         @drawAddNew cluster, options
 
   drawAddNew : (cluster, options) -> 
@@ -287,10 +287,17 @@ Cluster = ReactiveComponent
             #fontWeight: 500
             borderBottom: "1px solid #{logo_red}"
 
-          onClick: => @local.adding_new_proposal = cluster_name; save(@local)
-
-
-          t("add new")
+          onClick: (e) => 
+            if permit('create proposal') > 0
+              @local.adding_new_proposal = cluster_name; save(@local)
+            else 
+              e.stopPropagation()
+              reset_key 'auth', {form: 'login', goal: ''}
+          
+          if permit('create proposal') > 0
+            t("add new")
+          else 
+            t("login_to_add_new")
 
       else 
         [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
@@ -673,7 +680,7 @@ window.CollapsedProposal = ReactiveComponent
 
           if draw_slider && ( \
                @local.hover_proposal == proposal.key || browser.is_mobile)
-          
+
             Slider 
               base_height: 0
               key: slider.key

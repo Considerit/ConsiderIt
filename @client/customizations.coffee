@@ -472,6 +472,21 @@ carcd_header = ReactiveComponent
           borderLeftColor: 'transparent'
           borderRightColor: 'transparent'
 
+        A
+          href: '/'
+          style: 
+            display: 'block'
+            fontSize: 43
+            visibility: if homepage then 'hidden'
+            verticalAlign: 'top'
+            left: 15
+            top: 12
+            color: focus_blue
+            zIndex: 10
+            position: 'relative'
+          '<'
+
+
       if homepage 
         DIV
           style:
@@ -516,7 +531,7 @@ customizations['carcd'] =
   show_proposer_icon: true
 
   "cluster/Questions" : 
-    point_labels: delta_pluses
+    point_labels: pro_con
     slider_pole_labels: important_unimportant
     show_slider_feedback: false
 
@@ -527,7 +542,7 @@ customizations['carcd'] =
   HomepageHeader: carcd_header
   NonHomepageHeader: carcd_header
 
-  ProposalNavigation: ProposalNavigationWithMenu
+  #ProposalNavigation: ProposalNavigationWithMenu
 
 
 

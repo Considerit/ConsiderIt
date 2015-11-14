@@ -201,6 +201,13 @@ window.translateStanceToPixelX = (stance, width) -> (stance + 1) / 2 * width
 window.translatePixelXToStance = (pixel_x, width) -> 2 * (pixel_x / width) - 1
 
 
+# Checks this node and ancestors whether check holds true
+window.closest = (node, check) -> 
+  if !node || node == document
+    false
+  else 
+    check(node) || closest(node.parentNode, check)
+
 
 
 ##############################

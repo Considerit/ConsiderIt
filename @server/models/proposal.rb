@@ -94,6 +94,11 @@ class Proposal < ActiveRecord::Base
 
         when 'cimsec'
           randomize_cluster_order = false
+
+        when 'carcd'
+          manual_clusters = ['Questions', "CARCD's role in Emerging Resources", \
+                             "CARCD's role in Regional Alignment", \
+                             "CARCD's Role for the Community"]
       end
     end
 

@@ -42,7 +42,7 @@ window.sorted_proposals = (cluster) ->
   cluster_key = "cluster/#{cluster.name}"
   show_icon = customization('show_proposer_icon', cluster_key)
   proposal_support = customization("proposal_support")
-  _.clone(cluster.proposals).sort (a,b) ->
+  cluster.proposals.slice().sort (a,b) ->
     return proposal_support(b) - proposal_support(a)
 
 cluster_styles = ->
@@ -106,7 +106,6 @@ window.SimpleHomepage = ReactiveComponent
         clusters[default_cluster_name] = unnamed
 
     clusters = _.values clusters
-    console.log (c.proposals for c in clusters)
 
     DIV
       className: 'simplehomepage'
@@ -121,16 +120,6 @@ window.SimpleHomepage = ReactiveComponent
         '''a.proposal:hover {border-bottom: 1px solid grey}'''
 
 
-      if permit('create proposal') > 0 && customization('show_new_proposal_button')
-        A 
-          style: 
-            color: logo_red
-            marginTop: 35
-            display: 'inline-block'
-            borderBottom: "1px solid #{logo_red}"
-
-          href: '/proposal/new'
-          t('Create new proposal')
 
       # List all clusters
 
@@ -166,7 +155,18 @@ window.SimpleHomepage = ReactiveComponent
                   save(@local)
                 'Show archive'
           else if cluster.proposals?.length > 0
-            @drawCluster cluster, options
+            Cluster {cluster, options}
+
+      if permit('create proposal') > 0 && customization('show_new_proposal_button')
+        A 
+          style: 
+            color: logo_red
+            marginTop: 35
+            display: 'inline-block'
+            borderBottom: "1px solid #{logo_red}"
+
+          href: '/proposal/new'
+          t('Create new proposal')
 
   typeset : -> 
     subdomain = fetch('/subdomain')
@@ -176,10 +176,74 @@ window.SimpleHomepage = ReactiveComponent
   componentDidMount : -> @typeset()
   componentDidUpdate : -> @typeset()
 
+  drawWatchFilter: -> 
+    filter = fetch 'homepage_filter'
+
+    DIV 
+      id: 'watching_filter'
+      style: 
+        position: 'absolute'
+        left: -87  
+        top: 5
+        border: "1px solid #bbb"
+        opacity: if !filter.watched && !@local.hover_watch_filter then .3
+        padding: '3px 10px'
+        cursor: 'pointer'
+        display: 'inline-block'
+        backgroundColor: '#fafafa'
+        borderRadius: 8
+
+      onMouseEnter: => 
+        @local.hover_watch_filter = true
+
+        tooltip = fetch 'tooltip'
+        tooltip.coords = $(@getDOMNode()).find('#watching_filter').offset()
+        tooltip.tip = t('filter_to_watched')
+        save tooltip
+        save @local
+
+      onMouseLeave: => 
+        @local.hover_watch_filter = false
+        save @local
+        tooltip = fetch 'tooltip'
+        tooltip.coords = null
+        save tooltip
+
+      onClick: => 
+        filter.watched = !filter.watched
+        save filter
+
+      SPAN
+        style: 
+          fontSize: 16
+          verticalAlign: 'text-bottom'
+          color: '#666'
+        "only "
+
+      I 
+        className: "fa fa-star"
+        style: 
+          color: logo_red
+          verticalAlign: 'text-bottom'
+
+          # width: 30
+          # height: 30
+
+
+Cluster = ReactiveComponent
+  displayName: 'Cluster'
+
+
   # cluster of proposals
-  drawCluster: (cluster, options) -> 
+  render: -> 
+    options = @props.options
+    cluster = @props.cluster
+
     current_user = fetch '/current_user'
     subdomain = fetch '/subdomain'
+
+    # subscribe to a key that will alert us to when sort order has changed
+    fetch('homepage_you_updated_proposal')
 
     DIV
       key: cluster.name
@@ -189,11 +253,15 @@ window.SimpleHomepage = ReactiveComponent
       @drawClusterHeading cluster, options
 
       for proposal,idx in sorted_proposals(cluster)
-        [@drawProposal proposal, options.show_proposer_icon
+        DIV 
+          key: "collapsed#{proposal.key}"
 
-        @drawThreshold(subdomain, cluster, idx)
+          CollapsedProposal 
+            key: "collapsed#{proposal.key}"
+            proposal: proposal
+            icons: options.show_proposer_icon
 
-        ]
+          @drawThreshold(subdomain, cluster, idx)
 
       if permit('create proposal') > 0 && customization('show_new_proposal_button')
         @drawAddNew cluster, options
@@ -407,7 +475,64 @@ window.SimpleHomepage = ReactiveComponent
                          {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
           options.homie_histo_title
 
-  drawProposal : (proposal, icons) ->
+
+
+  drawThreshold: (subdomain, cluster, idx) -> 
+
+    cutoff = 28 
+    if subdomain.name == 'ANUP2015'
+      cutoff = 7
+
+    if subdomain.name in ['ANUP2015', 'RANDOM2015'] && cluster.name == 'Under Review' && idx == cutoff
+      DIV 
+        style:
+          borderTop: "4px solid green"
+          borderBottom: "4px solid #{logo_red}"
+          padding: "4px 0"
+          textAlign: 'center'
+          
+          fontWeight: 600
+          margin: "16px 0 32px 0"
+
+        I
+          style: 
+            color: 'green'
+            display: 'block'
+          className: 'fa fa-thumbs-o-up'
+
+
+        "Acceptance threshold for #{cutoff} papers"
+
+        I
+          style: 
+            display: 'block'
+            color: logo_red
+          className: 'fa fa-thumbs-o-down'    
+
+  storeSortOrder: -> 
+    p = (p.key for p in sorted_proposals(@props.cluster))
+    c = fetch("cluster-#{slugify(@props.cluster.name)}/sort_order")
+    order = JSON.stringify(p)
+    if order != c.sort_order
+      c.sort_order = order 
+      save c
+
+  componentDidMount: -> @storeSortOrder()
+  componentDidUpdate: -> @storeSortOrder()
+
+
+
+window.CollapsedProposal = ReactiveComponent
+  displayName: 'CollapsedProposal'
+
+  render : ->
+    proposal = fetch @props.proposal
+    icons = @props.icons
+
+    # we want to update if the sort order changes so that we can 
+    # resolve @local.keep_in_view
+    fetch("cluster-#{slugify(proposal.cluster or default_cluster_name)}/sort_order")
+
     current_user = fetch '/current_user'
 
     watching = current_user.subscriptions[proposal.key] == 'watched'
@@ -418,10 +543,35 @@ window.SimpleHomepage = ReactiveComponent
 
     unread = hasUnreadNotifications(proposal)
 
+    your_opinion = fetch proposal.your_opinion
+    if your_opinion?.published
+      can_opine = permit 'update opinion', proposal, your_opinion
+    else
+      can_opine = permit 'publish opinion', proposal
+
+    draw_slider = can_opine > 0 || your_opinion?.published
+
+
+    if draw_slider
+      slider = fetch "homepage_slider#{proposal.key}"
+      # Update the slider value when the server gets back to us
+      if your_opinion && slider.value != your_opinion.stance && !slider.has_moved 
+        slider.value = your_opinion.stance
+        if your_opinion.stance
+          slider.has_moved = true
+        save slider
+
+
     DIV
       key: proposal.key
       style:
         minHeight: 70
+      onMouseEnter: => 
+        if draw_slider
+          @local.hover_proposal = proposal.key; save @local
+      onMouseLeave: => 
+        if draw_slider && !slider.is_moving
+          @local.hover_proposal = null; save @local
 
       DIV style: first_column,
 
@@ -503,10 +653,15 @@ window.SimpleHomepage = ReactiveComponent
 
 
       # Histogram for Proposal
-      A
-        href: proposal_url(proposal)
+      DIV 
+        style: 
+          display: 'inline-block' 
+        # A
+        #   href: proposal_url(proposal)
+
         DIV
           style: secnd_column
+
           Histogram
             key: "histogram-#{proposal.slug}"
             proposal: proposal
@@ -516,88 +671,88 @@ window.SimpleHomepage = ReactiveComponent
             enable_selection: false
             draw_base: true    
 
-  drawWatchFilter: -> 
-    filter = fetch 'homepage_filter'
+          if draw_slider && @local.hover_proposal == proposal.key
+            Slider 
+              base_height: 0
+              key: slider.key
+              width: secnd_column.width
+              polarized: true
+              respond_to_click: false
+              base_color: 'transparent'
+              handle: slider_handle.triangley
+              handle_height: 18
+              handle_width: 21
+              offset: true
+              handle_props:
+                use_face: false
+                
+              onMouseUpCallback: (e) =>
+                # We save the slider's position to the server only on mouse-up.
+                # This way you can drag it with good performance.
+                if your_opinion.stance != slider.value
 
-    DIV 
-      id: 'watching_filter'
-      style: 
-        position: 'absolute'
-        left: -87  
-        top: 5
-        border: "1px solid #bbb"
-        opacity: if !filter.watched && !@local.hover_watch_filter then .3
-        padding: '3px 10px'
-        cursor: 'pointer'
-        display: 'inline-block'
-        backgroundColor: '#fafafa'
-        borderRadius: 8
+                  # save distance from top that the proposal is at, so we can 
+                  # maintain that position after the save potentially triggers 
+                  # a re-sort. 
+                  prev_offset = @getDOMNode().offsetTop
+                  prev_scroll = window.scrollY
 
-      onMouseEnter: => 
-        @local.hover_watch_filter = true
+                  your_opinion.stance = slider.value
+                  your_opinion.published = true
+                  save your_opinion
+                  window.writeToLog 
+                    what: 'move slider'
+                    details: {proposal: proposal.key, stance: slider.value}
+                  @local.slid = 1000
 
-        tooltip = fetch 'tooltip'
-        tooltip.coords = $(@getDOMNode()).find('#watching_filter').offset()
-        tooltip.tip = t('filter_to_watched')
-        save tooltip
-        save @local
+                  update = fetch('homepage_you_updated_proposal')
+                  update.dummy = !update.dummy
+                  save update
 
-      onMouseLeave: => 
-        @local.hover_watch_filter = false
-        save @local
-        tooltip = fetch 'tooltip'
-        tooltip.coords = null
-        save tooltip
+                  @local.keep_in_view = 
+                    offset: prev_offset
+                    scroll: prev_scroll
 
-      onClick: => 
-        filter.watched = !filter.watched
-        save filter
+                  scroll_handle = => 
+                    @local.keep_in_view = null 
+                    window.removeEventListener 'scroll', scroll_handle
 
-      SPAN
-        style: 
-          fontSize: 16
-          verticalAlign: 'text-bottom'
-          color: '#666'
-        "only "
-
-      I 
-        className: "fa fa-star"
-        style: 
-          color: logo_red
-          verticalAlign: 'text-bottom'
-
-          # width: 30
-          # height: 30
-
-  drawThreshold: (subdomain, cluster, idx) -> 
-
-    cutoff = 28 
-    if subdomain.name == 'ANUP2015'
-      cutoff = 7
-
-    if subdomain.name in ['ANUP2015', 'RANDOM2015'] && cluster.name == 'Under Review' && idx == cutoff
-      DIV 
-        style:
-          borderTop: "4px solid green"
-          borderBottom: "4px solid #{logo_red}"
-          padding: "4px 0"
-          textAlign: 'center'
-          
-          fontWeight: 600
-          margin: "16px 0 32px 0"
-
-        I
-          style: 
-            color: 'green'
-            display: 'block'
-          className: 'fa fa-thumbs-o-up'
+                  window.addEventListener 'scroll', scroll_handle
 
 
-        "Acceptance threshold for #{cutoff} papers"
+                mouse_over_element = closest e.target, (node) => 
+                  node == @getDOMNode()
 
-        I
-          style: 
-            display: 'block'
-            color: logo_red
-          className: 'fa fa-thumbs-o-down'    
+                if @local.hover_proposal == proposal.key && !mouse_over_element
+                  @local.hover_proposal = null 
+                  save @local
+
+  componentDidUpdate: -> 
+    if @local.keep_in_view
+      prev_scroll = @local.keep_in_view.scroll
+      prev_offset = @local.keep_in_view.offset
+
+      target = prev_scroll + @getDOMNode().offsetTop - prev_offset
+      if window.scrollTo && window.scrollY != target
+        window.scrollTo(0, target)
+        @local.keep_in_view = null
+
+    if @local.slid && !@fading 
+      @fading = true
+
+      update_bg = => 
+        if @local.slid <= 0
+          @getDOMNode().style.backgroundColor = ''
+          clearInterval int
+          @fading = false
+        else 
+          @getDOMNode().style.backgroundColor = "rgba(253, 254, 216, #{@local.slid / 1000})"
+
+      int = setInterval =>
+        @local.slid -= 50
+        update_bg() 
+      , 50
+
+      update_bg()
+
 

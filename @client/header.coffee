@@ -9,6 +9,8 @@ window.Header = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
 
+    auth = fetch('auth')
+    return SPAN null if auth.form && auth.form != 'edit profile'
     DIV 
       style: 
         position: 'relative'

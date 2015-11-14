@@ -1906,7 +1906,7 @@ Root = ReactiveComponent
         LOADING_INDICATOR
 
       else 
-        auth = fetch('auth')
+        
 
         DIV 
           style:
@@ -1917,11 +1917,11 @@ Root = ReactiveComponent
           
           BrowserHacks()
 
-          Header() if !auth.form || auth.form == 'edit profile'       
+          Header(key: 'page_header')       
 
           Page key: "/page#{loc.url}"
 
-          Footer()
+          Footer(key: 'page_footer')
 
       Tooltip()
 

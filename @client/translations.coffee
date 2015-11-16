@@ -91,11 +91,12 @@ dict.spa =
 
 
 
-
 #########
 # Considerit opining
 
 _.extend dict.en, 
+  give_your_opinion: 'Give your Opinion'
+  update_your_opinion: 'Update your Opinion'
   comment: 'comment'
   comments: 'comments'
   read_more: 'read more'
@@ -133,6 +134,8 @@ _.extend dict.en,
   filter_to_watched: "Filter proposals to those you're watching"
 
 _.extend dict.spa, 
+  give_your_opinion: 'Deja tu Opinion'
+  update_your_opinion: 'Actualizar tu Opinion'
   comment: 'comentario'
   comments: 'comentarios'
   read_more: 'ver más'

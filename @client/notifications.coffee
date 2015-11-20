@@ -334,7 +334,7 @@ window.ActivityFeed = ReactiveComponent
         point = fetch(event_object.point)
         SPAN
           style: {}
-          "#{t(commented_on)} "
+          "#{t('commented_on')} "
           if notification.event_object_relationship == 'point_authored'
             SPAN 
               style: 

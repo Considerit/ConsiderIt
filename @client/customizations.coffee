@@ -1090,6 +1090,17 @@ customizations['seattle2035'] =
                 discussion or you have a comment about another issue in the Draft Plan.
                 """
 
+              DIV 
+                style: 
+                  marginTop: 40
+                  backgroundColor: seattle2035_pink
+                  color: 'white'
+                  fontSize: 28
+                  textAlign: 'center'
+                  padding: "30px 42px"
+
+                "The comment period is now closed. Thank you for your input!"
+
 
 ###################
 # Foodcorps

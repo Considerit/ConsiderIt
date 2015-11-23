@@ -15,7 +15,7 @@ restart.txt
 *.crt
 *.sql
 
-mysql_statebus.js
+mysql_statebus.coffee
 
 config/newrelic.yml
 config/database.yml

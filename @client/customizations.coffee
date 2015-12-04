@@ -527,7 +527,7 @@ carcd_header = ReactiveComponent
         ProfileMenu()
 
 
-customizations['carcd'] = 
+customizations['carcd'] = customizations['carcd-demo'] = 
   show_proposer_icon: true
 
   "cluster/Questions" : 

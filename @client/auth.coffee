@@ -165,7 +165,7 @@ Auth = ReactiveComponent
       when 'reset password'
         [ @headerAndBorder null, t('Reset Your Password'),
             @body [["#{t('Code')}:", @inputBox('verification_code', t('code_from_email'))],
-                   ["#{t('New password')}:", @inputBox('password', t("choose a new password"), 'password')]
+                   ["#{t('New password')}:", @inputBox('password', t("choose_password"), 'password')]
                   ], t('verification_sent')
           @submitButton(t('Log in')) ]
 

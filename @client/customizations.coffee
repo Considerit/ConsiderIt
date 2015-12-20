@@ -1714,7 +1714,7 @@ customizations.bitcoinfoundation =
   collapse_descriptions_at: 600
 
   homie_histo_title: "Members' Opinions"
-  collapse_descriptions_at: 600
+  collapse_descriptions_at: 300
 
   'cluster/Candidates': 
     slider_pole_labels: support_oppose

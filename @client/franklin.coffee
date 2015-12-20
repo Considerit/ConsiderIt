@@ -820,10 +820,6 @@ DecisionBoard = ReactiveComponent
         visibility: 'hidden'
 
 
-
-
-
-
     DIV 
       className:'opinion_region'
       style:

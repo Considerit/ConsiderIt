@@ -1843,7 +1843,7 @@ customizations.bitcoinfoundation =
 
         ProfileMenu()
 
-customizations.bitcoinfoundation.NonHomepageHeader = customizations.bitcoin.HomepageHeader
+customizations.bitcoinfoundation.NonHomepageHeader = customizations.bitcoinfoundation.HomepageHeader
 
 
 

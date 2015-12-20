@@ -1691,7 +1691,7 @@ styles += """
 ####################
 # Bitcoin
 
-customizations.bitcoin = 
+customizations.bitcoinfoundation = 
   show_new_proposal_button: false
 
   auth:   
@@ -1843,7 +1843,7 @@ customizations.bitcoin =
 
         ProfileMenu()
 
-customizations.bitcoin.NonHomepageHeader = customizations.bitcoin.HomepageHeader
+customizations.bitcoinfoundation.NonHomepageHeader = customizations.bitcoin.HomepageHeader
 
 
 

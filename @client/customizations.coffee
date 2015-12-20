@@ -1691,6 +1691,10 @@ styles += """
 ####################
 # Bitcoin
 
+customizations.bitcoin = 
+  show_proposer_icon: true
+  collapse_descriptions_at: 600
+
 customizations.bitcoinfoundation = 
   show_new_proposal_button: false
 
@@ -1707,6 +1711,8 @@ customizations.bitcoinfoundation =
 
   # default proposal options
   show_proposer_icon: true
+  collapse_descriptions_at: 600
+
   homie_histo_title: "Members' Opinions"
   collapse_descriptions_at: 600
 

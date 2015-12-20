@@ -1,25 +1,6 @@
 require 'csv'
 require 'pp'
 
-def stance_name(stance_segment)
-  case stance_segment
-    when 0
-      return "strong oppose"
-    when 1
-      return "oppose"
-    when 2
-      return "weak oppose"
-    when 3
-      return "undecided"
-    when 4
-      return "weak support"
-    when 5
-      return "support"
-    when 6
-      return "strong support"
-  end
-end
-
 
 task :export_gsacrd_data => :environment do
   #subdomains = ['livingvotersguide']
@@ -92,11 +73,20 @@ task :export_all_comments => :environment do
   subdomain = Subdomain.find_by_name('seattle2035')
 
   CSV.open("lib/tasks/client_data/export/#{subdomain.name}-opinions.csv", "w") do |csv|
-    csv << ["proposal", 'created', "username", "email", "date joined", "opinion", "#points"]
+    csv << ["proposal", 'created', "username", "email", "opinion", "#points"]
   end
 
   CSV.open("lib/tasks/client_data/export/#{subdomain.name}-points.csv", "w") do |csv|
     csv << ['proposal', 'type', 'created', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
+  end
+
+  fields = "zip", "gender", "age", "ethnicity", "education", "race", "home", "hispanic"
+  CSV.open("lib/tasks/client_data/export/#{subdomain.name}-users.csv", "w") do |csv|
+    row = ['email', 'name', 'date joined'] 
+    for field in fields 
+      row.append field 
+    end 
+    csv << row
   end
 
   subdomain.proposals.each do |proposal|
@@ -104,7 +94,7 @@ task :export_all_comments => :environment do
     CSV.open("lib/tasks/client_data/export/#{subdomain.name}-opinions.csv", "a") do |csv|
       proposal.opinions.published.each do |opinion|
         user = opinion.user
-        csv << [proposal.slug, opinion.created_at, user.name, user.email.gsub('.ghost', ''), user.created_at, opinion.stance, user.points.where(:proposal_id => proposal.id).count]
+        csv << [proposal.slug, opinion.created_at, user.name, user.email.gsub('.ghost', ''), opinion.stance, user.points.where(:proposal_id => proposal.id).count]
       end
     end
 
@@ -112,7 +102,7 @@ task :export_all_comments => :environment do
 
       proposal.points.published.each do |pnt|
         opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
-        csv << [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? stance_name(opinion.stance_segment) : '-', pnt.inclusions.count, pnt.comments.count]
+        csv << [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
 
         pnt.comments.each do |comment|
           opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
@@ -120,6 +110,22 @@ task :export_all_comments => :environment do
         end
       end
     end
+  end
+
+  subdomain.users.each do |user|
+    CSV.open("lib/tasks/client_data/export/#{subdomain.name}-users.csv", "a") do |csv|
+      tags = {}
+      for k,v in JSON.parse(user.tags) or {}
+        tags[k.split('.')[0]] = v
+      end
+
+      row = [user.email, user.name, user.created_at]
+      for field in fields 
+        row.append tags.has_key?(field) ? tags[field] : ""
+      end
+      csv << row
+
+    end 
   end
 
 end

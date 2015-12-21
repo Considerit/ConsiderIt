@@ -1695,7 +1695,7 @@ customizations.bitcoin =
   show_proposer_icon: true
   collapse_descriptions_at: 600
 
-customizations.bitcoinfoundation = customizations['bitcoinfoundation-archive'] = 
+customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] = 
   show_new_proposal_button: false
 
   auth:   
@@ -1850,7 +1850,7 @@ customizations.bitcoinfoundation = customizations['bitcoinfoundation-archive'] =
         ProfileMenu()
 
 customizations.bitcoinfoundation.NonHomepageHeader = customizations.bitcoinfoundation.HomepageHeader = \
-customizations['bitcoinfoundation-archive'].NonHomepageHeader = customizations['bitcoinfoundation-archive'].HomepageHeader
+customizations['bitcoinfoundationarchive'].NonHomepageHeader = customizations['bitcoinfoundationarchive'].HomepageHeader
 
 
 

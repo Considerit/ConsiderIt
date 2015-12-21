@@ -15,7 +15,7 @@ window.EditProposal = ReactiveComponent
     if !@props.fresh && !proposal.id
       return SPAN null
 
-    default_group = if subdomain.name == 'bitcoinfoundation-archive' || \
+    default_group = if subdomain.name == 'bitcoinfoundationarchive' || \
                        subdomain.name == 'bitcoinfoundation'
                       'Our Actions'
                     else

@@ -64,7 +64,7 @@ features = [{
       see which proposals have greatest support.
       """
       A 
-        href: 'https://bitcoinfoundation-archive.consider.it'
+        href: 'https://bitcoinfoundationarchive.consider.it'
         style: 
           textDecoration: 'underline'
           cursor: 'pointer'

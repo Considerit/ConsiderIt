@@ -244,7 +244,7 @@ applications = [{
 
     description: ->
       examples = [
-        ["Bitcoin Foundation", 'https://bitcoinfoundation.consider.it']
+        ["Bitcoin Foundation", 'https://bitcoinfoundation-archive.consider.it']
       ]
       
       DIV

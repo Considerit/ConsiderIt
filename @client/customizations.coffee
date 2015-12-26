@@ -1696,7 +1696,6 @@ customizations.bitcoin =
   collapse_descriptions_at: 600
 
 customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] = 
-  show_new_proposal_button: false
 
   auth:   
     user_questions : [

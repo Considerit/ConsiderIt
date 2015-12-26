@@ -1733,6 +1733,13 @@ customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] =
         '.'
     archived: true
 
+  'cluster/First Foundation': 
+    slider_pole_labels: agree_disagree
+    description: 
+      DIV null, 
+        'An archive of the proceedings of the First Foundation'
+    archived: true
+
 
   show_crafting_page_first: true
 

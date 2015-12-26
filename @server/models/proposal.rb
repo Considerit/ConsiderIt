@@ -76,7 +76,7 @@ class Proposal < ActiveRecord::Base
           manual_clusters = ['Our Mission', 'Our Values', 'Our Goals', 'Our Focus', 
                              'Our Actions', 'Resolutions', 'Foundation Goals', 
                              'Board Proposals', 'Member Proposals', 
-                             'Proposals', 'Trustees', 'Members', 'Candidates']
+                             'Proposals', 'Trustees', 'Members', 'First Foundation', 'Candidates']
 
         when 'random2015', 'program-committee-demo'
           manual_clusters = ['Submissions', 'Under Review', 'Probably Accept', 

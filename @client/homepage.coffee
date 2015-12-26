@@ -144,7 +144,7 @@ window.SimpleHomepage = ReactiveComponent
             DIV
               style: margin: "45px 0"
 
-              "#{options.label} "
+              "#{options.label or cluster.name} "
 
               A 
                 style: 
@@ -434,17 +434,21 @@ Cluster = ReactiveComponent
 
     cluster_key = "cluster/#{cluster.name}"
 
+    subdomain = fetch '/subdomain'
+
     DIV null,
-      if options.label
+      if options.label || options.description
         DIV 
           style: 
             width: CONTENT_WIDTH()
-          H1
-            style: 
-              fontSize: 48
-              fontWeight: 200
-              
-            options.label
+
+          if options.label
+            H1
+              style: 
+                fontSize: 48
+                fontWeight: 200
+                
+              options.label
 
           if options.description
             DIV                
@@ -460,7 +464,7 @@ Cluster = ReactiveComponent
         style: first_header
         cluster.name || default_cluster_name
 
-        if cluster.proposals.length > 10
+        if subdomain.name == 'RANDOM2015'
           " (#{cluster.proposals.length})"
       H1
         style: secnd_header

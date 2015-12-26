@@ -1713,8 +1713,11 @@ customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] =
   show_proposer_icon: true
   collapse_descriptions_at: 600
 
-  homie_histo_title: "Members' Opinions"
+  homie_histo_title: "Votes"
   collapse_descriptions_at: 300
+
+  'cluster/Members': 
+    slider_pole_labels: support_oppose
 
   'cluster/Candidates': 
     slider_pole_labels: support_oppose
@@ -1732,125 +1735,125 @@ customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] =
 
   show_crafting_page_first: true
 
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
+#   HomepageHeader : ReactiveComponent
+#     displayName: 'HomepageHeader'
 
-    render: ->
-      homepage = fetch('location').url == '/'
+#     render: ->
+#       homepage = fetch('location').url == '/'
 
-      # Entire header (the grey area)
-      DIV
-        style:
-          backgroundColor: '#676766'
-          height: if not homepage then 63
-        onMouseEnter: => @local.hover=true;  save(@local)
-        onMouseLeave: => @local.hover=false; save(@local)
+#       # Entire header (the grey area)
+#       DIV
+#         style:
+#           backgroundColor: '#676766'
+#           height: if not homepage then 63
+#         onMouseEnter: => @local.hover=true;  save(@local)
+#         onMouseLeave: => @local.hover=false; save(@local)
 
-        STYLE null,
-          '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
-             p {margin-bottom: 1em}'''
+#         STYLE null,
+#           '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
+#              p {margin-bottom: 1em}'''
 
-        # The top bar with the logo
-        DIV
-          style:
-            cursor: if not homepage then 'pointer'
-            paddingTop: if homepage then 18
-          onClick: if not homepage then => loadPage('/')
+#         # The top bar with the logo
+#         DIV
+#           style:
+#             cursor: if not homepage then 'pointer'
+#             paddingTop: if homepage then 18
+#           onClick: if not homepage then => loadPage('/')
 
-          DIV 
-            style: 
-              width: (if homepage then CONTENT_WIDTH() else BODY_WIDTH()) + 281
-              margin: 'auto'
-            # Back arrow
-            if not homepage
-              SPAN
-                style:
-                  display: 'inline-block'
-                  color: '#eee'
-                  marginLeft: -10
-                  fontSize: 43
-                  fontWeight: 400
-                  paddingLeft: 25 # Make the clickable target bigger
-                  paddingRight: 25 # Make the clickable target bigger
-                '<'
+#           DIV 
+#             style: 
+#               width: (if homepage then CONTENT_WIDTH() else BODY_WIDTH()) + 281
+#               margin: 'auto'
+#             # Back arrow
+#             if not homepage
+#               SPAN
+#                 style:
+#                   display: 'inline-block'
+#                   color: '#eee'
+#                   marginLeft: -10
+#                   fontSize: 43
+#                   fontWeight: 400
+#                   paddingLeft: 25 # Make the clickable target bigger
+#                   paddingRight: 25 # Make the clickable target bigger
+#                 '<'
 
-            # Logo
-            A
-              href: if homepage then 'https://bitcoinfoundation.org'
-              style: 
-                margin: if homepage then 'auto' else '0 0 0 -4px'
-                width: if homepage then CONTENT_WIDTH()
-                position: if homepage then 'relative'
-                left: if homepage then -121
-                display: if homepage then 'block'
+#             # Logo
+#             A
+#               href: if homepage then 'https://bitcoinfoundation.org'
+#               style: 
+#                 margin: if homepage then 'auto' else '0 0 0 -4px'
+#                 width: if homepage then CONTENT_WIDTH()
+#                 position: if homepage then 'relative'
+#                 left: if homepage then -121
+#                 display: if homepage then 'block'
 
-              IMG
-                style:
-                  height: if homepage then 40 else 26
-                src: asset('bitcoin/logo.svg')
+#               IMG
+#                 style:
+#                   height: if homepage then 40 else 26
+#                 src: asset('bitcoin/logo.svg')
 
-            if not homepage
-              SPAN
-                style:
-                  color: 'cyan'
-                  fontSize: 26
-                  fontWeight: 500
-                  marginLeft: 40
-                'The Distributed Opinion'
+#             if not homepage
+#               SPAN
+#                 style:
+#                   color: 'cyan'
+#                   fontSize: 26
+#                   fontWeight: 500
+#                   marginLeft: 40
+#                 'The Distributed Opinion'
 
 
 
-          # Text
-          if homepage
-            election_day = new Date('02/24/2015')
-            today = new Date()
-            _second = 1000
-            _minute = _second * 60
-            _hour = _minute * 60
-            _day = _hour * 24
-            days_remaining = Math.ceil((election_day - today) / _day)
-            list_style =
-              paddingLeft: '1em'
-              textIndent: '-1em'
-              margin: 0
+#           # Text
+#           if homepage
+#             election_day = new Date('02/24/2015')
+#             today = new Date()
+#             _second = 1000
+#             _minute = _second * 60
+#             _hour = _minute * 60
+#             _day = _hour * 24
+#             days_remaining = Math.ceil((election_day - today) / _day)
+#             list_style =
+#               paddingLeft: '1em'
+#               textIndent: '-1em'
+#               margin: 0
 
-            DIV
-              style:
-                color: 'white'
-                fontSize: 22
-                fontWeight: 300
-                paddingTop: 23
-                paddingBottom: 20
-                width: CONTENT_WIDTH()
-                margin: 'auto'
+#             DIV
+#               style:
+#                 color: 'white'
+#                 fontSize: 22
+#                 fontWeight: 300
+#                 paddingTop: 23
+#                 paddingBottom: 20
+#                 width: CONTENT_WIDTH()
+#                 margin: 'auto'
 
-              DIV
-                style:
-                  color: 'cyan'
-                  fontSize: 63
-                  fontWeight: 500
-                  marginBottom: 15
-                'The Distributed Opinion'
+#               DIV
+#                 style:
+#                   color: 'cyan'
+#                   fontSize: 63
+#                   fontWeight: 500
+#                   marginBottom: 15
+#                 'The Distributed Opinion'
 
-              P
-                style: 
-                  fontWeight: 600
-                  fontSize: 35
-                'We choose our own future.'
+#               P
+#                 style: 
+#                   fontWeight: 600
+#                   fontSize: 35
+#                 'We choose our own future.'
 
-              P style: marginTop: 14, marginBottom: 20,
-                'We must decide how we want our Foundation to evolve.'
-                BR null, ''
-                'Give your opinion to influence your peers. '
-                A
-                  href: '/proposal/new'
-                  style: textDecoration: 'underline', fontWeight: 400
-                  "Or submit a new direction."
+#               P style: marginTop: 14, marginBottom: 20,
+#                 'We must decide how we want our Foundation to evolve.'
+#                 BR null, ''
+#                 'Give your opinion to influence your peers. '
+#                 A
+#                   href: '/proposal/new'
+#                   style: textDecoration: 'underline', fontWeight: 400
+#                   "Or submit a new direction."
 
-        ProfileMenu()
+#         ProfileMenu()
 
-customizations.bitcoinfoundation.NonHomepageHeader = customizations.bitcoinfoundation.HomepageHeader = \
-customizations['bitcoinfoundationarchive'].NonHomepageHeader = customizations['bitcoinfoundationarchive'].HomepageHeader
+# customizations.bitcoinfoundation.NonHomepageHeader = customizations.bitcoinfoundation.HomepageHeader = \
+# customizations['bitcoinfoundationarchive'].NonHomepageHeader = customizations['bitcoinfoundationarchive'].HomepageHeader
 
 
 

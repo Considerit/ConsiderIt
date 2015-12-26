@@ -1715,6 +1715,8 @@ customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] =
   homie_histo_title: "Votes"
   collapse_descriptions_at: 300
 
+  slider_pole_labels: support_oppose
+
   'cluster/Members': 
     slider_pole_labels: support_oppose
 

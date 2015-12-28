@@ -632,16 +632,27 @@ window.CollapsedProposal = ReactiveComponent
         if icons
           editor = proposal_editor(proposal)
           # Person's icon
-          A
-            href: proposal_url(proposal)
-            Avatar
-              key: editor
-              user: editor
-              style:
-                height: 50
-                width: 50
-                borderRadius: 0
-                backgroundColor: '#ddd'
+          if editor 
+            A
+              href: proposal_url(proposal)
+              Avatar
+                key: editor
+                user: editor
+                style:
+                  height: 50
+                  width: 50
+                  borderRadius: 0
+                  backgroundColor: '#ddd'
+          else 
+            SPAN 
+              style: 
+                height: 48
+                width: 48
+                display: 'inline-block'
+                verticalAlign: 'top'
+                border: "2px dashed #ddd"
+
+
 
         # Name of Proposal
         DIV

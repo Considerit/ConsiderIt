@@ -1694,6 +1694,7 @@ styles += """
 customizations.bitcoin = 
   show_proposer_icon: true
   collapse_descriptions_at: 600
+  slider_pole_labels: support_oppose
 
 customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] = 
 

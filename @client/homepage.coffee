@@ -157,7 +157,7 @@ window.SimpleHomepage = ReactiveComponent
           else if cluster.proposals?.length > 0
             Cluster {cluster, options}
 
-      if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name != 'bitcoinfoundation'
+      if permit('create proposal') > 0 && customization('show_new_proposal_button') && ! subdomain.name in ['bitcoin', 'bitcoinfoundation'] 
         A 
           style: 
             color: logo_red

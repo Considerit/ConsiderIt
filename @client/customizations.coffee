@@ -1693,7 +1693,7 @@ styles += """
 
 customizations.bitcoin = 
   show_proposer_icon: true
-  collapse_descriptions_at: 600
+  collapse_descriptions_at: 300
   slider_pole_labels: support_oppose
 
 customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] = 
@@ -1711,8 +1711,6 @@ customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] =
 
   # default proposal options
   show_proposer_icon: true
-  collapse_descriptions_at: 600
-
   homie_histo_title: "Votes"
   collapse_descriptions_at: 300
 

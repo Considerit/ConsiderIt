@@ -646,8 +646,8 @@ window.CollapsedProposal = ReactiveComponent
           else 
             SPAN 
               style: 
-                height: 48
-                width: 48
+                height: 50
+                width: 50
                 display: 'inline-block'
                 verticalAlign: 'top'
                 border: "2px dashed #ddd"

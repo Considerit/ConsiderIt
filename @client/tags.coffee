@@ -26,7 +26,8 @@ UserTags = ReactiveComponent
       if user.tags? && Object.keys(user.tags).length > 0
         for tag,val of user.tags 
           all_tags[tag] ||= []
-          all_tags[tag].push user 
+          if val && val.toLowerCase() not in ["no", 'false']
+            all_tags[tag].push user 
       else 
         all_tags['no tags'] ||= []
         all_tags['no tags'].push user

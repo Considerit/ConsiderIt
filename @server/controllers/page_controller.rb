@@ -21,7 +21,7 @@ class PageController < ApplicationController
       when 'dashboard/create_subdomain'
         authorize_action = "create subdomain"
 
-      when 'dashboard/application', 'dashboard/roles', 'dashboard/import_data'
+      when 'dashboard/application', 'dashboard/roles', 'dashboard/import_data', 'dashboard/tags'
         authorize_action = "update subdomain"
 
       else

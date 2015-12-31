@@ -25,6 +25,7 @@ require './customizations'
 require './form'
 require './histogram'
 require './roles'
+require './tags'
 require './homepage'
 require './shared'
 require './opinion_slider'
@@ -1852,6 +1853,8 @@ Page = ReactiveComponent
             AppSettingsDash key: "/page/dashboard/application"
           when '/dashboard/roles'
             SubdomainRoles key: "/page/dashboard/roles"
+          when '/dashboard/tags'
+            UserTags key: "/page/dashboard/tags"
           else
             if @page?.proposal?
               Proposal key: @page.proposal.key

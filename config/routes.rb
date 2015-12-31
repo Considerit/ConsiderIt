@@ -34,6 +34,8 @@ ConsiderIt::Application.routes.draw do
   get '/page/*id' => 'page#show'
   resources :user, :only => [:show]
   get '/users' => 'user#index'
+  match '/user/:id' => 'user#update', :via => [:put]
+
   resources :proposal
   get '/proposals' => 'proposal#index'
 

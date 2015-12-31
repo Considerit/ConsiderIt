@@ -123,11 +123,11 @@ UserTags = ReactiveComponent
 
           for tags in [current_user.tags, @local.new_tags]
             for k,v of tags
-              do (k,v) => 
+              do (k,v, tags) => 
                 #k = k.split('.')[0]
                 editing = @local.editing == k
-
                 DIV 
+                  key: "#{k}-#{v}"
                   style: {}
                   onFocus: (e) => @local.editing = k; save @local
                   onBlur: (e) => @local.editing = null; save @local

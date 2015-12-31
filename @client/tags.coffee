@@ -15,7 +15,7 @@ UserTags = ReactiveComponent
 
       current_user = if @local.current_user then fetch(@local.current_user)
       if current_user
-        for k,v of all_tags 
+        for k,v of all_tags when k != 'no tags'
           if !current_user.tags[k]?
             @local.new_tags[k] = ""
       save @local

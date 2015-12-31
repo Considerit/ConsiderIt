@@ -35,7 +35,9 @@ UserTags = ReactiveComponent
 
     DIV 
       style: 
-        padding: 50
+        width: CONTENT_WIDTH()
+        margin: 'auto'
+        paddingTop: 50
 
       DIV 
         style: 

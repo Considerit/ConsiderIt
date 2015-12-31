@@ -25,12 +25,14 @@ UserTags = ReactiveComponent
     for user in users.users
       if user.tags? && Object.keys(user.tags).length > 0
         for tag,val of user.tags 
-          all_tags[tag] ||= []
+          all_tags[tag] ||= {yes: [], no: []}
           if val && val.toLowerCase() not in ["no", 'false']
-            all_tags[tag].push user 
+            all_tags[tag].yes.push user 
+          else 
+            all_tags[tag].no.push user 
       else 
-        all_tags['no tags'] ||= []
-        all_tags['no tags'].push user
+        all_tags['no tags'] ||= {yes: [], no: []}
+        all_tags['no tags'].yes.push user
 
     all_tags
 
@@ -217,6 +219,7 @@ UserTags = ReactiveComponent
           marginTop: 12
 
         for tag_group, tag_users of all_tags 
+          console.log tag_users
           DIV
             style:
               width: 300
@@ -243,7 +246,7 @@ UserTags = ReactiveComponent
                 fontSize: 0
                 lineHeight: 0
 
-              for user in tag_users 
+              for user in tag_users.yes
                 do (user) => 
                   Avatar 
                     key: user.key
@@ -253,6 +256,17 @@ UserTags = ReactiveComponent
                       cursor: 'pointer'
                     onClick: => change_current_user user.key      
 
+
+              for user in tag_users.no
+                do (user) => 
+                  Avatar 
+                    key: user.key
+                    style: 
+                      width: 40
+                      height: 40
+                      cursor: 'pointer'
+                      opacity: .2
+                    onClick: => change_current_user user.key      
 
 
 

@@ -196,6 +196,12 @@ def permit(action, object)
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
+  when 'update user'
+    if !current_user.is_admin?
+      return Permission::INSUFFICIENT_PRIVILEGES 
+    end
+
+
   when 'request factcheck'
     proposal = object
     return Permission::DISABLED if !proposal.assessment_enabled || !proposal.active

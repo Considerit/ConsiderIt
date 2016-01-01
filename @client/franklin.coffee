@@ -25,6 +25,7 @@ require './customizations'
 require './form'
 require './histogram'
 require './roles'
+require './filter'
 require './tags'
 require './homepage'
 require './shared'
@@ -262,6 +263,13 @@ Proposal = ReactiveComponent
 
         if has_focus == 'opinion'
           SaveYourOpinionNotice()
+
+        if customization('user_filters')
+          UserFilter
+            style: 
+              width: BODY_WIDTH()
+              margin: '20px auto'
+              textAlign: 'center'
 
         #feelings
         DIV
@@ -761,8 +769,6 @@ DecisionBoard = ReactiveComponent
     included_points = fetch(@proposal.your_opinion).point_inclusions
     wing_points = (pnt for pnt in wing_points when !_.contains(included_points, pnt.key) )
     are_points_in_wings = wing_points.length > 0 
-
-
     
     decision_board_style =
       borderRadius: 16
@@ -1243,6 +1249,12 @@ buildPointsList = (proposal, valence, sort_field, filter_included) ->
   points = fetch("/page/#{proposal.slug}").points
   opinions = fetch("/page/#{proposal.slug}").opinions
 
+  # filter out filter users...
+  filtered_out = fetch('filtered')
+  if filtered_out.users
+    filtered = true
+    opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
+
   points = (pnt for pnt in points when pnt.is_pro == (valence == 'pros') )
 
   if filter_included
@@ -1250,29 +1262,31 @@ buildPointsList = (proposal, valence, sort_field, filter_included) ->
     points = (pnt for pnt in points when !_.contains(included_points, pnt.key) )
 
   # Filter down to the points included in the selection opinions, if set. 
-  hist = fetch(namespaced_key('histogram', proposal))
-  selected_opinions = if hist.selected_opinion 
-                        [hist.selected_opinion] 
-                      else 
-                        hist.selected_opinions
-  
-  if selected_opinions
-    # order points by resonance to those users.    
-    point_inclusions_per_point = {} # map of points to including users
-    _.each selected_opinions, (opinion_key) =>
-      opinion = fetch(opinion_key)
-      if opinion.point_inclusions
-        for point in opinion.point_inclusions
-          if !(point of point_inclusions_per_point)
-            point_inclusions_per_point[point] = 1
-          else
-            point_inclusions_per_point[point] += 1
+  # hist = fetch(namespaced_key('histogram', proposal))
+  # if hist.selected_opinion 
+  #   opinions = [hist.selected_opinion] 
+  #   filtered = true
+  # else if hist.selected_opinions
+  #   opinions = hist.selected_opinions
+  #   filtered = true
 
-    points = (pnt for pnt in points when pnt.key of point_inclusions_per_point)
+  # order points by resonance to users in view.    
+  point_inclusions_per_point = {} # map of points to including users
+  _.each opinions, (opinion_key) =>
+    opinion = fetch(opinion_key)
+    if opinion.point_inclusions
+      for point in opinion.point_inclusions
+        if !(point of point_inclusions_per_point)
+          point_inclusions_per_point[point] = 1
+        else
+          point_inclusions_per_point[point] += 1
+
+  
+  points = (pnt for pnt in points when pnt.key of point_inclusions_per_point)
 
   # Sort points based on resonance with selected users, or custom sort_field
   sort = (pnt) ->
-    if selected_opinions
+    if filtered
       -point_inclusions_per_point[pnt.key] 
     else
       -pnt[sort_field]

@@ -69,15 +69,6 @@ end
 def permit(action, object)
   return Permission::PERMITTED if current_user.super_admin
 
-  # def matchEmail(permission_list)
-  #   pp "YOYO"
-  #   Permission::matchEmail(permission_list)
-  # end
-
-  # def matchSomeRole(roles, accepted_roles)
-  #   Permission::matchSomeRole(roles, accepted_roles)
-  # end
-
   case action
   when 'create subdomain'
     return Permission::NOT_LOGGED_IN if !current_user.registered
@@ -115,6 +106,8 @@ def permit(action, object)
 
     can_read = permit('read proposal', object)
     return can_read if can_read < 0
+
+    return Permission::NOT_LOGGED_IN if !current_user.registered
 
     if !current_user.is_admin? && !Permitted::matchEmail(proposal.user_roles['editor'])
       return Permission::INSUFFICIENT_PRIVILEGES

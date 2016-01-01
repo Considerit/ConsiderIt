@@ -57,6 +57,8 @@ permit = (action) ->
       return Permission.NOT_LOGGED_IN if !current_user.logged_in
 
     when 'update proposal', 'delete proposal'
+      return Permission.NOT_LOGGED_IN if !current_user.logged_in
+
       proposal = fetch arguments[1]
       if !current_user.is_admin && (proposal.key == 'new_proposal' || !matchEmail(proposal.roles.editor) )
         return Permission.INSUFFICIENT_PRIVILEGES

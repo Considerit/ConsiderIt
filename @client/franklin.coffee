@@ -219,12 +219,11 @@ Proposal = ReactiveComponent
     # board, new point). We need to set a minheight that is large enough to 
     # encompass these elements. 
     adjustments = fetch('reasons_height_adjustment')
-    minheight = 100 + adjustments.opinion_region_height
+    minheight = 100 + (adjustments.opinion_region_height || 0)
     if get_selected_point()
       minheight += adjustments.open_point_height
     if adjustments.edit_point_height
       minheight += adjustments.edit_point_height
-
 
     # if there aren't community_points, then we won't bother showing them
     community_points = fetch("/page/#{@proposal.slug}").points  
@@ -961,6 +960,11 @@ DecisionBoard = ReactiveComponent
           db.user_hovering_on_drop_target = true
           save db
 
+  update_reasons_height: -> 
+    s = fetch('reasons_height_adjustment')
+    s.opinion_region_height = $(@getDOMNode()).height()
+    save s
+
   transition : -> 
     return if @is_waiting()
 
@@ -998,10 +1002,7 @@ DecisionBoard = ReactiveComponent
             perform final_state
             @transitioning = false
 
-            s = fetch('reasons_height_adjustment')
-            s.opinion_region_height = $(@getDOMNode()).height()
-            save s
-
+            @update_reasons_height()
         , speed + 200
 
       else if !@transitioning
@@ -1009,9 +1010,7 @@ DecisionBoard = ReactiveComponent
         perform initial_state
         perform final_state
 
-        s = fetch('reasons_height_adjustment')
-        s.opinion_region_height = $(@getDOMNode()).height()
-        save s
+        @update_reasons_height()
             
       @last_proposal_mode = mode
 

@@ -813,9 +813,10 @@ window.Discussion = ReactiveComponent
     s = fetch('reasons_height_adjustment')
 
     dist_from_parent = $(@getDOMNode()).offset().top - $('.reasons_region').offset().top
-
-    s.open_point_height = $(@getDOMNode()).height() + dist_from_parent
-    save s
+    open_point_height = $(@getDOMNode()).height() + dist_from_parent
+    if s.open_point_height != open_point_height
+      s.open_point_height = open_point_height
+      save s
 
 window.SubmitFactCheck = ReactiveComponent
   displayName: 'SubmitFactCheck'

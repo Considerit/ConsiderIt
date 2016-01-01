@@ -93,15 +93,15 @@ class User < ActiveRecord::Base
 
   # Gets all of the users active for this subdomain
   def self.all_for_subdomain
-    fields = "CONCAT('\/user\/',id) as 'key',users.name,users.avatar_file_name,users.groups"
+    fields = "CONCAT('\/user\/',id) as 'key',users.name,users.avatar_file_name,users.groups,users.tags"
     if current_user.is_admin?
-      fields += ",email,tags"
+      fields += ",email"
     end
     users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
     users.each{|u| u['groups']=JSON.parse(u['groups']||'[]')}
-    if current_user.is_admin?
-      users.each{|u| u['tags']=JSON.parse(u['tags']||'{}')}      
-    end
+    # if current_user.is_admin?
+    users.each{|u| u['tags']=JSON.parse(u['tags']||'{}')}      
+    # end
 
     {key: '/users', users: users.as_json}
   end
@@ -389,6 +389,21 @@ class User < ActiveRecord::Base
     #       Where should it live? 
     # user.destroy()
 
+  end
+
+  def self.update_avatar_cache (subdomain = nil)
+    if subdomain
+      subdomains = [subdomain]
+    else 
+      subdomains = Subdomain.all
+    end
+    for subdomain in subdomains 
+      pp "Updating avatar cache for #{subdomain.name}"
+      cache_key = "avatar-digest-#{subdomain.id}"
+      users = User.where("registered=1 AND b64_thumbnail IS NOT NULL AND INSTR(active_in, '\"#{subdomain.id}\"')")
+      avatars = users.select([:id,:b64_thumbnail]).map {|user| "#avatar-#{user.id} { background-image: url('#{user.b64_thumbnail}');}"}.join(' ')
+      Rails.cache.write(cache_key, avatars)
+    end
   end
 
   def self.purge

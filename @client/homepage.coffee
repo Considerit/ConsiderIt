@@ -7,6 +7,7 @@ require './watch_star'
 require './browser_hacks' # for access to browser object
 require './browser_location' # for loadPage
 require './bubblemouth'
+require './filter'
 
 default_cluster_name = 'Proposals'
 
@@ -111,15 +112,18 @@ window.SimpleHomepage = ReactiveComponent
       className: 'simplehomepage'
       style: 
         fontSize: 22
-        margin: 'auto'
+        margin: '45px auto'
         width: HOMEPAGE_WIDTH()
-        marginTop: 10
         position: 'relative'
 
       STYLE null,
         '''a.proposal:hover {border-bottom: 1px solid grey}'''
 
-
+      if customization('user_filters')
+        UserFilter
+          style: 
+            width: CONTENT_WIDTH()
+            marginBottom: 20
 
       # List all clusters
 
@@ -142,7 +146,8 @@ window.SimpleHomepage = ReactiveComponent
 
           if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
             DIV
-              style: margin: "45px 0"
+              style: 
+                margin: "#{if index > 0 then '45px' else ''} 0 45px 0"
 
               "#{options.label or cluster.name} "
 

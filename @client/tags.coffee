@@ -219,7 +219,6 @@ UserTags = ReactiveComponent
           marginTop: 12
 
         for tag_group, tag_users of all_tags 
-          console.log tag_users
           DIV
             style:
               width: 300

@@ -125,6 +125,7 @@ window.Histogram = ReactiveComponent
 
   render: -> 
     hist = fetch @props.key
+    filter_out = fetch 'filtered'
 
     if !hist.initialized
       _.defaults hist,
@@ -295,6 +296,7 @@ window.Histogram = ReactiveComponent
 
   drawAvatars: -> 
     hist = fetch @props.key
+    filter_out = fetch 'filtered'
 
     # Highlighted users are the users whose avatars are colorized and fully 
     # opaque in the histogram. It is based on the current opinion selection and 
@@ -348,6 +350,10 @@ window.Histogram = ReactiveComponent
 
       for opinion in @props.opinions
         user = opinion.user
+
+        if filter_out.users?[user]
+          continue
+
         fetch(opinion) # subscribe to changes so physics sim will get rerun...
 
         if @props.backgrounded
@@ -519,6 +525,7 @@ window.Histogram = ReactiveComponent
     selected_opinions
 
   physicsSimulation: ->
+    filter_out = fetch 'filtered'
 
     # We only need to rerun the sim if the distribution of stances has changed, 
     # or the width/height of the histogram has changed. We round the stance to two 
@@ -529,14 +536,18 @@ window.Histogram = ReactiveComponent
       Math.round(fetch(o.key).stance * 100) / 100 )
 
     simulation_opinion_hash += " (#{@props.width}, #{@props.height}, #{@props.width})"
+    simulation_opinion_hash += JSON.stringify filter_out.users
+
 
     if @refs && @refs.histo && simulation_opinion_hash != @local.simulation_opinion_hash
       histo = @refs.histo.getDOMNode()
 
       icons = histo.childNodes
 
-      if icons.length == @props.opinions.length
-        opinions = for opinion, i in @props.opinions
+      filtered_opinions = (o for o in @props.opinions when !(filter_out.users?[o.user]))
+
+      if icons.length == filtered_opinions.length
+        opinions = for opinion, i in filtered_opinions
           {stance: opinion.stance, icon: icons[i], radius: icons[i].style.width/2}
 
         positionAvatars(@props.width, @props.height, opinions, @local.avatar_size / 2)
@@ -557,6 +568,9 @@ window.Histogram = ReactiveComponent
 # width and height)
 
 calculateAvatarRadius = (width, height, opinions) -> 
+  filter_out = fetch 'filtered'
+  if filter_out.users 
+    opinions = (o for o in opinions when !(filter_out.users?[o.user]))
 
   opinions.sort (a,b) -> a.stance - b.stance
 

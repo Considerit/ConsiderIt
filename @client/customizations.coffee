@@ -348,8 +348,6 @@ conference_config =
   homie_histo_title: "PC's ratings"
 
 
-
-
 ################################
 # DEFAULT CUSTOMIZATIONS
 # 
@@ -362,9 +360,14 @@ customizations.default =
 
   opinion_value: (o) -> o.stance
   proposal_support: (proposal) ->
-    opinions = fetch('/page/' + proposal.slug).opinions
+    opinions = fetch('/page/' + proposal.slug).opinions    
     if !opinions || opinions.length == 0
       return null
+
+    filtered_out = fetch('filtered')
+    if filtered_out.users
+      opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
+      console.log opinions
     opinion_value = customization("opinion_value", proposal)
 
     sum = 0
@@ -1695,6 +1698,22 @@ customizations.bitcoin =
   show_proposer_icon: true
   collapse_descriptions_at: 300
   slider_pole_labels: support_oppose
+
+  # user_filters: [ {
+  #     label: 'verified users'
+  #     tooltip: 'explanation for verified user'
+  #     pass: (user) -> 
+  #       user = fetch(user)
+  #       user.tags['user'] && \
+  #        !(user.tags['user'].toLowerCase() in ['no', 'false'])
+  #   }, {
+  #     label: 'miners'
+  #     tooltip: 'explanation for miner'
+  #     pass: (user) -> 
+  #       user = fetch(user)
+  #       user.tags['miner'] && \
+  #         !(user.tags['miner'].toLowerCase() in ['no', 'false'])
+  #   }]
 
 customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] = 
 

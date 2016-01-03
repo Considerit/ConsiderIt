@@ -1275,10 +1275,14 @@ buildPointsList = (proposal, valence, sort_field, filter_included) ->
     opinion = fetch(opinion_key)
     if opinion.point_inclusions
       for point in opinion.point_inclusions
-        if !(point of point_inclusions_per_point)
-          point_inclusions_per_point[point] = 1
-        else
-          point_inclusions_per_point[point] += 1
+        point_inclusions_per_point[point] ||= 0
+        point_inclusions_per_point[point] += 1
+
+  # try enforce k=2-anonymity for hidden points
+  if opinions.length < 2
+    for point,inclusions of point_inclusions_per_point
+      if fetch(point).hide_name
+        delete point_inclusions_per_point[point]
 
   
   points = (pnt for pnt in points when pnt.key of point_inclusions_per_point)

@@ -34,7 +34,6 @@ Hi #{@user.first_name}, a summary for you.
   - if notifications.key? 'edited_proposal'
     = list_item "This proposal has been edited."
 
-
   - if notifications.key? 'new_opinion'
     = list_item "#{get_user_str(notifications['new_opinion'])} opined"
 
@@ -48,8 +47,8 @@ Hi #{@user.first_name}, a summary for you.
 
     - for user_id, ns in grouped
       - points = ns.map {|n| n.event_object }
-
-      - txt = "#{User.find(user_id).name} adds a new point: "
+      - user_name = user_id == -1 ? 'Anonymous' : User.find(user_id).name
+      - txt = "#{user_name} adds a new point: "
       - points.each_with_index do |point, idx|
 
         - point_link = styled_link(point.proposal.slug, "\"#{point.title(40)}\"", :search_params => {selected: "%2Fpoint%2F#{point.id}"}, :text_preceding => "'#{point.title(40)}'. View at ")

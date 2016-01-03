@@ -67,7 +67,9 @@ class CurrentUserController < ApplicationController
             errors.append("Password needs to be at least #{@min_pass} letters") if !ok_password
             errors.append('Name is blank') if !has_name
             errors.append('Community pledge required') if !signed_pledge
-            errors.append('Email address can\'t be blank') if !ok_email
+            if !ok_email && !errors.include?('Email address is not properly formatted')
+              errors.append('Email address can\'t be blank') 
+            end
           end
 
         end
@@ -343,7 +345,7 @@ class CurrentUserController < ApplicationController
       errors.append 'There is already an account with that email'
     # And that it's valid
     elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
-      errors.append 'Bad email address'
+      errors.append 'Email address is not properly formatted'
     elsif current_user.email != email
       # puts("Updating email from #{current_user.email} to #{params[:email]}")
       # Okay, here comes a new email address!

@@ -108,7 +108,7 @@ Auth = ReactiveComponent
                     [ @inputBox('email', 'email@address', 'email'),
                       DIV(null),
                       @inputBox('password', t("password"), 'password'),
-                      @resetPasswordLink() ]]].concat @userQuestionInputs()
+                      @resetPasswordLink() ], 'email + password']].concat @userQuestionInputs()
           @footerForRegistrationAndLogin() ]
 
       # The REGISTER form, with easy switch to log in
@@ -135,7 +135,7 @@ Auth = ReactiveComponent
         [ @headerAndBorder goal, t('Introduce Yourself'),
             @body [["#{t('login_as')}:",
                       [ email_field,
-                        @inputBox('password', t("password"), 'password')]],
+                        @inputBox('password', t("password"), 'password')], 'email + password'],
                     avatar_field,
                     [t('name_prompt'), @inputBox('name', t('full_name'))],
                     pledges_field].concat @userQuestionInputs()
@@ -340,6 +340,13 @@ Auth = ReactiveComponent
                     fontWeight: 600
                     fontSize: if browser.is_mobile then 24
                   field[0]
+                if field.length > 2
+                  LABEL 
+                    style: 
+                      display: 'block'
+                      color: auth_ghost_gray
+                      fontSize: 14
+                    field[2]
               TD
                 style:
                   verticalAlign: 'bottom'

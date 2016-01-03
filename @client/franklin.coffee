@@ -1261,13 +1261,13 @@ buildPointsList = (proposal, valence, sort_field, filter_included) ->
     points = (pnt for pnt in points when !_.contains(included_points, pnt.key) )
 
   # Filter down to the points included in the selection opinions, if set. 
-  # hist = fetch(namespaced_key('histogram', proposal))
-  # if hist.selected_opinion 
-  #   opinions = [hist.selected_opinion] 
-  #   filtered = true
-  # else if hist.selected_opinions
-  #   opinions = hist.selected_opinions
-  #   filtered = true
+  hist = fetch(namespaced_key('histogram', proposal))
+  if hist.selected_opinion 
+    opinions = [hist.selected_opinion] 
+    filtered = true
+  else if hist.selected_opinions
+    opinions = hist.selected_opinions
+    filtered = true
 
   # order points by resonance to users in view.    
   point_inclusions_per_point = {} # map of points to including users

@@ -130,7 +130,7 @@ window.EditPoint = ReactiveComponent
               marginTop: 0
               display: 'inline-block'
               fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 24
-              padding: '4px 35px'
+              padding: '4px 25px'
               float: 'left'
             t('Done')
 
@@ -170,7 +170,10 @@ window.EditPoint = ReactiveComponent
               save(@local)
           LABEL 
             htmlFor: "sign_name-#{@props.valence}"
-            title:'Signing your name lends your point more weight with peers.'
+            title:"""This won\'t make your point perfectly anonymous, but will make \
+                     it considerably harder for others to associate with you. \
+                     Note that signing your name lends your point more weight \
+                     with peers."""
             t('sign_name')  
 
   componentWillMount : ->

@@ -40,8 +40,10 @@ module MailerHelper
           obj_id = -1
         end
       end
-      h[obj_id] ||= []
-      h[obj_id].push(n) 
+      if obj_id != -1
+        h[obj_id] ||= []
+        h[obj_id].push(n) 
+      end
     }
   end
 

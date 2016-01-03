@@ -238,7 +238,11 @@ window.Point = ReactiveComponent
           style: 
             wordWrap: 'break-word'
             fontSize: POINT_FONT_SIZE()
-          splitParagraphs point.nutshell
+
+          DIV 
+            className: 'point_nutshell'
+
+            splitParagraphs point.nutshell
 
           DIV 
             className: "point_details" + \
@@ -524,6 +528,7 @@ styles += """
   box-shadow: #b5b5b5 0 1px 1px 0px;
   min-height: 34px; }
 
+.point_nutshell a { text-decoration: underline; }
 .point_details_tease a, .point_details a {
   text-decoration: underline;
   word-break: break-all; }

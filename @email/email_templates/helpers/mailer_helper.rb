@@ -34,7 +34,11 @@ module MailerHelper
     notifications.each_with_object({}) { |n,h| 
       case n.event_object_type
       when 'Point'
-        obj_id = n.event_object.user_id        
+        point = n.event_object
+        obj_id = point.user_id
+        if point.hide_name
+          obj_id = -1
+        end
       end
       h[obj_id] ||= []
       h[obj_id].push(n) 

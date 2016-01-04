@@ -36,70 +36,163 @@ window.ProfileMenu = ReactiveComponent
           _.clone(@props.style))
 
       if current_user.logged_in
-        SPAN
-          className: 'profile_menu_wrap'
-          style:
-            position: 'relative'
 
-          onTouchEnd: => 
-            @local.menu = !@local.menu
-            save(@local)
+        DIV null,
 
-          onMouseEnter: => @local.menu = true; save(@local)
-          onMouseLeave: => @local.menu = false; save(@local)
-          DIV 
-            style: 
-              display: if not @local.menu then 'none'
-              position: 'absolute'
-              marginTop: -8
-              marginLeft: -8
-              padding: 8
-              paddingTop: 70
-              paddingRight: 14
-              backgroundColor: '#eee'
-              right: 0
-              textAlign: 'right'
-              zIndex: 999999
+          if false && subdomain.name == 'bitcoin' && \
+             current_user.logged_in && \
+             (!current_user.tags['verified']? || current_user.tags['verified'] in ['no', 'false'])
+              
+            DIV 
+              style: 
+                position: 'absolute'
+                zIndex: 10
+                left: -315
+              onMouseEnter: => @local.show_verify = true; save @local
+              onMouseLeave: => @local.show_verify = false; save @local 
 
-            for option in menu_options
-              A
-                className: 'menu_link'
-                href: option.href
-                key: option.href
-                option.label
+              DIV 
+                style: 
+                  backgroundColor: focus_blue
+                  color: 'white'
+                  fontWeight: 600
+                  padding: '4px 12px'
+                  fontSize: 21
+                  borderRadius: if ! @local.show_verify then 8
+                  position: 'relative'
+                  cursor: 'pointer'
 
-            A 
-              'data-action': 'logout'
-              className: 'menu_link'
-              onClick: logout
-              onTouchEnd: logout
-              t('Log out')
 
-          SPAN 
-            style: 
-              color: if !light_background then 'white'
+                SPAN 
+                  style: cssTriangle 'right', focus_blue, 10, 12,
+                    position: 'absolute'
+                    right: -10
+                    top: 12
+
+                'Please verify you are human!'
+
+              if @local.show_verify
+
+                today = new Date()
+                dd = today.getDate()
+                mm = today.getMonth() + 1
+                yyyy = today.getFullYear()
+
+                dd = '0' + dd if dd < 10
+                mm = '0' + mm if mm < 10
+
+                today = yyyy + '/' + mm + '/' + dd
+
+                DIV 
+                  style: 
+                    width: 650
+                    position: 'absolute'
+                    right: 0
+                    zIndex: 999
+                    padding: 40
+                    backgroundColor: 'white'
+                    boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+                    fontSize: 21
+
+                  DIV style: marginBottom: 20,
+                    "To verify you are human, write on a piece of paper:"
+
+                  DIV style: marginBottom: 20, marginLeft: 50,
+
+                    current_user.name
+                    BR null
+                    "bitcoin.consider.it"
+                    BR null
+                    today
+
+                  DIV style: marginBottom: 20,
+
+                    "Then take a photo of yourself with it, and email the photo to "
+
+                    A 
+                      mailTo: 'verify@consider.it'
+                      style: 
+                        textDecoration: 'underline'
+                      'verify@consider.it' 
+
+                    ". This photo will be publicly visible proof that you are real!"
+
+                  DIV style: marginBottom: 20,
+                    "Yours,"
+                    BR null
+                    "The Admins"
+
+                  IMG 
+                    src: asset('bitcoin/verify example.jpg')
+                    style: 
+                      width: 570
+
+
+          SPAN
+            className: 'profile_menu_wrap'
+            style:
               position: 'relative'
-              zIndex: 9999999999
-              backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)'
-              boxShadow: if !@local.menu then '0px 1px 1px rgba(0,0,0,.1)'
-              borderRadius: 8
-              padding: '3px 4px'
 
-            Avatar 
-              key: current_user.user
-              hide_tooltip: true
-              className: 'userbar_avatar'
-              style: 
-                height: 35
-                width: 35
-                marginRight: 7
-                marginTop: 1
-            I 
+            onTouchEnd: => 
+              @local.menu = !@local.menu
+              save(@local)
 
-              className: 'fa fa-caret-down'
+            onMouseEnter: => @local.menu = true; save(@local)
+            onMouseLeave: => @local.menu = false; save(@local)
+
+            DIV 
               style: 
-                visibility: if @local.menu then 'hidden'
-                #color: 'black'
+                display: if not @local.menu then 'none'
+                position: 'absolute'
+                marginTop: -8
+                marginLeft: -8
+                padding: 8
+                paddingTop: 70
+                paddingRight: 14
+                backgroundColor: '#eee'
+                right: 0
+                textAlign: 'right'
+                zIndex: 999999
+
+              for option in menu_options
+                A
+                  className: 'menu_link'
+                  href: option.href
+                  key: option.href
+                  option.label
+
+              A 
+                'data-action': 'logout'
+                className: 'menu_link'
+                onClick: logout
+                onTouchEnd: logout
+                t('Log out')
+
+            SPAN 
+              style: 
+                color: if !light_background then 'white'
+                position: 'relative'
+                zIndex: 9999999999
+                backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)'
+                boxShadow: if !@local.menu then '0px 1px 1px rgba(0,0,0,.1)'
+                borderRadius: 8
+                padding: '3px 4px'
+
+              Avatar 
+                key: current_user.user
+                hide_tooltip: true
+                className: 'userbar_avatar'
+                style: 
+                  height: 35
+                  width: 35
+                  marginRight: 7
+                  marginTop: 1
+              I 
+
+                className: 'fa fa-caret-down'
+                style: 
+                  visibility: if @local.menu then 'hidden'
+                  #color: 'black'
       else
         A
           className: 'profile_anchor login'

@@ -8,8 +8,6 @@ UserFilter = ReactiveComponent
     filters = customization 'user_filters'
     users = fetch '/users'
     filter_out = fetch 'filtered'
-    current_user = fetch '/current_user'
-    subdomain = fetch '/subdomain'
 
     set_filtered_users = => 
       filter_out.users = {}
@@ -65,24 +63,6 @@ UserFilter = ReactiveComponent
 
             filter.label
 
-      if subdomain.name == 'bitcoin' && \
-         current_user.logged_in && \
-         (!current_user.tags['verified']? || current_user.tags['verified'] in ['no', 'false'])
-        
-        DIV 
-          style: 
-            fontSize: 14 
-            color: logo_red
-
-          """You are unverified! Photograph yourself holding a bitcoin.consider.it \
-             sign and email it to """
-          A 
-            mailTo: 'verify@consider.it'
-            style: 
-              textDecoration: 'underline'
-            'verify@consider.it' 
-
-          '.'
 
 
 

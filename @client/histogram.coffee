@@ -1,4 +1,5 @@
 require './browser_hacks'
+md5 = require './vendor/md5' 
 
 ##
 # Histogram
@@ -298,6 +299,9 @@ window.Histogram = ReactiveComponent
     hist = fetch @props.key
     filter_out = fetch 'filtered'
 
+
+    @try_histocache()
+
     # Highlighted users are the users whose avatars are colorized and fully 
     # opaque in the histogram. It is based on the current opinion selection and 
     # the highlighted_users state, which can be manipulated by other components. 
@@ -369,11 +373,14 @@ window.Histogram = ReactiveComponent
         else
           avatar_style = regular_avatar_style
 
+        pos = @local.histocache?.positions?[(user.key or user).split('/user/')[1]]
         Avatar 
           key: user
           user: user
           hide_tooltip: @props.backgrounded
-          style: avatar_style
+          style: _.extend {}, avatar_style, 
+            left: pos?[0]
+            top: pos?[1]
 
   onClick: (ev) -> 
 
@@ -524,38 +531,86 @@ window.Histogram = ReactiveComponent
     selected_opinions = (o.key for o in all_opinions when inRange(o.stance, min, max))
     selected_opinions
 
+
+  histocache_key: -> 
+    filter_out = fetch 'filtered'
+    opinions = (o for o in @props.opinions when !(filter_out.users?[o.user]))
+
+    key = JSON.stringify _.map(opinions, (o) => 
+            Math.round(fetch(o.key).stance * 100) / 100 )
+    key += " (#{@props.width}, #{@props.height}, #{@props.width})"
+    # key += JSON.stringify filter_out.users
+    md5 key
+
+  try_histocache : -> 
+    proposal = fetch(@props.proposal)
+    histocache_key = @histocache_key()
+
+    if proposal.histocache?[histocache_key]
+      if histocache_key != @local.histocache?.hash
+        @local.histocache =
+          hash: histocache_key 
+          positions: proposal.histocache[histocache_key]
+        save @local
+      return true 
+    
+    false
+
   physicsSimulation: ->
     filter_out = fetch 'filtered'
+    proposal = fetch @props.proposal
+    return if !proposal.histocache?
 
     # We only need to rerun the sim if the distribution of stances has changed, 
     # or the width/height of the histogram has changed. We round the stance to two 
     # decimals to avoid more frequent recalculations than necessary (one way 
     # this happens is with the server rounding opinion data differently than 
     # the javascript does when moving one's slider)
-    simulation_opinion_hash = JSON.stringify _.map(@props.opinions, (o) => 
-      Math.round(fetch(o.key).stance * 100) / 100 )
+    histocache_key = @histocache_key()
+    
+    if @try_histocache()
+      noop = 1
+    else if @refs && @refs.histo && histocache_key != @local.histocache?.hash && @current_request != histocache_key
 
-    simulation_opinion_hash += " (#{@props.width}, #{@props.height}, #{@props.width})"
-    simulation_opinion_hash += JSON.stringify filter_out.users
-
-
-    if @refs && @refs.histo && simulation_opinion_hash != @local.simulation_opinion_hash
+      # we need to recalculate this histo
       histo = @refs.histo.getDOMNode()
-
       icons = histo.childNodes
 
       filtered_opinions = (o for o in @props.opinions when !(filter_out.users?[o.user]))
 
-      if icons.length == filtered_opinions.length
+      if icons.length > 0 && icons.length == filtered_opinions.length
         opinions = for opinion, i in filtered_opinions
-          {stance: opinion.stance, icon: icons[i], radius: icons[i].style.width/2}
-
-        positionAvatars(@props.width, @props.height, opinions, @local.avatar_size / 2)
+          {stance: opinion.stance, icon: icons[i], radius: icons[i].style.width/2, user: opinion.user}
         
-        @local.simulation_opinion_hash = simulation_opinion_hash
-        save @local
+        positionAvatars 
+          w: @props.width
+          h: @props.height
+          o: opinions
+          r: @local.avatar_size / 2
+          abort: => 
+            abort = !@isMounted() || @current_request != histocache_key
+            abort
 
-  componentDidMount: ->     
+          done: (positions) =>   
+            return if !@isMounted()
+            if Object.keys(positions).length != 0 && @current_request == histocache_key
+              @local.histocaches = 
+                hash: histocache_key
+                positions: positions
+              save @local
+
+              proposal.histocache[histocache_key] = positions
+
+              # save to server
+              save
+                key: "/histogram/proposal/#{fetch(@props.proposal).id}/#{histocache_key}"
+                positions: positions
+    @current_request = histocache_key
+
+
+
+
+  componentDidMount: ->   
     @physicsSimulation()
 
   componentDidUpdate: -> 
@@ -652,11 +707,13 @@ calculateAvatarRadius = (width, height, opinions) ->
 # Uses a d3-based physics simulation to calculate a reasonable layout
 # of avatars within a given area.
 
-positionAvatars = (width, height, opinions, r) ->
-  width = width || 400
-  height = height || 70
+positionAvatars = (opts) -> 
 
-  opinions = opinions.slice()
+  width = opts.w || 400
+  height = opts.h || 70
+  r = opts.r || 30
+
+  opinions = opts.o.slice()
               .sort( (a,b) -> a.stance-b.stance )
   n = opinions.length
   x_force_mult = 2
@@ -704,6 +761,12 @@ positionAvatars = (width, height, opinions, r) ->
 
   # Called after the simulation stops
   end = ->
+    positions = {}
+    for o, i in nodes
+      positions[parseInt(opinions[i].user.split('/user/')[1])] = \
+        [o.x - o.radius, o.y - o.radius]
+
+    opts.done?(positions) if !opts.abort? || !opts.abort()
     return 
     total_energy = calculate_global_energy()
     console.log('Simulation complete after ' + ticks + ' ticks. ' + 
@@ -711,6 +774,11 @@ positionAvatars = (width, height, opinions, r) ->
 
   # One iteration of the simulation
   tick = (e) ->
+
+    if opts.abort?()
+      force.stop()
+      return
+
     some_node_moved = false
 
     ####
@@ -748,7 +816,8 @@ positionAvatars = (width, height, opinions, r) ->
     ticks += 1
 
     # Complete the simulation if we've reached a steady state
-    force.stop() if !some_node_moved
+    if !some_node_moved
+      force.stop() 
 
   collide = (node) ->
 

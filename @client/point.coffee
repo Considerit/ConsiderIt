@@ -17,10 +17,10 @@ window.Point = ReactiveComponent
 
       if @data().includers
 
-        if !draw_all_includers
-          includers = [point.user]
-        else 
+        if draw_all_includers
           includers = @buildIncluders()
+        else 
+          includers = [point.user]
 
         s = #includers_style
           rows: 8
@@ -34,25 +34,28 @@ window.Point = ReactiveComponent
         # Now we'll go through the list from back to front
         i = includers.length
 
-        for includer in includers
-          i -= 1
-          curr_column = Math.floor(i / s.rows)
-          side_offset = curr_column * s.col_gap + i * s.dx
-          top_offset = (i % s.rows) * s.dy 
-          left_right = if @data().is_pro && @props.rendered_as != 'under_review' then 'left' else 'right'
-          style = 
-            top: top_offset
-            position: 'absolute'
+        DIV null,
 
-          style[left_right] = side_offset
+          for includer in includers
+            i -= 1
+            curr_column = Math.floor(i / s.rows)
+            side_offset = curr_column * s.col_gap + i * s.dx
+            top_offset = (i % s.rows) * s.dy 
+            left_right = if @data().is_pro && @props.rendered_as != 'under_review' then 'left' else 'right'
+            style = 
+              top: top_offset
+              position: 'absolute'
 
-          # Finally draw the guys
-          Avatar
-            key: includer
-            className: "point_includer_avatar"
-            style: style
-            hide_tooltip: @props.rendered_as == 'under_review' 
-            anonymous: point.user == includer && point.hide_name
+            style[left_right] = side_offset
+
+            # Finally draw the guys
+            Avatar
+              key: includer
+              className: "point_includer_avatar"
+              style: style
+              hide_tooltip: @props.rendered_as == 'under_review' 
+              anonymous: point.user == includer && point.hide_name
+
 
     renderNewIndicator = =>
       if @data().includers
@@ -490,7 +493,7 @@ window.Point = ReactiveComponent
 
   buildIncluders : -> 
     point = @data()
-    author_has_included = _.contains point.includers, point.user
+    #author_has_included = _.contains point.includers, point.user
 
     includers = point.includers
 
@@ -504,9 +507,9 @@ window.Point = ReactiveComponent
       # only show includers from the current opinion selection
       selected_users = (fetch(o).user for o in selected_opinions)
       includers = _.intersection includers, selected_users
-      author_has_included = _.contains selected_users, point.user
+      #author_has_included = _.contains selected_users, point.user
 
-    if author_has_included 
+    if true #author_has_included 
       includers = _.without includers, point.user
       includers.push point.user
 

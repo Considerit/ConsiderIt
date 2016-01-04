@@ -72,7 +72,7 @@ class Proposal < ActiveRecord::Base
     elsif 
       proposals = subdomain.proposals.where(:hide_on_homepage => false)
       case subdomain.name.downcase
-        when 'bitcoinfoundation', 'bitcoinfoundationarchive'
+        when 'bitcoinfoundation'
           manual_clusters = ['Our Mission', 'Our Values', 'Our Goals', 'Our Focus', 
                              'Our Actions', 'Resolutions', 'Foundation Goals', 
                              'Board Proposals', 'Member Proposals', 
@@ -196,7 +196,7 @@ class Proposal < ActiveRecord::Base
     json['top_point'] = self.points.published.order(:score).last
 
     json['histocache'] = JSON.parse(json['histocache'] || '{}')
-    
+
     make_key(json, 'proposal')
     stubify_field(json, 'user')
 

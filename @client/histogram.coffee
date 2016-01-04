@@ -344,6 +344,7 @@ window.Histogram = ReactiveComponent
     # Draw the avatars in the histogram. Placement will be determined later
     # by the physics sim
     DIV 
+      key: @histocache_key()
       ref: 'histo'
       style: 
         height: @props.height

@@ -35,7 +35,7 @@ window.OpinionSlider = ReactiveComponent
     # Define slider layout
     slider_style = 
       position: 'relative'
-      left: - (@props.width - BODY_WIDTH()) / 2
+      left: - (@props.width - PROPOSAL_HISTO_WIDTH()) / 2
       width: @props.width
       height: SLIDER_HANDLE_SIZE()
 

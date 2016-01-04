@@ -15,7 +15,7 @@ class Proposal < ActiveRecord::Base
   include Moderatable, Notifier
   
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :published]
+  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :published, :histocache]
 
   scope :active, -> {where( :active => true, :published => true )}
 
@@ -195,6 +195,8 @@ class Proposal < ActiveRecord::Base
 
     json['top_point'] = self.points.published.order(:score).last
 
+    json['histocache'] = JSON.parse(json['histocache'] || '{}')
+    
     make_key(json, 'proposal')
     stubify_field(json, 'user')
 

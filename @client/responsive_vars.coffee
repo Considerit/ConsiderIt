@@ -55,10 +55,12 @@ setResponsive = ->
                else 
                  content_width - 2 * gutter - 2 * whitespace
 
+
   body_width = Math.min(body_width, 700)
 
-
   # UI components
+  proposal_histo_width = 60 * Math.floor(body_width / 60)
+
   decision_board_width = body_width + 4 # the four is for the border
 
   point_width = if two_col then body_width / 2 - 38 else decision_board_width / 2 - 30
@@ -73,9 +75,9 @@ setResponsive = ->
                     else
                       14
 
-
   homepage_width = Math.min content_width, 900
-
+  homepage_width = 60 * Math.floor(homepage_width / 60)
+    
   if browser.is_mobile && portrait
     point_font_size += 4
 
@@ -85,6 +87,7 @@ setResponsive = ->
     GUTTER: gutter
     WHITESPACE: whitespace
     BODY_WIDTH: body_width
+    PROPOSAL_HISTO_WIDTH: proposal_histo_width
     DECISION_BOARD_WIDTH: decision_board_width
     POINT_WIDTH: point_width
     REASONS_REGION_WIDTH: reasons_region_width

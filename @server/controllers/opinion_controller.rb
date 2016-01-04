@@ -48,6 +48,12 @@ class OpinionController < ApplicationController
       })
     end
 
+    # clear the histogram cache because we got a new opinion
+    if opinion.published
+      proposal.histocache = nil
+      proposal.save
+    end
+
     #proposal.delay.update_metrics()
     
     dirty_key "/opinion/#{opinion.id}"

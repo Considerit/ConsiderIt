@@ -273,7 +273,7 @@ Proposal = ReactiveComponent
         #feelings
         DIV
           style:
-            width: BODY_WIDTH()
+            width: PROPOSAL_HISTO_WIDTH()
             margin: '0 auto'
             position: 'relative'
             zIndex: 1
@@ -303,15 +303,15 @@ Proposal = ReactiveComponent
                     # is rendered first. By setting a dummy prop on Dock
                     # that corresponds to the prop for the child, we assure
                     # that the parent will properly pass the prop onto the 
-                    # child. 
+                    # child. e
 
-            do =>       
+            do =>
 
               Histogram
                 key: namespaced_key('histogram', @proposal)
                 proposal: @proposal
                 opinions: opinionsForProposal(@proposal)
-                width: BODY_WIDTH()
+                width: PROPOSAL_HISTO_WIDTH()
                 height: if fetch('histogram-dock').docked then 50 else 170
                 enable_selection: true
                 draw_base: if fetch('histogram-dock').docked then true else false
@@ -328,12 +328,12 @@ Proposal = ReactiveComponent
             dockable : => 
               mode == 'crafting'
             dummy: get_proposal_mode() == 'crafting'
-            dummy2: BODY_WIDTH()
+            dummy2: PROPOSAL_HISTO_WIDTH()
             do =>   
               plurality = if mode == 'crafting' then 'individual' else 'group'
               OpinionSlider
                 key: namespaced_key('slider', @proposal)
-                width: BODY_WIDTH() - 10
+                width: PROPOSAL_HISTO_WIDTH() - 10
                 your_opinion: @proposal.your_opinion
                 focused: mode == 'crafting'
                 backgrounded: false

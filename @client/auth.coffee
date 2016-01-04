@@ -22,8 +22,6 @@ require './form'
 require './shared'
 
 
-
-
 window.logout = -> 
   current_user = fetch('/current_user')
   current_user.logged_in = false
@@ -95,9 +93,9 @@ Auth = ReactiveComponent
     goal = null
     if auth.goal 
       try 
-        goal = "To #{t(auth.goal)}"
+        goal = "To #{t(auth.goal).toLowerCase()}"
       catch 
-        goal = "To #{auth.goal}" 
+        goal = "To #{auth.goal.toLowerCase()}" 
 
     switch auth.form
 

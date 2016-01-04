@@ -14,12 +14,6 @@ window.EditProposal = ReactiveComponent
     # render if the proposal isn't loaded already. 
     if !@props.fresh && !proposal.id
       return SPAN null
-
-    default_group = if subdomain.name == 'bitcoinfoundationarchive' || \
-                       subdomain.name == 'bitcoinfoundation'
-                      'Our Actions'
-                    else
-                      null
     
     # check permissions
     permitted = if @props.fresh  

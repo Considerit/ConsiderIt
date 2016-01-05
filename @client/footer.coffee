@@ -28,10 +28,28 @@ window.DefaultFooter = ReactiveComponent
       #   if subdomain.branding.logo
       #     IMG src: "#{subdomain.branding.logo}", style: {width: 300}
 
+
+
       DIV 
         style: 
           marginTop: 30
 
+        DIV 
+          style: 
+            color: logo_red
+            cursor: 'pointer'
+            borderRadius: '50%'
+            display: 'inline-block'
+            padding: 10
+            textAlign: 'center'
+            fontSize: 18
+          title: 'Back to top'
+          onClick: -> scrollTo 0, 0
+
+          'Back to top'
+          I className: 'fa fa-angle-up', style: paddingLeft: 5
+
+        BR null
         TechnologyByConsiderit()
 
         DIV 

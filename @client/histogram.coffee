@@ -334,8 +334,8 @@ window.Histogram = ReactiveComponent
     # 3) The style of an unselected avatar when some other avatar(s) is selected
     unselected_avatar_style = _.extend {}, regular_avatar_style,  
       opacity: .2
-    if !browser.is_mobile
-      unselected_avatar_style = css.grayscale _.extend unselected_avatar_style
+    # if !browser.is_mobile
+    #   unselected_avatar_style = css.grayscale _.extend unselected_avatar_style
     # 4) The style of the avatar when the histogram is backgrounded 
     #    (e.g. on the crafting page)
     backgrounded_page_avatar_style = _.extend {}, unselected_avatar_style, 

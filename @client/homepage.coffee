@@ -581,6 +581,10 @@ window.CollapsedProposal = ReactiveComponent
     opinions = opinionsForProposal(proposal)
 
     score = 0
+    
+    filter_out = fetch 'filtered'
+    opinions = (o for o in opinions when !filter_out.users?[o.user])
+
     for o in opinions 
       score += o.stance
     score = Math.round(score * 10) / 10

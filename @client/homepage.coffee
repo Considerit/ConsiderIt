@@ -801,10 +801,13 @@ window.CollapsedProposal = ReactiveComponent
 
         SPAN 
           style: 
-            color: '#aaa'
+            color: '#999'
             fontSize: 12
-            fontWeight: 600
             cursor: 'pointer'
+          if score < 0
+            score *= -1
+            "–"
+
           score
 
         if @local.hover_score

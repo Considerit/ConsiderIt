@@ -110,7 +110,7 @@ window.ProfileMenu = ReactiveComponent
                     "Then take a photo of yourself with it, and email the photo to "
 
                     A 
-                      mailTo: 'verify@consider.it'
+                      href: 'mailto:verify@consider.it'
                       style: 
                         textDecoration: 'underline'
                       'verify@consider.it' 

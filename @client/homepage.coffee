@@ -578,6 +578,16 @@ window.CollapsedProposal = ReactiveComponent
 
     draw_slider = can_opine > 0 || your_opinion?.published
 
+    opinions = opinionsForProposal(proposal)
+
+    score = 0
+    for o in opinions 
+      score += o.stance
+    score = Math.round(score * 10) / 10
+    avg = score / opinions.length
+
+    score_w = widthWhenRendered "#{score}", {fontSize: 12, fontWeight: 600}
+
 
     if draw_slider
       slider = fetch "homepage_slider#{proposal.key}"
@@ -593,6 +603,7 @@ window.CollapsedProposal = ReactiveComponent
       key: proposal.key
       style:
         minHeight: 70
+        position: 'relative'
       onMouseEnter: => 
         if draw_slider
           @local.hover_proposal = proposal.key; save @local
@@ -609,22 +620,22 @@ window.CollapsedProposal = ReactiveComponent
             href: proposal_url(proposal)
             style: 
               position: 'absolute'
-              left: -75
-              top: 5
-              width: 22
-              height: 22
+              left: -66
+              top: 11
+              width: 8
+              height: 8
               textAlign: 'center'
               display: 'inline-block'
               cursor: 'pointer'
-              backgroundColor: logo_red
+              backgroundColor: '#aaa'
               color: 'white'
               fontSize: 14
               borderRadius: '50%'
               padding: 2
               fontWeight: 600
 
-            I 
-              className: 'fa-bell fa'
+            # I 
+            #   className: 'fa-bell fa'
 
 
         if current_user?.logged_in
@@ -694,16 +705,18 @@ window.CollapsedProposal = ReactiveComponent
       DIV 
         style: 
           display: 'inline-block' 
+          position: 'relative'
         # A
         #   href: proposal_url(proposal)
 
         DIV
           style: secnd_column
+                
 
           Histogram
             key: "histogram-#{proposal.slug}"
             proposal: proposal
-            opinions: opinionsForProposal(proposal)
+            opinions: opinions
             width: secnd_column.width
             height: 50
             enable_selection: false
@@ -766,6 +779,46 @@ window.CollapsedProposal = ReactiveComponent
                 if @local.hover_proposal == proposal.key && !mouse_over_element
                   @local.hover_proposal = null 
                   save @local
+      
+      # little score feedback
+      DIV 
+        ref: 'score'
+        style: 
+          position: 'absolute'
+          right: -35 - score_w
+          top: 32
+        onMouseEnter: => 
+          tooltip = fetch 'tooltip'
+          tooltip.coords = $(@refs.score.getDOMNode()).offset()
+          tooltip.coords.left -= 120
+          tooltip.tip = "#{opinions.length} opinions. \u03BC = #{Math.round(avg * 100) / 100}"
+          save tooltip
+
+        onMouseLeave: => 
+          tooltip = fetch 'tooltip'
+          tooltip.coords = null
+          save tooltip
+
+        SPAN 
+          style: 
+            color: '#aaa'
+            fontSize: 12
+            fontWeight: 600
+            cursor: 'pointer'
+          score
+
+        if @local.hover_score
+          DIV
+            style: 
+              position: 'absolute'
+              backgroundColor: 'white'
+              padding: "4px 10px"
+              zIndex: 10
+              boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+              fontSize: 16
+              right: 0
+              bottom: 30
+              width: 200
 
   componentDidUpdate: -> 
     if @local.keep_in_view

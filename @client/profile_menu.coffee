@@ -39,7 +39,7 @@ window.ProfileMenu = ReactiveComponent
 
         DIV null,
 
-          if false && subdomain.name == 'bitcoin' && \
+          if subdomain.name == 'bitcoin' && \
              current_user.logged_in && \
              (!current_user.tags['verified']? || current_user.tags['verified'] in ['no', 'false'])
               
@@ -127,6 +127,10 @@ window.ProfileMenu = ReactiveComponent
                     style: 
                       width: 570
 
+                  IMG 
+                    src: asset('bitcoin/verification-travis.jpg')
+                    style: 
+                      width: 570
 
           SPAN
             className: 'profile_menu_wrap'

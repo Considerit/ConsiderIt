@@ -21,7 +21,8 @@ private
     title = subdomain.title
 
     if !title || title == ''
-      raise "huh?? #{subdomain.id} #{subdomain.name}"
+      #raise "huh?? #{subdomain.id} #{subdomain.name}"
+      title = 'untitled'
     end
 
     "[#{title}] #{subject}"

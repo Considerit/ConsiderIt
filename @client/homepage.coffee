@@ -439,6 +439,8 @@ Cluster = ReactiveComponent
 
     cluster_key = "cluster/#{cluster.name}"
 
+    icons = options.show_proposer_icon
+
     subdomain = fetch '/subdomain'
 
     DIV null,
@@ -446,6 +448,7 @@ Cluster = ReactiveComponent
         DIV 
           style: 
             width: CONTENT_WIDTH()
+
 
           if options.label
             H1
@@ -466,7 +469,9 @@ Cluster = ReactiveComponent
 
       # Header of cluster
       H1
-        style: first_header
+        style: _.extend {}, first_header, 
+          paddingLeft: if icons then 68 else 0
+
         cluster.name || default_cluster_name
 
         if subdomain.name == 'RANDOM2015'

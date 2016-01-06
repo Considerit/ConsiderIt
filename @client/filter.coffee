@@ -1,10 +1,15 @@
 require './shared'
 require './customizations'
 
+window.enable_filtering = -> a=fetch('filter'); a.enabled=true; save(a)
+
 UserFilter = ReactiveComponent
   displayName: 'UserFilter'
 
   render : -> 
+    if !fetch('filter').enabled 
+      return SPAN null 
+
     filters = customization 'user_filters'
     users = fetch '/users'
     filter_out = fetch 'filtered'
@@ -31,7 +36,8 @@ UserFilter = ReactiveComponent
 
 
     DIV 
-      style: _.extend {}, (@props.style or {})
+      style: _.extend {}, (@props.style or {}), 
+        paddingLeft: if customization('show_proposer_icon') then 68
 
       SPAN 
         style: 

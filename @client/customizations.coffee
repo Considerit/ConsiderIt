@@ -367,7 +367,6 @@ customizations.default =
     filtered_out = fetch('filtered')
     if filtered_out.users
       opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
-      console.log opinions
     opinion_value = customization("opinion_value", proposal)
 
     sum = 0
@@ -1699,23 +1698,21 @@ customizations.bitcoin =
   collapse_descriptions_at: 300
   slider_pole_labels: support_oppose
 
-  # user_filters: [ {
-  #     label: 'verified users'
-  #     tooltip: 'explanation for verified user'
-  #     pass: (user) -> 
-  #       user = fetch(user)
-  #       user.tags['user'] && \
-  #        !(user.tags['user'].toLowerCase() in ['no', 'false'])
-  #   }, {
-  #     label: 'miners'
-  #     tooltip: 'explanation for miner'
-  #     pass: (user) -> 
-  #       user = fetch(user)
-  #       user.tags['miner'] && \
-  #         !(user.tags['miner'].toLowerCase() in ['no', 'false'])
-  #   }]
+  user_filters: [ {
+      label: 'verified users'
+      pass: (user) -> 
+        user = fetch(user)
+        user.tags['verified'] && \
+         !(user.tags['verified'].toLowerCase() in ['no', 'false'])
+    }, {
+      label: 'miners'
+      pass: (user) -> 
+        user = fetch(user)
+        user.tags['bitcoin_miner'] && \
+          !(user.tags['bitcoin_miner'].toLowerCase() in ['no', 'false'])
+    }]
 
-customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] = 
+customizations['bitcoinfoundation'] = 
 
   auth:   
     user_questions : [
@@ -1877,9 +1874,6 @@ customizations.bitcoinfoundation = customizations['bitcoinfoundationarchive'] =
 #                   "Or submit a new direction."
 
 #         ProfileMenu()
-
-# customizations.bitcoinfoundation.NonHomepageHeader = customizations.bitcoinfoundation.HomepageHeader = \
-# customizations['bitcoinfoundationarchive'].NonHomepageHeader = customizations['bitcoinfoundationarchive'].HomepageHeader
 
 
 

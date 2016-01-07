@@ -256,10 +256,6 @@ Proposal = ReactiveComponent
 
         ProposalDescription()
 
-        # notifications
-        if current_user?.logged_in          
-          ActivityFeed()
-
         if has_focus == 'opinion'
           SaveYourOpinionNotice()
 
@@ -551,17 +547,57 @@ ProposalDescription = ReactiveComponent
             else
               @renderDescriptionField item
 
-      if permit('update proposal', @proposal) > 0
-        DIV 
-          style:
-            marginTop: 15
-            color: '#666'
+      DIV 
+        style:
+          marginTop: 15
+          color: '#666'
+
+        if permit('update proposal', @proposal) > 0
+
+          I 
+            className: 'fa fa-cog'
+            style: 
+              cursor: 'pointer'
+              color: if @local.show_options then logo_red else "#aaa"
+              fontSize: 24
+              marginRight: 10
+              display: 'inline-block'
+
+            onClick: => 
+              @local.show_options = !@local.show_options
+              save @local
+
+        if current_user?.logged_in          
+
+          I 
+            className: 'fa fa-bell'
+            title: 'notifications'
+            style: 
+              cursor: 'pointer'
+              color: if @local.show_notifications then logo_red else "#aaa"
+              fontSize: 24
+
+            onClick: => 
+              @local.show_notifications = !@local.show_notifications
+              save @local
+
+      if @local.show_options
+        DIV
+          style: 
+            marginTop: 5
+
           A 
             href: "#{@proposal.key}/edit"
+            style:
+              marginRight: 10
+              color: '#999'
+
             t('edit')
+
           A 
             style: 
-              padding: 10
+              marginRight: 10
+              color: '#999'              
               backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'
             onClick: => 
               @local.edit_roles = !@local.edit_roles
@@ -570,6 +606,10 @@ ProposalDescription = ReactiveComponent
 
           if permit('delete proposal', @proposal) > 0
             A
+              style:
+                marginRight: 10
+                color: '#999'
+
               onClick: => 
                 if confirm('Delete this proposal forever?')
                   destroy(@proposal.key)
@@ -579,7 +619,8 @@ ProposalDescription = ReactiveComponent
           if current_user.is_super_admin
             SPAN 
               style:
-                padding: 10
+                marginRight: 10
+                color: '#999'
 
               onClick: => 
                 @local.copy_to_subdomain = !@local.copy_to_subdomain
@@ -608,7 +649,7 @@ ProposalDescription = ReactiveComponent
                           backgroundColor: hsv2rgb(hues[idx], .7, .5)
                           color: 'white'
                           display: 'inline-block'            
-                        sub.name
+                        sub.name        
 
       if @local.edit_roles
         DIV 
@@ -620,6 +661,11 @@ ProposalDescription = ReactiveComponent
 
           ProposalRoles 
             key: @proposal.key
+
+      # notifications
+      if @local.show_notifications      
+        ActivityFeed()
+
 
 
 

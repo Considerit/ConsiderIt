@@ -281,42 +281,41 @@ window.ActivityFeed = ReactiveComponent
         margin: 'auto'
         marginBottom: 18
 
-      DIV
+      # DIV
+      #   style: 
+      #     backgroundColor: "#eee"
+      #     textDecoration: 'underline'
+      #     padding: 10
+      #     fontSize: 18
+      #     textAlign: 'center'
+      #     cursor: 'pointer'
+
+      #   onClick: => 
+      #     @local.show_notifications = !@local.show_notifications
+      #     save @local
+
+      #   I 
+      #     className: 'fa-bell-o fa'
+      #     style: 
+      #       display: 'inline-block'
+      #       marginRight: 15
+
+      #   if @local.show_notifications
+      #     t('Hide notifications')
+      #   else
+      #     t('Show notifications')
+
+      notifications = []
+
+      UL
         style: 
-          backgroundColor: "#eee"
-          textDecoration: 'underline'
-          padding: 10
-          fontSize: 18
-          textAlign: 'center'
-          cursor: 'pointer'
+          border: "1px solid #eee"
+          listStyle: 'none'
+          padding: 20
 
-        onClick: => 
-          @local.show_notifications = !@local.show_notifications
-          save @local
+        for notification in @proposal.notifications
 
-        I 
-          className: 'fa-bell-o fa'
-          style: 
-            display: 'inline-block'
-            marginRight: 15
-
-        if @local.show_notifications
-          t('Hide notifications')
-        else
-          t('Show notifications')
-
-      if @local.show_notifications
-        notifications = []
-
-        UL
-          style: 
-            border: "1px solid #eee"
-            listStyle: 'none'
-            padding: 20
-
-          for notification in @proposal.notifications
-
-            @drawNotification(notification)
+          @drawNotification(notification)
 
   drawNotification: (notification) -> 
     event_object = fetch "/#{notification.event_object_type.toLowerCase()}/#{notification.event_object_id}"

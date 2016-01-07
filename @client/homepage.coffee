@@ -548,6 +548,16 @@ Cluster = ReactiveComponent
   componentDidUpdate: -> @storeSortOrder()
 
 
+pad = (num, len) -> 
+  str = num #.toString()
+  dec = str.split('.')
+  i = 0 
+  while i < len - dec[0].toString().length
+    dec[0] = "0" + dec[0]
+    i += 1
+
+
+  dec[0] + if dec.length > 0 then '.' + dec[1] else ''
 
 window.CollapsedProposal = ReactiveComponent
   displayName: 'CollapsedProposal'
@@ -580,17 +590,20 @@ window.CollapsedProposal = ReactiveComponent
 
     opinions = opinionsForProposal(proposal)
 
-    score = 0
-    
+    score = 0    
     filter_out = fetch 'filtered'
     opinions = (o for o in opinions when !filter_out.users?[o.user])
 
     for o in opinions 
       score += o.stance
-    score = Math.round(score * 10) / 10
     avg = score / opinions.length
+    negative = score < 0
+    score *= -1 if negative
 
-    score_w = widthWhenRendered "#{score}", {fontSize: 12, fontWeight: 600}
+    console.log score, score.toFixed(1)
+    score = pad score.toFixed(1),2
+
+    score_w = widthWhenRendered "#{score}", {fontSize: 18, fontWeight: 600}
 
 
     if draw_slider
@@ -789,8 +802,8 @@ window.CollapsedProposal = ReactiveComponent
         ref: 'score'
         style: 
           position: 'absolute'
-          right: -35 - score_w
-          top: 32
+          right: -50 - score_w
+          top: 10
         onMouseEnter: => 
           tooltip = fetch 'tooltip'
           tooltip.coords = $(@refs.score.getDOMNode()).offset()
@@ -806,12 +819,12 @@ window.CollapsedProposal = ReactiveComponent
         SPAN 
           style: 
             color: '#999'
-            fontSize: 12
+            fontSize: 18
+            fontWeight: 600
             cursor: 'pointer'
-          if score < 0
-            score *= -1
-            "–"
 
+          if negative
+            '–'
           score
 
         if @local.hover_score

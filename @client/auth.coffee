@@ -648,8 +648,12 @@ Auth = ReactiveComponent
     current_user = fetch('/current_user')
     auth = fetch('auth')
 
-    questions = if auth.ask_questions then customization('auth.user_questions')
-    questions = questions or []
+    if auth.ask_questions && auth.form in \
+          ['edit profile', 'create account', 'create account via invitation']
+      questions = customization('auth.user_questions')
+    else 
+      questions = []
+
 
     if @local.tags != current_user.tags
       @local.tags = current_user.tags

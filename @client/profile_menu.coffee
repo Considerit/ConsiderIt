@@ -204,6 +204,8 @@ window.ProfileMenu = ReactiveComponent
           onClick: (e) =>
             reset_key 'auth',
               form: 'login'
+              ask_questions: true
+
 
           style: 
             color: if !light_background then 'white'

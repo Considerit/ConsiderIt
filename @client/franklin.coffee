@@ -263,8 +263,8 @@ Proposal = ReactiveComponent
           UserFilter
             style: 
               width: BODY_WIDTH()
-              margin: '20px auto'
-              textAlign: 'center'
+              margin: '40px auto 20px auto'
+
 
         #feelings
         DIV
@@ -513,8 +513,7 @@ ProposalDescription = ReactiveComponent
           paddingTop: '1em'
           position: 'relative'
           maxHeight: if @local.description_collapsed then @max_description_height
-          overflowY: if @local.description_collapsed then 'hidden'
-          overflowX: 'visible'
+          overflow: if @local.description_collapsed then 'hidden'
         if @local.description_collapsed
           DIV
             style:
@@ -533,7 +532,7 @@ ProposalDescription = ReactiveComponent
               @local.description_collapsed = false
               save(@local)
             'Expand full text'
-        SPAN dangerouslySetInnerHTML:{__html: @proposal.description}
+        DIV dangerouslySetInnerHTML:{__html: @proposal.description}
 
 
       if @local.description_fields
@@ -1507,10 +1506,14 @@ PointsList = ReactiveComponent
               reset_key 'auth', 
                 form: 'create account'
                 goal: 'Write a point'
+                ask_questions: true
+
             else if can_add_new_point == Permission.UNVERIFIED_EMAIL
               reset_key 'auth', 
                 form: 'verify email'
                 goal: 'Write a point'
+                ask_questions: true
+
               save auth
               current_user.trying_to = 'send_verification_token'
               save current_user
@@ -1859,6 +1862,8 @@ AuthTransition = ReactiveComponent
         key: 'auth'
         form: 'create account via invitation'
         goal: 'Complete registration'
+        ask_questions: true
+
 
     SPAN null
 

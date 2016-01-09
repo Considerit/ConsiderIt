@@ -1693,24 +1693,67 @@ styles += """
 ####################
 # Bitcoin
 
+
+passes_tags = (user, tags) -> 
+  if typeof(tags) == 'string'
+    tags = [tags]
+  user = fetch(user)
+
+  passes = false 
+  for tag in tags 
+    passes ||= user.tags[tag] && \
+     !(user.tags[tag].toLowerCase() in ['no', 'false'])
+  passes 
+
+
+
+
 customizations.bitcoin = 
   show_proposer_icon: true
   collapse_descriptions_at: 300
   slider_pole_labels: support_oppose
 
+  auth:   
+    user_questions : [
+      {
+        tag: 'bitcoin_developer.editable'
+        question: 'Others consider me a bitcoin developer'
+        input: 'dropdown'
+        options:['No', 'Yes']
+        required: false
+      },{
+        tag: 'bitcoin_business.editable'
+        question: 'I operate these bitcoin businesses (urls)'
+        input: 'text'
+        required: false
+      }
+    ]
+
+
   user_filters: [ {
       label: 'verified users'
-      pass: (user) -> 
-        user = fetch(user)
-        user.tags['verified'] && \
-         !(user.tags['verified'].toLowerCase() in ['no', 'false'])
+      tooltip: 'User sent in verification image.'
+      pass: (user) -> passes_tags(user, 'verified')
+      icon: "<span style='color:green'>\u2713 verified</span>"
+
     }, {
       label: 'miners'
-      pass: (user) -> 
-        user = fetch(user)
-        user.tags['bitcoin_miner'] && \
-          !(user.tags['bitcoin_miner'].toLowerCase() in ['no', 'false'])
-    }]
+      tooltip: 'Controls > 1% hashrate.'
+      pass: (user) -> passes_tags(user, 'bitcoin_large_miner')
+      icon: "<span style=''>\u26CF miner</span>"      
+    }, {
+      label: 'developers'
+      tooltip: 'Self reported in user profile.'
+      pass: (user) -> passes_tags(user, 'bitcoin_developer.editable')
+      icon: "<span style=''><img src='https://dl.dropboxusercontent.com/u/3403211/dev.png' style='width:20px' /> developer</span>"            
+    },{
+      label: 'businesses'
+      tooltip: 'Self reported in user profile. Verified by email to business.'
+      pass: (user) -> passes_tags(user, 'bitcoin_business.editable')
+      icon: (user) -> "<span style=''>operates: #{fetch(user).tags['bitcoin_business.editable']}</span>"            
+
+    }
+  ]
 
 customizations['bitcoinfoundation'] = 
 

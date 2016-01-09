@@ -161,7 +161,7 @@ window.recourse = (permission, goal) ->
       loadPage '/'
 
     when Permission.NOT_LOGGED_IN
-      reset_key 'auth', {form: 'login', goal: goal}
+      reset_key 'auth', {form: 'login', goal: goal, ask_questions: true}
 
     when Permission.UNVERIFIED_EMAIL
       reset_key 'auth', {form: 'verify email', goal: goal}

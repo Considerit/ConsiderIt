@@ -60,7 +60,7 @@ UserTags = ReactiveComponent
           placeholder: "Name or email..."
           value: if current_user then current_user.name
           onChange: => 
-            @local.filtered = $(@getDOMNode()).find('#filter').val()
+            @local.filtered = $(@getDOMNode()).find('#filter').val()?.toLowerCase()
             change_current_user null 
             save(@local)
           onKeyPress: (e) => 
@@ -85,7 +85,7 @@ UserTags = ReactiveComponent
         available_users = _.filter users.users, (u) => 
             u.key != @local.current_user &&
              (!@local.filtered || 
-              "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1)
+              "#{u.name} <#{u.email}>".toLowerCase().indexOf(@local.filtered) > -1)
 
         if available_users.length > 0
           UL 

@@ -1,5 +1,6 @@
 require './shared'
 require './tooltip'
+require './customizations'
 
 
 # globally accessible method for getting the URL of a user's avatar
@@ -26,8 +27,19 @@ user_name = (user, anon) ->
 document.addEventListener "mouseover", (e) ->
   if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
     user = fetch(e.target.getAttribute('data-user'))
+    anonymous = e.target.getAttribute('data-anonymous') == 'true'
 
-    name = user_name user, e.target.getAttribute('data-anonymous') == 'true'
+    name = user_name user, anonymous
+
+    if !anonymous && filters = customization 'user_filters'
+      for filter in filters 
+        if filter.pass(user) && filter.icon
+          if typeof(filter.icon) != 'string'
+            icon = filter.icon(user)
+          else
+            icon = filter.icon 
+          name += '<span style="padding: 0 0 0 12px">' + icon + "</span>"
+
 
     tooltip = fetch 'tooltip'
     tooltip.coords = $(e.target).offset()
@@ -143,6 +155,7 @@ window.Avatar = ReactiveComponent
           name = "#{name[0][0]}#{name[1][0]}"
         else 
           name = "#{name[0][0]}"
+
         SPAN 
           style: 
             color: 'white'
@@ -153,8 +166,7 @@ window.Avatar = ReactiveComponent
             fontFamily: ff
             top: style.height / 2 - heightWhenRendered(name, {fontSize: fontsize, fontFamily: ff}) / 2
 
-          name
-          
+          name          
 
 styles += """
 .avatar {

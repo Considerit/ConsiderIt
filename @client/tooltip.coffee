@@ -6,6 +6,8 @@ window.Tooltip = ReactiveComponent
   displayName: 'Tooltip'
 
   render : -> 
+
+
     tooltip = fetch('tooltip')
     return SPAN(null) if !tooltip.coords
 
@@ -13,24 +15,24 @@ window.Tooltip = ReactiveComponent
     tip = tooltip.tip
 
     style = 
-        fontSize: 16
-        padding: '2px 4px'
-        borderRadius: 8
-        #whiteSpace: 'nowrap'
-        maxWidth: 200
+      fontSize: 16
+      padding: '2px 4px'
+      borderRadius: 8
+      #maxWidth: 200
 
-    real_height = heightWhenRendered tip, style
+    size = sizeWhenRendered(tip, style)
 
     # place the tooltip above the element
     _.extend style, 
-        top: coords.top - real_height - 9
-        left: coords.left
-        pointerEvents: 'none'
-        zIndex: 9999
-        color: 'white'
-        backgroundColor: focus_blue
-        position: 'absolute'
+      top: coords.top - size.height - 9
+      left: coords.left - size.width / 2
+      pointerEvents: 'none'
+      zIndex: 9999
+      color: '#999'
+      backgroundColor: '#f6f6f6'
+      position: 'absolute'
 
     DIV
       style: style
-      tip
+      dangerouslySetInnerHTML: {__html: tip}
+

@@ -124,6 +124,8 @@ window.SimpleHomepage = ReactiveComponent
           style: 
             width: CONTENT_WIDTH()
             marginBottom: 20
+            paddingLeft: if customization('show_proposer_icon') then 68
+
 
       # List all clusters
 
@@ -303,7 +305,7 @@ Cluster = ReactiveComponent
               @local.adding_new_proposal = cluster_name; save(@local)
             else 
               e.stopPropagation()
-              reset_key 'auth', {form: 'login', goal: ''}
+              reset_key 'auth', {form: 'login', goal: '', ask_questions: true}
           
           if permitted
             t("add new")
@@ -600,7 +602,6 @@ window.CollapsedProposal = ReactiveComponent
     negative = score < 0
     score *= -1 if negative
 
-    console.log score, score.toFixed(1)
     score = pad score.toFixed(1),2
 
     score_w = widthWhenRendered "#{score}", {fontSize: 18, fontWeight: 600}

@@ -67,7 +67,7 @@ class CurrentUserController < ApplicationController
             errors.append("Password needs to be at least #{@min_pass} letters") if !ok_password
             errors.append('Name is blank') if !has_name
             errors.append('Community pledge required') if !signed_pledge
-            if !ok_email && !errors.include?('Email address is not properly formatted')
+            if !params[:email] || params[:email].length == 0
               errors.append('Email address can\'t be blank') 
             end
           end

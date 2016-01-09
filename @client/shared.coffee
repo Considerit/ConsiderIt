@@ -203,6 +203,39 @@ window.heightWhenRendered = (str, style) ->
 
   height_cache[key]
 
+# Computes the width/height of some text given some styles
+size_cache = {}
+window.sizeWhenRendered = (str, style) -> 
+  main = document.getElementById('content')
+
+  return {width: 0, height: 0} if !main
+
+  style ||= {}
+  # This DOM manipulation is relatively expensive, so cache results
+  style.str = str
+  key = JSON.stringify style
+  delete style.str
+
+  if key not of size_cache
+    style.display ||= 'inline-block'
+
+    test = document.createElement("span")
+    test.innerHTML = "<span>#{str}</span>"
+    for k,v of style
+      test.style[k] = v
+
+    main.appendChild test 
+    h = test.offsetHeight
+    w = test.offsetWidth
+    main.removeChild test
+
+    size_cache[key] = 
+      width: w
+      height: h
+
+  size_cache[key]
+
+
 
 # maps an opinion stance in [-1, 1] to a pixel value [0, width]
 window.translateStanceToPixelX = (stance, width) -> (stance + 1) / 2 * width

@@ -62,6 +62,8 @@ window.OpinionSlider = ReactiveComponent
                     else 
                       'rgb(200, 200, 200)'
         base_endpoint: if slider.docked then 'square' else 'sharp'
+        regions: customization('slider_regions', @proposal)
+        draw_ticks: customization('slider_ticks', @proposal)
         polarized: true
         draw_helpers: @props.focused && !slider.has_moved
         handle: if @props.backgrounded 
@@ -77,6 +79,48 @@ window.OpinionSlider = ReactiveComponent
           visibility: if hist_selection || !@props.permitted then 'hidden'
         onMouseUpCallback: @handleMouseUp
         respond_to_click: false
+
+      @saveYourOpinionNotice()
+
+
+  saveYourOpinionNotice : -> 
+    your_opinion = fetch @props.your_opinion
+    slider = fetch @props.key
+
+    return SPAN null if (!TWO_COL() && customization('discussion', @proposal))  || \
+                        ( your_opinion.published || \
+                          (!slider.has_moved && your_opinion.point_inclusions.length == 0)\
+                        ) || slider.is_moving
+    
+
+    style = 
+      #backgroundColor: '#eee'
+      padding: 10
+      color: 'white'
+      textAlign: 'center'
+      fontSize: 16
+      margin: '10px 0'
+      position: 'relative'
+      fontWeight: 700
+      textDecoration: 'underline'
+      cursor: 'pointer'
+      color: focus_blue
+
+    s = sizeWhenRendered t('login_to_save_opinion'), style
+
+    DIV 
+      style: 
+        width: @props.width
+        margin: 'auto'
+        position: 'relative'
+
+      A 
+        style: _.extend style, 
+          left: (slider.value + 1) / 2 * @props.width - s.width / 2 - 10
+
+        onClick: => saveOpinion(@proposal)
+
+        t('login_to_save_opinion')
 
 
   drawPoleLabels: ->
@@ -130,27 +174,16 @@ window.OpinionSlider = ReactiveComponent
   drawFeedback: -> 
     slider = fetch @props.key
 
+    labels = customization 'slider_pole_labels', @proposal
     slider_feedback = 
       if !slider.has_moved 
         t('Slide Your Overall Opinion')
+      else if func = labels.slider_feedback
+        func slider.value, @proposal
       else if !customization('show_slider_feedback', @proposal)
-        if TWO_COL() then t("Your opinion") else ''
-      else if isNeutralOpinion slider.value
-        "You are Undecided"
+        if TWO_COL() then t("Your opinion") else ''        
       else 
-        degree = Math.abs slider.value
-        strength_of_opinion = if degree > .999
-                                "Fully "
-                              else if degree > .5
-                                "Firmly "
-                              else
-                                "Slightly " 
-
-        valence = customization "slider_pole_labels.individual." + \
-                                (if slider.value > 0 then 'support' else 'oppose'), \
-                                @proposal
-
-        "You #{strength_of_opinion} #{valence}"
+        ''
 
     feedback_style = 
       pointerEvents: 'none' 
@@ -161,7 +194,7 @@ window.OpinionSlider = ReactiveComponent
 
     # Keep feedback centered over handle, but keep within the bounds of 
     # the slider region when the slider is in an extreme position. 
-    feedback_left = @props.width * (slider.value / 2 + .5)
+    feedback_left = @props.width * (slider.value + 1) / 2
     feedback_width = widthWhenRendered(slider_feedback, feedback_style) + 10
 
     if slider.docked 
@@ -191,14 +224,21 @@ window.OpinionSlider = ReactiveComponent
     # Clicking on the slider handle should transition us between 
     # crafting <=> results. We should also transition to crafting 
     # when we've been dragging on the results page.
-    if !TWO_COL() && (slider.value == your_opinion.stance || mode == 'results')
+    transition = !TWO_COL() && \
+       (slider.value == your_opinion.stance || mode == 'results') &&
+       customization('discussion', @proposal)
+
+    if transition
       new_page = if mode == 'results' then 'crafting' else 'results'
       updateProposalMode new_page, 'click_slider'
+
 
     # We save the slider's position to the server only on mouse-up.
     # This way you can drag it with good performance.
     if your_opinion.stance != slider.value
       your_opinion.stance = slider.value
+      if !transition && fetch('/current_user').logged_in
+        your_opinion.published = true
       save your_opinion
       window.writeToLog 
         what: 'move slider'

@@ -22,7 +22,15 @@ window.Homepage = ReactiveComponent
       doc.title = title
       save doc
 
-    customization('Homepage')()
+    DIV null,
+
+      customization('Homepage')()
+
+      # if customization('tawkspace')
+      #   IFRAME 
+      #     src: customization('tawkspace')
+      #     height: 500
+      #     width: CONTENT_WIDTH()
 
 
 #############
@@ -132,12 +140,12 @@ window.SimpleHomepage = ReactiveComponent
       for cluster, index in clusters or []
         cluster_key = "cluster/#{cluster.name}"
 
-        options =   
-          archived: customization("archived", cluster_key)
-          label: customization("label", cluster_key)
-          description: customization("description", cluster_key)
-          homie_histo_title: customization("homie_histo_title", cluster_key)
-          show_proposer_icon: customization("show_proposer_icon", cluster_key)
+        cluster_keys = ['archived', 'label', 'description', 'homie_histo_title', \
+                        'show_proposer_icon', 'slider_handle', 'slider_pole_labels', 
+                        'slider_regions', 'slider_ticks', 'discussion', 'show_score']
+        options = {}
+        for k in cluster_keys
+          options[k] = customization k, cluster_key 
 
         DIV 
           style: 
@@ -266,7 +274,7 @@ Cluster = ReactiveComponent
           CollapsedProposal 
             key: "collapsed#{proposal.key}"
             proposal: proposal
-            icons: options.show_proposer_icon
+            options: options 
 
           @drawThreshold(subdomain, cluster, idx)
 
@@ -566,7 +574,8 @@ window.CollapsedProposal = ReactiveComponent
 
   render : ->
     proposal = fetch @props.proposal
-    icons = @props.icons
+    options = @props.options
+    icons = options.show_proposer_icon
 
     # we want to update if the sort order changes so that we can 
     # resolve @local.keep_in_view
@@ -592,19 +601,20 @@ window.CollapsedProposal = ReactiveComponent
 
     opinions = opinionsForProposal(proposal)
 
-    score = 0    
-    filter_out = fetch 'filtered'
-    opinions = (o for o in opinions when !filter_out.users?[o.user])
+    if options.show_score 
+      score = 0
+      filter_out = fetch 'filtered'
+      opinions = (o for o in opinions when !filter_out.users?[o.user])
 
-    for o in opinions 
-      score += o.stance
-    avg = score / opinions.length
-    negative = score < 0
-    score *= -1 if negative
+      for o in opinions 
+        score += o.stance
+      avg = score / opinions.length
+      negative = score < 0
+      score *= -1 if negative
 
-    score = pad score.toFixed(1),2
+      score = pad score.toFixed(1),2
 
-    score_w = widthWhenRendered "#{score}", {fontSize: 18, fontWeight: 600}
+      score_w = widthWhenRendered "#{score}", {fontSize: 18, fontWeight: 600}
 
 
     if draw_slider
@@ -615,7 +625,6 @@ window.CollapsedProposal = ReactiveComponent
         if your_opinion.stance
           slider.has_moved = true
         save slider
-
 
     DIV
       key: proposal.key
@@ -738,108 +747,115 @@ window.CollapsedProposal = ReactiveComponent
             width: secnd_column.width
             height: 50
             enable_selection: false
-            draw_base: true    
-
-          if draw_slider && ( \
-               @local.hover_proposal == proposal.key || browser.is_mobile)
-
-            Slider 
-              base_height: 0
-              key: slider.key
-              width: secnd_column.width
-              polarized: true
-              respond_to_click: false
-              base_color: 'transparent'
-              handle: slider_handle.triangley
-              handle_height: 18
-              handle_width: 21
-              offset: true
-              handle_props:
-                use_face: false
-                
-              onMouseUpCallback: (e) =>
-                # We save the slider's position to the server only on mouse-up.
-                # This way you can drag it with good performance.
-                if your_opinion.stance != slider.value
-
-                  # save distance from top that the proposal is at, so we can 
-                  # maintain that position after the save potentially triggers 
-                  # a re-sort. 
-                  prev_offset = @getDOMNode().offsetTop
-                  prev_scroll = window.scrollY
-
-                  your_opinion.stance = slider.value
-                  your_opinion.published = true
-                  save your_opinion
-                  window.writeToLog 
-                    what: 'move slider'
-                    details: {proposal: proposal.key, stance: slider.value}
-                  @local.slid = 1000
-
-                  update = fetch('homepage_you_updated_proposal')
-                  update.dummy = !update.dummy
-                  save update
-
-                  @local.keep_in_view = 
-                    offset: prev_offset
-                    scroll: prev_scroll
-
-                  scroll_handle = => 
-                    @local.keep_in_view = null 
-                    window.removeEventListener 'scroll', scroll_handle
-
-                  window.addEventListener 'scroll', scroll_handle
+            draw_base: true
+            draw_base_labels: if options['slider_ticks']? 
+                                !options['slider_ticks'] 
+                              else 
+                                true
 
 
-                mouse_over_element = closest e.target, (node) => 
-                  node == @getDOMNode()
+          Slider 
+            base_height: 0
+            draw_handle: !!(draw_slider && ( \
+                         @local.hover_proposal == proposal.key || browser.is_mobile))
+            key: slider.key
+            width: secnd_column.width
+            polarized: true
+            regions: options.slider_regions
+            draw_ticks: options['slider_ticks']
+            respond_to_click: false
+            base_color: 'transparent'
+            handle: slider_handle.triangley
+            handle_height: 18
+            handle_width: 21
+            offset: true
+            handle_props:
+              use_face: false
+              
+            onMouseUpCallback: (e) =>
+              # We save the slider's position to the server only on mouse-up.
+              # This way you can drag it with good performance.
+              if your_opinion.stance != slider.value
 
-                if @local.hover_proposal == proposal.key && !mouse_over_element
-                  @local.hover_proposal = null 
-                  save @local
+                # save distance from top that the proposal is at, so we can 
+                # maintain that position after the save potentially triggers 
+                # a re-sort. 
+                prev_offset = @getDOMNode().offsetTop
+                prev_scroll = window.scrollY
+
+                your_opinion.stance = slider.value
+                your_opinion.published = true
+                save your_opinion
+                window.writeToLog 
+                  what: 'move slider'
+                  details: {proposal: proposal.key, stance: slider.value}
+                @local.slid = 1000
+
+                update = fetch('homepage_you_updated_proposal')
+                update.dummy = !update.dummy
+                save update
+
+                @local.keep_in_view = 
+                  offset: prev_offset
+                  scroll: prev_scroll
+
+                scroll_handle = => 
+                  @local.keep_in_view = null 
+                  window.removeEventListener 'scroll', scroll_handle
+
+                window.addEventListener 'scroll', scroll_handle
+
+
+              mouse_over_element = closest e.target, (node) => 
+                node == @getDOMNode()
+
+              if @local.hover_proposal == proposal.key && !mouse_over_element
+                @local.hover_proposal = null 
+                save @local
       
       # little score feedback
-      DIV 
-        ref: 'score'
-        style: 
-          position: 'absolute'
-          right: -50 - score_w
-          top: 10
-        onMouseEnter: => 
-          tooltip = fetch 'tooltip'
-          tooltip.coords = $(@refs.score.getDOMNode()).offset()
-          tooltip.coords.left -= 120
-          tooltip.tip = "#{opinions.length} opinions. \u03BC = #{Math.round(avg * 100) / 100}"
-          save tooltip
-
-        onMouseLeave: => 
-          tooltip = fetch 'tooltip'
-          tooltip.coords = null
-          save tooltip
-
-        SPAN 
+      if options.show_score
+        DIV 
+          ref: 'score'
           style: 
-            color: '#999'
-            fontSize: 18
-            fontWeight: 600
-            cursor: 'pointer'
+            position: 'absolute'
+            right: -50 - score_w
+            top: 10
+          onMouseEnter: => 
+            if opinions.length > 0
+              tooltip = fetch 'tooltip'
+              tooltip.coords = $(@refs.score.getDOMNode()).offset()
+              tooltip.tip = "#{opinions.length} opinions. \u03BC = #{Math.round(avg * 100) / 100}"
+              save tooltip
 
-          if negative
-            '–'
-          score
+          onMouseLeave: => 
+            tooltip = fetch 'tooltip'
+            tooltip.coords = null
+            save tooltip
 
-        if @local.hover_score
-          DIV
+          SPAN 
             style: 
-              position: 'absolute'
-              backgroundColor: 'white'
-              padding: "4px 10px"
-              zIndex: 10
-              boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-              fontSize: 16
-              right: 0
-              bottom: 30
-              width: 200
+              color: '#999'
+              fontSize: 18
+              fontWeight: 600
+              cursor: 'pointer'
+
+            if negative
+              '–'
+            score
+
+          if @local.hover_score
+            DIV
+              style: 
+                position: 'absolute'
+                backgroundColor: 'white'
+                padding: "4px 10px"
+                zIndex: 10
+                boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+                fontSize: 16
+                right: 0
+                bottom: 30
+                width: 200
 
   componentDidUpdate: -> 
     if @local.keep_in_view

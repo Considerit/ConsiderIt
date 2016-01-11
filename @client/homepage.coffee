@@ -282,6 +282,8 @@ Cluster = ReactiveComponent
         @drawAddNew cluster, options
 
   drawAddNew : (cluster, options) -> 
+    return SPAN null if cluster.name == 'Blocksize Survey'
+
     cluster_name = cluster.name or default_cluster_name
     icons = options.show_proposer_icon
     current_user = fetch '/current_user'
@@ -631,6 +633,7 @@ window.CollapsedProposal = ReactiveComponent
       style:
         minHeight: 70
         position: 'relative'
+        marginBottom: if customization('slider_ticks', proposal) then 25
       onMouseEnter: => 
         if draw_slider
           @local.hover_proposal = proposal.key; save @local

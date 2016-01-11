@@ -758,7 +758,7 @@ window.CollapsedProposal = ReactiveComponent
             base_height: 0
             draw_handle: !!(draw_slider && ( \
                          @local.hover_proposal == proposal.key || browser.is_mobile))
-            key: slider.key
+            key: "homepage_slider#{proposal.key}"
             width: secnd_column.width
             polarized: true
             regions: options.slider_regions

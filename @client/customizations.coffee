@@ -218,6 +218,24 @@ support_oppose =
     support_sub: ''
     oppose_sub: ''
 
+  slider_feedback: (value, proposal) -> 
+    if Math.abs(value) < 0.05
+      "You are undecided"
+    else 
+      degree = Math.abs value
+      strength_of_opinion = if degree > .999
+                              "Fully "
+                            else if degree > .5
+                              "Firmly "
+                            else
+                              "Slightly " 
+
+      valence = customization "slider_pole_labels.individual." + \
+                              (if value > 0 then 'support' else 'oppose'), \
+                              proposal
+
+      "You #{strength_of_opinion} #{valence}"
+
 important_unimportant = 
   individual: 
     support: 'Important'
@@ -292,6 +310,24 @@ agree_disagree =
     oppose: 'Disagree'  
     support_sub: ''
     oppose_sub: ''
+
+  slider_feedback: (value, proposal) -> 
+    if Math.abs(value) < 0.05
+      "You are undecided"
+    else 
+      degree = Math.abs value
+      strength_of_opinion = if degree > .999
+                              "Fully "
+                            else if degree > .5
+                              "Firmly "
+                            else
+                              "Slightly " 
+
+      valence = customization "slider_pole_labels.individual." + \
+                              (if value > 0 then 'agree' else 'disagree'), \
+                              proposal
+
+      "You #{strength_of_opinion} #{valence}"
 
 plus_minus = 
   individual: 
@@ -375,6 +411,8 @@ customizations.default =
 
     sum
 
+  discussion: true
+
   show_new_proposal_button: true
 
   show_crafting_page_first: false
@@ -390,6 +428,10 @@ customizations.default =
   docking_proposal_header : false
 
   slider_handle: slider_handle.face
+  slider_ticks: false
+  slider_regions: null
+
+  show_score: true
 
   show_proposer_icon: false
   collapse_descriptions_at: false
@@ -1711,7 +1753,62 @@ passes_tags = (user, tags) ->
 customizations.bitcoin = 
   show_proposer_icon: true
   collapse_descriptions_at: 300
+
+
   slider_pole_labels: support_oppose
+
+  show_score: true
+
+  'cluster/Blocksize Survey': 
+    show_crafting_page_first: false
+
+    slider_handle: slider_handle.triangley
+    slider_ticks: true
+    discussion: false
+    show_score: false
+    slider_pole_labels: 
+      individual: 
+        support: '16mb <'
+        oppose: '< 1mb'
+        support_sub: ''
+        oppose_sub: ''
+      group: 
+        support: '16mb <'
+        oppose: '< 1mb'
+        support_sub: ''
+        oppose_sub: ''
+
+      # slider_feedback: (value, proposal) -> 
+      #   value += 1
+      #   value /= 2
+
+      #   val = Math.pow(2, 4 * value).toFixed(1)
+
+      #   if val > 16
+      #     "greater than 16mb"
+      #   else 
+      #     "#{val}mb"
+
+
+    slider_regions:[{
+        label: '1mb', 
+        abbrev: '1'
+      },{
+        label: '2mb', 
+        abbrev: '2'
+      },{
+        label: '4mb', 
+        abbrev: '4'
+      },{
+        label: '8mb', 
+        abbrev: '8'
+      },{
+        label: '16mb', 
+        abbrev: '16'
+      }]
+
+
+  tawkspace: 'https://tawk.space/embedded-space/bitcoin'
 
   auth:   
     user_questions : [

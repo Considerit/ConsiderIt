@@ -128,6 +128,11 @@ window.Histogram = ReactiveComponent
     hist = fetch @props.key
     filter_out = fetch 'filtered'
 
+    if !@props.draw_base 
+      @props.draw_base_labels = false 
+    else if !@props.draw_base_labels?
+      @props.draw_base_labels = true
+
     if !hist.initialized
       _.defaults hist,
         initialized: true
@@ -215,7 +220,7 @@ window.Histogram = ReactiveComponent
 
     DIV histogram_props, 
 
-      if @props.draw_base
+      if @props.draw_base_labels
         @drawHistogramBase()
 
       if @props.enable_selection

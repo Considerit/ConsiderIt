@@ -213,7 +213,7 @@ window.Point = ReactiveComponent
             position: 'absolute'
 
           mouth_style[side] = -POINT_MOUTH_WIDTH + \
-            if is_selected || @props.rendered_as == 'under_review' then 3 else 0
+            if is_selected || @props.rendered_as == 'under_review' then 3 else 1
           
           if !point.is_pro || @props.rendered_as == 'under_review'
             mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
@@ -308,6 +308,12 @@ window.Point = ReactiveComponent
               SPAN null, t('delete')
 
       if TWO_COL() && @props.rendered_as != 'under_review'
+        your_opinion = fetch @proposal.your_opinion
+        if your_opinion?.published
+          can_opine = permit 'update opinion', @proposal, your_opinion
+        else
+          can_opine = permit 'publish opinion', @proposal
+
         included = @included()
         includePoint = (e) => 
           e.stopPropagation()
@@ -334,6 +340,7 @@ window.Point = ReactiveComponent
             backgroundColor: if included then focus_blue else 'white'
             fontSize: 18  
             zIndex: 0
+            display: if can_opine < 0 then 'none'
 
 
           onMouseEnter: => 

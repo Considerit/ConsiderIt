@@ -176,13 +176,19 @@ window.Slider = ReactiveComponent
 
       if @props.draw_ticks && @props.regions
         d =  @props.width / (@props.regions.length)
+
+        sty = 
+          color: '#BDBDBD'
+          fontSize: 14
+
         for region, idx in @props.regions
+          w = sizeWhenRendered region.abbrev, sty
           DIV 
-            style: 
+            style: _.extend {}, sty,
               color: '#BDBDBD'
               fontSize: 14
               position: 'absolute'
-              left: (idx + .5) * d
+              left: (idx + .5) * d - w.width / 2
               top: 4
 
             region.abbrev

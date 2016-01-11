@@ -88,7 +88,7 @@ window.proposal_url = (proposal) =>
   subdomain = fetch('/subdomain')  
 
   if TWO_COL() || ((!customization('show_crafting_page_first', proposal) || !proposal.active ) \
-     && proposal.top_point)
+     && (!customization('discussion', proposal) || proposal.top_point))
 
     result += '?results=true'
 
@@ -256,9 +256,6 @@ Proposal = ReactiveComponent
 
         ProposalDescription()
 
-        if has_focus == 'opinion'
-          SaveYourOpinionNotice()
-
         if customization('user_filters')
           UserFilter
             style: 
@@ -350,7 +347,7 @@ Proposal = ReactiveComponent
             position: 'relative'
             paddingBottom: '4em' #padding instead of margin for docking
             margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
-
+            display: if !customization('discussion', @proposal) then 'none'
 
           # Border + bubblemouth that is shown when there is a histogram selection
           GroupSelectionRegion()
@@ -370,7 +367,7 @@ Proposal = ReactiveComponent
             style: 
               visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
-          if !TWO_COL()
+          if !TWO_COL() && customization('discussion', @proposal)
             Dock
               key: 'decisionboard-dock'
               docked_key: 'decisionboard'            
@@ -1059,7 +1056,7 @@ DecisionBoard = ReactiveComponent
             
       @last_proposal_mode = mode
 
-saveOpinion = (proposal) -> 
+window.saveOpinion = (proposal) -> 
   root = fetch('root')
   your_opinion = fetch(proposal.your_opinion)
 
@@ -1091,45 +1088,6 @@ saveOpinion = (proposal) ->
     root.opinions_to_publish.push(proposal.your_opinion)
 
     save root
-
-SaveYourOpinionNotice = ReactiveComponent
-  displayName: 'SaveYourOpinionNotice'
-
-  render : -> 
-    your_opinion = fetch(@proposal.your_opinion)
-    slider = fetch namespaced_key('slider', @proposal)
-
-    return SPAN null if !TWO_COL()  || \
-                        ( your_opinion.published || \
-                          (!slider.has_moved && your_opinion.point_inclusions.length == 0)\
-                        )
-    
-    Dock 
-      dock_on_zoomed_screens: true
-      skip_jut: true
-
-      style: 
-        width: DOCUMENT_WIDTH()
-
-      DIV 
-        style: 
-          backgroundColor: focus_blue
-          padding: 10
-          color: 'white'
-          textAlign: 'center'
-          fontSize: 28
-
-        'Your opinion hasn’t been added yet! '
-
-        A 
-          style: 
-            fontWeight: 700
-            textDecoration: 'underline'
-            cursor: 'pointer'
-          onClick: => saveOpinion(@proposal)
-
-          t('Save your opinion')
-
 
 
 SliderBubblemouth = ReactiveComponent

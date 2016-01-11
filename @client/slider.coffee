@@ -102,6 +102,9 @@ window.Slider = ReactiveComponent
 
     slider = fetch @props.key
 
+    if !@props.draw_handle?
+      @props.draw_handle = true
+
     # initialize
     if !slider.value?
       _.defaults slider,
@@ -122,7 +125,8 @@ window.Slider = ReactiveComponent
       style : slider_style
 
       @drawSliderBase()
-      @drawSliderHandle()
+      if @props.draw_handle
+        @drawSliderHandle()
 
 
   drawSliderBase: -> 
@@ -169,6 +173,19 @@ window.Slider = ReactiveComponent
                           position: 'absolute'
                           left: if idx == 0 then -12
                           right: if idx == 1 then -12
+
+      if @props.draw_ticks && @props.regions
+        d =  @props.width / (@props.regions.length)
+        for region, idx in @props.regions
+          DIV 
+            style: 
+              color: '#BDBDBD'
+              fontSize: 14
+              position: 'absolute'
+              left: (idx + .5) * d
+              top: 4
+
+            region.abbrev
 
 
   drawSliderHandle: -> 

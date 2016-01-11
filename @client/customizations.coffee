@@ -1768,13 +1768,13 @@ customizations.bitcoin =
     show_score: false
     slider_pole_labels: 
       individual: 
-        support: '16mb <'
-        oppose: '< 1mb'
+        support: ''
+        oppose: ''
         support_sub: ''
         oppose_sub: ''
       group: 
-        support: '16mb <'
-        oppose: '< 1mb'
+        support: ''
+        oppose: ''
         support_sub: ''
         oppose_sub: ''
 
@@ -1792,19 +1792,19 @@ customizations.bitcoin =
 
     slider_regions:[{
         label: '1mb', 
-        abbrev: '1'
+        abbrev: '1mb'
       },{
         label: '2mb', 
-        abbrev: '2'
+        abbrev: '2mb'
       },{
         label: '4mb', 
-        abbrev: '4'
+        abbrev: '4mb'
       },{
         label: '8mb', 
-        abbrev: '8'
+        abbrev: '8mb'
       },{
         label: '16mb', 
-        abbrev: '16'
+        abbrev: '16mb'
       }]
 
 

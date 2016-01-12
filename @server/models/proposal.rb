@@ -72,6 +72,9 @@ class Proposal < ActiveRecord::Base
     elsif 
       proposals = subdomain.proposals.where(:hide_on_homepage => false)
       case subdomain.name.downcase
+        when 'bitcoin'
+          manual_clusters = ['Blocksize Survey', 'Proposals'] 
+
         when 'bitcoinfoundation'
           manual_clusters = ['Our Mission', 'Our Values', 'Our Goals', 'Our Focus', 
                              'Our Actions', 'Resolutions', 'Foundation Goals', 

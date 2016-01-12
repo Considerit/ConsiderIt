@@ -324,10 +324,11 @@ agree_disagree =
                               "Slightly " 
 
       valence = customization "slider_pole_labels.individual." + \
-                              (if value > 0 then 'agree' else 'disagree'), \
+                              (if value > 0 then 'support' else 'oppose'), \
                               proposal
 
       "You #{strength_of_opinion} #{valence}"
+
 
 plus_minus = 
   individual: 

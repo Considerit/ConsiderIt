@@ -233,7 +233,12 @@ _.extend dict.en,
   login_as: 'Hi, I log in as'
   password: 'password'
   name_prompt: 'My name is'
-  full_name: 'first and last name'
+  full_name: (args) -> 
+    subdomain = fetch '/subdomain'
+    if subdomain.name == 'bitcoin'
+      'user name or company name'
+    else
+      'first and last name'
   pic_prompt: 'I look like'
   your_profile: 'Your Profile'
   updated_successfully: "Updated successfully"

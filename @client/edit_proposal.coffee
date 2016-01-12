@@ -270,38 +270,15 @@ window.EditProposal = ReactiveComponent
         DIV
           style: block_style
 
-          if user.is_admin
-
-            [LABEL htmlFor:'cluster', style: label_style, t('category') + ' (' + t('optional') + '):'
-            INPUT 
-              id: 'cluster'
-              name: 'cluster'
-              pattern: '^.{3,}'
-              placeholder: 'The proposal will be shown on the homepage under this category. (Default="Proposals")'
-              defaultValue: if @props.fresh then default_group else proposal.cluster
-              style: input_style
-            ]
-          else  
-            clusters = fetch('/proposals').clusters
-            groups = (c.name for c in clusters \
-                     when !!c.name && !customization("archived", "cluster/#{c.name}"))
-
-            [LABEL 
-              htmlFor:'cluster'
-              style: _.extend {}, label_style,
-                width: 130
-              t('Category') + ':'
-
-            SELECT
-              id: 'cluster'
-              name: 'cluster'
-              style: 
-                fontSize: 30
-              defaultValue: if @props.fresh then null else proposal.cluster
-              for group,i in groups
-                OPTION key: i, value: group, group
-            ]
-
+          LABEL htmlFor:'cluster', style: label_style, t('category') + ' (' + t('optional') + '):'
+          INPUT 
+            id: 'cluster'
+            name: 'cluster'
+            pattern: '^.{3,}'
+            placeholder: 'The proposal will be shown on the homepage under this category. (Default="Proposals")'
+            defaultValue: if @props.fresh then '' else proposal.cluster
+            style: input_style
+          
         DIV 
           style: _.extend {}, block_style,
             display: if !user.is_admin then 'none'

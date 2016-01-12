@@ -88,7 +88,7 @@ class Subdomain < ActiveRecord::Base
     ['admin', 'moderator', 'evaluator', 'proposer', 'visitor'].each do |role|
 
       # default roles if they haven't been set
-      default_role = role == 'visitor' ? ['*'] : []
+      default_role = ['visitor', 'proposer'].include?(role) ? ['*'] : []
       result[role] = default_role if !result.has_key?(role) || !result[role]
 
       # Filter role if the client isn't supposed to see it

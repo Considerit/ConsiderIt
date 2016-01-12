@@ -118,7 +118,7 @@ SubdomainRoles = ReactiveComponent
         label: 'Proposers', 
         description: 'Can add new proposals.', 
         icon: 'fa-lightbulb-o', 
-        wildcard: {label: 'Any registered visitor can post new proposals', default: false}},
+        wildcard: {label: 'Any registered visitor can post new proposals', default: true}},
       {
         name: 'visitor', 
         label: 'Visitors', 

@@ -172,7 +172,7 @@ window.SimpleHomepage = ReactiveComponent
           else if cluster.proposals?.length > 0
             Cluster {cluster, options}
 
-      if permit('create proposal') > 0 && customization('show_new_proposal_button') && ! subdomain.name in ['bitcoin', 'bitcoinfoundation'] 
+      if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation'] 
         A 
           style: 
             color: logo_red
@@ -280,6 +280,8 @@ Cluster = ReactiveComponent
 
       if customization('show_new_proposal_button')
         @drawAddNew cluster, options
+      else 
+        console.log 'no custom!'
 
   drawAddNew : (cluster, options) -> 
     return SPAN null if cluster.name == 'Blocksize Survey'
@@ -295,6 +297,7 @@ Cluster = ReactiveComponent
     needs_to_login = permitted == Permission.NOT_LOGGED_IN
     permitted = permitted > 0
 
+    console.log permitted, needs_to_login
     return SPAN null if !permitted && !needs_to_login
 
     DIV null,

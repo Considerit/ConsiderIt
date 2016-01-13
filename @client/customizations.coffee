@@ -1749,7 +1749,9 @@ passes_tags = (user, tags) ->
   passes 
 
 
-
+customizations.bitcoinclassic = 
+  'cluster/Pull requests': 
+    description: '* If you strongly disagree with a pull request, please provide reasons.'
 
 customizations.bitcoin = 
   show_proposer_icon: true

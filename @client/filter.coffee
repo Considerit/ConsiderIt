@@ -22,9 +22,9 @@ UserFilter = ReactiveComponent
 
       if filter_funcs.length > 0
         for user in users.users
-          passes = false 
+          passes = true 
           for func in filter_funcs
-            passes ||= func(user)
+            passes &&= func(user)
 
           if !passes
             filter_out.users[user.key] = 1
@@ -131,8 +131,8 @@ UserFilter = ReactiveComponent
             DIV style: para,
 
               """Filters help us understand the opinions of the stakeholder groups. \
-                 Filters are disjunctive: membership to any selected filter will \
-                 pass a user. These are the filters:"""
+                 Filters are conjunctive: only users that pass all active filters are shown.
+                 These are the filters:"""
 
             DIV style: para,
               SPAN 

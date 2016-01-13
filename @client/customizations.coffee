@@ -1749,7 +1749,8 @@ passes_tags = (user, tags) ->
   passes 
 
 
-# customizations.bitcoinclassic = 
+
+
 #   'cluster/Pull requests': 
 #     description: '* If you strongly disagree with a pull request, please provide reasons.'
 
@@ -1854,6 +1855,12 @@ customizations.bitcoin =
 
     }
   ]
+
+customizations.bitcoinclassic = _.extend {}, 
+  user_filters: customizations.bitcoin.user_filters
+  auth: customizations.bitcoin.auth
+  show_proposer_icon: true
+  collapse_descriptions_at: 300
 
 customizations['bitcoinfoundation'] = 
 

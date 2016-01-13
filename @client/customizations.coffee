@@ -1924,6 +1924,8 @@ customizations.bitcoinclassic = _.extend {},
                 color: '#8d8d8d'
                 marginLeft: 15
                 fontSize: 14
+                position: 'relative'
+                top: -4
 
               "Guide to participation"
 

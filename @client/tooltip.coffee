@@ -16,14 +16,15 @@ window.Tooltip = ReactiveComponent
 
     style = _.defaults {}, (@props.style or {}), 
       fontSize: 16
-      padding: '2px 4px'
+      padding: '4px 8px'
       borderRadius: 8
       pointerEvents: 'none'
       zIndex: 9999
-      color: '#999'
+      color: '#777'
       backgroundColor: '#f6f6f6'
       position: 'absolute'      
       boxShadow: '0 1px 1px rgba(0,0,0,.2)'
+      borderBottom: '1px solid #eee'
       #maxWidth: 200
 
     size = sizeWhenRendered(tip, style)

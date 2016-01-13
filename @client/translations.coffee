@@ -235,7 +235,7 @@ _.extend dict.en,
   name_prompt: 'My name is'
   full_name: (args) -> 
     subdomain = fetch '/subdomain'
-    if subdomain.name == 'bitcoin'
+    if subdomain.name in ['bitcoin', 'bitcoinclassic']
       'user name or company name'
     else
       'first and last name'

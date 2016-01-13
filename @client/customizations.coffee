@@ -1856,11 +1856,80 @@ customizations.bitcoin =
     }
   ]
 
+# https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/
+
 customizations.bitcoinclassic = _.extend {}, 
   user_filters: customizations.bitcoin.user_filters
   auth: customizations.bitcoin.auth
   show_proposer_icon: true
   collapse_descriptions_at: 300
+
+  HomepageHeader: ReactiveComponent 
+    displayName: 'HomepageHeader'
+
+    render: ->
+      homepage = fetch('location').url == '/'
+
+      DIV
+        style:
+          backgroundColor: 'white'
+          height: 63
+          borderBottom: '1px solid #ddd'
+          boxShadow: '0 1px 2px rgba(0,0,0,.1)'
+
+        onMouseEnter: => @local.hover=true;  save(@local)
+        onMouseLeave: => @local.hover=false; save(@local)
+
+        STYLE null,
+          '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
+             p {margin-bottom: 1em}'''
+
+        # The top bar with the logo
+        DIV
+          style:
+            cursor: if not homepage then 'pointer'
+          onClick: if not homepage then => loadPage('/')
+
+          DIV 
+            style: 
+              marginLeft: 50
+            SPAN
+              style:
+                display: 'inline-block'
+                visibility: if homepage then 'hidden'
+                color: '#eee'
+                marginLeft: -10
+                fontSize: 43
+                fontWeight: 400
+                paddingLeft: 25 # Make the clickable target bigger
+                paddingRight: 25 # Make the clickable target bigger
+              '<'
+
+            # Logo
+            A
+              href: 'https://bitcoinclassic.com'
+
+              IMG
+                style:
+                  height: 29
+                  width: 206
+
+                src: asset('bitcoin/bitcoinclassic.png')
+
+            A 
+              href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/'
+              target: '_blank'
+              style: 
+                textDecoration: 'underline'
+                color: '#8d8d8d'
+                marginLeft: 15
+                fontSize: 14
+
+              "Guide to participation"
+
+
+customizations.bitcoinclassic.NonHomepageHeader = customizations.bitcoinclassic.HomepageHeader
+
 
 customizations['bitcoinfoundation'] = 
 

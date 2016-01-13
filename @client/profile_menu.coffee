@@ -39,7 +39,7 @@ window.ProfileMenu = ReactiveComponent
 
         DIV null,
 
-          if subdomain.name == 'bitcoin' && \
+          if subdomain.name in ['bitcoin', 'bitcoinclassic'] && \
              current_user.logged_in && \
              (!current_user.tags['verified']? || current_user.tags['verified'] in ['no', 'false'])
               

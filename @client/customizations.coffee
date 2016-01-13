@@ -1929,6 +1929,8 @@ customizations.bitcoinclassic = _.extend {},
 
               "Guide to participation"
 
+        ProfileMenu()
+
 
 customizations.bitcoinclassic.NonHomepageHeader = customizations.bitcoinclassic.HomepageHeader
 

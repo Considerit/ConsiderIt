@@ -14,14 +14,14 @@ window.Header = ReactiveComponent
 
 
     DIV null, 
-      DIV
-        style: 
-          backgroundColor: logo_red
-          textAlign: 'center'
-          color: 'white'
-          padding: 15
+      # DIV
+      #   style: 
+      #     backgroundColor: logo_red
+      #     textAlign: 'center'
+      #     color: 'white'
+      #     padding: 15
 
-        "Consider.it will be down from approximately 3:30pm - 4:30pm PT Today, 1/15, for server upgrades."
+      #   "Consider.it will be down from approximately 3:30pm - 4:30pm PT Today, 1/15, for server upgrades."
     
       DIV 
         style: 

@@ -1,3 +1,6 @@
+require './color'
+
+
 #######################
 # Customizations.coffee
 #
@@ -1872,6 +1875,7 @@ customizations.bitcoinclassic = _.extend {},
 
       DIV
         style:
+          position: 'relative'
           backgroundColor: 'white'
           height: 63
           borderBottom: '1px solid #ddd'

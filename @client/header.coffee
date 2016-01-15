@@ -11,45 +11,57 @@ window.Header = ReactiveComponent
 
     auth = fetch('auth')
     return SPAN null if auth.form && auth.form != 'edit profile'
-    DIV 
-      style: 
-        position: 'relative'
-        zIndex: 2
-        margin: '0 auto'
-        backgroundColor: 'white'
 
-      if fetch('location').url == '/'
-        customization('HomepageHeader')()
-      else 
-        customization('NonHomepageHeader')()
 
-      if fetch('location').url == '/about'
-        DIV null, 
-          A 
-            href: '/'
-            style: 
-              position: 'absolute'
-              display: 'inline-block'
-              zIndex: 999
-              marginTop: 8
-              marginLeft: 16
-              fontWeight: 600
-            I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
-            SPAN 
-              style: 
-                fontSize: 15
-                paddingLeft: 6
-                color: '#777'
-                verticalAlign: 'text-bottom'
-              'Home'
+    DIV null, 
+      DIV
+        style: 
+          backgroundColor: logo_red
+          textAlign: 'center'
+          color: 'white'
+          padding: 15
 
+        "Consider.it will be down from approximately 3:30pm - 4:30pm PT Today, 1/15, for server upgrades."
+    
       DIV 
         style: 
-          backgroundColor: '#eee'
-          color: '#f00'
-          padding: '5px 20px'
-          display: if @root.server_error then 'block' else 'none'
-        'Warning: there was a server error!'
+          position: 'relative'
+          zIndex: 2
+          margin: '0 auto'
+          backgroundColor: 'white'
+
+        if fetch('location').url == '/'
+          customization('HomepageHeader')()
+        else 
+          customization('NonHomepageHeader')()
+
+        if fetch('location').url == '/about'
+          DIV null, 
+            A 
+              href: '/'
+              style: 
+                position: 'absolute'
+                display: 'inline-block'
+                zIndex: 999
+                marginTop: 8
+                marginLeft: 16
+                fontWeight: 600
+              I className: 'fa fa-home', style: {fontSize: 28, color: '#bbb'}
+              SPAN 
+                style: 
+                  fontSize: 15
+                  paddingLeft: 6
+                  color: '#777'
+                  verticalAlign: 'text-bottom'
+                'Home'
+
+        DIV 
+          style: 
+            backgroundColor: '#eee'
+            color: '#f00'
+            padding: '5px 20px'
+            display: if @root.server_error then 'block' else 'none'
+          'Warning: there was a server error!'
 
 
 

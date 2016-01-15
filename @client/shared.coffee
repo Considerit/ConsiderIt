@@ -10,7 +10,7 @@ window.styles = ""
 
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 
-window.LIVE_UPDATE_INTERVAL = 1000 * 60
+window.LIVE_UPDATE_INTERVAL = 3000 * 60
 
 # live updating
 setInterval ->

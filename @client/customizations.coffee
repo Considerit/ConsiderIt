@@ -1877,9 +1877,9 @@ customizations.bitcoinclassic = _.extend {},
         style:
           position: 'relative'
           backgroundColor: 'white'
-          height: 63
-          borderBottom: '1px solid #ddd'
-          boxShadow: '0 1px 2px rgba(0,0,0,.1)'
+          #height: 63
+          # borderBottom: '1px solid #ddd'
+          # boxShadow: '0 1px 2px rgba(0,0,0,.1)'
 
         onMouseEnter: => @local.hover=true;  save(@local)
         onMouseLeave: => @local.hover=false; save(@local)
@@ -1920,18 +1920,35 @@ customizations.bitcoinclassic = _.extend {},
 
                 src: asset('bitcoin/bitcoinclassic.png')
 
-            A 
-              href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/'
-              target: '_blank'
+            BR null
+            SPAN
               style: 
-                textDecoration: 'underline'
-                color: '#8d8d8d'
-                marginLeft: 15
-                fontSize: 14
+                color: 'white'
+                marginLeft: 69
                 position: 'relative'
+                marginBottom: 10
                 top: -4
+                backgroundColor: '#F69332'
+                padding: '3px 6px'
+                fontSize: 18
 
-              "Guide to participation"
+
+              "Please discuss proposals on "
+              A 
+                href: "http://invite.bitcoinclassic.com/"
+                target: '_blank'
+                style: 
+                  textDecoration: 'underline'
+
+                "Slack"
+              " before posting here. "               
+              A 
+                href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/'
+                target: '_blank'
+                style: 
+                  textDecoration: 'underline'
+
+                "Other guidelines"
 
         ProfileMenu()
 

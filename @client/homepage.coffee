@@ -297,7 +297,6 @@ Cluster = ReactiveComponent
     needs_to_login = permitted == Permission.NOT_LOGGED_IN
     permitted = permitted > 0
 
-    console.log permitted, needs_to_login
     return SPAN null if !permitted && !needs_to_login
 
     DIV null,

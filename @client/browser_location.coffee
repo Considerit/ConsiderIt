@@ -178,7 +178,8 @@ relativeURLFromLocation = ->
 
   # fix url encoding of /
   search = location.search?.replace(/\%2[fF]/g, '/')
-  "#{location.pathname}#{search}#{location.hash}"
+  loc = location.pathname?.replace(/\%20/g, ' ')
+  "#{loc}#{search}#{location.hash}"
 
 relativeURLFromStatebus = ->  
   loc = fetch 'location'

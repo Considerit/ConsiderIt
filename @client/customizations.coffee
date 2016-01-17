@@ -1935,6 +1935,14 @@ customizations.bitcoinclassic = _.extend {},
 
               "Please discuss proposals on "
               A 
+                href: "https://www.reddit.com/r/Bitcoin_Classic/"
+                target: '_blank'
+                style: 
+                  textDecoration: 'underline'
+
+                "Reddit"
+              " or "
+              A 
                 href: "http://invite.bitcoinclassic.com/"
                 target: '_blank'
                 style: 

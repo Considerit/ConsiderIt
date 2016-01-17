@@ -132,6 +132,11 @@ window.ProfileMenu = ReactiveComponent
                     style: 
                       width: 570
 
+                  IMG 
+                    src: asset('bitcoin/KevinBitcoin.jpg')
+                    style: 
+                      width: 570
+
           SPAN
             className: 'profile_menu_wrap'
             style:

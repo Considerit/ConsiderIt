@@ -586,31 +586,36 @@ window.Histogram = ReactiveComponent
 
       if icons.length > 0 && icons.length == filtered_opinions.length
         opinions = for opinion, i in filtered_opinions
-          {stance: opinion.stance, icon: icons[i], radius: icons[i].style.width/2, user: opinion.user}
+          {stance: opinion.stance, user: opinion.user}
         
-        positionAvatars 
-          w: @props.width
-          h: @props.height
-          o: opinions
-          r: @local.avatar_size / 2
-          abort: => 
-            abort = !@isMounted() || @current_request != histocache_key
-            abort
+        setTimeout => 
+          if @isMounted()
+            layoutAvatars 
+              k: histocache_key
+              w: @props.width
+              h: @props.height
+              o: opinions
+              r: @local.avatar_size / 2
+              abort: => 
+                abort = !@isMounted() || @current_request != histocache_key
+                abort
 
-          done: (positions) =>   
-            return if !@isMounted()
-            if Object.keys(positions).length != 0 && @current_request == histocache_key
-              @local.histocaches = 
-                hash: histocache_key
-                positions: positions
-              save @local
+              done: (positions) =>   
+                return if !@isMounted()
+                if Object.keys(positions).length != 0 && @current_request == histocache_key
+                  @local.histocaches = 
+                    hash: histocache_key
+                    positions: positions
+                  save @local
 
-              proposal.histocache[histocache_key] = positions
+                  proposal.histocache[histocache_key] = positions
 
-              # save to server
-              save
-                key: "/histogram/proposal/#{fetch(@props.proposal).id}/#{histocache_key}"
-                positions: positions
+                  # save to server
+                  save
+                    key: "/histogram/proposal/#{fetch(@props.proposal).id}/#{histocache_key}"
+                    positions: positions
+        , 1
+
     @current_request = histocache_key
 
 
@@ -621,6 +626,202 @@ window.Histogram = ReactiveComponent
 
   componentDidUpdate: -> 
     @physicsSimulation()
+
+
+######
+# Uses a d3-based physics simulation to calculate a reasonable layout
+# of avatars within a given area.
+
+layoutAvatars = (opts) -> 
+  histo_queue.push opts 
+  if !histo_running
+    histo_run_next_job()
+
+histo_queue = []
+histo_running = null 
+histo_run_next_job = (completed) -> 
+  if histo_running == completed 
+    histo_running = null
+
+  if !histo_running && histo_queue.length > 0
+    histo_running = histo_queue.shift()
+
+    positionAvatars histo_running
+
+
+positionAvatars = (opts) -> 
+
+  # Check if system energy would be reduced if two nodes' positions would 
+  # be swapped. We square the difference in order to favor large differences 
+  # for one vs small differences for the pair.
+  energy_reduced_by_swap = (p1, p2) ->
+    # how much does each point covet the other's location, over their own?
+    p1_jealousy = (p1.x - p1.x_target) * (p1.x - p1.x_target) - \
+                  (p2.x - p1.x_target) * (p2.x - p1.x_target)
+    p2_jealousy = (p2.x - p2.x_target) * (p2.x - p2.x_target) - \
+                  (p1.x - p2.x_target) * (p1.x - p2.x_target) 
+    p1_jealousy + p2_jealousy
+
+  # Swaps the positions of two avatars
+  swap_position = (p1, p2) ->
+    swap_x = p1.x; swap_y = p1.y
+    p1.x = p2.x; p1.y = p2.y
+    p2.x = swap_x; p2.y = swap_y 
+
+  # One iteration of the simulation
+  tick = (alpha) ->
+    stable = true
+
+    ####
+    # Repel colliding nodes
+    # A quadtree helps efficiently detect collisions
+    q = d3.geom.quadtree(nodes)
+
+    for n in nodes 
+      q.visit collide(n, alpha)
+
+    for o, i in nodes
+      o.px = o.x
+      o.py = o.y
+
+      # Push node toward its desired x-position
+      o.x += alpha * (x_force_mult * width  * .001) * (o.x_target - o.x)
+
+      # Push node downwards
+      o.y += alpha * y_force_mult
+
+      # Ensure node is still within the bounding box
+      if o.x < o.radius
+        o.x = o.radius
+      else if o.x > width - o.radius
+        o.x = width - o.radius
+
+      if o.y < o.radius
+        o.y = o.radius
+      else if o.y > height - o.radius
+        o.y = height - o.radius
+
+      dx = Math.abs(o.py - o.y)
+      dy = Math.abs(o.px - o.x) > .1
+
+      if stable && Math.sqrt(dx * dx + dy * dy) > 1
+        stable = false
+
+    # Complete the simulation if we've reached a steady state
+    stable
+
+  collide = (p1, alpha) ->
+
+    return (quad, x1, y1, x2, y2) ->
+      p2 = quad.point
+      if quad.leaf && p2 && p2 != p1
+        dx = Math.abs (p1.x - p2.x)
+        dy = Math.abs (p1.y - p2.y)
+        dist = Math.sqrt(dx * dx + dy * dy)
+        combined_r = p1.radius + p2.radius
+
+        # Transpose two points in the same neighborhood if it would reduce 
+        # energy of system
+        if energy_reduced_by_swap(p1, p2) > 0
+          swap_position(p1, p2)          
+
+        # repel both points equally in opposite directions if they overlap
+        if dist < combined_r
+          separate_by = if dist == 0 then 1 else ( combined_r - dist ) / combined_r
+          offset_x = (combined_r - dx) * separate_by
+          offset_y = (combined_r - dy) * separate_by
+
+          if p1.x < p2.x 
+            p1.x -= offset_x / 2
+            p2.x += offset_x / 2
+          else 
+            p2.x -= offset_x / 2
+            p1.x += offset_x / 2
+
+          if p1.y < p2.y           
+            p1.y -= offset_y / 2
+            p2.y += offset_y / 2
+          else 
+            p2.y -= offset_y / 2
+            p1.y += offset_y / 2
+
+      # Visit subregions if we could possibly have a collision there
+      neighborhood_radius = p1.radius
+      nx1 = p1.x - neighborhood_radius
+      nx2 = p1.x + neighborhood_radius
+      ny1 = p1.y - neighborhood_radius
+      ny2 = p1.y + neighborhood_radius
+
+      return x1 > nx2 || 
+              x2 < nx1 ||
+              y1 > ny2 ||
+              y2 < ny1
+
+
+
+  ##############
+  # Initialize positions of each node
+  targets = {}
+  opinions = opts.o.slice()
+  width = opts.w || 400
+  height = opts.h || 70
+  r = calculateAvatarRadius width, height, opinions
+
+
+  nodes = opinions.map (o, i) ->
+    x_target = o.stance * width
+
+    if targets[x_target]
+      if x_target > .98
+        x_target -= .1 * Math.random() 
+      else if x_target < .02
+        x_target += .1 * Math.random() 
+
+    targets[x_target] = 1
+
+    x = x_target
+    y = height - r
+
+    return {
+      index: i
+      radius: r
+      x: x
+      y: y
+      x_target: x_target
+    }
+
+  ###########
+  # run the simulation
+  stable = false
+  alpha = .8
+  decay = .8
+  min_alpha = 0.0000001
+  x_force_mult = 2
+  y_force_mult = 2
+
+  total_ticks = 0
+
+  while true
+    stable = tick alpha
+    alpha *= decay
+    total_ticks += 1
+
+    stable ||= alpha <= min_alpha
+
+    aborted = opts.abort?()
+    break if stable || aborted
+
+
+  if !aborted
+    positions = {}
+    for o, i in nodes
+      positions[parseInt(opinions[i].user.split('/user/')[1])] = \
+        [o.x - o.radius, o.y - o.radius]
+
+    opts.done?(positions)
+
+  histo_run_next_job(opts)
+
 
 
 #####
@@ -708,256 +909,3 @@ calculateAvatarRadius = (width, height, opinions) ->
 
   r
 
-
-######
-# Uses a d3-based physics simulation to calculate a reasonable layout
-# of avatars within a given area.
-
-positionAvatars = (opts) -> 
-
-  width = opts.w || 400
-  height = opts.h || 70
-  r = opts.r || 30
-
-  opinions = opts.o.slice()
-              .sort( (a,b) -> a.stance-b.stance )
-  n = opinions.length
-  x_force_mult = 2
-  y_force_mult = if height <= 100 then 2 else 6
-  ticks = 0
-
-  stances = {}
-
-  # Initialize positions of each node
-  nodes = d3.range(opinions.length).map (i) ->
-    radius = opinions[i].radius || r
-
-    if parseFloat(opinions[i].icon.style.width) != radius * 2
-      opinions[i].icon.style.width = opinions[i].icon.style.height = radius * 2 + 'px'
-
-    x_target = (opinions[i].stance + 1)/2 * width
-    
-
-    if stances[x_target]
-      if x_target > .99
-        x_target -= .01 * Math.random() 
-      else if x_target < .01
-        x_target += .01 * Math.random() 
-      else 
-        x_target += .01 * ((Math.random() * 2) - 1)
-
-
-    opinions[i].x_target = x_target
-    stances[x_target] = 1
-
-    # Travis: I'm finding that different initial conditions work 
-    # better at different scales.
-    #   - Give large numbers of avatars some good initial spacing
-    #   - Small numbers of avatars can be more precisely placed for quick 
-    #     convergence with little churn  
-    x = if opinions.length > 10 then radius + (width - 2 * radius) * (i / n) else opinions[i].x_target
-    y = if opinions.length == 1 then height - radius else radius + Math.random() * (height - 2 * radius)
-
-    return {
-      index: i, 
-      radius: radius,
-      x: x,
-      y: y
-    }
-
-  # Called after the simulation stops
-  end = ->
-    positions = {}
-    for o, i in nodes
-      positions[parseInt(opinions[i].user.split('/user/')[1])] = \
-        [o.x - o.radius, o.y - o.radius]
-
-    opts.done?(positions) if !opts.abort? || !opts.abort()
-    return 
-    total_energy = calculate_global_energy()
-    console.log('Simulation complete after ' + ticks + ' ticks. ' + 
-                'Energy of system could be reduced by at most ' + total_energy + ' by global sort.')
-
-  # One iteration of the simulation
-  tick = (e) ->
-
-    if opts.abort?()
-      force.stop()
-      return
-
-    some_node_moved = false
-
-    ####
-    # Repel colliding nodes
-    # A quadtree helps efficiently detect collisions
-    q = d3.geom.quadtree(nodes)
-
-    for n in nodes 
-      q.visit collide(n)
-
-    #####
-    # Apply standard forces
-    for o, i in nodes
-
-      # Push node toward its desired x-position
-      o.x += e.alpha * (x_force_mult * width  * .001) * (opinions[o.index].x_target - o.x)
-
-      # Push node downwards
-      # The last term accelerates unimpeded falling nodes
-      o.y += e.alpha * y_force_mult * Math.max(o.y - o.py + 1, 1)
-
-      # Ensure node is still within the bounding box
-      o.x = Math.max(o.radius, Math.min(width  - o.radius, o.x))
-      o.y = Math.max(o.radius, Math.min(height - o.radius, o.y))
-
-      # Re-position dom element...if it has moved enough      
-      if !opinions[i].icon.style.left || Math.abs( parseFloat(opinions[i].icon.style.left) - (o.x - o.radius)) > .1 
-        opinions[i].icon.style.left = o.x - o.radius + 'px'
-        some_node_moved = true
-
-      if !opinions[i].icon.style.top || Math.abs( parseFloat(opinions[i].icon.style.top) - (o.y - o.radius)) > .1 
-        opinions[i].icon.style.top  = o.y - o.radius + 'px'
-        some_node_moved = true
-
-    ticks += 1
-
-    # Complete the simulation if we've reached a steady state
-    if !some_node_moved
-      force.stop() 
-
-  collide = (node) ->
-
-    return (quad, x1, y1, x2, y2) ->
-      if quad.leaf && quad.point && quad.point != node
-        dx = node.x - quad.point.x
-        dy = node.y - quad.point.y
-        dist = Math.sqrt(dx * dx + dy * dy)
-        combined_r = node.radius + quad.point.radius
-
-        # Transpose two points in the same neighborhood if it would reduce energy of system
-        # 10 is not a principled threshold. 
-        if energy_reduced_by_swap(node, quad.point) > 10
-          swap_position(node, quad.point)          
-          dx *= -1
-          dy *= -1
-
-        # repel both points equally in opposite directions if they overlap
-        if dist < combined_r
-          separate_by = if dist == 0 then 1 else ( dist - combined_r ) / dist
-          offset_x = dx * separate_by * .5
-          offset_y = dy * separate_by * .5
-
-          node.x -= offset_x
-          node.y -= offset_y
-          quad.point.x += offset_x
-          quad.point.y += offset_y
-
-
-      # Visit subregions if we could possibly have a collision there
-      # Travis: I understand what the 16 *does* but not the significance
-      #         of the particular value. Does 16 make sense for all
-      #         avatar sizes and sizes of the bounding box?
-      neighborhood_radius = node.radius + 16
-      nx1 = node.x - neighborhood_radius
-      nx2 = node.x + neighborhood_radius
-      ny1 = node.y - neighborhood_radius
-      ny2 = node.y + neighborhood_radius
-
-      return x1 > nx2 || 
-              x2 < nx1 ||
-              y1 > ny2 ||
-              y2 < ny1
-
-  # Check if system energy would be reduced if two nodes' positions would 
-  # be swapped. We square the difference in order to favor large differences 
-  # for one vs small differences for the pair.
-  energy_reduced_by_swap = (p1, p2) ->
-    # how much does each point covet the other's location, over their own?
-    p1_jealousy = Math.pow(p1.x - opinions[p1.index].x_target, 2) - \
-                  Math.pow(p2.x - opinions[p1.index].x_target, 2)
-    p2_jealousy = Math.pow(p2.x - opinions[p2.index].x_target, 2) - \
-                  Math.pow(p1.x - opinions[p2.index].x_target, 2)
-
-    p1_jealousy + p2_jealousy
-
-  # Swaps the positions of two nodes
-  position_props = ['x', 'y', 'px', 'py']
-  swap_position = (p1, p2) ->
-    for prop in position_props
-      swap = p1[prop]
-      p1[prop] = p2[prop]
-      p2[prop] = swap
-
-  # see https://github.com/mbostock/d3/wiki/Force-Layout for docs
-  force = d3.layout.force()
-    .nodes(nodes)
-    .on("tick", tick)
-    .on('end', end)
-    .gravity(0)
-    .charge(0)
-    .chargeDistance(0)
-    .start()
-
-  ######################################################
-  # The rest of these methods are only used for testing
-  ######################################################
-
-
-  # Calculates the reduction in global energy that a sort would have, 
-  # where global energy is the sum across all nodes of the square of their 
-  # distance from desired x position. We square the difference in order 
-  # to favor large differences for individuals over small differences for
-  # many.
-  calculate_global_energy = -> 
-    energy_unsorted = 0
-    energy_sorted = 0
-    sorted = global_sort(false)
-
-    for __, i in nodes
-      energy_sorted   += Math.pow(sorted[i].x - opinions[sorted[i].index].x_target, 2)
-      energy_unsorted += Math.pow( nodes[i].x - opinions[nodes[i].index].x_target , 2)
-
-    return Math.sqrt(energy_unsorted) - Math.sqrt(energy_sorted)
-
-  #####
-  # global_sort
-  #
-  # Given a set of simulated face positions, reassigns avatars to the positions based on 
-  # stance to enforce a global ordering. 
-  # This method is visually jarring, so using it to sort nodes in place should be 
-  # used as little as possible.
-  global_sort = (sort_in_place) ->
-    sort_in_place = true if !sort_in_place?
-
-    # Create one node list sorted by x position
-    x_sorted_nodes = nodes.slice()
-                          .sort( (a,b) -> a.x-b.x )
-    # ... and another sorted by desired x position
-    desired_x_sorted_nodes = nodes.slice()
-                  .sort( (a,b) -> opinions[a.index].x_target - opinions[b.index].x_target)
-
-    # Create a new dummy set of nodes optimally arranged
-    new_nodes = []
-    for __, i in nodes
-      new_nodes.push
-        # assign the avatar...
-        index: desired_x_sorted_nodes[i].index
-        radius: desired_x_sorted_nodes[i].radius
-        weight: desired_x_sorted_nodes[i].weight
-        # ...to a good position
-        x: x_sorted_nodes[i].x
-        y: x_sorted_nodes[i].y
-        px: x_sorted_nodes[i].px
-        py: x_sorted_nodes[i].py
-
-    # Walk through nodes and reassign the faces given
-    # the optimal assignments discovered earlier. We
-    # can't assign nodes=new_nodes because the layout
-    # depends on nodes pointing to the same object.
-    if sort_in_place
-      props = ['index', 'radius', 'x', 'y', 'px', 'py', 'weight']    
-      for __, i in nodes
-        for __, j in props
-          nodes[i][props[j]] = new_nodes[i][props[j]]
-
-    return new_nodes

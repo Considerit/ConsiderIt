@@ -767,9 +767,8 @@ positionAvatars = (opts) ->
   height = opts.h || 70
   r = calculateAvatarRadius width, height, opinions
 
-
   nodes = opinions.map (o, i) ->
-    x_target = o.stance * width
+    x_target = (o.stance + 1) / 2 * width
 
     if targets[x_target]
       if x_target > .98

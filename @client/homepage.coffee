@@ -54,6 +54,17 @@ window.sorted_proposals = (cluster) ->
   cluster.proposals.slice().sort (a,b) ->
     return proposal_support(b) - proposal_support(a)
 
+cluster_keys = ['archived', 'label', 'description', 'homie_histo_title', \
+                'show_proposer_icon', 'slider_handle', 'slider_pole_labels', 
+                'slider_regions', 'slider_ticks', 'discussion', 'show_score']
+
+cluster_options = (key) -> 
+  options = {}
+  for k in cluster_keys
+    options[k] = customization k, key 
+  options
+
+
 cluster_styles = ->
 
   first_column =
@@ -114,7 +125,19 @@ window.SimpleHomepage = ReactiveComponent
         unnamed.name = default_cluster_name
         clusters[default_cluster_name] = unnamed
 
+
+    # move archived clusters to the back 
     clusters = _.values clusters
+    c = []
+    a = []
+    for cluster in clusters 
+      if !cluster.archived
+        c.push cluster 
+      else 
+        a.push cluster 
+    for cluster in a 
+      c.push cluster 
+    clusters = c
 
     DIV
       className: 'simplehomepage'
@@ -140,12 +163,7 @@ window.SimpleHomepage = ReactiveComponent
       for cluster, index in clusters or []
         cluster_key = "cluster/#{cluster.name}"
 
-        cluster_keys = ['archived', 'label', 'description', 'homie_histo_title', \
-                        'show_proposer_icon', 'slider_handle', 'slider_pole_labels', 
-                        'slider_regions', 'slider_ticks', 'discussion', 'show_score']
-        options = {}
-        for k in cluster_keys
-          options[k] = customization k, cluster_key 
+        options = cluster_options cluster_key
 
         DIV 
           style: 

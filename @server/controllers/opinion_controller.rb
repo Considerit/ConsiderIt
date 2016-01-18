@@ -40,7 +40,6 @@ class OpinionController < ApplicationController
       authorize! 'publish opinion', proposal
 
       opinion.publish()  # This will also publish all the newly-written points
-      dirty_key "/page/" # you're now a recent contributor on the homepage!
 
       write_to_log({
         :what => 'published opinion',
@@ -52,6 +51,9 @@ class OpinionController < ApplicationController
     if opinion.published
       proposal.histocache = nil
       proposal.save
+
+      dirty_key "/proposal/#{proposal.id}"
+      dirty_key "/page/#{proposal.slug}"
     end
 
     #proposal.delay.update_metrics()

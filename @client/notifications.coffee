@@ -250,26 +250,38 @@ window.Notifications = ReactiveComponent
 
 
 window.hasUnreadNotifications = (proposal) ->
+
+  notifications = notifications_for proposal
+  return false unless notifications
+
+  unread = (n for n in notifications when !n.read_at)
+  unread = null if unread.length == 0 
+  unread
+
+window.notifications_for = (proposal) -> 
   current_user = fetch '/current_user'
-  return false unless proposal.notifications?
+  return false unless current_user.notifications?
 
-  unread = (n for n in proposal.notifications when !n.read_at)
+  (n for n in current_user.notifications when \
+    n.digest_object_id == fetch(proposal).id)
 
-  unread.length
 
 window.ActivityFeed = ReactiveComponent
   displayName: 'ActivityFeed'
 
   render: ->
 
-    current_user = fetch('/current_user')
+    current_user = fetch('/current_user')      
 
-    if @proposal.notifications?.length == 0
-      return SPAN null
+    notifications = fetch "/notifications/#{@proposal.id}"
+
+    return SPAN null if @is_waiting()
 
     # just mark everything as read when you've opened the proposal
-    if hasUnreadNotifications(@proposal)
-      for n in @proposal.notifications
+    unread = hasUnreadNotifications(@proposal)
+
+    if unread 
+      for n in unread
         if !n.read_at
           n.read_at = Date.now()
           save n
@@ -281,40 +293,13 @@ window.ActivityFeed = ReactiveComponent
         margin: 'auto'
         marginBottom: 18
 
-      # DIV
-      #   style: 
-      #     backgroundColor: "#eee"
-      #     textDecoration: 'underline'
-      #     padding: 10
-      #     fontSize: 18
-      #     textAlign: 'center'
-      #     cursor: 'pointer'
-
-      #   onClick: => 
-      #     @local.show_notifications = !@local.show_notifications
-      #     save @local
-
-      #   I 
-      #     className: 'fa-bell-o fa'
-      #     style: 
-      #       display: 'inline-block'
-      #       marginRight: 15
-
-      #   if @local.show_notifications
-      #     t('Hide notifications')
-      #   else
-      #     t('Show notifications')
-
-      notifications = []
-
       UL
         style: 
           border: "1px solid #eee"
           listStyle: 'none'
           padding: 20
 
-        for notification in @proposal.notifications
-
+        for notification in notifications.notifications
           @drawNotification(notification)
 
   drawNotification: (notification) -> 
@@ -380,8 +365,6 @@ window.ActivityFeed = ReactiveComponent
         
       when 'Opinion'
         t('added_opinion') 
-
-
 
     LI 
       style: 

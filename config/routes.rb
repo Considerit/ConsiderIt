@@ -57,6 +57,7 @@ ConsiderIt::Application.routes.draw do
   get '/subdomains' => 'subdomain#index'
 
   match '/notification/:notification_id' => 'notification#update', :via => [:put]
+  get '/notifications/:proposal_id' => 'notification#index'
 
 
   match 'update_images_hack' => 'subdomain#update_images_hack', :via => [:put]

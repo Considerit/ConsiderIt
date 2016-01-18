@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150702151911) do
+ActiveRecord::Schema.define(version: 20160113190453) do
 
   create_table "assessments", force: :cascade do |t|
     t.integer  "user_id",         limit: 4
@@ -164,6 +164,11 @@ ActiveRecord::Schema.define(version: 20150702151911) do
     t.datetime "created_at"
   end
 
+  add_index "notifications", ["digest_object_id"], name: "index_notifications_on_digest_object_id", using: :btree
+  add_index "notifications", ["digest_object_type"], name: "index_notifications_on_digest_object_type", using: :btree
+  add_index "notifications", ["subdomain_id"], name: "index_notifications_on_subdomain_id", using: :btree
+  add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
+
   create_table "opinions", force: :cascade do |t|
     t.integer  "proposal_id",      limit: 4
     t.integer  "user_id",          limit: 4
@@ -249,6 +254,7 @@ ActiveRecord::Schema.define(version: 20150702151911) do
     t.string   "cluster",                                limit: 255
     t.text     "zips",                                   limit: 65535
     t.text     "roles",                                  limit: 65535
+    t.text     "histocache",                             limit: 16777215
   end
 
   add_index "proposals", ["subdomain_id", "active"], name: "select_proposal_by_active", using: :btree
@@ -345,6 +351,7 @@ ActiveRecord::Schema.define(version: 20150702151911) do
 
   add_index "users", ["avatar_file_name"], name: "index_users_on_avatar_file_name", using: :btree
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
+  add_index "users", ["registered"], name: "index_users_on_registered", using: :btree
 
   create_table "verdicts", force: :cascade do |t|
     t.string   "short_name",        limit: 255

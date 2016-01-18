@@ -1864,7 +1864,7 @@ customizations.bitcoin =
 customizations.bitcoinclassic = _.extend {}, 
   user_filters: customizations.bitcoin.user_filters
   auth: customizations.bitcoin.auth
-  show_proposer_icon: true
+  show_proposer_icon: false
   collapse_descriptions_at: 300
 
   'cluster/Scrapped proposals': 

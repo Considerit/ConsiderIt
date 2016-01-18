@@ -126,18 +126,28 @@ window.SimpleHomepage = ReactiveComponent
         clusters[default_cluster_name] = unnamed
 
 
+
     # move archived clusters to the back 
     clusters = _.values clusters
     c = []
     a = []
     for cluster in clusters 
-      if !cluster.archived
+      options = cluster_options "cluster/#{cluster.name}"
+      if !options.archived
         c.push cluster 
       else 
         a.push cluster 
     for cluster in a 
       c.push cluster 
     clusters = c
+
+    collapsed = fetch 'collapsed'
+
+    if !collapsed.clusters?
+      collapsed.clusters = {}
+      for cluster in a 
+        collapsed.clusters["cluster/#{cluster.name}"] = 1
+      save collapsed
 
     DIV
       className: 'simplehomepage'
@@ -157,38 +167,18 @@ window.SimpleHomepage = ReactiveComponent
             marginBottom: 20
             paddingLeft: if customization('show_proposer_icon') then 68
 
-
       # List all clusters
-
       for cluster, index in clusters or []
         cluster_key = "cluster/#{cluster.name}"
-
         options = cluster_options cluster_key
 
-        DIV 
-          style: 
-            position: 'relative'
+        if cluster.proposals?.length > 0
+          Cluster
+            key: cluster_key
+            cluster: cluster 
+            options: options 
+            index: index
 
-          if current_user.logged_in && index == 0
-            @drawWatchFilter()
-
-          if options.archived && (!@local.show_cluster || !(cluster.name in @local.show_cluster))
-            DIV
-              style: 
-                margin: "#{if index > 0 then '45px' else ''} 0 45px 0"
-
-              "#{options.label or cluster.name} "
-
-              A 
-                style: 
-                  textDecoration: 'underline'
-                onClick: do(cluster) => => 
-                  @local.show_cluster ||= []
-                  @local.show_cluster.push(cluster.name)
-                  save(@local)
-                'Show archive'
-          else if cluster.proposals?.length > 0
-            Cluster {cluster, options}
 
       if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation'] 
         A 
@@ -278,28 +268,35 @@ Cluster = ReactiveComponent
     # subscribe to a key that will alert us to when sort order has changed
     fetch('homepage_you_updated_proposal')
 
+    collapsed = fetch 'collapsed'
+    is_collapsed = collapsed.clusters[@props.key]
+
+
     DIV
       key: cluster.name
       id: if cluster.name && cluster.name then cluster.name.toLowerCase()
-      style: margin: '45px 0'
+      style: 
+        paddingBottom: if !is_collapsed then 45
 
-      @drawClusterHeading cluster, options
+      @drawClusterHeading cluster, options, is_collapsed
 
-      for proposal,idx in sorted_proposals(cluster)
-        DIV 
-          key: "collapsed#{proposal.key}"
+      if !is_collapsed
+        DIV null,
+          for proposal,idx in sorted_proposals(cluster)
+            DIV 
+              key: "collapsed#{proposal.key}"
 
-          CollapsedProposal 
-            key: "collapsed#{proposal.key}"
-            proposal: proposal
-            options: options 
+              CollapsedProposal 
+                key: "collapsed#{proposal.key}"
+                proposal: proposal
+                options: options 
 
-          @drawThreshold(subdomain, cluster, idx)
+              @drawThreshold(subdomain, cluster, idx)
 
-      if customization('show_new_proposal_button')
-        @drawAddNew cluster, options
-      else 
-        console.log 'no custom!'
+          if customization('show_new_proposal_button')
+            @drawAddNew cluster, options
+          else 
+            console.log 'no custom!'
 
   drawAddNew : (cluster, options) -> 
     return SPAN null if cluster.name == 'Blocksize Survey'
@@ -466,14 +463,18 @@ Cluster = ReactiveComponent
 
                 t('cancel')
 
-  drawClusterHeading : (cluster, options) -> 
+  drawClusterHeading : (cluster, options, is_collapsed) -> 
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
 
     cluster_key = "cluster/#{cluster.name}"
 
     icons = options.show_proposer_icon
+    collapsed = fetch 'collapsed'
 
     subdomain = fetch '/subdomain'
+
+    tw = if is_collapsed then 15 else 20
+    th = if is_collapsed then 20 else 15
 
     DIV null,
       if options.label || options.description
@@ -502,37 +503,58 @@ Cluster = ReactiveComponent
       # Header of cluster
       H1
         style: _.extend {}, first_header, 
-          paddingLeft: if icons then 68 else 0
+          paddingLeft: if icons then 68 else 0, 
+          position: 'relative'
+          cursor: 'pointer'
+
+        onClick: -> 
+          if collapsed.clusters[cluster_key]
+            delete collapsed.clusters[cluster_key]
+          else 
+            collapsed.clusters[cluster_key] = 1 
+          save collapsed
+
 
         cluster.name || default_cluster_name
 
+        SPAN 
+          style: cssTriangle (if is_collapsed then 'right' else 'bottom'), 'black', tw, th,
+            position: 'absolute'
+            left: -tw - 20 + (if icons then 68 else 0)
+            bottom: 14
+            width: tw
+            height: th
+            display: 'inline-block'
+
         if subdomain.name == 'RANDOM2015'
           " (#{cluster.proposals.length})"
-      H1
-        style: secnd_header
-        SPAN
-          style:
-            position: 'absolute'
-            bottom: -43
-            fontSize: 21
-            color: '#444'
-            fontWeight: 300
-          customization("slider_pole_labels.individual.oppose", cluster_key)
-        SPAN
-          style:
-            position: 'absolute'
-            bottom: -43
-            fontSize: 21
-            color: '#444'
-            right: 0
-            fontWeight: 300
-          customization("slider_pole_labels.individual.support", cluster_key)
-        SPAN 
-          style: 
-            position: 'relative'
-            marginLeft: -(widthWhenRendered(options.homie_histo_title, 
-                         {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
-          options.homie_histo_title
+
+      if !is_collapsed
+        H1
+          style: secnd_header
+          SPAN
+            style:
+              position: 'absolute'
+              bottom: -43
+              fontSize: 21
+              color: '#444'
+              fontWeight: 300
+            customization("slider_pole_labels.individual.oppose", cluster_key)
+          SPAN
+            style:
+              position: 'absolute'
+              bottom: -43
+              fontSize: 21
+              color: '#444'
+              right: 0
+              fontWeight: 300
+            customization("slider_pole_labels.individual.support", cluster_key)
+          SPAN 
+            style: 
+              position: 'relative'
+              marginLeft: -(widthWhenRendered(options.homie_histo_title, 
+                           {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
+            options.homie_histo_title
 
 
 
@@ -736,19 +758,41 @@ window.CollapsedProposal = ReactiveComponent
             marginTop: if icons then 0 #9
           A
             className: 'proposal proposal_homepage_name'
-            style: if not icons then {borderBottom: '1px solid grey'}
+            style: 
+              fontWeight: 500
+              #if not icons then {borderBottom: '1px solid grey'}
             href: proposal_url(proposal)
+
             proposal.name
 
-          if !proposal.active
-            DIV
-              style: 
-                fontSize: 14
-                color: '#414141'
-                fontWeight: 200
-                marginTop: 5
+          DIV 
+            style: 
+              fontSize: 16
+              color: "#999"
+              fontStyle: 'italic'
 
-              t('closed')
+            SPAN 
+              style: {}
+
+              prettyDate(proposal.created_at)
+
+              if !icons && editor = proposal_editor(proposal)
+                SPAN 
+                  style: {}
+
+                  " by #{fetch(editor)?.name}"
+
+              SPAN 
+                # dangerouslySetInnerHTML: { __html: '&bull;'}
+                style: 
+                  padding: '0 8px'
+
+
+            if !proposal.active
+              SPAN 
+                style: {}
+
+                t('closed')
 
 
       # Histogram for Proposal

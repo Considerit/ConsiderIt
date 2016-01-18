@@ -33,9 +33,10 @@ class Opinion < ActiveRecord::Base
     your_opinion = Opinion.where(:proposal_id => proposal.id, 
                                  :user => user)
     if your_opinion.length > 1
-      raise "Duplicate opinions for user #{user}: #{your_opinion.map {|o| o.id} }!"
+      pp "Duplicate opinions for user #{user}: #{your_opinion.map {|o| o.id} }!"
     end
     your_opinion = your_opinion.first
+
 
     # Otherwise create one
     if your_opinion.nil?

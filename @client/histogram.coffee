@@ -815,7 +815,7 @@ positionAvatars = (opts) ->
     positions = {}
     for o, i in nodes
       positions[parseInt(opinions[i].user.split('/user/')[1])] = \
-        [o.x - o.radius, o.y - o.radius]
+        [Math.round((o.x - o.radius) * 10) / 10, Math.round((o.y - o.radius) * 10) / 10]
 
     opts.done?(positions)
 

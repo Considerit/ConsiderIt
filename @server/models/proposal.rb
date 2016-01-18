@@ -162,18 +162,18 @@ class Proposal < ActiveRecord::Base
     pointz = self.points.where("(published=1 AND #{moderation_status_check}) OR user_id=#{current_user.id}")
     pointz = pointz.public_fields.map {|p| p.as_json}
 
-    published_opinions = self.opinions.published
-    ops = published_opinions.public_fields.map {|x| x.as_json}
+    # published_opinions = self.opinions.published
+    # ops = published_opinions.public_fields.map {|x| x.as_json}
 
-    if published_opinions.where(:user_id => nil).count > 0
-      throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
-    end
+    # if published_opinions.where(:user_id => nil).count > 0
+    #   throw "We have published opinions without a user: #{published_opinions.map {|o| o.id}}"
+    # end
 
     data = { 
       key: "/page/#{self.slug}",
-      proposal: self.as_json,
+      proposal: "/proposal/#{self.id}",
       points: pointz,
-      opinions: ops
+      # opinions: ops
     }
 
     if self.subdomain.assessment_enabled
@@ -193,10 +193,37 @@ class Proposal < ActiveRecord::Base
     json = super(options)
 
     # Find an existing opinion for this user
-    your_opinion = Opinion.find_by(:proposal => self, :user => current_user)
-    json['your_opinion'] = "/opinion/#{your_opinion.id}" if your_opinion
+    #your_opinion = Opinion.find_by(:proposal => self, :user => current_user)
+    your_opinion = Opinion.get_or_make(self)
 
-    json['top_point'] = self.points.published.order(:score).last
+    json['your_opinion'] = your_opinion #if your_opinion
+
+    # published_opinions = self.opinions.published
+    # ops = published_opinions.public_fields.map {|x| x.as_json}
+
+    o = ActiveRecord::Base.connection.execute """\
+      SELECT created_at, id, point_inclusions, proposal_id, 
+      stance, user_id 
+          FROM opinions 
+          WHERE subdomain_id=#{self.subdomain_id} AND
+                proposal_id=#{self.id} AND 
+                published=1;
+      """
+
+
+    ops = o.map do |op|
+      {
+        key: "/opinion/#{op[1]}",
+        created_at: op[0],
+        proposal: "/proposal/#{op[3]}",
+        user: "/user/#{op[5]}",
+        published: true,
+        stance: op[4].to_f,   
+        point_inclusions: JSON.parse(op[2] || '[]').map! {|p| "/point/#{p}"}
+      }
+    end 
+
+    json['opinions'] = ops
 
     json['histocache'] = JSON.parse(json['histocache'] || '{}')
 
@@ -212,8 +239,9 @@ class Proposal < ActiveRecord::Base
       json['roles'] = self.user_roles(filter = true)
     end
 
-    json['notifications'] = Notifier.filter_unmoderated(notifications)
     #json['description_fields'] = JSON.parse(json['description_fields'] || '[]')
+
+
     json
   end
 
@@ -224,6 +252,10 @@ class Proposal < ActiveRecord::Base
         digest_object_id: self.id)
       .order('created_at DESC')
   end
+
+  def safe_notifications
+    Notifier.filter_unmoderated(notifications)
+  end 
 
   def key
     "/proposal/#{id}"

@@ -17,7 +17,7 @@ setInterval ->
   dependent_keys = []
   for key of arest.components_4_key.hash
     if key[0] == '/' && arest.components_4_key.get(key).length > 0 && \
-       !key.match(/\/(user|opinion|proposal|point)\//)
+       !key.match(/\/(user|opinion|point)\//)
 
       if key != '/current_user' || fetch('/current_user').logged_in
         arest.serverFetch(key)
@@ -129,6 +129,15 @@ window.slugify = (text) ->
     .replace(/^-+/, '')             # Trim - from start of text
     .replace(/-+$/, '')             # Trim - from end of text
     .substring(0, 30)
+
+
+window.shared_local_key = (key_or_object) -> 
+  key = key_or_object.key || key_or_object
+  if key[0] == '/'
+    key = key.substring(1, key.length)
+    "#{key}/shared"
+  else 
+    key
 
 
 window.reset_key = (obj_or_key, updates) -> 

@@ -400,7 +400,7 @@ customizations.default =
 
   opinion_value: (o) -> o.stance
   proposal_support: (proposal) ->
-    opinions = fetch('/page/' + proposal.slug).opinions    
+    opinions = fetch(proposal).opinions    
     if !opinions || opinions.length == 0
       return null
 
@@ -1323,7 +1323,7 @@ window.paper_scores = (paper) ->
   scores = {}
   paper = fetch(paper)
 
-  opinions = fetch("/page/#{paper.slug}").opinions
+  opinions = fetch(paper).opinions
   opinion_value = customization("opinion_value", paper)
 
   opinion_vals = opinions.map (o) -> opinion_value(o)

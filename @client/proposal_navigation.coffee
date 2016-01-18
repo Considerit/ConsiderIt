@@ -13,8 +13,10 @@ window.DefaultProposalNavigation = ReactiveComponent
   displayName: 'ProposalNavigation'
   render : ->
     subdomain = fetch('/subdomain')
-    all_proposals = fetch('/proposals')
     show_proposer_icon = customization('show_proposer_icon', "cluster/#{@proposal.cluster}")
+
+
+    all_proposals = fetch('/proposals')
 
     mod = (n, m) -> ((n % m) + m) % m
 

@@ -25,12 +25,6 @@ gem 'delayed_paperclip'
 gem 'font-awesome-rails'
 
 #############
-# PURE PERFORMANCE
-# Rails JSON encoding is super slow, oj makes it faster
-gem 'oj' 
-gem 'oj_mimic_json' # we need this for Rails 4.1.x
-
-#############
 # BACKGROUND PROCESSING / EMAIL
 gem 'whenever' # https://github.com/javan/whenever
 gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' 
@@ -47,6 +41,8 @@ gem 'mechanize' # for webscraping; only used for RANDOM2015 deployment
 group :development, :test do
   gem 'thin'
   gem 'ruby-prof'
+  # gem 'rack-mini-profiler'
+
   # gem 'guard', '>= 2.2.2',       :require => false
   # gem 'guard-livereload',        :require => false
   # gem 'rack-livereload'
@@ -54,6 +50,12 @@ group :development, :test do
 end
 
 group :production do
+  ############
+  # PURE PERFORMANCE
+  # Rails JSON encoding is super slow, oj makes it faster
+  gem 'oj'
+  gem 'oj_mimic_json' # we need this for Rails 4.1.x
+
   gem 'exception_notification'
   gem "aws-ses", "~> 0.6.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
   gem 'aws-sdk', "~> 1.60"

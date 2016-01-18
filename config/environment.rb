@@ -57,6 +57,7 @@ if "irb" == $0
   ActiveSupport::Cache::Store.logger = Logger.new(STDOUT)
 end
 
+# comment this out to restore mysql logging output
 ActiveRecord::Base.logger.level = 1
 
 code_revision = `git log --pretty=format:%h -n1`.strip

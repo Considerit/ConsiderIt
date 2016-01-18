@@ -88,7 +88,7 @@ window.proposal_url = (proposal) =>
   subdomain = fetch('/subdomain')  
 
   if TWO_COL() || ((!customization('show_crafting_page_first', proposal) || !proposal.active ) \
-     && (!customization('discussion', proposal) || proposal.top_point))
+     && (!customization('discussion', proposal)))
 
     result += '?results=true'
 
@@ -127,7 +127,7 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
 
 window.opinionsForProposal = (proposal) ->       
   filter_func = customization("homie_histo_filter", proposal)
-  opinions = fetch('/page/' + proposal.slug).opinions || []
+  opinions = fetch(proposal).opinions || []
   # We'll only pass SOME opinions to the histogram
   opinions = (opinion for opinion in opinions when \
                !filter_func or filter_func(fetch(opinion.user)))
@@ -179,6 +179,8 @@ Proposal = ReactiveComponent
         edit_mode = pc
         break
 
+    local_proposal = fetch shared_local_key(@proposal)
+
     has_focus = \
       if get_selected_point()
         'point'
@@ -187,9 +189,9 @@ Proposal = ReactiveComponent
       else
         "opinion"
 
-    if @proposal.has_focus != has_focus
-      @proposal.has_focus = has_focus
-      save @proposal
+    if local_proposal.has_focus != has_focus
+      local_proposal.has_focus = has_focus
+      save local_proposal
 
 
     mode = get_proposal_mode()
@@ -1249,7 +1251,7 @@ GroupSelectionRegion = ReactiveComponent
 buildPointsList = (proposal, valence, sort_field, filter_included) ->
   sort_field = sort_field or 'score'
   points = fetch("/page/#{proposal.slug}").points
-  opinions = fetch("/page/#{proposal.slug}").opinions
+  opinions = fetch(proposal).opinions
 
   # filter out filter users...
   filtered_out = fetch('filtered')
@@ -1565,6 +1567,7 @@ PointsList = ReactiveComponent
     drop_target_text = t("drag_from_#{left_or_right}", {noun})
 
     dt_w = POINT_WIDTH() - 24
+    local_proposal = fetch shared_local_key(@proposal)
 
     DIV 
       style: 
@@ -1579,7 +1582,7 @@ PointsList = ReactiveComponent
         is_left: @props.valence == 'cons'
         style: 
           #padding: "0 #{if @props.valence == 'pros' then '24px' else '0px'} .25em #{if @props.valence == 'cons' then '24px' else '0px'}"        
-          opacity: if @proposal.has_focus == 'edit point' then .1
+          opacity: if local_proposal.has_focus == 'edit point' then .1
         text_style: {}
 
 
@@ -1610,11 +1613,12 @@ PointsList = ReactiveComponent
       mouth_style['transform'] = 'rotate(90deg)'
       mouth_style['right'] = -POINT_MOUTH_WIDTH  + stroke_width + 1
 
+    local_proposal = fetch shared_local_key(@proposal)
 
     DIV
       style: _.defaults style, 
         position: 'relative'
-        opacity: if @proposal.has_focus == 'edit point' then .1
+        opacity: if local_proposal.has_focus == 'edit point' then .1
 
       SVG 
         width: w
@@ -1883,7 +1887,7 @@ Page = ReactiveComponent
             UserTags key: "/page/dashboard/tags"
           else
             if @page?.proposal?
-              Proposal key: @page.proposal.key
+              Proposal key: @page.proposal
             else
               LOADING_INDICATOR
 

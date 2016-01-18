@@ -213,7 +213,7 @@ def permit(action, object)
     raise "Undefined Permission: #{action}"
   end
 
-  puts "#{current_user.name} is permitted to #{action}"
+  # puts "#{current_user.name} is permitted to #{action}"
 
   return Permission::PERMITTED
 end

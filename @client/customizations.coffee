@@ -1867,6 +1867,31 @@ customizations.bitcoinclassic = _.extend {},
   show_proposer_icon: true
   collapse_descriptions_at: 300
 
+  'cluster/Scrapped proposals': 
+    #label: "Winter 2015 board election"
+    # description: 
+    #   DIV null, 
+    #     'Thanks for your opinions. Here are the '
+    #     A
+    #       href: 'https://blog.bitcoinfoundation.org/election-results/'
+    #       style: textDecoration: 'underline'
+    #       "results"
+    #     '.'
+    archived: true
+
+  'cluster/Closed pull requests': 
+    #label: "Winter 2015 board election"
+    # description: 
+    #   DIV null, 
+    #     'Thanks for your opinions. Here are the '
+    #     A
+    #       href: 'https://blog.bitcoinfoundation.org/election-results/'
+    #       style: textDecoration: 'underline'
+    #       "results"
+    #     '.'
+    archived: true
+
+
   HomepageHeader: ReactiveComponent 
     displayName: 'HomepageHeader'
 

@@ -93,7 +93,25 @@ window.DefaultProposalNavigation = ReactiveComponent
           fontStyle: 'italic'
           visibility: if !@proposal.cluster then 'hidden'
 
-        @proposal.cluster or '-'
+        if permit('update proposal', @proposal)
+          INPUT 
+            ref: 'cluster'
+            name: 'cluster'
+            pattern: '^.{3,}'
+            defaultValue: @proposal.cluster
+            style: 
+              border: 'none'
+              outline: 'none'
+              fontStyle: 'italic'
+              fontSize: 16
+
+            onBlur: => 
+              @proposal.cluster = @refs.cluster.getDOMNode().value
+              save @proposal
+
+
+        else 
+          @proposal.cluster or '-'
 
 
   componentDidUpdate : -> @typeset()
@@ -210,6 +228,7 @@ window.ProposalNavigationWithMenu = ReactiveComponent
 
         SPAN null,
           "#{if @proposal.designator && @proposal.category then "#{@proposal.category[0]}-#{@proposal.designator} " else ''}#{@proposal.name}" 
+          
           I 
             className: 'fa fa-caret-down'
             style: 

@@ -53,20 +53,13 @@ class Point < ActiveRecord::Base
     result['includers'] = JSON.parse (result['includers'] || '[]')
     result['includers'].map! {|u| hide_name && u == user_id ? -1 : u}
     result['includers'].map! {|u| "/user/#{u}"}
-
-
-    # super slow!
-    # result['last_inclusion'] = inclusions.count > 0 ? inclusions.order(:created_at).last.created_at.to_i : -1
         
     make_key(result, 'point')
-    #result['included_by'] = result['includers']
-    #result.delete('includers')
     stubify_field(result, 'proposal')
     stubify_field(result, 'opinion')
     stubify_field(result, 'user')
 
     if current_subdomain.assessment_enabled
-
       assessment = proposal.assessments.completed.where(:assessable_type => 'Point', :assessable_id => id).first
       result['assessment'] = assessment ? "assessment/#{assessment.id}" : nil
     end
@@ -123,7 +116,6 @@ class Point < ActiveRecord::Base
     end
 
     self.includers = updated_includers.to_s
-    self.num_inclusions = updated_includers.length
     self.last_inclusion = updated_includers.length > 0 ? self.inclusions.where("user_id IN (?)", updated_includers).order(:created_at).last.created_at.to_i : -1
 
     if changed?

@@ -31,7 +31,7 @@ document.addEventListener "mouseover", (e) ->
 
     name = user_name user, anonymous
 
-    if !anonymous && filters = customization 'user_filters'
+    if !anonymous && filters = customization 'opinion_filters'
       for filter in filters 
         if filter.pass(user) && filter.icon
           if typeof(filter.icon) != 'string'

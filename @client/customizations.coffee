@@ -1927,7 +1927,7 @@ customizations.bitcoinclassic = _.extend {},
 
             # Logo
             A
-              href: 'https://bitcoinclassic.com'
+              href: if homepage then 'https://bitcoinclassic.com' else '/'
 
               IMG
                 style:

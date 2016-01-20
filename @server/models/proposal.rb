@@ -40,12 +40,11 @@ class Proposal < ActiveRecord::Base
     end
   end
 
-  def self.summaries(subdomain = nil)
+  def self.all_proposals_for_subdomain(subdomain = nil)
     subdomain ||= current_subdomain
 
     # if a subdomain wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
-    randomize_cluster_order = false
 
     if subdomain.moderate_proposals_mode == 1
       moderation_status_check = 'moderation_status=1'
@@ -95,8 +94,6 @@ class Proposal < ActiveRecord::Base
         when 'swotconsultants', 'swotconsultants1'
           manual_clusters = ['Strengths', 'Weaknesses', 'Opportunities', 'Threats']
 
-        when 'cimsec'
-          randomize_cluster_order = false
 
         when 'carcd', 'carcd-demo'
           manual_clusters = ['Questions', "CARCD's role in Emerging Resources", \
@@ -106,8 +103,16 @@ class Proposal < ActiveRecord::Base
     end
 
     proposals = proposals.where(moderation_status_check)
+    [proposals, manual_clusters]
 
+  end 
+
+  def self.summaries(subdomain = nil)
+    subdomain ||= current_subdomain
+    
+    proposals, manual_clusters = all_proposals_for_subdomain(subdomain)
     clustered_proposals = {}
+    randomize_cluster_order = subdomain.name.downcase == 'cimsec'
 
     # group all proposals into clusters
     most_recent = {}

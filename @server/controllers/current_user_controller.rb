@@ -1,5 +1,27 @@
 # coding: utf-8
 
+
+def dirty_if_any_private_proposals(real_user)
+  matters = false 
+
+  proposals, _ = Proposal.all_proposals_for_subdomain
+
+  dummy = User.new
+
+  proposals.each do |proposal|
+    if permit('read proposal', proposal, real_user) != permit('read proposal', proposal, dummy)
+      matters = true 
+      break 
+    end
+  end 
+
+  if matters 
+    dirty_key '/proposals'
+  end 
+
+  matters
+end
+
 class CurrentUserController < ApplicationController
   skip_before_action :verify_authenticity_token, :only => :update_user_avatar_hack
 
@@ -50,7 +72,7 @@ class CurrentUserController < ApplicationController
             end
 
             current_user.add_to_active_in
-            dirty_key '/proposals'
+            dirty_if_any_private_proposals current_user
 
             update_roles_and_permissions
 
@@ -101,7 +123,7 @@ class CurrentUserController < ApplicationController
             current_user.add_to_active_in
             update_roles_and_permissions
 
-            dirty_key '/proposals'
+            dirty_if_any_private_proposals current_user
 
             if user.is_admin?
               dirty_key '/subdomain'
@@ -144,7 +166,7 @@ class CurrentUserController < ApplicationController
               current_user.verified = true
               current_user.save
             end
-            dirty_key '/proposals'
+            dirty_if_any_private_proposals current_user
 
             log('sign in by password reset')
 
@@ -194,7 +216,7 @@ class CurrentUserController < ApplicationController
         if current_user && current_user.logged_in?
           puts("Logging out.")
           dirty_key '/page/'
-          dirty_key '/proposals'
+          dirty_if_any_private_proposals current_user
           new_current_user()
           log('logged out')
         end
@@ -210,8 +232,8 @@ class CurrentUserController < ApplicationController
 
           user = User.find key_id(params[:switch_to])
           if user
+            dirty_if_any_private_proposals current_user
             set_current_user(user)
-            dirty_key '/proposals'
             dirty_key '/application'
           else
             errors.append "Could not find a user at #{params[:switch_to]}"
@@ -316,6 +338,8 @@ class CurrentUserController < ApplicationController
       new_tags.update non_editable_old_tags
 
       new_params[:tags] = JSON.dump new_tags
+
+      dirty_key '/proposals' # might have access to more proposals if user tags have been changed (LVG, zipcodes)
     end
 
     if new_params.has_key? :subscriptions
@@ -327,7 +351,7 @@ class CurrentUserController < ApplicationController
       if !current_user.save
         raise 'Error saving basic current_user parameters!'
       end
-      dirty_key '/proposals' # might have access to more proposals if user tags have been changed (LVG, zipcodes)
+      
 
     else
       raise 'Had trouble manipulating this user!'

@@ -133,8 +133,8 @@ class ProposalController < ApplicationController
     response = proposal.as_json
     if errors.length > 0
       response[:errors] = errors
-    else 
-      dirty_key '/proposals'
+    # else 
+    #   dirty_key '/proposals'
     end
 
     render :json => [response]

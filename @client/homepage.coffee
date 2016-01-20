@@ -47,12 +47,6 @@ window.proposal_editor = (proposal) ->
   return editor != '-' and editor
 
 
-window.sorted_proposals = (cluster) ->
-  cluster_key = "cluster/#{cluster.name}"
-  show_icon = customization('show_proposer_icon', cluster_key)
-  proposal_support = customization("proposal_support")
-  cluster.proposals.slice().sort (a,b) ->
-    return proposal_support(b) - proposal_support(a)
 
 cluster_keys = ['archived', 'label', 'description', 'homie_histo_title', \
                 'show_proposer_icon', 'slider_handle', 'slider_pole_labels', 
@@ -65,7 +59,7 @@ cluster_options = (key) ->
   options
 
 
-cluster_styles = ->
+window.cluster_styles = ->
 
   first_column =
     width: HOMEPAGE_WIDTH() * .6 - 50
@@ -141,8 +135,8 @@ window.SimpleHomepage = ReactiveComponent
       c.push cluster 
     clusters = c
 
+    # collapse by default archived clusters
     collapsed = fetch 'collapsed'
-
     if !collapsed.clusters?
       collapsed.clusters = {}
       for cluster in a 
@@ -160,24 +154,37 @@ window.SimpleHomepage = ReactiveComponent
       STYLE null,
         '''a.proposal:hover {border-bottom: 1px solid grey}'''
 
-      if customization('user_filters')
-        UserFilter
+      if customization('proposal_filters')
+        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+        ProposalFilter
           style: 
-            width: CONTENT_WIDTH()
+            width: first_column.width
             marginBottom: 20
             paddingLeft: if customization('show_proposer_icon') then 68
+            display: 'inline-block'
+            verticalAlign: 'top'
+
+      if customization('opinion_filters')
+        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+        OpinionFilter
+          style: 
+            width: secnd_column.width
+            marginBottom: 20
+            marginLeft: secnd_column.marginLeft
+            display: 'inline-block'
+            verticalAlign: 'top'
+            textAlign: 'center'
 
       # List all clusters
       for cluster, index in clusters or []
         cluster_key = "cluster/#{cluster.name}"
         options = cluster_options cluster_key
 
-        if cluster.proposals?.length > 0
-          Cluster
-            key: cluster_key
-            cluster: cluster 
-            options: options 
-            index: index
+        Cluster
+          key: cluster_key
+          cluster: cluster 
+          options: options 
+          index: index
 
 
       if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation'] 
@@ -271,6 +278,8 @@ Cluster = ReactiveComponent
     collapsed = fetch 'collapsed'
     is_collapsed = collapsed.clusters[@props.key]
 
+    proposals = sorted_proposals(cluster)
+    return SPAN null if !proposals || proposals.length == 0
 
     DIV
       key: cluster.name
@@ -281,8 +290,8 @@ Cluster = ReactiveComponent
       @drawClusterHeading cluster, options, is_collapsed
 
       if !is_collapsed
-        DIV null,
-          for proposal,idx in sorted_proposals(cluster)
+        DIV null, 
+          for proposal,idx in proposals
             DIV 
               key: "collapsed#{proposal.key}"
 
@@ -295,8 +304,6 @@ Cluster = ReactiveComponent
 
           if customization('show_new_proposal_button')
             @drawAddNew cluster, options
-          else 
-            console.log 'no custom!'
 
   drawAddNew : (cluster, options) -> 
     return SPAN null if cluster.name == 'Blocksize Survey'
@@ -613,6 +620,40 @@ pad = (num, len) ->
 
   dec[0] + if dec.length > 0 then '.' + dec[1] else ''
 
+NewActivity = ReactiveComponent
+  displayName: 'NewActivity'
+
+  render: -> 
+    proposal = @props.proposal 
+    unread = hasUnreadNotifications(proposal)
+
+    if current_user?.logged_in && unread
+      A
+        title: 'New activity'
+        href: proposal_url(proposal)
+        style: 
+          position: 'absolute'
+          left: -66
+          top: 11
+          width: 8
+          height: 8
+          textAlign: 'center'
+          display: 'inline-block'
+          cursor: 'pointer'
+          backgroundColor: '#aaa'
+          color: 'white'
+          fontSize: 14
+          borderRadius: '50%'
+          padding: 2
+          fontWeight: 600
+
+        # I 
+        #   className: 'fa-bell fa'
+    else 
+      SPAN null
+
+
+
 window.CollapsedProposal = ReactiveComponent
   displayName: 'CollapsedProposal'
 
@@ -632,8 +673,6 @@ window.CollapsedProposal = ReactiveComponent
     return if !watching && fetch('homepage_filter').watched
 
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-
-    unread = hasUnreadNotifications(proposal)
 
     your_opinion = fetch proposal.your_opinion
     if your_opinion?.published
@@ -663,12 +702,15 @@ window.CollapsedProposal = ReactiveComponent
 
     if draw_slider
       slider = fetch "homepage_slider#{proposal.key}"
+    else 
+      slider = null 
+
+    if slider && your_opinion && slider.value != your_opinion.stance && !slider.has_moved 
       # Update the slider value when the server gets back to us
-      if your_opinion && slider.value != your_opinion.stance && !slider.has_moved 
-        slider.value = your_opinion.stance
-        if your_opinion.stance
-          slider.has_moved = true
-        save slider
+      slider.value = your_opinion.stance
+      if your_opinion.stance
+        slider.has_moved = true
+      save slider
 
     DIV
       key: proposal.key
@@ -685,30 +727,8 @@ window.CollapsedProposal = ReactiveComponent
 
       DIV style: first_column,
 
-
-        if current_user?.logged_in && unread
-          A
-            title: 'New activity'
-            href: proposal_url(proposal)
-            style: 
-              position: 'absolute'
-              left: -66
-              top: 11
-              width: 8
-              height: 8
-              textAlign: 'center'
-              display: 'inline-block'
-              cursor: 'pointer'
-              backgroundColor: '#aaa'
-              color: 'white'
-              fontSize: 14
-              borderRadius: '50%'
-              padding: 2
-              fontWeight: 600
-
-            # I 
-            #   className: 'fa-bell fa'
-
+        NewActivity
+          proposal: proposal 
 
         if current_user?.logged_in
           # ability to watch proposal

@@ -66,37 +66,39 @@ end
 #   extend interface to allow for passing user and subdomain so that
 #   permit interface can be used for offline processing, such as 
 #   the notifications subsystem.
-def permit(action, object)
-  return Permission::PERMITTED if current_user.super_admin
+def permit(action, object, user = nil)
+
+  user ||= current_user
+  return Permission::PERMITTED if user.super_admin
 
   case action
   when 'create subdomain'
-    return Permission::NOT_LOGGED_IN if !current_user.registered
+    return Permission::NOT_LOGGED_IN if !user.registered
 
   when 'update subdomain', 'delete subdomain'
-    return Permission::NOT_LOGGED_IN if !current_user.registered
-    return Permission::INSUFFICIENT_PRIVILEGES if !current_user.is_admin?
-    return Permission::UNVERIFIED_EMAIL if !current_user.verified  
+    return Permission::NOT_LOGGED_IN if !user.registered
+    return Permission::INSUFFICIENT_PRIVILEGES if !user.is_admin?
+    return Permission::UNVERIFIED_EMAIL if !user.verified  
 
   when 'create proposal'
-    return Permission::NOT_LOGGED_IN if !current_user.registered
-    if !current_user.is_admin? && !Permitted::matchEmail(current_subdomain.user_roles['proposer'])
+    return Permission::NOT_LOGGED_IN if !user.registered
+    if !user.is_admin? && !Permitted::matchEmail(current_subdomain.user_roles['proposer'], user)
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
   when 'read proposal'
     proposal = object
 
-    if !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter', 'opiner', 'observer'])
-      if !current_user.registered
+    if !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter', 'opiner', 'observer'], user)
+      if !user.registered
         return Permission::NOT_LOGGED_IN 
       else
         return Permission::INSUFFICIENT_PRIVILEGES 
       end
     elsif !proposal.user_roles['observer'].index('*')
-      if !current_user.registered
+      if !user.registered
         return Permission::NOT_LOGGED_IN 
-      elsif !current_user.verified
+      elsif !user.verified
         return Permission::UNVERIFIED_EMAIL
       end
     end
@@ -107,9 +109,9 @@ def permit(action, object)
     can_read = permit('read proposal', object)
     return can_read if can_read < 0
 
-    return Permission::NOT_LOGGED_IN if !current_user.registered
+    return Permission::NOT_LOGGED_IN if !user.registered
 
-    if !current_user.is_admin? && !Permitted::matchEmail(proposal.user_roles['editor'])
+    if !user.is_admin? && !Permitted::matchEmail(proposal.user_roles['editor'], user)
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
@@ -120,8 +122,8 @@ def permit(action, object)
   when 'publish opinion'
     proposal = object
     return Permission::DISABLED if !proposal.active
-    return Permission::NOT_LOGGED_IN if !current_user.registered
-    if !current_user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'opiner'])
+    return Permission::NOT_LOGGED_IN if !user.registered
+    if !user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'opiner'], user)
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
@@ -130,12 +132,12 @@ def permit(action, object)
     
     can_read = permit 'read opinion', opinion
     return can_read if can_read < 0
-    return Permission::INSUFFICIENT_PRIVILEGES if current_user.id != opinion.user_id
+    return Permission::INSUFFICIENT_PRIVILEGES if user.id != opinion.user_id
 
   when 'read point'
     point = object
 
-    if current_user.id != point.user_id && !current_user.is_admin?
+    if user.id != point.user_id && !user.is_admin?
       return Permission::DISABLED if point.published && !(point.moderation_status.nil? || point.moderation_status != 0)
     end
 
@@ -143,8 +145,8 @@ def permit(action, object)
     proposal = object
     return Permission::DISABLED if !proposal.active
 
-    if !current_user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer'])
-      if !current_user.registered
+    if !user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer'], user)
+      if !user.registered
         return Permission::NOT_LOGGED_IN  
       else 
         return Permission::INSUFFICIENT_PRIVILEGES 
@@ -153,14 +155,14 @@ def permit(action, object)
 
   when 'update point'
     point = object
-    if !current_user.is_admin? && current_user.id != point.user_id
+    if !user.is_admin? && user.id != point.user_id
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
   when 'delete point'
     point = object
-    if !current_user.is_admin?
-      return Permission::INSUFFICIENT_PRIVILEGES if current_user.id != point.user_id
+    if !user.is_admin?
+      return Permission::INSUFFICIENT_PRIVILEGES if user.id != point.user_id
       return Permission::DISABLED if point.inclusions.count > 1
     end
 
@@ -174,9 +176,9 @@ def permit(action, object)
     proposal = point.proposal
 
     return Permission.DISABLED if !proposal.active
-    return Permission::NOT_LOGGED_IN if !current_user.registered
+    return Permission::NOT_LOGGED_IN if !user.registered
   
-    if !current_user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter'])
+    if !user.is_admin? && !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter'], user)
       return Permission::INSUFFICIENT_PRIVILEGES
     end
 
@@ -185,12 +187,12 @@ def permit(action, object)
     can_read = permit 'read comment', comment
     return can_read if can_read < 0
 
-    if !current_user.is_admin? && current_user.id != comment.user_id
+    if !user.is_admin? && user.id != comment.user_id
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
   when 'update user'
-    if !current_user.is_admin?
+    if !user.is_admin?
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
@@ -198,22 +200,22 @@ def permit(action, object)
   when 'request factcheck'
     proposal = object
     return Permission::DISABLED if !proposal.assessment_enabled || !proposal.active
-    return Permission::NOT_LOGGED_IN if !current_user.registered 
+    return Permission::NOT_LOGGED_IN if !user.registered 
 
   when 'factcheck content'
-    return Permission::NOT_LOGGED_IN if !current_user.registered
-    return Permission::INSUFFICIENT_PRIVILEGES if !current_user.has_any_role?([:admin, :superadmin, :evaluator])
-    return Permission::UNVERIFIED_EMAIL if !current_user.verified  
+    return Permission::NOT_LOGGED_IN if !user.registered
+    return Permission::INSUFFICIENT_PRIVILEGES if !user.has_any_role?([:admin, :superadmin, :evaluator])
+    return Permission::UNVERIFIED_EMAIL if !user.verified  
 
   when 'moderate content'
-    return Permission::NOT_LOGGED_IN if !current_user.registered
-    return Permission::INSUFFICIENT_PRIVILEGES if !current_user.has_any_role?([:admin, :superadmin, :moderator])
-    return Permission::UNVERIFIED_EMAIL if !current_user.verified  
+    return Permission::NOT_LOGGED_IN if !user.registered
+    return Permission::INSUFFICIENT_PRIVILEGES if !user.has_any_role?([:admin, :superadmin, :moderator])
+    return Permission::UNVERIFIED_EMAIL if !user.verified  
   else
     raise "Undefined Permission: #{action}"
   end
 
-  # puts "#{current_user.name} is permitted to #{action}"
+  # puts "#{user.name} is permitted to #{action}"
 
   return Permission::PERMITTED
 end

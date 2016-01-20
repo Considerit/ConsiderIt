@@ -263,6 +263,7 @@ Proposal = ReactiveComponent
             style: 
               width: BODY_WIDTH()
               margin: '40px auto 20px auto'
+              textAlign: 'center'
 
 
         #feelings

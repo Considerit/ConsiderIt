@@ -2,24 +2,283 @@ require './shared'
 require './customizations'
 
 
-UserFilter = ReactiveComponent
-  displayName: 'UserFilter'
+
+
+
+get_all_tags = -> 
+  proposals = fetch '/proposals'
+  proposals = _.flatten (c.proposals for c in proposals.clusters)
+  all_tags = {}
+  for proposal in proposals 
+    text = "#{proposal.name} #{proposal.description}"
+
+    if text.indexOf("#") > -1 && tags = text.match(/#(\w+)/g)
+      for tag in tags
+        tag = tag.toLowerCase()
+
+        all_tags[tag] ||= 0
+        all_tags[tag] += 1
+
+  # ordered_tags = ({tag: k, count: v} for k,v of all_tags when v > 1)
+  # ordered_tags.sort (a,b) -> b.count - a.count
+
+  all_tags 
+
+
+regexes = {}
+ApplyFilters = ReactiveComponent
+  displayName: 'ApplyFilters'
+
+  render: ->
+    filters = fetch 'filters'
+    filter_out = fetch 'filtered'
+    filter_out.proposals ||= {}
+
+    proposals = fetch '/proposals'
+    proposals = _.flatten (c.proposals for c in proposals.clusters)
+
+    new_filter_out = {}
+
+    for filter in (filters.for_proposals or [])
+      if !regexes[filter]
+        regexes[filter] = new RegExp filter, 'i'
+
+    for proposal in proposals 
+      editor = proposal_editor(proposal)
+      if editor 
+        editor = fetch(editor).name 
+      else 
+        editor = ""
+      text = "#{editor} #{proposal.name} #{proposal.description} #{prettyDate(proposal.created_at)}"
+      passes = true 
+      for filter in (filters.for_proposals or [])
+        passes &&= !!text.match regexes[filter]
+      if !passes
+        new_filter_out[proposal.key] = 1
+
+    if JSON.stringify(new_filter_out) != JSON.stringify filter_out.proposals
+      filter_out.proposals = new_filter_out
+      save filter_out
+
+    SPAN null
+
+
+
+window.sorted_proposals = (cluster) ->
+
+  cluster_key = "cluster/#{cluster.name}"
+  show_icon = customization('show_proposer_icon', cluster_key)
+
+  sort = fetch 'sort_proposals'
+
+  proposal_rank = sort.func or customization("proposal_rank")
+
+  proposals = cluster.proposals.slice().sort (a,b) ->
+    return proposal_rank(b, sort.opinion_value) - proposal_rank(a, sort.opinion_value)
+
+  # filter out filtered proposals
+  filter_out = fetch 'filtered'
+  if filter_out.proposals
+    filtered = []
+    for proposal in proposals
+      if filter_out.proposals[proposal.key]
+        filtered.push proposal
+    for proposal in filtered
+      proposals.splice proposals.indexOf(proposal), 1
+
+  proposals
+
+
+
+basic_proposal_scoring = (proposal, opinion_value) -> 
+  if !opinion_value
+    opinion_value = (o) -> o.stance
+
+  opinions = fetch(proposal).opinions    
+  if !opinions || opinions.length == 0
+    return null
+
+  filtered_out = fetch('filtered')
+  if filtered_out.users
+    opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
+
+  sum = 0
+  for opinion in opinions
+    sum += opinion_value(opinion)
+
+  sum
+
+
+sort_options = [
+
+  { 
+    func: basic_proposal_scoring
+    name: 'highest score'
+    opinion_value: (o) -> o.stance
+  }, {
+    func: basic_proposal_scoring
+    name: 'most activity'
+    opinion_value: (o) -> 1 + (o.point_inclusions or []).length
+  }, {
+    func: (proposal) -> new Date(proposal.created_at).getTime()
+    name: 'most recently submitted'
+  },{
+    func: (proposal) -> 
+      max = -1
+      for o in proposal.opinions 
+        if o.created_at > max 
+          max = new Date(o.created_at).getTime()
+      max 
+    name: 'most recent opinion'
+  }
+
+]
+
+sort = fetch 'sort_proposals'
+if !sort.func?
+  if customization("proposal_rank")
+    sort.func = customization("proposal_rank")
+    sort.name = 'custom'
+  else 
+    _.extend sort, sort_options[0]
+
+  save sort 
+
+
+
+
+
+ProposalFilter = ReactiveComponent
+  displayName: 'ProposalFilter'
 
   render : -> 
 
-    filters = customization 'user_filters'
+    proposals = fetch '/proposals'
+    filter_out = fetch 'filtered'
+    filters = fetch 'filters'
+
+    sort = fetch 'sort_proposals'
+
+    DIV 
+      style: _.defaults (@props.style or {})
+
+      ApplyFilters()
+
+
+      SPAN
+        style: 
+          color: focus_blue
+          fontSize: 20
+          fontWeight: 600
+
+        "Sort by "
+
+
+        SPAN 
+          style: 
+            fontWeight: 800
+            position: 'relative'
+            cursor: 'pointer'
+
+          onClick: => 
+            @local.show_sort_options = !@local.show_sort_options
+            save @local
+
+          sort.name
+
+          if @local.show_sort_options
+            DIV 
+              style: 
+                position: 'absolute'
+                zIndex: 999
+                width: 300
+                backgroundColor: 'white'
+                border: "1px solid #{focus_blue}"
+                top: 24
+                borderRadius: 8
+                fontWeight: 400
+
+              for sort_option in sort_options
+                do (sort_option) => 
+                  DIV 
+                    style:
+                      padding: '3px 6px'
+                      borderBottom: "1px solid #eaeaea"
+
+                    onClick: (e) =>
+                      _.extend sort, sort_option                      
+                      save sort 
+                      @local.show_sort_options = false
+                      save @local
+                      e.stopPropagation()
+
+
+                    sort_option.name
+
+      FORM 
+        onSubmit: (e) => 
+          n = @refs.new_filter.getDOMNode()
+          filters.for_proposals ||= []
+          filters.for_proposals.push n.value
+          save filters
+          n.value = null
+
+          e.stopPropagation(); e.preventDefault()
+
+
+        INPUT
+          ref: 'new_filter' 
+          type: 'text'
+          placeholder: 'search to add filter...'
+          style:
+            fontSize: 16
+            padding: '4px 8px'
+            width: 300
+
+      DIV 
+        style:
+          paddingTop: 5
+
+        for filter in (filters.for_proposals or [])
+          do (filter) => 
+            SPAN 
+              style: 
+                backgroundColor: '#eee'
+                color: '#666'
+                padding: '4px 8px'
+                borderRadius: 16
+                fontSize: 16
+                cursor: 'pointer'
+                boxShadow: '0 1px 1px rgba(0,0,0,.2)'
+                marginRight: 10
+              onClick: -> 
+                idx = filters.for_proposals.indexOf(filter)
+                filters.for_proposals.splice idx, 1
+                save filters
+
+              filter 
+
+
+OpinionFilter = ReactiveComponent
+  displayName: 'OpinionFilter'
+
+  render : -> 
+
+    filters = customization 'opinion_filters'
     users = fetch '/users'
     filter_out = fetch 'filtered'
 
-    set_filtered_users = => 
+    toggle_filter = (filter) -> 
       filter_out.users = {}
-      filter_out.checked = {}
-      filter_funcs = []
-      for filter,idx in filters 
-        if @refs[idx].getDOMNode().checked
-          filter_funcs.push filter.pass
-          filter_out.checked[filter.label] = true
+      filter_out.opinion_filters ||= {}
 
+      if filter_out.opinion_filters[filter.label]
+        delete filter_out.opinion_filters[filter.label]
+      else 
+        filter_out.opinion_filters[filter.label] = filter
+
+
+      filter_funcs = (f.pass for k,f of filter_out.opinion_filters)
       if filter_funcs.length > 0
         for user in users.users
           passes = true 
@@ -35,211 +294,211 @@ UserFilter = ReactiveComponent
     DIV 
       style: (@props.style or {})
 
-      SPAN 
+      DIV 
         style: 
-          textStyle: 'italics'
-          marginRight: 10
+          color: focus_blue
+          fontSize: 20
+          fontWeight: 600
 
-        'Filter to:'
+        'Filter opinions to'
 
-      for filter,idx in filters 
-        do (filter, idx) => 
-          id = "filter-#{slugify(filter.label)}"
-          DIV 
-            ref: "filter-#{idx}"
-            style: 
-              display: 'inline-block'
-              marginRight: 10
-            onMouseEnter: => 
-              if filter.tooltip 
-                tooltip = fetch 'tooltip'
-                tooltip.coords = $(@refs["filter-#{idx}"].getDOMNode()).offset()
-                tooltip.tip = filter.tooltip
-                save tooltip
-            onMouseLeave: => 
-              if filter.tooltip 
-                tooltip = fetch 'tooltip'
-                tooltip.coords = tooltip.tip = null 
-                save tooltip
-
-            INPUT 
-              type: 'checkbox'
-              ref: idx
-              id: id
-              style: 
-                fontSize: 24
-                marginRight: 6
-                display: 'inline-block'
-                cursor: 'pointer'
-
-              defaultChecked: filter_out.checked?[filter.label]
-              onChange: set_filtered_users
-
-            LABEL 
-              htmlFor: id
-              style: 
-                cursor: 'pointer'
-
-              filter.label
+      VerificationProcessExplanation()
 
       DIV 
         style: 
           marginTop: 0
-          position: 'relative'
+        for filter,idx in filters 
+          do (filter, idx) => 
+            is_enabled = filter_out.opinion_filters?[filter.label]
+            DIV 
+              ref: "filter-#{idx}"
+              style: 
+                display: 'inline-block'
+                marginRight: if idx != filters.length - 1 then 5
+                paddingRight: if idx != filters.length - 1 then 5  
+                borderRight: if idx != filters.length - 1 then '1px solid #ddd'
+                color: if is_enabled then focus_blue else '#aaa'
+                cursor: 'pointer'
+                fontSize: 16
+
+              onMouseEnter: => 
+                if filter.tooltip 
+                  tooltip = fetch 'tooltip'
+                  tooltip.coords = $(@refs["filter-#{idx}"].getDOMNode()).offset()
+                  tooltip.tip = filter.tooltip
+                  save tooltip
+              onMouseLeave: => 
+                if filter.tooltip 
+                  tooltip = fetch 'tooltip'
+                  tooltip.coords = tooltip.tip = null 
+                  save tooltip
+              onClick: -> toggle_filter(filter)              
+
+              filter.label 
+
+
+VerificationProcessExplanation = ReactiveComponent
+  displayName: 'VerificationProcessExplanation'
+  render: -> 
+    users = fetch '/users'
+    callout = "about verification"
+    DIV 
+      style: 
+        position: 'absolute'
+        right: -sizeWhenRendered(callout, {fontSize: 12}).width
+        top: -3
+
+      SPAN 
+        style: 
+          color: "#aaa"
+          fontSize: 14
 
         SPAN 
           style: 
-            color: "#8D8D8D"
-            fontSize: 14
+            textDecoration: 'underline'
+            cursor: 'pointer'
+            color: if @local.describe_process then logo_red
+          onClick: => 
+            @local.describe_process = !@local.describe_process
+            save @local
+          callout
 
-          "read more about "
+      if @local.describe_process
+        para = 
+          marginBottom: 20
+
+        DIV 
+          style: 
+            textAlign: 'left'
+            position: 'absolute'
+            right: 0
+            top: 40
+            width: 650
+            zIndex: 999
+            padding: "20px 40px"
+            backgroundColor: '#eee'
+            #boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+            fontSize: 18
+
           SPAN 
-            style: 
-              textDecoration: 'underline'
-              cursor: 'pointer'
-              color: if @local.describe_process then logo_red
-            onClick: => 
-              @local.describe_process = !@local.describe_process
-              save @local
-            "filters and our process" 
-            if @local.describe_process
-              " (close)"
+            style: cssTriangle 'top', '#eee', 16, 8,
+              position: 'absolute'
+              right: 50
+              top: -8
 
-        if @local.describe_process
-          para = 
-            marginBottom: 20
+
+          DIV style: para,
+
+            """Filters help us understand the opinions of the stakeholder groups. \
+               Filters are conjunctive: only users that pass all active filters are shown.
+               These are the filters:"""
+
+          DIV style: para,
+            SPAN 
+              style:
+                fontWeight: 700
+              'Verified users'
+            """. Verified users have emailed us a verification image to validate their account.  
+               We have also verified a few other people via other media channels, like Reddit. """
+            SPAN style: fontStyle: 'italic', 
+              "Verification results shown below."
+
+          DIV style: para,
+            SPAN 
+              style:
+                fontWeight: 700
+              'Miners'
+
+            ". Miners are "
+            OL 
+              style: 
+                marginLeft: 20 
+              LI null,
+                'Users who control a mining pool with > 1% amount of hashrate'
+              LI null,
+                'Users who control > 1% amount of hashrate'
+            'We verify hashrate by consulting '
+            A 
+              href: 'https://blockchain.info/pools'
+              target: '_blank'
+              style: 
+                textDecoration: 'underline'
+
+              'https://blockchain.info/pools'
+            '.'
+
+          DIV style: para,
+            SPAN 
+              style:
+                fontWeight: 700
+              'Developers'
+
+            """. Bitcoin developers self-report by editing their user profile. If we recognize 
+               someone as a committer or maintainer of Core or XT, we assign it. 
+               We aren’t satisfied by our criteria for developer. We hope to work with 
+               the community to define a more robust standard for 'reputable technical voice'.""" 
+
+          DIV style: para,
+            SPAN 
+              style:
+                fontWeight: 700
+              'Businesses'
+
+            """. Bitcoin businesses self-report by editing their user profile. Business accounts
+               are either users who operate the business or an account that will represent that 
+               businesses' official position. 
+               We send an email to the listed business(es) to confirm control of the account.""" 
+
+          DIV style: para,
+            "These filters aren’t perfect. If you think there is a problem, email us at "
+            A
+              href: "mailto:admin@consider.it"
+              style: 
+                textDecoration: 'underline'
+              'admin@consider.it'
+
+            ". We will try to make a more trustless process in the future."
 
           DIV 
-            style: 
-              position: 'absolute'
-              left: 0
-              top: 40
-              width: 650
-              zIndex: 999
-              padding: "20px 40px"
-              backgroundColor: '#eee'
-              #boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-              fontSize: 18
-
-            SPAN 
-              style: cssTriangle 'top', '#eee', 16, 8,
-                position: 'absolute'
-                left: 180
-                top: -8
-
-
-            DIV style: para,
-
-              """Filters help us understand the opinions of the stakeholder groups. \
-                 Filters are conjunctive: only users that pass all active filters are shown.
-                 These are the filters:"""
-
-            DIV style: para,
-              SPAN 
-                style:
-                  fontWeight: 700
-                'Verified users'
-              """. Verified users have emailed us a verification image to validate their account.  
-                 We have also verified a few other people via other media channels, like Reddit. """
-              SPAN style: fontStyle: 'italic', 
-                "Verification results shown below."
-
-            DIV style: para,
-              SPAN 
-                style:
-                  fontWeight: 700
-                'Miners'
-
-              ". Miners are "
-              OL 
-                style: 
-                  marginLeft: 20 
-                LI null,
-                  'Users who control a mining pool with > 1% amount of hashrate'
-                LI null,
-                  'Users who control > 1% amount of hashrate'
-              'We verify hashrate by consulting '
-              A 
-                href: 'https://blockchain.info/pools'
-                target: '_blank'
-                style: 
-                  textDecoration: 'underline'
-
-                'https://blockchain.info/pools'
-              '.'
-
-            DIV style: para,
-              SPAN 
-                style:
-                  fontWeight: 700
-                'Developers'
-
-              """. Bitcoin developers self-report by editing their user profile. If we recognize 
-                 someone as a committer or maintainer of Core or XT, we assign it. 
-                 We aren’t satisfied by our criteria for developer. We hope to work with 
-                 the community to define a more robust standard for 'reputable technical voice'.""" 
-
-            DIV style: para,
-              SPAN 
-                style:
-                  fontWeight: 700
-                'Businesses'
-
-              """. Bitcoin businesses self-report by editing their user profile. Business accounts
-                 are either users who operate the business or an account that will represent that 
-                 businesses' official position. 
-                 We send an email to the listed business(es) to confirm control of the account.""" 
-
-            DIV style: para,
-              "These filters aren’t perfect. If you think there is a problem, email us at "
-              A
-                href: "mailto:admin@consider.it"
-                style: 
-                  textDecoration: 'underline'
-                'admin@consider.it'
-
-              ". We will try to make a more trustless process in the future."
+            style: {}
 
             DIV 
-              style: {}
+              style: 
+                fontWeight: 600
+                fontSize: 26
 
-              DIV 
-                style: 
-                  fontWeight: 600
-                  fontSize: 26
+              'Verification status'
 
-                'Verification status'
+            for user in users.users 
+              user = fetch user 
+              if user.tags.verified && user.tags.verified.toLowerCase() not in ['no', 'false']
+                DIV 
+                  style:
+                    marginTop: 20
 
-              for user in users.users 
-                user = fetch user 
-                if user.tags.verified && user.tags.verified.toLowerCase() not in ['no', 'false']
                   DIV 
-                    style:
-                      marginTop: 20
+                    style: 
+                      fontWeight: 600
 
+                    user.name
+
+
+                  if user.tags.verified?.indexOf('http') == 0
+                    IMG 
+                      src: user.tags.verified
+                      style: 
+                        width: 400
+                  else 
                     DIV 
                       style: 
-                        fontWeight: 600
+                        fontStyle: 'italic'
 
-                      user.name
-
-
-                    if user.tags.verified?.indexOf('http') == 0
-                      IMG 
-                        src: user.tags.verified
-                        style: 
-                          width: 400
-                    else 
-                      DIV 
-                        style: 
-                          fontStyle: 'italic'
-
-                        user.tags.verified
+                      user.tags.verified
 
 
 
 
 
 
-
-window.UserFilter = UserFilter
+window.ProposalFilter = ProposalFilter
+window.OpinionFilter = OpinionFilter

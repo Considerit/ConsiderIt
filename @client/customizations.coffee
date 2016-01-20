@@ -397,25 +397,9 @@ customizations.default =
   lang: 'en'
 
   # Proposal options
-
-  opinion_value: (o) -> o.stance
-  proposal_support: (proposal) ->
-    opinions = fetch(proposal).opinions    
-    if !opinions || opinions.length == 0
-      return null
-
-    filtered_out = fetch('filtered')
-    if filtered_out.users
-      opinions = (o for o in opinions when !(filtered_out.users?[o.user]))
-    opinion_value = customization("opinion_value", proposal)
-
-    sum = 0
-    for opinion in opinions
-      sum += opinion_value(opinion)
-
-    sum
-
   discussion: true
+
+  proposal_filters: true
 
   show_new_proposal_button: true
 
@@ -1834,8 +1818,8 @@ customizations.bitcoin =
     ]
 
 
-  user_filters: [ {
-      label: 'verified users'
+  opinion_filters: [ {
+      label: 'verified'
       tooltip: 'User sent in verification image.'
       pass: (user) -> passes_tags(user, 'verified')
       icon: "<span style='color:green'>\u2713 verified</span>"
@@ -1862,10 +1846,12 @@ customizations.bitcoin =
 # https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/
 
 customizations.bitcoinclassic = _.extend {}, 
-  user_filters: customizations.bitcoin.user_filters
+  opinion_filters: customizations.bitcoin.opinion_filters
   auth: customizations.bitcoin.auth
   show_proposer_icon: false
   collapse_descriptions_at: 300
+
+  proposal_filters: true
 
   'cluster/Scrapped proposals': 
     #label: "Winter 2015 board election"
@@ -1917,17 +1903,22 @@ customizations.bitcoinclassic = _.extend {},
         DIV
           style:
             cursor: if not homepage then 'pointer'
+            width: HOMEPAGE_WIDTH()
+            margin: 'auto'
           onClick: if not homepage then => loadPage('/')
 
           DIV 
             style: 
-              marginLeft: 50
+              marginLeft: -70
+              paddingTop: 30
             SPAN
               style:
                 display: 'inline-block'
                 visibility: if homepage then 'hidden'
                 color: '#eee'
-                marginLeft: -10
+                position: 'relative'
+                left: -60
+                top: -10
                 fontSize: 43
                 fontWeight: 400
                 paddingLeft: 25 # Make the clickable target bigger
@@ -1940,48 +1931,59 @@ customizations.bitcoinclassic = _.extend {},
 
               IMG
                 style:
-                  height: 29
-                  width: 206
+                  height: 51
+                  marginLeft: -50
 
-                src: asset('bitcoin/bitcoinclassic.png')
+                src: asset('bitcoin/bitcoinclassiclogo.png')
 
             BR null
-            SPAN
-              style: 
-                color: 'white'
-                marginLeft: 69
-                position: 'relative'
-                marginBottom: 10
-                top: -4
-                backgroundColor: '#F69332'
-                padding: '3px 6px'
-                fontSize: 18
+            if homepage 
 
-
-              "Please discuss proposals on "
-              A 
-                href: "https://www.reddit.com/r/Bitcoin_Classic/"
-                target: '_blank'
+              SPAN
                 style: 
-                  textDecoration: 'underline'
+                  marginLeft: 69
+                  position: 'relative'
+                  marginTop: 5
+                  marginBottom: 10
+                  top: -4
+                  #backgroundColor: '#F69332'
+                  padding: '3px 6px'
+                  fontSize: 20
+                  fontStyle: 'italic'
+                  fontWeight: 700
+                  color: '#bbb'
 
-                "Reddit"
-              " or "
-              A 
-                href: "http://invite.bitcoinclassic.com/"
-                target: '_blank'
-                style: 
-                  textDecoration: 'underline'
 
-                "Slack"
-              " before posting here. "               
-              A 
-                href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/'
-                target: '_blank'
-                style: 
-                  textDecoration: 'underline'
+                "Please discuss proposals on "
+                A 
+                  href: "https://www.reddit.com/r/Bitcoin_Classic/"
+                  target: '_blank'
+                  style: 
+                    borderBottom: "1px solid #bbb"
+                    #textDecoration: 'underline'
 
-                "Other guidelines"
+                  "Reddit"
+                " or "
+                A 
+                  href: "http://invite.bitcoinclassic.com/"
+                  target: '_blank'
+                  style: 
+                    borderBottom: "1px solid #bbb"
+                    #textDecoration: 'underline'
+
+                  "Slack"
+                " first. "
+
+                "Other "               
+                A 
+                  href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/'
+                  target: '_blank'
+                  style: 
+                    borderBottom: "1px solid #bbb"
+                    #textDecoration: 'underline'
+
+                  "guidelines"
+                "."
 
         ProfileMenu()
 

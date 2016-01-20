@@ -318,12 +318,12 @@ class User < ActiveRecord::Base
   def absorb (user)
     return if not (self and user)
 
-    dest_user = self.id #user that will do the absorbing
-    source_user = user.id #user that will be absorbed
+    older_user = self.id #user that will do the absorbing
+    newer_user = user.id #user that will be absorbed
 
-    puts("Merging!  Kill User #{source_user}, put into User #{dest_user}")
+    puts("Merging!  Kill User #{newer_user}, put into User #{older_user}")
 
-    return if dest_user == source_user
+    return if older_user == newer_user
     
     dirty_key("/current_user") # in case absorb gets called outside 
                                # of CurrentUserController
@@ -343,13 +343,23 @@ class User < ActiveRecord::Base
     #    TODO: Reconsider this assumption. Should we use Opinion.updated_at to 
     #          decide which is the new one and which is the old, and consequently 
     #          which gets absorbed into the other?
-    new_ops = Opinion.where(:user_id => source_user)
-    old_ops = Opinion.where(:user_id => dest_user)
+    new_ops = Opinion.where(:user_id => newer_user)
+    old_ops = Opinion.where(:user_id => older_user)
     puts("Merging opinions from #{old_ops.map{|o| o.id}} to #{new_ops.map{|o| o.id}}")
 
     for new_op in new_ops
+
+      # we only need to absorb this user if they've dragged the slider 
+      # or included a point
+      # ATTENTION!! This will delete someone's opinion if they vote exactly neutral and 
+      #             didn't include any points (and they're logging in)
+      if new_op.stance == 0 && (new_op.point_inclusions == '[]' || new_op.point_inclusions.length == 0)
+        new_op.destroy
+        next 
+      end
+
       puts("Looking for opinion to absorb into #{new_op.id}...")
-      old_op = Opinion.where(:user_id => dest_user,
+      old_op = Opinion.where(:user_id => older_user,
                              :proposal_id => new_op.proposal.id).first
 
       if old_op
@@ -361,7 +371,7 @@ class User < ActiveRecord::Base
         # if this is the first time this user is saving an opinion for this proposal
         # we'll just change the user id of the opinion, seeing as there isn't any
         # opinion to absorb into
-        new_op.user_id = dest_user
+        new_op.user_id = older_user
         new_op.save
         dirty_key("/opinion/#{new_op.id}")
       end
@@ -372,16 +382,15 @@ class User < ActiveRecord::Base
     # TRAVIS: Opinion & Inclusion is taken care of when absorbing an Opinion
 
     # Bulk updates...
-    for table in [Point, Proposal, Comment, Assessment, Assessable::Request, \
-                  Moderation ] 
+    for table in [Point, Proposal, Comment] 
 
       # First, remember what we're dirtying
-      table.where(:user_id => source_user).each{|x| dirty_key("/#{table.name.downcase}/#{x.id}")}
-      table.where(:user_id => source_user).update_all(user_id: dest_user)
+      table.where(:user_id => newer_user).each{|x| dirty_key("/#{table.name.downcase}/#{x.id}")}
+      table.where(:user_id => newer_user).update_all(user_id: older_user)
     end
 
     # log table, which doesn't use user_id
-    Log.where(:who => source_user).update_all(who: dest_user)
+    Log.where(:who => newer_user).update_all(who: older_user)
 
     # 3. Delete the old user
     # TODO: Enable this once we're confident everything is working.

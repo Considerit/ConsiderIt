@@ -53,7 +53,6 @@ class OpinionController < ApplicationController
       proposal.save
 
       dirty_key "/proposal/#{proposal.id}"
-      dirty_key "/page/#{proposal.slug}"
     end
 
     #proposal.delay.update_metrics()

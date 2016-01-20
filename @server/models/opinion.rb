@@ -47,6 +47,7 @@ class Opinion < ActiveRecord::Base
                                     :stance => 0,
                                     :point_inclusions => '[]',
                                    )
+      
     end
     your_opinion
   end
@@ -155,7 +156,7 @@ class Opinion < ActiveRecord::Base
 
     # First record everything we're dirtying
     dirty_key("/opinion/#{id}")
-    dirty_key("/page/#{Proposal.find(proposal_id).slug}")    
+    dirty_key("/proposal/#{proposal_id}")    
 
     # If we're absorbing the Opinion's user as well
     if absorb_user
@@ -170,13 +171,13 @@ class Opinion < ActiveRecord::Base
       # BUG: There is a strange bug we can't find where inclusion.point_id can
       # get set to null. The code above has been null guarded. 
       # This is an attempt to gather more data on it. 
-      if inclusions.where('point_id IS NULL').count > 0 
-        begin 
-          raise "We have a null point_id for an inclusion!"
-        rescue => e
-          ExceptionNotifier.notify_exception e, :env => request.env
-        end
-      end
+      # if inclusions.where('point_id IS NULL').count > 0 
+      #   begin 
+      #     raise "We have a null point_id for an inclusion!"
+      #   rescue => e
+      #     ExceptionNotifier.notify_exception e, :env => request.env
+      #   end
+      # end
 
       proposal.inclusions.where(:user_id => self.user_id).destroy_all
 

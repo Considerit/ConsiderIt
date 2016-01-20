@@ -258,8 +258,8 @@ Proposal = ReactiveComponent
 
         ProposalDescription()
 
-        if customization('user_filters')
-          UserFilter
+        if customization('opinion_filters')
+          OpinionFilter
             style: 
               width: BODY_WIDTH()
               margin: '40px auto 20px auto'
@@ -498,6 +498,7 @@ ProposalDescription = ReactiveComponent
             fontSize: 16
             color: "#888"
             fontStyle: 'italic'
+            paddingTop: 18
 
           prettyDate(@proposal.created_at)
 

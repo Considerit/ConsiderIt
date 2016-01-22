@@ -598,7 +598,7 @@ customizations['consider'] =
   #show_proposer_icon: true
   proposal_filters: false 
   opinion_filters: false 
-  
+
   "cluster/Bug Reports" : 
     slider_pole_labels: relevance
     show_slider_feedback: false
@@ -623,7 +623,7 @@ customizations['consider'] =
   #   }]
 
 
-  "cluster/Hard tasks" : 
+  "cluster/Hard Tasks" : 
     slider_pole_labels: important_unimportant
     show_slider_feedback: false
     description: 

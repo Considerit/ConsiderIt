@@ -1,5 +1,5 @@
 require './color'
-
+require './logo'
 
 #######################
 # Customizations.coffee
@@ -187,6 +187,7 @@ support_challenge_claim =
   other_header: "--valences-- identified" 
   top_header: "Top --valences--" 
 
+
 delta_pluses = 
   pro: 'plus'
   pros: 'pluses' 
@@ -238,6 +239,20 @@ support_oppose =
                               proposal
 
       "You #{strength_of_opinion} #{valence}"
+
+
+relevance = 
+  individual: 
+    support: 'Big impact!'
+    oppose: 'No impact on me'
+    support_sub: ''
+    oppose_sub: ''    
+  group: 
+    support: 'Big impact!'
+    oppose: 'No impact on me'
+    support_sub: ''
+    oppose_sub: ''
+
 
 important_unimportant = 
   individual: 
@@ -579,6 +594,90 @@ customizations['carcd'] = customizations['carcd-demo'] =
 
 
 
+customizations['consider'] = 
+  #show_proposer_icon: true
+  proposal_filters: false 
+  opinion_filters: false 
+  
+  "cluster/Bug Reports" : 
+    slider_pole_labels: relevance
+    show_slider_feedback: false
+    discussion: false
+    description: 
+      DIV 
+        style: 
+          #marginLeft: 65
+          fontSize: 18
+          fontWeight: 500
+          position: 'relative'
+          top: 12
+          padding: 4
+          fontStyle: 'italic'
+          color: '#888'
+        "Describe bugs you've encountered. Please include your browser and device!"
+
+  # opinion_filters: [ {
+  #     label: 'consider.it staff'
+  #     tooltip: null
+  #     pass: (user) -> user.key in ['/user/1701', '/user/1707', '/user/30970']
+  #   }]
+
+
+  "cluster/Hard tasks" : 
+    slider_pole_labels: important_unimportant
+    show_slider_feedback: false
+    description: 
+      DIV 
+        style: 
+          #marginLeft: 65
+          fontSize: 18
+          fontWeight: 500
+          position: 'relative'
+          top: 12
+          padding: 4
+          fontStyle: 'italic'
+          color: '#888'
+        "What tasks should we make significantly easier?"
+
+  HomepageHeader: ReactiveComponent
+    displayName: 'HomepageHeader'
+
+    render: -> 
+      HEADER_HEIGHT = 30 
+      DIV
+        style:
+          position: "relative"
+          margin: "0 auto"
+          backgroundColor: logo_red
+          height: HEADER_HEIGHT
+          zIndex: 1
+
+        DIV
+          style:
+            width: CONTENT_WIDTH()
+            margin: 'auto'
+
+          SPAN 
+            style:
+              position: "relative"
+              top: 4
+              left: if window.innerWidth > 1055 then -23.5 else 0
+
+            drawLogo HEADER_HEIGHT + 5, 
+                    'white', 
+                    (if @local.in_red then 'transparent' else logo_red), 
+                    !@local.in_red,
+                    false
+
+          SPAN 
+            style: 
+              fontSize: 22
+              position: 'relative'
+              top: -5
+              color: 'white'
+              fontStyle: 'italic'
+
+            'Issue Slate'
 
 
 customizations['us'] = 
@@ -1729,9 +1828,9 @@ passes_tags = (user, tags) ->
     tags = [tags]
   user = fetch(user)
 
-  passes = false 
+  passes = true 
   for tag in tags 
-    passes ||= user.tags[tag] && \
+    passes &&= user.tags[tag] && \
      !(user.tags[tag].toLowerCase() in ['no', 'false'])
   passes 
 
@@ -1819,7 +1918,7 @@ customizations.bitcoin =
 
 
   opinion_filters: [ {
-      label: 'verified'
+      label: 'users'
       tooltip: 'User sent in verification image.'
       pass: (user) -> passes_tags(user, 'verified')
       icon: "<span style='color:green'>\u2713 verified</span>"
@@ -1827,17 +1926,17 @@ customizations.bitcoin =
     }, {
       label: 'miners'
       tooltip: 'Controls > 1% hashrate.'
-      pass: (user) -> passes_tags(user, 'bitcoin_large_miner')
+      pass: (user) -> passes_tags(user, ['bitcoin_large_miner', 'verified'])
       icon: "<span style=''>\u26CF miner</span>"      
     }, {
       label: 'developers'
       tooltip: 'Self reported in user profile.'
-      pass: (user) -> passes_tags(user, 'bitcoin_developer.editable')
+      pass: (user) -> passes_tags(user, ['bitcoin_developer.editable', 'verified'])
       icon: "<span style=''><img src='https://dl.dropboxusercontent.com/u/3403211/dev.png' style='width:20px' /> developer</span>"            
     },{
       label: 'businesses'
-      tooltip: 'Self reported in user profile. Verified by email to business.'
-      pass: (user) -> passes_tags(user, 'bitcoin_business.editable')
+      tooltip: 'Self reported in user profile'
+      pass: (user) -> passes_tags(user, ['bitcoin_business.editable', 'verified'])
       icon: (user) -> "<span style=''>operates: #{fetch(user).tags['bitcoin_business.editable']}</span>"            
 
     }
@@ -1888,7 +1987,7 @@ customizations.bitcoinclassic = _.extend {},
         style:
           position: 'relative'
           backgroundColor: 'white'
-          #height: 63
+          # height: 63
           # borderBottom: '1px solid #ddd'
           # boxShadow: '0 1px 2px rgba(0,0,0,.1)'
 

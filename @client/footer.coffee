@@ -15,6 +15,15 @@ window.DefaultFooter = ReactiveComponent
   displayName: 'Footer'
   render: ->
     subdomain = fetch '/subdomain'
+
+    separator = SPAN 
+      style: 
+        padding: '0 6px'
+        color: '#ccc'
+      #dangerouslySetInnerHTML: { __html: "&bull;"}
+      '|'
+
+
     DIV
       style: 
         position: 'relative'
@@ -50,32 +59,90 @@ window.DefaultFooter = ReactiveComponent
           I className: 'fa fa-angle-up', style: paddingLeft: 5
 
         BR null
-        TechnologyByConsiderit()
+        TechnologyByConsiderit
+          size: 26
+
 
         DIV 
           style: 
             marginTop: 7
             maxHeight: if browser.is_mobile then 30
+            color: '999'
 
-          'Bug to report? Want to use this technology yourself? '
-          A 
+          SPAN 
             style: 
-              textDecoration: 'underline'
-            href: "mailto:admin@consider.it"
+              display: 'inline-block'
+              marginBottom: 10
 
-            'Email us'
-          ' at admin@consider.it'
+            A 
+              style: 
+                textDecoration: 'underline'
+                color: logo_red              
+              href: "mailto:admin@consider.it"
+
+              'Talk to us'
+              ' at admin@consider.it'
+
+          separator
+
+          SPAN 
+            style: 
+              display: 'inline-block'
+              marginBottom: 10
+
+            A 
+              style: 
+                textDecoration: 'underline'
+                color: logo_red
+
+              href: "https://consider.consider.it"
+
+              'Report bugs or share ideas'
+
+          separator
+
+          SPAN 
+            style: 
+              display: 'inline-block'
+              marginBottom: 10
+
+            A 
+              style: 
+                textDecoration: 'underline'
+                color: logo_red
+              href: "https://consider.it"
+
+              'Create your own consider.it project'
+
+
+
+
+
+        # DIV 
+        #   style: 
+        #     marginTop: 7
+        #     maxHeight: if browser.is_mobile then 30
+
+        #   'Bug to report? Want to use this technology yourself? '
+        #   A 
+        #     style: 
+        #       textDecoration: 'underline'
+        #     href: "mailto:admin@consider.it"
+
+        #     'Email us'
+        #   ' at admin@consider.it'
 
 
 require './logo'
 window.TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'
   render : -> 
+    @props.size ||= 20
     DIV 
       style: 
         textAlign: 'left'
         display: 'inline-block'
-        fontSize: 20
+        fontSize: @props.size
       "Technology by "
       A 
         onMouseEnter: => 
@@ -91,7 +158,7 @@ window.TechnologyByConsiderit = ReactiveComponent
           top: 6
           left: 3
         
-        drawLogo 25, logo_red, logo_red, false, true, logo_red, (if @local.hover then 142 else null), true
+        drawLogo @props.size + 5, logo_red, logo_red, false, true, logo_red, (if @local.hover then 142 else null), true
 
 
 

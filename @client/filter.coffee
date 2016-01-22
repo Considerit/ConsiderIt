@@ -171,7 +171,7 @@ ProposalFilter = ReactiveComponent
           fontSize: 20
           fontWeight: 600
 
-        "Sort by "
+        "Sorted by "
 
 
         SPAN 
@@ -185,6 +185,10 @@ ProposalFilter = ReactiveComponent
             save @local
 
           sort.name
+
+          SPAN style: _.extend cssTriangle 'bottom', focus_blue, 11, 7,
+            display: 'inline-block'
+            marginLeft: 4
 
           if @local.show_sort_options
             DIV 
@@ -229,7 +233,7 @@ ProposalFilter = ReactiveComponent
         INPUT
           ref: 'new_filter' 
           type: 'text'
-          placeholder: 'search to add filter...'
+          placeholder: 'search proposals'
           style:
             fontSize: 16
             padding: '4px 8px'
@@ -267,6 +271,7 @@ OpinionFilter = ReactiveComponent
     filters = customization 'opinion_filters'
     users = fetch '/users'
     filter_out = fetch 'filtered'
+    bitcoin = fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic']
 
     toggle_filter = (filter) -> 
       filter_out.users = {}
@@ -275,6 +280,7 @@ OpinionFilter = ReactiveComponent
       if filter_out.opinion_filters[filter.label]
         delete filter_out.opinion_filters[filter.label]
       else 
+        filter_out.opinion_filters = {} # act like radio button
         filter_out.opinion_filters[filter.label] = filter
 
 
@@ -300,9 +306,12 @@ OpinionFilter = ReactiveComponent
           fontSize: 20
           fontWeight: 600
 
-        'Filter opinions to'
+        'Filter opinions to' 
+        if bitcoin 
+          ' verified'
 
-      VerificationProcessExplanation()
+      if bitcoin
+        VerificationProcessExplanation()
 
       DIV 
         style: 
@@ -397,7 +406,7 @@ VerificationProcessExplanation = ReactiveComponent
             SPAN 
               style:
                 fontWeight: 700
-              'Verified users'
+              'Users'
             """. Verified users have emailed us a verification image to validate their account.  
                We have also verified a few other people via other media channels, like Reddit. """
             SPAN style: fontStyle: 'italic', 
@@ -446,8 +455,7 @@ VerificationProcessExplanation = ReactiveComponent
 
             """. Bitcoin businesses self-report by editing their user profile. Business accounts
                are either users who operate the business or an account that will represent that 
-               businesses' official position. 
-               We send an email to the listed business(es) to confirm control of the account.""" 
+               businesses' official position.""" 
 
           DIV style: para,
             "These filters aren’t perfect. If you think there is a problem, email us at "

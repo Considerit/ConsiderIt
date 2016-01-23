@@ -209,13 +209,13 @@ pros_contras =
 
 
 port_pros_cons = 
-  pro: 'pró'
-  pros: 'pros' 
-  con: 'contra'
-  cons: 'contras'
+  pro: 'Favorável'
+  pros: 'Favorável' 
+  con: 'Contrário'
+  cons: 'Contrário'
   your_header: "Entrega tu --valences--" 
   other_header: "Otros' --valences--" 
-  top_header: "Cima --valences--" 
+  top_header: "Top --valences--" 
 
 
 # slider poles
@@ -401,14 +401,14 @@ desacuerdo_acuerdo =
 
 port_agree_disagree = 
   individual: 
-    support: 'Acuerdo'
-    oppose: 'Discrepar'
+    support: 'Concordo'
+    oppose: 'Discordo'
     support_sub: ''
     oppose_sub: ''
 
   group: 
-    support: 'Acuerdo'
-    oppose: 'Discrepar'
+    support: 'Concordo'
+    oppose: 'Discordo'
     support_sub: ''
     oppose_sub: ''
 

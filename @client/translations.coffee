@@ -221,7 +221,7 @@ _.extend dict.ptbr,
   write_a_point: 'Escrever um ponto de vista'
   summary_placeholder: 'Um breve resumo do seu Ponto de Vista.'
   description_placeholder: 'Inclua seus argumentos e evidências.'
-  sign_name: 'Informe seu nome'
+  sign_name: 'Assinar'
 
   tip_single: (args) -> 
     "Escreve seu ponto de vista. Inclua multiplos #{args.noun} se tiver mais."
@@ -361,10 +361,10 @@ _.extend dict.ptbr,
   log_out: 'Sair'
   edit_profile: 'Editar Perfil'
   email_settings: 'Configurações de Email'
-  introduce_yourself: 'Diga quem é você'
+  introduce_yourself: 'Identifique-se'
 
   complete_registration: 'Completar registro'
-  login_as: 'Oi, está logado como'
+  login_as: 'Logar como'
   password: 'senha'
   name_prompt: 'Meu nome é'
   full_name: (args) -> 

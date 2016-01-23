@@ -592,7 +592,8 @@ customizations['carcd'] = customizations['carcd-demo'] =
   #ProposalNavigation: ProposalNavigationWithMenu
 
 
-
+customizations['sintaj'] = 
+  lang: 'ptbr'
 
 customizations['consider'] = 
   #show_proposer_icon: true

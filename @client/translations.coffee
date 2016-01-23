@@ -32,7 +32,7 @@ window.t = (label, args) ->
 
 ##### 
 # Dict will hold all the different translations for each language, 
-#  i.e. dict.en, dict.spa, etc
+#  i.e. dict.en, dict.spa, dict.ptbr, etc
 # Each language's dict will have entries for every possible label that the 
 # system needs to have a translation for. The entry can be a simple string, 
 # or a function that will be passed arguments from t(). 
@@ -88,6 +88,22 @@ dict.spa =
   publish: 'Publicar'
   closed: 'cerrado'
   add_new: 'crear nueva'
+
+
+dict.ptbr = 
+  or: 'ou'
+  and: 'e'
+
+  done: 'Pronto'
+  cancel: 'cancelar'
+  edit: 'editar'
+  share: 'compartilhar'
+  delete: 'apagar'
+  close: 'fechar'
+  update: 'Atualizar'
+  publish: 'Publicar'
+  closed: 'fechado'
+  add_new: 'criar novo'
 
 
 
@@ -175,6 +191,46 @@ _.extend dict.spa,
   tip_attacks: "No ataques personales."
   filter_to_watched: "Filtrar propuestas por las que estás observando"
 
+_.extend dict.ptbr, 
+  give_your_opinion: 'Dê sua opinião'
+  update_your_opinion: 'Atualizar sua opinião'
+  comment: 'comentar'
+  comments: 'comentários'
+  read_more: 'leia mais'
+  select_these_opinions: 'Selecione estas opiniões'
+  prev: 'ant'
+  next: 'prox'
+  drag_from_left: (args) ->
+    "Arrastar uma #{args.noun} da esquerda"
+  drag_from_right: (args) -> 
+    "Arrastar uma #{args.noun} da direita"
+  write_a_new_point: (args) -> 
+    "Escrever uma nova #{args.noun}"    
+
+  slide_your_overall_opinion: 'Deslize e defina sua Opinião Geral'
+  your_opinion: "Sua opinião"
+  save_your_opinion: 'Salvar sua opinião'
+  return_to_results: 'Voltar para os resultados'
+  skip_to_results: 'ou vá direto para os resultados'
+  login_to_comment: 'Conecte-se para comentar'
+  login_to_add_new: 'Conecte-se para adicionar um novo'
+  login_to_save_opinion: 'Conecte-se para salvar sua opinião'
+  discuss_this_point: 'Discutir este Ponto'
+  save_comment: 'Salvar comentário'
+  write_a_comment: 'Escrever um comentário'
+  write_a_point: 'Escrever um ponto de vista'
+  summary_placeholder: 'Um breve resumo do seu Ponto de Vista.'
+  description_placeholder: 'Inclua seus argumentos e evidências.'
+  sign_name: 'Informe seu nome'
+
+  tip_single: (args) -> 
+    "Escreve seu ponto de vista. Inclua multiplos #{args.noun} se tiver mais."
+  tip_direct: "Seja direto. O resumo é seu ponto de vista principal."
+  tip_review: "Reveja sua linguagem. Não seja desleixado(a)."
+  tip_attacks: "Não faça ataques pessoais."
+
+  filter_to_watched: "Filtrar propostas daqueles que está observando"
+
 #########
 # Creating proposal
 
@@ -216,7 +272,23 @@ _.extend dict.spa,
   open_for_discussion: '¿Abierta a debate?'
   permissions_and_invites: 'Permisos e invitaciones'
 
-
+_.extend dict.ptbr, 
+  create_new_proposal: 'Criar nova proposta'
+  error_free: "livre de erros ortográficos"
+  unambiguous: 'sem ambiguidades'
+  make_it: 'Faça'
+  url_instr: "Apenas letras, números, underscores e traços."
+  summary: 'Sumário'
+  proposal_summary_instr: 'Entre 3-8 palavras com um verbo e um substantivo.'
+  details: 'Detalhes'
+  label: 'Rótulo'
+  expandable_body_instr: 'Texto exibido quando expandido'
+  add_expandable: "Adicionar uma seção de descrição expandida"
+  category: 'Categoria'
+  optional: 'opcional'
+  show_on_homepage: 'Exibir na página inicial?'
+  open_for_discussion: 'Abrir para discussão?'
+  permissions_and_invites: 'Permissões e convites'
 
 ########
 # authentication / user account related translations
@@ -283,6 +355,38 @@ _.extend dict.spa,
   forgot_password: '¡He olvidado mi contraseña!'
 
 
+_.extend dict.ptbr, 
+  log_in: 'Entrar'
+  create_new_account: 'Criar nova conta'
+  log_out: 'Sair'
+  edit_profile: 'Editar Perfil'
+  email_settings: 'Configurações de Email'
+  introduce_yourself: 'Diga quem é você'
+
+  complete_registration: 'Completar registro'
+  login_as: 'Oi, está logado como'
+  password: 'senha'
+  name_prompt: 'Meu nome é'
+  full_name: (args) -> 
+    subdomain = fetch '/subdomain'
+    if subdomain.name in ['bitcoin', 'bitcoinclassic']
+      'nome de usuário ou nome da empresa'
+    else
+      'nome e sobrenome'
+  pic_prompt: 'Minha foto'
+  your_profile: 'Seu Perfil'
+  updated_successfully: "Atualizado com sucesso"
+  reset_your_password: "Criar nova senha"
+  code: 'Código'
+  new_password: 'Nova senha'
+  verification_sent: 'Enviamos um código de verificação para o seu email.'
+  verify: 'Verificar'
+  choose_password: "escolher uma nova senha"
+  code_from_email: 'código de verificação do email'
+  verify_your_email: 'Verifique seu Email'
+  more_info: 'Por favor, forneça algumas informações'
+  forgot_password: 'Esqueci minha senha!'
+
 ########
 # email notification settings
 
@@ -329,6 +433,29 @@ _.extend dict.spa,
   added_new_point: 'ha añadido un nuevo punto de vista'
   added_opinion: 'ha añadido su opinión'
 
+_.extend dict.ptbr, 
+
+  send_email: 'Me envie notificações por email'
+  email_digest_purpose: (args) ->
+    "As notificações resumem novas atividades sobre #{args.project}"
+  digest_timing: "Envie resumos"
+  daily: 'diários'
+  hourly: 'por hora'
+  weekly: 'semanais'
+  monthly: 'mensais'
+  notable_events: "Emails só serão enviados para avisar eventos importantes. Quais eventos são importantes para você?"
+  watched_proposals: 'As propostas que você está seguindo:'
+  unwatch: "Deixar de seguir esta proposta"
+  hide_notifications: 'Ocultar notificações'
+  show_notifications: 'Mostrar notificações'
+  commented_on: "comentado em"
+  your_point: 'seu ponto de vista'
+  edited_proposal: 'editou esta proposta'
+  added_new_point: 'adicionou novo ponto de vista'
+  added_opinion: 'adicionou sua opinião'
 
 # fill in missing spanish translations with english equivalents
 _.defaults dict.spa, dict.en
+
+# fill in missing brazilian portuguese translations with english equivalents
+_.defaults dict.ptbr, dict.en

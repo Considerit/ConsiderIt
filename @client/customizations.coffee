@@ -594,6 +594,7 @@ customizations['carcd'] = customizations['carcd-demo'] =
 
 customizations['sintaj'] = 
   lang: 'ptbr'
+  proposal_filters: false
 
 customizations['consider'] = 
   #show_proposer_icon: true

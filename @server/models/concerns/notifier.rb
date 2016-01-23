@@ -101,6 +101,8 @@ module Notifier
 
     candidates = options[:filter] ? Notification.where(options[:filter]) : Notification.all
 
+    candidates = Notifier.filter_no_longer_existing(candidates)
+
     if !options[:skip_moderation_filter]
       candidates = Notifier.filter_unmoderated(candidates)
     end
@@ -119,6 +121,13 @@ module Notifier
 
     aggregation
   end
+
+  def self.filter_no_longer_existing(notifications)
+    notifications.select {|n|
+      !!n.event_object && !!n.digest_object 
+    }
+
+  end 
 
   def self.filter_unmoderated(notifications)
     notifications.select {|n|

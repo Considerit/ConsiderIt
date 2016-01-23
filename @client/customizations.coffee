@@ -208,6 +208,16 @@ pros_contras =
   top_header: "Top --valences--" 
 
 
+port_pros_cons = 
+  pro: 'pró'
+  pros: 'pros' 
+  con: 'contra'
+  cons: 'contras'
+  your_header: "Entrega tu --valences--" 
+  other_header: "Otros' --valences--" 
+  top_header: "Cima --valences--" 
+
+
 # slider poles
 
 support_oppose = 
@@ -385,6 +395,20 @@ desacuerdo_acuerdo =
   group: 
     support: 'Acuerdo'
     oppose: 'Desacuerdo'
+    support_sub: ''
+    oppose_sub: ''
+
+
+port_agree_disagree = 
+  individual: 
+    support: 'Acuerdo'
+    oppose: 'Discrepar'
+    support_sub: ''
+    oppose_sub: ''
+
+  group: 
+    support: 'Acuerdo'
+    oppose: 'Discrepar'
     support_sub: ''
     oppose_sub: ''
 
@@ -592,10 +616,6 @@ customizations['carcd'] = customizations['carcd-demo'] =
   #ProposalNavigation: ProposalNavigationWithMenu
 
 
-customizations['sintaj'] = 
-  lang: 'ptbr'
-  proposal_filters: false
-
 customizations['consider'] = 
   #show_proposer_icon: true
   proposal_filters: false 
@@ -689,6 +709,16 @@ customizations['cimsec'] =
   slider_pole_labels : effective_ineffective
 
 
+portuguese = ['sintaj']
+
+for port in portuguese
+  customizations[port] = 
+    lang: 'ptbr'
+    point_labels : port_pros_cons
+    slider_pole_labels : port_agree_disagree
+    homie_histo_title: "Opiniones"
+    show_slider_feedback: false
+    proposal_filters: false 
 
 spanish = ['alcala', 'villagb', 'citysens', 'iniciativasciudadanas', \
            'movilidadcdmx', 'zonaq', 'valenciaencomu', 'aguademayo']
@@ -700,6 +730,7 @@ for spa in spanish
     slider_pole_labels : desacuerdo_acuerdo
     homie_histo_title: "Opiniones"
     show_slider_feedback: false
+    proposal_filters: false 
 
 
 customizations['alcala'] = _.extend {}, customizations['alcala'],

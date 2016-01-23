@@ -209,10 +209,10 @@ pros_contras =
 
 
 port_pros_cons = 
-  pro: 'Favorável'
-  pros: 'Favorável' 
-  con: 'Contrário'
-  cons: 'Contrário'
+  pro: 'A Favor'
+  pros: 'A Favor' 
+  con: 'Contra'
+  cons: 'Contra'
   your_header: "Entrega tu --valences--" 
   other_header: "Otros' --valences--" 
   top_header: "Top --valences--" 

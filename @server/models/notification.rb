@@ -18,7 +18,11 @@ class Notification < ActiveRecord::Base
   end
 
   def event_object
-    event_object_type.constantize.find(event_object_id)
+    begin 
+      event_object_type.constantize.find(event_object_id)
+    rescue 
+      return nil 
+    end
   end
 
   def event

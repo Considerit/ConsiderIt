@@ -2135,7 +2135,7 @@ customizations.bitcoinclassic = _.extend {},
               marginTop: 10
               padding: 8
 
-            "This site is undergoing a sybil attack. Filtering to verified users has temporarily been enabled by default."
+            "Some users have abused the open registration system. Filtering to verified users has been enabled by default."
             " "
 
         ProfileMenu()

@@ -296,6 +296,9 @@ OpinionFilter = ReactiveComponent
 
       save filter_out
 
+    if fetch('/subdomain').name == 'bitcoinclassic' && !filter_out.opinion_filters?
+      toggle_filter filters[0]
+
 
     DIV 
       style: (@props.style or {})

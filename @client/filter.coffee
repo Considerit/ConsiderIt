@@ -126,9 +126,10 @@ sort_options = [
     func: (proposal) -> 
       max = -1
       for o in proposal.opinions 
-        if o.created_at > max 
-          max = new Date(o.created_at).getTime()
-      max 
+        d = new Date(o.created_at).getTime()
+        if d > max 
+          max = d
+      -max 
     name: 'most recent opinion'
   }
 

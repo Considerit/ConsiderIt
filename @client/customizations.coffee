@@ -2086,36 +2086,57 @@ customizations.bitcoinclassic = _.extend {},
                   color: '#bbb'
 
 
-                "Please discuss proposals on "
-                A 
-                  href: "https://www.reddit.com/r/Bitcoin_Classic/"
-                  target: '_blank'
-                  style: 
-                    borderBottom: "1px solid #bbb"
-                    #textDecoration: 'underline'
+                "Propose and deliberate ideas for Bitcoin Classic. Not used for binding decision making."
 
-                  "Reddit"
-                " or "
-                A 
-                  href: "http://invite.bitcoinclassic.com/"
-                  target: '_blank'
-                  style: 
-                    borderBottom: "1px solid #bbb"
-                    #textDecoration: 'underline'
 
-                  "Slack"
-                " first. "
+          DIV 
+            style: 
+              marginTop: 10
+              padding: 8
 
-                "Other "               
-                A 
-                  href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/'
-                  target: '_blank'
-                  style: 
-                    borderBottom: "1px solid #bbb"
-                    #textDecoration: 'underline'
+            "Classic is using consider.it to sample community opinion to better understand what users really 
+             think about bitcoin and want to see it become. The governance model that Classic eventually 
+             adopts may include opinions collected from this site, but Classic has not committed itself 
+             to making decisions based only on the preferences expressed here or elsewhere."
+            " "
+            "Please vet proposals on "
+            A 
+              href: "https://www.reddit.com/r/Bitcoin_Classic/"
+              target: '_blank'
+              style: 
+                borderBottom: "1px solid #bbb"
+                #textDecoration: 'underline'
 
-                  "guidelines"
-                "."
+              "Reddit"
+            " or "
+            A 
+              href: "http://invite.bitcoinclassic.com/"
+              target: '_blank'
+              style: 
+                borderBottom: "1px solid #bbb"
+                #textDecoration: 'underline'
+
+              "Slack"
+            " first. "
+
+            "Other "               
+            A 
+              href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/'
+              target: '_blank'
+              style: 
+                borderBottom: "1px solid #bbb"
+                #textDecoration: 'underline'
+
+              "guidelines"
+            "."
+          DIV 
+            style: 
+              backgroundColor: '#eee'
+              marginTop: 10
+              padding: 8
+
+            "This site is undergoing a sybil attack. Filtering to verified users has temporarily been enabled by default."
+            " "
 
         ProfileMenu()
 

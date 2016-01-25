@@ -2085,8 +2085,7 @@ customizations.bitcoinclassic = _.extend {},
                   fontWeight: 700
                   color: '#bbb'
 
-
-                "Propose and deliberate ideas for Bitcoin Classic. Not used for binding decision making."
+                "Propose and deliberate ideas for Bitcoin Classic. Not for binding votes."
 
 
           DIV 
@@ -2135,7 +2134,7 @@ customizations.bitcoinclassic = _.extend {},
               marginTop: 10
               padding: 8
 
-            "Some users have abused the open registration system. Filtering to verified users has been enabled by default."
+            "Some users have abused the open registration system. Filtering opinions to verified users has been enabled by default."
             " "
 
         ProfileMenu()

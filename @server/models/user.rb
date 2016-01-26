@@ -83,8 +83,11 @@ class User < ActiveRecord::Base
       subscriptions: subscription_settings(current_subdomain),
       notifications: notifications.order('created_at desc'),
       verified: verified,
-      needs_to_complete_profile: self.registered && (self.complete_profile || !self.name) 
+      needs_to_complete_profile: self.registered && (self.complete_profile || !self.name),
                                 #happens for users that were created via email invitation
+      needs_to_verify: ['ri', 'bitcoin', 'bitcoinclassic'].include?(current_subdomain.name) && \
+                               self.registered && !self.verified
+
     }
 
     data

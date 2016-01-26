@@ -249,8 +249,13 @@ Auth = ReactiveComponent
                 title: t('cancel')
 
                 onClick: =>
+
                   if auth.form == 'verify email' || location.pathname == '/proposal/new'
                     loadPage '/'
+
+                  if auth.form == 'verify email'
+                    setTimeout logout, 1
+                    
                   reset_key auth
 
                 I className: 'fa-close fa'

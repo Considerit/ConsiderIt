@@ -395,6 +395,10 @@ class User < ActiveRecord::Base
     # log table, which doesn't use user_id
     Log.where(:who => newer_user).update_all(who: older_user)
 
+    subs = JSON.parse(self.active_in || '[]').concat(JSON.parse(user.active_in || '[]')).uniq
+    self.active_in = JSON.dump subs
+    save 
+
     # 3. Delete the old user
     # TODO: Enable this once we're confident everything is working.
     #       I see that this is being done in CurrentUserController#replace_user. 

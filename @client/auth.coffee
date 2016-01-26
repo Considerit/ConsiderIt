@@ -255,7 +255,7 @@ Auth = ReactiveComponent
 
                   if auth.form == 'verify email'
                     setTimeout logout, 1
-                    
+
                   reset_key auth
 
                 I className: 'fa-close fa'
@@ -583,9 +583,15 @@ Auth = ReactiveComponent
     if !customization('civility_pledge')
       return null
     else
-      pledges = ['Use only one account', 
-                 'Speak only on behalf of myself', 
-                 'Not attack or mock others']
+
+      if subdomain.name == 'livingvotersguide'
+        pledges = ['Use only one account', 
+                   'Speak only on behalf of myself', 
+                   'Not attack or mock others']
+      else 
+        pledges = ['Use only one account', 
+                   'Not attack or mock others']
+
 
     UL style: {paddingTop: 6},
 

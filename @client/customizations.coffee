@@ -1877,6 +1877,7 @@ customizations.bitcoin =
   show_proposer_icon: true
   collapse_descriptions_at: 300
 
+  civility_pledge: true
 
   slider_pole_labels: support_oppose
 
@@ -1984,6 +1985,9 @@ customizations.bitcoinclassic = _.extend {},
   collapse_descriptions_at: 300
 
   proposal_filters: true
+
+  civility_pledge: true
+
 
   'cluster/Scrapped proposals': 
     #label: "Winter 2015 board election"

@@ -580,7 +580,7 @@ ProposalDescription = ReactiveComponent
               @local.show_options = !@local.show_options
               save @local
 
-        if current_user?.logged_in          
+        if current_user?.logged_in
 
           I 
             className: 'fa fa-bell'
@@ -1840,6 +1840,13 @@ AuthTransition = ReactiveComponent
         form: 'create account via invitation'
         goal: 'Complete registration'
         ask_questions: true
+    else if current_user.needs_to_verify
+      reset_key 'auth',
+        key: 'auth'
+        form: 'verify email'
+        goal: 'confirm you control this email'
+        ask_questions: false
+
 
 
     SPAN null

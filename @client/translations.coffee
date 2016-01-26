@@ -317,7 +317,7 @@ _.extend dict.en,
   reset_your_password: "Reset Your Password"
   code: 'Code'
   new_password: 'New password'
-  verification_sent: 'We sent you a verification code via email.'
+  verification_sent: 'We sent you a verification code via email. Copy / paste it below.'
   verify: 'Verify'
   choose_password: "choose a new password"
   code_from_email: 'verification code from email'

@@ -52,7 +52,6 @@ class CurrentUserController < ApplicationController
     # puts("  trying to #{params[:trying_to]}")
     # puts("")
 
-
     case trying_to
 
       when 'create account', 'create account via invitation'
@@ -252,10 +251,14 @@ class CurrentUserController < ApplicationController
         log('answering user questions')
 
       when 'verify email'
+        pp '\n\n\nhoho!!!\n'
+
+
         verify_user(current_user.email, params[:verification_code])
         log('verifying email')
 
       when 'send_verification_token'
+        pp '\n\n\nSENDING TOKEN!!!\n'
         UserMailer.verification(current_user, current_subdomain).deliver_now
         log('verification token sent')
 

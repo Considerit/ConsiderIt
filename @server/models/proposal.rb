@@ -107,7 +107,7 @@ class Proposal < ActiveRecord::Base
 
   end 
 
-  def self.summaries(subdomain = nil)
+  def self.summaries(subdomain = nil, all_points = false)
     subdomain ||= current_subdomain
     
     proposals, manual_clusters = all_proposals_for_subdomain(subdomain)
@@ -116,6 +116,7 @@ class Proposal < ActiveRecord::Base
 
     # group all proposals into clusters
     most_recent = {}
+    points = []
     proposals.each do |proposal|
 
       # Impose access control restrictions for current user
@@ -127,6 +128,16 @@ class Proposal < ActiveRecord::Base
 
       clustered_proposals[proposal.cluster] = [] if !clustered_proposals.has_key? proposal.cluster
       clustered_proposals[proposal.cluster].append proposal.as_json
+
+      if all_points 
+        if subdomain.moderate_points_mode == 1
+          moderation_status_check = 'moderation_status=1'
+        else 
+          moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+        end
+
+        points.concat proposal.points.where("(published=1 AND #{moderation_status_check})").public_fields.map {|p| p.as_json}
+      end
     end
 
     # now order the clusters
@@ -151,6 +162,9 @@ class Proposal < ActiveRecord::Base
       key: '/proposals',
       clusters: clusters
     }
+    if all_points 
+      proposals[:points] = points
+    end
 
     proposals
 
@@ -208,7 +222,7 @@ class Proposal < ActiveRecord::Base
 
     o = ActiveRecord::Base.connection.execute """\
       SELECT created_at, id, point_inclusions, proposal_id, 
-      stance, user_id 
+      stance, user_id, updated_at
           FROM opinions 
           WHERE subdomain_id=#{self.subdomain_id} AND
                 proposal_id=#{self.id} AND 
@@ -216,10 +230,12 @@ class Proposal < ActiveRecord::Base
       """
 
 
+
     ops = o.map do |op|
       {
         key: "/opinion/#{op[1]}",
         created_at: op[0],
+        updated_at: op[6],
         proposal: "/proposal/#{op[3]}",
         user: "/user/#{op[5]}",
         published: true,

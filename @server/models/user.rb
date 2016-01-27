@@ -96,12 +96,11 @@ class User < ActiveRecord::Base
 
   # Gets all of the users active for this subdomain
   def self.all_for_subdomain
-    fields = "CONCAT('\/user\/',id) as 'key',users.name,users.avatar_file_name,users.groups,users.tags"
+    fields = "CONCAT('\/user\/',id) as 'key',users.name,users.avatar_file_name,users.tags"
     if current_user.is_admin?
       fields += ",email"
     end
     users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
-    users.each{|u| u['groups']=JSON.parse(u['groups']||'[]')}
     # if current_user.is_admin?
     users.each{|u| u['tags']=JSON.parse(u['tags']||'{}')}      
     # end

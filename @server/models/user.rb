@@ -85,7 +85,7 @@ class User < ActiveRecord::Base
       verified: verified,
       needs_to_complete_profile: self.registered && (self.complete_profile || !self.name),
                                 #happens for users that were created via email invitation
-      needs_to_verify: ['ri', 'bitcoin', 'bitcoinclassic'].include?(current_subdomain.name) && \
+      needs_to_verify: ['bitcoin', 'bitcoinclassic'].include?(current_subdomain.name) && \
                                self.registered && !self.verified
 
     }

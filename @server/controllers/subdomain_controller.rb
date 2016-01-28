@@ -53,8 +53,8 @@ class SubdomainController < ApplicationController
         cluster: 'Test question',
         active: true,
         published: true, 
-        moderation_status: 1
-
+        moderation_status: 1,
+        roles: "{\"editor\":[\"/user/#{current_user.id}\"],\"writer\":[\"*\"],\"commenter\":[\"*\"],\"opiner\":[\"*\"],\"observer\":[\"*\",\"*\"]}"
       })
       proposal.save
 

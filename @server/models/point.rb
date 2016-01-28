@@ -30,7 +30,7 @@ class Point < ActiveRecord::Base
   acts_as_tenant :subdomain
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:comment_count, :created_at, :id, :includers, :is_pro, :nutshell, :proposal_id, :published, :score, :text, :user_id, :hide_name, :last_inclusion]
+  self.my_public_fields = [:comment_count, :created_at, :updated_at, :id, :includers, :is_pro, :nutshell, :proposal_id, :published, :score, :text, :user_id, :hide_name, :last_inclusion]
 
   scope :public_fields, -> {select(self.my_public_fields)}
 
@@ -56,7 +56,6 @@ class Point < ActiveRecord::Base
         
     make_key(result, 'point')
     stubify_field(result, 'proposal')
-    stubify_field(result, 'opinion')
     stubify_field(result, 'user')
 
     if current_subdomain.assessment_enabled

@@ -1877,24 +1877,6 @@ customizations.fidoruk =
 
   show_score: false
 
-
-  # auth:   
-  #   user_questions : [
-  #     {
-  #       tag: 'bitcoin_developer.editable'
-  #       question: 'Others consider me a bitcoin developer'
-  #       input: 'dropdown'
-  #       options:['No', 'Yes']
-  #       required: false
-  #     },{
-  #       tag: 'bitcoin_business.editable'
-  #       question: 'I operate these bitcoin businesses (urls)'
-  #       input: 'text'
-  #       required: false
-  #     }
-  #   ]
-
-
   opinion_filters: [ 
     {
       label: 'Account holder'
@@ -1982,17 +1964,18 @@ customizations.fidoruk =
               verticalAlign: 'middle'
               marginTop: 5
 
-            DIV
-              style: 
-                paddingBottom: 10
-                fontSize: 16
-                color: '#444'
+            if homepage 
+              DIV
+                style: 
+                  paddingBottom: 10
+                  fontSize: 16
+                  color: '#444'
 
-              "Please first put your proposal into the Fidor Community platform, and link to it in your consider.it proposal.
-              This allows us to converse, update our opinions, and track progress over a longer period of time."
+                "Please first put your proposal into the Fidor Community platform, and link to it in your consider.it proposal.
+                This allows us to converse, update our opinions, and track progress over a longer period of time."
 
 
-
+customizations.fidoruk.NonHomepageHeader = customizations.fidoruk.HomepageHeader
 
 
 customizations.bitcoin = 

@@ -1888,17 +1888,17 @@ customizations.fidoruk =
       label: 'Community member'
       tooltip: null
       pass: (user) -> passes_tags(user, 'fidor_community_member')
-      icon: "<span style=''>\u26CF miner</span>"      
+      icon: "<span style='color:blue'>community</span>"      
     },{
       label: 'Business member'
       tooltip: null
       pass: (user) -> passes_tags(user, 'fidor_business_member')
-      icon: "<span style=''>\u26CF miner</span>"      
+      icon: "<span style='color:orange'>business</span>"      
     }, {
       label: 'Fidor staff'
       tooltip: null
       pass: (user) -> passes_tags(user, 'fidor_staff')
-      icon: "<span style=''>\u26CF miner</span>"      
+      icon: "<span style='gray'>staff</span>"      
     },     
   ]
 

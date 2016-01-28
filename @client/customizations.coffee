@@ -1870,8 +1870,130 @@ passes_tags = (user, tags) ->
 
 
 
-#   'cluster/Pull requests': 
-#     description: '* If you strongly disagree with a pull request, please provide reasons.'
+customizations.fidoruk = 
+  collapse_descriptions_at: 300
+
+  civility_pledge: true
+
+  show_score: false
+
+
+  # auth:   
+  #   user_questions : [
+  #     {
+  #       tag: 'bitcoin_developer.editable'
+  #       question: 'Others consider me a bitcoin developer'
+  #       input: 'dropdown'
+  #       options:['No', 'Yes']
+  #       required: false
+  #     },{
+  #       tag: 'bitcoin_business.editable'
+  #       question: 'I operate these bitcoin businesses (urls)'
+  #       input: 'text'
+  #       required: false
+  #     }
+  #   ]
+
+
+  opinion_filters: [ 
+    {
+      label: 'Account holder'
+      tooltip: null
+      pass: (user) -> passes_tags(user, 'fidor_account_holder')
+      icon: "<span style='color:green'>account-holder</span>"
+
+    }, {
+      label: 'Community member'
+      tooltip: null
+      pass: (user) -> passes_tags(user, 'fidor_community_member')
+      icon: "<span style=''>\u26CF miner</span>"      
+    },{
+      label: 'Business member'
+      tooltip: null
+      pass: (user) -> passes_tags(user, 'fidor_business_member')
+      icon: "<span style=''>\u26CF miner</span>"      
+    }, {
+      label: 'Fidor staff'
+      tooltip: null
+      pass: (user) -> passes_tags(user, 'fidor_staff')
+      icon: "<span style=''>\u26CF miner</span>"      
+    },     
+  ]
+
+  HomepageHeader: ReactiveComponent
+    displayName: 'ShortHeader'
+
+    render: ->
+      subdomain = fetch '/subdomain'   
+      loc = fetch 'location'
+
+      hsl = parseCssHsl(subdomain.branding.primary_color)
+      is_light = hsl.l > .75
+
+      homepage = loc.url == '/'
+
+      DIV 
+        style:
+          minHeight: 70
+
+        ProfileMenu()
+
+
+        DIV
+          style: 
+            width: (if homepage then HOMEPAGE_WIDTH() else BODY_WIDTH() ) + 130
+            margin: 'auto'
+
+
+          A
+            href: '/'
+            style: 
+              display: 'inline-block'
+              color: if !is_light then 'white'
+              fontSize: 43
+              visibility: if homepage || !customization('has_homepage') then 'hidden'
+              verticalAlign: 'middle'
+              marginTop: 5
+            '<'
+
+
+          if subdomain.branding.logo
+            A 
+              href: if subdomain.external_project_url then subdomain.external_project_url
+              style: 
+                verticalAlign: 'middle'
+                #marginLeft: 35
+                display: 'inline-block'
+                fontSize: 0
+                cursor: if !subdomain.external_project_url then 'default'
+
+              IMG 
+                src: subdomain.branding.logo
+                style: 
+                  height: 80
+
+          DIV 
+            style: 
+              color: if !is_light then 'white'
+              marginLeft: 35
+              fontSize: 32
+              fontWeight: 400
+              display: 'inline-block'
+              verticalAlign: 'middle'
+              marginTop: 5
+
+            DIV
+              style: 
+                paddingBottom: 10
+                fontSize: 16
+                color: '#444'
+
+              "Please first put your proposal into the Fidor Community platform, and link to it in your consider.it proposal.
+              This allows us to converse, update our opinions, and track progress over a longer period of time."
+
+
+
+
 
 customizations.bitcoin = 
   show_proposer_icon: true

@@ -2235,7 +2235,7 @@ customizations.bitcoinclassic = _.extend {},
             "Interested in running a node that mirrors consider.it data to provide an audit trail? "
 
             A 
-              href: ''
+              href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/435gi1/distributed_publicly_auditable_data_for/'
               target: '_blank'
               style: 
                 textDecoration: 'underline'

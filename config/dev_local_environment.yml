@@ -1,0 +1,8 @@
+default:
+  secret_token: MYSECRET_TOKEN
+  secret_key_base: MYSECRET_KEYBASE
+
+  email: 'me@development.dev'
+
+  indexability: 
+    default: false

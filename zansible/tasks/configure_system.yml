@@ -22,11 +22,11 @@
 # Configure automatic security upgrades
 
 - name: Install Unattended-upgrades config 1
-  copy: src=templates/unattended-updates/10periodic dest=/etc/apt/apt.conf.d/10periodic mode=744
+  copy: src=templates/auto_update_10periodic dest=/etc/apt/apt.conf.d/10periodic mode=744
   sudo: True
 
 - name: Install Unattended-upgrades config 2
-  copy: src=templates/unattended-updates/50unattended-upgrades dest=/etc/apt/apt.conf.d/50unattended-upgrades mode=744
+  copy: src=templates/auto_update_50unattended-upgrades dest=/etc/apt/apt.conf.d/50unattended-upgrades mode=744
   sudo: True
 
 ###################
@@ -61,13 +61,13 @@
 # Install mysql
 
 - name: Write mysqld.conf
-  template: src=templates/mysql/mysqld.cnf.j2 dest=/etc/mysql/conf.d/mysqld.cnf
+  template: src=templates/mysqld.cnf.j2 dest=/etc/mysql/conf.d/mysqld.cnf
   sudo: True
   notify:
     - Restart mysql
 
 - name: Write mysql client.cnf
-  template: src=templates/mysql/client.cnf.j2 dest=/etc/mysql/conf.d/client.cnf
+  template: src=templates/mysql.client.cnf.j2 dest=/etc/mysql/conf.d/client.cnf
   sudo: True
   notify:
     - Restart mysql
@@ -221,11 +221,11 @@
   sudo: True
 
 - name: Write nginx mime.types
-  template: src=templates/nginx/mime.types.j2 dest=/etc/nginx/mime.types
+  template: src=templates/nginx.mime.types.j2 dest=/etc/nginx/mime.types
   sudo: True
 
 - name: Configure nginx as service
-  template: src=templates/nginx/nginx.init.j2 dest=/etc/init.d/nginx mode=0755
+  template: src=templates/nginx.init.j2 dest=/etc/init.d/nginx mode=0755
   sudo: True
 
 - name: Set Passenger Path
@@ -234,7 +234,7 @@
   sudo: False
 
 - name: Write nginx.conf
-  template: src=templates/nginx/nginx.conf.j2 dest=/opt/nginx/conf/nginx.conf
+  template: src=templates/nginx.conf.j2 dest=/opt/nginx/conf/nginx.conf
   sudo: True
   notify:
     - Restart nginx
@@ -244,7 +244,7 @@
   sudo: True
 
 - name: Create vhost for this site
-  template: src=templates/nginx/sites/vhost.conf.j2 dest=/etc/nginx/conf.d/{{app_name}}.conf mode=0755
+  template: src=templates/nginx.vhost.conf.j2 dest=/etc/nginx/conf.d/{{app_name}}.conf mode=0755
   sudo: True
   when: server.name is defined and code.environment == "production"
 

@@ -1,5 +1,5 @@
 - name: Initialize production configuration
-  template: src=templates/considerit_config/production.rb.j2 dest={{app_home}}/config/environments/production.rb
+  template: src=templates/production.rb.j2 dest={{app_home}}/config/environments/production.rb
   sudo: False
   when: code.environment == "production"
 

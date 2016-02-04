@@ -1,7 +1,0 @@
-- name: Stop nginx service
-  service: name=nginx state=stopped pattern=nginx
-  sudo: True
-
-- name: Start nginx service and have it run during system startup
-  service: name=nginx state=started enabled=yes pattern=nginx
-  sudo: True

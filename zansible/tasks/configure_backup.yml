@@ -1,31 +1,39 @@
 - name: create Backup directory
   file: path={{app_home}}/Backup state=directory
   sudo: False
+  when: code.environment == "production"
 
 - name: create backup/models directory
   file: path={{app_home}}/Backup/models state=directory
   sudo: False
+  when: code.environment == "production"
 
 - name: instantiate backup config
   template: src=templates/Backup/config.rb.j2 dest={{app_home}}/Backup/config.rb
   sudo: False
+  when: code.environment == "production"
 
 - name: instantiate backup model file
   template: src=templates/Backup/models/my_backup.rb.j2 dest={{app_home}}/Backup/models/my_backup.rb
   sudo: False
+  when: code.environment == "production"
 
 - name: install backup dependency net-ssh
   shell: "{{source}} && backup dependencies --install net-ssh"
   sudo: False
+  when: code.environment == "production"
 
 - name: install backup dependency net-scp
   shell: "{{source}} && backup dependencies --install net-scp"
   sudo: False
+  when: code.environment == "production"
 
 - name: install backup dependency excon
   shell: "{{source}} && backup dependencies --install excon"
   sudo: False
+  when: code.environment == "production"
 
 - name: install backup dependency fog
   shell: "{{source}} && backup dependencies --install fog"
   sudo: False
+  when: code.environment == "production"

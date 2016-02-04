@@ -1,7 +1,7 @@
-Copyright (c) 2010-2012, Travis Kriplean
+Copyright (c) 2010-2016, Travis Kriplean
 Author: Travis Kriplean
 All rights reserved.
 
-Much of this code is derived from a BSD-licensed project. Source code deriving from that code is under the license specified at BSD.txt. Each file governed by this license notes it. 
+Some of the Rails server code in @server is derived from a previous version of Consider.it licensed under BSD.txt. 
 
 The rest of the files are proprietary. For these files, licensed users are free to use the code, free to modify it for their own use, but may not redistribute it. Contact Travis Kriplean for obtaining a license.

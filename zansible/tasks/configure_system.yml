@@ -1,0 +1,346 @@
+
+###################
+# Install dependencies
+- name: Update system
+  command: /usr/bin/apt-get update --assume-yes
+  sudo: True
+
+- name: Upgrade system
+  command: /usr/bin/apt-get upgrade --assume-yes
+  sudo: True
+
+- name: Installs ruby building dependencies
+  apt: pkg={{item}} state=latest install_recommends=no
+  with_items: deps
+  sudo: True
+
+- name: Install aws cli
+  command: pip install awscli
+  sudo: True
+
+###################
+# Configure automatic security upgrades
+
+- name: Install Unattended-upgrades config 1
+  copy: src=templates/unattended-updates/10periodic dest=/etc/apt/apt.conf.d/10periodic mode=744
+  sudo: True
+
+- name: Install Unattended-upgrades config 2
+  copy: src=templates/unattended-updates/50unattended-upgrades dest=/etc/apt/apt.conf.d/50unattended-upgrades mode=744
+  sudo: True
+
+###################
+# Set up users
+
+- name: Make home directory
+  file: path=/home/{{user}} owner={{user}} state=directory
+  sudo: False
+
+# - name: Proper ownership of home files
+#   shell: "chown {{user}}:{{user}} {{app_home}} -R"
+
+- name: Configure sudoers
+  lineinfile: "dest=/etc/sudoers backup=yes state=present regexp='^%{{user}}' insertafter=EOF line='%{{user}} ALL=(ALL) ALL'"
+  sudo: True
+  when: code.environment != 'development'
+
+
+
+###################
+# Install memcached
+
+- name: Write memcached.conf
+  template: src=templates/memcached.cnf.j2 dest=/etc/memcached.conf mode=0644
+  sudo: True
+
+- name: Restart memcached
+  service: name=memcached state=started
+  sudo: True
+
+###################
+# Install mysql
+
+- name: Write mysqld.conf
+  template: src=templates/mysql/mysqld.cnf.j2 dest=/etc/mysql/conf.d/mysqld.cnf
+  sudo: True
+  notify:
+    - Restart mysql
+
+- name: Write mysql client.cnf
+  template: src=templates/mysql/client.cnf.j2 dest=/etc/mysql/conf.d/client.cnf
+  sudo: True
+  notify:
+    - Restart mysql
+
+- name: Start mysql service
+  #service: name=mysql state=restarted
+  shell: 'service mysql restart'
+  sudo: True
+
+- name: Change default pass for user root for mysql
+  mysql_user: name={{database.user}} password={{database.password}}
+  ignore_errors: yes
+  sudo: True
+
+- name: Create default database
+  mysql_db: name={{database.name}} state=present login_user={{database.user}} login_password={{database.password}}
+  sudo: True
+
+###################
+# Configure SSH
+
+- name: Make .ssh directory
+  file: path=~/.ssh owner={{user}} state=directory
+  sudo: False
+
+- name: Create authorized_keys
+  template: src=templates/ssh/authorized_keys.j2 dest=~/.ssh/authorized_keys mode=400
+  sudo: false
+  when: ssh.pubkeys
+
+# THIS WILL FAIL UNLESS YOU HAVE ACCESS TO THE CONSIDERIT DROPBOX & ARE ON A MAC
+- name: Make .ssh directory
+  local_action: file path=templates/ssh state=directory
+  sudo: False
+
+# note: local_action's current working directory is the location of the top level playbook
+- name: Copy github ssh deploy key from private considerit dropbox
+  local_action: "shell cp -r ~/Dropbox/ConsiderIt/Local_dev_requirements/zansible/templates/ssh/github templates/ssh"
+  sudo: False
+
+- name: Copy over Github private rsa deploy key
+  copy: src=templates/ssh/github/{{deploy_key}}_rsa dest=~/.ssh/{{deploy_key}}_rsa mode=700
+  sudo: False
+
+- name: Add github ssh key to config file
+  template: src=templates/ssh/ssh_config.j2 dest=~/.ssh/config
+  sudo: False
+
+- name: Add Github to known hosts
+  shell: ssh-keyscan github.com >> ~/.ssh/known_hosts
+  sudo: False
+
+
+####################
+# Install Ruby
+
+- name: Install rbenv
+  git: repo=git://github.com/sstephenson/rbenv.git dest={{rbenv_path}}
+  sudo: False
+
+- name: Create rbenv plugin directory
+  file: path={{rbenv_path}}/plugins/ owner={{user}} group={{user}} state=directory
+  sudo: False
+
+- name: Install ruby-build
+  git: repo=git://github.com/sstephenson/ruby-build.git dest={{rbenv_path}}/plugins/ruby-build
+  sudo: False
+
+- name: Add rbenv and shims to bashrc
+  lineinfile: dest=~/.profile line='export RBENV_ROOT={{rbenv_path}}; export PATH="$RBENV_ROOT/bin:$PATH"; eval "$(rbenv init -)"' regexp=rbenv*
+  sudo: False
+
+- name: Add rbenv and shims to root bashrc
+  lineinfile: dest=/root/.profile line='export RBENV_ROOT={{rbenv_path}}; export PATH="$RBENV_ROOT/bin:$PATH"; eval "$(rbenv init -)"' regexp=rbenv*
+  sudo: True
+
+- name: Add rbenv and shims to skel profile
+  lineinfile: dest=/etc/skel/.profile line='export RBENV_ROOT={{rbenv_path}}; export PATH="$RBENV_ROOT/bin:$PATH"; eval "$(rbenv init -)"' regexp=rbenv*
+  sudo: True
+
+#note: this could be dangerous if server is not just hosting considerit
+# - name: Copy over root profile
+#   shell: cp /etc/skel/.bashrc /root/.bashrc creates=/root/.profile
+#   sudo: True
+
+# - name: Add rbenv and shims to root path
+#   lineinfile: dest=/root/.bashrc line='export PATH="/home/{{user}}/.rbenv/bin:{{ruby_home}}:$PATH"' regexp=rbenv*
+#   sudo: True
+
+- name: Get current ruby version
+  shell: "{{source}} && {{path}} rbenv version | cut -f1 -d\" \""
+  register: ruby_current_version
+  sudo: False
+
+- name: Ruby Version check
+  debug: >
+    msg="current version of Ruby is {{ ruby_current_version.stdout }} while were looking for {{ ruby_version }}"
+
+- name: Install ruby (4-7min)
+  shell: "{{source}} && {{path}} rbenv install {{ruby_version}} && {{path}} rbenv global {{ruby_version}}"
+  when: ruby_current_version.stdout != ruby_version
+  async: 1000
+  poll: 30
+  sudo: False
+
+# - name: Set global rbenv version
+#   shell: "{{source}} && {{path}} rbenv global {{ruby_version}}"
+#   when: ruby_current_version.stdout != ruby_version
+#   sudo: False
+
+- name: Install bundler
+  shell: "{{source}} && {{path}} gem install bundler --no-rdoc --no-ri && {{rbenv_home}}/rbenv rehash"
+  sudo: False
+
+
+
+####################
+# Install Passenger
+
+- name: Install passenger
+  shell: "{{source}} && {{path}} gem install passenger --no-rdoc --no-ri"
+  sudo: False
+
+- name: Rbenv rehash
+  shell: "{{source}} && {{path}} rbenv rehash"
+  sudo: False
+
+- name: Install passenger nginx module
+  shell: "{{source}} && passenger-install-nginx-module --auto --auto-download --prefix=/opt/nginx --extra-configure-flags=--with-http_ssl_module creates=/opt/nginx"
+  sudo: True
+
+- name: Set Passenger Path
+  shell: "{{source}} && passenger-config --root | cut -f1 -d\" \""
+  register: passenger_root
+  sudo: False
+
+- name: Create passenger agents
+  shell: "{{source}} && rake nginx chdir={{passenger_root.stdout}} creates={{passenger_root.stdout}}/agents/PassengerWatchdog"
+  sudo: True # False #TODO: make sure it is ok to install under sudo
+
+
+################
+# Install nginx
+
+- name: Create /var/log
+  file: path=/var/log/nginx owner=root state=directory
+  sudo: True
+
+- name: Create /etc/nginx
+  file: path=/etc/nginx owner=root state=directory
+  sudo: True
+
+- name: Write nginx mime.types
+  template: src=templates/nginx/mime.types.j2 dest=/etc/nginx/mime.types
+  sudo: True
+
+- name: Configure nginx as service
+  template: src=templates/nginx/nginx.init.j2 dest=/etc/init.d/nginx mode=0755
+  sudo: True
+
+- name: Set Passenger Path
+  shell: "{{source}} && passenger-config --root | cut -f1 -d\" \""
+  register: passenger_root
+  sudo: False
+
+- name: Write nginx.conf
+  template: src=templates/nginx/nginx.conf.j2 dest=/opt/nginx/conf/nginx.conf
+  sudo: True
+  notify:
+    - Restart nginx
+
+- name: Make virtual hosts directory
+  file: path=/etc/nginx/conf.d owner=root state=directory
+  sudo: True
+
+- name: Create vhost for this site
+  template: src=templates/nginx/sites/vhost.conf.j2 dest=/etc/nginx/conf.d/{{app_name}}.conf mode=0755
+  sudo: True
+  when: server.name is defined and code.environment == "production"
+
+- name: Add nginx bootup script to bootup process
+  shell: update-rc.d nginx defaults
+  sudo: True
+
+
+##################
+# Start nginx 
+
+- name: Stop nginx service
+  service: name=nginx state=stopped pattern=nginx
+  sudo: True
+
+- name: Start nginx service and have it run during system startup
+  service: name=nginx state=started enabled=yes pattern=nginx
+  sudo: True
+
+
+#################
+# Install nodejs
+
+- name: Get current node version
+  shell: (node -v 2> /dev/null) | cut -f1 -d" "
+  register: node_current_version
+  sudo: False
+
+- name: Node Version check
+  debug: >
+    msg="current version of Node is {{ node_current_version.stdout }} while were looking for {{ node_version }}"
+
+- name: Node.js | Fetching node.js source
+  get_url: url=http://nodejs.org/dist/{{node_version}}/node-{{node_version}}.tar.gz dest=/tmp/
+  when: node_current_version.stdout != node_version
+  sudo: True
+
+- name: Node.js | Unpack node.js tarball
+  command: tar zxf node-{{node_version}}.tar.gz chdir=/tmp
+  when: node_current_version.stdout != node_version
+  sudo: True
+
+- name: Node.js | Configure
+  shell: "/usr/bin/python ./configure --prefix={{node_path}} chdir=/tmp/node-{{node_version}}"
+  when: node_current_version.stdout != node_version
+  sudo: True
+
+- name: Node.js | Make
+  shell: "/usr/bin/make chdir=/tmp/node-{{node_version}}/"
+  sudo: True
+  when: node_current_version.stdout != node_version
+
+- name: Node.js | Make install
+  shell: "/usr/bin/make install chdir=/tmp/node-{{node_version}}/"
+  when: node_current_version.stdout != node_version
+  async: 1200
+  poll: 30
+  sudo: True
+
+
+################
+# Install webpack
+
+- name: install webpack
+  npm: name=webpack global=no path={{app_home}}
+
+- name: install coffee-loader
+  npm: name=coffee-loader global=no path={{app_home}}
+
+- name: install s3
+  npm: name=s3 global=no path={{app_home}}
+
+- name: install yamljs
+  npm: name=yamljs global=no path={{app_home}}
+
+- name: install chunk-manifest-webpack-plugin
+  npm: name=chunk-manifest-webpack-plugin global=no path={{app_home}}
+
+- name: install compression-webpack-plugin
+  npm: name=compression-webpack-plugin global=no path={{app_home}}
+
+
+
+
+##############
+# Shortcuts for development
+- name: dev shortcuts
+  lineinfile: "dest=/home//vagrant/.bashrc state=present line='cd /vagrant'"
+  when: code.environment == 'development'
+
+- lineinfile: "dest=/home/vagrant/.bashrc state=present line='s () { cd /vagrant; rails s -b 0.0.0.0; }'"
+  when: code.environment == 'development'
+
+- lineinfile: "dest=/home//vagrant/.bashrc state=present line='alias db=\"cd /vagrant; rails dbconsole -p\"'"
+  when: code.environment == 'development'
+
+- lineinfile: "dest=/home//vagrant/.bashrc state=present line='alias c=\"cd /vagrant; rails console\"'"
+  when: code.environment == 'development'
+

@@ -1,3 +1,0 @@
-- name: Ensure cache directory
-  file: path={{app_home}}/public/system/cache state=directory
-  sudo: False

@@ -1,4 +1,4 @@
-Some of the server-side code is derived from a BSD-licensed project. Source code deriving from that code is under the following BSD license. Each file governed by this license notes it. 
+Some of the server-side code is derived from a BSD-licensed project. Source code deriving from that code is under the following BSD license. 
 
 Copyright (c) 2010-2012, University of Washington, Travis Kriplean
 Author: Travis Kriplean

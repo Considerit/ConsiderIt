@@ -2,10 +2,11 @@
   shell: "{{source}} && cd {{app_home}} && git checkout config/environments/production.rb; git checkout db/schema.rb; git checkout public/robots.txt; git checkout config/schedule.rb"
   sudo: False
 
-
 - name: Installs ConsiderIt
   git: repo={{code.repo}} dest={{app_home}} version={{code.branch}} accept_hostkey=true
   sudo: False
+  ignore_errors: yes
+
 
 - name: Create database.yml
   template: src=templates/considerit_config/database.yml.j2 dest={{app_home}}/config/database.yml mode=400

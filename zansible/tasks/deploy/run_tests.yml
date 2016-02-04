@@ -1,5 +1,0 @@
-- name: Run tests
-  shell: "{{source}} && cd {{app_home}} && RAILS_ENV=test bundle exec rake run_acceptance_tests"
-  when: code.run_tests_on_deploy
-  sudo: False
-

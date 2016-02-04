@@ -4,12 +4,11 @@
   name: Deploying Consider.it. Intended to be run whenever code needs to be pushed. 
   vars:
   vars_files:
-    - global_vars/environment.yml
+    - variables.yml
   tasks:
-    - include: tasks/deploy/install_considerit.yml
-    - include: tasks/deploy/update_app_environment.yml
-    - include: tasks/deploy/migrate_database.yml    
-    - include: tasks/deploy/flushes_and_resets.yml
-    - include: tasks/deploy/run_tests.yml
+    - include: tasks/install_considerit.yml
+    - include: tasks/update_app_environment.yml
+    - include: tasks/migrate_database.yml    
+    - include: tasks/flushes_and_resets.yml
   handlers:
     - include: tasks/handlers.yml

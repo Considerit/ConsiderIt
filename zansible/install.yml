@@ -1,39 +1,19 @@
-# good set of playbooks: https://github.com/francisbesset/ansible-playbooks/
-#https://www.digitalocean.com/community/articles/how-to-install-rails-and-nginx-with-passenger-on-ubuntu
-
-# In setting up daniels, I had to modify /etc/sudoers to change the secure_path because rbenv paths weren't accessible through sudo
-
 ---
 
 - hosts: all
   name: Installing dependencies and Setting up the Rails environment
   vars: 
   vars_files:
-    - global_vars/environment.yml
-    - global_vars/dependencies.yml
-    - global_vars/mysql_config_vars.yml
-    - global_vars/memcached_config_vars.yml
-    - global_vars/nginx_config_vars.yml    
+    - variables.yml    
   tasks:
-    # - include: tasks/install/install_deps.yml
-    # - include: tasks/install/configure_system.yml
-    # - include: tasks/install/install_memcached.yml
-    # - include: tasks/install/install_mysql.yml
-    # - include: tasks/install/configure_ssh.yml
-    # - include: tasks/deploy/install_considerit.yml
-    # - include: tasks/install/install_test_data.yml
-    # - include: tasks/install/install_ruby.yml
-    # - include: tasks/install/install_passenger.yml
-    # - include: tasks/install/install_nginx.yml
-    # - include: tasks/install/setup_ssl.yml
-    # - include: tasks/install/start_nginx.yml
-    # - include: tasks/install/load_db_schema.yml
-    # - include: tasks/node/install_nodejs.yml
+    - include: tasks/configure_system.yml
 
-    #- include: tasks/node/install_phantomjs.yml
-    #- include: tasks/node/install_casperjs.yml
-    #- include: tasks/install/configure_backup.yml
-    - include: tasks/node/install_webpack.yml
+    - include: tasks/install_considerit.yml
+    - include: tasks/update_app_environment.yml
+
+    - include: tasks/load_db_schema.yml
+    - include: tasks/migrate_database.yml
+    - include: tasks/configure_backup.yml
 
   handlers:
     - include: tasks/handlers.yml

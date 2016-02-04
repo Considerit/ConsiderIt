@@ -3,6 +3,37 @@ require 'uri'
 namespace :metrics do
   desc "Create metrics output"
 
+  task :subdomains => :environment do 
+    subdomains = Subdomain
+                    .where("YEAR(created_at)=2015 OR Year(created_at)=2016")
+                    .where("roles not like '%/user/1701' AND roles not like '%/user/915%' AND roles not like '%/user/30970%'")
+
+    years = {
+      2015 => {
+        1 => 0,
+        2 => 0,
+        3 => 0,
+        4 => 0,
+        5 => 0,
+        6 => 0,
+        7 => 0,
+        8 => 0,
+        9 => 0,
+        10 => 0,
+        11 => 0, 
+        12 => 0
+      },
+      2016 => {
+        1 => 0
+      }
+    }
+    subdomains.each do |subdomain|
+      #d = Date subdomain.created_at
+      years[subdomain.created_at.year][subdomain.created_at.month] += 1
+    end
+    pp years
+  end
+
   task :basic => :environment do
 
     WASHINGTON = true

@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 #VM environment option :virtualbox || :parallels
-VM = :virtualbox
+VM = :parallels
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
@@ -45,12 +45,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 80, host: 8080
   config.vm.network :forwarded_port, guest: 3000, host: 3000
   config.vm.network :forwarded_port, guest: 4000, host: 4000
+
   if VM == :parallels
     config.vm.network :forwarded_port, guest: 2222, host: 22
+    config.ssh.host = '10.211.55.5'
+    config.ssh.port = 22
   end
+
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  # config.vm.network :hostonly, "192.168.33.10"
+  #config.vm.network :hostonly, "192.168.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -76,17 +80,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.synced_folder ".", "/vagrant", type: "rsync",
   #   rsync__exclude: [".git/", "node_modules/"]
 
-  #config.ssh.host = '10.211.55.4'
-  
-  if VM == :parallels
-    config.ssh.port = 22
-  end
-  
+
   config.vm.provision :ansible do |ansible|
     # point Vagrant at the location of your playbook you want to run
 
     #setup core
-    ansible.playbook = "zansible/install-for-local-dev.yml"
+    ansible.playbook = "zansible/install.yml"
 
     ansible.inventory_path = "zansible/hosts/development"
     ansible.limit = 'all'
@@ -96,7 +95,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #ansible.hosts = "ubuntu"
     if VM == :parallels
       ansible.extra_vars = { 
-        ansible_ssh_host: '10.211.55.4',
+        ansible_ssh_host: '10.211.55.5',
       }
       ansible.verbose = 'vvvv'
     end

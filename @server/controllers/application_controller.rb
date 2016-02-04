@@ -91,7 +91,12 @@ protected
         begin
           candidate_subdomain = Subdomain.find(default_subdomain)
         rescue ActiveRecord::RecordNotFound
-          candidate_subdomain = Subdomain.find(1)
+          # create a subdomain if one doesn't yet exist
+          if Subdomain.count == 0
+            new_subdomain = Subdomain.new name: "test", app_title: "test"
+            new_subdomain.save
+          end
+          candidate_subdomain = Subdomain.first
         end
       else 
         candidate_subdomain = Subdomain.find_by_name(rq.subdomain)

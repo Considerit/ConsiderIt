@@ -42,11 +42,6 @@ group :development, :test do
   gem 'thin'
   gem 'ruby-prof'
   # gem 'rack-mini-profiler'
-
-  # gem 'guard', '>= 2.2.2',       :require => false
-  # gem 'guard-livereload',        :require => false
-  # gem 'rack-livereload'
-  # gem 'rb-fsevent',              :require => false  #filesystem management for OSX; used by guard
 end
 
 group :production do

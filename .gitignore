@@ -49,11 +49,8 @@ test/data/test.sql
 
 node_modules
 
-zansible/templates/seed_data/test.sql.bz2
-zansible/templates/seed_data/avatars.zip
-zansible/templates/seed_data/considerit.sql.bz2
-zansible/templates/ssl/*
-zansible/templates/ssh/github
+zansible/files/ssl/*
+zansible/files/ssh/github
 
 zansible/hosts/group_vars/chalkboardit
 zansible/hosts/group_vars/considerit

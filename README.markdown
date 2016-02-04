@@ -32,6 +32,7 @@ sudo -E apt-get -y install advancecomp autoconf automake bison build-essential \
      libxslt1-dev memcached mysql-server openssl optipng nodejs npm \
      pngcrush python-apt python-pip python-mysqldb unattended-upgrades \
      unzip zlib1g zlib1g-dev
+sudo ln -s /usr/bin/nodejs /usr/bin/node
 ```
 
 The non-interative prompt prevents mysql-server from asking for a root password to your database. We'll set that later. 
@@ -64,8 +65,6 @@ We'll use root user/pass here. But you can set it to what you want, as long as y
 
 ### Install considerit
 
-Make sure you have a Github ssh key: https://help.github.com/articles/generating-an-ssh-key/
-
 ```
 git clone https://github.com/tkriplean/ConsiderIt.git considerit
 cd considerit
@@ -77,21 +76,48 @@ rake db:schema:load
 rake db:migrate
 ```
 
+Note that if you plan on committing a lot of code, you might want to take the time to set up the considerit repository with ssh keys: https://help.github.com/articles/generating-an-ssh-key/. That means using a different git clone protocol as well. 
+
 
 ### Start it up!
 
-From your considerit directory:
+Make sure you're in your considerit directory.
+
+You'll want to have webpack watching in the background for changes to your javascript.
+
+```
+bin/webpack &
+```
+
+Then start your rails server:
 
 ```
 rails s
 ```
 
-You might also want to run delayed_job, which processes background jobs like uploaded avatars. Not needed though for most development work: 
+You might also want to have delayed_job running in the background. Delayed_job processes background jobs like uploaded avatars. Not needed though for most development work.
 
 ```
-rails s
+bin/delayed_job restart
 ```
+
+### Make yourself a super_admin
+
+After you make a considerit account for yourself, you'll probably want to make yourself a superadmin. First load the rails console:
+
+```
+rails c
+```
+
+Then set the field:
+
+```
+u=User.find_by_email('my_test@email.address')
+u.super_admin=true
+u.save
+```
+
 
 ### Other development environments
 
-I run considerit in an Ubuntu VM on my Mac, managed by Vagrant and provisioned by Ansible. Shoot me an email at travis@consider.it if you want to do the same. 
+I run considerit in an Ubuntu VM on my Mac, managed by Vagrant and provisioned by Ansible. Shoot me an email at travis@consider.it if you want to do the same. Otherwise you're on your own :-)

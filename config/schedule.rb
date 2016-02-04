@@ -4,8 +4,6 @@ env :PATH, ENV['PATH']
 set :output, 'log/cron_log.log'
 
 job_type :envcommand, '. ~/.profile; cd :path && RAILS_ENV=:environment :task'
-
-# on some systems, need to source rvm before running standard rake command
 job_type :rake, '. ~/.profile; cd :path && RAILS_ENV=:environment bundle exec rake :task --silent :output'
 
 every 30.minutes do
@@ -24,12 +22,6 @@ every 1.hour do
   rake 'clear_null_inclusions'
 end
 
-every 5.minutes do 
+every 20.minutes do 
   rake 'send_email_notifications'
-end
-
-
-# For RANDOM2015 deployment, can be removed once that's done.
-every 10.minutes do
-  envcommand "rake 'import_from_easychair'"
 end

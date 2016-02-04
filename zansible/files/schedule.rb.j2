@@ -34,8 +34,3 @@ every 4.hours do
   envcommand 'backup perform --trigger {{ ansible_hostname }} --config-file {{app_home}}/Backup/config.rb'
 end
 {% endif %}
-
-# For RANDOM2015 deployment, can be removed once that's done.
-every 10.minutes do
-  envcommand "rake 'import_from_easychair'"
-end

@@ -32,7 +32,6 @@ config:
   secret_key_base: '2951b055ced80eb9fc4f4c6aeab29c8f5ecd265928785b0233440e74af2b321bc0960022059be0d77e87498e3a85e09867b151bfac81d3b38eed88ed05171a34'
 
   google_analytics: UA-31400941-1
-  new_relic: 578589adb6303e0190d1df8a343577521a70a562
   aws:
     enabled: false
 
@@ -40,11 +39,4 @@ config:
     email_recipients: admin@consider.it
 
   indexability:
-    default: false
-
-  meta:
-    default: 
-      title: "ConsiderIt"
-      description: "Help think through these issues being considered."
-      keywords: "Discuss Decide Deliberate"
-      
+    default: false      

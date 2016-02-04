@@ -9,9 +9,10 @@
     - include: tasks/configure_system.yml
 
     - include: tasks/install_considerit.yml
-    - include: tasks/update_app_environment.yml
 
+    - include: tasks/update_app_environment.yml
     - include: tasks/load_db_schema.yml
+
     - include: tasks/migrate_database.yml
     - include: tasks/configure_backup.yml
 

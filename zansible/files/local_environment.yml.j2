@@ -3,10 +3,9 @@ default:
   secret_key_base: '{{config.secret_key_base}}'
 
   email: '{{config.admin_email}}'
-  analytics:
-    google: '{{config.google_analytics}}'
+  google_analytics: '{{config.google_analytics}}'
 
-  new_relic: '{{config.new_relic}}'
+  indexability: {{ config.indexability }}
 
 {% if config.aws.enabled %}
   aws:
@@ -16,14 +15,3 @@ default:
     cloudfront: '{{ config.aws.cloudfront }}'
 {% endif %}
   
-  meta: {{ config.meta }}
-  indexability: {{ config.indexability }}
-
-development: 
-  default_to: default
-
-test: 
-  default_to: development
-
-production:
-  default_to: development

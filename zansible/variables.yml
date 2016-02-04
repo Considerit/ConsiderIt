@@ -6,8 +6,6 @@ ruby_version: 2.2.2
 source: . ~/.profile
 port: 3000
 path: 'PATH="{{rbenv_path}}/bin:{{rbenv_path}}/plugins/ruby-build/bin:$HOME/.rbenv/shims:$PATH"'
-node_version: v0.10.24
-node_path: /usr/local
 
 
 memcached:
@@ -17,50 +15,5 @@ memcached:
   listen: 127.0.0.1
   max_connections: 1024
 
-mysqld:
-  bind_address: 127.0.0.1
-  key_buffer: 16M
-  max_connection: 100
-  utf8: true
-
 nginx:
   connections: 1024
-  
-deps: 
-  - advancecomp
-  - autoconf 
-  - automake 
-  - bison 
-  - build-essential 
-  - curl 
-  - emacs23-nox
-  - exuberant-ctags 
-  - gifsicle
-  - git-core
-  - imagemagick
-  - jpegoptim
-  - libcurl4-openssl-dev #nginx/passenger requirement
-  - libjpeg-progs
-  - libmagickcore-dev
-  - libmagickwand-dev
-  - libmysqlclient-dev
-  - libreadline6 
-  - libreadline6-dev 
-  - libreadline-dev
-  - libssl-dev 
-  - libncurses5-dev
-  - libtool
-  - libxml2-dev 
-  - libxslt1-dev 
-  - memcached
-  - mysql-server
-  - openssl 
-  - optipng
-  - pngcrush
-  - python-apt
-  - python-pip
-  - python-mysqldb # for Ansible mysql module
-  - unattended-upgrades
-  - unzip
-  - zlib1g 
-  - zlib1g-dev

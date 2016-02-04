@@ -9,12 +9,12 @@
   when: code.environment == "production"
 
 - name: instantiate backup config
-  template: src=templates/dbbackup.config.rb.j2 dest={{app_home}}/Backup/config.rb
+  template: src=files/dbbackup.config.rb.j2 dest={{app_home}}/Backup/config.rb
   sudo: False
   when: code.environment == "production"
 
 - name: instantiate backup model file
-  template: src=templates/dbbackup.models.rb.j2 dest={{app_home}}/Backup/models/my_backup.rb
+  template: src=files/dbbackup.models.rb.j2 dest={{app_home}}/Backup/models/my_backup.rb
   sudo: False
   when: code.environment == "production"
 

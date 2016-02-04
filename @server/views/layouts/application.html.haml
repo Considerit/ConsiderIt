@@ -101,9 +101,9 @@
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-          - if APP_CONFIG[:analytics][:google] && APP_CONFIG[:analytics][:google] != ''
+          - if APP_CONFIG[:google_analytics] != ''
             :javascript
-              ga('create', '#{APP_CONFIG[:analytics][:google]}', 'consider.it', {'name': 'considerit'});
+              ga('create', '#{APP_CONFIG[:google_analytics]}', 'consider.it', {'name': 'considerit'});
               ga('considerit.send', 'pageview');
 
 

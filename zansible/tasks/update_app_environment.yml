@@ -1,5 +1,5 @@
 - name: Initialize production configuration
-  template: src=templates/production.rb.j2 dest={{app_home}}/config/environments/production.rb
+  template: src=files/production.rb.j2 dest={{app_home}}/config/environments/production.rb
   sudo: False
   when: code.environment == "production"
 
@@ -13,6 +13,6 @@
   when: code.environment == "production"
 
 - name: Initialize robots.txt
-  template: src=templates/robots.txt.j2 dest={{app_home}}/public/robots.txt
+  template: src=files/robots.txt.j2 dest={{app_home}}/public/robots.txt
   sudo: False
   when: code.environment == "production"

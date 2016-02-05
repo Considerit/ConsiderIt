@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160113190453) do
+ActiveRecord::Schema.define(version: 20160120011325) do
 
   create_table "assessments", force: :cascade do |t|
     t.integer  "user_id",         limit: 4
@@ -166,6 +166,8 @@ ActiveRecord::Schema.define(version: 20160113190453) do
 
   add_index "notifications", ["digest_object_id"], name: "index_notifications_on_digest_object_id", using: :btree
   add_index "notifications", ["digest_object_type"], name: "index_notifications_on_digest_object_type", using: :btree
+  add_index "notifications", ["event_object_id"], name: "index_notifications_on_event_object_id", using: :btree
+  add_index "notifications", ["event_object_type"], name: "index_notifications_on_event_object_type", using: :btree
   add_index "notifications", ["subdomain_id"], name: "index_notifications_on_subdomain_id", using: :btree
   add_index "notifications", ["user_id"], name: "index_notifications_on_user_id", using: :btree
 

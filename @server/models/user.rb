@@ -406,7 +406,7 @@ class User < ActiveRecord::Base
 
   end
 
-  def self.update_avatar_cache (subdomain = nil)
+  def self.refresh_cache (subdomain = nil)
     if subdomain
       subdomains = [subdomain]
     else 

@@ -52,7 +52,7 @@ class UserController < ApplicationController
         cache_key = "avatar-digest-#{current_subdomain.id}"
         avatars = Rails.cache.read(cache_key)
         if avatars.nil? || avatars == 0
-          User.update_avatar_cache(current_subdomain)
+          User.refresh_cache(current_subdomain)
           avatars = Rails.cache.read(cache_key)
         end
       else

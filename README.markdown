@@ -1,8 +1,7 @@
 Consider.it
 ===========
 
-[Consider.it][1] is a deliberation and opinion visualization tool for focused
-discussion on the web.
+[Consider.it][1] is a web-based deliberation and opinion visualization tool. It helps focus discussion even when lots of people participate.
 
 [1]: <https://consider.it>
 

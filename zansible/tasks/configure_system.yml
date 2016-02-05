@@ -96,7 +96,8 @@
 
 - name: Update default password for mysql
   shell: mysqladmin -u {{database.user}} password {{database.password}}
-
+  ignore_errors: yes
+  
 - name: Create default database
   mysql_db: name={{database.name}} state=present login_user={{database.user}} login_password={{database.password}}
   sudo: True

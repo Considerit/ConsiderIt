@@ -30,7 +30,8 @@ public/system/homepage_pics
 public/system/logos
 public/system/icons
 public/system/cache/*.css
-public/system/default_avatar/avatar.sketch*
+public/system/default_avatar
+public/system/paperclip_attachments.yml
 public/assets/
 public/build/
 public/sitemaps/*
@@ -55,14 +56,7 @@ zansible/files/ssh/github
 zansible/hosts/group_vars/chalkboardit
 zansible/hosts/group_vars/considerit
 zansible/hosts/group_vars/chlkit
-zansible/hosts/group_vars/workbus
-zansible/hosts/group_vars/iweb
 
 zansible/hosts/chalkboardit
 zansible/hosts/chlkit
-zansible/hosts/workbus
 zansible/hosts/considerit
-zansible/hosts/iweb
-zansible/hosts/group_vars/considerit_old
-
-zansible/hosts/considerit_old

@@ -11,9 +11,16 @@ require 'zlib'
 # 4) Appends .ghost to all non-super admin user email addresses
 #    to prevent emails being sent to real users in a testing context
 # 5) Migrates the database so it is in sync with current environment
+#
+# Currently assumes that you 
+#   1) are backing up your database to s3
+#   2) are storing assets on s3
+#
+# ...and that you have: 
+#    1) installed awscli locally http://docs.aws.amazon.com/cli/latest/userguide/installing.html
+#    2) registered your AWS credentials with awscli
 
-# Where production assets are served from 
-PRODUCTION_ASSET_HOST = "http://d2rtgkroh5y135.cloudfront.net"
+BACKUP_PATH = 's3://considerit-backups/xenogear-considerit/xenogear/'
 
 task :sync_with_production, [:sql_url] => :environment do |t, args|
   sql_url = args[:sql_url]
@@ -93,7 +100,7 @@ def prepare_production_database(sql_url)
 end
 
 def download_latest_from_s3
-  path = 's3://considerit-backups/xenogear-considerit/xenogear/'
+  path = BACKUP_PATH
   backups = `aws s3 ls #{path}`
   backups = backups.lines.map {|l| l.strip.gsub('PRE ', '')}
   latest = File.join path, backups[-1], 'xenogear.tar'  

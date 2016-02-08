@@ -503,7 +503,7 @@ ProposalDescription = ReactiveComponent
 
           prettyDate(@proposal.created_at)
 
-          if editor = proposal_editor(@proposal)
+          if (editor = proposal_editor(@proposal)) && editor == @proposal.user
             SPAN 
               style: {}
 

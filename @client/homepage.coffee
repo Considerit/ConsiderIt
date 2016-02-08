@@ -804,9 +804,8 @@ window.CollapsedProposal = ReactiveComponent
                   " by #{fetch(editor)?.name}"
 
               SPAN 
-                # dangerouslySetInnerHTML: { __html: '&bull;'}
                 style: 
-                  padding: '0 8px'
+                  paddingRight: 16
 
 
             if !proposal.active

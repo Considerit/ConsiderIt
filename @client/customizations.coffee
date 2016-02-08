@@ -2211,10 +2211,8 @@ customizations.bitcoinclassic = _.extend {},
         # The top bar with the logo
         DIV
           style:
-            cursor: if not homepage then 'pointer'
             width: HOMEPAGE_WIDTH()
             margin: 'auto'
-          onClick: if not homepage then => loadPage('/')
 
           DIV 
             style: 
@@ -2232,11 +2230,15 @@ customizations.bitcoinclassic = _.extend {},
                 fontWeight: 400
                 paddingLeft: 25 # Make the clickable target bigger
                 paddingRight: 25 # Make the clickable target bigger
+                cursor: if not homepage then 'pointer'
+              onClick: if not homepage then => loadPage('/')
+
               '<'
 
             # Logo
             A
               href: if homepage then 'https://bitcoinclassic.com' else '/'
+
 
               IMG
                 style:
@@ -2265,73 +2267,75 @@ customizations.bitcoinclassic = _.extend {},
                 "Propose and deliberate ideas for Bitcoin Classic. Not for binding votes."
 
 
-          DIV 
-            style: 
-              marginTop: 10
-              padding: 8
-              fontSize: 18
+          if homepage
+            DIV null, 
+              DIV 
+                style: 
+                  marginTop: 10
+                  padding: 8
+                  fontSize: 18
 
-            "Classic is using consider.it to sample community opinion to better understand what users really 
-             think about bitcoin and want to see it become. The governance model that Classic eventually 
-             adopts may include opinions collected from this site, but Classic has not committed itself 
-             to making decisions based only on the preferences expressed here or elsewhere."
-            " "
-            "Please vet proposals on "
-            A 
-              href: "https://www.reddit.com/r/Bitcoin_Classic/"
-              target: '_blank'
-              style: 
-                borderBottom: "1px solid #bbb"
-                #textDecoration: 'underline'
+                "Classic is using consider.it to sample community opinion to better understand what users really 
+                 think about bitcoin and want to see it become. The governance model that Classic eventually 
+                 adopts may include opinions collected from this site, but Classic has not committed itself 
+                 to making decisions based only on the preferences expressed here or elsewhere."
+                " "
+                "Please vet proposals on "
+                A 
+                  href: "https://www.reddit.com/r/Bitcoin_Classic/"
+                  target: '_blank'
+                  style: 
+                    borderBottom: "1px solid #bbb"
+                    #textDecoration: 'underline'
 
-              "Reddit"
-            " or "
-            A 
-              href: "http://invite.bitcoinclassic.com/"
-              target: '_blank'
-              style: 
-                borderBottom: "1px solid #bbb"
-                #textDecoration: 'underline'
+                  "Reddit"
+                " or "
+                A 
+                  href: "http://invite.bitcoinclassic.com/"
+                  target: '_blank'
+                  style: 
+                    borderBottom: "1px solid #bbb"
+                    #textDecoration: 'underline'
 
-              "Slack"
-            " first. "
+                  "Slack"
+                " first. "
 
-            "Other "               
-            A 
-              href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/'
-              target: '_blank'
-              style: 
-                borderBottom: "1px solid #bbb"
-                #textDecoration: 'underline'
+                "Other "               
+                A 
+                  href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/'
+                  target: '_blank'
+                  style: 
+                    borderBottom: "1px solid #bbb"
+                    #textDecoration: 'underline'
 
-              "guidelines"
-            "."
-          DIV 
-            style: 
-              #backgroundColor: '#eee'
-              marginTop: 10
-              padding: 8
-              fontSize: 18
+                  "guidelines"
+                "."
+              DIV 
+                style: 
+                  #backgroundColor: '#eee'
+                  marginTop: 10
+                  padding: 8
+                  fontSize: 18
 
-            "Some users have abused open registration. Filtering opinions to verified users has been enabled by default."
-            " "
+                "Some users have abused open registration. Filtering opinions to verified users has been enabled by default."
+                " "
 
-          DIV 
-            style: 
-              backgroundColor: '#eee'
-              marginTop: 10
-              padding: 8
-              fontSize: 18
+              DIV 
+                style: 
+                  backgroundColor: '#eee'
+                  marginTop: 10
+                  padding: 8
+                  fontSize: 18
 
-            "Interested in running a node that mirrors consider.it data to provide an audit trail? "
+                "Interested in running a node that mirrors consider.it data to provide an audit trail? "
 
-            A 
-              href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/435gi1/distributed_publicly_auditable_data_for/'
-              target: '_blank'
-              style: 
-                textDecoration: 'underline'
+                A 
+                  href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/435gi1/distributed_publicly_auditable_data_for/'
+                  target: '_blank'
+                  style: 
+                    textDecoration: 'underline'
 
-              "Learn more"
+                  "Learn more"
 
         ProfileMenu()
 

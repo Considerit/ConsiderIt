@@ -837,7 +837,7 @@ calculateAvatarRadius = (width, height, opinions) ->
 
   # first, calculate a moving average of the number of opinions
   # across around all possible stances
-  window_size = .1
+  window_size = .3
   avg_inc = .01
   moving_avg = []
   idx = 0

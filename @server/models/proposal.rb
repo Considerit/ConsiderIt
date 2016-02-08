@@ -75,17 +75,13 @@ class Proposal < ActiveRecord::Base
           manual_clusters = ['Blocksize Survey', 'Proposals'] 
 
         when 'bitcoinfoundation'
-          manual_clusters = ['Our Mission', 'Our Values', 'Our Goals', 'Our Focus', 
-                             'Our Actions', 'Resolutions', 'Foundation Goals', 
-                             'Board Proposals', 'Member Proposals', 
-                             'Proposals', 'Trustees', 'Members', 'First Foundation', 'Candidates']
+          manual_clusters = ['Proposals', 'Trustees', 'Members']
 
         when 'random2015', 'program-committee-demo'
           manual_clusters = ['Submissions', 'Under Review', 'Probably Accept', 
                              'Accepted', 'Probably Reject', 'Rejected']
         
         when 'seattle2035'
-
           manual_clusters = ['Key Proposals', 'Big Changes', 'Overall']
 
         when 'monitorinstitute'
@@ -103,6 +99,16 @@ class Proposal < ActiveRecord::Base
     end
 
     proposals = proposals.where(moderation_status_check)
+
+    if manual_clusters
+      # add clusters that aren't explictly named to the end
+      proposals.each do |p|
+        if p.cluster && !manual_clusters.include?(p.cluster)
+          manual_clusters.append p.cluster
+        end
+      end
+    end 
+
     [proposals, manual_clusters]
 
   end 

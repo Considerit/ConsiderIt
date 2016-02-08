@@ -86,6 +86,7 @@ window.OpinionSlider = ReactiveComponent
   saveYourOpinionNotice : -> 
     your_opinion = fetch @props.your_opinion
     slider = fetch @props.key
+    current_user = fetch '/current_user'
 
     return SPAN null if (!TWO_COL() && customization('discussion', @proposal))  || \
                         ( your_opinion.published || \
@@ -106,7 +107,13 @@ window.OpinionSlider = ReactiveComponent
       cursor: 'pointer'
       color: focus_blue
 
-    s = sizeWhenRendered t('login_to_save_opinion'), style
+    notice = if current_user.logged_in
+               t('save_your_opinion')
+             else 
+               t('login_to_save_opinion')
+    
+    s = sizeWhenRendered notice, style
+
 
     DIV 
       style: 
@@ -120,7 +127,9 @@ window.OpinionSlider = ReactiveComponent
 
         onClick: => saveOpinion(@proposal)
 
-        t('login_to_save_opinion')
+        notice 
+
+        
 
 
   drawPoleLabels: ->

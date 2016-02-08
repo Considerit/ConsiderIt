@@ -97,7 +97,7 @@ window.prettyDate = (time) ->
   diff = (((new Date()).getTime() - date.getTime()) / 1000)
   day_diff = Math.floor(diff / 86400)
 
-  return if isNaN(day_diff) || day_diff < 0 || day_diff >= 31
+  return if isNaN(day_diff) || day_diff < 0
 
   # TODO: pluralize properly (e.g. 1 days ago, 1 weeks ago...)
   r = day_diff == 0 && (
@@ -108,9 +108,10 @@ window.prettyDate = (time) ->
                               diff < 86400 && Math.floor(diff / 3600) + " hours ago") || 
                               day_diff == 1 && "Yesterday" || 
                               day_diff < 7 && day_diff + " days ago" || 
-                              day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago"
+                              day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago" ||
+                              "#{date.getMonth()}/#{date.getDay()}/#{date.getFullYear()}"
 
-  r = r.replace('1 days ago', '1 day ago').replace('1 weeks ago', '1 week ago')
+  r = r.replace('1 days ago', '1 day ago').replace('1 weeks ago', '1 week ago').replace('1 years ago', '1 year ago')
   r
 
 

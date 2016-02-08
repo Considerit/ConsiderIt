@@ -476,7 +476,7 @@ ProposalDescription = ReactiveComponent
 
     DIV           
       style: 
-        width: BODY_WIDTH()
+        width: HOMEPAGE_WIDTH()
         position: 'relative'
         margin: 'auto'
         fontSize: 18
@@ -533,7 +533,7 @@ ProposalDescription = ReactiveComponent
             style:
               backgroundColor: 'white'
               backgroundColor: '#f9f9f9'
-              width: BODY_WIDTH()
+              width: HOMEPAGE_WIDTH()
               position: 'absolute'
               bottom: 0
               textDecoration: 'underline'
@@ -667,7 +667,7 @@ ProposalDescription = ReactiveComponent
       if @local.edit_roles
         DIV 
           style:
-            width: BODY_WIDTH()
+            width: HOMEPAGE_WIDTH()
             margin: 'auto'
             backgroundColor: '#fafafa'
             padding: '10px 60px'

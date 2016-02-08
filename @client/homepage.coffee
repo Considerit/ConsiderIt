@@ -797,7 +797,7 @@ window.CollapsedProposal = ReactiveComponent
 
               prettyDate(proposal.created_at)
 
-              if !icons && editor = proposal_editor(proposal)
+              if !icons && (editor = proposal_editor(proposal)) && editor == proposal.user
                 SPAN 
                   style: {}
 

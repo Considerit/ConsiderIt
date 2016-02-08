@@ -38,7 +38,7 @@ window.DefaultProposalNavigation = ReactiveComponent
     DIV
       style:
         margin: "30px auto 0 auto"
-        width: BODY_WIDTH()
+        width: HOMEPAGE_WIDTH()
         position: 'relative'
 
       DIV 
@@ -72,7 +72,7 @@ window.DefaultProposalNavigation = ReactiveComponent
       # Photo
       if show_proposer_icon
         editor = proposal_editor(@proposal)
-        width = Math.min(GUTTER() + WHITESPACE(), 225)
+        width = Math.min(GUTTER(), 120)
         if editor
           Avatar
             key: editor
@@ -82,8 +82,9 @@ window.DefaultProposalNavigation = ReactiveComponent
               position: 'absolute'
               #height: 225
               width: width
-              maxWidth: width - 35
-              marginLeft: -width - 35
+              top: 36
+              maxWidth: width - (if width == 120 then 20 else 10)
+              marginLeft: -width - (if width == 120 then 20 else 10)
               borderRadius: 0
               backgroundColor: 'transparent'
 

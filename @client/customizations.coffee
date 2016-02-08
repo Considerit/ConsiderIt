@@ -2196,6 +2196,7 @@ customizations.bitcoinclassic = _.extend {},
         style:
           position: 'relative'
           backgroundColor: 'white'
+          paddingBottom: 20
           # height: 63
           # borderBottom: '1px solid #ddd'
           # boxShadow: '0 1px 2px rgba(0,0,0,.1)'
@@ -2268,6 +2269,7 @@ customizations.bitcoinclassic = _.extend {},
             style: 
               marginTop: 10
               padding: 8
+              fontSize: 18
 
             "Classic is using consider.it to sample community opinion to better understand what users really 
              think about bitcoin and want to see it become. The governance model that Classic eventually 
@@ -2309,8 +2311,9 @@ customizations.bitcoinclassic = _.extend {},
               #backgroundColor: '#eee'
               marginTop: 10
               padding: 8
+              fontSize: 18
 
-            "Some users have abused the open registration system. Filtering opinions to verified users has been enabled by default."
+            "Some users have abused open registration. Filtering opinions to verified users has been enabled by default."
             " "
 
           DIV 
@@ -2318,6 +2321,7 @@ customizations.bitcoinclassic = _.extend {},
               backgroundColor: '#eee'
               marginTop: 10
               padding: 8
+              fontSize: 18
 
             "Interested in running a node that mirrors consider.it data to provide an audit trail? "
 

@@ -488,6 +488,7 @@ Cluster = ReactiveComponent
         DIV 
           style: 
             width: CONTENT_WIDTH()
+            marginLeft: if icons then 70
 
 
           if options.label

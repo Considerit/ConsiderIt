@@ -48,7 +48,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   if VM == :parallels
     config.vm.network :forwarded_port, guest: 2222, host: 22
-    config.ssh.host = '10.211.55.10'
+    config.ssh.host = '10.211.55.11'
     config.ssh.port = 22
   end
 

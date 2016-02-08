@@ -2337,15 +2337,34 @@ customizations.bitcoinclassic.NonHomepageHeader = customizations.bitcoinclassic.
 
 customizations['bitcoinfoundation'] = 
 
-  auth:   
-    user_questions : [
-      {
-        tag: 'bitcoin_foundation_member.editable'
-        question: 'I am a member of the Bitcoin Foundation'
-        input: 'dropdown'
-        options:['No', 'Yes']
-        required: true
-      }]
+  opinion_filters: [ {
+      label: 'members'
+      tooltip: 'Verified member of the Second Foundation.'
+      pass: (user) -> passes_tags(user, 'second_foundation_member')
+      icon: "<span style='color:green'>\u2713 member</span>"
+
+    }, {
+      label: 'miners'
+      tooltip: 'Controls > 1% hashrate.'
+      pass: (user) -> passes_tags(user, ['bitcoin_large_miner', 'verified'])
+      icon: "<span style=''>\u26CF miner</span>"      
+    }, {
+      label: 'developers'
+      tooltip: 'Self reported in user profile.'
+      pass: (user) -> passes_tags(user, ['bitcoin_developer.editable', 'verified'])
+      icon: "<span style=''><img src='https://dl.dropboxusercontent.com/u/3403211/dev.png' style='width:20px' /> developer</span>"            
+    }
+  ]
+
+  # auth:   
+  #   user_questions : [
+  #     {
+  #       tag: 'bitcoin_foundation_member.editable'
+  #       question: 'I am a member of the Bitcoin Foundation'
+  #       input: 'dropdown'
+  #       options:['No', 'Yes']
+  #       required: true
+  #     }]
   civility_pledge: true
 
   # default proposal options

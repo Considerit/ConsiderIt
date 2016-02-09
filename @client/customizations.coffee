@@ -2264,7 +2264,7 @@ customizations.bitcoinclassic = _.extend {},
                   fontWeight: 700
                   color: '#bbb'
 
-                "Propose and deliberate ideas for Bitcoin Classic. Not for binding votes."
+                "Propose and deliberate ideas for Bitcoin Classic. Not yet for binding votes."
 
 
           if homepage

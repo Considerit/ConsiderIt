@@ -709,7 +709,7 @@ customizations['cimsec'] =
   slider_pole_labels : effective_ineffective
 
 
-portuguese = ['sintaj']
+portuguese = ['sintaj', 'delegados_sintaj']
 
 for port in portuguese
   customizations[port] = 

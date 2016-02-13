@@ -109,7 +109,7 @@ window.prettyDate = (time) ->
                               day_diff == 1 && "Yesterday" || 
                               day_diff < 7 && day_diff + " days ago" || 
                               day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago" ||
-                              "#{date.getMonth()}/#{date.getDay()}/#{date.getFullYear()}"
+                              "#{date.getMonth() + 1}/#{date.getDay()}/#{date.getFullYear()}"
 
   r = r.replace('1 days ago', '1 day ago').replace('1 weeks ago', '1 week ago').replace('1 years ago', '1 year ago')
   r

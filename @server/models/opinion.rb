@@ -7,7 +7,7 @@ class Opinion < ActiveRecord::Base
   acts_as_tenant :subdomain
 
   scope :published, -> {where( :published => true )}
-  scope :public_fields, -> {select( [:created_at, :updated_at, :id, :proposal_id, :stance, :user_id, :point_inclusions, :published] )}
+  scope :public_fields, -> {select( [:created_at, :updated_at, :id, :proposal_id, :stance, :user_id, :point_inclusions, :published, :subdomain_id] )}
 
   def as_json(options={})
     pubs = ['created_at', 'updated_at', 'id', 'point_inclusions',

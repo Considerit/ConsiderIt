@@ -15,7 +15,7 @@ class Proposal < ActiveRecord::Base
   include Moderatable, Notifier
   
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :published, :histocache]
+  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :category, :designator, :name, :description, :description_fields, :active, :hide_on_homepage, :published, :histocache, :subdomain_id]
 
   scope :active, -> {where( :active => true, :published => true )}
 
@@ -228,7 +228,7 @@ class Proposal < ActiveRecord::Base
 
     o = ActiveRecord::Base.connection.execute """\
       SELECT created_at, id, point_inclusions, proposal_id, 
-      stance, user_id, updated_at
+      stance, user_id, updated_at, subdomain_id
           FROM opinions 
           WHERE subdomain_id=#{self.subdomain_id} AND
                 proposal_id=#{self.id} AND 

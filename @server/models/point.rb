@@ -30,7 +30,7 @@ class Point < ActiveRecord::Base
   acts_as_tenant :subdomain
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:comment_count, :created_at, :updated_at, :id, :includers, :is_pro, :nutshell, :proposal_id, :published, :score, :text, :user_id, :hide_name, :last_inclusion]
+  self.my_public_fields = [:comment_count, :created_at, :updated_at, :id, :includers, :is_pro, :nutshell, :proposal_id, :published, :score, :text, :user_id, :hide_name, :last_inclusion, :subdomain_id]
 
   scope :public_fields, -> {select(self.my_public_fields)}
 

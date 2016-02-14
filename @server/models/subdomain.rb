@@ -97,7 +97,7 @@ class Subdomain < ActiveRecord::Base
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 
         result[role] = result[role].map{|email_or_key|
-          email_or_key.index('*') || email_or_key == "/user/#{current_user.id}" ? email_or_key : '-'
+          email_or_key.index('*') || email_or_key.match("/user/") ? email_or_key : '-'
         }.uniq
       end
     end

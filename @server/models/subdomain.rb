@@ -12,7 +12,7 @@ class Subdomain < ActiveRecord::Base
   validates_attachment_content_type :logo, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :name, :about_page_url, :notifications_sender_email, :app_title, :external_project_url, :assessment_enabled, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode]
+  self.my_public_fields = [:id, :name, :created_at, :about_page_url, :notifications_sender_email, :app_title, :external_project_url, :assessment_enabled, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode]
 
   scope :public_fields, -> { select(self.my_public_fields) }
 

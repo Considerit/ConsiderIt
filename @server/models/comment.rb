@@ -2,7 +2,7 @@ class Comment < ActiveRecord::Base
   include Moderatable, Notifier
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :body, :user_id, :created_at, :point_id, :moderation_status ]
+  self.my_public_fields = [:id, :body, :user_id, :created_at, :point_id, :moderation_status, :subdomain_id ]
 
   scope :public_fields, -> {select(self.my_public_fields)}
   

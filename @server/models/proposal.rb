@@ -53,7 +53,6 @@ class Proposal < ActiveRecord::Base
     end
 
     if subdomain.name == 'livingvotersguide'
-      year = 2015
       local_jurisdictions = []   
       
       user_tags = current_user.tags ? JSON.load(current_user.tags) : nil
@@ -62,11 +61,11 @@ class Proposal < ActiveRecord::Base
         # associated with that zipcode. We'll also want to insert them between the statewide
         # measures and the advisory votes, since we hate the advisory votes. 
         local_jurisdictions = ActiveRecord::Base.connection.exec_query( 
-          "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%' AND YEAR(created_at)=#{year}")
+          "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%'")
           .map {|r| r['cluster']}
       end
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
-      proposals = subdomain.proposals.active.where("YEAR(created_at)=#{year}").where('cluster IN (?)', manual_clusters)
+      proposals = subdomain.proposals.where('cluster IN (?)', manual_clusters)
 
     elsif 
       proposals = subdomain.proposals.where(:hide_on_homepage => false)

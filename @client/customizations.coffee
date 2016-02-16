@@ -2461,7 +2461,7 @@ ZipcodeBox = ReactiveComponent
       DIV 
         style: 
           backgroundColor: 'rgba(0,0,0,.1)'
-          fontSize: 32
+          fontSize: 22
           fontWeight: 700
           width: 720
           color: 'white'
@@ -2474,15 +2474,8 @@ ZipcodeBox = ReactiveComponent
           type: 'text'
           key: 'zip_input'
           placeholder: 'Zip Code'
-          style: {margin: '0 0 0 12px', fontSize: 24, height: 42, width: 152, padding: '4px 20px'}
+          style: {margin: '0 0 0 12px', fontSize: 22, height: 42, width: 152, padding: '4px 20px'}
           onChange: onChange
-        BR null
-        SPAN 
-          style: 
-            fontSize: 20
-            fontWeight: 400
-          'Your city council candidates will be revealed!'
-
 
 customizations.livingvotersguide = 
 
@@ -2494,7 +2487,7 @@ customizations.livingvotersguide =
   #docking_proposal_header : true
 
   'cluster/Advisory votes': 
-    label: 'Advisory Votes'
+    archived: true
     description: 
       DIV null,
         "Advisory Votes are not binding. They are a consequence of Initiative 960 passing in 2007"
@@ -2613,17 +2606,12 @@ customizations.livingvotersguide =
                 color: 'white'
                 fontSize: if homepage then 20 else 18
 
-              SPAN style: {fontWeight: 700},
-                'Learn' 
-              ' about your ballot, '
-              SPAN style: {fontWeight: 700},
-                'decide' 
-              ' how you’ll vote, and '
-              SPAN style: {fontWeight: 700},
-                'share'
-              ' your opinion.'
+              'Learn about your ballot, decide how you’ll vote, and share your opinion.'
 
           if homepage
+
+
+
             DIV
               style:
                 color: 'white'
@@ -2685,27 +2673,28 @@ customizations.livingvotersguide =
           DIV 
             style: 
               backgroundColor: LVG_green
-              paddingTop: 12
 
             DIV 
               style: 
-                fontSize: 32
                 color: 'white'
-                textAlign: 'center'
-                margin: '0 auto 12px auto'
-                width: CONTENT_WIDTH()
-                maxHeight: if browser.is_mobile then 50
+                margin: 'auto'
+                padding: '40px'
+                width: 720
 
-              # SPAN 
-              #   style: {}
 
-              #   'Coming soon: '
-
-              SPAN
+              DIV
                 style: 
-                  fontWeight: 700
+                  fontSize: 24
+                  fontWeight: 600
+                  textAlign: 'center'
 
-                '2015 General Election: Ballots due November 3rd!'
+                """The Living Voters Guide has passed on..."""
+
+              DIV 
+                style: 
+                  fontSize: 18
+                """We have made the difficult decision to discontinue the Living Voters Guide 
+                   after six years of service. Thank you for your contributions through the years!"""
 
             DIV 
               style: 

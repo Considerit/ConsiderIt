@@ -263,6 +263,18 @@ relevance =
     support_sub: ''
     oppose_sub: ''
 
+priority = 
+  individual: 
+    support: 'High Priority'
+    oppose: 'Low Priority'
+    support_sub: ''
+    oppose_sub: ''    
+  group: 
+    support: 'High Priority'
+    oppose: 'Low Priority'
+    support_sub: ''
+    oppose_sub: ''    
+
 
 important_unimportant = 
   individual: 
@@ -598,8 +610,79 @@ carcd_header = ReactiveComponent
         ProfileMenu()
 
 
+
+
 customizations['carcd'] = customizations['carcd-demo'] = 
   show_proposer_icon: true
+
+
+  "cluster/Serving Districts" : 
+    point_labels: 
+      pro: 'for depth'
+      pros: 'Arguments for Depth' 
+      con: 'for breadth'
+      cons: 'Arguments for Breadth'
+      your_header: "Your --valences--" 
+      other_header: "--valences-- identified" 
+      top_header: "Top --valences--" 
+
+    slider_pole_labels: 
+      individual: 
+        support: 'High impact'
+        oppose: 'All districts'
+        support_sub: ''
+        oppose_sub: ''    
+      group: 
+        support: 'High impact'
+        oppose: 'All districts'
+        support_sub: ''
+        oppose_sub: ''
+
+
+
+    show_slider_feedback: false
+
+    description: 
+      DIV 
+        style: 
+          #marginLeft: 65
+          fontSize: 18
+          fontWeight: 500
+          position: 'relative'
+          top: 12
+          padding: 4
+          fontStyle: 'italic'
+          color: '#888'
+        "Rank the priority of each of program option. Remember, to emphasize everything is to emphasize nothing."
+
+
+
+  "cluster/Program Emphasis" : 
+    point_labels: pro_con
+    slider_pole_labels: priority
+    show_slider_feedback: false
+
+    description: 
+      DIV 
+        style: 
+          #marginLeft: 65
+          fontSize: 18
+          fontWeight: 500
+          position: 'relative'
+          top: 12
+          padding: 4
+          fontStyle: 'italic'
+          color: '#888'
+        "Rank the priority of each of program option. Remember, to emphasize everything is to emphasize nothing."
+
+
+
+
+  "cluster/Lagging Districts" : 
+    point_labels: pro_con
+    slider_pole_labels: agree_disagree
+    show_slider_feedback: false
+
 
   "cluster/Questions" : 
     point_labels: pro_con

@@ -91,7 +91,8 @@ class Proposal < ActiveRecord::Base
 
 
         when 'carcd', 'carcd-demo'
-          manual_clusters = ['Questions', "CARCD's role in Emerging Resources", \
+          manual_clusters = ['Serving Districts', 'Program Emphasis', 'Lagging Districts', 'Accreditation', \
+                             'Questions', "CARCD's role in Emerging Resources", \
                              "CARCD's role in Regional Alignment", \
                              "CARCD's Role for the Community"]
       end

@@ -526,15 +526,17 @@ carcd_header = ReactiveComponent
     DIV 
       style: 
         position: 'relative'
-        height: if homepage then 262 else 200
+        width: HOMEPAGE_WIDTH()
+        margin: 'auto'
+        height: if !homepage then 180
 
       A
-        href: 'http://www.carcd.org/'
+        href: 'http://carcd.consider.it'
         target: '_blank'
         style:
           position: 'absolute'
-          top: 70
-          left: (WINDOW_WIDTH() - 391) / 2
+          top: 20
+          left: -48 #(WINDOW_WIDTH() - 391) / 2
           zIndex: 5
 
         IMG
@@ -542,14 +544,13 @@ carcd_header = ReactiveComponent
           style:
             height: 145
 
-
       DIV
         style:
-          backgroundColor: "#F0F0F0"
+          # backgroundColor: "#F0F0F0"
           height: 82
           width: '100%'
           position: 'relative'
-          top: 100
+          top: 50
           left: 0
           #border: '1px solid #7D9DB5'
           #borderLeftColor: 'transparent'
@@ -562,43 +563,80 @@ carcd_header = ReactiveComponent
             fontSize: 43
             visibility: if homepage then 'hidden'
             verticalAlign: 'top'
-            left: 15
-            top: 12
-            color: focus_blue
-            zIndex: 10
+            left: -91
+            top: 10
+            color: 'black'
             position: 'relative'
           '<'
 
+      if homepage
+        DIV 
+          style: 
+            paddingTop: 82
+            width: HOMEPAGE_WIDTH()
+            paddingLeft: 70
+            margin: 'auto'
+            position: 'relative'
 
-      if homepage 
-        DIV
-          style:
-            position: 'absolute'
-            left: (WINDOW_WIDTH() + 8) / 2
-            zIndex: 5
-            top: 188
-            paddingLeft: 12
-
-          SPAN 
+          DIV 
             style: 
-              fontSize: 14
-              fontWeight: 400
-              color: '#7D9DB5'
-              #fontVariant: 'small-caps'
-              position: 'relative'
-              top: -18
-            'facilitated by'
+              fontSize: 26
+              fontWeight: 600
+              # position: 'absolute'
+              # top: -80
+              color: '#7D9DB6'
 
-          A 
-            href: 'http://solidgroundconsulting.com'
-            target: '_blank'
+            "We need your feedback!" 
+
+          DIV 
             style: 
-              padding: '0 5px'
+              fontSize: 20
+              marginBottom: 18
 
-            IMG
-              src: asset('carcd/solidground.png')
-              style: 
-                width: 103
+            """This survey gives you a chance to influence the CARCD strategic plan and 
+            our priorities for the next several years.  Please take the time to 
+            respond to the questions below – elaborate, argue, tell us what you 
+            really think!"""
+
+          DIV 
+            style: 
+              fontSize: 20
+              marginBottom: 6
+            "Thank you for your time,"
+            BR null
+            "The CARCD team"
+
+
+
+      # if homepage 
+      #   DIV
+      #     style:
+      #       position: 'absolute'
+      #       left: (WINDOW_WIDTH() + 8) / 2
+      #       zIndex: 5
+      #       top: 188
+      #       paddingLeft: 12
+
+      #     SPAN 
+      #       style: 
+      #         fontSize: 14
+      #         fontWeight: 400
+      #         color: '#7D9DB5'
+      #         #fontVariant: 'small-caps'
+      #         position: 'relative'
+      #         top: -18
+      #       'facilitated by'
+
+      #     A 
+      #       href: 'http://solidgroundconsulting.com'
+      #       target: '_blank'
+      #       style: 
+      #         padding: '0 5px'
+
+      #       IMG
+      #         src: asset('carcd/solidground.png')
+      #         style: 
+      #           width: 103
 
       DIV 
         style: 
@@ -614,6 +652,7 @@ carcd_header = ReactiveComponent
 
 customizations['carcd'] = customizations['carcd-demo'] = 
   show_proposer_icon: true
+  proposal_filters: false
 
 
   "cluster/Serving Districts" : 
@@ -623,7 +662,7 @@ customizations['carcd'] = customizations['carcd-demo'] =
       con: 'argument for breadth'
       cons: 'Arguments for Breadth'
       your_header: "Your --valences--" 
-      other_header: "--valences-- identified" 
+      other_header: "--valences--" 
       top_header: "Top --valences--" 
 
     slider_pole_labels: 
@@ -643,13 +682,13 @@ customizations['carcd'] = customizations['carcd-demo'] =
         style: 
           #marginLeft: 65
           fontSize: 18
-          fontWeight: 500
+          fontWeight: 400
           position: 'relative'
           top: 12
           padding: 4
           fontStyle: 'italic'
           color: '#888'
-        "Rank the priority of each of program option. Remember, to emphasize everything is to emphasize nothing."
+        "Serve districts equally, or should it deeply focus more of its efforts on those districts with the capacity?"
     show_slider_feedback: false
 
 
@@ -660,7 +699,7 @@ customizations['carcd'] = customizations['carcd-demo'] =
       con: 'argument for unrewarded'
       cons: 'Arguments for Unrewarded'
       your_header: "Your --valences--" 
-      other_header: "--valences-- identified" 
+      other_header: "--valences--" 
       top_header: "Top --valences--" 
 
     slider_pole_labels: 

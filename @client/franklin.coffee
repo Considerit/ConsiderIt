@@ -894,7 +894,7 @@ DecisionBoard = ReactiveComponent
 
       SliderBubblemouth()
 
-      [DIV
+      DIV
         key: 'body' 
         className:'decision_board_body'
         style: css.crossbrowserify decision_board_style
@@ -974,7 +974,26 @@ DecisionBoard = ReactiveComponent
             A 
               className:'cancel_opinion_button primary_cancel_button'
               onClick: => updateProposalMode('results', 'cancel_button')
-              t('skip_to_results') ]
+              t('skip_to_results') 
+
+        else 
+
+          DIV 
+            className: 'below_save'
+            style: 
+              display: 'none'
+                      
+            A 
+              style: 
+                textDecoration: 'underline'
+              className:'cancel_opinion_button primary_cancel_button'
+              onClick: => 
+                your_opinion.published = false 
+                save your_opinion
+
+              'Unpublish opinion'
+
+
 
   componentDidUpdate : ->
     @transition()

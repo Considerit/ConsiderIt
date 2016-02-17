@@ -45,6 +45,13 @@ class OpinionController < ApplicationController
         :what => 'published opinion',
         :where => proposal.slug
       })
+    elsif params.has_key?('published') && !params['published'] && opinion.published
+      opinion.unpublish()
+      write_to_log({
+        :what => 'unpublished opinion',
+        :where => proposal.slug
+      })
+
     end
 
     # clear the histogram cache because we got a new opinion
@@ -62,4 +69,5 @@ class OpinionController < ApplicationController
     render :json => []
 
   end
+
 end

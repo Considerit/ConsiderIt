@@ -213,8 +213,8 @@ port_pros_cons =
   pros: 'A Favor' 
   con: 'Contra'
   cons: 'Contra'
-  your_header: "Entrega tu --valences--" 
-  other_header: "Otros' --valences--" 
+  your_header: "Teus pontos --valences--" 
+  other_header: "Outros --valences--" 
   top_header: "Top --valences--" 
 
 
@@ -887,7 +887,7 @@ for port in portuguese
     lang: 'ptbr'
     point_labels : port_pros_cons
     slider_pole_labels : port_agree_disagree
-    homie_histo_title: "Opiniones"
+    homie_histo_title: "Opiniõnes"
     show_slider_feedback: false
     proposal_filters: false 
 

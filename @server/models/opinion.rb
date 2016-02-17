@@ -83,6 +83,19 @@ class Opinion < ActiveRecord::Base
 
   end
 
+  def unpublish
+    self.published = false
+    recache
+    self.save if changed?
+
+    inclusions.each do |inc|
+      inc.point.recache
+    end
+
+    dirty_key "/page/#{Proposal.find(proposal_id).slug}"
+    dirty_key "/proposal/#{proposal.id}"
+  end
+
   def update_inclusions (points_to_include)
     points_already_included = inclusions.map {|i| i.point_id}.compact
     points_to_exclude = points_already_included.select {|point_id| not points_to_include.include? point_id}

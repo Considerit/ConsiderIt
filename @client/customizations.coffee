@@ -887,7 +887,7 @@ for port in portuguese
     lang: 'ptbr'
     point_labels : port_pros_cons
     slider_pole_labels : port_agree_disagree
-    homie_histo_title: "Opiniõnes"
+    homie_histo_title: "Opiniões"
     show_slider_feedback: false
     proposal_filters: false 
 

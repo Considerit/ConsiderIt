@@ -91,7 +91,6 @@ window.ImageHeader = ReactiveComponent
     is_light = hsl.l > .75
 
     masthead_style = 
-      textAlign: 'center'
       backgroundColor: subdomain.branding.primary_color
       height: 45
 
@@ -108,7 +107,7 @@ window.ImageHeader = ReactiveComponent
     DIV
       style: masthead_style 
 
-      if subdomain.external_project_url 
+      if homepage && subdomain.external_project_url 
         A
           href: subdomain.external_project_url
           style: 
@@ -120,6 +119,19 @@ window.ImageHeader = ReactiveComponent
             fontSize: 18
 
           '< project homepage'
+      else 
+        A
+          href: '/'
+          style: 
+            position: 'relative'
+            marginLeft: 20
+            display: 'inline-block'
+            color: if !is_light then 'white'
+            fontSize: 43
+            visibility: if homepage || !customization('has_homepage') then 'hidden'
+            verticalAlign: 'middle'
+            marginTop: 5
+          '<'
 
        
 

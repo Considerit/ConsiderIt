@@ -792,20 +792,21 @@ window.CollapsedProposal = ReactiveComponent
               color: "#999"
               fontStyle: 'italic'
 
-            SPAN 
-              style: {}
-
-              prettyDate(proposal.created_at)
-
-              if !icons && (editor = proposal_editor(proposal)) && editor == proposal.user
-                SPAN 
-                  style: {}
-
-                  " by #{fetch(editor)?.name}"
-
+            if customization('show_meta')
               SPAN 
-                style: 
-                  paddingRight: 16
+                style: {}
+
+                prettyDate(proposal.created_at)
+
+                if !icons && (editor = proposal_editor(proposal)) && editor == proposal.user
+                  SPAN 
+                    style: {}
+
+                    " by #{fetch(editor)?.name}"
+
+                SPAN 
+                  style: 
+                    paddingRight: 16
 
 
             if !proposal.active

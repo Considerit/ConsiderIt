@@ -494,20 +494,21 @@ ProposalDescription = ReactiveComponent
 
         @proposal.name
 
-        DIV 
-          style: 
-            fontSize: 16
-            color: "#888"
-            fontStyle: 'italic'
-            paddingTop: 18
+        if customization('show_meta')
+          DIV 
+            style: 
+              fontSize: 16
+              color: "#888"
+              fontStyle: 'italic'
+              paddingTop: 18
 
-          prettyDate(@proposal.created_at)
+            prettyDate(@proposal.created_at)
 
-          if (editor = proposal_editor(@proposal)) && editor == @proposal.user
-            SPAN 
-              style: {}
+            if (editor = proposal_editor(@proposal)) && editor == @proposal.user
+              SPAN 
+                style: {}
 
-              " by #{fetch(editor)?.name}"
+                " by #{fetch(editor)?.name}"
 
       if !@proposal.active
         SPAN 

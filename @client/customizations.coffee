@@ -597,14 +597,14 @@ customizations['rupaulseason8'] =
   show_meta: false 
 
   point_labels: 
-    pro: 'love'
-    pros: 'loving' 
-    con: 'shade'
-    cons: 'shading'
-    your_header: "Your --valences--" 
-    other_header: "--valences--" 
-    top_header: "Top --valences--" 
-
+    pro: 'Love'
+    pros: 'Love' 
+    con: 'Shade'
+    cons: 'Shade'
+    your_header: "Throw your --valences--" 
+    other_header: "Others' --valences--" 
+    top_header: "Best --valences--" 
+    
   slider_pole_labels: 
     individual: 
       support: 'YAAAAAAS'

@@ -276,6 +276,19 @@ priority =
     oppose_sub: ''    
 
 
+
+interested = 
+  individual: 
+    support: 'Interested'
+    oppose: 'Uninterested'
+    support_sub: ''
+    oppose_sub: ''    
+  group: 
+    support: 'Interested'
+    oppose: 'Uninterested'
+    support_sub: ''
+    oppose_sub: ''  
+
 important_unimportant = 
   individual: 
     support: 'Important'
@@ -2445,6 +2458,170 @@ customizations.bitcoin =
                     textDecoration: 'underline'
 
                   "Learn more"
+
+
+
+
+
+
+
+
+
+
+
+customizations['on-chain-conf'] = _.extend {}, 
+  opinion_filters: customizations.bitcoin.opinion_filters
+  auth: customizations.bitcoin.auth
+  show_proposer_icon: false
+  collapse_descriptions_at: 300
+  show_meta: false 
+
+  proposal_filters: true
+  civility_pledge: true
+
+   
+
+  'cluster/On-chain scaling': 
+    slider_pole_labels: interested
+
+  'cluster/Other topics': 
+    slider_pole_labels: interested
+
+
+  HomepageHeader: ReactiveComponent 
+    displayName: 'HomepageHeader'
+
+    render: ->
+      homepage = fetch('location').url == '/'
+
+      DIV
+        style:
+          position: 'relative'
+          backgroundColor: 'white'
+          paddingTop: 40
+          backgroundColor: '#211F20'
+          # height: 63
+          # borderBottom: '1px solid #ddd'
+          # boxShadow: '0 1px 2px rgba(0,0,0,.1)'
+
+        onMouseEnter: => @local.hover=true;  save(@local)
+        onMouseLeave: => @local.hover=false; save(@local)
+
+        STYLE null,
+          '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
+             p {margin-bottom: 1em}'''
+
+        # The top bar with the logo
+        DIV
+          style:
+            #width: HOMEPAGE_WIDTH()
+            margin: 'auto'
+            textAlign: 'center'
+
+
+
+          IMG
+            style: 
+              height: 360 / 2
+              marginLeft: -146 / 2
+            src: asset('bitcoin/onchain2.png')
+
+          BR null
+          BR style: padding: 20
+          BR null
+          IMG 
+            style: 
+              height: 280 / 2
+              #top: -136
+              #left: 282
+              position: 'relative'
+            src: asset('bitcoin/conf_mock4.png') 
+          BR null
+          BR style: padding: 20
+          BR null
+
+
+          DIV 
+            style: 
+              marginLeft: -70
+              paddingTop: 30
+              position: 'absolute'
+            SPAN
+              style:
+                display: 'inline-block'
+                visibility: if homepage then 'hidden'
+                color: 'white'
+                position: 'relative'
+                left: -60
+                top: -10
+                fontSize: 43
+                fontWeight: 400
+                paddingLeft: 25 # Make the clickable target bigger
+                paddingRight: 25 # Make the clickable target bigger
+                cursor: if not homepage then 'pointer'
+              onClick: if not homepage then => loadPage('/')
+
+              '<'
+
+          if homepage 
+            DIV 
+              style:
+                backgroundColor: '#636363'
+                color: 'white'
+                textAlign: 'center'
+                padding: '20px 0'
+                width: '100%'
+                borderBottom: '1px solid #444'
+                borderTop: '1px solid #767676'
+
+              DIV 
+                style: 
+                  fontWeight: 600
+                  fontSize: 20
+
+                'Upcoming: April TBD, 2-day online conference about on-chain scaling'
+              DIV 
+                style:
+                  fontSize: 18
+
+                'Express your preferences below. '
+
+
+
+          # DIV 
+          #   style:
+          #     fontSize: 24
+          #     fontStyle: 'italic'
+          #     fontWeight: 600
+          #     display: 'inline-block'
+          #     margin: 'auto'
+          #   DIV 
+          #     style: 
+          #       color: '#A9556D'
+          #     'You identify topics you want to learn more about.'
+          #   DIV 
+          #     style: 
+          #       color: '#B1BC83'
+          #     'We organize events that match speakers with topics.'
+
+            # if homepage 
+
+
+        ProfileMenu()
+
+
+customizations['on-chain-conf'].NonHomepageHeader = customizations['on-chain-conf'].HomepageHeader
+
+
+
+
+
+
+
+
+
+
+
 
 
 

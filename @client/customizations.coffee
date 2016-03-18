@@ -2497,9 +2497,9 @@ customizations['on-chain-conf'] = _.extend {},
       DIV
         style:
           position: 'relative'
-          backgroundColor: 'white'
-          paddingTop: 40
-          backgroundColor: '#211F20'
+          backgroundColor: '#272727'
+          overflow: 'hidden'
+          paddingBottom: 60
           # height: 63
           # borderBottom: '1px solid #ddd'
           # boxShadow: '0 1px 2px rgba(0,0,0,.1)'
@@ -2519,26 +2519,33 @@ customizations['on-chain-conf'] = _.extend {},
             textAlign: 'center'
 
 
-
           IMG
             style: 
-              height: 360 / 2
-              marginLeft: -146 / 2
-            src: asset('bitcoin/onchain2.png')
+              position: 'relative'
+              top: -50
+              zIndex: 3
+              width: '100%'
+            src: asset('bitcoin/OnChainConferences.svg')
 
-          BR null
-          BR style: padding: 20
-          BR null
+
+          DIV 
+            style: 
+              position: 'absolute'
+              left: 0
+              top: 0
+              height: '70%'
+              width: '100%'
+              background: 'linear-gradient(to bottom, rgba(0,0,0,.97) 0%,rgba(0,0,0,0.65) 85%,rgba(0,0,0,0) 100%)'
+              zIndex: 2
+
           IMG 
             style: 
-              height: 280 / 2
-              #top: -136
-              #left: 282
-              position: 'relative'
-            src: asset('bitcoin/conf_mock4.png') 
-          BR null
-          BR style: padding: 20
-          BR null
+              position: 'absolute'
+              zIndex: 1
+              width: '160%'
+              top: 45
+              left: '-30%'
+            src: asset('bitcoin/rays.png') 
 
 
           DIV 
@@ -2546,6 +2553,7 @@ customizations['on-chain-conf'] = _.extend {},
               marginLeft: -70
               paddingTop: 30
               position: 'absolute'
+              zIndex: 3
             SPAN
               style:
                 display: 'inline-block'
@@ -2566,20 +2574,21 @@ customizations['on-chain-conf'] = _.extend {},
           if homepage 
             DIV 
               style:
-                backgroundColor: '#636363'
+                backgroundColor: 'rgba(0,0,0,.7)'
                 color: 'white'
                 textAlign: 'center'
                 padding: '20px 0'
                 width: '100%'
-                borderBottom: '1px solid #444'
-                borderTop: '1px solid #767676'
+                position: 'relative' 
+                zIndex: 3
+                top: 60
 
               DIV 
                 style: 
                   fontWeight: 600
                   fontSize: 20
 
-                'Upcoming: April TBD, 2-day online conference about on-chain scaling'
+                'Upcoming: Late May TBD, 2-day online conference about on-chain scaling'
               DIV 
                 style:
                   fontSize: 18

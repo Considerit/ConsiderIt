@@ -29,7 +29,7 @@ window.ProfileMenu = ReactiveComponent
       style:
         _.extend(
           position: 'absolute'
-          zIndex: 1
+          zIndex: 5
           right: 30
           fontSize: 26
           top: 17,

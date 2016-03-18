@@ -2550,10 +2550,11 @@ customizations['on-chain-conf'] = _.extend {},
 
           DIV 
             style: 
-              marginLeft: -70
-              paddingTop: 30
+              marginLeft: 50
+              paddingTop: 13
               position: 'absolute'
               zIndex: 3
+              
             SPAN
               style:
                 display: 'inline-block'
@@ -2589,7 +2590,7 @@ customizations['on-chain-conf'] = _.extend {},
                   fontSize: 20
 
                 'Upcoming: May 27-29, 2-day online conference about on-chain scaling'
-                
+
               DIV 
                 style:
                   fontSize: 18

@@ -2488,6 +2488,7 @@ customizations['on-chain-conf'] = _.extend {},
     slider_pole_labels: interested
 
 
+
   HomepageHeader: ReactiveComponent 
     displayName: 'HomepageHeader'
 
@@ -2500,6 +2501,7 @@ customizations['on-chain-conf'] = _.extend {},
           backgroundColor: '#272727'
           overflow: 'hidden'
           paddingBottom: 60
+          height: if !homepage then 200
           # height: 63
           # borderBottom: '1px solid #ddd'
           # boxShadow: '0 1px 2px rgba(0,0,0,.1)'
@@ -2545,9 +2547,9 @@ customizations['on-chain-conf'] = _.extend {},
               position: 'absolute'
               left: 0
               top: 0
-              height: '64%'
+              height: if homepage then '64%' else '100%'
               width: '100%'
-              background: 'linear-gradient(to bottom, rgba(0,0,0,.97) 0%,rgba(0,0,0,0.65) 70%,rgba(0,0,0,0) 100%)'
+              background: if homepage then 'linear-gradient(to bottom, rgba(0,0,0,.97) 0%,rgba(0,0,0,0.65) 70%,rgba(0,0,0,0) 100%)' else 'rgba(0,0,0,.7)'
               zIndex: 2
 
           IMG 
@@ -2555,7 +2557,7 @@ customizations['on-chain-conf'] = _.extend {},
               position: 'absolute'
               zIndex: 1
               width: '160%'
-              top: 45
+              top: 0 #45
               left: '-30%'
             src: asset('bitcoin/rays.png') 
 
@@ -2566,6 +2568,7 @@ customizations['on-chain-conf'] = _.extend {},
               paddingTop: 13
               position: 'absolute'
               zIndex: 3
+              top: 65
               
             SPAN
               style:

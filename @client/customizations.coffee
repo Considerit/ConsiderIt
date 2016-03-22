@@ -2519,13 +2519,29 @@ customizations['on-chain-conf'] = _.extend {},
             textAlign: 'center'
 
 
-          IMG
+
+
+
+          DIV 
             style: 
+              margin: "90px auto 140px auto"
+              width: '80%'
               position: 'relative'
-              top: -50
               zIndex: 3
-              width: '100%'
-            src: asset('bitcoin/OnChainConferences.svg')
+
+            IMG
+              style: 
+                position: 'absolute'
+                left: '23%'
+                top: '-16%'
+                width: '7%'
+              src: asset('bitcoin/blockchainLogo.png')
+
+            IMG
+              style: 
+                display: 'inline-block'
+                width: '100%'
+              src: asset('bitcoin/OnChainConferences2.svg')
 
 
           DIV 

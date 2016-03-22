@@ -2518,30 +2518,26 @@ customizations['on-chain-conf'] = _.extend {},
             margin: 'auto'
             textAlign: 'center'
 
-
-
-
-
           DIV 
             style: 
-              margin: "90px auto 140px auto"
+              margin: "60px auto 160px auto"
               width: '80%'
               position: 'relative'
               zIndex: 3
 
-            IMG
-              style: 
-                position: 'absolute'
-                left: '23%'
-                top: '-16%'
-                width: '7%'
-              src: asset('bitcoin/blockchainLogo.png')
+            # IMG
+            #   style: 
+            #     position: 'absolute'
+            #     left: '23%'
+            #     top: '-16%'
+            #     width: '7%'
+            #   src: asset('bitcoin/blockchainLogo.png')
 
             IMG
               style: 
                 display: 'inline-block'
-                width: '100%'
-              src: asset('bitcoin/OnChainConferences2.svg')
+                width: '90%'
+              src: asset('bitcoin/OnChainConferences3.svg')
 
 
           DIV 
@@ -2549,9 +2545,9 @@ customizations['on-chain-conf'] = _.extend {},
               position: 'absolute'
               left: 0
               top: 0
-              height: '70%'
+              height: '64%'
               width: '100%'
-              background: 'linear-gradient(to bottom, rgba(0,0,0,.97) 0%,rgba(0,0,0,0.65) 85%,rgba(0,0,0,0) 100%)'
+              background: 'linear-gradient(to bottom, rgba(0,0,0,.97) 0%,rgba(0,0,0,0.65) 70%,rgba(0,0,0,0) 100%)'
               zIndex: 2
 
           IMG 

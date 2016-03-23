@@ -2479,7 +2479,7 @@ customizations['on-chain-conf'] = _.extend {},
   proposal_filters: true
   civility_pledge: true
 
-   
+  slider_pole_labels: interested
 
   'cluster/On-chain scaling': 
     slider_pole_labels: interested

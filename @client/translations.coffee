@@ -105,6 +105,21 @@ dict.ptbr =
   closed: 'fechado'
   add_new: 'criar novo'
 
+dict.tun_ar = 
+  or: 'أو'
+  and: 'و'
+
+  done: 'منجز'
+  cancel: 'إلغاء'
+  edit: 'تعديل'
+  share: 'أنقل'
+  delete: 'إحذف'
+  close: 'أغلق'
+  update: 'حدّث'
+  publish: 'أنشر'
+  closed: 'مغلق'
+  add_new: 'إضافة جديدة'
+
 
 
 #########
@@ -149,6 +164,8 @@ _.extend dict.en,
   tip_attacks: "No personal attacks."
 
   filter_to_watched: "Filter proposals to those you're watching"
+
+
 
 _.extend dict.spa, 
   give_your_opinion: 'Deja tu Opinion'
@@ -231,6 +248,48 @@ _.extend dict.ptbr,
 
   filter_to_watched: "Filtrar propostas daqueles que está observando"
 
+
+_.extend dict.tun_ar, 
+  give_your_opinion: 'أبد رأيك'
+  update_your_opinion: 'بد رأيك من جديد'
+  comment: 'علّق'
+  comments: 'تعليقات'
+  read_more: 'اقرأ المزيد'
+  select_these_opinions: 'اختر هذه الآراء'
+  prev: 'السابق'
+  next: 'اللاحق'
+  drag_from_left: (args) ->   
+    "من اليسار #{args.noun} اسحب"
+  drag_from_right: (args) -> 
+    "من اليمين #{args.noun}اسحب"
+  write_a_new_point: (args) ->     
+    "(ة) جديد #{args.noun}اكتب"
+
+  slide_your_overall_opinion: 'حدّد رأيك العامّ'
+  your_opinion: "رأيك"
+  save_your_opinion: 'احفظ رأيك'
+  return_to_results: 'العودة إلى النتائج'
+  skip_to_results: 'أو مر مباشرة إلى النتائج'
+  login_to_comment: 'سجّل لكتابة تعليق'
+  login_to_add_new: 'سجّل لإضافة الجديد'
+  login_to_save_opinion: 'سجل لحفظ رأيك'
+  discuss_this_point: 'ناقش هذه النقطة'
+  save_comment: 'احفظ التعليق'
+  write_a_comment: 'اكتب تعليق'
+  write_a_point: 'اكتب وجهة نظر'
+  summary_placeholder: 'تلخيص موجز لوجهة نظرك'
+  description_placeholder: '.أضف خلفيّات أو دلائل/ اثباتات'
+  sign_name: 'أدخل اسمك'
+
+  tip_single: (args) -> 
+    "أبد وجهة نظر واحدة. أضف إن كان لديك المزيد."
+  tip_direct: "كن موجزا. الملخص هو وجهة نظرك الرئيسية"
+  tip_review: "راجع لغتك. لا تكن مهملا."
+  tip_attacks: "الهجوم الشخصي ممنوع"
+
+  filter_to_watched: "إفرز مقترحات من تتابعهم."
+
+
 #########
 # Creating proposal
 
@@ -289,6 +348,24 @@ _.extend dict.ptbr,
   show_on_homepage: 'Exibir na página inicial?'
   open_for_discussion: 'Abrir para discussão?'
   permissions_and_invites: 'Permissões e convites'
+
+_.extend dict.tun_ar,
+  create_new_proposal: 'إحدث مقترح جديد'
+  error_free: "خال من الأخطاء اللغويّة"
+  unambiguous: 'خال من الغموض'
+  make_it: 'أنجز'
+  url_instr: "مجرّد حروف وأرقام وأشرطة سفلية ومطّات"
+  summary: 'ملخص'
+  proposal_summary_instr: 'اهدف إلي 3-8 كلمات من بينها فعل واسم'
+  details: 'تفاصيل'
+  label: ' مسمّى'
+  expandable_body_instr: 'النص الذي يظهر عند التوسيع'
+  add_expandable: "أضف قسم مخصّص للوصف القابل للتوسيع"
+  category: 'فئة'
+  optional: 'اختياري'
+  show_on_homepage: 'أدرج على الصفحة الرئيسية؟'
+  open_for_discussion: 'إفتح للمناقشة؟'
+  permissions_and_invites: 'رخص ودعوات'
 
 ########
 # authentication / user account related translations
@@ -387,6 +464,33 @@ _.extend dict.ptbr,
   more_info: 'Por favor, forneça algumas informações'
   forgot_password: 'Esqueci minha senha!'
 
+_.extend dict.tun_ar, 
+  log_in: 'سجّل للخول'
+  create_new_account: 'إنشاء حساب جديد'
+  log_out: 'خروج'
+  edit_profile: 'تعديل البيانات الشخصية'
+  email_settings: 'إعدادات البريد الإلكتروني'
+  introduce_yourself: 'عرف بنفسك'
+
+  complete_registration: 'اكمل التسجيل'
+  login_as: 'مرحبا،أسجّل الدخول باسم'
+  password: 'كلمه السر'
+  name_prompt: 'اسمي'
+  full_name: 'إسم المستخدم'
+  pic_prompt: 'أنا أشبه'
+  your_profile: 'بياناتك الشخصية'
+  updated_successfully: "تم التحديث بنجاح"
+  reset_your_password: "إعادة تعيين كلمة السر"
+  code: '  رمز'
+  new_password: ' كلمة السر الجديدة'
+  verification_sent: 'لقد أرسلنا إليك رمز التحقق عبر البريد الإلكتروني. انسخ /ألصق أدناه.'
+  verify: 'تحقّق'
+  choose_password: "اختر كلمة سر جديدة"
+  code_from_email: 'رمز التحقق من البريد الإلكتروني'
+  verify_your_email: ' تحقق من البريد الإلكتروني الخاص بك'
+  more_info: 'الرجاء إعطاء بعض المعلومات'
+  forgot_password: 'لقد نسيت كلمة السر الخاصة بي'
+
 ########
 # email notification settings
 
@@ -453,6 +557,26 @@ _.extend dict.ptbr,
   edited_proposal: 'editou esta proposta'
   added_new_point: 'adicionou novo ponto de vista'
   added_opinion: 'adicionou sua opinião'
+
+_.extend dict.tun_ar,
+  send_email: 'أرسل لي ملخصات البريد الإلكتروني'
+  email_digest_purpose: (args) ->
+    "#{args.project} ترصد الملخّصات الأنشطة الجديدة ذات الجدوى بالنسبة لك نظرا ل"
+  digest_timing: "أرسل الملخّص كل"
+  daily: 'يوم'
+  hourly: 'ساعة'
+  weekly: 'أسبوع'
+  monthly: 'شهر'
+  notable_events: "يتم إرسال رسائل البريد الإلكتروني إلا إذا وقع حدث بارز.  أي حدث يتمّ اعتباره بارزا بالنسبة لك؟"
+  watched_proposals: 'الاقتراحات التي تشاهدها لهذا النشاط الجديد'
+  unwatch: "عدم مشاهدة هذا الاقتراح"
+  hide_notifications: 'أخف التنبيهات'
+  show_notifications: 'اكشف التنبيهات'
+  commented_on: "علّق على"
+  your_point: 'وجهة نظرك'
+  edited_proposal: 'عدل هذا الاقتراح'
+  added_new_point: 'أضف وجهة نظر أخرى'
+  added_opinion: 'أضافوا أراءهم'
 
 # fill in missing spanish translations with english equivalents
 _.defaults dict.spa, dict.en

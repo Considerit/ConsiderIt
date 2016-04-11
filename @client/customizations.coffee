@@ -1005,6 +1005,9 @@ customizations['cimsec'] =
   slider_pole_labels : effective_ineffective
 
 
+customizations['tunisia'] = 
+  lang: 'tun_ar'
+
 portuguese = ['sintaj', 'delegados_sintaj']
 
 for port in portuguese

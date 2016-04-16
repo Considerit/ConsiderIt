@@ -1005,8 +1005,28 @@ customizations['cimsec'] =
   slider_pole_labels : effective_ineffective
 
 
+
 customizations['tunisia'] = 
   lang: 'tun_ar'
+  slider_pole_labels: 
+    individual: 
+      support: 'أوافق'
+      oppose: 'أخالف'
+      # support: 'ادعم'
+      # oppose: 'اعارض'
+    group: 
+      support: 'أوافق'
+      oppose: 'أخالف'
+
+  point_labels:  
+    pro: 'نقطة إجابية'
+    pros: 'نقاط إجابية' 
+    con: 'نقطة سلبية'
+    cons: 'نقاط سلبية'
+    your_header: "--valences-- أبد" 
+    other_header: "--valences--  أخرى" 
+    top_header: "--valences--  الرئيسية" 
+
 
 portuguese = ['sintaj', 'delegados_sintaj']
 

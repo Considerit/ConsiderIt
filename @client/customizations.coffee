@@ -1007,7 +1007,7 @@ customizations['cimsec'] =
 
 
 customizations['tunisia'] = 
-  proposal_filters: true
+  proposal_filters: false
   show_meta: false
   lang: 'tun_ar'
   slider_pole_labels: 

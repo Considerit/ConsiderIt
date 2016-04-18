@@ -1007,6 +1007,8 @@ customizations['cimsec'] =
 
 
 customizations['tunisia'] = 
+  proposal_filters: true
+  show_meta: false
   lang: 'tun_ar'
   slider_pole_labels: 
     individual: 
@@ -1018,6 +1020,7 @@ customizations['tunisia'] =
       support: 'أوافق'
       oppose: 'أخالف'
 
+  homie_histo_title: 'الآراء'
   point_labels:  
     pro: 'نقطة إجابية'
     pros: 'نقاط إجابية' 

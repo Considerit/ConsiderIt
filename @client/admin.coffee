@@ -269,6 +269,18 @@ AppSettingsDash = ReactiveComponent
                   defaultValue: subdomain.branding.primary_color
                   placeholder: 'The primary brand color. Needs to be dark.'
 
+              DIV className: 'input_group',
+                LABEL htmlFor: 'homepage_text', 'Homepage text'
+                TEXTAREA 
+                  id: 'homepage_text'
+                  name: 'homepage_text'
+                  defaultValue: subdomain.branding.homepage_text
+                  placeholder: 'Shown in homepage. Can be HTML.'
+                  style: 
+                    display: 'block'
+                    width: 500
+
+
           FORM id: 'subdomain_files', action: '/update_images_hack',
             if current_user.is_super_admin
               DIV className: 'input_group',
@@ -334,7 +346,7 @@ AppSettingsDash = ReactiveComponent
     subdomain.branding =
       primary_color: $('#primary_color').val()
       masthead_header_text: $('#masthead_header_text').val()
-
+      homepage_text: $('#homepage_text').val()
     @local.save_complete = @local.file_errors = false
     save @local
 

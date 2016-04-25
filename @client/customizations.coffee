@@ -2489,7 +2489,8 @@ customizations.bitcoin =
 
 
 
-
+customizations['ynpn'] = 
+  proposal_filters: false
 
 
 

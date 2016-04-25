@@ -61,6 +61,8 @@ class Subdomain < ActiveRecord::Base
   #      image covering the area
   #   logo
   #      A customer's logo. Shown in the footer if set. Isn't sized, just puts in whatever is uploaded. 
+  #   description
+  #      HTML description of the site, displayed in the default headers
   def branding_info
     brands = JSON.parse(self.branding || "{}")
 

@@ -72,10 +72,22 @@ window.DefaultHeader = ReactiveComponent
   render: -> 
     subdomain = fetch '/subdomain'   
 
-    if subdomain.branding.masthead
-      ImageHeader()
-    else
-      ShortHeader()
+    DIV null, 
+      if subdomain.branding.masthead
+        ImageHeader()
+      else
+        ShortHeader()
+
+      if subdomain.branding.homepage_text
+        DIV
+          style: 
+            marginTop: 40
+            width: CONTENT_WIDTH()
+            margin: '20px auto'
+            fontSize: 18
+          dangerouslySetInnerHTML: 
+            __html: subdomain.branding.homepage_text
+
 
 ###########################
 # A large header with an image background

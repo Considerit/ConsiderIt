@@ -1726,10 +1726,10 @@ customizations['collective'] =
   show_meta: false 
   proposal_filters: false 
 
-  "/cluster/contributions": 
+  "/cluster/Contributions": 
     slider_pole_labels: important_unimportant  
 
-  "/cluster/licenses":
+  "/cluster/Licenses":
     slider_pole_labels: yes_no
 
 #################

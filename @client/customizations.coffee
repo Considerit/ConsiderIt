@@ -302,6 +302,7 @@ important_unimportant =
     oppose_sub: ''
 
 
+
 yes_no = 
   individual: 
     support: 'Yes'
@@ -1718,6 +1719,18 @@ customizations['humanities-los'] =
 
   "cluster/Monuments 8-2" : monuments
   "cluster/Monuments 8-1" : monuments
+
+
+
+customizations['collective'] = 
+  show_meta: false 
+  proposal_filters: false 
+
+  "/cluster/contributions": 
+    slider_pole_labels: important_unimportant  
+
+  "/cluster/licenses":
+    slider_pole_labels: yes_no
 
 #################
 # RANDOM2015

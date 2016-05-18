@@ -2644,7 +2644,7 @@ customizations['on-chain-conf'] = _.extend {},
                   fontWeight: 600
                   fontSize: 20
 
-                'Upcoming, May 27-29: online conference about on-chain scaling'
+                'Upcoming, June 25-26: online conference about on-chain scaling'
 
               DIV 
                 style:

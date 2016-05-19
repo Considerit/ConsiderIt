@@ -2694,6 +2694,11 @@ customizations.dao = _.extend {},
 
   civility_pledge: true
 
+  proposal_tips: [
+    'Describe your idea in sufficient depth for others to evaluate it. The title is usually not enough.'
+    'Link to any contract code, external resources, or videos.'
+    'Link to any forum.daohub.org or /r/thedao where more free-form discussion about your idea is happening.'
+  ]
 
   'cluster/Scrapped proposals': 
     archived: true
@@ -2810,9 +2815,10 @@ customizations.dao = _.extend {},
               "If you vote strongly, add pro and con points that explain your reasoning, especially if you oppose."
               "Proposals lacking sufficient detail to evaluate should be mildly opposed."
               #"Take advantage of range voting. Don't go all-for or all-against something unless it's really the most important thing on the whole page."
+              "If you make a proposal, refine your proposals to address criticism."
               "If a proposal is updated, please update your opinion."
               "Proposing far-out stuff you have no intention of working on will only clutter the interface for others."
-              "Votes here are not official."
+              "Recognize that votes here are not official."
             ]
 
             DIV null, 

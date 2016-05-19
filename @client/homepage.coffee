@@ -305,6 +305,92 @@ Cluster = ReactiveComponent
           if customization('show_new_proposal_button')
             @drawAddNew cluster, options
 
+
+  drawTips : -> 
+    # guidelines/tips for good points
+    mobile = browser.is_mobile
+
+    guidelines_w = if mobile then 'auto' else 330
+    guidelines_h = 238
+
+    tips = customization('proposal_tips')
+
+    DIV 
+      style:
+        position: if mobile then 'relative' else 'absolute'
+        left: 512
+        width: guidelines_w
+        color: focus_blue
+        zIndex: 1
+        marginBottom: if mobile then 20
+        backgroundColor: if mobile then 'rgba(255,255,255,.85)'
+        fontSize: 14
+
+
+      if !mobile
+        SVG
+          width: guidelines_w + 28
+          height: guidelines_h
+          viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
+          style: css.crossbrowserify
+            position: 'absolute'
+            transform: 'scaleX(-1)'
+            left: -20
+
+          DEFS null,
+            svg.dropShadow 
+              id: "guidelines-shadow"
+              dx: '0'
+              dy: '2'
+              stdDeviation: "3"
+              opacity: .5
+
+          PATH
+            stroke: focus_blue #'#ccc'
+            strokeWidth: 1
+            fill: "#FFF"
+            filter: 'url(#guidelines-shadow)'
+
+            d: """
+                M#{guidelines_w},33
+                L#{guidelines_w},0
+                L1,0
+                L1,#{guidelines_h} 
+                L#{guidelines_w},#{guidelines_h} 
+                L#{guidelines_w},58
+                L#{guidelines_w + 20},48
+                L#{guidelines_w},33 
+                Z
+               """
+      DIV 
+        style: 
+          padding: if !mobile then '14px 18px'
+          position: 'relative'
+          marginLeft: 5
+
+        SPAN 
+          style: 
+            fontWeight: 600
+            fontSize: if PORTRAIT_MOBILE() then 70 else if LANDSCAPE_MOBILE() then 36
+          "Add new"
+
+        UL 
+          style: 
+            listStylePosition: 'outside'
+            marginLeft: 16
+            marginTop: 5
+
+          do ->
+            tips = customization('proposal_tips')
+
+            for tip in tips
+              LI 
+                style: 
+                  paddingBottom: 3
+                  fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
+                tip  
+
+
   drawAddNew : (cluster, options) -> 
     return SPAN null if cluster.name == 'Blocksize Survey'
 
@@ -351,6 +437,8 @@ Cluster = ReactiveComponent
         w = first_column.width - 50 + (if icons then -18 else 0)
         
         DIV null, 
+          if customization('proposal_tips')
+            @drawTips()
 
           if icons
             editor = current_user.user

@@ -286,6 +286,7 @@ Cluster = ReactiveComponent
       id: if cluster.name && cluster.name then cluster.name.toLowerCase()
       style: 
         paddingBottom: if !is_collapsed then 45
+        position: 'relative'
 
       @drawClusterHeading cluster, options, is_collapsed
 

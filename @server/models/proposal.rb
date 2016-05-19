@@ -70,6 +70,9 @@ class Proposal < ActiveRecord::Base
     elsif 
       proposals = subdomain.proposals.where(:hide_on_homepage => false)
       case subdomain.name.downcase
+        when 'dao'
+          manual_clusters = ['Proposed', 'Mature', 'Incubator', 'Incomplete']
+
         when 'on-chain-conf'
           manual_clusters = ['Events', 'On-chain scaling', 'Other topics'] 
 

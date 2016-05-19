@@ -2698,12 +2698,62 @@ customizations.dao = _.extend {},
     'Describe your idea in sufficient depth for others to evaluate it. The title is usually not enough.'
     'Link to any contract code, external resources, or videos.'
     'Link to any forum.daohub.org or /r/thedao where more free-form discussion about your idea is happening.'
+    'Take responsibility for improving your idea given feedback.'
   ]
 
-  'cluster/Scrapped proposals': 
+  'cluster/Incomplete': 
+    archived: true
+    description: 
+      DIV 
+        style: 
+          position: 'absolute'
+          top: 42
+          fontSize: 14
+          fontWeight: 400
+
+        'Drafts of ideas with substantial ambiguity'
+
+  'cluster/Incubator': 
+    archived: false
+    description: 
+      DIV 
+        style: 
+          position: 'absolute'
+          top: 42
+          fontSize: 14
+          fontWeight: 400
+
+        'Ideas with some traction and examination of tradeoffs'
+
+  'cluster/Mature': 
+    archived: false
+    description: 
+      DIV
+        style: 
+          position: 'absolute'
+          top: 42
+          fontSize: 14
+          fontWeight: 400
+
+        'Proposals with a community working toward real proposal'
+
+  'cluster/Proposed': 
+    archived: false
+    description: 
+      DIV 
+        style: 
+          position: 'absolute'
+          top: 42
+          fontSize: 14
+          fontWeight: 400
+
+        'Proposals submitted to The Dao\'s smart contract'
+
+
+  'cluster/Archived': 
     archived: true
 
-  'cluster/Drafts': 
+  'cluster/Funded': 
     archived: true
 
 

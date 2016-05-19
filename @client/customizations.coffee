@@ -2686,6 +2686,217 @@ customizations['on-chain-conf'].NonHomepageHeader = customizations['on-chain-con
 
 
 
+customizations.dao = _.extend {}, 
+  show_proposer_icon: true
+  collapse_descriptions_at: 300
+
+  proposal_filters: true
+
+  civility_pledge: true
+
+
+  'cluster/Scrapped proposals': 
+    archived: true
+
+  'cluster/Drafts': 
+    archived: true
+
+
+  HomepageHeader: ReactiveComponent 
+    displayName: 'HomepageHeader'
+
+    render: ->
+      homepage = true # fetch('location').url == '/'
+
+      DIV
+        style:
+          position: 'relative'
+          background: "linear-gradient(-45deg, #7474BF, #348AC7)"
+          paddingBottom: 20
+
+
+        onMouseEnter: => @local.hover=true;  save(@local)
+        onMouseLeave: => @local.hover=false; save(@local)
+
+
+
+
+        STYLE null,
+          '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
+             p {margin-bottom: 1em}'''
+
+        # LINK
+        #   href: "http://fonts.googleapis.com/css?family=Montserrat:200,300,400,500,700"
+        #   rel: 'stylesheet'
+        #   type: 'text/css'
+
+        DIV 
+          style: 
+            marginLeft: 70
+          SPAN
+            style:
+              display: 'inline-block'
+              visibility: if fetch('location').url == '/' then 'hidden'
+              color: '#ccc'
+              position: 'relative'
+              left: -60
+              top: 4
+              fontSize: 43
+              fontWeight: 400
+              paddingLeft: 25 # Make the clickable target bigger
+              paddingRight: 25 # Make the clickable target bigger
+              cursor: if fetch('location').url != '/' then 'pointer'
+            onClick: if fetch('location').url != '/' then => loadPage('/')
+
+            '<'
+
+
+          # Logo
+          A
+            href: if homepage then 'https://forum.daohub.org/c/theDAO' else '/'
+
+
+            IMG
+              style:
+                height: 30
+                width: 30
+                marginLeft: -44
+                marginRight: 10
+                marginTop: -10
+                verticalAlign: 'middle'
+
+              src: asset('ethereum/the_dao.jpg')
+
+            SPAN 
+              style:
+                #fontFamily: "Montserrat, 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+                fontSize: 24
+                color: 'white'
+                fontWeight: 500
+
+              "The DAO"
+
+        SPAN
+          style:
+            display: 'inline-block'
+            visibility: if fetch('location').url == '/' then 'hidden'
+            color: '#ccc'
+            position: 'absolute'
+            left: 0
+            bottom: -70
+            fontSize: 43
+            fontWeight: 400
+            paddingLeft: 25 # Make the clickable target bigger
+            paddingRight: 25 # Make the clickable target bigger
+            cursor: if fetch('location').url != '/' then 'pointer'
+          onClick: if fetch('location').url != '/' then => loadPage('/')
+
+          '<'
+
+
+
+        # The top bar with the logo
+        DIV
+          style:
+            width: HOMEPAGE_WIDTH()
+            margin: 'auto'
+
+
+
+          if homepage
+
+            tips = [
+              "Read a proposal carefully before voting strongly; otherwise only indicate slight support or opposition."
+              "If you vote strongly, add pro and con points that explain your reasoning, especially if you oppose."
+              "Proposals lacking sufficient detail to evaluate should be mildly opposed."
+              #"Take advantage of range voting. Don't go all-for or all-against something unless it's really the most important thing on the whole page."
+              "If a proposal is updated, please update your opinion."
+              "Proposing far-out stuff you have no intention of working on will only clutter the interface for others."
+              "Votes here are not official."
+            ]
+
+            DIV null, 
+
+              DIV 
+                style: 
+                  #backgroundColor: '#eee'
+                  # marginTop: 10
+                  padding: "0 8px"
+                  fontSize: 42
+                  fontWeight: 300
+                  color: 'white'
+                  marginTop: 10
+                
+                'Vet Proposals for The DAO'            
+
+              DIV 
+                style: 
+                  #backgroundColor: '#eee'
+                  # marginTop: 10
+                  padding: "0 8px"
+                  fontSize: 18
+                  color: 'white'
+                  marginTop: 40
+                  opacity: .7
+
+                "Tips for keeping this space productive: "
+ 
+                UL 
+                  style: 
+                    listStyle: 'outside'
+                    paddingLeft: 40
+                    marginTop: 10
+
+                  for tip in tips 
+                    LI 
+                      style: {}
+                      tip
+
+              DIV 
+                style: 
+                  marginTop: 10
+                  padding: 8
+                  fontSize: 18
+                  color: '#eee'
+                  opacity: .7
+
+                  #fontFamily: "Montserrat, 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+
+                "Moderators are (1) categorizing proposals based on their maturity and (2) archiving older proposals."
+
+
+              DIV 
+                style: 
+                  backgroundColor: 'white'
+                  marginTop: 20
+                  marginBottom: 20
+                  padding: 8
+                  fontSize: 18
+                  color: 'black'
+                  opacity: .5
+                  display: 'inline-block'
+
+                "Meta discussion about dao.consider.it at "
+
+                A 
+                  href: 'https://thedao.slack.com/messages/dao_consider_it/'
+                  target: '_blank'
+                  style: 
+                    #textDecoration: 'underline'
+                    color: '#EC4246'
+                    fontWeight: 600
+
+                  "#dao_consider_it"
+                ' on The Dao\'s Slack.'
+
+
+
+        ProfileMenu()
+
+
+customizations.dao.NonHomepageHeader = customizations.dao.HomepageHeader
+
+
 
 
 

@@ -1,3 +1,5 @@
+require 'cgi'
+
 class HtmlController < ApplicationController
   respond_to :html
   before_action :verify_user
@@ -118,6 +120,10 @@ class HtmlController < ApplicationController
       description = proposal.seo_description || "What do you think? #{proposal.description || proposal.name}"
       description = ActionView::Base.full_sanitizer.sanitize description
       keywords = proposal.seo_keywords if proposal.seo_keywords
+
+      @proposal = proposal
+      @host = current_subdomain.host_with_port
+      @oembed_url = CGI.escape "https://" + @host + "/" + @proposal.slug + "?results=true"
     end
 
     meta = [

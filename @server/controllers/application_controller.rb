@@ -32,17 +32,18 @@ class ApplicationController < ActionController::Base
   end
 
   def render(*args)
+    unless @skip_dirty 
+      dirty_key '/application'
 
-    dirty_key '/application'
-
-    # if there are dirtied keys, we'll append the corresponding data to the response
-    if current_subdomain && Thread.current[:dirtied_keys].keys.length > 0
-      for arg in args
-        if arg.is_a?(::Hash) && arg.has_key?(:json)
-          if arg[:json].is_a?(::Hash)
-            arg[:json] = [arg[:json]]
+      # if there are dirtied keys, we'll append the corresponding data to the response
+      if current_subdomain && Thread.current[:dirtied_keys].keys.length > 0
+        for arg in args
+          if arg.is_a?(::Hash) && arg.has_key?(:json)
+            if arg[:json].is_a?(::Hash)
+              arg[:json] = [arg[:json]]
+            end
+            arg[:json] += compile_dirty_objects()
           end
-          arg[:json] += compile_dirty_objects()
         end
       end
     end

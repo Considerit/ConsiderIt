@@ -1,4 +1,5 @@
 require 'cgi'
+require 'uri'
 
 class OembedController < ApplicationController
   respond_to :html
@@ -17,20 +18,15 @@ class OembedController < ApplicationController
     format = params[:format] or 'json'  # need to support xml too
 
     url = CGI.unescape params[:url]
-    slug = /\/\/[\d\w.]+\/([\d\w\-_]+)/.match(url)[1]
+    slug = /\/\/[\d\w.:]+\/([\d\w\-_]+)/.match(url)[1]
     proposal = Proposal.find_by_slug slug
 
-    subdomain = proposal.subdomain
 
-    if url.match('localhost')
-      protocol = 'http'
-      host = 'localhost:3000'
-    else 
-      protocol = 'https'
-      host = subdomain.host_with_port
-    end
+    u = URI.parse(params[:url])
 
-    embed_src = "#{protocol}://#{host}/embed/proposal/#{proposal.slug}"
+    port = u.port != 80 && u.port != 443 ? ":#{u.port}" : ''
+    pp u, u.scheme, u.host, u.port
+    embed_src = "#{u.scheme}://#{u.host}#{port}/embed/proposal/#{proposal.slug}"
 
     # todo: access permission
 

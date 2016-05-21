@@ -18,6 +18,7 @@ window.OpinionSlider = ReactiveComponent
   displayName: 'OpinionSlider'
 
   render : ->
+    @proposal ||= fetch(@props.proposal)
     slider = fetch @props.key
     your_opinion = fetch @props.your_opinion
 

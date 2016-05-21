@@ -127,24 +127,24 @@ class HtmlController < ApplicationController
     end
 
     meta = [
-      # { :name => 'title', :content => title },
-      # { :name => 'twitter:title', :content => title },
-      # { :property => 'http://ogp.me/ns#title', :content => title },
+      { :name => 'title', :content => title },
+      { :name => 'twitter:title', :content => title },
+      { :property => 'http://ogp.me/ns#title', :content => title },
 
-      # { :name => 'description', :content => description },
-      # { :name => 'twitter:description', :content => description },
-      # { :property => 'http://ogp.me/ns#description', :content => description },
+      { :name => 'description', :content => description },
+      { :name => 'twitter:description', :content => description },
+      { :property => 'http://ogp.me/ns#description', :content => description },
 
       { :name => 'keywords', :content => keywords },
 
-      # { :property => 'http://ogp.me/ns#url', :content => request.original_url() },
-      # { :property => 'http://ogp.me/ns#image', :content => image },
+      { :property => 'http://ogp.me/ns#url', :content => request.original_url() },
+      { :property => 'http://ogp.me/ns#image', :content => image },
 
-      # { :property => 'http://ogp.me/ns#type', :content => 'website' },
-      # { :property => 'http://ogp.me/ns#site_name', :content => (current_subdomain.app_title or "#{current_subdomain.name} discussion") },
+      { :property => 'http://ogp.me/ns#type', :content => 'website' },
+      { :property => 'http://ogp.me/ns#site_name', :content => (current_subdomain.app_title or "#{current_subdomain.name} discussion") },
 
-      # { :name => 'twitter:card', :content => 'summary' },
-      # { :property => 'https://www.facebook.com/2008/fbml#app_id', :content => fb_app_id }
+      { :name => 'twitter:card', :content => 'summary' },
+      { :property => 'https://www.facebook.com/2008/fbml#app_id', :content => fb_app_id }
 
     ]
 

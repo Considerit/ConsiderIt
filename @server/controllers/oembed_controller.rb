@@ -1,3 +1,5 @@
+require 'cgi'
+
 class OembedController < ApplicationController
   respond_to :html
   
@@ -8,10 +10,20 @@ class OembedController < ApplicationController
 
     format = params[:format] or 'json'  # need to support xml too
 
+    url = CGI.unescape params[:url]
+    # pp /\/\/[\d\w.]+\/([\d\w]+)/.match(url)
+    # pp /\/\/[\d\w.]+\/([\d\w]+)/.match(url)[1]
+    slug = /\/\/[\d\w.]+\/([\d\w\-_]+)/.match(url)[1]
+    proposal = Proposal.find_by_slug slug
+
+    # todo: access permission
+
+    pp proposal
+
     resp = {
       :version => '1.0',
-      :title => 'TEST',
-      :author_name => 'test',
+      :title => proposal.name,
+      :author_name => proposal.user.name,
       :provider_url => 'https://consider.it',
       :provider_name => 'Consider.it',
       :type => 'rich',
@@ -26,13 +38,17 @@ class OembedController < ApplicationController
 
     @skip_dirty = true
 
+
+    ActiveSupport.escape_html_entities_in_json = false
+
     respond_to do |format|
       format.html { render :json => resp.to_json }
       format.json { render :json => resp.to_json }
       format.xml  { render :xml => resp }
     end 
 
-    
+    ActiveSupport.escape_html_entities_in_json = true
+  
   end
 
 

@@ -69,21 +69,20 @@ ProposalDescription = ReactiveComponent
 
         @proposal.name
 
-        if customization('show_meta')
-          DIV 
-            style: 
-              fontSize: 12
-              color: "#888"
-              fontStyle: 'italic'
-              paddingTop: 0
+        DIV 
+          style: 
+            fontSize: 12
+            color: "#888"
+            fontStyle: 'italic'
+            paddingTop: 0
 
-            prettyDate(@proposal.created_at)
+          prettyDate(@proposal.created_at)
 
-            if (editor = proposal_editor(@proposal)) && editor == @proposal.user
-              SPAN 
-                style: {}
+          if (editor = proposal_editor(@proposal)) && editor == @proposal.user
+            SPAN 
+              style: {}
 
-                " by #{fetch(editor)?.name}"
+              " by #{fetch(editor)?.name}"
 
       # DIV
       #   className: 'proposal_details'
@@ -131,9 +130,6 @@ Proposal = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
-
-    console.log "FETCHING", @proposal
-
     @proposal = fetch @props.key
 
     return LOADING_INDICATOR if !@proposal.name
@@ -146,50 +142,44 @@ Proposal = ReactiveComponent
         width: width
         backgroundColor: 'white'
         border: '1px solid #ccc'
-        borderRadius: 16
-        padding: '20px 20px'
-
+        borderRadius: '16px 16px 18px 18px'
 
 
       Avatars()
       Tooltip()
 
-      ProposalDescription 
-        proposal: @proposal 
-        width: width
+      DIV 
+        style: 
+          padding: '20px 20px'
+
+        ProposalDescription 
+          proposal: @proposal 
+          width: width
+
+        DIV 
+          style: 
+            position: 'relative'
+            zIndex: 1
+            margin: 'auto'
+            width: histo_width
+              
+          Histogram
+            key: namespaced_key('histogram', @proposal)
+            proposal: @proposal
+            opinions: opinionsForProposal(@proposal)
+            width: histo_width
+            height: 80
+            enable_selection: false
+            backgrounded: false
+            draw_base_labels: true 
+            draw_base: true
 
       DIV 
         style: 
-          position: 'relative'
-          zIndex: 1
-          margin: 'auto'
-          width: histo_width
-            
-        Histogram
-          key: namespaced_key('histogram', @proposal)
-          proposal: @proposal
-          opinions: opinionsForProposal(@proposal)
-          width: histo_width
-          height: 80
-          enable_selection: false
-          backgrounded: false
-          draw_base_labels: true 
-          draw_base: true
+          backgroundColor: logo_red 
+          borderRadius: '0 0 16px 16px'
 
-
-        # OpinionSlider
-        #   key: namespaced_key('slider', @proposal)
-        #   width: histo_width - 10
-        #   your_opinion: @proposal.your_opinion
-        #   proposal: @proposal
-        #   focused: false
-        #   backgrounded: false
-        #   permitted: false
-        #   pole_labels: [ \
-        #     [customization("slider_pole_labels.group.oppose", @proposal),
-        #      customization("slider_pole_labels.group.oppose_sub", @proposal)], \
-        #     [customization("slider_pole_labels.group.support", @proposal),
-        #      customization("slider_pole_labels.group.support_sub", @proposal)]]
+        'hi'          
 
 
 

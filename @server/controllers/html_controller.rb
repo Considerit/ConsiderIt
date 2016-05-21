@@ -179,7 +179,6 @@ class HtmlController < ApplicationController
 
       { :name => 'twitter:card', :content => 'summary' },
       { :property => 'https://www.facebook.com/2008/fbml#app_id', :content => fb_app_id }
-
     ]
 
     if google_verification

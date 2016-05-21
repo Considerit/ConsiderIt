@@ -18,8 +18,6 @@ class OembedController < ApplicationController
 
     # todo: access permission
 
-    pp proposal
-
     resp = {
       :version => '1.0',
       :title => proposal.name,
@@ -29,14 +27,13 @@ class OembedController < ApplicationController
       :type => 'rich',
       :width => width,
       :height => height,
-      :html => """
-        <iframe> 
+      :html => """<iframe> 
           Hello world!
-        </iframe>
+      </iframe>
       """
     }
 
-    @skip_dirty = true
+    @oembed_request = true
 
 
     ActiveSupport.escape_html_entities_in_json = false

@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   set_current_tenant_through_filter
   prepend_before_action :get_current_subdomain
   before_action :init_thread_globals
-  before_action :allow_iframe_requests
+  after_action :allow_iframe_requests
 
   rescue_from PermissionDenied do |exception|
     result = { :permission_denied => exception.reason } 

@@ -17,7 +17,7 @@
       - if @proposal
 
         - ['json', 'xml'].each do |format| 
-          %link{ :rel => 'alternate', :title => format + " oEmbed Profile", :type => "application/" + format + "+oembed", :href => 'https://' + @host + "/oembed." + format + "?url=" + @oembed_url + "&format=" + format}
+          %link{ :rel => 'alternate', :title => format + " oEmbed Profile", :type => "#{format=='json' ? 'application' : 'text'}/#{format}+oembed", :href => "https://#{@host}/oembed.#{format}?url=#{@oembed_url}&format=#{format}"}
 
       - @meta.each do |meta|
         - if meta[:content]

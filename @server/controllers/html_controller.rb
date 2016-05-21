@@ -76,6 +76,8 @@ class HtmlController < ApplicationController
 
   def proposal_embed
 
+    @oembed_request = true
+
     # if someone has accessed a non-existent subdomain or the mime type isn't HTML (must be accessing a nonexistent file)
     @proposal = Proposal.find_by_slug params[:slug]
 

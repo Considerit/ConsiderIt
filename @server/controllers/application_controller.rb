@@ -32,7 +32,7 @@ class ApplicationController < ActionController::Base
   end
 
   def render(*args)
-    unless @skip_dirty 
+    unless @oembed_request 
       dirty_key '/application'
 
       # if there are dirtied keys, we'll append the corresponding data to the response
@@ -338,7 +338,7 @@ protected
   def allow_iframe_requests
     enable_iframing = ['allsides', 'enviroissues']
 
-    if current_tenant && enable_iframing.include?(current_tenant.name)
+    if current_tenant && (enable_iframing.include?(current_tenant.name) || @oembed_request)
       response.headers.delete('X-Frame-Options')
     end
   end  

@@ -5,9 +5,15 @@ class OembedController < ApplicationController
   
   def show
 
-    width = maxwidth = params[:maxwidth] or 600
-    height = maxheight = params[:maxheight] or 400
-
+    width = maxwidth = params[:maxwidth] 
+    if !width
+      width = 600
+    end
+    height = maxheight = params[:maxheight] 
+    if !height 
+      height = 400
+    end
+    
     format = params[:format] or 'json'  # need to support xml too
 
     url = CGI.unescape params[:url]

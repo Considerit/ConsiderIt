@@ -13,7 +13,7 @@ class OembedController < ApplicationController
     if !height 
       height = 400
     end
-    
+
     format = params[:format] or 'json'  # need to support xml too
 
     url = CGI.unescape params[:url]
@@ -34,7 +34,11 @@ class OembedController < ApplicationController
       :width => width,
       :height => height,
       :html => """<iframe> 
-          Hello world!
+          <html> 
+            <body> 
+              Hello world!
+            </body>
+          </html>
       </iframe>
       """
     }

@@ -12,7 +12,8 @@ class OembedController < ApplicationController
     authorize! "read proposal", proposal
 
     width = params[:maxwidth].to_i
-    width = 700 if !width || width > 700 
+
+    width = 700 if width == 0 || !width || width > 700 
 
     # don't actually support height. Twitter doesn't either :)
     # https://dev.twitter.com/rest/reference/get/statuses/oembed

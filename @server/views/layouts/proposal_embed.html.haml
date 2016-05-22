@@ -8,7 +8,8 @@
 
     %meta{ :http_equiv => "X-UA-Compatible", :content => "IE=edge,chrome=1" }
 
-    %meta{ :name => "app", :content => 'proposal_embed', :proposal => "/proposal/#{@proposal.id}"}
+    - if !@not_found && @proposal 
+      %meta{ :name => "app", :content => 'proposal_embed', :proposal => "/proposal/#{@proposal.id}"}
 
     %link{ :href => "//fast.fonts.net/cssapi/cd97b194-90f2-4567-be7e-3a72011995f3.css",  :rel => 'stylesheet', :type => 'text/css' }
 
@@ -17,7 +18,7 @@
         window.location = "http://windows.microsoft.com/en-us/internet-explorer/download-ie";
       
   %body
-    - if @not_found
+    - if @not_found || !@proposal
       #nope{style: "padding: 20px; color: #555"}
         Sorry, we cannot find that proposal. It may not exist, or perhaps you don't have permission to access it.
     - else 

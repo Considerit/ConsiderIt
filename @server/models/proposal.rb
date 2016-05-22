@@ -89,6 +89,10 @@ class Proposal < ActiveRecord::Base
         when 'seattle2035'
           manual_clusters = ['Key Proposals', 'Big Changes', 'Overall']
 
+        when 'hala'
+          manual_clusters = ['Minimize Displacement', 'Fair Chance Housing', 'Housing Options and Community Assets', 'Transitions', 'Urban Design Quality']
+
+
         when 'monitorinstitute'
           manual_clusters = ['Intellectual Agenda Items', 'Overall']
 

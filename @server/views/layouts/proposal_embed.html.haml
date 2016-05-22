@@ -17,20 +17,23 @@
         window.location = "http://windows.microsoft.com/en-us/internet-explorer/download-ie";
       
   %body
+    - if @not_found
+      #nope{style: "padding: 20px; color: #555"}
+        Sorry, we cannot find that proposal. It may not exist, or perhaps you don't have permission to access it.
+    - else 
+      #content{ subdomain: current_subdomain.name }
 
-    #content.content{ subdomain: current_subdomain.name }
-
-    :javascript
-      if(!window.console) {
-        window.console={
-          log : function(){},
-          assert : function(){},
-          info : function(){},
-          warn : function(){},
-          error : function(){},
-          time : function(){},
-          timeEnd : function(){}
+      :javascript
+        if(!window.console) {
+          window.console={
+            log : function(){},
+            assert : function(){},
+            info : function(){},
+            warn : function(){},
+            error : function(){},
+            time : function(){},
+            timeEnd : function(){}
+          }
         }
-      }
 
-    %script{:src => @js, :type => 'text/javascript'}
+      %script{:src => @js, :type => 'text/javascript'}

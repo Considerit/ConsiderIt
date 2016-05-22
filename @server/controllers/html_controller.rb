@@ -73,38 +73,6 @@ class HtmlController < ApplicationController
 
 
 
-
-  def proposal_embed
-
-    @oembed_request = true
-
-    # if someone has accessed a non-existent subdomain or the mime type isn't HTML (must be accessing a nonexistent file)
-    @proposal = Proposal.find_by_slug params[:slug]
-
-    if !@proposal || !current_subdomain || request.format.to_s != 'text/html' || request.fullpath.include?('data:image')
-      render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
-      return
-    end
-
-    manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
-
-    if Rails.application.config.action_controller.asset_host
-      @js = "#{Rails.application.config.action_controller.asset_host}/#{manifest['proposal_embed']}"
-    else 
-      @js = "/#{manifest['proposal_embed']}"
-    end
-
-    dirty_key '/asset_manifest'
-    response.headers["Strict Transport Security"] = 'max-age=0'
-
-    render "layouts/proposal_embed", :layout => false
-  end
-
-
-
-
-
-
   private
 
 

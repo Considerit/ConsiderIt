@@ -1,4 +1,3 @@
-require 'cgi'
 require 'uri'
 
 class OembedController < ApplicationController
@@ -6,29 +5,37 @@ class OembedController < ApplicationController
   
   def show
 
-    width = maxwidth = params[:maxwidth] 
-    if !width
-      width = 600
-    end
-    height = maxheight = params[:maxheight] 
-    if !height 
-      height = 400
-    end
-
-    format = params[:format] or 'json'  # need to support xml too
-
-    url = CGI.unescape params[:url]
-    slug = /\/\/[\d\w.:]+\/([\d\w\-_]+)/.match(url)[1]
+    u = URI.parse(params[:url])
+    slug = u.path.gsub /\//, '' 
     proposal = Proposal.find_by_slug slug
 
+    authorize! "read proposal", proposal
 
-    u = URI.parse(params[:url])
+    width = params[:maxwidth].to_i
+    width = 700 if !width || width > 700 
+
+    # don't actually support height. Twitter doesn't either :)
+    # https://dev.twitter.com/rest/reference/get/statuses/oembed
+    height = 320
+
+    format = params[:format] or 'json'
+
+
 
     port = u.port != 80 && u.port != 443 ? ":#{u.port}" : ''
-    pp u, u.scheme, u.host, u.port
     embed_src = "#{u.scheme}://#{u.host}#{port}/embed/proposal/#{proposal.slug}"
 
-    # todo: access permission
+    attrs = {
+      :src => embed_src,
+      :width => width,
+      :frameborder => 0,
+      :style => "overflow:hidden"
+    }
+
+    attributes = []
+    attrs.each do |k,v|
+      attributes.append "#{k}='#{v}'"
+    end
 
     resp = {
       :version => '1.0',
@@ -39,11 +46,10 @@ class OembedController < ApplicationController
       :type => 'rich',
       :width => width,
       :height => height,
-      :html => "<iframe style='border:none; outline:none;' width='#{width}' height='#{height}' src='#{embed_src}'></iframe>"
+      :html => "<iframe #{attributes.join(' ')}></iframe>"
     }
 
     @oembed_request = true
-
 
     ActiveSupport.escape_html_entities_in_json = false
 
@@ -58,5 +64,33 @@ class OembedController < ApplicationController
   end
 
 
+  def proposal_embed
+
+    @oembed_request = true
+
+    # if someone has accessed a non-existent subdomain or the mime type isn't HTML (must be accessing a nonexistent file)
+    @proposal = Proposal.find_by_slug params[:slug]
+
+    if !@proposal || permit("read proposal", @proposal) < 0 || !current_subdomain || request.format.to_s != 'text/html' || request.fullpath.include?('data:image')
+      @not_found = true
+    end
+
+    manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
+
+    if Rails.application.config.action_controller.asset_host
+      @js = "#{Rails.application.config.action_controller.asset_host}/#{manifest['proposal_embed']}"
+    else 
+      @js = "/#{manifest['proposal_embed']}"
+    end
+
+    dirty_key '/asset_manifest'
+    response.headers["Strict Transport Security"] = 'max-age=0'
+
+    render "layouts/proposal_embed", :layout => false
+  end
+
+  def allow_iframe_requests
+    response.headers.delete('X-Frame-Options')
+  end  
 
 end

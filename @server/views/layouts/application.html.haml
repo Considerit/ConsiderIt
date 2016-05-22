@@ -16,7 +16,7 @@
       // oEmbed 
       - if @proposal
 
-        - ['xml'].each do |format| 
+        - ['xml', 'json'].each do |format| 
           %link{ :rel => 'alternate', :title => format + " oEmbed Profile", :type => "#{format=='json' ? 'application' : 'text'}/#{format}+oembed", :href => "https://#{@host}/oembed.#{format}?url=#{@oembed_url}"}
 
       - @meta.each do |meta|

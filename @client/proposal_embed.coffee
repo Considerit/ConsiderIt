@@ -1,19 +1,14 @@
-require './element_viewport_positioning'
+# require './element_viewport_positioning'
 
 # require './vendor/jquery.touchpunch'
 
-require './vendor/modernizr' 
+# require './vendor/modernizr' 
 require './activerest-m'
 require './avatar'
 require './browser_hacks'
-# require './browser_location'
 require './bubblemouth'
 require './customizations'
 require './histogram'
-# require './roles'
-# require './filter'
-# require './tags'
-# require './homepage'
 require './shared'
 require './tooltip'
 require './translations'
@@ -36,9 +31,6 @@ proposal_url = (proposal, results) ->
 window.opinionsForProposal = (proposal) ->       
   filter_func = customization("homie_histo_filter", proposal)
   opinions = fetch(proposal).opinions || []
-  # We'll only pass SOME opinions to the histogram
-  opinions = (opinion for opinion in opinions when \
-               !filter_func or filter_func(fetch(opinion.user)))
   opinions
 
 
@@ -52,13 +44,20 @@ ProposalDescription = ReactiveComponent
       @local.description_collapsed = true
       save(@local)
 
+
+    if @proposal.description?.length > 0 
+
+      div = document.createElement("div");
+      div.innerHTML = @proposal.description
+      len = div.innerText.trim().length
+
     DIV           
       style: 
         width: @props.width - 50
         position: 'relative'
         margin: 'auto'
         fontSize: 16
-        marginBottom: 18
+        marginBottom: 40
 
 
       # Proposal name
@@ -68,7 +67,7 @@ ProposalDescription = ReactiveComponent
           lineHeight: 1.2
           fontWeight: 700
           fontSize: 24
-          paddingBottom: 15
+          paddingBottom: if len > 0 then 15
 
         A 
           href: proposal_url(@proposal, true) 
@@ -91,15 +90,8 @@ ProposalDescription = ReactiveComponent
               style: {}
 
               " by #{fetch(editor)?.name}"
-
-      # DIV
-      #   className: 'proposal_details'
-      #   style:
-      #     position: 'relative'
-      #     maxHeight: if @local.description_collapsed then @max_description_height
-      #     overflow: if @local.description_collapsed then 'hidden'
         
-      if @local.description_collapsed && @proposal.description?.length > 100
+      if @local.description_collapsed && @proposal.description?.length > 100        
         DIV
           style:
             backgroundColor: '#f9f9f9'
@@ -119,19 +111,19 @@ ProposalDescription = ReactiveComponent
             @local.description_collapsed = false
             save(@local)
           'Show details'
-      else 
+      else if @proposal.description?.length > 0 && len > 0 
         DIV
           className: 'proposal_details'
           style: 
-            padding: '5px 0 20px 0'
+            paddingTop: 5
 
           DIV dangerouslySetInnerHTML:{__html: @proposal.description}
       
 
   componentDidUpdate : ->
-    subdomain = fetch('/subdomain')
-    if subdomain.name == 'RANDOM2015' && @local.description_fields && $('#description_fields').find('.MathJax').length == 0
-      MathJax.Hub.Queue(["Typeset",MathJax.Hub,"description_fields"])
+    window.frameElement.height = @getDOMNode().offsetHeight + 234
+    console.log "UPDATED TO ", window.frameElement.height
+
 
 
 
@@ -140,7 +132,6 @@ Proposal = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
-    console.log window, location
     @proposal = fetch @props.key
 
     return LOADING_INDICATOR if !@proposal.name

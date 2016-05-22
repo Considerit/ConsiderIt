@@ -504,7 +504,6 @@ customizations.default =
 
 
   auth: 
-    
     user_questions: []
 
   Homepage : SimpleHomepage
@@ -1313,6 +1312,488 @@ customizations['monitorinstitute'] =
 
               """This is the intro to the draft intellectual agenda. Please provide 
                  feedback on each proposed intellectual agenda item below."""
+
+
+################
+# seattle HALA
+
+hala_teal = "#0FB09A"
+hala_orange = '#FBAF3B'
+hala_magenta = '#CB2A5C'
+
+hala_section_heading = 
+  fontSize: 42
+  fontWeight: 300
+  color: hala_magenta
+  marginBottom: 5
+
+hala_section_description = 
+  fontSize: 18
+  fontWeight: 400 
+  #fontStyle: 'italic' 
+  color: '#666'
+
+hala_section_call_to_action = 
+  fontSize: 18
+  width: HOMEPAGE_WIDTH
+  marginBottom: 20
+  #fontStyle: 'italic'
+  color: '#666'
+
+hala_proposal_style = 
+  #color: "#444"
+  borderBottom: "1px solid #ddd"
+
+customizations['hala'] = 
+  point_labels : pro_con
+  slider_pole_labels : agree_disagree
+  homie_histo_title: "Opinions"
+  show_proposer_icon: false
+  show_meta: false 
+  civility_pledge: true
+  show_score: false
+  proposal_filters: false
+
+  proposal_style: hala_proposal_style
+  uncollapseable: true
+
+
+  "cluster/Minimize Displacement" : 
+
+          
+    homepage_label: 'Displacement proposal'
+    description: 
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Minimizing Displacement in Seattle"
+
+
+        DIV 
+          style: hala_section_description
+
+          """Displacement is happening throughout Seattle, and particular communities 
+             are at high risk of displacement. Data analysis and community outreach will 
+             help identify how growth may benefit or burden certain populations. We will 
+             use that data to make sure our strategies are reaching the communities most 
+             in need."""
+          DIV 
+            style: marginTop: 10
+
+            "What do you think of the following proposal?"
+
+
+  "cluster/Fair Chance Housing" : 
+    homepage_label: 'Proposals'    
+    description: 
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Fair Chance Housing legislation"
+
+
+        DIV 
+          style: hala_section_description
+
+          """An estimated one in every three adults in the United States has a criminal 
+             record, and nearly half of all children in the U.S. have one parent with a 
+             criminal record. Due to a rise in the use of criminal background checks during 
+             the tenant screening process, people with arrest and conviction records face 
+             major barriers to housing. Fair Chance Housing legislation can lessen some of 
+             the barriers with the following strategies."""
+
+          DIV 
+            style: marginTop: 10
+            
+            "What do you think of the following proposals?"
+
+
+  "cluster/Housing Options and Community Assets" : 
+    homepage_label: 'Proposals'    
+
+    description: 
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Mandatory Housing Affordability"
+
+
+        DIV 
+          style: hala_section_description
+
+          """Mandatory Housing Affordability (MHA) would require all new commercial and multifamily development either to 
+             include affordable housing on site or make an in-lieu payment for affordable 
+             housing using a State-approved approach. In exchange for the new affordable 
+             housing requirement, additional development capacity will be granted in 
+             the form of zoning changes. A community input process will help inform details 
+             and location of the zoning changes to implement MHA. The MHA program is a 
+             cornerstone of the Grand Bargain and is essential to achieving affordable 
+             housing goals of 6,000 new affordable units over ten years."""
+
+
+          DIV 
+            style: marginTop: 10
+            
+            "What do you think of the following proposed MHA principles?"
+
+
+  "cluster/Transitions" : 
+    homepage_label: 'Proposals'    
+
+    description: 
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Transitioning between high and low scale zones"
+
+
+        DIV 
+          style: hala_section_description
+
+          """When taller buildings are constructed in areas that are zoned for more density, 
+             neighboring buildings that are smaller sometimes feel out of place. Zoning 
+             regulations can plan for transitions between higher- and lower-scale zones as 
+             Seattle grows and accommodates new residents and growing families."""
+
+          DIV 
+            style: marginTop: 10
+            
+            "What do you think of the following proposals?"
+
+
+  "cluster/Urban Design Quality" : 
+    homepage_label: 'Proposals'    
+
+    description: 
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Design features for urban quality"
+
+
+        DIV 
+          style: hala_section_description
+
+          """As Seattle builds new housing, we want to know what design features are 
+             important to you. These elements address quality of life with design choices 
+             for new residential buildings and landscaping."""
+
+          DIV 
+            style: marginTop: 10
+            
+            "What do you think of the following proposals?"
+
+
+  auth: 
+
+    user_questions : [
+      { 
+        tag: 'zip.editable'
+        question: 'The zipcode where I live is'
+        input: 'text'
+        required: false
+        input_style: 
+          width: 85
+        validation: (zip) ->
+          return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip)
+      }, {
+        tag: 'age.editable'
+        question: 'My age is'
+        input: 'text'
+        input_style: 
+          width: 85        
+        required: false
+      }, {
+        tag: 'race.editable'
+        question: 'My race is'
+        input: 'text'
+        required: false
+      }, {
+      #   tag: 'hispanic.editable'
+      #   question: "I'm of Hispanic origin"
+      #   input: 'dropdown'
+      #   options:['No', 'Yes']
+      #   required: false
+      # }, {
+      #   tag: 'gender.editable'
+      #   question: "My gender is"
+      #   input: 'dropdown'
+      #   options:['Female', 'Male', 'Transgender', 'Other']
+      #   required: false
+      # }, {
+        tag: 'home.editable'
+        question: "My home is"
+        input: 'dropdown'
+        options:['Rented', 'Owned by me', 'Other']
+        required: false
+      }, {
+        tag: 'housing_type.editable'
+        question: "I live in"
+        input: 'dropdown'
+        options:['A house or townhome', 'An apartment or condo', 'A single room', 'I\'m homeless']
+        required: false
+      }
+
+
+
+     ]
+
+  additional_auth_footer: -> 
+
+    auth = fetch('auth')
+    if auth.ask_questions && auth.form in ['create account', 'create account via invitation', 'user questions']
+      return DIV 
+        style:
+          fontSize: 13
+          color: auth_text_gray
+          padding: '16px 0' 
+        """
+        We are collecting this information to find out if this tool is 
+        truly reaching the diverse population that reflects our city. Thank you!
+        """
+    else 
+      SPAN null, ''
+
+
+
+
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
+
+    render: ->
+
+      header_style = 
+        color: hala_teal
+        fontSize: 44
+        #fontWeight: 600
+        marginTop: 10
+
+      section_style = 
+        marginBottom: 20
+        color: 'black'
+
+      paragraph_heading_style = 
+        display: 'block'
+        #fontWeight: 600
+        fontSize: 28
+        color: hala_teal
+
+      paragraph_style = 
+        fontSize: 18
+
+      DIV
+        style:
+          position: 'relative'
+
+        A 
+          href: 'http://seattle.gov/hala'
+          target: '_blank'
+          style: 
+            display: 'block'
+            position: 'absolute'
+            top: 22
+            left: 20
+            color: "#0B4D92" #hala_magenta
+
+          I 
+            className: 'fa fa-chevron-left'
+            style: 
+              display: 'inline-block'
+              marginRight: 5
+
+          'seattle.gov/hala'
+
+
+        IMG
+          style: 
+            width: '100%'
+            display: 'block'
+            #paddingTop: 20
+
+          src: asset('hala/hala-header.png')
+
+
+        ProfileMenu()
+
+        DIV 
+          style: 
+            borderTop: "7px solid #{hala_teal}"
+            padding: '20px 0'
+            #marginTop: 50
+
+          DIV 
+            style: 
+              width: HOMEPAGE_WIDTH()
+              margin: 'auto'
+              display: 'none'
+
+
+            DIV 
+              style: header_style
+
+              'Let’s talk about how Seattle is changing'
+
+            DIV 
+              style: section_style
+
+              # SPAN 
+              #   style: paragraph_heading_style
+
+              #   'Seattle is one of the fastest growing cities in America.'
+              
+              SPAN 
+                style: paragraph_style
+                  
+                """
+                Seattle is one of the fastest growing cities in America, expecting to add 
+                120,000 people and 115,000 jobs by 2035. We must plan for how 
+                and where that growth occurs.
+                """
+
+            DIV 
+              style: section_style
+
+
+              SPAN 
+                style: paragraph_heading_style
+                'The Seattle 2035 draft plan addresses Seattle’s growth'
+              
+              SPAN 
+                style: paragraph_style
+                'We are pleased to present a '
+
+                A 
+                  target: '_blank'
+                  href: 'http://2035.seattle.gov'
+                  style: 
+                    textDecoration: 'underline'
+
+                  'Draft Plan'
+
+                """
+                   for public discussion. The Draft Plan contains hundreds of 
+                  policies that guide decisions about our city, including 
+                  Key Proposals for addressing growth and change. 
+                  These Key Proposals have emerged from conversations among 
+                  City agencies and through """
+                A 
+                  target: '_blank'
+                  href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2262500.pdf'
+                  style: 
+                    textDecoration: 'underline'
+
+                  'public input' 
+                '.'
+
+
+            DIV 
+              style: section_style
+
+              SPAN 
+                style: paragraph_heading_style
+                'We need your feedback on the Key Proposals in the Draft Plan'
+
+              SPAN 
+                style: paragraph_style
+
+                """
+                We have listed below some Key Proposals in the draft.
+                Do these Key Proposals make sense for Seattle over the coming twenty years? 
+                Please tell us by adding your opinion below. Your input will influence 
+                the Mayor’s Recommended Plan, 
+                """
+                A
+                  target: '_blank'
+                  href: 'http://2035.seattle.gov/about/faqs/#how-long'
+                  style: 
+                    textDecoration: 'underline'
+                  'coming in 2016 '
+                '!'
+
+            DIV 
+              style: 
+                #fontStyle: 'italic'
+                marginTop: 20
+                fontSize: 18
+                color: seattle2035_dark
+
+              DIV 
+                style: 
+                  marginBottom: 18
+                "Thanks for your time,"
+
+              A 
+                href: 'http://www.seattle.gov/dpd/cityplanning/default.htm'
+                target: '_blank'
+                style: 
+                  display: 'block'
+                  marginBottom: 8
+
+                IMG
+                  src: asset('seattle2035/DPD Logo.svg')
+                  style: 
+                    height: 70
+
+
+              DIV 
+                style: _.extend {}, section_style,
+                  margin: 0
+                  marginTop: 10
+                  fontSize: 18
+
+                'p.s. Email us at '
+                A
+                  href: "mailto:2035@seattle.gov"
+                  style: 
+                    textDecoration: 'underline'
+
+                  "2035@seattle.gov"
+                """
+                 if you would like us to add another Key Proposal below for 
+                discussion or you have a comment about another issue in the Draft Plan.
+                """
+
+              # DIV 
+              #   style: 
+              #     marginTop: 40
+              #     backgroundColor: hala_magenta
+              #     color: 'white'
+              #     fontSize: 28
+              #     textAlign: 'center'
+              #     padding: "30px 42px"
+
+              #   "The comment period is now closed. Thank you for your input!"
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2707,11 +3188,11 @@ customizations.dao = _.extend {},
       DIV 
         style: 
           position: 'absolute'
-          top: 42
+          top: 44
           fontSize: 14
           fontWeight: 400
 
-        'Drafts of ideas with substantial ambiguity'
+        'Ideas with substantial ambiguity'
 
   'cluster/Incubator': 
     archived: false
@@ -2719,11 +3200,11 @@ customizations.dao = _.extend {},
       DIV 
         style: 
           position: 'absolute'
-          top: 42
+          top: 44
           fontSize: 14
           fontWeight: 400
 
-        'Ideas with some traction and examination of tradeoffs'
+        'Ideas with some traction and critique'
 
   'cluster/Mature': 
     archived: false
@@ -2731,7 +3212,7 @@ customizations.dao = _.extend {},
       DIV
         style: 
           position: 'absolute'
-          top: 42
+          top: 44
           fontSize: 14
           fontWeight: 400
 
@@ -2743,7 +3224,7 @@ customizations.dao = _.extend {},
       DIV 
         style: 
           position: 'absolute'
-          top: 42
+          top: 44
           fontSize: 14
           fontWeight: 400
 

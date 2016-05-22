@@ -94,7 +94,7 @@ window.DefaultProposalNavigation = ReactiveComponent
           fontStyle: 'italic'
           visibility: if !@proposal.cluster then 'hidden'
 
-        if permit('update proposal', @proposal)
+        if permit('update proposal', @proposal) > 0
           INPUT 
             ref: 'cluster'
             name: 'cluster'

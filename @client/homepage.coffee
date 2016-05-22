@@ -48,14 +48,19 @@ window.proposal_editor = (proposal) ->
 
 
 
-cluster_keys = ['archived', 'label', 'description', 'homie_histo_title', \
+cluster_keys = ['archived', 'label', 'description', 'homie_histo_title',
                 'show_proposer_icon', 'slider_handle', 'slider_pole_labels', 
-                'slider_regions', 'slider_ticks', 'discussion', 'show_score']
+                'slider_regions', 'slider_ticks', 'discussion', 'show_score', 
+                'uncollapseable', 'cluster_header', 'homepage_label', 'proposal_style']
 
 cluster_options = (key) -> 
   options = {}
   for k in cluster_keys
     options[k] = customization k, key 
+
+  options.proposal_style = _.extend 
+    fontWeight: 500
+  , (customization('proposal_style', key))
   options
 
 
@@ -312,7 +317,7 @@ Cluster = ReactiveComponent
     mobile = browser.is_mobile
 
     guidelines_w = if mobile then 'auto' else 330
-    guidelines_h = 238
+    guidelines_h = 258
 
     tips = customization('proposal_tips')
 
@@ -562,6 +567,7 @@ Cluster = ReactiveComponent
   drawClusterHeading : (cluster, options, is_collapsed) -> 
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
 
+
     cluster_key = "cluster/#{cluster.name}"
 
     icons = options.show_proposer_icon
@@ -598,60 +604,69 @@ Cluster = ReactiveComponent
               options.description
 
       # Header of cluster
-      H1
-        style: _.extend {}, first_header, 
-          paddingLeft: if icons then 68 else 0, 
-          position: 'relative'
-          cursor: 'pointer'
 
-        onClick: -> 
-          if collapsed.clusters[cluster_key]
-            delete collapsed.clusters[cluster_key]
-          else 
-            collapsed.clusters[cluster_key] = 1 
-          save collapsed
+      if options.cluster_header
+        options.cluster_header()
+      else 
 
-
-        cluster.name || default_cluster_name
-
-        SPAN 
-          style: cssTriangle (if is_collapsed then 'right' else 'bottom'), 'black', tw, th,
-            position: 'absolute'
-            left: -tw - 20 + (if icons then 68 else 0)
-            bottom: 14
-            width: tw
-            height: th
-            display: 'inline-block'
-
-        if subdomain.name == 'RANDOM2015'
-          " (#{cluster.proposals.length})"
-
-      if !is_collapsed
-        H1
-          style: secnd_header
-          SPAN
-            style:
-              position: 'absolute'
-              bottom: -43
-              fontSize: 21
-              color: '#444'
-              fontWeight: 300
-            customization("slider_pole_labels.individual.oppose", cluster_key)
-          SPAN
-            style:
-              position: 'absolute'
-              bottom: -43
-              fontSize: 21
-              color: '#444'
-              right: 0
-              fontWeight: 300
-            customization("slider_pole_labels.individual.support", cluster_key)
-          SPAN 
-            style: 
+        DIV 
+          style: {}
+          H1
+            style: _.extend {}, first_header, 
+              paddingLeft: if icons then 68 else 0, 
               position: 'relative'
-              marginLeft: -(widthWhenRendered(options.homie_histo_title, 
-                           {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
-            options.homie_histo_title
+              cursor: if !options.uncollapseable then 'pointer'
+
+            onClick: -> 
+              if !options.uncollapseable
+                if collapsed.clusters[cluster_key]
+                  delete collapsed.clusters[cluster_key]
+                else 
+                  collapsed.clusters[cluster_key] = 1 
+                save collapsed
+
+
+            options.homepage_label || cluster.name || default_cluster_name
+
+            if !options.uncollapseable
+              SPAN 
+                style: cssTriangle (if is_collapsed then 'right' else 'bottom'), 'black', tw, th,
+                  position: 'absolute'
+                  left: -tw - 20 + (if icons then 68 else 0)
+                  bottom: 14
+                  width: tw
+                  height: th
+                  display: 'inline-block'
+
+            if subdomain.name == 'RANDOM2015'
+              " (#{cluster.proposals.length})"
+
+          if !is_collapsed
+            H1
+              style: secnd_header
+              SPAN
+                style:
+                  position: 'absolute'
+                  bottom: -43
+                  fontSize: 21
+                  color: '#444'
+                  fontWeight: 300
+                customization("slider_pole_labels.individual.oppose", cluster_key)
+              SPAN
+                style:
+                  position: 'absolute'
+                  bottom: -43
+                  fontSize: 21
+                  color: '#444'
+                  right: 0
+                  fontWeight: 300
+                customization("slider_pole_labels.individual.support", cluster_key)
+              SPAN 
+                style: 
+                  position: 'relative'
+                  marginLeft: -(widthWhenRendered(options.homie_histo_title, 
+                               {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
+                options.homie_histo_title
 
 
 
@@ -868,9 +883,8 @@ window.CollapsedProposal = ReactiveComponent
             marginTop: if icons then 0 #9
           A
             className: 'proposal proposal_homepage_name'
-            style: 
-              fontWeight: 500
-              #if not icons then {borderBottom: '1px solid grey'}
+            style: options.proposal_style
+              
             href: proposal_url(proposal)
 
             proposal.name

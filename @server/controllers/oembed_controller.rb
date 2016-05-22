@@ -21,8 +21,6 @@ class OembedController < ApplicationController
 
     format = params[:format] or 'json'
 
-
-
     port = u.port != 80 && u.port != 443 ? ":#{u.port}" : ''
     embed_src = "#{u.scheme}://#{u.host}#{port}/embed/proposal/#{proposal.slug}"
 

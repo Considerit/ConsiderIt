@@ -24,7 +24,11 @@ namespace :metrics do
         12 => 0
       },
       2016 => {
-        1 => 0
+        1 => 0,
+        2 => 0,
+        3 => 0,
+        4 => 0,
+        5 => 0
       }
     }
     subdomains.each do |subdomain|

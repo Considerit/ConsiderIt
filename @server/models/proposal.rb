@@ -71,7 +71,7 @@ class Proposal < ActiveRecord::Base
       proposals = subdomain.proposals.where(:hide_on_homepage => false)
       case subdomain.name.downcase
         when 'dao'
-          manual_clusters = ['Proposed', 'Mature', 'Incubator', 'Incomplete']
+          manual_clusters = ['New', 'Needs elaboration', 'Review', 'Proposed to DAO', 'Proposed', 'Mature', 'Incubator', 'Incomplete']
 
         when 'on-chain-conf'
           manual_clusters = ['Events', 'On-chain scaling', 'Other topics'] 
@@ -90,7 +90,7 @@ class Proposal < ActiveRecord::Base
           manual_clusters = ['Key Proposals', 'Big Changes', 'Overall']
 
         when 'hala'
-          manual_clusters = ['Minimize Displacement', 'Fair Chance Housing', 'Housing Options and Community Assets', 'Transitions', 'Urban Design Quality']
+          manual_clusters = ['Fair Chance Housing', 'Minimize Displacement', 'Transportation', 'Housing Options and Community Assets', 'Transitions', 'Urban Village Expansion Areas', 'Urban Design Quality', 'Historic Areas and Unique Conditions']
 
 
         when 'monitorinstitute'

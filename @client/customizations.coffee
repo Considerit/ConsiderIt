@@ -1320,6 +1320,7 @@ customizations['monitorinstitute'] =
 hala_teal = "#0FB09A"
 hala_orange = '#FBAF3B'
 hala_magenta = '#CB2A5C'
+hala_gray = '#666'
 
 hala_section_heading = 
   fontSize: 42
@@ -1331,14 +1332,14 @@ hala_section_description =
   fontSize: 18
   fontWeight: 400 
   #fontStyle: 'italic' 
-  color: '#666'
+  color: hala_gray
 
 hala_section_call_to_action = 
   fontSize: 18
   width: HOMEPAGE_WIDTH
   marginBottom: 20
   #fontStyle: 'italic'
-  color: '#666'
+  color: hala_gray
 
 hala_proposal_style = 
   #color: "#444"
@@ -1356,6 +1357,91 @@ customizations['hala'] =
 
   proposal_style: hala_proposal_style
   uncollapseable: true
+
+
+
+  "cluster/Transportation" : 
+
+          
+    homepage_label: 'Transportation proposal'
+    # description: 
+    #   DIV 
+    #     style: 
+    #       width: HOMEPAGE_WIDTH()
+
+    #     DIV 
+    #       style: hala_section_heading
+
+    #       "Transportation"
+
+
+    #     DIV 
+    #       style: hala_section_description
+
+    #       """Displacement is happening throughout Seattle, and particular communities 
+    #          are at high risk of displacement. Data analysis and community outreach will 
+    #          help identify how growth may benefit or burden certain populations. We will 
+    #          use that data to make sure our strategies are reaching the communities most 
+    #          in need."""
+    #       DIV 
+    #         style: marginTop: 10
+
+    #         "What do you think of the following proposal?"
+
+
+  "cluster/Urban Village Expansion Areas" : 
+
+          
+    homepage_label: 'Proposals'
+    description: 
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Urban Village Expansion Areas"
+
+
+        DIV 
+          style: hala_section_description
+
+          """Urban Villages are areas where Seattleites have decided growth is most appropriate. Some of 
+             these boundaries may be expanded to take advantage of the high density of amenities that 
+             currently exist in those areas."""
+          DIV 
+            style: marginTop: 10
+
+            "What do you think of the following proposals?"
+
+
+  "cluster/Historic Areas and Unique Conditions" : 
+
+          
+    homepage_label: 'Proposals'
+    description: 
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Historic Areas and Unique Conditions"
+
+
+        DIV 
+          style: hala_section_description
+
+          """Seattle has many historic areas, some on the National Register and some known to locals as 
+          places of historic or cultural significance. These areas can be tricky sites for new buildings 
+          and often require costly planning, design and construction."""
+          DIV 
+            style: marginTop: 10
+
+            "What do you think of the following proposals?"
+
 
 
   "cluster/Minimize Displacement" : 
@@ -1403,12 +1489,14 @@ customizations['hala'] =
         DIV 
           style: hala_section_description
 
-          """An estimated one in every three adults in the United States has a criminal 
+          """Fair Chance Housing legislation is aimed at increasing access to Housing for 
+             People with Criminal History. 
+             An estimated one in every three adults in the United States has a criminal 
              record, and nearly half of all children in the U.S. have one parent with a 
              criminal record. Due to a rise in the use of criminal background checks during 
              the tenant screening process, people with arrest and conviction records face 
-             major barriers to housing. Fair Chance Housing legislation can lessen some of 
-             the barriers with the following strategies."""
+             major barriers to housing. Fair Chance Housing legislation could lessen some of 
+             the barriers people face."""
 
           DIV 
             style: marginTop: 10
@@ -1439,7 +1527,19 @@ customizations['hala'] =
              housing requirement, additional development capacity will be granted in 
              the form of zoning changes. A community input process will help inform details 
              and location of the zoning changes to implement MHA. The MHA program is a 
-             cornerstone of the Grand Bargain and is essential to achieving affordable 
+             cornerstone of the """
+
+          A 
+            href: 'http://www.seattle.gov/hala/about'
+            target: '_blank'
+            style: 
+              color: hala_teal
+              textDecoration: 'underline'
+
+            'Grand Bargain' 
+
+
+          """ and is essential to achieving affordable 
              housing goals of 6,000 new affordable units over ten years."""
 
 
@@ -1600,6 +1700,9 @@ customizations['hala'] =
 
       paragraph_style = 
         fontSize: 18
+        color: hala_gray
+        paddingTop: 10
+        display: 'block'
 
       DIV
         style:
@@ -1645,30 +1748,33 @@ customizations['hala'] =
             style: 
               width: HOMEPAGE_WIDTH()
               margin: 'auto'
-              display: 'none'
 
+
+            # DIV 
+            #   style: header_style
+
+            #   'Let’s talk about housing affordability and livability'
 
             DIV 
-              style: header_style
-
-              'Let’s talk about how Seattle is changing'
-
-            DIV 
-              style: section_style
-
-              # SPAN 
-              #   style: paragraph_heading_style
-
-              #   'Seattle is one of the fastest growing cities in America.'
+              style: _.extend {}, section_style, 
+                color: hala_gray
               
-              SPAN 
-                style: paragraph_style
+              DIV  
+                style: _.extend {}, paragraph_style, 
+                  #fontSize: 22
+                  fontStyle: 'italic'
+                  margin: 'auto'
+                  padding: "40px 40px"
                   
                 """
-                Seattle is one of the fastest growing cities in America, expecting to add 
-                120,000 people and 115,000 jobs by 2035. We must plan for how 
-                and where that growth occurs.
+                “We are facing our worst housing affordability crisis in decades. My vision is a city where 
+                people who work in Seattle can afford to live here…We all share a responsibility in making Seattle 
+                affordable. Together, HALA will take us there.”
                 """
+                DIV  
+                  style: _.extend {}, paragraph_style, 
+                    paddingLeft: '70%'
+                  "– Mayor Ed Murray"
 
             DIV 
               style: section_style
@@ -1676,34 +1782,15 @@ customizations['hala'] =
 
               SPAN 
                 style: paragraph_heading_style
-                'The Seattle 2035 draft plan addresses Seattle’s growth'
+                """Your thoughts on the Housing Affordability and Livability Agenda (HALA) are key to securing quality, 
+                   affordable housing for Seattle for many years to come"""
               
               SPAN 
                 style: paragraph_style
-                'We are pleased to present a '
-
-                A 
-                  target: '_blank'
-                  href: 'http://2035.seattle.gov'
-                  style: 
-                    textDecoration: 'underline'
-
-                  'Draft Plan'
-
-                """
-                   for public discussion. The Draft Plan contains hundreds of 
-                  policies that guide decisions about our city, including 
-                  Key Proposals for addressing growth and change. 
-                  These Key Proposals have emerged from conversations among 
-                  City agencies and through """
-                A 
-                  target: '_blank'
-                  href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2262500.pdf'
-                  style: 
-                    textDecoration: 'underline'
-
-                  'public input' 
-                '.'
+                """HALA addresses Seattle’s housing affordability crisis on many fronts. As we take proposals from 
+                   idea to practice, we have been listening to the community to find out what matters to you. This 
+                  online conversation reflects the variety of what we’ve heard thus far and will continue to provide with 
+                  meaningful ideas on how to move forward."""
 
 
             DIV 
@@ -1711,31 +1798,29 @@ customizations['hala'] =
 
               SPAN 
                 style: paragraph_heading_style
-                'We need your feedback on the Key Proposals in the Draft Plan'
+                'We need your ideas to get HALA right'
 
               SPAN 
                 style: paragraph_style
 
                 """
-                We have listed below some Key Proposals in the draft.
-                Do these Key Proposals make sense for Seattle over the coming twenty years? 
-                Please tell us by adding your opinion below. Your input will influence 
-                the Mayor’s Recommended Plan, 
+                We have listed key recommendations below. This is an opportunity for you to shape the recommendations before they are finalized. Please tell us by adding your opinion below. 
                 """
-                A
-                  target: '_blank'
-                  href: 'http://2035.seattle.gov/about/faqs/#how-long'
-                  style: 
-                    textDecoration: 'underline'
-                  'coming in 2016 '
-                '!'
+
+              SPAN 
+                style: paragraph_style
+
+                """
+                As the year progresses, we will be looking at other new programs, so check back often to weigh in on them.
+                """
+
 
             DIV 
               style: 
                 #fontStyle: 'italic'
                 marginTop: 20
                 fontSize: 18
-                color: seattle2035_dark
+                #color: seattle2035_dark
 
               DIV 
                 style: 
@@ -1750,7 +1835,7 @@ customizations['hala'] =
                   marginBottom: 8
 
                 IMG
-                  src: asset('seattle2035/DPD Logo.svg')
+                  src: asset('hala/HALA Logo.svg')
                   style: 
                     height: 70
 
@@ -1763,15 +1848,21 @@ customizations['hala'] =
 
                 'p.s. Email us at '
                 A
-                  href: "mailto:2035@seattle.gov"
+                  href: "mailto:halainfo@seattle.gov"
                   style: 
                     textDecoration: 'underline'
 
-                  "2035@seattle.gov"
-                """
-                 if you would like us to add another Key Proposal below for 
-                discussion or you have a comment about another issue in the Draft Plan.
-                """
+                  "halainfo@seattle.gov"
+
+                ' or visit our website at '
+                A
+                  href: "http://seattle.gov/HALA"
+                  style: 
+                    textDecoration: 'underline'
+
+                  "seattle.gov/HALA"                  
+                ' if you have additional questions or want to know more.'
+
 
               # DIV 
               #   style: 
@@ -3181,6 +3272,31 @@ customizations.dao = _.extend {},
     'Link to any forum.daohub.org or /r/thedao where more free-form discussion about your idea is happening.'
     'Take responsibility for improving your idea given feedback.'
   ]
+
+  'cluster/New': 
+    archived: false
+    description: 
+      DIV 
+        style: 
+          position: 'absolute'
+          top: 44
+          fontSize: 14
+          fontWeight: 400
+
+        'Add new proposals here!'
+
+  'cluster/Needs elaboration': 
+    archived: true
+    description: 
+      DIV 
+        style: 
+          position: 'absolute'
+          top: 44
+          fontSize: 14
+          fontWeight: 400
+
+        'Ideas that need more description to evaluate'
+
 
   'cluster/Incomplete': 
     archived: false

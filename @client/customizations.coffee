@@ -3183,7 +3183,7 @@ customizations.dao = _.extend {},
   ]
 
   'cluster/Incomplete': 
-    archived: true
+    archived: false
     description: 
       DIV 
         style: 

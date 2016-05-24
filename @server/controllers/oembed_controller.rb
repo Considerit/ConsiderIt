@@ -45,7 +45,6 @@ class OembedController < ApplicationController
       :provider_name => 'Consider.it',
       :type => 'rich',
       :width => width,
-      :height => height,
       :html => """<iframe id='considerit-embed-#{proposal.id}' #{attributes.join(' ')}></iframe>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.3/iframeResizer.min.js'></script>
         <script>iFrameResize({log:true}, document.getElementById('considerit-embed-#{proposal.id}'))</script>"""

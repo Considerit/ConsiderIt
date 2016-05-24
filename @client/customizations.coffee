@@ -1564,7 +1564,7 @@ customizations['hala'] =
             fontStyle: 'italic'
             marginTop: 20
 
-          """The rest of the questions ask for your input on principles related to MHA."""
+          """The rest of the questions ask for your input on principles related to Mandatory Housing Affordability."""
 
 
         DIV 
@@ -1577,7 +1577,7 @@ customizations['hala'] =
         DIV 
           style: hala_section_description
             
-          "What do you think of the following MHA principles?"
+          "What do you think of the following principles?"
 
 
 
@@ -1607,7 +1607,7 @@ customizations['hala'] =
           DIV 
             style: marginTop: 10
             
-            "What do you think of the following MHA principles?"
+            "What do you think of the following principles?"
 
 
   "cluster/Urban Design Quality" : 
@@ -1634,7 +1634,7 @@ customizations['hala'] =
           DIV 
             style: marginTop: 10
             
-            "What do you think of the following MHA principles?"
+            "What do you think of the following principles?"
 
 
   auth: 
@@ -3580,6 +3580,30 @@ customizations.dao = _.extend {},
 
                   "#dao_consider_it"
                 ' on The Dao\'s Slack.'
+
+              DIV 
+                style: 
+                  backgroundColor: 'white'
+                  marginTop: 20
+                  marginBottom: 20
+                  padding: 8
+                  fontSize: 18
+                  color: 'black'
+                  opacity: .5
+                  display: 'inline-block'
+
+                "Proposed "
+
+                A 
+                  href: '/organization_of_dao_considerit'
+                  target: '_blank'
+                  style: 
+                    #textDecoration: 'underline'
+                    color: '#EC4246'
+                    fontWeight: 600
+
+                  " reorganization of dao.consider.it"
+                '. Feedback requested!'             
 
 
 

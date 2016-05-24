@@ -192,7 +192,7 @@ window.SimpleHomepage = ReactiveComponent
           index: index
 
 
-      if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation'] 
+      if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation', 'dao'] 
         A 
           style: 
             color: logo_red

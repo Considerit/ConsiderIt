@@ -1321,11 +1321,12 @@ hala_teal = "#0FB09A"
 hala_orange = '#FBAF3B'
 hala_magenta = '#CB2A5C'
 hala_gray = '#666'
+hala_brown = '#A77C53'
 
 hala_section_heading = 
   fontSize: 42
   fontWeight: 300
-  color: hala_magenta
+  color: hala_teal
   marginBottom: 5
 
 hala_section_description = 
@@ -1456,7 +1457,7 @@ customizations['hala'] =
         DIV 
           style: hala_section_heading
 
-          "Minimizing Displacement in Seattle"
+          "Minimize Displacement"
 
 
         DIV 
@@ -1505,7 +1506,7 @@ customizations['hala'] =
 
 
   "cluster/Housing Options and Community Assets" : 
-    homepage_label: 'Proposals'    
+    homepage_label: 'MHA Principles'    
 
     description: 
       DIV 
@@ -1513,9 +1514,25 @@ customizations['hala'] =
           width: HOMEPAGE_WIDTH()
 
         DIV 
-          style: hala_section_heading
+          style: _.extend {}, hala_section_heading, 
+            color: hala_brown
+            fontSize: 42
+            fontWeight: 400
+            #marginLeft: -30
+            
 
-          "Mandatory Housing Affordability"
+          SPAN 
+            style: 
+              borderBottom: "1px solid #{hala_brown}"
+              color: hala_brown
+
+            "Mandatory Housing Affordability "
+
+            SPAN 
+              style: 
+                fontStyle: 'italic'
+              "principles"
+
 
 
         DIV 
@@ -1542,15 +1559,31 @@ customizations['hala'] =
           """ and is essential to achieving affordable 
              housing goals of 6,000 new affordable units over ten years."""
 
+        DIV 
+          style: _.extend {}, hala_section_description, 
+            fontStyle: 'italic'
+            marginTop: 20
 
-          DIV 
-            style: marginTop: 10
+          """The rest of the questions ask for your input on principles related to MHA."""
+
+
+        DIV 
+          style: _.extend {}, hala_section_heading,
+            marginTop: 20
+
+          "Housing Options and Community Assets"
+
+
+        DIV 
+          style: hala_section_description
             
-            "What do you think of the following proposed MHA principles?"
+          "What do you think of the following MHA principles?"
+
+
 
 
   "cluster/Transitions" : 
-    homepage_label: 'Proposals'    
+    homepage_label: 'MHA Principles'    
 
     description: 
       DIV 
@@ -1560,7 +1593,7 @@ customizations['hala'] =
         DIV 
           style: hala_section_heading
 
-          "Transitioning between high and low scale zones"
+          "Transitions"
 
 
         DIV 
@@ -1574,11 +1607,11 @@ customizations['hala'] =
           DIV 
             style: marginTop: 10
             
-            "What do you think of the following proposals?"
+            "What do you think of the following MHA principles?"
 
 
   "cluster/Urban Design Quality" : 
-    homepage_label: 'Proposals'    
+    homepage_label: 'MHA Principles'    
 
     description: 
       DIV 
@@ -1588,7 +1621,7 @@ customizations['hala'] =
         DIV 
           style: hala_section_heading
 
-          "Design features for urban quality"
+          "Urban Design Quality"
 
 
         DIV 
@@ -1601,7 +1634,7 @@ customizations['hala'] =
           DIV 
             style: marginTop: 10
             
-            "What do you think of the following proposals?"
+            "What do you think of the following MHA principles?"
 
 
   auth: 
@@ -1683,7 +1716,7 @@ customizations['hala'] =
     render: ->
 
       header_style = 
-        color: hala_teal
+        color: hala_brown
         fontSize: 44
         #fontWeight: 600
         marginTop: 10
@@ -1694,9 +1727,9 @@ customizations['hala'] =
 
       paragraph_heading_style = 
         display: 'block'
-        #fontWeight: 600
+        fontWeight: 400
         fontSize: 28
-        color: hala_teal
+        color: hala_brown
 
       paragraph_style = 
         fontSize: 18
@@ -1804,8 +1837,15 @@ customizations['hala'] =
                 style: paragraph_style
 
                 """
-                We have listed key recommendations below. This is an opportunity for you to shape the recommendations before they are finalized. Please tell us by adding your opinion below. 
-                """
+                We have listed key recommendations below. This is an opportunity for you to shape the recommendations 
+                before they are finalized."""
+                SPAN 
+                  style: 
+                    color: 'black'
+                    fontWeight: 600
+                  " We are committed to using your feedback in a constructive way and will report back on how we use it."
+
+                " Please add your opinion below."
 
               SPAN 
                 style: paragraph_style
@@ -1835,7 +1875,7 @@ customizations['hala'] =
                   marginBottom: 8
 
                 IMG
-                  src: asset('hala/HALA Logo.svg')
+                  src: asset('hala/Seattle-Logo-and-signature.jpg')
                   style: 
                     height: 70
 
@@ -1861,7 +1901,7 @@ customizations['hala'] =
                     textDecoration: 'underline'
 
                   "seattle.gov/HALA"                  
-                ' if you have additional questions or want to know more.'
+                ' if you want to know more.'
 
 
               # DIV 
@@ -3257,7 +3297,6 @@ customizations['on-chain-conf'].NonHomepageHeader = customizations['on-chain-con
 
 
 
-
 customizations.dao = _.extend {}, 
   show_proposer_icon: true
   collapse_descriptions_at: 300
@@ -3548,7 +3587,6 @@ customizations.dao = _.extend {},
 
 
 customizations.dao.NonHomepageHeader = customizations.dao.HomepageHeader
-
 
 
 

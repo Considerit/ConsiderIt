@@ -3,6 +3,7 @@
 # require './vendor/jquery.touchpunch'
 
 # require './vendor/modernizr' 
+require './vendor/iframe-resizer-inner.min'
 require './activerest-m'
 require './avatar'
 require './browser_hacks'
@@ -118,12 +119,6 @@ ProposalDescription = ReactiveComponent
             paddingTop: 5
 
           DIV dangerouslySetInnerHTML:{__html: @proposal.description}
-      
-
-  componentDidUpdate : ->
-    window.frameElement.height = @getDOMNode().offsetHeight + 234
-    console.log "UPDATED TO ", window.frameElement.height
-
 
 
 

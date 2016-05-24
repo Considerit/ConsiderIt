@@ -1531,7 +1531,7 @@ customizations['hala'] =
             SPAN 
               style: 
                 fontStyle: 'italic'
-              "principles"
+              "Principles"
 
 
 

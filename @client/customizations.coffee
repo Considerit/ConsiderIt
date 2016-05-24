@@ -776,7 +776,7 @@ carcd_header = ReactiveComponent
 
 
 customizations['carcd'] = customizations['carcd-demo'] = 
-  show_proposer_icon: true
+  show_proposer_icon: false
   proposal_filters: false
 
 
@@ -818,26 +818,26 @@ customizations['carcd'] = customizations['carcd-demo'] =
 
 
   "cluster/Accreditation" : 
-    point_labels: 
-      pro: 'argument for rewarded'
-      pros: 'Arguments for Rewarded' 
-      con: 'argument for unrewarded'
-      cons: 'Arguments for Unrewarded'
-      your_header: "Your --valences--" 
-      other_header: "--valences--" 
-      top_header: "Top --valences--" 
+    # point_labels: 
+    #   pro: 'argument for rewarded'
+    #   pros: 'Arguments for Rewarded' 
+    #   con: 'argument for unrewarded'
+    #   cons: 'Arguments for Unrewarded'
+    #   your_header: "Your --valences--" 
+    #   other_header: "--valences--" 
+    #   top_header: "Top --valences--" 
 
-    slider_pole_labels: 
-      individual: 
-        support: 'Rewarded'
-        oppose: 'Unrewarded'
-        support_sub: ''
-        oppose_sub: ''    
-      group: 
-        support: 'Rewarded'
-        oppose: 'Unrewarded'
-        support_sub: ''
-        oppose_sub: ''
+    slider_pole_labels: priority
+      # individual: 
+      #   support: 'Rewarded'
+      #   oppose: 'Unrewarded'
+      #   support_sub: ''
+      #   oppose_sub: ''    
+      # group: 
+      #   support: 'Rewarded'
+      #   oppose: 'Unrewarded'
+      #   support_sub: ''
+      #   oppose_sub: ''
 
     description: 
       DIV 

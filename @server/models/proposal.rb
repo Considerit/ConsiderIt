@@ -71,7 +71,7 @@ class Proposal < ActiveRecord::Base
       proposals = subdomain.proposals.where(:hide_on_homepage => false)
       case subdomain.name.downcase
         when 'dao'
-          manual_clusters = ['New', 'Needs elaboration', 'Review', 'Proposed to DAO', 'Proposed', 'Mature', 'Incubator', 'Incomplete']
+          manual_clusters = ['New', "Proposed to DAO", 'Under review',  'Needs more description', 'Funded', 'Rejected', 'Archived', 'Proposed', 'Mature', 'Incubator', 'Incomplete', 'Proposals']
 
         when 'on-chain-conf'
           manual_clusters = ['Events', 'On-chain scaling', 'Other topics'] 

@@ -192,7 +192,7 @@ window.SimpleHomepage = ReactiveComponent
           index: index
 
 
-      if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation', 'dao'] 
+      if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation'] 
         A 
           style: 
             color: logo_red
@@ -317,7 +317,7 @@ Cluster = ReactiveComponent
     mobile = browser.is_mobile
 
     guidelines_w = if mobile then 'auto' else 330
-    guidelines_h = 258
+    guidelines_h = 300
 
     tips = customization('proposal_tips')
 

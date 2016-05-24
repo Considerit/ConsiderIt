@@ -113,8 +113,9 @@ class Proposal < ActiveRecord::Base
     if manual_clusters
       # add clusters that aren't explictly named to the end
       proposals.each do |p|
-        if p.cluster && !manual_clusters.include?(p.cluster)
-          manual_clusters.append p.cluster
+        cluster = p.cluster || 'Proposals'
+        if !manual_clusters.include?(cluster)
+          manual_clusters.append cluster
         end
       end
     end 
@@ -134,16 +135,17 @@ class Proposal < ActiveRecord::Base
     most_recent = {}
     points = []
     proposals.each do |proposal|
+      cluster = proposal.cluster || 'Proposals'
 
       # Impose access control restrictions for current user
       next if permit('read proposal', proposal) < 0
 
-      if !most_recent[proposal.cluster] || most_recent[proposal.cluster] < proposal.created_at
-        most_recent[proposal.cluster] = proposal.created_at
+      if !most_recent[cluster] || most_recent[cluster] < proposal.created_at
+        most_recent[cluster] = proposal.created_at
       end
 
-      clustered_proposals[proposal.cluster] = [] if !clustered_proposals.has_key? proposal.cluster
-      clustered_proposals[proposal.cluster].append proposal.as_json
+      clustered_proposals[cluster] = [] if !clustered_proposals.has_key? cluster
+      clustered_proposals[cluster].append proposal.as_json
 
       if all_points 
         if subdomain.moderate_points_mode == 1

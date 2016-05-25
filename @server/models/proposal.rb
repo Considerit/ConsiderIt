@@ -45,6 +45,7 @@ class Proposal < ActiveRecord::Base
 
     # if a subdomain wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
+    always_shown = [] 
 
     if subdomain.moderate_proposals_mode == 1
       moderation_status_check = 'moderation_status=1'
@@ -72,6 +73,7 @@ class Proposal < ActiveRecord::Base
       case subdomain.name.downcase
         when 'dao'
           manual_clusters = ['New', "Proposed to DAO", 'Under review',  'Needs more description', 'Funded', 'Rejected', 'Archived', 'Proposed', 'Mature', 'Incubator', 'Incomplete', 'Proposals']
+          always_shown = ['New']
 
         when 'on-chain-conf'
           manual_clusters = ['Events', 'On-chain scaling', 'Other topics'] 
@@ -120,14 +122,14 @@ class Proposal < ActiveRecord::Base
       end
     end 
 
-    [proposals, manual_clusters]
+    [proposals, manual_clusters, always_shown]
 
   end 
 
   def self.summaries(subdomain = nil, all_points = false)
     subdomain ||= current_subdomain
     
-    proposals, manual_clusters = all_proposals_for_subdomain(subdomain)
+    proposals, manual_clusters, always_shown = all_proposals_for_subdomain(subdomain)
     clustered_proposals = {}
     randomize_cluster_order = subdomain.name.downcase == 'cimsec'
 
@@ -158,6 +160,10 @@ class Proposal < ActiveRecord::Base
       end
     end
 
+    always_shown.each do |cluster|
+      clustered_proposals[cluster] = [] if !clustered_proposals.has_key? cluster      
+    end 
+
     # now order the clusters
     if manual_clusters
       ordered_clusters = manual_clusters
@@ -173,7 +179,10 @@ class Proposal < ActiveRecord::Base
     clusters = ordered_clusters.map {|cluster| 
       { 
         :name => cluster, 
-        :proposals => clustered_proposals[cluster] } 
+        :proposals => clustered_proposals[cluster],
+        :always_shown => always_shown.include?(cluster)
+      } 
+
       }.select {|c| c[:proposals]}
 
     proposals = {

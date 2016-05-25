@@ -106,9 +106,9 @@ class HtmlController < ApplicationController
       keywords = "discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,public engagement,impact assessment,strategic planning,process improvement,standards,stakeholder committee,Common Core,listening"
       google_verification = "gd89L8El1xxxBpOUk9czjE9zZF4nh8Dc9izzbxIRmuY"
     else
-      title = current_subdomain.app_title or "#{current_subdomain.name} discussion"
-      image = nil
-      description = "Help think through these issues being considered."
+      title = current_subdomain.app_title or "#{current_subdomain.name}"
+      image = current_subdomain.branding_info.logo
+      description = "#{Proposal.active.count} issues being considered."
     end
 
     # proposal overrides, if the current page is a proposal
@@ -119,7 +119,14 @@ class HtmlController < ApplicationController
         title = "#{proposal.category[0]}-#{proposal.designator}: #{title}"
       end
       title = proposal.seo_title || title
-      description = proposal.seo_description || "What do you think? #{proposal.description || proposal.name}"
+      description = proposal.seo_description || "#{proposal.description || proposal.name}"
+
+      parts = description.split('<br>')
+
+      if parts.length > 1
+        description = parts[0] + '...'
+      end
+
       description = ActionView::Base.full_sanitizer.sanitize description
       keywords = proposal.seo_keywords if proposal.seo_keywords
 
@@ -130,22 +137,21 @@ class HtmlController < ApplicationController
 
     meta = [
       { :name => 'title', :content => title },
-      { :name => 'twitter:title', :content => title },
-      { :property => 'http://ogp.me/ns#title', :content => title },
-
       { :name => 'description', :content => description },
-      { :name => 'twitter:description', :content => description },
-      { :property => 'http://ogp.me/ns#description', :content => description },
-
       { :name => 'keywords', :content => keywords },
 
+      { :property => 'http://ogp.me/ns#title', :content => title },
+      { :property => 'http://ogp.me/ns#description', :content => description },
       { :property => 'http://ogp.me/ns#url', :content => request.original_url() },
       { :property => 'http://ogp.me/ns#image', :content => image },
-
       { :property => 'http://ogp.me/ns#type', :content => 'website' },
       { :property => 'http://ogp.me/ns#site_name', :content => (current_subdomain.app_title or "#{current_subdomain.name} discussion") },
 
       { :name => 'twitter:card', :content => 'summary' },
+      { :name => 'twitter:title', :content => title },
+      { :name => 'twitter:description', :content => description },
+
+
       { :property => 'https://www.facebook.com/2008/fbml#app_id', :content => fb_app_id }
     ]
 

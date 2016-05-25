@@ -106,9 +106,20 @@ class HtmlController < ApplicationController
       keywords = "discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,public engagement,impact assessment,strategic planning,process improvement,standards,stakeholder committee,Common Core,listening"
       google_verification = "gd89L8El1xxxBpOUk9czjE9zZF4nh8Dc9izzbxIRmuY"
     else
-      title = current_subdomain.app_title or "#{current_subdomain.name}"
-      image = current_subdomain.branding_info.logo
-      description = "#{Proposal.active.count} issues being considered."
+      title = current_subdomain.branding_info['masthead_header_text']
+      if !title or title.length == 0 
+        title = current_subdomain['app_title'] or "#{current_subdomain.name}"
+      end
+      image = current_subdomain.branding_info['logo']
+      if image 
+        image = "//#{Rails.application.config.action_controller.asset_host or 'localhost:3000'}#{image}"
+      end 
+      cnt = Proposal.active.count
+      if cnt == 1
+        description = "One proposal is being considered."
+      else 
+        description = "#{cnt} proposals are being considered."
+      end 
     end
 
     # proposal overrides, if the current page is a proposal
@@ -143,7 +154,6 @@ class HtmlController < ApplicationController
       { :property => 'http://ogp.me/ns#title', :content => title },
       { :property => 'http://ogp.me/ns#description', :content => description },
       { :property => 'http://ogp.me/ns#url', :content => request.original_url() },
-      { :property => 'http://ogp.me/ns#image', :content => image },
       { :property => 'http://ogp.me/ns#type', :content => 'website' },
       { :property => 'http://ogp.me/ns#site_name', :content => (current_subdomain.app_title or "#{current_subdomain.name} discussion") },
 
@@ -154,6 +164,11 @@ class HtmlController < ApplicationController
 
       { :property => 'https://www.facebook.com/2008/fbml#app_id', :content => fb_app_id }
     ]
+
+    if image 
+      meta.append({ :property => 'http://ogp.me/ns#image', :content => image })
+      meta.append({ :name => 'twitter:image', :content => image })
+    end 
 
     if google_verification
       meta.append({:name => "google-site-verification", :content => google_verification })

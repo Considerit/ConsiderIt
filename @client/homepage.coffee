@@ -284,7 +284,7 @@ Cluster = ReactiveComponent
     is_collapsed = collapsed.clusters[@props.key]
 
     proposals = sorted_proposals(cluster)
-    return SPAN null if !proposals || proposals.length == 0
+    return SPAN null if !proposals || (proposals.length == 0 && !cluster.always_shown)
 
     DIV
       key: cluster.name

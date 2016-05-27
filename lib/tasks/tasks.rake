@@ -23,7 +23,7 @@ task :dao_org => :environment do
     'Needs more description' => 'Proposals',
     'Incubator' => 'Proposals',
     'investment' => 'Proposals',
-    'Mature' => 'Developmental',
+    'Mature' => 'Under development',
     'Under review' => 'Under development',
 
   }
@@ -38,7 +38,7 @@ task :dao_org => :environment do
     'Meta' => ['extending-proposal-vote-deadlines', 'expansion-upon-daoconsiderit-to-where-suggestionsideasproposals-graduate-to-higher-levels-process-of-collective-consideration'],
     'Proposals' => ['adding-a-decentralized-cloud-brother-of-ethereum-blockchain-to-make-it-the-futur-1st-world-web-hosting-cie', 'found-or-buy-law-firms-in-major-economic-countries', 'invest-in-real-estate', 'by_klm', 'daollery-we-are-open-an-art-gallery-and-collectively-choose-pieces-of-artwork-to-display-for-each-show'],
     'Needs more description' => ['smart-contracts-for-world-trade-per-incoterms'],
-    'DAO 2.0 Wishlist' => ['create-an-upgrade-protocol-for-thedao-code-and-funds-into-thedao-v20-and-beyond-in-order-to-adapt-to-urgent-attacks-known-weaknesses-or-new-features']
+    'DAO v2.0 Wishlist' => ['create-an-upgrade-protocol-for-thedao-code-and-funds-into-thedao-v20-and-beyond-in-order-to-adapt-to-urgent-attacks-known-weaknesses-or-new-features']
   }
 
   slugs.each do |category, proposals|

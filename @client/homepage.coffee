@@ -125,8 +125,6 @@ window.SimpleHomepage = ReactiveComponent
           unnamed.name = default_cluster_name
           clusters[default_cluster_name] = unnamed
 
-
-
     # move archived clusters to the back 
     clusters = _.values clusters
     c = []

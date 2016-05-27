@@ -72,7 +72,7 @@ class Proposal < ActiveRecord::Base
       proposals = subdomain.proposals.where(:hide_on_homepage => false)
       case subdomain.name.downcase
         when 'dao'
-          manual_clusters = ['New', "Proposed to DAO", 'Under development',  'Needs more description', 'Funded', 'Rejected', 'Archived', 'Proposals', 'Meta', 'DAO 2.0 Wishlist']
+          manual_clusters = ['New', "Proposed to DAO", 'Under development',  'Needs more description', 'Funded', 'Rejected', 'Archived', 'Proposals', 'Ideas', 'Meta', 'DAO 2.0 Wishlist']
           always_shown = ['New', 'Proposed to DAO', 'Under development', 'Needs more description',  'Proposals', 'Meta']
 
         when 'on-chain-conf'

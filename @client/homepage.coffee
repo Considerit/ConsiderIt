@@ -51,7 +51,8 @@ window.proposal_editor = (proposal) ->
 cluster_keys = ['archived', 'label', 'description', 'homie_histo_title',
                 'show_proposer_icon', 'slider_handle', 'slider_pole_labels', 
                 'slider_regions', 'slider_ticks', 'discussion', 'show_score', 
-                'uncollapseable', 'cluster_header', 'homepage_label', 'proposal_style']
+                'uncollapseable', 'cluster_header', 'homepage_label', 
+                'cluster_filters', 'proposal_style', 'one_line_desc']
 
 cluster_options = (key) -> 
   options = {}
@@ -116,13 +117,13 @@ window.SimpleHomepage = ReactiveComponent
         for own k,v of c 
           unnamed[k] = v 
 
-    if unnamed 
-      if clusters[default_cluster_name]
-        c = clusters[default_cluster_name]
-        c.proposals = c.proposals.concat unnamed.proposals
-      else 
-        unnamed.name = default_cluster_name
-        clusters[default_cluster_name] = unnamed
+      if unnamed?
+        if clusters[default_cluster_name]
+          c = clusters[default_cluster_name]
+          c.proposals = c.proposals.concat unnamed.proposals
+        else 
+          unnamed.name = default_cluster_name
+          clusters[default_cluster_name] = unnamed
 
 
 
@@ -148,60 +149,79 @@ window.SimpleHomepage = ReactiveComponent
         collapsed.clusters["cluster/#{cluster.name}"] = 1
       save collapsed
 
-    DIV
-      className: 'simplehomepage'
-      style: 
-        fontSize: 22
-        margin: '45px auto'
-        width: HOMEPAGE_WIDTH()
-        position: 'relative'
+    cluster_filters = fetch 'cluster_filters'
 
-      STYLE null,
-        '''a.proposal:hover {border-bottom: 1px solid grey}'''
+    DIV null,
 
-      if customization('proposal_filters')
-        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-        ProposalFilter
-          style: 
-            width: first_column.width
-            marginBottom: 20
-            paddingLeft: if customization('show_proposer_icon') then 68
-            display: 'inline-block'
-            verticalAlign: 'top'
+      if customization('cluster_filters')
+        ClusterFilter()
+      DIV
+        className: 'simplehomepage'
+        style: 
+          fontSize: 22
+          margin: '45px auto'
+          width: HOMEPAGE_WIDTH()
+          position: 'relative'
 
-      if customization('opinion_filters')
-        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-        OpinionFilter
-          style: 
-            width: secnd_column.width
-            marginBottom: 20
-            marginLeft: secnd_column.marginLeft
-            display: 'inline-block'
-            verticalAlign: 'top'
-            textAlign: 'center'
+        STYLE null,
+          '''a.proposal:hover {border-bottom: 1px solid grey}'''
 
-      # List all clusters
-      for cluster, index in clusters or []
-        cluster_key = "cluster/#{cluster.name}"
-        options = cluster_options cluster_key
+        if customization('proposal_filters')
+          [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+          ProposalFilter
+            style: 
+              width: first_column.width
+              marginBottom: 20
+              paddingLeft: if customization('show_proposer_icon') then 68
+              display: 'inline-block'
+              verticalAlign: 'top'
 
-        Cluster
-          key: cluster_key
-          cluster: cluster 
-          options: options 
-          index: index
+        if customization('opinion_filters')
+          [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+          OpinionFilter
+            style: 
+              width: secnd_column.width
+              marginBottom: 20
+              marginLeft: secnd_column.marginLeft
+              display: 'inline-block'
+              verticalAlign: 'top'
+              textAlign: 'center'
+
+        # List all clusters
+        for cluster, index in clusters or []
+          cluster_key = "cluster/#{cluster.name}"
+          options = cluster_options cluster_key
+
+          fails_filter = cluster_filters.filter? && (cluster_filters.clusters != '*' && !(cluster.name in cluster_filters.clusters) )
+          if fails_filter && ('*' in cluster_filters.clusters)
+            in_others = []
+            for filter, clusters of customization('cluster_filters')
+              in_others = in_others.concat clusters 
+
+            fails_filter &&= cluster.name in in_others
 
 
-      if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation'] 
-        A 
-          style: 
-            color: logo_red
-            marginTop: 35
-            display: 'inline-block'
-            borderBottom: "1px solid #{logo_red}"
+          if fails_filter
+            SPAN null 
+          else 
 
-          href: '/proposal/new'
-          t('Create new proposal')
+            Cluster
+              key: cluster_key
+              cluster: cluster 
+              options: options 
+              index: index
+
+
+        if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation'] 
+          A 
+            style: 
+              color: logo_red
+              marginTop: 35
+              display: 'inline-block'
+              borderBottom: "1px solid #{logo_red}"
+
+            href: '/proposal/new'
+            t('Create new proposal')
 
   typeset : -> 
     subdomain = fetch('/subdomain')
@@ -263,6 +283,82 @@ window.SimpleHomepage = ReactiveComponent
 
           # width: 30
           # height: 30
+
+
+ClusterFilter = ReactiveComponent
+  displayName: 'ClusterFilter'
+
+  render: -> 
+    filters = ([k,v] for k,v of customization('cluster_filters'))
+    filters.unshift ["Show all", '*']
+
+    cluster_filters = fetch 'cluster_filters'
+    if !cluster_filters.filter?
+      cluster_filters.filter = 'Show all'
+      cluster_filters.clusters = '*'
+      save cluster_filters
+
+
+    DIV 
+      style: 
+        backgroundColor: '#D8D8D8'
+        fontSize: 22
+        fontWeight: 600
+        color: '#555'
+
+      DIV 
+        style: 
+          width: 900 #HOMEPAGE_WIDTH()
+          margin: 'auto'
+          textAlign: 'center'
+
+        for [filter, clusters], idx in filters 
+          do (filter, clusters) =>
+            current = cluster_filters.filter == filter 
+            hovering = @local.hovering == filter
+            SPAN 
+              style: 
+                borderLeft: if idx == 0 then '1px solid #CACACA'
+                borderRight: '1px solid #CACACA'
+                padding: '12px 40px'
+                display: 'inline-block'
+                cursor: 'pointer'
+                color: if current then 'white' else if hovering then 'black'
+                backgroundColor: if current then '#FF3834'
+                position: 'relative'
+              onMouseEnter: => 
+                if cluster_filters.filter != filter 
+                  @local.hovering = filter 
+                  save @local 
+              onMouseLeave: => 
+                @local.hovering = null 
+                save @local
+              onClick: => 
+                cluster_filters.filter = filter 
+                cluster_filters.clusters = clusters
+                save cluster_filters
+
+              filter
+
+              if current
+                tw = 45
+                th = 10
+                SPAN 
+                  style: cssTriangle 'bottom', '#FF3834', tw, th,
+                    position: 'absolute'
+                    left: -tw / 2
+                    marginLeft: '50%'
+                    bottom: -th + 1
+                    width: tw
+                    height: th
+                    display: 'inline-block'
+
+
+
+
+          # if clusters == '*'
+
+
 
 
 Cluster = ReactiveComponent
@@ -601,7 +697,7 @@ Cluster = ReactiveComponent
                 fontWeight: 200
                 marginBottom: 10
 
-              options.description
+              options.description()
 
       # Header of cluster
 
@@ -610,7 +706,8 @@ Cluster = ReactiveComponent
       else 
 
         DIV 
-          style: {}
+          style: 
+            position: 'relative'
           H1
             style: _.extend {}, first_header, 
               paddingLeft: if icons then 68 else 0, 
@@ -641,6 +738,16 @@ Cluster = ReactiveComponent
             if subdomain.name == 'RANDOM2015'
               " (#{cluster.proposals.length})"
 
+            if options.one_line_desc
+              DIV 
+                style: 
+                  position: 'absolute'
+                  bottom: -12
+                  color: '#444'
+                  fontSize: 14
+                  fontWeight: 400
+                options.one_line_desc
+
           if !is_collapsed
             H1
               style: secnd_header
@@ -667,6 +774,8 @@ Cluster = ReactiveComponent
                   marginLeft: -(widthWhenRendered(options.homie_histo_title, 
                                {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
                 options.homie_histo_title
+
+
 
 
 

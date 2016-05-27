@@ -779,6 +779,9 @@ customizations['carcd'] = customizations['carcd-demo'] =
   show_proposer_icon: false
   proposal_filters: false
 
+  point_labels: pro_con
+  slider_pole_labels: priority
+  show_slider_feedback: false
 
   "cluster/Serving Districts" : 
     point_labels: 
@@ -902,9 +905,6 @@ customizations['carcd'] = customizations['carcd-demo'] =
     slider_pole_labels: important_unimportant
     show_slider_feedback: false
 
-  point_labels: pro_con
-  slider_pole_labels: promising_weak
-  show_slider_feedback: false
 
   HomepageHeader: carcd_header
   NonHomepageHeader: carcd_header
@@ -1557,14 +1557,17 @@ customizations['hala'] =
 
 
           """ and is essential to achieving affordable 
-             housing goals of 6,000 new affordable units over ten years."""
+             housing goals of 6,000 new affordable units over ten years. """
 
         DIV 
           style: _.extend {}, hala_section_description, 
             fontStyle: 'italic'
             marginTop: 20
 
-          """The rest of the questions ask for your input on principles related to Mandatory Housing Affordability."""
+          """The questions below assume that zoning changes will take place to fully implement MHA.  
+             We are asking for input on how those zoning changes will look and feel.  These questions 
+             are intended to get at the values that should drive these zoning changes.  What are the 
+             important principles for us to keep in mind when we propose zoning changes in the next few months?"""
 
 
         DIV 
@@ -3295,324 +3298,6 @@ customizations['on-chain-conf'].NonHomepageHeader = customizations['on-chain-con
 
 
 
-
-
-# customizations.dao = _.extend {}, 
-#   show_proposer_icon: true
-#   collapse_descriptions_at: 300
-
-#   proposal_filters: true
-
-#   civility_pledge: true
-
-#   proposal_tips: [
-#     'Describe your idea in sufficient depth for others to evaluate it. The title is usually not enough.'
-#     'Link to any contract code, external resources, or videos.'
-#     'Link to any forum.daohub.org or /r/thedao where more free-form discussion about your idea is happening.'
-#     'Take responsibility for improving your idea given feedback.'
-#   ]
-
-#   'cluster/New': 
-#     archived: false
-#     description: ->  
-#       DIV 
-#         style: 
-#           position: 'absolute'
-#           top: 44
-#           fontSize: 14
-#           fontWeight: 400
-
-#         'Add new proposals here!'
-
-#   'cluster/Needs elaboration': 
-#     archived: true
-#     description: ->  
-#       DIV 
-#         style: 
-#           position: 'absolute'
-#           top: 44
-#           fontSize: 14
-#           fontWeight: 400
-
-#         'Ideas that need more description to evaluate'
-
-
-#   'cluster/Incomplete': 
-#     archived: false
-#     description: ->  
-#       DIV 
-#         style: 
-#           position: 'absolute'
-#           top: 44
-#           fontSize: 14
-#           fontWeight: 400
-
-#         'Ideas with substantial ambiguity'
-
-#   'cluster/Incubator': 
-#     archived: false
-#     description: ->  
-#       DIV 
-#         style: 
-#           position: 'absolute'
-#           top: 44
-#           fontSize: 14
-#           fontWeight: 400
-
-#         'Ideas with some traction and critique'
-
-#   'cluster/Mature': 
-#     archived: false
-#     description: ->  
-#       DIV
-#         style: 
-#           position: 'absolute'
-#           top: 44
-#           fontSize: 14
-#           fontWeight: 400
-
-#         'Proposals with a community working toward real proposal'
-
-#   'cluster/Proposed': 
-#     archived: false
-#     description: ->  
-#       DIV 
-#         style: 
-#           position: 'absolute'
-#           top: 44
-#           fontSize: 14
-#           fontWeight: 400
-
-#         'Proposals submitted to The Dao\'s smart contract'
-
-
-#   'cluster/Archived': 
-#     archived: true
-
-#   'cluster/Funded': 
-#     archived: true
-
-
-#   HomepageHeader: ReactiveComponent 
-#     displayName: 'HomepageHeader'
-
-#     render: ->
-#       homepage = true # fetch('location').url == '/'
-
-#       DIV
-#         style:
-#           position: 'relative'
-#           background: "linear-gradient(-45deg, #7474BF, #348AC7)"
-#           paddingBottom: 20
-
-
-#         onMouseEnter: => @local.hover=true;  save(@local)
-#         onMouseLeave: => @local.hover=false; save(@local)
-
-
-
-
-#         STYLE null,
-#           '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
-#              p {margin-bottom: 1em}'''
-
-#         # LINK
-#         #   href: "http://fonts.googleapis.com/css?family=Montserrat:200,300,400,500,700"
-#         #   rel: 'stylesheet'
-#         #   type: 'text/css'
-
-#         DIV 
-#           style: 
-#             marginLeft: 70
-#           SPAN
-#             style:
-#               display: 'inline-block'
-#               visibility: if fetch('location').url == '/' then 'hidden'
-#               color: '#ccc'
-#               position: 'relative'
-#               left: -60
-#               top: 4
-#               fontSize: 43
-#               fontWeight: 400
-#               paddingLeft: 25 # Make the clickable target bigger
-#               paddingRight: 25 # Make the clickable target bigger
-#               cursor: if fetch('location').url != '/' then 'pointer'
-#             onClick: if fetch('location').url != '/' then => loadPage('/')
-
-#             '<'
-
-
-#           # Logo
-#           A
-#             href: if homepage then 'https://forum.daohub.org/c/theDAO' else '/'
-
-
-#             IMG
-#               style:
-#                 height: 30
-#                 width: 30
-#                 marginLeft: -44
-#                 marginRight: 10
-#                 marginTop: -10
-#                 verticalAlign: 'middle'
-
-#               src: asset('ethereum/the_dao.jpg')
-
-#             SPAN 
-#               style:
-#                 #fontFamily: "Montserrat, 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-#                 fontSize: 24
-#                 color: 'white'
-#                 fontWeight: 500
-
-#               "The DAO"
-
-#         SPAN
-#           style:
-#             display: 'inline-block'
-#             visibility: if fetch('location').url == '/' then 'hidden'
-#             color: '#ccc'
-#             position: 'absolute'
-#             left: 0
-#             bottom: -70
-#             fontSize: 43
-#             fontWeight: 400
-#             paddingLeft: 25 # Make the clickable target bigger
-#             paddingRight: 25 # Make the clickable target bigger
-#             cursor: if fetch('location').url != '/' then 'pointer'
-#           onClick: if fetch('location').url != '/' then => loadPage('/')
-
-#           '<'
-
-
-
-#         # The top bar with the logo
-#         DIV
-#           style:
-#             width: HOMEPAGE_WIDTH()
-#             margin: 'auto'
-
-
-
-#           if homepage
-
-#             tips = [
-#               "Read a proposal carefully before voting strongly; otherwise only indicate slight support or opposition."
-#               "If you vote strongly, add pro and con points that explain your reasoning, especially if you oppose."
-#               "Proposals lacking sufficient detail to evaluate should be mildly opposed."
-#               #"Take advantage of range voting. Don't go all-for or all-against something unless it's really the most important thing on the whole page."
-#               "If you make a proposal, refine your proposals to address criticism."
-#               "If a proposal is updated, please update your opinion."
-#               "Proposing far-out stuff you have no intention of working on will only clutter the interface for others."
-#               "Recognize that votes here are not official."
-#             ]
-
-#             DIV null, 
-
-#               DIV 
-#                 style: 
-#                   #backgroundColor: '#eee'
-#                   # marginTop: 10
-#                   padding: "0 8px"
-#                   fontSize: 42
-#                   fontWeight: 300
-#                   color: 'white'
-#                   marginTop: 10
-                
-#                 'Vet Proposals for The DAO'            
-
-#               DIV 
-#                 style: 
-#                   #backgroundColor: '#eee'
-#                   # marginTop: 10
-#                   padding: "0 8px"
-#                   fontSize: 18
-#                   color: 'white'
-#                   marginTop: 40
-#                   opacity: .7
-
-#                 "Tips for keeping this space productive: "
- 
-#                 UL 
-#                   style: 
-#                     listStyle: 'outside'
-#                     paddingLeft: 40
-#                     marginTop: 10
-
-#                   for tip in tips 
-#                     LI 
-#                       style: {}
-#                       tip
-
-#               DIV 
-#                 style: 
-#                   marginTop: 10
-#                   padding: 8
-#                   fontSize: 18
-#                   color: '#eee'
-#                   opacity: .7
-
-#                   #fontFamily: "Montserrat, 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-
-#                 "Moderators are (1) categorizing proposals based on their maturity and (2) archiving older proposals."
-
-
-#               DIV 
-#                 style: 
-#                   backgroundColor: 'white'
-#                   marginTop: 20
-#                   marginBottom: 20
-#                   padding: 8
-#                   fontSize: 18
-#                   color: 'black'
-#                   opacity: .5
-#                   display: 'inline-block'
-
-#                 "Meta discussion about dao.consider.it at "
-
-#                 A 
-#                   href: 'https://thedao.slack.com/messages/dao_consider_it/'
-#                   target: '_blank'
-#                   style: 
-#                     #textDecoration: 'underline'
-#                     color: '#EC4246'
-#                     fontWeight: 600
-
-#                   "#dao_consider_it"
-#                 ' on The Dao\'s Slack.'
-
-#               DIV 
-#                 style: 
-#                   backgroundColor: 'white'
-#                   marginTop: 20
-#                   marginBottom: 20
-#                   padding: 8
-#                   fontSize: 18
-#                   color: 'black'
-#                   opacity: .5
-#                   display: 'inline-block'
-
-#                 "Proposed "
-
-#                 A 
-#                   href: '/organization_of_dao_considerit'
-#                   target: '_blank'
-#                   style: 
-#                     #textDecoration: 'underline'
-#                     color: '#EC4246'
-#                     fontWeight: 600
-
-#                   " reorganization of dao.consider.it"
-#                 '. Feedback requested!'             
-
-
-
-#         ProfileMenu()
-
-
-# customizations.dao.NonHomepageHeader = customizations.dao.HomepageHeader
-
-
 dao_blue = '#348AC7'
 dao_red = '#F83E34'
 dao_purple = '#7474BF'
@@ -3685,8 +3370,8 @@ customizations.dao = _.extend {},
     one_line_desc: 'Add new proposals here'
     description: ->
       min_requirements = [
-        'A brief description of the problem or opportunity'
-        'A brief description of the solution'
+        'At least one sentence on the problem or opportunity'
+        'At least one sentence on the solution'
         'A contractor who may undertake the work'
       ]
       community_tips = [
@@ -3698,15 +3383,33 @@ customizations.dao = _.extend {},
         style: 
           width: HOMEPAGE_WIDTH()
         
-        DIV 
-          style: dao_section_heading
+        if fetch('cluster_filters').clusters == '*'
 
-          'Proposal Pipeline'
+          DIV 
+            style: dao_section_heading
+
+            'Proposal Pipeline'
 
 
         DIV
           style: dao_section_description
 
+          DIV 
+            style: 
+              marginBottom: 15
+
+            'Please give constructive feedback! Some tips:'
+
+          UL
+            style: 
+              marginBottom: 15
+              marginLeft: 35
+
+            for tip in community_tips
+              LI 
+                style: 
+                  listStyle: 'outside'
+                tip 
 
           DIV 
             style: 
@@ -3725,24 +3428,6 @@ customizations.dao = _.extend {},
                   listStyle: 'outside'
                 req 
 
-          DIV 
-            style: 
-              marginBottom: 15
-
-            'Community, please give constructive feedback. Some tips:'
-
-          UL
-            style: 
-              marginBottom: 15
-              marginLeft: 35
-
-            for tip in community_tips
-              LI 
-                style: 
-                  listStyle: 'outside'
-                tip 
-
-
 
   'cluster/Proposals':
     homepage_label: 'Ideas'
@@ -3754,10 +3439,12 @@ customizations.dao = _.extend {},
         style: 
           width: HOMEPAGE_WIDTH()
         
-        DIV 
-          style: dao_section_heading
+        if fetch('cluster_filters').clusters == '*'
 
-          'Inspire Us'
+          DIV 
+            style: dao_section_heading
+
+            'Inspire Us'
 
 
         DIV 
@@ -3770,20 +3457,22 @@ customizations.dao = _.extend {},
   'cluster/Meta':
     description: ->
 
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-        
-        DIV 
-          style: dao_section_heading
-
-          'Meta Proposals'
-
+      if fetch('cluster_filters').clusters == '*'
 
         DIV 
-          style: dao_section_description
+          style: 
+            width: HOMEPAGE_WIDTH()
+          
+          DIV 
+            style: dao_section_heading
 
-          """Create proposals related to the operation of The DAO itself."""
+            'Meta Proposals'
+
+
+          DIV 
+            style: dao_section_description
+
+            """Create proposals related to the operation of The DAO itself."""
 
 
   'cluster/Name the DAO':
@@ -3793,7 +3482,7 @@ customizations.dao = _.extend {},
     displayName: 'HomepageHeader'
 
     render: ->
-      homepage = true # fetch('location').url == '/'
+      homepage = fetch('location').url == '/'
 
       DIV
         style:
@@ -3824,7 +3513,8 @@ customizations.dao = _.extend {},
             style:
               display: 'inline-block'
               visibility: if fetch('location').url == '/' then 'hidden'
-              color: '#ccc'
+              color: 'white'
+              opacity: .7
               position: 'relative'
               left: -60
               top: 4
@@ -3862,24 +3552,6 @@ customizations.dao = _.extend {},
                 fontWeight: 500
 
               "The DAO"
-
-        SPAN
-          style:
-            display: 'inline-block'
-            visibility: if fetch('location').url == '/' then 'hidden'
-            color: '#ccc'
-            position: 'absolute'
-            left: 0
-            bottom: -70
-            fontSize: 43
-            fontWeight: 400
-            paddingLeft: 25 # Make the clickable target bigger
-            paddingRight: 25 # Make the clickable target bigger
-            cursor: if fetch('location').url != '/' then 'pointer'
-          onClick: if fetch('location').url != '/' then => loadPage('/')
-
-          '<'
-
 
 
         # The top bar with the logo

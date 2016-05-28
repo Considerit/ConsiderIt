@@ -3,57 +3,60 @@ require './form'
 require './shared'
 
 
-pro_label = customization('point_labels.pro')
-con_label = customization('point_labels.con')
 
-all_roles = [ 
-  {
-    name: 'editor', 
-    label: 'Editors', 
-    description: 'Can modify the description of the proposal, as well as ' + \
-                 'write, comment, and opine.', 
-    icon: 'fa-edit', 
-    wildcard: 
-      label: 'Any registered user who can observe can edit'
-      default: false
-  },{
-    name: 'writer', 
-    label: 'Writers', 
-    description: "Can write #{pro_label} and #{con_label} points that are " + \
-                 "shared with others. Any writer can comment and opine.", 
-    icon: 'fa-th-list', 
-    wildcard: 
-      label: 'Any registered user who can observe can write'
-      default: true
-  },{
-    name: 'commenter', 
-    label: 'Commenters', 
-    description: "Can comment on #{pro_label} and #{con_label} points.", 
-    icon: 'fa-comment', 
-    wildcard: 
-      label: 'Any registered user who can observe can comment'
-      default: true
-  },{
-    name: 'opiner', 
-    label: 'Opiners', 
-    description: 'Can drag the slider and build a list of other people\'s Pros/Cons, but can\'t write new Pros, Cons or Comments.'
-    icon: 'fa-bar-chart', 
-    wildcard: 
-      label: 'Any registered user who can observe can opine'
-      default: true
-  },{
-    name: 'observer', 
-    label: 'Observers', 
-    description: 'Can access this proposal. But that\'s it.', 
-    icon: 'fa-eye', 
-    wildcard: 
-      label: "Public. Anyone can view"
-      default: true
-  }
-]
+all_roles = -> 
+  pro_label = customization('point_labels.pro')
+  con_label = customization('point_labels.con')
 
-all_roles = _.compact all_roles
 
+  all = [ 
+    {
+      name: 'editor', 
+      label: 'Editors', 
+      description: 'Can modify the description of the proposal, as well as ' + \
+                   'write, comment, and opine.', 
+      icon: 'fa-edit', 
+      wildcard: 
+        label: 'Any registered user who can observe can edit'
+        default: false
+    },{
+      name: 'writer', 
+      label: 'Writers', 
+      description: "Can write #{pro_label} and #{con_label} points that are " + \
+                   "shared with others. Any writer can comment and opine.", 
+      icon: 'fa-th-list', 
+      wildcard: 
+        label: 'Any registered user who can observe can write'
+        default: true
+    },{
+      name: 'commenter', 
+      label: 'Commenters', 
+      description: "Can comment on #{pro_label} and #{con_label} points.", 
+      icon: 'fa-comment', 
+      wildcard: 
+        label: 'Any registered user who can observe can comment'
+        default: true
+    },{
+      name: 'opiner', 
+      label: 'Opiners', 
+      description: 'Can drag the slider and build a list of other people\'s Pros/Cons, but can\'t write new Pros, Cons or Comments.'
+      icon: 'fa-bar-chart', 
+      wildcard: 
+        label: 'Any registered user who can observe can opine'
+        default: true
+    },{
+      name: 'observer', 
+      label: 'Observers', 
+      description: 'Can access this proposal. But that\'s it.', 
+      icon: 'fa-eye', 
+      wildcard: 
+        label: "Public. Anyone can view"
+        default: true
+    }
+  ]
+
+  all = _.compact all
+  all
 
 ProposalRoles = ReactiveComponent
   displayName: 'ProposalRoles'
@@ -70,14 +73,14 @@ ProposalRoles = ReactiveComponent
     if !proposal.roles
       InitializeProposalRoles(proposal)
 
-    SpecifyRoles proposal, all_roles
+    SpecifyRoles proposal, all_roles()
 
 window.InitializeProposalRoles = (proposal) -> 
   current_user = fetch '/current_user'
   subdomain = fetch '/subdomain'
 
   proposal.roles = {}
-  for role in all_roles
+  for role in all_roles()
     proposal.roles[role.name] = []
     if role.wildcard && role.wildcard.default
       if role.name == 'observer' 

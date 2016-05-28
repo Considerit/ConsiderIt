@@ -1940,10 +1940,9 @@ Root = ReactiveComponent
   displayName: 'Root'
 
   render : -> 
-
-    subdomain = fetch '/subdomain'
     loc = fetch('location')
     app = fetch('/application')
+    subdomain = fetch '/subdomain'
     current_user = fetch('/current_user')
 
     DIV 

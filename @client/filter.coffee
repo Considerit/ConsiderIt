@@ -70,6 +70,7 @@ window.sorted_proposals = (cluster) ->
   show_icon = customization('show_proposer_icon', cluster_key)
 
   sort = fetch 'sort_proposals'
+  set_sort() if !sort.func? 
 
   proposal_rank = sort.func or customization("proposal_rank")
 
@@ -135,15 +136,17 @@ sort_options = [
 
 ]
 
-sort = fetch 'sort_proposals'
-if !sort.func?
-  if customization("proposal_rank")
-    sort.func = customization("proposal_rank")
-    sort.name = 'custom'
-  else 
-    _.extend sort, sort_options[0]
 
-  save sort 
+set_sort = -> 
+  sort = fetch 'sort_proposals'
+  if !sort.func?
+    if customization("proposal_rank")
+      sort.func = customization("proposal_rank")
+      sort.name = 'custom'
+    else 
+      _.extend sort, sort_options[0]
+
+    save sort 
 
 
 
@@ -159,6 +162,8 @@ ProposalFilter = ReactiveComponent
     filters = fetch 'filters'
 
     sort = fetch 'sort_proposals'
+
+    set_sort() if !sort.func? 
 
     DIV 
       style: _.defaults (@props.style or {})

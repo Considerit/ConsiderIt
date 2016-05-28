@@ -47,7 +47,6 @@
       React.renderComponent Saas({key: 'saas_root'}), document.getElementById('content')
 
     when 'proposal_embed'
-      console.log app_meta, app_meta.getAttribute('proposal')
       React.renderComponent ProposalEmbed({key: app_meta.getAttribute('proposal')}), document.getElementById('content')
 
 )()

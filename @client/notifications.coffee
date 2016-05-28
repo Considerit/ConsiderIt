@@ -257,8 +257,9 @@ window.hasUnreadNotifications = (proposal) ->
   unread = null if unread.length == 0 
   unread
 
-current_user = fetch '/current_user'
+
 window.notifications_for = (proposal) -> 
+  current_user = arest.cache['/current_user']
   return false unless current_user.notifications?
 
   (n for n in current_user.notifications when \

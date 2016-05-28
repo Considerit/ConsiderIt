@@ -22,6 +22,16 @@ window.Header = ReactiveComponent
       #     padding: 15
 
       #   "Consider.it will be down from approximately 3:30pm - 4:30pm PT Today, 1/15, for server upgrades."
+
+      DIV 
+        style: 
+          backgroundColor: 'black'
+          color: 'white'
+          padding: 10
+          fontSize: 24
+          textAlign: 'center'
+
+        "Consider.it server upgrade scheduled for 5:30pm - 6:00pm UTC"
     
       DIV 
         style: 

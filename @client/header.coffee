@@ -14,24 +14,16 @@ window.Header = ReactiveComponent
 
 
     DIV null, 
-      # DIV
+      # DIV 
+      #   id: 'upgrade-message'
       #   style: 
-      #     backgroundColor: logo_red
-      #     textAlign: 'center'
+      #     backgroundColor: 'black'
       #     color: 'white'
-      #     padding: 15
+      #     padding: 10
+      #     fontSize: 24
+      #     textAlign: 'center'
 
-      #   "Consider.it will be down from approximately 3:30pm - 4:30pm PT Today, 1/15, for server upgrades."
-
-      DIV 
-        style: 
-          backgroundColor: 'black'
-          color: 'white'
-          padding: 10
-          fontSize: 24
-          textAlign: 'center'
-
-        "Consider.it server upgrade scheduled for 5:30pm - 6:00pm UTC"
+      #   "Consider.it server upgrade scheduled for 5:30pm - 6:00pm UTC"
     
       DIV 
         style: 

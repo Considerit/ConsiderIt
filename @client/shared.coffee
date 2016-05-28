@@ -10,18 +10,24 @@ window.styles = ""
 
 window.TRANSITION_SPEED = 700   # Speed of transition from results to crafting (and vice versa) 
 
-window.LIVE_UPDATE_INTERVAL = 3000 * 60
+window.LIVE_UPDATE_INTERVAL = 3 * 60 * 1000
 
 # live updating
 setInterval ->
   dependent_keys = []
+  proposals = false 
   for key of arest.components_4_key.hash
     if key[0] == '/' && arest.components_4_key.get(key).length > 0 && \
-       !key.match(/\/(user|opinion|point)\//)
+       !key.match(/\/(user|opinion|point|proposals)\//)
 
-      if key != '/current_user' || fetch('/current_user').logged_in
+      if key.match(/\/proposal\//)
+        proposals = true 
+
+      else if key != '/current_user' || fetch('/current_user').logged_in
         arest.serverFetch(key)
         #console.log "FETCHING #{key}"
+  if proposals 
+    arest.serverFetch('/proposals')
 
 , LIVE_UPDATE_INTERVAL 
 

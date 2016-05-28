@@ -1982,7 +1982,7 @@ Root = ReactiveComponent
             backgroundColor: 'white'
             overflowX: 'hidden'
 
-          Avatars()
+          # Avatars()
           
           BrowserHacks()
 

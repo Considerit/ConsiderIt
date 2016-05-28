@@ -73,8 +73,8 @@ document.addEventListener "mouseout", (e) ->
 # Properties set on Avatar will be transferred to the outputted SPAN or IMG.
 #
 # Props
-#   img_size (default = 'thumb')
-#      The size of the embedded image. 'thumb' or 'large' or 'original'
+#   img_size (default = 'small')
+#      The size of the embedded image. 'small' or 'large' or 'original'
 #   hide_tooltip (default = false)
 #      Suppress the tooltip on hover. 
 #   anonymous (default = false)
@@ -95,24 +95,26 @@ window.Avatar = ReactiveComponent
            "avatar-#{user.key.split('/')[2]}"
 
     style = _.extend {}, @props.style
-    img_size = @props.img_size or 'thumb'
+    img_size = @props.img_size or 'small'
 
     show_avatar = !anonymous && !!user.avatar_file_name
     # Automatically upgrade the avatar size to 'large' if the width of the image is 
     # greater than the size of the b64 encoded image
-    if img_size == 'thumb' && style?.width >= 50 && !browser.is_ie9
+    if img_size == 'small' && style?.width >= 50 && !browser.is_ie9
       img_size = 'large' 
     # ...but we only use a larger image if this user actually has one and isn't anonymous
-    use_large_image = img_size != 'thumb' && show_avatar
+    use_large_image = img_size != 'small' && show_avatar
 
     if use_large_image
+      @props.src = avatarUrl user, img_size
+    else if show_avatar
       @props.src = avatarUrl user, img_size
     else
 
       current_user = fetch('/current_user')
       if current_user.user == user.key
         thumbnail = current_user.b64_thumbnail
-        if thumbnail? && img_size == 'thumb' 
+        if thumbnail? && img_size == 'small' 
           @props.src = thumbnail
       else
         # prevents a weird webkit outlining issue

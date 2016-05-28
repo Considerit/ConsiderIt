@@ -31,6 +31,7 @@ window.customization = (field, object_or_key) ->
         else 
           null
 
+
   ########
   # The chain of customizations: 
   #  1) any object-specific configuration
@@ -69,7 +70,6 @@ window.customization = (field, object_or_key) ->
 
   # if !value?
   #   console.error "Could not find a value for #{field} #{if key then key else ''}"
-
   value
 
 

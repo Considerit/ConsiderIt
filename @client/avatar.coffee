@@ -85,6 +85,7 @@ window.Avatar = ReactiveComponent
   displayName: 'Avatar'
   
   render : ->
+
     anonymous = @props.anonymous? && @props.anonymous 
 
     user = @data()
@@ -166,7 +167,7 @@ window.Avatar = ReactiveComponent
             display: 'block'
             position: 'relative'
             fontFamily: ff
-            top: style.height / 2 - heightWhenRendered(name, {fontSize: fontsize, fontFamily: ff}) / 2
+            top: .3 * fontsize #style.height / 2 - heightWhenRendered(name, {fontSize: fontsize, fontFamily: ff}) / 2
 
           name          
 

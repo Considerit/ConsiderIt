@@ -1878,7 +1878,7 @@ customizations['hala'] =
                   marginBottom: 8
 
                 IMG
-                  src: asset('hala/Seattle-Logo-and-signature.jpg')
+                  src: asset('hala/Seattle-Logo-and-signature2.jpg')
                   style: 
                     height: 70
 

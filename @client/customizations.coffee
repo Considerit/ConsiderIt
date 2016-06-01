@@ -1567,7 +1567,9 @@ customizations['hala'] =
           """The questions below assume that zoning changes will take place to fully implement MHA.  
              We are asking for input on how those zoning changes will look and feel.  These questions 
              are intended to get at the values that should drive these zoning changes.  What are the 
-             important principles for us to keep in mind when we propose zoning changes in the next few months?"""
+             important principles for us to keep in mind when we propose zoning changes in the next few months? 
+             Bear in mind, the following elements are only a portion of the MHA. We will continue adding 
+             pieces as they become available."""
 
 
         DIV 
@@ -3398,7 +3400,7 @@ customizations.dao = _.extend {},
             style: 
               marginBottom: 15
 
-            'Please give constructive feedback! Some tips:'
+            'Some tips for giving constructive feedback:'
 
           UL
             style: 

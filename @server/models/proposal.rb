@@ -116,7 +116,7 @@ class Proposal < ActiveRecord::Base
       # add clusters that aren't explictly named to the end
       proposals.each do |p|
         cluster = p.cluster || 'Proposals'
-        if !manual_clusters.include?(cluster)
+        if !manual_clusters.include?(cluster.strip)
           manual_clusters.append cluster
         end
       end
@@ -137,7 +137,7 @@ class Proposal < ActiveRecord::Base
     most_recent = {}
     points = []
     proposals.each do |proposal|
-      cluster = proposal.cluster || 'Proposals'
+      cluster = proposal.cluster ? proposal.cluster.strip : 'Proposals'
 
       # Impose access control restrictions for current user
       next if permit('read proposal', proposal) < 0

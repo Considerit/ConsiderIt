@@ -1825,10 +1825,10 @@ customizations['hala'] =
               
               SPAN 
                 style: paragraph_style
-                """HALA addresses Seattle’s housing affordability crisis on many fronts. As we take proposals from 
-                   idea to practice, we have been listening to the community to find out what matters to you. This 
-                  online conversation reflects the variety of what we’ve heard thus far and will continue to provide with 
-                  meaningful ideas on how to move forward."""
+                """HALA addresses Seattle's housing affordability crisis on many fronts. As we take proposals from idea 
+                   to practice, we have been listening to the community to find out what matters to you. This online 
+                   conversation reflects the variety of what many of the ideas we've heard thus far and will continue 
+                   to provide with meaningful ideas on how to move forward."""
 
 
             DIV 
@@ -1842,7 +1842,7 @@ customizations['hala'] =
                 style: paragraph_style
 
                 """
-                We have listed key recommendations below. This is an opportunity for you to shape the recommendations 
+                We have listed many key recommendations below. This is an opportunity for you to shape the recommendations 
                 before they are finalized."""
                 SPAN 
                   style: 

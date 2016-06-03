@@ -137,6 +137,33 @@ class Proposal < ActiveRecord::Base
 
     # group all proposals into clusters
     most_recent = {}
+
+    your_opinions = {}
+    Opinion.where(:user => current_user).each do |opinion|
+      your_opinions[opinion.proposal_id] = opinion
+    end 
+
+    if your_opinions.keys().length < proposals.length
+      missing_opinions = []
+      proposals.each do |proposal|
+        if !your_opinions.has_key?(proposal.id)
+          missing_opinions << Opinion.new({
+            :proposal_id => proposal.id,
+            :user => current_user ? current_user : nil,
+            :subdomain_id => current_subdomain.id,
+            :stance => 0,
+            :point_inclusions => '[]',
+          })
+        end 
+      end 
+
+      Opinion.import missing_opinions
+
+      Opinion.where(:user => current_user).each do |opinion|
+        your_opinions[opinion.proposal_id] = opinion
+      end 
+    end 
+
     points = []
     proposals.each do |proposal|
       cluster = proposal.cluster ? proposal.cluster.strip : 'Proposals'
@@ -149,7 +176,8 @@ class Proposal < ActiveRecord::Base
       end
 
       clustered_proposals[cluster] = [] if !clustered_proposals.has_key? cluster
-      clustered_proposals[cluster].append proposal.as_json
+
+      clustered_proposals[cluster].append proposal.as_json({}, your_opinions[proposal.id])
 
       if all_points 
         if subdomain.moderate_points_mode == 1
@@ -236,21 +264,15 @@ class Proposal < ActiveRecord::Base
 
   end
 
-  def as_json(options={})
+  def as_json(options={}, your_opinion=nil)
     options[:only] ||= Proposal.my_public_fields
     json = super(options)
 
     # Find an existing opinion for this user
-    #your_opinion = Opinion.find_by(:proposal => self, :user => current_user)
+    if !your_opinion
+      your_opinion = Opinion.get_or_make(self)
+    end 
 
-
-    # require 'benchmark'
-    # your_opinion = nil 
-    # $js += Benchmark.realtime { your_opinion = Opinion.get_or_make(self) }
-
-    # puts 'js', $js
-
-    your_opinion = Opinion.get_or_make(self)
     json['your_opinion'] = your_opinion #if your_opinion
 
 
@@ -266,9 +288,7 @@ class Proposal < ActiveRecord::Base
                 published=1;
       """
 
-
-
-    ops = o.map do |op|
+    json['opinions'] = o.map do |op|
 
       {
         key: "/opinion/#{op[1]}",
@@ -282,13 +302,9 @@ class Proposal < ActiveRecord::Base
       }
     end 
 
-    json['opinions'] = ops
-
-
 
     # The JSON.parse is expensive...
     json['histocache'] = Oj.load(json['histocache'] || '{}')
-
 
 
     make_key(json, 'proposal')

@@ -250,7 +250,7 @@ class Proposal < ActiveRecord::Base
 
     # puts 'js', $js
 
-    # your_opinion = Opinion.get_or_make(self)
+    your_opinion = Opinion.get_or_make(self)
     json['your_opinion'] = your_opinion #if your_opinion
 
 

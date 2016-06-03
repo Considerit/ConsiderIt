@@ -3335,9 +3335,12 @@ customizations.dao = _.extend {},
   show_proposer_icon: true
   collapse_descriptions_at: 300
 
-  proposal_filters: false
+  proposal_filters: true
 
   civility_pledge: true
+
+  # "cluster/all": 
+  #   default_proposal_sort: 'newest'
 
   proposal_tips: [
     'Describe your idea in sufficient depth for others to evaluate it. The title is usually not enough.'
@@ -3376,68 +3379,14 @@ customizations.dao = _.extend {},
   'cluster/Done':
     archived: true
 
-  'cluster/New': 
-    one_line_desc: 'Add new proposals here'
-    description: ->
-      min_requirements = [
-        'At least one sentence on the problem or opportunity'
-        'At least one sentence on the solution'
-        'A contractor who may undertake the work'
-      ]
-      community_tips = [
-        'If you vote strongly, add pro and con points to explain your reasoning, especially if you oppose'
-        'Use Con points to identify weak points and offer suggestions'
-        '\"Votes\" here are unofficial temperature checks'
-      ]
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-        
-        if fetch('cluster_filters').clusters == '*'
-
-          DIV 
-            style: dao_section_heading
-
-            'Proposal Pipeline'
-
-
-        DIV
-          style: dao_section_description
-
-          DIV 
-            style: 
-              marginBottom: 15
-
-            'Some tips for giving constructive feedback:'
-
-          UL
-            style: 
-              marginBottom: 15
-              marginLeft: 35
-
-            for tip in community_tips
-              LI 
-                style: 
-                  listStyle: 'outside'
-                tip 
-
-          DIV 
-            style: 
-              marginBottom: 15
-
-            'Proposers, please include at minimium:'
-
-          UL
-            style: 
-              marginBottom: 15
-              marginLeft: 35
-
-            for req in min_requirements
-              LI 
-                style: 
-                  listStyle: 'outside'
-                req 
-
+  # 'cluster/New': 
+  #   one_line_desc: 'Add new proposals here'
+  #   description: ->
+  #     community_tips = [
+  #       'If you vote strongly, add pro and con points to explain your reasoning, especially if you oppose'
+  #       'Use Con points to identify weak points and offer suggestions'
+  #       '\"Votes\" here are unofficial temperature checks'
+  #     ]
 
   'cluster/Proposals':
     homepage_label: 'Ideas'
@@ -3448,14 +3397,6 @@ customizations.dao = _.extend {},
       DIV 
         style: 
           width: HOMEPAGE_WIDTH()
-        
-        if fetch('cluster_filters').clusters == '*'
-
-          DIV 
-            style: dao_section_heading
-
-            'Inspire Us'
-
 
         DIV 
           style: dao_section_description
@@ -3463,26 +3404,6 @@ customizations.dao = _.extend {},
           """Post inspiring ideas. Maybe a contractor will put together a proposal based 
              on your idea. Or maybe you get excited by the feedback, and put together
              your own proposal."""
-
-  'cluster/Meta':
-    description: ->
-
-      if fetch('cluster_filters').clusters == '*'
-
-        DIV 
-          style: 
-            width: HOMEPAGE_WIDTH()
-          
-          DIV 
-            style: dao_section_heading
-
-            'Meta Proposals'
-
-
-          DIV 
-            style: dao_section_description
-
-            """Create proposals related to the operation of The DAO itself."""
 
 
   'cluster/Name the DAO':
@@ -3498,7 +3419,8 @@ customizations.dao = _.extend {},
         style:
           position: 'relative'
           background: "linear-gradient(-45deg, #{dao_purple}, #{dao_blue})"
-          paddingBottom: 20
+          paddingBottom: if !homepage then 20
+          borderBottom: "2px solid #{dao_yellow}"
 
 
         onMouseEnter: => @local.hover=true;  save(@local)
@@ -3510,11 +3432,6 @@ customizations.dao = _.extend {},
         STYLE null,
           '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
              p {margin-bottom: 1em}'''
-
-        # LINK
-        #   href: "http://fonts.googleapis.com/css?family=Montserrat:200,300,400,500,700"
-        #   rel: 'stylesheet'
-        #   type: 'text/css'
 
 
         DIV 
@@ -3577,7 +3494,8 @@ customizations.dao = _.extend {},
 
             DIV 
               style: 
-                paddingBottom: 50
+                #paddingBottom: 50
+                position: 'relative'
 
               DIV 
                 style: 
@@ -3627,7 +3545,6 @@ customizations.dao = _.extend {},
 
               DIV 
                 style: 
-                  opacity: .7
                   position: 'relative'
                   color: 'white'
                   fontSize: 20
@@ -3636,19 +3553,43 @@ customizations.dao = _.extend {},
                   style: 
                     position: 'relative'
                     left: 100
-
                   DIV 
                     style: 
                       width: 260
                       position: 'relative'
 
-                    'Ideas that inspire the community & contractors.'
+                    SPAN style: opacity: .7,
+                      'Ideas that inspire the community & contractors.'
+
+                    BR null
+
+                    A 
+                      style: 
+                        opacity: if !@local.hover_idea then .7
+                        display: 'inline-block'
+                        marginTop: 6
+                        color: dao_yellow
+                        border: "1px solid #{dao_yellow}"
+                        #textDecoration: 'underline'
+                        fontSize: 14
+                        fontWeight: 600
+                        #backgroundColor: "rgba(255,255,255,.2)"
+                        padding: '4px 12px'
+                        borderRadius: 8
+                      onMouseEnter: => @local.hover_idea = true; save @local
+                      onMouseLeave: => @local.hover_idea = null; save @local
+
+                      href: '/proposal/new?category=Proposals'
+
+                      t("add new")
 
                     SVG 
                       style: 
                         position: 'absolute'
                         top: 75
                         left: '35%'
+                        opacity: .5
+
                       width: 67 * 1.05
                       height: 204 * 1.05
                       viewBox: "0 0 67 204" 
@@ -3665,20 +3606,44 @@ customizations.dao = _.extend {},
                   style: 
                     position: 'relative'
                     left: 370
-                    marginTop: 30
+                    marginTop: 0 #30
 
                   DIV 
                     style: 
                       width: 260
                       position: 'relative'
 
-                    'Proposals working toward a smart contract.'
+                    SPAN style: opacity: .7,
+                      'Proposals working toward a smart contract.'
+                    BR null
+
+                    A 
+                      style: 
+                        opacity: if !@local.hover_new then .7
+                        display: 'inline-block'
+                        marginTop: 6
+                        color: dao_yellow
+                        border: "1px solid #{dao_yellow}"
+                        #textDecoration: 'underline'
+                        fontSize: 14
+                        fontWeight: 600
+                        #backgroundColor: "rgba(255,255,255,.2)"
+                        padding: '4px 12px'
+                        borderRadius: 8
+                      onMouseEnter: => @local.hover_new = true; save @local
+                      onMouseLeave: => @local.hover_new = null; save @local
+
+                      href: '/proposal/new?category=New'
+
+                      t("add new")
 
                     SVG 
                       style: 
                         position: 'absolute'
                         top: 75
                         left: '35%'
+                        opacity: .5
+
                       width: 67 * .63
                       height: 204 * .63
                       viewBox: "0 0 67 204" 
@@ -3695,21 +3660,43 @@ customizations.dao = _.extend {},
                   style: 
                     position: 'relative'
                     left: 630
-                    marginTop: 30
+                    marginTop: 0 #30
 
                   DIV 
                     style: 
                       width: 260
                       position: 'relative'
 
-                    'Issues related to the operation of The DAO.'
+                    SPAN style: opacity: .7,
+                      'Issues related to the operation of The DAO.'
 
+                    BR null
+                    A 
+                      style: 
+                        opacity: if !@local.hover_meta then .7
+                        display: 'inline-block'
+                        marginTop: 6
+                        color: dao_yellow
+                        border: "1px solid #{dao_yellow}"
+                        #textDecoration: 'underline'
+                        fontSize: 14
+                        fontWeight: 600
+                        #backgroundColor: "rgba(255,255,255,.2)"
+                        padding: '4px 12px'
+                        borderRadius: 8
+                      onMouseEnter: => @local.hover_meta = true; save @local
+                      onMouseLeave: => @local.hover_meta = null; save @local
+
+                      href: '/proposal/new?category=Meta'
+
+                      t("add new")
 
                     SVG 
                       style: 
                         position: 'absolute'
                         top: 75
                         left: '35%'
+                        opacity: .5
                       width: 67 * .21
                       height: 204 * .21
                       viewBox: "0 0 67 204" 
@@ -3721,6 +3708,11 @@ customizations.dao = _.extend {},
                           strokeWidth: 1 / .21
                           stroke: 'white' 
                           d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
+
+
+
+              if customization('cluster_filters')
+                ClusterFilter()
 
 
 

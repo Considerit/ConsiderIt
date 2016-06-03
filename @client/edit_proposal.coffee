@@ -57,7 +57,11 @@ window.EditProposal = ReactiveComponent
       display: 'block'      
 
 
-
+    if @props.fresh 
+      location = fetch 'location'
+      cluster = location.query_params.category or ''
+    else 
+      cluster = proposal.cluster 
 
     if !@local.description_fields && (@props.fresh || @data().slug)
       @local.description_fields = if @data().description_fields 
@@ -105,43 +109,81 @@ window.EditProposal = ReactiveComponent
             style: 
               fontSize: 30
               fontWeight: 700
-            if @props.fresh then t('create_new_proposal') else "#{capitalize(t('edit'))} '#{proposal.name}'"
 
-          DIV 
-            style: 
-              fontSize: 18
+            if @props.fresh 
+              if subdomain.name == 'dao' && cluster == 'Proposals'
+                'Add a new inspiring idea'
+              else if subdomain.name == 'dao' && cluster == 'Meta'
+                'Add a new meta proposal'
+              else if subdomain.name == 'dao' && cluster == 'New'
+                'Create a new proposal. Please include:'
 
-            t('make_it') + ' ' 
-            SPAN 
+              else
+                t('create_new_proposal') 
+            else 
+              "#{capitalize(t('edit'))} '#{proposal.name}'"
+
+          if subdomain.name == 'dao' && cluster == 'New'
+            min_requirements = [
+              'At least one sentence on the problem or opportunity.'
+              'At least one sentence on the solution.'
+              'Address the execution of the work, such as by identifying a contractor.'
+              'Links to any external converations (e.g. on forum.daohub.org), contract code, external resources, or videos.'
+            ]
+            UL 
               style: 
-                fontWeight: 600
-              t("unambiguous")
-            ' ' + t('and') + ' '
-            SPAN 
+                fontSize: 18
+                marginLeft: 40
+
+              for req in min_requirements
+                LI null, 
+                  req 
+
+          if subdomain.name == 'dao' && cluster == 'Proposals'
+            DIV 
               style: 
-                fontWeight: 600
-              t('error_free')
-            '.'
+                fontSize: 18
 
-        DIV style: block_style,
-          LABEL htmlFor:'slug', style: label_style, 'URL:'
+              """Toss out an idea. Maybe a contractor will put together a proposal 
+                 based on your idea. Or maybe you get excited by the feedback, and 
+                 put together your own more detailed proposal for funding."""
+          else 
+            DIV 
+              style: 
+                fontSize: 18
 
-          BR null
-          SPAN
-            style: 
-              fontSize: 20
-              color: '#aaa'
-            "#{location.origin}/"
-          INPUT 
-            id:'slug'
-            name:'slug'
-            pattern:'^.{3,}'
-            placeholder: t('url_instr')
-            required:'required'
-            defaultValue: if @props.fresh then null else proposal.slug
-            style: _.extend {}, input_style,
-              width: 400
-              display: 'inline-block'
+              t('make_it') + ' ' 
+              SPAN 
+                style: 
+                  fontWeight: 600
+                t("unambiguous")
+              ' ' + t('and') + ' '
+              SPAN 
+                style: 
+                  fontWeight: 600
+                t('error_free')
+              '.'
+
+        if fetch('/current_user').is_admin
+          DIV style: block_style,
+            LABEL htmlFor:'slug', style: label_style, 'URL:'
+
+            BR null
+            SPAN
+              style: 
+                fontSize: 20
+                color: '#aaa'
+              "#{location.origin}/"
+            INPUT 
+              id:'slug'
+              name:'slug'
+              pattern:'^.{3,}'
+              placeholder: t('url_instr')
+              required:'required'
+              defaultValue: if @props.fresh then null else proposal.slug
+              style: _.extend {}, input_style,
+                width: 400
+                display: 'inline-block'
 
         DIV style: block_style,
           LABEL htmlFor:'name', style: label_style, t('Summary') + ':'
@@ -276,7 +318,7 @@ window.EditProposal = ReactiveComponent
             name: 'cluster'
             pattern: '^.{3,}'
             placeholder: 'The proposal will be shown on the homepage under this category. (Default="Proposals")'
-            defaultValue: if @props.fresh then '' else proposal.cluster
+            defaultValue: cluster 
             style: input_style
           
         DIV 
@@ -396,7 +438,9 @@ window.EditProposal = ReactiveComponent
 
     name = $el.find('#name').val()
     description = fetch("description-#{@data().key}").html
-    slug = $el.find('#slug').val()
+
+    slug = $el.find('#slug').val() or slugify(name)
+
     cluster = $el.find('#cluster').val()
     cluster = null if cluster == ""
 

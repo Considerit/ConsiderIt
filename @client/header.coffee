@@ -28,7 +28,7 @@ window.Header = ReactiveComponent
       DIV 
         style: 
           position: 'relative'
-          zIndex: 2
+          zIndex: if subdomain.name == 'dao' then 1 else 2
           margin: '0 auto'
           backgroundColor: 'white'
 

@@ -31,7 +31,7 @@ Development = ReactiveComponent
         opacity: if @local.hover_top then 1 else 0
         backgroundColor: 'black'
         color: 'white'
-        padding: 30
+        padding: 15
 
       onTouchEnd: (e) => @local.hover_top = true; save @local
       onMouseEnter: (e) => @local.hover_top = true; save @local

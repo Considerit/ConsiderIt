@@ -239,21 +239,22 @@ window.Histogram = ReactiveComponent
     [SPAN
       style:
         position: 'absolute'
-        left: -21
-        bottom: -12
-        fontSize: 19
-        fontWeight: 500
+        left: 0
+        bottom: -21
+        fontSize: 14
+        fontWeight: 400
         color: '#999'
-      '–'
+      customization("slider_pole_labels.group.oppose", @props.proposal)
     SPAN
       style:
         position: 'absolute'
-        right: -21
-        bottom: -13
-        fontSize: 19
-        fontWeight: 500
+        right: 0
+        bottom: -21
+        fontSize: 14
+        fontWeight: 400
         color: '#999'
-      '+']
+      customization("slider_pole_labels.group.support", @props.proposal)
+    ]
 
   drawSelectionArea: -> 
     hist = fetch @props.key
@@ -364,7 +365,11 @@ window.Histogram = ReactiveComponent
         if filter_out.users?[user]
           continue
 
-        fetch(opinion) # subscribe to changes so physics sim will get rerun...
+        o = fetch(opinion) # subscribe to changes so physics sim will get rerun...
+
+        # sub_creation = new Date(fetch('/subdomain').created_at).getTime()
+        # creation = new Date(o.created_at).getTime()
+        # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
 
         if @props.backgrounded
           avatar_style = if fetch('/current_user').user == user 
@@ -387,6 +392,8 @@ window.Histogram = ReactiveComponent
           style: _.extend {}, avatar_style, 
             left: pos?[0]
             top: pos?[1]
+            # opacity: opacity
+
 
   onClick: (ev) -> 
 

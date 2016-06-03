@@ -130,7 +130,7 @@ window.get_clusters = ->
       a.push cluster 
   for cluster in a 
     c.push cluster 
-  c
+  [c,a]
 
 
 
@@ -143,7 +143,7 @@ window.TagHomepage = ReactiveComponent
     current_user = fetch('/current_user')
 
     proposals = []
-    clusters = get_clusters()
+    [clusters, archived] = get_clusters()
     hues = getNiceRandomHues clusters.length
     colors = {}
     for cluster, idx in clusters
@@ -200,15 +200,15 @@ window.SimpleHomepage = ReactiveComponent
     current_user = fetch('/current_user')
 
     if !proposals.clusters 
-      return loading_indicator
+      return DIV null, loading_indicator
 
-    clusters = get_clusters()
+    [clusters, archived] = get_clusters()
 
     # collapse by default archived clusters
     collapsed = fetch 'collapsed'
     if !collapsed.clusters?
       collapsed.clusters = {}
-      for cluster in a 
+      for cluster in archived 
         collapsed.clusters["cluster/#{cluster.name}"] = 1
       save collapsed
 

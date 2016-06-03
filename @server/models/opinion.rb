@@ -41,11 +41,9 @@ class Opinion < ActiveRecord::Base
 
     # Otherwise create one
     if your_opinion.nil?
-      # pp 'creating'
       your_opinion = Opinion.create(:proposal_id => proposal.id,
                                     :user => user ? user : nil,
                                     :subdomain_id => current_subdomain.id,
-                                    :published => false,
                                     :stance => 0,
                                     :point_inclusions => '[]',
                                    )

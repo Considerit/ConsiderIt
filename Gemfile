@@ -15,6 +15,7 @@ gem "bcrypt"
 gem "mysql2"
 gem 'acts_as_tenant' # https://github.com/ErwinM/acts_as_tenant
 gem 'deep_cloneable'
+gem 'activerecord-import' # bulk imports for performance
 
 #############
 # VIEWS / FORMS / CLIENT

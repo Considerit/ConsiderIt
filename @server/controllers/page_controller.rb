@@ -44,7 +44,7 @@ class PageController < ApplicationController
       authorize! "read proposal", proposal, "/page/#{proposal.slug}"
 
       # Ensure an existing opinion for this user
-      your_opinion = Opinion.get_or_make(proposal)
+      # your_opinion = Opinion.get_or_make(proposal)
 
       dirty_key "/page/#{proposal.slug}"
       dirty_key '/users'

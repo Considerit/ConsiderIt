@@ -1,3 +1,5 @@
+# $js = 0 
+
 # coding: utf-8
 class Proposal < ActiveRecord::Base
   has_many :points, :dependent => :destroy
@@ -240,9 +242,17 @@ class Proposal < ActiveRecord::Base
 
     # Find an existing opinion for this user
     #your_opinion = Opinion.find_by(:proposal => self, :user => current_user)
-    your_opinion = Opinion.get_or_make(self)
 
+
+    # require 'benchmark'
+    # your_opinion = nil 
+    # $js += Benchmark.realtime { your_opinion = Opinion.get_or_make(self) }
+
+    # puts 'js', $js
+
+    # your_opinion = Opinion.get_or_make(self)
     json['your_opinion'] = your_opinion #if your_opinion
+
 
     # published_opinions = self.opinions.published
     # ops = published_opinions.public_fields.map {|x| x.as_json}
@@ -259,6 +269,7 @@ class Proposal < ActiveRecord::Base
 
 
     ops = o.map do |op|
+
       {
         key: "/opinion/#{op[1]}",
         created_at: op[0],
@@ -267,18 +278,25 @@ class Proposal < ActiveRecord::Base
         user: "/user/#{op[5]}",
         published: true,
         stance: op[4].to_f,   
-        point_inclusions: JSON.parse(op[2] || '[]').map! {|p| "/point/#{p}"}
+        point_inclusions: Oj.load(op[2] || '[]').map! {|p| "/point/#{p}"}
       }
     end 
 
     json['opinions'] = ops
 
-    json['histocache'] = JSON.parse(json['histocache'] || '{}')
+
+
+    # The JSON.parse is expensive...
+    json['histocache'] = Oj.load(json['histocache'] || '{}')
+
+
 
     make_key(json, 'proposal')
     stubify_field(json, 'user')
 
-    json['assessment_enabled'] = fact_check_request_enabled?
+    if fact_check_request_enabled?
+      json['assessment_enabled'] = true
+    end
 
     if permit('update proposal', self) > 0
       json['roles'] = self.user_roles
@@ -319,7 +337,7 @@ class Proposal < ActiveRecord::Base
   #
   # TODO: consolidate with subdomain.user_roles
   def user_roles(filter = false)
-    result = JSON.parse(roles || "{}")
+    result = Oj.load(roles || "{}")
 
 
     ['editor', 'writer', 'commenter', 'opiner', 'observer'].each do |role|

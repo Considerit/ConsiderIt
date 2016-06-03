@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160120011325) do
+ActiveRecord::Schema.define(version: 20160603205045) do
 
   create_table "assessments", force: :cascade do |t|
     t.integer  "user_id",         limit: 4
@@ -176,7 +176,6 @@ ActiveRecord::Schema.define(version: 20160120011325) do
     t.integer  "user_id",          limit: 4
     t.text     "explanation",      limit: 65535
     t.float    "stance",           limit: 24
-    t.integer  "stance_segment",   limit: 4
     t.boolean  "published",                      default: false
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -186,8 +185,8 @@ ActiveRecord::Schema.define(version: 20160120011325) do
 
   add_index "opinions", ["proposal_id"], name: "index_positions_on_option_id", using: :btree
   add_index "opinions", ["published"], name: "index_opinions_on_published", using: :btree
-  add_index "opinions", ["stance_segment"], name: "index_opinions_on_stance_segment", using: :btree
   add_index "opinions", ["subdomain_id", "proposal_id", "published"], name: "index_opinions_on_subdomain_id_and_proposal_id_and_published", using: :btree
+  add_index "opinions", ["subdomain_id", "proposal_id", "user_id"], name: "index_opinions_on_subdomain_id_and_proposal_id_and_user_id", using: :btree
   add_index "opinions", ["subdomain_id"], name: "index_opinions_on_subdomain_id", using: :btree
   add_index "opinions", ["user_id"], name: "index_opinions_on_user_id", using: :btree
 

@@ -64,7 +64,7 @@ class Subdomain < ActiveRecord::Base
   #   description
   #      HTML description of the site, displayed in the default headers
   def branding_info
-    brands = JSON.parse(self.branding || "{}")
+    brands = Oj.load(self.branding || "{}")
 
     if !brands.has_key?('primary_color') || brands['primary_color'] == ''
       brands['primary_color'] = '#eee'
@@ -86,7 +86,7 @@ class Subdomain < ActiveRecord::Base
   #
   # TODO: consolidate with proposal.user_roles
   def user_roles(filter = false)
-    result = JSON.parse(roles || "{}")
+    result = Oj.load(roles || "{}")
     ['admin', 'moderator', 'evaluator', 'proposer', 'visitor'].each do |role|
 
       # default roles if they haven't been set

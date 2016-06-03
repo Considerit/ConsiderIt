@@ -40,6 +40,10 @@ group :development, :test do
   gem 'thin'
   gem 'ruby-prof'
   # gem 'rack-mini-profiler'
+
+  gem 'oj'
+  gem 'oj_mimic_json' # we need this for Rails 4.1.x
+
 end
 
 group :production do

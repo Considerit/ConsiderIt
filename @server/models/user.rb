@@ -49,7 +49,7 @@ class User < ActiveRecord::Base
         raise "Could not store image for user #{self.id}, it is too large!"
       end
 
-      JSON.parse((self.active_in or '[]')).each do |subdomain_id|
+      Oj.load((self.active_in or '[]')).each do |subdomain_id|
         Rails.cache.delete("avatar-digest-#{subdomain_id}") 
       end
     end
@@ -74,7 +74,7 @@ class User < ActiveRecord::Base
       name: name,
       reset_password_token: nil,
       b64_thumbnail: b64_thumbnail,
-      tags: JSON.parse(tags || '{}'),
+      tags: Oj.load(tags || '{}'),
       is_super_admin: self.super_admin,
       is_admin: is_admin?,
       is_moderator: permit('moderate content', nil) > 0,
@@ -102,7 +102,7 @@ class User < ActiveRecord::Base
     end
     users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
     # if current_user.is_admin?
-    users.each{|u| u['tags']=JSON.parse(u['tags']||'{}')}      
+    users.each{|u| u['tags']=Oj.load(u['tags']||'{}')}      
     # end
 
     {key: '/users', users: users.as_json}
@@ -114,7 +114,7 @@ class User < ActiveRecord::Base
     result = { 'key' => "/user/#{id}",
                'name' => name,
                'avatar_file_name' => avatar_file_name,
-               'tags' => JSON.parse(tags || '{}')  }
+               'tags' => Oj.load(tags || '{}')  }
                   # TODO: filter private tags
     if current_user.is_admin?
       result['email'] = email
@@ -134,7 +134,7 @@ class User < ActiveRecord::Base
       return self.super_admin
     else
       subdomain ||= current_subdomain
-      roles = subdomain.roles ? JSON.parse(subdomain.roles) : {}
+      roles = subdomain.roles ? Oj.load(subdomain.roles) : {}
       return roles.key?(role) && roles[role] && roles[role].include?("/user/#{id}")
     end
   end
@@ -155,7 +155,7 @@ class User < ActiveRecord::Base
   def add_to_active_in(subdomain=nil)
     subdomain ||= current_subdomain
     
-    active_subdomains = JSON.parse(self.active_in || "[]")
+    active_subdomains = Oj.load(self.active_in || "[]")
 
     if !active_subdomains.include?("#{subdomain.id}")
       active_subdomains.push "#{subdomain.id}"
@@ -174,7 +174,7 @@ class User < ActiveRecord::Base
   end
 
   def emails_received
-    JSON.parse(self.emails || "{}")
+    Oj.load(self.emails || "{}")
   end
 
   def sent_email_about(key, time=nil)
@@ -190,7 +190,7 @@ class User < ActiveRecord::Base
   def subscription_settings(subdomain)
 
     notifier_config = Notifier::config
-    my_subs = JSON.parse(subscriptions || "{}")[subdomain.id.to_s] || {}
+    my_subs = Oj.load(subscriptions || "{}")[subdomain.id.to_s] || {}
 
     for event, config in notifier_config
       if config.key? 'allowed'
@@ -229,7 +229,7 @@ class User < ActiveRecord::Base
   def update_subscriptions(new_settings, subdomain = nil)
     subdomain ||= current_subdomain
 
-    subs = JSON.parse(subscriptions || "{}")
+    subs = Oj.load(subscriptions || "{}")
     subs[subdomain.id.to_s] = new_settings
 
     # Strip out unnecessary items that we can reconstruct from the 
@@ -394,7 +394,7 @@ class User < ActiveRecord::Base
     # log table, which doesn't use user_id
     Log.where(:who => newer_user).update_all(who: older_user)
 
-    subs = JSON.parse(self.active_in || '[]').concat(JSON.parse(user.active_in || '[]')).uniq
+    subs = Oj.load(self.active_in || '[]').concat(Oj.load(user.active_in || '[]')).uniq
     self.active_in = JSON.dump subs
     save 
 

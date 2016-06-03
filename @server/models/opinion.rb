@@ -30,16 +30,18 @@ class Opinion < ActiveRecord::Base
     user = current_user
     
     # First try to find a published opinion for this user
-    your_opinion = Opinion.where(:proposal_id => proposal.id, 
-                                 :user => user)
-    if your_opinion.length > 1
-      pp "Duplicate opinions for user #{user}: #{your_opinion.map {|o| o.id} }!"
-    end
+    your_opinion = proposal.opinions.where(:user => user)
+
+    # if your_opinion.length > 1
+    #   pp "Duplicate opinions for user #{user}: #{your_opinion.map {|o| o.id} }!"
+    # end
+    
     your_opinion = your_opinion.first
 
 
     # Otherwise create one
     if your_opinion.nil?
+      # pp 'creating'
       your_opinion = Opinion.create(:proposal_id => proposal.id,
                                     :user => user ? user : nil,
                                     :subdomain_id => current_subdomain.id,
@@ -47,7 +49,6 @@ class Opinion < ActiveRecord::Base
                                     :stance => 0,
                                     :point_inclusions => '[]',
                                    )
-      
     end
     your_opinion
   end

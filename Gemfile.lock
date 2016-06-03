@@ -55,6 +55,8 @@ GEM
       activemodel (= 4.2.3)
       activesupport (= 4.2.3)
       arel (~> 6.0)
+    activerecord-import (0.13.0)
+      activerecord (>= 3.0)
     activerecord-session_store (0.1.1)
       actionpack (>= 4.0.0, < 5)
       activerecord (>= 4.0.0, < 5)
@@ -189,6 +191,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord-import
   activerecord-session_store
   acts_as_tenant
   aws-sdk (~> 1.60)

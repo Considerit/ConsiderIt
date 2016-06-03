@@ -81,19 +81,115 @@ window.cluster_styles = ->
 
   first_header =
     fontSize: 36
-    marginBottom: 40
+    marginBottom: 30
     fontWeight: 600
   _.extend(first_header, first_column)
 
   secnd_header =
     fontSize: 36
-    marginBottom: 45
     fontWeight: 600
     position: 'relative'
     whiteSpace: 'nowrap'
   _.extend(secnd_header, secnd_column)
 
   [first_column, secnd_column, first_header, secnd_header]
+
+
+
+window.get_clusters = -> 
+  proposals = fetch('/proposals')
+  # make sure that proposals w/o a cluster use the default cluster
+  clusters = {}
+  for c in (proposals.clusters or [])
+    if c.name 
+      clusters[c.name] = {}
+      for own k,v of c
+        clusters[c.name][k] = v
+    else 
+      unnamed = {}
+      for own k,v of c 
+        unnamed[k] = v 
+
+    if unnamed?
+      if clusters[default_cluster_name]
+        c = clusters[default_cluster_name]
+        c.proposals = c.proposals.concat unnamed.proposals
+      else 
+        unnamed.name = default_cluster_name
+        clusters[default_cluster_name] = unnamed
+
+  # move archived clusters to the back 
+  clusters = _.values clusters
+  c = []
+  a = []
+  for cluster in clusters 
+    options = cluster_options "cluster/#{cluster.name}"
+    if !options.archived
+      c.push cluster 
+    else 
+      a.push cluster 
+  for cluster in a 
+    c.push cluster 
+  c
+
+
+
+window.TagHomepage = ReactiveComponent
+  displayName: 'TagHomepage'
+
+  render: -> 
+    subdomain = fetch('/subdomain')
+    proposals = fetch('/proposals')
+    current_user = fetch('/current_user')
+
+    proposals = []
+    clusters = get_clusters()
+    hues = getNiceRandomHues clusters.length
+    colors = {}
+    for cluster, idx in clusters
+      proposals = proposals.concat cluster.proposals
+      colors[cluster.name] = hues[idx]
+
+    proposals = sorted_proposals(proposals)
+
+    [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+
+    DIV null,
+
+      DIV
+        className: 'simplehomepage'
+        style: 
+          fontSize: 22
+          margin: '45px auto'
+          width: HOMEPAGE_WIDTH()
+          position: 'relative'
+
+        STYLE null,
+          '''a.proposal:hover {border-bottom: 1px solid grey}'''
+
+        ProposalFilter
+          style: 
+            width: first_column.width
+            marginBottom: 20
+            paddingLeft: if customization('show_proposer_icon') then 68
+            display: 'inline-block'
+            verticalAlign: 'top'
+
+
+        DIV null, 
+          for proposal,idx in proposals
+            DIV 
+              key: "collapsed#{proposal.key}"
+
+              CollapsedProposal 
+                key: "collapsed#{proposal.key}"
+                proposal: proposal
+                options: cluster_options("cluster/proposals")
+                show_category: true
+                category_color: hsv2rgb(colors[proposal.cluster], .7, .8)
+
+
+
 
 window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'
@@ -103,41 +199,10 @@ window.SimpleHomepage = ReactiveComponent
     proposals = fetch('/proposals')
     current_user = fetch('/current_user')
 
-    line_height = '1.8em'
+    if !proposals.clusters 
+      return loading_indicator
 
-    # make sure that proposals w/o a cluster use the default cluster
-    clusters = {}
-    for c in proposals.clusters
-      if c.name 
-        clusters[c.name] = {}
-        for own k,v of c
-          clusters[c.name][k] = v
-      else 
-        unnamed = {}
-        for own k,v of c 
-          unnamed[k] = v 
-
-      if unnamed?
-        if clusters[default_cluster_name]
-          c = clusters[default_cluster_name]
-          c.proposals = c.proposals.concat unnamed.proposals
-        else 
-          unnamed.name = default_cluster_name
-          clusters[default_cluster_name] = unnamed
-
-    # move archived clusters to the back 
-    clusters = _.values clusters
-    c = []
-    a = []
-    for cluster in clusters 
-      options = cluster_options "cluster/#{cluster.name}"
-      if !options.archived
-        c.push cluster 
-      else 
-        a.push cluster 
-    for cluster in a 
-      c.push cluster 
-    clusters = c
+    clusters = get_clusters()
 
     # collapse by default archived clusters
     collapsed = fetch 'collapsed'
@@ -149,10 +214,12 @@ window.SimpleHomepage = ReactiveComponent
 
     cluster_filters = fetch 'cluster_filters'
 
+
+    if subdomain.name == 'dao' && cluster_filters.clusters == '*'
+      return TagHomepage()
+
     DIV null,
 
-      if customization('cluster_filters')
-        ClusterFilter()
       DIV
         className: 'simplehomepage'
         style: 
@@ -283,227 +350,30 @@ window.SimpleHomepage = ReactiveComponent
           # height: 30
 
 
-ClusterFilter = ReactiveComponent
-  displayName: 'ClusterFilter'
-
-  render: -> 
-    filters = ([k,v] for k,v of customization('cluster_filters'))
-    filters.unshift ["Show all", '*']
-
-    cluster_filters = fetch 'cluster_filters'
-    if !cluster_filters.filter?
-      cluster_filters.filter = 'Show all'
-      cluster_filters.clusters = '*'
-      save cluster_filters
+window.NewProposal = ReactiveComponent
+  displayName: 'NewProposal'
 
 
-    DIV 
-      style: 
-        backgroundColor: '#D8D8D8'
-        fontSize: 22
-        fontWeight: 600
-        color: '#555'
+  render : -> 
+    cluster_name = @props.cluster_name 
+    cluster_key = "cluster/#{cluster_name}"
 
-      DIV 
-        style: 
-          width: 900 #HOMEPAGE_WIDTH()
-          margin: 'auto'
-          textAlign: 'center'
-
-        for [filter, clusters], idx in filters 
-          do (filter, clusters) =>
-            current = cluster_filters.filter == filter 
-            hovering = @local.hovering == filter
-            SPAN 
-              style: 
-                borderLeft: if idx == 0 then '1px solid #CACACA'
-                borderRight: '1px solid #CACACA'
-                padding: '12px 40px'
-                display: 'inline-block'
-                cursor: 'pointer'
-                color: if current then 'white' else if hovering then 'black'
-                backgroundColor: if current then '#FF3834'
-                position: 'relative'
-              onMouseEnter: => 
-                if cluster_filters.filter != filter 
-                  @local.hovering = filter 
-                  save @local 
-              onMouseLeave: => 
-                @local.hovering = null 
-                save @local
-              onClick: => 
-                cluster_filters.filter = filter 
-                cluster_filters.clusters = clusters
-                save cluster_filters
-
-              filter
-
-              if current
-                tw = 45
-                th = 10
-                SPAN 
-                  style: cssTriangle 'bottom', '#FF3834', tw, th,
-                    position: 'absolute'
-                    left: -tw / 2
-                    marginLeft: '50%'
-                    bottom: -th + 1
-                    width: tw
-                    height: th
-                    display: 'inline-block'
+    cluster_state = fetch(@props.local)
 
 
+    return SPAN null if cluster_name == 'Blocksize Survey'
 
-
-          # if clusters == '*'
-
-
-
-
-Cluster = ReactiveComponent
-  displayName: 'Cluster'
-
-
-  # cluster of proposals
-  render: -> 
-    options = @props.options
-    cluster = @props.cluster
-
-    current_user = fetch '/current_user'
-    subdomain = fetch '/subdomain'
-
-    # subscribe to a key that will alert us to when sort order has changed
-    fetch('homepage_you_updated_proposal')
-
-    collapsed = fetch 'collapsed'
-    is_collapsed = collapsed.clusters[@props.key]
-
-    proposals = sorted_proposals(cluster)
-    return SPAN null if !proposals || (proposals.length == 0 && !cluster.always_shown)
-
-    DIV
-      key: cluster.name
-      id: if cluster.name && cluster.name then cluster.name.toLowerCase()
-      style: 
-        paddingBottom: if !is_collapsed then 45
-        position: 'relative'
-
-      @drawClusterHeading cluster, options, is_collapsed
-
-      if !is_collapsed
-        DIV null, 
-          for proposal,idx in proposals
-            DIV 
-              key: "collapsed#{proposal.key}"
-
-              CollapsedProposal 
-                key: "collapsed#{proposal.key}"
-                proposal: proposal
-                options: options 
-
-              @drawThreshold(subdomain, cluster, idx)
-
-          if customization('show_new_proposal_button')
-            @drawAddNew cluster, options
-
-
-  drawTips : -> 
-    # guidelines/tips for good points
-    mobile = browser.is_mobile
-
-    guidelines_w = if mobile then 'auto' else 330
-    guidelines_h = 300
-
-    tips = customization('proposal_tips')
-
-    DIV 
-      style:
-        position: if mobile then 'relative' else 'absolute'
-        left: 512
-        width: guidelines_w
-        color: focus_blue
-        zIndex: 1
-        marginBottom: if mobile then 20
-        backgroundColor: if mobile then 'rgba(255,255,255,.85)'
-        fontSize: 14
-
-
-      if !mobile
-        SVG
-          width: guidelines_w + 28
-          height: guidelines_h
-          viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
-          style: css.crossbrowserify
-            position: 'absolute'
-            transform: 'scaleX(-1)'
-            left: -20
-
-          DEFS null,
-            svg.dropShadow 
-              id: "guidelines-shadow"
-              dx: '0'
-              dy: '2'
-              stdDeviation: "3"
-              opacity: .5
-
-          PATH
-            stroke: focus_blue #'#ccc'
-            strokeWidth: 1
-            fill: "#FFF"
-            filter: 'url(#guidelines-shadow)'
-
-            d: """
-                M#{guidelines_w},33
-                L#{guidelines_w},0
-                L1,0
-                L1,#{guidelines_h} 
-                L#{guidelines_w},#{guidelines_h} 
-                L#{guidelines_w},58
-                L#{guidelines_w + 20},48
-                L#{guidelines_w},33 
-                Z
-               """
-      DIV 
-        style: 
-          padding: if !mobile then '14px 18px'
-          position: 'relative'
-          marginLeft: 5
-
-        SPAN 
-          style: 
-            fontWeight: 600
-            fontSize: if PORTRAIT_MOBILE() then 70 else if LANDSCAPE_MOBILE() then 36
-          "Add new"
-
-        UL 
-          style: 
-            listStylePosition: 'outside'
-            marginLeft: 16
-            marginTop: 5
-
-          do ->
-            tips = customization('proposal_tips')
-
-            for tip in tips
-              LI 
-                style: 
-                  paddingBottom: 3
-                  fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
-                tip  
-
-
-  drawAddNew : (cluster, options) -> 
-    return SPAN null if cluster.name == 'Blocksize Survey'
-
-    cluster_name = cluster.name or default_cluster_name
-    icons = options.show_proposer_icon
+    cluster_name = cluster_name or default_cluster_name
     current_user = fetch '/current_user'
 
-    adding = @local.adding_new_proposal == cluster_name 
+    adding = cluster_state.adding_new_proposal == cluster_name 
     cluster_slug = slugify(cluster_name)
 
     permitted = permit('create proposal')
     needs_to_login = permitted == Permission.NOT_LOGGED_IN
     permitted = permitted > 0
+
+    icons = @props.icons
 
     return SPAN null if !permitted && !needs_to_login
 
@@ -513,16 +383,12 @@ Cluster = ReactiveComponent
       if !adding 
 
         SPAN 
-          style: 
-            marginLeft: if icons then 50 + 18
-            color: logo_red
+          style: _.extend @props.label_style,
             cursor: 'pointer'
-            #fontWeight: 500
-            borderBottom: "1px solid #{logo_red}"
 
           onClick: (e) => 
             if permitted
-              @local.adding_new_proposal = cluster_name; save(@local)
+              cluster_state.adding_new_proposal = cluster_name; save(cluster_state)
             else 
               e.stopPropagation()
               reset_key 'auth', {form: 'login', goal: '', ask_questions: true}
@@ -641,12 +507,11 @@ Cluster = ReactiveComponent
 
                   save proposal, => 
                     if proposal.errors?.length == 0
-                      @local.adding_new_proposal = null 
+                      cluster_state.adding_new_proposal = null 
+                      save cluster_state
                     else
                       @local.errors = proposal.errors
-                    save @local
-
-
+                      save @local
 
                 t('Done')
 
@@ -654,9 +519,239 @@ Cluster = ReactiveComponent
                 style: 
                   color: '#888'
                   cursor: 'pointer'
-                onClick: => @local.adding_new_proposal = null; save(@local)
+                onClick: => cluster_state.adding_new_proposal = null; save(cluster_state)
 
                 t('cancel')
+
+
+
+  drawTips : -> 
+    # guidelines/tips for good points
+    mobile = browser.is_mobile
+
+    guidelines_w = if mobile then 'auto' else 330
+    guidelines_h = 300
+
+    tips = customization('proposal_tips')
+
+    DIV 
+      style:
+        position: if mobile then 'relative' else 'absolute'
+        left: 512
+        width: guidelines_w
+        color: focus_blue
+        zIndex: 1
+        marginBottom: if mobile then 20
+        backgroundColor: if mobile then 'rgba(255,255,255,.85)'
+        fontSize: 14
+
+
+      if !mobile
+        SVG
+          width: guidelines_w + 28
+          height: guidelines_h
+          viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
+          style: css.crossbrowserify
+            position: 'absolute'
+            transform: 'scaleX(-1)'
+            left: -20
+
+          DEFS null,
+            svg.dropShadow 
+              id: "guidelines-shadow"
+              dx: '0'
+              dy: '2'
+              stdDeviation: "3"
+              opacity: .5
+
+          PATH
+            stroke: focus_blue #'#ccc'
+            strokeWidth: 1
+            fill: "#FFF"
+            filter: 'url(#guidelines-shadow)'
+
+            d: """
+                M#{guidelines_w},33
+                L#{guidelines_w},0
+                L1,0
+                L1,#{guidelines_h} 
+                L#{guidelines_w},#{guidelines_h} 
+                L#{guidelines_w},58
+                L#{guidelines_w + 20},48
+                L#{guidelines_w},33 
+                Z
+               """
+      DIV 
+        style: 
+          padding: if !mobile then '14px 18px'
+          position: 'relative'
+          marginLeft: 5
+
+        SPAN 
+          style: 
+            fontWeight: 600
+            fontSize: if PORTRAIT_MOBILE() then 70 else if LANDSCAPE_MOBILE() then 36
+          "Add new"
+
+        UL 
+          style: 
+            listStylePosition: 'outside'
+            marginLeft: 16
+            marginTop: 5
+
+          do ->
+            tips = customization('proposal_tips')
+
+            for tip in tips
+              LI 
+                style: 
+                  paddingBottom: 3
+                  fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
+                tip  
+
+
+
+
+
+window.ClusterFilter = ReactiveComponent
+  displayName: 'ClusterFilter'
+
+  render: -> 
+    filters = ([k,v] for k,v of customization('cluster_filters'))
+    filters.unshift ["Show all", '*']
+
+    cluster_filters = fetch 'cluster_filters'
+    if !cluster_filters.filter?
+      cluster_filters.filter = 'Show all'
+      cluster_filters.clusters = '*'
+      save cluster_filters
+
+
+    DIV 
+      style: 
+        fontSize: 22
+        fontWeight: 600
+        color: 'white'
+        width: '100%'
+        zIndex: 2
+        position: 'relative'
+        top: 2
+        marginTop: 20
+
+      DIV 
+        style: 
+          width: 900 #HOMEPAGE_WIDTH()
+          margin: 'auto'
+          textAlign: 'center'
+
+        for [filter, clusters], idx in filters 
+          do (filter, clusters) =>
+            current = cluster_filters.filter == filter 
+            hovering = @local.hovering == filter
+            SPAN 
+              style: 
+                #borderLeft: if idx == 0 then '1px solid #CACACA'
+                #borderRight: '1px solid #CACACA'
+                padding: '12px 40px 4px 40px'
+                display: 'inline-block'
+                cursor: 'pointer'
+                color: if current then 'black' else if hovering then '#F8E71C'
+                backgroundColor: if current then 'white'
+                position: 'relative'
+                borderRadius: '16px 16px 0 0'
+                borderLeft: if current then "2px solid #F8E71C"
+                borderTop: if current then "2px solid #F8E71C"
+                borderRight: if current then "2px solid #F8E71C"
+
+              onMouseEnter: => 
+                if cluster_filters.filter != filter 
+                  @local.hovering = filter 
+                  save @local 
+              onMouseLeave: => 
+                @local.hovering = null 
+                save @local
+              onClick: => 
+                cluster_filters.filter = filter 
+                cluster_filters.clusters = clusters
+                save cluster_filters
+
+              filter
+
+              # if current
+              #   tw = 45
+              #   th = 10
+              #   SPAN 
+              #     style: cssTriangle 'bottom', '#FF3834', tw, th,
+              #       position: 'absolute'
+              #       left: -tw / 2
+              #       marginLeft: '50%'
+              #       bottom: -th + 1
+              #       width: tw
+              #       height: th
+              #       display: 'inline-block'
+
+
+
+
+          # if clusters == '*'
+
+
+
+
+Cluster = ReactiveComponent
+  displayName: 'Cluster'
+
+
+  # cluster of proposals
+  render: -> 
+    options = @props.options
+    cluster = @props.cluster
+
+    current_user = fetch '/current_user'
+    subdomain = fetch '/subdomain'
+
+    # subscribe to a key that will alert us to when sort order has changed
+    fetch('homepage_you_updated_proposal')
+
+    collapsed = fetch 'collapsed'
+    is_collapsed = collapsed.clusters[@props.key]
+
+    proposals = sorted_proposals(cluster.proposals)
+    return SPAN null if !proposals || (proposals.length == 0 && !cluster.always_shown)
+
+    DIV
+      key: cluster.name
+      id: if cluster.name && cluster.name then cluster.name.toLowerCase()
+      style: 
+        paddingBottom: if !is_collapsed then 45
+        position: 'relative'
+
+      @drawClusterHeading cluster, options, is_collapsed
+
+      if !is_collapsed
+        DIV null, 
+          for proposal,idx in proposals
+            DIV 
+              key: "collapsed#{proposal.key}"
+
+              CollapsedProposal 
+                key: "collapsed#{proposal.key}"
+                proposal: proposal
+                options: options 
+
+              @drawThreshold(subdomain, cluster, idx)
+
+          if customization('show_new_proposal_button')
+            NewProposal 
+              cluster_name: cluster.name
+              local: @local.key
+              label_style: 
+                marginLeft: if options.show_proposer_icon then 50 + 18
+                borderBottom: "1px solid #{logo_red}"
+                color: logo_red
+              icons: options.show_proposer_icon
+
+
 
   drawClusterHeading : (cluster, options, is_collapsed) -> 
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
@@ -749,23 +844,23 @@ Cluster = ReactiveComponent
           if !is_collapsed
             H1
               style: secnd_header
-              SPAN
-                style:
-                  position: 'absolute'
-                  bottom: -43
-                  fontSize: 21
-                  color: '#444'
-                  fontWeight: 300
-                customization("slider_pole_labels.individual.oppose", cluster_key)
-              SPAN
-                style:
-                  position: 'absolute'
-                  bottom: -43
-                  fontSize: 21
-                  color: '#444'
-                  right: 0
-                  fontWeight: 300
-                customization("slider_pole_labels.individual.support", cluster_key)
+              # SPAN
+              #   style:
+              #     position: 'absolute'
+              #     bottom: -43
+              #     fontSize: 21
+              #     color: '#444'
+              #     fontWeight: 300
+              #   customization("slider_pole_labels.individual.oppose", cluster_key)
+              # SPAN
+              #   style:
+              #     position: 'absolute'
+              #     bottom: -43
+              #     fontSize: 21
+              #     color: '#444'
+              #     right: 0
+              #     fontWeight: 300
+              #   customization("slider_pole_labels.individual.support", cluster_key)
               SPAN 
                 style: 
                   position: 'relative'
@@ -810,7 +905,7 @@ Cluster = ReactiveComponent
           className: 'fa fa-thumbs-o-down'    
 
   storeSortOrder: -> 
-    p = (p.key for p in sorted_proposals(@props.cluster))
+    p = (p.key for p in sorted_proposals(@props.cluster.proposals))
     c = fetch("cluster-#{slugify(@props.cluster.name)}/sort_order")
     order = JSON.stringify(p)
     if order != c.sort_order
@@ -924,12 +1019,16 @@ window.CollapsedProposal = ReactiveComponent
         slider.has_moved = true
       save slider
 
+    # sub_creation = new Date(fetch('/subdomain').created_at).getTime()
+    # creation = new Date(proposal.created_at).getTime()
+    # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
+
     DIV
       key: proposal.key
       style:
         minHeight: 70
         position: 'relative'
-        marginBottom: if customization('slider_ticks', proposal) then 25
+        marginBottom: if customization('slider_ticks', proposal) then 15 else 15
       onMouseEnter: => 
         if draw_slider
           @local.hover_proposal = proposal.key; save @local
@@ -968,6 +1067,7 @@ window.CollapsedProposal = ReactiveComponent
                   width: 50
                   borderRadius: 0
                   backgroundColor: '#ddd'
+                  # opacity: opacity
           else 
             SPAN 
               style: 
@@ -976,8 +1076,6 @@ window.CollapsedProposal = ReactiveComponent
                 display: 'inline-block'
                 verticalAlign: 'top'
                 border: "2px dashed #ddd"
-
-
 
         # Name of Proposal
         DIV
@@ -988,6 +1086,7 @@ window.CollapsedProposal = ReactiveComponent
             paddingBottom: 20
             width: first_column.width - 50 + (if icons then -18 else 0)
             marginTop: if icons then 0 #9
+            # opacity: opacity
           A
             className: 'proposal proposal_homepage_name'
             style: options.proposal_style
@@ -1017,6 +1116,23 @@ window.CollapsedProposal = ReactiveComponent
                 SPAN 
                   style: 
                     paddingRight: 16
+
+            if @props.show_category && proposal.cluster
+              cluster = proposal.cluster 
+              if fetch('/subdomain').name == 'dao' && proposal.cluster == 'Proposals'
+                cluster = 'Ideas'
+
+              SPAN 
+                style: 
+                  #border: "1px solid #{@props.category_color}"
+                  backgroundColor: @props.category_color
+                  padding: '1px 2px'
+                  color: 'white' #@props.category_color
+                  fontStyle: 'normal'
+                  fontSize: 12
+
+
+                cluster
 
 
             if !proposal.active

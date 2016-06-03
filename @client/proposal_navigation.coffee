@@ -24,7 +24,7 @@ window.DefaultProposalNavigation = ReactiveComponent
     next_proposal = prev_proposal = null
     if all_proposals.clusters  # In case /proposals isn't loaded
 
-      all_proposals_flat = _.flatten (sorted_proposals(c) for c in all_proposals.clusters)
+      all_proposals_flat = _.flatten (sorted_proposals(c.proposals) for c in all_proposals.clusters)
 
       for proposal, idx in all_proposals_flat
         if proposal == @proposal

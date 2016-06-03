@@ -260,7 +260,7 @@
         return ""
     }
 
-    loading_indicator = React.DOM.div({style: {height: '100%', width: '100%'},
+    window.loading_indicator = React.DOM.div({style: {height: '100%', width: '100%'},
                                        className: 'loading'}, 'Loading')
     function error_indicator(message) {
         return React.DOM.div(null, 'Error! ' + message)

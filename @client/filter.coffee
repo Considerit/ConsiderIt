@@ -64,17 +64,14 @@ ApplyFilters = ReactiveComponent
 
 
 
-window.sorted_proposals = (cluster) ->
-
-  cluster_key = "cluster/#{cluster.name}"
-  show_icon = customization('show_proposer_icon', cluster_key)
+window.sorted_proposals = (proposals) ->
 
   sort = fetch 'sort_proposals'
   set_sort() if !sort.func? 
 
   proposal_rank = sort.func or customization("proposal_rank")
 
-  proposals = cluster.proposals.slice().sort (a,b) ->
+  proposals = proposals.slice().sort (a,b) ->
     return proposal_rank(b, sort.opinion_value) - proposal_rank(a, sort.opinion_value)
 
   # filter out filtered proposals
@@ -117,13 +114,13 @@ sort_options = [
     name: 'highest score'
     opinion_value: (o) -> o.stance
   }, {
+    func: (proposal) -> new Date(proposal.created_at).getTime()
+    name: 'newest'
+  }, {
     func: basic_proposal_scoring
     name: 'most activity'
     opinion_value: (o) -> 1 + (o.point_inclusions or []).length
   }, {
-    func: (proposal) -> new Date(proposal.created_at).getTime()
-    name: 'most recently submitted'
-  },{
     func: (proposal) -> 
       max = -1
       for o in proposal.opinions 
@@ -143,6 +140,14 @@ set_sort = ->
     if customization("proposal_rank")
       sort.func = customization("proposal_rank")
       sort.name = 'custom'
+    else if customization('default_proposal_sort')
+      def = null 
+      for s in sort_options
+        if s.name == customization('default_proposal_sort')
+          def = s 
+
+      _.extend sort, def or sort_options[0]
+
     else 
       _.extend sort, sort_options[0]
 
@@ -177,7 +182,7 @@ ProposalFilter = ReactiveComponent
           fontSize: 20
           fontWeight: 600
 
-        "Sorted by "
+        "Sort by "
 
 
         SPAN 
@@ -208,13 +213,17 @@ ProposalFilter = ReactiveComponent
                 borderRadius: 8
                 fontWeight: 400
 
-              for sort_option in sort_options
+              for sort_option in sort_options when sort_option.name != sort.name
                 do (sort_option) => 
                   DIV 
                     style:
                       padding: '3px 6px'
                       borderBottom: "1px solid #eaeaea"
+                      color: if @local.hover == sort_option.name then 'white'
+                      backgroundColor: if @local.hover == sort_option.name then focus_blue
 
+                    onMouseEnter: => @local.hover = sort_option.name; save @local 
+                    onMouseLeave: => @local.hover = null; save @local
                     onClick: (e) =>
                       _.extend sort, sort_option                      
                       save sort 

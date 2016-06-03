@@ -58,8 +58,8 @@ window.EditProposal = ReactiveComponent
 
 
     if @props.fresh 
-      location = fetch 'location'
-      cluster = location.query_params.category or ''
+      loc = fetch 'location'
+      cluster = loc.query_params.category or ''
     else 
       cluster = proposal.cluster 
 

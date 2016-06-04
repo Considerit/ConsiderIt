@@ -81,95 +81,103 @@ document.addEventListener "mouseout", (e) ->
 #      Don't show a real picture and show "anonymous" in the tooltip. 
 
 
+window.avatar = (user, props) ->
+  if !user.key 
+    if user.key == arest.cache['/current_user'].user 
+      user = fetch(user)
+    else 
+      user = arest.cache[user]
+  anonymous = props.anonymous? && props.anonymous 
+
+  id = if anonymous 
+         "avatar-hidden" 
+       else 
+         "avatar-#{user.key.split('/')[2]}"
+
+  style = _.extend {}, props.style
+  img_size = props.img_size or 'small'
+
+  show_avatar = !anonymous && !!user.avatar_file_name
+  # Automatically upgrade the avatar size to 'large' if the width of the image is 
+  # greater than the size of the b64 encoded image
+  if img_size == 'small' && style?.width >= 50 && !browser.is_ie9
+    img_size = 'large' 
+  # ...but we only use a larger image if this user actually has one and isn't anonymous
+  use_large_image = img_size != 'small' && show_avatar
+
+  if use_large_image
+    props.src = avatarUrl user, img_size
+  else if show_avatar
+    props.src = avatarUrl user, img_size
+  else
+    current_user = fetch('/current_user')
+    if current_user.user == user.key
+      thumbnail = current_user.b64_thumbnail
+      if thumbnail? && img_size == 'small' 
+        props.src = thumbnail
+    else
+      # prevents a weird webkit outlining issue
+      # http://stackoverflow.com/questions/4743127
+      style.content = "''" 
+
+  # Override the gray default avatar color if we're showing an image. 
+  # In most cases the white will allow for a transparent look. It 
+  # isn't set to transparent because a transparent icon in many cases
+  # will reveal content behind it that is undesirable to show.  
+  style.backgroundColor = 'white' if show_avatar
+
+  add_initials = !user.avatar_file_name
+  
+  if add_initials
+    style.textAlign = 'center'
+
+  attrs = _.extend {}, props,
+    className: "avatar #{props.className or ''}"
+    id: id
+    'data-user': user.key
+    'data-showtooltip': !props.hide_tooltip
+    'data-anon': anonymous      
+    style: style
+
+
+  # IE9 gets confused if there is an image without a src
+  # Chrome puts a weird gray border around IMGs without a src
+  tag = if !props.src? then SPAN else IMG
+
+
+  tag attrs,
+    if add_initials
+      name = user_name user, anonymous
+      if name == 'Anonymous'
+        name = '?'
+      fontsize = style.width / 2
+      ff = 'monaco,Consolas,"Lucida Console",monospace'
+      if name.length == 2
+        name = "#{name[0][0]}#{name[1][0]}"
+      else 
+        name = "#{name[0][0]}"
+
+      SPAN 
+        style: 
+          color: 'white'
+          pointerEvents: 'none'
+          fontSize: fontsize
+          display: 'block'
+          position: 'relative'
+          fontFamily: ff
+          top: .3 * fontsize #style.height / 2 - heightWhenRendered(name, {fontSize: fontsize, fontFamily: ff}) / 2
+
+        name
+
+
+
 window.Avatar = ReactiveComponent
   displayName: 'Avatar'
   
   render : ->
+    avatar @data(), @props 
 
-    anonymous = @props.anonymous? && @props.anonymous 
-
-    user = @data()
-
-    id = if anonymous 
-           "avatar-hidden" 
-         else 
-           "avatar-#{user.key.split('/')[2]}"
-
-    style = _.extend {}, @props.style
-    img_size = @props.img_size or 'small'
-
-    show_avatar = !anonymous && !!user.avatar_file_name
-    # Automatically upgrade the avatar size to 'large' if the width of the image is 
-    # greater than the size of the b64 encoded image
-    if img_size == 'small' && style?.width >= 50 && !browser.is_ie9
-      img_size = 'large' 
-    # ...but we only use a larger image if this user actually has one and isn't anonymous
-    use_large_image = img_size != 'small' && show_avatar
-
-    if use_large_image
-      @props.src = avatarUrl user, img_size
-    else if show_avatar
-      @props.src = avatarUrl user, img_size
-    else
-
-      current_user = fetch('/current_user')
-      if current_user.user == user.key
-        thumbnail = current_user.b64_thumbnail
-        if thumbnail? && img_size == 'small' 
-          @props.src = thumbnail
-      else
-        # prevents a weird webkit outlining issue
-        # http://stackoverflow.com/questions/4743127
-        style.content = "''" 
-
-    # Override the gray default avatar color if we're showing an image. 
-    # In most cases the white will allow for a transparent look. It 
-    # isn't set to transparent because a transparent icon in many cases
-    # will reveal content behind it that is undesirable to show.  
-    style.backgroundColor = 'white' if show_avatar
-
-    add_initials = !user.avatar_file_name
-    
-    if add_initials
-      style.textAlign = 'center'
-
-    attrs =
-      className: "avatar #{@props.className or ''}"
-      id: id
-      'data-user': user.key
-      'data-showtooltip': !@props.hide_tooltip
-      'data-anon': anonymous      
-      style: style
-
-
-    # IE9 gets confused if there is an image without a src
-    # Chrome puts a weird gray border around IMGs without a src
-    tag = if !@props.src? then SPAN else IMG
-
-
-    @transferPropsTo tag attrs,
-      if add_initials
-        name = user_name user, anonymous
-        if name == 'Anonymous'
-          name = '?'
-        fontsize = style.width / 2
-        ff = 'monaco,Consolas,"Lucida Console",monospace'
-        if name.length == 2
-          name = "#{name[0][0]}#{name[1][0]}"
-        else 
-          name = "#{name[0][0]}"
-
-        SPAN 
-          style: 
-            color: 'white'
-            pointerEvents: 'none'
-            fontSize: fontsize
-            display: 'block'
-            position: 'relative'
-            fontFamily: ff
-            top: .3 * fontsize #style.height / 2 - heightWhenRendered(name, {fontSize: fontsize, fontFamily: ff}) / 2
-
-          name          
+       
 
 styles += """
 .avatar {

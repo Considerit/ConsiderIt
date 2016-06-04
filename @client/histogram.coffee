@@ -163,7 +163,10 @@ window.Histogram = ReactiveComponent
         save @local 
         dirtied = true 
 
+    @local.dirty == dirtied
+
     return SPAN null if dirtied
+
 
 
     if !@props.draw_base 
@@ -588,7 +591,7 @@ window.Histogram = ReactiveComponent
 
         save @local
       return true 
-    
+      
     false
 
   physicsSimulation: ->
@@ -605,46 +608,41 @@ window.Histogram = ReactiveComponent
     
     if @try_histocache()
       noop = 1
-    else if @refs && @refs.histo && histocache_key != @local.histocache?.hash && @current_request != histocache_key
-
-      # we need to recalculate this histo
-      histo = @refs.histo.getDOMNode()
-      icons = histo.childNodes
+    else if !@local.dirty && histocache_key != @local.histocache?.hash && @current_request != histocache_key
 
       filtered_opinions = (o for o in @props.opinions when !(filter_out.users?[o.user]))
 
-      if icons.length > 0 && icons.length == filtered_opinions.length
-        opinions = for opinion, i in filtered_opinions
-          {stance: opinion.stance, user: opinion.user}
-        
-        setTimeout => 
-          if @isMounted()
-            layoutAvatars 
-              k: histocache_key
-              w: @props.width
-              h: @props.height
-              o: opinions
-              r: @local.avatar_size / 2
-              abort: => 
-                abort = !@isMounted() || @current_request != histocache_key
-                abort
+      opinions = for opinion, i in filtered_opinions
+        {stance: opinion.stance, user: opinion.user}
+      
+      setTimeout => 
+        if @isMounted()
+          layoutAvatars 
+            k: histocache_key
+            w: @props.width
+            h: @props.height
+            o: opinions
+            r: @local.avatar_size / 2
+            abort: => 
+              abort = !@isMounted() || @current_request != histocache_key
+              abort
 
-              done: (positions) =>   
-                return if !@isMounted()
-                if Object.keys(positions).length != 0 && @current_request == histocache_key
-                  @local.histocaches = 
-                    hash: histocache_key
-                    positions: positions
+            done: (positions) =>   
+              return if !@isMounted()
+              if Object.keys(positions).length != 0 && @current_request == histocache_key
+                @local.histocaches = 
+                  hash: histocache_key
+                  positions: positions
 
-                  save @local
+                save @local
 
-                  proposal.histocache[histocache_key] = positions
+                proposal.histocache[histocache_key] = positions
 
-                  # save to server
-                  save
-                    key: "/histogram/proposal/#{fetch(@props.proposal).id}/#{histocache_key}"
-                    positions: positions
-        , 1
+                # save to server
+                save
+                  key: "/histogram/proposal/#{fetch(@props.proposal).id}/#{histocache_key}"
+                  positions: positions
+      , 1
 
     @current_request = histocache_key
 

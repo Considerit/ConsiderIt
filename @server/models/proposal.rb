@@ -289,17 +289,21 @@ class Proposal < ActiveRecord::Base
       """
 
     json['opinions'] = o.map do |op|
-
-      {
+      r = {
         key: "/opinion/#{op[1]}",
         created_at: op[0],
-        updated_at: op[6],
+        # updated_at: op[6],
         proposal: "/proposal/#{op[3]}",
         user: "/user/#{op[5]}",
-        published: true,
-        stance: op[4].to_f,   
-        point_inclusions: Oj.load(op[2] || '[]').map! {|p| "/point/#{p}"}
+        # published: true,
+        stance: op[4].to_f
       }
+
+      if op[2] && op[2] != '[]'
+        r[:point_inclusions] = Oj.load(op[2]).map! {|p| "/point/#{p}"}
+      end 
+
+      r 
     end 
 
 

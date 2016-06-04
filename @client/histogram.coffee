@@ -385,14 +385,22 @@ window.Histogram = ReactiveComponent
           avatar_style = regular_avatar_style
 
         pos = @local.histocache?.positions?[(user.key or user).split('/user/')[1]]
-        Avatar 
-          key: user
-          user: user
+        # Avatar 
+        #   key: user
+        #   user: user
+        #   hide_tooltip: @props.backgrounded
+        #   style: _.extend {}, avatar_style, 
+        #     left: pos?[0]
+        #     top: pos?[1]
+        #     # opacity: opacity
+
+        avatar user,
           hide_tooltip: @props.backgrounded
           style: _.extend {}, avatar_style, 
             left: pos?[0]
             top: pos?[1]
             # opacity: opacity
+
 
 
   onClick: (ev) -> 

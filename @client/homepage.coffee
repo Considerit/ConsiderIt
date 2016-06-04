@@ -196,6 +196,12 @@ window.SimpleHomepage = ReactiveComponent
 
   render : ->
     subdomain = fetch('/subdomain')
+
+    cluster_filters = fetch 'cluster_filters'
+    if subdomain.name == 'dao' && cluster_filters.clusters == '*'
+      return TagHomepage()
+
+      
     proposals = fetch('/proposals')
     current_user = fetch('/current_user')
 
@@ -212,11 +218,6 @@ window.SimpleHomepage = ReactiveComponent
         collapsed.clusters["cluster/#{cluster.name}"] = 1
       save collapsed
 
-    cluster_filters = fetch 'cluster_filters'
-
-
-    if subdomain.name == 'dao' && cluster_filters.clusters == '*'
-      return TagHomepage()
 
     DIV null,
 

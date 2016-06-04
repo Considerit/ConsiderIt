@@ -128,11 +128,7 @@ window.Histogram = ReactiveComponent
     hist = fetch @props.key
     filter_out = fetch 'filtered'
 
-    if !@props.draw_base 
-      @props.draw_base_labels = false 
-    else if !@props.draw_base_labels?
-      @props.draw_base_labels = true
-
+    dirtied = false 
     if !hist.initialized
       _.defaults hist,
         initialized: true
@@ -147,11 +143,33 @@ window.Histogram = ReactiveComponent
           # use null instead of [] because an empty selection of []
           # is treated differently than no selection whatsoever
       save hist
-      
+      dirtied = true 
+
     avatar_radius = calculateAvatarRadius(@props.width, @props.height, @props.opinions)
+
     if @local.avatar_size != avatar_radius * 2
       @local.avatar_size = avatar_radius * 2
       save @local
+      dirtied = true 
+
+    # extraction from @try_histocache
+    proposal = fetch(@props.proposal)
+    histocache_key = @histocache_key()
+    if proposal.histocache?[histocache_key]
+      if histocache_key != @local.histocache?.hash
+        @local.histocache =
+          hash: histocache_key 
+          positions: proposal.histocache[histocache_key]
+        save @local 
+        dirtied = true 
+
+    return SPAN null if dirtied
+
+
+    if !@props.draw_base 
+      @props.draw_base_labels = false 
+    else if !@props.draw_base_labels?
+      @props.draw_base_labels = true
 
     @props.enable_selection &&= @props.opinions.length > 0
 
@@ -161,7 +179,6 @@ window.Histogram = ReactiveComponent
     region_selection_vertical_padding = if @props.enable_selection then 30 else 0
     if @local.region_selection_vertical_padding != region_selection_vertical_padding
        @local.region_selection_vertical_padding = region_selection_vertical_padding
-       save @local
 
     # whether to show the shaded opinion selection region in the histogram
     draw_selection_area = @props.enable_selection &&
@@ -303,10 +320,7 @@ window.Histogram = ReactiveComponent
 
   drawAvatars: -> 
     hist = fetch @props.key
-    filter_out = fetch 'filtered'
-
-
-    @try_histocache()
+    filter_out = fetch 'filtered'    
 
     # Highlighted users are the users whose avatars are colorized and fully 
     # opaque in the histogram. It is based on the current opinion selection and 
@@ -560,7 +574,6 @@ window.Histogram = ReactiveComponent
     key = JSON.stringify _.map(opinions, (o) => 
             Math.round(fetch(o.key).stance * 100) / 100 )
     key += " (#{@props.width}, #{@props.height}, #{@props.width})"
-    # key += JSON.stringify filter_out.users
     md5 key
 
   try_histocache : -> 
@@ -572,6 +585,7 @@ window.Histogram = ReactiveComponent
         @local.histocache =
           hash: histocache_key 
           positions: proposal.histocache[histocache_key]
+
         save @local
       return true 
     
@@ -621,6 +635,7 @@ window.Histogram = ReactiveComponent
                   @local.histocaches = 
                     hash: histocache_key
                     positions: positions
+
                   save @local
 
                   proposal.histocache[histocache_key] = positions

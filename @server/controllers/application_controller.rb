@@ -33,7 +33,7 @@ class ApplicationController < ActionController::Base
 
   def render(*args)
     unless @oembed_request 
-      dirty_key '/application'
+      # dirty_key '/application'
 
       # if there are dirtied keys, we'll append the corresponding data to the response
       if current_subdomain && Thread.current[:dirtied_keys].keys.length > 0

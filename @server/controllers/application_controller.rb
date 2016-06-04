@@ -146,6 +146,10 @@ protected
     session[:current_user_id] = user.id
     Thread.current[:current_user_id] = user.id
     Thread.current[:current_user]    = user
+
+    if user.registered 
+      dirty_key '/proposals' # your_opinion
+    end 
   end
 
   def replace_user(old_user, new_user)

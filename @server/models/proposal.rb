@@ -293,7 +293,7 @@ class Proposal < ActiveRecord::Base
         key: "/opinion/#{op[1]}",
         created_at: op[0],
         # updated_at: op[6],
-        proposal: "/proposal/#{op[3]}",
+        # proposal: "/proposal/#{op[3]}",
         user: "/user/#{op[5]}",
         # published: true,
         stance: op[4].to_f

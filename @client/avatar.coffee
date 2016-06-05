@@ -85,13 +85,12 @@ window.avatar = (user, props) ->
   if !user.key 
     if user == arest.cache['/current_user'].user 
       user = fetch(user)
-    else 
+    else if arest.cache[user]
       user = arest.cache[user]
-
-    if !user.key 
+    else 
       fetch user
       return SPAN null
-      
+
   anonymous = props.anonymous? && props.anonymous 
 
   id = if anonymous 

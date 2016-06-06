@@ -274,46 +274,18 @@ Proposal = ReactiveComponent
             position: 'relative'
             zIndex: 1
 
-          Dock
-            key: 'histogram-dock'
-            docked_key: namespaced_key('histogram', @proposal)
-            dock_on_zoomed_screens: true
-            constraints : ['slider-dock']
-            dockable : => 
-              #mode == 'results'
-              false
-            start : 170 - 50
 
-            stop : -> 
-              $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
-
-            dummy:  if fetch('histogram-dock').docked then 1 else -1
-            dummy2: if mode == 'crafting' then 1 else -1
-            dummy3: opinionsForProposal(@proposal)
-            dummy4: BODY_WIDTH()
-                    # TODO: Dummy is a shallow patch for an odd problem. 
-                    # If you have a nested component (in this case Histogram) 
-                    # which passes a prop based on a Statebus value, then 
-                    # that nested component will not be rerendered with 
-                    # the new prop unless the parent component (Dock)
-                    # is rendered first. By setting a dummy prop on Dock
-                    # that corresponds to the prop for the child, we assure
-                    # that the parent will properly pass the prop onto the 
-                    # child. e
-
-            do =>
-
-              Histogram
-                key: namespaced_key('histogram', @proposal)
-                proposal: @proposal
-                opinions: opinionsForProposal(@proposal)
-                width: PROPOSAL_HISTO_WIDTH()
-                height: if fetch('histogram-dock').docked then 50 else 170
-                enable_selection: true
-                draw_base: if fetch('histogram-dock').docked then true else false
-                backgrounded: mode == 'crafting'
-                on_click_when_backgrounded: ->
-                  updateProposalMode('results', 'click_histogram')
+          Histogram
+            key: namespaced_key('histogram', @proposal)
+            proposal: @proposal
+            opinions: opinionsForProposal(@proposal)
+            width: PROPOSAL_HISTO_WIDTH()
+            height: if fetch('histogram-dock').docked then 50 else 170
+            enable_selection: true
+            draw_base: if fetch('histogram-dock').docked then true else false
+            backgrounded: mode == 'crafting'
+            on_click_when_backgrounded: ->
+              updateProposalMode('results', 'click_histogram')
 
           Dock
             key: 'slider-dock'

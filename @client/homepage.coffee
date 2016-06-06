@@ -134,13 +134,56 @@ window.get_clusters = ->
 
 
 
+ProposalsLoading = ReactiveComponent
+  displayName: 'ProposalLoading'
+
+  render: ->  
+    if !@local.cnt?
+      @local.cnt = 0
+
+    negative = Math.floor((@local.cnt / 284)) % 2 == 1
+
+    DIV 
+      style: 
+        width: HOMEPAGE_WIDTH()
+        margin: 'auto'
+        padding: '60px'
+        textAlign: 'center'
+        fontStyle: 'italic'
+        #color: logo_red
+        fontSize: 24
+
+      DIV 
+        style: 
+          position: 'relative'
+          top: 6
+          left: 3
+        
+        drawLogo 50, logo_red, logo_red, false, true, logo_red, (if negative then 284 - @local.cnt % 284 else @local.cnt % 284), false
+
+
+      "Loading proposals...there is much to consider!"
+
+  componentWillMount: -> 
+    @int = setInterval => 
+      @local.cnt += 1 
+      save @local 
+    , 10
+
+  componentWillUnmount: -> 
+    clearInterval @int 
+
+
 window.TagHomepage = ReactiveComponent
   displayName: 'TagHomepage'
 
   render: -> 
     subdomain = fetch('/subdomain')
-    proposals = fetch('/proposals')
     current_user = fetch('/current_user')
+
+    all = fetch('/proposals')
+    if !all.clusters
+      return ProposalsLoading()   
 
     proposals = []
     [clusters, archived] = get_clusters()
@@ -178,6 +221,8 @@ window.TagHomepage = ReactiveComponent
 
         DIV null, 
           for proposal,idx in proposals
+            continue if idx > 20 && !@local.show_all
+
             DIV 
               key: "collapsed#{proposal.key}"
 
@@ -187,6 +232,26 @@ window.TagHomepage = ReactiveComponent
                 options: cluster_options("cluster/proposals")
                 show_category: true
                 category_color: hsv2rgb(colors[proposal.cluster], .7, .8)
+
+        if !@local.show_all && proposals.length > 20 
+          DIV
+            style:
+              backgroundColor: '#f9f9f9'
+              width: HOMEPAGE_WIDTH()
+              #position: 'absolute'
+              #bottom: 0
+              textDecoration: 'underline'
+              cursor: 'pointer'
+              paddingTop: 10
+              paddingBottom: 10
+              fontWeight: 600
+              textAlign: 'center'
+              marginTop: 40
+
+            onMouseDown: => 
+              @local.show_all = true
+              save(@local)
+            'Show all proposals'
 
 
 
@@ -206,7 +271,7 @@ window.SimpleHomepage = ReactiveComponent
     current_user = fetch('/current_user')
 
     if !proposals.clusters 
-      return DIV null, loading_indicator
+      return ProposalsLoading()   
 
     [clusters, archived] = get_clusters()
 

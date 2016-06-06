@@ -111,7 +111,7 @@ sort_options = [
 
   { 
     func: basic_proposal_scoring
-    name: 'highest score'
+    name: 'total score'
     opinion_value: (o) -> o.stance
   }, {
     func: (proposal) -> new Date(proposal.created_at).getTime()
@@ -120,6 +120,12 @@ sort_options = [
     func: basic_proposal_scoring
     name: 'most activity'
     opinion_value: (o) -> 1 + (o.point_inclusions or []).length
+  }, { 
+    func: (proposal, opinion_value) -> 
+      sum = basic_proposal_scoring(proposal, opinion_value)
+      sum / fetch(proposal).opinions.length
+    name: 'average score'
+    opinion_value: (o) -> o.stance
   }, {
     func: (proposal) -> 
       max = -1

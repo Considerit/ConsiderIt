@@ -165,6 +165,7 @@ class Proposal < ActiveRecord::Base
     end 
 
     points = []
+    earliest = nil
     proposals.each do |proposal|
       cluster = proposal.cluster ? proposal.cluster.strip : 'Proposals'
 
@@ -187,6 +188,10 @@ class Proposal < ActiveRecord::Base
         end
 
         points.concat proposal.points.where("(published=1 AND #{moderation_status_check})").public_fields.map {|p| p.as_json}
+      end
+
+      if !earliest || proposal.created_at < earliest.created_at
+        earliest = proposal 
       end
     end
 
@@ -217,7 +222,8 @@ class Proposal < ActiveRecord::Base
 
     proposals = {
       key: '/proposals',
-      clusters: clusters
+      clusters: clusters, 
+      earliest: earliest ? earliest.created_at : nil
     }
     if all_points 
       proposals[:points] = points
@@ -291,8 +297,8 @@ class Proposal < ActiveRecord::Base
     json['opinions'] = o.map do |op|
       r = {
         key: "/opinion/#{op[1]}",
-        created_at: op[0],
-        # updated_at: op[6],
+        # created_at: op[0],
+        updated_at: op[6],
         # proposal: "/proposal/#{op[3]}",
         user: "/user/#{op[5]}",
         # published: true,

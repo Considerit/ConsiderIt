@@ -228,7 +228,7 @@ Proposal = ReactiveComponent
       minheight += adjustments.edit_point_height
 
     # if there aren't community_points, then we won't bother showing them
-    community_points = fetch("/page/#{@proposal.slug}").points  
+    community_points = fetch("/page/#{@proposal.slug}").points or []
     if mode == 'crafting'
       included_points = fetch(@proposal.your_opinion).point_inclusions
       community_points = (pnt for pnt in community_points when !_.contains(included_points, pnt.key) )
@@ -532,7 +532,6 @@ ProposalDescription = ReactiveComponent
         if @local.description_collapsed
           DIV
             style:
-              backgroundColor: 'white'
               backgroundColor: '#f9f9f9'
               width: HOMEPAGE_WIDTH()
               position: 'absolute'
@@ -824,7 +823,7 @@ DecisionBoard = ReactiveComponent
 
     # if there aren't points in the wings, then we won't bother showing 
     # the drop target
-    wing_points = fetch("/page/#{@proposal.slug}").points  
+    wing_points = fetch("/page/#{@proposal.slug}").points or [] 
     included_points = fetch(@proposal.your_opinion).point_inclusions
     wing_points = (pnt for pnt in wing_points when !_.contains(included_points, pnt.key) )
     are_points_in_wings = wing_points.length > 0 
@@ -1285,8 +1284,9 @@ GroupSelectionRegion = ReactiveComponent
 
 buildPointsList = (proposal, valence, sort_field, filter_included) ->
   sort_field = sort_field or 'score'
-  points = fetch("/page/#{proposal.slug}").points
+  points = fetch("/page/#{proposal.slug}").points or []
   opinions = fetch(proposal).opinions
+
 
   # filter out filter users...
   filtered_out = fetch('filtered')

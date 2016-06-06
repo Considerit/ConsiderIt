@@ -113,29 +113,42 @@ sort_options = [
     func: basic_proposal_scoring
     name: 'total score'
     opinion_value: (o) -> o.stance
+    description: "Each proposal is scored by the sum of opinions, where opinions are on [-1, 1]."
   }, {
     func: (proposal) -> new Date(proposal.created_at).getTime()
     name: 'newest'
+    description: "The proposals submitted most recently are shown first."
   }, {
     func: basic_proposal_scoring
     name: 'most activity'
     opinion_value: (o) -> 1 + (o.point_inclusions or []).length
+    description: "Each proposal is scored by the raw number of opinions and recognized pros/cons."
   }, { 
     func: (proposal, opinion_value) -> 
       sum = basic_proposal_scoring(proposal, opinion_value)
       sum / fetch(proposal).opinions.length
     name: 'average score'
     opinion_value: (o) -> o.stance
+    description: "Each proposal is scored by the average opinion score, where opinions are on [-1, 1]."
   }, {
     func: (proposal) -> 
-      max = -1
-      for o in proposal.opinions 
-        d = new Date(o.created_at).getTime()
-        if d > max 
-          max = d
-      -max 
-    name: 'most recent opinion'
+      if fetch(proposal.your_opinion).published then proposal.your_opinion.stance else -1
+    name: 'your score'
+    description: "Proposals are ordered by your own opinion on them."
+  }, {
+    func: (proposal, opinion_value) -> 
+      sum = basic_proposal_scoring(proposal, opinion_value)
+      et = new Date(arest.cache['/proposals'].earliest).getTime()
+      pt = new Date(proposal.created_at).getTime()
+      sum * (1 + Math.pow((pt - et) / 100000, 2))
+    name: 'trending'
+    opinion_value: (o) -> 
+      ot = new Date(o.updated_at).getTime()
+      et = new Date(arest.cache['/proposals'].earliest).getTime() 
+      Math.pow((ot - et) / 100000, 2) * o.stance 
+    description: "Each proposals is scored by the sum of opinions, with newer opinions weighed more heavily."
   }
+
 
 ]
 
@@ -182,63 +195,6 @@ ProposalFilter = ReactiveComponent
       ApplyFilters()
 
 
-      SPAN
-        style: 
-          color: focus_blue
-          fontSize: 20
-          fontWeight: 600
-
-        "Sort by "
-
-
-        SPAN 
-          style: 
-            fontWeight: 800
-            position: 'relative'
-            cursor: 'pointer'
-
-          onClick: => 
-            @local.show_sort_options = !@local.show_sort_options
-            save @local
-
-          sort.name
-
-          SPAN style: _.extend cssTriangle 'bottom', focus_blue, 11, 7,
-            display: 'inline-block'
-            marginLeft: 4
-
-          if @local.show_sort_options
-            DIV 
-              style: 
-                position: 'absolute'
-                zIndex: 999
-                width: 300
-                backgroundColor: 'white'
-                border: "1px solid #{focus_blue}"
-                top: 24
-                borderRadius: 8
-                fontWeight: 400
-
-              for sort_option in sort_options when sort_option.name != sort.name
-                do (sort_option) => 
-                  DIV 
-                    style:
-                      padding: '3px 6px'
-                      borderBottom: "1px solid #eaeaea"
-                      color: if @local.hover == sort_option.name then 'white'
-                      backgroundColor: if @local.hover == sort_option.name then focus_blue
-
-                    onMouseEnter: => @local.hover = sort_option.name; save @local 
-                    onMouseLeave: => @local.hover = null; save @local
-                    onClick: (e) =>
-                      _.extend sort, sort_option                      
-                      save sort 
-                      @local.show_sort_options = false
-                      save @local
-                      e.stopPropagation()
-
-
-                    sort_option.name
 
       FORM 
         onSubmit: (e) => 
@@ -282,6 +238,75 @@ ProposalFilter = ReactiveComponent
                 save filters
 
               filter 
+
+      DIV
+        style: 
+          color: focus_blue
+          fontSize: 20
+          fontWeight: 400
+          marginTop: 12
+
+        "sort proposals by "
+
+
+        SPAN 
+          style: 
+            fontWeight: 600
+            position: 'relative'
+            cursor: 'pointer'
+
+          onClick: => 
+            @local.show_sort_options = !@local.show_sort_options
+            save @local
+
+          sort.name
+
+          SPAN style: _.extend cssTriangle 'bottom', focus_blue, 11, 7,
+            display: 'inline-block'
+            marginLeft: 4
+
+          if @local.show_sort_options
+            DIV 
+              style: 
+                position: 'absolute'
+                zIndex: 999
+                width: HOMEPAGE_WIDTH()
+                backgroundColor: 'white'
+                border: "1px solid #{focus_blue}"
+                top: 24
+                borderRadius: 8
+                fontWeight: 400
+                overflow: 'hidden'
+
+              for sort_option in sort_options #when sort_option.name != sort.name
+                do (sort_option) => 
+                  DIV 
+                    style:
+                      padding: '6px 12px'
+                      borderBottom: "1px solid #eaeaea"
+                      color: if @local.hover == sort_option.name then 'white'
+                      backgroundColor: if @local.hover == sort_option.name then focus_blue
+                      fontWeight: 600
+                    onMouseEnter: => @local.hover = sort_option.name; save @local 
+                    onMouseLeave: => @local.hover = null; save @local
+                    onClick: (e) =>
+                      _.extend sort, sort_option                      
+                      save sort 
+                      @local.show_sort_options = false
+                      save @local
+                      e.stopPropagation()
+
+
+                    sort_option.name
+
+                    DIV 
+                      style: 
+                        fontSize: 16
+                        color: if @local.hover == sort_option.name then '#ccc' else '#888'
+                        fontWeight: 400
+
+                      sort_option.description
+
 
 
 OpinionFilter = ReactiveComponent

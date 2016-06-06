@@ -3339,7 +3339,7 @@ customizations.dao = _.extend {},
 
   civility_pledge: true
 
-  default_proposal_sort: 'newest'
+  default_proposal_sort: 'trending'
 
   proposal_tips: [
     'Describe your idea in sufficient depth for others to evaluate it. The title is usually not enough.'

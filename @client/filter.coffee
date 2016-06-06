@@ -243,7 +243,7 @@ ProposalFilter = ReactiveComponent
         style: 
           color: focus_blue
           fontSize: 20
-          fontWeight: 400
+          fontWeight: 500
           marginTop: 12
 
         "sort proposals by "
@@ -251,9 +251,10 @@ ProposalFilter = ReactiveComponent
 
         SPAN 
           style: 
-            fontWeight: 600
+            fontWeight: 700
             position: 'relative'
             cursor: 'pointer'
+            textDecoration: 'underline'
 
           onClick: => 
             @local.show_sort_options = !@local.show_sort_options

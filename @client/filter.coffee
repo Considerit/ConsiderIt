@@ -146,7 +146,7 @@ sort_options = [
       ot = new Date(o.updated_at).getTime()
       et = new Date(arest.cache['/proposals'].earliest).getTime() 
       Math.pow((ot - et) / 100000, 2) * o.stance 
-    description: "Each proposals is scored by the sum of opinions, with newer opinions weighed more heavily."
+    description: "Each proposal is scored by the sum of opinions, with newer opinions weighed more heavily."
   }
 
 

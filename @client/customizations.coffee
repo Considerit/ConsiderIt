@@ -1043,7 +1043,7 @@ for port in portuguese
     proposal_filters: false 
 
 spanish = ['alcala', 'villagb', 'citysens', 'iniciativasciudadanas', \
-           'movilidadcdmx', 'zonaq', 'valenciaencomu', 'aguademayo', 'eparticipa']
+           'movilidadcdmx', 'zonaq', 'valenciaencomu', 'aguademayo', 'eparticipa', 'theartofco']
 
 for spa in spanish
   customizations[spa] = 

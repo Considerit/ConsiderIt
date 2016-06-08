@@ -7,7 +7,9 @@ class HtmlController < ApplicationController
   def index
 
     # if someone has accessed a non-existent subdomain or the mime type isn't HTML (must be accessing a nonexistent file)
-    if !current_subdomain || request.format.to_s != 'text/html' || request.fullpath.include?('data:image')
+    # Note: I removed the text/html constraint because of problems oneboxing from discourse
+    #if !current_subdomain || request.format.to_s != 'text/html' || request.fullpath.include?('data:image')
+    if !current_subdomain || request.fullpath.include?('data:image')    
       render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
       return
     end

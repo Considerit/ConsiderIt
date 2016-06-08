@@ -140,7 +140,7 @@ sort_options = [
       sum = basic_proposal_scoring(proposal, opinion_value)
       n = Date.now()
       pt = new Date(proposal.created_at).getTime()
-      sum / (1 + (n - pt) / 1000000000)  # decrease this constant to favor newer proposals
+      sum / (1 + (n - pt) / 10000000000)  # decrease this constant to favor newer proposals
 
 
     name: 'trending'

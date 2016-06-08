@@ -48,12 +48,13 @@ class OembedController < ApplicationController
       :html => """<iframe id='considerit-embed-#{proposal.id}' #{attributes.join(' ')}></iframe>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.3/iframeResizer.min.js'></script>
         <script>
-          var i=setInterval(function(){
+          console.log('loading')
+          var resize_interval=setInterval(function(){
             console.log('checking!', typeof iFrameResize)
             if (typeof iFrameResize != 'undefined'){
               console.log('resizing!')
               iFrameResize({log:true, checkOrigin:false}, document.getElementById('considerit-embed-#{proposal.id}'))
-              clearInterval(i)
+              clearInterval(resize_interval)
             }
           }, 40)
         </script>"""

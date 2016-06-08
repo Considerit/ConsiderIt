@@ -54,6 +54,11 @@
         %script{type: "text/javascript", src:"//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"}
         
     %body
+      %div{ :style => "position: absolute; left: -1000px; width: 400px"} 
+        Blind users, please email
+        %a{ :rel => 'admin@consider.it link', :href => 'mailto:admin@consider.it' }
+          admin@consider.it.
+        We can assist you with uploading your opinions. Sorry for the inconvenience!
 
       #content.content{ subdomain: current_subdomain.name }
 

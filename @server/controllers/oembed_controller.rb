@@ -50,7 +50,7 @@ class OembedController < ApplicationController
         <script>
           var i=setInterval(function(){
             if (iFrameResize){
-              iFrameResize({log:false}, document.getElementById('considerit-embed-#{proposal.id}'))
+              iFrameResize({log:false, checkOrigin:false}, document.getElementById('considerit-embed-#{proposal.id}'))
               clearInterval(i)
             }
           }, 40)

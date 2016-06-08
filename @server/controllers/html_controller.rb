@@ -1,7 +1,7 @@
 require 'cgi'
 
 class HtmlController < ApplicationController
-  respond_to :html
+  #respond_to :html
   before_action :verify_user
 
   def index

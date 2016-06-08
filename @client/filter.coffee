@@ -138,14 +138,16 @@ sort_options = [
   }, {
     func: (proposal, opinion_value) -> 
       sum = basic_proposal_scoring(proposal, opinion_value)
-      et = new Date(arest.cache['/proposals'].earliest).getTime()
+      n = Date.now()
       pt = new Date(proposal.created_at).getTime()
-      sum * (1 + Math.pow((pt - et) / 100000, 2))
+      sum / (1 + (n - pt) / 1000000000)  # decrease this constant to favor newer proposals
+
+
     name: 'trending'
     opinion_value: (o) -> 
       ot = new Date(o.updated_at).getTime()
-      et = new Date(arest.cache['/proposals'].earliest).getTime() 
-      Math.pow((ot - et) / 100000, 2) * o.stance 
+      n = Date.now()
+      o.stance / (1 + Math.pow((n - ot) / 100000, 2))
     description: "Each proposal is scored by the sum of opinions, with newer opinions weighed more heavily."
   }
 

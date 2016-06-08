@@ -278,6 +278,7 @@ ProposalFilter = ReactiveComponent
                 borderRadius: 8
                 fontWeight: 400
                 overflow: 'hidden'
+                boxShadow: '0 1px 2px rgba(0,0,0,.3)'
 
               for sort_option in sort_options #when sort_option.name != sort.name
                 do (sort_option) => 

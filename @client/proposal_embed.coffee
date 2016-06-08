@@ -129,6 +129,8 @@ Proposal = ReactiveComponent
   render : -> 
     @proposal = fetch @props.key
 
+    users = fetch '/users'
+
     return LOADING_INDICATOR if !@proposal.name
 
     width = @getDOMNode().offsetWidth
@@ -144,8 +146,6 @@ Proposal = ReactiveComponent
         border: '1px solid #ccc'
         borderRadius: '16px 16px 18px 18px'
 
-
-      Avatars()
       Tooltip()
 
       DIV 
@@ -179,10 +179,6 @@ Proposal = ReactiveComponent
           textAlign: 'center' 
           marginBottom: 20
           position: 'relative'
-
-
-
-
 
         A 
           href: proposal_url(@proposal) 

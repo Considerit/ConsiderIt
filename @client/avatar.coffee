@@ -83,7 +83,7 @@ document.addEventListener "mouseout", (e) ->
 
 window.avatar = (user, props) ->
   if !user.key 
-    if user == arest.cache['/current_user'].user 
+    if user == arest.cache['/current_user']?.user 
       user = fetch(user)
     else if arest.cache[user]
       user = arest.cache[user]

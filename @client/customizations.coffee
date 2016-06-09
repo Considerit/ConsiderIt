@@ -1353,12 +1353,18 @@ customizations['hala'] =
   show_proposer_icon: false
   show_meta: false 
   civility_pledge: true
-  show_score: false
+  show_score: true
   proposal_filters: false
 
   proposal_style: hala_proposal_style
   uncollapseable: true
 
+
+  opinion_filters: [ {
+      label: 'focus group'
+      tooltip: null
+      pass: (user) -> passes_tags(user, 'hala_focus_group')
+    }]
 
 
   "cluster/Transportation" : 

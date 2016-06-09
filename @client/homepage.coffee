@@ -309,14 +309,16 @@ window.SimpleHomepage = ReactiveComponent
 
         if customization('opinion_filters')
           [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+          hala = subdomain.name == 'HALA'
+
           OpinionFilter
             style: 
-              width: secnd_column.width
+              width: if !hala then secnd_column.width
               marginBottom: 20
-              marginLeft: secnd_column.marginLeft
-              display: 'inline-block'
+              marginLeft: if !hala then secnd_column.marginLeft
+              display: if !hala then 'inline-block'
               verticalAlign: 'top'
-              textAlign: 'center'
+              textAlign: if !hala then 'center' else 'right'
 
         # List all clusters
         for cluster, index in clusters or []
@@ -1305,7 +1307,7 @@ window.CollapsedProposal = ReactiveComponent
             if opinions.length > 0
               tooltip = fetch 'tooltip'
               tooltip.coords = $(@refs.score.getDOMNode()).offset()
-              tooltip.tip = "#{opinions.length} opinions. \u03BC = #{Math.round(avg * 100) / 100}"
+              tooltip.tip = "#{opinions.length} opinions, with an average score of #{Math.round(avg * 100) / 100} (each opinion is between -1 and 1)."
               save tooltip
 
           onMouseLeave: => 

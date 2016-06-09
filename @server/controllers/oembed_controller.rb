@@ -48,7 +48,6 @@ class OembedController < ApplicationController
       :html => """<iframe id='considerit-embed-#{proposal.id}' #{attributes.join(' ')}></iframe>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.3/iframeResizer.min.js'></script>
         <script type='application/javascript'>
-          window.EMBEDDED_RUN=true;
           console.log('loading')
           var resize_interval=setInterval(function(){
             console.log('checking!', typeof iFrameResize)

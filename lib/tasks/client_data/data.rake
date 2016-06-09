@@ -69,8 +69,9 @@ task :export_proposal_data => :environment do
 
 end
 
-task :export_all_comments => :environment do
-  subdomain = Subdomain.find_by_name('seattle2035')
+task :export, [:sub] => :environment do |t, args|
+  sub = args[:sub] || 'hala'
+  subdomain = Subdomain.find_by_name(sub)
 
   CSV.open("lib/tasks/client_data/export/#{subdomain.name}-opinions.csv", "w") do |csv|
     csv << ["proposal", 'created', "username", "email", "opinion", "#points"]

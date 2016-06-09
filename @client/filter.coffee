@@ -148,7 +148,7 @@ sort_options = [
       ot = new Date(o.updated_at).getTime()
       n = Date.now()
       o.stance / (1 + Math.pow((n - ot) / 100000, 2))
-    description: "Each proposal is scored by the sum of opinions, with newer opinions weighed more heavily."
+    description: "Like 'total score', except that newer opinions are weighed more heavily, and older proposals are penalized."
   }
 
 
@@ -274,7 +274,7 @@ ProposalFilter = ReactiveComponent
                 position: 'absolute'
                 zIndex: 999
                 width: HOMEPAGE_WIDTH()
-                backgroundColor: 'white'
+                backgroundColor: '#eee'
                 border: "1px solid #{focus_blue}"
                 top: 24
                 borderRadius: 8
@@ -287,7 +287,7 @@ ProposalFilter = ReactiveComponent
                   DIV 
                     style:
                       padding: '6px 12px'
-                      borderBottom: "1px solid #eaeaea"
+                      borderBottom: "1px solid #ddd"
                       color: if @local.hover == sort_option.name then 'white'
                       backgroundColor: if @local.hover == sort_option.name then focus_blue
                       fontWeight: 600
@@ -322,6 +322,9 @@ OpinionFilter = ReactiveComponent
     users = fetch '/users'
     filter_out = fetch 'filtered'
     bitcoin = fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic']
+    hala = fetch('/subdomain').name == 'HALA'
+
+    return SPAN null if hala && !fetch('/current_user').is_admin
 
     toggle_filter = (filter) -> 
       filter_out.users = {}
@@ -369,6 +372,7 @@ OpinionFilter = ReactiveComponent
       DIV 
         style: 
           marginTop: 0
+
         for filter,idx in filters 
           do (filter, idx) => 
             is_enabled = filter_out.opinion_filters?[filter.label]

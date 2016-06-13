@@ -78,7 +78,7 @@ class ProposalController < ApplicationController
       current_user.update_subscription_key(proposal.key, 'watched', :force => false)
       dirty_key '/current_user'
 
-      #Notifier.create_notification 'new', proposal
+      Notifier.create_notification 'new', proposal
       proposal.notify_moderator
 
       write_to_log({

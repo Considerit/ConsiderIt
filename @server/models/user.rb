@@ -316,6 +316,14 @@ class User < ActiveRecord::Base
     end
   end
 
+  def avatar_link(img_type='small')
+    if self.avatar_file_name
+      "#{Rails.application.config.action_controller.asset_host || ''}/system/avatars/#{self.id}/#{img_type}/#{self.avatar_file_name}"
+    else 
+      nil 
+    end
+  end
+
 
   def absorb (user)
     return if not (self and user)

@@ -158,19 +158,30 @@ sort_options = [
 set_sort = -> 
   sort = fetch 'sort_proposals'
   if !sort.func?
-    if customization("proposal_rank")
-      sort.func = customization("proposal_rank")
-      sort.name = 'custom'
-    else if customization('default_proposal_sort')
-      def = null 
+
+    found = false 
+    loc = fetch('location')
+    if loc.query_params?.sort_by
       for s in sort_options
-        if s.name == customization('default_proposal_sort')
-          def = s 
+        if s.name == loc.query_params.sort_by.replace('_', ' ')
+          _.extend sort, s or sort_options[0]
+          found = true 
+          break
 
-      _.extend sort, def or sort_options[0]
+    if !found
+      if customization("proposal_rank")
+        sort.func = customization("proposal_rank")
+        sort.name = 'custom'
+      else if customization('default_proposal_sort')
+        def = null 
+        for s in sort_options
+          if s.name == customization('default_proposal_sort')
+            def = s
+            break 
+        _.extend sort, def or sort_options[0]
 
-    else 
-      _.extend sort, sort_options[0]
+      else 
+        _.extend sort, sort_options[0]
 
     save sort 
 

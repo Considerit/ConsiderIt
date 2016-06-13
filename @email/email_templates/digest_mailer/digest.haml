@@ -1,99 +1,63 @@
-Hi #{@user.first_name}, a summary for you.
 = linebreak
 = linebreak
   
-- if @subdomain_notifications
-  - if @subdomain_notifications.key? 'content_to_moderate'
+- if @subdomain_notifications && @subdomain_notifications.key?('content_to_moderate')
     
-    = paragraph("There is new content #{styled_link('dashboard/moderate', 'waiting to be moderated', :text_preceding => 'waiting to be moderated at ')}.")
+  = section('For moderation')
+
+  = paragraph("There is new content #{styled_link('dashboard/moderate', 'waiting to be moderated', :text_preceding => 'waiting to be moderated at ')}.")
+
+  = end_section()
 
 
-  - if @subdomain_notifications.key? 'new_request'
-      
-    = list_item("There are new #{styled_link('dashboard/assessment', 'requests for fact-checks', :text_preceding => 'requests for fact-checks at ')}.")
+- if @new_stuff && @new_stuff.key?(:your_proposals) && @new_stuff[:your_proposals].length > 0 
+  
+  = section('Your proposals')
+
+  - @new_stuff[:your_proposals].each do |proposal|
+    = proposal_with_events(proposal)
+
+  = end_section()
 
 
-  - if @subdomain_notifications.key? 'new_proposal'
-    - count = @subdomain_notifications['new_proposal'].length
-    
-    // - if count > 1
-    //   = section_header_major("New proposals")
+- if @new_stuff && @new_stuff.key?(:new_proposals) && @new_stuff[:new_proposals].length > 0 
+  
+  = section('New proposals')
 
-    - for notification in @subdomain_notifications['new_proposal']
-      - proposal = notification.event_object
-      - proposal_link = styled_link(proposal.slug, "\"#{proposal.title(40)}\"", :text_preceding => "'#{proposal.title(40)}'. View at ")
-      = list_item("#{proposal.user.name} proposes: #{proposal_link}")
-      // = item_divider
+  - num = @new_stuff[:new_proposals].length
 
+  - if num > 5
+    - new_proposals = @new_stuff[:new_proposals][0..2]
+  - else 
+    - new_proposals = @new_stuff[:new_proposals]
 
-- for proposal_id, notifications in @proposal_notifications
-  - proposal = Proposal.find(proposal_id)
+  - new_proposals.each do |proposal|
+    = proposal_without_events(proposal)
 
-  = section_header_major(styled_link(proposal.slug, proposal.name, text_instead: true))
-
-  - if notifications.key? 'edited_proposal'
-    = list_item "This proposal has been edited."
-
-  - if notifications.key? 'new_opinion'
-    = list_item "#{get_user_str(notifications['new_opinion'])} opined"
-
-  - if notifications.key? 'new_point'
-
-    - grouped = group_by_user(notifications['new_point'])
-
-    - count = grouped.keys.length
-    
-    //= section_header("New points")
-
-    - for user_id, ns in grouped
-      - points = ns.map {|n| n.event_object }
-      - user_name = user_id == -1 ? 'Anonymous' : User.find(user_id).name
-      - txt = "#{user_name} adds a new point: "
-      - points.each_with_index do |point, idx|
-
-        - point_link = styled_link(point.proposal.slug, "\"#{point.title(40)}\"", :search_params => {selected: "%2Fpoint%2F#{point.id}"}, :text_preceding => "'#{point.title(40)}'. View at ")
-
-        - if idx == points.length - 1 && points.length > 1
-          - txt += 'and '
-
-        - txt += point_link
-
-        - if idx < points.length - 1
-          - txt += ', '
-    
-      = list_item(txt)
+  - if num > 5
+    - if @part == 'text'
+      \r\nView the other #{num - 3} new proposals at #{full_link('', {:sort_by => 'newest'})}
+    - else 
+      %a{:href => full_link('', {:sort_by => 'newest'}), :style=>"text-align:center; color:black;padding-top:20px;display:block;"}
+        View #{num - 3} more new proposals
 
 
-  - for event in ['new_comment', 'new_assessment']
+  = end_section()
 
 
-    - if notifications.key? event
+- if @new_stuff && @new_stuff.key?(:active_proposals) && @new_stuff[:active_proposals].length > 0 
+  
+  = section('Active proposals')
 
-      //= section_header("New comments")
+  - @new_stuff[:active_proposals].each do |proposal|
+    = proposal_with_events(proposal)
 
-      - relations = { |
-          'point_authored' => ' your point ', |
-          'point_engaged' => ' a point you\'ve engaged ', |
-          'watched' => '', |
-        } |
-
-      - by_event_object = group_by_object(notifications[event])
-      - for event_object_id, ns in by_event_object
-
-        - comment = ns[0].event_object
-        - point = comment.point
-        - relation = relations[ns[0].event_object_relationship]
-
-        - txt = "#{get_user_str(ns)} commented on#{relation}"
-        - txt += styled_link(point.proposal.slug, "\"#{point.title(40)}\"", :search_params => {selected: "%2Fpoint%2F#{point.id}"}, :text_preceding => "'#{point.title(40)}'. View at ")
-
-        = list_item(txt)
-
-  // = item_divider
-  = linebreak
+  = end_section()
 
 
-
+- if @part == 'text'
+  "\r\n\r\n------------------------------------"
+  = render :partial => 'event_mailer/unsubscribe'
 
 = content_for :footer do
   = render :partial => 'event_mailer/unsubscribe'

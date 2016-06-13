@@ -1,16 +1,20 @@
 require 'mail'
 
 class DigestMailer < Mailer
+  layout 'digest'
 
-  def digest(subdomain, user, notifications)
+  def digest(subdomain, user, notifications, new_stuff, last_sent_at, send_limit)
 
+    @send_limit = send_limit
+    @last_sent_at = last_sent_at
+    @new_stuff = new_stuff
     @subdomain_notifications = (notifications['Subdomain'] || {})[subdomain.id]
-    @proposal_notifications = notifications['Proposal'] || {}
+    # @proposal_notifications = notifications['Proposal'] || {}
 
     @subdomain = subdomain
     @user = user
 
-    subject = "Summary of recent activity"
+    subject = "New activity at #{subdomain.title}"
 
     subject = subject_line subject, @subdomain
 
@@ -35,5 +39,10 @@ class DigestMailer < Mailer
     format_email default_sender(subdomain), \
                 (subdomain.title)
   end
+
+  def subject_line(subject, subdomain)
+    "[considerit] #{subject}"
+  end
+
 
 end

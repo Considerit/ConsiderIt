@@ -3510,7 +3510,7 @@ customizations.dao = _.extend {},
                   fontSize: 46
                   fontWeight: 200
                   color: 'white'
-                  marginTop: 40
+                  marginTop: 20
 
                 
                 'Deliberate Proposals about The DAO'            
@@ -3519,13 +3519,12 @@ customizations.dao = _.extend {},
               DIV 
                 style: 
                   backgroundColor: 'rgba(255,255,255,.2)'
-                  marginTop: 5
-                  marginBottom: 20
+                  marginTop: 10
+                  marginBottom: 16
                   padding: '4px 12px'
                   float: 'right'
                   fontSize: 18
                   color: 'white'
-                  display: 'inline-block'
 
                 SPAN 
                   style: 
@@ -3542,10 +3541,56 @@ customizations.dao = _.extend {},
 
                   "#dao_consider_it"
 
+
               DIV 
                 style: 
                   clear: 'both'
-                  marginBottom: 120
+
+              DIV 
+                style: 
+                  float: 'right'
+                  fontSize: 12
+                  color: 'white'
+                  opacity: .9
+                  padding: '0px 10px'
+                  position: 'relative'
+
+                "Donate ETH to fuel our work evolving consider.it to meet The DAO’s needs."
+
+                # A 
+                #   href: 'https://thedao.slack.com/messages/dao_consider_it/'
+                #   target: '_blank'
+                #   style: 
+                #     #textDecoration: 'underline'
+                #     color: dao_yellow
+                #     fontWeight: 600
+
+                #   "#dao_consider_it"
+
+              DIV 
+                style: 
+                  clear: 'both'
+
+              DIV 
+                style: 
+                  #backgroundColor: 'rgba(255,255,255,.2)'
+                  #marginBottom: 20
+                  padding: '0px 10px'
+                  float: 'right'
+                  fontSize: 15
+                  fontWeight: 500
+                  #color: 'white'
+                  color: dao_yellow
+                  #border: "1px solid #{dao_yellow}"
+                  opacity: .8
+                  fontFamily: '"Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace'
+                "0xc7e165ebdad9eeb8e5f5d94eef3e96ea9739fdb2"
+
+
+              DIV 
+                style: 
+                  clear: 'both'
+                  marginBottom: 70
 
 
               DIV 

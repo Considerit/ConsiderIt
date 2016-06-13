@@ -3555,17 +3555,21 @@ customizations.dao = _.extend {},
                   padding: '0px 10px'
                   position: 'relative'
 
-                "Donate ETH to fuel our work evolving consider.it to meet The DAO’s needs."
+                "Donate ETH to fuel "
 
                 # A 
-                #   href: 'https://thedao.slack.com/messages/dao_consider_it/'
+                #   href: 'https://dao.consider.it/donate_to_considerit?results=true'
                 #   target: '_blank'
                 #   style: 
-                #     #textDecoration: 'underline'
-                #     color: dao_yellow
+                #     textDecoration: 'underline'
                 #     fontWeight: 600
 
-                #   "#dao_consider_it"
+                #   "our work"
+
+                "our work"
+
+                " evolving consider.it to meet The DAO’s needs."
+
 
               DIV 
                 style: 

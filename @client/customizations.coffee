@@ -3557,16 +3557,14 @@ customizations.dao = _.extend {},
 
                 "Donate ETH to fuel "
 
-                # A 
-                #   href: 'https://dao.consider.it/donate_to_considerit?results=true'
-                #   target: '_blank'
-                #   style: 
-                #     textDecoration: 'underline'
-                #     fontWeight: 600
+                A 
+                  href: 'https://dao.consider.it/donate_to_considerit?results=true'
+                  target: '_blank'
+                  style: 
+                    textDecoration: 'underline'
+                    fontWeight: 600
 
-                #   "our work"
-
-                "our work"
+                  "our work"
 
                 " evolving consider.it to meet The DAO’s needs."
 

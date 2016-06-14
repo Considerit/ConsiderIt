@@ -6,7 +6,7 @@ module MailerHelper
     else 
       """
       <div style='width: 80%; max-width: 800px; margin: 15px auto 5px auto; text-align: left; font-size:22px;'>#{name}</div>
-      <div style='width: 80%; max-width: 800px; margin: auto; padding: 1px 40px 30px 40px; background-color: white; color: #414141; box-shadow: 0 1px 2px rgba(0,0,0,.5); text-align: left'>
+      <div style='width: 80%; max-width: 800px; margin: auto; padding: 1px 20px 30px 20px; background-color: white; color: #414141; box-shadow: 0 1px 2px rgba(0,0,0,.5); text-align: left'>
       """.html_safe
     end
 
@@ -57,7 +57,7 @@ module MailerHelper
   end 
 
   def avatar(user, size=30, circular=false)
-    return '' if @part == 'text'
+    return '' if @part == 'text' || true
 
     if user.avatar_file_name
       if size > 30 
@@ -92,7 +92,7 @@ module MailerHelper
       end 
       text
     else 
-      html = "<div style='position:relative; margin-top:40px'>"
+      html = "<div style='position:relative; margin-top:20px'>"
 
       html += "<div style='position:absolute;left:-52px;top:4px;'>"
       html += avatar(proposal.user, 40)
@@ -188,6 +188,8 @@ module MailerHelper
   end
 
   def facepile(users)
+    return ''
+
     html = ''
     zindex = 99
     users.sort! {|a,b| a.avatar_file_name ? -1 : 1}

@@ -285,7 +285,7 @@ module MailerHelper
     if @part == 'text'
       "#{options[:text_preceding]}#{options[:text_instead] ? anchor : full_link(href, options[:search_params])}"
     else
-      "<a href=#{full_link(href, options[:search_params])} style='font-weight: 700; color:#{logo_red};'>#{anchor}</a>".html_safe
+      "<a href=#{full_link(href, options[:search_params])} style='font-weight: 700; color:#AE3B46;'>#{anchor}</a>".html_safe
     end
   end
 

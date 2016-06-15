@@ -134,6 +134,7 @@ ProposalDescription = ReactiveComponent
               textAlign: 'center'
               color: '#888'
               fontSize: 12
+              target: '_blank'
             href: proposal_url(@proposal) 
 
             'Show details'

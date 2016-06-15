@@ -26,7 +26,7 @@ class OembedController < ApplicationController
     lines = proposal.name.length * width_per_char / line_width.to_f
     lines = lines.ceil
     lines -= 1 # first line is already factored in
-    line_height = lines * 29 + 4 * lines 
+    line_height = lines * 29 + 6 * lines 
     height += line_height
 
     format = params[:format] or 'json'

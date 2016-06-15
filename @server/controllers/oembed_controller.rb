@@ -20,10 +20,10 @@ class OembedController < ApplicationController
     height = 320
 
     # guess the height
-    width_per_char = 490 / 45
+    width_per_char = 490.0 / 45 + 1
     line_wrap_penalty = 15 * width_per_char 
     line_width = width - 40 - line_wrap_penalty
-    lines = proposal.name.length * width_per_char / line_width
+    lines = proposal.name.length * width_per_char / line_width.to_f
     lines = lines.ceil
     lines -= 1 # first line is already factored in
     line_height = lines * 29 + 4 * lines 

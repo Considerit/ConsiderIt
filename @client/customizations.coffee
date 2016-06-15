@@ -3532,7 +3532,7 @@ customizations.dao = _.extend {},
                   "join meta discussion on Slack at "
 
                 A 
-                  href: 'https://thedao.slack.com/messages/dao_consider_it/'
+                  href: 'https://thedao.slack.com/messages/consider_it/'
                   target: '_blank'
                   style: 
                     #textDecoration: 'underline'

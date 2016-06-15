@@ -19,6 +19,16 @@ class OembedController < ApplicationController
     # https://dev.twitter.com/rest/reference/get/statuses/oembed
     height = 320
 
+    # guess the height
+    width_per_char = 490 / 45
+    line_wrap_penalty = 15 * width_per_char 
+    line_width = width - 40 - line_wrap_penalty
+    lines = proposal.name.length * width_per_char / line_width
+    lines = lines.ceil
+    lines -= 1 # first line is already factored in
+    line_height = lines * 29 + 4 * lines 
+    height += line_height
+
     format = params[:format] or 'json'
 
     port = u.port != 80 && u.port != 443 ? ":#{u.port}" : ''
@@ -27,6 +37,7 @@ class OembedController < ApplicationController
     attrs = {
       :src => embed_src,
       :width => width,
+      :height => height,
       :frameborder => 0,
       :style => "overflow:hidden",
       :scrolling => 'no'
@@ -45,15 +56,15 @@ class OembedController < ApplicationController
       :provider_name => 'Consider.it',
       :type => 'rich',
       :width => width,
+      :height => height,
       :html => """<iframe id='considerit-embed-#{proposal.id}' #{attributes.join(' ')}></iframe>
         <script src='https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.3/iframeResizer.min.js'></script>
         <script type='application/javascript'>
-          console.log('loading')
           var resize_interval=setInterval(function(){
-            console.log('checking!', typeof iFrameResize)
             if (typeof iFrameResize != 'undefined'){
-              console.log('resizing!')
-              iFrameResize({log:true, checkOrigin:false}, document.getElementById('considerit-embed-#{proposal.id}'))
+              iframe = document.getElementById('considerit-embed-#{proposal.id}')
+              iFrameResize({log:true, checkOrigin:false}, iframe)
+              iframe.iFrameResizer.sendMessage('Houston, we have contact!')
               clearInterval(resize_interval)
             }
           }, 40)

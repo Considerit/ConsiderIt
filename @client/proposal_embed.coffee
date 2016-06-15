@@ -16,6 +16,15 @@ require './translations'
 # require './opinion_slider'
 
 
+# The containing window calls this to let us know that the containing window is allowing 
+# for javascript to be run. In particular, that means the iframe can be resized, which 
+# opens up more interactive possibilities. 
+window.iFrameResizer =
+  messageCallback: (message) -> 
+    contact = fetch('contact')
+    contact.contact = true 
+    save contact
+
 window.namespaced_key = (base_key, base_object) ->
   namespace_key = fetch(base_object).key 
 
@@ -92,26 +101,44 @@ ProposalDescription = ReactiveComponent
 
               " by #{fetch(editor)?.name}"
         
-      if @local.description_collapsed && @proposal.description?.length > 100        
-        DIV
-          style:
-            backgroundColor: '#f9f9f9'
-            # width: @props.width
-            # position: 'absolute'
-            # bottom: 0
-            # textDecoration: 'underline'
-            cursor: 'pointer'
-            paddingTop: 5
-            paddingBottom: 5
-            #fontWeight: 600
-            marginTop: -5
-            textAlign: 'center'
-            color: '#888'
-            fontSize: 12
-          onMouseDown: => 
-            @local.description_collapsed = false
-            save(@local)
-          'Show details'
+      if @local.description_collapsed && @proposal.description?.length > 100
+        contact = !!fetch('contact').contact
+        if contact 
+
+          DIV
+            style:
+              backgroundColor: '#f9f9f9'
+              cursor: 'pointer'
+              paddingTop: 5
+              paddingBottom: 5
+              marginTop: -5
+              textAlign: 'center'
+              color: '#888'
+              fontSize: 12
+            onMouseDown: => 
+              if window.parentIFrame
+                @local.description_collapsed = false
+                save(@local)
+              else 
+
+            'Show details'
+
+        else 
+          A
+            style:
+              backgroundColor: '#f9f9f9'
+              cursor: 'pointer'
+              paddingTop: 5
+              paddingBottom: 5
+              marginTop: -5
+              textAlign: 'center'
+              color: '#888'
+              fontSize: 12
+            href: proposal_url(@proposal) 
+
+            'Show details'
+
+
       else if @proposal.description?.length > 0 && len > 0 
         DIV
           className: 'proposal_details'

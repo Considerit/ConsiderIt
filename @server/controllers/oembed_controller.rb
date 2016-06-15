@@ -17,7 +17,7 @@ class OembedController < ApplicationController
 
     # don't actually support height. Twitter doesn't either :)
     # https://dev.twitter.com/rest/reference/get/statuses/oembed
-    height = 320
+    height = 326
 
     # guess the height
     width_per_char = 490.0 / 45 + 1

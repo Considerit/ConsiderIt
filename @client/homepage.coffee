@@ -1310,7 +1310,7 @@ window.CollapsedProposal = ReactiveComponent
             if opinions.length > 0
               tooltip = fetch 'tooltip'
               tooltip.coords = $(@refs.score.getDOMNode()).offset()
-              tooltip.tip = "#{opinions.length} opinions, with an average score of #{Math.round(avg * 100) / 100} (each opinion is between -1 and 1)."
+              tooltip.tip = "#{opinions.length} opinions. Average score = #{Math.round(avg * 100) / 100} on a -1 to 1 scale."
               save tooltip
 
           onMouseLeave: => 

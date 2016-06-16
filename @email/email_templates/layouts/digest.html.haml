@@ -8,13 +8,13 @@
   %body
     #content{style: "font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; background-color: #{bg_color}; color: white; text-align: center; padding: 10px 0; box-sizing: border-box;"}
 
-      %div{style: 'margin: 0; padding: 0; font-size: 24px;'}
+      %div{style: 'color:white;margin: 0; padding: 0; font-size: 24px;'}
         #{@user.first_name}, here is a summary of recent activity on 
         
         %a{href: subdomain.host_with_port, style: 'color: white; font-weight: 600'}
           = subdomain.title
 
-      %div{style: 'font-size:12px; opacity:.7;'}
+      %div{style: 'color:white; font-size:12px; opacity:.7;'}
         - if @last_sent_at
           Last summary sent #{time_ago_in_words(@last_sent_at)} ago. 
 

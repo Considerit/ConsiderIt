@@ -8,9 +8,10 @@ task :send_email_notifications => :environment do
   begin
     notifications = Notifier.aggregate(filter: {'sent_email' => false})
     for subdomain_id, n_for_subdomain in notifications
-      next if user_id != 1701
-      
+
       for user_id, notifications_for_user in n_for_subdomain
+        next if user_id != 1701
+
         user = User.find user_id
         prefs = user.subscription_settings(Subdomain.find(subdomain_id))
 

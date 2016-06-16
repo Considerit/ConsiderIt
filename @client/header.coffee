@@ -134,18 +134,15 @@ window.ImageHeader = ReactiveComponent
 
           '< project homepage'
       else 
-        A
-          href: '/'
-          style: 
-            position: 'relative'
-            marginLeft: 20
-            display: 'inline-block'
-            color: if !is_light then 'white'
-            fontSize: 43
-            visibility: if homepage || !customization('has_homepage') then 'hidden'
-            verticalAlign: 'middle'
-            marginTop: 5
-          '<'
+        back_to_homepage_button
+          position: 'relative'
+          marginLeft: 20
+          display: 'inline-block'
+          color: if !is_light then 'white'
+          fontSize: 43
+          visibility: if homepage || !customization('has_homepage') then 'hidden'
+          verticalAlign: 'middle'
+          marginTop: 5
 
        
 

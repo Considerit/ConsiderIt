@@ -210,11 +210,11 @@ module MailerHelper
         text += relationship(relationship)
         text += "\r\n"
       end
-      text += "\r\nView at #{full_link(point.proposal.slug, {selected: "%2Fpoint%2F#{point.id}"})}"
+      text += "\r\nView at #{full_link(point.proposal.slug, {results: true, selected: "%2Fpoint%2F#{point.id}"})}"
       text
     else 
       html = """<a style='font-weight:600;color: #AE3B46;text-decoration:underline;font-size:16px;' 
-                 href='#{full_link(point.proposal.slug, {selected: "%2Fpoint%2F#{point.id}"})}'>#{point.title(70)}</a>"""
+                 href='#{full_link(point.proposal.slug, {results: true, selected: "%2Fpoint%2F#{point.id}"})}'>#{point.title(70)}</a>"""
       if relationship
         html += relationship(relationship)
       end

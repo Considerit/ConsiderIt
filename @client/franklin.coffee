@@ -87,8 +87,8 @@ window.proposal_url = (proposal) =>
   result = '/' + proposal.slug
   subdomain = fetch('/subdomain')  
 
-  if TWO_COL() || ((!customization('show_crafting_page_first', proposal) || !proposal.active ) \
-     && (!customization('discussion', proposal)))
+  if TWO_COL() || (!customization('show_crafting_page_first', proposal) || !proposal.active ) \
+     || (!customization('discussion', proposal))
 
     result += '?results=true'
 

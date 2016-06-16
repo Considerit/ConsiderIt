@@ -1,6 +1,25 @@
 require './responsive_vars'
 require './color'
 
+
+window.back_to_homepage_button = (style) -> 
+  loc = fetch('location')
+  homepage = loc.url == '/'
+
+  hash = loc.url.split('/')[1].replace('-', '_')
+
+  A
+    href: "/##{hash}"
+    style: _.defaults style,
+      fontSize: 43
+      visibility: if homepage then 'hidden'
+      color: 'black'
+
+    '<'
+
+
+
+
 ####
 # Make the DIV, SPAN, etc.
 for el of React.DOM

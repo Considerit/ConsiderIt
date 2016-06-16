@@ -181,6 +181,8 @@ window.TagHomepage = ReactiveComponent
     subdomain = fetch('/subdomain')
     current_user = fetch('/current_user')
 
+    show_all = fetch('show_all_proposals')
+
     all = fetch('/proposals')
     if !all.clusters
       return ProposalsLoading()   
@@ -221,7 +223,7 @@ window.TagHomepage = ReactiveComponent
 
         DIV null, 
           for proposal,idx in proposals
-            continue if idx > 20 && !@local.show_all
+            continue if idx > 20 && !show_all.show_all
 
             DIV 
               key: "collapsed#{proposal.key}"
@@ -233,7 +235,7 @@ window.TagHomepage = ReactiveComponent
                 show_category: true
                 category_color: hsv2rgb(colors[proposal.cluster], .7, .8)
 
-        if !@local.show_all && proposals.length > 20 
+        if !show_all.show_all && proposals.length > 20 
           DIV
             style:
               backgroundColor: '#f9f9f9'
@@ -249,8 +251,8 @@ window.TagHomepage = ReactiveComponent
               marginTop: 40
 
             onMouseDown: => 
-              @local.show_all = true
-              save(@local)
+              show_all.show_all = true
+              save(show_all)
             'Show all proposals'
 
 
@@ -1093,6 +1095,7 @@ window.CollapsedProposal = ReactiveComponent
 
     DIV
       key: proposal.key
+      id: proposal.slug.replace('-', '_')
       style:
         minHeight: 70
         position: 'relative'

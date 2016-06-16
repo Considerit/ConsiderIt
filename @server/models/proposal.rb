@@ -75,7 +75,7 @@ class Proposal < ActiveRecord::Base
       case subdomain.name.downcase
         when 'dao'
           manual_clusters = ["Proposed to DAO", 'Under development', 'New', 'Needs more description', 'Funded', 'Rejected', 'Archived', 'Proposals', 'Ideas', 'Meta', 'DAO 2.0 Wishlist']
-          always_shown = ['New', 'Proposed to DAO', 'Under development', 'Needs more description',  'Proposals', 'Meta']
+          always_shown = ['New', 'Proposed to DAO', 'Under development',  'Proposals', 'Meta']
 
         when 'on-chain-conf'
           manual_clusters = ['Events', 'On-chain scaling', 'Other topics'] 

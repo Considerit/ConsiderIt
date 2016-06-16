@@ -47,7 +47,7 @@ window.loadPage = (url, query_params) ->
     # represent in Statebus, as it is more of an event than state.
     # We'll set seek_to_hash here, then it will get set to null 
     # after it is processed. 
-    loc.seek_to_hash = true
+    loc.seek_to_hash = hash
 
   loc.url = url
   loc.hash = hash
@@ -164,14 +164,19 @@ window.BrowserLocation = ReactiveComponent
       #       in Chrome & Safari for a return visitor. The 
       #       browser's remember scroll gets imposed after this 
       #       runs, and overrides it. 
-      el = document.querySelector("##{loc.hash}")
-      if el
-        # If there are docked elements, we want to scroll a bit 
-        # before the element so that the docked elements don't 
-        # obscure the section headings
-        docks = fetch('docking_station')
-        seek_below = docks.y_stack or 50
-        $(window).scrollTop getCoords(el).top - seek_below
+
+
+      int = setInterval -> 
+        el = document.querySelector("##{loc.hash}")
+        if el
+          # If there are docked elements, we want to scroll a bit 
+          # before the element so that the docked elements don't 
+          # obscure the section headings
+          docks = fetch('docking_station')
+          seek_below = docks.y_stack or 50
+          $(window).scrollTop getCoords(el).top - seek_below
+          clearInterval int 
+      , 100
 
 relativeURLFromLocation = -> 
   # location.search returns query parameters

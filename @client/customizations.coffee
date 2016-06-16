@@ -3319,6 +3319,8 @@ customizations.dao = _.extend {},
 
   civility_pledge: true
 
+  show_crafting_page_first: false
+
   default_proposal_sort: 'trending'
 
   proposal_tips: [

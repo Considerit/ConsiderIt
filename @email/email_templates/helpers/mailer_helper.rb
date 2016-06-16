@@ -5,7 +5,7 @@ module MailerHelper
       "\r\n=============\r\n#{name.capitalize}\r\n=============\r\n\r\n"
     else 
       """
-      <div style='width: 80%; max-width: 800px; margin: 15px auto 5px auto; text-align: left; font-size:22px;'>#{name}</div>
+      <div style='color:white; width: 80%; max-width: 800px; margin: 15px auto 5px auto; text-align: left; font-size:22px;'>#{name}</div>
       <div style='width: 80%; max-width: 800px; margin: auto; padding: 1px 20px 30px 20px; background-color: white; color: #414141; box-shadow: 0 1px 2px rgba(0,0,0,.5); text-align: left'>
       """.html_safe
     end

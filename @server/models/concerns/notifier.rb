@@ -273,8 +273,8 @@ module Notifier
     # Who is watching this object?
     if event_type == 'content_to_moderate'
       watchers = User.where("id in (?)", subdomain.user_roles['moderator'].map {|key| key_id(key)})
-    elsif event_object_type == 'proposal' && event_type == 'new'
-      watchers = Notifier.subscribed_users(subdomain)      
+    elsif event_object_type == 'Proposal' && event_type == 'new'
+      watchers = subdomain.users.where(registered: true)
     else
       watchers = Notifier.subscribed_users(digest_object)
     end
@@ -316,13 +316,12 @@ module Notifier
       when 'Subdomain'
         subdomain = object
       when 'Proposal'
-        subdomain = object.subdomain      
+        subdomain = object.subdomain        
       else 
         raise "Can't find users subscribed to #{object.class.name}"
     end
 
     key = "/#{object.class.name.downcase}/#{object.id}"
-
     subdomain.users.where(registered: true).where("subscriptions like '%\"#{key}\":\"watched\"%'")
     
   end

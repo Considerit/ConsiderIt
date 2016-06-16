@@ -558,18 +558,15 @@ rupaul_header = ReactiveComponent
 
         ProfileMenu()
 
-        A
-          href: '/'
-          style: 
-            position: 'relative'
-            marginLeft: 20
-            display: 'inline-block'
-            color: if !is_light then 'white'
-            fontSize: 43
-            visibility: if homepage || !customization('has_homepage') then 'hidden'
-            verticalAlign: 'middle'
-            marginTop: 5
-          '<'
+        back_to_homepage_button
+          position: 'relative'
+          marginLeft: 20
+          display: 'inline-block'
+          color: if !is_light then 'white'
+          fontSize: 43
+          visibility: if homepage || !customization('has_homepage') then 'hidden'
+          verticalAlign: 'middle'
+          marginTop: 5
 
 
       DIV 
@@ -681,18 +678,15 @@ carcd_header = ReactiveComponent
           #borderLeftColor: 'transparent'
           #borderRightColor: 'transparent'
 
-        A
-          href: '/'
-          style: 
-            display: 'block'
-            fontSize: 43
-            visibility: if homepage then 'hidden'
-            verticalAlign: 'top'
-            left: -91
-            top: 10
-            color: 'black'
-            position: 'relative'
-          '<'
+        back_to_homepage_button 
+          display: 'block'
+          fontSize: 43
+          visibility: if homepage then 'hidden'
+          verticalAlign: 'top'
+          left: -91
+          top: 10
+          color: 'black'
+          position: 'relative'
 
       if homepage
         DIV 
@@ -1115,16 +1109,13 @@ customizations['monitorinstitute'] =
           paddingTop: 20
           margin: '0 auto 15px auto'
 
-        A
-          href: '/'
-          style: 
-            fontSize: 43
-            position: 'absolute'
-            marginRight: 30
-            left: -60
-            top: 3
 
-          '<'            
+        back_to_homepage_button
+          fontSize: 43
+          position: 'absolute'
+          marginRight: 30
+          left: -60
+          top: 3
             
         A 
           href: 'http://monitorinstitute.com/'
@@ -2248,19 +2239,16 @@ FoodcorpsHeader = ReactiveComponent
           top: 116
           left: 0
 
-      A
-        href: '/'
-        style: 
-          display: 'inline-block'
-          fontSize: 43
-          visibility: if homepage then 'hidden'
-          verticalAlign: 'top'
-          marginTop: 52
-          marginLeft: 15
-          color: 'white'
-          zIndex: 10
-          position: 'relative'
-        '<'
+      back_to_homepage_button
+        display: 'inline-block'
+        fontSize: 43
+        visibility: if homepage then 'hidden'
+        verticalAlign: 'top'
+        marginTop: 52
+        marginLeft: 15
+        color: 'white'
+        zIndex: 10
+        position: 'relative'
 
       DIV 
         style: 
@@ -2445,17 +2433,14 @@ customizations.enviroissues =
           margin: '20px auto'
           position: 'relative'
 
-        A
-          href: '/'
-          style: 
-            display: 'inline-block'
-            fontSize: 43
-            visibility: if homepage then 'hidden'
-            verticalAlign: 'top'
-            marginTop: 22
-            marginRight: 15
-            color: '#888'
-          '<'
+        back_to_homepage_button
+          display: 'inline-block'
+          fontSize: 43
+          visibility: if homepage then 'hidden'
+          verticalAlign: 'top'
+          marginTop: 22
+          marginRight: 15
+          color: '#888'
 
 
         IMG
@@ -2885,16 +2870,13 @@ customizations.fidoruk =
             margin: 'auto'
 
 
-          A
-            href: '/'
-            style: 
-              display: 'inline-block'
-              color: if !is_light then 'white'
-              fontSize: 43
-              visibility: if homepage || !customization('has_homepage') then 'hidden'
-              verticalAlign: 'middle'
-              marginTop: 5
-            '<'
+          back_to_homepage_button
+            display: 'inline-block'
+            color: if !is_light then 'white'
+            fontSize: 43
+            visibility: if homepage || !customization('has_homepage') then 'hidden'
+            verticalAlign: 'middle'
+            marginTop: 5
 
 
           if subdomain.branding.logo
@@ -3064,17 +3046,13 @@ customizations.bitcoin =
             margin: 'auto'
 
 
-          A
-            href: '/'
-            style: 
-              display: 'inline-block'
-              color: if !is_light then 'white'
-              fontSize: 43
-              visibility: if homepage || !customization('has_homepage') then 'hidden'
-              verticalAlign: 'middle'
-              marginTop: 5
-            '<'
-
+          back_to_homepage_button
+            display: 'inline-block'
+            color: if !is_light then 'white'
+            fontSize: 43
+            visibility: if homepage || !customization('has_homepage') then 'hidden'
+            verticalAlign: 'middle'
+            marginTop: 5
 
           if subdomain.branding.logo
             A 
@@ -3233,22 +3211,18 @@ customizations['on-chain-conf'] = _.extend {},
               zIndex: 3
               top: 65
               
-            SPAN
-              style:
-                display: 'inline-block'
-                visibility: if homepage then 'hidden'
-                color: 'white'
-                position: 'relative'
-                left: -60
-                top: -10
-                fontSize: 43
-                fontWeight: 400
-                paddingLeft: 25 # Make the clickable target bigger
-                paddingRight: 25 # Make the clickable target bigger
-                cursor: if not homepage then 'pointer'
-              onClick: if not homepage then => loadPage('/')
-
-              '<'
+            back_to_homepage_button
+              display: 'inline-block'
+              visibility: if homepage then 'hidden'
+              color: 'white'
+              position: 'relative'
+              left: -60
+              top: -10
+              fontSize: 43
+              fontWeight: 400
+              paddingLeft: 25 # Make the clickable target bigger
+              paddingRight: 25 # Make the clickable target bigger
+              cursor: if not homepage then 'pointer'
 
           if homepage 
             DIV 
@@ -3442,24 +3416,21 @@ customizations.dao = _.extend {},
         DIV 
           style: 
             marginLeft: 70
-          SPAN
-            style:
-              display: 'inline-block'
-              visibility: if fetch('location').url == '/' then 'hidden'
-              color: 'white'
-              opacity: .7
-              position: 'relative'
-              left: -60
-              top: 4
-              fontSize: 43
-              fontWeight: 400
-              paddingLeft: 25 # Make the clickable target bigger
-              paddingRight: 25 # Make the clickable target bigger
-              cursor: if fetch('location').url != '/' then 'pointer'
-            onClick: if fetch('location').url != '/' then => loadPage('/')
 
-            '<'
 
+          back_to_homepage_button            
+            display: 'inline-block'
+            visibility: if fetch('location').url == '/' then 'hidden'
+            color: 'white'
+            opacity: .7
+            position: 'relative'
+            left: -60
+            top: 4
+            fontSize: 43
+            fontWeight: 400
+            paddingLeft: 25 # Make the clickable target bigger
+            paddingRight: 25 # Make the clickable target bigger
+            cursor: if fetch('location').url != '/' then 'pointer'
 
           # Logo
           A
@@ -3839,22 +3810,20 @@ customizations.bitcoinclassic = _.extend {},
             style: 
               marginLeft: -70
               paddingTop: 30
-            SPAN
-              style:
-                display: 'inline-block'
-                visibility: if homepage then 'hidden'
-                color: '#eee'
-                position: 'relative'
-                left: -60
-                top: -10
-                fontSize: 43
-                fontWeight: 400
-                paddingLeft: 25 # Make the clickable target bigger
-                paddingRight: 25 # Make the clickable target bigger
-                cursor: if not homepage then 'pointer'
-              onClick: if not homepage then => loadPage('/')
 
-              '<'
+
+            back_to_homepage_button              
+              display: 'inline-block'
+              visibility: if homepage then 'hidden'
+              color: '#eee'
+              position: 'relative'
+              left: -60
+              top: -10
+              fontSize: 43
+              fontWeight: 400
+              paddingLeft: 25 # Make the clickable target bigger
+              paddingRight: 25 # Make the clickable target bigger
+              cursor: if not homepage then 'pointer'
 
             # Logo
             A
@@ -4179,16 +4148,13 @@ customizations.livingvotersguide =
               'About'
             
           if !homepage 
-            A
-              href: '/'
-              style: 
-                position: 'absolute'
-                display: 'inline-block'
-                top: 40
-                left: 22
-                fontSize: 43
-                color: 'white'
-              '<' 
+            back_to_homepage_button            
+              position: 'absolute'
+              display: 'inline-block'
+              top: 40
+              left: 22
+              fontSize: 43
+              color: 'white'
 
           # Logo
           A 

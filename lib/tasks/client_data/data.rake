@@ -81,7 +81,7 @@ task :export, [:sub] => :environment do |t, args|
     csv << ['proposal', 'type', 'created', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
   end
 
-  fields = "zip", "gender", "age", "ethnicity", "education", "race", "home", "hispanic"
+  fields = "zip", "gender", "age", "ethnicity", "education", "race", "home", "hispanic", "hala_focus_group"
   CSV.open("lib/tasks/client_data/export/#{subdomain.name}-users.csv", "w") do |csv|
     row = ['email', 'name', 'date joined'] 
     for field in fields 
@@ -125,8 +125,7 @@ task :export, [:sub] => :environment do |t, args|
         row.append tags.has_key?(field) ? tags[field] : ""
       end
       csv << row
-
-    end 
+    end
   end
 
 end

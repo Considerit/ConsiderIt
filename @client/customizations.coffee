@@ -3333,7 +3333,8 @@ customizations.dao = _.extend {},
   cluster_filters: 
     'Inspire Us': ['Ideas', 'Proposals']
     'Proposal Pipeline': ['New', "Proposed to DAO", 'Under development',  'Needs more description', 'Funded', 'Rejected', 'Archived']
-    'Meta Proposals': ['Meta', '*']
+    'Meta Proposals': ['Meta', 'Hack', '*']
+    'Hack Response': ['Hack']
 
 
   'cluster/Under development':
@@ -3577,7 +3578,7 @@ customizations.dao = _.extend {},
                 DIV 
                   style: 
                     position: 'relative'
-                    left: 100
+                    left: 60
                   DIV 
                     style: 
                       width: 260
@@ -3630,7 +3631,7 @@ customizations.dao = _.extend {},
                 DIV 
                   style: 
                     position: 'relative'
-                    left: 370
+                    left: 260
                     marginTop: 0 #30
 
                   DIV 
@@ -3684,7 +3685,7 @@ customizations.dao = _.extend {},
                 DIV 
                   style: 
                     position: 'relative'
-                    left: 630
+                    left: 490
                     marginTop: 0 #30
 
                   DIV 
@@ -3733,6 +3734,64 @@ customizations.dao = _.extend {},
                           strokeWidth: 1 / .21
                           stroke: 'white' 
                           d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
+
+
+                DIV 
+                  style: 
+                    position: 'absolute'
+                    left: 750
+                    marginTop: 0 #30
+                    bottom: -15
+
+                  DIV 
+                    style: 
+                      width: 260
+                      position: 'relative'
+
+                    # SPAN style: opacity: .7,
+                    #   'Issues related to the operation of The DAO.'
+
+                    BR null
+                    A 
+                      style: 
+                        opacity: if !@local.hover_hack then .7
+                        display: 'inline-block'
+                        marginTop: 6
+                        color: dao_yellow
+                        border: "1px solid #{dao_yellow}"
+                        #textDecoration: 'underline'
+                        fontSize: 14
+                        fontWeight: 600
+                        #backgroundColor: "rgba(255,255,255,.2)"
+                        padding: '4px 12px'
+                        borderRadius: 8
+                      onMouseEnter: => @local.hover_hack = true; save @local
+                      onMouseLeave: => @local.hover_hack = null; save @local
+
+                      href: '/proposal/new?category=Hack'
+
+                      t("add new")
+
+                    # SVG 
+                    #   style: 
+                    #     position: 'absolute'
+                    #     top: 75
+                    #     left: '35%'
+                    #     opacity: .5
+                    #   width: 67 * .21
+                    #   height: 204 * .21
+                    #   viewBox: "0 0 67 204" 
+
+                    #   G                       
+                    #     fill: 'none'
+
+                    #     PATH
+                    #       strokeWidth: 1 / .21
+                    #       stroke: 'white' 
+                    #       d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
+
+
+
 
 
 

@@ -123,17 +123,45 @@ module Notifier
   end
 
   def self.filter_no_longer_existing(notifications)
+    exists = {}
+
     notifications.select {|n|
-      !!n.event_object && !!n.digest_object 
+      event_key = "#{n.event_object_type}/#{n.event_object_id}"
+      digest_key = "#{n.digest_object_type}/#{n.digest_object_id}"
+
+      if !exists.key?(event_key) 
+        begin 
+          exists[event_key] = !!n.event_object
+        rescue 
+          exists[event_key] = false 
+        end
+      end 
+
+      if !exists.key?(digest_key)
+        begin 
+          exists[digest_key] = !!n.digest_object 
+        rescue 
+          exists[digest_key] = false 
+        end
+      end  
+
+      exists[event_key] && exists[digest_key]
     }
 
   end 
 
   def self.filter_unmoderated(notifications)
+    event_objs = {}
+
     notifications.select {|n|
-      !n.event_object.respond_to?(:okay_to_email_notification) ||
+      event_key = "#{n.event_object_type}/#{n.event_object_id}"
+      if !event_objs.key?(event_key)
+        event_objs[event_key] = n.event_object
+      end
+      event_object = event_objs[event_key]
+      !event_object.respond_to?(:okay_to_email_notification) ||
       n.event_type == 'content_to_moderate' ||
-      n.event_object.okay_to_email_notification
+      event_object.okay_to_email_notification
     }
   end
 

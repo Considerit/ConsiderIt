@@ -4,23 +4,7 @@ BUFFER = 5 * 60
 def send_digest(subdomain, user, notifications, subscription_settings, deliver = true, since = nil)
   
   send_emails = subscription_settings['send_emails']
-  return if !send_emails
-
-  ####
-  # Respect the user's notification settings. Compare with time since we last
-  # sent them a similar digest email.
-  can_send = true
-  send_key = "/subdomain/#{subdomain.id}"
-
-  last_digest_sent_at = user.emails_received[send_key]
-  if last_digest_sent_at
-    sec_since_last = Time.now() - Time.parse(last_digest_sent_at)
-    interval = email_me_no_more_than send_emails
-    can_send = sec_since_last >= interval
-  end
-
-  return if !can_send
-  #####
+  return if !send_emails || !due_for_notification(user, subdomain)
 
   ####
   # Check notifications to determine if a valid triggering event occurred
@@ -66,19 +50,29 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
     # I'm going to get all the data across the subdomain since the last time a digest 
     # was sent, and not rely on the notification objects. Sorry future Travis!
 
+    last_digest_sent_at = last_sent_at(user, subdomain)
     if !since 
-      since = last_digest_sent_at
+      if last_digest_sent_at
+        since = last_digest_sent_at
+      else 
+        since = user.created_at
+      end
     end 
 
-    if !since
-      since = user.created_at
+    # let's double check to make sure that we haven't sent an email already because of some race condition
+    if !due_for_notification(user, subdomain)
+      return
     end
 
-    mail = DigestMailer.digest(subdomain, user, notifications, get_new_activity(subdomain, user, since), last_digest_sent_at, send_emails)
-    if deliver
-      mail.deliver_now
+    # pp "DELIVERING TO #{user.email}\n"
 
-      # record that we've sent these notifications
+    send_key = "/subdomain/#{subdomain.id}"
+    user.sent_email_about(send_key)
+
+    mail = DigestMailer.digest(subdomain, user, notifications, get_new_activity(subdomain, user, since), last_digest_sent_at, send_emails)
+
+    # record that we've sent these notifications
+    Notification.transaction do 
       for v in notifications.values
         for vv in v.values
           for vvv in vv.values
@@ -89,10 +83,9 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
           end
         end
       end
-
-      user.sent_email_about(send_key)
-
     end
+
+    mail.deliver_now if deliver
 
   end
 
@@ -237,7 +230,7 @@ def get_new_activity(subdomain, user, since)
   active = active_proposals.values()
   your = your_proposals.values()
 
-  [active,your].each do |arr|
+  [active, your].each do |arr|
     arr.sort_by! do |p|
       tot = 0
       p[:events].values.each do |e|
@@ -259,6 +252,29 @@ def get_new_activity(subdomain, user, since)
 
 
 end
+
+def due_for_notification(user, subdomain)
+  ####
+  # Respect the user's notification settings. Compare with time since we last
+  # sent them a similar digest email.
+  can_send = true
+
+  last_digest_sent_at = last_sent_at(user, subdomain)
+  if last_digest_sent_at
+    sec_since_last = Time.now() - Time.parse(last_digest_sent_at)
+    interval = email_me_no_more_than user.subscription_settings(subdomain)['send_emails']
+    can_send = sec_since_last >= interval
+  end
+
+  can_send
+end
+
+def last_sent_at(user, subdomain)
+  send_key = "/subdomain/#{subdomain.id}"
+  last_digest_sent_at = user.emails_received[send_key]
+  last_digest_sent_at
+end
+
 
 # How long (in seconds) to wait between emails
 def email_me_no_more_than(interval)

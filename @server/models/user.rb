@@ -182,7 +182,7 @@ class User < ActiveRecord::Base
     settings = emails_received
     settings[key] = time
     self.emails = JSON.dump settings
-    save
+    self.save
   end
 
 

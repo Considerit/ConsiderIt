@@ -699,7 +699,7 @@ window.ClusterFilter = ReactiveComponent
 
     DIV 
       style: 
-        fontSize: 22
+        fontSize: 19
         fontWeight: 600
         color: 'white'
         width: '100%'
@@ -722,7 +722,7 @@ window.ClusterFilter = ReactiveComponent
               style: 
                 #borderLeft: if idx == 0 then '1px solid #CACACA'
                 #borderRight: '1px solid #CACACA'
-                padding: '12px 40px 4px 40px'
+                padding: '10px 30px 4px 30px'
                 display: 'inline-block'
                 cursor: 'pointer'
                 color: if current then 'black' else if hovering then '#F8E71C'

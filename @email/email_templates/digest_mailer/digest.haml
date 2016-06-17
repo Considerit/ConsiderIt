@@ -26,7 +26,7 @@
 
   - num = @new_stuff[:new_proposals].length
 
-  - if num > 8
+  - if num > 5
     - new_proposals = @new_stuff[:new_proposals][0..2]
   - else 
     - new_proposals = @new_stuff[:new_proposals]
@@ -34,7 +34,7 @@
   - new_proposals.each do |proposal|
     = proposal_without_events(proposal)
 
-  - if num > 8
+  - if num > 5
     - if @part == 'text'
       \r\nView the other #{num - 3} new proposals at #{full_link('', {:sort_by => 'newest'})}
     - else 

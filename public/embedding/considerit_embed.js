@@ -1,6 +1,6 @@
 // insert iframeResizer into DOM
 var resizer = document.createElement("script")
-resizer.src = '//cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.3/iframeResizer.min.js'
+resizer.src = 'https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.3/iframeResizer.min.js'
 resizer.id = 'iframeresizer'
 var fjs = document.getElementsByTagName('script')[0]
 fjs.parentNode.insertBefore(resizer, fjs)

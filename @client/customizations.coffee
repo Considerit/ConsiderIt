@@ -3335,6 +3335,7 @@ customizations.dao = _.extend {},
     'Proposal Pipeline': ['New', "Proposed to DAO", 'Under development',  'Needs more description', 'Funded', 'Rejected', 'Archived']
     'Meta Proposals': ['Meta', 'Hack', '*']
     'Hack Response': ['Hack', 'Hack meta']
+  cluster_filter_default: 'Hack Response'
 
 
   'cluster/Under development':

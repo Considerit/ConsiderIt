@@ -10,7 +10,6 @@ var embeds = document.querySelectorAll('[data-considerit-embed]')
 var loaded_iframes = 0
 for (var i = 0; i < embeds.length; i++){
   var embed = embeds[i]
-  
   var parts = embed.href.split('/')
   var slug = parts.pop()
   

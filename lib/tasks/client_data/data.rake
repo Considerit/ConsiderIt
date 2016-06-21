@@ -117,6 +117,21 @@ task :export, [:sub] => :environment do |t, args|
     CSV.open("lib/tasks/client_data/export/#{subdomain.name}-users.csv", "a") do |csv|
       tags = {}
       for k,v in JSON.parse(user.tags) or {}
+        if k == 'age.editable' 
+          if v.to_i > 0          
+            v = v.to_i
+
+            if v < 25
+              v = '0-25'
+            elsif v > 65
+              v = '65+'
+            else 
+              v = "#{10 * ((v / 10).floor)}-#{10 * ((v / 10).floor + 1)}"
+            end 
+          else 
+            next 
+          end
+        end 
         tags[k.split('.')[0]] = v
       end
 

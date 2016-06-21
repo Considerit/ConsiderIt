@@ -229,6 +229,9 @@ if(!is_dev){
         // sync images
         uploadDir( 'public/images', 'images')
 
+        // sync embedding
+        uploadDir( 'public/embedding', 'embedding')
+
       })
     }    
   )

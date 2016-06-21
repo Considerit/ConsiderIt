@@ -1351,11 +1351,50 @@ customizations['hala'] =
   uncollapseable: true
 
 
-  opinion_filters: [ {
-      label: 'focus group'
-      tooltip: null
-      pass: (user) -> passes_tags(user, 'hala_focus_group')
-    }]
+  opinion_filters: ( -> 
+    filters = 
+      [ {
+        label: 'focus group'
+        tooltip: null
+        pass: (user) -> passes_tags(user, 'hala_focus_group')
+      }] 
+
+    for home in ['Rented', 'Owned by me', 'Other']
+
+      filters.push 
+        label: "Home:#{home.replace(' ', '_')}"
+        tooltip: null 
+        pass: do(home) -> (user) -> 
+          u = fetch(user)
+          u.tags['home.editable'] == home 
+
+    for home in ['A house or townhome', 'An apartment or condo', 'A single room', 'I\'m homeless']
+
+      filters.push 
+        label: "Housing_type:#{home.replace(' ', '_')}"
+        tooltip: null 
+        pass: do(home) -> (user) -> 
+          u = fetch(user)
+          u.tags['housing_type.editable'] == home 
+
+    for age in [0, 25, 35, 45, 55, 65]
+      if age == 0 
+        label = 'Age:0-25'
+      else if age == 65
+        label = 'Age:65+'
+      else 
+        label = "Age:#{age}-#{age+10}"
+
+      filters.push 
+        label: label
+        tooltip: null 
+        pass: do(age) -> (user) -> 
+          u = fetch(user)
+          u.tags['age.editable'] && parseInt(u.tags['age.editable']) >= age && parseInt(u.tags['age.editable']) < age + 10
+
+
+    return filters 
+    )()
 
 
   "cluster/Transportation" : 
@@ -2809,6 +2848,13 @@ passes_tags = (user, tags) ->
     passes &&= user.tags[tag] && \
      !(user.tags[tag].toLowerCase() in ['no', 'false'])
   passes 
+
+passes_tag_filter = (user, tag, regex) -> 
+  user = fetch(user)
+  passes = true 
+  for tag, value of user.tags   
+    passes ||= tag.match(regex) && !(value.toLowerCase() in ['no', 'false'])
+  passes
 
 
 

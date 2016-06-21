@@ -61,6 +61,7 @@ ProposalDescription = ReactiveComponent
       div.innerHTML = @proposal.description
       len = div.innerText.trim().length
 
+    loc = fetch 'location'
     DIV           
       style: 
         width: @props.width - 50
@@ -95,7 +96,7 @@ ProposalDescription = ReactiveComponent
 
           prettyDate(@proposal.created_at)
 
-          if (editor = proposal_editor(@proposal)) && editor == @proposal.user
+          if (editor = proposal_editor(@proposal)) && editor == @proposal.user && (!loc.query_params.hide_author || loc.query_params.hide_author == 'false')
             SPAN 
               style: {}
 
@@ -103,6 +104,7 @@ ProposalDescription = ReactiveComponent
         
       if @local.description_collapsed && @proposal.description?.length > 100
         contact = !!fetch('contact').contact
+
         if contact 
 
           DIV

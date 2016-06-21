@@ -692,8 +692,11 @@ window.ClusterFilter = ReactiveComponent
 
     cluster_filters = fetch 'cluster_filters'
     if !cluster_filters.filter?
-      cluster_filters.filter = 'Show all'
-      cluster_filters.clusters = '*'
+      cluster_filters.filter = customization('cluster_filter_default') or 'Show all'
+      for [filter, clusters] in filters 
+        if filter == cluster_filters.filter
+          cluster_filters.clusters = clusters
+          break 
       save cluster_filters
 
 

@@ -1036,7 +1036,7 @@ for port in portuguese
     show_slider_feedback: false
     proposal_filters: false 
 
-spanish = ['alcala', 'villagb', 'citysens', 'iniciativasciudadanas', 'afternext', \
+spanish = ['vacabacana', 'alcala', 'villagb', 'citysens', 'iniciativasciudadanas', 'afternext', \
            'movilidadcdmx', 'zonaq', 'valenciaencomu', 'aguademayo', 'eparticipa', 'theartofco']
 
 for spa in spanish

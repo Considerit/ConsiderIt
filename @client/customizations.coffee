@@ -1397,39 +1397,54 @@ customizations['hala'] =
     )()
 
 
-  "cluster/Transportation" : 
+
+  "cluster/Preservation of Existing Affordable Housing" : 
 
           
-    homepage_label: 'Transportation proposal'
-    # description: ->  
-    #   DIV 
-    #     style: 
-    #       width: HOMEPAGE_WIDTH()
+    homepage_label: 'Guidelines'
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
 
-    #     DIV 
-    #       style: hala_section_heading
+        DIV 
+          style: hala_section_heading
 
-    #       "Transportation"
-
-
-    #     DIV 
-    #       style: hala_section_description
-
-    #       """Displacement is happening throughout Seattle, and particular communities 
-    #          are at high risk of displacement. Data analysis and community outreach will 
-    #          help identify how growth may benefit or burden certain populations. We will 
-    #          use that data to make sure our strategies are reaching the communities most 
-    #          in need."""
-    #       DIV 
-    #         style: marginTop: 10
-
-    #         "What do you think of the following proposal?"
+          "Preservation of Existing Affordable Housing"
 
 
-  "cluster/Urban Village Expansion Areas" : 
+        DIV 
+          style: hala_section_description
+
+          """There are many buildings and other types of housing in Seattle that currently offer affordable rents. 
+             In this set of questions, we are using the term "preservation" to describe retaining affordable rents 
+             in existing buildings that are currently unsubsidized. In the next section, we address historic 
+             preservation in the context of MHA. We will be using the term AMI or Area Median Income. 
+             For Seattle, here is a snapshot of those: 60% of AMI in 2016 is $37,980 annually for an individual, 
+             $54,180 for a family of four. See """
+
+          A 
+            href: 'http://www.seattle.gov/Documents/Departments/Housing/PropertyManagers/IncomeRentLimits/Income-Rent-Limits_Rental-Housing-HOME.pdf'
+            target: '_blank'
+            style: 
+              textDecoration: 'underline'
+
+            'detailed numbers'
+
+          '.'
+
+          DIV 
+            style: marginTop: 10
+
+            "What do you think of the following guidelines?"
+
+
+
+
+  "cluster/Urban Village Expansion" : 
 
           
-    homepage_label: 'Proposals'
+    homepage_label: 'Guidelines'
     description: ->  
       DIV 
         style: 
@@ -1444,19 +1459,47 @@ customizations['hala'] =
         DIV 
           style: hala_section_description
 
-          """Urban Villages are areas where Seattleites have decided growth is most appropriate. Some of 
-             these boundaries may be expanded to take advantage of the high density of amenities that 
-             currently exist in those areas."""
+          """Urban Villages are areas where there is a high density of essential services like 
+             high quality transportation options, parks, employment, shopping and other amenities 
+             that make it possible for residents to reduce their reliance on cars. It also means 
+             that investments made in those neighborhoods are maximized because they are enjoyed 
+             by the greatest number of people. Currently, the City is proposing to expand some 
+             Urban Village boundaries to reflect improvements and increases in services in those 
+             areas like the recent addition of light rail stations. To learn more about Urban 
+             Villages, see the resources below:"""
+
+          UL 
+            style: 
+              paddingLeft: 40
+
+            LI null, 
+              A 
+                href: 'http://seattlecitygis.maps.arcgis.com/apps/MapTools/index.html?appid=2c698e5c81164beb826ba448d00e5cf0'
+                target: '_blank'
+                style: 
+                  textDecoration: 'underline'
+
+                'Interactive Map of Seattle’s Urban Villages' 
+
+            LI null, 
+              A 
+                href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/dpdd016663.pdf'
+                target: '_blank'
+                style: 
+                  textDecoration: 'underline'
+
+                'Urban Village Element in Seattle’s Comprehensive Plan' 
+
           DIV 
             style: marginTop: 10
 
-            "What do you think of the following proposals?"
+            "What do you think of the following guidelines?"
 
 
   "cluster/Historic Areas and Unique Conditions" : 
 
           
-    homepage_label: 'Proposals'
+    homepage_label: 'Guidelines'
     description: ->  
       DIV 
         style: 
@@ -1471,74 +1514,17 @@ customizations['hala'] =
         DIV 
           style: hala_section_description
 
-          """Seattle has many historic areas, some on the National Register and some known to locals as 
-          places of historic or cultural significance. These areas can be tricky sites for new buildings 
-          and often require costly planning, design and construction."""
+          """Seattle has many historic areas, some on the National Register and some known to locals 
+          as places of historic or cultural significance.  As a community we have defined these areas, 
+          in code and in practice, and their special heritage in our community."""
           DIV 
             style: marginTop: 10
 
-            "What do you think of the following proposals?"
+            "What do you think of the following guidelines?"
 
 
 
-  "cluster/Minimize Displacement" : 
 
-          
-    homepage_label: 'Displacement proposal'
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV 
-          style: hala_section_heading
-
-          "Minimize Displacement"
-
-
-        DIV 
-          style: hala_section_description
-
-          """Displacement is happening throughout Seattle, and particular communities 
-             are at high risk of displacement. Data analysis and community outreach will 
-             help identify how growth may benefit or burden certain populations. We will 
-             use that data to make sure our strategies are reaching the communities most 
-             in need."""
-          DIV 
-            style: marginTop: 10
-
-            "What do you think of the following proposal?"
-
-
-  "cluster/Fair Chance Housing" : 
-    homepage_label: 'Proposals'    
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV 
-          style: hala_section_heading
-
-          "Fair Chance Housing legislation"
-
-
-        DIV 
-          style: hala_section_description
-
-          """Fair Chance Housing legislation is aimed at increasing access to Housing for 
-             People with Criminal History. 
-             An estimated one in every three adults in the United States has a criminal 
-             record, and nearly half of all children in the U.S. have one parent with a 
-             criminal record. Due to a rise in the use of criminal background checks during 
-             the tenant screening process, people with arrest and conviction records face 
-             major barriers to housing. Fair Chance Housing legislation could lessen some of 
-             the barriers people face."""
-
-          DIV 
-            style: marginTop: 10
-            
-            "What do you think of the following proposals?"
 
 
   "cluster/Housing Options and Community Assets" : 
@@ -1676,6 +1662,97 @@ customizations['hala'] =
             style: marginTop: 10
             
             "What do you think of the following principles?"
+
+
+  "cluster/Minimize Displacement" : 
+
+    archived: true
+    uncollapseable: false
+    homepage_label: 'Displacement proposal (archived)'
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Minimize Displacement"
+
+
+        DIV 
+          style: hala_section_description
+
+          """Displacement is happening throughout Seattle, and particular communities 
+             are at high risk of displacement. Data analysis and community outreach will 
+             help identify how growth may benefit or burden certain populations. We will 
+             use that data to make sure our strategies are reaching the communities most 
+             in need."""
+
+
+  "cluster/Fair Chance Housing" : 
+    archived: true
+    homepage_label: 'Guidelines (archived)'    
+    uncollapseable: false
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+
+        DIV 
+          style: _.extend {}, hala_section_heading, 
+            color: hala_brown
+            fontSize: 42
+            fontWeight: 400
+            #marginLeft: -30
+            
+
+          SPAN 
+            style: 
+              borderBottom: "1px solid #{hala_brown}"
+              color: hala_brown
+
+            "HALA phase 1 discussion archive"
+
+        DIV 
+          style: _.extend {}, hala_section_description,
+            marginBottom: 50
+
+          "We're working on summarizing what we heard from phase 1, which will be posted "
+
+          A 
+            href: 'http://www.seattle.gov/hala/your-thoughts'
+            target: '_blank'
+            style: 
+              color: hala_teal
+              textDecoration: 'underline'
+
+            'here'
+
+          '.'
+
+
+
+
+
+        DIV 
+          style: hala_section_heading
+
+          "Fair Chance Housing legislation"
+
+
+        DIV 
+          style: hala_section_description
+
+          """Fair Chance Housing legislation is aimed at increasing access to Housing for 
+             People with Criminal History. 
+             An estimated one in every three adults in the United States has a criminal 
+             record, and nearly half of all children in the U.S. have one parent with a 
+             criminal record. Due to a rise in the use of criminal background checks during 
+             the tenant screening process, people with arrest and conviction records face 
+             major barriers to housing. Fair Chance Housing legislation could lessen some of 
+             the barriers people face."""
 
 
   auth: 
@@ -1857,43 +1934,41 @@ customizations['hala'] =
               SPAN 
                 style: paragraph_heading_style
                 """Your thoughts on the Housing Affordability and Livability Agenda (HALA) are key to securing quality, 
-                   affordable housing for Seattle for many years to come"""
+                   affordable housing for Seattle for many years to come."""
               
               SPAN 
                 style: paragraph_style
                 """HALA addresses Seattle's housing affordability crisis on many fronts. As we take proposals from idea 
                    to practice, we have been listening to the community to find out what matters to you. This online 
-                   conversation reflects the variety of what many of the ideas we've heard thus far and will continue 
-                   to provide with meaningful ideas on how to move forward."""
+                   conversation reflects the diversity of ideas we've heard thus far and will continue 
+                   to provide meaningful ideas on how to move forward."""
 
 
             DIV 
               style: section_style
 
+
               SPAN 
                 style: paragraph_heading_style
-                'We need your ideas to get HALA right'
-
+                """Please add your opinion below"""
+        
               SPAN 
                 style: paragraph_style
 
                 """
                 We have listed many key recommendations below. This is an opportunity for you to shape the recommendations 
-                before they are finalized."""
-                SPAN 
+                before they are finalized. As the year progresses, we will be looking at other new programs, so check back often to weigh in on them. 
+                The questions you see here are Phase 2 of this community conversation. Phase 1 questions that closed 
+                recently can be found at the bottom of this page. We are also summarizing your feedback and posting it on """
+                A 
+                  href: 'http://www.seattle.gov/hala/your-thoughts'
+                  target: '_blank'
                   style: 
-                    color: 'black'
-                    fontWeight: 600
-                  " We are committed to using your feedback in a constructive way and will report back on how we use it."
+                    textDecoration: 'underline'
 
-                " Please add your opinion below."
+                  'our website'
 
-              SPAN 
-                style: paragraph_style
-
-                """
-                As the year progresses, we will be looking at other new programs, so check back often to weigh in on them.
-                """
+                '.'
 
 
             DIV 
@@ -1902,7 +1977,7 @@ customizations['hala'] =
                 marginTop: 20
                 fontSize: 18
                 #color: seattle2035_dark
-
+                color: hala_gray
               DIV 
                 style: 
                   marginBottom: 18
@@ -1919,6 +1994,7 @@ customizations['hala'] =
                   src: asset('hala/Seattle-Logo-and-signature2.jpg')
                   style: 
                     height: 70
+                    opacity: .7
 
 
               DIV 
@@ -1926,6 +2002,7 @@ customizations['hala'] =
                   margin: 0
                   marginTop: 10
                   fontSize: 18
+                  color: hala_gray
 
                 'p.s. Email us at '
                 A

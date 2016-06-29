@@ -49,6 +49,9 @@ class ProposalController < ApplicationController
       attrs['slug'] = attrs['slug'].strip
     end
 
+    if attrs.include?('cluster') && attrs['cluster'].length > 0 
+      attrs['cluster'] = attrs['cluster'].strip
+    end
 
     if errors.length == 0
 
@@ -106,6 +109,9 @@ class ProposalController < ApplicationController
       fields = ['slug', 'name', 'cluster', 'description', 'active', 'hide_on_homepage', 'description_fields']
       updated_fields = params.select{|k,v| fields.include?(k) && v != proposal[k]}
       
+      if updated_fields.include?('cluster') && updated_fields['cluster'].length > 0
+        updated_fields['cluster'] = updated_fields['cluster'].strip
+      end
       text_updated = updated_fields.include?('name') || updated_fields.include?('description')
       
       fields.each do |f|

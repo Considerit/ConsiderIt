@@ -94,7 +94,7 @@ class Proposal < ActiveRecord::Base
           manual_clusters = ['Key Proposals', 'Big Changes', 'Overall']
 
         when 'hala'
-          manual_clusters = ['Fair Chance Housing', 'Minimize Displacement', 'Transportation', 'Housing Options and Community Assets', 'Transitions', 'Urban Village Expansion Areas', 'Urban Design Quality', 'Historic Areas and Unique Conditions']
+          manual_clusters = ['Preservation of Existing Affordable Housing',  'Urban Village Expansion', 'Historic Areas and Unique Conditions', 'Housing Options and Community Assets', 'Transitions', 'Urban Design Quality', 'Fair Chance Housing', 'Minimize Displacement']
 
 
         when 'monitorinstitute'

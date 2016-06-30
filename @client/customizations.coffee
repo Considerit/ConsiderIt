@@ -1048,6 +1048,28 @@ for spa in spanish
     show_slider_feedback: false
     proposal_filters: false 
 
+french = ['divvy']
+
+for fr in french
+  customizations[fr] = 
+    lang: 'french'
+    point_labels : 
+      pro: 'pour' 
+      pros: 'pour' 
+      con: 'contre' 
+      cons: 'contre'
+      your_header: "Donner votre --valences--" 
+      other_header: "Les --valences-- des autres" 
+      top_header: "Meilleures --valences--" 
+
+    slider_pole_labels : 
+      support: 'd’accord' 
+      oppose: 'pas d’accord' 
+
+    homie_histo_title: "Des avis"
+    show_slider_feedback: false
+    proposal_filters: false 
+
 
 customizations['alcala'] = _.extend {}, customizations['alcala'],
   HomepageHeader : ReactiveComponent

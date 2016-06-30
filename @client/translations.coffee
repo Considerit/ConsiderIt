@@ -120,6 +120,20 @@ dict.tun_ar =
   closed: 'مغلق'
   add_new: 'إضافة جديدة'
 
+dict.french = 
+  or: 'ou'
+  and: 'et'
+
+  done: 'terminé' 
+  cancel: 'annuler' 
+  edit: 'modifier' 
+  share: 'partager' 
+  delete: 'effacer' 
+  close: 'fermer' 
+  update: 'mettre a jour' 
+  publish: 'publier' 
+  closed: 'fermé' 
+  add_new: 'ajouter' 
 
 
 #########
@@ -290,6 +304,48 @@ _.extend dict.tun_ar,
   filter_to_watched: "إفرز مقترحات من تتابعهم."
 
 
+_.extend dict.french,
+  give_your_opinion: 'Donnez votre opinion' 
+  update_your_opinion: 'modifiez votre opinion' 
+  comment: 'commentez'
+  comments: 'commentaires' 
+  read_more: 'Voir plus' 
+  select_these_opinions: 'choisissez ces opinions' 
+  prev: 'précédent' 
+  next: 'suivant' 
+  drag_from_left: (args) -> 
+    "glissez un #{args.noun} de la gauche"
+  drag_from_right: (args) -> 
+    "glissez un #{args.noun} de la droite"
+  write_a_new_point: (args) -> 
+    "ecrivez un nouvel argument #{args.noun}"
+
+  slide_your_overall_opinion: 'ajustez votre sentiment général' 
+  your_opinion: "votre opinion" 
+  save_your_opinion: 'enregistrez votre opinion' 
+  return_to_results: 'retour aux résultats' 
+  skip_to_results: 'aller directement aux résultats' 
+  login_to_comment: 'connectez-vous pour écrire un commentaire' 
+  login_to_add_new: 'connectez-vous pour ajouter' 
+  login_to_save_opinion: 'connectez-vous pour enregistrer votre opinion' 
+  discuss_this_point: 'discutez ce point' 
+  save_comment: 'enregistrer le commentaire' 
+  write_a_comment: 'Ecrire un commentaire' 
+  write_a_point: 'Ecrire un argument' 
+  summary_placeholder: 'Un résumé bref de votre argument.'
+  description_placeholder: 'Ajouter du contexte ou des temoignages.' 
+  sign_name: 'Signature' 
+
+  tip_single: (args) -> 
+    "Un argument a la fois. Ajoutez plusieurs #{args.noun} si vous en avez plus." 
+  tip_direct: "Soyez direct. le résumé est votre argument principal" 
+  tip_review: "Soignez votre vocabulaire. Relisez vous." 
+  tip_attacks: "Evitez les attaques personnelles." 
+
+  filter_to_watched: "Visualiser uniquement les propositions que vous suivez" 
+
+
+
 #########
 # Creating proposal
 
@@ -366,6 +422,26 @@ _.extend dict.tun_ar,
   show_on_homepage: 'أدرج على الصفحة الرئيسية؟'
   open_for_discussion: 'إفتح للمناقشة؟'
   permissions_and_invites: 'رخص ودعوات'
+
+
+_.extend dict.french, 
+  create_new_proposal: 'Créer une nouvelle proposition' 
+  error_free: "sans fautes de frappe" 
+  unambiguous: 'sans ambiguité' 
+  make_it: 'Allez y'
+  url_instr: "Lettres, chiffres, tirets uniquement." 
+  summary: 'Résumé' 
+  proposal_summary_instr: 'Visez 3-8 mots avec un verbe et un complement.'
+  details: 'Détails' 
+  label: 'Sous-titre' 
+  expandable_body_instr: 'Le texte qui s’affiche dans la sous section'
+  add_expandable: "Ajouter une sous section a la description" 
+  category: 'Catégorie' 
+  optional: 'Optionnel' 
+  show_on_homepage: 'Afficher en page principale?' 
+  open_for_discussion: 'Ouvert a a discussion?'
+  permissions_and_invites: 'Permissions et invitations' 
+
 
 ########
 # authentication / user account related translations
@@ -491,6 +567,36 @@ _.extend dict.tun_ar,
   more_info: 'الرجاء إعطاء بعض المعلومات'
   forgot_password: 'لقد نسيت كلمة السر الخاصة بي'
 
+
+_.extend dict.french, 
+  log_in: 'Connection' 
+  create_new_account: 'Créez un nouveau compte' 
+  log_out: 'Déconnection' 
+  edit_profile: 'Editez votre profil' 
+  email_settings: 'Réglages des courriels' 
+  introduce_yourself: 'Présentez-vous' 
+
+  complete_registration: 'Finalisez votre inscription' 
+  login_as: 'Je me connecte avec' 
+  password: 'Mon mot de passe est' 
+  name_prompt: 'Je m’appelle' 
+  full_name: 'Mon nom d’utilisateur est'  
+  pic_prompt: 'Je ressemble à'   
+  your_profile: 'Votre profil' 
+  updated_successfully: "Mise a jour réussie" 
+  reset_your_password: "Réinitalisez votre mot de passe"  
+  code: 'Code'
+  new_password: 'Nouveau mot de passe' 
+  verification_sent: 'Copiez et collez ci-dessous le code de vérification envoyé par courriel.'
+
+  verify: 'Verification' 
+  choose_password: "Choisissez votre nouveau mot de passe" 
+  code_from_email: 'code de vérification reçu par courriel'  
+  verify_your_email: 'Verifiez votre e mail' 
+  more_info: 'Veuillez fournir des informations' 
+  forgot_password: 'mot de passe oublié' 
+
+
 ########
 # email notification settings
 
@@ -577,6 +683,28 @@ _.extend dict.tun_ar,
   edited_proposal: 'عدل هذا الاقتراح'
   added_new_point: 'أضف وجهة نظر أخرى'
   added_opinion: 'أضافوا أراءهم'
+
+_.extend dict.french, 
+  send_email: 'Envoyez-moi des courriels récapitulaitfs' 
+  email_digest_purpose: (args) ->
+    "Les récapitulatifs résument l’activité nouvelle qui vous intéresse au sujet de #{args.project}"
+
+  digest_timing: "Fréquence d’envoi maximale"
+
+  daily: 'quotidienne' 
+  hourly: 'toutes les heures' 
+  weekly: 'hebdomadaire' 
+  monthly: 'mensuelle' 
+  notable_events: "Choisissez les évenements qui déclenchent l’envoi d’un courriel recapitulatif?" 
+  watched_proposals: 'Les propositions dont vous suivez l’activité:' 
+  unwatch: "Ne plus suivre cette proposition" 
+  hide_notifications: 'Masquer les notifications' 
+  show_notifications: 'Montrer les notifications' 
+  commented_on: "Commenté le" 
+  your_point: 'votre argument' 
+  edited_proposal: 'a edité cette proposition' 
+  added_new_point: 'a ajouté un argument' 
+  added_opinion: 'ont ajouté leur opinion' 
 
 # fill in missing spanish translations with english equivalents
 _.defaults dict.spa, dict.en

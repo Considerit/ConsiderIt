@@ -1048,7 +1048,7 @@ for spa in spanish
     show_slider_feedback: false
     proposal_filters: false 
 
-french = ['divvy']
+french = []
 
 for fr in french
   customizations[fr] = 

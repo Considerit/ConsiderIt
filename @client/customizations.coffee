@@ -1441,7 +1441,7 @@ customizations['hala'] =
           """There are many buildings and other types of housing in Seattle that currently offer affordable rents. 
              In this set of questions, we are using the term "preservation" to describe retaining affordable rents 
              in existing buildings that are currently unsubsidized. In the next section, we address historic 
-             preservation in the context of MHA. We will be using the term AMI or Area Median Income. 
+             preservation in the context of Mandatory Housing Affordability (MHA). We will be using the term AMI or Area Median Income. 
              For Seattle, here is a snapshot of those: 60% of AMI in 2016 is $37,980 annually for an individual, 
              $54,180 for a family of four. See """
 
@@ -3386,7 +3386,7 @@ customizations['on-chain-conf'] = _.extend {},
                   fontWeight: 600
                   fontSize: 20
 
-                'Upcoming, June 24-26: online conference about on-chain scaling. See '
+                'Visit '
 
                 A 
                   style: 
@@ -3394,13 +3394,13 @@ customizations['on-chain-conf'] = _.extend {},
                   href: 'http://onchainscaling.com/'
 
                   'onchainscaling.com'
-                '.'
+                'onchainscaling.com to see the recorded presentations from the first conference.'
 
               DIV 
                 style:
                   fontSize: 18
 
-                'Express your preferences below. '
+                'Express your preferences below for future event presentations. '
 
 
 

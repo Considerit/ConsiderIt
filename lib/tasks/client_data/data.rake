@@ -71,6 +71,7 @@ end
 
 task :export, [:sub] => :environment do |t, args|
   sub = args[:sub] || 'hala'
+
   subdomain = Subdomain.find_by_name(sub)
 
   CSV.open("lib/tasks/client_data/export/#{subdomain.name}-opinions.csv", "w") do |csv|
@@ -121,10 +122,10 @@ task :export, [:sub] => :environment do |t, args|
           if v.to_i > 0          
             v = v.to_i
 
-            if v < 25
-              v = '0-25'
-            elsif v > 65
-              v = '65+'
+            if v < 20
+              v = '0-20'
+            elsif v > 70
+              v = '70+'
             else 
               v = "#{10 * ((v / 10).floor)}-#{10 * ((v / 10).floor + 1)}"
             end 

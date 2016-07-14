@@ -1048,7 +1048,7 @@ for spa in spanish
     show_slider_feedback: false
     proposal_filters: false 
 
-french = []
+french = ['fr']
 
 for fr in french
   customizations[fr] = 

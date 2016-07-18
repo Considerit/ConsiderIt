@@ -3432,6 +3432,165 @@ customizations['on-chain-conf'].NonHomepageHeader = customizations['on-chain-con
 
 
 
+customizations['kulahawaiinetwork'] = 
+  show_proposer_icon: true
+  collapse_descriptions_at: 300
+
+  cluster_filters: 
+    'Advocacy & Public Relations': ['Advocacy & Public Relations']
+    'Building Kula Resources & Sustainability': ['Building Kula Resources & Sustainability']
+    'Cultivating Kumu': ['Cultivating Kumu']
+    'Relevant Assessments': ['Relevant Assessments']
+    'Teacher Resources': ['Teacher Resources']
+    '‘Ōlelo Hawai’i': ['‘Ōlelo Hawai’i']
+    '3C Readiness': ['3C Readiness']
+
+
+  HomepageHeader: ReactiveComponent 
+    displayName: 'HomepageHeader'
+
+    render: ->
+      homepage = fetch('location').url == '/'
+
+      DIV
+        style:
+          position: 'relative'
+          paddingBottom: if !homepage then 20
+          height: 300
+
+        DIV 
+          style: 
+            height: 300
+            width: '100%'
+            backgroundColor: 'black'
+            position: 'absolute'
+            zIndex: -1
+          DIV 
+            style: 
+              height: 300
+              position: 'absolute'
+              width: '100%'
+              left: 0
+              top: 0 
+              zIndex: 0
+              backgroundPosition: 'center'
+              backgroundSize: 'cover'
+              backgroundImage: "url(#{asset('hawaii/KulaHawaiiNetwork.jpg')})"
+              backgroundColor: 'black'
+
+              opacity: .6
+
+
+        STYLE null,
+          '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
+             p {margin-bottom: 1em}'''
+
+
+        DIV 
+          style: 
+            margin: 'auto'
+            width: HOMEPAGE_WIDTH()
+            position: 'relative'
+            textAlign: 'center'
+
+
+          back_to_homepage_button            
+            display: 'inline-block'
+            visibility: if fetch('location').url == '/' then 'hidden'
+            color: 'white'
+            opacity: .7
+            position: 'absolute'
+            left: -20
+            top: 4
+            fontSize: 43
+            fontWeight: 400
+            paddingLeft: 25 # Make the clickable target bigger
+            paddingRight: 25 # Make the clickable target bigger
+            cursor: if fetch('location').url != '/' then 'pointer'
+
+          # Logo
+          A 
+            style: 
+              cursor: 'none'
+            # href: if homepage then 'https://forum.daohub.org/c/theDAO' else '/'
+
+
+            # IMG
+            #   style:
+            #     height: 30
+            #     width: 30
+            #     marginLeft: -44
+            #     marginRight: 10
+            #     marginTop: -10
+            #     verticalAlign: 'middle'
+
+            #   src: asset('ethereum/the_dao.jpg')
+
+            SPAN 
+              style:
+                #fontFamily: "Montserrat, 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+                fontSize: 52
+                color: 'white'
+                fontWeight: 200
+                paddingTop: 40
+                display: 'inline-block'
+                opacity: .9
+
+              "Envision the Kula Hawai’i Network"
+
+
+        # The top bar with the logo
+        DIV
+          style:
+            width: HOMEPAGE_WIDTH()
+            margin: 'auto'
+
+          if homepage
+
+            DIV 
+              style: 
+                #paddingBottom: 50
+                position: 'relative'
+                
+
+              DIV 
+                style: 
+                  #backgroundColor: '#eee'
+                  # marginTop: 10
+                  # padding: "0 8px"
+                  fontSize: 22
+                  #fontWeight: 200
+                  color: 'white'
+                  marginTop: 0
+                  opacity: .7
+                  textAlign: 'center'
+
+                
+                'Please share your opinion. Click any proposal below to get started.'            
+
+        if homepage && customization('cluster_filters')
+          DIV 
+            style: 
+              position: 'relative'
+              margin: '62px auto 0 auto'
+              width: HOMEPAGE_WIDTH()
+
+            ClusterFilter()
+
+        ProfileMenu()
+
+
+customizations.kulahawaiinetwork.NonHomepageHeader = customizations.kulahawaiinetwork.HomepageHeader
+
+
+
+
+
+
+
+
+
+
 
 dao_blue = '#348AC7'
 dao_red = '#F83E34'

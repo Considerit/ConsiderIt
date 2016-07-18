@@ -700,11 +700,11 @@ window.ClusterFilter = ReactiveComponent
       save cluster_filters
 
 
+    subdomain = fetch('/subdomain')
+
+
     DIV 
       style: 
-        fontSize: 19
-        fontWeight: 600
-        color: 'white'
         width: '100%'
         zIndex: 2
         position: 'relative'
@@ -721,20 +721,33 @@ window.ClusterFilter = ReactiveComponent
           do (filter, clusters) =>
             current = cluster_filters.filter == filter 
             hovering = @local.hovering == filter
-            SPAN 
-              style: 
-                #borderLeft: if idx == 0 then '1px solid #CACACA'
-                #borderRight: '1px solid #CACACA'
+
+
+            filter_style = 
+              cursor: 'pointer'
+              position: 'relative'
+              display: 'inline-block'
+              fontSize: 16
+              fontWeight: 600        
+              color: 'white'
+              opacity: if hovering || current then 1 else .8
+
+            if subdomain.name == 'dao'
+              _.extend filter_style, 
                 padding: '10px 30px 4px 30px'
-                display: 'inline-block'
-                cursor: 'pointer'
                 color: if current then 'black' else if hovering then '#F8E71C'
                 backgroundColor: if current then 'white'
-                position: 'relative'
                 borderRadius: '16px 16px 0 0'
                 borderLeft: if current then "2px solid #F8E71C"
                 borderTop: if current then "2px solid #F8E71C"
                 borderRight: if current then "2px solid #F8E71C"
+            else 
+              _.extend filter_style, 
+                padding: '10px 20px 4px 20px'
+                backgroundColor: if current then 'rgba(255,255,255,.2)'
+
+            SPAN 
+              style: filter_style
 
               onMouseEnter: => 
                 if cluster_filters.filter != filter 
@@ -750,23 +763,6 @@ window.ClusterFilter = ReactiveComponent
 
               filter
 
-              # if current
-              #   tw = 45
-              #   th = 10
-              #   SPAN 
-              #     style: cssTriangle 'bottom', '#FF3834', tw, th,
-              #       position: 'absolute'
-              #       left: -tw / 2
-              #       marginLeft: '50%'
-              #       bottom: -th + 1
-              #       width: tw
-              #       height: th
-              #       display: 'inline-block'
-
-
-
-
-          # if clusters == '*'
 
 
 

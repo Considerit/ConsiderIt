@@ -77,6 +77,10 @@ class Proposal < ActiveRecord::Base
           manual_clusters = ["Proposed to DAO", 'Under development', 'New', 'Needs more description', 'Funded', 'Rejected', 'Archived', 'Proposals', 'Ideas', 'Meta', 'DAO 2.0 Wishlist', 'Hack', 'Hack meta']
           always_shown = ['Proposed to DAO', 'Under development',  'Proposals', 'Meta']
 
+        when 'kulahawaiinetwork'
+          manual_clusters = []
+          always_shown = ['Advocacy & Public Relations', 'Building Kula Resources & Sustainability', 'Cultivating Kumu', 'Relevant Assessments', 'Teacher Resources', '‘Ōlelo Hawai’i', '3C Readiness']
+
         when 'on-chain-conf'
           manual_clusters = ['Events', 'On-chain scaling', 'Other topics'] 
 
@@ -191,21 +195,29 @@ class Proposal < ActiveRecord::Base
 
     end
 
+
     always_shown.each do |cluster|
-      clustered_proposals[cluster] = [] if !clustered_proposals.has_key? cluster      
+      clustered_proposals[cluster] = [] if !clustered_proposals.has_key? cluster   
+      most_recent[cluster] = 0   
     end 
 
     # now order the clusters
     if manual_clusters
       ordered_clusters = manual_clusters
+      for cluster in always_shown
+        ordered_clusters.append(cluster) if ordered_clusters.index(cluster) == nil
+      end
+
     elsif randomize_cluster_order
       ordered_clusters = clustered_proposals.keys().shuffle
     else
       # order the group by most recent proposal
       ordered_clusters = clustered_proposals.keys().sort {|c1,c2|      
         most_recent[c1] < most_recent[c2] ? 1 : -1
-      }      
+      }
+
     end
+
 
     clusters = ordered_clusters.map {|cluster| 
       { 

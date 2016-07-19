@@ -735,7 +735,7 @@ window.ClusterFilter = ReactiveComponent
             if subdomain.name == 'dao'
               _.extend filter_style, 
                 padding: '10px 30px 4px 30px'
-                color: if current then 'black' else if hovering then '#F8E71C'
+                color: if current then 'black' else if hovering then '#F8E71C' else 'white'
                 backgroundColor: if current then 'white'
                 borderRadius: '16px 16px 0 0'
                 borderLeft: if current then "2px solid #F8E71C"

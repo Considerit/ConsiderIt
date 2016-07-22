@@ -3446,6 +3446,174 @@ customizations['kulahawaiinetwork'] =
     '3C Readiness': ['3C Readiness']
 
 
+  'cluster/Advocacy & Public Relations':
+    homepage_label: 'Ideas'
+
+    # one_line_desc: 'Add interesting proposals here'
+    description: ->
+
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV style: dao_section_heading, 
+          'Advocacy & Public Relations'
+
+        DIV 
+          style: dao_section_description
+
+
+          "A space to discuss ideas about two things:"
+          OL 
+            style: 
+              paddingLeft: 40
+              listStyle: 'outside'
+
+            LI null, 
+              "Sharing information and activating kula communities to improve policies related to:"
+
+              UL
+                style: 
+                  paddingLeft: 40  
+                  listStyle: 'outside'
+
+                LI null, 
+                  "ʻŌlelo Hawaiʻi, culture, and ʻāina-based education" 
+                LI null, 
+                  "Positions on issues supported by the network"
+            LI null, 
+              "Creating and sharing stories of kula and network successes to improve public perceptions and gain support for Hawaiian-focused education & outcomes."
+
+
+  'cluster/Building Kula Resources & Sustainability':
+    homepage_label: 'Ideas'
+
+    # one_line_desc: 'Add interesting proposals here'
+    description: ->
+
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV style: dao_section_heading, 
+          'Building Kula Resources & Sustainability'
+
+        DIV 
+          style: dao_section_description
+
+
+          "A space to discuss ideas around joining efforts across kula to enhance opportunities to increase kula resources and sustainability."
+
+
+  'cluster/Cultivating Kumu':
+    homepage_label: 'Ideas'
+
+    # one_line_desc: 'Add interesting proposals here'
+    description: ->
+
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV style: dao_section_heading, 
+          'Cultivating Kumu'
+
+        DIV 
+          style: dao_section_description
+
+
+          "A space to discuss ideas about two things:"
+          OL 
+            style: 
+              paddingLeft: 40
+              listStyle: 'outside'
+
+            LI null, 
+              "Attracting, training, recruiting, growing, retaining, and supporting the preparation of novice teachers, excellent kula leaders, kumu, and staff for learning contexts where ʻōlelo Hawaiʻi, culture, and ʻāina-based experiences are foundational."
+
+            LI null, 
+              "Growing two related communities of kumu and kula leaders who interact regularly, share and learn from one another, develop pilina with one another, and provide support ot one another."
+
+
+  'cluster/Relevant Assessments':
+    homepage_label: 'Ideas'
+
+    # one_line_desc: 'Add interesting proposals here'
+    description: ->
+
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV style: dao_section_heading, 
+          'Relevant Assessments'
+
+        DIV 
+          style: dao_section_description
+
+
+          "A space to discuss ideas around the development of shared assessments that honor the many dimensions of student growth involved in learning contexts where ʻōlelo Hawaiʻi, culture, and ʻāina-based experiences are foundational. Are we willing to challenge the mainstream concep to education success?"
+
+
+  'cluster/Teacher Resources':
+    homepage_label: 'Ideas'
+
+    # one_line_desc: 'Add interesting proposals here'
+    description: ->
+
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV style: dao_section_heading, 
+          'Teacher Resources'
+
+        DIV 
+          style: dao_section_description
+
+
+          "A space to discuss ideas around the creation of new (and compiling existing) ʻōlelo Hawaiʻi, culture, and ʻāina-based teaching resources to share widely in an online waihona."
+
+
+  'cluster/‘Ōlelo Hawai’i':
+    homepage_label: 'Ideas'
+
+    # one_line_desc: 'Add interesting proposals here'
+    description: ->
+
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV style: dao_section_heading, 
+          '‘Ōlelo Hawai’i'
+
+        DIV 
+          style: dao_section_description
+
+
+          "A space to discuss ideas around the way we use our network of Hawaiian Educational Organizationsʻ Synergy to increase the amount of Hawaiian Language speakers so that the language will again be thriving!"
+
+  'cluster/3C Readiness':
+    homepage_label: 'Ideas'
+
+    # one_line_desc: 'Add interesting proposals here'
+    description: ->
+
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV style: dao_section_heading, 
+          '3C Readiness'
+
+        DIV 
+          style: dao_section_description
+
+
+          "A space to discuss ideas around nurturing college, career, and community readiness in haumāna. How do we provide experiences for haumāna that integrate and bridge high-school, college, career, and community engagement experiences?"
+
+
   HomepageHeader: ReactiveComponent 
     displayName: 'HomepageHeader'
 

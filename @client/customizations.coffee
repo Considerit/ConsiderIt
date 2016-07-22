@@ -3619,23 +3619,24 @@ customizations['kulahawaiinetwork'] =
 
     render: ->
       homepage = fetch('location').url == '/'
+      height = if homepage then 300 else 120
 
       DIV
         style:
           position: 'relative'
           paddingBottom: if !homepage then 20
-          height: 300
+          height: height
 
         DIV 
           style: 
-            height: 300
+            height: height
             width: '100%'
             backgroundColor: 'black'
             position: 'absolute'
             zIndex: -1
           DIV 
             style: 
-              height: 300
+              height: height
               position: 'absolute'
               width: '100%'
               left: 0
@@ -3668,8 +3669,8 @@ customizations['kulahawaiinetwork'] =
             color: 'white'
             opacity: .7
             position: 'absolute'
-            left: -20
-            top: 4
+            left: -60
+            top: 38
             fontSize: 43
             fontWeight: 400
             paddingLeft: 25 # Make the clickable target bigger
@@ -3697,7 +3698,7 @@ customizations['kulahawaiinetwork'] =
             SPAN 
               style:
                 #fontFamily: "Montserrat, 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-                fontSize: 52
+                fontSize: 47
                 color: 'white'
                 fontWeight: 200
                 paddingTop: 40

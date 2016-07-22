@@ -45,11 +45,11 @@ class ProposalController < ApplicationController
 
     errors = validate_input attrs, nil
 
-    if attrs['slug'] && attrs['slug'].length > 0
+    if !!attrs['slug'] && attrs['slug'].length > 0
       attrs['slug'] = attrs['slug'].strip
     end
 
-    if attrs.include?('cluster') && attrs['cluster'].length > 0 
+    if !!attrs.include?('cluster') && attrs['cluster'].length > 0 
       attrs['cluster'] = attrs['cluster'].strip
     end
 

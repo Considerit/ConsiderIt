@@ -3444,6 +3444,7 @@ customizations['kulahawaiinetwork'] =
     'Teacher Resources': ['Teacher Resources']
     '‘Ōlelo Hawai’i': ['‘Ōlelo Hawai’i']
     '3C Readiness': ['3C Readiness']
+    'Leadership': ['Leadership']
 
 
   'cluster/Advocacy & Public Relations':
@@ -3612,6 +3613,25 @@ customizations['kulahawaiinetwork'] =
 
 
           "A space to discuss ideas around nurturing college, career, and community readiness in haumāna. How do we provide experiences for haumāna that integrate and bridge high-school, college, career, and community engagement experiences?"
+
+  'cluster/Leadership':
+    homepage_label: 'Ideas'
+
+    # one_line_desc: 'Add interesting proposals here'
+    description: ->
+
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV style: dao_section_heading, 
+          'Leadership'
+
+        DIV 
+          style: dao_section_description
+
+
+          "A space for network leaders to gather mana’o."
 
 
   HomepageHeader: ReactiveComponent 

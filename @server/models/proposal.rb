@@ -79,7 +79,7 @@ class Proposal < ActiveRecord::Base
 
         when 'kulahawaiinetwork'
           manual_clusters = []
-          always_shown = ['Advocacy & Public Relations', 'Building Kula Resources & Sustainability', 'Cultivating Kumu', 'Relevant Assessments', 'Teacher Resources', '‘Ōlelo Hawai’i', '3C Readiness']
+          always_shown = ['Leadership', 'Advocacy & Public Relations', 'Building Kula Resources & Sustainability', 'Cultivating Kumu', 'Relevant Assessments', 'Teacher Resources', '‘Ōlelo Hawai’i', '3C Readiness']
 
         when 'on-chain-conf'
           manual_clusters = ['Events', 'On-chain scaling', 'Other topics'] 

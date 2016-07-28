@@ -97,7 +97,7 @@ def get_new_activity(subdomain, user, since)
 
   new_proposals = {}
   subdomain.proposals.where("created_at > '#{since}'").each do |proposal|
-    if proposal.opinions.published.where(:user_id => user.id).count == 0 
+    if proposal.user && proposal.opinions.published.where(:user_id => user.id).count == 0 
       new_proposals[proposal.id] = proposal 
     end 
   end 
@@ -106,13 +106,11 @@ def get_new_activity(subdomain, user, since)
   new_opinions = subdomain.opinions.published.where("created_at > '#{since}' AND user_id != #{user.id}")
   new_comments = subdomain.comments.where("created_at > '#{since}' AND user_id != #{user.id}")
 
-
-
   your_proposals = {}
   active_proposals = {}
   new_points.each do |pnt|
     proposal = pnt.proposal
-    next if new_proposals.key?(proposal.id)
+    next if new_proposals.key?(proposal.id) || !proposal.user
 
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
     if !proposal_dict.has_key? proposal.id 
@@ -134,9 +132,9 @@ def get_new_activity(subdomain, user, since)
   new_comments.each do |comment|
     pnt = comment.point
     proposal = pnt.proposal
-    next if new_proposals.key?(proposal.id)
+    next if new_proposals.key?(proposal.id) || !proposal.user
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
-    if !proposal_dict.has_key? proposal.id 
+    if !proposal_dict.has_key?(proposal.id) && proposal.user
       proposal_dict[proposal.id] = {
         :obj => proposal,
         :events => {},
@@ -170,7 +168,7 @@ def get_new_activity(subdomain, user, since)
     next if new_proposals.key?(proposal.id)
 
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
-    if !proposal_dict.has_key? proposal.id 
+    if !proposal_dict.has_key?(proposal.id) && proposal.user
       proposal_dict[proposal.id] = {
         :obj => proposal,
         :events => {},
@@ -195,7 +193,7 @@ def get_new_activity(subdomain, user, since)
       next if new_proposals.key?(proposal.id) || proposal.opinions.published.where(:user_id => inclusion.user_id).count == 0
 
       proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
-      if !proposal_dict.has_key? proposal.id 
+      if !proposal_dict.has_key?(proposal.id) && proposal.user
         proposal_dict[proposal.id] = {
           :obj => proposal,
           :events => {},

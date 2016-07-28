@@ -49,7 +49,7 @@ class ProposalController < ApplicationController
       attrs['slug'] = attrs['slug'].strip
     end
 
-    if !!attrs.include?('cluster') && attrs['cluster'].length > 0 
+    if attrs.include?('cluster') && !!attrs['cluster'] && attrs['cluster'].length > 0 
       attrs['cluster'] = attrs['cluster'].strip
     end
 

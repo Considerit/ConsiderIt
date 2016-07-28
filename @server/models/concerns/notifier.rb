@@ -294,9 +294,14 @@ module Notifier
   def self.create_notifications_offline(event_type, event_object_type, event_object_id, subdomain_id, 
                                         protagonist_id, digest_object_type, digest_object_id)
 
-    subdomain = Subdomain.find(subdomain_id)
-    event_object = event_object_type.constantize.find(event_object_id)
-    digest_object = digest_object_type.constantize.find(digest_object_id)
+    begin
+      subdomain = Subdomain.find(subdomain_id)
+      event_object = event_object_type.constantize.find(event_object_id)
+      digest_object = digest_object_type.constantize.find(digest_object_id)
+    rescue ActiveRecord::RecordNotFound
+      # one of the objects has disappeared during the delay of creating a notification
+      return 
+    end
 
     # Who is watching this object?
     if event_type == 'content_to_moderate'

@@ -347,7 +347,7 @@ window.SimpleHomepage = ReactiveComponent
               index: index
 
 
-        if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation'] 
+        if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation', 'engageseattle'] 
           A 
             style: 
               color: logo_red
@@ -788,6 +788,8 @@ Cluster = ReactiveComponent
     proposals = sorted_proposals(cluster.proposals)
     return SPAN null if !proposals || (proposals.length == 0 && !cluster.always_shown)
 
+    cluster_key = "cluster/#{cluster.name}"
+
     DIV
       key: cluster.name
       id: if cluster.name && cluster.name then cluster.name.toLowerCase()
@@ -810,7 +812,7 @@ Cluster = ReactiveComponent
 
               @drawThreshold(subdomain, cluster, idx)
 
-          if customization('show_new_proposal_button')
+          if customization('show_new_proposal_button', cluster_key)
             NewProposal 
               cluster_name: cluster.name
               local: @local.key

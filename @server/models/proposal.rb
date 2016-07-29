@@ -100,6 +100,9 @@ class Proposal < ActiveRecord::Base
         when 'hala'
           manual_clusters = ['Preservation of Existing Affordable Housing',  'Urban Village Expansion', 'Historic Areas and Unique Conditions', 'Housing Options and Community Assets', 'Transitions', 'Urban Design Quality', 'Fair Chance Housing', 'Minimize Displacement']
 
+        when 'engageseattle'
+          manual_clusters = ['Value in engagement',  'Meeting preferences', 'Community Involvement Commission', 'Community Involvement Commission Roles', 'Engagement Ideas']
+          always_shown = manual_clusters
 
         when 'monitorinstitute'
           manual_clusters = ['Intellectual Agenda Items', 'Overall']

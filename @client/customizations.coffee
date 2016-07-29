@@ -2234,8 +2234,6 @@ customizations['engageseattle'] =
             color: '#666'
             marginBottom: 5
 
-
-
           """What additional roles, if any, should the Community Involvement Commission undertake?"""
 
 

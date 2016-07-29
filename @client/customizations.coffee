@@ -1348,13 +1348,6 @@ hala_section_description =
   #fontStyle: 'italic' 
   color: hala_gray
 
-hala_section_call_to_action = 
-  fontSize: 18
-  width: HOMEPAGE_WIDTH
-  marginBottom: 20
-  #fontStyle: 'italic'
-  color: hala_gray
-
 hala_proposal_style = 
   #color: "#444"
   borderBottom: "1px solid #ddd"
@@ -2058,6 +2051,501 @@ customizations['hala'] =
 
 
 
+################
+# engageseattle
+
+engageseattle_teal = "#67B5B5"
+hala_gray = '#666'
+
+engageseattle_section_heading = 
+  fontSize: 42
+  fontWeight: 300
+  color: engageseattle_teal
+  marginBottom: 5
+
+engageseattle_section_description = 
+  fontSize: 18
+  fontWeight: 400 
+  #fontStyle: 'italic' 
+  color: hala_gray
+
+
+customizations['engageseattle'] = 
+  point_labels : pro_con
+  slider_pole_labels : agree_disagree
+  homie_histo_title: "Opinions"
+  show_proposer_icon: false
+  show_meta: false 
+  civility_pledge: true
+  show_score: false
+  proposal_filters: false
+
+  proposal_style: 
+    #color: "#444"
+    borderBottom: "1px solid #ddd"
+
+  uncollapseable: true
+
+
+  opinion_filters: ( -> 
+    filters = 
+      [ {
+        label: 'focus group'
+        tooltip: null
+        pass: (user) -> passes_tags(user, 'hala_focus_group')
+      }] 
+
+    for home in ['Rented', 'Owned by me', 'Other']
+
+      filters.push 
+        label: "Home:#{home.replace(' ', '_')}"
+        tooltip: null 
+        pass: do(home) -> (user) -> 
+          u = fetch(user)
+          u.tags['home.editable'] == home 
+
+    for home in ['A house or townhome', 'An apartment or condo', 'A single room', 'I\'m homeless']
+
+      filters.push 
+        label: "Housing_type:#{home.replace(' ', '_')}"
+        tooltip: null 
+        pass: do(home) -> (user) -> 
+          u = fetch(user)
+          u.tags['housing_type.editable'] == home 
+
+    for age in [0, 25, 35, 45, 55, 65]
+      if age == 0 
+        label = 'Age:0-25'
+      else if age == 65
+        label = 'Age:65+'
+      else 
+        label = "Age:#{age}-#{age+10}"
+
+      filters.push 
+        label: label
+        tooltip: null 
+        pass: do(age) -> (user) -> 
+          u = fetch(user)
+          u.tags['age.editable'] && parseInt(u.tags['age.editable']) >= age && parseInt(u.tags['age.editable']) < age + 10
+
+
+    return filters 
+    )()
+
+
+
+  "cluster/Value in engagement" : 
+    cluster_header: -> 
+      DIV style: height: 18
+
+    show_new_proposal_button: false
+    homepage_label: 'Values'
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: engageseattle_section_heading
+
+          "What do you value when engaging with the City about issues in your community, such as at public meetings?"
+
+
+        # DIV 
+        #   style: engageseattle_section_description
+
+        #   """There are many buildings and other types of housing in Seattle that currently offer affordable rents. 
+        #      In this set of questions, we are using the term "preservation" to describe retaining affordable rents 
+        #      in existing buildings that are currently unsubsidized. In the next section, we address historic 
+        #      preservation in the context of Mandatory Housing Affordability (MHA). We will be using the term AMI or Area Median Income. 
+        #      For Seattle, here is a snapshot of those: 60% of AMI in 2016 is $37,980 annually for an individual, 
+        #      $54,180 for a family of four. See """
+
+        #   A 
+        #     href: 'http://www.seattle.gov/Documents/Departments/Housing/PropertyManagers/IncomeRentLimits/Income-Rent-Limits_Rental-Housing-HOME.pdf'
+        #     target: '_blank'
+        #     style: 
+        #       textDecoration: 'underline'
+
+        #     'detailed numbers'
+
+        #   '.'
+
+        #   DIV 
+        #     style: marginTop: 10
+
+        #     "What do you think of the following guidelines?"
+
+
+  "cluster/Meeting preferences" : 
+    cluster_header: -> 
+      DIV style: height: 18
+
+    show_new_proposal_button: false
+    homepage_label: 'Preferences'
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: engageseattle_section_heading
+
+          "How do you like to meet and what do you want to talk about?"
+
+
+  "cluster/Community Involvement Commission" : 
+
+    show_new_proposal_button: false
+    cluster_header: -> 
+      DIV style: height: 18
+
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: engageseattle_section_heading
+
+          'Community Involvement Commission'
+
+        DIV 
+          style: engageseattle_section_description
+
+          """A Community Involvement Commission could be established to create a more inclusive and 
+             representative process for decision-making. Your comments are needed to help develop the 
+             charter and membership of the Commission. """
+
+
+  "cluster/Community Involvement Commission Roles" : 
+          
+    homepage_label: 'Roles'
+
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: 
+            fontSize: 34
+            fontWeight: 300
+            color: '#666'
+            marginBottom: 5
+
+
+
+          """What additional roles, if any, should the Community Involvement Commission undertake?"""
+
+
+  "cluster/Engagement Ideas" : 
+          
+    homepage_label: 'Your ideas'
+
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: engageseattle_section_heading
+
+          """What’s your big idea on how the City can better engage with residents?"""
+
+
+
+
+  auth: 
+
+    user_questions : [
+      { 
+        tag: 'zip.editable'
+        question: 'The zipcode where I live is'
+        input: 'text'
+        required: false
+        input_style: 
+          width: 85
+        validation: (zip) ->
+          return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip)
+      }, {
+        tag: 'age.editable'
+        question: 'My age is'
+        input: 'text'
+        input_style: 
+          width: 85        
+        required: false
+      }, {
+        tag: 'race.editable'
+        question: 'My race is'
+        input: 'text'
+        required: false
+      }, {
+      #   tag: 'hispanic.editable'
+      #   question: "I'm of Hispanic origin"
+      #   input: 'dropdown'
+      #   options:['No', 'Yes']
+      #   required: false
+      # }, {
+      #   tag: 'gender.editable'
+      #   question: "My gender is"
+      #   input: 'dropdown'
+      #   options:['Female', 'Male', 'Transgender', 'Other']
+      #   required: false
+      # }, {
+        tag: 'home.editable'
+        question: "My home is"
+        input: 'dropdown'
+        options:['Rented', 'Owned by me', 'Other']
+        required: false
+      }, {
+        tag: 'housing_type.editable'
+        question: "I live in"
+        input: 'dropdown'
+        options:['A house or townhome', 'An apartment or condo', 'A single room', 'I\'m homeless']
+        required: false
+      }
+
+
+
+     ]
+
+  additional_auth_footer: -> 
+
+    auth = fetch('auth')
+    if auth.ask_questions && auth.form in ['create account', 'create account via invitation', 'user questions']
+      return DIV 
+        style:
+          fontSize: 13
+          color: auth_text_gray
+          padding: '16px 0' 
+        """
+        We are collecting this information to find out if this tool is 
+        truly reaching the diverse population that reflects our city. Thank you!
+        """
+    else 
+      SPAN null, ''
+
+
+
+
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
+
+    render: ->
+
+      header_style = 
+        color: engageseattle_teal
+        fontSize: 44
+        #fontWeight: 600
+        marginTop: 10
+
+      section_style = 
+        marginBottom: 20
+        color: 'black'
+
+      paragraph_heading_style = 
+        display: 'block'
+        fontWeight: 400
+        fontSize: 31
+        color: engageseattle_teal
+
+      paragraph_style = 
+        fontSize: 18
+        color: hala_gray
+        paddingTop: 10
+        display: 'block'
+
+      DIV
+        style:
+          position: 'relative'
+
+        # A 
+        #   href: 'http://www.seattle.gov/neighborhoods/equitable-outreach-and-engagement'
+        #   target: '_blank'
+        #   style: 
+        #     display: 'block'
+        #     position: 'absolute'
+        #     top: 22
+        #     left: 20
+        #     color: "white"
+
+        #   I 
+        #     className: 'fa fa-chevron-left'
+        #     style: 
+        #       display: 'inline-block'
+        #       marginRight: 5
+
+        #   'seattle.gov/#AdvancingEquitySEA'
+
+
+        IMG
+          style: 
+            width: '100%'
+            display: 'block'
+            #paddingTop: 20
+
+          src: asset('engageseattle/engageseattle_header.png')
+
+
+        ProfileMenu()
+
+        DIV 
+          style: 
+            borderTop: "7px solid #{engageseattle_teal}"
+            padding: '20px 0'
+            #marginTop: 50
+
+          DIV 
+            style: 
+              width: HOMEPAGE_WIDTH()
+              margin: 'auto'
+
+
+            # DIV 
+            #   style: header_style
+
+            #   'Let’s talk about housing affordability and livability'
+
+            DIV 
+              style: _.extend {}, section_style, 
+                color: hala_gray
+              
+              DIV  
+                style: _.extend {}, paragraph_style, 
+                  #fontSize: 22
+                  fontStyle: 'italic'
+                  margin: 'auto'
+                  padding: "40px 40px"
+                  
+                """
+                “How we reach out to residents to bring them into the governing process reflects the City’s 
+                 fundamental commitment to equity and to democracy. We’re constantly looking to bring down barriers, 
+                 to open up more opportunities, and to reflect the face of our diverse and growing city.”
+                """
+                DIV  
+                  style: _.extend {}, paragraph_style, 
+                    paddingLeft: '70%'
+                  "– Mayor Ed Murray"
+
+            DIV 
+              style: section_style
+
+
+              SPAN 
+                style: paragraph_heading_style
+                """Advancing Equitable Outreach and Engagement"""
+              
+              SPAN 
+                style: paragraph_style
+                """Mayor Murray recently issued an """
+
+                A 
+                  href: 'http://www.seattle.gov/neighborhoods/equitable-outreach-and-engagement'
+                  target: '_blank'
+                  style: 
+                    textDecoration: 'underline'
+
+                  'Executive Order'
+
+                """ directing the city to approach outreach and engagement in an equitable manner. 
+                Putting an equity lens on our approaches is bold and, yes, brave. It shows 
+                a commitment to practices that address accessibility and equity."""
+
+              SPAN 
+                style: paragraph_style
+                """At the heart of this """
+
+                A 
+                  href: 'http://www.seattle.gov/neighborhoods/equitable-outreach-and-engagement'
+                  target: '_blank'
+                  style: 
+                    textDecoration: 'underline'
+
+                  'Executive Order'
+
+                " is a commitment to advance the effective deployment of equitable and inclusive community engagement strategies across all city departments. This is about making information and opportunities for participation more accessible to communities throughout the city."
+
+              SPAN 
+                style: paragraph_style
+                """This is about bringing more people into the conversations or at least creating opportunities for people to participate so they can be heard. This is about making things easier and less exhaustive. This is about connecting communities to government and to one another. This is about moving forward."""
+
+
+            DIV 
+              style: section_style
+
+
+              SPAN 
+                style: paragraph_heading_style
+                """Please add your opinion below"""
+        
+              SPAN 
+                style: paragraph_style
+
+                """We’d love to hear what YOU need to be successful, and we’d like to hear how WE can help you."""
+
+
+            DIV 
+              style: 
+                #fontStyle: 'italic'
+                marginTop: 20
+                fontSize: 18
+                #color: seattle2035_dark
+                color: hala_gray
+              DIV 
+                style: 
+                  marginBottom: 18
+                "Thanks for your time,"
+
+              A 
+                href: 'http://www.seattle.gov/neighborhoods/equitable-outreach-and-engagement'
+                target: '_blank'
+                style: 
+                  display: 'block'
+                  marginBottom: 8
+
+                IMG
+                  src: asset('engageseattle/director_logo.png')
+                  style: 
+                    height: 70
+                    opacity: .9
+
+
+              # DIV 
+              #   style: _.extend {}, section_style,
+              #     margin: 0
+              #     marginTop: 10
+              #     fontSize: 18
+              #     color: hala_gray
+
+              #   'p.s. Email us at '
+              #   A
+              #     href: "mailto:halainfo@seattle.gov"
+              #     style: 
+              #       textDecoration: 'underline'
+
+              #     "halainfo@seattle.gov"
+
+              #   ' or visit our website at '
+              #   A
+              #     href: "http://seattle.gov/HALA"
+              #     style: 
+              #       textDecoration: 'underline'
+
+              #     "seattle.gov/HALA"                  
+              #   ' if you want to know more.'
+
+
+              # DIV 
+              #   style: 
+              #     marginTop: 40
+              #     backgroundColor: hala_magenta
+              #     color: 'white'
+              #     fontSize: 28
+              #     textAlign: 'center'
+              #     padding: "30px 42px"
+
+              #   "The comment period is now closed. Thank you for your input!"
 
 
 

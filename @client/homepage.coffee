@@ -311,7 +311,7 @@ window.SimpleHomepage = ReactiveComponent
 
         if customization('opinion_filters')
           [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-          hala = subdomain.name == 'HALA'
+          hala = subdomain.name in ['HALA', 'engageseattle']
 
           OpinionFilter
             style: 

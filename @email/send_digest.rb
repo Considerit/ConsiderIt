@@ -134,7 +134,7 @@ def get_new_activity(subdomain, user, since)
     proposal = pnt.proposal
     next if new_proposals.key?(proposal.id) || !proposal.user
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
-    if !proposal_dict.has_key?(proposal.id) && proposal.user
+    if !proposal_dict.has_key?(proposal.id)
       proposal_dict[proposal.id] = {
         :obj => proposal,
         :events => {},
@@ -165,10 +165,10 @@ def get_new_activity(subdomain, user, since)
 
   new_opinions.each do |opinion|
     proposal = opinion.proposal
-    next if new_proposals.key?(proposal.id)
+    next if new_proposals.key?(proposal.id) || !proposal.user
 
     proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
-    if !proposal_dict.has_key?(proposal.id) && proposal.user
+    if !proposal_dict.has_key?(proposal.id)
       proposal_dict[proposal.id] = {
         :obj => proposal,
         :events => {},
@@ -190,10 +190,10 @@ def get_new_activity(subdomain, user, since)
     pnt.inclusions.where("created_at > '#{since}' AND user_id != #{user.id}").each do |inclusion|
       pnt = inclusion.point
       proposal = pnt.proposal
-      next if new_proposals.key?(proposal.id) || proposal.opinions.published.where(:user_id => inclusion.user_id).count == 0
+      next if !proposal.user || new_proposals.key?(proposal.id) || proposal.opinions.published.where(:user_id => inclusion.user_id).count == 0
 
       proposal_dict = proposal.user_id == user.id ? your_proposals : active_proposals
-      if !proposal_dict.has_key?(proposal.id) && proposal.user
+      if !proposal_dict.has_key?(proposal.id)
         proposal_dict[proposal.id] = {
           :obj => proposal,
           :events => {},

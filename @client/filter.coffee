@@ -333,7 +333,7 @@ OpinionFilter = ReactiveComponent
     users = fetch '/users'
     filter_out = fetch 'filtered'
     bitcoin = fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic']
-    hala = fetch('/subdomain').name == 'HALA'
+    hala = fetch('/subdomain').name in ['HALA', 'engageseattle']
 
     return SPAN null if hala && !fetch('/current_user').is_admin
 

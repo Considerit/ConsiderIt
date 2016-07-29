@@ -2450,6 +2450,20 @@ customizations['engageseattle'] =
                 Putting an equity lens on our approaches is bold and, yes, brave. It shows 
                 a commitment to practices that address accessibility and equity."""
 
+
+            DIV 
+              style: section_style
+
+
+              SPAN 
+                style: paragraph_heading_style
+                """Please add your opinion below"""
+        
+              SPAN 
+                style: paragraph_style
+
+                """We need to hear from YOU about your experiences and what we can provide to make it easier for you to weigh in."""
+
               SPAN 
                 style: paragraph_style
                 """At the heart of this """
@@ -2466,21 +2480,12 @@ customizations['engageseattle'] =
 
               SPAN 
                 style: paragraph_style
-                """This is about bringing more people into the conversations or at least creating opportunities for people to participate so they can be heard. This is about making things easier and less exhaustive. This is about connecting communities to government and to one another. This is about moving forward."""
+                """We need to bring more people into the conversations and create more opportunities for people to participate and be heard. We are striving toward making things easier and less exhaustive. This is about connecting communities to government and to one another."""
 
-
-            DIV 
-              style: section_style
-
-
-              SPAN 
-                style: paragraph_heading_style
-                """Please add your opinion below"""
-        
               SPAN 
                 style: paragraph_style
+                """Your input will help guide this work moving forward.  In late-September the Mayor will propose legislation to the City Council advancing equitable outreach and engagement. Your input today will help shape this effort."""
 
-                """We’d love to hear what YOU need to be successful, and we’d like to hear how WE can help you."""
 
 
             DIV 

@@ -2731,7 +2731,7 @@ customizations['cir'] =
                   style: _.extend {}, paragraph_heading_style, 
                     marginTop: 10
 
-                  """Please help identify the most important question for our Citizen panel to 
+                  """Please help identify the most important question for our Citizen Panel to 
                      answer about Ballot Measure 97"""
                 
                 SPAN 

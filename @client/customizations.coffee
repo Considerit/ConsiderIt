@@ -2559,6 +2559,316 @@ customizations['engageseattle'] =
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################
+# CIR
+
+cir_header = "black"
+
+
+customizations['cir'] = 
+  point_labels : strengths_weaknesses
+  slider_pole_labels : important_unimportant
+  homie_histo_title: "Opinions"
+  show_proposer_icon: false
+  show_meta: true 
+  civility_pledge: true
+  show_score: false
+  proposal_filters: false
+
+  proposal_style: 
+    #color: "#444"
+    borderBottom: "1px solid #ddd"
+
+  uncollapseable: true
+
+
+  "cluster/Questions" : 
+          
+    homepage_label: 'Your questions'
+
+    description: ->  
+
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+          marginBottom: 20
+
+        DIV 
+          style: 
+            fontSize: 42
+            fontWeight: 300
+            color: cir_header
+            marginBottom: 5
+
+          'Questions for the Citizen Panel'
+
+        DIV 
+          style: 
+            fontSize: 18
+            fontWeight: 400 
+            #fontStyle: 'italic' 
+            color: cir_header
+
+          """Now that you've heard the claims, its your turn to ask the questions! Below, 
+             you can ask questions. Furthermore, you can rate how important the answer to 
+             each question is to you. The most important question will be presented to the 
+             Citizen Initiative Review when it convenes."""
+
+
+
+
+  auth: 
+
+    user_questions : [
+
+      {
+        tag: 'age.editable'
+        question: 'My age is'
+        input: 'text'
+        input_style: 
+          width: 85        
+        required: false
+      }, {
+        tag: 'race.editable'
+        question: 'My race is'
+        input: 'text'
+        required: false
+      }, {
+        tag: 'gender.editable'
+        question: "My gender is"
+        input: 'dropdown'
+        options:['Female', 'Male', 'Transgender', 'Other']
+        required: false
+      }
+
+
+     ]
+
+
+
+
+  HomepageHeader : ReactiveComponent
+    displayName: 'HomepageHeader'
+
+    render: ->
+
+      loc = fetch('location')
+
+      homepage = loc.url == '/'
+
+      section_style = 
+        marginBottom: 20
+        color: 'black'
+
+      paragraph_heading_style = 
+        display: 'block'
+        fontWeight: 400
+        fontSize: 40
+        color: cir_header
+
+      paragraph_style = 
+        fontSize: 18
+        color: '#666'
+        paddingTop: 10
+        display: 'block'
+
+      DIV
+        style:
+          position: 'relative'
+          width: HOMEPAGE_WIDTH()
+          margin: 'auto'
+
+        A 
+          href: 'http://healthydemocracy.org'
+
+          IMG
+            style: 
+              paddingTop: 10
+              width: '296px'
+              display: 'block'
+              position: 'relative'
+              left: -42
+
+            src: asset('CIR/healthy-democracy-logo.png')
+
+
+        ProfileMenu()
+
+        if homepage 
+
+          DIV 
+            style: 
+              padding: '20px 0'
+              #marginTop: 50
+
+            DIV 
+              style: 
+                width: HOMEPAGE_WIDTH()
+                margin: 'auto'
+
+
+              DIV 
+                style: section_style
+
+
+                SPAN 
+                  style: _.extend {}, paragraph_heading_style, 
+                    marginTop: 10
+
+                  """Please help identify the most important question for our Citizen panel to 
+                     answer about Ballot Measure 97"""
+                
+                SPAN 
+                  style: paragraph_style
+                  """Below you will find official information about this measure, as well as claims that 
+                     supporters and opposers of the measure are making. Additional information can be 
+                     found on """
+
+                  A 
+                    href: 'http://www.seattle.gov/neighborhoods/equitable-outreach-and-engagement'
+                    target: '_blank'
+                    style: 
+                      textDecoration: 'underline'
+                      color: '#159ed9'
+
+                    'ballotpedia.org'
+                  '.'
+
+
+                SPAN 
+                  style: paragraph_style
+                  """After perusing this information, please give us your opinion about the question whose 
+                     answer will make the biggest impact on whether you will vote for or against this 
+                     measure. """
+
+
+              DIV 
+                style: section_style
+
+
+                SPAN 
+                  style: 
+                    display: 'block'
+                    fontWeight: 400
+                    fontSize: 28
+                    color: cir_header
+
+                  """Measure 97: Oregon Business Tax Increase Initiative"""
+          
+                SPAN 
+                  style: paragraph_style
+
+                  """Increases corporate minimum tax when sales exceed $25 million; funds education, healthcare, senior services"""
+
+                ExpandableSection
+                  label: 'Explanatory Statement'
+                  text: 
+                    DIV null,
+                      DIV style: paragraph_style,
+                        "Ballot Measure 97 increases the corporate minimum tax for corporations with at least $25 million in Oregon sales. Currently, Oregon C corporations pay the higher of either an excise tax or a minimum tax based on the corporation’s sales in Oregon."
+                      DIV style: paragraph_style,
+                        "Ballot Measure 97 increases the annual minimum tax on corporations with Oregon sales of more than $25 million. It imposes a minimum tax of $30,001 plus 2.5 percent of amount of sales above $25 million. Oregon sales under $25 million would not be affected."
+                      DIV style: paragraph_style,
+                        "Ballot Measure 97 exempts “benefit companies” from the increased rate of minimum tax. “Benefit companies” are defined under Oregon law."
+                      DIV style: paragraph_style,
+                        "Ballot Measure 97 states that revenues generated from the increase in the corporate minimum tax are to be used to provide additional funding for education, healthcare and services for senior citizens."                    
+
+
+                ExpandableSection
+                  label: 'Estimate of Financial Impact'
+                  text: 
+                    DIV null,
+                      DIV style: paragraph_style,
+                        "The financial impact on state revenues is anticipated to be $548 million in new revenue in the 2015-17 biennium; $6.1 billion in the 2017-19 biennium and $6.0 million in the 2019-21 biennium. The annual financial impact on revenue would be approximately half of the biennial revenue amount."
+                      DIV style: paragraph_style,
+                        "The financial impact on state expenditures is indeterminate. The increased revenue will trigger increased expenditures by the state in the areas of public early childhood and kindergarten through grade 12 education, health care, and senior services, but the exact amount and the specific uses within the three identified programs cannot be determined."
+                      DIV style: paragraph_style,
+                        "There is no direct financial effect on local government expenditures or revenues."
+
+                ExpandableSection
+                  label: 'Proponent Claims'
+                  text: 
+                    DIV null,
+                      DIV style: paragraph_style,
+                        "TBD"
+
+                ExpandableSection
+                  label: 'Opponent Claims'
+                  text: 
+                    DIV null,
+                      DIV style: paragraph_style,
+                        "TBD"
+
+
+
+ExpandableSection = ReactiveComponent
+  displayName: 'ExpandableSection'
+
+  render: -> 
+    label = @props.label
+    text = @props.text 
+
+    expanded = @local.expanded 
+
+    symbol = if expanded then 'fa-chevron-down' else 'fa-chevron-right'
+
+    DIV null,
+        
+
+      DIV 
+        onClick: => @local.expanded = !@local.expanded; save(@local)
+
+        style: 
+          fontWeight: 600
+          color: cir_header
+          cursor: 'pointer'
+          marginTop: 12
+          fontSize: 22
+
+        SPAN 
+          className: "fa #{symbol}"
+          style: 
+            opacity: .7
+            position: 'relative'
+            left: -3
+            paddingRight: 6
+            display: 'inline-block'
+            width: 20
+
+
+        SPAN 
+          style: {}
+
+          label 
+
+      if expanded 
+        text 
+
+
+
+
+
+
+
+
+
+
 ################
 # seattle2035
 

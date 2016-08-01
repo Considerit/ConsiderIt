@@ -2447,8 +2447,8 @@ customizations['engageseattle'] =
                   'Executive Order'
 
                 """ directing the city to approach outreach and engagement in an equitable manner. 
-                Putting an equity lens on our approaches is bold and, yes, brave. It shows 
-                a commitment to practices that address accessibility and equity."""
+                This directive to all City departments is based on a strong commitment to making 
+                government more accessible, equitable and transparent."""
 
 
             DIV 

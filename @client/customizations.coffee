@@ -2613,8 +2613,9 @@ customizations['cir'] =
           style: 
             fontSize: 42
             fontWeight: 300
-            color: cir_header
+            color: '#159ed9' #cir_header
             marginBottom: 5
+
 
           'Questions to pose to the Citizen Panel'
 

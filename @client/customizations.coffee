@@ -2057,6 +2057,10 @@ customizations['hala'] =
 engageseattle_teal = "#67B5B5"
 hala_gray = '#666'
 
+engage_seattle_cluster = 
+  width: HOMEPAGE_WIDTH()
+  marginLeft: -70
+
 engageseattle_section_heading = 
   fontSize: 42
   fontWeight: 300
@@ -2074,8 +2078,8 @@ customizations['engageseattle'] =
   point_labels : pro_con
   slider_pole_labels : agree_disagree
   homie_histo_title: "Opinions"
-  show_proposer_icon: false
-  show_meta: false 
+  show_proposer_icon: true
+  show_meta: true 
   civility_pledge: true
   show_score: false
   proposal_filters: false
@@ -2142,8 +2146,7 @@ customizations['engageseattle'] =
     homepage_label: 'Values'
     description: ->  
       DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
+        style: engage_seattle_cluster
 
         DIV 
           style: engageseattle_section_heading
@@ -2185,8 +2188,7 @@ customizations['engageseattle'] =
     homepage_label: 'Preferences'
     description: ->  
       DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
+        style: engage_seattle_cluster
 
         DIV 
           style: engageseattle_section_heading
@@ -2202,8 +2204,8 @@ customizations['engageseattle'] =
 
     description: ->  
       DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
+        style: engage_seattle_cluster
+          
 
         DIV 
           style: engageseattle_section_heading
@@ -2224,8 +2226,7 @@ customizations['engageseattle'] =
 
     description: ->  
       DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
+        style: engage_seattle_cluster
 
         DIV 
           style: 
@@ -2243,8 +2244,7 @@ customizations['engageseattle'] =
 
     description: ->  
       DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
+        style: engage_seattle_cluster
 
         DIV 
           style: engageseattle_section_heading

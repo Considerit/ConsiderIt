@@ -104,6 +104,11 @@ class Proposal < ActiveRecord::Base
           manual_clusters = ['Value in engagement',  'Meeting preferences', 'Community Involvement Commission', 'Community Involvement Commission Roles', 'Engagement Ideas']
           always_shown = manual_clusters
 
+        when 'cir'
+          manual_clusters = ['Questions']
+          always_shown = manual_clusters
+
+
         when 'monitorinstitute'
           manual_clusters = ['Intellectual Agenda Items', 'Overall']
 

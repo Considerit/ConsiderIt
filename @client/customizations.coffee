@@ -2616,7 +2616,7 @@ customizations['cir'] =
             color: cir_header
             marginBottom: 5
 
-          'Questions for the Citizen Panel'
+          'Questions to pose to the Citizen Panel'
 
         DIV 
           style: 

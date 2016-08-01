@@ -2582,7 +2582,7 @@ cir_header = "black"
 
 
 customizations['cir'] = 
-  point_labels : strengths_weaknesses
+  #point_labels : strengths_weaknesses
   slider_pole_labels : important_unimportant
   homie_histo_title: "Opinions"
   show_proposer_icon: false
@@ -2860,7 +2860,7 @@ ExpandableSection = ReactiveComponent
       if expanded 
         text 
 
-
+# customizations['cir'].NonHomepageHeader = customizations['cir'].HomepageHeader
 
 
 

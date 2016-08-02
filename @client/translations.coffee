@@ -161,7 +161,7 @@ _.extend dict.en,
   return_to_results: 'Return to results'
   skip_to_results: 'or just skip to the results'
   login_to_comment: 'Log in to write a comment'
-  login_to_add_new: 'Log in to add new'
+  login_to_add_new: 'Log in to share an idea'
   login_to_save_opinion: 'Log in to save your opinion'
   discuss_this_point: 'Discuss this Point'
   save_comment: 'Save comment'

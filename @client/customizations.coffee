@@ -2691,7 +2691,7 @@ customizations['cir'] =
 
 
       statement = 
-        Proponent: [
+        Opponent: [
           "M97 would be the most costly and damaging tax increase in Oregon history.  Its $6 billion tax hike would hurt Oregon small businesses and consumers by increasing prices for almost all goods and services they buy, with no guarantee of how the funds would be spent."
           "Sponsors claim the tax only affects large corporations. But studies by the nonpartisan Legislative Revenue Office (LRO) and Northwest Economic Research Center (NERC) funded by M97’s sponsors, both found that most of the tax would be passed on to Oregon consumers through higher costs for everything from food, clothing, cars and housing to gas, electricity, insurance and healthcare. LRO estimated M97 would increase costs for a typical Oregon family by $600 per year."
           "Both studies also show the impacts would be regressive, by costing low- and middle-income families a higher percentage of their incomes than upper-income families. This would especially hurt rural counties, where average incomes are lower than urban/suburban counties."
@@ -2703,7 +2703,7 @@ customizations['cir'] =
           M97 is a damaging tax plan that would hurt small businesses, cause thousands of Oregon workers to lose their jobs and put the greatest burden on low- and middle-income families and seniors on fixed incomes.
           That’s why NO on 97 is urged by a broad coalition of small businesses, farmers, organizations, consumers, taxpayers and editorials in nearly every major newspaper."
         ],
-        Opponent: [
+        Proponent: [
           "Measure 97 makes large and out-of-state corporations pay more in taxes so Oregon families can have the schools, health care, and dignified retirement we deserve."
           "According to two separate independent studies, corporations pay lower taxes in Oregon than any other state. Large and out-of-state corporations like Bank of America, Comcast, Wal-Mart, and Monsanto make hundreds of millions of dollars from the business they do in Oregon but pay lower taxes here than anywhere else in the nation. "
           "At the same time, Oregon families are taking home $1,000 to $2,000 less each year, while corporate profits have risen 170% over the last decade. Oregon families are struggling and large corporations are not paying their fair share."
@@ -2717,7 +2717,7 @@ customizations['cir'] =
 
 
       claims = 
-        Proponent: [{
+        Opponent: [{
           statement: 'M97 would impose $6 billion in new taxes on sales of goods and services in Oregon: everything from food, clothing, cars and housing to gas, utilities, prescriptions and healthcare. It would be the largest, most damaging tax increase in state history.', 
           sources: [
             {text: 'Measure 97 Section 1'}, 
@@ -2764,7 +2764,7 @@ customizations['cir'] =
           ]}
         ]
 
-        Opponent: [{
+        Proponent: [{
           statement: 'M97 raises the corporate minimum tax on sales above $25 million on large and out-of-state C corporations, affecting less than 1% of businesses in Oregon. Money raised must fund Oregon’s early childhood education, K-12, healthcare, and senior services', 
           sources: [
             {link: 'http://oregonvotes.org/irr/2016/028text.pdf'}, 

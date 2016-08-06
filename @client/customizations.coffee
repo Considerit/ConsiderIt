@@ -2858,7 +2858,7 @@ customizations['cir'] =
                      found on """
 
                   A 
-                    href: 'http://www.seattle.gov/neighborhoods/equitable-outreach-and-engagement'
+                    href: 'https://ballotpedia.org/Oregon_Business_Tax_Increase_Initiative_(2016)'
                     target: '_blank'
                     style: 
                       textDecoration: 'underline'

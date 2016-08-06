@@ -12,6 +12,8 @@ require '../logo'
 require '../bubblemouth'
 require '../translations'
 
+require '../homepage'
+
 
 window.SAAS_PAGE_WIDTH = 1000
 window.TEXT_WIDTH = 730
@@ -56,6 +58,16 @@ require './uses'
 require './contact'
 require './pricing'
 require './features'
+
+
+Proposals = ReactiveComponent
+  displayName: 'Proposals'
+
+  render: -> 
+    users = fetch '/users'
+    proposals = fetch '/proposals'
+
+    TagHomepage()
 
 
 HEADER_HEIGHT = 30
@@ -673,6 +685,7 @@ Collaborate = ReactiveComponent
           bottom: -30      
 
 
+
 Page = ReactiveComponent
 
   displayName: "Page"
@@ -726,6 +739,8 @@ Root = ReactiveComponent
     window.is_swipping = false
 
   render: ->
+    loc = fetch 'location'
+
     DIV null,
       BrowserLocation()
       StateDash()
@@ -750,7 +765,12 @@ Root = ReactiveComponent
         style:
           backgroundColor: "white"
         BrowserHacks()
-        Page()
+
+
+        if loc.url == '/proposals'
+          Proposals()
+        else 
+          Page()
 
       Tooltip()
 

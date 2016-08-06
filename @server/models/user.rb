@@ -100,7 +100,11 @@ class User < ActiveRecord::Base
     if current_user.is_admin?
       fields += ",email"
     end
-    users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
+    if current_subdomain.name == 'homepage'
+      users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1")
+    else 
+      users = ActiveRecord::Base.connection.exec_query( "SELECT #{fields} FROM users WHERE registered=1 AND active_in like '%\"#{current_subdomain.id}\"%'")
+    end 
     # if current_user.is_admin?
     users.each{|u| u['tags']=Oj.load(u['tags']||'{}')}      
     # end

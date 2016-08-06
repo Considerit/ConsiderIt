@@ -8,6 +8,8 @@ require './browser_hacks' # for access to browser object
 require './browser_location' # for loadPage
 require './bubblemouth'
 require './filter'
+require './notifications'
+require './browser_location'
 
 default_cluster_name = 'Proposals'
 
@@ -178,13 +180,14 @@ window.TagHomepage = ReactiveComponent
   displayName: 'TagHomepage'
 
   render: -> 
-    subdomain = fetch('/subdomain')
     current_user = fetch('/current_user')
 
     show_all = fetch('show_all_proposals')
 
+    users = fetch '/users'
     all = fetch('/proposals')
-    if !all.clusters
+    
+    if !all.clusters || !users.users
       return ProposalsLoading()   
 
     proposals = []

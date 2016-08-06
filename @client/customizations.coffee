@@ -105,7 +105,7 @@ customization_value = (field, config) ->
 
 ###########
 # Private storage
-customizations = {}
+window.customizations = {}
 
 
 

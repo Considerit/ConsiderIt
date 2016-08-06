@@ -67,35 +67,7 @@ window.get_proposal_mode = ->
 window.get_selected_point = -> 
   fetch('location').query_params.selected
 
-######
-# Expands a key like 'slider' to one that is namespaced to a parent object, 
-# like the current proposal. Will return a local key like 'proposal/345/slider' 
-window.namespaced_key = (base_key, base_object) ->
-  namespace_key = fetch(base_object).key 
 
-  # don't store this on the server
-  if namespace_key[0] == '/'
-    namespace_key = namespace_key.substring(1, namespace_key.length)
-  
-  "#{namespace_key}_#{base_key}"
-
-window.proposal_url = (proposal) =>
-  # The special thing about this function is that it only links to
-  # "?results=true" if the proposal has an opinion.
-
-  proposal = fetch proposal
-  result = '/' + proposal.slug
-  subdomain = fetch('/subdomain')  
-
-  if TWO_COL() || (!customization('show_crafting_page_first', proposal) || !proposal.active ) \
-     || (!customization('discussion', proposal))
-
-    result += '?results=true'
-
-  return result
-
-window.isNeutralOpinion = (stance) -> 
-  return Math.abs(stance) < 0.05
 
 window.updateProposalMode = (proposal_mode, triggered_by) ->
   loc = fetch('location')
@@ -125,13 +97,6 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
       triggered_by: triggered_by 
   
 
-window.opinionsForProposal = (proposal) ->       
-  filter_func = customization("homie_histo_filter", proposal)
-  opinions = fetch(proposal).opinions || []
-  # We'll only pass SOME opinions to the histogram
-  opinions = (opinion for opinion in opinions when \
-               !filter_func or filter_func(fetch(opinion.user)))
-  opinions
 
 #####################
 # These are some of the major components and their relationships 

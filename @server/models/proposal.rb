@@ -1,5 +1,3 @@
-# $js = 0 
-
 # coding: utf-8
 class Proposal < ActiveRecord::Base
   has_many :points, :dependent => :destroy
@@ -70,8 +68,20 @@ class Proposal < ActiveRecord::Base
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
       proposals = subdomain.proposals.where('cluster IN (?)', manual_clusters)
 
-    elsif 
-      proposals = subdomain.proposals.where(:hide_on_homepage => false)
+    else
+      proposals = nil 
+
+      if subdomain.name == 'homepage'        
+        ActsAsTenant.without_tenant do 
+          proposals = Proposal
+                        .where(:hide_on_homepage => false)
+                        .where('name != "Consider.it can help me"')
+                        .where(:published => true)
+        end 
+      else 
+        proposals = subdomain.proposals.where(:hide_on_homepage => false)
+      end
+
       case subdomain.name.downcase
         when 'dao'
           manual_clusters = ["Proposed to DAO", 'Under development', 'New', 'Needs more description', 'Funded', 'Rejected', 'Archived', 'Proposals', 'Ideas', 'Meta', 'DAO 2.0 Wishlist', 'Hack', 'Hack meta']

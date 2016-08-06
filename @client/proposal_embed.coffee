@@ -34,7 +34,7 @@ window.namespaced_key = (base_key, base_object) ->
   
   "#{namespace_key}_#{base_key}"
 
-proposal_url = (proposal, results) -> 
+proposal_link = (proposal, results) -> 
   "#{location.origin}/#{proposal.slug}#{if results then '?results=true' else ''}"
 
 
@@ -81,7 +81,7 @@ ProposalDescription = ReactiveComponent
           paddingBottom: if len > 0 then 15
 
         A 
-          href: proposal_url(@proposal, true) 
+          href: proposal_link(@proposal, true) 
           style: 
             textDecoration: 'underline'
           target: '_blank'
@@ -137,7 +137,7 @@ ProposalDescription = ReactiveComponent
               color: '#888'
               fontSize: 12
             target: '_blank'
-            href: proposal_url(@proposal) 
+            href: proposal_link(@proposal) 
 
             'Show details'
 
@@ -211,7 +211,7 @@ Proposal = ReactiveComponent
           position: 'relative'
 
         A 
-          href: proposal_url(@proposal) 
+          href: proposal_link(@proposal) 
           target: '_blank'          
           style: 
             color: focus_blue

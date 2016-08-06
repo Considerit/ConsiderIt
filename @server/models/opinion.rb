@@ -41,12 +41,14 @@ class Opinion < ActiveRecord::Base
 
     # Otherwise create one
     if your_opinion.nil?
-      your_opinion = Opinion.create(:proposal_id => proposal.id,
-                                    :user => user ? user : nil,
-                                    :subdomain_id => current_subdomain.id,
-                                    :stance => 0,
-                                    :point_inclusions => '[]',
-                                   )
+      ActsAsTenant.without_tenant do 
+        your_opinion = Opinion.create!(:proposal_id => proposal.id,
+                                      :user => user ? user : nil,
+                                      :subdomain_id => proposal.subdomain_id,
+                                      :stance => 0,
+                                      :point_inclusions => '[]',
+                                     )
+      end 
     end
     your_opinion
   end

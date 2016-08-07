@@ -13,7 +13,7 @@ Backup::Model.new(:'{{ ansible_hostname }}-dump', 'Backups up considerit databas
   # Split the backup file in to chunks of 250 megabytes
   # if the backup file size exceeds 250 megabytes
   #
-  split_into_chunks_of 250
+  split_into_chunks_of 2500
 
   ##
   # MySQL [Database]

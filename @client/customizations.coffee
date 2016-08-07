@@ -2872,8 +2872,8 @@ customizations['cir'] =
                   style: paragraph_style
                   """After perusing this information, please give us your opinion about the question whose 
                      answer will make the biggest impact on whether you will vote for or against this 
-                     measure. """
-
+                     measure. We will be ending the online input on Tuesday, August 16 in time to have 
+                     your question printed in the official CIR Citizen Panel Manual."""
 
               DIV 
                 style: section_style

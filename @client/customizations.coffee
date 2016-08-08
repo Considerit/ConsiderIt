@@ -2056,7 +2056,7 @@ customizations['bradywalkinshaw'] =
   slider_pole_labels : agree_disagree
   homie_histo_title: "Opinions"
   show_proposer_icon: true
-  show_meta: true 
+  show_meta: false 
   civility_pledge: true
   show_score: false
   proposal_filters: false

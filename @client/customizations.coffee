@@ -2051,6 +2051,371 @@ customizations['hala'] =
 
 
 
+customizations['bradywalkinshaw'] = 
+  point_labels : pro_con
+  slider_pole_labels : agree_disagree
+  homie_histo_title: "Opinions"
+  show_proposer_icon: true
+  show_meta: true 
+  civility_pledge: true
+  show_score: false
+  proposal_filters: false
+
+  cluster_filters: 
+    'Economics': ['Economics']
+    'Environment': ['Environment']
+    'Education': ['Education']
+    'Civil Rights': ['Civil Rights']
+
+  "cluster/Civil Rights" : 
+    homepage_label: 'Planks' 
+    uncollapseable: true   
+
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Civil Rights for the 21st Century"
+
+
+        DIV 
+          style: hala_section_description
+
+          DIV 
+            style: 
+              paddingTop: 10
+
+            "The son of a Cuban immigrant, Brady Piñero Walkinshaw will be Washington State’s first Latino and openly-gay member of Congress. He grew up in a rural farming community in Washington State, attended Princeton University with support from financial aid, and has worked professionally to create economic opportunity in the developing world.  As a State Representative, he brought together Republicans and Democrats to pass legislation to expand affordable housing, improve transportation, and increase healthcare and mental health services.  At 32 years old, Brady represents a new generation of positive Progressive leadership that will get things done in Congress for years to come. He’ll be a Progressive voice on national issues like climate change and focus on delivering for our local priorities."
+
+          DIV 
+            style: 
+              paddingTop: 10
+
+            "Brady has the background and life experiences to represent this region’s unique diversity and be a voice for our community. His mother’s family were poor immigrants from Cuba seeking a better life and opportunity, and he will work to pass immigration reform to bring millions of immigrants out of the shadows. As a married gay man, Brady recognizes that the movement for social justice must continue to protect everyone’s civil rights. As the first person of color to represent our district in Congress, Brady will fight to end discrimination in the workplace, schools and our justice system."
+
+          DIV 
+            style: marginTop: 10
+            
+            "The next generation of leadership in our country must continue the heroic efforts of those who have come before us to secure justice for every American, regardless of gender, orientation, race, economic status, or even citizenship status. We need leaders that reflect the diversity of our nation and understand from personal experience that our diversity is our greatest strength."
+
+
+  "cluster/Economics" : 
+    homepage_label: 'Planks' 
+    uncollapseable: true   
+
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Economic Leadership for the 21st Century"
+
+
+        DIV 
+          style: hala_section_description
+
+          DIV 
+            style: 
+              paddingTop: 10
+
+            "America’s next generation of leaders must balance our pace of growth with our core Progressive values, and there are few regions where this divide is more visible than Washington’s 7th district."
+          DIV 
+            style: 
+              paddingTop: 10
+
+            "Our community has both an opportunity and the obligation to build innovative, community-based solutions to address the climate crisis. The first step in that process is supporting policies that transition our nation to a low-carbon economy – to halt the debilitating impact of climate change, keep our region pristine and beautiful, and spur a new wave of economic growth for the 21st Century."
+          DIV 
+            style: 
+              paddingTop: 10
+
+            "Addressing climate change head on is a necessity. Our region has the values, the commitment, and the talent to build innovative reforms that can transform our economy and lead the global community in taking action."
+          DIV 
+            style: 
+              paddingTop: 10
+
+            "Washington state is blessed with stunning nature, clean energy and an unparalleled quality of life that attracts innovative employers and highly skilled workers. We are fortunate to boast a strong economic base across diverse industries, and to serve as home to some of the world’s leading innovative companies. The next generation of leadership in this country must focus on continuing growth that generates prosperity while ensuring that every American has access to the opportunities and resources they need to share in prosperity."
+          DIV 
+            style: 
+              paddingTop: 10
+
+            "Our economy should work for all of us, not just a wealthy few, and our region has all the tools we need to lead the nation in both innovation industries and equality for all our residents. We must generate a healthy economy that expands access to opportunity and jobs that pay a living wage."
+
+          DIV 
+            style: marginTop: 10
+            
+            "What do you think of the following planks? Click into any of them to read details and discuss."
+
+
+  "cluster/Education" : 
+    homepage_label: 'Planks' 
+    uncollapseable: true   
+
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Education Leadership for the 21st Century"
+
+
+        DIV 
+          style: hala_section_description
+
+          """Education and academic research are key to the future of our country, and we need to do everything in our power to support students as they prepare to compete in the global economy. Financial obstacles continue to restrict students from becoming the first in their families to go to college, and we must ensure that higher education is accessible for every single student."""
+
+          DIV 
+            style: marginTop: 10
+            
+            "What do you think of the following planks? Click into any of them to read details and discuss."
+
+
+
+  "cluster/Environment" : 
+    homepage_label: 'Planks'    
+    uncollapseable: true   
+    description: ->  
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+
+        DIV 
+          style: hala_section_heading
+
+          "Environmental Leadership for the 21st Century"
+
+
+        DIV 
+          style: hala_section_description
+
+          """Brady is committed to forward-looking policies and will make fighting climate change his top priority.  He will fight for our Progressive values and bring Republicans and Democrats together to get things done, like investing in transportation and public transit improvements – such as light rail and express bus services – to reduce carbon emissions and improve our quality of life."""
+
+          DIV 
+            style: marginTop: 10
+            
+            "What do you think of the following planks? Click into any of them to read details and discuss."
+
+
+
+  HomepageHeader: ReactiveComponent
+    displayName: 'HomepageHeader'
+
+    render: ->
+      loc = fetch 'location'
+      homepage = loc.url == '/'
+
+      DIV
+        style:
+          height: if homepage then 642 else 100
+          margin: '0px auto'
+          position: 'relative'
+          overflow: 'hidden'
+          backgroundColor: if !homepage then 'white'
+
+        back_to_homepage_button
+          fontSize: 43
+          visibility: if homepage then 'hidden'
+          verticalAlign: 'top'
+          marginTop: 22
+          marginRight: 15
+          color: '#888'
+          position: 'absolute'
+          top: 10
+          left: 10
+
+        STYLE null,
+          """
+          header#main_header h1 {
+            width: 230px;
+            height: 130px;
+            display: inline-block;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            margin-right: 12px;
+            line-height: 1;
+            font-family: 'futura-pt', 'Futura Std', Calibri, Verdana, sans-serif;
+            }
+
+          header#main_header h1 a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-image: url(http://bradywalkinshaw.com/wp-content/themes/walkinshaw/images/logo_walk#{if !homepage then '_int' else ''}.png);
+            background-size: contain;
+            background-repeat: no-repeat;
+            
+            text-indent: -9999em;
+            overflow: hidden;
+            }
+
+
+            header#main_header nav {
+              vertical-align: top;
+              display: inline-block;
+              margin-top: 21px;
+              }
+
+            header#main_header nav ul {
+              margin: 0;
+              padding: 0;
+              list-style: none;
+              text-align: left;
+
+              }
+
+            header#main_header nav li {
+              display: inline-block;
+              position: relative;
+              margin: 0 1px;
+              text-transform: uppercase;
+              font-size: 13.4px;
+              font-weight: 900;
+              }
+
+            header#main_header nav li a {
+              display: block;
+              color: #{if homepage then '#fff' else '#777'};
+              text-decoration: none;
+              padding: 14px 19px;
+              overflow: hidden;
+              transition: .3s ease background, .3s ease color;
+              }
+
+            #hero {
+              position: absolute;
+              z-index: -1;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background-color: #f0f0f0;
+              background-image: url(http://bradywalkinshaw.com/wp-content/uploads/2016/07/hero_walkinshaw_v2_r3.jpg);
+              background-position: center 70%;
+              background-size: cover;
+              }
+          
+          """
+
+
+        if homepage 
+          DIV 
+            id: "hero" 
+
+
+        HEADER 
+          id: "main_header" 
+
+          DIV 
+            style: 
+              textAlign: 'center'
+
+            H1 null, 
+              A 
+                href: "http://bradywalkinshaw.com"
+                "Brady Piñero Walkinshaw"
+
+            NAV 
+              class: "topmenu"
+
+              DIV null, 
+                UL null, 
+                  LI null, 
+                    A href: "http://bradywalkinshaw.com/meet_brady/",
+                      'Meet Brady'
+                  LI null, 
+                    A href: "http://bradywalkinshaw.com/endorsements/",
+                      'Endorsements'
+                  LI null, 
+                    A href: "http://bradywalkinshaw.com/#issues/",
+                      'Issues'
+                  LI null, 
+                    A href: "http://bradywalkinshaw.com/news/",
+                      'News'
+                  LI null, 
+                    A href: "http://bradywalkinshaw.com/results/",
+                      'Results'
+                  LI null, 
+                    A href: "http://bradywalkinshaw.com/resources/",
+                      'Resources'
+                  LI null, 
+                    A 
+                      href: "http://bradywalkinshaw.com/donate/"
+                      style: 
+                        backgroundColor: '#db282e'
+                        color: 'white'
+
+                      'Donate'
+
+
+
+        DIV 
+          style: 
+            fontSize: 24
+            backgroundColor: 'rgba(0,0,0,.5)'
+            position: 'absolute'
+            bottom: 0
+            width: '100%'
+            textAlign: 'center'
+            display: if !homepage then 'none'
+
+          DIV style: textAlign: 'center',
+            DIV 
+              style:
+                fontSize: 36
+                fontWeight: 600
+                #textAlign: 'right'
+                color: 'white'
+                #marginTop: 140
+                #display: 'inline-block'
+                #backgroundColor: 'rgba(0,0,0,.3)'
+                padding: '0 10px 10px 0'
+                # borderRadius: 26
+                # border: "1px solid rgba(0,0,0,.8)"
+                position: 'relative'
+                top: 10
+
+              SPAN 
+                style: 
+                  color: '#7eef54'
+
+                "Engage my platform. "
+              
+              SPAN 
+                style: 
+                  color: '#ffdd21'
+
+                "I want to hear your opinion."
+
+
+          ClusterFilter
+            filter_style: 
+              color: 'white'
+              fontSize: 22
+
+
+        DIV 
+          style: 
+            position: 'absolute'
+            top: 18
+            right: 0
+            width: 110
+
+          ProfileMenu()
+
+customizations.bradywalkinshaw.NonHomepageHeader = customizations.bradywalkinshaw.HomepageHeader
+
+
+
+
 ################
 # engageseattle
 

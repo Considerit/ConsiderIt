@@ -726,7 +726,7 @@ window.ClusterFilter = ReactiveComponent
             hovering = @local.hovering == filter
 
 
-            filter_style = 
+            filter_style = _.defaults {}, (@props.filter_style or {}),
               cursor: 'pointer'
               position: 'relative'
               display: 'inline-block'
@@ -744,6 +744,12 @@ window.ClusterFilter = ReactiveComponent
                 borderLeft: if current then "2px solid #F8E71C"
                 borderTop: if current then "2px solid #F8E71C"
                 borderRight: if current then "2px solid #F8E71C"
+            if subdomain.name == 'bradywalkinshaw'
+              _.extend filter_style, 
+                padding: '10px 20px 4px 20px'
+                backgroundColor: if current then 'white'
+                color: if current then 'black' else if hovering then '#F8E71C' else 'white'
+                borderRadius: '16px 16px 0 0'
             else 
               _.extend filter_style, 
                 padding: '10px 20px 4px 20px'

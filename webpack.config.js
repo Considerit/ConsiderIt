@@ -28,6 +28,10 @@
 // These variables are pulled out because they're most likely to be configured
 // as part of writing an application.
 
+
+var fs = require('fs')
+
+
 /////
 // Global variables
 // These variables will be made global on Window for use in all js files
@@ -49,6 +53,11 @@ entry_points = {
   proposal_embed: './@client/proposal_embed.coffee'
 }
 
+subs = fs.readdirSync('./@client/custom_homepages')
+for( var i=0; i < subs.length; i++ ){
+  var fname = subs[i]
+  entry_points[fname.split('.')[0]] = './@client/custom_homepages/' + fname
+}
 
 ////////////////////////////////////////
 // Innards

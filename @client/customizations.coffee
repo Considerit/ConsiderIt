@@ -20,7 +20,15 @@ require './logo'
 # special configs for that object (object.key) or key.
 
 window.customization = (field, object_or_key) -> 
-  subdomain = fetch('/subdomain')
+  
+  if !!object_or_key && !object_or_key.key?
+    object_or_key = fetch object_or_key
+
+
+  if object_or_key && object_or_key.subdomain_id
+    subdomain = fetch "/subdomain/#{object_or_key.subdomain_id}" 
+  else 
+    subdomain = fetch('/subdomain')
 
   subdomain_name = subdomain.name?.toLowerCase()
 
@@ -70,6 +78,7 @@ window.customization = (field, object_or_key) ->
 
   # if !value?
   #   console.error "Could not find a value for #{field} #{if key then key else ''}"
+
   value
 
 
@@ -221,16 +230,8 @@ port_pros_cons =
 # slider poles
 
 support_oppose = 
-  individual: 
-    support: 'Support'
-    oppose: 'Oppose'
-    support_sub: ''
-    oppose_sub: ''
-  group: 
-    support: 'Supporters'
-    oppose: 'Opposers'
-    support_sub: ''
-    oppose_sub: ''
+  support: 'Support'
+  oppose: 'Oppose'
 
   slider_feedback: (value, proposal) -> 
     if Math.abs(value) < 0.05
@@ -244,7 +245,7 @@ support_oppose =
                             else
                               "Slightly " 
 
-      valence = customization "slider_pole_labels.individual." + \
+      valence = customization "slider_pole_labels." + \
                               (if value > 0 then 'support' else 'oppose'), \
                               proposal
 
@@ -252,118 +253,44 @@ support_oppose =
 
 
 relevance = 
-  individual: 
-    support: 'Big impact!'
-    oppose: 'No impact on me'
-    support_sub: ''
-    oppose_sub: ''    
-  group: 
-    support: 'Big impact!'
-    oppose: 'No impact on me'
-    support_sub: ''
-    oppose_sub: ''
+  support: 'Big impact!'
+  oppose: 'No impact on me'    
 
 priority = 
-  individual: 
-    support: 'High Priority'
-    oppose: 'Low Priority'
-    support_sub: ''
-    oppose_sub: ''    
-  group: 
-    support: 'High Priority'
-    oppose: 'Low Priority'
-    support_sub: ''
-    oppose_sub: ''    
+  support: 'High Priority'
+  oppose: 'Low Priority'    
 
 
 
 interested = 
-  individual: 
-    support: 'Interested'
-    oppose: 'Uninterested'
-    support_sub: ''
-    oppose_sub: ''    
-  group: 
-    support: 'Interested'
-    oppose: 'Uninterested'
-    support_sub: ''
-    oppose_sub: ''  
+  support: 'Interested'
+  oppose: 'Uninterested'    
 
 important_unimportant = 
-  individual: 
-    support: 'Important'
-    oppose: 'Unimportant'
-    support_sub: ''
-    oppose_sub: ''    
-  group: 
-    support: 'Important'
-    oppose: 'Unimportant'
-    support_sub: ''
-    oppose_sub: ''
-
+  support: 'Important'
+  oppose: 'Unimportant'    
 
 
 yes_no = 
-  individual: 
-    support: 'Yes'
-    oppose: 'No'
-    support_sub: ''
-    oppose_sub: ''    
-  group: 
-    support: 'Yes'
-    oppose: 'No'
-    support_sub: ''
-    oppose_sub: ''
+  support: 'Yes'
+  oppose: 'No'    
 
 strong_weak = 
-  individual: 
-    support: 'Strong'
-    oppose: 'Weak'
-    support_sub: ''
-    oppose_sub: ''    
-  group: 
-    support: 'Strong'
-    oppose: 'Weak'
-    support_sub: ''
-    oppose_sub: ''
+  support: 'Strong'
+  oppose: 'Weak'    
 
 promising_weak = 
-  individual: 
-    support: 'Promising'
-    oppose: 'Weak'
-    support_sub: ''
-    oppose_sub: ''    
-  group: 
-    support: 'Promising'
-    oppose: 'Weak'
-    support_sub: ''
-    oppose_sub: ''
+  support: 'Promising'
+  oppose: 'Weak'    
 
 
 ready_not_ready = 
-  individual: 
-    support: 'Ready'
-    oppose: 'Not ready'
-    support_sub: ''
-    oppose_sub: ''
-  group: 
-    support: 'Ready'
-    oppose: 'Not ready'  
-    support_sub: ''
-    oppose_sub: ''
+  support: 'Ready'
+  oppose: 'Not ready'
 
 agree_disagree = 
-  individual: 
-    support: 'Agree'
-    oppose: 'Disagree'
-    support_sub: ''
-    oppose_sub: ''
-
-  group: 
-    support: 'Agree'
-    oppose: 'Disagree'  
-    support_sub: ''
-    oppose_sub: ''
+  support: 'Agree'
+  oppose: 'Disagree'
 
   slider_feedback: (value, proposal) -> 
     if Math.abs(value) < 0.05
@@ -377,7 +304,7 @@ agree_disagree =
                             else
                               "Slightly " 
 
-      valence = customization "slider_pole_labels.individual." + \
+      valence = customization "slider_pole_labels." + \
                               (if value > 0 then 'support' else 'oppose'), \
                               proposal
 
@@ -385,70 +312,28 @@ agree_disagree =
 
 
 plus_minus = 
-  individual: 
-    support: '+'
-    oppose: '–'
-    support_sub: ''
-    oppose_sub: ''
-
-  group: 
-    support: '+'
-    oppose: '–'
-    support_sub: ''
-    oppose_sub: ''
+  support: '+'
+  oppose: '–'
 
 effective_ineffective = 
-  individual: 
-    support: 'Effective'
-    oppose: 'Ineffective'
-    support_sub: ''
-    oppose_sub: ''
-
-  group: 
-    support: 'Effective'
-    oppose: 'Ineffective'
-    support_sub: ''
-    oppose_sub: ''
+  support: 'Effective'
+  oppose: 'Ineffective'
 
 
 desacuerdo_acuerdo = 
-  individual: 
-    support: 'Acuerdo'
-    oppose: 'Desacuerdo'
-    support_sub: ''
-    oppose_sub: ''
-
-  group: 
-    support: 'Acuerdo'
-    oppose: 'Desacuerdo'
-    support_sub: ''
-    oppose_sub: ''
-
+  support: 'Acuerdo'
+  oppose: 'Desacuerdo'
 
 port_agree_disagree = 
-  individual: 
-    support: 'Concordo'
-    oppose: 'Discordo'
-    support_sub: ''
-    oppose_sub: ''
-
-  group: 
-    support: 'Concordo'
-    oppose: 'Discordo'
-    support_sub: ''
-    oppose_sub: ''
-
+  support: 'Concordo'
+  oppose: 'Discordo'
 
 
 # application options
 conference_config = 
   slider_pole_labels :
-    individual: 
-      support: 'Accept'
-      oppose: 'Reject'
-    group: 
-      support: 'Accept'
-      oppose: 'Reject'
+    support: 'Accept'
+    oppose: 'Reject'
 
   homie_histo_title: "PC's ratings"
 
@@ -494,8 +379,6 @@ customizations.default =
   # TODO: put them in their own object
   homie_histo_title: 'Opinions'
   archived: false
-  label: false
-  description: ->  null
 
   # Other options
   additional_auth_footer: false
@@ -509,14 +392,13 @@ customizations.default =
   Homepage : SimpleHomepage
   ProposalNavigation : DefaultProposalNavigation
 
-  HomepageHeader : DefaultHeader
-  NonHomepageHeader: ShortHeader
+  # HomepageHeader : DefaultHeader
+  # NonHomepageHeader: ShortHeader
 
   Footer : DefaultFooter
 
-  ThanksForYourOpinion: false
-
-
+  proposal_style: 
+    borderBottom: "1px solid #ddd"
 
 
 
@@ -525,81 +407,6 @@ customizations.default =
 
 
 
-rupaul_header = ReactiveComponent
-  displayName: 'ImageHeader'
-
-  render: ->
-    subdomain = fetch '/subdomain'   
-    loc = fetch 'location'    
-    homepage = loc.url == '/'
-
-    masthead_style = 
-      textAlign: 'left'
-      backgroundColor: subdomain.branding.primary_color
-      height: 45
-
-    hsl = parseCssHsl(subdomain.branding.primary_color)
-    is_light = hsl.l > .75
-
-    if subdomain.branding.masthead
-      _.extend masthead_style, 
-        height: 300
-        backgroundPosition: 'center'
-        backgroundSize: 'cover'
-        backgroundImage: "url(#{subdomain.branding.masthead})"
-
-    else 
-      throw 'ImageHeader can\'t be used without a branding masthead'
-
-    DIV null,
-
-      DIV
-        style: masthead_style 
-
-        ProfileMenu()
-
-        back_to_homepage_button
-          position: 'relative'
-          marginLeft: 20
-          display: 'inline-block'
-          color: if !is_light then 'white'
-          fontSize: 43
-          visibility: if homepage || !customization('has_homepage') then 'hidden'
-          verticalAlign: 'middle'
-          marginTop: 5
-
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-          margin: '40px auto'
-          display: if !homepage then 'none'
-
-        DIV 
-          style: 
-            fontSize: 52
-            fontWeight: 300
-            marginBottom: 20
-            color: '#CE496E'
-
-          "Welcome Hunties to season 8 of RuPaul's Drag Race!"
-
-        DIV 
-          style: 
-            marginBottom: 12
-            fontSize: 21
-
-          """This is a space for you to serve the T, throw some shade, show some 
-          love and share who you think has the Charisma, Uniqueness, Nerve and 
-          Talent to be America's Next Drag Superstar! So, just between us 
-          squirrel-friends, who do think will be win season 8?"""
-
-        DIV 
-          style: 
-            fontSize: 21
-
-          """You can change your votes each week. When a queen gets eliminated, we'll 
-          Sashay away her from the list. Good luck! And Don't Fuck it Up!"""    
 
 customizations['rupaulseason8'] =
   show_proposer_icon: false
@@ -616,155 +423,10 @@ customizations['rupaulseason8'] =
     top_header: "Best --valences--" 
     
   slider_pole_labels: 
-    individual: 
-      support: 'YAAAAAAS'
-      oppose: 'Hellz No!'
-      support_sub: ''
-      oppose_sub: ''    
-    group: 
-      support: 'YAAAAAAS'
-      oppose: 'Hellz No!'
-      support_sub: ''
-      oppose_sub: ''
-
-  HomepageHeader: rupaul_header
-  NonHomepageHeader: rupaul_header
+    support: 'YAAAAAAS'
+    oppose: 'Hellz No!'
 
 
-
-
-
-####
-# CARCD 
-
-carcd_header = ReactiveComponent
-  displayName: 'Carcd_header'
-
-  render: -> 
-    loc = fetch('location')
-
-    homepage = loc.url == '/'
-
-    DIV 
-      style: 
-        position: 'relative'
-        width: HOMEPAGE_WIDTH()
-        margin: 'auto'
-        height: if !homepage then 180
-
-      A
-        href: 'http://carcd.consider.it'
-        target: '_blank'
-        style:
-          position: 'absolute'
-          top: 20
-          left: -48 #(WINDOW_WIDTH() - 391) / 2
-          zIndex: 5
-
-        IMG
-          src: asset('carcd/logo2.png')
-          style:
-            height: 145
-
-      DIV
-        style:
-          # backgroundColor: "#F0F0F0"
-          height: 82
-          width: '100%'
-          position: 'relative'
-          top: 50
-          left: 0
-          #border: '1px solid #7D9DB5'
-          #borderLeftColor: 'transparent'
-          #borderRightColor: 'transparent'
-
-        back_to_homepage_button 
-          display: 'block'
-          fontSize: 43
-          visibility: if homepage then 'hidden'
-          verticalAlign: 'top'
-          left: -91
-          top: 10
-          color: 'black'
-          position: 'relative'
-
-      if homepage
-        DIV 
-          style: 
-            paddingTop: 82
-            width: HOMEPAGE_WIDTH()
-            paddingLeft: 70
-            margin: 'auto'
-            position: 'relative'
-
-          DIV 
-            style: 
-              fontSize: 26
-              fontWeight: 600
-              # position: 'absolute'
-              # top: -80
-              color: '#7D9DB6'
-
-            "We need your feedback!" 
-
-          DIV 
-            style: 
-              fontSize: 20
-              marginBottom: 18
-
-            """This survey gives you a chance to influence the CARCD strategic plan and 
-            our priorities for the next several years.  Please take the time to 
-            respond to the questions below – elaborate, argue, tell us what you 
-            really think!"""
-
-          DIV 
-            style: 
-              fontSize: 20
-              marginBottom: 6
-            "Thank you for your time,"
-            BR null
-            "The CARCD team"
-
-
-
-      # if homepage 
-      #   DIV
-      #     style:
-      #       position: 'absolute'
-      #       left: (WINDOW_WIDTH() + 8) / 2
-      #       zIndex: 5
-      #       top: 188
-      #       paddingLeft: 12
-
-      #     SPAN 
-      #       style: 
-      #         fontSize: 14
-      #         fontWeight: 400
-      #         color: '#7D9DB5'
-      #         #fontVariant: 'small-caps'
-      #         position: 'relative'
-      #         top: -18
-      #       'facilitated by'
-
-      #     A 
-      #       href: 'http://solidgroundconsulting.com'
-      #       target: '_blank'
-      #       style: 
-      #         padding: '0 5px'
-
-      #       IMG
-      #         src: asset('carcd/solidground.png')
-      #         style: 
-      #           width: 103
-
-      DIV 
-        style: 
-          position: 'absolute'
-          top: 18
-          right: 0
-          width: 110
-
-        ProfileMenu()
 
 
 
@@ -777,134 +439,6 @@ customizations['carcd'] = customizations['carcd-demo'] =
   slider_pole_labels: priority
   show_slider_feedback: false
 
-  "cluster/Serving Districts" : 
-    point_labels: 
-      pro: 'argument for depth'
-      pros: 'Arguments for Depth' 
-      con: 'argument for breadth'
-      cons: 'Arguments for Breadth'
-      your_header: "Your --valences--" 
-      other_header: "--valences--" 
-      top_header: "Top --valences--" 
-
-    slider_pole_labels: 
-      individual: 
-        support: 'High impact districts'
-        oppose: 'All districts'
-        support_sub: ''
-        oppose_sub: ''    
-      group: 
-        support: 'High impact districts'
-        oppose: 'All districts'
-        support_sub: ''
-        oppose_sub: ''
-
-    description: ->  
-      DIV 
-        style: 
-          #marginLeft: 65
-          fontSize: 18
-          fontWeight: 400
-          position: 'relative'
-          top: 12
-          padding: 4
-          fontStyle: 'italic'
-          color: '#888'
-        "Serve districts equally, or should it deeply focus more of its efforts on those districts with the capacity?"
-    show_slider_feedback: false
-
-
-  "cluster/Accreditation" : 
-    # point_labels: 
-    #   pro: 'argument for rewarded'
-    #   pros: 'Arguments for Rewarded' 
-    #   con: 'argument for unrewarded'
-    #   cons: 'Arguments for Unrewarded'
-    #   your_header: "Your --valences--" 
-    #   other_header: "--valences--" 
-    #   top_header: "Top --valences--" 
-
-    slider_pole_labels: priority
-      # individual: 
-      #   support: 'Rewarded'
-      #   oppose: 'Unrewarded'
-      #   support_sub: ''
-      #   oppose_sub: ''    
-      # group: 
-      #   support: 'Rewarded'
-      #   oppose: 'Unrewarded'
-      #   support_sub: ''
-      #   oppose_sub: ''
-
-    description: ->  
-      DIV 
-        style: 
-          #marginLeft: 65
-          fontSize: 18
-          fontWeight: 500
-          position: 'relative'
-          top: 12
-          padding: 4
-          fontStyle: 'italic'
-          color: '#888'
-        "How much should CARCD actively push districts to embrace and meet the Vision and Standards expectations? "
-
-    show_slider_feedback: false
-
-
-
-
-  "cluster/Program Emphasis" : 
-    point_labels: pro_con
-    slider_pole_labels: priority
-    show_slider_feedback: false
-
-    description: ->  
-      DIV 
-        style: 
-          #marginLeft: 65
-          fontSize: 18
-          fontWeight: 500
-          position: 'relative'
-          top: 12
-          padding: 4
-          fontStyle: 'italic'
-          color: '#888'
-        "Rank the priority of each of program option. Remember, to emphasize everything is to emphasize nothing."
-
-
-
-
-  "cluster/Lagging Districts" : 
-    point_labels: pro_con
-    slider_pole_labels: agree_disagree
-    show_slider_feedback: false
-
-    description: -> 
-      DIV 
-        style: 
-          #marginLeft: 65
-          fontSize: 18
-          fontWeight: 500
-          position: 'relative'
-          top: 12
-          padding: 4
-          fontStyle: 'italic'
-          color: '#888'
-        "Parts of the state lack effective, sustainable districts. What should CARCD's response be?"
-
-
-  "cluster/Questions" : 
-    point_labels: pro_con
-    slider_pole_labels: important_unimportant
-    show_slider_feedback: false
-
-
-  HomepageHeader: carcd_header
-  NonHomepageHeader: carcd_header
-
-  #ProposalNavigation: ProposalNavigationWithMenu
-
 
 customizations['consider'] = 
   #show_proposer_icon: true
@@ -915,18 +449,7 @@ customizations['consider'] =
     slider_pole_labels: relevance
     show_slider_feedback: false
     discussion: false
-    description: ->  
-      DIV 
-        style: 
-          #marginLeft: 65
-          fontSize: 18
-          fontWeight: 500
-          position: 'relative'
-          top: 12
-          padding: 4
-          fontStyle: 'italic'
-          color: '#888'
-        "Describe bugs you've encountered. Please include your browser and device!"
+    one_line_desc: "Include your browser and device!"
 
   # opinion_filters: [ {
   #     label: 'consider.it staff'
@@ -938,59 +461,8 @@ customizations['consider'] =
   "cluster/Hard Tasks" : 
     slider_pole_labels: important_unimportant
     show_slider_feedback: false
-    description: ->  
-      DIV 
-        style: 
-          #marginLeft: 65
-          fontSize: 18
-          fontWeight: 500
-          position: 'relative'
-          top: 12
-          padding: 4
-          fontStyle: 'italic'
-          color: '#888'
-        "What tasks should we make significantly easier?"
-
-  HomepageHeader: ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: -> 
-      HEADER_HEIGHT = 30 
-      DIV
-        style:
-          position: "relative"
-          margin: "0 auto"
-          backgroundColor: logo_red
-          height: HEADER_HEIGHT
-          zIndex: 1
-
-        DIV
-          style:
-            width: CONTENT_WIDTH()
-            margin: 'auto'
-
-          SPAN 
-            style:
-              position: "relative"
-              top: 4
-              left: if window.innerWidth > 1055 then -23.5 else 0
-
-            drawLogo HEADER_HEIGHT + 5, 
-                    'white', 
-                    (if @local.in_red then 'transparent' else logo_red), 
-                    !@local.in_red,
-                    false
-
-          SPAN 
-            style: 
-              fontSize: 22
-              position: 'relative'
-              top: -5
-              color: 'white'
-              fontStyle: 'italic'
-
-            'Issue Slate'
-
+    one_line_desc: "What tasks should we make significantly easier?"
+        
 
 customizations['us'] = 
   show_proposer_icon: true
@@ -1005,14 +477,8 @@ customizations['tunisia'] =
   show_meta: false
   lang: 'tun_ar'
   slider_pole_labels: 
-    individual: 
-      support: 'أوافق'
-      oppose: 'أخالف'
-      # support: 'ادعم'
-      # oppose: 'اعارض'
-    group: 
-      support: 'أوافق'
-      oppose: 'أخالف'
+    support: 'أوافق'
+    oppose: 'أخالف'
 
   homie_histo_title: 'الآراء'
   point_labels:  
@@ -1071,34 +537,6 @@ for fr in french
     proposal_filters: false 
 
 
-customizations['alcala'] = _.extend {}, customizations['alcala'],
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: ->
-      subdomain = fetch '/subdomain'
-
-      DIV
-        style:
-          position: 'relative'
-
-        IMG
-          style: 
-            width: '100%'
-            display: 'block'
-
-          src: subdomain.branding.masthead
-
-        ProfileMenu()
-
-        DIV 
-          style: 
-            padding: '20px 0'
-
-          DIV 
-            style: 
-              width: HOMEPAGE_WIDTH()
-              margin: 'auto'
 
 
 
@@ -1106,7 +544,6 @@ customizations['alcala'] = _.extend {}, customizations['alcala'],
 ###############
 # Monitorinstitute
 
-monitorinstitute_red = "#BE0712"
 
 customizations['monitorinstitute'] = 
   point_labels : strengths_improvements
@@ -1114,217 +551,6 @@ customizations['monitorinstitute'] =
   homie_histo_title: "Opinions"
   show_slider_feedback: false
 
-  NonHomepageHeader : ReactiveComponent
-    displayName: 'NonHomepageHeader'
-
-    render: ->
-      section_style = 
-        padding: '8px 0'
-        fontSize: 16
-
-
-
-      DIV
-        style:
-          position: 'relative'
-          width: BODY_WIDTH()
-          paddingTop: 20
-          margin: '0 auto 15px auto'
-
-
-        back_to_homepage_button
-          fontSize: 43
-          position: 'absolute'
-          marginRight: 30
-          left: -60
-          top: 3
-            
-        A 
-          href: 'http://monitorinstitute.com/'
-          target: '_blank'
-          style: 
-            display: 'inline-block'
-
-          IMG 
-            src: asset("monitorinstitute/logo.jpg")
-
-        DIV 
-          style: 
-            position: 'absolute'
-            right: -70
-            top: 0
-            width: 200
-          ProfileMenu()
-
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: ->
-      section_style = 
-        padding: '8px 0'
-        fontSize: 16
-
-      DIV
-        style:
-          position: 'relative'
-
-        DIV 
-          style: 
-            width: CONTENT_WIDTH()
-            margin: 'auto'
-            paddingTop: 20
-            position: 'relative'
-
-          A 
-            href: 'http://monitorinstitute.com/'
-            target: '_blank'
-
-            IMG 
-              src: asset("monitorinstitute/logo.jpg")
-
-          ProfileMenu()
-
-
-          DIV 
-            style: {}
-
-            DIV 
-              style:  
-                color: monitorinstitute_red
-                fontSize: 34
-                marginTop: 40
-
-              "The Monitor Institute intellectual agenda"
-
-            DIV 
-              style: 
-                fontStyle: 'italic'
-                marginBottom: 20
-              'Spring 2015'
-
-            DIV 
-              style: 
-                width: CONTENT_WIDTH() * .7
-                borderRight: "1px solid #ddd"
-                display: 'inline-block'
-                paddingRight: 25
-
-              P 
-                style: section_style
-
-
-                """
-                Central to the Monitor Institute brand is the idea that we pursue 
-                “next practice” in social impact. We do not simply master and teach 
-                well‐established best practices, but treat those as table stakes and 
-                focus our attention on the learning edges for the field. Our core 
-                expertise is in helping social impact leaders and organizations 
-                develop the skillsets they need to achieve greater progress than 
-                in the past and prepare themselves for tomorrow’s context.
-                """
-
-              P 
-                style: section_style
-
-                """
-                This document is a place for us to articulate two things: """
-                SPAN
-                  style: 
-                    fontStyle: 'italic'
-
-                  "what we believe"
- 
-                """ to be “next practice” today, and what """
-                SPAN
-                  style: 
-                    fontStyle: 'italic'
-
-                  "what we want to know"
-
-                """ about how those practices can and will develop further. The former is our 
-                point of view; the latter is the whitespace that is waiting to be 
-                filled in over the coming three to five years.
-                """
-
-
-
-
-
-              P 
-                style: section_style
-                "It is designed to be used in a variety of ways:"
-
-              UL
-                style:
-                  listStylePosition: 'outside'
-                  paddingLeft: 30
-
-                LI
-                  style: section_style
-                  """
-                  It is primarily a """
-
-                  SPAN
-                    style: 
-                      fontWeight: 600
-                    "statement of strategy and vision"
-                  """. It does not contain 
-                  every next practice in the world, nor every important question to be 
-                  resolved, but only the ones that we believe are both (a) the most 
-                  transformative in the field of social impact and (b) those that we are 
-                  equipped and committed to working on. It must therefore be a living document, 
-                  revisited and revised often enough that it always reflects our most 
-                  up‐to‐date perspectives.
-                  """
-
-                LI 
-                  style: section_style
-                  """
-                  Next, it is a """
-
-                  SPAN
-                    style: 
-                      fontWeight: 600
-                    "rubric for making choices"
-
-                  """ that will keep us aligned and focused. 
-                  We will know we are doing well as a next‐practice consulting team when our 
-                  mix of commercial and eminence work promotes the points of view described 
-                  under """
-
-                  SPAN
-                    style: 
-                      fontStyle: 'italic'
-
-                    "what we believe"
-
-                  " and helps us answer the questions listed under "
-
-                  SPAN
-                    style: 
-                      fontStyle: 'italic'
-
-                    "what we want to know"
-
-                  """. When there is a question as to whether we should pursue an 
-                  opportunity that arrives or choose to focus resources in a given direction, 
-                  we can check our judgment by asking whether it will help us do either or both 
-                  of those things. That is equally true for scanning, for relationship‐building 
-                  and sales, for eminence projects, and for commercial work.
-                  """
-
-            DIV 
-              style: 
-                display: 'inline-block'
-                width: CONTENT_WIDTH() * .25
-                verticalAlign: 'top'
-                marginTop: 200
-                paddingLeft: 25
-                color: monitorinstitute_red
-                fontWeight: 600
-
-              """This is the intro to the draft intellectual agenda. Please provide 
-                 feedback on each proposed intellectual agenda item below."""
 
 
 ################
@@ -1333,7 +559,7 @@ customizations['monitorinstitute'] =
 hala_teal = "#0FB09A"
 hala_orange = '#FBAF3B'
 hala_magenta = '#CB2A5C'
-hala_gray = '#666'
+hala_gray = '#444'
 hala_brown = '#A77C53'
 
 hala_section_heading = 
@@ -1348,9 +574,10 @@ hala_section_description =
   #fontStyle: 'italic' 
   color: hala_gray
 
-hala_proposal_style = 
-  #color: "#444"
-  borderBottom: "1px solid #ddd"
+
+cluster_link = (href, anchor) ->
+  anchor ||= href 
+  "<a href='#{href}' target='_blank' style='text-decoration:underline'>#{anchor}</a>"
 
 customizations['hala'] = 
   point_labels : pro_con
@@ -1362,7 +589,6 @@ customizations['hala'] =
   show_score: true
   proposal_filters: false
 
-  proposal_style: hala_proposal_style
   uncollapseable: true
 
 
@@ -1412,133 +638,60 @@ customizations['hala'] =
     )()
 
 
+  label_style: 
+    color: hala_teal
 
   "cluster/Preservation of Existing Affordable Housing" : 
 
-          
     homepage_label: 'Guidelines'
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV 
-          style: hala_section_heading
-
-          "Preservation of Existing Affordable Housing"
-
-
-        DIV 
-          style: hala_section_description
-
+    label: "Preservation of Existing Affordable Housing"
+    description: [
           """There are many buildings and other types of housing in Seattle that currently offer affordable rents. 
              In this set of questions, we are using the term "preservation" to describe retaining affordable rents 
              in existing buildings that are currently unsubsidized. In the next section, we address historic 
              preservation in the context of Mandatory Housing Affordability (MHA). We will be using the term AMI or Area Median Income. 
              For Seattle, here is a snapshot of those: 60% of AMI in 2016 is $37,980 annually for an individual, 
-             $54,180 for a family of four. See """
-
-          A 
-            href: 'http://www.seattle.gov/Documents/Departments/Housing/PropertyManagers/IncomeRentLimits/Income-Rent-Limits_Rental-Housing-HOME.pdf'
-            target: '_blank'
-            style: 
-              textDecoration: 'underline'
-
-            'detailed numbers'
-
-          '.'
-
-          DIV 
-            style: marginTop: 10
-
-            "What do you think of the following guidelines?"
-
-
+             $54,180 for a family of four. 
+             See #{cluster_link('http://www.seattle.gov/Documents/Departments/Housing/PropertyManagers/IncomeRentLimits/Income-Rent-Limits_Rental-Housing-HOME.pdf','detailed numbers')}."""
+          "What do you think of the following guidelines?"
+        ]
 
 
   "cluster/Urban Village Expansion" : 
 
           
     homepage_label: 'Guidelines'
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV 
-          style: hala_section_heading
-
-          "Urban Village Expansion Areas"
-
-
-        DIV 
-          style: hala_section_description
-
-          """Urban Villages are areas where there is a high density of essential services like 
-             high quality transportation options, parks, employment, shopping and other amenities 
-             that make it possible for residents to reduce their reliance on cars. It also means 
-             that investments made in those neighborhoods are maximized because they are enjoyed 
-             by the greatest number of people. Currently, the City is proposing to expand some 
-             Urban Village boundaries to reflect improvements and increases in services in those 
-             areas like the recent addition of light rail stations. To learn more about Urban 
-             Villages, see the resources below:"""
-
-          UL 
-            style: 
-              paddingLeft: 40
-
-            LI null, 
-              A 
-                href: 'http://seattlecitygis.maps.arcgis.com/apps/MapTools/index.html?appid=2c698e5c81164beb826ba448d00e5cf0'
-                target: '_blank'
-                style: 
-                  textDecoration: 'underline'
-
-                'Interactive Map of Seattle’s Urban Villages' 
-
-            LI null, 
-              A 
-                href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/dpdd016663.pdf'
-                target: '_blank'
-                style: 
-                  textDecoration: 'underline'
-
-                'Urban Village Element in Seattle’s Comprehensive Plan' 
-
-          DIV 
-            style: marginTop: 10
-
-            "What do you think of the following guidelines?"
+    label: "Urban Village Expansion Areas"
+    description: [
+      """Urban Villages are areas where there is a high density of essential services like 
+         high quality transportation options, parks, employment, shopping and other amenities 
+         that make it possible for residents to reduce their reliance on cars. It also means 
+         that investments made in those neighborhoods are maximized because they are enjoyed 
+         by the greatest number of people. Currently, the City is proposing to expand some 
+         Urban Village boundaries to reflect improvements and increases in services in those 
+         areas like the recent addition of light rail stations. To learn more about Urban 
+         Villages, see the resources below:
+         <ul style='padding-left:40px'>
+            <li>#{cluster_link('http://seattlecitygis.maps.arcgis.com/apps/MapTools/index.html?appid=2c698e5c81164beb826ba448d00e5cf0', 'Interactive Map of Seattle’s Urban Villages')}</li>
+            <li>#{cluster_link('http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/dpdd016663.pdf', 'Urban Village Element in Seattle’s Comprehensive Plan' )}</li>
+         </ul>
+      """
+      "What do you think of the following guidelines?"
+    ]
 
 
   "cluster/Historic Areas and Unique Conditions" : 
 
           
     homepage_label: 'Guidelines'
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
+    label: "Historic Areas and Unique Conditions"
+    description: [
+      """Seattle has many historic areas, some on the National Register and some known to locals 
+         as places of historic or cultural significance.  As a community we have defined these areas, 
+         in code and in practice, and their special heritage in our community."""
 
-        DIV 
-          style: hala_section_heading
-
-          "Historic Areas and Unique Conditions"
-
-
-        DIV 
-          style: hala_section_description
-
-          """Seattle has many historic areas, some on the National Register and some known to locals 
-          as places of historic or cultural significance.  As a community we have defined these areas, 
-          in code and in practice, and their special heritage in our community."""
-          DIV 
-            style: marginTop: 10
-
-            "What do you think of the following guidelines?"
-
-
-
+      "What do you think of the following guidelines?"
+    ]
 
 
 
@@ -1626,57 +779,24 @@ customizations['hala'] =
 
   "cluster/Transitions" : 
     homepage_label: 'MHA Principles'    
-
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV 
-          style: hala_section_heading
-
-          "Transitions"
-
-
-        DIV 
-          style: hala_section_description
-
-          """When taller buildings are constructed in areas that are zoned for more density, 
-             neighboring buildings that are smaller sometimes feel out of place. Zoning 
-             regulations can plan for transitions between higher- and lower-scale zones as 
-             Seattle grows and accommodates new residents and growing families."""
-
-          DIV 
-            style: marginTop: 10
-            
-            "What do you think of the following principles?"
-
+    label: "Transitions"
+    description: [
+      """When taller buildings are constructed in areas that are zoned for more density, 
+         neighboring buildings that are smaller sometimes feel out of place. Zoning 
+         regulations can plan for transitions between higher- and lower-scale zones as 
+         Seattle grows and accommodates new residents and growing families."""
+      "What do you think of the following principles?"
+    ]
 
   "cluster/Urban Design Quality" : 
     homepage_label: 'MHA Principles'    
-
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV 
-          style: hala_section_heading
-
-          "Urban Design Quality"
-
-
-        DIV 
-          style: hala_section_description
-
-          """As Seattle builds new housing, we want to know what design features are 
-             important to you. These elements address quality of life with design choices 
-             for new residential buildings and landscaping."""
-
-          DIV 
-            style: marginTop: 10
-            
-            "What do you think of the following principles?"
+    label: "Urban Design Quality"
+    description: [
+      """As Seattle builds new housing, we want to know what design features are 
+         important to you. These elements address quality of life with design choices 
+         for new residential buildings and landscaping."""
+      "What do you think of the following principles?"
+    ]
 
 
   "cluster/Minimize Displacement" : 
@@ -1684,25 +804,12 @@ customizations['hala'] =
     archived: true
     uncollapseable: false
     homepage_label: 'Displacement proposal (archived)'
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV 
-          style: hala_section_heading
-
-          "Minimize Displacement"
-
-
-        DIV 
-          style: hala_section_description
-
-          """Displacement is happening throughout Seattle, and particular communities 
-             are at high risk of displacement. Data analysis and community outreach will 
-             help identify how growth may benefit or burden certain populations. We will 
-             use that data to make sure our strategies are reaching the communities most 
-             in need."""
+    label: "Minimize Displacement"
+    description: """Displacement is happening throughout Seattle, and particular communities 
+                    are at high risk of displacement. Data analysis and community outreach will 
+                    help identify how growth may benefit or burden certain populations. We will 
+                    use that data to make sure our strategies are reaching the communities most 
+                    in need."""
 
 
   "cluster/Fair Chance Housing" : 
@@ -1713,7 +820,6 @@ customizations['hala'] =
       DIV 
         style: 
           width: HOMEPAGE_WIDTH()
-
 
         DIV 
           style: _.extend {}, hala_section_heading, 
@@ -1746,9 +852,6 @@ customizations['hala'] =
             'here'
 
           '.'
-
-
-
 
 
         DIV 
@@ -1841,216 +944,6 @@ customizations['hala'] =
       SPAN null, ''
 
 
-
-
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: ->
-
-      header_style = 
-        color: hala_brown
-        fontSize: 44
-        #fontWeight: 600
-        marginTop: 10
-
-      section_style = 
-        marginBottom: 20
-        color: 'black'
-
-      paragraph_heading_style = 
-        display: 'block'
-        fontWeight: 400
-        fontSize: 28
-        color: hala_brown
-
-      paragraph_style = 
-        fontSize: 18
-        color: hala_gray
-        paddingTop: 10
-        display: 'block'
-
-      DIV
-        style:
-          position: 'relative'
-
-        A 
-          href: 'http://seattle.gov/hala'
-          target: '_blank'
-          style: 
-            display: 'block'
-            position: 'absolute'
-            top: 22
-            left: 20
-            color: "#0B4D92" #hala_magenta
-
-          I 
-            className: 'fa fa-chevron-left'
-            style: 
-              display: 'inline-block'
-              marginRight: 5
-
-          'seattle.gov/hala'
-
-
-        IMG
-          style: 
-            width: '100%'
-            display: 'block'
-            #paddingTop: 20
-
-          src: asset('hala/hala-header.png')
-
-
-        ProfileMenu()
-
-        DIV 
-          style: 
-            borderTop: "7px solid #{hala_teal}"
-            padding: '20px 0'
-            #marginTop: 50
-
-          DIV 
-            style: 
-              width: HOMEPAGE_WIDTH()
-              margin: 'auto'
-
-
-            # DIV 
-            #   style: header_style
-
-            #   'Let’s talk about housing affordability and livability'
-
-            DIV 
-              style: _.extend {}, section_style, 
-                color: hala_gray
-              
-              DIV  
-                style: _.extend {}, paragraph_style, 
-                  #fontSize: 22
-                  fontStyle: 'italic'
-                  margin: 'auto'
-                  padding: "40px 40px"
-                  
-                """
-                “We are facing our worst housing affordability crisis in decades. My vision is a city where 
-                people who work in Seattle can afford to live here…We all share a responsibility in making Seattle 
-                affordable. Together, HALA will take us there.”
-                """
-                DIV  
-                  style: _.extend {}, paragraph_style, 
-                    paddingLeft: '70%'
-                  "– Mayor Ed Murray"
-
-            DIV 
-              style: section_style
-
-
-              SPAN 
-                style: paragraph_heading_style
-                """Your thoughts on the Housing Affordability and Livability Agenda (HALA) are key to securing quality, 
-                   affordable housing for Seattle for many years to come."""
-              
-              SPAN 
-                style: paragraph_style
-                """HALA addresses Seattle's housing affordability crisis on many fronts. As we take proposals from idea 
-                   to practice, we have been listening to the community to find out what matters to you. This online 
-                   conversation reflects the diversity of ideas we've heard thus far and will continue 
-                   to provide meaningful ideas on how to move forward."""
-
-
-            DIV 
-              style: section_style
-
-
-              SPAN 
-                style: paragraph_heading_style
-                """Please add your opinion below"""
-        
-              SPAN 
-                style: paragraph_style
-
-                """
-                We have listed many key recommendations below. This is an opportunity for you to shape the recommendations 
-                before they are finalized. As the year progresses, we will be looking at other new programs, so check back often to weigh in on them. 
-                The questions you see here are Phase 2 of this community conversation. Phase 1 questions that closed 
-                recently can be found at the bottom of this page. We are also summarizing your feedback and posting it on """
-                A 
-                  href: 'http://www.seattle.gov/hala/your-thoughts'
-                  target: '_blank'
-                  style: 
-                    textDecoration: 'underline'
-
-                  'our website'
-
-                '.'
-
-
-            DIV 
-              style: 
-                #fontStyle: 'italic'
-                marginTop: 20
-                fontSize: 18
-                #color: seattle2035_dark
-                color: hala_gray
-              DIV 
-                style: 
-                  marginBottom: 18
-                "Thanks for your time,"
-
-              A 
-                href: 'http://www.seattle.gov/dpd/cityplanning/default.htm'
-                target: '_blank'
-                style: 
-                  display: 'block'
-                  marginBottom: 8
-
-                IMG
-                  src: asset('hala/Seattle-Logo-and-signature2.jpg')
-                  style: 
-                    height: 70
-                    opacity: .7
-
-
-              DIV 
-                style: _.extend {}, section_style,
-                  margin: 0
-                  marginTop: 10
-                  fontSize: 18
-                  color: hala_gray
-
-                'p.s. Email us at '
-                A
-                  href: "mailto:halainfo@seattle.gov"
-                  style: 
-                    textDecoration: 'underline'
-
-                  "halainfo@seattle.gov"
-
-                ' or visit our website at '
-                A
-                  href: "http://seattle.gov/HALA"
-                  style: 
-                    textDecoration: 'underline'
-
-                  "seattle.gov/HALA"                  
-                ' if you want to know more.'
-
-
-              # DIV 
-              #   style: 
-              #     marginTop: 40
-              #     backgroundColor: hala_magenta
-              #     color: 'white'
-              #     fontSize: 28
-              #     textAlign: 'center'
-              #     padding: "30px 42px"
-
-              #   "The comment period is now closed. Thank you for your input!"
-
-
-
-
 customizations['bradywalkinshaw'] = 
   point_labels : pro_con
   slider_pole_labels : agree_disagree
@@ -2061,8 +954,11 @@ customizations['bradywalkinshaw'] =
   show_score: false
   proposal_filters: false
 
+  label_style:
+    color: hala_teal
+
   cluster_filters: 
-    'Economics': ['Economics']
+    'Economy': ['Economics']
     'Environment': ['Environment']
     'Education': ['Education']
     'Civil Rights': ['Civil Rights']
@@ -2071,348 +967,47 @@ customizations['bradywalkinshaw'] =
     homepage_label: 'Planks' 
     uncollapseable: true   
 
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
+    label: "Civil Rights for the 21st Century"
 
-        DIV 
-          style: hala_section_heading
-
-          "Civil Rights for the 21st Century"
-
-
-        DIV 
-          style: hala_section_description
-
-          DIV 
-            style: 
-              paddingTop: 10
-
-            "The son of a Cuban immigrant, Brady Piñero Walkinshaw will be Washington State’s first Latino and openly-gay member of Congress. He grew up in a rural farming community in Washington State, attended Princeton University with support from financial aid, and has worked professionally to create economic opportunity in the developing world.  As a State Representative, he brought together Republicans and Democrats to pass legislation to expand affordable housing, improve transportation, and increase healthcare and mental health services.  At 32 years old, Brady represents a new generation of positive Progressive leadership that will get things done in Congress for years to come. He’ll be a Progressive voice on national issues like climate change and focus on delivering for our local priorities."
-
-          DIV 
-            style: 
-              paddingTop: 10
-
-            "Brady has the background and life experiences to represent this region’s unique diversity and be a voice for our community. His mother’s family were poor immigrants from Cuba seeking a better life and opportunity, and he will work to pass immigration reform to bring millions of immigrants out of the shadows. As a married gay man, Brady recognizes that the movement for social justice must continue to protect everyone’s civil rights. As the first person of color to represent our district in Congress, Brady will fight to end discrimination in the workplace, schools and our justice system."
-
-          DIV 
-            style: marginTop: 10
-            
-            "The next generation of leadership in our country must continue the heroic efforts of those who have come before us to secure justice for every American, regardless of gender, orientation, race, economic status, or even citizenship status. We need leaders that reflect the diversity of our nation and understand from personal experience that our diversity is our greatest strength."
+    description: [
+      "The son of a Cuban immigrant, Brady Piñero Walkinshaw will be Washington State’s first Latino and openly-gay member of Congress. He grew up in a rural farming community in Washington State, attended Princeton University with support from financial aid, and has worked professionally to create economic opportunity in the developing world.  As a State Representative, he brought together Republicans and Democrats to pass legislation to expand affordable housing, improve transportation, and increase healthcare and mental health services.  At 32 years old, Brady represents a new generation of positive Progressive leadership that will get things done in Congress for years to come. He’ll be a Progressive voice on national issues like climate change and focus on delivering for our local priorities."
+      "Brady has the background and life experiences to represent this region’s unique diversity and be a voice for our community. His mother’s family were poor immigrants from Cuba seeking a better life and opportunity, and he will work to pass immigration reform to bring millions of immigrants out of the shadows. As a married gay man, Brady recognizes that the movement for social justice must continue to protect everyone’s civil rights. As the first person of color to represent our district in Congress, Brady will fight to end discrimination in the workplace, schools and our justice system."
+      "The next generation of leadership in our country must continue the heroic efforts of those who have come before us to secure justice for every American, regardless of gender, orientation, race, economic status, or even citizenship status. We need leaders that reflect the diversity of our nation and understand from personal experience that our diversity is our greatest strength."
+    ]
 
 
   "cluster/Economics" : 
     homepage_label: 'Planks' 
     uncollapseable: true   
 
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV 
-          style: hala_section_heading
-
-          "Economic Leadership for the 21st Century"
-
-
-        DIV 
-          style: hala_section_description
-
-          DIV 
-            style: 
-              paddingTop: 10
-
-            "America’s next generation of leaders must balance our pace of growth with our core Progressive values, and there are few regions where this divide is more visible than Washington’s 7th district."
-          DIV 
-            style: 
-              paddingTop: 10
-
-            "Our community has both an opportunity and the obligation to build innovative, community-based solutions to address the climate crisis. The first step in that process is supporting policies that transition our nation to a low-carbon economy – to halt the debilitating impact of climate change, keep our region pristine and beautiful, and spur a new wave of economic growth for the 21st Century."
-          DIV 
-            style: 
-              paddingTop: 10
-
-            "Addressing climate change head on is a necessity. Our region has the values, the commitment, and the talent to build innovative reforms that can transform our economy and lead the global community in taking action."
-          DIV 
-            style: 
-              paddingTop: 10
-
-            "Washington state is blessed with stunning nature, clean energy and an unparalleled quality of life that attracts innovative employers and highly skilled workers. We are fortunate to boast a strong economic base across diverse industries, and to serve as home to some of the world’s leading innovative companies. The next generation of leadership in this country must focus on continuing growth that generates prosperity while ensuring that every American has access to the opportunities and resources they need to share in prosperity."
-          DIV 
-            style: 
-              paddingTop: 10
-
-            "Our economy should work for all of us, not just a wealthy few, and our region has all the tools we need to lead the nation in both innovation industries and equality for all our residents. We must generate a healthy economy that expands access to opportunity and jobs that pay a living wage."
-
-          DIV 
-            style: marginTop: 10
-            
-            "What do you think of the following planks? Click into any of them to read details and discuss."
-
+    label: "Economic Leadership for the 21st Century"
+    description: [
+      "America’s next generation of leaders must balance our pace of growth with our core Progressive values, and there are few regions where this divide is more visible than Washington’s 7th district."
+      "Our community has both an opportunity and the obligation to build innovative, community-based solutions to address the climate crisis. The first step in that process is supporting policies that transition our nation to a low-carbon economy – to halt the debilitating impact of climate change, keep our region pristine and beautiful, and spur a new wave of economic growth for the 21st Century."
+      "Addressing climate change head on is a necessity. Our region has the values, the commitment, and the talent to build innovative reforms that can transform our economy and lead the global community in taking action."
+      "Washington state is blessed with stunning nature, clean energy and an unparalleled quality of life that attracts innovative employers and highly skilled workers. We are fortunate to boast a strong economic base across diverse industries, and to serve as home to some of the world’s leading innovative companies. The next generation of leadership in this country must focus on continuing growth that generates prosperity while ensuring that every American has access to the opportunities and resources they need to share in prosperity."
+      "Our economy should work for all of us, not just a wealthy few, and our region has all the tools we need to lead the nation in both innovation industries and equality for all our residents. We must generate a healthy economy that expands access to opportunity and jobs that pay a living wage."            
+      "What do you think of the following planks? Click into any of them to read details and discuss."
+    ]
 
   "cluster/Education" : 
     homepage_label: 'Planks' 
     uncollapseable: true   
 
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV 
-          style: hala_section_heading
-
-          "Education Leadership for the 21st Century"
-
-
-        DIV 
-          style: hala_section_description
-
-          """Education and academic research are key to the future of our country, and we need to do everything in our power to support students as they prepare to compete in the global economy. Financial obstacles continue to restrict students from becoming the first in their families to go to college, and we must ensure that higher education is accessible for every single student."""
-
-          DIV 
-            style: marginTop: 10
-            
-            "What do you think of the following planks? Click into any of them to read details and discuss."
-
-
+    label: "Education Leadership for the 21st Century"
+    description: [
+      """Education and academic research are key to the future of our country, and we need to do everything in our power to support students as they prepare to compete in the global economy. Financial obstacles continue to restrict students from becoming the first in their families to go to college, and we must ensure that higher education is accessible for every single student."""
+      "What do you think of the following planks? Click into any of them to read details and discuss."
+    ]
 
   "cluster/Environment" : 
     homepage_label: 'Planks'    
-    uncollapseable: true   
-    description: ->  
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV 
-          style: hala_section_heading
-
-          "Environmental Leadership for the 21st Century"
-
-
-        DIV 
-          style: hala_section_description
-
+    uncollapseable: true  
+    label: "Environmental Leadership for the 21st Century"
+    description: [
           """Brady is committed to forward-looking policies and will make fighting climate change his top priority.  He will fight for our Progressive values and bring Republicans and Democrats together to get things done, like investing in transportation and public transit improvements – such as light rail and express bus services – to reduce carbon emissions and improve our quality of life."""
-
-          DIV 
-            style: marginTop: 10
-            
-            "What do you think of the following planks? Click into any of them to read details and discuss."
-
-
-
-  HomepageHeader: ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: ->
-      loc = fetch 'location'
-      homepage = loc.url == '/'
-
-      DIV
-        style:
-          height: if homepage then 642 else 100
-          margin: '0px auto'
-          position: 'relative'
-          overflow: 'hidden'
-          backgroundColor: if !homepage then 'white'
-
-        back_to_homepage_button
-          fontSize: 43
-          visibility: if homepage then 'hidden'
-          verticalAlign: 'top'
-          marginTop: 22
-          marginRight: 15
-          color: '#888'
-          position: 'absolute'
-          top: 10
-          left: 10
-
-        STYLE null,
-          """
-          header#main_header h1 {
-            width: 230px;
-            height: 130px;
-            display: inline-block;
-            margin-top: 16px;
-            margin-bottom: 16px;
-            margin-right: 12px;
-            line-height: 1;
-            font-family: 'futura-pt', 'Futura Std', Calibri, Verdana, sans-serif;
-            }
-
-          header#main_header h1 a {
-            display: block;
-            width: 100%;
-            height: 100%;
-            background-image: url(http://bradywalkinshaw.com/wp-content/themes/walkinshaw/images/logo_walk#{if !homepage then '_int' else ''}.png);
-            background-size: contain;
-            background-repeat: no-repeat;
-            
-            text-indent: -9999em;
-            overflow: hidden;
-            }
-
-
-            header#main_header nav {
-              vertical-align: top;
-              display: inline-block;
-              margin-top: 21px;
-              }
-
-            header#main_header nav ul {
-              margin: 0;
-              padding: 0;
-              list-style: none;
-              text-align: left;
-
-              }
-
-            header#main_header nav li {
-              display: inline-block;
-              position: relative;
-              margin: 0 1px;
-              text-transform: uppercase;
-              font-size: 13.4px;
-              font-weight: 900;
-              }
-
-            header#main_header nav li a {
-              display: block;
-              color: #{if homepage then '#fff' else '#777'};
-              text-decoration: none;
-              padding: 14px 19px;
-              overflow: hidden;
-              transition: .3s ease background, .3s ease color;
-              }
-
-            #hero {
-              position: absolute;
-              z-index: -1;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background-color: #f0f0f0;
-              background-image: url(http://bradywalkinshaw.com/wp-content/uploads/2016/07/hero_walkinshaw_v2_r3.jpg);
-              background-position: center 70%;
-              background-size: cover;
-              }
-          
-          """
-
-
-        if homepage 
-          DIV 
-            id: "hero" 
-
-
-        HEADER 
-          id: "main_header" 
-
-          DIV 
-            style: 
-              textAlign: 'center'
-
-            H1 null, 
-              A 
-                href: "http://bradywalkinshaw.com"
-                "Brady Piñero Walkinshaw"
-
-            NAV 
-              class: "topmenu"
-
-              DIV null, 
-                UL null, 
-                  LI null, 
-                    A href: "http://bradywalkinshaw.com/meet_brady/",
-                      'Meet Brady'
-                  LI null, 
-                    A href: "http://bradywalkinshaw.com/endorsements/",
-                      'Endorsements'
-                  LI null, 
-                    A href: "http://bradywalkinshaw.com/#issues/",
-                      'Issues'
-                  LI null, 
-                    A href: "http://bradywalkinshaw.com/news/",
-                      'News'
-                  LI null, 
-                    A href: "http://bradywalkinshaw.com/results/",
-                      'Results'
-                  LI null, 
-                    A href: "http://bradywalkinshaw.com/resources/",
-                      'Resources'
-                  LI null, 
-                    A 
-                      href: "http://bradywalkinshaw.com/donate/"
-                      style: 
-                        backgroundColor: '#db282e'
-                        color: 'white'
-
-                      'Donate'
-
-
-
-        DIV 
-          style: 
-            fontSize: 24
-            backgroundColor: 'rgba(0,0,0,.5)'
-            position: 'absolute'
-            bottom: 0
-            width: '100%'
-            textAlign: 'center'
-            display: if !homepage then 'none'
-
-          DIV style: textAlign: 'center',
-            DIV 
-              style:
-                fontSize: 36
-                fontWeight: 600
-                #textAlign: 'right'
-                color: 'white'
-                #marginTop: 140
-                #display: 'inline-block'
-                #backgroundColor: 'rgba(0,0,0,.3)'
-                padding: '0 10px 10px 0'
-                # borderRadius: 26
-                # border: "1px solid rgba(0,0,0,.8)"
-                position: 'relative'
-                top: 10
-
-              SPAN 
-                style: 
-                  color: '#7eef54'
-
-                "Engage my platform. "
-              
-              SPAN 
-                style: 
-                  color: '#ffdd21'
-
-                "I want to hear your opinion."
-
-
-          ClusterFilter
-            filter_style: 
-              color: 'white'
-              fontSize: 22
-
-
-        DIV 
-          style: 
-            position: 'absolute'
-            top: 18
-            right: 0
-            width: 110
-
-          ProfileMenu()
-
-customizations.bradywalkinshaw.NonHomepageHeader = customizations.bradywalkinshaw.HomepageHeader
-
+          "What do you think of the following planks? Click into any of them to read details and discuss."
+    ]
 
 
 
@@ -2420,24 +1015,6 @@ customizations.bradywalkinshaw.NonHomepageHeader = customizations.bradywalkinsha
 # engageseattle
 
 engageseattle_teal = "#67B5B5"
-hala_gray = '#666'
-
-engage_seattle_cluster = 
-  width: HOMEPAGE_WIDTH()
-  marginLeft: -70
-
-engageseattle_section_heading = 
-  fontSize: 42
-  fontWeight: 300
-  color: engageseattle_teal
-  marginBottom: 5
-
-engageseattle_section_description = 
-  fontSize: 18
-  fontWeight: 400 
-  #fontStyle: 'italic' 
-  color: hala_gray
-
 
 customizations['engageseattle'] = 
   point_labels : pro_con
@@ -2446,15 +1023,13 @@ customizations['engageseattle'] =
   show_proposer_icon: true
   show_meta: true 
   civility_pledge: true
-  show_score: false
+  show_score: true
   proposal_filters: false
-
-  proposal_style: 
-    #color: "#444"
-    borderBottom: "1px solid #ddd"
 
   uncollapseable: true
 
+  label_style:
+    color: engageseattle_teal
 
   opinion_filters: ( -> 
     filters = 
@@ -2509,40 +1084,7 @@ customizations['engageseattle'] =
 
     show_new_proposal_button: false
     homepage_label: 'Values'
-    description: ->  
-      DIV 
-        style: engage_seattle_cluster
-
-        DIV 
-          style: engageseattle_section_heading
-
-          "What do you value when engaging with the City about issues in your community, such as at public meetings?"
-
-
-        # DIV 
-        #   style: engageseattle_section_description
-
-        #   """There are many buildings and other types of housing in Seattle that currently offer affordable rents. 
-        #      In this set of questions, we are using the term "preservation" to describe retaining affordable rents 
-        #      in existing buildings that are currently unsubsidized. In the next section, we address historic 
-        #      preservation in the context of Mandatory Housing Affordability (MHA). We will be using the term AMI or Area Median Income. 
-        #      For Seattle, here is a snapshot of those: 60% of AMI in 2016 is $37,980 annually for an individual, 
-        #      $54,180 for a family of four. See """
-
-        #   A 
-        #     href: 'http://www.seattle.gov/Documents/Departments/Housing/PropertyManagers/IncomeRentLimits/Income-Rent-Limits_Rental-Housing-HOME.pdf'
-        #     target: '_blank'
-        #     style: 
-        #       textDecoration: 'underline'
-
-        #     'detailed numbers'
-
-        #   '.'
-
-        #   DIV 
-        #     style: marginTop: 10
-
-        #     "What do you think of the following guidelines?"
+    label: "What do you value when engaging with the City about issues in your community, such as at public meetings?"
 
 
   "cluster/Meeting preferences" : 
@@ -2551,14 +1093,7 @@ customizations['engageseattle'] =
 
     show_new_proposal_button: false
     homepage_label: 'Preferences'
-    description: ->  
-      DIV 
-        style: engage_seattle_cluster
-
-        DIV 
-          style: engageseattle_section_heading
-
-          "How do you like to meet and what do you want to talk about?"
+    label: "How do you like to meet and what do you want to talk about?"
 
 
   "cluster/Community Involvement Commission" : 
@@ -2567,54 +1102,29 @@ customizations['engageseattle'] =
     cluster_header: -> 
       DIV style: height: 18
 
-    description: ->  
-      DIV 
-        style: engage_seattle_cluster
-          
-
-        DIV 
-          style: engageseattle_section_heading
-
-          'Community Involvement Commission'
-
-        DIV 
-          style: engageseattle_section_description
-
-          """A Community Involvement Commission could be established to create a more inclusive and 
-             representative process for decision-making. Your comments are needed to help develop the 
-             charter and membership of the Commission. """
+    label: 'Community Involvement Commission'
+    description: """A Community Involvement Commission could be established to create a more inclusive and 
+                   representative process for decision-making. Your comments are needed to help develop the 
+                   charter and membership of the Commission. """
 
 
   "cluster/Community Involvement Commission Roles" : 
           
     homepage_label: 'Roles'
 
-    description: ->  
-      DIV 
-        style: engage_seattle_cluster
+    label_style: 
+      fontSize: 34
+      fontWeight: 300
+      color: '#666'
+      marginBottom: 5
 
-        DIV 
-          style: 
-            fontSize: 34
-            fontWeight: 300
-            color: '#666'
-            marginBottom: 5
-
-          """What additional roles, if any, should the Community Involvement Commission undertake?"""
+    label: "What additional roles, if any, should the Community Involvement Commission undertake?"
 
 
   "cluster/Engagement Ideas" : 
           
     homepage_label: 'Your ideas'
-
-    description: ->  
-      DIV 
-        style: engage_seattle_cluster
-
-        DIV 
-          style: engageseattle_section_heading
-
-          """What’s your big idea on how the City can better engage with residents?"""
+    label: "What’s your big idea on how the City can better engage with residents?"
 
 
 
@@ -2692,262 +1202,32 @@ customizations['engageseattle'] =
 
 
 
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: ->
-
-      header_style = 
-        color: engageseattle_teal
-        fontSize: 44
-        #fontWeight: 600
-        marginTop: 10
-
-      section_style = 
-        marginBottom: 20
-        color: 'black'
-
-      paragraph_heading_style = 
-        display: 'block'
-        fontWeight: 400
-        fontSize: 31
-        color: engageseattle_teal
-
-      paragraph_style = 
-        fontSize: 18
-        color: hala_gray
-        paddingTop: 10
-        display: 'block'
-
-      DIV
-        style:
-          position: 'relative'
-
-        # A 
-        #   href: 'http://www.seattle.gov/neighborhoods/equitable-outreach-and-engagement'
-        #   target: '_blank'
-        #   style: 
-        #     display: 'block'
-        #     position: 'absolute'
-        #     top: 22
-        #     left: 20
-        #     color: "white"
-
-        #   I 
-        #     className: 'fa fa-chevron-left'
-        #     style: 
-        #       display: 'inline-block'
-        #       marginRight: 5
-
-        #   'seattle.gov/#AdvancingEquitySEA'
-
-
-        IMG
-          style: 
-            width: '100%'
-            display: 'block'
-            #paddingTop: 20
-
-          src: asset('engageseattle/engageseattle_header.png')
-
-
-        ProfileMenu()
-
-        DIV 
-          style: 
-            borderTop: "7px solid #{engageseattle_teal}"
-            padding: '20px 0'
-            #marginTop: 50
-
-          DIV 
-            style: 
-              width: HOMEPAGE_WIDTH()
-              margin: 'auto'
-
-
-            # DIV 
-            #   style: header_style
-
-            #   'Let’s talk about housing affordability and livability'
-
-            DIV 
-              style: _.extend {}, section_style, 
-                color: hala_gray
-              
-              DIV  
-                style: _.extend {}, paragraph_style, 
-                  #fontSize: 22
-                  fontStyle: 'italic'
-                  margin: 'auto'
-                  padding: "40px 40px"
-                  
-                """
-                “How we reach out to residents to bring them into the governing process reflects the City’s 
-                 fundamental commitment to equity and to democracy. We’re constantly looking to bring down barriers, 
-                 to open up more opportunities, and to reflect the face of our diverse and growing city.”
-                """
-                DIV  
-                  style: _.extend {}, paragraph_style, 
-                    paddingLeft: '70%'
-                  "– Mayor Ed Murray"
-
-            DIV 
-              style: section_style
-
 
-              SPAN 
-                style: paragraph_heading_style
-                """Advancing Equitable Outreach and Engagement"""
-              
-              SPAN 
-                style: paragraph_style
-                """Mayor Murray recently issued an """
-
-                A 
-                  href: 'http://www.seattle.gov/neighborhoods/equitable-outreach-and-engagement'
-                  target: '_blank'
-                  style: 
-                    textDecoration: 'underline'
 
-                  'Executive Order'
-
-                """ directing the city to approach outreach and engagement in an equitable manner. 
-                This directive to all City departments is based on a strong commitment to making 
-                government more accessible, equitable and transparent."""
-
 
-            DIV 
-              style: section_style
 
 
-              SPAN 
-                style: paragraph_heading_style
-                """Please add your opinion below"""
-        
-              SPAN 
-                style: paragraph_style
 
-                """We need to hear from YOU about your experiences and what we can provide to make it easier for you to weigh in."""
 
-              SPAN 
-                style: paragraph_style
-                """At the heart of this """
 
-                A 
-                  href: 'http://www.seattle.gov/neighborhoods/equitable-outreach-and-engagement'
-                  target: '_blank'
-                  style: 
-                    textDecoration: 'underline'
 
-                  'Executive Order'
 
-                " is a commitment to advance the effective deployment of equitable and inclusive community engagement strategies across all city departments. This is about making information and opportunities for participation more accessible to communities throughout the city."
 
-              SPAN 
-                style: paragraph_style
-                """We need to bring more people into the conversations and create more opportunities for people to participate and be heard. We are striving toward making things easier and less exhaustive. This is about connecting communities to government and to one another."""
 
-              SPAN 
-                style: paragraph_style
-                """Your input will help guide this work moving forward.  In late-September the Mayor will propose legislation to the City Council advancing equitable outreach and engagement. Your input today will help shape this effort."""
 
 
 
-            DIV 
-              style: 
-                #fontStyle: 'italic'
-                marginTop: 20
-                fontSize: 18
-                #color: seattle2035_dark
-                color: hala_gray
-              DIV 
-                style: 
-                  marginBottom: 18
-                "Thanks for your time,"
 
-              A 
-                href: 'http://www.seattle.gov/neighborhoods/equitable-outreach-and-engagement'
-                target: '_blank'
-                style: 
-                  display: 'block'
-                  marginBottom: 8
 
-                IMG
-                  src: asset('engageseattle/director_logo.png')
-                  style: 
-                    height: 70
-                    opacity: .9
 
 
-              # DIV 
-              #   style: _.extend {}, section_style,
-              #     margin: 0
-              #     marginTop: 10
-              #     fontSize: 18
-              #     color: hala_gray
 
-              #   'p.s. Email us at '
-              #   A
-              #     href: "mailto:halainfo@seattle.gov"
-              #     style: 
-              #       textDecoration: 'underline'
 
-              #     "halainfo@seattle.gov"
 
-              #   ' or visit our website at '
-              #   A
-              #     href: "http://seattle.gov/HALA"
-              #     style: 
-              #       textDecoration: 'underline'
 
-              #     "seattle.gov/HALA"                  
-              #   ' if you want to know more.'
-
-
-              # DIV 
-              #   style: 
-              #     marginTop: 40
-              #     backgroundColor: hala_magenta
-              #     color: 'white'
-              #     fontSize: 28
-              #     textAlign: 'center'
-              #     padding: "30px 42px"
-
-              #   "The comment period is now closed. Thank you for your input!"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-################
-# CIR
-
-cir_header = "black"
 
 
 customizations['cir'] = 
-  #point_labels : strengths_weaknesses
   slider_pole_labels : important_unimportant
   homie_histo_title: "Opinions"
   show_proposer_icon: false
@@ -2956,48 +1236,22 @@ customizations['cir'] =
   show_score: false
   proposal_filters: false
 
-  proposal_style: 
-    #color: "#444"
-    borderBottom: "1px solid #ddd"
-
   uncollapseable: true
+
+  label_style:
+    color: '#159ed9'
 
 
   "cluster/Questions" : 
           
     homepage_label: 'Your questions'
 
-    description: ->  
+    label: 'Questions to pose to the Citizen Panel'
 
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-          marginBottom: 20
-
-        DIV 
-          style: 
-            fontSize: 42
-            fontWeight: 300
-            color: '#159ed9' #cir_header
-            marginBottom: 5
-
-
-          'Questions to pose to the Citizen Panel'
-
-        DIV 
-          style: 
-            fontSize: 18
-            fontWeight: 400 
-            #fontStyle: 'italic' 
-            color: cir_header
-
-          """Now that you've heard the claims, its your turn to ask the questions! Below, 
-             you can ask questions. Furthermore, you can rate how important the answer to 
-             each question is to you. The most important question will be presented to the 
-             Citizen Initiative Review when it convenes."""
-
-
-
+    description: """Now that you've heard the claims, its your turn to ask the questions! Below, 
+                    you can ask questions. Furthermore, you can rate how important the answer to 
+                    each question is to you. The most important question will be presented to the 
+                    Citizen Initiative Review when it convenes."""
 
   auth: 
 
@@ -3028,385 +1282,8 @@ customizations['cir'] =
 
 
 
-
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: ->
-
-      loc = fetch('location')
-
-      homepage = loc.url == '/'
-
-      section_style = 
-        marginBottom: 20
-        color: 'black'
-
-      paragraph_heading_style = 
-        display: 'block'
-        fontWeight: 400
-        fontSize: 40
-        color: cir_header
-
-      paragraph_style = 
-        fontSize: 18
-        color: '#666'
-        paddingTop: 10
-        display: 'block'
-
-
-      statement = 
-        Opponent: [
-          "M97 would be the most costly and damaging tax increase in Oregon history.  Its $6 billion tax hike would hurt Oregon small businesses and consumers by increasing prices for almost all goods and services they buy, with no guarantee of how the funds would be spent."
-          "Sponsors claim the tax only affects large corporations. But studies by the nonpartisan Legislative Revenue Office (LRO) and Northwest Economic Research Center (NERC) funded by M97’s sponsors, both found that most of the tax would be passed on to Oregon consumers through higher costs for everything from food, clothing, cars and housing to gas, electricity, insurance and healthcare. LRO estimated M97 would increase costs for a typical Oregon family by $600 per year."
-          "Both studies also show the impacts would be regressive, by costing low- and middle-income families a higher percentage of their incomes than upper-income families. This would especially hurt rural counties, where average incomes are lower than urban/suburban counties."
-          "Former State Economist Tom Potiowsky, who led the NERC study, said 97's tax is “like a sales tax on steroids.” A recent news story revealed that when sponsors tried pressuring him to say 97’s tax on C Corps wouldn’t be regressive for consumers Potiowsky said: “Applying [a gross receipts tax] to a narrow group of C corporations does not make regressivity go away.”"
-          "Both studies also agreed that M97 would cause the loss of tens of thousands of private-sector jobs, by increasing operating costs for both large employers and small businesses statewide."
-          "M97 would arbitrarily and unfairly make some businesses bigger losers than others.  It taxes C Corps but exempts S Corps and B Corps that sell the same products and make as much or more money. It would especially hurt businesses that have slim profit margins, like farms and grocery stores, and those that are already struggling. It would also burden startup companies that initially have little or no profit, making Oregon one of the worst states in which to locate a new business."
-          "M97 also hurts nonprofits and local governments, since they would face increased costs of electricity, gas, insurance, healthcare and other goods and services."
-          "We all want ample funding for education, healthcare and other vital services but M97 doesn’t provide a guarantee or accountability of where revenues will go. Legislative Counsel confirmed that the legislature “may appropriate revenues generated by the measure in any way it chooses.”  The July 20 Portland Tribune editorial noted: “The Legislature can spend the available money in any way it sees fit—on pensions, prisons or pet projects.”
-          M97 is a damaging tax plan that would hurt small businesses, cause thousands of Oregon workers to lose their jobs and put the greatest burden on low- and middle-income families and seniors on fixed incomes.
-          That’s why NO on 97 is urged by a broad coalition of small businesses, farmers, organizations, consumers, taxpayers and editorials in nearly every major newspaper."
-        ],
-        Proponent: [
-          "Measure 97 makes large and out-of-state corporations pay more in taxes so Oregon families can have the schools, health care, and dignified retirement we deserve."
-          "According to two separate independent studies, corporations pay lower taxes in Oregon than any other state. Large and out-of-state corporations like Bank of America, Comcast, Wal-Mart, and Monsanto make hundreds of millions of dollars from the business they do in Oregon but pay lower taxes here than anywhere else in the nation. "
-          "At the same time, Oregon families are taking home $1,000 to $2,000 less each year, while corporate profits have risen 170% over the last decade. Oregon families are struggling and large corporations are not paying their fair share."
-          "Low corporate taxes hurt schools and families. Oregon’s high school graduation rates are the 4th lowest in the country. 383,000 Oregonians still have no health insurance, and premiums are too expensive. 21,000 more seniors live in poverty today than a decade ago. If we pass Measure 97, we can address these problems."
-          "Measure 97 increases the corporate tax only on C corporations and only on their sales above $25 million. 82% of the money raised comes from corporations headquartered outside Oregon. 85% of the money comes from corporations with more than $100 million in sales in Oregon. Less than 1% of Oregon businesses will be affected."
-          "Measure 97 will hold big, out-of-state corporations accountable to paying their fair share of taxes. In 2013, 530 C corporations used tax credits to reduce their Oregon tax bill to $0, shorting the state by nearly $8.77 million in revenue. Additionally, because corporations hide profits overseas, Oregon loses $283 million per year in corporate income tax revenues. Measure 97’s simple, effective rate increase prevents corporations from exploiting off-shore loopholes." 
-          "Money raised by Measure 97 is sorely needed, and will make a real difference in people’s lives. Oregon will be able to hire 6,000 new teachers, make sure every child in Oregon has health care, and allow 20,000 more Oregon seniors to afford to stay in their own homes when they retire by providing in-home care. "
-          "Large corporations like Comcast and Kroger that oppose Measure 97 say Oregonians and not corporations will pay this new tax. Whenever we ask corporations to do their part they use scare tactics and threaten higher prices — economic data shows those threats are empty. Corporations charge the same for their products in every state, regardless of state taxes." 
-          "Measure 97 gives Oregon families a chance for a better life. It will improve our schools and graduation rates, make healthcare affordable, and help our aging parents and grandparents retire with dignity."
-        ]
-
-
-      claims = 
-        Opponent: [{
-          statement: 'M97 would impose $6 billion in new taxes on sales of goods and services in Oregon: everything from food, clothing, cars and housing to gas, utilities, prescriptions and healthcare. It would be the largest, most damaging tax increase in state history.', 
-          sources: [
-            {text: 'Measure 97 Section 1'}, 
-            {text: 'Portland Tribune, July 21', link: 'http://bit.ly/portlandtribune_tax-increase-threatens-family-budgets'},
-            {text: 'LRO impact brief', link: 'http://bit.ly/CIRsources'}
-          ]},{
-          statement: 'M97 unfairly taxes sales, not profits. It would require businesses to pay 2.5% on sales even when they make no profit or lose money. That would especially hurt businesses that have slim profit margins, like grocery stores, medical clinics and farms.'
-          sources: [
-            {text: 'Measure 97 Section 1'}, 
-            {text: 'Forbes', link: 'http://bit.ly/forbes_least-profitable-businesses'},
-            {text: 'LRO impact brief', link: 'http://bit.ly/CIRsources'}
-          ]},{
-          statement: 'A nonpartisan study by the Legislative Revenue Office says M97\'s tax would increase costs consumers pay for essential goods and services, costing a typical family $600 more per year. A former State Economist said it\'s "like a sales tax on steroids."'
-          sources: [
-            {text: 'Legislative Revenue Office IP 28 Description and Analysis, table 1', link: 'http://bit.ly/OregonLRO_IP28-Research-Report'},
-            {text: 'East Oregonian July 30', link: 'http://bit.ly/capitalbureau_gross-receipts-tax-on-steroids'},
-            {text: 'LRO cost estimate to households', link: 'http://bit.ly/CIRsources'},
-            {text: 'Shopping cart study', link: 'http://bit.ly/taxfoundation_IP28-would-raise-prices'}
-          ]},{
-          statement: 'A nonpartisan Legislative Revenue Office study shows 97\'s tax is regressive. It would increase consumer costs for food, medicine, clothing, housing, utilities and other essential goods and services, hurting families who can least afford it the most.'
-          sources: [
-            {text: 'Legislative Revenue Office IP 28 Description and Analysis, page 12 and table 11', link: 'http://bit.ly/OregonLRO_IP28-Research-Report'},
-            {text: 'Shopping cart study', link: 'http://bit.ly/taxfoundation_IP28-would-raise-prices'},
-            {text: 'ECONorthwest comparison of studies', link: 'http://bit.ly/CIRsources'},
-          ]},{
-          statement: 'M97 would hurt all Oregon employers, large and small, by increasing their operating costs and making them less competitive. The sponsors\' own study and the legislative study agree: M97 would cause the loss of tens of thousands of private sector jobs.'
-          sources: [
-            {text: 'Legislative Revenue Office IP 28 Description and Analysis, page 14', link: 'http://bit.ly/OregonLRO_IP28-Research-Report'},
-            {text: 'ECONorthwest comparison of studies', link: 'http://bit.ly/CIRsources'},
-          ]},{
-          statement: '97 doesn’t guarantee the revenues will go to schools, healthcare or anything else. The Legislative Counsel Committee confirmed that the legislature “may appropriate revenues generated by the measure in any way it chooses.” It’s a blank check.'
-          sources: [
-            {text: 'Legislative Counsel Committee letter', link: 'http://bit.ly/CIRsources'},
-            {text: 'Portland Tribune, July 2', link: 'http://bit.ly/portlandtribune_tax-increase-threatens-family-budgets'},
-            {text: 'ECONorthwest testimony before the Fiscal Impact Statement Committee', link: 'http://bit.ly/CIRsources'},
-            {text: 'Attorney General opinion, 37 Op Atty gen 599 (1975)', link: 'http://bit.ly/CIRsources'},
-
-          ]},{
-          statement: 'M97 makes it harder for local stores to compete with big chains. Chains ship and sell their own products and would pay 2.5%. Local stores get products via manufacturers and distributors who\'d each pay the tax, so their costs could go up 7.5% or more.'
-          sources: [
-            {text: 'Legislative Revenue Office IP 28 Description and Analysis, pages 11-12', link: 'http://bit.ly/OregonLRO_IP28-Research-Report'},
-            {text: '"Tax on a Tax"" chart', link: 'http://bit.ly/CIRsources'},
-            {text: 'Analysis by RCG Economics', link: 'http://bit.ly/CIRsources'},
-          ]}
-        ]
-
-        Proponent: [{
-          statement: 'M97 raises the corporate minimum tax on sales above $25 million on large and out-of-state C corporations, affecting less than 1% of businesses in Oregon. Money raised must fund Oregon’s early childhood education, K-12, healthcare, and senior services', 
-          sources: [
-            {link: 'http://oregonvotes.org/irr/2016/028text.pdf'}, 
-            {link: 'https://www.oregonlegislature.gov/lro/Documents/IP%2028%20-%20RR%203-16.pdf'}, 
-          ]},{
-          statement: 'Oregon’s schools and critical services have been underfunded for decades, because large and out-of-state corporations don’t pay their fair share in taxes. In fact, Oregon ranks 50th in corporate taxes nationwide. Oregon families deserve better', 
-          sources: [
-            {link: 'http://www.ode.state.or.us/superintendent/priorities/2014-qem-report-volume-i-final--corrected.pdf'}, 
-            {link: 'http://www.andersoneconomicgroup.com/Portals/0/AEG%20Tax%20Burden%20Study_2016_FINAL.pdf'}, 
-            {link: 'http://www.ocpp.org/media/uploads/pdf/2016/06/rpt20160629-corporate-tax-shift_fnl.pdf'}, 
-          ]},{
-          statement: 'M97 would raise $3B annually, allowing for major investments in education, healthcare and senior services. This revenue could improve Oregon’s low graduation rates, make healthcare more accessible, and provide 20,000 more seniors with in-home care', 
-          sources: [
-            {link: 'https://www.oregonlegislature.gov/lro/Documents/IP%2028%20-%20RR%203-16.pdf'}, 
-            {link: 'http://www.ode.state.or.us/superintendent/priorities/2014-qem-report-volume-i-final--corrected.pdf'}, 
-            {link: 'http://www.oregonhealthequity.org/wp-content/uploads/2015/11/OHEA_MendtheGap_Web.pdf'}, 
-            {link: 'https://www.pdx.edu/nerc/sites/www.pdx.edu.nerc/files/Retirement%20Security%20Final%20Report.pdf'},             
-          ]},{
-          statement: 'Without new taxes from large corporations, Oregon faces an estimated $750M a year of new budget cuts. This means deep cuts in every department and every school district. M97 would raise $3B a year to fund education, healthcare, and senior services', 
-          sources: [
-            {link: 'http://voteyeson97.org/wp-content/uploads/2016/08/A-Better-Oregon-report-8-1-16-final.pdf'}, 
-            {link: 'http://www.statesmanjournal.com/story/news/politics/2016/07/11/why-oregon-budgeting-feast-and-famine/86944656'}, 
-          ]},{
-          statement: 'Because only large corporations pay M97, it will help small businesses be more competitive. M97 sets new corporate minimums that close corporate tax loopholes. A better educated workforce also means more qualified workers — which bolsters the economy', 
-          sources: [
-            {link: 'http://oregonvotes.org/irr/2016/028text.pdf'}, 
-            {link: 'http://voteyeson97.org/oregon-families-pay-so-why-dont-corporations'}, 
-            {link: 'http://www.oregonlive.com/education/index.ssf/2015/01/lack_of_technical_education_pr.html'},             
-          ]},{
-          statement: 'Oregon’s schools and critical services have faced cuts for decades. Since 1990, every OR governor has tried to fix budget shortfalls and stop the cuts. Oregonians can’t afford to wait any longer. Research and polls show M97 can finally fix this', 
-          sources: [
-            {link: 'https://icitizen.com/insights/oregon-poll-results-june-2016/'}, 
-            {link: 'http://www.statesmanjournal.com/story/news/politics/2016/07/11/why-oregon-budgeting-feast-and-famine/86944656/'}, 
-            {link: 'http://ouroregon.org/cuts-are-not-the-solution/'},     
-            {link: 'http://klcc.org/post/oregon-school-funding-still-challenge-25-years-after-measure-5'}
-          ]},{
-          statement: 'Voters should ask themselves: Should large and out of state corporations pay their fair share in Oregon taxes? Do Oregon kids deserve good schools? Should all families have affordable health care? Should seniors get a dignified retirement?', 
-          sources: []},
-        ]
-
-      DIV
-        style:
-          position: 'relative'
-          width: HOMEPAGE_WIDTH()
-          margin: 'auto'
-
-        A 
-          href: 'http://healthydemocracy.org'
-
-          IMG
-            style: 
-              paddingTop: 10
-              width: '296px'
-              display: 'block'
-              position: 'relative'
-              left: -42
-
-            src: asset('CIR/healthy-democracy-logo.png')
-
-
-        ProfileMenu()
-
-        if homepage 
-
-          DIV 
-            style: 
-              padding: '20px 0'
-              #marginTop: 50
-
-            DIV 
-              style: 
-                width: HOMEPAGE_WIDTH()
-                margin: 'auto'
-
-
-              DIV 
-                style: section_style
-
-
-                SPAN 
-                  style: _.extend {}, paragraph_heading_style, 
-                    marginTop: 10
-
-                  """Please help identify the most important question for our Citizen Panel to 
-                     answer about Ballot Measure 97"""
-                
-                SPAN 
-                  style: paragraph_style
-                  """Below you will find official information about this measure, as well as claims that 
-                     supporters and opposers of the measure are making. Additional information can be 
-                     found on """
-
-                  A 
-                    href: 'https://ballotpedia.org/Oregon_Business_Tax_Increase_Initiative_(2016)'
-                    target: '_blank'
-                    style: 
-                      textDecoration: 'underline'
-                      color: '#159ed9'
-
-                    'ballotpedia.org'
-                  '.'
-
-
-                SPAN 
-                  style: paragraph_style
-                  """After perusing this information, please give us your opinion about the question whose 
-                     answer will make the biggest impact on whether you will vote for or against this 
-                     measure. We will be ending the online input on Tuesday, August 16 in time to have 
-                     your question printed in the official CIR Citizen Panel Manual."""
-
-              DIV 
-                style: section_style
-
-
-                SPAN 
-                  style: 
-                    display: 'block'
-                    fontWeight: 400
-                    fontSize: 28
-                    color: cir_header
-
-                  """Measure 97: Oregon Business Tax Increase Initiative"""
-          
-                SPAN 
-                  style: paragraph_style
-
-                  """Increases corporate minimum tax when sales exceed $25 million; funds education, healthcare, senior services"""
-
-                ExpandableSection
-                  label: 'Explanatory Statement'
-                  text: 
-                    DIV null,
-                      DIV style: paragraph_style,
-                        "Ballot Measure 97 increases the corporate minimum tax for corporations with at least $25 million in Oregon sales. Currently, Oregon C corporations pay the higher of either an excise tax or a minimum tax based on the corporation’s sales in Oregon."
-                      DIV style: paragraph_style,
-                        "Ballot Measure 97 increases the annual minimum tax on corporations with Oregon sales of more than $25 million. It imposes a minimum tax of $30,001 plus 2.5 percent of amount of sales above $25 million. Oregon sales under $25 million would not be affected."
-                      DIV style: paragraph_style,
-                        "Ballot Measure 97 exempts “benefit companies” from the increased rate of minimum tax. “Benefit companies” are defined under Oregon law."
-                      DIV style: paragraph_style,
-                        "Ballot Measure 97 states that revenues generated from the increase in the corporate minimum tax are to be used to provide additional funding for education, healthcare and services for senior citizens."                    
-
-
-                ExpandableSection
-                  label: 'Estimate of Financial Impact'
-                  text: 
-                    DIV null,
-                      DIV style: paragraph_style,
-                        "The financial impact on state revenues is anticipated to be $548 million in new revenue in the 2015-17 biennium; $6.1 billion in the 2017-19 biennium and $6.0 million in the 2019-21 biennium. The annual financial impact on revenue would be approximately half of the biennial revenue amount."
-                      DIV style: paragraph_style,
-                        "The financial impact on state expenditures is indeterminate. The increased revenue will trigger increased expenditures by the state in the areas of public early childhood and kindergarten through grade 12 education, health care, and senior services, but the exact amount and the specific uses within the three identified programs cannot be determined."
-                      DIV style: paragraph_style,
-                        "There is no direct financial effect on local government expenditures or revenues."
-
-
-
-
-                for section in ['Proponent', 'Opponent']
-
-
-                  ExpandableSection
-                    label: "#{section} Claims"
-                    text: 
-                      DIV null,
-                        for claim, idx in claims[section]
-                          DIV 
-                            style: _.extend {}, paragraph_style, 
-                              marginLeft: 22
-                              marginTop: 10
-
-                            DIV 
-                              style: 
-                                fontWeight: 600
-                                textDecoration: 'underline'
-                              "Claim #{idx + 1}"
-                            DIV 
-                              style: {}
-
-                              claim.statement
-
-                            if claim.sources?.length > 0                           
-                              UL 
-                                style: 
-                                  marginLeft: 28
-                                  marginTop: 5
-
-                                for src in claim.sources
-                                  LI 
-                                    style: 
-                                      listStyle: 'outside'
-
-                                    if src.link 
-                                      A 
-                                        href: src.link 
-                                        target: '_blank'
-                                        style: 
-                                          textDecoration: 'underline'
-                                          color: '#159ed9'
-
-                                        src.text or src.link
-                                    else 
-                                      src.text 
-                        DIV 
-                          style: 
-                            marginLeft: 22
-                            marginTop: 10
-                          ExpandableSection
-                            label: "#{section} Position Statement"
-                            text: 
-                              DIV 
-                                style: 
-                                  marginLeft: 22
-
-                                for para in statement[section]
-                                  DIV style: paragraph_style,
-                                    para 
-
-
-
-
-ExpandableSection = ReactiveComponent
-  displayName: 'ExpandableSection'
-
-  render: -> 
-    label = @props.label
-    text = @props.text 
-
-    expanded = @local.expanded 
-
-    symbol = if expanded then 'fa-chevron-down' else 'fa-chevron-right'
-
-    DIV null,
-        
-
-      DIV 
-        onClick: => @local.expanded = !@local.expanded; save(@local)
-
-        style: 
-          fontWeight: 600
-          color: cir_header
-          cursor: 'pointer'
-          marginTop: 12
-          fontSize: 22
-
-        SPAN 
-          className: "fa #{symbol}"
-          style: 
-            opacity: .7
-            position: 'relative'
-            left: -3
-            paddingRight: 6
-            display: 'inline-block'
-            width: 20
-
-
-        SPAN 
-          style: {}
-
-          label 
-
-      if expanded 
-        text 
-
-# customizations['cir'].NonHomepageHeader = customizations['cir'].HomepageHeader
-
-
-
-
-
-
-
-
 ################
 # seattle2035
-
-seattle2035_cream = "#FCFBE6"
-seattle2035_pink = '#F06668'
-seattle2035_dark = '#5C1517'
 
 customizations['seattle2035'] = 
   point_labels : pro_con
@@ -3468,294 +1345,24 @@ customizations['seattle2035'] =
 
 
 
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: ->
-
-      header_style = 
-        color: seattle2035_pink
-        fontSize: 44
-        #fontWeight: 600
-        marginTop: 10
-
-      section_style = 
-        marginBottom: 20
-        color: seattle2035_dark
-
-      paragraph_heading_style = 
-        display: 'block'
-        #fontWeight: 600
-        fontSize: 28
-        color: seattle2035_pink
-
-      paragraph_style = 
-        fontSize: 18
-
-      DIV
-        style:
-          position: 'relative'
-
-        A 
-          href: 'http://2035.seattle.gov/'
-          target: '_blank'
-          style: 
-            display: 'block'
-            position: 'absolute'
-            top: 22
-            left: 20
-            color: seattle2035_pink
-
-          I 
-            className: 'fa fa-chevron-left'
-            style: 
-              display: 'inline-block'
-              marginRight: 5
-
-          '2035.seattle.gov'
-
-
-        IMG
-          style: 
-            width: '100%'
-            display: 'block'
-            paddingTop: 50
-
-          src: asset('seattle2035/banner.png')
-
-        ProfileMenu()
-
-        DIV 
-          style: 
-            borderTop: "5px solid #{seattle2035_pink}"
-            padding: '20px 0'
-            #marginTop: 50
-
-          DIV 
-            style: 
-              width: HOMEPAGE_WIDTH()
-              margin: 'auto'
-
-
-            DIV 
-              style: header_style
-
-              'Let’s talk about how Seattle is changing'
-
-            DIV 
-              style: section_style
-
-              # SPAN 
-              #   style: paragraph_heading_style
-
-              #   'Seattle is one of the fastest growing cities in America.'
-              
-              SPAN 
-                style: paragraph_style
-                  
-                """
-                Seattle is one of the fastest growing cities in America, expecting to add 
-                120,000 people and 115,000 jobs by 2035. We must plan for how 
-                and where that growth occurs.
-                """
-
-            DIV 
-              style: section_style
-
-
-              SPAN 
-                style: paragraph_heading_style
-                'The Seattle 2035 draft plan addresses Seattle’s growth'
-              
-              SPAN 
-                style: paragraph_style
-                'We are pleased to present a '
-
-                A 
-                  target: '_blank'
-                  href: 'http://2035.seattle.gov'
-                  style: 
-                    textDecoration: 'underline'
-
-                  'Draft Plan'
-
-                """
-                   for public discussion. The Draft Plan contains hundreds of 
-                  policies that guide decisions about our city, including 
-                  Key Proposals for addressing growth and change. 
-                  These Key Proposals have emerged from conversations among 
-                  City agencies and through """
-                A 
-                  target: '_blank'
-                  href: 'http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2262500.pdf'
-                  style: 
-                    textDecoration: 'underline'
-
-                  'public input' 
-                '.'
-
-
-            DIV 
-              style: section_style
-
-              SPAN 
-                style: paragraph_heading_style
-                'We need your feedback on the Key Proposals in the Draft Plan'
-
-              SPAN 
-                style: paragraph_style
-
-                """
-                We have listed below some Key Proposals in the draft.
-                Do these Key Proposals make sense for Seattle over the coming twenty years? 
-                Please tell us by adding your opinion below. Your input will influence 
-                the Mayor’s Recommended Plan, 
-                """
-                A
-                  target: '_blank'
-                  href: 'http://2035.seattle.gov/about/faqs/#how-long'
-                  style: 
-                    textDecoration: 'underline'
-                  'coming in 2016 '
-                '!'
-
-            DIV 
-              style: 
-                #fontStyle: 'italic'
-                marginTop: 20
-                fontSize: 18
-                color: seattle2035_dark
-
-              DIV 
-                style: 
-                  marginBottom: 18
-                "Thanks for your time,"
-
-              A 
-                href: 'http://www.seattle.gov/dpd/cityplanning/default.htm'
-                target: '_blank'
-                style: 
-                  display: 'block'
-                  marginBottom: 8
-
-                IMG
-                  src: asset('seattle2035/DPD Logo.svg')
-                  style: 
-                    height: 70
-
-
-              DIV 
-                style: _.extend {}, section_style,
-                  margin: 0
-                  marginTop: 10
-                  fontSize: 18
-
-                'p.s. Email us at '
-                A
-                  href: "mailto:2035@seattle.gov"
-                  style: 
-                    textDecoration: 'underline'
-
-                  "2035@seattle.gov"
-                """
-                 if you would like us to add another Key Proposal below for 
-                discussion or you have a comment about another issue in the Draft Plan.
-                """
-
-              DIV 
-                style: 
-                  marginTop: 40
-                  backgroundColor: seattle2035_pink
-                  color: 'white'
-                  fontSize: 28
-                  textAlign: 'center'
-                  padding: "30px 42px"
-
-                "The comment period is now closed. Thank you for your input!"
-
-
-###################
-# Foodcorps
-
-
-FoodcorpsHeader = ReactiveComponent
-  displayName: 'FoodcorpsHeader'
-
-  render: -> 
-    loc = fetch('location')
-
-    homepage = loc.url == '/'
-
-    DIV 
-      style: 
-        position: 'relative'
-        height: 200
-
-      IMG
-        src: asset('foodcorps/logo.png')
-        style:
-          height: 160
-          position: 'absolute'
-          top: 10
-          left: (WINDOW_WIDTH() - CONTENT_WIDTH()) / 2
-          zIndex: 5
-
-
-      DIV
-        style:
-          background: "url(#{asset('foodcorps/bg.gif')}) repeat-x"
-          height: 68
-          width: '100%'
-          position: 'relative'
-          top: 116
-          left: 0
-
-      back_to_homepage_button
-        display: 'inline-block'
-        fontSize: 43
-        visibility: if homepage then 'hidden'
-        verticalAlign: 'top'
-        marginTop: 52
-        marginLeft: 15
-        color: 'white'
-        zIndex: 10
-        position: 'relative'
-
-      DIV 
-        style: 
-          position: 'absolute'
-          top: 18
-          right: 0
-          width: 110
-
-        ProfileMenu()
-      
-
-
 customizations['foodcorps'] = 
   point_labels : strengths_weaknesses
   slider_pole_labels : ready_not_ready
   show_slider_feedback: false
 
-  HomepageHeader : FoodcorpsHeader
-  NonHomepageHeader: FoodcorpsHeader
 
-################
-# sosh
+
 customizations['sosh'] = 
   point_labels : strengths_weaknesses
   slider_pole_labels : yes_no
   show_slider_feedback: false
 
-################
-# schools
+
 customizations['schools'] = 
   homie_histo_title: "Students' opinions"
   #point_labels : challenge_justify
   slider_pole_labels : agree_disagree
 
-#################
-# allsides
 
 customizations['allsides'] = 
   'cluster/Classroom Discussions':
@@ -3773,8 +1380,9 @@ customizations['allsides'] =
     {heading: 'Community', details: null}, \
     {heading: '', details: ''}]
 
-#################
-# humanities-los
+
+
+
 
 essential_questions = 
   homie_histo_title: "Student responses"
@@ -3796,12 +1404,10 @@ customizations['humanities-los'] =
   homie_histo_title: "Students' feedback"
 
   "cluster/Essential Questions 8-2": essential_questions
-
   "cluster/Essential Questions 8-1": essential_questions
 
   "cluster/Monuments 8-2" : monuments
   "cluster/Monuments 8-1" : monuments
-
 
 
 customizations['collective'] = 
@@ -3814,8 +1420,9 @@ customizations['collective'] =
   "/cluster/Licenses":
     slider_pole_labels: yes_no
 
-#################
-# RANDOM2015
+
+
+
 
 customizations['anup2015'] = conference_config
 
@@ -3891,47 +1498,10 @@ customizations.enviroissues =
   slider_pole_labels : agree_disagree
 
 
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: ->
-      loc = fetch 'location'
-      homepage = loc.url == '/'
-
-      DIV
-        style:
-          width: CONTENT_WIDTH()
-          margin: '20px auto'
-          position: 'relative'
-
-        back_to_homepage_button
-          display: 'inline-block'
-          fontSize: 43
-          visibility: if homepage then 'hidden'
-          verticalAlign: 'top'
-          marginTop: 22
-          marginRight: 15
-          color: '#888'
-
-
-        IMG
-          src: asset('enviroissues/logo.png')
-
-        DIV 
-          style: 
-            position: 'absolute'
-            top: 18
-            right: 0
-            width: 110
-
-          ProfileMenu()
-
-customizations.enviroissues.NonHomepageHeader = customizations.enviroissues.HomepageHeader
 
 ##############
 # ECAST
 
-ecast_highlight_color =  "#73B3B9"  #"#CB7833"
 customizations.ecastonline = customizations['ecast-demo'] = 
   show_crafting_page_first: true
 
@@ -4017,257 +1587,8 @@ customizations.ecastonline = customizations['ecast-demo'] =
   homie_histo_title: "Citizens' opinions"
 
 
-  NonHomepageHeader : ReactiveComponent
-    displayName: 'NonHomepageHeader'
-
-    render: ->
-      DIV 
-        style: 
-          backgroundColor: 'black'
-          width: '100%'
-          position: 'relative'
-          borderBottom: "2px solid #{ecast_highlight_color}"
-          padding: "10px 0"
-          backgroundImage: "url(#{asset('ecast/bg-small.png')})"
-          height: 94
-
-        A 
-          href: "http://ecastonline.org/"
-          target: '_blank'
-          IMG 
-            style: 
-              height: 75
-              position: 'absolute'
-              left: 50
-              top: 10
-
-            src: asset('ecast/ecast-small.png')
-
-        A 
-          style: 
-            fontSize: 30
-            fontWeight: 600
-            color: 'white'
-            textShadow: '0 2px 4px rgba(0,0,0,.5)'       
-            position: 'relative'
-            top: 20
-            left: 250 
-          href: '/'
-          "Informing NASA's Asteroid Initiative"
-
-        DIV 
-          style: 
-            position: 'absolute'
-            right: 0
-            top: 14
-            width: 110
-          ProfileMenu()
-
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render : ->
-      paragraph_style = 
-        marginBottom: 20
-        textShadow: '0 1px 1px rgba(255,255,255,.5)'
-        fontWeight: 600
-
-      DIV 
-        style: 
-          backgroundColor: 'black'
-          height: 685
-          overflow: 'hidden'
-          width: '100%'
-          position: 'relative'
-          borderBottom: "5px solid #{ecast_highlight_color}"
-
-        IMG 
-          style: 
-            position: 'absolute'
-            width: 1300
-          src: asset('ecast/bg-small.png')
-
-        # Title of site
-        DIV 
-          style: 
-            position: 'absolute'
-            left: 50
-            top: 38
-
-          DIV 
-            style: 
-              fontSize: 42
-              fontWeight: 600
-              color: 'white'
-              textShadow: '0 2px 4px rgba(0,0,0,.5)'
-
-            A 
-              href: '/'
-              "Informing NASA's Asteroid Initiative"
-
-          DIV
-            style: 
-              fontSize: 24
-              fontWeight: 600         
-              color: 'white'
-              textAlign: 'center'
-              marginTop: -5
- 
-            A
-              href: '/'
-              "A Citizen Forum"
-
-        # Credits
-        DIV 
-          style:
-            position: 'absolute'
-            top: 61
-            left: 790
-
-          DIV 
-            style: 
-              fontSize: 18
-              color: 'white'
-            'hosted by'
-
-          A 
-            href: "http://ecastonline.org/"
-            target: '_blank'
-            IMG 
-              style: 
-                display: 'block'
-                marginTop: 4
-                width: 215
-              src: asset('ecast/ecast-small.png')
-
-          # DIV 
-          #   style: 
-          #     fontSize: 18
-          #     color: 'white'
-          #     marginTop: 12              
-          #   'supported by'
-
-          # A 
-          #   href: "http://www.nasa.gov/"
-          #   target: '_blank'
-
-          #   IMG 
-          #     style: 
-          #       display: 'block'
-          #       marginTop: 4
-          #       width: 160
-
-          #     src: asset('ecast/nasa.png')
-
-        # Video callout
-        DIV
-          style: 
-            position: 'absolute'
-            left: 434
-            top: 609
-            color: ecast_highlight_color
-            fontSize: 17
-            fontWeight: 600
-            width: 325
-
-          I 
-            className: 'fa fa-film'
-            style: 
-              position: 'absolute'
-              left: -27
-              top: 3
-          'Learn more first! Watch this video from the public forums that ECAST hosted.'
-
-          SPAN
-            style: 
-              position: 'absolute'
-              top: 24
-              right: -15
-
-            I
-              className: 'fa fa-angle-right'
-              style: 
-                paddingLeft: 10
-            I
-              className: 'fa fa-angle-right'
-              style: 
-                paddingLeft: 5
-            I
-              className: 'fa fa-angle-right'
-              style: 
-                paddingLeft: 5
 
 
-        # Video
-        IFRAME
-          position: 'absolute'
-          type: "text/html" 
-          width: 370
-          height: 220
-          src: "//www.youtube.com/embed/6yImAjIws9A?autoplay=0"
-          frameborder: 0
-          style:
-            top: 460
-            left: 790
-            zIndex: 99
-            position: 'absolute'
-            border: "5px solid #{ecast_highlight_color}"
-            borderBottom: 'none'
-
-
-        # Text in bubble
-        DIV 
-          style: 
-            fontSize: 17
-            position: 'absolute'
-            top: 156
-            left: 97
-            width: 600
-
-          P style: paragraph_style, 
-            """In its history, the Earth has been repeatedly struck by asteroids, 
-               large chunks of rock from space that can cause considerable damage 
-               in a collision. Can we—or should we—try to protect Earth from 
-               potentially hazardous impacts?"""
-
-          P style: paragraph_style, 
-            """Sounds like stuff just for rocket scientists. But how would you like 
-               to be part of this discussion?"""
-
-          P style: paragraph_style, 
-            """Now you can! NASA is collaborating with ECAST—Expert and Citizen 
-               Assessment of Science and Technology—to give citizens a say in 
-               decisions about the future of space exploration."""
-
-          P style: paragraph_style, 
-            """Join the dialogue below about detecting asteroids and mitigating their 
-               potential impact. The five recommendations below emerged from ECAST 
-               public forums held in Phoenix and Boston last November."""
-
-          P style: paragraph_style, 
-            """Please take a few moments to review the background materials and the 
-               recommendations, and tell us what you think! Your input is important 
-               as we analyze the outcomes of the forums and make our final report 
-               to NASA."""
-
-        DIV 
-          style: 
-            position: 'absolute'
-            top: 30
-            right: 0
-            width: 110
-          ProfileMenu()
-
-styles += """
-[subdomain="ecastonline"] .simplehomepage a.proposal, [subdomain="ecast-demo"] .simplehomepage a.proposal{
-  border-color: #{ecast_highlight_color} !important;
-  color: #{ecast_highlight_color} !important;
-}
-"""
-
-
-####################
-# Bitcoin
 
 
 passes_tags = (user, tags) -> 
@@ -4323,77 +1644,6 @@ customizations.fidoruk =
     },     
   ]
 
-  HomepageHeader: ReactiveComponent
-    displayName: 'ShortHeader'
-
-    render: ->
-      subdomain = fetch '/subdomain'   
-      loc = fetch 'location'
-
-      hsl = parseCssHsl(subdomain.branding.primary_color)
-      is_light = hsl.l > .75
-
-      homepage = loc.url == '/'
-
-      DIV 
-        style:
-          minHeight: 70
-
-        ProfileMenu()
-
-
-        DIV
-          style: 
-            width: (if homepage then HOMEPAGE_WIDTH() else BODY_WIDTH() ) + 130
-            margin: 'auto'
-
-
-          back_to_homepage_button
-            display: 'inline-block'
-            color: if !is_light then 'white'
-            fontSize: 43
-            visibility: if homepage || !customization('has_homepage') then 'hidden'
-            verticalAlign: 'middle'
-            marginTop: 5
-
-
-          if subdomain.branding.logo
-            A 
-              href: if subdomain.external_project_url then subdomain.external_project_url
-              style: 
-                verticalAlign: 'middle'
-                #marginLeft: 35
-                display: 'inline-block'
-                fontSize: 0
-                cursor: if !subdomain.external_project_url then 'default'
-
-              IMG 
-                src: subdomain.branding.logo
-                style: 
-                  height: 80
-
-          DIV 
-            style: 
-              color: if !is_light then 'white'
-              marginLeft: 35
-              fontSize: 32
-              fontWeight: 400
-              display: 'inline-block'
-              verticalAlign: 'middle'
-              marginTop: 5
-
-            if homepage 
-              DIV
-                style: 
-                  paddingBottom: 10
-                  fontSize: 16
-                  color: '#444'
-
-                "Please first put your proposal into the Fidor Community platform, and link to it in your consider.it proposal.
-                This allows us to converse, update our opinions, and track progress over a longer period of time."
-
-
-customizations.fidoruk.NonHomepageHeader = customizations.fidoruk.HomepageHeader
 
 
 customizations.bitcoin = 
@@ -4414,28 +1664,8 @@ customizations.bitcoin =
     discussion: false
     show_score: false
     slider_pole_labels: 
-      individual: 
-        support: ''
-        oppose: ''
-        support_sub: ''
-        oppose_sub: ''
-      group: 
-        support: ''
-        oppose: ''
-        support_sub: ''
-        oppose_sub: ''
-
-      # slider_feedback: (value, proposal) -> 
-      #   value += 1
-      #   value /= 2
-
-      #   val = Math.pow(2, 4 * value).toFixed(1)
-
-      #   if val > 16
-      #     "greater than 16mb"
-      #   else 
-      #     "#{val}mb"
-
+      support: ''
+      oppose: ''
 
     slider_regions:[{
         label: '1mb', 
@@ -4498,84 +1728,7 @@ customizations.bitcoin =
 
     }
   ]
-  HomepageHeader: ReactiveComponent
-    displayName: 'ShortHeader'
 
-    render: ->
-      subdomain = fetch '/subdomain'   
-      loc = fetch 'location'
-
-      hsl = parseCssHsl(subdomain.branding.primary_color)
-      is_light = hsl.l > .75
-
-      homepage = loc.url == '/'
-
-      DIV 
-        style:
-          backgroundColor: subdomain.branding.primary_color
-          minHeight: 70
-
-        ProfileMenu()
-
-
-        DIV
-          style: 
-            width: (if homepage then CONTENT_WIDTH() else BODY_WIDTH() ) + 130
-            margin: 'auto'
-
-
-          back_to_homepage_button
-            display: 'inline-block'
-            color: if !is_light then 'white'
-            fontSize: 43
-            visibility: if homepage || !customization('has_homepage') then 'hidden'
-            verticalAlign: 'middle'
-            marginTop: 5
-
-          if subdomain.branding.logo
-            A 
-              href: if subdomain.external_project_url then subdomain.external_project_url
-              style: 
-                verticalAlign: 'middle'
-                marginLeft: 35
-                display: 'inline-block'
-                fontSize: 0
-                cursor: if !subdomain.external_project_url then 'default'
-
-              IMG 
-                src: subdomain.branding.logo
-                style: 
-                  height: 56
-
-          if subdomain.branding.masthead_header_text || (if !subdomain.branding.logo then subdomain.app_title else null)
-            text = subdomain.branding.masthead_header_text || subdomain.app_title
-            DIV 
-              style: 
-                color: if !is_light then 'white'
-                marginLeft: 35
-                fontSize: 32
-                fontWeight: 400
-                display: 'inline-block'
-                verticalAlign: 'middle'
-                marginTop: 5
-
-              text
-
-              DIV
-                style: 
-                  paddingBottom: 10
-                  fontSize: 14
-                  color: '#444'
-
-                "Interested in running a node that mirrors consider.it data to provide an audit trail? "
-
-                A 
-                  href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/435gi1/distributed_publicly_auditable_data_for/'
-                  target: '_blank'
-                  style: 
-                    textDecoration: 'underline'
-
-                  "Learn more"
 
 
 
@@ -4608,160 +1761,6 @@ customizations['on-chain-conf'] = _.extend {},
 
 
 
-  HomepageHeader: ReactiveComponent 
-    displayName: 'HomepageHeader'
-
-    render: ->
-      homepage = fetch('location').url == '/'
-
-      DIV
-        style:
-          position: 'relative'
-          backgroundColor: '#272727'
-          overflow: 'hidden'
-          paddingBottom: 60
-          height: if !homepage then 200
-          # height: 63
-          # borderBottom: '1px solid #ddd'
-          # boxShadow: '0 1px 2px rgba(0,0,0,.1)'
-
-        onMouseEnter: => @local.hover=true;  save(@local)
-        onMouseLeave: => @local.hover=false; save(@local)
-
-        STYLE null,
-          '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
-             p {margin-bottom: 1em}'''
-
-        # The top bar with the logo
-        DIV
-          style:
-            #width: HOMEPAGE_WIDTH()
-            margin: 'auto'
-            textAlign: 'center'
-
-          DIV 
-            style: 
-              margin: "60px auto 160px auto"
-              width: '80%'
-              position: 'relative'
-              zIndex: 3
-
-            # IMG
-            #   style: 
-            #     position: 'absolute'
-            #     left: '23%'
-            #     top: '-16%'
-            #     width: '7%'
-            #   src: asset('bitcoin/blockchainLogo.png')
-
-            IMG
-              style: 
-                display: 'inline-block'
-                width: '90%'
-              src: asset('bitcoin/OnChainConferences3.svg')
-
-
-          DIV 
-            style: 
-              position: 'absolute'
-              left: 0
-              top: 0
-              height: if homepage then '64%' else '100%'
-              width: '100%'
-              background: if homepage then 'linear-gradient(to bottom, rgba(0,0,0,.97) 0%,rgba(0,0,0,0.65) 70%,rgba(0,0,0,0) 100%)' else 'rgba(0,0,0,.7)'
-              zIndex: 2
-
-          IMG 
-            style: 
-              position: 'absolute'
-              zIndex: 1
-              width: '160%'
-              top: 0 #45
-              left: '-30%'
-            src: asset('bitcoin/rays.png') 
-
-
-          DIV 
-            style: 
-              marginLeft: 50
-              paddingTop: 13
-              position: 'absolute'
-              zIndex: 3
-              top: 65
-              
-            back_to_homepage_button
-              display: 'inline-block'
-              visibility: if homepage then 'hidden'
-              color: 'white'
-              position: 'relative'
-              left: -60
-              top: -10
-              fontSize: 43
-              fontWeight: 400
-              paddingLeft: 25 # Make the clickable target bigger
-              paddingRight: 25 # Make the clickable target bigger
-              cursor: if not homepage then 'pointer'
-
-          if homepage 
-            DIV 
-              style:
-                backgroundColor: 'rgba(0,0,0,.7)'
-                color: 'white'
-                textAlign: 'center'
-                padding: '20px 0'
-                width: '100%'
-                position: 'relative' 
-                zIndex: 3
-                top: 60
-
-              DIV 
-                style: 
-                  fontWeight: 600
-                  fontSize: 20
-
-                'Visit '
-
-                A 
-                  style: 
-                    textDecoration: 'underline'
-                  href: 'http://onchainscaling.com/'
-
-                  'onchainscaling.com'
-                'onchainscaling.com to see the recorded presentations from the first conference.'
-
-              DIV 
-                style:
-                  fontSize: 18
-
-                'Express your preferences below for future event presentations. '
-
-
-
-          # DIV 
-          #   style:
-          #     fontSize: 24
-          #     fontStyle: 'italic'
-          #     fontWeight: 600
-          #     display: 'inline-block'
-          #     margin: 'auto'
-          #   DIV 
-          #     style: 
-          #       color: '#A9556D'
-          #     'You identify topics you want to learn more about.'
-          #   DIV 
-          #     style: 
-          #       color: '#B1BC83'
-          #     'We organize events that match speakers with topics.'
-
-            # if homepage 
-
-
-        ProfileMenu()
-
-
-customizations['on-chain-conf'].NonHomepageHeader = customizations['on-chain-conf'].HomepageHeader
-
-
 
 
 
@@ -4783,333 +1782,64 @@ customizations['kulahawaiinetwork'] =
   'cluster/Advocacy & Public Relations':
     homepage_label: 'Ideas'
 
-    # one_line_desc: 'Add interesting proposals here'
-    description: ->
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV style: dao_section_heading, 
-          'Advocacy & Public Relations'
-
-        DIV 
-          style: dao_section_description
-
-
-          "A space to discuss ideas about two things:"
-          OL 
-            style: 
-              paddingLeft: 40
-              listStyle: 'outside'
-
-            LI null, 
-              "Sharing information and activating kula communities to improve policies related to:"
-
-              UL
-                style: 
-                  paddingLeft: 40  
-                  listStyle: 'outside'
-
-                LI null, 
-                  "ʻŌlelo Hawaiʻi, culture, and ʻāina-based education" 
-                LI null, 
-                  "Positions on issues supported by the network"
-            LI null, 
-              "Creating and sharing stories of kula and network successes to improve public perceptions and gain support for Hawaiian-focused education & outcomes."
-
+    label: 'Advocacy & Public Relations'
+    description: [
+      """A space to discuss ideas about two things:
+         <ul style='list-style:outside;padding-left:40px'>
+           <li>Sharing information and activating kula communities to improve policies 
+               related to (1) ʻŌlelo Hawaiʻi, culture, and ʻāina-based education and 
+               (2) Positions on issues supported by the network</li>
+           <li>Creating and sharing stories of kula and network successes to improve 
+               public perceptions and gain support for Hawaiian-focused education & outcomes.</li>
+         </ul>
+      """
+    ]
 
   'cluster/Building Kula Resources & Sustainability':
     homepage_label: 'Ideas'
-
-    # one_line_desc: 'Add interesting proposals here'
-    description: ->
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV style: dao_section_heading, 
-          'Building Kula Resources & Sustainability'
-
-        DIV 
-          style: dao_section_description
-
-
-          "A space to discuss ideas around joining efforts across kula to enhance opportunities to increase kula resources and sustainability."
+    label: 'Building Kula Resources & Sustainability'
+    description: "A space to discuss ideas around joining efforts across kula to enhance opportunities to increase kula resources and sustainability."
 
 
   'cluster/Cultivating Kumu':
     homepage_label: 'Ideas'
-
-    # one_line_desc: 'Add interesting proposals here'
-    description: ->
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV style: dao_section_heading, 
-          'Cultivating Kumu'
-
-        DIV 
-          style: dao_section_description
-
-
-          "A space to discuss ideas about two things:"
-          OL 
-            style: 
-              paddingLeft: 40
-              listStyle: 'outside'
-
-            LI null, 
-              "Attracting, training, recruiting, growing, retaining, and supporting the preparation of novice teachers, excellent kula leaders, kumu, and staff for learning contexts where ʻōlelo Hawaiʻi, culture, and ʻāina-based experiences are foundational."
-
-            LI null, 
-              "Growing two related communities of kumu and kula leaders who interact regularly, share and learn from one another, develop pilina with one another, and provide support ot one another."
-
+    label: 'Cultivating Kumu'
+    description: [
+      """A space to discuss ideas about two things:
+         <ul style='list-style:outside;padding-left:40px'>
+           <li>Attracting, training, recruiting, growing, retaining, and supporting the preparation of novice teachers, excellent kula leaders, kumu, and staff for learning contexts where ʻōlelo Hawaiʻi, culture, and ʻāina-based experiences are foundational.</li>
+           <li>Growing two related communities of kumu and kula leaders who interact regularly, share and learn from one another, develop pilina with one another, and provide support ot one another.</li>
+         </ul>
+      """
+    ]
 
   'cluster/Relevant Assessments':
     homepage_label: 'Ideas'
 
-    # one_line_desc: 'Add interesting proposals here'
-    description: ->
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV style: dao_section_heading, 
-          'Relevant Assessments'
-
-        DIV 
-          style: dao_section_description
-
-
-          "A space to discuss ideas around the development of shared assessments that honor the many dimensions of student growth involved in learning contexts where ʻōlelo Hawaiʻi, culture, and ʻāina-based experiences are foundational. Are we willing to challenge the mainstream concep to education success?"
+    label: 'Relevant Assessments'
+    description: "A space to discuss ideas around the development of shared assessments that honor the many dimensions of student growth involved in learning contexts where ʻōlelo Hawaiʻi, culture, and ʻāina-based experiences are foundational. Are we willing to challenge the mainstream concep to education success?"
 
 
   'cluster/Teacher Resources':
     homepage_label: 'Ideas'
-
-    # one_line_desc: 'Add interesting proposals here'
-    description: ->
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV style: dao_section_heading, 
-          'Teacher Resources'
-
-        DIV 
-          style: dao_section_description
-
-
-          "A space to discuss ideas around the creation of new (and compiling existing) ʻōlelo Hawaiʻi, culture, and ʻāina-based teaching resources to share widely in an online waihona."
+    label: 'Teacher Resources'
+    description: "A space to discuss ideas around the creation of new (and compiling existing) ʻōlelo Hawaiʻi, culture, and ʻāina-based teaching resources to share widely in an online waihona."
 
 
   'cluster/‘Ōlelo Hawai’i':
     homepage_label: 'Ideas'
-
-    # one_line_desc: 'Add interesting proposals here'
-    description: ->
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV style: dao_section_heading, 
-          '‘Ōlelo Hawai’i'
-
-        DIV 
-          style: dao_section_description
-
-
-          "A space to discuss ideas around the way we use our network of Hawaiian Educational Organizationsʻ Synergy to increase the amount of Hawaiian Language speakers so that the language will again be thriving!"
+    label: '‘Ōlelo Hawai’i'
+    description: "A space to discuss ideas around the way we use our network of Hawaiian Educational Organizationsʻ Synergy to increase the amount of Hawaiian Language speakers so that the language will again be thriving!"
 
   'cluster/3C Readiness':
     homepage_label: 'Ideas'
-
-    # one_line_desc: 'Add interesting proposals here'
-    description: ->
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV style: dao_section_heading, 
-          '3C Readiness'
-
-        DIV 
-          style: dao_section_description
-
-
-          "A space to discuss ideas around nurturing college, career, and community readiness in haumāna. How do we provide experiences for haumāna that integrate and bridge high-school, college, career, and community engagement experiences?"
+    label: '3C Readiness'
+    description: "A space to discuss ideas around nurturing college, career, and community readiness in haumāna. How do we provide experiences for haumāna that integrate and bridge high-school, college, career, and community engagement experiences?"
 
   'cluster/Leadership':
     homepage_label: 'Ideas'
-
-    # one_line_desc: 'Add interesting proposals here'
-    description: ->
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV style: dao_section_heading, 
-          'Leadership'
-
-        DIV 
-          style: dao_section_description
-
-
-          "A space for network leaders to gather mana’o."
-
-
-  HomepageHeader: ReactiveComponent 
-    displayName: 'HomepageHeader'
-
-    render: ->
-      homepage = fetch('location').url == '/'
-      height = if homepage then 300 else 120
-
-      DIV
-        style:
-          position: 'relative'
-          paddingBottom: if !homepage then 20
-          height: height
-
-        DIV 
-          style: 
-            height: height
-            width: '100%'
-            backgroundColor: 'black'
-            position: 'absolute'
-            zIndex: -1
-          DIV 
-            style: 
-              height: height
-              position: 'absolute'
-              width: '100%'
-              left: 0
-              top: 0 
-              zIndex: 0
-              backgroundPosition: 'center'
-              backgroundSize: 'cover'
-              backgroundImage: "url(#{asset('hawaii/KulaHawaiiNetwork.jpg')})"
-              backgroundColor: 'black'
-
-              opacity: .6
-
-
-        STYLE null,
-          '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
-             p {margin-bottom: 1em}'''
-
-
-        DIV 
-          style: 
-            margin: 'auto'
-            width: HOMEPAGE_WIDTH()
-            position: 'relative'
-            textAlign: 'center'
-
-
-          back_to_homepage_button            
-            display: 'inline-block'
-            visibility: if fetch('location').url == '/' then 'hidden'
-            color: 'white'
-            opacity: .7
-            position: 'absolute'
-            left: -60
-            top: 38
-            fontSize: 43
-            fontWeight: 400
-            paddingLeft: 25 # Make the clickable target bigger
-            paddingRight: 25 # Make the clickable target bigger
-            cursor: if fetch('location').url != '/' then 'pointer'
-
-          # Logo
-          A 
-            style: 
-              cursor: 'none'
-            # href: if homepage then 'https://forum.daohub.org/c/theDAO' else '/'
-
-
-            # IMG
-            #   style:
-            #     height: 30
-            #     width: 30
-            #     marginLeft: -44
-            #     marginRight: 10
-            #     marginTop: -10
-            #     verticalAlign: 'middle'
-
-            #   src: asset('ethereum/the_dao.jpg')
-
-            SPAN 
-              style:
-                #fontFamily: "Montserrat, 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-                fontSize: 47
-                color: 'white'
-                fontWeight: 200
-                paddingTop: 40
-                display: 'inline-block'
-                opacity: .9
-
-              "Envision the Kula Hawai’i Network"
-
-
-        # The top bar with the logo
-        DIV
-          style:
-            width: HOMEPAGE_WIDTH()
-            margin: 'auto'
-
-          if homepage
-
-            DIV 
-              style: 
-                #paddingBottom: 50
-                position: 'relative'
-                
-
-              DIV 
-                style: 
-                  #backgroundColor: '#eee'
-                  # marginTop: 10
-                  # padding: "0 8px"
-                  fontSize: 22
-                  #fontWeight: 200
-                  color: 'white'
-                  marginTop: 0
-                  opacity: .7
-                  textAlign: 'center'
-
-                
-                'Please share your opinion. Click any proposal below to get started.'            
-
-        if homepage && customization('cluster_filters')
-          DIV 
-            style: 
-              position: 'relative'
-              margin: '62px auto 0 auto'
-              width: HOMEPAGE_WIDTH()
-
-            ClusterFilter()
-
-        ProfileMenu()
-
-
-customizations.kulahawaiinetwork.NonHomepageHeader = customizations.kulahawaiinetwork.HomepageHeader
-
-
-
-
-
-
-
+    label: 'Leadership'
+    description: "A space for network leaders to gather mana’o."
 
 
 
@@ -5118,23 +1848,6 @@ dao_blue = '#348AC7'
 dao_red = '#F83E34'
 dao_purple = '#7474BF'
 dao_yellow = '#F8E71C'
-
-dao_section = 
-  width: HOMEPAGE_WIDTH()
-  marginLeft: -70  
-
-dao_section_heading = 
-  fontSize: 36
-  fontWeight: 300
-  color: 'black'
-  marginBottom: 20
-
-dao_section_description = 
-  fontSize: 18
-  fontWeight: 400 
-  #fontStyle: 'italic' 
-  color: '#666'
-  paddingBottom: 20
 
 
 customizations.dao = _.extend {}, 
@@ -5188,450 +1901,12 @@ customizations.dao = _.extend {},
   'cluster/Done':
     archived: true
 
-  # 'cluster/New': 
-  #   one_line_desc: 'Add new proposals here'
-  #   description: ->
-  #     community_tips = [
-  #       'If you vote strongly, add pro and con points to explain your reasoning, especially if you oppose'
-  #       'Use Con points to identify weak points and offer suggestions'
-  #       '\"Votes\" here are unofficial temperature checks'
-  #     ]
-
   'cluster/Proposals':
     homepage_label: 'Ideas'
-
-    # one_line_desc: 'Add interesting proposals here'
-    description: ->
-
-      DIV 
-        style: 
-          width: HOMEPAGE_WIDTH()
-
-        DIV 
-          style: dao_section_description
-
-          """Post inspiring ideas. Maybe a contractor will put together a proposal based 
-             on your idea. Or maybe you get excited by the feedback, and put together
-             your own proposal."""
-
 
   'cluster/Name the DAO':
     archived: true
 
-  HomepageHeader: ReactiveComponent 
-    displayName: 'HomepageHeader'
-
-    render: ->
-      homepage = fetch('location').url == '/'
-
-      DIV
-        style:
-          position: 'relative'
-          background: "linear-gradient(-45deg, #{dao_purple}, #{dao_blue})"
-          paddingBottom: if !homepage then 20
-          borderBottom: "2px solid #{dao_yellow}"
-
-
-        onMouseEnter: => @local.hover=true;  save(@local)
-        onMouseLeave: => @local.hover=false; save(@local)
-
-
-
-
-        STYLE null,
-          '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
-             p {margin-bottom: 1em}'''
-
-
-        DIV 
-          style: 
-            marginLeft: 70
-
-
-          back_to_homepage_button            
-            display: 'inline-block'
-            visibility: if fetch('location').url == '/' then 'hidden'
-            color: 'white'
-            opacity: .7
-            position: 'relative'
-            left: -60
-            top: 4
-            fontSize: 43
-            fontWeight: 400
-            paddingLeft: 25 # Make the clickable target bigger
-            paddingRight: 25 # Make the clickable target bigger
-            cursor: if fetch('location').url != '/' then 'pointer'
-
-          # Logo
-          A
-            href: if homepage then 'https://forum.daohub.org/c/theDAO' else '/'
-
-
-            IMG
-              style:
-                height: 30
-                width: 30
-                marginLeft: -44
-                marginRight: 10
-                marginTop: -10
-                verticalAlign: 'middle'
-
-              src: asset('ethereum/the_dao.jpg')
-
-            SPAN 
-              style:
-                #fontFamily: "Montserrat, 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-                fontSize: 24
-                color: 'white'
-                fontWeight: 500
-
-              "The DAO"
-
-
-        # The top bar with the logo
-        DIV
-          style:
-            width: HOMEPAGE_WIDTH()
-            margin: 'auto'
-
-
-
-          if homepage
-
-            DIV 
-              style: 
-                #paddingBottom: 50
-                position: 'relative'
-
-              DIV 
-                style: 
-                  #backgroundColor: '#eee'
-                  # marginTop: 10
-                  padding: "0 8px"
-                  fontSize: 46
-                  fontWeight: 200
-                  color: 'white'
-                  marginTop: 20
-
-                
-                'Deliberate Proposals about The DAO'            
-
-
-              DIV 
-                style: 
-                  backgroundColor: 'rgba(255,255,255,.2)'
-                  marginTop: 10
-                  marginBottom: 16
-                  padding: '4px 12px'
-                  float: 'right'
-                  fontSize: 18
-                  color: 'white'
-
-                SPAN 
-                  style: 
-                    opacity: .8
-                  "join meta discussion on Slack at "
-
-                A 
-                  href: 'https://thedao.slack.com/messages/consider_it/'
-                  target: '_blank'
-                  style: 
-                    #textDecoration: 'underline'
-                    color: dao_yellow
-                    fontWeight: 600
-
-                  "#dao_consider_it"
-
-
-              DIV 
-                style: 
-                  clear: 'both'
-
-              DIV 
-                style: 
-                  float: 'right'
-                  fontSize: 12
-                  color: 'white'
-                  opacity: .9
-                  padding: '0px 10px'
-                  position: 'relative'
-
-                "Donate ETH to fuel "
-
-                A 
-                  href: 'https://dao.consider.it/donate_to_considerit?results=true'
-                  target: '_blank'
-                  style: 
-                    textDecoration: 'underline'
-                    fontWeight: 600
-
-                  "our work"
-
-                " evolving consider.it to meet The DAO’s needs."
-
-
-              DIV 
-                style: 
-                  clear: 'both'
-
-              DIV 
-                style: 
-                  #backgroundColor: 'rgba(255,255,255,.2)'
-                  #marginBottom: 20
-                  padding: '0px 10px'
-                  float: 'right'
-                  fontSize: 15
-                  fontWeight: 500
-                  #color: 'white'
-                  color: dao_yellow
-                  #border: "1px solid #{dao_yellow}"
-                  opacity: .8
-                  fontFamily: '"Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace'
-                "0xc7e165ebdad9eeb8e5f5d94eef3e96ea9739fdb2"
-
-
-              DIV 
-                style: 
-                  clear: 'both'
-                  marginBottom: 70
-
-
-              DIV 
-                style: 
-                  position: 'relative'
-                  color: 'white'
-                  fontSize: 20
-
-                DIV 
-                  style: 
-                    position: 'relative'
-                    left: 60
-                  DIV 
-                    style: 
-                      width: 260
-                      position: 'relative'
-
-                    SPAN style: opacity: .7,
-                      'Ideas that inspire the community & contractors.'
-
-                    BR null
-
-                    A 
-                      style: 
-                        opacity: if !@local.hover_idea then .7
-                        display: 'inline-block'
-                        marginTop: 6
-                        color: dao_yellow
-                        border: "1px solid #{dao_yellow}"
-                        #textDecoration: 'underline'
-                        fontSize: 14
-                        fontWeight: 600
-                        #backgroundColor: "rgba(255,255,255,.2)"
-                        padding: '4px 12px'
-                        borderRadius: 8
-                      onMouseEnter: => @local.hover_idea = true; save @local
-                      onMouseLeave: => @local.hover_idea = null; save @local
-
-                      href: '/proposal/new?category=Proposals'
-
-                      t("add new")
-
-                    SVG 
-                      style: 
-                        position: 'absolute'
-                        top: 75
-                        left: '35%'
-                        opacity: .5
-
-                      width: 67 * 1.05
-                      height: 204 * 1.05
-                      viewBox: "0 0 67 204" 
-
-                      G                       
-                        fill: 'none'
-
-                        PATH
-                          strokeWidth: 1 / 1.05 
-                          stroke: 'white' 
-                          d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
-
-                DIV 
-                  style: 
-                    position: 'relative'
-                    left: 260
-                    marginTop: 0 #30
-
-                  DIV 
-                    style: 
-                      width: 260
-                      position: 'relative'
-
-                    SPAN style: opacity: .7,
-                      'Proposals working toward a smart contract.'
-                    BR null
-
-                    A 
-                      style: 
-                        opacity: if !@local.hover_new then .7
-                        display: 'inline-block'
-                        marginTop: 6
-                        color: dao_yellow
-                        border: "1px solid #{dao_yellow}"
-                        #textDecoration: 'underline'
-                        fontSize: 14
-                        fontWeight: 600
-                        #backgroundColor: "rgba(255,255,255,.2)"
-                        padding: '4px 12px'
-                        borderRadius: 8
-                      onMouseEnter: => @local.hover_new = true; save @local
-                      onMouseLeave: => @local.hover_new = null; save @local
-
-                      href: '/proposal/new?category=New'
-
-                      t("add new")
-
-                    SVG 
-                      style: 
-                        position: 'absolute'
-                        top: 75
-                        left: '35%'
-                        opacity: .5
-
-                      width: 67 * .63
-                      height: 204 * .63
-                      viewBox: "0 0 67 204" 
-
-                      G                       
-                        fill: 'none'
-
-                        PATH
-                          strokeWidth: 1 / .63
-                          stroke: 'white' 
-                          d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
-
-                DIV 
-                  style: 
-                    position: 'relative'
-                    left: 490
-                    marginTop: 0 #30
-
-                  DIV 
-                    style: 
-                      width: 260
-                      position: 'relative'
-
-                    SPAN style: opacity: .7,
-                      'Issues related to the operation of The DAO.'
-
-                    BR null
-                    A 
-                      style: 
-                        opacity: if !@local.hover_meta then .7
-                        display: 'inline-block'
-                        marginTop: 6
-                        color: dao_yellow
-                        border: "1px solid #{dao_yellow}"
-                        #textDecoration: 'underline'
-                        fontSize: 14
-                        fontWeight: 600
-                        #backgroundColor: "rgba(255,255,255,.2)"
-                        padding: '4px 12px'
-                        borderRadius: 8
-                      onMouseEnter: => @local.hover_meta = true; save @local
-                      onMouseLeave: => @local.hover_meta = null; save @local
-
-                      href: '/proposal/new?category=Meta'
-
-                      t("add new")
-
-                    SVG 
-                      style: 
-                        position: 'absolute'
-                        top: 75
-                        left: '35%'
-                        opacity: .5
-                      width: 67 * .21
-                      height: 204 * .21
-                      viewBox: "0 0 67 204" 
-
-                      G                       
-                        fill: 'none'
-
-                        PATH
-                          strokeWidth: 1 / .21
-                          stroke: 'white' 
-                          d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
-
-
-                DIV 
-                  style: 
-                    position: 'absolute'
-                    left: 750
-                    marginTop: 0 #30
-                    bottom: -15
-
-                  DIV 
-                    style: 
-                      width: 260
-                      position: 'relative'
-
-                    # SPAN style: opacity: .7,
-                    #   'Issues related to the operation of The DAO.'
-
-                    BR null
-                    A 
-                      style: 
-                        opacity: if !@local.hover_hack then .7
-                        display: 'inline-block'
-                        marginTop: 6
-                        color: dao_yellow
-                        border: "1px solid #{dao_yellow}"
-                        #textDecoration: 'underline'
-                        fontSize: 14
-                        fontWeight: 600
-                        #backgroundColor: "rgba(255,255,255,.2)"
-                        padding: '4px 12px'
-                        borderRadius: 8
-                      onMouseEnter: => @local.hover_hack = true; save @local
-                      onMouseLeave: => @local.hover_hack = null; save @local
-
-                      href: '/proposal/new?category=Hack'
-
-                      t("add new")
-
-                    # SVG 
-                    #   style: 
-                    #     position: 'absolute'
-                    #     top: 75
-                    #     left: '35%'
-                    #     opacity: .5
-                    #   width: 67 * .21
-                    #   height: 204 * .21
-                    #   viewBox: "0 0 67 204" 
-
-                    #   G                       
-                    #     fill: 'none'
-
-                    #     PATH
-                    #       strokeWidth: 1 / .21
-                    #       stroke: 'white' 
-                    #       d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
-
-
-
-
-
-
-              if customization('cluster_filters')
-                ClusterFilter()
-
-
-
-
-        ProfileMenu()
-
-
-customizations.dao.NonHomepageHeader = customizations.dao.HomepageHeader
 
 
 
@@ -5665,160 +1940,6 @@ customizations.bitcoinclassic = _.extend {},
   'cluster/Closed pull requests': 
     archived: true
 
-
-  HomepageHeader: ReactiveComponent 
-    displayName: 'HomepageHeader'
-
-    render: ->
-      homepage = fetch('location').url == '/'
-
-      DIV
-        style:
-          position: 'relative'
-          backgroundColor: 'white'
-          paddingBottom: 20
-          # height: 63
-          # borderBottom: '1px solid #ddd'
-          # boxShadow: '0 1px 2px rgba(0,0,0,.1)'
-
-        onMouseEnter: => @local.hover=true;  save(@local)
-        onMouseLeave: => @local.hover=false; save(@local)
-
-        STYLE null,
-          '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
-             p {margin-bottom: 1em}'''
-
-        # The top bar with the logo
-        DIV
-          style:
-            width: HOMEPAGE_WIDTH()
-            margin: 'auto'
-
-          DIV 
-            style: 
-              marginLeft: -70
-              paddingTop: 30
-
-
-            back_to_homepage_button              
-              display: 'inline-block'
-              visibility: if homepage then 'hidden'
-              color: '#eee'
-              position: 'relative'
-              left: -60
-              top: -10
-              fontSize: 43
-              fontWeight: 400
-              paddingLeft: 25 # Make the clickable target bigger
-              paddingRight: 25 # Make the clickable target bigger
-              cursor: if not homepage then 'pointer'
-
-            # Logo
-            A
-              href: if homepage then 'https://bitcoinclassic.com' else '/'
-
-
-              IMG
-                style:
-                  height: 51
-                  marginLeft: -50
-
-                src: asset('bitcoin/bitcoinclassiclogo.png')
-
-            BR null
-            if homepage 
-
-              SPAN
-                style: 
-                  marginLeft: 69
-                  position: 'relative'
-                  marginTop: 5
-                  marginBottom: 10
-                  top: -4
-                  #backgroundColor: '#F69332'
-                  padding: '3px 6px'
-                  fontSize: 20
-                  fontStyle: 'italic'
-                  fontWeight: 700
-                  color: '#bbb'
-
-                "Propose and deliberate ideas for Bitcoin Classic. Not yet for binding votes."
-
-
-          if homepage
-            DIV null, 
-              DIV 
-                style: 
-                  marginTop: 10
-                  padding: 8
-                  fontSize: 18
-
-                "Classic is using consider.it to sample community opinion to better understand what users really 
-                 think about bitcoin and want to see it become. The governance model that Classic eventually 
-                 adopts may include opinions collected from this site, but Classic has not committed itself 
-                 to making decisions based only on the preferences expressed here or elsewhere."
-                " "
-                "Please vet proposals on "
-                A 
-                  href: "https://www.reddit.com/r/Bitcoin_Classic/"
-                  target: '_blank'
-                  style: 
-                    borderBottom: "1px solid #bbb"
-                    #textDecoration: 'underline'
-
-                  "Reddit"
-                " or "
-                A 
-                  href: "http://invite.bitcoinclassic.com/"
-                  target: '_blank'
-                  style: 
-                    borderBottom: "1px solid #bbb"
-                    #textDecoration: 'underline'
-
-                  "Slack"
-                " first. "
-
-                "Other "               
-                A 
-                  href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/40u3ws/considerit_voting_guide/'
-                  target: '_blank'
-                  style: 
-                    borderBottom: "1px solid #bbb"
-                    #textDecoration: 'underline'
-
-                  "guidelines"
-                "."
-              DIV 
-                style: 
-                  #backgroundColor: '#eee'
-                  marginTop: 10
-                  padding: 8
-                  fontSize: 18
-
-                "Some users have abused open registration. Filtering opinions to verified users has been enabled by default."
-                " "
-
-              DIV 
-                style: 
-                  backgroundColor: '#eee'
-                  marginTop: 10
-                  padding: 8
-                  fontSize: 18
-
-                "Interested in running a node that mirrors consider.it data to provide an audit trail? "
-
-                A 
-                  href: 'https://www.reddit.com/r/Bitcoin_Classic/comments/435gi1/distributed_publicly_auditable_data_for/'
-                  target: '_blank'
-                  style: 
-                    textDecoration: 'underline'
-
-                  "Learn more"
-
-        ProfileMenu()
-
-
-customizations.bitcoinclassic.NonHomepageHeader = customizations.bitcoinclassic.HomepageHeader
 
 
 customizations['bitcoinfoundation'] = 
@@ -5862,9 +1983,7 @@ customizations['bitcoinfoundation'] =
 
   'cluster/First Foundation': 
     slider_pole_labels: support_oppose
-    description: ->  
-      DIV null, 
-        'Archived proceedings of the First Foundation'
+    one_line_desc: 'Archived proceedings of the First Foundation'        
     archived: true
 
   show_crafting_page_first: true
@@ -5874,86 +1993,7 @@ customizations['bitcoinfoundation'] =
 #####################
 # Living Voters Guide
 
-ZipcodeBox = ReactiveComponent
-  displayName: 'ZipcodeBox'
-  render: ->
-    current_user = fetch('/current_user')
-    extra_text = if Modernizr.input.placeholder then '' else ' Zip Code'
-    onChange = (event) =>
-      if event.target.value.match(/\d\d\d\d\d/)
-        current_user.tags['zip.editable'] = event.target.value
-        save(current_user)
 
-      else if event.target.value.length == 0
-        current_user.tags['zip.editable'] = undefined
-        @local.stay_around = true
-        save(current_user)
-        save(@local)
-
-    if current_user.tags['zip.editable'] or @local.stay_around
-      # Render the completed zip code box
-
-      DIV
-        style: 
-          textAlign: 'center'
-          padding: '13px 23px'
-          fontSize: 20
-          fontWeight: 400
-          margin: 'auto'
-          color: 'white'
-        className: 'filled_zip'
-
-        'Customized for:'
-        INPUT
-
-          style: 
-            fontSize: 20
-            fontWeight: 600
-            border: '1px solid transparent'
-            borderColor: if @local.focused || @local.hovering then '#767676' else 'transparent'
-            backgroundColor: if @local.focused || @local.hovering then 'white' else 'transparent'
-            width: 80
-            marginLeft: 7
-            color: if @local.focused || @local.hovering then 'black' else 'white'
-            display: 'inline-block'
-          type: 'text'
-          key: 'zip_input'
-          defaultValue: current_user.tags['zip.editable'] or ''
-          onChange: onChange
-          onFocus: => 
-            @local.focused = true
-            save(@local)
-          onBlur: =>
-            @local.focused = false
-            @local.stay_around = false
-            save(@local)
-          onMouseEnter: => 
-            @local.hovering = true
-            save @local
-          onMouseLeave: => 
-            @local.hovering = false
-            save @local
-
-    else
-      # zip code entry
-      DIV 
-        style: 
-          backgroundColor: 'rgba(0,0,0,.1)'
-          fontSize: 22
-          fontWeight: 700
-          width: 720
-          color: 'white'
-          padding: '15px 40px'
-          marginLeft: (WINDOW_WIDTH() - 720) / 2
-          #borderRadius: 16
-
-        'Customize this guide for your' + extra_text
-        INPUT
-          type: 'text'
-          key: 'zip_input'
-          placeholder: 'Zip Code'
-          style: {margin: '0 0 0 12px', fontSize: 22, height: 42, width: 152, padding: '4px 20px'}
-          onChange: onChange
 
 customizations.livingvotersguide = 
 
@@ -5966,222 +2006,7 @@ customizations.livingvotersguide =
 
   'cluster/Advisory votes': 
     archived: true
-    description: ->  
-      DIV null,
-        "Advisory Votes are not binding. They are a consequence of Initiative 960 passing in 2007"
-
-  ThanksForYourOpinion: ReactiveComponent
-    displayName: 'ThanksForYourOpinion'
-
-    render: ->
-
-      if @proposal.category && @proposal.designator
-        tweet = """Flex your civic muscle on #{@proposal.category.substring(0,1)}-
-                   #{@proposal.designator}! Learn about the issue and decide here: """
-      else 
-        tweet = """Learn and decide whether you will support \'#{@proposal.name}\' 
-                   on your Washington ballot here:"""
-      DIV 
-        style: 
-          position: 'fixed'
-          left: 0
-          bottom: 0
-          width: '100%'
-          backgroundColor: 'rgb(0,182,236)'
-          padding: '5px 10px'
-          color: 'white'
-          zIndex: 999
-          textAlign: 'center'
-          fontWeight: 600
-          fontSize: 18
-
-        'Thanks for your opinion! Invite your friends and family: '
-        SPAN style: {position: 'relative', top: 5, marginLeft: 5},
-          FBShare()
-          Tweet
-            text: tweet
-            url: "https://livingvotersguide.org/#{@proposal.slug}?results=true"
-
-
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: ->
-      LVG_blue = '#063D72'
-      LVG_green = '#A5CE39'
-
-      homepage = fetch('location').url == '/'
-
-      DIV 
-        style: 
-          position: 'relative'
-
-        DIV 
-          style: 
-            height: if !homepage then 150 else 455 
-            backgroundImage: "url(#{asset('livingvotersguide/bg.png')})"
-            backgroundPosition: 'center'
-            backgroundSize: 'cover'
-            backgroundColor: LVG_blue
-            textAlign: if homepage then 'center'
-
-          DIV
-            style:
-              position: 'absolute'
-              right: 17
-              top: 17
-            ProfileMenu({style: {height: 69, left: 0; top: 0, position: 'relative', display: 'inline-block'}})
-            SPAN style: {color: 'white'}, '   |   '
-            A href:'/about', style: {color: 'white', cursor: 'pointer'},
-              'About'
-            
-          if !homepage 
-            back_to_homepage_button            
-              position: 'absolute'
-              display: 'inline-block'
-              top: 40
-              left: 22
-              fontSize: 43
-              color: 'white'
-
-          # Logo
-          A 
-            style: 
-              marginTop: if homepage then 40 else 10
-              display: 'inline-block'
-              marginLeft: if !homepage then 80
-              marginRight: if !homepage then 30
-
-            href: (if fetch('location').url == '/' then '/about' else '/'),
-            IMG 
-              src: asset('livingvotersguide/logo.svg')
-              style:
-                width: if homepage then 220 else 120
-                height: if homepage then 220 else 120
-
-
-          # Tagline
-          DIV 
-            style:
-              display: if !homepage then 'inline-block'
-              position: 'relative'
-              top: if !homepage then -32
-            DIV
-              style:
-                fontSize: if homepage then 32 else 24
-                fontWeight: 700
-                color: LVG_green
-                margin: '12px 0 4px 0'
-
-              SPAN null, 
-                'Washington\'s Citizen Powered Voters Guide'
-
-            DIV 
-              style: 
-                color: 'white'
-                fontSize: if homepage then 20 else 18
-
-              'Learn about your ballot, decide how you’ll vote, and share your opinion.'
-
-          if homepage
-
-
-
-            DIV
-              style:
-                color: 'white'
-                fontSize: 20
-                marginTop: 30
-
-              DIV
-                style: 
-                  position: 'relative'
-                  display: 'inline'
-                  marginRight: 50
-                  height: 46
-
-                SPAN 
-                  style: 
-                    paddingRight: 12
-                    position: 'relative'
-                    top: 4
-                    verticalAlign: 'top'
-                  'brought to you by'
-                A 
-                  style: 
-                    verticalAlign: 'top'
-
-                  href: 'http://seattlecityclub.org'
-                  IMG 
-                    src: asset('livingvotersguide/cityclub.svg')
-
-              DIV 
-                style: 
-                  position: 'relative'
-                  display: 'inline'
-                  height: 46
-                  #display: 'none'
-
-                SPAN 
-                  style: 
-                    paddingRight: 12
-                    verticalAlign: 'top'
-                    position: 'relative'
-                    top: 4
-
-                  'fact-checks by'
-                
-                A 
-                  style: 
-                    verticalAlign: 'top'
-                    position: 'relative'
-                    top: -6
-
-                  href: 'http://spl.org'
-                  IMG
-                    style: 
-                      height: 31
-
-                    src: asset('livingvotersguide/spl.png')
-
-        if homepage
-          DIV 
-            style: 
-              backgroundColor: LVG_green
-
-            DIV 
-              style: 
-                color: 'white'
-                margin: 'auto'
-                padding: '40px'
-                width: 720
-
-
-              DIV
-                style: 
-                  fontSize: 24
-                  fontWeight: 600
-                  textAlign: 'center'
-
-                """The Living Voters Guide has passed on..."""
-
-              DIV 
-                style: 
-                  fontSize: 18
-                """We have made the difficult decision to discontinue the Living Voters Guide 
-                   after six years of service. Thank you for your contributions through the years!"""
-
-            DIV 
-              style: 
-                paddingBottom: 15
-
-              ZipcodeBox()
-
-        else
-          DIV 
-            style: 
-              backgroundColor: LVG_green
-              paddingTop: 5
+    one_line_desc: "Advisory Votes are not binding."
 
 
   Footer : ReactiveComponent
@@ -6218,7 +2043,6 @@ customizations.livingvotersguide =
 
         DefaultFooter()
 
-customizations.livingvotersguide.NonHomepageHeader = customizations.livingvotersguide.HomepageHeader
 
 FBShare = ReactiveComponent
   displayName: 'FBShare'
@@ -6264,86 +2088,13 @@ Tweet = ReactiveComponent
       style: {width: 57; height: 20}
 
 
-styles += """
-[subdomain="livingvotersguide"] .endorser_group {
-  width: 305px;
-  display: inline-block;
-  margin-bottom: 1em;
-  vertical-align: top; }
-  [subdomain="livingvotersguide"] .endorser_group.oppose {
-    margin-left: 60px; }
-  [subdomain="livingvotersguide"] .endorser_group li, [subdomain="livingvotersguide"] .endorser_group a {
-    font-size: 12px; }
-  [subdomain="livingvotersguide"] .endorser_group ul {
-    margin-left: 0px;
-    padding-left: 10px; }
-[subdomain="livingvotersguide"] .total_money_raised {
-  font-weight: 600;
-  float: right; }
-[subdomain="livingvotersguide"] .funders li {
-  list-style: none; }
-  [subdomain="livingvotersguide"] .funders li .funder_amount {
-    float: right; }
-[subdomain="livingvotersguide"] .news {
-  padding-left: 0; }
-  [subdomain="livingvotersguide"] .news li {
-    font-size: 13px;
-    list-style: none;
-    padding-bottom: 6px; }
-[subdomain="livingvotersguide"] .editorials ul {
-  padding-left: 10px; }
-  [subdomain="livingvotersguide"] .editorials ul li {
-    list-style: none;
-    padding-top: 6px; }
-
-"""
-
-
-#####################
-# Tigard
-customizations.tigard = 
-
-  HomepageHeader : ReactiveComponent
-    displayName: 'HomepageHeader'
-
-    render: ->
-      DIV style: {textAlign: 'center'},
-        STYLE null, 
-          '.banner_link {color: #78d18b; font-weight: 600; text-decoration: underline;}'
-
-        ProfileMenu()
-
-        DIV 
-          style: 
-            color: '#707070'
-            fontSize: 32
-            padding: '20px 0'
-            margin: '0px auto 0 auto'
-            fontWeight: 800
-            textTransform: 'uppercase'
-            position: 'relative'
-            width: CONTENT_WIDTH()
-          'Help plan '
-          A className: 'banner_link', href: 'http://riverterracetigard.com/', 'River Terrace'
-          ', Tigard\'s newest neighborhood' 
-
-
-#customizations.tigard.NonHomepageHeader = customizations.tigard.HomepageHeader
-
-
 customizations.mos = 
 
   slider_pole_labels :
-    individual: 
-      support: 'Support'
-      support_sub: 'the ban'
-      oppose: 'Oppose'
-      oppose_sub: 'the ban'
-    group: 
-      support: 'Supporters'
-      support_sub: 'of the ban'      
-      oppose: 'Opposers'
-      oppose_sub: 'of the ban'
+    support: 'Support'
+    support_sub: 'the ban'
+    oppose: 'Oppose'
+    oppose_sub: 'the ban'
 
   show_crafting_page_first: true
 

@@ -50,8 +50,8 @@ window.proposal_editor = (proposal) ->
 
 
 
-cluster_keys = ['archived', 'label', 'description', 'homie_histo_title',
-                'show_proposer_icon', 'slider_handle', 'slider_pole_labels', 
+cluster_keys = ['archived', 'label', 'label_style', 'description', 'description_style', 
+                'homie_histo_title', 'show_proposer_icon', 'slider_handle', 'slider_pole_labels', 
                 'slider_regions', 'slider_ticks', 'discussion', 'show_score', 
                 'uncollapseable', 'cluster_header', 'homepage_label', 
                 'cluster_filters', 'proposal_style', 'one_line_desc']
@@ -219,7 +219,7 @@ window.TagHomepage = ReactiveComponent
           style: 
             width: first_column.width
             marginBottom: 20
-            paddingLeft: if customization('show_proposer_icon') then 68
+            #paddingLeft: if customization('show_proposer_icon') then 68
             display: 'inline-block'
             verticalAlign: 'top'
 
@@ -308,7 +308,7 @@ window.SimpleHomepage = ReactiveComponent
             style: 
               width: first_column.width
               marginBottom: 20
-              paddingLeft: if customization('show_proposer_icon') then 68
+              # paddingLeft: if customization('show_proposer_icon') then 68
               display: 'inline-block'
               verticalAlign: 'top'
 
@@ -473,9 +473,12 @@ window.NewProposal = ReactiveComponent
 
       else 
         [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-        w = first_column.width - 50 + (if icons then -18 else 0)
+        w = first_column.width #- 50 + (if icons then -18 else 0)
         
-        DIV null, 
+        DIV 
+          style:
+            position: 'relative'
+
           if customization('proposal_tips')
             @drawTips()
 
@@ -486,6 +489,8 @@ window.NewProposal = ReactiveComponent
               key: editor
               user: editor
               style:
+                position: 'absolute'
+                left: -18 - 50
                 height: 50
                 width: 50
                 borderRadius: 0
@@ -494,7 +499,7 @@ window.NewProposal = ReactiveComponent
 
           DIV 
             style: 
-              marginLeft: if icons then 18 - 8
+              # marginLeft: if icons then 18 - 8
               display: 'inline-block'
             TEXTAREA 
               id:"#{cluster_slug}-name"
@@ -744,7 +749,7 @@ window.ClusterFilter = ReactiveComponent
                 borderLeft: if current then "2px solid #F8E71C"
                 borderTop: if current then "2px solid #F8E71C"
                 borderRight: if current then "2px solid #F8E71C"
-            if subdomain.name == 'bradywalkinshaw'
+            else if subdomain.name == 'bradywalkinshaw'
               _.extend filter_style, 
                 padding: '10px 20px 4px 20px'
                 backgroundColor: if current then 'white'
@@ -826,7 +831,7 @@ Cluster = ReactiveComponent
               cluster_name: cluster.name
               local: @local.key
               label_style: 
-                marginLeft: if options.show_proposer_icon then 50 + 18
+                #marginLeft: if options.show_proposer_icon then 50 + 18
                 borderBottom: "1px solid #{logo_red}"
                 color: logo_red
               icons: options.show_proposer_icon
@@ -851,26 +856,41 @@ Cluster = ReactiveComponent
       if options.label || options.description
         DIV 
           style: 
-            width: CONTENT_WIDTH()
-            marginLeft: if icons then 70
+            width: HOMEPAGE_WIDTH()
+            # marginLeft: if icons then 70
+            marginBottom: 16
 
 
           if options.label
             H1
-              style: 
-                fontSize: 48
-                fontWeight: 200
-                
+              style: _.defaults {}, (options.label_style or {}),
+                fontSize: 42
+                fontWeight: 300
+                marginBottom: 5
               options.label
 
           if options.description
-            DIV                
-              style:
-                fontSize: 22
-                fontWeight: 200
-                marginBottom: 10
 
+            if _.isFunction(options.description)                
               options.description()
+            else 
+              desc = options.description
+              if typeof desc == 'string'
+                desc = [options.description]
+
+              DIV                
+                style: _.defaults {}, (options.description_style or {}),
+                  fontSize: 18
+                  fontWeight: 400
+                  color: '#444'
+
+                for para, idx in desc
+                  DIV 
+                    key: idx
+                    style:
+                      marginBottom: 10
+                    dangerouslySetInnerHTML: {__html: para}
+
 
       # Header of cluster
 
@@ -883,7 +903,7 @@ Cluster = ReactiveComponent
             position: 'relative'
           H1
             style: _.extend {}, first_header, 
-              paddingLeft: if icons then 68 else 0, 
+              #paddingLeft: if icons then 68 else 0, 
               position: 'relative'
               cursor: if !options.uncollapseable then 'pointer'
 
@@ -902,7 +922,7 @@ Cluster = ReactiveComponent
               SPAN 
                 style: cssTriangle (if is_collapsed then 'right' else 'bottom'), 'black', tw, th,
                   position: 'absolute'
-                  left: -tw - 20 + (if icons then 68 else 0)
+                  left: -tw - 20 # + (if icons then 68 else 0)
                   bottom: 14
                   width: tw
                   height: th
@@ -915,8 +935,8 @@ Cluster = ReactiveComponent
               DIV 
                 style: 
                   position: 'absolute'
-                  bottom: -12
-                  color: '#444'
+                  bottom: -14
+                  color: '#666'
                   fontSize: 14
                   fontWeight: 400
                 options.one_line_desc
@@ -931,7 +951,7 @@ Cluster = ReactiveComponent
               #     fontSize: 21
               #     color: '#444'
               #     fontWeight: 300
-              #   customization("slider_pole_labels.individual.oppose", cluster_key)
+              #   customization("slider_pole_labels.oppose", cluster_key)
               # SPAN
               #   style:
               #     position: 'absolute'
@@ -940,7 +960,7 @@ Cluster = ReactiveComponent
               #     color: '#444'
               #     right: 0
               #     fontWeight: 300
-              #   customization("slider_pole_labels.individual.support", cluster_key)
+              #   customization("slider_pole_labels.support", cluster_key)
               SPAN 
                 style: 
                   position: 'relative'
@@ -1119,53 +1139,58 @@ window.CollapsedProposal = ReactiveComponent
 
       DIV style: first_column,
 
-        NewActivity
-          proposal: proposal 
+        DIV 
+          style: 
+            position: 'absolute'
+            left: if icons then -50 - 18 else 0
 
-        if current_user?.logged_in
-          # ability to watch proposal
-          
-          WatchStar
-            proposal: proposal
-            size: 30
-            style: 
-              position: 'absolute'
-              left: -40
-              top: 5
+          NewActivity
+            proposal: proposal 
+
+          if current_user?.logged_in
+            # ability to watch proposal
+            
+            WatchStar
+              proposal: proposal
+              size: 30
+              style: 
+                position: 'absolute'
+                left: -40
+                top: 5
 
 
-        if icons
-          editor = proposal_editor(proposal)
-          # Person's icon
-          if editor 
-            A
-              href: proposal_url(proposal)
-              Avatar
-                key: editor
-                user: editor
-                style:
+          if icons
+            editor = proposal_editor(proposal)
+            # Person's icon
+            if editor 
+              A
+                href: proposal_url(proposal)
+                Avatar
+                  key: editor
+                  user: editor
+                  style:
+                    height: 50
+                    width: 50
+                    borderRadius: 0
+                    backgroundColor: '#ddd'
+                    # opacity: opacity
+            else 
+              SPAN 
+                style: 
                   height: 50
                   width: 50
-                  borderRadius: 0
-                  backgroundColor: '#ddd'
-                  # opacity: opacity
-          else 
-            SPAN 
-              style: 
-                height: 50
-                width: 50
-                display: 'inline-block'
-                verticalAlign: 'top'
-                border: "2px dashed #ddd"
+                  display: 'inline-block'
+                  verticalAlign: 'top'
+                  border: "2px dashed #ddd"
 
         # Name of Proposal
         DIV
           style:
             display: 'inline-block'
             fontWeight: 400
-            marginLeft: if icons then 18
+            #marginLeft: if icons then 18
             paddingBottom: 20
-            width: first_column.width - 50 + (if icons then -18 else 0)
+            width: first_column.width # - 50 + (if icons then 0 else 0)
             marginTop: if icons then 0 #9
             # opacity: opacity
           A

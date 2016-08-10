@@ -210,6 +210,9 @@ protected
       elsif key == '/subdomain'
         response.append current_subdomain.as_json
 
+      elsif key.match "/subdomain/"
+        response.append Subdomain.find(key[11..key.length]).as_json({:include_id => true})
+
       elsif key == '/current_user'
         response.append current_user.current_user_hash(form_authenticity_token)
 

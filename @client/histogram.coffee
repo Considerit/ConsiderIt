@@ -264,7 +264,7 @@ window.Histogram = ReactiveComponent
         fontSize: 14
         fontWeight: 400
         color: '#999'
-      customization("slider_pole_labels.group.oppose", @props.proposal)
+      customization("slider_pole_labels.oppose", @props.proposal)
     SPAN
       style:
         position: 'absolute'
@@ -273,7 +273,7 @@ window.Histogram = ReactiveComponent
         fontSize: 14
         fontWeight: 400
         color: '#999'
-      customization("slider_pole_labels.group.support", @props.proposal)
+      customization("slider_pole_labels.support", @props.proposal)
     ]
 
   drawSelectionArea: -> 

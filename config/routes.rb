@@ -54,6 +54,8 @@ ConsiderIt::Application.routes.draw do
   get '/apps' => 'application#app_index'
 
   get '/subdomain' => 'subdomain#show'
+  get '/subdomain/:id' => 'subdomain#show'
+
   post '/subdomain' => 'subdomain#create'
   match '/subdomain' => 'subdomain#update', :via => [:put]
   get '/subdomains' => 'subdomain#index'

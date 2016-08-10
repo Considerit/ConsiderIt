@@ -33,9 +33,9 @@ window.Header = ReactiveComponent
           backgroundColor: 'white'
 
         if fetch('location').url == '/'
-          customization('HomepageHeader')()
+          (window.HomepageHeader or DefaultHeader)()
         else 
-          customization('NonHomepageHeader')()
+          (window.NonHomepageHeader or ShortHeader)()
 
         if fetch('location').url == '/about'
           DIV null, 

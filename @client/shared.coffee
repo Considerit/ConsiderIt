@@ -110,7 +110,12 @@ window.proposal_url = (proposal) =>
 
   proposal = fetch proposal
   result = '/' + proposal.slug
-  subdomain = fetch('/subdomain')  
+  subdomain = fetch('/subdomain') 
+
+  if subdomain.name == 'homepage'
+    subdomain = fetch("/subdomain/#{proposal.subdomain_id}")
+    result = "https://#{subdomain.host_with_port}" + result
+    console.log result
 
   if TWO_COL() || (!customization('show_crafting_page_first', proposal) || !proposal.active ) \
      || (!customization('discussion', proposal))

@@ -61,10 +61,13 @@ class HtmlController < ApplicationController
 
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
 
+    
+    @js = "/#{manifest[@app]}"
+    @js_sub = "/#{manifest[current_subdomain.name.downcase]}"
+
     if Rails.application.config.action_controller.asset_host
-      @js = "#{Rails.application.config.action_controller.asset_host}/#{manifest[@app]}"
-    else 
-      @js = "/#{manifest[@app]}"
+      @js = "#{Rails.application.config.action_controller.asset_host}#{@js}"
+      @js_sub = "#{Rails.application.config.action_controller.asset_host}#{@js_sub}"
     end
 
     dirty_key '/asset_manifest'

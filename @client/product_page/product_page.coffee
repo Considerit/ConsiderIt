@@ -11,7 +11,7 @@ require '../state_dash'
 require '../logo'
 require '../bubblemouth'
 require '../translations'
-
+require '../customizations'
 require '../homepage'
 
 

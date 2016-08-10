@@ -80,7 +80,11 @@ class SubdomainController < ApplicationController
   end
 
   def show
-    dirty_key '/subdomain'
+    if params[:id]
+      dirty_key "/subdomain/#{params[:id] or current_subdomain.id}"
+    else 
+      dirty_key '/subdomain'
+    end
     render :json => []
   end
 

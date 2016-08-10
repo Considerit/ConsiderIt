@@ -263,7 +263,6 @@ Proposal = ReactiveComponent
             dummy: get_proposal_mode() == 'crafting'
             dummy2: PROPOSAL_HISTO_WIDTH()
             do =>   
-              plurality = if mode == 'crafting' then 'individual' else 'group'
               OpinionSlider
                 key: namespaced_key('slider', @proposal)
                 width: PROPOSAL_HISTO_WIDTH() - 10
@@ -272,10 +271,10 @@ Proposal = ReactiveComponent
                 backgrounded: false
                 permitted: draw_handle
                 pole_labels: [ \
-                  [customization("slider_pole_labels.#{plurality}.oppose", @proposal),
-                   customization("slider_pole_labels.#{plurality}.oppose_sub", @proposal)], \
-                  [customization("slider_pole_labels.#{plurality}.support", @proposal),
-                   customization("slider_pole_labels.#{plurality}.support_sub", @proposal)]]
+                  [customization("slider_pole_labels.oppose", @proposal),
+                   customization("slider_pole_labels.oppose_sub", @proposal) or ''], \
+                  [customization("slider_pole_labels.support", @proposal),
+                   customization("slider_pole_labels.support_sub", @proposal) or '']]
 
 
         #reasons
@@ -360,11 +359,6 @@ Proposal = ReactiveComponent
           fresh: pc.adding_new_point
           valence: valence
           your_points_key: edit_mode
-
-      else if mode == 'results' && 
-          your_opinion.published && 
-          customization('ThanksForYourOpinion', @proposal)
-        customization('ThanksForYourOpinion', @proposal)()    
 
 
   buildNewPointThreshold : ->

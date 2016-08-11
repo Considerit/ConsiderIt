@@ -27,6 +27,10 @@ ConsiderIt::Application.routes.draw do
   get '/oembed(.:format)' => 'oembed#show'
   get '/embed/proposal/:slug' => 'oembed#proposal_embed', :constraints => NotJSON.new
 
+
+  get "/dashboard/export(.:format)" => 'import_data#export'
+
+
   # All user-visible URLs go to the html controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
   get '(*url)' => 'html#index', :constraints => NotJSON.new

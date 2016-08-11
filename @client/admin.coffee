@@ -255,6 +255,31 @@ AppSettingsDash = ReactiveComponent
               defaultValue: subdomain.external_project_url
               placeholder: 'A link to the main project\'s homepage, if any.'
 
+
+          if subdomain.plan || current_user.is_super_admin
+            DIV className: 'input_group',
+              
+              LABEL htmlFor: 'google_analytics_code', "Google analytics. Add your Google analytics tracking code."
+              INPUT 
+                id: 'google_analytics_code'
+                type: 'text'
+                name: 'google_analytics_code'
+                defaultValue: subdomain.google_analytics_code
+                placeholder: 'Google Analytics tracking code'
+          else 
+            DIV className: 'input_group',
+              LABEL htmlFor: 'google_analytics_code', "Google analytics tracking code"
+              DIV style: {fontStyle: 'italic', fontSize: 15},
+                "Only available for paid plans. Email "
+                A 
+                  href: 'mailto:hello@consider.it'
+                  style: 
+                    textDecoration: 'underline'
+                  'hello@consider.it'
+                ' to inquire further.'
+
+
+
           # DIV className: 'input_group',
           #   LABEL htmlFor: 'notifications_sender_email', 'Contact email'
           #   INPUT 
@@ -378,7 +403,7 @@ AppSettingsDash = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'plan']
+    fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'plan', 'google_analytics_code']
 
     for f in fields
       subdomain[f] = $(@getDOMNode()).find("##{f}").val()

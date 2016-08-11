@@ -99,7 +99,7 @@ class SubdomainController < ApplicationController
       raise PermissionDenied.new Permission::DISABLED
     end
 
-    fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url']
+    fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'google_analytics_code']
     attrs = params.select{|k,v| fields.include? k}
 
     update_roles
@@ -111,7 +111,6 @@ class SubdomainController < ApplicationController
       end
     end
 
-    pp current_user.super_admin, params
     if current_user.super_admin && params.has_key?('plan')
       attrs['plan'] = params['plan'].to_i
     end 

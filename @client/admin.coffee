@@ -85,7 +85,7 @@ ImportDataDash = ReactiveComponent
           DIV style: marginTop: 20, display: 'block'
           A 
             style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
-            href: "/dashboard/export.zip"
+            href: "/dashboard/export"
             "data-nojax": true
 
             'Export'

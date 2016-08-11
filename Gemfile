@@ -32,7 +32,7 @@ gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git'
 gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delayed_job_active_record.git'
 gem "daemons"
 gem 'backup' #https://github.com/meskyanichi/backup
-
+gem 'rubyzip'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

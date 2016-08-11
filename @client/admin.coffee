@@ -74,6 +74,21 @@ ImportDataDash = ReactiveComponent
 
     DIV null, 
 
+      if subdomain.plan || current_user.is_super_admin
+        DIV null, 
+          DashHeader name: 'Export Data'
+
+          DIV style: {width: BODY_WIDTH(), margin: '15px auto'},
+            "Export data from Considerit. A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
+            DIV style: marginTop: 20, display: 'block'
+            A 
+              style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
+              href: "/dashboard/export.zip"
+              "data-nojax": true
+
+              'Export'
+
+
       DashHeader name: 'Import Data'
 
       DIV style: {width: BODY_WIDTH(), margin: '15px auto'},
@@ -240,17 +255,30 @@ AppSettingsDash = ReactiveComponent
 
 
           if current_user.is_super_admin
-            DIV className: 'input_group',
-              LABEL htmlFor: 'about_page_url', 'About Page URL'
-              INPUT 
-                id: 'about_page_url'
-                type: 'text'
-                name: 'about_page_url'
-                defaultValue: subdomain.about_page_url
-                placeholder: 'The about page will then contain a window to this url.'
+
+
+
+            # DIV className: 'input_group',
+            #   LABEL htmlFor: 'about_page_url', 'About Page URL'
+            #   INPUT 
+            #     id: 'about_page_url'
+            #     type: 'text'
+            #     name: 'about_page_url'
+            #     defaultValue: subdomain.about_page_url
+            #     placeholder: 'The about page will then contain a window to this url.'
 
 
             DIV null,
+
+              DIV className: 'input_group',
+                LABEL htmlFor: 'plan', 'Account Plan (0,1,2)'
+                INPUT 
+                  id: 'plan'
+                  type: 'text'
+                  name: 'plan'
+                  defaultValue: subdomain.plan
+                  placeholder: '0 for free plan, 1 for custom, 2 for consulting.'
+
               DIV className: 'input_group',
                 LABEL htmlFor: 'masthead_header_text', 'Masthead header text'
                 INPUT 
@@ -337,16 +365,19 @@ AppSettingsDash = ReactiveComponent
     submitting_files = @submit_logo || @submit_masthead
 
     subdomain = fetch '/subdomain'
+    current_user = fetch '/current_user'
 
-    fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url']
+    fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'plan']
 
     for f in fields
       subdomain[f] = $(@getDOMNode()).find("##{f}").val()
 
-    subdomain.branding =
-      primary_color: $('#primary_color').val()
-      masthead_header_text: $('#masthead_header_text').val()
-      homepage_text: $('#homepage_text').val()
+    if current_user.is_super_admin
+      subdomain.branding =
+        primary_color: $('#primary_color').val()
+        masthead_header_text: $('#masthead_header_text').val()
+        homepage_text: $('#homepage_text').val()
+
     @local.save_complete = @local.file_errors = false
     save @local
 

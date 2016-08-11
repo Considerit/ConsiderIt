@@ -74,19 +74,30 @@ ImportDataDash = ReactiveComponent
 
     DIV null, 
 
+      
+      DashHeader name: 'Export Data'
+
+      DIV style: {width: BODY_WIDTH(), margin: '15px auto'},
+
       if subdomain.plan || current_user.is_super_admin
         DIV null, 
-          DashHeader name: 'Export Data'
+          "Export data from Considerit. A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
+          DIV style: marginTop: 20, display: 'block'
+          A 
+            style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
+            href: "/dashboard/export.zip"
+            "data-nojax": true
 
-          DIV style: {width: BODY_WIDTH(), margin: '15px auto'},
-            "Export data from Considerit. A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
-            DIV style: marginTop: 20, display: 'block'
-            A 
-              style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
-              href: "/dashboard/export.zip"
-              "data-nojax": true
-
-              'Export'
+            'Export'
+      else 
+        DIV style: {fontStyle: 'italic'},
+          "Data export is only available for paid plans. Contact "
+          A 
+            href: 'mailto:hello@consider.it'
+            style: 
+              textDecoration: 'underline'
+            'hello@consider.it'
+          ' to inquire about a paid plan.'
 
 
       DashHeader name: 'Import Data'

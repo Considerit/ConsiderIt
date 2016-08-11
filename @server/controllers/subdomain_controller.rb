@@ -111,6 +111,11 @@ class SubdomainController < ApplicationController
       end
     end
 
+    pp current_user.super_admin, params
+    if current_user.super_admin && params.has_key?('plan')
+      attrs['plan'] = params['plan'].to_i
+    end 
+
     current_user.add_to_active_in
     current_subdomain.update_attributes! attrs
 

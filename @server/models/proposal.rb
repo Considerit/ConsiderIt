@@ -95,9 +95,8 @@ class Proposal < ActiveRecord::Base
 
     # make sure that there is an opinion created for current
     # user for all proposals
+    your_opinions = {}
     if subdomain.name != 'homepage'
-
-      your_opinions = {}
       Opinion.where(:user => current_user).each do |opinion|
         your_opinions[opinion.proposal_id] = opinion
       end 
@@ -189,12 +188,13 @@ class Proposal < ActiveRecord::Base
     json = super(options)
 
     # Find an existing opinion for this user
-    if !your_opinion
-      your_opinion = Opinion.get_or_make(self)
-    end 
+    if current_subdomain.name != 'homepage'
+      if !your_opinion
+        your_opinion = Opinion.get_or_make(self)
+      end 
 
-    json['your_opinion'] = your_opinion #if your_opinion
-
+      json['your_opinion'] = your_opinion #if your_opinion
+    end
 
     # published_opinions = self.opinions.published
     # ops = published_opinions.public_fields.map {|x| x.as_json}

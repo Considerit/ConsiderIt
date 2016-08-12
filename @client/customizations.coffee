@@ -125,7 +125,6 @@ require './profile_menu'
 require './slider'
 require './header'
 require './homepage'
-require './proposal_navigation'
 
 
 
@@ -329,14 +328,6 @@ port_agree_disagree =
   oppose: 'Discordo'
 
 
-# application options
-conference_config = 
-  slider_pole_labels :
-    support: 'Accept'
-    oppose: 'Reject'
-
-  homie_histo_title: "PC's ratings"
-
 
 ################################
 # DEFAULT CUSTOMIZATIONS
@@ -385,20 +376,20 @@ customizations.default =
   civility_pledge: false
   has_homepage: true
 
+  cluster_order: []
+  clusters_to_always_show: []
+
 
   auth: 
     user_questions: []
 
   Homepage : SimpleHomepage
-  ProposalNavigation : DefaultProposalNavigation
 
   # HomepageHeader : DefaultHeader
   # NonHomepageHeader: ShortHeader
 
   Footer : DefaultFooter
 
-  proposal_style: 
-    borderBottom: "1px solid #ddd"
 
 
 
@@ -430,6 +421,9 @@ customizations['rupaulseason8'] =
 
 
 
+customizations['swotconsultants'] = 
+  cluster_order: ['Strengths', 'Weaknesses', 'Opportunities', 'Threats']
+
 
 customizations['carcd'] = customizations['carcd-demo'] = 
   show_proposer_icon: false
@@ -438,6 +432,11 @@ customizations['carcd'] = customizations['carcd-demo'] =
   point_labels: pro_con
   slider_pole_labels: priority
   show_slider_feedback: false
+
+  cluster_order: ['Serving Districts', 'Program Emphasis', 'Lagging Districts', 'Accreditation', \
+                  'Questions', "CARCD's role in Emerging Resources", \
+                  "CARCD's role in Regional Alignment", \
+                  "CARCD's Role for the Community"]
 
 
 customizations['consider'] = 
@@ -551,7 +550,7 @@ customizations['monitorinstitute'] =
   homie_histo_title: "Opinions"
   show_slider_feedback: false
 
-
+  cluster_order: ['Intellectual Agenda Items', 'Overall']
 
 ################
 # seattle HALA
@@ -590,6 +589,8 @@ customizations['hala'] =
   proposal_filters: false
 
   uncollapseable: true
+
+  cluster_order: ['Preservation of Existing Affordable Housing',  'Urban Village Expansion', 'Historic Areas and Unique Conditions', 'Housing Options and Community Assets', 'Transitions', 'Urban Design Quality', 'Fair Chance Housing', 'Minimize Displacement']
 
 
   opinion_filters: ( -> 
@@ -1028,6 +1029,9 @@ customizations['engageseattle'] =
 
   uncollapseable: true
 
+  cluster_order:          ['Value in engagement',  'Meeting preferences', 'Community Involvement Commission', 'Community Involvement Commission Roles', 'Engagement Ideas']
+  clusters_to_always_show: ['Value in engagement',  'Meeting preferences', 'Community Involvement Commission', 'Community Involvement Commission Roles', 'Engagement Ideas']
+
   label_style:
     color: engageseattle_teal
 
@@ -1241,6 +1245,9 @@ customizations['cir'] =
   label_style:
     color: '#159ed9'
 
+  cluster_order: ['Questions']
+  clusters_to_always_show: ['Questions']
+
 
   "cluster/Questions" : 
           
@@ -1292,10 +1299,13 @@ customizations['seattle2035'] =
   show_proposer_icon: true
   civility_pledge: true
 
+  cluster_order: ['Key Proposals', 'Big Changes', 'Overall']
+
   "cluster/Overall" : 
     point_labels: strengths_weaknesses
     slider_pole_labels: yes_no
     show_slider_feedback: false
+
 
 
   auth: 
@@ -1423,11 +1433,23 @@ customizations['collective'] =
 
 
 
+          
+conference_config = 
+  slider_pole_labels :
+    support: 'Accept'
+    oppose: 'Reject'
+
+  homie_histo_title: "PC's ratings"
+
+  cluster_order: ['Submissions', 'Under Review', 'Probably Accept', 
+                  'Accepted', 'Probably Reject', 'Rejected']
+
 
 customizations['anup2015'] = conference_config
 
 
 customizations['random2015'] = _.extend {}, conference_config,
+
   opinion_value: (o) -> 3 * o.stance,
   "/proposal/2638" : 
     point_labels: strengths_limitations
@@ -1507,13 +1529,12 @@ customizations.ecastonline = customizations['ecast-demo'] =
 
   slider_pole_labels : agree_disagree
 
-  ProposalNavigation: ProposalNavigationWithMenu
   docking_proposal_header : true
 
   additional_auth_footer: -> 
 
     auth = fetch('fetch')
-    if auth.ask_questions && auth.form != 'edit profile'
+    if auth.ask_questions && auth.form in ['create account', 'create account via invitation', 'user questions']
       return DIV 
         style:
           fontSize: 13
@@ -1656,6 +1677,8 @@ customizations.bitcoin =
 
   show_score: true
 
+  cluster_order: ['Blocksize Survey', 'Proposals']   
+
   'cluster/Blocksize Survey': 
     show_crafting_page_first: false
 
@@ -1753,6 +1776,8 @@ customizations['on-chain-conf'] = _.extend {},
 
   slider_pole_labels: interested
 
+  cluster_order: ['Events', 'On-chain scaling', 'Other topics']
+
   'cluster/On-chain scaling': 
     slider_pole_labels: interested
 
@@ -1767,6 +1792,10 @@ customizations['on-chain-conf'] = _.extend {},
 customizations['kulahawaiinetwork'] = 
   show_proposer_icon: true
   collapse_descriptions_at: 300
+
+  clusters_to_always_show: ['Leadership', 'Advocacy & Public Relations', 'Building Kula Resources & Sustainability', \
+                           'Cultivating Kumu', 'Relevant Assessments', 'Teacher Resources', \
+                           '‘Ōlelo Hawai’i', '3C Readiness'] 
 
   cluster_filters: 
     'Advocacy & Public Relations': ['Advocacy & Public Relations']
@@ -1862,6 +1891,9 @@ customizations.dao = _.extend {},
 
   default_proposal_sort: 'trending'
 
+  cluster_order: ["Proposed to DAO", 'Under development', 'New', 'Needs more description', 'Funded', 'Rejected', 'Archived', 'Proposals', 'Ideas', 'Meta', 'DAO 2.0 Wishlist', 'Hack', 'Hack meta']
+  clusters_to_always_show: ['Proposed to DAO', 'Under development',  'Proposals', 'Meta']
+
   proposal_tips: [
     'Describe your idea in sufficient depth for others to evaluate it. The title is usually not enough.'
     'Link to any contract code, external resources, or videos.'
@@ -1943,6 +1975,7 @@ customizations.bitcoinclassic = _.extend {},
 
 
 customizations['bitcoinfoundation'] = 
+  cluster_order: ['Proposals', 'Trustees', 'Members']
 
   opinion_filters: [ {
       label: 'members'
@@ -2000,9 +2033,6 @@ customizations.livingvotersguide =
   civility_pledge: true
 
   slider_pole_labels: support_oppose
-
-  #ProposalNavigation: ProposalNavigationWithMenu
-  #docking_proposal_header : true
 
   'cluster/Advisory votes': 
     archived: true

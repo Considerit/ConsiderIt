@@ -40,6 +40,7 @@ require './edit_point'
 require './edit_comment'
 require './point'
 require './translations'
+require './proposal_navigation'
 
 
 ## ########################
@@ -173,7 +174,7 @@ Proposal = ReactiveComponent
          (can_opine == Permission.DISABLED && your_opinion.published))
       updateProposalMode('results', 'permission not granted for crafting')
     
-    proposal_header = (customization('ProposalNavigation', @proposal))()
+    proposal_header = DefaultProposalNavigation()
 
     newpoint_threshold = @buildNewPointThreshold()
     draw_handle = (can_opine not in [Permission.DISABLED, \

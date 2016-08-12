@@ -91,6 +91,43 @@ window.opinionsForProposal = (proposal) ->
                !filter_func or filter_func(fetch(opinion.user)))
   opinions
 
+window.get_all_clusters = ->
+  proposals = fetch '/proposals'
+  always_show = customization 'clusters_to_always_show'
+  all_clusters = ((p.cluster or 'Proposals').trim() for p in proposals.proposals)
+  all_clusters = all_clusters.concat always_show
+  all_clusters = _.uniq all_clusters
+  all_clusters
+
+window.clustered_proposals = -> 
+  proposals = fetch '/proposals'
+  cluster_order = customization 'cluster_order'
+
+  # create clusters
+  clusters = {}
+
+  all_clusters = get_all_clusters()
+
+  for cluster in all_clusters
+    sort = cluster_order.indexOf cluster
+    sort = 9999999999 if sort < 0
+
+    clusters[cluster] = 
+      key: "cluster/#{cluster}"
+      name: cluster
+      proposals: []
+      archived: customization('archived', "cluster/#{cluster}")
+      sort_order: sort
+
+  for proposal in proposals.proposals 
+    cluster = (proposal.cluster or 'Proposals').trim()
+    clusters[cluster].proposals.push proposal
+
+  # order
+  ordered_clusters = _.values clusters 
+  ordered_clusters.sort (a,b) -> a.sort_order - b.sort_order
+  ordered_clusters 
+
 
 ######
 # Expands a key like 'slider' to one that is namespaced to a parent object, 

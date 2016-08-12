@@ -4,7 +4,7 @@
 def dirty_if_any_private_proposals(real_user)
   matters = false 
 
-  proposals, _, __ = Proposal.all_proposals_for_subdomain
+  proposals = Proposal.all_proposals_for_subdomain
 
   dummy = User.new
 

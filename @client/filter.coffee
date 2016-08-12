@@ -7,9 +7,8 @@ require './customizations'
 
 get_all_tags = -> 
   proposals = fetch '/proposals'
-  proposals = _.flatten (c.proposals for c in proposals.clusters)
   all_tags = {}
-  for proposal in proposals 
+  for proposal in proposals.proposals 
     text = "#{proposal.name} #{proposal.description}"
 
     if text.indexOf("#") > -1 && tags = text.match(/#(\w+)/g)
@@ -35,7 +34,6 @@ ApplyFilters = ReactiveComponent
     filter_out.proposals ||= {}
 
     proposals = fetch '/proposals'
-    proposals = _.flatten (c.proposals for c in proposals.clusters)
 
     new_filter_out = {}
 
@@ -43,7 +41,7 @@ ApplyFilters = ReactiveComponent
       if !regexes[filter]
         regexes[filter] = new RegExp filter, 'i'
 
-    for proposal in proposals 
+    for proposal in proposals.proposals
       editor = proposal_editor(proposal)
       if editor 
         editor = fetch(editor).name 

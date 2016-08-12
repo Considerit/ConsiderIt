@@ -42,6 +42,7 @@ class Proposal < ActiveRecord::Base
 
   def self.all_proposals_for_subdomain(subdomain = nil)
     subdomain ||= current_subdomain
+    proposals = nil 
 
     # if a subdomain wants only specific clusters, ordered in a particular way, specify here
     manual_clusters = nil
@@ -68,140 +69,69 @@ class Proposal < ActiveRecord::Base
       manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
       proposals = subdomain.proposals.where('cluster IN (?)', manual_clusters)
 
-    else
-      proposals = nil 
-
-      if subdomain.name == 'homepage'        
-        ActsAsTenant.without_tenant do 
-          proposals = Proposal
-                        .where(:hide_on_homepage => false)
-                        .where('name != "Consider.it can help me"')
-                        .where(:published => true)
-        end 
-      else 
-        proposals = subdomain.proposals.where(:hide_on_homepage => false)
-      end
-
-      case subdomain.name.downcase
-        when 'dao'
-          manual_clusters = ["Proposed to DAO", 'Under development', 'New', 'Needs more description', 'Funded', 'Rejected', 'Archived', 'Proposals', 'Ideas', 'Meta', 'DAO 2.0 Wishlist', 'Hack', 'Hack meta']
-          always_shown = ['Proposed to DAO', 'Under development',  'Proposals', 'Meta']
-
-        when 'kulahawaiinetwork'
-          manual_clusters = []
-          always_shown = ['Leadership', 'Advocacy & Public Relations', 'Building Kula Resources & Sustainability', 'Cultivating Kumu', 'Relevant Assessments', 'Teacher Resources', '‘Ōlelo Hawai’i', '3C Readiness']
-
-        when 'on-chain-conf'
-          manual_clusters = ['Events', 'On-chain scaling', 'Other topics'] 
-
-        when 'bitcoin'
-          manual_clusters = ['Blocksize Survey', 'Proposals'] 
-
-        when 'bitcoinfoundation'
-          manual_clusters = ['Proposals', 'Trustees', 'Members']
-
-        when 'random2015', 'program-committee-demo'
-          manual_clusters = ['Submissions', 'Under Review', 'Probably Accept', 
-                             'Accepted', 'Probably Reject', 'Rejected']
-        
-        when 'seattle2035'
-          manual_clusters = ['Key Proposals', 'Big Changes', 'Overall']
-
-        when 'hala'
-          manual_clusters = ['Preservation of Existing Affordable Housing',  'Urban Village Expansion', 'Historic Areas and Unique Conditions', 'Housing Options and Community Assets', 'Transitions', 'Urban Design Quality', 'Fair Chance Housing', 'Minimize Displacement']
-
-        when 'engageseattle'
-          manual_clusters = ['Value in engagement',  'Meeting preferences', 'Community Involvement Commission', 'Community Involvement Commission Roles', 'Engagement Ideas']
-          always_shown = manual_clusters
-
-        when 'cir'
-          manual_clusters = ['Questions']
-          always_shown = manual_clusters
-
-
-        when 'monitorinstitute'
-          manual_clusters = ['Intellectual Agenda Items', 'Overall']
-
-        when 'swotconsultants', 'swotconsultants1'
-          manual_clusters = ['Strengths', 'Weaknesses', 'Opportunities', 'Threats']
-
-
-        when 'carcd', 'carcd-demo'
-          manual_clusters = ['Serving Districts', 'Program Emphasis', 'Lagging Districts', 'Accreditation', \
-                             'Questions', "CARCD's role in Emerging Resources", \
-                             "CARCD's role in Regional Alignment", \
-                             "CARCD's Role for the Community"]
-      end
+    elsif subdomain.name == 'homepage'        
+      ActsAsTenant.without_tenant do 
+        proposals = Proposal
+                      .where(:hide_on_homepage => false)
+                      .where('name != "Consider.it can help me"')
+                      .where(:published => true)
+      end 
+    else 
+      proposals = subdomain.proposals.where(:hide_on_homepage => false)
     end
 
     proposals = proposals.where(moderation_status_check)
-
-    if manual_clusters
-      # add clusters that aren't explictly named to the end
-      proposals.each do |p|
-        cluster = p.cluster || 'Proposals'
-        if !manual_clusters.include?(cluster.strip)
-          manual_clusters.append cluster
-        end
-      end
-    end 
-
-    [proposals, manual_clusters, always_shown]
+    proposals
 
   end 
 
   def self.summaries(subdomain = nil, all_points = false)
     subdomain ||= current_subdomain
     
-    proposals, manual_clusters, always_shown = all_proposals_for_subdomain(subdomain)
-    clustered_proposals = {}
-    randomize_cluster_order = subdomain.name.downcase == 'cimsec'
+    proposals = all_proposals_for_subdomain(subdomain)
 
-    # group all proposals into clusters
-    most_recent = {}
+    # Impose access control restrictions for current user    
+    proposals = proposals.select {|p| permit('read proposal', p) > 0 }
 
-    your_opinions = {}
-    Opinion.where(:user => current_user).each do |opinion|
-      your_opinions[opinion.proposal_id] = opinion
-    end 
+    # make sure that there is an opinion created for current
+    # user for all proposals
+    if subdomain.name != 'homepage'
 
-    if your_opinions.keys().length < proposals.length
-      missing_opinions = []
-      proposals.each do |proposal|
-        if !your_opinions.has_key?(proposal.id)
-          missing_opinions << Opinion.new({
-            :proposal_id => proposal.id,
-            :user => current_user ? current_user : nil,
-            :subdomain_id => current_subdomain.id,
-            :stance => 0,
-            :point_inclusions => '[]',
-          })
-        end 
-      end 
-
-      Opinion.import missing_opinions
-
+      your_opinions = {}
       Opinion.where(:user => current_user).each do |opinion|
         your_opinions[opinion.proposal_id] = opinion
       end 
-    end 
 
-    points = []
-    proposals.each do |proposal|
-      cluster = proposal.cluster ? proposal.cluster.strip : 'Proposals'
+      if your_opinions.keys().length < proposals.length
+        missing_opinions = []
+        proposals.each do |proposal|
+          if !your_opinions.has_key?(proposal.id)
+            missing_opinions << Opinion.new({
+              :proposal_id => proposal.id,
+              :user => current_user ? current_user : nil,
+              :subdomain_id => current_subdomain.id,
+              :stance => 0,
+              :point_inclusions => '[]',
+            })
+          end 
+        end 
 
-      # Impose access control restrictions for current user
-      next if permit('read proposal', proposal) < 0
+        Opinion.import missing_opinions
 
-      if !most_recent[cluster] || most_recent[cluster] < proposal.created_at
-        most_recent[cluster] = proposal.created_at
-      end
+        Opinion.where(:user => current_user).each do |opinion|
+          your_opinions[opinion.proposal_id] = opinion
+        end 
+      end 
+    end
 
-      clustered_proposals[cluster] = [] if !clustered_proposals.has_key? cluster
+    proposals_obj = {
+      key: '/proposals',
+      proposals: proposals.map {|p| p.as_json({}, your_opinions[p.id])}
+    }
 
-      clustered_proposals[cluster].append proposal.as_json({}, your_opinions[proposal.id])
-
-      if all_points 
+    if all_points 
+      points = []
+      proposals.each do |proposal|
         if subdomain.moderate_points_mode == 1
           moderation_status_check = 'moderation_status=1'
         else 
@@ -210,51 +140,10 @@ class Proposal < ActiveRecord::Base
 
         points.concat proposal.points.where("(published=1 AND #{moderation_status_check})").public_fields.map {|p| p.as_json}
       end
-
+      proposals_obj[:points] = points
     end
 
-
-    always_shown.each do |cluster|
-      clustered_proposals[cluster] = [] if !clustered_proposals.has_key? cluster   
-      most_recent[cluster] = 0   
-    end 
-
-    # now order the clusters
-    if manual_clusters
-      ordered_clusters = manual_clusters
-      for cluster in always_shown
-        ordered_clusters.append(cluster) if ordered_clusters.index(cluster) == nil
-      end
-
-    elsif randomize_cluster_order
-      ordered_clusters = clustered_proposals.keys().shuffle
-    else
-      # order the group by most recent proposal
-      ordered_clusters = clustered_proposals.keys().sort {|c1,c2|      
-        most_recent[c1] < most_recent[c2] ? 1 : -1
-      }
-
-    end
-
-
-    clusters = ordered_clusters.map {|cluster| 
-      { 
-        :name => cluster, 
-        :proposals => clustered_proposals[cluster],
-        :always_shown => always_shown.include?(cluster)
-      } 
-
-      }.select {|c| c[:proposals]}
-
-    proposals = {
-      key: '/proposals',
-      clusters: clusters, 
-    }
-    if all_points 
-      proposals[:points] = points
-    end
-
-    proposals
+    proposals_obj
 
   end
 

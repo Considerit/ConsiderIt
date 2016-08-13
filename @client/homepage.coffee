@@ -424,7 +424,7 @@ Cluster = ReactiveComponent
     is_collapsed = collapsed.clusters[@props.key]
 
     proposals = sorted_proposals(cluster.proposals)
-    return SPAN null if !proposals || (proposals.length == 0 && !(cluster.name in customization('cluster_to_always_show')))
+    return SPAN null if !proposals || (proposals.length == 0 && !(cluster.name in customization('clusters_to_always_show')))
 
     cluster_key = "cluster/#{cluster.name}"
 

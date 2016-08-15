@@ -22,23 +22,25 @@ class Proposal < ActiveRecord::Base
 
   # Sanitize the HTML fields that we insert dangerously in the client. 
   # We allow superadmins to post arbitrary HTML though. 
-  before_validation(on: [:create, :update]) do
+  before_validation(on: [:create]) do
 
     if !defined?(Rails::Console) && current_user && !current_user.is_admin?
       # Initialize fields if empty
       self.description        = self.description || '' 
       self.description_fields = self.description_fields || '[]' 
-
-      # Sanitize description
-      self.description = ActionController::Base.helpers.sanitize(self.description)
-      # Sanitize description_fields[i].html
-      self.description_fields =
-        JSON.dump(JSON.parse(self.description_fields).map { |field|
-                    field['html'] = ActionController::Base.helpers.sanitize(field['html'])
-                    field
-                  })
     end
+
+    # Sanitize description
+    self.description = ActionController::Base.helpers.sanitize(self.description)
+    # Sanitize description_fields[i].html
+    self.description_fields =
+      JSON.dump(JSON.parse(self.description_fields).map { |field|
+                  field['html'] = ActionController::Base.helpers.sanitize(field['html'])
+                  field
+                })    
   end
+
+  
 
   def self.all_proposals_for_subdomain(subdomain = nil)
     subdomain ||= current_subdomain

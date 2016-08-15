@@ -114,15 +114,27 @@ class ProposalController < ApplicationController
       end
       text_updated = updated_fields.include?('name') || updated_fields.include?('description')
       
+      fields_to_validate = {}
       fields.each do |f|
-        if !updated_fields.has_key?(f)
-          updated_fields[f] = proposal[f]
-        end
+        fields_to_validate[f] = updated_fields[f] || proposal[f]
       end
 
-      errors = validate_input(updated_fields, proposal)
-
+      errors = validate_input(fields_to_validate, proposal)
+      
       if errors.length == 0
+
+        if updated_fields.has_key?('description')
+          # Sanitize description
+          updated_fields['description'] = ActionController::Base.helpers.sanitize(updated_fields['description'])
+        end 
+        if updated_fields.has_key?('description_fields')
+          # Sanitize description_fields[i].html
+          updated_fields['description_fields'] =
+            JSON.dump(JSON.parse(updated_fields['description_fields']).map { |field|
+                        field['html'] = ActionController::Base.helpers.sanitize(field['html'])
+                        field
+                      })
+        end 
 
         update_roles(proposal)
 

@@ -166,8 +166,16 @@ window.BrowserLocation = ReactiveComponent
       #       runs, and overrides it. 
 
 
-      int = setInterval -> 
-        el = document.querySelector("##{loc.hash}")
+      int = setInterval ->
+        el = null 
+        try 
+          el = document.querySelector("##{loc.hash}")
+        catch e 
+          noop = 1
+
+        if !el 
+          el = document.querySelector("#p#{loc.hash}")
+
         if el
           # If there are docked elements, we want to scroll a bit 
           # before the element so that the docked elements don't 

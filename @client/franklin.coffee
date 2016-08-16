@@ -211,14 +211,7 @@ Proposal = ReactiveComponent
       DIV 
         className: 'proposal_header'
 
-        if customization('docking_proposal_header', @proposal)
-          Dock
-            dock_on_zoomed_screens: false
-            skip_jut: true
-            proposal_header
-
-        else
-          proposal_header
+        proposal_header
 
       DIV null,
 
@@ -287,7 +280,7 @@ Proposal = ReactiveComponent
             position: 'relative'
             paddingBottom: '4em' #padding instead of margin for docking
             margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
-            display: if !customization('discussion', @proposal) then 'none'
+            display: if !customization('discussion_enabled', @proposal) then 'none'
 
           # Border + bubblemouth that is shown when there is a histogram selection
           GroupSelectionRegion()
@@ -307,7 +300,7 @@ Proposal = ReactiveComponent
             style: 
               visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
-          if !TWO_COL() && customization('discussion', @proposal)
+          if !TWO_COL() && customization('discussion_enabled', @proposal)
             Dock
               key: 'decisionboard-dock'
               docked_key: 'decisionboard'            
@@ -404,7 +397,7 @@ ProposalDescription = ReactiveComponent
       catch
         @local.description_fields = null
 
-    @max_description_height = customization('collapse_descriptions_at', @proposal)
+    @max_description_height = customization('collapse_proposal_description_at', @proposal)
 
     DIV           
       style: 
@@ -426,7 +419,7 @@ ProposalDescription = ReactiveComponent
 
         @proposal.name
 
-        if customization('show_meta')
+        if customization('show_proposal_meta_data')
           DIV 
             style: 
               fontSize: 16
@@ -1858,6 +1851,8 @@ Page = ReactiveComponent
             ModerationDash key: "/page/dashboard/moderate"
           when '/dashboard/application'
             AppSettingsDash key: "/page/dashboard/application"
+          when '/dashboard/customizations'
+            CustomizationsDash key: "/page/dashboard/customizations"
           when '/dashboard/roles'
             SubdomainRoles key: "/page/dashboard/roles"
           when '/dashboard/tags'

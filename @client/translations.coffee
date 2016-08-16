@@ -12,7 +12,8 @@ require './customizations'
 # args is optional object that will be passed onto the label
 #
 window.t = (label, args) -> 
-  lang = customization('lang') # get the language defined for this subdomain
+  subdomain = fetch('/subdomain')
+  lang = subdomain.lang or 'en' # get the language defined for this subdomain
 
   if !dict[lang]?
     throw "Sorry, don't support language #{lang}"

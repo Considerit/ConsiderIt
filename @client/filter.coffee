@@ -67,7 +67,7 @@ window.sorted_proposals = (proposals) ->
   sort = fetch 'sort_proposals'
   set_sort() if !sort.func? 
 
-  proposal_rank = sort.func or customization("proposal_rank")
+  proposal_rank = sort.func
 
   proposals = proposals.slice().sort (a,b) ->
     return proposal_rank(b, sort.opinion_value) - proposal_rank(a, sort.opinion_value)
@@ -155,8 +155,8 @@ sort_options = [
 
 set_sort = -> 
   sort = fetch 'sort_proposals'
-  if !sort.func?
 
+  if !sort.func?
     found = false 
     loc = fetch('location')
     if loc.query_params?.sort_by
@@ -167,13 +167,10 @@ set_sort = ->
           break
 
     if !found
-      if customization("proposal_rank")
-        sort.func = customization("proposal_rank")
-        sort.name = 'custom'
-      else if customization('default_proposal_sort')
+      if def_sort = customization('homepage_default_sort_order')
         def = null 
         for s in sort_options
-          if s.name == customization('default_proposal_sort')
+          if s.name == def_sort
             def = s
             break 
         _.extend sort, def or sort_options[0]
@@ -197,6 +194,10 @@ ProposalFilter = ReactiveComponent
     filters = fetch 'filters'
 
     sort = fetch 'sort_proposals'
+
+    subdomain = fetch '/subdomain'
+
+    return SPAN null if !subdomain.name
 
     set_sort() if !sort.func? 
 

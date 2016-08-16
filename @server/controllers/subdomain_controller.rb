@@ -7,7 +7,7 @@ class SubdomainController < ApplicationController
   include Invitations
 
   def index 
-    subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name}}
+    subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations}}
     render :json => [{
       key: '/subdomains',
       subs: subdomains
@@ -99,7 +99,7 @@ class SubdomainController < ApplicationController
       raise PermissionDenied.new Permission::DISABLED
     end
 
-    fields = ['moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'google_analytics_code']
+    fields = ['lang', 'moderate_points_mode', 'moderate_comments_mode', 'moderate_proposals_mode', 'about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'google_analytics_code']
     attrs = params.select{|k,v| fields.include? k}
 
     update_roles
@@ -114,6 +114,11 @@ class SubdomainController < ApplicationController
     if current_user.super_admin && params.has_key?('plan')
       attrs['plan'] = params['plan'].to_i
     end 
+
+    if current_user.super_admin && params.has_key?('customizations')
+      attrs['customizations'] = params['customizations']
+    end 
+
 
     current_user.add_to_active_in
     current_subdomain.update_attributes! attrs

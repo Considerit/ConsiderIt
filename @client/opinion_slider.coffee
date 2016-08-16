@@ -64,7 +64,6 @@ window.OpinionSlider = ReactiveComponent
                       'rgb(200, 200, 200)'
         base_endpoint: if slider.docked then 'square' else 'sharp'
         regions: customization('slider_regions', @proposal)
-        draw_ticks: customization('slider_ticks', @proposal)
         polarized: true
         draw_helpers: @props.focused && !slider.has_moved
         handle: if @props.backgrounded 
@@ -89,7 +88,7 @@ window.OpinionSlider = ReactiveComponent
     slider = fetch @props.key
     current_user = fetch '/current_user'
 
-    return SPAN null if (!TWO_COL() && customization('discussion', @proposal))  || \
+    return SPAN null if (!TWO_COL() && customization('discussion_enabled', @proposal))  || \
                         ( your_opinion.published || \
                           (!slider.has_moved && your_opinion.point_inclusions.length == 0)\
                         ) || slider.is_moving
@@ -190,10 +189,8 @@ window.OpinionSlider = ReactiveComponent
         t('Slide Your Overall Opinion')
       else if func = labels.slider_feedback
         func slider.value, @proposal
-      else if !customization('show_slider_feedback', @proposal)
+      else
         if TWO_COL() then t("Your opinion") else ''        
-      else 
-        ''
 
     feedback_style = 
       pointerEvents: 'none' 
@@ -236,7 +233,7 @@ window.OpinionSlider = ReactiveComponent
     # when we've been dragging on the results page.
     transition = !TWO_COL() && \
        (slider.value == your_opinion.stance || mode == 'results') &&
-       customization('discussion', @proposal)
+       customization('discussion_enabled', @proposal)
 
     if transition
       new_page = if mode == 'results' then 'crafting' else 'results'

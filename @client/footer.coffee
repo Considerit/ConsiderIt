@@ -8,7 +8,7 @@ window.Footer = ReactiveComponent
       style: 
         position: 'relative'
         zIndex: 0
-      customization('Footer')()
+      customization('SiteFooter')()
 
 
 window.DefaultFooter = ReactiveComponent

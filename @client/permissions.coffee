@@ -73,7 +73,7 @@ permit = (action) ->
       if !current_user.is_admin && !matchSomeRole(proposal.roles, ['editor', 'writer', 'opiner'])
         return Permission.INSUFFICIENT_PRIVILEGES 
 
-      required_info = _.pluck _.where(customization('auth.user_questions'), {required: true}), 'tag' 
+      required_info = _.pluck _.where(customization('auth_questions'), {required: true}), 'tag' 
       existing_required_info = _.intersection required_info, _.keys(current_user.tags)
 
       if existing_required_info.length != required_info.length

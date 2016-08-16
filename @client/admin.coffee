@@ -487,7 +487,7 @@ CustomizationsDash = ReactiveComponent
     current_user = fetch '/current_user'
     subdomains = fetch('/subdomains')
 
-    sub_ids = {}
+    sub_ids = {'': ''}
     for sub in subdomains.subs when sub.customizations?.length > 0 && sub.name != subdomain.name
       sub_ids[sub.name.toLowerCase()] = sub.customizations
 

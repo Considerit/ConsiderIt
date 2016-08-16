@@ -47,13 +47,12 @@ window.CollapsedProposal = ReactiveComponent
     opinions = opinionsForProposal(proposal)
     
 
-    show_score = customization('show_score', proposal)
+    show_proposal_scores = customization('show_proposal_scores', proposal)
     icons = customization('show_proposer_icon', proposal)
-    slider_ticks = customization('slider_ticks', proposal)
     slider_regions = customization('slider_regions', proposal)
 
 
-    if show_score
+    if show_proposal_scores
       score = 0
       filter_out = fetch 'filtered'
       opinions = (o for o in opinions when !filter_out.users?[o.user])
@@ -87,11 +86,13 @@ window.CollapsedProposal = ReactiveComponent
 
     DIV
       key: proposal.key
-      id: proposal.slug.replace('-', '_')
+      id: 'p' + proposal.slug.replace('-', '_')  # Initial 'p' is because all ids must begin 
+                                           # with letter. seeking to hash was failing 
+                                           # on proposals whose name began with number.
       style:
         minHeight: 70
         position: 'relative'
-        marginBottom: if slider_ticks then 15 else 15
+        marginBottom: if slider_regions then 15 else 15
       onMouseEnter: => 
         if draw_slider
           @local.hover_proposal = proposal.key; save @local
@@ -166,7 +167,7 @@ window.CollapsedProposal = ReactiveComponent
               color: "#999"
               fontStyle: 'italic'
 
-            if customization('show_meta')
+            if customization('show_proposal_meta_data')
               SPAN 
                 style: {}
 
@@ -227,11 +228,7 @@ window.CollapsedProposal = ReactiveComponent
             height: 50
             enable_selection: false
             draw_base: true
-            draw_base_labels: if slider_ticks
-                                !slider_ticks 
-                              else 
-                                true
-
+            draw_base_labels: !slider_regions
 
           Slider 
             base_height: 0
@@ -241,7 +238,6 @@ window.CollapsedProposal = ReactiveComponent
             width: secnd_column.width
             polarized: true
             regions: slider_regions
-            draw_ticks: slider_ticks
             respond_to_click: false
             base_color: 'transparent'
             handle: slider_handle.triangley
@@ -293,7 +289,7 @@ window.CollapsedProposal = ReactiveComponent
                 save @local
       
       # little score feedback
-      if show_score
+      if show_proposal_scores
         DIV 
           ref: 'score'
           style: 

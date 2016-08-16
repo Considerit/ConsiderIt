@@ -63,12 +63,20 @@ class HtmlController < ApplicationController
 
     
     @js = "/#{manifest[@app]}"
-    @js_sub = "/#{manifest[current_subdomain.name.downcase]}"
 
     if Rails.application.config.action_controller.asset_host
       @js = "#{Rails.application.config.action_controller.asset_host}#{@js}"
-      @js_sub = "#{Rails.application.config.action_controller.asset_host}#{@js_sub}"
     end
+
+    if current_subdomain.customizations
+      customization_obj = current_subdomain.customizations.gsub '"', '\\"'
+      customization_obj = "{\n#{customization_obj}\n}"
+    else 
+      customization_obj = "{}"
+    end
+
+    # customization_code = File.read("@client/customizations_helpers.coffee")
+    # @customization_code = %x(echo "#{customization_code.gsub '"', '\\"'}\nwindow.customization_obj=#{customization_obj}" | coffee -scb)
 
     dirty_key '/asset_manifest'
     response.headers["Strict Transport Security"] = 'max-age=0'

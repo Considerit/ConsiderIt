@@ -1,5 +1,5 @@
 
-- cache ['application_layout', @app, @page, @is_search_bot, current_subdomain] do 
+- cache ['application_layout', @app, @page, @is_search_bot, current_user.super_admin, current_subdomain] do 
 
   !!! 5
 
@@ -76,8 +76,22 @@
           }
         }
 
+      %script{:type => 'text/javascript'}
+        window.asset_host = '#{Rails.application.config.action_controller.asset_host}'
+
       %script{:src => @js, :type => 'text/javascript'}
-      %script{:src => @js_sub, :type => 'text/javascript'}
+
+      / %script{:type => 'text/javascript'}
+      /   - pp @customization_code.gsub(/\n/,' pppppppp\\\n')
+      /   = "load_customization('#{current_subdomain.name}', \"#{@customization_code.gsub(/"/,"\\\"").gsub(/\n/,' \\ \n')}\")".html_safe
+
+
+      - if current_user.super_admin
+        %script{:src => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.min.js', :type => 'text/javascript'}
+        %script{:src => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/mode/coffeescript/coffeescript.js', :type => 'text/javascript'}
+        %link{:rel => 'stylesheet', :href => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.min.css'}
+
+
 
       - if @app == 'product_page' && Rails.env.production?
         :javascript

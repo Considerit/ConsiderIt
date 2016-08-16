@@ -362,7 +362,7 @@ window.Histogram = ReactiveComponent
     # 4) The style of the avatar when the histogram is backgrounded 
     #    (e.g. on the crafting page)
     backgrounded_page_avatar_style = _.extend {}, unselected_avatar_style, 
-      opacity: if customization('show_histogram_on_crafting') then .1 else 0.0
+      opacity: if customization('show_histogram_on_crafting', @props.proposal) then .1 else 0.0
 
     # Draw the avatars in the histogram. Placement will be determined later
     # by the physics sim

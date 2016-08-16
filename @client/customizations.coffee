@@ -2058,167 +2058,165 @@ customizations['cir'] =
 
 
 
-################
-# seattle2035
 
-customizations['seattle2035'] = 
-  show_proposer_icon: true
-  auth_require_pledge: true
+# customizations['seattle2035'] = 
+#   show_proposer_icon: true
+#   auth_require_pledge: true
 
-  homepage_list_order: ['Key Proposals', 'Big Changes', 'Overall']
+#   homepage_list_order: ['Key Proposals', 'Big Changes', 'Overall']
 
-  "list/Overall" : 
-    point_labels: point_labels.strengths_weaknesses
-    slider_pole_labels: slider_labels.yes_no
+#   "list/Overall" : 
+#     point_labels: point_labels.strengths_weaknesses
+#     slider_pole_labels: slider_labels.yes_no
 
 
-  auth_questions : [
-    { 
-      tag: 'zip.editable'
-      question: 'The zipcode where I live is'
-      input: 'text'
-      required: false
-      input_style: 
-        width: 85
-      validation: (zip) ->
-        return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip)
-    }, {
-      tag: 'age.editable'
-      question: 'My age is'
-      input: 'text'
-      input_style: 
-        width: 85        
-      required: false
-    }, {
-      tag: 'race.editable'
-      question: 'My race is'
-      input: 'text'
-      required: false
-    }, {
-      tag: 'hispanic.editable'
-      question: "I'm of Hispanic origin"
-      input: 'dropdown'
-      options:['No', 'Yes']
-      required: false
-    }, {
-      tag: 'gender.editable'
-      question: "My gender is"
-      input: 'dropdown'
-      options:['Female', 'Male', 'Transgender', 'Other']
-      required: false
-    }, {
-      tag: 'home.editable'
-      question: "My home is"
-      input: 'dropdown'
-      options:['Rented', 'Owned by me', 'Other']
-      required: false
-    }]
+#   auth_questions : [
+#     { 
+#       tag: 'zip.editable'
+#       question: 'The zipcode where I live is'
+#       input: 'text'
+#       required: false
+#       input_style: 
+#         width: 85
+#       validation: (zip) ->
+#         return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(zip)
+#     }, {
+#       tag: 'age.editable'
+#       question: 'My age is'
+#       input: 'text'
+#       input_style: 
+#         width: 85        
+#       required: false
+#     }, {
+#       tag: 'race.editable'
+#       question: 'My race is'
+#       input: 'text'
+#       required: false
+#     }, {
+#       tag: 'hispanic.editable'
+#       question: "I'm of Hispanic origin"
+#       input: 'dropdown'
+#       options:['No', 'Yes']
+#       required: false
+#     }, {
+#       tag: 'gender.editable'
+#       question: "My gender is"
+#       input: 'dropdown'
+#       options:['Female', 'Male', 'Transgender', 'Other']
+#       required: false
+#     }, {
+#       tag: 'home.editable'
+#       question: "My home is"
+#       input: 'dropdown'
+#       options:['Rented', 'Owned by me', 'Other']
+#       required: false
+#     }]
 
 
-  HomepageHeader: SeattleHeader
-    external_link: 'http://2035.seattle.gov/'
-    external_link_anchor: '2035.seattle.gov'
-    background_image_url: asset('seattle2035/banner.png')
-    image_style: 
-      borderBottom: "4px solid #{seattle_vars.pink}"      
+#   HomepageHeader: SeattleHeader
+#     external_link: 'http://2035.seattle.gov/'
+#     external_link_anchor: '2035.seattle.gov'
+#     background_image_url: asset('seattle2035/banner.png')
+#     image_style: 
+#       borderBottom: "4px solid #{seattle_vars.pink}"      
 
-    section_heading_style: 
-      color: seattle_vars.pink
-      fontSize: 28
+#     section_heading_style: 
+#       color: seattle_vars.pink
+#       fontSize: 28
 
-    external_link_style:
-      color: seattle_vars.pink
+#     external_link_style:
+#       color: seattle_vars.pink
       
-    sections: [
-      {
-        label: """Let’s talk about how Seattle is changing"""
-        label_style: 
-          fontSize: 44
-          marginTop: 10
+#     sections: [
+#       {
+#         label: """Let’s talk about how Seattle is changing"""
+#         label_style: 
+#           fontSize: 44
+#           marginTop: 10
 
-        paragraphs: ["""
-          Seattle is one of the fastest growing cities in America, expecting to add 
-          120,000 people and 115,000 jobs by 2035. We must plan for how 
-          and where that growth occurs.
-          """]
-      }, {
-        label: """The Seattle 2035 draft plan addresses Seattle’s growth"""
-        paragraphs: [
-          """We are pleased to present a #{cluster_link('http://2035.seattle.gov', 'Draft Plan')} 
-            for public discussion. The Draft Plan contains hundreds of 
-            policies that guide decisions about our city, including 
-            Key Proposals for addressing growth and change. 
-            These Key Proposals have emerged from conversations among 
-            City agencies and through 
-            #{cluster_link('http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2262500.pdf', 'public input')}.
-          """
-        ]
-      }, {
-        label: """We need your feedback on the Key Proposals in the Draft Plan"""
-        paragraphs: [
-          """
-          We have listed below some Key Proposals in the draft.
-          Do these Key Proposals make sense for Seattle over the coming twenty years? 
-          Please tell us by adding your opinion below. Your input will influence 
-          the Mayor’s Recommended Plan, 
-          #{cluster_link('http://2035.seattle.gov/about/faqs/#how-long', 'coming in 2016 ')}!
-          """
-        ]
-      }
-    ]
+#         paragraphs: ["""
+#           Seattle is one of the fastest growing cities in America, expecting to add 
+#           120,000 people and 115,000 jobs by 2035. We must plan for how 
+#           and where that growth occurs.
+#           """]
+#       }, {
+#         label: """The Seattle 2035 draft plan addresses Seattle’s growth"""
+#         paragraphs: [
+#           """We are pleased to present a #{cluster_link('http://2035.seattle.gov', 'Draft Plan')} 
+#             for public discussion. The Draft Plan contains hundreds of 
+#             policies that guide decisions about our city, including 
+#             Key Proposals for addressing growth and change. 
+#             These Key Proposals have emerged from conversations among 
+#             City agencies and through 
+#             #{cluster_link('http://www.seattle.gov/dpd/cs/groups/pan/@pan/documents/web_informational/p2262500.pdf', 'public input')}.
+#           """
+#         ]
+#       }, {
+#         label: """We need your feedback on the Key Proposals in the Draft Plan"""
+#         paragraphs: [
+#           """
+#           We have listed below some Key Proposals in the draft.
+#           Do these Key Proposals make sense for Seattle over the coming twenty years? 
+#           Please tell us by adding your opinion below. Your input will influence 
+#           the Mayor’s Recommended Plan, 
+#           #{cluster_link('http://2035.seattle.gov/about/faqs/#how-long', 'coming in 2016 ')}!
+#           """
+#         ]
+#       }
+#     ]
 
-    salutation: 
-      text: 'Thanks for your time,'
-      image: asset('seattle2035/DPD Logo.svg')
-      from: 'City of Seattle'
-      after:  """p.s. Email us at #{cluster_link("mailto:2035@seattle.gov", "2035@seattle.gov")}
-                 if you would like us to add another Key Proposal below for 
-                 discussion or you have a comment about another issue in the Draft Plan.
-              """
-    closed: true
-
-
+#     salutation: 
+#       text: 'Thanks for your time,'
+#       image: asset('seattle2035/DPD Logo.svg')
+#       from: 'City of Seattle'
+#       after:  """p.s. Email us at #{cluster_link("mailto:2035@seattle.gov", "2035@seattle.gov")}
+#                  if you would like us to add another Key Proposal below for 
+#                  discussion or you have a comment about another issue in the Draft Plan.
+#               """
+#     closed: true
 
 
 
-customizations['foodcorps'] = 
-  point_labels : point_labels.strengths_weaknesses
-  slider_pole_labels : slider_labels.ready_not_ready
-
-  SiteHeader: -> 
-    loc = fetch('location')
-
-    homepage = loc.url == '/'
-
-    DIV 
-      style: 
-        position: 'relative'
-        height: 200
-
-      IMG
-        src: asset('foodcorps/logo.png')
-        style:
-          height: 160
-          position: 'absolute'
-          top: 10
-          left: (WINDOW_WIDTH() - CONTENT_WIDTH()) / 2
-          zIndex: 5
 
 
-      DIV
-        style:
-          background: "url(#{asset('foodcorps/bg.gif')}) repeat-x"
-          height: 68
-          width: '100%'
-          position: 'relative'
-          top: 116
-          left: 0
+# customizations['foodcorps'] = 
+#   point_labels : point_labels.strengths_weaknesses
+#   slider_pole_labels : slider_labels.ready_not_ready
 
-      back_to_homepage_button
-        top: 52
-        left: 15
-        color: 'white'
-        position: 'relative'
+#   SiteHeader: -> 
+#     loc = fetch('location')
+
+#     homepage = loc.url == '/'
+
+#     DIV 
+#       style: 
+#         position: 'relative'
+#         height: 200
+
+#       IMG
+#         src: asset('foodcorps/logo.png')
+#         style:
+#           height: 160
+#           position: 'absolute'
+#           top: 10
+#           left: (WINDOW_WIDTH() - CONTENT_WIDTH()) / 2
+#           zIndex: 5
+
+
+#       DIV
+#         style:
+#           background: "url(#{asset('foodcorps/bg.gif')}) repeat-x"
+#           height: 68
+#           width: '100%'
+#           position: 'relative'
+#           top: 116
+#           left: 0
+
+#       back_to_homepage_button
+#         top: 52
+#         left: 15
+#         color: 'white'
+#         position: 'relative'
 
 
 customizations['sosh'] = 
@@ -3000,559 +2998,559 @@ customizations['on-chain-conf'] = _.extend {},
 
 
 # customizations['kulahawaiinetwork'] = 
-#   show_proposer_icon: true
-#   collapse_proposal_description_at: 300
-
-#   homepage_lists_to_always_show: ['Leadership', 'Advocacy & Public Relations', 'Building Kula Resources & Sustainability', \
-#                            'Cultivating Kumu', 'Relevant Assessments', 'Teacher Resources', \
-#                            '‘Ōlelo Hawai’i', '3C Readiness'] 
-
-#   homepage_tabs: 
-#     'Advocacy & Public Relations': ['Advocacy & Public Relations']
-#     'Building Kula Resources & Sustainability': ['Building Kula Resources & Sustainability']
-#     'Cultivating Kumu': ['Cultivating Kumu']
-#     'Relevant Assessments': ['Relevant Assessments']
-#     'Teacher Resources': ['Teacher Resources']
-#     '‘Ōlelo Hawai’i': ['‘Ōlelo Hawai’i']
-#     '3C Readiness': ['3C Readiness']
-#     'Leadership': ['Leadership']
-
-
-#   'list/Advocacy & Public Relations':
-#     list_items_title: 'Ideas'
-
-#     list_label: 'Advocacy & Public Relations'
-#     list_description: [
-#       """A space to discuss ideas about two things:
-#          <ul style='list-style:outside;padding-left:40px'>
-#            <li>Sharing information and activating kula communities to improve policies 
-#                related to (1) ʻŌlelo Hawaiʻi, culture, and ʻāina-based education and 
-#                (2) Positions on issues supported by the network</li>
-#            <li>Creating and sharing stories of kula and network successes to improve 
-#                public perceptions and gain support for Hawaiian-focused education & outcomes.</li>
-#          </ul>
-#       """
-#     ]
-
-#   'list/Building Kula Resources & Sustainability':
-#     list_items_title: 'Ideas'
-#     list_label: 'Building Kula Resources & Sustainability'
-#     list_description: "A space to discuss ideas around joining efforts across kula to enhance opportunities to increase kula resources and sustainability."
-
-
-#   'list/Cultivating Kumu':
-#     list_items_title: 'Ideas'
-#     list_label: 'Cultivating Kumu'
-#     list_description: [
-#       """A space to discuss ideas about two things:
-#          <ul style='list-style:outside;padding-left:40px'>
-#            <li>Attracting, training, recruiting, growing, retaining, and supporting the preparation of novice teachers, excellent kula leaders, kumu, and staff for learning contexts where ʻōlelo Hawaiʻi, culture, and ʻāina-based experiences are foundational.</li>
-#            <li>Growing two related communities of kumu and kula leaders who interact regularly, share and learn from one another, develop pilina with one another, and provide support ot one another.</li>
-#          </ul>
-#       """
-#     ]
-
-#   'list/Relevant Assessments':
-#     list_items_title: 'Ideas'
-
-#     list_label: 'Relevant Assessments'
-#     list_description: "A space to discuss ideas around the development of shared assessments that honor the many dimensions of student growth involved in learning contexts where ʻōlelo Hawaiʻi, culture, and ʻāina-based experiences are foundational. Are we willing to challenge the mainstream concep to education success?"
-
-
-#   'list/Teacher Resources':
-#     list_items_title: 'Ideas'
-#     list_label: 'Teacher Resources'
-#     list_description: "A space to discuss ideas around the creation of new (and compiling existing) ʻōlelo Hawaiʻi, culture, and ʻāina-based teaching resources to share widely in an online waihona."
-
-
-#   'list/‘Ōlelo Hawai’i':
-#     list_items_title: 'Ideas'
-#     list_label: '‘Ōlelo Hawai’i'
-#     list_description: "A space to discuss ideas around the way we use our network of Hawaiian Educational Organizationsʻ Synergy to increase the amount of Hawaiian Language speakers so that the language will again be thriving!"
-
-#   'list/3C Readiness':
-#     list_items_title: 'Ideas'
-#     list_label: '3C Readiness'
-#     list_description: "A space to discuss ideas around nurturing college, career, and community readiness in haumāna. How do we provide experiences for haumāna that integrate and bridge high-school, college, career, and community engagement experiences?"
-
-#   'list/Leadership':
-#     list_items_title: 'Ideas'
-#     list_label: 'Leadership'
-#     list_description: "A space for network leaders to gather mana’o."
-
-#   SiteHeader: HawaiiHeader
-#     background_image_url: asset('hawaii/KulaHawaiiNetwork.jpg')
-#     title: "Envision the Kula Hawai’i Network"
-#     subtitle: 'Please share your opinion. Click any proposal below to get started.'
-#     # background_color: '#78d18b'
-#     # logo_width: 100
-
-
-
-
-customizations.dao = _.extend {}, 
   show_proposer_icon: true
   collapse_proposal_description_at: 300
 
-  homepage_show_search_and_sort: true
-
-  auth_require_pledge: true
-
-  homepage_show_new_proposal_button: false 
-
-  show_crafting_page_first: false
-
-  homepage_default_sort_order: 'trending'
-
-  homepage_list_order: ['Proposed to DAO', 'Under development', 'New', 'Needs more description', 'Funded', 'Rejected', 'Archived', 'Proposals', 'Ideas', 'Meta', 'DAO 2.0 Wishlist', 'Hack', 'Hack meta']
-  homepage_lists_to_always_show: ['Proposed to DAO', 'Under development',  'Proposals', 'Meta']
-
-  new_proposal_tips: [
-    'Describe your idea in sufficient depth for others to evaluate it. The title is usually not enough.'
-    'Link to any contract code, external resources, or videos.'
-    'Link to any forum.daohub.org or /r/thedao where more free-form discussion about your idea is happening.'
-    'Take responsibility for improving your idea given feedback.'
-  ]
+  homepage_lists_to_always_show: ['Leadership', 'Advocacy & Public Relations', 'Building Kula Resources & Sustainability', \
+                           'Cultivating Kumu', 'Relevant Assessments', 'Teacher Resources', \
+                           '‘Ōlelo Hawai’i', '3C Readiness'] 
 
   homepage_tabs: 
-    'Inspire Us': ['Ideas', 'Proposals']
-    'Proposal Pipeline': ['New', 'Proposed to DAO', 'Under development',  'Needs more description', 'Funded', 'Rejected', 'Archived']
-    'Meta Proposals': ['Meta', 'Hack', '*']
-    'Hack Response': ['Hack', 'Hack meta']
-  #homepage_default_tab: 'Hack Response'
+    'Advocacy & Public Relations': ['Advocacy & Public Relations']
+    'Building Kula Resources & Sustainability': ['Building Kula Resources & Sustainability']
+    'Cultivating Kumu': ['Cultivating Kumu']
+    'Relevant Assessments': ['Relevant Assessments']
+    'Teacher Resources': ['Teacher Resources']
+    '‘Ōlelo Hawai’i': ['‘Ōlelo Hawai’i']
+    '3C Readiness': ['3C Readiness']
+    'Leadership': ['Leadership']
 
 
-  'list/Under development':
-    list_is_archived: false
-
-  'list/Proposed to DAO':
-    list_one_line_desc: 'Proposals submitted to The Dao\'s smart contract'
-
-  'list/Needs more description':
-    list_is_archived: true
-    list_one_line_desc: 'Proposals needing more description to evaluate'
-
-  'list/Funded':
-    list_is_archived: true 
-    list_one_line_desc: 'Proposals already funded by The DAO'
-
-  'list/Rejected':
-    list_is_archived: true   
-    list_one_line_desc: 'Proposals formally rejected by The DAO'
-  
-  'list/Archived':
-    list_is_archived: true 
-
-  'list/Done':
-    list_is_archived: true
-
-  'list/Proposals':
+  'list/Advocacy & Public Relations':
     list_items_title: 'Ideas'
 
-  'list/Name the DAO':
-    list_is_archived: true
+    list_label: 'Advocacy & Public Relations'
+    list_description: [
+      """A space to discuss ideas about two things:
+         <ul style='list-style:outside;padding-left:40px'>
+           <li>Sharing information and activating kula communities to improve policies 
+               related to (1) ʻŌlelo Hawaiʻi, culture, and ʻāina-based education and 
+               (2) Positions on issues supported by the network</li>
+           <li>Creating and sharing stories of kula and network successes to improve 
+               public perceptions and gain support for Hawaiian-focused education & outcomes.</li>
+         </ul>
+      """
+    ]
 
-  SiteHeader: ->
-    homepage = fetch('location').url == '/'
-
-    DIV
-      style:
-        position: 'relative'
-        background: "linear-gradient(-45deg, #{dao_vars.purple}, #{dao_vars.blue})"
-        paddingBottom: if !homepage then 20
-        borderBottom: "2px solid #{dao_vars.yellow}"
-
-
-      onMouseEnter: => @local.hover=true;  save(@local)
-      onMouseLeave: => @local.hover=false; save(@local)
-
-
-
-
-      STYLE null,
-        '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
-           p {margin-bottom: 1em}'''
+  'list/Building Kula Resources & Sustainability':
+    list_items_title: 'Ideas'
+    list_label: 'Building Kula Resources & Sustainability'
+    list_description: "A space to discuss ideas around joining efforts across kula to enhance opportunities to increase kula resources and sustainability."
 
 
-      DIV 
-        style: 
-          marginLeft: 70
+  'list/Cultivating Kumu':
+    list_items_title: 'Ideas'
+    list_label: 'Cultivating Kumu'
+    list_description: [
+      """A space to discuss ideas about two things:
+         <ul style='list-style:outside;padding-left:40px'>
+           <li>Attracting, training, recruiting, growing, retaining, and supporting the preparation of novice teachers, excellent kula leaders, kumu, and staff for learning contexts where ʻōlelo Hawaiʻi, culture, and ʻāina-based experiences are foundational.</li>
+           <li>Growing two related communities of kumu and kula leaders who interact regularly, share and learn from one another, develop pilina with one another, and provide support ot one another.</li>
+         </ul>
+      """
+    ]
+
+  'list/Relevant Assessments':
+    list_items_title: 'Ideas'
+
+    list_label: 'Relevant Assessments'
+    list_description: "A space to discuss ideas around the development of shared assessments that honor the many dimensions of student growth involved in learning contexts where ʻōlelo Hawaiʻi, culture, and ʻāina-based experiences are foundational. Are we willing to challenge the mainstream concep to education success?"
 
 
-        back_to_homepage_button            
-          display: 'inline-block'
-          color: 'white'
-          opacity: .7
-          position: 'relative'
-          left: -60
-          top: 4
-          fontWeight: 400
-          paddingLeft: 25 # Make the clickable target bigger
-          paddingRight: 25 # Make the clickable target bigger
-          cursor: if fetch('location').url != '/' then 'pointer'
-
-        # Logo
-        A
-          href: if homepage then 'https://forum.daohub.org/c/theDAO' else '/'
+  'list/Teacher Resources':
+    list_items_title: 'Ideas'
+    list_label: 'Teacher Resources'
+    list_description: "A space to discuss ideas around the creation of new (and compiling existing) ʻōlelo Hawaiʻi, culture, and ʻāina-based teaching resources to share widely in an online waihona."
 
 
-          IMG
-            style:
-              height: 30
-              width: 30
-              marginLeft: -44
-              marginRight: 10
-              marginTop: -10
-              verticalAlign: 'middle'
+  'list/‘Ōlelo Hawai’i':
+    list_items_title: 'Ideas'
+    list_label: '‘Ōlelo Hawai’i'
+    list_description: "A space to discuss ideas around the way we use our network of Hawaiian Educational Organizationsʻ Synergy to increase the amount of Hawaiian Language speakers so that the language will again be thriving!"
 
-            src: asset('ethereum/the_dao.jpg')
+  'list/3C Readiness':
+    list_items_title: 'Ideas'
+    list_label: '3C Readiness'
+    list_description: "A space to discuss ideas around nurturing college, career, and community readiness in haumāna. How do we provide experiences for haumāna that integrate and bridge high-school, college, career, and community engagement experiences?"
 
-          SPAN 
-            style:
-              #fontFamily: "Montserrat, 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
-              fontSize: 24
-              color: 'white'
-              fontWeight: 500
+  'list/Leadership':
+    list_items_title: 'Ideas'
+    list_label: 'Leadership'
+    list_description: "A space for network leaders to gather mana’o."
 
-            "The DAO"
-
-
-      # The top bar with the logo
-      DIV
-        style:
-          width: HOMEPAGE_WIDTH()
-          margin: 'auto'
+  SiteHeader: HawaiiHeader
+    background_image_url: asset('hawaii/KulaHawaiiNetwork.jpg')
+    title: "Envision the Kula Hawai’i Network"
+    subtitle: 'Please share your opinion. Click any proposal below to get started.'
+    # background_color: '#78d18b'
+    # logo_width: 100
 
 
 
-        if homepage
 
-          DIV 
-            style: 
-              #paddingBottom: 50
-              position: 'relative'
+# customizations.dao = _.extend {}, 
+#   show_proposer_icon: true
+#   collapse_proposal_description_at: 300
 
-            DIV 
-              style: 
-                #backgroundColor: '#eee'
-                # marginTop: 10
-                padding: "0 8px"
-                fontSize: 46
-                fontWeight: 200
-                color: 'white'
-                marginTop: 20
+#   homepage_show_search_and_sort: true
+
+#   auth_require_pledge: true
+
+#   homepage_show_new_proposal_button: false 
+
+#   show_crafting_page_first: false
+
+#   homepage_default_sort_order: 'trending'
+
+#   homepage_list_order: ['Proposed to DAO', 'Under development', 'New', 'Needs more description', 'Funded', 'Rejected', 'Archived', 'Proposals', 'Ideas', 'Meta', 'DAO 2.0 Wishlist', 'Hack', 'Hack meta']
+#   homepage_lists_to_always_show: ['Proposed to DAO', 'Under development',  'Proposals', 'Meta']
+
+#   new_proposal_tips: [
+#     'Describe your idea in sufficient depth for others to evaluate it. The title is usually not enough.'
+#     'Link to any contract code, external resources, or videos.'
+#     'Link to any forum.daohub.org or /r/thedao where more free-form discussion about your idea is happening.'
+#     'Take responsibility for improving your idea given feedback.'
+#   ]
+
+#   homepage_tabs: 
+#     'Inspire Us': ['Ideas', 'Proposals']
+#     'Proposal Pipeline': ['New', 'Proposed to DAO', 'Under development',  'Needs more description', 'Funded', 'Rejected', 'Archived']
+#     'Meta Proposals': ['Meta', 'Hack', '*']
+#     'Hack Response': ['Hack', 'Hack meta']
+#   #homepage_default_tab: 'Hack Response'
+
+
+#   'list/Under development':
+#     list_is_archived: false
+
+#   'list/Proposed to DAO':
+#     list_one_line_desc: 'Proposals submitted to The Dao\'s smart contract'
+
+#   'list/Needs more description':
+#     list_is_archived: true
+#     list_one_line_desc: 'Proposals needing more description to evaluate'
+
+#   'list/Funded':
+#     list_is_archived: true 
+#     list_one_line_desc: 'Proposals already funded by The DAO'
+
+#   'list/Rejected':
+#     list_is_archived: true   
+#     list_one_line_desc: 'Proposals formally rejected by The DAO'
+  
+#   'list/Archived':
+#     list_is_archived: true 
+
+#   'list/Done':
+#     list_is_archived: true
+
+#   'list/Proposals':
+#     list_items_title: 'Ideas'
+
+#   'list/Name the DAO':
+#     list_is_archived: true
+
+#   SiteHeader: ->
+#     homepage = fetch('location').url == '/'
+
+#     DIV
+#       style:
+#         position: 'relative'
+#         background: "linear-gradient(-45deg, #{dao_vars.purple}, #{dao_vars.blue})"
+#         paddingBottom: if !homepage then 20
+#         borderBottom: "2px solid #{dao_vars.yellow}"
+
+
+#       onMouseEnter: => @local.hover=true;  save(@local)
+#       onMouseLeave: => @local.hover=false; save(@local)
+
+
+
+
+#       STYLE null,
+#         '''.profile_anchor.login {font-size: 26px; padding-top: 16px;}
+#            p {margin-bottom: 1em}'''
+
+
+#       DIV 
+#         style: 
+#           marginLeft: 70
+
+
+#         back_to_homepage_button            
+#           display: 'inline-block'
+#           color: 'white'
+#           opacity: .7
+#           position: 'relative'
+#           left: -60
+#           top: 4
+#           fontWeight: 400
+#           paddingLeft: 25 # Make the clickable target bigger
+#           paddingRight: 25 # Make the clickable target bigger
+#           cursor: if fetch('location').url != '/' then 'pointer'
+
+#         # Logo
+#         A
+#           href: if homepage then 'https://forum.daohub.org/c/theDAO' else '/'
+
+
+#           IMG
+#             style:
+#               height: 30
+#               width: 30
+#               marginLeft: -44
+#               marginRight: 10
+#               marginTop: -10
+#               verticalAlign: 'middle'
+
+#             src: asset('ethereum/the_dao.jpg')
+
+#           SPAN 
+#             style:
+#               #fontFamily: "Montserrat, 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+#               fontSize: 24
+#               color: 'white'
+#               fontWeight: 500
+
+#             "The DAO"
+
+
+#       # The top bar with the logo
+#       DIV
+#         style:
+#           width: HOMEPAGE_WIDTH()
+#           margin: 'auto'
+
+
+
+#         if homepage
+
+#           DIV 
+#             style: 
+#               #paddingBottom: 50
+#               position: 'relative'
+
+#             DIV 
+#               style: 
+#                 #backgroundColor: '#eee'
+#                 # marginTop: 10
+#                 padding: "0 8px"
+#                 fontSize: 46
+#                 fontWeight: 200
+#                 color: 'white'
+#                 marginTop: 20
 
               
-              'Deliberate Proposals about The DAO'            
-
-
-            DIV 
-              style: 
-                backgroundColor: 'rgba(255,255,255,.2)'
-                marginTop: 10
-                marginBottom: 16
-                padding: '4px 12px'
-                float: 'right'
-                fontSize: 18
-                color: 'white'
-
-              SPAN 
-                style: 
-                  opacity: .8
-                "join meta discussion on Slack at "
-
-              A 
-                href: 'https://thedao.slack.com/messages/consider_it/'
-                target: '_blank'
-                style: 
-                  #textDecoration: 'underline'
-                  color: dao_vars.yellow
-                  fontWeight: 600
-
-                "#dao_consider_it"
-
-
-            DIV 
-              style: 
-                clear: 'both'
-
-            DIV 
-              style: 
-                float: 'right'
-                fontSize: 12
-                color: 'white'
-                opacity: .9
-                padding: '0px 10px'
-                position: 'relative'
-
-              "Donate ETH to fuel "
-
-              A 
-                href: 'https://dao.consider.it/donate_to_considerit?results=true'
-                target: '_blank'
-                style: 
-                  textDecoration: 'underline'
-                  fontWeight: 600
-
-                "our work"
-
-              " evolving consider.it to meet The DAO’s needs."
-
-
-            DIV 
-              style: 
-                clear: 'both'
-
-            DIV 
-              style: 
-                #backgroundColor: 'rgba(255,255,255,.2)'
-                #marginBottom: 20
-                padding: '0px 10px'
-                float: 'right'
-                fontSize: 15
-                fontWeight: 500
-                #color: 'white'
-                color: dao_vars.yellow
-                #border: "1px solid #{dao_vars.yellow}"
-                opacity: .8
-                fontFamily: '"Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace'
-              "0xc7e165ebdad9eeb8e5f5d94eef3e96ea9739fdb2"
-
-
-            DIV 
-              style: 
-                clear: 'both'
-                marginBottom: 70
-
-
-            DIV 
-              style: 
-                position: 'relative'
-                color: 'white'
-                fontSize: 20
-
-              DIV 
-                style: 
-                  position: 'relative'
-                  left: 60
-                DIV 
-                  style: 
-                    width: 260
-                    position: 'relative'
-
-                  SPAN style: opacity: .7,
-                    'Ideas that inspire the community & contractors.'
-
-                  BR null
-
-                  A 
-                    style: 
-                      opacity: if !@local.hover_idea then .7
-                      display: 'inline-block'
-                      marginTop: 6
-                      color: dao_vars.yellow
-                      border: "1px solid #{dao_vars.yellow}"
-                      #textDecoration: 'underline'
-                      fontSize: 14
-                      fontWeight: 600
-                      #backgroundColor: "rgba(255,255,255,.2)"
-                      padding: '4px 12px'
-                      borderRadius: 8
-                    onMouseEnter: => @local.hover_idea = true; save @local
-                    onMouseLeave: => @local.hover_idea = null; save @local
-
-                    href: '/proposal/new?category=Proposals'
-
-                    t("add new")
-
-                  SVG 
-                    style: 
-                      position: 'absolute'
-                      top: 75
-                      left: '35%'
-                      opacity: .5
-
-                    width: 67 * 1.05
-                    height: 204 * 1.05
-                    viewBox: "0 0 67 204" 
-
-                    G                       
-                      fill: 'none'
-
-                      PATH
-                        strokeWidth: 1 / 1.05 
-                        stroke: 'white' 
-                        d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
-
-              DIV 
-                style: 
-                  position: 'relative'
-                  left: 260
-                  marginTop: 0 #30
-
-                DIV 
-                  style: 
-                    width: 260
-                    position: 'relative'
-
-                  SPAN style: opacity: .7,
-                    'Proposals working toward a smart contract.'
-                  BR null
-
-                  A 
-                    style: 
-                      opacity: if !@local.hover_new then .7
-                      display: 'inline-block'
-                      marginTop: 6
-                      color: dao_vars.yellow
-                      border: "1px solid #{dao_vars.yellow}"
-                      #textDecoration: 'underline'
-                      fontSize: 14
-                      fontWeight: 600
-                      #backgroundColor: "rgba(255,255,255,.2)"
-                      padding: '4px 12px'
-                      borderRadius: 8
-                    onMouseEnter: => @local.hover_new = true; save @local
-                    onMouseLeave: => @local.hover_new = null; save @local
-
-                    href: '/proposal/new?category=New'
-
-                    t("add new")
-
-                  SVG 
-                    style: 
-                      position: 'absolute'
-                      top: 75
-                      left: '35%'
-                      opacity: .5
-
-                    width: 67 * .63
-                    height: 204 * .63
-                    viewBox: "0 0 67 204" 
-
-                    G                       
-                      fill: 'none'
-
-                      PATH
-                        strokeWidth: 1 / .63
-                        stroke: 'white' 
-                        d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
-
-              DIV 
-                style: 
-                  position: 'relative'
-                  left: 490
-                  marginTop: 0 #30
-
-                DIV 
-                  style: 
-                    width: 260
-                    position: 'relative'
-
-                  SPAN style: opacity: .7,
-                    'Issues related to the operation of The DAO.'
-
-                  BR null
-                  A 
-                    style: 
-                      opacity: if !@local.hover_meta then .7
-                      display: 'inline-block'
-                      marginTop: 6
-                      color: dao_vars.yellow
-                      border: "1px solid #{dao_vars.yellow}"
-                      #textDecoration: 'underline'
-                      fontSize: 14
-                      fontWeight: 600
-                      #backgroundColor: "rgba(255,255,255,.2)"
-                      padding: '4px 12px'
-                      borderRadius: 8
-                    onMouseEnter: => @local.hover_meta = true; save @local
-                    onMouseLeave: => @local.hover_meta = null; save @local
-
-                    href: '/proposal/new?category=Meta'
-
-                    t("add new")
-
-                  SVG 
-                    style: 
-                      position: 'absolute'
-                      top: 75
-                      left: '35%'
-                      opacity: .5
-                    width: 67 * .21
-                    height: 204 * .21
-                    viewBox: "0 0 67 204" 
-
-                    G                       
-                      fill: 'none'
-
-                      PATH
-                        strokeWidth: 1 / .21
-                        stroke: 'white' 
-                        d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
-
-
-              DIV 
-                style: 
-                  position: 'absolute'
-                  left: 750
-                  marginTop: 0 #30
-                  bottom: -15
-
-                DIV 
-                  style: 
-                    width: 260
-                    position: 'relative'
-
-                  # SPAN style: opacity: .7,
-                  #   'Issues related to the operation of The DAO.'
-
-                  BR null
-                  A 
-                    style: 
-                      opacity: if !@local.hover_hack then .7
-                      display: 'inline-block'
-                      marginTop: 6
-                      color: dao_vars.yellow
-                      border: "1px solid #{dao_vars.yellow}"
-                      #textDecoration: 'underline'
-                      fontSize: 14
-                      fontWeight: 600
-                      #backgroundColor: "rgba(255,255,255,.2)"
-                      padding: '4px 12px'
-                      borderRadius: 8
-                    onMouseEnter: => @local.hover_hack = true; save @local
-                    onMouseLeave: => @local.hover_hack = null; save @local
-
-                    href: '/proposal/new?category=Hack'
-
-                    t("add new")
-
-                  # SVG 
-                  #   style: 
-                  #     position: 'absolute'
-                  #     top: 75
-                  #     left: '35%'
-                  #     opacity: .5
-                  #   width: 67 * .21
-                  #   height: 204 * .21
-                  #   viewBox: "0 0 67 204" 
-
-                  #   G                       
-                  #     fill: 'none'
-
-                  #     PATH
-                  #       strokeWidth: 1 / .21
-                  #       stroke: 'white' 
-                  #       d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
-
-
-
-
-
-
-            if customization('homepage_tabs')
-              HomepageTabs()
+#               'Deliberate Proposals about The DAO'            
+
+
+#             DIV 
+#               style: 
+#                 backgroundColor: 'rgba(255,255,255,.2)'
+#                 marginTop: 10
+#                 marginBottom: 16
+#                 padding: '4px 12px'
+#                 float: 'right'
+#                 fontSize: 18
+#                 color: 'white'
+
+#               SPAN 
+#                 style: 
+#                   opacity: .8
+#                 "join meta discussion on Slack at "
+
+#               A 
+#                 href: 'https://thedao.slack.com/messages/consider_it/'
+#                 target: '_blank'
+#                 style: 
+#                   #textDecoration: 'underline'
+#                   color: dao_vars.yellow
+#                   fontWeight: 600
+
+#                 "#dao_consider_it"
+
+
+#             DIV 
+#               style: 
+#                 clear: 'both'
+
+#             DIV 
+#               style: 
+#                 float: 'right'
+#                 fontSize: 12
+#                 color: 'white'
+#                 opacity: .9
+#                 padding: '0px 10px'
+#                 position: 'relative'
+
+#               "Donate ETH to fuel "
+
+#               A 
+#                 href: 'https://dao.consider.it/donate_to_considerit?results=true'
+#                 target: '_blank'
+#                 style: 
+#                   textDecoration: 'underline'
+#                   fontWeight: 600
+
+#                 "our work"
+
+#               " evolving consider.it to meet The DAO’s needs."
+
+
+#             DIV 
+#               style: 
+#                 clear: 'both'
+
+#             DIV 
+#               style: 
+#                 #backgroundColor: 'rgba(255,255,255,.2)'
+#                 #marginBottom: 20
+#                 padding: '0px 10px'
+#                 float: 'right'
+#                 fontSize: 15
+#                 fontWeight: 500
+#                 #color: 'white'
+#                 color: dao_vars.yellow
+#                 #border: "1px solid #{dao_vars.yellow}"
+#                 opacity: .8
+#                 fontFamily: '"Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace'
+#               "0xc7e165ebdad9eeb8e5f5d94eef3e96ea9739fdb2"
+
+
+#             DIV 
+#               style: 
+#                 clear: 'both'
+#                 marginBottom: 70
+
+
+#             DIV 
+#               style: 
+#                 position: 'relative'
+#                 color: 'white'
+#                 fontSize: 20
+
+#               DIV 
+#                 style: 
+#                   position: 'relative'
+#                   left: 60
+#                 DIV 
+#                   style: 
+#                     width: 260
+#                     position: 'relative'
+
+#                   SPAN style: opacity: .7,
+#                     'Ideas that inspire the community & contractors.'
+
+#                   BR null
+
+#                   A 
+#                     style: 
+#                       opacity: if !@local.hover_idea then .7
+#                       display: 'inline-block'
+#                       marginTop: 6
+#                       color: dao_vars.yellow
+#                       border: "1px solid #{dao_vars.yellow}"
+#                       #textDecoration: 'underline'
+#                       fontSize: 14
+#                       fontWeight: 600
+#                       #backgroundColor: "rgba(255,255,255,.2)"
+#                       padding: '4px 12px'
+#                       borderRadius: 8
+#                     onMouseEnter: => @local.hover_idea = true; save @local
+#                     onMouseLeave: => @local.hover_idea = null; save @local
+
+#                     href: '/proposal/new?category=Proposals'
+
+#                     t("add new")
+
+#                   SVG 
+#                     style: 
+#                       position: 'absolute'
+#                       top: 75
+#                       left: '35%'
+#                       opacity: .5
+
+#                     width: 67 * 1.05
+#                     height: 204 * 1.05
+#                     viewBox: "0 0 67 204" 
+
+#                     G                       
+#                       fill: 'none'
+
+#                       PATH
+#                         strokeWidth: 1 / 1.05 
+#                         stroke: 'white' 
+#                         d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
+
+#               DIV 
+#                 style: 
+#                   position: 'relative'
+#                   left: 260
+#                   marginTop: 0 #30
+
+#                 DIV 
+#                   style: 
+#                     width: 260
+#                     position: 'relative'
+
+#                   SPAN style: opacity: .7,
+#                     'Proposals working toward a smart contract.'
+#                   BR null
+
+#                   A 
+#                     style: 
+#                       opacity: if !@local.hover_new then .7
+#                       display: 'inline-block'
+#                       marginTop: 6
+#                       color: dao_vars.yellow
+#                       border: "1px solid #{dao_vars.yellow}"
+#                       #textDecoration: 'underline'
+#                       fontSize: 14
+#                       fontWeight: 600
+#                       #backgroundColor: "rgba(255,255,255,.2)"
+#                       padding: '4px 12px'
+#                       borderRadius: 8
+#                     onMouseEnter: => @local.hover_new = true; save @local
+#                     onMouseLeave: => @local.hover_new = null; save @local
+
+#                     href: '/proposal/new?category=New'
+
+#                     t("add new")
+
+#                   SVG 
+#                     style: 
+#                       position: 'absolute'
+#                       top: 75
+#                       left: '35%'
+#                       opacity: .5
+
+#                     width: 67 * .63
+#                     height: 204 * .63
+#                     viewBox: "0 0 67 204" 
+
+#                     G                       
+#                       fill: 'none'
+
+#                       PATH
+#                         strokeWidth: 1 / .63
+#                         stroke: 'white' 
+#                         d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
+
+#               DIV 
+#                 style: 
+#                   position: 'relative'
+#                   left: 490
+#                   marginTop: 0 #30
+
+#                 DIV 
+#                   style: 
+#                     width: 260
+#                     position: 'relative'
+
+#                   SPAN style: opacity: .7,
+#                     'Issues related to the operation of The DAO.'
+
+#                   BR null
+#                   A 
+#                     style: 
+#                       opacity: if !@local.hover_meta then .7
+#                       display: 'inline-block'
+#                       marginTop: 6
+#                       color: dao_vars.yellow
+#                       border: "1px solid #{dao_vars.yellow}"
+#                       #textDecoration: 'underline'
+#                       fontSize: 14
+#                       fontWeight: 600
+#                       #backgroundColor: "rgba(255,255,255,.2)"
+#                       padding: '4px 12px'
+#                       borderRadius: 8
+#                     onMouseEnter: => @local.hover_meta = true; save @local
+#                     onMouseLeave: => @local.hover_meta = null; save @local
+
+#                     href: '/proposal/new?category=Meta'
+
+#                     t("add new")
+
+#                   SVG 
+#                     style: 
+#                       position: 'absolute'
+#                       top: 75
+#                       left: '35%'
+#                       opacity: .5
+#                     width: 67 * .21
+#                     height: 204 * .21
+#                     viewBox: "0 0 67 204" 
+
+#                     G                       
+#                       fill: 'none'
+
+#                       PATH
+#                         strokeWidth: 1 / .21
+#                         stroke: 'white' 
+#                         d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
+
+
+#               DIV 
+#                 style: 
+#                   position: 'absolute'
+#                   left: 750
+#                   marginTop: 0 #30
+#                   bottom: -15
+
+#                 DIV 
+#                   style: 
+#                     width: 260
+#                     position: 'relative'
+
+#                   # SPAN style: opacity: .7,
+#                   #   'Issues related to the operation of The DAO.'
+
+#                   BR null
+#                   A 
+#                     style: 
+#                       opacity: if !@local.hover_hack then .7
+#                       display: 'inline-block'
+#                       marginTop: 6
+#                       color: dao_vars.yellow
+#                       border: "1px solid #{dao_vars.yellow}"
+#                       #textDecoration: 'underline'
+#                       fontSize: 14
+#                       fontWeight: 600
+#                       #backgroundColor: "rgba(255,255,255,.2)"
+#                       padding: '4px 12px'
+#                       borderRadius: 8
+#                     onMouseEnter: => @local.hover_hack = true; save @local
+#                     onMouseLeave: => @local.hover_hack = null; save @local
+
+#                     href: '/proposal/new?category=Hack'
+
+#                     t("add new")
+
+#                   # SVG 
+#                   #   style: 
+#                   #     position: 'absolute'
+#                   #     top: 75
+#                   #     left: '35%'
+#                   #     opacity: .5
+#                   #   width: 67 * .21
+#                   #   height: 204 * .21
+#                   #   viewBox: "0 0 67 204" 
+
+#                   #   G                       
+#                   #     fill: 'none'
+
+#                   #     PATH
+#                   #       strokeWidth: 1 / .21
+#                   #       stroke: 'white' 
+#                   #       d: "M1.62120606,0.112317888 C1.62120606,0.112317888 -3.81550783,47.7673271 15.7617242,109.624892 C35.3389562,171.482458 65.9279782,203.300407 65.9279782,203.300407"
+
+
+
+
+
+
+#             if customization('homepage_tabs')
+#               HomepageTabs()
 
 
 

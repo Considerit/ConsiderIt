@@ -1,7 +1,6 @@
 require './responsive_vars'
 require './color'
 
-
 window.back_to_homepage_button = (style) -> 
   loc = fetch('location')
   homepage = loc.url == '/'
@@ -9,15 +8,14 @@ window.back_to_homepage_button = (style) ->
   hash = loc.url.split('/')[1].replace('-', '_')
 
   A
+    key: 'back_to_homepage_button'
     href: "/##{hash}"
-    style: _.defaults style,
+    style: _.defaults {}, style,
       fontSize: 43
-      visibility: if homepage then 'hidden'
+      visibility: if homepage || !customization('has_homepage') then 'hidden' else 'visible'
       color: 'black'
 
     '<'
-
-
 
 
 ####
@@ -76,24 +74,21 @@ window.asset = (name) ->
   app = fetch('/application')
 
   if app.app?
-    "#{app.asset_host or ''}/images/#{name}"
+    a = "#{app.asset_host or ''}/images/#{name}"
   else 
-    # app isn't loaded yet...
-    ""
+    a = "#{window.asset_host or ''}/images/#{name}"
+
+  a
 
 #####
 # data 
 window.opinionsForProposal = (proposal) ->       
-  filter_func = customization("homie_histo_filter", proposal)
   opinions = fetch(proposal).opinions || []
-  # We'll only pass SOME opinions to the histogram
-  opinions = (opinion for opinion in opinions when \
-               !filter_func or filter_func(fetch(opinion.user)))
   opinions
 
 window.get_all_clusters = ->
   proposals = fetch '/proposals'
-  always_show = customization 'clusters_to_always_show'
+  always_show = customization 'homepage_lists_to_always_show'
   all_clusters = ((p.cluster or 'Proposals').trim() for p in proposals.proposals)
   all_clusters = all_clusters.concat always_show
   all_clusters = _.uniq all_clusters
@@ -101,7 +96,7 @@ window.get_all_clusters = ->
 
 window.clustered_proposals = -> 
   proposals = fetch '/proposals'
-  cluster_order = customization 'cluster_order'
+  homepage_list_order = customization 'homepage_list_order'
 
   # create clusters
   clusters = {}
@@ -109,14 +104,14 @@ window.clustered_proposals = ->
   all_clusters = get_all_clusters()
 
   for cluster in all_clusters
-    sort = cluster_order.indexOf cluster
+    sort = homepage_list_order.indexOf cluster
     sort = 9999999999 if sort < 0
 
     clusters[cluster] = 
-      key: "cluster/#{cluster}"
+      key: "list/#{cluster}"
       name: cluster
       proposals: []
-      archived: customization('archived', "cluster/#{cluster}")
+      list_is_archived: customization('list_is_archived', "list/#{cluster}")
       sort_order: sort
 
   for proposal in proposals.proposals 
@@ -155,7 +150,7 @@ window.proposal_url = (proposal) =>
     console.log result
 
   if TWO_COL() || (!customization('show_crafting_page_first', proposal) || !proposal.active ) \
-     || (!customization('discussion', proposal))
+     || (!customization('discussion_enabled', proposal))
 
     result += '?results=true'
 

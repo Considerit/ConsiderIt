@@ -154,8 +154,6 @@ window.Slider = ReactiveComponent
         continue if endpoint == 'square'
 
         if endpoint == 'sharp'
-          # TODO: this would probably look better as SVG
-
           DIV 
             key: "endpoint-#{idx}"
             style: 
@@ -174,7 +172,7 @@ window.Slider = ReactiveComponent
                           left: if idx == 0 then -12
                           right: if idx == 1 then -12
 
-      if @props.draw_ticks && @props.regions
+      if @props.regions
         d =  @props.width / (@props.regions.length)
 
         sty = 
@@ -352,8 +350,7 @@ window.Slider = ReactiveComponent
 #    Whether the handle should show the more intricate details. 
 #
 
-if !window.slider_handle
-  window.slider_handle = {}
+window.slider_handle ||= {}
 
 slider_handle.face = (props) -> 
 

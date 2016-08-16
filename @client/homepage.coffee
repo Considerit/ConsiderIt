@@ -14,14 +14,17 @@ window.Homepage = ReactiveComponent
     doc = fetch('document')
     subdomain = fetch('/subdomain')
 
+    return SPAN null if !subdomain.name
+
     title = subdomain.app_title || subdomain.name
     if doc.title != title
       doc.title = title
       save doc
 
-    DIV null,
+    DIV 
+      key: "homepage_#{subdomain.name}"
 
-      customization('Homepage')()
+      SimpleHomepage()
 
       # if customization('tawkspace')
       #   IFRAME 
@@ -166,8 +169,8 @@ window.SimpleHomepage = ReactiveComponent
   render : ->
     subdomain = fetch('/subdomain')
 
-    cluster_filters = fetch 'cluster_filters'
-    if subdomain.name == 'dao' && cluster_filters.clusters == '*'
+    homepage_tabs = fetch 'homepage_tabs'
+    if subdomain.name == 'dao' && homepage_tabs.clusters == '*'
       return TagHomepage()
 
     proposals = fetch('/proposals')
@@ -182,7 +185,7 @@ window.SimpleHomepage = ReactiveComponent
     collapsed = fetch 'collapsed'
     if !collapsed.clusters?
       collapsed.clusters = {}
-      for cluster in clusters when cluster.archived 
+      for cluster in clusters when cluster.list_is_archived 
         collapsed.clusters[cluster.key] = 1
       save collapsed
 
@@ -200,7 +203,7 @@ window.SimpleHomepage = ReactiveComponent
         STYLE null,
           '''a.proposal:hover {border-bottom: 1px solid grey}'''
 
-        if customization('proposal_filters')
+        if customization('homepage_show_search_and_sort') && proposals.proposals.length > 15
           [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
           ProposalFilter
             style: 
@@ -224,12 +227,12 @@ window.SimpleHomepage = ReactiveComponent
 
         # List all clusters
         for cluster, index in clusters or []
-          cluster_key = "cluster/#{cluster.name}"
+          cluster_key = "list/#{cluster.name}"
 
-          fails_filter = cluster_filters.filter? && (cluster_filters.clusters != '*' && !(cluster.name in cluster_filters.clusters) )
-          if fails_filter && ('*' in cluster_filters.clusters)
+          fails_filter = homepage_tabs.filter? && (homepage_tabs.clusters != '*' && !(cluster.name in homepage_tabs.clusters) )
+          if fails_filter && ('*' in homepage_tabs.clusters)
             in_others = []
-            for filter, clusters of customization('cluster_filters')
+            for filter, clusters of customization('homepage_tabs')
               in_others = in_others.concat clusters 
 
             fails_filter &&= cluster.name in in_others
@@ -245,7 +248,7 @@ window.SimpleHomepage = ReactiveComponent
               index: index
 
 
-        if permit('create proposal') > 0 && customization('show_new_proposal_button') && subdomain.name not in ['bitcoin', 'bitcoinfoundation', 'engageseattle'] 
+        if permit('create proposal') > 0 && customization('homepage_show_new_proposal_button')
           A 
             style: 
               color: logo_red
@@ -318,21 +321,21 @@ window.SimpleHomepage = ReactiveComponent
           # height: 30
 
 
-window.ClusterFilter = ReactiveComponent
-  displayName: 'ClusterFilter'
+window.HomepageTabs = ReactiveComponent
+  displayName: 'HomepageTabs'
 
   render: -> 
-    filters = ([k,v] for k,v of customization('cluster_filters'))
+    filters = ([k,v] for k,v of customization('homepage_tabs'))
     filters.unshift ["Show all", '*']
 
-    cluster_filters = fetch 'cluster_filters'
-    if !cluster_filters.filter?
-      cluster_filters.filter = customization('cluster_filter_default') or 'Show all'
+    homepage_tabs = fetch 'homepage_tabs'
+    if !homepage_tabs.filter?
+      homepage_tabs.filter = customization('homepage_default_tab') or 'Show all'
       for [filter, clusters] in filters 
-        if filter == cluster_filters.filter
-          cluster_filters.clusters = clusters
+        if filter == homepage_tabs.filter
+          homepage_tabs.clusters = clusters
           break 
-      save cluster_filters
+      save homepage_tabs
 
 
     subdomain = fetch('/subdomain')
@@ -354,11 +357,11 @@ window.ClusterFilter = ReactiveComponent
 
         for [filter, clusters], idx in filters 
           do (filter, clusters) =>
-            current = cluster_filters.filter == filter 
+            current = homepage_tabs.filter == filter 
             hovering = @local.hovering == filter
 
 
-            filter_style = _.defaults {}, (@props.filter_style or {}),
+            tab_style = _.defaults {}, (@props.tab_style or {}),
               cursor: 'pointer'
               position: 'relative'
               display: 'inline-block'
@@ -368,7 +371,7 @@ window.ClusterFilter = ReactiveComponent
               opacity: if hovering || current then 1 else .8
 
             if subdomain.name == 'dao'
-              _.extend filter_style, 
+              _.extend tab_style, 
                 padding: '10px 30px 4px 30px'
                 color: if current then 'black' else if hovering then '#F8E71C' else 'white'
                 backgroundColor: if current then 'white'
@@ -377,30 +380,30 @@ window.ClusterFilter = ReactiveComponent
                 borderTop: if current then "2px solid #F8E71C"
                 borderRight: if current then "2px solid #F8E71C"
             else if subdomain.name == 'bradywalkinshaw'
-              _.extend filter_style, 
+              _.extend tab_style, 
                 padding: '10px 20px 4px 20px'
                 backgroundColor: if current then 'white'
                 color: if current then 'black' else if hovering then '#F8E71C' else 'white'
                 borderRadius: '16px 16px 0 0'
             else 
-              _.extend filter_style, 
+              _.extend tab_style, 
                 padding: '10px 20px 4px 20px'
                 backgroundColor: if current then 'rgba(255,255,255,.2)'
 
             SPAN 
-              style: filter_style
+              style: tab_style
 
               onMouseEnter: => 
-                if cluster_filters.filter != filter 
+                if homepage_tabs.filter != filter 
                   @local.hovering = filter 
                   save @local 
               onMouseLeave: => 
                 @local.hovering = null 
                 save @local
               onClick: => 
-                cluster_filters.filter = filter 
-                cluster_filters.clusters = clusters
-                save cluster_filters
+                homepage_tabs.filter = filter 
+                homepage_tabs.clusters = clusters
+                save homepage_tabs
 
               filter
 
@@ -424,9 +427,9 @@ Cluster = ReactiveComponent
     is_collapsed = collapsed.clusters[@props.key]
 
     proposals = sorted_proposals(cluster.proposals)
-    return SPAN null if !proposals || (proposals.length == 0 && !(cluster.name in customization('clusters_to_always_show')))
+    return SPAN null if !proposals || (proposals.length == 0 && !(cluster.name in customization('homepage_lists_to_always_show')))
 
-    cluster_key = "cluster/#{cluster.name}"
+    cluster_key = "list/#{cluster.name}"
 
     DIV
       key: cluster.name
@@ -449,7 +452,7 @@ Cluster = ReactiveComponent
 
               @drawThreshold(subdomain, cluster, idx)
 
-          if customization('show_new_proposal_button', cluster_key)
+          if customization('list_show_new_button', cluster_key)
             NewProposal 
               cluster_name: cluster.name
               local: @local.key
@@ -463,7 +466,7 @@ Cluster = ReactiveComponent
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
 
 
-    cluster_key = "cluster/#{cluster.name}"
+    cluster_key = "list/#{cluster.name}"
 
     collapsed = fetch 'collapsed'
 
@@ -472,15 +475,15 @@ Cluster = ReactiveComponent
     tw = if is_collapsed then 15 else 20
     th = if is_collapsed then 20 else 15
 
-    cluster_header = customization 'cluster_header', cluster_key
-    one_line_desc = customization 'one_line_desc', cluster_key
-    uncollapseable = customization 'uncollapseable', cluster_key
-    homepage_label = customization 'homepage_label', cluster_key
+    ListHeader = customization 'ListHeader', cluster_key
+    list_one_line_desc = customization 'list_one_line_desc', cluster_key
+    list_uncollapseable = customization 'list_uncollapseable', cluster_key
+    list_items_title = customization 'list_items_title', cluster_key
 
-    label = customization 'label', cluster_key
-    description = customization 'description', cluster_key
-    label_style = customization 'label_style', cluster_key
-    description_style = customization 'description_style', cluster_key
+    label = customization 'list_label', cluster_key
+    description = customization 'list_description', cluster_key
+    label_style = customization 'list_label_style', cluster_key
+    description_style = customization 'list_description_style', cluster_key
 
 
     DIV null,
@@ -511,8 +514,9 @@ Cluster = ReactiveComponent
               DIV                
                 style: _.defaults {}, (description_style or {}),
                   fontSize: 18
-                  fontWeight: 400
+                  fontWeight: 400 
                   color: '#444'
+                
 
                 for para, idx in desc
                   DIV 
@@ -524,8 +528,8 @@ Cluster = ReactiveComponent
 
       # Header of cluster
 
-      if cluster_header
-        cluster_header()
+      if ListHeader
+        ListHeader()
       else 
 
         DIV 
@@ -534,10 +538,10 @@ Cluster = ReactiveComponent
           H1
             style: _.extend {}, first_header, 
               position: 'relative'
-              cursor: if !uncollapseable then 'pointer'
+              cursor: if !list_uncollapseable then 'pointer'
 
             onClick: -> 
-              if !uncollapseable
+              if !list_uncollapseable
                 if collapsed.clusters[cluster_key]
                   delete collapsed.clusters[cluster_key]
                 else 
@@ -545,9 +549,9 @@ Cluster = ReactiveComponent
                 save collapsed
 
 
-            homepage_label || cluster.name || 'Proposals'
+            list_items_title || cluster.name || 'Proposals'
 
-            if !uncollapseable
+            if !list_uncollapseable
               SPAN 
                 style: cssTriangle (if is_collapsed then 'right' else 'bottom'), 'black', tw, th,
                   position: 'absolute'
@@ -560,7 +564,7 @@ Cluster = ReactiveComponent
             if subdomain.name == 'RANDOM2015'
               " (#{cluster.proposals.length})"
 
-            if one_line_desc
+            if list_one_line_desc
               DIV 
                 style: 
                   position: 'absolute'
@@ -568,10 +572,10 @@ Cluster = ReactiveComponent
                   color: '#666'
                   fontSize: 14
                   fontWeight: 400
-                one_line_desc
+                list_one_line_desc
 
           if !is_collapsed
-            histo_title = customization('homie_histo_title', cluster_key)
+            histo_title = customization('list_opinions_title', cluster_key)
             H1
               style: secnd_header
               SPAN 
@@ -634,7 +638,7 @@ window.NewProposal = ReactiveComponent
 
   render : -> 
     cluster_name = @props.cluster_name 
-    cluster_key = "cluster/#{cluster_name}"
+    cluster_key = "list/#{cluster_name}"
 
     cluster_state = fetch(@props.local)
 
@@ -650,8 +654,6 @@ window.NewProposal = ReactiveComponent
     permitted = permit('create proposal')
     needs_to_login = permitted == Permission.NOT_LOGGED_IN
     permitted = permitted > 0
-
-    icons = customization('show_proposer_icon', cluster_key) 
 
     return SPAN null if !permitted && !needs_to_login
 
@@ -678,16 +680,16 @@ window.NewProposal = ReactiveComponent
 
       else 
         [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-        w = first_column.width #- 50 + (if icons then -18 else 0)
+        w = first_column.width
         
         DIV 
           style:
             position: 'relative'
 
-          if customization('proposal_tips')
-            @drawTips()
+          if customization('new_proposal_tips', cluster_key)
+            @drawTips customization('new_proposal_tips', cluster_key)
 
-          if icons
+          if customization('show_proposer_icon', cluster_key) 
             editor = current_user.user
             # Person's icon
             Avatar
@@ -704,7 +706,6 @@ window.NewProposal = ReactiveComponent
 
           DIV 
             style: 
-              # marginLeft: if icons then 18 - 8
               display: 'inline-block'
             TEXTAREA 
               id:"#{cluster_slug}-name"
@@ -808,14 +809,12 @@ window.NewProposal = ReactiveComponent
 
 
 
-  drawTips : -> 
+  drawTips : (tips) -> 
     # guidelines/tips for good points
     mobile = browser.is_mobile
 
     guidelines_w = if mobile then 'auto' else 330
     guidelines_h = 300
-
-    tips = customization('proposal_tips')
 
     DIV 
       style:
@@ -883,7 +882,7 @@ window.NewProposal = ReactiveComponent
             marginTop: 5
 
           do ->
-            tips = customization('proposal_tips')
+            tips = customization('new_proposal_tips')
 
             for tip in tips
               LI 

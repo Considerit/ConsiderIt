@@ -53,12 +53,6 @@ entry_points = {
   proposal_embed: './@client/proposal_embed.coffee'
 }
 
-subs = fs.readdirSync('./@client/custom_homepages')
-for( var i=0; i < subs.length; i++ ){
-  var fname = subs[i]
-  entry_points[fname.split('.')[0]] = './@client/custom_homepages/' + fname
-}
-
 ////////////////////////////////////////
 // Innards
 

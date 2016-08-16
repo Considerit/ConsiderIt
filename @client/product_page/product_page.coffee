@@ -66,6 +66,9 @@ Proposals = ReactiveComponent
   render: -> 
     users = fetch '/users'
     proposals = fetch '/proposals'
+    subdomain = fetch '/subdomain'
+
+    return SPAN null if !subdomain.name
 
     TagHomepage()
 

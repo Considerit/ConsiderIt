@@ -39,7 +39,6 @@ proposal_link = (proposal, results) ->
 
 
 window.opinionsForProposal = (proposal) ->       
-  filter_func = customization("homie_histo_filter", proposal)
   opinions = fetch(proposal).opinions || []
   opinions
 

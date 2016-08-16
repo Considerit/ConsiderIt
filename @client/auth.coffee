@@ -358,10 +358,15 @@ Auth = ReactiveComponent
                 field[1]
              TR style: {height: 10}]
 
-      if customization('additional_auth_footer')
-        additional = customization('additional_auth_footer')()
-        if additional
-          additional
+      if customization('auth_footer')
+        auth = fetch('auth')
+        if auth.ask_questions && auth.form in ['create account', 'create account via invitation', 'user questions']
+          DIV 
+            style:
+              fontSize: 13
+              color: auth_text_gray
+              padding: '16px 0'
+            dangerouslySetInnerHTML: {__html: customization('auth_footer')}
 
       if (current_user.errors or []).length > 0 or @local.errors.length > 0
         errors = current_user.errors.concat(@local.errors or [])
@@ -572,17 +577,11 @@ Auth = ReactiveComponent
   pledgeInput : -> 
     subdomain = fetch('/subdomain')
 
-    if !customization('civility_pledge')
+    if !customization('auth_require_pledge')
       return null
     else
-
-      if subdomain.name == 'livingvotersguide'
-        pledges = ['Use only one account', 
-                   'Speak only on behalf of myself', 
-                   'Not attack or mock others']
-      else 
-        pledges = ['Use only one account', 
-                   'Not attack or mock others']
+      pledges = ['Use only one account', 
+                 'Not attack or mock others']
 
 
     UL style: {paddingTop: 6},
@@ -653,7 +652,7 @@ Auth = ReactiveComponent
 
     if auth.ask_questions && auth.form in \
           ['edit profile', 'create account', 'create account via invitation']
-      questions = customization('auth.user_questions')
+      questions = customization('auth_questions')
     else 
       questions = []
 
@@ -749,7 +748,7 @@ Auth = ReactiveComponent
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
     if auth.ask_questions
-      questions = customization('auth.user_questions')
+      questions = customization('auth_questions')
       @local.errors = []
       for question in questions
         if question.required

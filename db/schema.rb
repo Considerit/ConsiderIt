@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160810232346) do
+ActiveRecord::Schema.define(version: 20160814035942) do
 
   create_table "assessments", force: :cascade do |t|
     t.integer  "user_id",         limit: 4
@@ -286,21 +286,21 @@ ActiveRecord::Schema.define(version: 20160810232346) do
 
   create_table "subdomains", force: :cascade do |t|
     t.string   "name",                       limit: 255
-    t.datetime "created_at",                                               null: false
-    t.datetime "updated_at",                                               null: false
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
     t.string   "app_title",                  limit: 255
     t.string   "notifications_sender_email", limit: 255
     t.string   "google_analytics_code",      limit: 255
-    t.boolean  "has_civility_pledge",                      default: false
+    t.boolean  "has_civility_pledge",                         default: false
     t.string   "host",                       limit: 255
     t.string   "host_with_port",             limit: 255
-    t.boolean  "assessment_enabled",                       default: false
-    t.integer  "moderate_points_mode",       limit: 4,     default: 0
-    t.integer  "moderate_comments_mode",     limit: 4,     default: 0
-    t.integer  "moderate_proposals_mode",    limit: 4,     default: 0
+    t.boolean  "assessment_enabled",                          default: false
+    t.integer  "moderate_points_mode",       limit: 4,        default: 0
+    t.integer  "moderate_comments_mode",     limit: 4,        default: 0
+    t.integer  "moderate_proposals_mode",    limit: 4,        default: 0
     t.string   "external_project_url",       limit: 255
     t.string   "about_page_url",             limit: 255
-    t.text     "roles",                      limit: 65535
+    t.text     "roles",                      limit: 16777215
     t.string   "masthead_file_name",         limit: 255
     t.string   "masthead_content_type",      limit: 255
     t.integer  "masthead_file_size",         limit: 4
@@ -311,8 +311,10 @@ ActiveRecord::Schema.define(version: 20160810232346) do
     t.integer  "logo_file_size",             limit: 4
     t.datetime "logo_updated_at"
     t.string   "logo_remote_url",            limit: 255
-    t.text     "branding",                   limit: 65535
-    t.integer  "plan",                       limit: 4,     default: 0
+    t.text     "branding",                   limit: 16777215
+    t.integer  "plan",                       limit: 4,        default: 0
+    t.text     "customizations",             limit: 16777215
+    t.string   "lang",                       limit: 255,      default: "en"
   end
 
   add_index "subdomains", ["name"], name: "by_identifier", length: {"name"=>10}, using: :btree

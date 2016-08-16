@@ -8,11 +8,13 @@ window.ProfileMenu = ReactiveComponent
     is_evaluator = subdomain.assessment_enabled && current_user.is_evaluator
     is_admin = current_user.is_admin
     is_moderator = current_user.is_moderator
+    is_super = current_user.is_super_admin
     menu_options = [
       {href: '/edit_profile', label: t('Edit Profile')},
       {href: '/dashboard/email_notifications', label: t('Email Settings')},
       if is_admin then {href: '/dashboard/import_data', label: 'Import / Export Data'} else null,
       if is_admin then {href: '/dashboard/application', label: 'App Settings'} else null,
+      if is_super then {href: '/dashboard/customizations', label: 'Customizations'} else null,      
       if is_admin then {href: '/dashboard/roles', label: 'User Roles'} else null,
       if is_admin then {href: '/dashboard/tags', label: 'User Tags'} else null,      
       if is_moderator then {href: '/dashboard/moderate', label: 'Moderate'} else null,

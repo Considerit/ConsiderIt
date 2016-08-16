@@ -11,8 +11,6 @@ window.DefaultProposalNavigation = ReactiveComponent
   displayName: 'ProposalNavigation'
   render : ->
     subdomain = fetch('/subdomain')
-    show_proposer_icon = customization('show_proposer_icon', "cluster/#{@proposal.cluster}")
-
 
     all_proposals = fetch('/proposals') 
 
@@ -68,7 +66,7 @@ window.DefaultProposalNavigation = ReactiveComponent
 
 
       # Photo
-      if show_proposer_icon
+      if customization('show_proposer_icon', "list/#{@proposal.cluster}")
         editor = proposal_editor(@proposal)
         width = Math.min(GUTTER(), 120)
         if editor

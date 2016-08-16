@@ -228,14 +228,14 @@ AppSettingsDash = ReactiveComponent
       STYLE dangerouslySetInnerHTML: __html: #dangerously set html is so that the type="text" doesn't get escaped
         """
         .app_settings_dash { font-size: 18px }
-        .app_settings_dash input[type="text"] { display: block; width: 600px; font-size: 18px; padding: 4px 8px; } 
+        .app_settings_dash input[type="text"], .app_settings_dash textarea { border: 1px solid #aaa; outline: none; display: block; width: #{HOMEPAGE_WIDTH()}px; font-size: 18px; padding: 4px 8px; } 
         .app_settings_dash .input_group { margin-bottom: 12px; }
         """
 
       DashHeader name: 'Application Settings'
 
       if subdomain.name
-        DIV style: {width: BODY_WIDTH(), margin: '20px auto'}, 
+        DIV style: {width: HOMEPAGE_WIDTH(), margin: '20px auto'}, 
 
           DIV className: 'input_group',
             LABEL htmlFor: 'app_title', 'The name of this application'
@@ -254,6 +254,46 @@ AppSettingsDash = ReactiveComponent
               name: 'external_project_url'
               defaultValue: subdomain.external_project_url
               placeholder: 'A link to the main project\'s homepage, if any.'
+
+          DIV className: 'input_group',
+            LABEL htmlFor: 'lang', 'Interface Language'
+            SELECT 
+              id: 'lang'
+              type: 'text'
+              name: 'lang'
+              defaultValue: subdomain.lang
+              style: 
+                fontSize: 18
+                marginLeft: 12
+                display: 'inline-block'
+
+              OPTION
+                value: 'en'
+                'English'
+
+              OPTION
+                value: 'spa'
+                'Spanish'
+
+              OPTION
+                value: 'french'
+                'French'
+
+              OPTION
+                value: 'ptbr'
+                'Portuguese'
+
+              OPTION
+                value: 'tun_ar'
+                'Tunisian arabic'
+
+            DIV 
+              style: 
+                fontStyle: 'italic'
+                fontSize: 12
+              "Your language not available? Email us at hello@consider.it to help us create a translation."
+
+
 
 
           if subdomain.plan || current_user.is_super_admin
@@ -333,16 +373,16 @@ AppSettingsDash = ReactiveComponent
                   defaultValue: subdomain.branding.primary_color
                   placeholder: 'The primary brand color. Needs to be dark.'
 
-              DIV className: 'input_group',
-                LABEL htmlFor: 'homepage_text', 'Homepage text'
-                TEXTAREA 
-                  id: 'homepage_text'
-                  name: 'homepage_text'
-                  defaultValue: subdomain.branding.homepage_text
-                  placeholder: 'Shown in homepage. Can be HTML.'
-                  style: 
-                    display: 'block'
-                    width: 500
+              # DIV className: 'input_group',
+              #   LABEL htmlFor: 'homepage_text', 'Homepage text'
+              #   TEXTAREA 
+              #     id: 'homepage_text'
+              #     name: 'homepage_text'
+              #     defaultValue: subdomain.branding.homepage_text
+              #     placeholder: 'Shown in homepage. Can be HTML.'
+              #     style: 
+              #       display: 'block'
+              #       width: HOMEPAGE_WIDTH()
 
 
           FORM id: 'subdomain_files', action: '/update_images_hack',
@@ -403,7 +443,7 @@ AppSettingsDash = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'plan', 'google_analytics_code']
+    fields = ['about_page_url', 'notifications_sender_email', 'app_title', 'external_project_url', 'plan', 'google_analytics_code', 'lang']
 
     for f in fields
       subdomain[f] = $(@getDOMNode()).find("##{f}").val()
@@ -412,7 +452,7 @@ AppSettingsDash = ReactiveComponent
       subdomain.branding =
         primary_color: $('#primary_color').val()
         masthead_header_text: $('#masthead_header_text').val()
-        homepage_text: $('#homepage_text').val()
+        # homepage_text: $('#homepage_text').val()
 
     @local.save_complete = @local.file_errors = false
     save @local
@@ -435,6 +475,254 @@ AppSettingsDash = ReactiveComponent
           error: => 
             @local.file_errors = true
             save @local
+
+
+
+CustomizationsDash = ReactiveComponent
+  displayName: 'CustomizationsDash'
+
+  render : -> 
+
+    subdomain = fetch '/subdomain'
+    current_user = fetch '/current_user'
+    subdomains = fetch('/subdomains')
+
+    sub_ids = {}
+    for sub in subdomains.subs when sub.customizations?.length > 0 && sub.name != subdomain.name
+      sub_ids[sub.name.toLowerCase()] = sub.customizations
+
+    if !@local.compare_to?
+      @local.compare_to = '' #_.keys(sub_ids)[0]
+      save @local
+
+    compare_to = sub_ids[@local.compare_to]
+
+    return SPAN null if !subdomain.name || !current_user.is_super_admin || !subdomains.subs
+    @local.current_value ||= subdomain.customizations
+
+    DIV 
+      style: 
+        width: '90%'
+        margin: '20px auto'
+      className: 'customizations'
+
+      STYLE 
+        dangerouslySetInnerHTML: {__html: """
+          .customizations .CodeMirror {
+            height: auto;
+            font-size: 14px;
+            border: 1px solid #ddd;
+          }
+
+        """}
+
+      DIV className: 'input_group',
+
+
+
+        DIV 
+          style: 
+            display: 'inline-block'
+            width: '58%'
+            verticalAlign: 'top'
+
+          DIV 
+            style: 
+              fontStyle: 'italic'
+              fontSize: 24
+              fontWeight: 600
+            "Customizations for #{subdomain.name}.consider.it:"
+
+          CodeMirrorTextArea 
+            ref: 'cm_editor'
+            id: 'customizations'
+            default_value: subdomain.customizations or "\n\n\n\n\n\n\n"
+            onChange: (val) => 
+              @local.current_value = val
+
+          DIV 
+            className: 'input_group'
+            BUTTON 
+              className: 'primary_button button'
+              onClick: @submit
+
+              'Save'
+
+          if @local.save_complete
+            DIV style: {color: 'green'}, 'Saved.'
+
+          if @local.errors
+            if @local.errors && @local.errors.length > 0
+              DIV 
+                style: 
+                  borderRadius: 8
+                  margin: 20
+                  padding: 20
+                  backgroundColor: '#FFE2E2'
+
+                H1 style: {fontSize: 18}, 'Ooops!'
+
+                for error in @local.errors
+                  DIV 
+                    style: 
+                      marginTop: 10
+                    error
+
+
+        DIV 
+          style: 
+            display: 'inline-block'
+            width: '38%'
+            verticalAlign: 'top'
+            marginLeft: '2%'
+
+          DIV 
+            style: 
+              fontStyle: 'italic'
+            "Compare to "
+            SELECT 
+              value: @local.compare_to
+              style: 
+                width: 80
+              onChange: (ev) => 
+                @local.compare_to = ev.target.value 
+                save @local
+
+              for sub, id of sub_ids 
+                OPTION 
+                  value: sub
+                  sub 
+            ".consider.it:"
+
+          if compare_to
+            CodeMirrorTextArea 
+              key: compare_to
+              id: 'comparison'
+              default_value: compare_to
+              opts: 
+                readOnly: 'nocursor'
+
+      DIV null, 
+
+        DIV 
+          style: 
+            marginTop: 20
+            marginBottom: 5
+            cursor: 'pointer'
+            fontWeight: 600
+            color: '#666'
+            textDecoration: 'underline'
+            
+          onClick: => @local.show_shared = !@local.show_shared; save @local
+
+          "Shared code and variables to use in customizations"
+
+        if @local.show_shared
+
+          CodeMirrorTextArea 
+            key: 'shared_code'
+            default_value: subdomain.shared_code
+            opts: 
+              readOnly: 'nocursor'
+
+      DIV null, 
+
+        DIV 
+          style: 
+            marginTop: 20
+            marginBottom: 5
+            cursor: 'pointer'
+            fontWeight: 600
+            color: '#666'
+            textDecoration: 'underline'
+
+          onClick: => @local.show_doc = !@local.show_doc; save @local
+
+          "Variable documentation"
+
+        if @local.show_doc
+          DIV 
+            style: 
+              marginTop: 10
+
+            A 
+              href: "https://docs.google.com/spreadsheets/d/1gn1PuF98i4eD8x0E4YHmtBAcEdau9W13cJ7fh6MF3u8/edit#gid=0"
+              target: '_blank'
+              style: 
+                display: 'block'
+                textDecoration: 'underline'
+                color: focus_blue
+                marginBottom: 5
+              "Load documentation in own tab"
+            "."
+
+
+            IFRAME
+              width: '100%' 
+              height: 1500 
+              src: "https://docs.google.com/spreadsheets/d/1gn1PuF98i4eD8x0E4YHmtBAcEdau9W13cJ7fh6MF3u8/pubhtml?widget=true&amp;headers=false"
+
+
+
+
+
+
+  submit : -> 
+    subdomain = fetch '/subdomain'
+
+    subdomain.customizations = @local.current_value
+
+    @local.save_complete = false
+    save @local
+
+    save subdomain, => 
+      if subdomain.errors
+        @local.errors = subdomain.errors
+
+      @local.save_complete = true
+      save @local
+
+
+
+CodeMirrorTextArea = ReactiveComponent
+  displayName: 'CodeMirrorTextArea'
+
+  render: -> 
+    TEXTAREA 
+      id: @props.id
+      name: @props.id
+      ref: 'field'
+      defaultValue: @props.default_value 
+
+  componentDidMount: -> 
+    betterTab = (cm) ->
+
+      if cm.somethingSelected()
+        cm.indentSelection 'add'
+      else
+        o = if cm.getOption("indentWithTabs")
+              "\t"
+            else 
+              Array(cm.getOption("indentUnit") + 1).join(" ")
+
+        cm.replaceSelection o, "end", "+input"
+
+    @m = CodeMirror.fromTextArea @refs.field.getDOMNode(), _.defaults (@props.opts or {}),        
+          lineNumbers: true
+          matchBrackets: true
+          indentUnit: 2
+          mode: 'coffeescript'
+          extraKeys: 
+            Tab: betterTab
+    if @props.onChange
+      @m.on('change', => @props.onChange(@m.getValue()))
+
+  componentWillUnmount: -> 
+    @m.getTextArea().remove()
+
+
+
+
 
 AdminTaskList = ReactiveComponent
   displayName: 'AdminTaskList'
@@ -1201,3 +1489,4 @@ window.ModerationDash = ModerationDash
 window.AppSettingsDash = AppSettingsDash
 window.ImportDataDash = ImportDataDash
 window.DashHeader = DashHeader
+window.CustomizationsDash = CustomizationsDash

@@ -12,7 +12,7 @@ class Subdomain < ActiveRecord::Base
   validates_attachment_content_type :logo, :content_type => %w(image/jpeg image/jpg image/png image/gif)
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :name, :created_at, :about_page_url, :notifications_sender_email, :app_title, :external_project_url, :assessment_enabled, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode, :host_with_port, :plan]
+  self.my_public_fields = [:id, :lang, :name, :created_at, :about_page_url, :notifications_sender_email, :app_title, :external_project_url, :assessment_enabled, :moderate_points_mode, :moderate_comments_mode, :moderate_proposals_mode, :host_with_port, :plan]
 
   scope :public_fields, -> { select(self.my_public_fields) }
 
@@ -39,6 +39,22 @@ class Subdomain < ActiveRecord::Base
     end
 
     json['branding'] = self.branding_info
+
+    if self.customizations || current_user.super_admin
+      shared = File.read("@client/customizations_helpers.coffee")
+      if current_user.super_admin
+        json['shared_code'] = shared
+      end 
+    end
+
+    if self.customizations 
+      str = self.customizations.gsub '"', '\\"'
+      if current_user.super_admin
+        json['customizations'] = self.customizations
+      end 
+      json['customization_obj'] = %x(echo "#{shared.gsub '"', '\\"'}\nwindow.customization_obj={\n#{str}\n}" | coffee -scb)
+    end 
+    
     json
   end
 

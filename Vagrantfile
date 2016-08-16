@@ -23,7 +23,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.box_url = "https://github.com/kraksoft/vagrant-box-ubuntu/releases/download/14.04/ubuntu-14.04-amd64.box"	
     config.vm.network :private_network, ip: "192.168.33.10"
     config.vm.provider "virtualbox" do |v|
-      v.memory = 4096
+      v.memory = 8192
       # v.gui = true
     end
   end
@@ -33,7 +33,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.box_url = "https://atlas.hashicorp.com/parallels/boxes/ubuntu-14.04"
     config.vm.box = "parallels/ubuntu-14.04"
     config.vm.provider "parallels" do |v|
-      v.memory = 4096
+      v.memory = 8192
       v.cpus = 4
       v.update_guest_tools = true
     end

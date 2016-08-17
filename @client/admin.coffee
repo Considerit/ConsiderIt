@@ -604,8 +604,6 @@ CustomizationsDash = ReactiveComponent
               key: compare_to
               id: 'comparison'
               default_value: compare_to
-              opts: 
-                readOnly: 'nocursor'
 
       DIV null, 
 
@@ -627,8 +625,6 @@ CustomizationsDash = ReactiveComponent
           CodeMirrorTextArea 
             key: 'shared_code'
             default_value: subdomain.shared_code
-            opts: 
-              readOnly: 'nocursor'
 
       DIV null, 
 

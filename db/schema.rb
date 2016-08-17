@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160814035942) do
+ActiveRecord::Schema.define(version: 20160817181945) do
 
   create_table "assessments", force: :cascade do |t|
     t.integer  "user_id",         limit: 4
@@ -101,17 +101,6 @@ ActiveRecord::Schema.define(version: 20160814035942) do
     t.datetime "sent_at"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
-  end
-
-  create_table "follows", force: :cascade do |t|
-    t.integer  "user_id",         limit: 4
-    t.integer  "followable_id",   limit: 4
-    t.string   "followable_type", limit: 255
-    t.boolean  "follow",                      default: true
-    t.boolean  "explicit",                    default: false
-    t.integer  "subdomain_id",    limit: 4
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
   end
 
   create_table "inclusions", force: :cascade do |t|
@@ -219,9 +208,7 @@ ActiveRecord::Schema.define(version: 20160814035942) do
   add_index "points", ["subdomain_id"], name: "index_points_on_subdomain_id", using: :btree
 
   create_table "proposals", force: :cascade do |t|
-    t.string   "designator",                             limit: 255
-    t.string   "category",                               limit: 255
-    t.string   "name",                                   limit: 255
+    t.text     "name",                                   limit: 65535
     t.text     "description",                            limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"

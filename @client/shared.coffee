@@ -94,6 +94,10 @@ window.get_all_clusters = ->
   all_clusters = _.uniq all_clusters
   all_clusters
 
+
+
+newest_in_cluster_on_load = {}
+
 window.clustered_proposals = -> 
   proposals = fetch '/proposals'
   homepage_list_order = customization 'homepage_list_order'
@@ -103,9 +107,23 @@ window.clustered_proposals = ->
 
   all_clusters = get_all_clusters()
 
+  # By default sort proposals by the newest of the proposals.
+  # But we'll only do this on page load, so that clusters don't move
+  # around when someone adds a new proposal.
+  if Object.keys(newest_in_cluster_on_load).length == 0
+    for proposal in proposals.proposals 
+      cluster = (proposal.cluster or 'Proposals').trim()
+      time = (new Date(proposal.created_at).getTime())
+      if !newest_in_cluster_on_load[cluster] || time > newest_in_cluster_on_load[cluster]
+        newest_in_cluster_on_load[cluster] = time 
+
   for cluster in all_clusters
     sort = homepage_list_order.indexOf cluster
-    sort = 9999999999 if sort < 0
+    if sort < 0 
+      if newest_in_cluster_on_load[cluster]
+        sort = homepage_list_order.length + ((new Date()).getTime() - newest_in_cluster_on_load[cluster])
+      else 
+        sort = 9999999999999
 
     clusters[cluster] = 
       key: "list/#{cluster}"

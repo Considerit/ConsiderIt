@@ -422,9 +422,9 @@ window.HawaiiHeader = (opts) -> ->
   _.defaults opts.homepage_button_style,
     display: 'inline-block'
     color: if is_light then 'black' else 'white'
-    opacity: .7
+    # opacity: .7
     position: 'absolute'
-    left: -60
+    left: -80
     fontSize: opts.title_style.fontSize
     #top: 38
     fontWeight: 400
@@ -452,7 +452,7 @@ window.HawaiiHeader = (opts) -> ->
         margin: 'auto'
         width: HOMEPAGE_WIDTH()
         position: 'relative'
-        textAlign: 'center'
+        textAlign: if homepage then 'center'
 
 
       back_to_homepage_button opts.homepage_button_style

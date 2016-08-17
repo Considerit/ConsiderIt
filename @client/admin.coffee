@@ -498,6 +498,11 @@ CustomizationsDash = ReactiveComponent
     compare_to = sub_ids[@local.compare_to]
 
     return SPAN null if !subdomain.name || !current_user.is_super_admin || !subdomains.subs
+
+    if !CodeMirror?
+      location.reload()
+      return SPAN null
+
     @local.current_value ||= subdomain.customizations
 
     DIV 

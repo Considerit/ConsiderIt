@@ -34,7 +34,7 @@ class Proposal < ActiveRecord::Base
     self.description = ActionController::Base.helpers.sanitize(self.description)
     # Sanitize description_fields[i].html
     self.description_fields =
-      JSON.dump(JSON.parse(self.description_fields).map { |field|
+      JSON.dump(JSON.parse(self.description_fields || '{}').map { |field|
                   field['html'] = ActionController::Base.helpers.sanitize(field['html'])
                   field
                 })    

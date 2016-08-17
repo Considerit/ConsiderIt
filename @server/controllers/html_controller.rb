@@ -139,9 +139,6 @@ class HtmlController < ApplicationController
     proposal = Proposal.find_by_slug page[1..page.length] if page != '/' && page != '/about'
     if proposal 
       title = proposal.name
-      if proposal.category && proposal.designator
-        title = "#{proposal.category[0]}-#{proposal.designator}: #{title}"
-      end
       title = proposal.seo_title || title
       description = proposal.seo_description || "#{proposal.description || proposal.name}"
 

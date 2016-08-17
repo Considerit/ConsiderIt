@@ -490,36 +490,7 @@ ProposalDescription = ReactiveComponent
           marginTop: 15
           color: '#666'
 
-        if permit('update proposal', @proposal) > 0
-
-          I 
-            className: 'fa fa-cog'
-            style: 
-              cursor: 'pointer'
-              color: if @local.show_options then logo_red else "#aaa"
-              fontSize: 24
-              marginRight: 10
-              display: 'inline-block'
-
-            onClick: => 
-              @local.show_options = !@local.show_options
-              save @local
-
-        if current_user?.logged_in
-
-          I 
-            className: 'fa fa-bell'
-            title: 'notifications'
-            style: 
-              cursor: 'pointer'
-              color: if @local.show_notifications then logo_red else "#aaa"
-              fontSize: 24
-
-            onClick: => 
-              @local.show_notifications = !@local.show_notifications
-              save @local
-
-      if @local.show_options
+      if permit('update proposal', @proposal) > 0
         DIV
           style: 
             marginTop: 5
@@ -554,40 +525,40 @@ ProposalDescription = ReactiveComponent
                   loadPage('/')
               t('delete')
 
-          if current_user.is_super_admin
-            SPAN 
-              style:
-                marginRight: 10
-                color: '#999'
+          # if current_user.is_super_admin
+          #   SPAN 
+          #     style:
+          #       marginRight: 10
+          #       color: '#999'
 
-              onClick: => 
-                @local.copy_to_subdomain = !@local.copy_to_subdomain
-                save @local
+          #     onClick: => 
+          #       @local.copy_to_subdomain = !@local.copy_to_subdomain
+          #       save @local
 
-              A null,
-                'Copy to subdomain'
+          #     A null,
+          #       'Copy to subdomain'
 
-              if @local.copy_to_subdomain
-                subdomains = fetch('/subdomains').subs
-                hues = getNiceRandomHues subdomains?.length
+          #     if @local.copy_to_subdomain
+          #       subdomains = fetch('/subdomains').subs
+          #       hues = getNiceRandomHues subdomains?.length
                 
-                UL 
-                  style: {}
-                  for sub, idx in subdomains
-                    LI
-                      style: 
-                        display: 'inline-block'
-                        listStyle: 'none'
-                      A
-                        href: "/proposal/#{@proposal.id}/copy_to/#{sub.id}"
-                        'data-nojax': false
-                        style: 
-                          padding: "4px 8px"
-                          fontSize: 18
-                          backgroundColor: hsv2rgb(hues[idx], .7, .5)
-                          color: 'white'
-                          display: 'inline-block'            
-                        sub.name        
+          #       UL 
+          #         style: {}
+          #         for sub, idx in subdomains
+          #           LI
+          #             style: 
+          #               display: 'inline-block'
+          #               listStyle: 'none'
+          #             A
+          #               href: "/proposal/#{@proposal.id}/copy_to/#{sub.id}"
+          #               'data-nojax': false
+          #               style: 
+          #                 padding: "4px 8px"
+          #                 fontSize: 18
+          #                 backgroundColor: hsv2rgb(hues[idx], .7, .5)
+          #                 color: 'white'
+          #                 display: 'inline-block'            
+          #               sub.name        
 
       if @local.edit_roles
         DIV 
@@ -599,11 +570,6 @@ ProposalDescription = ReactiveComponent
 
           ProposalRoles 
             key: @proposal.key
-
-      # notifications
-      if @local.show_notifications      
-        ActivityFeed()
-
 
 
 

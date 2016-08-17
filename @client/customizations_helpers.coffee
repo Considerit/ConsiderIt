@@ -400,40 +400,43 @@ window.HawaiiHeader = (opts) -> ->
     logo_width: 200
     title: '<title is required>'
     subtitle: null
-    title_style: 
-      fontSize: 47
-      color: if is_light then 'black' else 'white'
-      fontWeight: 200
-      paddingTop: 40      
-      display: 'inline-block'
-
-    subtitle_style: 
-      position: 'relative'
-      fontSize: 22
-      color: if is_light then 'black' else 'white'
-      marginTop: 0
-      opacity: .7
-      textAlign: 'center'  
-
+    title_style: {}
+    subtitle_style: {}
     tab_style: {}
+    homepage_button_style: {}
 
-    homepage_button_style:
-      display: 'inline-block'
-      color: if is_light then 'black' else 'white'
-      opacity: .7
-      position: 'absolute'
-      left: -60
-      top: 38
-      fontWeight: 400
-      paddingLeft: 25 # Make the clickable target bigger
-      paddingRight: 25 # Make the clickable target bigger
-      cursor: if fetch('location').url != '/' then 'pointer'
+  _.defaults opts.title_style,
+    fontSize: 47
+    color: if is_light then 'black' else 'white'
+    fontWeight: 300
+    display: 'inline-block'
+
+  _.defaults opts.subtitle_style,
+    position: 'relative'
+    fontSize: 22
+    color: if is_light then 'black' else 'white'
+    marginTop: 0
+    opacity: .7
+    textAlign: 'center'  
+
+  _.defaults opts.homepage_button_style,
+    display: 'inline-block'
+    color: if is_light then 'black' else 'white'
+    opacity: .7
+    position: 'absolute'
+    left: -60
+    fontSize: opts.title_style.fontSize
+    #top: 38
+    fontWeight: 400
+    paddingLeft: 25 # Make the clickable target bigger
+    paddingRight: 25 # Make the clickable target bigger
+    cursor: if fetch('location').url != '/' then 'pointer'
 
 
   DIV
     style:
       position: 'relative'
-      paddingBottom: if !homepage then 20 else 30
+      padding: "30px 0"
       backgroundPosition: 'center'
       backgroundSize: 'cover'
       backgroundImage: "url(#{opts.background_image_url})"

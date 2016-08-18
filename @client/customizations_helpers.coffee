@@ -576,11 +576,12 @@ window.SeattleHeader = (opts) -> ->
             style: quote_style
             "“#{opts.quote.what}”"
 
-            DIV  
-              style:
-                paddingLeft: '70%'
-                paddingTop: 10
-              "– #{opts.quote.who}"
+            if opts.quote.who 
+              DIV  
+                style:
+                  paddingLeft: '70%'
+                  paddingTop: 10
+                "– #{opts.quote.who}"
 
         DIV null,
 

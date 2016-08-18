@@ -58,7 +58,7 @@ require './uses'
 require './contact'
 require './pricing'
 require './features'
-
+require './metrics'
 
 Proposals = ReactiveComponent
   displayName: 'Proposals'
@@ -140,21 +140,24 @@ Header = ReactiveComponent
   componentDidMount : -> 
 
     checkBackground = =>   
-      red_regions = ['#uses', '#contact', '#footer', '#collaborate'] #[[0, 530 + 2 * HEADER_HEIGHT]]
-      y = $(window).scrollTop() + $(@getDOMNode()).outerHeight()
+      try 
+        red_regions = ['#uses', '#contact', '#footer', '#collaborate'] #[[0, 530 + 2 * HEADER_HEIGHT]]
+        y = $(window).scrollTop() + $(@getDOMNode()).outerHeight()
 
-      in_red = false
-      for region in red_regions
-        el = $(region)
-        start = el.offset().top
-        end = start + el.outerHeight()
+        in_red = false
+        for region in red_regions
+          el = $(region)
+          start = el.offset().top
+          end = start + el.outerHeight()
 
-        if y <= end && start <= y
-          in_red = true
-          break
-      if @local.in_red != in_red
-        @local.in_red = in_red
-        save @local
+          if y <= end && start <= y
+            in_red = true
+            break
+        if @local.in_red != in_red
+          @local.in_red = in_red
+          save @local
+      catch e  
+        noop = 1
 
     $(window).on "scroll.header", => checkBackground()
     checkBackground()
@@ -772,6 +775,8 @@ Root = ReactiveComponent
 
         if loc.url == '/proposals'
           Proposals()
+        else if loc.url == '/metrics'
+          Metrics()
         else 
           Page()
 

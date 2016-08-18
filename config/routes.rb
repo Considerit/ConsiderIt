@@ -35,7 +35,6 @@ ConsiderIt::Application.routes.draw do
   # html page, and then the required data will be fetched afterward in JSON
   get '(*url)' => 'html#index', :constraints => NotJSON.new
 
-  # Here's the entire JSON API:
   get '/page' => 'page#show'
   get '/page/*id' => 'page#show'
   resources :user, :only => [:show]
@@ -45,6 +44,7 @@ ConsiderIt::Application.routes.draw do
   resources :proposal
   get '/proposals' => 'proposal#index'
 
+  get '/metrics' => 'subdomain#metrics'
 
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :show]

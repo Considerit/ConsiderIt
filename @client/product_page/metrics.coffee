@@ -6,7 +6,7 @@ smooth = (series, window_l) ->
     range = (i for i in [idx - window_l + 1..idx] when i >= 0)
     tot = 0
     for p in range 
-      tot += series[p][1]
+      tot += series[p][2]
     d.push tot / range.length
 
   series
@@ -15,12 +15,25 @@ window.Metrics = ReactiveComponent
   displayName: 'Metrics'
 
   render: -> 
-    metrics = fetch '/metrics'
+    m = fetch '/metrics'
 
     if !@local.log?
       @local.log = 'linear'
+      @local.time_frame = 'all time'
 
-    return loading_indicator if !metrics.daily_active_contributors
+    return loading_indicator if !m.daily_active_contributors
+
+
+    console.log @local
+    if @local.time_frame == 'all time'
+      metrics = m 
+    else 
+      console.log 'HI!', m.daily_active_contributors
+      metrics = 
+        daily_active_contributors: (d for d in m.daily_active_contributors when d[0] < 365)
+        daily_active_subdomains: (d for d in m.daily_active_subdomains when d[0] < 365)
+
+    console.log metrics
 
     DIV 
       style: 
@@ -74,7 +87,7 @@ window.Metrics = ReactiveComponent
             borderRadius: 8
             display: 'inline-block'
             marginLeft: 10
-            
+
           onClick: => 
             if @local.log == 'linear'
               @local.log = 'log10'
@@ -85,10 +98,30 @@ window.Metrics = ReactiveComponent
 
           @local.log 
 
+        SPAN
+          style: 
+            fontSize: 14
+            border: '1px solid #ccc'
+            padding: '2px 4px'
+            cursor: 'pointer'
+            borderRadius: 8
+            display: 'inline-block'
+            marginLeft: 10
+
+          onClick: => 
+            if @local.time_frame == 'all time'
+              @local.time_frame = 'past 365 days'
+            else 
+              @local.time_frame = 'all time'
+
+            save @local 
+
+          @local.time_frame 
+
 
 
       LineGraph
-        key: "contributors-#{@local.log}"
+        key: "contributors-#{@local.log}-#{@local.time_frame }"
         data: smooth(metrics.daily_active_contributors, 30)
         width: WINDOW_WIDTH() - 60 * 2  
         log: @local.log
@@ -103,7 +136,7 @@ window.Metrics = ReactiveComponent
         "Daily active subdomains"
 
       LineGraph
-        key: "subs-#{@local.log}"
+        key: "subs-#{@local.log}-#{@local.time_frame }"
         data: smooth(metrics.daily_active_subdomains, 30)
         width: WINDOW_WIDTH() - 60 * 2
         log: @local.log
@@ -173,10 +206,10 @@ LineGraph = ReactiveComponent
     series = [
       {
         id: 'daily'
-        values: data.map( (d) -> [d[0], Math.max(d[1],.1)] )
+        values: data.map( (d) -> [d[1], Math.max(d[2],.1)] )
       }, {
         id: 'monthly'
-        values: data.map( (d) -> [d[0], Math.max(d[2],.1)] )
+        values: data.map( (d) -> [d[1], Math.max(d[3],.1)] )
       }
     ]
 
@@ -196,7 +229,7 @@ LineGraph = ReactiveComponent
     g = svg.append('g')
           .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
-    x.domain d3.extent(data, (d) -> formatDate.parse(d[0]))
+    x.domain d3.extent(data, (d) -> formatDate.parse(d[1]))
     y.domain [
       d3.min(series, (c) -> d3.min(c.values, (d) -> d[1]))
       d3.max(series, (c) -> d3.max(c.values, (d) -> d[1]))

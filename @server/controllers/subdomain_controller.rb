@@ -242,11 +242,11 @@ class SubdomainController < ApplicationController
       day = (now - i).strftime('%d-%b-%y')
 
       if contribs.has_key?(i)
-        active_contributors.append [day, contribs[i].keys().length]
-        active_subs.append [day, subs[i].keys().length]
+        active_contributors.append [i, day, contribs[i].keys().length]
+        active_subs.append [i, day, subs[i].keys().length]
       else 
-        active_contributors.append [day, 0]
-        active_subs.append [day, 0]            
+        active_contributors.append [i, day, 0]
+        active_subs.append [i, day, 0]            
       end 
     end
 

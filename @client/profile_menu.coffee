@@ -1,3 +1,5 @@
+require './customizations'
+
 window.ProfileMenu = ReactiveComponent
   displayName: 'ProfileMenu'
 
@@ -28,14 +30,12 @@ window.ProfileMenu = ReactiveComponent
 
     DIV
       id: 'user_nav'
-      style:
-        _.extend(
-          position: 'absolute'
-          zIndex: 5
-          right: 30
-          fontSize: 26
-          top: 17,
-          _.clone(@props.style))
+      style: _.defaults {}, (customization('profile_menu_style') or {}), (@props.style or {}),
+        position: 'absolute'
+        zIndex: 5
+        right: 30
+        fontSize: 26
+        top: 17
 
       if current_user.logged_in
 

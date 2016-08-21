@@ -117,22 +117,6 @@ window.DefaultFooter = ReactiveComponent
 
 
 
-
-        # DIV 
-        #   style: 
-        #     marginTop: 7
-        #     maxHeight: if browser.is_mobile then 30
-
-        #   'Bug to report? Want to use this technology yourself? '
-        #   A 
-        #     style: 
-        #       textDecoration: 'underline'
-        #     href: "mailto:admin@consider.it"
-
-        #     'Email us'
-        #   ' at admin@consider.it'
-
-
 require './logo'
 window.TechnologyByConsiderit = ReactiveComponent
   displayName: 'TechnologyByConsiderit'

@@ -272,19 +272,19 @@ AppSettingsDash = ReactiveComponent
                 'English'
 
               OPTION
-                value: 'spa'
+                value: 'es'
                 'Spanish'
 
               OPTION
-                value: 'french'
+                value: 'fr'
                 'French'
 
               OPTION
-                value: 'ptbr'
+                value: 'pt'
                 'Portuguese'
 
               OPTION
-                value: 'tun_ar'
+                value: 'aeb'
                 'Tunisian arabic'
 
             DIV 

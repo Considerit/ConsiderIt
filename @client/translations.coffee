@@ -74,7 +74,7 @@ dict.en =
   add_new: 'add new'
 
 
-dict.spa = 
+dict.es = 
   or: 'ó'
 
   # Alejandro, please translate:
@@ -91,7 +91,7 @@ dict.spa =
   add_new: 'crear nueva'
 
 
-dict.ptbr = 
+dict.pt = 
   or: 'ou'
   and: 'e'
 
@@ -106,7 +106,7 @@ dict.ptbr =
   closed: 'fechado'
   add_new: 'criar novo'
 
-dict.tun_ar = 
+dict.aeb = 
   or: 'أو'
   and: 'و'
 
@@ -121,7 +121,7 @@ dict.tun_ar =
   closed: 'مغلق'
   add_new: 'إضافة جديدة'
 
-dict.french = 
+dict.fr = 
   or: 'ou'
   and: 'et'
 
@@ -182,7 +182,7 @@ _.extend dict.en,
 
 
 
-_.extend dict.spa, 
+_.extend dict.es, 
   give_your_opinion: 'Deja tu Opinion'
   update_your_opinion: 'Actualizar tu Opinion'
   comment: 'comentario'
@@ -223,7 +223,7 @@ _.extend dict.spa,
   tip_attacks: "No ataques personales."
   filter_to_watched: "Filtrar propuestas por las que estás observando"
 
-_.extend dict.ptbr, 
+_.extend dict.pt, 
   give_your_opinion: 'Dê sua opinião'
   update_your_opinion: 'Atualizar sua opinião'
   comment: 'comentar'
@@ -264,7 +264,7 @@ _.extend dict.ptbr,
   filter_to_watched: "Filtrar propostas daqueles que está observando"
 
 
-_.extend dict.tun_ar, 
+_.extend dict.aeb, 
   give_your_opinion: 'أبد رأيك'
   update_your_opinion: 'بد رأيك من جديد'
   comment: 'علّق'
@@ -305,7 +305,7 @@ _.extend dict.tun_ar,
   filter_to_watched: "إفرز مقترحات من تتابعهم."
 
 
-_.extend dict.french,
+_.extend dict.fr,
   give_your_opinion: 'Donnez votre opinion' 
   update_your_opinion: 'modifiez votre opinion' 
   comment: 'commentez'
@@ -370,7 +370,7 @@ _.extend dict.en,
   permissions_and_invites: 'Permissions and invitations'
 
 # Alejandro, please translate:
-_.extend dict.spa, 
+_.extend dict.es, 
   create_new_proposal: 'Crear nueva propuesta'
   error_free: "libre de errores ortográficos"
   unambiguous: 'sin ambiguedades'
@@ -388,7 +388,7 @@ _.extend dict.spa,
   open_for_discussion: '¿Abierta a debate?'
   permissions_and_invites: 'Permisos e invitaciones'
 
-_.extend dict.ptbr, 
+_.extend dict.pt, 
   create_new_proposal: 'Criar nova proposta'
   error_free: "livre de erros ortográficos"
   unambiguous: 'sem ambiguidades'
@@ -406,7 +406,7 @@ _.extend dict.ptbr,
   open_for_discussion: 'Abrir para discussão?'
   permissions_and_invites: 'Permissões e convites'
 
-_.extend dict.tun_ar,
+_.extend dict.aeb,
   create_new_proposal: 'إحدث مقترح جديد'
   error_free: "خال من الأخطاء اللغويّة"
   unambiguous: 'خال من الغموض'
@@ -425,7 +425,7 @@ _.extend dict.tun_ar,
   permissions_and_invites: 'رخص ودعوات'
 
 
-_.extend dict.french, 
+_.extend dict.fr, 
   create_new_proposal: 'Créer une nouvelle proposition' 
   error_free: "sans fautes de frappe" 
   unambiguous: 'sans ambiguité' 
@@ -480,7 +480,7 @@ _.extend dict.en,
   forgot_password: 'I forgot my password!'
 
 
-_.extend dict.spa, 
+_.extend dict.es, 
   log_in: 'Entrar'
   create_new_account: 'Registrarse'
   log_out: 'Salir'
@@ -509,7 +509,7 @@ _.extend dict.spa,
   forgot_password: '¡He olvidado mi contraseña!'
 
 
-_.extend dict.ptbr, 
+_.extend dict.pt, 
   log_in: 'Entrar'
   create_new_account: 'Criar nova conta'
   log_out: 'Sair'
@@ -541,7 +541,7 @@ _.extend dict.ptbr,
   more_info: 'Por favor, forneça algumas informações'
   forgot_password: 'Esqueci minha senha!'
 
-_.extend dict.tun_ar, 
+_.extend dict.aeb, 
   log_in: 'سجّل للخول'
   create_new_account: 'إنشاء حساب جديد'
   log_out: 'خروج'
@@ -569,7 +569,7 @@ _.extend dict.tun_ar,
   forgot_password: 'لقد نسيت كلمة السر الخاصة بي'
 
 
-_.extend dict.french, 
+_.extend dict.fr, 
   log_in: 'Connection' 
   create_new_account: 'Créez un nouveau compte' 
   log_out: 'Déconnection' 
@@ -624,7 +624,7 @@ _.extend dict.en,
 
 
 # Alejandro, please translate:
-_.extend dict.spa, 
+_.extend dict.es, 
   send_email: 'Envíame resúmenes por correo electrónico'
   email_digest_purpose: (args) ->
     "Los resumenes proporcionan información de actividad sobre #{args.project}"
@@ -644,7 +644,7 @@ _.extend dict.spa,
   added_new_point: 'ha añadido un nuevo punto de vista'
   added_opinion: 'ha añadido su opinión'
 
-_.extend dict.ptbr, 
+_.extend dict.pt, 
 
   send_email: 'Me envie notificações por email'
   email_digest_purpose: (args) ->
@@ -665,7 +665,7 @@ _.extend dict.ptbr,
   added_new_point: 'adicionou novo ponto de vista'
   added_opinion: 'adicionou sua opinião'
 
-_.extend dict.tun_ar,
+_.extend dict.aeb,
   send_email: 'أرسل لي ملخصات البريد الإلكتروني'
   email_digest_purpose: (args) ->
     "#{args.project} ترصد الملخّصات الأنشطة الجديدة ذات الجدوى بالنسبة لك نظرا ل"
@@ -685,7 +685,7 @@ _.extend dict.tun_ar,
   added_new_point: 'أضف وجهة نظر أخرى'
   added_opinion: 'أضافوا أراءهم'
 
-_.extend dict.french, 
+_.extend dict.fr, 
   send_email: 'Envoyez-moi des courriels récapitulaitfs' 
   email_digest_purpose: (args) ->
     "Les récapitulatifs résument l’activité nouvelle qui vous intéresse au sujet de #{args.project}"
@@ -708,7 +708,7 @@ _.extend dict.french,
   added_opinion: 'ont ajouté leur opinion' 
 
 # fill in missing spanish translations with english equivalents
-_.defaults dict.spa, dict.en
+_.defaults dict.es, dict.en
 
 # fill in missing brazilian portuguese translations with english equivalents
-_.defaults dict.ptbr, dict.en
+_.defaults dict.pt, dict.en

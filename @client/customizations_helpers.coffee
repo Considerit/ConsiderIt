@@ -262,6 +262,7 @@ window.ShortHeader = (opts) -> ->
     external_link: subdomain.external_project_url
     logo_src: subdomain.branding.logo
     logo_height: 56
+    min_height: 60
 
   hsl = parseCssHsl(opts.background_color)
   is_light = hsl.l > .75
@@ -286,7 +287,7 @@ window.ShortHeader = (opts) -> ->
         style: 
           position: 'relative'
           left: if !homepage then -65 + 18
-          minHeight: 60
+          minHeight: opts.min_height
         TR null,
           if !homepage
             TD 
@@ -509,12 +510,6 @@ window.SeattleHeader = (opts) -> ->
     paragraph_style: {}
     section_heading_style: {}
 
-  external_link_style = _.defaults opts.external_link_style, 
-    display: 'block'
-    position: 'absolute'
-    top: 22
-    left: 20
-    color: "#0B4D92"
 
   paragraph_style = _.defaults opts.paragraph_style,
     fontSize: 18
@@ -534,6 +529,13 @@ window.SeattleHeader = (opts) -> ->
     fontWeight: 400
     fontSize: 28
     color: 'black'
+
+  external_link_style = _.defaults opts.external_link_style, 
+    display: 'block'
+    position: 'absolute'
+    top: 22
+    left: 20
+    color: "#0B4D92"
 
 
   DIV
@@ -663,6 +665,7 @@ window.seattle_vars =
   gray: "#444"
   pink: '#F06668'
   dark: '#5C1517'
+  magenta: '#d51c5c'
 
   section_description: 
     fontSize: 18

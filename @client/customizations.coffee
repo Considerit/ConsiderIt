@@ -202,7 +202,7 @@ customizations.lang_default =
     slider_pole_labels : slider_labels.agree_disagree
     list_opinions_title: 'Opinions'
 
-  spa: 
+  es: 
     point_labels : 
       pro: 'pro'
       pros: 'pros' 
@@ -218,7 +218,7 @@ customizations.lang_default =
 
     list_opinions_title: "Opiniones"
 
-  french: 
+  fr: 
     point_labels : 
       pro: 'pour' 
       pros: 'pour' 
@@ -234,7 +234,7 @@ customizations.lang_default =
 
     list_opinions_title: "Des avis"
 
-  tun_ar: 
+  aeb: 
     show_proposal_meta_data: false
     slider_pole_labels: 
       support: 'أوافق'
@@ -250,7 +250,7 @@ customizations.lang_default =
       other_header: "--valences--  أخرى" 
       top_header: "--valences--  الرئيسية" 
 
-  ptbr: 
+  pt: 
     point_labels : 
       pro: 'A Favor'
       pros: 'A Favor' 

@@ -629,7 +629,7 @@ window.SeattleHeader = (opts) -> ->
                   style: 
                     height: 70
               else
-                opts.from 
+                opts.salutation.from 
 
             if opts.salutation.after 
               DIV 

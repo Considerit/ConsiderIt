@@ -452,7 +452,7 @@ Cluster = ReactiveComponent
 
               @drawThreshold(subdomain, cluster, idx)
 
-          if customization('list_show_new_button', cluster_key)
+          if customization('list_show_new_button', cluster_key) || current_user.is_admin
             NewProposal 
               cluster_name: cluster.name
               local: @local.key

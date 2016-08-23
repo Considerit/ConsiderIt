@@ -6,7 +6,7 @@ window.passes_tags = (user, tags) ->
   passes = true 
   for tag in tags 
     passes &&= user.tags[tag] && \
-     !(user.tags[tag].toLowerCase() in ['no', 'false'])
+     !("#{user.tags[tag]}".toLowerCase() in ['no', 'false'])
   passes 
 
 window.passes_tag_filter = (user, tag, regex) -> 

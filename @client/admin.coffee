@@ -514,7 +514,7 @@ CustomizationsDash = ReactiveComponent
       STYLE 
         dangerouslySetInnerHTML: {__html: """
           .customizations .CodeMirror {
-            height: auto;
+            height: 500px;
             font-size: 14px;
             border: 1px solid #ddd;
           }
@@ -528,7 +528,7 @@ CustomizationsDash = ReactiveComponent
         DIV 
           style: 
             display: 'inline-block'
-            width: '58%'
+            width: if @local.compare_to != '' then '58%' else '75%'
             verticalAlign: 'top'
 
           DIV 
@@ -573,11 +573,10 @@ CustomizationsDash = ReactiveComponent
                       marginTop: 10
                     error
 
-
         DIV 
           style: 
             display: 'inline-block'
-            width: '38%'
+            width:  if @local.compare_to == '' then '22%' else '38%'
             verticalAlign: 'top'
             marginLeft: '2%'
 

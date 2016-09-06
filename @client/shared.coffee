@@ -337,7 +337,7 @@ window.splitParagraphs = (user_content) ->
     (^|[\s\n]) # Capture the beginning of string or line or leading whitespace
     (
       (?:https?):// # Look for a valid URL protocol (non-captured)
-      [\-A-Z0-9+\u0026\u2019@#/%?=()~_|!:,.;]* # Valid URL characters (any number of times)
+      [\-A-Z0-9+\u0026\u2019@#/%?=()\[\]\-\$&\*~_|!:,.;']* # Valid URL characters (any number of times)
       [\-A-Z0-9+\u0026@#/%=~()_|] # String must end in a valid URL character
     )
   ///gi

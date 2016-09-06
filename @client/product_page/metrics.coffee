@@ -24,16 +24,12 @@ window.Metrics = ReactiveComponent
     return loading_indicator if !m.daily_active_contributors
 
 
-    console.log @local
     if @local.time_frame == 'all time'
       metrics = m 
     else 
-      console.log 'HI!', m.daily_active_contributors
       metrics = 
         daily_active_contributors: (d for d in m.daily_active_contributors when d[0] < 365)
         daily_active_subdomains: (d for d in m.daily_active_subdomains when d[0] < 365)
-
-    console.log metrics
 
     DIV 
       style: 

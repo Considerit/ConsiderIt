@@ -7,12 +7,13 @@ class SubdomainController < ApplicationController
   include Invitations
 
   def index 
-    subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations}}
-    render :json => [{
-      key: '/subdomains',
-      subs: subdomains
-    }]
-
+    ActsAsTenant.without_tenant do 
+      subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations, :activity => s.proposals.count > 1 || s.opinions.published.count > 1 || s.points.published.count > 0}}
+      render :json => [{
+        key: '/subdomains',
+        subs: subdomains
+      }]
+    end
   end
 
 

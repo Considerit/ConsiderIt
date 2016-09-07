@@ -2,6 +2,18 @@
 class CommentController < ApplicationController
   respond_to :json
 
+  def all_for_subdomain
+
+    current_subdomain.points.each do |point|
+      if permit('read point', point) > 0 && point.comment_count > 0
+        dirty_key "/comments/#{point.id}"
+      end
+    end 
+
+    render :json => []
+  end 
+
+
   def index
 
     point = Point.find params[:point_id]

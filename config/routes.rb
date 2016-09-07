@@ -27,7 +27,6 @@ ConsiderIt::Application.routes.draw do
   get '/oembed(.:format)' => 'oembed#show'
   get '/embed/proposal/:slug' => 'oembed#proposal_embed', :constraints => NotJSON.new
 
-
   get "/dashboard/export(.:format)" => 'import_data#export'
 
 
@@ -43,8 +42,8 @@ ConsiderIt::Application.routes.draw do
 
   resources :proposal
   get '/proposals' => 'proposal#index'
-
   get '/metrics' => 'subdomain#metrics'
+  get '/all_comments' => 'comment#all_for_subdomain'
 
   resources :point, :only => [:create, :update, :destroy, :show]
   resources :opinion, :only => [:update, :show]

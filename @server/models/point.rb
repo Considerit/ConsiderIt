@@ -12,8 +12,9 @@ class Point < ActiveRecord::Base
 
 
   before_validation do 
-    #self.nutshell = self.nutshell.sanitize
-    #self.text = self.text.sanitize
+    #self.nutshell = sanitize_helper self.nutshell
+    #self.text = sanitize_helper self.text
+
 
     if self.nutshell.length > 180 
       self.text = self.text ? "#{self.nutshell[179..-1]} #{self.text}" : self.nutshell[179..-1]

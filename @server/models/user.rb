@@ -17,8 +17,8 @@ class User < ActiveRecord::Base
   before_save do 
     self.email = self.email.downcase if self.email
 
-    self.name = self.name.sanitize if self.name   
-    self.bio = self.bio.sanitize if self.bio
+    self.name = sanitize_helper self.name if self.name   
+    self.bio = sanitize_helper if self.bio
   end
 
   #validates_presence_of :avatar_remote_url, :if => :avatar_url_provided?, :message => 'is invalid or inaccessible'

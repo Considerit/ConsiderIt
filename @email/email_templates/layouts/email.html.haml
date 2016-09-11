@@ -6,25 +6,25 @@
   - bg_color = "#B03A44" #'#ccc' #subdomain.branding_info['primary_color']
   
   %body
-    %table#content{border: "0", cellpadding: "0", cellspacing: "0", height: "100%", width: "100%", style: "border-collapse: separate; border-spacing: 30px; font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; background-color: #{bg_color}; color: #ffffff; padding: 10px 0"}
+    %table#content{border: "0", cellpadding: "0", cellspacing: "0", height: "100%", width: "100%", style: "border-collapse: separate; border-spacing: 16px; background-color: #{bg_color}; color: #ffffff; padding: 10px 0"}
 
       %tr
 
-        %td{style: 'text-align: center'}
+        %td{style: "text-align: center;font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif;"}
 
           %h1{style: 'font-weight: 600; margin: 0; padding: 0'}
             %a{href: subdomain.host_with_port, style: 'color: #ffffff'}
               = subdomain.title
 
       %tr
-        %td{style: "margin: 15px auto; padding: 20px 40px; background-color: #ffffff; color: #414141; box-shadow: 0 1px 2px rgba(0,0,0,.5); text-align: left"}
+        %td{style: "margin: 15px auto; padding: 20px 40px; background-color: #ffffff; color: #414141; box-shadow: 0 1px 2px rgba(0,0,0,.5); text-align: left;font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif;"}
 
           = yield
 
 
 
       %tr
-        %td{style: 'text-align: center'}
+        %td{style: "text-align: center; font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif;"}
           = yield :footer
 
           %div{style: "color:white; margin-top: 15px; font-size: 18px"}

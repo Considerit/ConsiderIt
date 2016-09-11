@@ -5,8 +5,10 @@ module MailerHelper
       "\r\n=============\r\n#{name.capitalize}\r\n=============\r\n\r\n"
     else 
       """
-      <div style='color:white; width: 80%; max-width: 800px; margin: 15px auto 5px auto; text-align: left; font-size:22px;'>#{name}</div>
-      <div style='width: 80%; max-width: 800px; margin: auto; padding: 1px 20px 30px 20px; background-color: white; color: #414141; box-shadow: 0 1px 2px rgba(0,0,0,.5); text-align: left'>
+      <tr>
+      <td style='background-color: #ffffff; padding: 18px 30px 30px 30px; text-align: left; box-shadow:0px 1px 2px rgba(0,0,0,.3)'>
+      <div style='color:#434343; text-align: left; font-size:30px'>#{name}</div>
+      <div style='color: #434343; text-align: left'>
       """.html_safe
     end
 
@@ -16,7 +18,7 @@ module MailerHelper
     if @part == 'text'
       return ''
     else 
-      '</div>'.html_safe
+      '</div></td></tr>'.html_safe
     end
 
   end
@@ -26,9 +28,9 @@ module MailerHelper
     if @part == 'text'
       header
     else 
-      html = "<div style='margin: 0px 25px'>"
+      html = "<table><tr><td style='padding-top: 15px; padding-bottom: 15px'>"
       html += header
-      html += '</div>'
+      html += '</td></tr></table>'
       html.html_safe 
     end 
   end 
@@ -39,9 +41,9 @@ module MailerHelper
     if @part == 'text'
       header
     else 
-      html = "<div style='margin: 0px 25px'>"
+      html = "<table><tr><td style='padding-top: 8px; padding-bottom: 8px'>"
       html += header
-      html += '</div>'
+      html += '</td></tr></table>'
       html.html_safe 
     end
   end 
@@ -50,8 +52,8 @@ module MailerHelper
     if @part == 'text'
       "*#{rel}*"
     else 
-      """<span style='vertical-align:top;margin-top:5px;color:white;font-size:12px;background-color:#369CE9;padding:1px 2px;display:inline-block;margin-left:6px;'>
-        #{rel}
+      """<span style='vertical-align:top;color:#FE1394;font-size:14px;font-weight:500'>
+        [#{rel.gsub(' ', '&nbsp;')}]
       </span>"""
     end
   end 
@@ -92,12 +94,13 @@ module MailerHelper
       end 
       text
     else 
-      html = "<div style='position:relative; margin-top:20px'>"
+      html = ''
+      # html = "<div style='position:relative; margin-top:20px'>"
 
-      html += "<div style='position:absolute;left:-52px;top:4px;'>"
-      html += avatar(proposal.user, 40)
-      html += '</div>'
-      html += "<a style='font-weight:600;color: black;display:inline-block; text-decoration:underline; font-size:20px; #{has_relationship ? 'max-width: 75%;' : ''}' href='#{full_link(proposal.slug)}'>#{proposal.name}</a>"
+      # html += "<div style='position:absolute;left:-52px;top:4px;'>"
+      # html += avatar(proposal.user, 40)
+      # html += '</div>'
+      html += "<a style='font-weight:600;color: #2478CC;text-decoration:underline; font-size:24px;' href='#{full_link(proposal.slug)}'>#{proposal.name}</a>"
       if has_relationship
         html += relationship(proposal_info[:relationship])
       end
@@ -107,7 +110,7 @@ module MailerHelper
       if with_events && proposal_info.key?(:events)
         html += proposal_events proposal_info[:events].values()
       end 
-      html += "</div>"
+      # html += "</div>"
       html.html_safe
     end
   end 
@@ -132,7 +135,7 @@ module MailerHelper
     if @part == 'text'
       text = "New activity:\r\n"
     else 
-      html = "<div style='margin-left:60px'>"
+      html = "<table><tr><td style='padding-left:30px'><table>"
     end 
 
     events.each do |ev|
@@ -141,14 +144,14 @@ module MailerHelper
         label = 'added their opinion'
       when 'new_inclusion'
         if ev[:users].length == 1
-          label = 'agrees with'
+          label = 'agrees with:'
         else 
-          label = 'agree with'
+          label = 'agree with:'
         end
       when 'new_point'
-        label = "added a new #{ev[:obj].category}"
+        label = "added a new #{ev[:obj].category}:"
       when 'new_comment'
-        label = 'commented on'
+        label = 'commented on:'
       else 
         label = ev[:type]
       end
@@ -165,9 +168,9 @@ module MailerHelper
           end
         end
       else
-        html += "<div style='min-height: 30px; margin-top:12px;position:relative;'>"
+        html += "<tr><td style='min-height: 30px; padding-top:12px;'>"
         html += facepile ev[:users]
-        html += """<div style='color:black;font-size:16px;'>#{people_list(ev[:users])} #{label}</div>""" 
+        html += """<div style='color:#434343;font-size:14px;'>#{people_list(ev[:users])} #{label}</div>""" 
         if ev.key?(:obj)
           if ev.key?(:relationship)
             html += point_link(ev[:obj], ev[:relationship])
@@ -175,14 +178,14 @@ module MailerHelper
             html += point_link(ev[:obj])
           end
         end
-        html += '</div>'
+        html += '</td></tr>'
       end 
     end
 
     if @part == 'text'
       text
     else 
-      html += '</div>'
+      html += '</table></td></tr></table>'
       html
     end
   end
@@ -213,8 +216,8 @@ module MailerHelper
       text += "\r\nView at #{full_link(point.proposal.slug, {results: true, selected: "%2Fpoint%2F#{point.id}"})}"
       text
     else 
-      html = """<a style='font-weight:600;color: #AE3B46;text-decoration:underline;font-size:16px;' 
-                 href='#{full_link(point.proposal.slug, {results: true, selected: "%2Fpoint%2F#{point.id}"})}'>#{point.title(70)}</a>"""
+      html = """&ldquo;<a style='font-weight:600;color: #434343;text-decoration:underline; font-weight: 500; font-size:16px;' 
+                 href='#{full_link(point.proposal.slug, {results: true, selected: "%2Fpoint%2F#{point.id}"})}'>#{point.title(90)}</a>&rdquo;"""
       if relationship
         html += relationship(relationship)
       end
@@ -287,7 +290,7 @@ module MailerHelper
     if @part == 'text'
       "#{options[:text_preceding]}#{options[:text_instead] ? anchor : full_link(href, options[:search_params])}"
     else
-      "<a href=#{full_link(href, options[:search_params])} style='font-weight: 700; color:#AE3B46;'>#{anchor}</a>".html_safe
+      "<a href=#{full_link(href, options[:search_params])} style='font-weight: 700; color:#2478CC;'>#{anchor}</a>".html_safe
     end
   end
 

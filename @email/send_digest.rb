@@ -117,7 +117,7 @@ def get_new_activity(subdomain, user, since)
       proposal_dict[proposal.id] = {
         :obj => proposal,
         :events => {},
-        :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You expressed an opinion' : false 
+        :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You gave an opinion' : false 
       }
     end
 
@@ -138,7 +138,7 @@ def get_new_activity(subdomain, user, since)
       proposal_dict[proposal.id] = {
         :obj => proposal,
         :events => {},
-        :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You expressed an opinion' : false 
+        :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You gave an opinion' : false 
       }
     end
 
@@ -172,7 +172,7 @@ def get_new_activity(subdomain, user, since)
       proposal_dict[proposal.id] = {
         :obj => proposal,
         :events => {},
-        :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You expressed an opinion' : false 
+        :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You gave an opinion' : false 
       }
     end
 
@@ -197,7 +197,7 @@ def get_new_activity(subdomain, user, since)
         proposal_dict[proposal.id] = {
           :obj => proposal,
           :events => {},
-          :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You expressed an opinion' : false 
+          :relationship => user.opinions.published.where(:proposal_id => proposal.id).count > 0 ? 'You gave an opinion' : false 
         }
       end
 

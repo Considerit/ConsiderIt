@@ -6,7 +6,7 @@ module MailerHelper
     else 
       """
       <tr>
-      <td style='background-color: #ffffff; padding: 18px 30px 30px 30px; text-align: left; box-shadow:0px 1px 2px rgba(0,0,0,.3)'>
+      <td style='background-color: #ffffff; padding: 18px 24px 24px 24px; text-align: left; box-shadow:0px 1px 2px rgba(0,0,0,.3)'>
       <div style='color:#434343; text-align: left; font-size:30px'>#{name}</div>
       <div style='color: #434343; text-align: left'>
       """.html_safe

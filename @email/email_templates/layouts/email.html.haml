@@ -6,21 +6,30 @@
   - bg_color = "#B03A44" #'#ccc' #subdomain.branding_info['primary_color']
   
   %body
-    #content{style: "font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; background-color: #{bg_color}; color: white; text-align: center; padding: 10px 0"}
-      %h1{style: 'font-weight: 600; margin: 0; padding: 0'}
-        %a{href: subdomain.host_with_port, style: 'color: white'}
-          = subdomain.title
+    %table#content{border: "0", cellpadding: "0", cellspacing: "0", height: "100%", width: "100%", style: "border-collapse: separate; border-spacing: 30px; font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; background-color: #{bg_color}; color: #ffffff; padding: 10px 0"}
 
-      %div{style: "width: 80%; max-width: 800px; margin: 15px auto; padding: 20px 40px; background-color: white; color: #414141; box-shadow: 0 1px 2px rgba(0,0,0,.5); text-align: left"}
+      %tr
 
-        = yield
+        %td{style: 'text-align: center'}
 
-      %div
-        = yield :footer
+          %h1{style: 'font-weight: 600; margin: 0; padding: 0'}
+            %a{href: subdomain.host_with_port, style: 'color: #ffffff'}
+              = subdomain.title
 
-        %div{style: "color:white; margin-top: 15px; font-size: 18px"}
-          Technology by 
-          %a{href: 'https://consider.it', target: '_blank', style: "font-weight: 700; color: white; text-decoration: none"}
-            Consider.it
+      %tr
+        %td{style: "margin: 15px auto; padding: 20px 40px; background-color: #ffffff; color: #414141; box-shadow: 0 1px 2px rgba(0,0,0,.5); text-align: left"}
+
+          = yield
+
+
+
+      %tr
+        %td{style: 'text-align: center'}
+          = yield :footer
+
+          %div{style: "color:white; margin-top: 15px; font-size: 18px"}
+            Technology by 
+            %a{href: 'https://consider.it', target: '_blank', style: "font-weight: 700; color: #ffffff; text-decoration: none"}
+              Consider.it
 
 

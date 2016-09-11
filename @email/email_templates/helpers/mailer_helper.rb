@@ -7,7 +7,7 @@ module MailerHelper
       """
       <tr>
       <td style='background-color: #ffffff; padding: 18px 24px 24px 24px; text-align: left; box-shadow:0px 1px 2px rgba(0,0,0,.3)'>
-      <div style='color:#434343; text-align: left; font-size:30px'>#{name}</div>
+      <div style='color:#434343; text-align: left; font-size:24px'>#{name}</div>
       <div style='color: #434343; text-align: left'>
       """.html_safe
     end
@@ -52,8 +52,8 @@ module MailerHelper
     if @part == 'text'
       "*#{rel}*"
     else 
-      """<span style='vertical-align:top;color:#FE1394;font-size:14px;font-weight:500'>
-        [#{rel.gsub(' ', '&nbsp;')}]
+      """ <span style='vertical-align:baseline;background-color:#FE1394;color:#ffffff;font-size:13px;font-weight:500;padding:1px'>
+        #{rel.gsub(' ', '&nbsp;')}
       </span>"""
     end
   end 
@@ -100,7 +100,7 @@ module MailerHelper
       # html += "<div style='position:absolute;left:-52px;top:4px;'>"
       # html += avatar(proposal.user, 40)
       # html += '</div>'
-      html += "<a style='font-weight:600;color: #2478CC;text-decoration:underline; font-size:24px;' href='#{full_link(proposal.slug)}'>#{proposal.name}</a>"
+      html += "<a style='font-weight:600;color: #439fe0;text-decoration:underline; font-size:20px;' href='#{full_link(proposal.slug)}'>#{proposal.name.strip}</a>"
       if has_relationship
         html += relationship(proposal_info[:relationship])
       end
@@ -290,7 +290,7 @@ module MailerHelper
     if @part == 'text'
       "#{options[:text_preceding]}#{options[:text_instead] ? anchor : full_link(href, options[:search_params])}"
     else
-      "<a href=#{full_link(href, options[:search_params])} style='font-weight: 700; color:#2478CC;'>#{anchor}</a>".html_safe
+      "<a href=#{full_link(href, options[:search_params])} style='font-weight: 700; color:#439fe0;'>#{anchor}</a>".html_safe
     end
   end
 

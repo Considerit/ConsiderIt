@@ -6,14 +6,19 @@
   - bg_color = "#B03A44" #'#ccc' #subdomain.branding_info['primary_color']
   
   %body
-    %table#content{border: "0", cellpadding: "0", cellspacing: "0", height: "100%", width: "100%", style: "border-collapse: separate; border-spacing: 16px; background-color: #{bg_color}; color: #ffffff; padding: 10px 0"}
+
+    /[if mso]
+      :css
+        body, table, td {font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif;}
+
+    %table#content{border: "0", cellpadding: "0", cellspacing: "16", height: "100%", width: "100%", style: "border-collapse: separate; border-spacing: 16px; background-color: #{bg_color}; color: #ffffff; padding: 10px 0"}
 
       %tr
 
         %td{style: "text-align: center;font-family: 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif;"}
 
           %h1{style: 'font-weight: 600; margin: 0; padding: 0'}
-            %a{href: subdomain.host_with_port, style: 'color: #ffffff'}
+            %a{href: "https://" + subdomain.host_with_port, style: 'color: #ffffff'}
               = subdomain.title
 
       %tr

@@ -49,7 +49,7 @@ DashHeader = ReactiveComponent
 
       DIV 
         style: 
-          width: BODY_WIDTH()
+          width: HOMEPAGE_WIDTH()
           margin: 'auto'
           position: 'relative'    
         H1 
@@ -77,7 +77,7 @@ ImportDataDash = ReactiveComponent
       
       DashHeader name: 'Export Data'
 
-      DIV style: {width: BODY_WIDTH(), margin: '15px auto'},
+      DIV style: {width: HOMEPAGE_WIDTH(), margin: '15px auto'},
 
       if subdomain.plan || current_user.is_super_admin
         DIV null, 
@@ -102,7 +102,7 @@ ImportDataDash = ReactiveComponent
 
       DashHeader name: 'Import Data'
 
-      DIV style: {width: BODY_WIDTH(), margin: '15px auto'},
+      DIV style: {width: HOMEPAGE_WIDTH(), margin: '15px auto'},
         P style: {marginBottom: 6}, 
           "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
 

@@ -216,7 +216,7 @@ DEPENDENCIES
   deep_cloneable
   delayed_job!
   delayed_job_active_record!
-  delayed_paperclip (~> 2.9)
+  delayed_paperclip
   exception_notification
   font-awesome-rails
   haml

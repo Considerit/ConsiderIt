@@ -137,7 +137,7 @@ SubdomainRoles = ReactiveComponent
 
     DIV null, 
       DashHeader name: 'User Roles'
-      DIV style: {width: BODY_WIDTH(), margin: 'auto'},
+      DIV style: {width: HOMEPAGE_WIDTH(), margin: 'auto'},
         SpecifyRoles subdomain, roles
 
 
@@ -149,7 +149,7 @@ SpecifyRoles = (target, roles) ->
         style: 
           marginTop: 24
 
-        H1 style: {fontSize: 18, position: 'relative'}, 
+        H2 style: {fontSize: 18, position: 'relative'}, 
           I 
             className: "fa #{role.icon}"
             style: 

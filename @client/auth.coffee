@@ -227,12 +227,16 @@ Auth = ReactiveComponent
               position: 'relative'
               marginBottom: 10
               fontWeight: 600
-              fontSize: 61
               whiteSpace: 'nowrap'
-              color: focus_blue
-            SPAN
+
+            H1
               style: 
+                display: 'inline-block'
                 position: 'relative'
+                fontWeight: 600
+                fontSize: 61
+                color: focus_blue
+
               task
 
             if auth.form != 'edit profile'

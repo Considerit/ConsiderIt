@@ -22,7 +22,7 @@ gem 'activerecord-import' # bulk imports for performance
 gem "haml"
 gem 'paperclip' # https://github.com/thoughtbot/paperclip
 gem 'paperclip-compression'
-gem 'delayed_paperclip'
+gem 'delayed_paperclip', '~> 2.9'
 gem 'font-awesome-rails'
 
 #############

@@ -380,7 +380,7 @@ window.LegacyImageHeader = (opts) -> ->
 
      
     if opts.text
-      DIV style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
+      H1 style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
         opts.text
 
 
@@ -468,7 +468,7 @@ window.HawaiiHeader = (opts) -> ->
             paddingTop: 20
 
 
-      SPAN 
+      H1 
         style: opts.title_style
         opts.title 
 
@@ -587,7 +587,7 @@ window.SeattleHeader = (opts) -> ->
 
         DIV null,
 
-          for section in opts.sections 
+          for section, idx in opts.sections 
 
             DIV 
               style: 
@@ -595,7 +595,8 @@ window.SeattleHeader = (opts) -> ->
 
 
               if section.label 
-                DIV
+                HEADING = if idx == 0 then H1 else DIV
+                HEADING
                   style: _.defaults {}, (section.label_style or {}), section_heading_style
                   section.label 
 

@@ -531,11 +531,11 @@ Cluster = ReactiveComponent
       if ListHeader
         ListHeader()
       else 
-
+        HEADING = if label then H2 else H1
         DIV 
           style: 
             position: 'relative'
-          H1
+          HEADING
             style: _.extend {}, first_header, 
               position: 'relative'
               cursor: if !list_uncollapseable then 'pointer'

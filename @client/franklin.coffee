@@ -413,11 +413,13 @@ ProposalDescription = ReactiveComponent
         id: 'proposal_name'
         style:
           lineHeight: 1.2
-          fontWeight: 700
-          fontSize: 45
           paddingBottom: 15
 
-        @proposal.name
+        H1
+          style: 
+            fontWeight: 700
+            fontSize: 45
+          @proposal.name
 
         if customization('show_proposal_meta_data')
           DIV 
@@ -1248,7 +1250,8 @@ PointsList = ReactiveComponent
       header_prefix = if mode == 'results' then 'top' else "other"
       header_style = 
         width: POINT_WIDTH()
-        fontSize: 30        
+        fontSize: 30       
+        fontWeight: 400 
         position: 'relative'
         left: if @props.valence == 'cons' then -20 else 20
           # Mike: I wanted the headers to be centered over the ENTIRE
@@ -1283,7 +1286,7 @@ PointsList = ReactiveComponent
                              heightWhenRendered(other_heading, header_style)
 
     wrapper [
-      DIV 
+      H2 
         className:'points_heading_label'
         style: _.extend header_style,
           textAlign: 'center'

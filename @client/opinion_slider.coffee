@@ -190,7 +190,9 @@ window.OpinionSlider = ReactiveComponent
       else if func = labels.slider_feedback
         func slider.value, @proposal
       else
-        if TWO_COL() then t("Your opinion") else ''        
+        if TWO_COL() then t("Your opinion") else ''       
+
+    return SPAN null if slider_feedback == '' 
 
     feedback_style = 
       pointerEvents: 'none' 
@@ -217,7 +219,7 @@ window.OpinionSlider = ReactiveComponent
       marginLeft: -feedback_width / 2
       width: feedback_width
 
-    DIV 
+    H2  
       style: feedback_style
       slider_feedback
 

@@ -445,8 +445,75 @@ class User < ActiveRecord::Base
     classes.each do |cls|
       cls.where("user_id in (?)", missing_users.uniq).delete_all
     end
-
   end
-   
+
+  def self.get_saml_settings(url_base)
+    require 'onelogin/ruby-saml'
+    # this is just for testing purposes.
+    # should retrieve SAML-settings based on subdomain, IP-address, NameID or similar
+    settings = OneLogin::RubySaml::Settings.new
+
+    url_base ||= "http://localhost:3000"
+
+    # Example settings data, replace this values!
+
+    # When disabled, saml validation errors will raise an exception.
+    settings.soft = true
+
+    #SP section
+    settings.issuer                         = url_base + "/saml/metadata"
+    settings.assertion_consumer_service_url = url_base + "/saml/acs"
+    settings.assertion_consumer_logout_service_url = url_base + "/saml/logout"
+
+    # IdP section
+    settings.idp_entity_id                  = "https://app.onelogin.com/saml/metadata/585764"
+    settings.idp_sso_target_url             = "https://standardminds-dev.onelogin.com/trust/saml2/http-post/sso/585764"
+    settings.idp_slo_target_url             = "https://standardminds-dev.onelogin.com/trust/saml2/http-redirect/slo/585764"
+
+
+
+    settings.idp_cert                       = "-----BEGIN CERTIFICATE-----
+MIIEHTCCAwWgAwIBAgIUahG83qLFXCyf8o3d5J5I5mdfSbkwDQYJKoZIhvcNAQEF
+BQAwWjELMAkGA1UEBhMCVVMxEzARBgNVBAoMCkNvbnNpZGVyaXQxFTATBgNVBAsM
+DE9uZUxvZ2luIElkUDEfMB0GA1UEAwwWT25lTG9naW4gQWNjb3VudCA5MTU2NDAe
+Fw0xNjA5MDkwMzQzMzZaFw0yMTA5MTAwMzQzMzZaMFoxCzAJBgNVBAYTAlVTMRMw
+EQYDVQQKDApDb25zaWRlcml0MRUwEwYDVQQLDAxPbmVMb2dpbiBJZFAxHzAdBgNV
+BAMMFk9uZUxvZ2luIEFjY291bnQgOTE1NjQwggEiMA0GCSqGSIb3DQEBAQUAA4IB
+DwAwggEKAoIBAQC6P1KSXOUJ99lFoaGZHMokRropHQfiRVubCtWEbezWDxGwdsnr
+/raowJJXKQIalcVFJHIao5I9cbXrcgpvmElgxaMTWm+rInsY1f2y5yUM321BC/3+
+4q8N8xvCBhNEUD0O9xkcHcsMAXGu33vg0YSFYUd99aYoTeUwG6urpz6/b4JldMw3
+7ygOCssa9m6Ux9k4rbId9eYXiWgwrmrtEktUggYKfzIqhD/2KoFgzCIdVFMdYyja
+l2mPEbf+oav/5y6HO/gtK/DnZYW1LDs0c3Nwtab1bvmP0J+8mbmLDTRA2hyTBtQz
+GeBiUz9g8S1A68ezvulYccMmgDR6qdb7vQOZAgMBAAGjgdowgdcwDAYDVR0TAQH/
+BAIwADAdBgNVHQ4EFgQUpppEHxiKI9BJJeJB4GAjaLBuZlYwgZcGA1UdIwSBjzCB
+jIAUpppEHxiKI9BJJeJB4GAjaLBuZlahXqRcMFoxCzAJBgNVBAYTAlVTMRMwEQYD
+VQQKDApDb25zaWRlcml0MRUwEwYDVQQLDAxPbmVMb2dpbiBJZFAxHzAdBgNVBAMM
+Fk9uZUxvZ2luIEFjY291bnQgOTE1NjSCFGoRvN6ixVwsn/KN3eSeSOZnX0m5MA4G
+A1UdDwEB/wQEAwIHgDANBgkqhkiG9w0BAQUFAAOCAQEANmz1PRfgM8UEaWU2dUQ6
+p9LKzrTPlNmGY/pNFaGj42j/G8Q1qNPUnrhbitj8pdlr0vAHLQQkMvcICtmeS8UN
+bxaJ1YbN8s3o0twOXguzC19a0hkSyNdDCO+GgqazNnMzYmL+KbvdgVKCUs1kzI5Q
+8M8rH09auNVKPJ+QtaXbBln8DJJ2L9/Db6ujQlKR0ol2gotpMuoxCRtUMj9UmMM6
+euAP3Pt3b49r0igIPIwW9P73FOCmwFRURvFXMaj/M8MpJOxJ8a7CIvqaQXhW1voh
+BORjb2jFjB5kon9QH6kPg2KnYCThSe4OE5f5bv6gNhcfATYAtEWMKbVLhTDWXMfL
+xA==
+-----END CERTIFICATE-----"
+
+
+    # or settings.idp_cert_fingerprint           = "3B:05:BE:0A:EC:84:CC:D4:75:97:B3:A2:22:AC:56:21:44:EF:59:E6"
+    #    settings.idp_cert_fingerprint_algorithm = XMLSecurity::Document::SHA1
+
+    settings.name_identifier_format         = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+
+    # Security section
+    settings.security[:authn_requests_signed] = false
+    settings.security[:logout_requests_signed] = false
+    settings.security[:logout_responses_signed] = false
+    settings.security[:metadata_signed] = false
+    settings.security[:digest_method] = XMLSecurity::Document::SHA1
+    settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
+
+    settings
+  end
+
 
 end

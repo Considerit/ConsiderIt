@@ -29,6 +29,10 @@ ConsiderIt::Application.routes.draw do
 
   get "/dashboard/export(.:format)" => 'import_data#export'
 
+  # SAML for Development
+  get 'saml/sso' => 'current_user#sso' 
+  post 'saml/acs' => 'current_user#acs'
+  get 'saml/metadata' => 'current_user#metadata' 
 
   # All user-visible URLs go to the html controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
@@ -94,5 +98,7 @@ ConsiderIt::Application.routes.draw do
   match 'update_user_avatar_hack' => 'current_user#update_user_avatar_hack', :via => [:put]
 
   post "/dashboard/import_data" => 'import_data#create'
+
+
 
 end

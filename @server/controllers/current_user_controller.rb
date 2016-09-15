@@ -23,11 +23,11 @@ def dirty_if_any_private_proposals(real_user)
 end
 
 class CurrentUserController < ApplicationController
-  skip_before_action :verify_authenticity_token, :only => :update_user_avatar_hack
+  skip_before_action :verify_authenticity_token, :only => [:update_user_avatar_hack, :acs]
 
   # Gets the current user data
   def show
-    # puts("Current_user is #{current_user.id}")
+    #puts("Current_user is #{current_user.id}")
     dirty_key '/current_user'
     render :json => []
   end  
@@ -131,6 +131,22 @@ class CurrentUserController < ApplicationController
 
             # puts("Now current is #{current_user && current_user.id}")
             log('sign in by email')
+
+            # SAML dev code 
+            if false
+              # user logs in with SAML provider
+              puts "this is current user EMAIL #{current_user.email}"
+              settings = User.get_saml_settings(get_url_base)
+
+              if settings.nil?
+                render :action => :no_settings
+                return
+              end
+
+              request = OneLogin::RubySaml::Authrequest.new
+              redirect_to(request.create(settings))
+            end
+
           end
         end
 
@@ -421,6 +437,58 @@ class CurrentUserController < ApplicationController
 
   def log (what)
     write_to_log({:what => what, :where => request.fullpath, :details => nil})
+  end
+
+  def sso
+    settings = User.get_saml_settings(get_url_base)
+    if settings.nil?
+      render :action => :no_settings
+      return
+    end
+
+    request = OneLogin::RubySaml::Authrequest.new
+    redirect_to(request.create(settings))
+
+  end
+
+  def acs
+    settings = User.get_saml_settings(get_url_base)
+    response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings)
+    puts 'SAML WORKING'
+
+    if response.is_valid?
+      puts params
+      puts 'SAML VALID'
+      puts response.inspect
+      session[:nameid] = response.nameid
+      session[:attributes] = response.attributes
+      @attrs = session[:attributes]
+      logger.info "Sucessfully logged"
+      logger.info "NAMEID: #{response.nameid}"
+
+      # log user. in TODO allow for incorrect login and new user with name field
+      user = User.find_by_email(response.nameid.downcase)
+      replace_user(current_user, user)
+      set_current_user(user)
+      current_user.add_to_active_in
+      update_roles_and_permissions
+
+      redirect_to '/' 
+    else
+      logger.info "Response Invalid. Errors: #{response.errors}"
+      @errors = response.errors
+      render :action => :fail
+    end
+  end
+
+  def metadata
+    settings = User.get_saml_settings(get_url_base)
+    meta = OneLogin::RubySaml::Metadata.new
+    render :xml => meta.generate(settings, true)
+  end
+
+  def get_url_base
+    "#{request.protocol}#{request.host_with_port}"
   end
 
 end

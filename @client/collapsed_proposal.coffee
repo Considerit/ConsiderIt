@@ -84,7 +84,7 @@ window.CollapsedProposal = ReactiveComponent
     # creation = new Date(proposal.created_at).getTime()
     # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
 
-    DIV
+    LI
       key: proposal.key
       id: 'p' + proposal.slug.replace('-', '_')  # Initial 'p' is because all ids must begin 
                                            # with letter. seeking to hash was failing 
@@ -92,7 +92,10 @@ window.CollapsedProposal = ReactiveComponent
       style:
         minHeight: 70
         position: 'relative'
-        marginBottom: if slider_regions then 15 else 15
+        margin: "0 0 15px 0"
+        padding: 0
+        listStyle: 'none'
+
       onMouseEnter: => 
         if draw_slider
           @local.hover_proposal = proposal.key; save @local

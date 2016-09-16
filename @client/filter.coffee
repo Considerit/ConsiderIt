@@ -407,7 +407,7 @@ OpinionFilter = ReactiveComponent
                 display: 'inline-block'
                 marginLeft: 7
                 padding: '0 0 0 7px'  
-                color: if is_enabled then focus_blue else '#999'
+                color: if is_enabled then focus_blue else '#777'
                 cursor: 'pointer'
                 fontSize: 16
                 backgroundColor: 'transparent'

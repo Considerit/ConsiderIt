@@ -99,7 +99,7 @@ class Proposal < ActiveRecord::Base
     # user for all proposals
     your_opinions = {}
     if subdomain.name != 'homepage'
-      Opinion.where(:user => current_user).each do |opinion|
+      Opinion.where(:user => current_user).order('id DESC').each do |opinion|
         your_opinions[opinion.proposal_id] = opinion
       end 
 

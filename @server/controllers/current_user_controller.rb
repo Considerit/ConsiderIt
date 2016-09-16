@@ -132,21 +132,6 @@ class CurrentUserController < ApplicationController
             # puts("Now current is #{current_user && current_user.id}")
             log('sign in by email')
 
-            # SAML dev code 
-            if false
-              # user logs in with SAML provider
-              puts "this is current user EMAIL #{current_user.email}"
-              settings = User.get_saml_settings(get_url_base)
-
-              if settings.nil?
-                render :action => :no_settings
-                return
-              end
-
-              req = OneLogin::RubySaml::Authrequest.new
-              redirect_to(req.create(settings))
-            end
-
           end
         end
 

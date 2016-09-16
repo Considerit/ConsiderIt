@@ -83,7 +83,7 @@ ImportDataDash = ReactiveComponent
         DIV null, 
           "Export data from Considerit. A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
           DIV style: marginTop: 20, display: 'block'
-          A 
+          BUTTON 
             style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
             href: "/dashboard/export"
             "data-nojax": true
@@ -167,7 +167,7 @@ ImportDataDash = ReactiveComponent
             TR null,
               TD null
               TD style: {padding: '20px 0 0 20px'}, 
-                A 
+                BUTTON
                   id: 'submit_import'
                   style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
                   onClick: => 
@@ -194,7 +194,6 @@ ImportDataDash = ReactiveComponent
                         @local.successes = null                      
                         @local.errors = ['Unknown error parsing the files. Email tkriplean@gmail.com.']
                         save @local
-                        
 
                   'Done. Upload!'
 
@@ -878,8 +877,10 @@ ModerationDash = ReactiveComponent
                 'close'
 
           else 
-            A 
-              style: {textDecoration: 'underline'}
+            BUTTON 
+              style: 
+                padding: '4px 8px'
+
               onClick: => 
                 @local.edit_settings = true
                 save @local

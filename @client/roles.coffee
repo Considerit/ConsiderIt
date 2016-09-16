@@ -373,7 +373,7 @@ AddRolesAndInvite = ReactiveComponent
               style: {width: '90%', fontSize: 18, padding: '8px 14px'}
 
       # Submit button
-      DIV
+      BUTTON
         style: 
           backgroundColor: focus_blue
           color: 'white'
@@ -383,6 +383,7 @@ AddRolesAndInvite = ReactiveComponent
           cursor: 'pointer'
           borderRadius: 8
           marginTop: 12
+          border: 'none'
 
         onClick: (e) => 
 

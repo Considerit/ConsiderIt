@@ -32,9 +32,9 @@ class Opinion < ActiveRecord::Base
     # First try to find a published opinion for this user
     your_opinion = proposal.opinions.where(:user => user)
 
-    # if your_opinion.length > 1
-    #   pp "Duplicate opinions for user #{user}: #{your_opinion.map {|o| o.id} }!"
-    # end
+    if your_opinion.length > 1
+      pp "Duplicate opinions for user #{user}: #{your_opinion.map {|o| o.id} }!"
+    end
     
     your_opinion = your_opinion.first
 

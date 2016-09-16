@@ -234,7 +234,7 @@ ProposalFilter = ReactiveComponent
 
         for filter in (filters.for_proposals or [])
           do (filter) => 
-            SPAN 
+            BUTTON 
               style: 
                 backgroundColor: '#eee'
                 color: '#666'
@@ -244,6 +244,9 @@ ProposalFilter = ReactiveComponent
                 cursor: 'pointer'
                 boxShadow: '0 1px 1px rgba(0,0,0,.2)'
                 marginRight: 10
+                outline: 'none'
+                border: 'none'
+
               onClick: -> 
                 idx = filters.for_proposals.indexOf(filter)
                 filters.for_proposals.splice idx, 1
@@ -261,22 +264,34 @@ ProposalFilter = ReactiveComponent
         "sort proposals by "
 
 
-        SPAN 
+        DIV 
           style: 
-            fontWeight: 700
-            position: 'relative'
-            cursor: 'pointer'
-            textDecoration: 'underline'
-
-          onClick: => 
-            @local.show_sort_options = !@local.show_sort_options
-            save @local
-
-          sort.name
-
-          SPAN style: _.extend cssTriangle 'bottom', focus_blue, 11, 7,
             display: 'inline-block'
-            marginLeft: 4
+            position: 'relative'
+            
+          BUTTON 
+            style: 
+              fontWeight: 700
+              position: 'relative'
+              cursor: 'pointer'
+              textDecoration: 'underline'
+              backgroundColor: 'transparent'
+              outline: 'none'
+              border: 'none'
+              padding: 0
+              display: 'inline-block'
+              fontSize: 'inherit'
+              color: 'inherit'
+
+            onClick: => 
+              @local.show_sort_options = !@local.show_sort_options
+              save @local
+
+            sort.name
+
+            SPAN style: _.extend cssTriangle 'bottom', focus_blue, 11, 7,
+              display: 'inline-block'
+              marginLeft: 4
 
           if @local.show_sort_options
             DIV 
@@ -386,16 +401,18 @@ OpinionFilter = ReactiveComponent
         for filter,idx in filters 
           do (filter, idx) => 
             is_enabled = filter_out.opinion_filters?[filter.label]
-            DIV 
+            BUTTON 
               ref: "filter-#{idx}"
               style: 
                 display: 'inline-block'
-                marginRight: if idx != filters.length - 1 then 5
-                paddingRight: if idx != filters.length - 1 then 5  
-                borderRight: if idx != filters.length - 1 then '1px solid #ddd'
-                color: if is_enabled then focus_blue else '#aaa'
+                marginLeft: 7
+                padding: '0 0 0 7px'  
+                color: if is_enabled then focus_blue else '#999'
                 cursor: 'pointer'
                 fontSize: 16
+                backgroundColor: 'transparent'
+                outline: 'none'
+                border: 'none'
 
               onMouseEnter: => 
                 if filter.tooltip 
@@ -410,7 +427,7 @@ OpinionFilter = ReactiveComponent
                   save tooltip
               onClick: -> toggle_filter(filter)              
 
-              filter.label 
+              filter.label
 
 
 VerificationProcessExplanation = ReactiveComponent

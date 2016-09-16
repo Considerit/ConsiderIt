@@ -241,7 +241,7 @@ Auth = ReactiveComponent
 
             if auth.form != 'edit profile'
 
-              SPAN
+              BUTTON
                 style:
                   color: auth_ghost_gray
                   position: 'absolute'
@@ -250,6 +250,10 @@ Auth = ReactiveComponent
                   top: 70
                   padding: 10
                   fontSize: 24
+                  backgroundColor: 'transparent'
+                  outline: 'none'
+                  border: 'none'
+
                 title: t('cancel')
 
                 onClick: =>
@@ -424,13 +428,17 @@ Auth = ReactiveComponent
             paddingLeft: 18
             paddingRight: 7
           'or '
-        A
+
+        BUTTON
           style:
             display: 'inline-block'
             color: '#444'
             textDecoration: 'underline'
             fontWeight: 400
             fontSize: 24
+            backgroundColor: 'transparent'
+            outline: 'none'
+            border: 'none'
           onClick: =>
             current_user = fetch('/current_user')
             auth.form = if auth.form == 'create account' then 'login' else 'create account'
@@ -453,10 +461,11 @@ Auth = ReactiveComponent
   # inline: is the button inline-block?
   submitButton : (action, inline) ->
     # this is gross code
-    DIV
+    BUTTON
       style:
         fontSize: 24
         display: if inline then 'inline-block' else 'block'
+        width: if !inline then '100%'
       className:'primary_button' + (if @local.submitting then ' disabled' else '')
       onClick: @submitAuth
       
@@ -625,13 +634,18 @@ Auth = ReactiveComponent
     DIV 
       style: 
         textAlign: 'right'
-        fontSize: 18
         width: 300
 
-      A 
+      BUTTON
         style: 
           textDecoration: 'underline'
           color: auth_ghost_gray
+          backgroundColor: 'transparent'
+          outline: 'none'
+          border: 'none'
+          fontSize: 18
+          padding: 0
+
         onClick: => 
           # Tell the server to email us a token
           current_user = fetch('/current_user')

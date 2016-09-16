@@ -457,7 +457,7 @@ ProposalDescription = ReactiveComponent
           maxHeight: if @local.description_collapsed then @max_description_height
           overflow: if @local.description_collapsed then 'hidden'
         if @local.description_collapsed
-          DIV
+          BUTTON
             style:
               backgroundColor: '#f9f9f9'
               width: HOMEPAGE_WIDTH()
@@ -469,6 +469,8 @@ ProposalDescription = ReactiveComponent
               paddingBottom: 10
               fontWeight: 600
               textAlign: 'center'
+              border: 'none'
+
             onMouseDown: => 
               @local.description_collapsed = false
               save(@local)
@@ -502,24 +504,31 @@ ProposalDescription = ReactiveComponent
             style:
               marginRight: 10
               color: '#999'
-
+              backgroundColor: 'transparent'
+              border: 'none'
+              padding: 0
             t('edit')
 
-          A 
+          BUTTON 
             style: 
               marginRight: 10
               color: '#999'              
               backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'
+              border: 'none'
+              padding: 0
             onClick: => 
               @local.edit_roles = !@local.edit_roles
               save @local
             t('share')
 
           if permit('delete proposal', @proposal) > 0
-            A
+            BUTTON
               style:
                 marginRight: 10
                 color: '#999'
+                backgroundColor: 'transparent'
+                border: 'none'
+                padding: 0
 
               onClick: => 
                 if confirm('Delete this proposal forever?')
@@ -773,11 +782,13 @@ DecisionBoard = ReactiveComponent
         margin: 0
         fontSize: 16
         boxShadow: 'none'
+        width: '100%'
     else 
       give_opinion_style =
         visibility: 'hidden'
 
 
+    console.log (p for p in fetch(@proposal.your_opinion).point_inclusions), @proposal.your_opinion
     DIV 
       className:'opinion_region'
       style:
@@ -830,7 +841,7 @@ DecisionBoard = ReactiveComponent
 
 
           # only shown during crafting, but needs to be present always for animation
-          A 
+          BUTTON
             className: 'give_opinion_button primary_button'
             style: give_opinion_style
 
@@ -845,11 +856,12 @@ DecisionBoard = ReactiveComponent
           width: DECISION_BOARD_WIDTH()
 
         # Big bold button at the bottom of the crafting page
-        DIV 
+        BUTTON 
           className:'save_opinion_button primary_button'
           style:
             display: 'none'
             backgroundColor: focus_blue
+            width: '100%'
           onClick: => saveOpinion(@proposal)
 
           if your_opinion.published 
@@ -864,7 +876,7 @@ DecisionBoard = ReactiveComponent
             style: 
               display: 'none'
                       
-            A 
+            BUTTON 
               className:'cancel_opinion_button primary_cancel_button'
               onClick: => updateProposalMode('results', 'cancel_button')
               t('skip_to_results') 
@@ -1240,6 +1252,8 @@ PointsList = ReactiveComponent
 
     your_points = @data()
 
+
+
     if @props.points_editable && !your_points.editing_points
       _.extend your_points,
         editing_points : []
@@ -1266,7 +1280,6 @@ PointsList = ReactiveComponent
         fontWeight: 700
         color: focus_blue
         fontSize: 30
-
       wrapper = @drawYourPoints
 
 
@@ -1476,11 +1489,14 @@ PointsList = ReactiveComponent
 
         dangerouslySetInnerHTML:{__html: '&bull;'}
 
-      A 
+      BUTTON 
         className: "write_#{@props.valence}"
         style:
           textDecoration: 'underline'
           color: focus_blue
+          padding: 0
+          backgroundColor: 'transparent'
+          border: 'none'
 
         t('write_a_new_point', {noun}) 
 

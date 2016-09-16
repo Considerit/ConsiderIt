@@ -61,11 +61,14 @@ window.EditComment = ReactiveComponent
 
           if permitted == Permission.NOT_LOGGED_IN
             DIV null,
-              SPAN 
+              BUTTON 
                 style: 
                   textDecoration: 'underline'
                   color: focus_blue
                   fontSize: if browser.is_mobile then 18
+                  backgroundColor: 'transparent'
+                  padding: 0
+                  border: 'none'
                 t('login_to_comment')
               if '*' not in @proposal.roles.commenter
                 DIV style: {fontSize: 11},

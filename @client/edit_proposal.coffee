@@ -54,7 +54,10 @@ window.EditProposal = ReactiveComponent
       textDecoration: 'underline'
       fontSize: 14
       cursor: 'pointer'
-      display: 'block'      
+      display: 'block'    
+      backgroundColor: 'transparent'
+      padding: 0
+      border: 'none'  
 
 
     if @props.fresh 
@@ -123,46 +126,21 @@ window.EditProposal = ReactiveComponent
             else 
               "#{capitalize(t('edit'))} '#{proposal.name}'"
 
-          if subdomain.name == 'dao' && cluster == 'New'
-            min_requirements = [
-              'At least one sentence on the problem or opportunity.'
-              'At least one sentence on the solution.'
-              'Address the execution of the work, such as by identifying a contractor.'
-              'Links to any external converations (e.g. on forum.daohub.org), contract code, external resources, or videos.'
-            ]
-            UL 
+          DIV 
+            style: 
+              fontSize: 18
+
+            t('make_it') + ' ' 
+            SPAN 
               style: 
-                fontSize: 18
-                marginLeft: 40
-
-              for req in min_requirements
-                LI null, 
-                  req 
-
-          if subdomain.name == 'dao' && cluster == 'Proposals'
-            DIV 
+                fontWeight: 600
+              t("unambiguous")
+            ' ' + t('and') + ' '
+            SPAN 
               style: 
-                fontSize: 18
-
-              """Toss out an idea. Maybe a contractor will put together a proposal 
-                 based on your idea. Or maybe you get excited by the feedback, and 
-                 put together your own more detailed proposal for funding."""
-          else 
-            DIV 
-              style: 
-                fontSize: 18
-
-              t('make_it') + ' ' 
-              SPAN 
-                style: 
-                  fontWeight: 600
-                t("unambiguous")
-              ' ' + t('and') + ' '
-              SPAN 
-                style: 
-                  fontWeight: 600
-                t('error_free')
-              '.'
+                fontWeight: 600
+              t('error_free')
+            '.'
 
         if fetch('/current_user').is_admin
           DIV style: block_style,
@@ -218,7 +196,7 @@ window.EditProposal = ReactiveComponent
                 key: "field-#{field.id}"
                 style: _.extend({}, block_style, {width: ''}),
 
-                I 
+                BUTTON 
                   className: "fa fa-#{if field_open then 'minus' else 'plus'}-circle"
                   style: 
                     position: 'absolute'
@@ -226,6 +204,9 @@ window.EditProposal = ReactiveComponent
                     top: 18
                     color: '#414141'
                     cursor: 'pointer'
+                    padding: 0
+                    border: 'none'
+                    backgroundColor: 'transparent'
                   onClick: do (field, field_open) => => 
                     toggleDescriptionFieldOpen(field, field_open)
 
@@ -270,13 +251,13 @@ window.EditProposal = ReactiveComponent
                     right: 150
                     top: 12
 
-                  A
+                  BUTTON
                     style: operation_style
                     onClick: do (field, field_open) => => 
                       toggleDescriptionFieldOpen(field, field_open)
                     if field_open then t('close') else t('edit')
 
-                  A
+                  BUTTON
                     style: operation_style
                     onClick: do (field) => =>
                       @local.description_fields = \
@@ -285,12 +266,14 @@ window.EditProposal = ReactiveComponent
                       save @local
                     t('delete')
 
-            SPAN
+            BUTTON
               style: 
                 color: '#aaa'
                 cursor: 'pointer'
                 fontSize: 18
                 marginLeft: -18
+                backgroundColor: 'transparent'
+                border: 'none'
 
               onClick: => 
                 new_id = 0
@@ -406,23 +389,23 @@ window.EditProposal = ReactiveComponent
 
 
         DIV null,
-          INPUT 
+          BUTTON 
             className:'button primary_button'
-            type:'submit'
             style: 
               width: 400
               marginTop: 35
-            value:"#{if @props.fresh then t('Publish') else t('Update')}"
             onClick: @saveProposal
 
-          A 
-            
-            type:'submit'
+            if @props.fresh then t('Publish') else t('Update')
+
+          BUTTON
             style: 
               marginTop: 10
               padding: 25
               marginLeft: 10
               fontSize: 22
+              border: 'none'
+              backgroundColor: 'transparent'
 
             onClick: =>
               if @props.fresh 

@@ -643,13 +643,12 @@ body, input, button, textarea {
   color: black;
   min-height: 500px; }
 
-.button {
-  font-size: 16px; }
-
 .button, button, input[type='submit'] {
   outline: none;
   cursor: pointer;
-  text-align: center; }
+  text-align: center; 
+  font-size: inherit;
+}
 
 
 .flipped {
@@ -682,12 +681,15 @@ body, input, button, textarea {
   border: none;
   cursor: wait; }
 
-a.primary_cancel_button {
+.primary_cancel_button {
   color: #888888;
   margin-top: 0.5em; }
 
-a.cancel_opinion_button {
+.cancel_opinion_button {
   float: right;
+  background: transparent;
+  outline: none;
+  border: none;
   margin-top: 0.5em; }
 
 button.primary_button, input[type='submit'] {

@@ -127,18 +127,16 @@ window.TagHomepage = ReactiveComponent
             verticalAlign: 'top'
 
 
-        DIV null, 
+        UL null, 
           for proposal,idx in proposals
             continue if idx > 20 && !show_all.show_all
             cluster = proposal.cluster or 'Proposals'
-            DIV 
-              key: "collapsed#{proposal.key}"
 
-              CollapsedProposal 
-                key: "collapsed#{proposal.key}"
-                proposal: proposal
-                show_category: true
-                category_color: hsv2rgb(colors[cluster], .7, .8)
+            CollapsedProposal 
+              key: "collapsed#{proposal.key}"
+              proposal: proposal
+              show_category: true
+              category_color: hsv2rgb(colors[cluster], .7, .8)
 
         if !show_all.show_all && proposals.length > 20 
           BUTTON
@@ -442,24 +440,27 @@ Cluster = ReactiveComponent
       @drawClusterHeading cluster, is_collapsed
 
       if !is_collapsed
-        DIV null, 
+        UL null, 
           for proposal,idx in proposals
-            DIV 
+
+            CollapsedProposal 
               key: "collapsed#{proposal.key}"
-
-              CollapsedProposal 
-                key: "collapsed#{proposal.key}"
-                proposal: proposal
-
-              @drawThreshold(subdomain, cluster, idx)
+              proposal: proposal
 
           if customization('list_show_new_button', cluster_key) || current_user.is_admin
-            NewProposal 
-              cluster_name: cluster.name
-              local: @local.key
-              label_style: 
-                borderBottom: "1px solid #{logo_red}"
-                color: logo_red
+            LI 
+              key: "new#{cluster_key}"
+              style: 
+                margin: 0 
+                padding: 0
+                listStyle: 'none'
+
+              NewProposal 
+                cluster_name: cluster.name
+                local: @local.key
+                label_style: 
+                  borderBottom: "1px solid #{logo_red}"
+                  color: logo_red
 
 
 
@@ -587,38 +588,6 @@ Cluster = ReactiveComponent
                 histo_title
 
 
-
-  drawThreshold: (subdomain, cluster, idx) -> 
-
-    cutoff = 28 
-    if subdomain.name == 'ANUP2015'
-      cutoff = 7
-
-    if subdomain.name in ['ANUP2015', 'RANDOM2015'] && cluster.name == 'Under Review' && idx == cutoff
-      DIV 
-        style:
-          borderTop: "4px solid green"
-          borderBottom: "4px solid #{logo_red}"
-          padding: "4px 0"
-          textAlign: 'center'
-          
-          fontWeight: 600
-          margin: "16px 0 32px 0"
-
-        I
-          style: 
-            color: 'green'
-            display: 'block'
-          className: 'fa fa-thumbs-o-up'
-
-
-        "Acceptance threshold for #{cutoff} papers"
-
-        I
-          style: 
-            display: 'block'
-            color: logo_red
-          className: 'fa fa-thumbs-o-down'    
 
   storeSortOrder: -> 
     p = (p.key for p in sorted_proposals(@props.cluster.proposals))

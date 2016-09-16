@@ -143,8 +143,8 @@ class CurrentUserController < ApplicationController
                 return
               end
 
-              request = OneLogin::RubySaml::Authrequest.new
-              redirect_to(request.create(settings))
+              req = OneLogin::RubySaml::Authrequest.new
+              redirect_to(req.create(settings))
             end
 
           end
@@ -446,8 +446,8 @@ class CurrentUserController < ApplicationController
       return
     end
 
-    request = OneLogin::RubySaml::Authrequest.new
-    redirect_to(request.create(settings))
+    req = OneLogin::RubySaml::Authrequest.new
+    redirect_to(req.create(settings))
 
   end
 

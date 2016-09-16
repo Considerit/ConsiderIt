@@ -30,7 +30,7 @@ class Opinion < ActiveRecord::Base
     user = current_user
     
     # First try to find a published opinion for this user
-    your_opinion = proposal.opinions.where(:user => user)
+    your_opinion = user.opinions.where(:proposal_id => proposal.id).order('id DESC')
 
     if your_opinion.length > 1
       pp "Duplicate opinions for user #{user}: #{your_opinion.map {|o| o.id} }!"
@@ -43,7 +43,7 @@ class Opinion < ActiveRecord::Base
     if your_opinion.nil?
       ActsAsTenant.without_tenant do 
         your_opinion = Opinion.create!(:proposal_id => proposal.id,
-                                      :user => user ? user : nil,
+                                      :user => user,
                                       :subdomain_id => proposal.subdomain_id,
                                       :stance => 0,
                                       :point_inclusions => '[]',

@@ -278,11 +278,13 @@ window.Point = ReactiveComponent
         DIV null,
           if permit('update point', point) > 0 && 
               (@props.rendered_as == 'decision_board_point' || TWO_COL())
-            A
+            BUTTON
               style:
                 fontSize: if browser.is_mobile then 24 else 14
                 color: focus_blue
                 padding: '3px 12px 3px 0'
+                backgroundColor: 'transparent'
+                border: 'none'
 
               onTouchEnd: (e) -> e.stopPropagation()
               onClick: ((e) =>
@@ -290,22 +292,25 @@ window.Point = ReactiveComponent
                 points = fetch(@props.your_points_key)
                 points.editing_points.push(@props.key)
                 save(points))
-              SPAN null, t('edit')
+              t('edit')
 
           if permit('delete point', point) > 0 && 
               (@props.rendered_as == 'decision_board_point' || TWO_COL())
-            A 
+            BUTTON
               'data-action': 'delete-point'
               style:
                 fontSize: if browser.is_mobile then 24 else 14
                 color: focus_blue
                 padding: '3px 8px'
+                backgroundColor: 'transparent'
+                border: 'none'
               onTouchEnd: (e) -> e.stopPropagation()       
               onClick: (e) =>
                 e.stopPropagation()
                 if confirm('Delete this point forever?')
                   destroy @props.key
-              SPAN null, t('delete')
+              
+              t('delete')
 
       if TWO_COL() && @props.rendered_as != 'under_review'
         your_opinion = fetch @proposal.your_opinion
@@ -620,9 +625,11 @@ window.Comment = ReactiveComponent
             color: '#444'
             textDecoration: 'underline'
             cursor: 'pointer',
-            paddingRight: 10
+            padding: '0 10px 0 0'
+            backgroundColor: 'transparent'
+            border: 'none'
           DIV style: { marginLeft: 60}, 
-            SPAN
+            BUTTON
               'data-action' : 'delete-comment'
               style: comment_action_style
               onClick: do (key = comment.key) => (e) =>
@@ -631,7 +638,7 @@ window.Comment = ReactiveComponent
                   destroy(key)
               t('delete')
 
-            SPAN
+            BUTTON
               style: comment_action_style
               onClick: do (key = comment.key) => (e) =>
                 e.stopPropagation()

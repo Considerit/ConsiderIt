@@ -141,7 +141,7 @@ window.TagHomepage = ReactiveComponent
                 category_color: hsv2rgb(colors[cluster], .7, .8)
 
         if !show_all.show_all && proposals.length > 20 
-          DIV
+          BUTTON
             style:
               backgroundColor: '#f9f9f9'
               width: HOMEPAGE_WIDTH()
@@ -154,6 +154,7 @@ window.TagHomepage = ReactiveComponent
               fontWeight: 600
               textAlign: 'center'
               marginTop: 40
+              border: 'none'
 
             onMouseDown: => 
               show_all.show_all = true
@@ -662,9 +663,15 @@ window.NewProposal = ReactiveComponent
 
       if !adding 
 
-        SPAN 
-          style: _.extend @props.label_style,
+        BUTTON 
+          style: _.defaults @props.label_style,
             cursor: 'pointer'
+            backgroundColor: 'transparent'
+            outline: 'none'
+            border: 'none'
+            fontSize: 'inherit'
+            padding: 0
+            textDecoration: 'underline'
 
           onClick: (e) => 
             if permitted
@@ -756,7 +763,7 @@ window.NewProposal = ReactiveComponent
               style: 
                 marginTop: 8
 
-              SPAN 
+              BUTTON 
                 style: 
                   backgroundColor: focus_blue
                   color: 'white'
@@ -765,7 +772,9 @@ window.NewProposal = ReactiveComponent
                   padding: '4px 16px'
                   display: 'inline-block'
                   marginRight: 12
-
+                  outline: 'none'
+                  border: 'none'
+                  fontSize: 'inherit'
 
                 onClick: => 
                   name = $(@getDOMNode()).find("##{cluster_slug}-name").val()
@@ -799,10 +808,15 @@ window.NewProposal = ReactiveComponent
 
                 t('Done')
 
-              SPAN 
+              BUTTON 
                 style: 
                   color: '#888'
                   cursor: 'pointer'
+                  backgroundColor: 'transparent'
+                  outline: 'none'
+                  border: 'none'
+                  padding: 0
+                  fontSize: 'inherit'                  
                 onClick: => cluster_state.adding_new_proposal = null; save(cluster_state)
 
                 t('cancel')

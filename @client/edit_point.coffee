@@ -122,7 +122,7 @@ window.EditPoint = ReactiveComponent
             style: {color: '#777', fontSize: 12}
             'New points disabled for this proposal'
         else
-          DIV 
+          BUTTON 
             className: 'primary_button'
             'data-action': 'submit-point'
             onClick: @savePoint
@@ -134,7 +134,7 @@ window.EditPoint = ReactiveComponent
               float: 'left'
             t('Done')
 
-        A 
+        BUTTON
           onTouchEnd: @done
           onClick: @done
           style:
@@ -147,7 +147,9 @@ window.EditPoint = ReactiveComponent
             right: if mobile then -10 else 20
             position: 'relative'
             float: if mobile then 'left' else 'right'
-            padding: if mobile then 10
+            padding: if mobile then 10 else 0
+            backgroundColor: 'transparent'
+            border: 'none'
           t('cancel')
 
         DIV 

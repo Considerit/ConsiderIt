@@ -1,5 +1,5 @@
 # coding: utf-8
-
+require 'securerandom'
 
 def dirty_if_any_private_proposals(real_user)
   matters = false 
@@ -25,6 +25,9 @@ end
 class CurrentUserController < ApplicationController
   skip_before_action :verify_authenticity_token, :only => [:update_user_avatar_hack, :acs]
 
+  # minimum password length
+  MIN_PASS = 4
+
   # Gets the current user data
   def show
     #puts("Current_user is #{current_user.id}")
@@ -36,7 +39,7 @@ class CurrentUserController < ApplicationController
   def update
 
     errors = []
-    @min_pass = 4
+    @min_pass = MIN_PASS 
 
 
     if !params.has_key?(:trying_to) || !params[:trying_to] || params[:trying_to] == 'update_avatar_hack'
@@ -438,13 +441,11 @@ class CurrentUserController < ApplicationController
 
   def acs
     errors = []
+
     settings = User.get_saml_settings(get_url_base)
     response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings)
-    puts 'SAML WORKING'
 
     if response.is_valid?
-      puts params
-      puts 'SAML VALID'
       puts response.inspect
       session[:nameid] = response.nameid
       session[:attributes] = response.attributes
@@ -457,14 +458,16 @@ class CurrentUserController < ApplicationController
       user = User.find_by_email(email)
 
       if !user || !user.registered
-        # create a new user from SAML assertion if not already registered
-        # TODO clean this up
-        attrs = {'email' => email, 'password' => 'TODO_UPDATE_RANDOM'} 
-        try_saml_update_password 'create account', errors, attrs 
+        # Create a new user from SAML assertion if not already registered.
+        # A random password is created for the user as a placeholder.
+        random_password = SecureRandom.urlsafe_base64(60) 
+        attrs = {:email => email, :password => random_password, :name => 'Place Holder'} 
         update_saml_user_attrs 'create account', errors, attrs
+        try_saml_update_password 'create account', errors, attrs 
 
+        # TODO remove this and update all propertiers from update_saml_user_attrs
         current_user.name = 'Place Holder'
-        current_user.email = email
+
         has_name = current_user.name && current_user.name.length > 0
         ok_email = current_user.email && current_user.email.length > 0
         signed_pledge = true 
@@ -601,20 +604,18 @@ class CurrentUserController < ApplicationController
       if trying_to == 'create account' || trying_to == 'reset password'
         errors.append 'No password specified'
       end
-    elsif attrs[:password].length < @min_pass
+    elsif attrs[:password].length < MIN_PASS 
       errors.append 'Password is too short'
     else
-      # puts("Changing user's password.")
+      #puts("Changing user's password.")
       current_user.password = attrs[:password]
       if !current_user.save
         raise "Error saving this user's password"
       end
+      puts current_user.password
     end
 
   end
-
-
-
 
 
 

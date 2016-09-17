@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'onelogin/ruby-saml'
 
 class User < ActiveRecord::Base
   has_secure_password validations: false
@@ -448,7 +449,6 @@ class User < ActiveRecord::Base
   end
 
   def self.get_saml_settings(url_base)
-    require 'onelogin/ruby-saml'
     # this is just for testing purposes.
     # should retrieve SAML-settings based on subdomain, IP-address, NameID or similar
     settings = OneLogin::RubySaml::Settings.new

@@ -18,6 +18,7 @@ require './admin' # for dashes
 require './auth'
 require './avatar'
 require './browser_hacks'
+require './react_component_overrides'
 require './browser_location'
 require './bubblemouth'
 require './edit_proposal'

@@ -311,6 +311,7 @@ window.ShortHeader = (opts) -> ->
 
                 IMG 
                   src: opts.logo_src
+                  rel: "#{subdomain.name} logo"
                   style: 
                     height: opts.logo_height
 
@@ -352,6 +353,7 @@ window.LegacyImageHeader = (opts) -> ->
   DIV null,
 
     IMG 
+      rel: @props.background_image_alternative_text
       src: opts.background_image_url
       style: 
         width: '100%'
@@ -460,6 +462,7 @@ window.HawaiiHeader = (opts) -> ->
 
       if homepage && opts.logo
         IMG 
+          rel: @props.logo_alternative_text
           src: opts.logo
           style: 
             width: opts.logo_width
@@ -558,6 +561,7 @@ window.SeattleHeader = (opts) -> ->
 
     if opts.background_image_url
       IMG
+        rel: @props.background_image_alternative_text
         style: _.defaults {}, opts.image_style,
           width: '100%'
           display: 'block'
@@ -627,6 +631,7 @@ window.SeattleHeader = (opts) -> ->
               if opts.salutation.image 
                 IMG
                   src: opts.salutation.image 
+                  rel: ''
                   style: 
                     height: 70
               else

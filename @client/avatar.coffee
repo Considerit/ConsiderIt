@@ -142,6 +142,7 @@ window.avatar = (user, props) ->
     'data-showtooltip': !props.hide_tooltip
     'data-anon': anonymous      
     style: style
+    rel: ''
 
 
   # IE9 gets confused if there is an image without a src

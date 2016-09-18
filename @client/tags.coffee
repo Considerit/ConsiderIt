@@ -57,6 +57,7 @@ UserTags = ReactiveComponent
           type: 'text'
           style: {fontSize: 18, width: 350, padding: '3px 6px'}
           autoComplete: 'off'
+          'aria-label': "Name or email..."
           placeholder: "Name or email..."
           value: if current_user then current_user.name
           onChange: => 

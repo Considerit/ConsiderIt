@@ -95,7 +95,8 @@ window.Notifications = ReactiveComponent
         #backgroundColor: '#f2f2f2'
         padding: '10px 10px 10px 30px'
 
-      SPAN 
+      LABEL
+        htmlFor: 'send_digests_at_most' 
         style: 
           marginRight: 10
           display: 'inline-block'
@@ -104,6 +105,7 @@ window.Notifications = ReactiveComponent
 
 
       SELECT 
+        id: 'send_digests_at_most'
         style: 
           width: 80
           fontSize: 18
@@ -225,7 +227,7 @@ window.Notifications = ReactiveComponent
                     style: 
                       position: 'absolute'
                       left: -35
-                      top: 8
+                      top: 3
                   A 
                     href: "/#{obj.slug}"
                     style: 

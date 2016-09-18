@@ -687,6 +687,7 @@ window.NewProposal = ReactiveComponent
               id:"#{cluster_slug}-name"
               name:'name'
               pattern:'^.{3,}'
+              'aria-label': t('proposal_summary_instr')
               placeholder: t('proposal_summary_instr')
               required:'required'
               resize: 'none'
@@ -700,6 +701,7 @@ window.NewProposal = ReactiveComponent
             WysiwygEditor
               key:"description-new-proposal-#{cluster_slug}"
               placeholder: "Add #{t('details')} here"
+              'aria-label': "Add #{t('details')} here"
               container_style: 
                 padding: '6px 8px'
                 border: '1px solid #ccc'

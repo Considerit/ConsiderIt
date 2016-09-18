@@ -25,8 +25,13 @@ window.WatchStar = ReactiveComponent
       width: size 
       height: size
       cursor: 'pointer'
+      backgroundColor: 'transparent'
+      border: 'none'
+      margin: 0
+      padding: 0
 
-    I 
+    BUTTON 
+      'aria-label': label(watching)
       className: "fa #{if watching then icon else "#{icon}-o"}"
       style: _.extend {}, style, (@props.style || {})
 

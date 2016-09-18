@@ -64,6 +64,7 @@ window.EditPoint = ReactiveComponent
           maxLength: 180
           name: 'nutshell'
           pattern: '^.{3,}'
+          'aria-label': t('summary_placeholder')
           placeholder: t('summary_placeholder')
           required: 'required'
           defaultValue: if @props.fresh then null else @data().nutshell
@@ -86,6 +87,7 @@ window.EditPoint = ReactiveComponent
         AutoGrowTextArea 
           id:'text'
           name:'text'
+          'aria-label': t('description_placeholder') 
           placeholder: t('description_placeholder') 
           min_height: if PORTRAIT_MOBILE() then 150 else 100
           defaultValue: if @props.fresh then null else @data().text

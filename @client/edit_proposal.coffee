@@ -175,7 +175,7 @@ window.EditProposal = ReactiveComponent
             style: input_style
 
         DIV style: block_style,
-          LABEL htmlFor:'description', style: label_style, t('details') + ':'
+          LABEL htmlFor:"description-#{proposal.key}", style: label_style, t('details') + ':'
           
           WysiwygEditor
             key:"description-#{proposal.key}"

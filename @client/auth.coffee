@@ -337,34 +337,40 @@ Auth = ReactiveComponent
           additional_instructions
 
       TABLE null, TBODY null,
-        for field in fields
-          if field
-            [TR null,
-              TD
+        for field in fields when field
+          field_id = field[1]?.props?.id or field[1]?[0]?.props?.id
+          if field_id 
+            field_id = field_id.replace('user_avatar_form', 'user_avatar')
+          [TR null,
+            TD
+              style:
+                paddingTop: 4
+                verticalAlign: 'top'
+                width: '30%'
+
+              LABEL
+                htmlFor: field_id
                 style:
-                  paddingTop: 4
-                  verticalAlign: 'top'
-                  width: '30%'
-                LABEL
-                  style:
-                    color: focus_blue
-                    fontWeight: 600
-                    fontSize: if browser.is_mobile then 24
-                  field[0]
-                if field.length > 2
-                  LABEL 
-                    style: 
-                      display: 'block'
-                      color: auth_ghost_gray
-                      fontSize: 14
-                    field[2]
-              TD
-                style:
-                  verticalAlign: 'bottom'
-                  width: '100%'
-                  paddingLeft: 18
-                field[1]
-             TR style: {height: 10}]
+                  color: focus_blue
+                  fontWeight: 600
+                  fontSize: if browser.is_mobile then 24
+                field[0]
+
+              if field.length > 2
+                LABEL 
+                  style: 
+                    display: 'block'
+                    color: auth_ghost_gray
+                    fontSize: 14
+                  field[2]
+            TD
+              style:
+                verticalAlign: 'bottom'
+                width: '100%'
+                paddingLeft: 18
+              field[1]
+
+           TR style: {height: 10}]
 
       if customization('auth_footer')
         auth = fetch('auth')
@@ -554,6 +560,7 @@ Auth = ReactiveComponent
             marginRight: 18
 
           IMG 
+            rel: ''
             id: 'avatar_preview'
             style: {width: 60}
             src: if current_user.b64_thumbnail 
@@ -695,6 +702,7 @@ Auth = ReactiveComponent
               padding: '5px 10px'
               fontSize: 18            
             key: "#{question.tag}_inputBox"
+            id: "#{question.tag}_inputBox"
             type: 'text'
             value: @local.tags[question.tag]
 
@@ -709,6 +717,8 @@ Auth = ReactiveComponent
 
         when 'boolean'
           input = INPUT
+            id: "#{question.tag}_inputBox"
+            key: "#{question.tag}_inputBox"
             type:'checkbox'
             style: _.defaults question.input_style or {},  
               fontSize: 24
@@ -721,6 +731,8 @@ Auth = ReactiveComponent
 
         when 'dropdown'
           input = SELECT
+            id: "#{question.tag}_inputBox"
+            key: "#{question.tag}_inputBox"            
             style: _.defaults question.input_style or {},
               fontSize: 18
               marginTop: 4

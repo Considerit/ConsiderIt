@@ -222,6 +222,7 @@ ProposalFilter = ReactiveComponent
         INPUT
           ref: 'new_filter' 
           type: 'text'
+          'aria-label': 'search proposals'
           placeholder: 'search proposals'
           style:
             fontSize: 16

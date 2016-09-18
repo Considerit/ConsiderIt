@@ -84,9 +84,10 @@ window.EditComment = ReactiveComponent
       DIV 
         style: 
           marginLeft: 60   
-                 
+
         AutoGrowTextArea
           ref: 'comment_input'
+          'aria-label': if permitted > 0 then t('Write a comment') else ''
           placeholder: if permitted > 0 then t('Write a comment') else ''
           disabled: permitted < 0
           onChange: (e) => @local.new_comment = e.target.value; save(@local)

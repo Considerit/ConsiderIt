@@ -487,8 +487,9 @@ UserWithRole = (user_key, on_remove_from_role) ->
       else
         user_key
 
-    SPAN # remove user from role
-      style: {cursor: 'pointer', marginLeft: 8}
+    BUTTON # remove user from role
+      'aria-label': "Remove #{user.name} from role"
+      style: {cursor: 'pointer', marginLeft: 8, border: 'none', 'backgroundColor': 'transparent'}
       onClick: -> on_remove_from_role(user_key) if on_remove_from_role
       'x'
 

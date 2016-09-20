@@ -28,6 +28,17 @@ window.ProfileMenu = ReactiveComponent
     hsl = parseCssHsl(subdomain.branding.primary_color)
     light_background = hsl.l > .75
 
+    set_focus = (idx) => 
+      idx = 0 if !idx?
+      @local.focus = idx 
+      save @local 
+      @refs["menuitem-#{idx}"].getDOMNode().focus()
+
+    close_menu = => 
+      document.activeElement.blur()
+      @local.menu = false
+      save @local
+
     DIV
       id: 'user_nav'
       style: _.defaults {}, (customization('profile_menu_style') or {}), (@props.style or {}),
@@ -44,102 +55,11 @@ window.ProfileMenu = ReactiveComponent
           if subdomain.name in ['bitcoin', 'bitcoinclassic'] && \
              current_user.logged_in && \
              (!current_user.tags['verified']? || current_user.tags['verified'] in ['no', 'false'])
-              
-            DIV 
-              style: 
-                position: 'absolute'
-                zIndex: 10
-                left: -315
-              onMouseEnter: => @local.show_verify = true; save @local
-              onMouseLeave: => @local.show_verify = false; save @local 
+            
+            @bitcoinVerification()
 
-              DIV 
-                style: 
-                  backgroundColor: focus_blue
-                  color: 'white'
-                  fontWeight: 600
-                  padding: '4px 12px'
-                  fontSize: 21
-                  borderRadius: if ! @local.show_verify then 8
-                  position: 'relative'
-                  cursor: 'pointer'
-
-
-                SPAN 
-                  style: cssTriangle 'right', focus_blue, 10, 12,
-                    position: 'absolute'
-                    right: -10
-                    top: 12
-
-                'Please verify you are human!'
-
-              if @local.show_verify
-
-                today = new Date()
-                dd = today.getDate()
-                mm = today.getMonth() + 1
-                yyyy = today.getFullYear()
-
-                dd = '0' + dd if dd < 10
-                mm = '0' + mm if mm < 10
-
-                today = yyyy + '/' + mm + '/' + dd
-
-                DIV 
-                  style: 
-                    width: 650
-                    position: 'absolute'
-                    right: 0
-                    zIndex: 999
-                    padding: 40
-                    backgroundColor: 'white'
-                    boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-                    fontSize: 21
-
-                  DIV style: marginBottom: 20,
-                    "To verify you are human, write on a piece of paper:"
-
-                  DIV style: marginBottom: 20, marginLeft: 50,
-
-                    current_user.name
-                    BR null
-                    "bitcoin.consider.it"
-                    BR null
-                    today
-
-                  DIV style: marginBottom: 20,
-
-                    "Then take a photo of yourself with it, and email the photo to "
-
-                    A 
-                      href: 'mailto:verify@consider.it'
-                      style: 
-                        textDecoration: 'underline'
-                      'verify@consider.it' 
-
-                    ". This photo will be publicly visible proof that you are real!"
-
-                  DIV style: marginBottom: 20,
-                    "Yours,"
-                    BR null
-                    "The Admins"
-
-                  IMG 
-                    src: asset('bitcoin/verify example.jpg')
-                    style: 
-                      width: 570
-
-                  IMG 
-                    src: asset('bitcoin/verification-travis.jpg')
-                    style: 
-                      width: 570
-
-                  IMG 
-                    src: asset('bitcoin/KevinBitcoin.jpg')
-                    style: 
-                      width: 570
-
-          SPAN
+          DIV
+            key: 'profile_menu'
             className: 'profile_menu_wrap'
             style:
               position: 'relative'
@@ -148,46 +68,133 @@ window.ProfileMenu = ReactiveComponent
               @local.menu = !@local.menu
               save(@local)
 
-            onMouseEnter: => @local.menu = true; save(@local)
-            onMouseLeave: => @local.menu = false; save(@local)
+            onMouseEnter: (e) => @local.menu = true; save(@local)
+            onMouseLeave: close_menu
 
-            DIV 
+            onFocus: (e) => 
+              @local.menu = true
+              save(@local)
+              if !@local.focus? 
+                set_focus(0)    
+
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 27 # ENTER or ESC
+                close_menu()
+              else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
+                @local.focus = -1 if !@local.focus?
+                if e.which == 38
+                  @local.focus--
+                  if @local.focus < 0 
+                    @local.focus = menu_options.length 
+                else
+                  @local.focus++
+                  if @local.focus > menu_options.length 
+                    @local.focus = 0 
+                set_focus(@local.focus)
+                e.preventDefault() # prevent window from scrolling too
+
+            UL 
+              id: 'profile_menu_popup'
+              role: "menu"
+              'aria-hidden': !@local.menu
+              hidden: !@local.menu
               style: 
-                display: if not @local.menu then 'none'
+                listStyle: 'none'
                 position: 'absolute'
-                marginTop: -8
-                marginLeft: -8
-                padding: 8
-                paddingTop: 70
-                paddingRight: 14
+                left: 'auto'
+                right: if !@local.menu then -9999 else 0
+                margin: '-8px 0 0 -8px'
+                padding: "70px 14px 8px 8px"
                 backgroundColor: '#eee'
-                right: 0
                 textAlign: 'right'
                 zIndex: 999999
 
-              for option in menu_options
-                A
+
+              for option, idx in menu_options
+                LI 
+                  key: option.label
+                  role: "presentation"
+                  A
+                    ref: "menuitem-#{idx}"
+                    role: "menuitem"
+                    tabIndex: 0
+                    className: 'menu_link'
+                    href: option.href
+                    key: option.href
+                    style: 
+                      color: if @local.focus == idx then 'black'
+
+                    onKeyDown: (e) => 
+                      if e.which == 13 # ENTER
+                        e.currentTarget.click()
+                    onFocus: do(idx) => (e) => 
+                      if @local.focus != idx 
+                        set_focus idx
+                      e.stopPropagation()
+                    onMouseEnter: do(idx) => => 
+                      if @local.focus != idx                         
+                        set_focus idx
+
+                    onBlur: (e) => 
+                      @local.focus = null 
+                      save @local  
+
+                    onMouseExit: (e) => 
+                      @local.focus = null 
+                      save @local
+                      e.stopPropagation()
+
+
+                    option.label
+
+              LI 
+                role: "presentation"
+                key: 'logout'
+                A 
+                  role: "menuitem"
+                  tabIndex: 0
+                  ref: "menuitem-#{menu_options.length}"
+                  'data-action': 'logout'
                   className: 'menu_link'
-                  href: option.href
-                  key: option.href
-                  option.label
+                  style: 
+                    color: if @local.focus == idx then 'black'
 
-              A 
-                'data-action': 'logout'
-                className: 'menu_link'
-                onClick: logout
-                onTouchEnd: logout
-                t('Log out')
+                  onClick: logout
+                  onTouchEnd: logout
+                  onKeyDown: (e) => 
+                    logout() if e.which == 13 #ENTER 
 
-            SPAN 
+                  onFocus: (e) => 
+                    if @local.focus != menu_options.length 
+                      set_focus menu_options.length
+                    e.stopPropagation()
+                  onMouseEnter: => 
+                    if @local.focus != menu_options.length                         
+                      set_focus menu_options.length
+                  onBlur: => 
+                    @local.focus = null 
+                    save @local                      
+                  onMouseExit: => 
+                    @local.focus = null 
+                    save @local
+
+
+                  t('Log out')
+
+            BUTTON 
+              tabIndex: 0
+              'aria-haspopup': "true"
+              'aria-owns': "profile_menu_popup"
+
               style: 
                 color: if !light_background then 'white'
                 position: 'relative'
                 zIndex: 9999999999
-                backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)'
+                backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)' else 'transparent'
                 boxShadow: if !@local.menu then '0px 1px 1px rgba(0,0,0,.1)'
                 borderRadius: 8
                 padding: '3px 4px'
+                border: 'none'
 
               Avatar 
                 key: current_user.user
@@ -199,13 +206,12 @@ window.ProfileMenu = ReactiveComponent
                   marginRight: 7
                   marginTop: 1
               I 
-
                 className: 'fa fa-caret-down'
                 style: 
                   visibility: if @local.menu then 'hidden'
-                  #color: 'black'
+
       else
-        A
+        BUTTON
           className: 'profile_anchor login'
           'data-action': 'login'
           onClick: (e) =>
@@ -213,20 +219,112 @@ window.ProfileMenu = ReactiveComponent
               form: 'login'
               ask_questions: true
 
-
           style: 
             color: if !light_background then 'white'
+            backgroundColor: 'transparent'
+            border: 'none'
           t('Log in')
     
+  bitcoinVerification: -> 
+    current_user = fetch('/current_user')
+    subdomain = fetch('/subdomain')
+
+    DIV 
+      style: 
+        position: 'absolute'
+        zIndex: 10
+        left: -315
+      onMouseEnter: => @local.show_verify = true; save @local
+      onMouseLeave: => @local.show_verify = false; save @local 
+
+      DIV 
+        style: 
+          backgroundColor: focus_blue
+          color: 'white'
+          fontWeight: 600
+          padding: '4px 12px'
+          fontSize: 21
+          borderRadius: if ! @local.show_verify then 8
+          position: 'relative'
+          cursor: 'pointer'
+
+
+        SPAN 
+          style: cssTriangle 'right', focus_blue, 10, 12,
+            position: 'absolute'
+            right: -10
+            top: 12
+
+        'Please verify you are human!'
+
+      if @local.show_verify
+
+        today = new Date()
+        dd = today.getDate()
+        mm = today.getMonth() + 1
+        yyyy = today.getFullYear()
+
+        dd = '0' + dd if dd < 10
+        mm = '0' + mm if mm < 10
+
+        today = yyyy + '/' + mm + '/' + dd
+
+        DIV 
+          style: 
+            width: 650
+            position: 'absolute'
+            right: 0
+            zIndex: 999
+            padding: 40
+            backgroundColor: 'white'
+            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+            fontSize: 21
+
+          DIV style: marginBottom: 20,
+            "To verify you are human, write on a piece of paper:"
+
+          DIV style: marginBottom: 20, marginLeft: 50,
+
+            current_user.name
+            BR null
+            "bitcoin.consider.it"
+            BR null
+            today
+
+          DIV style: marginBottom: 20,
+
+            "Then take a photo of yourself with it, and email the photo to "
+
+            A 
+              href: 'mailto:verify@consider.it'
+              style: 
+                textDecoration: 'underline'
+              'verify@consider.it' 
+
+            ". This photo will be publicly visible proof that you are real!"
+
+          DIV style: marginBottom: 20,
+            "Yours,"
+            BR null
+            "The Admins"
+
+          IMG 
+            src: asset('bitcoin/verify example.jpg')
+            style: 
+              width: 570
+
+          IMG 
+            src: asset('bitcoin/verification-travis.jpg')
+            style: 
+              width: 570
+
+          IMG 
+            src: asset('bitcoin/KevinBitcoin.jpg')
+            style: 
+              width: 570    
 
 
 styles += """
-.profile_navigation {
-  text-align: right;
-  width: 100%;
-  padding: 20px 120px 0 0;
-  font-size: 21px; }
-
 .menu_link {
   position: relative;
   bottom: 8px;
@@ -234,8 +332,6 @@ styles += """
   display: block;
   color: #{focus_blue};
   white-space: nowrap; }
-
-.menu_link:hover{ color: black; }
 
 .profile_menu_wrap:hover .profile_anchor{ color: inherit; }
 """

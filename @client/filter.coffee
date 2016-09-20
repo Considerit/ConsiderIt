@@ -193,20 +193,15 @@ ProposalFilter = ReactiveComponent
     filter_out = fetch 'filtered'
     filters = fetch 'filters'
 
-    sort = fetch 'sort_proposals'
-
     subdomain = fetch '/subdomain'
 
     return SPAN null if !subdomain.name
 
-    set_sort() if !sort.func? 
 
     DIV 
       style: _.defaults (@props.style or {})
 
       ApplyFilters()
-
-
 
       FORM 
         onSubmit: (e) => 
@@ -253,89 +248,180 @@ ProposalFilter = ReactiveComponent
                 filters.for_proposals.splice idx, 1
                 save filters
 
-              filter 
+              filter
 
-      DIV
+      SortProposalsMenu() 
+
+SortProposalsMenu = ReactiveComponent
+  displayName: 'SortProposalsMenu'
+  render: -> 
+
+    sort = fetch 'sort_proposals'
+    set_sort() if !sort.func? 
+
+    trigger = (e) =>
+      _.extend sort, sort_options[@local.focus]                      
+      save sort 
+      @local.sort_menu = false
+      save @local
+      e.stopPropagation()
+      e.preventDefault()
+
+    set_focus = (idx) => 
+      idx = 0 if !idx?
+      @local.focus = idx 
+      save @local 
+      @refs["menuitem-#{idx}"].getDOMNode().focus()
+
+    close_menu = => 
+      document.activeElement.blur()
+      @local.sort_menu = false
+      save @local
+
+
+    DIV
+      style: 
+        color: focus_blue
+        fontSize: 20
+        fontWeight: 500
+        marginTop: 12
+
+      "sort proposals by "
+
+
+      DIV 
+        key: 'proposal_sort_order_menu'
         style: 
-          color: focus_blue
-          fontSize: 20
-          fontWeight: 500
-          marginTop: 12
-
-        "sort proposals by "
+          display: 'inline-block'
+          position: 'relative'
 
 
-        DIV 
+        onTouchEnd: => 
+          @local.sort_menu = !@local.sort_menu
+          save(@local)
+
+        onMouseEnter: => @local.sort_menu = true; save(@local)
+        onMouseLeave: close_menu
+
+        onFocus: =>  
+          @local.sort_menu = true
+          save(@local)
+          if !@local.focus? 
+            set_focus(0)    
+
+        onKeyDown: (e) => 
+          if e.which == 13 || e.which == 27 # ENTER or ESC
+            close_menu()
+          else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
+            @local.focs = -1 if !@local.focus?
+            if e.which == 38
+              @local.focus--
+              if @local.focus < 0 
+                @local.focus = sort_options.length - 1
+            else 
+              @local.focus++
+              if @local.focus > sort_options.length - 1
+                @local.focus = 0 
+            set_focus(@local.focus)
+            e.preventDefault() # prevent window from scrolling too
+
+
+          
+        BUTTON 
+          tabIndex: 0
+          'aria-haspopup': "true"
+          'aria-owns': "proposal_sort_order_menu_popup"
+
           style: 
-            display: 'inline-block'
+            fontWeight: 700
             position: 'relative'
-            
-          BUTTON 
-            style: 
-              fontWeight: 700
-              position: 'relative'
-              cursor: 'pointer'
-              textDecoration: 'underline'
-              backgroundColor: 'transparent'
-              outline: 'none'
-              border: 'none'
-              padding: 0
-              display: 'inline-block'
-              fontSize: 'inherit'
-              color: 'inherit'
+            cursor: 'pointer'
+            textDecoration: 'underline'
+            backgroundColor: 'transparent'
+            outline: 'none'
+            border: 'none'
+            padding: 0
+            display: 'inline-block'
+            fontSize: 'inherit'
+            color: 'inherit'
 
-            onClick: => 
-              @local.show_sort_options = !@local.show_sort_options
-              save @local
+          sort.name
 
-            sort.name
+          SPAN style: _.extend cssTriangle 'bottom', focus_blue, 11, 7,
+            display: 'inline-block'
+            marginLeft: 4
 
-            SPAN style: _.extend cssTriangle 'bottom', focus_blue, 11, 7,
-              display: 'inline-block'
-              marginLeft: 4
+        
+        UL 
+          id: 'proposal_sort_order_menu_popup'
+          role: "menu"
+          'aria-hidden': !@local.sort_menu
+          hidden: !@local.sort_menu
+          style: 
+            position: 'absolute'
+            left: if @local.sort_menu then 0 else -9999
+            listStyle: 'none'
+            zIndex: 999
+            width: HOMEPAGE_WIDTH()
+            backgroundColor: '#eee'
+            border: "1px solid #{focus_blue}"
+            top: 24
+            borderRadius: 8
+            fontWeight: 400
+            overflow: 'hidden'
+            boxShadow: '0 1px 2px rgba(0,0,0,.3)'
 
-          if @local.show_sort_options
-            DIV 
-              style: 
-                position: 'absolute'
-                zIndex: 999
-                width: HOMEPAGE_WIDTH()
-                backgroundColor: '#eee'
-                border: "1px solid #{focus_blue}"
-                top: 24
-                borderRadius: 8
-                fontWeight: 400
-                overflow: 'hidden'
-                boxShadow: '0 1px 2px rgba(0,0,0,.3)'
+          for sort_option, idx in sort_options
+            do (sort_option) => 
+              LI 
+                ref: "menuitem-#{idx}"
+                key: sort_option.name
+                role: "menuitem"
+                tabIndex: 0
+                style:
+                  padding: '6px 12px'
+                  borderBottom: "1px solid #ddd"
+                  color: if @local.focus == idx then 'white'
+                  backgroundColor: if @local.focus == idx then focus_blue
+                  fontWeight: 600
+                  cursor: 'pointer'
+                  display: 'block'
 
-              for sort_option in sort_options #when sort_option.name != sort.name
-                do (sort_option) => 
-                  DIV 
-                    style:
-                      padding: '6px 12px'
-                      borderBottom: "1px solid #ddd"
-                      color: if @local.hover == sort_option.name then 'white'
-                      backgroundColor: if @local.hover == sort_option.name then focus_blue
-                      fontWeight: 600
-                    onMouseEnter: => @local.hover = sort_option.name; save @local 
-                    onMouseLeave: => @local.hover = null; save @local
-                    onClick: (e) =>
-                      _.extend sort, sort_option                      
-                      save sort 
-                      @local.show_sort_options = false
-                      save @local
-                      e.stopPropagation()
+                onClick: do(idx) => (e) => 
+                  if @local.focus != idx 
+                    set_focus idx 
+                  trigger(e)
+                onTouchEnd: do(idx) => (e) =>
+                  if @local.focus != idx 
+                    set_focus idx 
+                  trigger(e)
 
+                onKeyDown: (e) => 
+                  trigger(e) if e.which == 13 #ENTER
+                    
+                onFocus: do(idx) => (e) => 
+                  if @local.focus != idx 
+                    set_focus idx
+                  e.stopPropagation()
+                onMouseEnter: do(idx) => => 
+                  if @local.focus != idx 
+                    set_focus idx
+                onBlur: do(idx) => (e) =>
+                  @local.focus = null 
+                  save @local  
+                onMouseExit: do(idx) => => 
+                  @local.focus = null 
+                  save @local
 
-                    sort_option.name
+                sort_option.name
 
-                    DIV 
-                      style: 
-                        fontSize: 16
-                        color: if @local.hover == sort_option.name then '#ccc' else '#888'
-                        fontWeight: 400
+                DIV 
+                  style: 
+                    fontSize: 16
+                    color: if @local.focus == idx then '#eee' else '#888'
+                    fontWeight: 400
 
-                      sort_option.description
+                  sort_option.description
 
 
 

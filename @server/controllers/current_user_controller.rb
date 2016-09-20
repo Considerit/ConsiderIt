@@ -461,12 +461,14 @@ class CurrentUserController < ApplicationController
         # Create a new user from SAML assertion if not already registered.
         # A random password is created for the user as a placeholder.
         random_password = SecureRandom.urlsafe_base64(60) 
-        attrs = {:email => email, :password => random_password, :name => 'Place Holder'} 
+        attrs = HashWithIndifferentAccess.new({
+          :email => email,
+          :password => random_password,
+          :name => 'Place Holder'
+        })
         update_saml_user_attrs 'create account', errors, attrs
         try_saml_update_password 'create account', errors, attrs 
 
-        # TODO remove this and update all propertiers from update_saml_user_attrs
-        current_user.name = 'Place Holder'
 
         has_name = current_user.name && current_user.name.length > 0
         ok_email = current_user.email && current_user.email.length > 0
@@ -474,7 +476,6 @@ class CurrentUserController < ApplicationController
         ok_password = true
 
         if has_name && ok_email && signed_pledge && ok_password
-          puts 'SAML register'
 
           current_user.registered = true
           if !current_user.save

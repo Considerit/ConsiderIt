@@ -83,7 +83,7 @@ ImportDataDash = ReactiveComponent
         DIV null, 
           "Export data from Considerit. A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
           DIV style: marginTop: 20, display: 'block'
-          BUTTON 
+          A 
             style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
             href: "/dashboard/export"
             "data-nojax": true

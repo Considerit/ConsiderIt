@@ -238,6 +238,7 @@ AddRolesAndInvite = ReactiveComponent
       # Show (and optionally change) the role currently being modified 
       # by the invite component
       DIV 
+        ref: 'menu_wrap'
         key: 'select_role_menu'
         style: 
           fontWeight: 500
@@ -256,9 +257,18 @@ AddRolesAndInvite = ReactiveComponent
           @local.roles_menu = true
           save(@local)
 
+        onBlur: (e) => 
+          setTimeout => 
+            # if the focus isn't still on an element inside of this menu, 
+            # then we should close the menu
+            if $(document.activeElement).closest(@refs.menu_wrap.getDOMNode()).length == 0
+              @local.roles_menu = false; save @local
+          , 0
+
         onKeyDown: (e) => 
           if e.which == 13 || e.which == 27 # ENTER or ESC
             close_menu()
+            e.preventDefault()
           else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
             @local.focs = -1 if !@local.focus?
             if e.which == 38
@@ -443,11 +453,12 @@ AddRolesAndInvite = ReactiveComponent
                     @local.added.push user.key
                     save @local
                     e.stopPropagation()
-                  onKeyPress: do(user) => (e) => 
+                  onKeyDown: do(user) => (e) => 
                     if e.which == 13 # ENTER
                       @local.added.push user.key
                       save @local
                       e.stopPropagation()
+                      e.preventDefault()
 
                   "#{user.name} <#{user.email}>"
 

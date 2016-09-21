@@ -340,6 +340,7 @@ AddRolesAndInvite = ReactiveComponent
                 if @local.focus != idx 
                   set_focus idx 
                 trigger(e, role)
+
               onTouchEnd: do(idx, role) => (e) =>
                 if @local.focus != idx 
                   set_focus idx 
@@ -352,12 +353,15 @@ AddRolesAndInvite = ReactiveComponent
                 if @local.focus != idx 
                   set_focus idx
                 e.stopPropagation()
+
               onMouseEnter: do(idx) => => 
                 if @local.focus != idx 
                   set_focus idx
+              
               onBlur: do(idx) => (e) =>
                 @local.focus = null 
                 save @local  
+              
               onMouseExit: do(idx) => => 
                 @local.focus = null 
                 save @local
@@ -598,7 +602,7 @@ UserWithRole = (user_key, on_remove_from_role) ->
         user_key
 
     BUTTON # remove user from role
-      'aria-label': "Remove #{user.name} from role"
+      'aria-label': "Remove #{user?.name or user_key} from role"
       style: {cursor: 'pointer', marginLeft: 8, border: 'none', 'backgroundColor': 'transparent'}
       onClick: -> on_remove_from_role(user_key) if on_remove_from_role
       'x'

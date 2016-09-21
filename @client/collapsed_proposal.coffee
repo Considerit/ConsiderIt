@@ -129,6 +129,7 @@ window.CollapsedProposal = ReactiveComponent
               A
                 href: proposal_url(proposal)
                 'aria-hidden': true
+                tabIndex: -1
                 Avatar
                   key: editor
                   user: editor

@@ -25,7 +25,6 @@ user_name = (user, anon) ->
 # were attaching a mouseover and mouseout event on each and every Avatar for
 # the purpose of showing a tooltip name. So we use event delegation instead. 
 show_tooltip = (e) ->
-  console.log "SHOW", e.type
   if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
     user = fetch(e.target.getAttribute('data-user'))
     anonymous = e.target.getAttribute('data-anonymous') == 'true'

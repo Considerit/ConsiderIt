@@ -352,7 +352,9 @@ window.HomepageTabs = ReactiveComponent
                 @local.hovering = null 
                 save @local
               onKeyDown: (e) => 
-                e.currentTarget.click() if e.which == 13
+                if e.which == 13
+                  e.currentTarget.click() 
+                  e.preventDefault()
               onClick: => 
                 homepage_tabs.filter = filter 
                 homepage_tabs.clusters = clusters
@@ -590,7 +592,6 @@ window.NewProposal = ReactiveComponent
           style: _.defaults @props.label_style,
             cursor: 'pointer'
             backgroundColor: 'transparent'
-            outline: 'none'
             border: 'none'
             fontSize: 'inherit'
             padding: 0
@@ -697,7 +698,6 @@ window.NewProposal = ReactiveComponent
                   padding: '4px 16px'
                   display: 'inline-block'
                   marginRight: 12
-                  outline: 'none'
                   border: 'none'
                   fontSize: 'inherit'
 
@@ -738,7 +738,6 @@ window.NewProposal = ReactiveComponent
                   color: '#888'
                   cursor: 'pointer'
                   backgroundColor: 'transparent'
-                  outline: 'none'
                   border: 'none'
                   padding: 0
                   fontSize: 'inherit'                  

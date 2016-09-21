@@ -530,7 +530,7 @@ window.slugify = (text) ->
 
 
 ## CSS reset
-
+focus_shadow = 'inset 0 0 2px rgba(0,0,0,.3), 0 0 2px rgba(0,0,0,.3)'
 window.styles += """
 /* RESET
  * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
@@ -602,11 +602,25 @@ b, strong { font-weight: bold; }
 
 a {
   color: inherit;
-  outline: none;
   cursor: pointer;
   text-decoration: none; }
+  a:focus {
+  }
+  a:active {
+  }  
   a img {
     border: none; }
+
+:focus {
+}
+.button, button, input[type='submit'] {
+  cursor: pointer;
+  text-align: center; 
+  font-size: inherit;
+} .button:focus, button:focus, input[type='submit']:focus {
+} .button:active:focus, button:active:focus, input[type='submit']:active:focus{
+}
+
 
 table {
   border-collapse: separate; }
@@ -642,13 +656,6 @@ body, input, button, textarea {
   font-size: 16px;
   color: black;
   min-height: 500px; }
-
-.button, button, input[type='submit'] {
-  outline: none;
-  cursor: pointer;
-  text-align: center; 
-  font-size: inherit;
-}
 
 
 .flipped {
@@ -688,7 +695,6 @@ body, input, button, textarea {
 .cancel_opinion_button {
   float: right;
   background: transparent;
-  outline: none;
   border: none;
   margin-top: 0.5em; }
 

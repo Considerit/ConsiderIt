@@ -475,6 +475,12 @@ ProposalDescription = ReactiveComponent
             onMouseDown: => 
               @local.description_collapsed = false
               save(@local)
+            onKeyDown: (e) =>
+              if e.which == 13 # ENTER 
+                @local.description_collapsed = false
+                e.preventDefault()
+                save(@local)
+
             'Expand full text'
         DIV dangerouslySetInnerHTML:{__html: @proposal.description}
 

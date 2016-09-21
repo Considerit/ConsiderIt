@@ -128,6 +128,7 @@ window.CollapsedProposal = ReactiveComponent
             if editor 
               A
                 href: proposal_url(proposal)
+                'aria-hidden': true
                 Avatar
                   key: editor
                   user: editor
@@ -293,23 +294,30 @@ window.CollapsedProposal = ReactiveComponent
       
       # little score feedback
       if show_proposal_scores
+        show_tooltip = => 
+          if opinions.length > 0
+            tooltip = fetch 'tooltip'
+            tooltip.coords = $(@refs.score.getDOMNode()).offset()
+            tooltip.tip = "#{opinions.length} opinions. Average of #{Math.round(avg * 100) / 100} on a -1 to 1 scale."
+            save tooltip
+        hide_tooltip = => 
+          tooltip = fetch 'tooltip'
+          tooltip.coords = null
+          save tooltip
+
         DIV 
+          'aria-describedby': 'tooltip'
           ref: 'score'
+          tabIndex: 0
           style: 
             position: 'absolute'
             right: -50 - score_w
             top: 10
-          onMouseEnter: => 
-            if opinions.length > 0
-              tooltip = fetch 'tooltip'
-              tooltip.coords = $(@refs.score.getDOMNode()).offset()
-              tooltip.tip = "#{opinions.length} opinions. Average of #{Math.round(avg * 100) / 100} on a -1 to 1 scale."
-              save tooltip
 
-          onMouseLeave: => 
-            tooltip = fetch 'tooltip'
-            tooltip.coords = null
-            save tooltip
+          onFocus: show_tooltip
+          onMouseEnter: show_tooltip
+          onBlur: hide_tooltip
+          onMouseLeave: hide_tooltip
 
           SPAN 
             style: 

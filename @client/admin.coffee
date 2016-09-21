@@ -227,7 +227,7 @@ AppSettingsDash = ReactiveComponent
       STYLE dangerouslySetInnerHTML: __html: #dangerously set html is so that the type="text" doesn't get escaped
         """
         .app_settings_dash { font-size: 18px }
-        .app_settings_dash input[type="text"], .app_settings_dash textarea { border: 1px solid #aaa; outline: none; display: block; width: #{HOMEPAGE_WIDTH()}px; font-size: 18px; padding: 4px 8px; } 
+        .app_settings_dash input[type="text"], .app_settings_dash textarea { border: 1px solid #aaa; display: block; width: #{HOMEPAGE_WIDTH()}px; font-size: 18px; padding: 4px 8px; } 
         .app_settings_dash .input_group { margin-bottom: 12px; }
         """
 

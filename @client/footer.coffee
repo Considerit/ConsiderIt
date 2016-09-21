@@ -53,7 +53,6 @@ window.DefaultFooter = ReactiveComponent
             textAlign: 'center'
             fontSize: 18
             backgroundColor: 'transparent'
-            outline: 'none'
             border: 'none'
             
           title: 'Back to top'

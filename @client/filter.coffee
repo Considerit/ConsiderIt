@@ -240,7 +240,6 @@ ProposalFilter = ReactiveComponent
                 cursor: 'pointer'
                 boxShadow: '0 1px 1px rgba(0,0,0,.2)'
                 marginRight: 10
-                outline: 'none'
                 border: 'none'
 
               onClick: -> 
@@ -290,11 +289,11 @@ SortProposalsMenu = ReactiveComponent
 
 
       DIV 
+        ref: 'menu_wrap'
         key: 'proposal_sort_order_menu'
         style: 
           display: 'inline-block'
           position: 'relative'
-
 
         onTouchEnd: => 
           @local.sort_menu = !@local.sort_menu
@@ -308,6 +307,14 @@ SortProposalsMenu = ReactiveComponent
           save(@local)
           if !@local.focus? 
             set_focus(0)    
+
+        onBlur: (e) => 
+          setTimeout => 
+            # if the focus isn't still on an element inside of this menu, 
+            # then we should close the menu
+            if $(document.activeElement).closest(@refs.menu_wrap.getDOMNode()).length == 0
+              @local.sort_menu = false; save @local
+          , 0
 
         onKeyDown: (e) => 
           if e.which == 13 || e.which == 27 # ENTER or ESC
@@ -338,7 +345,6 @@ SortProposalsMenu = ReactiveComponent
             cursor: 'pointer'
             textDecoration: 'underline'
             backgroundColor: 'transparent'
-            outline: 'none'
             border: 'none'
             padding: 0
             display: 'inline-block'
@@ -488,6 +494,8 @@ OpinionFilter = ReactiveComponent
         for filter,idx in filters 
           do (filter, idx) => 
             show_tooltip = => 
+              @local.focus = idx
+              save @local
               if filter.tooltip 
                 tooltip = fetch 'tooltip'
                 tooltip.coords = $(@refs["filter-#{idx}"].getDOMNode()).offset()
@@ -495,6 +503,8 @@ OpinionFilter = ReactiveComponent
                 save tooltip
 
             hide_tooltip = => 
+              @local.focus = null
+              save @local            
               if filter.tooltip 
                 tooltip = fetch 'tooltip'
                 tooltip.coords = tooltip.tip = null 
@@ -509,12 +519,12 @@ OpinionFilter = ReactiveComponent
                 display: 'inline-block'
                 marginLeft: 7
                 padding: '0 0 0 7px'  
-                color: if is_enabled then focus_blue else '#777'
+                color: if is_enabled then focus_blue else if @local.focus == idx then 'black' else '#777'
                 cursor: 'pointer'
                 fontSize: 16
                 backgroundColor: 'transparent'
-                outline: 'none'
                 border: 'none'
+                outline: 'none'
 
               onMouseEnter: show_tooltip
               onMouseLeave: hide_tooltip

@@ -495,6 +495,7 @@ class CurrentUserController < ApplicationController
           end
           log('registered account')
           puts current_user
+          redirect_to '/edit_profile' 
 
         end
       else
@@ -502,9 +503,9 @@ class CurrentUserController < ApplicationController
         set_current_user(user)
         current_user.add_to_active_in
         update_roles_and_permissions
+        redirect_to '/' 
       end
 
-      redirect_to '/' 
     else
       logger.info "Response Invalid. Errors: #{response.errors}"
       @errors = response.errors

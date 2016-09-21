@@ -60,6 +60,7 @@ window.ProfileMenu = ReactiveComponent
 
           DIV
             key: 'profile_menu'
+            ref: 'menu_wrap'
             className: 'profile_menu_wrap'
             style:
               position: 'relative'
@@ -75,11 +76,21 @@ window.ProfileMenu = ReactiveComponent
               @local.menu = true
               save(@local)
               if !@local.focus? 
-                set_focus(0)    
+                set_focus(0)
+
+            onBlur: (e) => 
+              setTimeout => 
+                # if the focus isn't still on an element inside of this menu, 
+                # then we should close the menu
+                if $(document.activeElement).closest(@refs.menu_wrap.getDOMNode()).length == 0
+                  @local.menu = false; save @local
+              , 0
 
             onKeyDown: (e) => 
+              console.log 'KEYPRESS', e.which
               if e.which == 13 || e.which == 27 # ENTER or ESC
                 close_menu()
+                e.preventDefault()
               else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
                 @local.focus = -1 if !@local.focus?
                 if e.which == 38
@@ -123,10 +134,12 @@ window.ProfileMenu = ReactiveComponent
                     key: option.href
                     style: 
                       color: if @local.focus == idx then 'black'
+                      outline: 'none'
 
                     onKeyDown: (e) => 
                       if e.which == 13 # ENTER
                         e.currentTarget.click()
+                        e.preventDefault()
                     onFocus: do(idx) => (e) => 
                       if @local.focus != idx 
                         set_focus idx
@@ -158,11 +171,14 @@ window.ProfileMenu = ReactiveComponent
                   className: 'menu_link'
                   style: 
                     color: if @local.focus == idx then 'black'
-
+                    outline: 'none'
+                    
                   onClick: logout
                   onTouchEnd: logout
                   onKeyDown: (e) => 
-                    logout() if e.which == 13 #ENTER 
+                    if e.which == 13 #ENTER 
+                      logout() 
+                      e.preventDefault()
 
                   onFocus: (e) => 
                     if @local.focus != menu_options.length 

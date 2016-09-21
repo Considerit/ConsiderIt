@@ -240,6 +240,15 @@ Auth = ReactiveComponent
               task
 
             if auth.form != 'edit profile'
+              cancel_auth = (e) =>
+
+                if auth.form == 'verify email' || location.pathname == '/proposal/new'
+                  loadPage '/'
+
+                if auth.form == 'verify email'
+                  setTimeout logout, 1
+
+                reset_key auth
 
               BUTTON
                 style:
@@ -251,20 +260,15 @@ Auth = ReactiveComponent
                   padding: 10
                   fontSize: 24
                   backgroundColor: 'transparent'
-                  outline: 'none'
                   border: 'none'
 
                 title: t('cancel')
 
-                onClick: =>
-
-                  if auth.form == 'verify email' || location.pathname == '/proposal/new'
-                    loadPage '/'
-
-                  if auth.form == 'verify email'
-                    setTimeout logout, 1
-
-                  reset_key auth
+                onClick: cancel_auth
+                onKeyDown: (e) => 
+                  if e.which == 13 # ENTER 
+                    cancel_auth(e)
+                    e.preventDefault()
 
                 I className: 'fa-close fa'
 
@@ -413,6 +417,14 @@ Auth = ReactiveComponent
       button = t('Log in')
       toggle_to = t('Create new account')
 
+    toggle = (e) =>
+      current_user = fetch('/current_user')
+      auth.form = if auth.form == 'create account' then 'login' else 'create account'
+      current_user.errors = []
+      @local.errors = []
+      save auth
+      save @local
+
     DIV
       style:
         position: 'relative'
@@ -443,15 +455,12 @@ Auth = ReactiveComponent
             fontWeight: 400
             fontSize: 24
             backgroundColor: 'transparent'
-            outline: 'none'
             border: 'none'
-          onClick: =>
-            current_user = fetch('/current_user')
-            auth.form = if auth.form == 'create account' then 'login' else 'create account'
-            current_user.errors = []
-            @local.errors = []
-            save auth
-            save @local
+          onClick: toggle
+          onKeyDown: (e) => 
+            if e.which == 13
+              toggle(e)
+              e.preventDefault()
 
           toggle_to
       
@@ -474,6 +483,10 @@ Auth = ReactiveComponent
         width: if !inline then '100%'
       className:'primary_button' + (if @local.submitting then ' disabled' else '')
       onClick: @submitAuth
+      onKeyDown: (e) => 
+        if e.which == 13
+          @submitAuth(e)
+          e.preventDefault()
       
       action
         
@@ -638,6 +651,16 @@ Auth = ReactiveComponent
   #
   # "I forgot my password!"
   resetPasswordLink : -> 
+    reset = (e) => 
+      # Tell the server to email us a token
+      current_user = fetch('/current_user')
+      current_user.trying_to = 'send_password_reset_token'
+      save current_user, =>
+        if current_user.errors?.length > 0
+          arest.updateCache(current_user)
+        else
+          # Switch to reset_password mode
+          reset_key 'auth', {form : 'reset password'}
     DIV 
       style: 
         textAlign: 'right'
@@ -648,21 +671,16 @@ Auth = ReactiveComponent
           textDecoration: 'underline'
           color: auth_ghost_gray
           backgroundColor: 'transparent'
-          outline: 'none'
           border: 'none'
           fontSize: 18
           padding: 0
 
-        onClick: => 
-          # Tell the server to email us a token
-          current_user = fetch('/current_user')
-          current_user.trying_to = 'send_password_reset_token'
-          save current_user, =>
-            if current_user.errors?.length > 0
-              arest.updateCache(current_user)
-            else
-              # Switch to reset_password mode
-              reset_key 'auth', {form : 'reset password'}
+        onClick: reset
+        onKeyDown: (e) =>
+          if e.which == 13 # ENTER
+            reset(e)  
+            e.preventDefault()
+
 
         t('forgot_password') 
 

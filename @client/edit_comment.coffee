@@ -106,6 +106,7 @@ window.EditComment = ReactiveComponent
             marginLeft: 60
             padding: '8px 16px'
             fontSize: if browser.is_mobile then 24
+          
           'data-action': 'save-comment'
 
           t('Save comment')

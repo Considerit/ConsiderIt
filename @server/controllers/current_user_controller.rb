@@ -42,7 +42,8 @@ class CurrentUserController < ApplicationController
     @min_pass = MIN_PASS 
 
 
-    if !params.has_key?(:trying_to) || !params[:trying_to] || params[:trying_to] == 'update_avatar_hack'
+    if !params.has_key?(:trying_to) || !params[:trying_to] ||
+          params[:trying_to] == 'update_avatar_hack' || params[:trying_to] == 'edit saml profile' 
       trying_to = 'edit profile'    
     else
       trying_to = params[:trying_to]
@@ -495,7 +496,7 @@ class CurrentUserController < ApplicationController
           end
           log('registered account')
           puts current_user
-          redirect_to '/edit_profile' 
+          redirect_to '/edit_saml_profile' 
 
         end
       else

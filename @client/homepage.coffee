@@ -106,58 +106,58 @@ window.TagHomepage = ReactiveComponent
 
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
 
-    DIV null,
 
-      DIV
-        className: 'simplehomepage'
+    DIV
+      id: 'simplehomepage'
+      role: if customization('homepage_tabs') then "tabpanel"
+      style: 
+        fontSize: 22
+        margin: '45px auto'
+        width: HOMEPAGE_WIDTH()
+        position: 'relative'
+
+      STYLE null,
+        '''a.proposal:hover {border-bottom: 1px solid grey}'''
+
+      ProposalFilter
         style: 
-          fontSize: 22
-          margin: '45px auto'
-          width: HOMEPAGE_WIDTH()
-          position: 'relative'
-
-        STYLE null,
-          '''a.proposal:hover {border-bottom: 1px solid grey}'''
-
-        ProposalFilter
-          style: 
-            width: first_column.width
-            marginBottom: 20
-            display: 'inline-block'
-            verticalAlign: 'top'
+          width: first_column.width
+          marginBottom: 20
+          display: 'inline-block'
+          verticalAlign: 'top'
 
 
-        UL null, 
-          for proposal,idx in proposals
-            continue if idx > 20 && !show_all.show_all
-            cluster = proposal.cluster or 'Proposals'
+      UL null, 
+        for proposal,idx in proposals
+          continue if idx > 20 && !show_all.show_all
+          cluster = proposal.cluster or 'Proposals'
 
-            CollapsedProposal 
-              key: "collapsed#{proposal.key}"
-              proposal: proposal
-              show_category: true
-              category_color: hsv2rgb(colors[cluster], .7, .8)
+          CollapsedProposal 
+            key: "collapsed#{proposal.key}"
+            proposal: proposal
+            show_category: true
+            category_color: hsv2rgb(colors[cluster], .7, .8)
 
-        if !show_all.show_all && proposals.length > 20 
-          BUTTON
-            style:
-              backgroundColor: '#f9f9f9'
-              width: HOMEPAGE_WIDTH()
-              #position: 'absolute'
-              #bottom: 0
-              textDecoration: 'underline'
-              cursor: 'pointer'
-              paddingTop: 10
-              paddingBottom: 10
-              fontWeight: 600
-              textAlign: 'center'
-              marginTop: 40
-              border: 'none'
+      if !show_all.show_all && proposals.length > 20 
+        BUTTON
+          style:
+            backgroundColor: '#f9f9f9'
+            width: HOMEPAGE_WIDTH()
+            #position: 'absolute'
+            #bottom: 0
+            textDecoration: 'underline'
+            cursor: 'pointer'
+            paddingTop: 10
+            paddingBottom: 10
+            fontWeight: 600
+            textAlign: 'center'
+            marginTop: 40
+            border: 'none'
 
-            onMouseDown: => 
-              show_all.show_all = true
-              save(show_all)
-            'Show all proposals'
+          onMouseDown: => 
+            show_all.show_all = true
+            save(show_all)
+          'Show all proposals'
 
 
 
@@ -189,74 +189,74 @@ window.SimpleHomepage = ReactiveComponent
       save collapsed
 
 
-    DIV null,
 
-      DIV
-        className: 'simplehomepage'
-        style: 
-          fontSize: 22
-          margin: '45px auto'
-          width: HOMEPAGE_WIDTH()
-          position: 'relative'
+    DIV
+      id: 'simplehomepage'
+      role: if customization('homepage_tabs') then "tabpanel"
+      style: 
+        fontSize: 22
+        margin: '45px auto'
+        width: HOMEPAGE_WIDTH()
+        position: 'relative'
 
-        STYLE null,
-          '''a.proposal:hover {border-bottom: 1px solid grey}'''
+      STYLE null,
+        '''a.proposal:hover {border-bottom: 1px solid grey}'''
 
-        if customization('homepage_show_search_and_sort') && proposals.proposals.length > 15
-          [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-          ProposalFilter
-            style: 
-              width: first_column.width
-              marginBottom: 20
-              display: 'inline-block'
-              verticalAlign: 'top'
+      if customization('homepage_show_search_and_sort') && proposals.proposals.length > 15
+        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+        ProposalFilter
+          style: 
+            width: first_column.width
+            marginBottom: 20
+            display: 'inline-block'
+            verticalAlign: 'top'
 
-        if customization('opinion_filters')
-          [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-          hala = subdomain.name in ['HALA', 'engageseattle']
+      if customization('opinion_filters')
+        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+        hala = subdomain.name in ['HALA', 'engageseattle']
 
-          OpinionFilter
-            style: 
-              width: if !hala then secnd_column.width
-              marginBottom: 20
-              marginLeft: if !hala then secnd_column.marginLeft
-              display: if !hala then 'inline-block'
-              verticalAlign: 'top'
-              textAlign: if !hala then 'center' else 'right'
+        OpinionFilter
+          style: 
+            width: if !hala then secnd_column.width
+            marginBottom: 20
+            marginLeft: if !hala then secnd_column.marginLeft
+            display: if !hala then 'inline-block'
+            verticalAlign: 'top'
+            textAlign: if !hala then 'center' else 'right'
 
-        # List all clusters
-        for cluster, index in clusters or []
-          cluster_key = "list/#{cluster.name}"
+      # List all clusters
+      for cluster, index in clusters or []
+        cluster_key = "list/#{cluster.name}"
 
-          fails_filter = homepage_tabs.filter? && (homepage_tabs.clusters != '*' && !(cluster.name in homepage_tabs.clusters) )
-          if fails_filter && ('*' in homepage_tabs.clusters)
-            in_others = []
-            for filter, clusters of customization('homepage_tabs')
-              in_others = in_others.concat clusters 
+        fails_filter = homepage_tabs.filter? && (homepage_tabs.clusters != '*' && !(cluster.name in homepage_tabs.clusters) )
+        if fails_filter && ('*' in homepage_tabs.clusters)
+          in_others = []
+          for filter, clusters of customization('homepage_tabs')
+            in_others = in_others.concat clusters 
 
-            fails_filter &&= cluster.name in in_others
-
-
-          if fails_filter
-            SPAN null 
-          else 
-
-            Cluster
-              key: cluster_key
-              cluster: cluster 
-              index: index
+          fails_filter &&= cluster.name in in_others
 
 
-        if permit('create proposal') > 0 && customization('homepage_show_new_proposal_button')
-          A 
-            style: 
-              color: logo_red
-              marginTop: 35
-              display: 'inline-block'
-              borderBottom: "1px solid #{logo_red}"
+        if fails_filter
+          SPAN null 
+        else 
 
-            href: '/proposal/new'
-            t('Create new proposal')
+          Cluster
+            key: cluster_key
+            cluster: cluster 
+            index: index
+
+
+      if permit('create proposal') > 0 && customization('homepage_show_new_proposal_button')
+        A 
+          style: 
+            color: logo_red
+            marginTop: 35
+            display: 'inline-block'
+            borderBottom: "1px solid #{logo_red}"
+
+          href: '/proposal/new'
+          t('Create new proposal')
 
   typeset : -> 
     subdomain = fetch('/subdomain')
@@ -336,9 +336,7 @@ window.HomepageTabs = ReactiveComponent
           break 
       save homepage_tabs
 
-
     subdomain = fetch('/subdomain')
-
 
     DIV 
       style: 
@@ -348,11 +346,13 @@ window.HomepageTabs = ReactiveComponent
         top: 2
         marginTop: 20
 
-      DIV 
+      UL 
+        role: 'tablist'
         style: 
           width: 900 #HOMEPAGE_WIDTH()
           margin: 'auto'
           textAlign: 'center'
+          listStyle: 'none'
 
         for [filter, clusters], idx in filters 
           do (filter, clusters) =>
@@ -389,8 +389,12 @@ window.HomepageTabs = ReactiveComponent
                 padding: '10px 20px 4px 20px'
                 backgroundColor: if current then 'rgba(255,255,255,.2)'
 
-            SPAN 
+            LI 
+              tabIndex: 0
+              role: 'tab'
               style: tab_style
+              'aria-controls': 'simplehomepage'
+              'aria-selected': current
 
               onMouseEnter: => 
                 if homepage_tabs.filter != filter 
@@ -399,6 +403,8 @@ window.HomepageTabs = ReactiveComponent
               onMouseLeave: => 
                 @local.hovering = null 
                 save @local
+              onKeyDown: (e) => 
+                e.currentTarget.click() if e.which == 13
               onClick: => 
                 homepage_tabs.filter = filter 
                 homepage_tabs.clusters = clusters

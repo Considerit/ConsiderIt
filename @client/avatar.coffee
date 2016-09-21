@@ -24,7 +24,8 @@ user_name = (user, anon) ->
 # Was seeing major slowdown on pages with lots of avatars simply because we
 # were attaching a mouseover and mouseout event on each and every Avatar for
 # the purpose of showing a tooltip name. So we use event delegation instead. 
-document.addEventListener "mouseover", (e) ->
+show_tooltip = (e) ->
+  console.log "SHOW", e.type
   if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
     user = fetch(e.target.getAttribute('data-user'))
     anonymous = e.target.getAttribute('data-anonymous') == 'true'
@@ -46,11 +47,24 @@ document.addEventListener "mouseover", (e) ->
     tooltip.tip = name
     save tooltip
 
-document.addEventListener "mouseout", (e) ->
+hide_tooltip = (e) ->
   if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
     tooltip = fetch 'tooltip'
     tooltip.coords = null
     save tooltip
+
+
+
+document.addEventListener "mouseover", show_tooltip
+document.addEventListener "mouseout", hide_tooltip
+
+$('body').on 'focusin', '.avatar', show_tooltip
+$('body').on 'focusout', '.avatar', hide_tooltip
+
+# focus/blur don't seem to work at document level
+# document.addEventListener "focus", show_tooltip, true
+# document.addEventListener "blur", hide_tooltip, true
+
 
 ##
 # Avatar
@@ -143,6 +157,9 @@ window.avatar = (user, props) ->
     'data-anon': anonymous      
     style: style
     rel: ''
+    tabIndex: if !props.hide_tooltip then 0
+    'aria-describedby': if !props.hide_tooltip then 'tooltip'
+
 
 
   # IE9 gets confused if there is an image without a src

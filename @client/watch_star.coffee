@@ -30,24 +30,31 @@ window.WatchStar = ReactiveComponent
       margin: 0
       padding: 0
 
+    show_tooltip =  => 
+      @local.hover_watch = proposal.key; save @local
+      tooltip = fetch 'tooltip'
+      tooltip.coords = $(@getDOMNode()).offset()
+      tooltip.tip = label(watching)
+      save tooltip
+
+    hide_tooltip = => 
+      @local.hover_watch = null; save @local
+      tooltip = fetch 'tooltip'
+      tooltip.coords = null
+      save tooltip
+
+
     BUTTON 
       'aria-label': label(watching)
+      'aria-describedby': 'tooltip'
+
       className: "fa #{if watching then icon else "#{icon}-o"}"
       style: _.extend {}, style, (@props.style || {})
 
-      onMouseEnter: => 
-        @local.hover_watch = proposal.key; save @local
-
-        tooltip = fetch 'tooltip'
-        tooltip.coords = $(@getDOMNode()).offset()
-        tooltip.tip = label(watching)
-        save tooltip
-
-      onMouseLeave: => 
-        @local.hover_watch = null; save @local
-        tooltip = fetch 'tooltip'
-        tooltip.coords = null
-        save tooltip
+      onMouseEnter: show_tooltip
+      onFocus: show_tooltip
+      onMouseLeave: hide_tooltip
+      onBlur: hide_tooltip
 
       onClick: => 
         if !current_user.subscriptions[proposal.key]

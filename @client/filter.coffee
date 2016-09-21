@@ -487,8 +487,23 @@ OpinionFilter = ReactiveComponent
 
         for filter,idx in filters 
           do (filter, idx) => 
+            show_tooltip = => 
+              if filter.tooltip 
+                tooltip = fetch 'tooltip'
+                tooltip.coords = $(@refs["filter-#{idx}"].getDOMNode()).offset()
+                tooltip.tip = filter.tooltip
+                save tooltip
+
+            hide_tooltip = => 
+              if filter.tooltip 
+                tooltip = fetch 'tooltip'
+                tooltip.coords = tooltip.tip = null 
+                save tooltip
+
             is_enabled = filter_out.opinion_filters?[filter.label]
             BUTTON 
+              'aria-describedby': if filter.tooltip then 'tooltip'
+              tabIndex: 0
               ref: "filter-#{idx}"
               style: 
                 display: 'inline-block'
@@ -501,18 +516,16 @@ OpinionFilter = ReactiveComponent
                 outline: 'none'
                 border: 'none'
 
-              onMouseEnter: => 
-                if filter.tooltip 
-                  tooltip = fetch 'tooltip'
-                  tooltip.coords = $(@refs["filter-#{idx}"].getDOMNode()).offset()
-                  tooltip.tip = filter.tooltip
-                  save tooltip
-              onMouseLeave: => 
-                if filter.tooltip 
-                  tooltip = fetch 'tooltip'
-                  tooltip.coords = tooltip.tip = null 
-                  save tooltip
-              onClick: -> toggle_filter(filter)              
+              onMouseEnter: show_tooltip
+              onMouseLeave: hide_tooltip
+              onFocus: show_tooltip
+              onBlur: hide_tooltip 
+              onClick: -> toggle_filter(filter)   
+              onKeyDown: (e) -> 
+                if e.which == 13   
+                  toggle_filter(filter) 
+                  e.preventDefault()
+                  e.stopPropagation()
 
               filter.label
 

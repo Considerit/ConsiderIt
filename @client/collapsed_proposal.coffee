@@ -44,29 +44,11 @@ window.CollapsedProposal = ReactiveComponent
 
     draw_slider = can_opine > 0 || your_opinion?.published
 
-    opinions = opinionsForProposal(proposal)
-    
-
-    show_proposal_scores = customization('show_proposal_scores', proposal)
     icons = customization('show_proposer_icon', proposal)
     slider_regions = customization('slider_regions', proposal)
+    show_proposal_scores = customization('show_proposal_scores', proposal)
 
-
-    if show_proposal_scores
-      score = 0
-      filter_out = fetch 'filtered'
-      opinions = (o for o in opinions when !filter_out.users?[o.user])
-
-      for o in opinions 
-        score += o.stance
-      avg = score / opinions.length
-      negative = score < 0
-      score *= -1 if negative
-
-      score = pad score.toFixed(1),2
-
-      score_w = widthWhenRendered "#{score}", {fontSize: 18, fontWeight: 600}
-
+    opinions = opinionsForProposal(proposal)
 
     if draw_slider
       slider = fetch "homepage_slider#{proposal.key}"
@@ -295,6 +277,20 @@ window.CollapsedProposal = ReactiveComponent
       
       # little score feedback
       if show_proposal_scores
+        score = 0
+        filter_out = fetch 'filtered'
+        opinions = (o for o in opinions when !filter_out.users?[o.user])
+
+        for o in opinions 
+          score += o.stance
+        avg = score / opinions.length
+        negative = score < 0
+        score *= -1 if negative
+
+        score = pad score.toFixed(1),2
+
+        score_w = widthWhenRendered "#{score}", {fontSize: 18, fontWeight: 600}
+
         show_tooltip = => 
           if opinions.length > 0
             tooltip = fetch 'tooltip'
@@ -307,9 +303,8 @@ window.CollapsedProposal = ReactiveComponent
           save tooltip
 
         DIV 
-          'aria-describedby': 'tooltip'
+          'aria-hidden': true
           ref: 'score'
-          tabIndex: 0
           style: 
             position: 'absolute'
             right: -50 - score_w
@@ -325,24 +320,11 @@ window.CollapsedProposal = ReactiveComponent
               color: '#999'
               fontSize: 18
               fontWeight: 600
-              cursor: 'pointer'
+              cursor: 'default'
 
             if negative
               '–'
             score
-
-          if @local.hover_score
-            DIV
-              style: 
-                position: 'absolute'
-                backgroundColor: 'white'
-                padding: "4px 10px"
-                zIndex: 10
-                boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-                fontSize: 16
-                right: 0
-                bottom: 30
-                width: 200
 
   componentDidUpdate: -> 
     if @local.keep_in_view

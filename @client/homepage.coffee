@@ -490,6 +490,14 @@ Cluster = ReactiveComponent
         ListHeader()
       else 
         HEADING = if label then H2 else H1
+        toggle_list = ->
+          if !list_uncollapseable
+            if collapsed.clusters[cluster_key]
+              delete collapsed.clusters[cluster_key]
+            else 
+              collapsed.clusters[cluster_key] = 1 
+            save collapsed
+
         DIV 
           style: 
             position: 'relative'
@@ -497,30 +505,32 @@ Cluster = ReactiveComponent
             style: _.extend {}, first_header, 
               position: 'relative'
               cursor: if !list_uncollapseable then 'pointer'
+            BUTTON 
+              style: 
+                padding: 0 
+                margin: 0 
+                border: 'none'
+                backgroundColor: 'transparent'
+                fontWeight: first_header.fontWeight
+              onKeyDown: (e) -> 
+                console.log 'KEY!', e.which
+                if e.which == 13 || e.which == 32
+                  toggle_list()
+                  e.preventDefault()
+              onClick: toggle_list
 
-            onClick: -> 
+              list_items_title || cluster.name || 'Proposals'
+
               if !list_uncollapseable
-                if collapsed.clusters[cluster_key]
-                  delete collapsed.clusters[cluster_key]
-                else 
-                  collapsed.clusters[cluster_key] = 1 
-                save collapsed
-
-
-            list_items_title || cluster.name || 'Proposals'
-
-            if !list_uncollapseable
-              SPAN 
-                style: cssTriangle (if is_collapsed then 'right' else 'bottom'), 'black', tw, th,
-                  position: 'absolute'
-                  left: -tw - 20
-                  bottom: 14
-                  width: tw
-                  height: th
-                  display: 'inline-block'
-
-            if subdomain.name == 'RANDOM2015'
-              " (#{cluster.proposals.length})"
+                SPAN 
+                  'aria-hidden': true
+                  style: cssTriangle (if is_collapsed then 'right' else 'bottom'), 'black', tw, th,
+                    position: 'absolute'
+                    left: -tw - 20
+                    bottom: 14
+                    width: tw
+                    height: th
+                    display: 'inline-block'
 
             if list_one_line_desc
               DIV 

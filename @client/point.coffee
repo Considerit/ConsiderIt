@@ -182,9 +182,6 @@ window.Point = ReactiveComponent
       onTouchEnd: @selectPoint
       style: point_style
 
-      if @props.rendered_as == 'community_point' && @props.is_new
-        renderNewIndicator()
-
       if @props.rendered_as == 'decision_board_point'
         DIV 
           style: 
@@ -516,18 +513,23 @@ window.Point = ReactiveComponent
                         else 
                           hist.selected_opinions
 
-    if selected_opinions?.length > 0      
+    if selected_opinions?.length > 0
       # only show includers from the current opinion selection
       selected_users = (fetch(o).user for o in selected_opinions)
       includers = _.intersection includers, selected_users
       #author_has_included = _.contains selected_users, point.user
 
     if filter_out.users 
-      includers = (i for i in includers if !filter_out.users[i])
+      includers = (i for i in includers when !filter_out.users[i])
+
+      
 
     if true #author_has_included 
       includers = _.without includers, point.user
       includers.push point.user
+
+    if @data().key == '/point/8627'
+      console.log 'INCLUDERS', includers
 
     _.uniq includers
         

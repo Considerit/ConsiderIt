@@ -14,11 +14,8 @@ class HtmlController < ApplicationController
       return
     end
 
-    def get_url_base
-      "#{request.protocol}#{request.host_with_port}"
-    end
-
-    if current_subdomain.SSO_only?
+    if current_subdomain.SSO_only and not current_user.registered
+      get_url_base = "#{request.protocol}#{request.host_with_port}"
       settings = User.get_saml_settings(get_url_base)
       req = OneLogin::RubySaml::Authrequest.new
       redirect_to(req.create(settings))

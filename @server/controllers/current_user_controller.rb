@@ -462,21 +462,22 @@ class CurrentUserController < ApplicationController
         # Create a new user from SAML assertion if not already registered.
         # A random password is created for the user as a placeholder.
         random_password = SecureRandom.urlsafe_base64(60) 
+        # TODO parse and insert name below when IdP Delft gives us assertion statement spec
         attrs = HashWithIndifferentAccess.new({
           :email => email,
           :password => random_password,
-          :name => 'Place Holder'
+          :name => ''
         })
         update_saml_user_attrs 'create account', errors, attrs
         try_saml_update_password 'create account', errors, attrs 
 
-
-        has_name = current_user.name && current_user.name.length > 0
+        # TODO when get IdP spec from Delft. See if we get name. If yes, uncomment has_name and add to conditional below 
+        #has_name = current_user.name && current_user.name.length > 0
         ok_email = current_user.email && current_user.email.length > 0
         signed_pledge = true 
         ok_password = true
 
-        if has_name && ok_email && signed_pledge && ok_password
+        if ok_email && signed_pledge && ok_password 
 
           current_user.registered = true
           if !current_user.save
@@ -512,6 +513,7 @@ class CurrentUserController < ApplicationController
       @errors = response.errors
       render :action => :fail
     end
+
   end
 
   def metadata

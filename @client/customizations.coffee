@@ -282,7 +282,7 @@ text_and_masthead = ['educacion2025', 'ynpn', 'lsfyl', 'kealaiwikuamoo', 'iwikua
 masthead_only = ["kamakakoi","seattletimes","kevin","ihub","SilverLakeNC",\
                  "Relief-Demo","GS-Demo","ri","ITFeedback","Committee-Meeting","policyninja", \
                  "SocialSecurityWorks","amberoon","economist","impacthub-demo","mos","Cattaca", \
-                 "Airbdsm","fun","bitcoin-ukraine","lyftoff","hcao","arlingtoncountyfair","progressive", \
+                 "Airbdsm","bitcoin-ukraine","lyftoff","hcao","arlingtoncountyfair","progressive", \
                  "design","crm","safenetwork","librofm","washingtonpost","MSNBC", \
                  "PublicForum","AMA-RFS","AmySchumer","VillaGB","AwesomeHenri", \
                  "citySENS","alcala","MovilidadCDMX","deus_ex","neuwrite","bitesizebio","HowScienceIsMade","SABF", \

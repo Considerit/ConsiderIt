@@ -42,6 +42,15 @@ window.GoogleTranslate = ReactiveComponent
     , 20
 
 
+window.pad = (num, len) -> 
+  str = num
+  dec = str.split('.')
+  i = 0 
+  while i < len - dec[0].toString().length
+    dec[0] = "0" + dec[0]
+    i += 1
+
+  dec[0] + if dec.length > 0 then '.' + dec[1] else ''
 
 
 window.back_to_homepage_button = (style) -> 

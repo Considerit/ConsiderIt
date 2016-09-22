@@ -177,7 +177,6 @@ Proposal = ReactiveComponent
     
     proposal_header = DefaultProposalNavigation()
 
-    newpoint_threshold = @buildNewPointThreshold()
     draw_handle = (can_opine not in [Permission.DISABLED, \
                           Permission.INSUFFICIENT_PRIVILEGES]) || \
                           your_opinion.published
@@ -291,7 +290,6 @@ Proposal = ReactiveComponent
             rendered_as: 'community_point'
             points_editable: TWO_COL()
             valence: 'cons'
-            newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             drop_target: false
             points: buildPointsList \
@@ -331,7 +329,6 @@ Proposal = ReactiveComponent
             rendered_as: 'community_point'
             points_editable: TWO_COL()
             valence: 'pros'
-            newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             drop_target: false
             points: buildPointsList \
@@ -354,17 +351,6 @@ Proposal = ReactiveComponent
           fresh: pc.adding_new_point
           valence: valence
           your_points_key: edit_mode
-
-
-  buildNewPointThreshold : ->
-    # Grab the 10th percentile
-    points = @page.points || []
-    newpoint_threshold = 
-      (_.sortBy points, \
-                (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
-
-    (newpoint_threshold and Date.parse(newpoint_threshold.created_at)) or 
-      new Date()
 
 
 ##
@@ -794,8 +780,6 @@ DecisionBoard = ReactiveComponent
       give_opinion_style =
         visibility: 'hidden'
 
-
-    console.log (p for p in fetch(@proposal.your_opinion).point_inclusions), @proposal.your_opinion
     DIV 
       className:'opinion_region'
       style:
@@ -1332,8 +1316,6 @@ PointsList = ReactiveComponent
                 rendered_as: @props.rendered_as
                 your_points_key: @props.key
                 enable_dragging: @props.points_draggable
-                is_new: @props.newpoint_threshold &&
-                         Date.parse(point.created_at) > @props.newpoint_threshold
 
 
       if @props.drop_target

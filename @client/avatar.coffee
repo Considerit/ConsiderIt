@@ -69,10 +69,6 @@ $('body').on 'focusout', '.avatar', hide_tooltip
 # Avatar
 # Displays a user's avatar
 #
-# We primarily download all avatar images as part of a CSS file specifying a 
-# b64 encoded background-image small 50x50 thumbnails for each user 
-# (under #avatar-{id}). 
-#
 # Higher resolution images are available ('large' and 'original'). These can 
 # be specified by setting the img_size property of Avatar.
 #
@@ -148,6 +144,10 @@ window.avatar = (user, props) ->
   if add_initials
     style.textAlign = 'center'
 
+  name = user_name user, anonymous
+  if name == 'Anonymous'
+    name = '?'
+
   attrs = _.extend {}, props,
     className: "avatar #{props.className or ''}"
     id: id
@@ -155,9 +155,8 @@ window.avatar = (user, props) ->
     'data-showtooltip': !props.hide_tooltip
     'data-anon': anonymous      
     style: style
-    rel: ''
-    tabIndex: if !props.hide_tooltip then 0
-    'aria-describedby': if !props.hide_tooltip then 'tooltip'
+    rel: props.rel?.replace('<user>', name) or name
+    tabIndex: if props.focusable then 0 else -1
 
 
 
@@ -168,9 +167,6 @@ window.avatar = (user, props) ->
 
   tag attrs,
     if add_initials
-      name = user_name user, anonymous
-      if name == 'Anonymous'
-        name = '?'
       fontsize = style.width / 2
       ff = 'monaco,Consolas,"Lucida Console",monospace'
       if name.length == 2

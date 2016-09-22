@@ -504,6 +504,7 @@ window.Point = ReactiveComponent
     save(hist)
 
   buildIncluders : -> 
+    filter_out = fetch 'filtered'
     point = @data()
     #author_has_included = _.contains point.includers, point.user
 
@@ -520,6 +521,9 @@ window.Point = ReactiveComponent
       selected_users = (fetch(o).user for o in selected_opinions)
       includers = _.intersection includers, selected_users
       #author_has_included = _.contains selected_users, point.user
+
+    if filter_out.users 
+      includers = (i for i in includers if !filter_out.users[i])
 
     if true #author_has_included 
       includers = _.without includers, point.user

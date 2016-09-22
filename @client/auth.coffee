@@ -149,10 +149,13 @@ Auth = ReactiveComponent
 
         [ @headerAndBorder null, t('Your Profile'),
             @body [
-              ["#{t('login_as')}:",
-                [ @inputBox('email', 'email@address', 'email'),
-                  @inputBox('password', t("password"), 'password')]
-              ],
+              # we don't want users on single sign on subdomains to change email/password
+              if not fetch('/subdomain').SSO_only        
+                ["#{t('login_as')}:",
+                  [ @inputBox('email', 'email@address', 'email'),
+                    @inputBox('password', t("password"), 'password')]
+                ]
+              ,
               ["#{t('name_prompt')}:", @inputBox('name', t('full_name'))],
               avatar_field].concat @userQuestionInputs()
           @submitButton(t('Update'))

@@ -189,6 +189,7 @@ window.SimpleHomepage = ReactiveComponent
       save collapsed
 
 
+    has_proposal_sort = customization('homepage_show_search_and_sort') && proposals.proposals.length > 10
 
     DIV
       id: 'simplehomepage'
@@ -202,7 +203,7 @@ window.SimpleHomepage = ReactiveComponent
       STYLE null,
         '''a.proposal:hover {border-bottom: 1px solid grey}'''
 
-      if customization('homepage_show_search_and_sort') && proposals.proposals.length > 15
+      if has_proposal_sort
         [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
         ProposalFilter
           style: 
@@ -213,16 +214,15 @@ window.SimpleHomepage = ReactiveComponent
 
       if customization('opinion_filters')
         [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-        hala = subdomain.name in ['HALA', 'engageseattle']
 
         OpinionFilter
           style: 
-            width: if !hala then secnd_column.width
+            width: if has_proposal_sort then secnd_column.width
             marginBottom: 20
-            marginLeft: if !hala then secnd_column.marginLeft
-            display: if !hala then 'inline-block'
+            marginLeft: if has_proposal_sort then secnd_column.marginLeft else secnd_column.marginLeft + first_column.width
+            display: if has_proposal_sort then 'inline-block'
             verticalAlign: 'top'
-            textAlign: if !hala then 'center' else 'right'
+            textAlign: 'center' 
 
       # List all clusters
       for cluster, index in clusters or []

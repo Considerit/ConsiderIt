@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160817181945) do
+ActiveRecord::Schema.define(version: 20160922021710) do
 
   create_table "assessments", force: :cascade do |t|
     t.integer  "user_id",         limit: 4
@@ -302,6 +302,7 @@ ActiveRecord::Schema.define(version: 20160817181945) do
     t.integer  "plan",                       limit: 4,        default: 0
     t.text     "customizations",             limit: 16777215
     t.string   "lang",                       limit: 255,      default: "en"
+    t.boolean  "SSO_only",                                    default: false
   end
 
   add_index "subdomains", ["name"], name: "by_identifier", length: {"name"=>10}, using: :btree

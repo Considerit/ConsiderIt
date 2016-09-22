@@ -62,7 +62,7 @@ window.Video = ReactiveComponent
         @drawChapterMenu()
 
       A
-        href: 'https://fun.consider.it/Death_Star'
+        href: 'https://galacticfederation.consider.it/Death_Star'
         target: '_blank'
         onMouseEnter: => 
           @local.hover_interact_death_star = true

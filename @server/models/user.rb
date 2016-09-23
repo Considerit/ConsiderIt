@@ -449,13 +449,10 @@ class User < ActiveRecord::Base
   end
 
   def self.get_saml_settings(url_base)
-    # this is just for testing purposes.
     # should retrieve SAML-settings based on subdomain, IP-address, NameID or similar
     settings = OneLogin::RubySaml::Settings.new
 
     url_base ||= "http://localhost:3000"
-
-    # Example settings data, replace this values!
 
     # When disabled, saml validation errors will raise an exception.
     settings.soft = true
@@ -465,14 +462,37 @@ class User < ActiveRecord::Base
     settings.assertion_consumer_service_url = url_base + "/saml/acs"
     settings.assertion_consumer_logout_service_url = url_base + "/saml/logout"
 
-    # IdP section
-    settings.idp_entity_id                  = "https://app.onelogin.com/saml/metadata/585764"
-    settings.idp_sso_target_url             = "https://standardminds-dev.onelogin.com/trust/saml2/http-post/sso/585764"
-    settings.idp_slo_target_url             = "https://standardminds-dev.onelogin.com/trust/saml2/http-redirect/slo/585764"
-
-
+    # Example settings data, replace this values with Delft settings!
+    # TODO replace example.com settings with Delft IDP settings
+    if current_subdomain.host_with_port == 'test.example.com:80'
+      # IdP section
+      settings.idp_entity_id                  = ""
+      settings.idp_sso_target_url             = ""
+      settings.idp_slo_target_url             = ""
 
     settings.idp_cert                       = "-----BEGIN CERTIFICATE-----
+-----END CERTIFICATE-----"
+
+      # or settings.idp_cert_fingerprint           = "3B:05:BE:0A:EC:84:CC:D4:75:97:B3:A2:22:AC:56:21:44:EF:59:E6"
+      #    settings.idp_cert_fingerprint_algorithm = XMLSecurity::Document::SHA1
+
+      settings.name_identifier_format         = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+
+      # Security section
+      settings.security[:authn_requests_signed] = false
+      settings.security[:logout_requests_signed] = false
+      settings.security[:logout_responses_signed] = false
+      settings.security[:metadata_signed] = false
+      settings.security[:digest_method] = XMLSecurity::Document::SHA1
+      settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
+
+    elsif Rails.env.development? 
+      # IdP section for Onelogin IDP used in development
+      settings.idp_entity_id                  = "https://app.onelogin.com/saml/metadata/585764"
+      settings.idp_sso_target_url             = "https://standardminds-dev.onelogin.com/trust/saml2/http-post/sso/585764"
+      settings.idp_slo_target_url             = "https://standardminds-dev.onelogin.com/trust/saml2/http-redirect/slo/585764"
+
+      settings.idp_cert                       = "-----BEGIN CERTIFICATE-----
 MIIEHTCCAwWgAwIBAgIUahG83qLFXCyf8o3d5J5I5mdfSbkwDQYJKoZIhvcNAQEF
 BQAwWjELMAkGA1UEBhMCVVMxEzARBgNVBAoMCkNvbnNpZGVyaXQxFTATBgNVBAsM
 DE9uZUxvZ2luIElkUDEfMB0GA1UEAwwWT25lTG9naW4gQWNjb3VudCA5MTU2NDAe
@@ -498,22 +518,24 @@ BORjb2jFjB5kon9QH6kPg2KnYCThSe4OE5f5bv6gNhcfATYAtEWMKbVLhTDWXMfL
 xA==
 -----END CERTIFICATE-----"
 
+      # or settings.idp_cert_fingerprint           = "3B:05:BE:0A:EC:84:CC:D4:75:97:B3:A2:22:AC:56:21:44:EF:59:E6"
+      #    settings.idp_cert_fingerprint_algorithm = XMLSecurity::Document::SHA1
 
-    # or settings.idp_cert_fingerprint           = "3B:05:BE:0A:EC:84:CC:D4:75:97:B3:A2:22:AC:56:21:44:EF:59:E6"
-    #    settings.idp_cert_fingerprint_algorithm = XMLSecurity::Document::SHA1
+      settings.name_identifier_format         = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
 
-    settings.name_identifier_format         = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+      # Security section
+      settings.security[:authn_requests_signed] = false
+      settings.security[:logout_requests_signed] = false
+      settings.security[:logout_responses_signed] = false
+      settings.security[:metadata_signed] = false
+      settings.security[:digest_method] = XMLSecurity::Document::SHA1
+      settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
 
-    # Security section
-    settings.security[:authn_requests_signed] = false
-    settings.security[:logout_requests_signed] = false
-    settings.security[:logout_responses_signed] = false
-    settings.security[:metadata_signed] = false
-    settings.security[:digest_method] = XMLSecurity::Document::SHA1
-    settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
+    else
+      raise "IdP settings not found for this subdomain!"
+    end
 
     settings
   end
-
 
 end

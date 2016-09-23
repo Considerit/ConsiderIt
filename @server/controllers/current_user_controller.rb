@@ -431,10 +431,8 @@ class CurrentUserController < ApplicationController
   def sso
     settings = User.get_saml_settings(get_url_base)
     if settings.nil?
-      render :action => :no_settings
-      return
+      raise "No IdP Settings!"
     end
-
     req = OneLogin::RubySaml::Authrequest.new
     redirect_to(req.create(settings))
 
@@ -447,12 +445,11 @@ class CurrentUserController < ApplicationController
     response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings)
 
     if response.is_valid?
-      puts response.inspect
       session[:nameid] = response.nameid
       session[:attributes] = response.attributes
       @attrs = session[:attributes]
-      logger.info "Sucessfully logged"
-      logger.info "NAMEID: #{response.nameid}"
+      log("Sucessfully logged")
+      log("NAMEID: #{response.nameid}")
 
       # log user. in TODO allow for incorrect login and new user with name field
       email = response.nameid.downcase
@@ -496,7 +493,6 @@ class CurrentUserController < ApplicationController
             current_user.save
           end
           log('registered account')
-          puts current_user
           redirect_to '/edit_saml_profile' 
 
         end
@@ -509,9 +505,8 @@ class CurrentUserController < ApplicationController
       end
 
     else
-      logger.info "Response Invalid. Errors: #{response.errors}"
-      @errors = response.errors
-      render :action => :fail
+      log("Response Invalid from IdP. Errors: #{response.errors}")
+      raise "Response Invalid from IdP. Errors: #{response.errors}"
     end
 
   end

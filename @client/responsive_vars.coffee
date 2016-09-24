@@ -71,7 +71,7 @@ setResponsive = ->
                            decision_board_width
 
   point_font_size = if point_width > 250
-                      15
+                      14
                     else
                       14
 

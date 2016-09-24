@@ -285,19 +285,6 @@ Proposal = ReactiveComponent
           # Border + bubblemouth that is shown when there is a histogram selection
           GroupSelectionRegion()
 
-          PointsList 
-            key: 'community_cons'
-            rendered_as: 'community_point'
-            points_editable: TWO_COL()
-            valence: 'cons'
-            points_draggable: mode == 'crafting'
-            drop_target: false
-            points: buildPointsList \
-              @proposal, 'cons', \
-              (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-              mode == 'crafting'
-            style: 
-              visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
           if !TWO_COL() && customization('discussion_enabled', @proposal)
             Dock
@@ -319,9 +306,25 @@ Proposal = ReactiveComponent
                 zIndex: 0 #so that points being dragged are above opinion region
                 display: 'inline-block'
                 verticalAlign: 'top'
+                left: '50%'
+                marginLeft: -DECISION_BOARD_WIDTH() / 2
 
               DecisionBoard
                 key: 'decisionboard'
+
+          PointsList 
+            key: 'community_cons'
+            rendered_as: 'community_point'
+            points_editable: TWO_COL()
+            valence: 'cons'
+            points_draggable: mode == 'crafting'
+            drop_target: false
+            points: buildPointsList \
+              @proposal, 'cons', \
+              (if mode == 'results' then 'score' else 'last_inclusion'), \ 
+              mode == 'crafting'
+            style: 
+              visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
           #community pros
           PointsList 
@@ -337,6 +340,8 @@ Proposal = ReactiveComponent
               mode == 'crafting'
             style: 
               visibility: if !TWO_COL() && !has_community_points then 'hidden'
+
+
 
       if edit_mode && browser.is_mobile
         # full screen edit point mode for mobile
@@ -809,16 +814,6 @@ DecisionBoard = ReactiveComponent
                 marginTop: -3 # To undo the 3 pixel border
 
               PointsList 
-                key: 'your_con_points'
-                valence: 'cons'
-                rendered_as: 'decision_board_point'
-                points_editable: true
-                points_draggable: true
-                drop_target: are_points_in_wings
-                points: (p for p in fetch(@proposal.your_opinion).point_inclusions \
-                              when !fetch(p).is_pro)
-
-              PointsList 
                 key: 'your_pro_points'
                 valence: 'pros'
                 rendered_as: 'decision_board_point'
@@ -828,8 +823,18 @@ DecisionBoard = ReactiveComponent
                 points: (p for p in fetch(@proposal.your_opinion).point_inclusions \
                               when fetch(p).is_pro)
 
-              DIV style: {clear: 'both'}
+              PointsList 
+                key: 'your_con_points'
+                valence: 'cons'
+                rendered_as: 'decision_board_point'
+                points_editable: true
+                points_draggable: true
+                drop_target: are_points_in_wings
+                points: (p for p in fetch(@proposal.your_opinion).point_inclusions \
+                              when !fetch(p).is_pro)
 
+
+              DIV style: {clear: 'both'}
 
           # only shown during crafting, but needs to be present always for animation
           BUTTON
@@ -840,6 +845,7 @@ DecisionBoard = ReactiveComponent
               t('Update your Opinion')
             else 
               t('Give your Opinion')
+
 
       DIV 
         key: 'footer'
@@ -854,6 +860,10 @@ DecisionBoard = ReactiveComponent
             backgroundColor: focus_blue
             width: '100%'
           onClick: => saveOpinion(@proposal)
+          onKeyDown: (e) => 
+            if e.which == 13 # ENTER 
+              saveOpinion @proposal 
+              e.preventDefault()
 
           if your_opinion.published 
             t('Return to results')
@@ -870,6 +880,11 @@ DecisionBoard = ReactiveComponent
             BUTTON 
               className:'cancel_opinion_button primary_cancel_button'
               onClick: => updateProposalMode('results', 'cancel_button')
+              onKeyDown: (e) => 
+                if e.which == 13 # ENTER 
+                  updateProposalMode('results', 'cancel_button')
+                  e.preventDefault()
+
               t('skip_to_results') 
 
         else 
@@ -879,13 +894,18 @@ DecisionBoard = ReactiveComponent
             style: 
               display: 'none'
                       
-            A 
+            BUTTON 
               style: 
                 textDecoration: 'underline'
               className:'cancel_opinion_button primary_cancel_button'
               onClick: => 
                 your_opinion.published = false 
                 save your_opinion
+              onKeyDown: (e) => 
+                if e.which == 13 # ENTER 
+                  your_opinion.published = false 
+                  save your_opinion
+                  e.preventDefault()
 
               'Unpublish opinion'
 
@@ -1289,8 +1309,33 @@ PointsList = ReactiveComponent
     header_height = Math.max heightWhenRendered(heading,       header_style), \
                              heightWhenRendered(other_heading, header_style)
 
+    keydown = (e) => 
+      if e.which == 37 || e.which == 39 # LEFT or RIGHT
+        els = $('.point_list')
+        for el, idx in els 
+          if el == @getDOMNode()
+            i = idx 
+            break 
+        if e.which == 37 
+          i++
+          if i > els.length - 1
+            i = 0 
+        else 
+          i--
+          if i < 0 
+            i = els.length - 1
+        els[i].focus()
+
     wrapper [
+      DIV 
+        id: "pointslist-aria-desc-#{heading.replace(' ', '_')}"
+        style: 
+          position: 'absolute'
+          left: -9999
+        "Navigate between point lists with LEFT and RIGHT arrow keys."
+
       H2 
+        id: @local.key.replace('/','-')
         className:'points_heading_label'
         style: _.extend header_style,
           textAlign: 'center'
@@ -1299,7 +1344,8 @@ PointsList = ReactiveComponent
           height: header_height
         heading 
 
-      UL null,
+      UL 
+        'aria-labeledby': @local.key.replace('/','-')
         if points.length > 0 || @props.rendered_as == 'decision_board_point'
           for point in points
             if @props.points_editable && \
@@ -1323,7 +1369,10 @@ PointsList = ReactiveComponent
 
       if @props.points_editable
         @drawAddNewPoint()
-      ]
+      ], 
+        onKeyDown: keydown
+        'aria-described-by': "pointslist-aria-desc-#{heading.replace(' ', '_')}"
+        tabIndex: 0 
 
   columnStandsOut: -> 
     your_points = @data()
@@ -1336,8 +1385,7 @@ PointsList = ReactiveComponent
     contains_selection || is_editing
 
 
-  drawCommunityPoints: (children) -> 
-
+  drawCommunityPoints: (children, props) -> 
     x_pos = if @props.points_draggable
               if @props.valence == 'cons' then 0 else DECISION_BOARD_WIDTH()
             else if !TWO_COL()
@@ -1345,14 +1393,8 @@ PointsList = ReactiveComponent
             else
               0
 
-    # TODO: The minheight below is not a principled or complete solution to two
-    #       sizing issues: 
-    #           1) resizing the reasons region when the height of the decision board 
-    #              (which is absolutely positioned) grows taller the wing points
-    #           2) when filtering the points on result page to a group of opinions 
-    #              with few inclusions, the document height can jarringly fluctuate
-    DIV
-      className: "points_by_community #{@props.valence}_by_community"
+    props = _.extend props,
+      className: "point_list points_by_community #{@props.valence}_by_community"
       style: css.crossbrowserify _.defaults (@props.style or {}),
         display: 'inline-block'
         verticalAlign: 'top'
@@ -1365,11 +1407,20 @@ PointsList = ReactiveComponent
         transition: "transform #{TRANSITION_SPEED}ms"
         transform: "translate(#{x_pos}px, 0)"
 
+
+    # TODO: The minheight below is not a principled or complete solution to two
+    #       sizing issues: 
+    #           1) resizing the reasons region when the height of the decision board 
+    #              (which is absolutely positioned) grows taller the wing points
+    #           2) when filtering the points on result page to a group of opinions 
+    #              with few inclusions, the document height can jarringly fluctuate
+    DIV props,
+
       children
 
-  drawYourPoints: (children) -> 
-    DIV 
-      className: "points_on_decision_board #{@props.valence}_on_decision_board"
+  drawYourPoints: (children, props) -> 
+    props = _.extend props,
+      className: "point_list points_on_decision_board #{@props.valence}_on_decision_board"
       style: _.defaults (@props.style or {}),
         display: 'inline-block'
         verticalAlign: 'top'        
@@ -1378,7 +1429,7 @@ PointsList = ReactiveComponent
         position: 'relative'
         zIndex: if @columnStandsOut() then 6 else 1        
         float: if @props.valence == 'pros' then 'right' else 'left'
-
+    DIV props,
       children
 
   drawAddNewPoint: -> 
@@ -1504,6 +1555,7 @@ PointsList = ReactiveComponent
     local_proposal = fetch shared_local_key(@proposal)
 
     DIV 
+      'aria-hidden': true
       style: 
         marginLeft: if @props.valence == 'cons' then 24 else 0
         marginRight: if @props.valence == 'pros' then 24 else 0

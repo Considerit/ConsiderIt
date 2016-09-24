@@ -504,7 +504,7 @@ Cluster = ReactiveComponent
           HEADING
             style: _.extend {}, first_header, 
               position: 'relative'
-              cursor: if !list_uncollapseable then 'pointer'
+              
             BUTTON 
               style: 
                 padding: 0 
@@ -512,8 +512,9 @@ Cluster = ReactiveComponent
                 border: 'none'
                 backgroundColor: 'transparent'
                 fontWeight: first_header.fontWeight
+                cursor: if !list_uncollapseable then 'pointer'
+                  
               onKeyDown: (e) -> 
-                console.log 'KEY!', e.which
                 if e.which == 13 || e.which == 32
                   toggle_list()
                   e.preventDefault()

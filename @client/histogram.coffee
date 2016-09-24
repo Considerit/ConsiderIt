@@ -199,10 +199,12 @@ window.Histogram = ReactiveComponent
                                 !@local.hoving_over_avatar))
 
     histogram_props = 
-      tabIndex: 0
+      tabIndex: if !@props.backgrounded then 0
+
       className: 'histogram'
-      'aria-labeledby': "##{proposal.id}-histo-label"
-      'aria-describedby': "##{proposal.id}-histo-description"
+      'aria-hidden': @props.backgrounded
+      'aria-labeledby': if !@props.backgrounded then "##{proposal.id}-histo-label"
+      'aria-describedby': if !@props.backgrounded then "##{proposal.id}-histo-description"
 
       style: css.crossbrowserify
         width: @props.width

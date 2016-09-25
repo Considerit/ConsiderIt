@@ -352,7 +352,7 @@ window.HomepageTabs = ReactiveComponent
                 @local.hovering = null 
                 save @local
               onKeyDown: (e) => 
-                if e.which == 13
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
                   e.currentTarget.click() 
                   e.preventDefault()
               onClick: => 
@@ -515,7 +515,7 @@ Cluster = ReactiveComponent
                 cursor: if !list_uncollapseable then 'pointer'
                   
               onKeyDown: (e) -> 
-                if e.which == 13 || e.which == 32
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
                   toggle_list()
                   e.preventDefault()
               onClick: toggle_list

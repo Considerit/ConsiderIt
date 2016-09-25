@@ -66,7 +66,7 @@ UserTags = ReactiveComponent
             save(@local)
           onKeyPress: (e) => 
             # enter key pressed...
-            if e.which == 13
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
               e.preventDefault()
               change_current_user @local.hovered_user
               save @local

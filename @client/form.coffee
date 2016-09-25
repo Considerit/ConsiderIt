@@ -20,7 +20,7 @@ window.Button = (props, text, callback) ->
   props.style = _.extend(style, (props.style or {}))
   props.onClick = callback
   props.onKeyDown = (e) -> 
-    if e.which == 13 # ENTER
+    if e.which == 13 || e.which == 32 # ENTER or SPACE
       callback(e)
       e.stopPropagation()
       e.preventDefault()

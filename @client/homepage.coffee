@@ -506,6 +506,8 @@ Cluster = ReactiveComponent
               position: 'relative'
               
             BUTTON 
+              'aria-label': "Expand or collapse list"
+              'aria-pressed': !collapsed.clusters[cluster_key]
               style: 
                 padding: 0 
                 margin: 0 

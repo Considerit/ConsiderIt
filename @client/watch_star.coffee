@@ -47,6 +47,7 @@ window.WatchStar = ReactiveComponent
     BUTTON 
       'aria-label': label(watching)
       'aria-describedby': 'tooltip'
+      'aria-pressed': watching
 
       className: "fa #{if watching then icon else "#{icon}-o"}"
       style: _.extend {}, style, (@props.style || {})

@@ -148,8 +148,8 @@ window.ProfileMenu = ReactiveComponent
                 position: 'absolute'
                 left: 'auto'
                 right: if !@local.menu then -9999 else 0
-                margin: '-8px 0 0 -8px'
-                padding: "30px 14px 8px 8px"
+                margin: '-42px 0 0 -8px'
+                padding: "56px 14px 8px 8px"
                 backgroundColor: '#eee'
                 textAlign: 'right'
                 zIndex: 999999

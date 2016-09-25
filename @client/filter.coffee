@@ -317,7 +317,7 @@ SortProposalsMenu = ReactiveComponent
           , 0
 
         onKeyDown: (e) => 
-          if e.which == 13 || e.which == 27 # ENTER or ESC
+          if e.which == 13 || e.which == 32 || e.which == 27 # ENTER or ESC
             close_menu()
           else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
             @local.focs = -1 if !@local.focus?
@@ -403,7 +403,7 @@ SortProposalsMenu = ReactiveComponent
                   trigger(e)
 
                 onKeyDown: (e) => 
-                  trigger(e) if e.which == 13 #ENTER
+                  trigger(e) if e.which == 13 || e.which == 32 # ENTER or SPACE
                     
                 onFocus: do(idx) => (e) => 
                   if @local.focus != idx 
@@ -532,7 +532,7 @@ OpinionFilter = ReactiveComponent
               onBlur: hide_tooltip 
               onClick: -> toggle_filter(filter)   
               onKeyDown: (e) -> 
-                if e.which == 13   
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
                   toggle_filter(filter) 
                   e.preventDefault()
                   e.stopPropagation()

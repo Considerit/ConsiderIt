@@ -32,7 +32,10 @@ window.ProfileMenu = ReactiveComponent
       idx = 0 if !idx?
       @local.focus = idx 
       save @local 
-      @refs["menuitem-#{idx}"].getDOMNode().focus()
+      setTimeout => 
+        @refs["menuitem-#{idx}"].getDOMNode().focus()
+      , 0
+
 
     close_menu = => 
       document.activeElement.blur()
@@ -72,12 +75,6 @@ window.ProfileMenu = ReactiveComponent
             onMouseEnter: (e) => @local.menu = true; save(@local)
             onMouseLeave: close_menu
 
-            onFocus: (e) => 
-              @local.menu = true
-              save(@local)
-              if !@local.focus? 
-                set_focus(0)
-
             onBlur: (e) => 
               setTimeout => 
                 # if the focus isn't still on an element inside of this menu, 
@@ -103,6 +100,44 @@ window.ProfileMenu = ReactiveComponent
                 set_focus(@local.focus)
                 e.preventDefault() # prevent window from scrolling too
 
+            BUTTON 
+              tabIndex: 0
+              'aria-haspopup': "true"
+              'aria-owns': "profile_menu_popup"
+
+              style: 
+                color: if !light_background then 'white'
+                position: 'relative'
+                zIndex: 9999999999
+                backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)' else 'transparent'
+                boxShadow: if !@local.menu then '0px 1px 1px rgba(0,0,0,.1)'
+                borderRadius: 8
+                padding: '3px 4px'
+                border: 'none'
+
+              onKeyDown: (e) => 
+                if e.which == 13 || e.which == 32
+                  @local.menu = true
+                  save(@local)
+                  if !@local.focus? 
+                    set_focus(0)
+                  e.preventDefault()
+                  e.stopPropagation()
+
+              Avatar 
+                key: current_user.user
+                hide_tooltip: true
+                className: 'userbar_avatar'
+                style: 
+                  height: 35
+                  width: 35
+                  marginRight: 7
+                  marginTop: 1
+              I 
+                className: 'fa fa-caret-down'
+                style: 
+                  visibility: if @local.menu then 'hidden'
+
             UL 
               id: 'profile_menu_popup'
               role: "menu"
@@ -114,7 +149,7 @@ window.ProfileMenu = ReactiveComponent
                 left: 'auto'
                 right: if !@local.menu then -9999 else 0
                 margin: '-8px 0 0 -8px'
-                padding: "70px 14px 8px 8px"
+                padding: "30px 14px 8px 8px"
                 backgroundColor: '#eee'
                 textAlign: 'right'
                 zIndex: 999999
@@ -127,7 +162,7 @@ window.ProfileMenu = ReactiveComponent
                   A
                     ref: "menuitem-#{idx}"
                     role: "menuitem"
-                    tabIndex: 0
+                    tabIndex: if @local.focus == idx then 0 else -1
                     className: 'menu_link'
                     href: option.href
                     key: option.href
@@ -163,9 +198,9 @@ window.ProfileMenu = ReactiveComponent
                 role: "presentation"
                 key: 'logout'
                 A 
-                  role: "menuitem"
-                  tabIndex: 0
                   ref: "menuitem-#{menu_options.length}"
+                  role: "menuitem"
+                  tabIndex: -1
                   'data-action': 'logout'
                   className: 'menu_link'
                   style: 
@@ -178,7 +213,6 @@ window.ProfileMenu = ReactiveComponent
                     if e.which == 13 || e.which == 32 # ENTER or SPACE
                       logout() 
                       e.preventDefault()
-
                   onFocus: (e) => 
                     if @local.focus != menu_options.length 
                       set_focus menu_options.length
@@ -193,37 +227,8 @@ window.ProfileMenu = ReactiveComponent
                     @local.focus = null 
                     save @local
 
-
                   t('Log out')
 
-            BUTTON 
-              tabIndex: 0
-              'aria-haspopup': "true"
-              'aria-owns': "profile_menu_popup"
-
-              style: 
-                color: if !light_background then 'white'
-                position: 'relative'
-                zIndex: 9999999999
-                backgroundColor: if !@local.menu then 'rgba(255,255,255, .1)' else 'transparent'
-                boxShadow: if !@local.menu then '0px 1px 1px rgba(0,0,0,.1)'
-                borderRadius: 8
-                padding: '3px 4px'
-                border: 'none'
-
-              Avatar 
-                key: current_user.user
-                hide_tooltip: true
-                className: 'userbar_avatar'
-                style: 
-                  height: 35
-                  width: 35
-                  marginRight: 7
-                  marginTop: 1
-              I 
-                className: 'fa fa-caret-down'
-                style: 
-                  visibility: if @local.menu then 'hidden'
 
       else
         BUTTON

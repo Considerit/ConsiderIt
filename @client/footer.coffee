@@ -4,7 +4,7 @@ window.Footer = ReactiveComponent
   displayName: 'Footer'
 
   render : ->
-    DIV 
+    FOOTER 
       style: 
         position: 'relative'
         zIndex: 0

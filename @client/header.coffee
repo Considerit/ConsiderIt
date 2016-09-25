@@ -13,7 +13,7 @@ window.Header = ReactiveComponent
     return SPAN null if auth.form && auth.form != 'edit profile'
 
 
-    DIV null, 
+    HEADER null, 
       # DIV 
       #   id: 'upgrade-message'
       #   style: 

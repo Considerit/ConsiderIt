@@ -467,7 +467,7 @@ ProposalDescription = ReactiveComponent
               @local.description_collapsed = false
               save(@local)
             onKeyDown: (e) =>
-              if e.which == 13 # ENTER 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
                 @local.description_collapsed = false
                 e.preventDefault()
                 save(@local)
@@ -861,7 +861,7 @@ DecisionBoard = ReactiveComponent
             width: '100%'
           onClick: => saveOpinion(@proposal)
           onKeyDown: (e) => 
-            if e.which == 13 # ENTER 
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
               saveOpinion @proposal 
               e.preventDefault()
 
@@ -881,7 +881,7 @@ DecisionBoard = ReactiveComponent
               className:'cancel_opinion_button primary_cancel_button'
               onClick: => updateProposalMode('results', 'cancel_button')
               onKeyDown: (e) => 
-                if e.which == 13 # ENTER 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
                   updateProposalMode('results', 'cancel_button')
                   e.preventDefault()
 
@@ -902,7 +902,7 @@ DecisionBoard = ReactiveComponent
                 your_opinion.published = false 
                 save your_opinion
               onKeyDown: (e) => 
-                if e.which == 13 # ENTER 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
                   your_opinion.published = false 
                   save your_opinion
                   e.preventDefault()

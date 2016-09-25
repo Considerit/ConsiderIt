@@ -266,7 +266,7 @@ Auth = ReactiveComponent
 
                 onClick: cancel_auth
                 onKeyDown: (e) => 
-                  if e.which == 13 # ENTER 
+                  if e.which == 13 || e.which == 32 # ENTER or SPACE
                     cancel_auth(e)
                     e.preventDefault()
 
@@ -458,7 +458,7 @@ Auth = ReactiveComponent
             border: 'none'
           onClick: toggle
           onKeyDown: (e) => 
-            if e.which == 13
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
               toggle(e)
               e.preventDefault()
 
@@ -484,7 +484,7 @@ Auth = ReactiveComponent
       className:'primary_button' + (if @local.submitting then ' disabled' else '')
       onClick: @submitAuth
       onKeyDown: (e) => 
-        if e.which == 13
+        if e.which == 13 || e.which == 32 # ENTER or SPACE
           @submitAuth(e)
           e.preventDefault()
       
@@ -677,7 +677,7 @@ Auth = ReactiveComponent
 
         onClick: reset
         onKeyDown: (e) =>
-          if e.which == 13 # ENTER
+          if e.which == 13 || e.which == 32 # ENTER or SPACE
             reset(e)  
             e.preventDefault()
 

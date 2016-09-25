@@ -87,7 +87,7 @@ window.ProfileMenu = ReactiveComponent
               , 0
 
             onKeyDown: (e) => 
-              if e.which == 13 || e.which == 27 # ENTER or ESC
+              if e.which == 13 || e.which == 32 || e.which == 27 # ENTER or ESC
                 close_menu()
                 e.preventDefault()
               else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
@@ -136,7 +136,7 @@ window.ProfileMenu = ReactiveComponent
                       outline: 'none'
 
                     onKeyDown: (e) => 
-                      if e.which == 13 # ENTER
+                      if e.which == 13 || e.which == 32 # ENTER or SPACE
                         e.currentTarget.click()
                         e.preventDefault()
                     onFocus: do(idx) => (e) => 
@@ -175,7 +175,7 @@ window.ProfileMenu = ReactiveComponent
                   onClick: logout
                   onTouchEnd: logout
                   onKeyDown: (e) => 
-                    if e.which == 13 #ENTER 
+                    if e.which == 13 || e.which == 32 # ENTER or SPACE
                       logout() 
                       e.preventDefault()
 

@@ -230,7 +230,7 @@ window.Slider = ReactiveComponent
           slider.value = Math.min slider.value, 1
           save slider
           e.preventDefault()
-        else if e.which == 32 || e.which == 13 # SPACE or ENTER
+        else if e.which == 13 || e.which == 32 # ENTER or SPACE
           @props.onMouseUpCallback(e) if @props.onMouseUpCallback
           e.preventDefault()
 

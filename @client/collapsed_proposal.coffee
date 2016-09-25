@@ -219,8 +219,7 @@ window.CollapsedProposal = ReactiveComponent
 
           Slider 
             base_height: 0
-            draw_handle: !!(draw_slider && ( \
-                         @local.hover_proposal == proposal.key || browser.is_mobile))
+            draw_handle: !!draw_slider
             key: "homepage_slider#{proposal.key}"
             width: secnd_column.width
             polarized: true
@@ -230,10 +229,22 @@ window.CollapsedProposal = ReactiveComponent
             handle: slider_handle.triangley
             handle_height: 18
             handle_width: 21
+            handle_style: 
+              opacity: if !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
             offset: true
             handle_props:
               use_face: false
-              
+            label: "Express your opinion on a slider from #{customization("slider_pole_labels.oppose", proposal)} to #{customization("slider_pole_labels.support", proposal)}"
+            onBlur: (e) => @local.slider_has_focus = false; save @local
+            onFocus: (e) => @local.slider_has_focus = true; save @local 
+
+            readable_text: (value) => 
+              if value > .03
+                "#{(value * 100).toFixed(0)}% #{customization("slider_pole_labels.support", proposal)}"
+              else if value < -.03 
+                "#{-1 * (value * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", proposal)}"
+              else 
+                "Neutral"
             onMouseUpCallback: (e) =>
               # We save the slider's position to the server only on mouse-up.
               # This way you can drag it with good performance.

@@ -87,7 +87,6 @@ window.ProfileMenu = ReactiveComponent
               , 0
 
             onKeyDown: (e) => 
-              console.log 'KEYPRESS', e.which
               if e.which == 13 || e.which == 27 # ENTER or ESC
                 close_menu()
                 e.preventDefault()

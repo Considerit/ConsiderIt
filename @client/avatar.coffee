@@ -155,7 +155,7 @@ window.avatar = (user, props) ->
     'data-showtooltip': !props.hide_tooltip
     'data-anon': anonymous      
     style: style
-    rel: props.rel?.replace('<user>', name) or name
+    alt: props.rel?.replace('<user>', name) or name
     tabIndex: if props.focusable then 0 else -1
 
 

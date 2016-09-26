@@ -506,6 +506,7 @@ Cluster = ReactiveComponent
               position: 'relative'
               
             BUTTON 
+              tabIndex: if list_uncollapseable then -1 else 0
               'aria-label': "Expand or collapse list"
               'aria-pressed': !collapsed.clusters[cluster_key]
               style: 

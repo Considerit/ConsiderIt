@@ -573,7 +573,7 @@ Auth = ReactiveComponent
             marginRight: 18
 
           IMG 
-            rel: ''
+            alt: ''
             id: 'avatar_preview'
             style: {width: 60}
             src: if current_user.b64_thumbnail 

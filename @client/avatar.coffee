@@ -29,10 +29,6 @@ show_tooltip = (e) ->
     user = fetch(e.target.getAttribute('data-user'))
     anonymous = e.target.getAttribute('data-anonymous') == 'true'
 
-    if e.target.getAttribute('title')
-      e.target.setAttribute('data-title', e.target.getAttribute('title'))
-      e.target.removeAttribute('title')
-
     name = e.target.getAttribute('title') or e.target.getAttribute('alt')
     if !name
       name = user_name user, anonymous
@@ -46,6 +42,9 @@ show_tooltip = (e) ->
               icon = filter.icon 
             name += '<span style="padding: 0 0 0 12px">' + icon + "</span>"
 
+    if e.target.getAttribute('title')
+      e.target.setAttribute('data-title', e.target.getAttribute('title'))
+      e.target.removeAttribute('title')
 
     tooltip = fetch 'tooltip'
     tooltip.coords = $(e.target).offset()

@@ -212,6 +212,7 @@ window.Slider = ReactiveComponent
       tabIndex: 0
 
       onKeyDown: (e) => 
+        console.log 'GOT KEY', e.which
         if e.which in [37, 38, 39, 40, 33, 34, 35, 36]
           amount =  if e.which in [37, 38, 39, 40]
                       .05
@@ -225,10 +226,14 @@ window.Slider = ReactiveComponent
                       else 
                         1
 
-          slider.value += direction * amount 
-          slider.value = Math.max slider.value, (if @props.polarized then -1 else 0)
-          slider.value = Math.min slider.value, 1
-          save slider
+          new_val = slider.value
+          new_val += direction * amount 
+          new_val = Math.max new_val, (if @props.polarized then -1 else 0)
+          new_val = Math.min new_val, 1
+          if new_val != slider.value
+            slider.value = new_val
+            save slider
+            @props.onMouseUpCallback?(e)
           e.preventDefault()
         else if e.which == 13 || e.which == 32 # ENTER or SPACE
           @props.onMouseUpCallback(e) if @props.onMouseUpCallback

@@ -29,25 +29,36 @@ show_tooltip = (e) ->
     user = fetch(e.target.getAttribute('data-user'))
     anonymous = e.target.getAttribute('data-anonymous') == 'true'
 
-    name = user_name user, anonymous
+    if e.target.getAttribute('title')
+      e.target.setAttribute('data-title', e.target.getAttribute('title'))
+      e.target.removeAttribute('title')
 
-    if !anonymous && filters = customization 'opinion_filters'
-      for filter in filters 
-        if filter.pass(user) && filter.icon
-          if typeof(filter.icon) != 'string'
-            icon = filter.icon(user)
-          else
-            icon = filter.icon 
-          name += '<span style="padding: 0 0 0 12px">' + icon + "</span>"
+    name = e.target.getAttribute('title') or e.target.getAttribute('alt')
+    if !name
+      name = user_name user, anonymous
+
+      if !anonymous && filters = customization 'opinion_filters'
+        for filter in filters 
+          if filter.pass(user) && filter.icon
+            if typeof(filter.icon) != 'string'
+              icon = filter.icon(user)
+            else
+              icon = filter.icon 
+            name += '<span style="padding: 0 0 0 12px">' + icon + "</span>"
 
 
     tooltip = fetch 'tooltip'
     tooltip.coords = $(e.target).offset()
     tooltip.tip = name
     save tooltip
+    e.preventDefault()
 
 hide_tooltip = (e) ->
   if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
+    if e.target.getAttribute('data-title')
+      e.target.setAttribute('title', e.target.getAttribute('data-title'))
+      e.target.removeAttribute('data-title')
+
     tooltip = fetch 'tooltip'
     tooltip.coords = null
     save tooltip
@@ -148,15 +159,6 @@ window.avatar = (user, props) ->
   if name == 'Anonymous'
     name = '?'
 
-  attrs = _.extend {}, props,
-    className: "avatar #{props.className or ''}"
-    id: id
-    'data-user': user.key
-    'data-showtooltip': !props.hide_tooltip
-    'data-anon': anonymous      
-    style: style
-    alt: props.rel?.replace('<user>', name) or name
-    tabIndex: if props.focusable then 0 else -1
 
 
 
@@ -164,6 +166,19 @@ window.avatar = (user, props) ->
   # Chrome puts a weird gray border around IMGs without a src
   tag = if !props.src? then SPAN else IMG
 
+  alt = props.alt 
+  delete props.alt if props.alt? 
+
+  attrs = _.extend {}, props,
+    className: "avatar #{props.className or ''}"
+    id: id
+    'data-user': user.key
+    'data-showtooltip': !props.hide_tooltip
+    'data-anon': anonymous      
+    style: style
+    tabIndex: if props.focusable then 0 else -1
+
+  attrs[(if tag == SPAN then 'title' else 'alt')] = alt?.replace('<user>', name) or name
 
   tag attrs,
     if add_initials

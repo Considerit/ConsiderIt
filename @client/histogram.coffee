@@ -306,7 +306,7 @@ window.Histogram = ReactiveComponent
           position: 'absolute'
           left: -9999
         """#{opinions.length} people's opinion, with an average of #{exp} on a spectrum from #{customization("slider_pole_labels.oppose", @props.proposal)} to #{customization("slider_pole_labels.support", @props.proposal)}. 
-           Press ENTER or SPACE to enable tab navigation of each person's opinion, and escape to exit the navigation.
+           Press ENTER or SPACE to enable tab navigation of each person's opinion, and ESC to exit the navigation.
         """         
 
       if @props.draw_base_labels
@@ -492,7 +492,7 @@ window.Histogram = ReactiveComponent
           ref: "avatar-#{idx}"
           focusable: @local.navigating_inside && !@props.backgrounded
           hide_tooltip: @props.backgrounded
-          rel: "<user>#{exp}"
+          alt: "<user>#{exp}"
           style: _.extend {}, avatar_style, 
             left: pos?[0]
             top: pos?[1]

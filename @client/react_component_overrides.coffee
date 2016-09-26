@@ -7,7 +7,7 @@ window.IMG = React.createClass
   render : -> 
 
     props = @props
-    if !props.rel?
-      console.error "Accessibility: IMG doesn't have REL attribute set!", @props
+    if !props.alt?
+      console.error "Accessibility: IMG doesn't have ALT attribute set!", @props
 
     old_IMG props, props.children

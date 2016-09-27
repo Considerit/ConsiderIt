@@ -7,7 +7,10 @@ window.EditComment = ReactiveComponent
     DIV 
       className: 'comment_entry'
 
-      
+      onKeyDown: (e) -> # prevents entire point from closing when SPACE or ENTER is pressed
+        if e.which == 32 || e.which == 13
+          e.stopPropagation() 
+
 
       # Comment author name
       DIV

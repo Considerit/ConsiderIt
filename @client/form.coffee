@@ -181,7 +181,7 @@ window.WysiwygEditor = ReactiveComponent
             # Toolbar
             DIV 
               role: 'toolbar'
-              'aria-label': 'Rich text markup'
+              'title': 'Rich text markup'
               'aria-orientation': 'vertical'
               id: 'toolbar'
               tabIndex: 0
@@ -221,6 +221,7 @@ window.WysiwygEditor = ReactiveComponent
                     ref: "toolbaritem-#{idx}"
                     tabIndex: if @local.focused_toolbar_item == idx then 0 else -1
                     className: button.className
+                    'aria-label': button.title
                     style: 
                       fontSize: 14
                       width: 28

@@ -490,7 +490,7 @@ window.Histogram = ReactiveComponent
 
         avatar user,
           ref: "avatar-#{idx}"
-          focusable: @local.navigating_inside && !@props.backgrounded
+          focusable: @local.navigating_inside && !@props.backgrounded 
           hide_tooltip: @props.backgrounded
           alt: "<user>#{exp}"
           style: _.extend {}, avatar_style, 

@@ -37,7 +37,7 @@ class PageController < ApplicationController
       proposal = Proposal.find_by_slug page
 
       if !proposal 
-        render :status => :not_found, :json => {:result => 'Not found'}
+        render :json => {:key => "/page/#{page}", :result => 'Not found'}
         return
       end
 

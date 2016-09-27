@@ -212,7 +212,6 @@ window.Slider = ReactiveComponent
       tabIndex: 0
 
       onKeyDown: (e) => 
-        console.log 'GOT KEY', e.which
         if e.which in [37, 38, 39, 40, 33, 34, 35, 36]
           amount =  if e.which in [37, 38, 39, 40]
                       .05

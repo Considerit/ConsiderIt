@@ -1886,7 +1886,22 @@ Page = ReactiveComponent
           else
             if @page?.proposal?
               Proposal key: @page.proposal
-            else
+            else if @page.result == 'Not found'
+              DIV 
+                style: 
+                  textAlign: 'center'
+                  fontSize: 32
+                  marginTop: 50
+
+                "There doesn't seem to be a proposal here"
+
+                DIV 
+                  style: 
+                    color: '#555'
+                    fontSize: 16
+                  "Check if the url is correct. The author may also have deleted it. Good luck!"
+
+            else 
               LOADING_INDICATOR
 
 Root = ReactiveComponent

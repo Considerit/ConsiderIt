@@ -140,6 +140,7 @@ window.TechnologyByConsiderit = ReactiveComponent
           save @local
         href: 'http://consider.it'
         target: '_blank'
+        title: 'Consider.it\'s homepage'
         style: 
           position: 'relative'
           top: 6

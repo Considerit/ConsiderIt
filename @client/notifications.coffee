@@ -26,10 +26,30 @@ window.Notifications = ReactiveComponent
 
     prefs = current_user.subscriptions
 
+    loc = fetch('location')
+
+    if loc.query_params?.unsubscribe
+      if current_user.subscriptions['send_emails']
+        current_user.subscriptions['send_emails'] = null 
+        save current_user
+        @local.unsubscribed = true 
+        save @local 
+      delete loc.query_params.unsubscribe
+      save loc
+
     DIV 
       style:
         width: BODY_WIDTH()
         margin: '50px auto'
+
+      if @local.unsubscribed && !current_user.subscriptions['send_emails']
+        DIV 
+          style: 
+            border: "1px solid #{logo_red}" 
+            color: logo_red
+            padding: '4px 8px'
+
+          "You are unsubscribed from summary emails from #{subdomain.name}.consider.it"
 
       DIV
         style: 
@@ -49,13 +69,14 @@ window.Notifications = ReactiveComponent
             position: 'absolute'
             left: -40
 
-          onChange: => 
+          onChange: (e) => 
 
             if prefs['send_emails'] 
               current_user.subscriptions['send_emails'] = null
             else
               current_user.subscriptions['send_emails'] = settings['default_subscription']
             save current_user
+            e.stopPropagation()
 
         DIV 
           style: 

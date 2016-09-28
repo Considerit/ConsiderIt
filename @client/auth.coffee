@@ -360,13 +360,14 @@ Auth = ReactiveComponent
                   fontSize: if browser.is_mobile then 24
                 field[0]
 
-              if field.length > 2
-                LABEL 
-                  style: 
-                    display: 'block'
-                    color: auth_ghost_gray
-                    fontSize: 14
-                  field[2]
+                if field.length > 2
+                  DIV 
+                    style: 
+                      display: 'block'
+                      color: auth_ghost_gray
+                      fontSize: 14
+                      fontWeight: 400
+                    field[2]
             TD
               style:
                 verticalAlign: 'bottom'

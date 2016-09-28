@@ -38,6 +38,8 @@ window.DefaultProposalNavigation = ReactiveComponent
         position: 'relative'
 
       DIV 
+        'aria-label': 'Previous or next proposals'
+        role: 'navigation'
         style: 
           position: 'absolute'
           right: 0
@@ -45,6 +47,7 @@ window.DefaultProposalNavigation = ReactiveComponent
         # Next button
         if next_proposal
           A
+            'title': 'Previous proposal'
             style:
               display: 'inline-block'
               float: 'right'
@@ -55,6 +58,7 @@ window.DefaultProposalNavigation = ReactiveComponent
         # Previous button
         if prev_proposal
           A
+            'title': 'Next proposal'
             style:
               display: 'inline-block'
               float: 'right'

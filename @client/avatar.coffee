@@ -169,7 +169,7 @@ window.avatar = (user, props) ->
   delete props.alt if props.alt? 
 
   attrs = _.extend {}, props,
-    className: "avatar #{props.className or ''} #{id}"
+    className: "avatar #{props.className or ''}"
     'data-user': user.key
     'data-showtooltip': !props.hide_tooltip
     'data-anon': anonymous      

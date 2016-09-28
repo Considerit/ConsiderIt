@@ -516,8 +516,7 @@ window.Histogram = ReactiveComponent
       is_clicking_user = ev.target.className.indexOf('avatar') != -1
 
       if is_clicking_user
-        user_key = "/user/" + ev.target.getAttribute('id')
-                               .substring(7, ev.target.getAttribute('id').length)
+        user_key = ev.target.getAttribute('data-user')
         user_opinion = _.findWhere @props.opinions, {user: user_key}
         is_deselection = hist.selected_opinion == user_opinion.key && 
                           !@local.last_selection_via_drag

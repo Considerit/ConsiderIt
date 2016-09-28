@@ -415,7 +415,12 @@ class ImportDataController < ApplicationController
         opinions.each do |o|
           total_score += o.stance
         end
-        avg_score = total_score / (opinions.count || 0)
+
+        begin 
+          avg_score = total_score / opinions.count
+        rescue
+          avg_score = 0 
+        end 
 
         proposals_csv << [proposal.slug, proposal.created_at, proposal.user.email.gsub('.ghost', ''), proposal.name, proposal.description, proposal.points.published.count, opinions.count, total_score, avg_score]
 

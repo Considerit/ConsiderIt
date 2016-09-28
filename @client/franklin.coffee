@@ -1328,7 +1328,7 @@ PointsList = ReactiveComponent
 
     wrapper [
       DIV 
-        id: "pointslist-aria-desc-#{heading.replace(' ', '_')}"
+        id: "pointslist-aria-desc-#{heading.replace(/ /g, '_')}"
         style: 
           position: 'absolute'
           left: -9999
@@ -1345,7 +1345,7 @@ PointsList = ReactiveComponent
         heading 
 
       UL 
-        'aria-labeledby': @local.key.replace('/','-')
+        'aria-labelledby': @local.key.replace('/','-')
         if points.length > 0 || @props.rendered_as == 'decision_board_point'
           for point in points
             if @props.points_editable && \
@@ -1371,7 +1371,7 @@ PointsList = ReactiveComponent
         @drawAddNewPoint()
       ], 
         onKeyDown: keydown
-        'aria-described-by': "pointslist-aria-desc-#{heading.replace(' ', '_')}"
+        'aria-describedby': "pointslist-aria-desc-#{heading.replace(/ /g, '_')}"
         tabIndex: 0 
 
   columnStandsOut: -> 

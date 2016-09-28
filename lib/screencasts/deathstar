@@ -192,10 +192,10 @@ end
 pause 1
 
 while_saying "See what a particular individual believes" do 
-  move to_element("#avatar-282314")
+  move to_element(".avatar-282314")
   click
   pause 4
-  move to_element("#avatar-282161"), {:speed => 2}
+  move to_element(".avatar-282161"), {:speed => 2}
   click
   pause 3.5  
   click

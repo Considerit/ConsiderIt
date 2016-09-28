@@ -536,6 +536,7 @@ Auth = ReactiveComponent
       name: "user[#{name}]"
       key: "#{name}_inputBox"
       placeholder: placeholder
+      'aria-label': if name == 'password' then placeholder
       required: "required"
       type: type || 'text'
       onChange: onChange

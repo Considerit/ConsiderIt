@@ -96,6 +96,7 @@ window.DefaultProposalNavigation = ReactiveComponent
             name: 'cluster'
             pattern: '^.{3,}'
             defaultValue: @proposal.cluster
+            'aria-label': 'Update the proposal category'
             style: 
               border: 'none'
               fontStyle: 'italic'

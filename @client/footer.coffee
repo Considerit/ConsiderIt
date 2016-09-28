@@ -55,7 +55,6 @@ window.DefaultFooter = ReactiveComponent
             backgroundColor: 'transparent'
             border: 'none'
             
-          title: 'Back to top'
           onClick: -> scrollTo 0, 0
 
           'Back to top'

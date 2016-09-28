@@ -23,6 +23,7 @@ window.Homepage = ReactiveComponent
 
     DIV 
       key: "homepage_#{subdomain.name}"
+      role: 'main'
 
       SimpleHomepage()
 
@@ -219,7 +220,7 @@ window.SimpleHomepage = ReactiveComponent
           style: 
             width: if has_proposal_sort then secnd_column.width
             marginBottom: 20
-            marginLeft: if has_proposal_sort then secnd_column.marginLeft else secnd_column.marginLeft + first_column.width
+            marginLeft: if has_proposal_sort then secnd_column.marginLeft else 0
             display: if has_proposal_sort then 'inline-block'
             verticalAlign: 'top'
             textAlign: 'center' 

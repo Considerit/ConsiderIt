@@ -494,10 +494,11 @@ slider_handle.triangley = (props) ->
       zIndex: 10
       filter: if props.has_focus then "drop-shadow(0 0 3px #{focus_blue_transparent(.5)})"
 
+  id = "triangley_filter-#{(Math.random() * 1000000).toFixed(0)}"
   SVG svg_props,
     DEFS null, 
       FILTER 
-        id: "triangley_filter"
+        id: id
         x: "-50%" 
         y: "-50%" 
         width: "200%" 
@@ -560,7 +561,7 @@ slider_handle.triangley = (props) ->
       PATH 
         d: "M1,6 L20,6 L20,16 L1,16 L1,6 Z M10.5,0 L20,6 L1,6 L10.5,0 Z"
         fill: focus_blue
-        filter: "url(#triangley_filter)" 
+        filter: "url(##{id})" 
 
 
 slider_handle.flat = (props) -> 

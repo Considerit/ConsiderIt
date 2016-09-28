@@ -203,7 +203,7 @@ window.Histogram = ReactiveComponent
 
       className: 'histogram'
       'aria-hidden': @props.backgrounded
-      'aria-labeledby': if !@props.backgrounded then "##{proposal.id}-histo-label"
+      'aria-labelledby': if !@props.backgrounded then "##{proposal.id}-histo-label"
       'aria-describedby': if !@props.backgrounded then "##{proposal.id}-histo-description"
 
       style: css.crossbrowserify

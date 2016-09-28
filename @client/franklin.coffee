@@ -204,6 +204,7 @@ Proposal = ReactiveComponent
     DIV 
       id: "proposal-#{@proposal.id}"
       key: @props.slug
+      role: 'main'
       style: 
         paddingBottom: if browser.is_mobile && has_focus == 'edit point' then 200
           # make room for add new point button

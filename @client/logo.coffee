@@ -15,6 +15,11 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
     version: "1.1" 
     xmlns: "http://www.w3.org/2000/svg" 
 
+
+    TITLE 
+      id: 'considerit_logo_title'
+      'Considerit Logo'
+
     DEFS null,
       CLIPPATH
         id: 'logo_clip'

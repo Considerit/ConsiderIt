@@ -193,7 +193,7 @@ class User < ActiveRecord::Base
   # Notification preferences. 
   def subscription_settings(subdomain)
 
-    notifier_config = Notifier::config
+    notifier_config = Notifier::config(subdomain)
     my_subs = Oj.load(subscriptions || "{}")[subdomain.id.to_s] || {}
 
     for event, config in notifier_config
@@ -213,7 +213,7 @@ class User < ActiveRecord::Base
 
     end
 
-    my_subs['default_subscription'] = Notifier.default_subscription
+    my_subs['default_subscription'] = Notifier.default_subscription(subdomain)
     if !my_subs.key?('send_emails')
       my_subs['send_emails'] = my_subs['default_subscription']
     end

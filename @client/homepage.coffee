@@ -548,7 +548,7 @@ Cluster = ReactiveComponent
 
           if !is_collapsed
             histo_title = customization('list_opinions_title', cluster_key)
-            H1
+            DIV
               style: secnd_header
               SPAN 
                 style: 

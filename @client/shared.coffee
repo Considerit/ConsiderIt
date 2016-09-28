@@ -60,6 +60,7 @@ window.back_to_homepage_button = (style) ->
   hash = loc.url.split('/')[1].replace('-', '_')
 
   A
+    role: 'navigation'
     title: 'back to homepage'
     key: 'back_to_homepage_button'
     href: "/##{hash}"

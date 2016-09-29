@@ -13,7 +13,7 @@ window.WatchStar = ReactiveComponent
 
     label = @props.label || (watching) -> 
       if watching     
-        "Stop getting notifications" 
+        "Stop getting notifications for this proposal" 
       else 
         "Get notifications"
 

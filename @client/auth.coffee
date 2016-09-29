@@ -68,6 +68,7 @@ Auth = ReactiveComponent
 
     DIV null,
       DIV
+        role: if auth.form != 'edit profile' then 'main'
         style:
           margin: "0 auto"
           padding: if !@props.naked then '4em 0'

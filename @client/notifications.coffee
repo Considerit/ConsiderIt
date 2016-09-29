@@ -39,8 +39,8 @@ window.Notifications = ReactiveComponent
 
     DIV 
       style:
-        width: BODY_WIDTH()
-        margin: '50px auto'
+        width: HOMEPAGE_WIDTH()
+        margin: '0px auto'
 
       if @local.unsubscribed && !current_user.subscriptions['send_emails']
         DIV 
@@ -56,6 +56,14 @@ window.Notifications = ReactiveComponent
           fontSize: 24
           marginBottom: 10
           position: 'relative'
+
+        H1 
+          style: 
+            fontSize: 28
+            padding: '20px 0'
+            fontWeight: 400
+
+          'Email notification settings'
           
         INPUT 
           type: 'checkbox'
@@ -182,7 +190,7 @@ window.Notifications = ReactiveComponent
                   style: 
                     fontSize: 24
                     position: 'absolute'
-                    left: -40
+                    left: -30
                     top: 2
                   onChange: do (config) => => 
                     config.email_trigger = !config.email_trigger
@@ -210,12 +218,13 @@ window.Notifications = ReactiveComponent
       DIV 
         style: 
           padding: '20px 0'
-          marginLeft: 63
 
-        DIV
+        H2
           style: 
+            fontSize: 24
             position: 'relative'
             paddingBottom: 10
+            fontWeight: 400
           t('watched_proposals')
 
 
@@ -227,7 +236,7 @@ window.Notifications = ReactiveComponent
           UL
             style: 
               position: 'relative'
-              paddingLeft: 37
+              paddingLeft: 30
 
             for k,v of unsubscribed
               do (k) => 

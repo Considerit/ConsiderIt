@@ -523,6 +523,7 @@ OpinionFilter = ReactiveComponent
 
             is_enabled = filter_out.opinion_filters?[filter.label]
             BUTTON 
+              'aria-label': "Filter opinions to #{filter.label}"
               'aria-describedby': if filter.tooltip then 'tooltip'
               'aria-pressed': is_enabled
               tabIndex: 0

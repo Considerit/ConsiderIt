@@ -103,11 +103,10 @@ Auth = ReactiveComponent
       # The LOGIN form, with easy switch to register
       when 'login'
         [ @headerAndBorder goal, t('Introduce Yourself'),
-            @body [["#{t('login_as')}:",
-                    [ @inputBox('email', 'email@address', 'email'),
-                      DIV(null),
-                      @inputBox('password', t("password"), 'password'),
-                      @resetPasswordLink() ], 'email + password']].concat @userQuestionInputs()
+            @body [
+                    ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')],
+                    ["My #{t("password")}:", [@inputBox('password', t("password"), 'password'), @resetPasswordLink()]]
+                  ].concat @userQuestionInputs()
           @footerForRegistrationAndLogin() ]
 
       # The REGISTER form, with easy switch to log in
@@ -132,9 +131,10 @@ Auth = ReactiveComponent
           footer = @submitButton(t('Create new account'))
 
         [ @headerAndBorder goal, t('Introduce Yourself'),
-            @body [["#{t('login_as')}:",
-                      [ email_field,
-                        @inputBox('password', t("password"), 'password')], 'email + password'],
+            @body [
+                    ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')],
+                    ["My #{t("password")}:", @inputBox('password', t("password"), 'password')]
+
                     avatar_field,
                     [t('name_prompt'), @inputBox('name', t('full_name'))],
                     pledges_field].concat @userQuestionInputs()
@@ -149,10 +149,8 @@ Auth = ReactiveComponent
 
         [ @headerAndBorder null, t('Your Profile'),
             @body [
-              ["#{t('login_as')}:",
-                [ @inputBox('email', 'email@address', 'email'),
-                  @inputBox('password', t("password"), 'password')]
-              ],
+              ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')],
+              ["My #{t("password")}:", @inputBox('password', t("password"), 'password')]
               ["#{t('name_prompt')}:", @inputBox('name', t('full_name'))],
               avatar_field].concat @userQuestionInputs()
           @submitButton(t('Update'))
@@ -427,6 +425,9 @@ Auth = ReactiveComponent
       @local.errors = []
       save auth
       save @local
+      setTimeout =>
+        $('#user_email')[0].focus()
+      ,0
 
     DIV
       style:
@@ -668,7 +669,7 @@ Auth = ReactiveComponent
     DIV 
       style: 
         textAlign: 'right'
-        width: 300
+        width: '100%'
 
       BUTTON
         style: 

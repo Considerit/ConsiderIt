@@ -490,6 +490,7 @@ Cluster = ReactiveComponent
       if ListHeader
         ListHeader()
       else 
+        heading_text = list_items_title || cluster.name || 'Proposals'
         HEADING = if label then H2 else H1
         toggle_list = ->
           if !list_uncollapseable
@@ -508,7 +509,7 @@ Cluster = ReactiveComponent
               
             BUTTON 
               tabIndex: if list_uncollapseable then -1 else 0
-              'aria-label': "Expand or collapse list"
+              'aria-label': "#{heading_text}. Expand or collapse list."
               'aria-pressed': !collapsed.clusters[cluster_key]
               style: 
                 padding: 0 
@@ -524,7 +525,7 @@ Cluster = ReactiveComponent
                   e.preventDefault()
               onClick: toggle_list
 
-              list_items_title || cluster.name || 'Proposals'
+              heading_text 
 
               if !list_uncollapseable
                 SPAN 
@@ -686,6 +687,7 @@ window.NewProposal = ReactiveComponent
             if @local.errors?.length > 0
               
               DIV
+                role: 'alert'
                 style:
                   fontSize: 18
                   color: 'darkred'

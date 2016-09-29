@@ -101,6 +101,7 @@ window.EditPoint = ReactiveComponent
       if @local.errors?.length > 0
         
         DIV
+          role: 'alert'
           style:
             fontSize: 18
             color: 'darkred'

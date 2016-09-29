@@ -391,6 +391,7 @@ Auth = ReactiveComponent
       if (current_user.errors or []).length > 0 or @local.errors.length > 0
         errors = current_user.errors.concat(@local.errors or [])
         DIV
+          role: 'alert'
           style:
             fontSize: 18
             color: 'darkred'

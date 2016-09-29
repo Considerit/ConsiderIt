@@ -83,7 +83,7 @@ window.OpinionSlider = ReactiveComponent
         onMouseUpCallback: @handleMouseUp
         respond_to_click: false
 
-        label: "Express your opinion on a slider from #{@props.pole_labels[0][0]} to #{@props.pole_labels[1][0]}"
+        label: "Express your opinion on a slider from #{@props.pole_labels[0][0]} to #{@props.pole_labels[1][0]} about #{@proposal.name}"
         readable_text: (value) => 
           if value > .03
             "#{(value * 100).toFixed(0)}% #{@props.pole_labels[1][0]}"

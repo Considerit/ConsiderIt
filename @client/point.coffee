@@ -196,7 +196,7 @@ window.Point = ReactiveComponent
           id: "point-aria-interaction-#{point.id}"
           style: 
             position: 'absolute'
-            left: -9999
+            bottom: -999999999999
           "A point written by #{if point.hide_name then 'Anonymous' else fetch(point.user).name}, with #{point.comment_count} #{if point.comment_count != 1 then t('comments') else t('comment')}. Press ENTER or SPACE for details or discussion."
 
         if @props.rendered_as != 'decision_board_point'

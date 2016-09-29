@@ -467,10 +467,12 @@ ProposalDescription = ReactiveComponent
             onMouseDown: => 
               @local.description_collapsed = false
               save(@local)
+
             onKeyDown: (e) =>
               if e.which == 13 || e.which == 32 # ENTER or SPACE
                 @local.description_collapsed = false
                 e.preventDefault()
+                document.activeElement.blur()
                 save(@local)
 
             'Expand full text'
@@ -585,11 +587,16 @@ ProposalDescription = ReactiveComponent
 
 
   componentDidMount : ->
-    if (@max_description_height and @local.description_collapsed == undefined \
+    if (@proposal.description and @max_description_height and @local.description_collapsed == undefined \
         and $('.proposal_details').height() > @max_description_height)
       @local.description_collapsed = true; save(@local)
 
   componentDidUpdate : ->
+    if (@proposal.description and @max_description_height and @local.description_collapsed == undefined \
+        and $('.proposal_details').height() > @max_description_height)
+      @local.description_collapsed = true; save(@local)
+
+
     subdomain = fetch('/subdomain')
     if subdomain.name == 'RANDOM2015' && @local.description_fields && $('#description_fields').find('.MathJax').length == 0
       MathJax.Hub.Queue(["Typeset",MathJax.Hub,"description_fields"])
@@ -796,6 +803,7 @@ DecisionBoard = ReactiveComponent
       SliderBubblemouth()
 
       DIV
+        'aria-live': 'polite'
         key: 'body' 
         className:'decision_board_body'
         style: css.crossbrowserify decision_board_style
@@ -803,6 +811,7 @@ DecisionBoard = ReactiveComponent
           if get_proposal_mode() == 'results' 
             updateProposalMode('crafting', 'give_opinion_button')
 
+            $('.the_handle')[0].focus()
 
 
         DIV null, 
@@ -1332,7 +1341,7 @@ PointsList = ReactiveComponent
         id: "pointslist-aria-desc-#{heading.replace(/ /g, '_')}"
         style: 
           position: 'absolute'
-          left: -9999
+          bottom: -999999999999
         "Navigate between point lists with LEFT and RIGHT arrow keys."
 
       H2 
@@ -1842,6 +1851,7 @@ Page = ReactiveComponent
     auth = fetch('auth')
 
     DIV 
+      'aria-live': 'polite'
       style: 
         position: 'relative'
         zIndex: 1

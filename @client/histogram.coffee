@@ -297,14 +297,14 @@ window.Histogram = ReactiveComponent
         id: "##{proposal.id}-histo-label"
         style: 
           position: 'absolute'
-          left: -9999
+          bottom: -999999999999
         "Histogram showing #{opinions.length} opinions"
 
       DIV 
         id: "##{proposal.id}-histo-description"
         style: 
           position: 'absolute'
-          left: -9999
+          bottom: -999999999999
         """#{opinions.length} people's opinion, with an average of #{exp} on a spectrum from #{customization("slider_pole_labels.oppose", @props.proposal)} to #{customization("slider_pole_labels.support", @props.proposal)}. 
            Press ENTER or SPACE to enable tab navigation of each person's opinion, and ESC to exit the navigation.
         """         

@@ -144,7 +144,6 @@ window.WysiwygEditor = ReactiveComponent
         title: 'Directly edit HTML'
         onClick: => @local.edit_code = true; save @local
 
-
     DIV 
       id: @props.key
       style: 
@@ -169,8 +168,6 @@ window.WysiwygEditor = ReactiveComponent
 
       else
 
-
-
         DIV null,
 
           Dock
@@ -180,6 +177,7 @@ window.WysiwygEditor = ReactiveComponent
               
             # Toolbar
             DIV 
+              ref: 'toolbar'
               role: 'toolbar'
               'title': 'Rich text markup'
               'aria-orientation': 'vertical'
@@ -192,11 +190,15 @@ window.WysiwygEditor = ReactiveComponent
                 top: 0
                 display: 'block'
                 visibility: if wysiwyg_editor.showing != @props.key then 'hidden'
+
               onFocus: (e) => 
-                if !@local.focused_toolbar_item?
-                  @local.focused_toolbar_item = 0 
-                  save @local
-                @refs["toolbaritem-#{@local.focused_toolbar_item}"].getDOMNode().focus()
+                if !@local.focused_toolbar_item && !@local.just_unfocused
+
+                  if !@local.focused_toolbar_item?
+                    @local.focused_toolbar_item = 0 
+                    save @local
+
+                  @refs["toolbaritem-#{@local.focused_toolbar_item}"].getDOMNode().focus()
 
               onKeyDown: (e) => 
                 if e.which in [37, 38, 39, 40]
@@ -234,9 +236,18 @@ window.WysiwygEditor = ReactiveComponent
                     title: button.title
                     value: if button.value then button.value 
                     onClick: if button.onClick then button.onClick
-                    onFocus: => @local.focused_toolbar_item = idx ; save @local
-                    onBlur: => 
+                    onFocus: (e) => 
+                      @local.focused_toolbar_item = idx; 
+                      save @local
+                      e.stopPropagation()
+
+                    onBlur: (e) => 
+                      e.stopPropagation()
                       @local.focused_toolbar_item = null 
+                      @local.just_unfocused = true
+                      setTimeout =>
+                        @local.just_unfocused = false 
+                      , 0
                       save @local 
 
                       # if the focus isn't still on an element inside of this menu, 
@@ -256,7 +267,7 @@ window.WysiwygEditor = ReactiveComponent
               id: 'editor'
               dangerouslySetInnerHTML:{__html: @props.html}
               'data-placeholder': if show_placeholder then @props.placeholder else ''
-              onFocus: => 
+              onFocus: (e) => 
                 # Show the toolbar on focus
                 # showing is global state for the toolbar to be 
                 # shown. It gets set to null when someone clicks outside the 
@@ -266,6 +277,7 @@ window.WysiwygEditor = ReactiveComponent
                 wysiwyg_editor = fetch 'wysiwyg_editor'
                 wysiwyg_editor.showing = @props.key
                 save wysiwyg_editor
+
               onBlur: => 
                 # if the focus isn't still on an element inside of this menu, 
                 # then we should close the menu                

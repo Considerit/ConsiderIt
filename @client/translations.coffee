@@ -456,7 +456,7 @@ _.extend dict.en,
   introduce_yourself: 'Introduce Yourself'
 
   complete_registration: 'Complete registration'
-  login_as: 'Hi, I log in as'
+  login_as: 'Hi, my email is'
   password: 'password'
   name_prompt: 'My name is'
   full_name: (args) -> 
@@ -464,7 +464,7 @@ _.extend dict.en,
     if subdomain.name in ['bitcoin', 'bitcoinclassic']
       'user name or company name'
     else
-      'first and last name'
+      'first and last name or pseudonym'
   pic_prompt: 'I look like'
   your_profile: 'Your Profile'
   updated_successfully: "Updated successfully"

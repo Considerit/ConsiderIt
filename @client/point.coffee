@@ -236,9 +236,7 @@ window.Point = ReactiveComponent
 
           DIV 
             id: "point-aria-interaction-#{point.id}"
-            style: 
-              position: 'absolute'
-              left: -999999999999
+            className: 'hidden'
             "By #{if point.hide_name then 'Anonymous' else fetch(point.user).name}, with #{@data().includers.length} importance #{if @data().includers.length != 1 then 'votes' else 'vote'} and #{point.comment_count} #{if point.comment_count != 1 then t('comments') else t('comment')}. Press ENTER or SPACE for details or discussion."
 
           DIV 

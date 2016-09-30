@@ -360,6 +360,7 @@ window.HomepageTabs = ReactiveComponent
                 homepage_tabs.filter = filter 
                 homepage_tabs.clusters = clusters
                 save homepage_tabs
+                document.activeElement.blur()
 
               filter
 
@@ -503,6 +504,7 @@ Cluster = ReactiveComponent
         DIV 
           style: 
             position: 'relative'
+
           HEADING
             style: _.extend {}, first_header, 
               position: 'relative'
@@ -518,6 +520,7 @@ Cluster = ReactiveComponent
                 backgroundColor: 'transparent'
                 fontWeight: first_header.fontWeight
                 cursor: if !list_uncollapseable then 'pointer'
+                textAlign: 'left'
                   
               onKeyDown: (e) -> 
                 if e.which == 13 || e.which == 32 # ENTER or SPACE

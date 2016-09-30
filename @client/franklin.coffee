@@ -1348,9 +1348,7 @@ PointsList = ReactiveComponent
         heading 
 
         DIV 
-          style: 
-            position: 'absolute'
-            bottom: -999999999
+          className: 'hidden'
           "Cycle through the lists of points with spacebar."
 
       UL 
@@ -1845,7 +1843,6 @@ Page = ReactiveComponent
     auth = fetch('auth')
 
     DIV 
-      'aria-live': 'polite'
       style: 
         position: 'relative'
         zIndex: 1

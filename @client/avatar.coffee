@@ -25,26 +25,21 @@ user_name = (user, anon) ->
 # were attaching a mouseover and mouseout event on each and every Avatar for
 # the purpose of showing a tooltip name. So we use event delegation instead. 
 show_tooltip = (e) ->
-  if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
+  if e.target.getAttribute('data-user') && e.target.getAttribute('data-tooltip')
     user = fetch(e.target.getAttribute('data-user'))
     anonymous = e.target.getAttribute('data-anonymous') == 'true'
 
-    name = e.target.getAttribute('title') or e.target.getAttribute('alt')
-    if !name
-      name = user_name user, anonymous
 
-      if !anonymous && filters = customization 'opinion_filters'
-        for filter in filters 
-          if filter.pass(user) && filter.icon
-            if typeof(filter.icon) != 'string'
-              icon = filter.icon(user)
-            else
-              icon = filter.icon 
-            name += '<span style="padding: 0 0 0 12px">' + icon + "</span>"
+    name = e.target.getAttribute('data-tooltip')
 
-    if e.target.getAttribute('title')
-      e.target.setAttribute('data-title', e.target.getAttribute('title'))
-      e.target.removeAttribute('title')
+    if !anonymous && filters = customization 'opinion_filters'
+      for filter in filters 
+        if filter.pass(user) && filter.icon
+          if typeof(filter.icon) != 'string'
+            icon = filter.icon(user)
+          else
+            icon = filter.icon 
+          name += '<span style="padding: 0 0 0 12px">' + icon + "</span>"
 
     tooltip = fetch 'tooltip'
     tooltip.coords = $(e.target).offset()
@@ -53,7 +48,7 @@ show_tooltip = (e) ->
     e.preventDefault()
 
 hide_tooltip = (e) ->
-  if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
+  if e.target.getAttribute('data-user') && e.target.getAttribute('data-tooltip')
     if e.target.getAttribute('data-title')
       e.target.setAttribute('title', e.target.getAttribute('data-title'))
       e.target.removeAttribute('data-title')
@@ -101,6 +96,8 @@ $('body').on 'focusout', '.avatar', hide_tooltip
 
 
 window.avatar = (user, props) ->
+  props = _.extend {}, props
+
   if !user.key 
     if user == arest.cache['/current_user']?.user 
       user = fetch(user)
@@ -154,50 +151,58 @@ window.avatar = (user, props) ->
   if add_initials
     style.textAlign = 'center'
 
-  name = user_name user, anonymous
-  if name == 'Anonymous'
-    name = '?'
-
-
-
 
   # IE9 gets confused if there is an image without a src
   # Chrome puts a weird gray border around IMGs without a src
   tag = if !props.src? then SPAN else IMG
 
+  name = user_name user, anonymous
   alt = props.alt 
   delete props.alt if props.alt? 
+  tooltip = alt?.replace('<user>', name) or name
 
   attrs = _.extend {}, props,
+    key: user.key
     className: "avatar #{props.className or ''}"
     'data-user': user.key
-    'data-showtooltip': !props.hide_tooltip
-    'data-anon': anonymous      
+    'data-tooltip': if !props.hide_tooltip then tooltip 
+    'data-anon': anonymous  
     style: style
     tabIndex: if props.focusable then 0 else -1
 
-  attrs[(if tag == SPAN then 'title' else 'alt')] = alt?.replace('<user>', name) or name
-
+  if tag == IMG
+    attrs.alt = tooltip 
+  
   tag attrs,
     if add_initials
       fontsize = style.width / 2
       ff = 'monaco,Consolas,"Lucida Console",monospace'
+      if name == 'Anonymous'
+        name = '?'
+
       if name.length == 2
         name = "#{name[0][0]}#{name[1][0]}"
       else 
         name = "#{name[0][0]}"
 
-      SPAN 
+      DIV
         style: 
           color: 'white'
           pointerEvents: 'none'
           fontSize: fontsize
-          display: 'block'
           position: 'relative'
           fontFamily: ff
           top: .3 * fontsize #style.height / 2 - heightWhenRendered(name, {fontSize: fontsize, fontFamily: ff}) / 2
-
+          overflow: 'hidden'
         name
+
+        DIV 
+          style: 
+            position: 'absolute'
+            bottom: -99999999999
+
+          tooltip
+
 
 
 

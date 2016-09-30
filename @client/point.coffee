@@ -190,14 +190,6 @@ window.Point = ReactiveComponent
         tabIndex: 0
         onBlur: (e) => @local.has_focus = false; save(@local)
         onFocus: (e) => @local.has_focus = true; save(@local)
-        'aria-describedby': "point-aria-interaction-#{point.id}"
-
-        DIV 
-          id: "point-aria-interaction-#{point.id}"
-          style: 
-            position: 'absolute'
-            bottom: -999999999999
-          "A point written by #{if point.hide_name then 'Anonymous' else fetch(point.user).name}, with #{point.comment_count} #{if point.comment_count != 1 then t('comments') else t('comment')}. Press ENTER or SPACE for details or discussion."
 
         if @props.rendered_as != 'decision_board_point'
 
@@ -215,6 +207,7 @@ window.Point = ReactiveComponent
             mouth_style['transform'] = 'rotate(90deg)'
 
           DIV 
+            'role': 'presentation'
             key: 'community_point_mouth'
             style: css.crossbrowserify mouth_style
 
@@ -240,6 +233,13 @@ window.Point = ReactiveComponent
             className: 'point_nutshell'
 
             splitParagraphs point.nutshell
+
+          DIV 
+            id: "point-aria-interaction-#{point.id}"
+            style: 
+              position: 'absolute'
+              left: -999999999999
+            "By #{if point.hide_name then 'Anonymous' else fetch(point.user).name}, with #{@data().includers.length} importance #{if @data().includers.length != 1 then 'votes' else 'vote'} and #{point.comment_count} #{if point.comment_count != 1 then t('comments') else t('comment')}. Press ENTER or SPACE for details or discussion."
 
           DIV 
             'aria-hidden': true
@@ -304,6 +304,7 @@ window.Point = ReactiveComponent
 
       if @props.rendered_as != 'decision_board_point' 
         DIV 
+          'aria-hidden': true
           className:'includers'
           onMouseEnter: if @props.rendered_as != 'under_review' then @highlightIncluders
           onMouseLeave: if @props.rendered_as != 'under_review' then @unHighlightIncluders

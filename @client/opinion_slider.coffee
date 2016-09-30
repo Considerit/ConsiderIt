@@ -158,6 +158,7 @@ window.OpinionSlider = ReactiveComponent
                       widthWhenRendered(sub_text, {fontSize: 14, maxWidth: available_x}))
 
         DIV 
+          'aria-hidden': true
           key: main_text
           style: 
             position: 'absolute'
@@ -181,6 +182,7 @@ window.OpinionSlider = ReactiveComponent
     else
       for pole_label, idx in @props.pole_labels
         DIV 
+          'aria-hidden': true
           key: "small-#{pole_label[0]}"
           style: 
             position: 'absolute'
@@ -231,7 +233,8 @@ window.OpinionSlider = ReactiveComponent
       marginLeft: -feedback_width / 2
       width: feedback_width
 
-    H2  
+    DIV
+      'aria-hidden' : true
       style: feedback_style
       slider_feedback
 

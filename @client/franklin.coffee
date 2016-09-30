@@ -1320,39 +1320,38 @@ PointsList = ReactiveComponent
                              heightWhenRendered(other_heading, header_style)
 
     keydown = (e) => 
-      if e.which == 37 || e.which == 39 # LEFT or RIGHT
-        els = $('.point_list')
+      if e.which == 32
+        els = $('.point_list .points_heading_label')
         for el, idx in els 
-          if el == @getDOMNode()
+          if el == @refs.point_list_heading.getDOMNode()
             i = idx 
             break 
-        if e.which == 37 
-          i++
-          if i > els.length - 1
-            i = 0 
-        else 
-          i--
-          if i < 0 
-            i = els.length - 1
+        i--
+        if i < 0
+          i = els.length - 1 
         els[i].focus()
+        e.preventDefault()
+        e.stopPropagation()
 
     wrapper [
-      DIV 
-        id: "pointslist-aria-desc-#{heading.replace(/ /g, '_')}"
-        style: 
-          position: 'absolute'
-          bottom: -999999999999
-        "Navigate between point lists with LEFT and RIGHT arrow keys."
-
       H2 
+        ref: 'point_list_heading'
         id: @local.key.replace('/','-')
-        className:'points_heading_label'
+        className: 'points_heading_label'
+        tabIndex: 0           
+        onKeyDown: keydown
         style: _.extend header_style,
           textAlign: 'center'
           marginBottom: 18
           marginTop: 7
           height: header_height
         heading 
+
+        DIV 
+          style: 
+            position: 'absolute'
+            bottom: -999999999
+          "Cycle through the lists of points with spacebar."
 
       UL 
         'aria-labelledby': @local.key.replace('/','-')
@@ -1379,10 +1378,8 @@ PointsList = ReactiveComponent
 
       if @props.points_editable
         @drawAddNewPoint()
-      ], 
-        onKeyDown: keydown
-        'aria-describedby': "pointslist-aria-desc-#{heading.replace(/ /g, '_')}"
-        tabIndex: 0 
+      ] 
+
 
   columnStandsOut: -> 
     your_points = @data()
@@ -1395,7 +1392,7 @@ PointsList = ReactiveComponent
     contains_selection || is_editing
 
 
-  drawCommunityPoints: (children, props) -> 
+  drawCommunityPoints: (children) -> 
     x_pos = if @props.points_draggable
               if @props.valence == 'cons' then 0 else DECISION_BOARD_WIDTH()
             else if !TWO_COL()
@@ -1403,7 +1400,13 @@ PointsList = ReactiveComponent
             else
               0
 
-    props = _.extend props,
+    # TODO: The minheight below is not a principled or complete solution to two
+    #       sizing issues: 
+    #           1) resizing the reasons region when the height of the decision board 
+    #              (which is absolutely positioned) grows taller the wing points
+    #           2) when filtering the points on result page to a group of opinions 
+    #              with few inclusions, the document height can jarringly fluctuate
+    DIV
       className: "point_list points_by_community #{@props.valence}_by_community"
       style: css.crossbrowserify _.defaults (@props.style or {}),
         display: 'inline-block'
@@ -1417,19 +1420,11 @@ PointsList = ReactiveComponent
         transition: "transform #{TRANSITION_SPEED}ms"
         transform: "translate(#{x_pos}px, 0)"
 
-
-    # TODO: The minheight below is not a principled or complete solution to two
-    #       sizing issues: 
-    #           1) resizing the reasons region when the height of the decision board 
-    #              (which is absolutely positioned) grows taller the wing points
-    #           2) when filtering the points on result page to a group of opinions 
-    #              with few inclusions, the document height can jarringly fluctuate
-    DIV props,
-
       children
 
-  drawYourPoints: (children, props) -> 
-    props = _.extend props,
+  drawYourPoints: (children) -> 
+      
+    DIV 
       className: "point_list points_on_decision_board #{@props.valence}_on_decision_board"
       style: _.defaults (@props.style or {}),
         display: 'inline-block'
@@ -1438,8 +1433,7 @@ PointsList = ReactiveComponent
         marginTop: 28
         position: 'relative'
         zIndex: if @columnStandsOut() then 6 else 1        
-        float: if @props.valence == 'pros' then 'right' else 'left'
-    DIV props,
+        float: if @props.valence == 'pros' then 'right' else 'left'    
       children
 
   drawAddNewPoint: -> 

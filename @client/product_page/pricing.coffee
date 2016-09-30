@@ -42,7 +42,7 @@ window.Pricing = ReactiveComponent
   drawPlans : -> 
     plans = [
       {
-        name: 'Beta'
+        name: 'Basic'
         highlight: true
         width: SAAS_PAGE_WIDTH / 3 + 60 #SAAS_PAGE_WIDTH / 3 - 70
         price: 'Free for everyone'
@@ -51,7 +51,6 @@ window.Pricing = ReactiveComponent
           'Unlimited users',
           'Unlimited questions',
           #'One Consider.it site',
-          'Basic branding',
           'Content moderation',
           #'Question grouping',
           'Private conversations',

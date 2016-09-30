@@ -662,6 +662,14 @@ body, h1, h2, h3, h4, h5, h6 {
 body, input, button, textarea {
   font-family: 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; }
 
+.hidden {
+  position:absolute;
+  left:-10000px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;}
+
 .content {
   position: relative;
   font-size: 16px;

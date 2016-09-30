@@ -37,35 +37,36 @@ window.DefaultProposalNavigation = ReactiveComponent
         width: HOMEPAGE_WIDTH()
         position: 'relative'
 
-      DIV 
-        'aria-label': 'Previous or next proposals'
-        role: 'navigation'
-        style: 
-          position: 'absolute'
-          right: 0
+      if next_proposal || prev_proposal
+        NAV 
+          'aria-label': 'Previous or next proposals'
+          role: 'navigation'
+          style: 
+            position: 'absolute'
+            right: 0
 
-        # Next button
-        if next_proposal
-          A
-            'title': 'Previous proposal'
-            style:
-              display: 'inline-block'
-              float: 'right'
-            href: proposal_url(next_proposal)
-            'data-no-scroll': true
-            "#{t('next')} >"
+          # Next button
+          if next_proposal
+            A
+              'title': 'Previous proposal'
+              style:
+                display: 'inline-block'
+                float: 'right'
+              href: proposal_url(next_proposal)
+              'data-no-scroll': true
+              "#{t('next')} >"
 
-        # Previous button
-        if prev_proposal
-          A
-            'title': 'Next proposal'
-            style:
-              display: 'inline-block'
-              float: 'right'
-              marginRight: if next_proposal then 10
-            href: proposal_url(prev_proposal)
-            'data-no-scroll': true
-            "< #{t('prev')}"
+          # Previous button
+          if prev_proposal
+            A
+              'title': 'Next proposal'
+              style:
+                display: 'inline-block'
+                float: 'right'
+                marginRight: if next_proposal then 10
+              href: proposal_url(prev_proposal)
+              'data-no-scroll': true
+              "< #{t('prev')}"
 
 
 

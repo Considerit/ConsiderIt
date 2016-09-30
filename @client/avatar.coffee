@@ -197,10 +197,7 @@ window.avatar = (user, props) ->
         name
 
         DIV 
-          style: 
-            position: 'absolute'
-            bottom: -99999999999
-
+          className: 'hidden'
           tooltip
 
 

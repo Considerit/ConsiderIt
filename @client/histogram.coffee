@@ -297,16 +297,16 @@ window.Histogram = ReactiveComponent
         id: "##{proposal.id}-histo-label"
         style: 
           position: 'absolute'
-          bottom: -999999999999
+          left: -999999999999
         "Histogram showing #{opinions.length} opinions"
 
       DIV 
         id: "##{proposal.id}-histo-description"
         style: 
           position: 'absolute'
-          bottom: -999999999999
+          left: -999999999999
         """#{opinions.length} people's opinion, with an average of #{exp} on a spectrum from #{customization("slider_pole_labels.oppose", @props.proposal)} to #{customization("slider_pole_labels.support", @props.proposal)}. 
-           Press ENTER or SPACE to enable tab navigation of each person's opinion, and ESC to exit the navigation.
+           Press ENTER or SPACE to enable tab navigation of each person's opinion, and ESCAPE to exit the navigation.
         """         
 
       if @props.draw_base_labels
@@ -321,7 +321,22 @@ window.Histogram = ReactiveComponent
       if draw_selection_area
         @drawSelectionArea()
 
-      @drawAvatars()
+
+
+      HistoAvatars
+        highlighted_users: hist.highlighted_users
+        selected_opinion: hist.selected_opinion 
+        selected_opinions: hist.selected_opinions
+        avatar_size: @local.avatar_size 
+        enable_selection: @props.enable_selection
+        proposal: @props.proposal
+        height: @props.height 
+        backgrounded: @props.backgrounded
+        opinions: @props.opinions 
+        histocache: @local.histocache
+        histocache_key: @histocache_key()
+        navigating_inside: @local.navigating_inside
+
 
 
   drawHistogramBase: -> 
@@ -389,116 +404,6 @@ window.Histogram = ReactiveComponent
               pointerEvents: 'none'
 
             t('select_these_opinions')
-
-  drawAvatars: -> 
-    hist = fetch @props.key
-    filter_out = fetch 'filtered'    
-
-    # Highlighted users are the users whose avatars are colorized and fully 
-    # opaque in the histogram. It is based on the current opinion selection and 
-    # the highlighted_users state, which can be manipulated by other components. 
-    highlighted_users = hist.highlighted_users
-    selected_users = if hist.selected_opinion 
-                       [hist.selected_opinion] 
-                     else 
-                       hist.selected_opinions
-    if selected_users
-      if highlighted_users
-        highlighted_users = _.intersection highlighted_users, \
-                                          (fetch(o).user for o in selected_users)
-      else 
-        highlighted_users = (fetch(o).user for o in selected_users)
-
-
-    # There are a few avatar styles that might be applied depending on state:
-    # 1) Regular, for when no user is selected
-    regular_avatar_style =
-      width: @local.avatar_size
-      height: @local.avatar_size
-      position: 'absolute'
-      cursor: if @props.enable_selection then 'pointer' else 'auto'
-
-    # 2) The style of a selected avatar
-    selected_avatar_style = _.extend {}, regular_avatar_style, 
-      zIndex: 9
-      backgroundColor: focus_blue
-    css.crossbrowserify selected_avatar_style
-    # 3) The style of an unselected avatar when some other avatar(s) is selected
-    unselected_avatar_style = _.extend {}, regular_avatar_style,  
-      opacity: .2
-    # if !browser.is_mobile
-    #   unselected_avatar_style = css.grayscale _.extend unselected_avatar_style
-    # 4) The style of the avatar when the histogram is backgrounded 
-    #    (e.g. on the crafting page)
-    backgrounded_page_avatar_style = _.extend {}, unselected_avatar_style, 
-      opacity: if customization('show_histogram_on_crafting', @props.proposal) then .1 else 0.0
-
-    # Draw the avatars in the histogram. Placement will be determined later
-    # by the physics sim
-    DIV 
-      key: @histocache_key()
-      ref: 'histo'
-      style: 
-        height: @props.height
-        position: 'relative'
-        top: -1
-        cursor: if !@props.backgrounded && 
-                    @props.enable_selection then 'pointer'
-
-      for opinion, idx in @props.opinions
-        user = opinion.user
-
-        if filter_out.users?[user]
-          continue
-
-        o = fetch(opinion) # subscribe to changes so physics sim will get rerun...
-
-        # sub_creation = new Date(fetch('/subdomain').created_at).getTime()
-        # creation = new Date(o.created_at).getTime()
-        # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
-
-        if @props.backgrounded
-          avatar_style = if fetch('/current_user').user == user 
-                           _.extend({}, regular_avatar_style, {opacity: .25}) 
-                         else 
-                           backgrounded_page_avatar_style
-        else if highlighted_users
-          if _.contains(highlighted_users, opinion.user)   
-            avatar_style = selected_avatar_style
-          else
-            avatar_style = unselected_avatar_style
-        else
-          avatar_style = regular_avatar_style
-
-        pos = @local.histocache?.positions?[(user.key or user).split('/user/')[1]]
-        # Avatar 
-        #   key: user
-        #   user: user
-        #   hide_tooltip: @props.backgrounded
-        #   style: _.extend {}, avatar_style, 
-        #     left: pos?[0]
-        #     top: pos?[1]
-        #     # opacity: opacity
-
-        stance = opinion.stance 
-        if stance < -.03
-          exp = " is #{(-1 * stance * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", @props.proposal)}"
-        else if stance > .03
-          exp = " is #{(stance * 100).toFixed(0)}% #{customization("slider_pole_labels.support", @props.proposal)}"
-        else 
-          exp = " is neutral"
-
-        avatar user,
-          ref: "avatar-#{idx}"
-          focusable: @local.navigating_inside && !@props.backgrounded 
-          hide_tooltip: @props.backgrounded
-          alt: "<user>#{exp}"
-          style: _.extend {}, avatar_style, 
-            left: pos?[0]
-            top: pos?[1]
-            # opacity: opacity
-
-
 
   onClick: (ev) -> 
 
@@ -733,6 +638,119 @@ window.Histogram = ReactiveComponent
 
   componentDidUpdate: -> 
     @physicsSimulation()
+
+
+HistoAvatars = ReactiveComponent 
+  displayName: 'HistoAvatars'
+
+  render: ->
+    filter_out = fetch 'filtered'    
+
+    # Highlighted users are the users whose avatars are colorized and fully 
+    # opaque in the histogram. It is based on the current opinion selection and 
+    # the highlighted_users state, which can be manipulated by other components. 
+    highlighted_users = @props.highlighted_users
+    selected_users = if @props.selected_opinion 
+                       [@props.selected_opinion] 
+                     else 
+                       @props.selected_opinions
+    if selected_users
+      if highlighted_users
+        highlighted_users = _.intersection highlighted_users, \
+                                          (fetch(o).user for o in selected_users)
+      else 
+        highlighted_users = (fetch(o).user for o in selected_users)
+
+
+    # There are a few avatar styles that might be applied depending on state:
+    # 1) Regular, for when no user is selected
+    regular_avatar_style =
+      width: @props.avatar_size
+      height: @props.avatar_size
+      position: 'absolute'
+      cursor: if @props.enable_selection then 'pointer' else 'auto'
+
+    # 2) The style of a selected avatar
+    selected_avatar_style = _.extend {}, regular_avatar_style, 
+      zIndex: 9
+      backgroundColor: focus_blue
+    css.crossbrowserify selected_avatar_style
+    # 3) The style of an unselected avatar when some other avatar(s) is selected
+    unselected_avatar_style = _.extend {}, regular_avatar_style,  
+      opacity: .2
+    # if !browser.is_mobile
+    #   unselected_avatar_style = css.grayscale _.extend unselected_avatar_style
+    # 4) The style of the avatar when the histogram is backgrounded 
+    #    (e.g. on the crafting page)
+    backgrounded_page_avatar_style = _.extend {}, unselected_avatar_style, 
+      opacity: if customization('show_histogram_on_crafting', @props.proposal) then .1 else 0.0
+
+    # Draw the avatars in the histogram. Placement will be determined later
+    # by the physics sim
+    DIV 
+      key: @props.histocache_key
+      ref: 'histo'
+      style: 
+        height: @props.height
+        position: 'relative'
+        top: -1
+        cursor: if !@props.backgrounded && 
+                    @props.enable_selection then 'pointer'
+
+      for opinion, idx in @props.opinions
+        user = opinion.user
+
+        if filter_out.users?[user]
+          continue
+
+        o = fetch(opinion) # subscribe to changes so physics sim will get rerun...
+
+        # sub_creation = new Date(fetch('/subdomain').created_at).getTime()
+        # creation = new Date(o.created_at).getTime()
+        # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
+
+        if @props.backgrounded
+          avatar_style = if fetch('/current_user').user == user 
+                           _.extend({}, regular_avatar_style, {opacity: .25}) 
+                         else 
+                           backgrounded_page_avatar_style
+        else if highlighted_users
+          if _.contains(highlighted_users, opinion.user)   
+            avatar_style = selected_avatar_style
+          else
+            avatar_style = unselected_avatar_style
+        else
+          avatar_style = regular_avatar_style
+
+        pos = @props.histocache?.positions?[(user.key or user).split('/user/')[1]]
+        # Avatar 
+        #   key: user
+        #   user: user
+        #   hide_tooltip: @props.backgrounded
+        #   style: _.extend {}, avatar_style, 
+        #     left: pos?[0]
+        #     top: pos?[1]
+        #     # opacity: opacity
+
+        stance = opinion.stance 
+        if stance < -.03
+          exp = " is #{(-1 * stance * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", @props.proposal)}"
+        else if stance > .03
+          exp = " is #{(stance * 100).toFixed(0)}% #{customization("slider_pole_labels.support", @props.proposal)}"
+        else 
+          exp = " is neutral"
+
+        avatar user,
+          ref: "avatar-#{idx}"
+          focusable: @props.navigating_inside && !@props.backgrounded 
+          hide_tooltip: @props.backgrounded
+          alt: "<user>#{exp}"
+          style: _.extend {}, avatar_style, 
+            left: pos?[0]
+            top: pos?[1]
+            # opacity: opacity
+
+
 
 
 ######

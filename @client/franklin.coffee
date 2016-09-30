@@ -201,15 +201,14 @@ Proposal = ReactiveComponent
     has_community_points = community_points.length > 0 
 
 
-    DIV 
+    ARTICLE 
       id: "proposal-#{@proposal.id}"
       key: @props.slug
-      role: 'main'
       style: 
         paddingBottom: if browser.is_mobile && has_focus == 'edit point' then 200
           # make room for add new point button
 
-      DIV 
+      HEADER 
         className: 'proposal_header'
 
         proposal_header
@@ -226,14 +225,17 @@ Proposal = ReactiveComponent
               textAlign: 'center'
 
 
-        #feelings
-        DIV
+        # feelings
+        SECTION
           style:
             width: PROPOSAL_HISTO_WIDTH()
             margin: '0 auto'
             position: 'relative'
             zIndex: 1
 
+          H2 
+            className: 'hidden'
+            "Evaluations of this proposal on spectrum from #{customization("slider_pole_labels.oppose", @proposal)} to #{customization("slider_pole_labels.support", @proposal)}"
 
           Histogram
             key: namespaced_key('histogram', @proposal)
@@ -273,7 +275,7 @@ Proposal = ReactiveComponent
 
 
         #reasons
-        DIV 
+        SECTION 
           className:'reasons_region'
           style : 
             width: REASONS_REGION_WIDTH()    
@@ -283,35 +285,12 @@ Proposal = ReactiveComponent
             margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
             display: if !customization('discussion_enabled', @proposal) then 'none'
 
+          H2
+            className: 'hidden'
+            'Why people think what they do about the proposal'
+
           # Border + bubblemouth that is shown when there is a histogram selection
           GroupSelectionRegion()
-
-
-          if !TWO_COL() && customization('discussion_enabled', @proposal)
-            Dock
-              key: 'decisionboard-dock'
-              docked_key: 'decisionboard'            
-              constraints : ['slider-dock']
-              dock_on_zoomed_screens: true
-              dockable : => 
-                mode == 'crafting'
-
-              start: -24
-
-              stop : -> 
-                $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
-
-              style: 
-                position: 'absolute'
-                width: DECISION_BOARD_WIDTH()
-                zIndex: 0 #so that points being dragged are above opinion region
-                display: 'inline-block'
-                verticalAlign: 'top'
-                left: '50%'
-                marginLeft: -DECISION_BOARD_WIDTH() / 2
-
-              DecisionBoard
-                key: 'decisionboard'
 
           PointsList 
             key: 'community_cons'
@@ -342,6 +321,31 @@ Proposal = ReactiveComponent
             style: 
               visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
+          if !TWO_COL() && customization('discussion_enabled', @proposal)
+            Dock
+              key: 'decisionboard-dock'
+              docked_key: 'decisionboard'            
+              constraints : ['slider-dock']
+              dock_on_zoomed_screens: true
+              dockable : => 
+                mode == 'crafting'
+
+              start: -24
+
+              stop : -> 
+                $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
+
+              style: 
+                position: 'absolute'
+                width: DECISION_BOARD_WIDTH()
+                zIndex: 0 #so that points being dragged are above opinion region
+                display: 'inline-block'
+                verticalAlign: 'top'
+                left: '50%'
+                marginLeft: -DECISION_BOARD_WIDTH() / 2
+
+              DecisionBoard
+                key: 'decisionboard'
 
 
       if edit_mode && browser.is_mobile
@@ -793,12 +797,14 @@ DecisionBoard = ReactiveComponent
       give_opinion_style =
         visibility: 'hidden'
 
-    DIV 
+    SECTION 
       className:'opinion_region'
       style:
         width: DECISION_BOARD_WIDTH()
 
-
+      H3 
+        className: 'hidden'
+        'Craft your opinion using pros and cons'
 
       SliderBubblemouth()
 
@@ -1319,37 +1325,19 @@ PointsList = ReactiveComponent
     header_height = Math.max heightWhenRendered(heading,       header_style), \
                              heightWhenRendered(other_heading, header_style)
 
-    keydown = (e) => 
-      if e.which == 32
-        els = $('.point_list .points_heading_label')
-        for el, idx in els 
-          if el == @refs.point_list_heading.getDOMNode()
-            i = idx 
-            break 
-        i--
-        if i < 0
-          i = els.length - 1 
-        els[i].focus()
-        e.preventDefault()
-        e.stopPropagation()
+    HEADING = if @props.rendered_as == 'community_point' then H3 else H4 
 
     wrapper [
-      H2 
+      HEADING 
         ref: 'point_list_heading'
         id: @local.key.replace('/','-')
         className: 'points_heading_label'
-        tabIndex: 0           
-        onKeyDown: keydown
         style: _.extend header_style,
           textAlign: 'center'
           marginBottom: 18
           marginTop: 7
           height: header_height
         heading 
-
-        DIV 
-          className: 'hidden'
-          "Cycle through the lists of points with spacebar."
 
       UL 
         'aria-labelledby': @local.key.replace('/','-')
@@ -1404,7 +1392,7 @@ PointsList = ReactiveComponent
     #              (which is absolutely positioned) grows taller the wing points
     #           2) when filtering the points on result page to a group of opinions 
     #              with few inclusions, the document height can jarringly fluctuate
-    DIV
+    SECTION
       className: "point_list points_by_community #{@props.valence}_by_community"
       style: css.crossbrowserify _.defaults (@props.style or {}),
         display: 'inline-block'
@@ -1422,7 +1410,7 @@ PointsList = ReactiveComponent
 
   drawYourPoints: (children) -> 
       
-    DIV 
+    SECTION 
       className: "point_list points_on_decision_board #{@props.valence}_on_decision_board"
       style: _.defaults (@props.style or {}),
         display: 'inline-block'
@@ -1522,10 +1510,12 @@ PointsList = ReactiveComponent
 
       if @props.drop_target
         SPAN 
+          'aria-hidden': true
           style: 
             fontWeight: if browser.high_density_display then 300 else 400
           "#{t('or')} "
-      SPAN 
+      SPAN
+        'aria-hidden': true
         style: 
           padding: if @props.drop_target then '0 6px' else '0 11px 0 0'
 
@@ -1842,7 +1832,8 @@ Page = ReactiveComponent
     loc = fetch('location')
     auth = fetch('auth')
 
-    DIV 
+    MAIN 
+      role: 'main'
       style: 
         position: 'relative'
         zIndex: 1

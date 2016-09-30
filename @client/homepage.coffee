@@ -23,7 +23,7 @@ window.Homepage = ReactiveComponent
 
     DIV 
       key: "homepage_#{subdomain.name}"
-      role: 'main'
+      
 
       SimpleHomepage()
 
@@ -388,7 +388,7 @@ Cluster = ReactiveComponent
 
     cluster_key = "list/#{cluster.name}"
 
-    DIV
+    ARTICLE
       key: cluster.name
       id: if cluster.name && cluster.name then cluster.name.toLowerCase()
       style: 

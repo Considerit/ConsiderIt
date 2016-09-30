@@ -411,6 +411,7 @@ window.Point = ReactiveComponent
         Discussion
           key:"/comments/#{point.id}"
           point: point.key
+          rendered_as: @props.rendered_as
 
   componentDidMount : ->    
     @setDraggability()
@@ -843,7 +844,8 @@ window.Discussion = ReactiveComponent
       e.preventDefault()
       e.stopPropagation()
 
-    DIV 
+    HEADING = if @props.rendered_as != 'decision_board_point' then H4 else H5
+    SECTION 
       id: 'open_point'
       style: discussion_style
       tabIndex: 0
@@ -884,12 +886,12 @@ window.Discussion = ReactiveComponent
         'x'
 
       if point.text?.length > 0 
-        DIV 
+        SECTION 
           style: 
             marginBottom: 24
             marginTop: 10
 
-          H3
+          HEADING
             style:
               textAlign: 'left'
               fontSize: 24
@@ -905,29 +907,26 @@ window.Discussion = ReactiveComponent
           
 
 
+      SECTION null,
+        HEADING
+          style:
+            textAlign: 'left'
+            fontSize: 24
+            color: focus_blue
+            marginBottom: 25
+            marginTop: 10
+            fontWeight: 600
+          t('Discuss this Point')
 
-      H3
-        style:
-          textAlign: 'left'
-          fontSize: 24
-          color: focus_blue
-          marginBottom: 25
-          marginTop: 10
-          fontWeight: 600
-        t('Discuss this Point')
+        DIV className: 'comments',
+          for comment in comments
+            if comment.key.match /(comment)/
+              Comment key: comment.key
+            else 
+              FactCheck key: comment.key
 
-
-      
-
-      DIV className: 'comments',
-        for comment in comments
-          if comment.key.match /(comment)/
-            Comment key: comment.key
-          else 
-            FactCheck key: comment.key
-
-      # Write a new comment
-      EditComment fresh: true, point: arest.key_id(@props.key)
+        # Write a new comment
+        EditComment fresh: true, point: arest.key_id(@props.key)
 
   # HACK! Save the height of the open point, which will be added 
   # to the min height of the reasons region to accommodate the

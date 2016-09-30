@@ -59,17 +59,20 @@ window.back_to_homepage_button = (style) ->
 
   hash = loc.url.split('/')[1].replace('-', '_')
 
-  A
+  NAV 
     role: 'navigation'
-    title: 'back to homepage'
-    key: 'back_to_homepage_button'
-    href: "/##{hash}"
-    style: _.defaults {}, style,
-      fontSize: 43
-      visibility: if homepage || !customization('has_homepage') then 'hidden' else 'visible'
-      color: 'black'
+    style: 
+      display: 'inline-block'
+    A
+      title: 'back to homepage'
+      key: 'back_to_homepage_button'
+      href: "/##{hash}"
+      style: _.defaults {}, style,
+        fontSize: 43
+        visibility: if homepage || !customization('has_homepage') then 'hidden' else 'visible'
+        color: 'black'
 
-    '<'
+      '<'
 
 
 ####

@@ -274,7 +274,7 @@ class SubdomainController < ApplicationController
         c[:year] += contributors.keys().length if day <= 365
         c[:month] += contributors.keys().length if day <= 30
         c[:week] += contributors.keys().length if day <= 7                
-        c[:day] += contributors.keys().length if day <= 1
+        c[:day] += contributors.keys().length if day < 1
       end 
       contributors_per_subdomain[subdomain] = c
     end 

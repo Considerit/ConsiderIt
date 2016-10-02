@@ -28,7 +28,7 @@ window.Metrics = ReactiveComponent
                   fontSize: 36
                   width: 400
                   textAlign: 'center'
-                'Loading metrics, might take ~15 seconds' 
+                'Loading metrics, might a minute' 
 
     if @local.time_frame == 'all time'
       metrics = m 
@@ -165,14 +165,13 @@ window.Metrics = ReactiveComponent
           contributions.sort (a,b) => b[1][@local.sort_contributions_by] - a[1][@local.sort_contributions_by]
 
           sort_on_click = (e) =>
-            console.log 'SWTICH TO ', e.currentTarget, e.currentTarget.getAttribute('data-time')
             @local.sort_contributions_by = e.currentTarget.getAttribute('data-time')
             save @local
 
           td_style =
-            padding: '0 5px'
+            padding: '0 8px'
           th_style =
-            padding: '0 5px'
+            padding: '2px 8px'
             fontWeight: 'bold'
             cursor: 'pointer'
             borderBottom: '1px solid #999'
@@ -184,6 +183,7 @@ window.Metrics = ReactiveComponent
                   textAlign: 'right'
                   cursor: 'default'
                 'Name'
+              TH onClick: sort_on_click, 'data-time': 'active', style: th_style, 'Days active'
               TH onClick: sort_on_click, 'data-time': 'lifetime', style: th_style, 'Lifetime'
               TH onClick: sort_on_click, 'data-time': 'year', style: th_style, 'Past year'
               TH onClick: sort_on_click, 'data-time': 'month', style: th_style, 'Past month'
@@ -208,6 +208,7 @@ window.Metrics = ReactiveComponent
                       overflow: 'hidden'
                     fetch("/subdomain/#{subdomain}").name 
 
+                TD style: td_style, contributors.active
                 TD style: td_style, contributors.lifetime
                 TD style: td_style, contributors.year
                 TD style: td_style, contributors.month

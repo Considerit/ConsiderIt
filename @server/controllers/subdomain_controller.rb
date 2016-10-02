@@ -263,6 +263,7 @@ class SubdomainController < ApplicationController
     contributors_per_subdomain = {}
     total.each do |subdomain, contributors_per_day| 
       c = {
+        :active => 0,
         :lifetime => 0,
         :year => 0,
         :month => 0,
@@ -270,6 +271,7 @@ class SubdomainController < ApplicationController
         :day => 0
       }
       contributors_per_day.each do |day, contributors|
+        c[:active] += 1
         c[:lifetime] += contributors.keys().length
         c[:year] += contributors.keys().length if day <= 365
         c[:month] += contributors.keys().length if day <= 30

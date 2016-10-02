@@ -171,7 +171,7 @@ window.avatar = (user, props) ->
     tabIndex: if props.focusable then 0 else -1
 
   if tag == IMG
-    attrs.alt = tooltip 
+    attrs.alt = if props.hide_tooltip then '' else tooltip 
   
   tag attrs,
     if add_initials

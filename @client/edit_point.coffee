@@ -87,7 +87,7 @@ window.EditPoint = ReactiveComponent
           
         AutoGrowTextArea 
           id:'text'
-          name:'text'
+          name:'fulltext'
           'aria-label': t('description_placeholder') 
           placeholder: t('description_placeholder') 
           min_height: if PORTRAIT_MOBILE() then 150 else 100

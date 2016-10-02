@@ -66,17 +66,15 @@ Auth = ReactiveComponent
 
     return SPAN null if !auth.form
 
-    DIV null,
-      DIV
-        role: if auth.form != 'edit profile' then 'main'
-        style:
-          margin: "0 auto"
-          padding: if !@props.naked then '4em 0'
-          position: 'relative'
-          zIndex: 0
-          width: AUTH_WIDTH()
+    DIV
+      style:
+        margin: "0 auto"
+        padding: if !@props.naked then '4em 0'
+        position: 'relative'
+        zIndex: 0
+        width: AUTH_WIDTH()
 
-        @buildAuthForm()
+      @buildAuthForm()
 
   ####
   # buildAuthForm
@@ -119,7 +117,7 @@ Auth = ReactiveComponent
           avatar_field = ["#{t('pic_prompt')}:", avatar_field]
 
         if pledges = @pledgeInput()
-          pledges_field = ['I pledge to:', pledges]
+          pledges_field = ['My pledge:', pledges]
 
         if auth.form == 'create account'
           email_field = @inputBox('email', 'email@address', 'email')
@@ -618,8 +616,8 @@ Auth = ReactiveComponent
     if !customization('auth_require_pledge')
       return null
     else
-      pledges = ['Use only one account', 
-                 'Not attack or mock others']
+      pledges = ['I will use only one account', 
+                 'I will not attack or mock others']
 
 
     UL style: {paddingTop: 6},

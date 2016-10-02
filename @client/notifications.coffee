@@ -69,6 +69,7 @@ window.Notifications = ReactiveComponent
           type: 'checkbox'
           defaultChecked: !!prefs['send_emails']
           id: 'enable_email'
+          name: 'enable_email'
           style: 
             verticalAlign: 'top'
             display: 'inline-block'
@@ -185,6 +186,7 @@ window.Notifications = ReactiveComponent
 
                 INPUT 
                   id: "#{event}_input"
+                  name: "#{event}_input"
                   type: 'checkbox'
                   checked: if config.email_trigger then true
                   style: 

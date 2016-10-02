@@ -90,6 +90,7 @@ window.EditComment = ReactiveComponent
 
         AutoGrowTextArea
           ref: 'comment_input'
+          name: 'new comment'
           'aria-label': if permitted > 0 then t('Write a comment') else ''
           placeholder: if permitted > 0 then t('Write a comment') else ''
           disabled: permitted < 0

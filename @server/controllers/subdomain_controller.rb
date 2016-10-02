@@ -163,6 +163,7 @@ class SubdomainController < ApplicationController
   def metrics
     contribs = {}
     subs = {}
+    total = {}
 
     fake_users = {}
 
@@ -171,7 +172,7 @@ class SubdomainController < ApplicationController
 
 
     # TODO: put this in database
-    demo_subs = ["MSNBC","washingtonpost","MsTimberlake","design","Relief-Demo","sosh","GS-Demo","impacthub-demo","librofm","bitcoin-demo","amberoon","SocialSecurityWorks","Airbdsm","event","lyftoff","Schools","ANUP2015","CARCD-demo","news","Committee-Meeting","Cattaca","AMA-RFS","economist","ITFeedback","kevin","program-committee-demo","ECAST-Demo"]
+    demo_subs = ["galacticfederation", "MSNBC","washingtonpost","MsTimberlake","design","Relief-Demo","sosh","GS-Demo","impacthub-demo","librofm","bitcoin-demo","amberoon","SocialSecurityWorks","Airbdsm","event","lyftoff","Schools","ANUP2015","CARCD-demo","news","Committee-Meeting","Cattaca","AMA-RFS","economist","ITFeedback","kevin","program-committee-demo","ECAST-Demo"]
     skip_subs = {}
     demo_subs.each {|s| skip_subs[s] = 1}
     bad_subs = {}
@@ -215,9 +216,17 @@ class SubdomainController < ApplicationController
           if !subs.has_key?(days_since)
             subs[days_since] = {}
           end 
+          if !total.has_key?(item.subdomain_id)
+            total[item.subdomain_id] = {}
+          end 
+          if !total[item.subdomain_id].has_key?(days_since)
+            total[item.subdomain_id][days_since] = {}
+          end
 
           contribs[days_since][item.user_id] = 1 
           subs[days_since][item.subdomain_id] = 1
+          
+          total[item.subdomain_id][days_since][item.user_id] = 1
 
           if !earliest || earliest < days_since
             earliest = days_since
@@ -251,10 +260,30 @@ class SubdomainController < ApplicationController
       end 
     end
 
+    contributors_per_subdomain = {}
+    total.each do |subdomain, contributors_per_day| 
+      c = {
+        :lifetime => 0,
+        :year => 0,
+        :month => 0,
+        :week => 0,
+        :day => 0
+      }
+      contributors_per_day.each do |day, contributors|
+        c[:lifetime] += contributors.keys().length
+        c[:year] += contributors.keys().length if day <= 365
+        c[:month] += contributors.keys().length if day <= 30
+        c[:week] += contributors.keys().length if day <= 7                
+        c[:day] += contributors.keys().length if day <= 1
+      end 
+      contributors_per_subdomain[subdomain] = c
+    end 
+
     metrics = {
       :key => '/metrics',
       :daily_active_contributors => active_contributors.reverse(),
-      :daily_active_subdomains => active_subs.reverse()
+      :daily_active_subdomains => active_subs.reverse(),
+      :contributors_per_subdomain => contributors_per_subdomain
     }
 
 

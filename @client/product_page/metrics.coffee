@@ -33,9 +33,10 @@ window.Metrics = ReactiveComponent
     if @local.time_frame == 'all time'
       metrics = m 
     else 
-      metrics = 
+      metrics = _.extend m,
         daily_active_contributors: (d for d in m.daily_active_contributors when d[0] < 365)
         daily_active_subdomains: (d for d in m.daily_active_subdomains when d[0] < 365)
+
 
     DIV 
       style: 
@@ -186,7 +187,7 @@ window.Metrics = ReactiveComponent
               TH onClick: sort_on_click, 'data-time': 'lifetime', style: th_style, 'Lifetime'
               TH onClick: sort_on_click, 'data-time': 'year', style: th_style, 'Past year'
               TH onClick: sort_on_click, 'data-time': 'month', style: th_style, 'Past month'
-              TH onClick: sort_on_click, 'data-time': 'week', style: th_style, 'Past week',
+              TH onClick: sort_on_click, 'data-time': 'week', style: th_style, 'Past week'
               TH onClick: sort_on_click, 'data-time': 'day', style: th_style, 'Past day'
 
             for cont in contributions 

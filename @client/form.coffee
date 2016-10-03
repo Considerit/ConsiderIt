@@ -77,9 +77,15 @@ window.CharacterCountTextInput = ReactiveComponent
     DIV 
       style: 
         position: 'relative' 
+
       SPAN 
+        'aria-hidden': true
         style: count_style
         @props.maxLength - @local.count
+
+      SPAN 
+        className: 'hidden'
+        "#{@props.maxLength - @local.count} characters left"
 
       @transferPropsTo TEXTAREA 
         className: class_name

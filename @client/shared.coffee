@@ -673,6 +673,18 @@ body, input, button, textarea {
   height:1px;
   overflow:hidden;}
 
+a.skip:active, 
+a.skip:focus, 
+a.skip:hover {
+    position: fixed;
+    left: 0; 
+    top: 0;
+    width: auto; 
+    height: auto; 
+    overflow: visible; 
+}
+
+
 .content {
   position: relative;
   font-size: 16px;

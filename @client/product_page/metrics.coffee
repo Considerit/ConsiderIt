@@ -28,7 +28,7 @@ window.Metrics = ReactiveComponent
                   fontSize: 36
                   width: 400
                   textAlign: 'center'
-                'Loading metrics, might a minute' 
+                'Loading metrics, might be a minute' 
 
     if @local.time_frame == 'all time'
       metrics = m 

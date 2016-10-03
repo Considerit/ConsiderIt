@@ -137,7 +137,6 @@ Proposal = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
-
     point_cols = ['your_con_points', 'your_pro_points', 'community_cons', 'community_pros']
     edit_mode = false
     for pc in point_cols
@@ -292,6 +291,32 @@ Proposal = ReactiveComponent
           # Border + bubblemouth that is shown when there is a histogram selection
           GroupSelectionRegion()
 
+          if !TWO_COL() && customization('discussion_enabled', @proposal)
+            Dock
+              key: 'decisionboard-dock'
+              docked_key: 'decisionboard'            
+              constraints : ['slider-dock']
+              dock_on_zoomed_screens: true
+              dockable : => 
+                mode == 'crafting'
+
+              start: -24
+
+              stop : -> 
+                $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
+
+              style: 
+                position: 'absolute'
+                width: DECISION_BOARD_WIDTH()
+                zIndex: 0 #so that points being dragged are above opinion region
+                display: 'inline-block'
+                verticalAlign: 'top'
+                left: '50%'
+                marginLeft: -DECISION_BOARD_WIDTH() / 2
+
+              DecisionBoard
+                key: 'decisionboard'
+
           PointsList 
             key: 'community_cons'
             rendered_as: 'community_point'
@@ -321,31 +346,6 @@ Proposal = ReactiveComponent
             style: 
               visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
-          if !TWO_COL() && customization('discussion_enabled', @proposal)
-            Dock
-              key: 'decisionboard-dock'
-              docked_key: 'decisionboard'            
-              constraints : ['slider-dock']
-              dock_on_zoomed_screens: true
-              dockable : => 
-                mode == 'crafting'
-
-              start: -24
-
-              stop : -> 
-                $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
-
-              style: 
-                position: 'absolute'
-                width: DECISION_BOARD_WIDTH()
-                zIndex: 0 #so that points being dragged are above opinion region
-                display: 'inline-block'
-                verticalAlign: 'top'
-                left: '50%'
-                marginLeft: -DECISION_BOARD_WIDTH() / 2
-
-              DecisionBoard
-                key: 'decisionboard'
 
 
       if edit_mode && browser.is_mobile
@@ -804,6 +804,8 @@ DecisionBoard = ReactiveComponent
 
       H3 
         className: 'hidden'
+        style: 
+          display: if !TWO_COL() && get_proposal_mode() == 'results' then 'none'
         'Craft your opinion using pros and cons'
 
       SliderBubblemouth()
@@ -816,7 +818,6 @@ DecisionBoard = ReactiveComponent
         onClick: => 
           if get_proposal_mode() == 'results' 
             updateProposalMode('crafting', 'give_opinion_button')
-
             $('.the_handle')[0].focus()
 
 
@@ -880,6 +881,10 @@ DecisionBoard = ReactiveComponent
             if e.which == 13 || e.which == 32 # ENTER or SPACE
               saveOpinion @proposal 
               e.preventDefault()
+          'aria-label': if your_opinion.published 
+                          t('Return to results')
+                        else 
+                          "#{t('log_in')} and #{t('Save your opinion')}"
 
           if your_opinion.published 
             t('Return to results')
@@ -1116,101 +1121,99 @@ GroupSelectionRegion = ReactiveComponent
     hist = fetch namespaced_key('histogram', @proposal)
 
     has_histogram_focus = hist.selected_opinions || hist.selected_opinion
-    if has_histogram_focus
-      DIV 
-        style: 
-          width: BODY_WIDTH() + 160
-          border: "3px solid #{if get_selected_point() then '#eee' else focus_blue }"
-          height: '100%'
-          position: 'absolute'
-          borderRadius: 16
-          marginLeft: -BODY_WIDTH()/2 - 80
-          left: '50%'
-          top: 18
+    return SPAN null if !has_histogram_focus
 
-        # draw a bubble mouth
-        if hist.selected_opinions
-          w = 40; h = 30
-          left = translateStanceToPixelX(hist.selected_opinion_value, BODY_WIDTH()) + 10
+    DIV 
+      style: 
+        width: BODY_WIDTH() + 160
+        border: "3px solid #{if get_selected_point() then '#eee' else focus_blue }"
+        height: '100%'
+        position: 'absolute'
+        borderRadius: 16
+        marginLeft: -BODY_WIDTH()/2 - 80
+        left: '50%'
+        top: 18
 
-          DIV 
-            style: cssTriangle 'top', \
-                               (if get_selected_point() then '#eee' else focus_blue), \
-                               w, h,               
-                                  position: 'relative'
-                                  top: -32
-                                  left: left
+      # draw a bubble mouth
+      if hist.selected_opinions
+        w = 40; h = 30
+        left = translateStanceToPixelX(hist.selected_opinion_value, BODY_WIDTH()) + 10
 
-            DIV
-              style: cssTriangle 'top', 'white', w - 1, h - 1,
-                position: 'relative'
-                left: -(w - 2)/2
-                top: 6
+        DIV 
+          style: cssTriangle 'top', \
+                             (if get_selected_point() then '#eee' else focus_blue), \
+                             w, h,               
+                                position: 'relative'
+                                top: -32
+                                left: left
 
-        # draw a name + avatar display for the selected opinion
-        else 
-          place_avatar_opinion_value = \
-               if hist.selected_opinion_value > 0 then .66 else -.8
-          left = translateStanceToPixelX(place_avatar_opinion_value, BODY_WIDTH() + 160)
+          DIV
+            style: cssTriangle 'top', 'white', w - 1, h - 1,
+              position: 'relative'
+              left: -(w - 2)/2
+              top: 6
 
-          avatar_size = 80
-          user = fetch(fetch(hist.selected_opinion).user)
-          name = user.name or 'Anonymous'
-          title = "#{name}'#{if name[name.length - 1] != 's' then 's' else ''} Opinion"
+      # draw a name + avatar display for the selected opinion
+      else 
+        place_avatar_opinion_value = \
+             if hist.selected_opinion_value > 0 then .66 else -.8
+        left = translateStanceToPixelX(place_avatar_opinion_value, BODY_WIDTH() + 160)
 
-          name_width = widthWhenRendered(title, {fontSize: '30px', fontWeight: '600'})
+        avatar_size = 80
+        user = fetch(fetch(hist.selected_opinion).user)
+        name = user.name or 'Anonymous'
+        title = "#{name}'#{if name[name.length - 1] != 's' then 's' else ''} Opinion"
 
-          if hist.selected_opinion_value > 0
-            name_style = 
-              left: -28 - avatar_size * .5 - name_width 
-              borderTopLeftRadius: 16
-              paddingRight: avatar_size * .75
-              paddingLeft: 18
+        name_width = widthWhenRendered(title, {fontSize: '30px', fontWeight: '600'})
 
-          else
-            name_style = 
-              left: avatar_size/4
-              borderTopRightRadius: 16
-              paddingLeft: avatar_size * .75
-              paddingRight: 18
-                
-          DIV 
-            style: 
-              left: left
-              position: 'absolute'
-              zIndex: 1
+        if hist.selected_opinion_value > 0
+          name_style = 
+            left: -28 - avatar_size * .5 - name_width 
+            borderTopLeftRadius: 16
+            paddingRight: avatar_size * .75
+            paddingLeft: 18
 
-            DIV null,
-              Avatar 
-                key: user
-                user: user
-                hide_tooltip: true
+        else
+          name_style = 
+            left: avatar_size/4
+            borderTopRightRadius: 16
+            paddingLeft: avatar_size * .75
+            paddingRight: 18
+              
+        DIV 
+          style: 
+            left: left
+            position: 'absolute'
+            zIndex: 1
+
+          DIV null,
+            Avatar 
+              key: user
+              user: user
+              hide_tooltip: true
+              style: 
+                position: 'absolute'
+                width: avatar_size
+                height: avatar_size
+                top: -avatar_size * .75
+                left: -avatar_size/4
+                zIndex: 99 
+                border: "3px solid #{focus_blue}"
+
+            DIV 
+              style: _.extend name_style,
+                position: 'absolute'
+                backgroundColor: focus_blue
+                paddingTop: 8
+                paddingBottom: 8
+                color: 'white'
+                top: -58
+                width: name_width + 10 + 18 + avatar_size * .75 + 10
+
+              SPAN 
                 style: 
-                  position: 'absolute'
-                  width: avatar_size
-                  height: avatar_size
-                  top: -avatar_size * .75
-                  left: -avatar_size/4
-                  zIndex: 99 
-                  border: "3px solid #{focus_blue}"
-
-              DIV 
-                style: _.extend name_style,
-                  position: 'absolute'
-                  backgroundColor: focus_blue
-                  paddingTop: 8
-                  paddingBottom: 8
-                  color: 'white'
-                  top: -58
-                  width: name_width + 10 + 18 + avatar_size * .75 + 10
-
-                SPAN 
-                  style: 
-                    fontSize: 30
-                  title
-
-    else 
-      SPAN null
+                  fontSize: 30
+                title      
 
 
 
@@ -1405,8 +1408,22 @@ PointsList = ReactiveComponent
 
         transition: "transform #{TRANSITION_SPEED}ms"
         transform: "translate(#{x_pos}px, 0)"
+      if get_proposal_mode() == 'crafting' && !TWO_COL()
+
+        [A
+          className: 'hidden'
+          href: "##{@props.valence}_on_decision_board"
+          'data-nojax': true
+          onClick: (e) => 
+            e.stopPropagation()
+            document.activeElement?.blur()
+            $("[name='#{@props.valence}_on_decision_board']").focus()
+
+          "Skip to Your points."
+        A name: "#{@props.valence}_by_community"]
 
       children
+
 
   drawYourPoints: (children) -> 
       
@@ -1420,6 +1437,7 @@ PointsList = ReactiveComponent
         position: 'relative'
         zIndex: if @columnStandsOut() then 6 else 1        
         float: if @props.valence == 'pros' then 'right' else 'left'    
+      A name: "#{@props.valence}_on_decision_board"
       children
 
   drawAddNewPoint: -> 
@@ -1430,36 +1448,58 @@ PointsList = ReactiveComponent
     hist = fetch namespaced_key('histogram', @proposal)
     hist_selection = hist.selected_opinions || hist.selected_opinion
 
+    noun = \
+        capitalize \
+          if @props.valence == 'pros' 
+            customization('point_labels.pro', @proposal)
+          else 
+            customization('point_labels.con', @proposal)    
+
     if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES && !hist_selection
       if !your_points.adding_new_point
-        DIV 
-          onClick: => 
-            if can_add_new_point == Permission.NOT_LOGGED_IN
-              reset_key 'auth', 
-                form: 'create account'
-                goal: 'Write a point'
-                ask_questions: true
+        DIV null,
 
-            else if can_add_new_point == Permission.UNVERIFIED_EMAIL
-              reset_key 'auth', 
-                form: 'verify email'
-                goal: 'Write a point'
-                ask_questions: true
+          DIV 
+            onClick: => 
+              if can_add_new_point == Permission.NOT_LOGGED_IN
+                reset_key 'auth', 
+                  form: 'create account'
+                  goal: 'Write a point'
+                  ask_questions: true
 
-              save auth
-              current_user.trying_to = 'send_verification_token'
-              save current_user
+              else if can_add_new_point == Permission.UNVERIFIED_EMAIL
+                reset_key 'auth', 
+                  form: 'verify email'
+                  goal: 'Write a point'
+                  ask_questions: true
 
-            else
-              your_points.adding_new_point = true
-              save your_points
+                save auth
+                current_user.trying_to = 'send_verification_token'
+                save current_user
 
-            writeToLog {what: 'click new point'}
+              else
+                your_points.adding_new_point = true
+                save your_points
+
+              writeToLog {what: 'click new point'}
+
+            if @props.rendered_as == 'decision_board_point'
+              @drawAddNewPointInDecisionBoard()
+            else 
+              @drawAddNewPointInCommunityCol()
 
           if @props.rendered_as == 'decision_board_point'
-            @drawAddNewPointInDecisionBoard()
-          else 
-            @drawAddNewPointInCommunityCol()
+            A
+              className: 'hidden'
+              href: "##{@props.valence}_by_community"
+              'data-nojax': true
+              onClick: (e) => 
+                e.stopPropagation()
+                document.activeElement?.blur()
+                $("[name='#{@props.valence}_by_community']").focus()
+
+              "Skip to #{noun} points by others to vote on important ones."
+
       else if !browser.is_mobile
         EditPoint
           key: "new_point_#{@props.valence}"

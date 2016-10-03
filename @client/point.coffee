@@ -341,8 +341,8 @@ window.Point = ReactiveComponent
             sty = 
               left: if !@local.focused_include then 20 else if included then -20 else -40
 
-          BUTTON 
-            'aria-label': if included then 'Mark this point as unimportant' else 'Mark this point as important'
+          BUTTON
+            'aria-label': if included then 'Mark this point as unimportant and move to next point' else 'Mark this point as important and move to next point'
             style: _.extend sty, 
               position: 'absolute'
               top: 20
@@ -350,14 +350,19 @@ window.Point = ReactiveComponent
               padding: 0
               backgroundColor: 'transparent'
               border: 'none'              
-              display: if can_opine < 0 || get_selected_point() then 'none'
+              display: if get_selected_point() then 'none'
             onFocus: (e) => @local.focused_include = true; save @local
             onBlur: (e) => @local.focused_include = false; save @local
             onTouchEnd: includePoint
             onClick: includePoint
             onKeyDown: (e) => 
               if e.which == 13 || e.which == 32
+
+                next = $(e.target).closest('.point').next().find('.point_content')
                 includePoint(e)
+                valence = if @data().is_pro then 'pros' else 'cons'
+
+                next.focus()
                 e.preventDefault()
 
             I 
@@ -509,7 +514,6 @@ window.Point = ReactiveComponent
 
 
     loc = fetch('location')
-    console.log 'SELECTING POINT'
     if get_selected_point() == @props.key # deselect
       delete loc.query_params.selected
       what = 'deselected a point'

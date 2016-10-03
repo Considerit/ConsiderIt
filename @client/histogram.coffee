@@ -343,7 +343,7 @@ window.Histogram = ReactiveComponent
         bottom: -21
         fontSize: 14
         fontWeight: 400
-        color: '#999'
+        color: '#666'
       customization("slider_pole_labels.oppose", @props.proposal)
     SPAN
       style:
@@ -352,7 +352,7 @@ window.Histogram = ReactiveComponent
         bottom: -21
         fontSize: 14
         fontWeight: 400
-        color: '#999'
+        color: '#666'
       customization("slider_pole_labels.support", @props.proposal)
     ]
 

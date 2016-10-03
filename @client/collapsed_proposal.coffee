@@ -142,7 +142,7 @@ window.CollapsedProposal = ReactiveComponent
             className: 'proposal proposal_homepage_name'
             style: 
               fontWeight: 500
-              borderBottom: "1px solid #ccc"              
+              borderBottom: "1px solid #aaa"              
               
             href: proposal_url(proposal)
 

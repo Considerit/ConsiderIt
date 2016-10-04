@@ -120,19 +120,16 @@ Auth = ReactiveComponent
           pledges_field = ['My pledge:', pledges]
 
         if auth.form == 'create account'
-          email_field = @inputBox('email', 'email@address', 'email')
+          email_field = ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')]
           footer = @footerForRegistrationAndLogin()
         else
-          email_field = DIV
-            style: {color: auth_text_gray, padding: '4px 8px'},
-            current_user.email
+          email_field = ["#{t('login_as')}:", DIV style: {color: auth_text_gray, padding: '4px 8px'}, current_user.email]
           footer = @submitButton(t('Create new account'))
 
         [ @headerAndBorder goal, t('Introduce Yourself'),
             @body [
-                    ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')],
-                    ["My #{t("password")}:", @inputBox('password', t("password"), 'password')]
-
+                    email_field,
+                    ["My #{t("password")}:", @inputBox('password', t("password"), 'password')],
                     avatar_field,
                     [t('name_prompt'), @inputBox('name', t('full_name'))],
                     pledges_field].concat @userQuestionInputs()

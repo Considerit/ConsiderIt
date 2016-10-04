@@ -300,6 +300,7 @@ end
 module Invitations
   def process_and_send_invitations(roles, invitations, target)
 
+    
     invitations.each do |invite|
       message = invite['message'] && invite['message'].length > 0 ? invite['message'] : nil
       users_with_role = roles[invite['role']]
@@ -330,7 +331,6 @@ module Invitations
 
             # replace email address with the user's key in the roles object
 
-            # does this have to be done across all other subdomains / proposals / roles?
             users_with_role[users_with_role.index(user_or_email)] = "/user/#{invitee.id}" 
           end
 

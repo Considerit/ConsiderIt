@@ -49,9 +49,6 @@ class User < ActiveRecord::Base
         raise "Could not store image for user #{self.id}, it is too large!"
       end
 
-      Oj.load((self.active_in or '[]')).each do |subdomain_id|
-        Rails.cache.delete("avatar-digest-#{subdomain_id}") 
-      end
     end
   end
 
@@ -165,14 +162,6 @@ class User < ActiveRecord::Base
       active_subdomains.push "#{subdomain.id}"
       self.active_in = JSON.dump active_subdomains
       self.save
-
-      # if we're logging in to a subdomain that we didn't originally register, we'll have to 
-      # regenerate the avatars file. Note that there is still a bug where the avatar won't be there 
-      # on initial login to the new subdomain.
-      if self.avatar_file_name && active_subdomains.length > 1
-        subdomain_id = subdomain.id
-        Rails.cache.delete("avatar-digest-#{subdomain_id}")
-      end
     end
 
   end
@@ -418,20 +407,6 @@ class User < ActiveRecord::Base
 
   end
 
-  def self.refresh_cache (subdomain = nil)
-    if subdomain
-      subdomains = [subdomain]
-    else 
-      subdomains = Subdomain.all
-    end
-    for subdomain in subdomains 
-      pp "Updating avatar cache for #{subdomain.name}"
-      cache_key = "avatar-digest-#{subdomain.id}"
-      users = User.where("registered=1 AND b64_thumbnail IS NOT NULL AND INSTR(active_in, '\"#{subdomain.id}\"')")
-      avatars = users.select([:id,:b64_thumbnail]).map {|user| "#avatar-#{user.id} { background-image: url('#{user.b64_thumbnail}');}"}.join(' ')
-      Rails.cache.write(cache_key, avatars)
-    end
-  end
 
   def self.purge
     users = User.all.map {|u| u.id}

@@ -436,7 +436,6 @@ window.Point = ReactiveComponent
     is_selected = get_selected_point() == @props.key
     if @local.is_selected != is_selected
       if is_selected
-
         if browser.is_mobile
           $(@getDOMNode()).moveToTop {scroll: false}
         else

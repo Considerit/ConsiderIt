@@ -587,12 +587,17 @@ window.NewProposal = ReactiveComponent
     cluster_key = "list/#{cluster_name}"
 
     cluster_state = fetch(@props.local)
-
+    loc = fetch 'location'
 
     return SPAN null if cluster_name == 'Blocksize Survey'
 
     cluster_name = cluster_name or 'Proposals'
     current_user = fetch '/current_user'
+
+    if cluster_state.adding_new_proposal != cluster_name && \
+       loc.query_params.new_proposal == encodeURIComponent(cluster_name)
+      cluster_state.adding_new_proposal = cluster_name
+      save cluster_state
 
     adding = cluster_state.adding_new_proposal == cluster_name 
     cluster_slug = slugify(cluster_name)
@@ -606,7 +611,7 @@ window.NewProposal = ReactiveComponent
     DIV null,
 
 
-      if !adding 
+      if !adding
 
         BUTTON 
           style: _.defaults @props.label_style,
@@ -618,11 +623,17 @@ window.NewProposal = ReactiveComponent
             textDecoration: 'underline'
 
           onClick: (e) => 
+            loc.query_params.new_proposal = encodeURIComponent cluster_name
+            save loc
+
             if permitted
               cluster_state.adding_new_proposal = cluster_name; save(cluster_state)
+              setTimeout =>
+                $("##{cluster_slug}-name").focus()
+              , 0
             else 
               e.stopPropagation()
-              reset_key 'auth', {form: 'login', goal: '', ask_questions: true}
+              reset_key 'auth', {form: 'login', goal: 'add a new proposal', ask_questions: true}
           
           if permitted
             t("add new")
@@ -748,6 +759,8 @@ window.NewProposal = ReactiveComponent
                     if proposal.errors?.length == 0
                       cluster_state.adding_new_proposal = null 
                       save cluster_state
+                      delete loc.query_params.new_proposal
+                      save loc                      
                     else
                       @local.errors = proposal.errors
                       save @local
@@ -762,10 +775,31 @@ window.NewProposal = ReactiveComponent
                   border: 'none'
                   padding: 0
                   fontSize: 'inherit'                  
-                onClick: => cluster_state.adding_new_proposal = null; save(cluster_state)
+                onClick: => 
+                  cluster_state.adding_new_proposal = null; 
+                  save(cluster_state)
+                  delete loc.query_params.new_proposal
+                  save loc
 
                 t('cancel')
 
+  componentDidMount : ->    
+    @ensureIsInViewPort()
+
+  componentDidUpdate : -> 
+    @ensureIsInViewPort()
+
+  ensureIsInViewPort : -> 
+    loc = fetch 'location'
+    local = fetch @props.local
+
+    is_selected = loc.query_params.new_proposal == encodeURIComponent((@props.cluster_name or 'Proposals'))
+
+    if is_selected
+      if browser.is_mobile
+        $(@getDOMNode()).moveToTop {scroll: false}
+      else
+        $(@getDOMNode()).ensureInView {scroll: false}
 
 
   drawTips : (tips) -> 

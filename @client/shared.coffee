@@ -61,8 +61,6 @@ window.back_to_homepage_button = (style) ->
 
   NAV 
     role: 'navigation'
-    style: 
-      display: 'inline-block'
     A
       title: 'back to homepage'
       key: 'back_to_homepage_button'

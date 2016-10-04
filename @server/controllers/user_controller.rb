@@ -44,28 +44,5 @@ class UserController < ApplicationController
     render :json => []
   end
 
-  def avatars
-    
-    respond_to do |format|
-
-      if !session[:search_bot]        
-        cache_key = "avatar-digest-#{current_subdomain.id}"
-        avatars = Rails.cache.read(cache_key)
-        if avatars.nil? || avatars == 0
-          User.refresh_cache(current_subdomain)
-          avatars = Rails.cache.read(cache_key)
-        end
-      else
-        avatars = ''
-      end
-
-      format.json { 
-        render :json => {
-          key: '/avatars',
-          avatars: avatars
-        }
-      }
-    end
-  end
 
 end

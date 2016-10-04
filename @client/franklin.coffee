@@ -327,7 +327,7 @@ Proposal = ReactiveComponent
             points: buildPointsList \
               @proposal, 'cons', \
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-              mode == 'crafting'
+              mode == 'crafting' && !TWO_COL()
             style: 
               visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
@@ -342,7 +342,7 @@ Proposal = ReactiveComponent
             points: buildPointsList \
               @proposal, 'pros', \
               (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-              mode == 'crafting'
+              mode == 'crafting' && !TWO_COL()
             style: 
               visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
@@ -1231,9 +1231,16 @@ buildPointsList = (proposal, valence, sort_field, filter_included) ->
 
   points = (pnt for pnt in points when pnt.is_pro == (valence == 'pros') )
 
+  included_points = fetch(proposal.your_opinion).point_inclusions
   if filter_included
-    included_points = fetch(proposal.your_opinion).point_inclusions
     points = (pnt for pnt in points when !_.contains(included_points, pnt.key) )
+  else 
+    for pnt in included_points
+      point = fetch pnt 
+      continue if pnt.is_pro != (valence == 'pros')
+      if points.indexOf(point) == -1
+        points.push point 
+
 
   # Filter down to the points included in the selection opinions, if set. 
   hist = fetch(namespaced_key('histogram', proposal))
@@ -1259,9 +1266,7 @@ buildPointsList = (proposal, valence, sort_field, filter_included) ->
       if fetch(point).hide_name
         delete point_inclusions_per_point[point]
 
-  
-  points = (pnt for pnt in points when pnt.key of point_inclusions_per_point)
-
+  points = (pnt for pnt in points when (pnt.key of point_inclusions_per_point) || (pnt.key in included_points))
   # Sort points based on resonance with selected users, or custom sort_field
   sort = (pnt) ->
     if filtered

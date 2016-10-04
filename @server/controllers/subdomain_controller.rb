@@ -135,13 +135,14 @@ class SubdomainController < ApplicationController
 
   def update_roles
     if params.has_key?('roles')
-      if params.has_key?(:invitations) && params[:invitations]
-        params['roles'] = process_and_send_invitations(params['roles'], params[:invitations], current_subdomain)
+      if params.has_key?('invitations') && params['invitations']
+        params['roles'] = process_and_send_invitations(params['roles'], params['invitations'], current_subdomain)
       end
       # rails replaces [] with nil in params for some reason...
       params['roles'].each do |k,v|
         params['roles'][k] = [] if !v
       end
+      current_subdomain.roles = JSON.dump params['roles']
     end
   end
 
@@ -328,7 +329,9 @@ module Invitations
             })
 
             # replace email address with the user's key in the roles object
-            users_with_role[users_with_role.index(user_or_email)] = "/user/#{invitee.id}"
+
+            # does this have to be done across all other subdomains / proposals / roles?
+            users_with_role[users_with_role.index(user_or_email)] = "/user/#{invitee.id}" 
           end
 
         end

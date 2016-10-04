@@ -231,17 +231,3 @@ styles += """
 }
 
 """
-
-
-# Fetches b64 encoded avatar thumbnails and puts them in a style sheet
-# window.Avatars = ReactiveComponent
-#   displayName: 'Avatars'
-#   render: -> 
-#     avatars = fetch('/avatars')
-
-#     STYLE 
-#       type: 'text/css'
-#       id: 'b64-avatars'
-#       dangerouslySetInnerHTML: 
-#         __html: if avatars.avatars then avatars.avatars else ''
-

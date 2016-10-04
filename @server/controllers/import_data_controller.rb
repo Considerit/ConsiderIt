@@ -177,6 +177,8 @@ class ImportDataController < ApplicationController
               })
 
               proposal = Proposal.find_by_slug attrs['slug']
+              attrs['roles'] = "{\"editor\":[\"/user/#{user.id}\"], \"writer\":[\"*\"], \"commenter\":[\"*\"], \"opiner\":[\"*\"], \"observer\":[\"*\", \"*\"]}"
+
               if !proposal
                 attrs['subdomain_id'] = current_subdomain.id
                 proposal = Proposal.new attrs
@@ -188,6 +190,7 @@ class ImportDataController < ApplicationController
               end
 
               proposals.push proposal
+
 
 
 

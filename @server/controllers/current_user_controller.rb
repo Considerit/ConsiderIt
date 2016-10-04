@@ -372,7 +372,9 @@ class CurrentUserController < ApplicationController
     elsif current_user.email != email
       # puts("Updating email from #{current_user.email} to #{params[:email]}")
       # Okay, here comes a new email address!
+
       current_user.update_attributes({:email => email, :verified => false})
+
       if !current_user.save
         raise "Error saving this user's email"
       end
@@ -401,16 +403,18 @@ class CurrentUserController < ApplicationController
   # roles or permissions settings. If so, replace the email with the
   # user's key. 
   def update_roles_and_permissions
-    for cls in [Subdomain, Proposal]
-      objs_with_user_in_role = cls.where("roles like '%\"#{current_user.email}\"%'") 
-                                       # this is case insensitive
+    ActsAsTenant.without_tenant do 
+      for cls in [Subdomain, Proposal]
+        objs_with_user_in_role = cls.where("roles like '%\"#{current_user.email}\"%'") 
+                                         # this is case insensitive
 
-      for obj in objs_with_user_in_role
-        pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{obj.name}"
-        obj.roles = obj.roles.gsub /\"#{current_user.email}\"/i, "\"/user/#{current_user.id}\""
-        obj.save
+        for obj in objs_with_user_in_role
+          pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{obj.name}"
+          obj.roles = obj.roles.gsub /\"#{current_user.email}\"/i, "\"/user/#{current_user.id}\""
+          obj.save
+        end
+
       end
-
     end
 
   end

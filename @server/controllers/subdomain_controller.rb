@@ -326,13 +326,13 @@ module Invitations
               :complete_profile => true,
               :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
             })
-            invitee.add_to_active_in
 
             # replace email address with the user's key in the roles object
             users_with_role[users_with_role.index(user_or_email)] = "/user/#{invitee.id}"
-
           end
+
         end
+        invitee.add_to_active_in        
         UserMailer.invitation(current_user, invitee, target, invite['role'], current_subdomain, message).deliver_later
 
       end

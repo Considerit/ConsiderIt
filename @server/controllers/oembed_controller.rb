@@ -9,6 +9,11 @@ class OembedController < ApplicationController
     slug = u.path.gsub /\//, '' 
     proposal = Proposal.find_by_slug slug
 
+    if !proposal
+      render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found
+      return
+    end
+
     authorize! "read proposal", proposal
 
     width = params[:maxwidth].to_i

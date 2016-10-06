@@ -234,7 +234,7 @@ Proposal = ReactiveComponent
 
           H2 
             className: 'hidden'
-            "Evaluations of this proposal on spectrum from #{customization("slider_pole_labels.oppose", @proposal)} to #{customization("slider_pole_labels.support", @proposal)}"
+            "Evaluations on spectrum from #{customization("slider_pole_labels.oppose", @proposal)} to #{customization("slider_pole_labels.support", @proposal)} of the proposal '#{@proposal.name}'"
 
           Histogram
             key: namespaced_key('histogram', @proposal)
@@ -806,7 +806,7 @@ DecisionBoard = ReactiveComponent
         className: 'hidden'
         style: 
           display: if !TWO_COL() && get_proposal_mode() == 'results' then 'none'
-        'Craft your opinion using pros and cons'
+        "Craft your opinion using pros and cons about '#{@proposal.name}'"
 
       SliderBubblemouth()
 
@@ -1721,6 +1721,37 @@ PointsList = ReactiveComponent
 
 
 
+AccessibilitySupport = ReactiveComponent 
+  displayName: 'AccessibilitySupport'
+
+  render: -> 
+    DIV   
+      style: 
+        width: HOMEPAGE_WIDTH()
+        margin: 'auto'
+
+      H1
+        style: 
+          fontSize: 32
+          fontWeight: 600
+          marginTop: 30
+          marginBottom: 10
+
+        'Accessibility Support'
+
+      P 
+        style: 
+          paddingBottom: 18
+          fontSize: 24
+
+        "If you are having difficulty using Considerit to give feedback, contact us at "
+
+        A 
+          href: "mailto:accessibility@consider.it?subject=Accessibility support"
+          style: 
+            textDecoration: 'underline'
+          'accessibility@consider.it'
+        ". We will help you personally."
 
 About = ReactiveComponent
   displayName: 'About'
@@ -1903,7 +1934,9 @@ Page = ReactiveComponent
           when '/about'
             About()
           when '/proposal/new'
-            EditProposal key: "new_proposal", fresh: true              
+            EditProposal key: "new_proposal", fresh: true      
+          when '/accessibility_support'
+            AccessibilitySupport()        
           when '/dashboard/email_notifications'
             Notifications 
               key: '/page/dashboard/email_notifications'

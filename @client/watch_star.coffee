@@ -45,6 +45,7 @@ window.WatchStar = ReactiveComponent
 
 
     BUTTON 
+      'aria-hidden': true
       'aria-label': label(watching)
       'aria-describedby': if @local.hover_watch then 'tooltip'
       'aria-pressed': watching

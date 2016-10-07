@@ -14,6 +14,17 @@ class HtmlController < ApplicationController
       return
     end
 
+    if current_subdomain.SSO_only and not current_user.registered
+      get_url_base = "#{request.protocol}#{request.host_with_port}"
+      settings = User.get_saml_settings(get_url_base)
+      if settings.nil?
+        raise "No IdP Settings!"
+      end
+      req = OneLogin::RubySaml::Authrequest.new
+      redirect_to(req.create(settings))
+      return
+    end
+
     if Rails.env.development? || request.host.end_with?('chlk.it')
       if params[:domain]
         session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id

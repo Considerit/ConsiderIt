@@ -43,7 +43,7 @@ window.DefaultFooter = ReactiveComponent
         style: 
           marginTop: 30
 
-        DIV 
+        BUTTON 
           style: 
             color: logo_red
             cursor: 'pointer'
@@ -52,6 +52,9 @@ window.DefaultFooter = ReactiveComponent
             padding: 10
             textAlign: 'center'
             fontSize: 18
+            backgroundColor: 'transparent'
+            border: 'none'
+            
           title: 'Back to top'
           onClick: -> scrollTo 0, 0
 

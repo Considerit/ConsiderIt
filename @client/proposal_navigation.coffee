@@ -98,7 +98,6 @@ window.DefaultProposalNavigation = ReactiveComponent
             defaultValue: @proposal.cluster
             style: 
               border: 'none'
-              outline: 'none'
               fontStyle: 'italic'
               fontSize: 16
 

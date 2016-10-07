@@ -24,7 +24,7 @@ user_name = (user, anon) ->
 # Was seeing major slowdown on pages with lots of avatars simply because we
 # were attaching a mouseover and mouseout event on each and every Avatar for
 # the purpose of showing a tooltip name. So we use event delegation instead. 
-document.addEventListener "mouseover", (e) ->
+show_tooltip = (e) ->
   if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
     user = fetch(e.target.getAttribute('data-user'))
     anonymous = e.target.getAttribute('data-anonymous') == 'true'
@@ -46,19 +46,28 @@ document.addEventListener "mouseover", (e) ->
     tooltip.tip = name
     save tooltip
 
-document.addEventListener "mouseout", (e) ->
+hide_tooltip = (e) ->
   if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
     tooltip = fetch 'tooltip'
     tooltip.coords = null
     save tooltip
 
+
+
+document.addEventListener "mouseover", show_tooltip
+document.addEventListener "mouseout", hide_tooltip
+
+$('body').on 'focusin', '.avatar', show_tooltip
+$('body').on 'focusout', '.avatar', hide_tooltip
+
+# focus/blur don't seem to work at document level
+# document.addEventListener "focus", show_tooltip, true
+# document.addEventListener "blur", hide_tooltip, true
+
+
 ##
 # Avatar
 # Displays a user's avatar
-#
-# We primarily download all avatar images as part of a CSS file specifying a 
-# b64 encoded background-image small 50x50 thumbnails for each user 
-# (under #avatar-{id}). 
 #
 # Higher resolution images are available ('large' and 'original'). These can 
 # be specified by setting the img_size property of Avatar.
@@ -135,6 +144,10 @@ window.avatar = (user, props) ->
   if add_initials
     style.textAlign = 'center'
 
+  name = user_name user, anonymous
+  if name == 'Anonymous'
+    name = '?'
+
   attrs = _.extend {}, props,
     className: "avatar #{props.className or ''}"
     id: id
@@ -142,6 +155,9 @@ window.avatar = (user, props) ->
     'data-showtooltip': !props.hide_tooltip
     'data-anon': anonymous      
     style: style
+    rel: props.rel?.replace('<user>', name) or name
+    tabIndex: if props.focusable then 0 else -1
+
 
 
   # IE9 gets confused if there is an image without a src
@@ -151,9 +167,6 @@ window.avatar = (user, props) ->
 
   tag attrs,
     if add_initials
-      name = user_name user, anonymous
-      if name == 'Anonymous'
-        name = '?'
       fontsize = style.width / 2
       ff = 'monaco,Consolas,"Lucida Console",monospace'
       if name.length == 2

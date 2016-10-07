@@ -124,18 +124,18 @@ class ProposalController < ApplicationController
       end
 
       errors = validate_input(fields_to_validate, proposal)
-      
+        
       if errors.length == 0
 
         if updated_fields.has_key?('description')
           # Sanitize description
-          updated_fields['description'] = ActionController::Base.helpers.sanitize(updated_fields['description'])
+          updated_fields['description'] = sanitize_helper(updated_fields['description'])
         end 
         if updated_fields.has_key?('description_fields')
           # Sanitize description_fields[i].html
           updated_fields['description_fields'] =
             JSON.dump(JSON.parse(updated_fields['description_fields']).map { |field|
-                        field['html'] = ActionController::Base.helpers.sanitize(field['html'])
+                        field['html'] = sanitize_helper(field['html'])
                         field
                       })
         end 

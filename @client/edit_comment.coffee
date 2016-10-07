@@ -61,11 +61,14 @@ window.EditComment = ReactiveComponent
 
           if permitted == Permission.NOT_LOGGED_IN
             DIV null,
-              SPAN 
+              BUTTON 
                 style: 
                   textDecoration: 'underline'
                   color: focus_blue
                   fontSize: if browser.is_mobile then 18
+                  backgroundColor: 'transparent'
+                  padding: 0
+                  border: 'none'
                 t('login_to_comment')
               if '*' not in @proposal.roles.commenter
                 DIV style: {fontSize: 11},
@@ -81,9 +84,10 @@ window.EditComment = ReactiveComponent
       DIV 
         style: 
           marginLeft: 60   
-                 
+
         AutoGrowTextArea
           ref: 'comment_input'
+          'aria-label': if permitted > 0 then t('Write a comment') else ''
           placeholder: if permitted > 0 then t('Write a comment') else ''
           disabled: permitted < 0
           onChange: (e) => @local.new_comment = e.target.value; save(@local)
@@ -102,6 +106,7 @@ window.EditComment = ReactiveComponent
             marginLeft: 60
             padding: '8px 16px'
             fontSize: if browser.is_mobile then 24
+          
           'data-action': 'save-comment'
 
           t('Save comment')

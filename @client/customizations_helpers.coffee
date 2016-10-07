@@ -5,8 +5,8 @@ window.passes_tags = (user, tags) ->
 
   passes = true 
   for tag in tags 
-    passes &&= user.tags[tag] && \
-     !("#{user.tags[tag]}".toLowerCase() in ['no', 'false'])
+    passes &&= user?.tags?[tag] && \
+     !("#{user?.tags?[tag]}".toLowerCase() in ['no', 'false'])
   passes 
 
 window.passes_tag_filter = (user, tag, regex) -> 
@@ -311,6 +311,7 @@ window.ShortHeader = (opts) -> ->
 
                 IMG 
                   src: opts.logo_src
+                  rel: "#{subdomain.name} logo"
                   style: 
                     height: opts.logo_height
 
@@ -352,6 +353,7 @@ window.LegacyImageHeader = (opts) -> ->
   DIV null,
 
     IMG 
+      rel: @props.background_image_alternative_text
       src: opts.background_image_url
       style: 
         width: '100%'
@@ -380,7 +382,7 @@ window.LegacyImageHeader = (opts) -> ->
 
      
     if opts.text
-      DIV style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
+      H1 style: {color: 'white', margin: 'auto', fontSize: 60, fontWeight: 700, position: 'relative', top: 50}, 
         opts.text
 
 
@@ -460,6 +462,7 @@ window.HawaiiHeader = (opts) -> ->
 
       if homepage && opts.logo
         IMG 
+          rel: @props.logo_alternative_text
           src: opts.logo
           style: 
             width: opts.logo_width
@@ -468,7 +471,7 @@ window.HawaiiHeader = (opts) -> ->
             paddingTop: 20
 
 
-      SPAN 
+      H1 
         style: opts.title_style
         opts.title 
 
@@ -558,6 +561,7 @@ window.SeattleHeader = (opts) -> ->
 
     if opts.background_image_url
       IMG
+        rel: @props.background_image_alternative_text
         style: _.defaults {}, opts.image_style,
           width: '100%'
           display: 'block'
@@ -587,7 +591,7 @@ window.SeattleHeader = (opts) -> ->
 
         DIV null,
 
-          for section in opts.sections 
+          for section, idx in opts.sections 
 
             DIV 
               style: 
@@ -595,7 +599,8 @@ window.SeattleHeader = (opts) -> ->
 
 
               if section.label 
-                DIV
+                HEADING = if idx == 0 then H1 else DIV
+                HEADING
                   style: _.defaults {}, (section.label_style or {}), section_heading_style
                   section.label 
 
@@ -626,6 +631,7 @@ window.SeattleHeader = (opts) -> ->
               if opts.salutation.image 
                 IMG
                   src: opts.salutation.image 
+                  rel: ''
                   style: 
                     height: 70
               else

@@ -31,11 +31,11 @@ class Proposal < ActiveRecord::Base
     end
 
     # Sanitize description
-    self.description = ActionController::Base.helpers.sanitize(self.description)
+    self.description = sanitize_helper(self.description)
     # Sanitize description_fields[i].html
     self.description_fields =
       JSON.dump(JSON.parse(self.description_fields || '{}').map { |field|
-                  field['html'] = ActionController::Base.helpers.sanitize(field['html'])
+                  field['html'] = sanitize_helper(field['html'])
                   field
                 })    
   end
@@ -99,7 +99,7 @@ class Proposal < ActiveRecord::Base
     # user for all proposals
     your_opinions = {}
     if subdomain.name != 'homepage'
-      Opinion.where(:user => current_user).each do |opinion|
+      Opinion.where(:user => current_user).order('id DESC').each do |opinion|
         your_opinions[opinion.proposal_id] = opinion
       end 
 

@@ -270,7 +270,9 @@ SortProposalsMenu = ReactiveComponent
       idx = 0 if !idx?
       @local.focus = idx 
       save @local 
-      @refs["menuitem-#{idx}"].getDOMNode().focus()
+      setTimeout => 
+        @refs["menuitem-#{idx}"].getDOMNode().focus()
+      , 0
 
     close_menu = => 
       document.activeElement.blur()
@@ -299,14 +301,7 @@ SortProposalsMenu = ReactiveComponent
           @local.sort_menu = !@local.sort_menu
           save(@local)
 
-        onMouseEnter: => @local.sort_menu = true; save(@local)
         onMouseLeave: close_menu
-
-        onFocus: =>  
-          @local.sort_menu = true
-          save(@local)
-          if !@local.focus? 
-            set_focus(0)    
 
         onBlur: (e) => 
           setTimeout => 
@@ -317,7 +312,7 @@ SortProposalsMenu = ReactiveComponent
           , 0
 
         onKeyDown: (e) => 
-          if e.which == 13 || e.which == 27 # ENTER or ESC
+          if e.which == 13 || e.which == 32 || e.which == 27 # ENTER or ESC
             close_menu()
           else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
             @local.focs = -1 if !@local.focus?
@@ -351,6 +346,19 @@ SortProposalsMenu = ReactiveComponent
             fontSize: 'inherit'
             color: 'inherit'
 
+          onClick: => 
+            @local.sort_menu = !@local.sort_menu
+            set_focus(0) if @local.sort_menu
+            save(@local)
+          
+          onKeyDown: (e) =>
+            if e.which == 13 || e.which == 32  
+              @local.sort_menu = !@local.sort_menu
+              set_focus(0) if @local.sort_menu
+              save(@local)
+              e.preventDefault()
+              e.stopPropagation()
+
           sort.name
 
           SPAN style: _.extend cssTriangle 'bottom', focus_blue, 11, 7,
@@ -383,7 +391,7 @@ SortProposalsMenu = ReactiveComponent
                 ref: "menuitem-#{idx}"
                 key: sort_option.name
                 role: "menuitem"
-                tabIndex: 0
+                tabIndex: if @local.focus == idx then 0 else -1
                 style:
                   padding: '6px 12px'
                   borderBottom: "1px solid #ddd"
@@ -392,6 +400,7 @@ SortProposalsMenu = ReactiveComponent
                   fontWeight: 600
                   cursor: 'pointer'
                   display: 'block'
+                  outline: 'none'
 
                 onClick: do(idx) => (e) => 
                   if @local.focus != idx 
@@ -403,7 +412,9 @@ SortProposalsMenu = ReactiveComponent
                   trigger(e)
 
                 onKeyDown: (e) => 
-                  trigger(e) if e.which == 13 #ENTER
+                  if e.which == 13 || e.which == 32 # ENTER or SPACE
+                    trigger(e) 
+                    e.preventDefault()
                     
                 onFocus: do(idx) => (e) => 
                   if @local.focus != idx 
@@ -512,7 +523,9 @@ OpinionFilter = ReactiveComponent
 
             is_enabled = filter_out.opinion_filters?[filter.label]
             BUTTON 
+              'aria-label': "Filter opinions to #{filter.label}"
               'aria-describedby': if filter.tooltip then 'tooltip'
+              'aria-pressed': is_enabled
               tabIndex: 0
               ref: "filter-#{idx}"
               style: 
@@ -532,7 +545,7 @@ OpinionFilter = ReactiveComponent
               onBlur: hide_tooltip 
               onClick: -> toggle_filter(filter)   
               onKeyDown: (e) -> 
-                if e.which == 13   
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
                   toggle_filter(filter) 
                   e.preventDefault()
                   e.stopPropagation()

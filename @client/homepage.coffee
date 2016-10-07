@@ -16,13 +16,15 @@ window.Homepage = ReactiveComponent
 
     return SPAN null if !subdomain.name
 
-    title = subdomain.app_title || subdomain.name
+    title = subdomain.branding.masthead_header_text or subdomain.app_title or "#{subdomain.name} considerit homepage"
+
     if doc.title != title
       doc.title = title
       save doc
 
     DIV 
       key: "homepage_#{subdomain.name}"
+      
 
       SimpleHomepage()
 
@@ -219,7 +221,7 @@ window.SimpleHomepage = ReactiveComponent
           style: 
             width: if has_proposal_sort then secnd_column.width
             marginBottom: 20
-            marginLeft: if has_proposal_sort then secnd_column.marginLeft else secnd_column.marginLeft + first_column.width
+            marginLeft: if has_proposal_sort then secnd_column.marginLeft else 0
             display: if has_proposal_sort then 'inline-block'
             verticalAlign: 'top'
             textAlign: 'center' 
@@ -352,13 +354,14 @@ window.HomepageTabs = ReactiveComponent
                 @local.hovering = null 
                 save @local
               onKeyDown: (e) => 
-                if e.which == 13
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
                   e.currentTarget.click() 
                   e.preventDefault()
               onClick: => 
                 homepage_tabs.filter = filter 
                 homepage_tabs.clusters = clusters
                 save homepage_tabs
+                document.activeElement.blur()
 
               filter
 
@@ -386,7 +389,7 @@ Cluster = ReactiveComponent
 
     cluster_key = "list/#{cluster.name}"
 
-    DIV
+    ARTICLE
       key: cluster.name
       id: if cluster.name && cluster.name then cluster.name.toLowerCase()
       style: 
@@ -489,6 +492,7 @@ Cluster = ReactiveComponent
       if ListHeader
         ListHeader()
       else 
+        heading_text = list_items_title || cluster.name || 'Proposals'
         HEADING = if label then H2 else H1
         toggle_list = ->
           if !list_uncollapseable
@@ -501,25 +505,31 @@ Cluster = ReactiveComponent
         DIV 
           style: 
             position: 'relative'
+
           HEADING
             style: _.extend {}, first_header, 
               position: 'relative'
-              cursor: if !list_uncollapseable then 'pointer'
+              
             BUTTON 
+              tabIndex: if list_uncollapseable then -1 else 0
+              'aria-label': "#{heading_text}. Expand or collapse list."
+              'aria-pressed': !collapsed.clusters[cluster_key]
               style: 
                 padding: 0 
                 margin: 0 
                 border: 'none'
                 backgroundColor: 'transparent'
                 fontWeight: first_header.fontWeight
+                cursor: if !list_uncollapseable then 'pointer'
+                textAlign: 'left'
+                  
               onKeyDown: (e) -> 
-                console.log 'KEY!', e.which
-                if e.which == 13 || e.which == 32
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
                   toggle_list()
                   e.preventDefault()
               onClick: toggle_list
 
-              list_items_title || cluster.name || 'Proposals'
+              heading_text 
 
               if !list_uncollapseable
                 SPAN 
@@ -544,7 +554,7 @@ Cluster = ReactiveComponent
 
           if !is_collapsed
             histo_title = customization('list_opinions_title', cluster_key)
-            H1
+            DIV
               style: secnd_header
               SPAN 
                 style: 
@@ -577,12 +587,17 @@ window.NewProposal = ReactiveComponent
     cluster_key = "list/#{cluster_name}"
 
     cluster_state = fetch(@props.local)
-
+    loc = fetch 'location'
 
     return SPAN null if cluster_name == 'Blocksize Survey'
 
     cluster_name = cluster_name or 'Proposals'
     current_user = fetch '/current_user'
+
+    if cluster_state.adding_new_proposal != cluster_name && \
+       loc.query_params.new_proposal == encodeURIComponent(cluster_name)
+      cluster_state.adding_new_proposal = cluster_name
+      save cluster_state
 
     adding = cluster_state.adding_new_proposal == cluster_name 
     cluster_slug = slugify(cluster_name)
@@ -596,7 +611,7 @@ window.NewProposal = ReactiveComponent
     DIV null,
 
 
-      if !adding 
+      if !adding
 
         BUTTON 
           style: _.defaults @props.label_style,
@@ -608,11 +623,17 @@ window.NewProposal = ReactiveComponent
             textDecoration: 'underline'
 
           onClick: (e) => 
+            loc.query_params.new_proposal = encodeURIComponent cluster_name
+            save loc
+
             if permitted
               cluster_state.adding_new_proposal = cluster_name; save(cluster_state)
+              setTimeout =>
+                $("##{cluster_slug}-name").focus()
+              , 0
             else 
               e.stopPropagation()
-              reset_key 'auth', {form: 'login', goal: '', ask_questions: true}
+              reset_key 'auth', {form: 'login', goal: 'add a new proposal', ask_questions: true}
           
           if permitted
             t("add new")
@@ -681,6 +702,7 @@ window.NewProposal = ReactiveComponent
             if @local.errors?.length > 0
               
               DIV
+                role: 'alert'
                 style:
                   fontSize: 18
                   color: 'darkred'
@@ -737,6 +759,8 @@ window.NewProposal = ReactiveComponent
                     if proposal.errors?.length == 0
                       cluster_state.adding_new_proposal = null 
                       save cluster_state
+                      delete loc.query_params.new_proposal
+                      save loc                      
                     else
                       @local.errors = proposal.errors
                       save @local
@@ -751,10 +775,31 @@ window.NewProposal = ReactiveComponent
                   border: 'none'
                   padding: 0
                   fontSize: 'inherit'                  
-                onClick: => cluster_state.adding_new_proposal = null; save(cluster_state)
+                onClick: => 
+                  cluster_state.adding_new_proposal = null; 
+                  save(cluster_state)
+                  delete loc.query_params.new_proposal
+                  save loc
 
                 t('cancel')
 
+  componentDidMount : ->    
+    @ensureIsInViewPort()
+
+  componentDidUpdate : -> 
+    @ensureIsInViewPort()
+
+  ensureIsInViewPort : -> 
+    loc = fetch 'location'
+    local = fetch @props.local
+
+    is_selected = loc.query_params.new_proposal == encodeURIComponent((@props.cluster_name or 'Proposals'))
+
+    if is_selected
+      if browser.is_mobile
+        $(@getDOMNode()).moveToTop {scroll: false}
+      else
+        $(@getDOMNode()).ensureInView {scroll: false}
 
 
   drawTips : (tips) -> 

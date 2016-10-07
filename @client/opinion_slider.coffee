@@ -53,6 +53,8 @@ window.OpinionSlider = ReactiveComponent
       if (@props.focused || TWO_COL()) && @props.permitted && !hist_selection
         @drawFeedback() 
 
+
+
       Slider
         key: @props.key
         width: @props.width
@@ -77,8 +79,18 @@ window.OpinionSlider = ReactiveComponent
           transition: "transform #{TRANSITION_SPEED}ms"
           transform: "scale(#{if !@props.focused || slider.docked then 1 else 2.5})"
           visibility: if hist_selection || !@props.permitted then 'hidden'
+        
         onMouseUpCallback: @handleMouseUp
         respond_to_click: false
+
+        label: "Express your opinion on a slider from #{@props.pole_labels[0][0]} to #{@props.pole_labels[1][0]} about #{@proposal.name}"
+        readable_text: (value) => 
+          if value > .03
+            "#{(value * 100).toFixed(0)}% #{@props.pole_labels[1][0]}"
+          else if value < -.03 
+            "#{-1 * (value * 100).toFixed(0)}% #{@props.pole_labels[0][0]}"
+          else 
+            "Neutral"
 
       @saveYourOpinionNotice()
 
@@ -146,6 +158,7 @@ window.OpinionSlider = ReactiveComponent
                       widthWhenRendered(sub_text, {fontSize: 14, maxWidth: available_x}))
 
         DIV 
+          'aria-hidden': true
           key: main_text
           style: 
             position: 'absolute'
@@ -169,6 +182,7 @@ window.OpinionSlider = ReactiveComponent
     else
       for pole_label, idx in @props.pole_labels
         DIV 
+          'aria-hidden': true
           key: "small-#{pole_label[0]}"
           style: 
             position: 'absolute'
@@ -219,7 +233,8 @@ window.OpinionSlider = ReactiveComponent
       marginLeft: -feedback_width / 2
       width: feedback_width
 
-    H2  
+    DIV
+      'aria-hidden' : true
       style: feedback_style
       slider_feedback
 

@@ -170,7 +170,8 @@ ImportDataDash = ReactiveComponent
                 BUTTON
                   id: 'submit_import'
                   style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
-                  onClick: => 
+                  onClick: (e) => 
+                    e.preventDefault()
                     $('html, #submit_import').css('cursor', 'wait')
                     $(@getDOMNode()).find('form').ajaxSubmit
                       type: 'POST'

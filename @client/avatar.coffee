@@ -25,11 +25,12 @@ user_name = (user, anon) ->
 # were attaching a mouseover and mouseout event on each and every Avatar for
 # the purpose of showing a tooltip name. So we use event delegation instead. 
 show_tooltip = (e) ->
-  if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
+  if e.target.getAttribute('data-user') && e.target.getAttribute('data-tooltip')
     user = fetch(e.target.getAttribute('data-user'))
     anonymous = e.target.getAttribute('data-anonymous') == 'true'
 
-    name = user_name user, anonymous
+
+    name = e.target.getAttribute('data-tooltip')
 
     if !anonymous && filters = customization 'opinion_filters'
       for filter in filters 
@@ -40,14 +41,18 @@ show_tooltip = (e) ->
             icon = filter.icon 
           name += '<span style="padding: 0 0 0 12px">' + icon + "</span>"
 
-
     tooltip = fetch 'tooltip'
     tooltip.coords = $(e.target).offset()
     tooltip.tip = name
     save tooltip
+    e.preventDefault()
 
 hide_tooltip = (e) ->
-  if e.target.getAttribute('data-user') && e.target.getAttribute('data-showtooltip') == 'true'
+  if e.target.getAttribute('data-user') && e.target.getAttribute('data-tooltip')
+    if e.target.getAttribute('data-title')
+      e.target.setAttribute('title', e.target.getAttribute('data-title'))
+      e.target.removeAttribute('data-title')
+
     tooltip = fetch 'tooltip'
     tooltip.coords = null
     save tooltip
@@ -91,6 +96,8 @@ $('body').on 'focusout', '.avatar', hide_tooltip
 
 
 window.avatar = (user, props) ->
+  props = _.extend {}, props
+
   if !user.key 
     if user == arest.cache['/current_user']?.user 
       user = fetch(user)
@@ -144,47 +151,55 @@ window.avatar = (user, props) ->
   if add_initials
     style.textAlign = 'center'
 
-  name = user_name user, anonymous
-  if name == 'Anonymous'
-    name = '?'
-
-  attrs = _.extend {}, props,
-    className: "avatar #{props.className or ''}"
-    id: id
-    'data-user': user.key
-    'data-showtooltip': !props.hide_tooltip
-    'data-anon': anonymous      
-    style: style
-    rel: props.rel?.replace('<user>', name) or name
-    tabIndex: if props.focusable then 0 else -1
-
-
 
   # IE9 gets confused if there is an image without a src
   # Chrome puts a weird gray border around IMGs without a src
   tag = if !props.src? then SPAN else IMG
 
+  name = user_name user, anonymous
+  alt = props.alt 
+  delete props.alt if props.alt? 
+  tooltip = alt?.replace('<user>', name) or name
 
+  attrs = _.extend {}, props,
+    key: user.key
+    className: "avatar #{props.className or ''}"
+    'data-user': user.key
+    'data-tooltip': if !props.hide_tooltip then tooltip 
+    'data-anon': anonymous  
+    style: style
+    tabIndex: if props.focusable then 0 else -1
+
+  if tag == IMG
+    attrs.alt = if props.hide_tooltip then '' else tooltip 
+  
   tag attrs,
     if add_initials
       fontsize = style.width / 2
       ff = 'monaco,Consolas,"Lucida Console",monospace'
+      if name == 'Anonymous'
+        name = '?'
+
       if name.length == 2
         name = "#{name[0][0]}#{name[1][0]}"
       else 
         name = "#{name[0][0]}"
 
-      SPAN 
+      DIV
         style: 
           color: 'white'
           pointerEvents: 'none'
           fontSize: fontsize
-          display: 'block'
           position: 'relative'
           fontFamily: ff
           top: .3 * fontsize #style.height / 2 - heightWhenRendered(name, {fontSize: fontsize, fontFamily: ff}) / 2
-
+          overflow: 'hidden'
         name
+
+        DIV 
+          className: 'hidden'
+          tooltip
+
 
 
 
@@ -216,17 +231,3 @@ styles += """
 }
 
 """
-
-
-# Fetches b64 encoded avatar thumbnails and puts them in a style sheet
-# window.Avatars = ReactiveComponent
-#   displayName: 'Avatars'
-#   render: -> 
-#     avatars = fetch('/avatars')
-
-#     STYLE 
-#       type: 'text/css'
-#       id: 'b64-avatars'
-#       dangerouslySetInnerHTML: 
-#         __html: if avatars.avatars then avatars.avatars else ''
-

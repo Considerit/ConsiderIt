@@ -456,7 +456,7 @@ _.extend dict.en,
   introduce_yourself: 'Introduce Yourself'
 
   complete_registration: 'Complete registration'
-  login_as: 'Hi, I log in as'
+  login_as: 'Hi, my email is'
   password: 'password'
   name_prompt: 'My name is'
   full_name: (args) -> 
@@ -464,7 +464,7 @@ _.extend dict.en,
     if subdomain.name in ['bitcoin', 'bitcoinclassic']
       'user name or company name'
     else
-      'first and last name'
+      'first and last name or pseudonym'
   pic_prompt: 'I look like'
   your_profile: 'Your Profile'
   updated_successfully: "Updated successfully"
@@ -603,16 +603,16 @@ _.extend dict.fr,
 
 _.extend dict.en, 
 
-  send_email: 'Send me email digests'
+  send_email: 'Send me email summaries of activity'
   email_digest_purpose: (args) ->
-    "The digests summarize relevant new activity for you regarding #{args.project}"
-  digest_timing: "Send summaries at most"
+    "The emails summarize relevant new activity for you regarding #{args.project}"
+  digest_timing: "Send email summaries at most"
   daily: 'daily'
   hourly: 'hourly'
   weekly: 'weekly'
   monthly: 'monthly'
   notable_events: "Emails are only sent if a notable event occurred. Which events are notable to you?"
-  watched_proposals: 'The proposals you are watching for new activity:'
+  watched_proposals: 'The proposals you are watching for new activity'
   unwatch: "Unwatch this proposal"
   hide_notifications: 'Hide notifications'
   show_notifications: 'Show notifications'

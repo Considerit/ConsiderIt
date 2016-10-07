@@ -51,6 +51,7 @@ window.EditPoint = ReactiveComponent
     DIV
       className: 'edit_point'
       style: style
+      'aria-describedby': 'tips_for_new_point'
 
       DIV
         style: 
@@ -86,7 +87,7 @@ window.EditPoint = ReactiveComponent
           
         AutoGrowTextArea 
           id:'text'
-          name:'text'
+          name:'fulltext'
           'aria-label': t('description_placeholder') 
           placeholder: t('description_placeholder') 
           min_height: if PORTRAIT_MOBILE() then 150 else 100
@@ -100,6 +101,7 @@ window.EditPoint = ReactiveComponent
       if @local.errors?.length > 0
         
         DIV
+          role: 'alert'
           style:
             fontSize: 18
             color: 'darkred'
@@ -215,6 +217,7 @@ window.EditPoint = ReactiveComponent
 
 
     DIV 
+      id: 'tips_for_new_point'
       style:
         position: if mobile then 'relative' else 'absolute'
         left: if !mobile then (if @props.valence == 'pros' then -guidelines_w - 25 else POINT_WIDTH() + 15)

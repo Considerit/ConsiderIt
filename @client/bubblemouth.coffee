@@ -71,7 +71,7 @@ window.Bubblemouth = (props) ->
     
   """
 
-  id = "x#{md5(JSON.stringify(props))}"
+  id = "x#{md5(JSON.stringify(props))}-#{(Math.random() * 100000).toFixed(0)}"
 
   SVG 
     version: "1.1" 

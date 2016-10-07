@@ -1,58 +1,59 @@
-= linebreak
-= linebreak
   
-- if @subdomain_notifications && @subdomain_notifications.key?('content_to_moderate')
+
+%table{border: "0", cellpadding: "0", cellspacing: "16", width: "100%", style: "border-collapse: separate; border-spacing: 16px; width: 100%"}
+
+  - if @subdomain_notifications && @subdomain_notifications.key?('content_to_moderate')
+      
+    = section('For moderation')
+
+    = paragraph("There is new content #{styled_link('dashboard/moderate', 'waiting to be moderated', :text_preceding => 'waiting to be moderated at ')}.")
+
+    = end_section()
+
+
+  - if @new_stuff && @new_stuff.key?(:your_proposals) && @new_stuff[:your_proposals].length > 0 
     
-  = section('For moderation')
+    = section('Your proposals')
 
-  = paragraph("There is new content #{styled_link('dashboard/moderate', 'waiting to be moderated', :text_preceding => 'waiting to be moderated at ')}.")
+    - @new_stuff[:your_proposals].each do |proposal|
+      = proposal_with_events(proposal)
 
-  = end_section()
-
-
-- if @new_stuff && @new_stuff.key?(:your_proposals) && @new_stuff[:your_proposals].length > 0 
-  
-  = section('Your proposals')
-
-  - @new_stuff[:your_proposals].each do |proposal|
-    = proposal_with_events(proposal)
-
-  = end_section()
+    = end_section()
 
 
-- if @new_stuff && @new_stuff.key?(:new_proposals) && @new_stuff[:new_proposals].length > 0 
-  
-  = section('New proposals')
+  - if @new_stuff && @new_stuff.key?(:new_proposals) && @new_stuff[:new_proposals].length > 0 
+    
+    = section('New proposals')
 
-  - num = @new_stuff[:new_proposals].length
+    - num = @new_stuff[:new_proposals].length
 
-  - if num > 5
-    - new_proposals = @new_stuff[:new_proposals][0..2]
-  - else 
-    - new_proposals = @new_stuff[:new_proposals]
-
-  - new_proposals.each do |proposal|
-    = proposal_without_events(proposal)
-
-  - if num > 5
-    - if @part == 'text'
-      \r\nView the other #{num - 3} new proposals at #{full_link('', {:sort_by => 'newest'})}
+    - if num > 5
+      - new_proposals = @new_stuff[:new_proposals][0..2]
     - else 
-      %a{:href => full_link('', {:sort_by => 'newest'}), :style=>"text-align:center; color:black;padding-top:20px;display:block;"}
-        View #{num - 3} more new proposals
+      - new_proposals = @new_stuff[:new_proposals]
+
+    - new_proposals.each do |proposal|
+      = proposal_without_events(proposal)
+
+    - if num > 5
+      - if @part == 'text'
+        \r\nView the other #{num - 3} new proposals at #{full_link('', {:sort_by => 'newest'})}
+      - else 
+        %a{:href => full_link('', {:sort_by => 'newest'}), :style=>"text-align:center; color:black;padding-top:20px;display:block;"}
+          View #{num - 3} more new proposals
 
 
-  = end_section()
+    = end_section()
 
 
-- if @new_stuff && @new_stuff.key?(:active_proposals) && @new_stuff[:active_proposals].length > 0 
-  
-  = section('Active proposals')
+  - if @new_stuff && @new_stuff.key?(:active_proposals) && @new_stuff[:active_proposals].length > 0 
+    
+    = section('Proposals with recent activity')
 
-  - @new_stuff[:active_proposals].each do |proposal|
-    = proposal_with_events(proposal)
+    - @new_stuff[:active_proposals].each do |proposal|
+      = proposal_with_events(proposal)
 
-  = end_section()
+    = end_section()
 
 
 - if @part == 'text'
@@ -60,4 +61,5 @@
   = render :partial => 'event_mailer/unsubscribe'
 
 = content_for :footer do
+  Update 
   = render :partial => 'event_mailer/unsubscribe'

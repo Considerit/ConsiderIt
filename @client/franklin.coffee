@@ -18,6 +18,7 @@ require './admin' # for dashes
 require './auth'
 require './avatar'
 require './browser_hacks'
+require './react_component_overrides'
 require './browser_location'
 require './bubblemouth'
 require './edit_proposal'
@@ -176,7 +177,6 @@ Proposal = ReactiveComponent
     
     proposal_header = DefaultProposalNavigation()
 
-    newpoint_threshold = @buildNewPointThreshold()
     draw_handle = (can_opine not in [Permission.DISABLED, \
                           Permission.INSUFFICIENT_PRIVILEGES]) || \
                           your_opinion.published
@@ -290,7 +290,6 @@ Proposal = ReactiveComponent
             rendered_as: 'community_point'
             points_editable: TWO_COL()
             valence: 'cons'
-            newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             drop_target: false
             points: buildPointsList \
@@ -330,7 +329,6 @@ Proposal = ReactiveComponent
             rendered_as: 'community_point'
             points_editable: TWO_COL()
             valence: 'pros'
-            newpoint_threshold: newpoint_threshold
             points_draggable: mode == 'crafting'
             drop_target: false
             points: buildPointsList \
@@ -353,17 +351,6 @@ Proposal = ReactiveComponent
           fresh: pc.adding_new_point
           valence: valence
           your_points_key: edit_mode
-
-
-  buildNewPointThreshold : ->
-    # Grab the 10th percentile
-    points = @page.points || []
-    newpoint_threshold = 
-      (_.sortBy points, \
-                (pnt) => - Date.parse(pnt.created_at))[Math.ceil(points.length / 10)]
-
-    (newpoint_threshold and Date.parse(newpoint_threshold.created_at)) or 
-      new Date()
 
 
 ##
@@ -413,11 +400,13 @@ ProposalDescription = ReactiveComponent
         id: 'proposal_name'
         style:
           lineHeight: 1.2
-          fontWeight: 700
-          fontSize: 45
           paddingBottom: 15
 
-        @proposal.name
+        H1
+          style: 
+            fontWeight: 700
+            fontSize: 45
+          @proposal.name
 
         if customization('show_proposal_meta_data')
           DIV 
@@ -455,7 +444,7 @@ ProposalDescription = ReactiveComponent
           maxHeight: if @local.description_collapsed then @max_description_height
           overflow: if @local.description_collapsed then 'hidden'
         if @local.description_collapsed
-          DIV
+          BUTTON
             style:
               backgroundColor: '#f9f9f9'
               width: HOMEPAGE_WIDTH()
@@ -467,9 +456,17 @@ ProposalDescription = ReactiveComponent
               paddingBottom: 10
               fontWeight: 600
               textAlign: 'center'
+              border: 'none'
+
             onMouseDown: => 
               @local.description_collapsed = false
               save(@local)
+            onKeyDown: (e) =>
+              if e.which == 13 # ENTER 
+                @local.description_collapsed = false
+                e.preventDefault()
+                save(@local)
+
             'Expand full text'
         DIV dangerouslySetInnerHTML:{__html: @proposal.description}
 
@@ -500,24 +497,31 @@ ProposalDescription = ReactiveComponent
             style:
               marginRight: 10
               color: '#999'
-
+              backgroundColor: 'transparent'
+              border: 'none'
+              padding: 0
             t('edit')
 
-          A 
+          BUTTON 
             style: 
               marginRight: 10
               color: '#999'              
               backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'
+              border: 'none'
+              padding: 0
             onClick: => 
               @local.edit_roles = !@local.edit_roles
               save @local
             t('share')
 
           if permit('delete proposal', @proposal) > 0
-            A
+            BUTTON
               style:
                 marginRight: 10
                 color: '#999'
+                backgroundColor: 'transparent'
+                border: 'none'
+                padding: 0
 
               onClick: => 
                 if confirm('Delete this proposal forever?')
@@ -771,10 +775,10 @@ DecisionBoard = ReactiveComponent
         margin: 0
         fontSize: 16
         boxShadow: 'none'
+        width: '100%'
     else 
       give_opinion_style =
         visibility: 'hidden'
-
 
     DIV 
       className:'opinion_region'
@@ -828,7 +832,7 @@ DecisionBoard = ReactiveComponent
 
 
           # only shown during crafting, but needs to be present always for animation
-          A 
+          BUTTON
             className: 'give_opinion_button primary_button'
             style: give_opinion_style
 
@@ -843,11 +847,12 @@ DecisionBoard = ReactiveComponent
           width: DECISION_BOARD_WIDTH()
 
         # Big bold button at the bottom of the crafting page
-        DIV 
+        BUTTON 
           className:'save_opinion_button primary_button'
           style:
             display: 'none'
             backgroundColor: focus_blue
+            width: '100%'
           onClick: => saveOpinion(@proposal)
 
           if your_opinion.published 
@@ -862,7 +867,7 @@ DecisionBoard = ReactiveComponent
             style: 
               display: 'none'
                       
-            A 
+            BUTTON 
               className:'cancel_opinion_button primary_cancel_button'
               onClick: => updateProposalMode('results', 'cancel_button')
               t('skip_to_results') 
@@ -1238,6 +1243,8 @@ PointsList = ReactiveComponent
 
     your_points = @data()
 
+
+
     if @props.points_editable && !your_points.editing_points
       _.extend your_points,
         editing_points : []
@@ -1248,7 +1255,8 @@ PointsList = ReactiveComponent
       header_prefix = if mode == 'results' then 'top' else "other"
       header_style = 
         width: POINT_WIDTH()
-        fontSize: 30        
+        fontSize: 30       
+        fontWeight: 400 
         position: 'relative'
         left: if @props.valence == 'cons' then -20 else 20
           # Mike: I wanted the headers to be centered over the ENTIRE
@@ -1263,7 +1271,6 @@ PointsList = ReactiveComponent
         fontWeight: 700
         color: focus_blue
         fontSize: 30
-
       wrapper = @drawYourPoints
 
 
@@ -1283,7 +1290,7 @@ PointsList = ReactiveComponent
                              heightWhenRendered(other_heading, header_style)
 
     wrapper [
-      DIV 
+      H2 
         className:'points_heading_label'
         style: _.extend header_style,
           textAlign: 'center'
@@ -1309,8 +1316,6 @@ PointsList = ReactiveComponent
                 rendered_as: @props.rendered_as
                 your_points_key: @props.key
                 enable_dragging: @props.points_draggable
-                is_new: @props.newpoint_threshold &&
-                         Date.parse(point.created_at) > @props.newpoint_threshold
 
 
       if @props.drop_target
@@ -1473,11 +1478,14 @@ PointsList = ReactiveComponent
 
         dangerouslySetInnerHTML:{__html: '&bull;'}
 
-      A 
+      BUTTON 
         className: "write_#{@props.valence}"
         style:
           textDecoration: 'underline'
           color: focus_blue
+          padding: 0
+          backgroundColor: 'transparent'
+          border: 'none'
 
         t('write_a_new_point', {noun}) 
 

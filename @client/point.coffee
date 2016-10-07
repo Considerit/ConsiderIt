@@ -182,9 +182,6 @@ window.Point = ReactiveComponent
       onTouchEnd: @selectPoint
       style: point_style
 
-      if @props.rendered_as == 'community_point' && @props.is_new
-        renderNewIndicator()
-
       if @props.rendered_as == 'decision_board_point'
         DIV 
           style: 
@@ -278,11 +275,13 @@ window.Point = ReactiveComponent
         DIV null,
           if permit('update point', point) > 0 && 
               (@props.rendered_as == 'decision_board_point' || TWO_COL())
-            A
+            BUTTON
               style:
                 fontSize: if browser.is_mobile then 24 else 14
                 color: focus_blue
                 padding: '3px 12px 3px 0'
+                backgroundColor: 'transparent'
+                border: 'none'
 
               onTouchEnd: (e) -> e.stopPropagation()
               onClick: ((e) =>
@@ -290,22 +289,25 @@ window.Point = ReactiveComponent
                 points = fetch(@props.your_points_key)
                 points.editing_points.push(@props.key)
                 save(points))
-              SPAN null, t('edit')
+              t('edit')
 
           if permit('delete point', point) > 0 && 
               (@props.rendered_as == 'decision_board_point' || TWO_COL())
-            A 
+            BUTTON
               'data-action': 'delete-point'
               style:
                 fontSize: if browser.is_mobile then 24 else 14
                 color: focus_blue
                 padding: '3px 8px'
+                backgroundColor: 'transparent'
+                border: 'none'
               onTouchEnd: (e) -> e.stopPropagation()       
               onClick: (e) =>
                 e.stopPropagation()
                 if confirm('Delete this point forever?')
                   destroy @props.key
-              SPAN null, t('delete')
+              
+              t('delete')
 
       if TWO_COL() && @props.rendered_as != 'under_review'
         your_opinion = fetch @proposal.your_opinion
@@ -499,6 +501,7 @@ window.Point = ReactiveComponent
     save(hist)
 
   buildIncluders : -> 
+    filter_out = fetch 'filtered'
     point = @data()
     #author_has_included = _.contains point.includers, point.user
 
@@ -510,15 +513,23 @@ window.Point = ReactiveComponent
                         else 
                           hist.selected_opinions
 
-    if selected_opinions?.length > 0      
+    if selected_opinions?.length > 0
       # only show includers from the current opinion selection
       selected_users = (fetch(o).user for o in selected_opinions)
       includers = _.intersection includers, selected_users
       #author_has_included = _.contains selected_users, point.user
 
+    if filter_out.users 
+      includers = (i for i in includers when !filter_out.users[i])
+
+      
+
     if true #author_has_included 
       includers = _.without includers, point.user
       includers.push point.user
+
+    if @data().key == '/point/8627'
+      console.log 'INCLUDERS', includers
 
     _.uniq includers
         
@@ -620,9 +631,11 @@ window.Comment = ReactiveComponent
             color: '#444'
             textDecoration: 'underline'
             cursor: 'pointer',
-            paddingRight: 10
+            padding: '0 10px 0 0'
+            backgroundColor: 'transparent'
+            border: 'none'
           DIV style: { marginLeft: 60}, 
-            SPAN
+            BUTTON
               'data-action' : 'delete-comment'
               style: comment_action_style
               onClick: do (key = comment.key) => (e) =>
@@ -631,7 +644,7 @@ window.Comment = ReactiveComponent
                   destroy(key)
               t('delete')
 
-            SPAN
+            BUTTON
               style: comment_action_style
               onClick: do (key = comment.key) => (e) =>
                 e.stopPropagation()

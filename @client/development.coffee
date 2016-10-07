@@ -11,6 +11,7 @@ Development = ReactiveComponent
 
   render : -> 
     subdomains = fetch('/subdomains').subs
+    subdomains = (s for s in subdomains when s.activity)
     apps = fetch '/apps'
     app = fetch '/application'
 

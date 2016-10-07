@@ -6,8 +6,10 @@
 # when doing development. 
 
 window.focus_blue = '#2478CC'
+window.focus_blue_transparent = (opacity) -> 
+  "rgba(36, 120, 205, #{opacity}"
 window.logo_red = "#B03A44"
-window.default_avatar_in_histogram_color = '#d3d3d3'
+window.default_avatar_in_histogram_color = '#999'
 window.considerit_gray = '#f6f7f9'
 
 window.parseCssRgb = (css_color_str) ->

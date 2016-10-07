@@ -30,6 +30,7 @@ module Permitted
     user ||= current_user
     return true if permission_list.index('*')
     return true if permission_list.index(user.key)
+    return true if permission_list.index(user.email)
     permission_list.each do |email_or_key| 
       if email_or_key.index('*')
         allowed_domain = email_or_key.split('@')[1]

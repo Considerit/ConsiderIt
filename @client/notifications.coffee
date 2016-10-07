@@ -26,21 +26,50 @@ window.Notifications = ReactiveComponent
 
     prefs = current_user.subscriptions
 
+    loc = fetch('location')
+
+    if loc.query_params?.unsubscribe
+      if current_user.subscriptions['send_emails']
+        current_user.subscriptions['send_emails'] = null 
+        save current_user
+        @local.unsubscribed = true 
+        save @local 
+      delete loc.query_params.unsubscribe
+      save loc
+
     DIV 
       style:
-        width: BODY_WIDTH()
-        margin: '50px auto'
+        width: HOMEPAGE_WIDTH()
+        margin: '0px auto'
+
+      if @local.unsubscribed && !current_user.subscriptions['send_emails']
+        DIV 
+          style: 
+            border: "1px solid #{logo_red}" 
+            color: logo_red
+            padding: '4px 8px'
+
+          "You are unsubscribed from summary emails from #{subdomain.name}.consider.it"
 
       DIV
         style: 
           fontSize: 24
           marginBottom: 10
           position: 'relative'
+
+        H1 
+          style: 
+            fontSize: 28
+            padding: '20px 0'
+            fontWeight: 400
+
+          'Email notification settings'
           
         INPUT 
           type: 'checkbox'
           defaultChecked: !!prefs['send_emails']
           id: 'enable_email'
+          name: 'enable_email'
           style: 
             verticalAlign: 'top'
             display: 'inline-block'
@@ -49,13 +78,14 @@ window.Notifications = ReactiveComponent
             position: 'absolute'
             left: -40
 
-          onChange: => 
+          onChange: (e) => 
 
             if prefs['send_emails'] 
               current_user.subscriptions['send_emails'] = null
             else
               current_user.subscriptions['send_emails'] = settings['default_subscription']
             save current_user
+            e.stopPropagation()
 
         DIV 
           style: 
@@ -156,12 +186,13 @@ window.Notifications = ReactiveComponent
 
                 INPUT 
                   id: "#{event}_input"
+                  name: "#{event}_input"
                   type: 'checkbox'
                   checked: if config.email_trigger then true
                   style: 
                     fontSize: 24
                     position: 'absolute'
-                    left: -40
+                    left: -30
                     top: 2
                   onChange: do (config) => => 
                     config.email_trigger = !config.email_trigger
@@ -189,12 +220,13 @@ window.Notifications = ReactiveComponent
       DIV 
         style: 
           padding: '20px 0'
-          marginLeft: 63
 
-        DIV
+        H2
           style: 
+            fontSize: 24
             position: 'relative'
             paddingBottom: 10
+            fontWeight: 400
           t('watched_proposals')
 
 
@@ -206,7 +238,7 @@ window.Notifications = ReactiveComponent
           UL
             style: 
               position: 'relative'
-              paddingLeft: 37
+              paddingLeft: 30
 
             for k,v of unsubscribed
               do (k) => 

@@ -4,7 +4,7 @@ window.Footer = ReactiveComponent
   displayName: 'Footer'
 
   render : ->
-    DIV 
+    FOOTER 
       style: 
         position: 'relative'
         zIndex: 0
@@ -55,7 +55,6 @@ window.DefaultFooter = ReactiveComponent
             backgroundColor: 'transparent'
             border: 'none'
             
-          title: 'Back to top'
           onClick: -> scrollTo 0, 0
 
           'Back to top'
@@ -140,6 +139,7 @@ window.TechnologyByConsiderit = ReactiveComponent
           save @local
         href: 'http://consider.it'
         target: '_blank'
+        title: 'Consider.it\'s homepage'
         style: 
           position: 'relative'
           top: 6

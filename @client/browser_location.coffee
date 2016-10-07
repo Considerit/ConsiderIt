@@ -183,6 +183,7 @@ window.BrowserLocation = ReactiveComponent
           docks = fetch('docking_station')
           seek_below = docks.y_stack or 50
           $(window).scrollTop getCoords(el).top - seek_below
+          el.focus()
           clearInterval int 
       , 100
 

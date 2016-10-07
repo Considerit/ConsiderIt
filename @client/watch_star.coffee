@@ -13,7 +13,7 @@ window.WatchStar = ReactiveComponent
 
     label = @props.label || (watching) -> 
       if watching     
-        "Stop getting notifications" 
+        "Stop getting notifications for this proposal" 
       else 
         "Get notifications"
 
@@ -45,8 +45,10 @@ window.WatchStar = ReactiveComponent
 
 
     BUTTON 
+      'aria-hidden': true
       'aria-label': label(watching)
-      'aria-describedby': 'tooltip'
+      'aria-describedby': if @local.hover_watch then 'tooltip'
+      'aria-pressed': watching
 
       className: "fa #{if watching then icon else "#{icon}-o"}"
       style: _.extend {}, style, (@props.style || {})

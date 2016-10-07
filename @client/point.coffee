@@ -57,23 +57,6 @@ window.Point = ReactiveComponent
               anonymous: point.user == includer && point.hide_name
 
 
-    renderNewIndicator = =>
-      if @data().includers
-        side_offset = 48
-        left_right = if @data().is_pro then 'right' else 'left'
-        style = 
-          position: 'absolute'
-          color: 'rgb(255,22,3)'
-          fontSize: '11px'
-          top: -14
-          #backgroundColor: 'white'
-          zIndex: 5
-          fontVariant: 'small-caps'
-          fontWeight: 'bold'
-
-        style[left_right] = "#{-side_offset}"
-        SPAN {style: style}, '-new-'
-
 
     point_content_style = 
       width: POINT_WIDTH() #+ 6
@@ -83,10 +66,16 @@ window.Point = ReactiveComponent
       top: -3
       position: 'relative'
       zIndex: 1
+      outline: 'none'
 
     if is_selected
       _.extend point_content_style,
         borderColor: focus_blue
+        backgroundColor: 'white'
+
+    else if @local.has_focus
+      _.extend point_content_style,
+        borderColor: '#999'
         backgroundColor: 'white'
 
     if @props.rendered_as == 'decision_board_point'
@@ -152,7 +141,6 @@ window.Point = ReactiveComponent
       listStyle: 'none outside none'
 
 
-
     if @props.rendered_as == 'decision_board_point'
       _.extend point_style, 
         marginLeft: 9
@@ -166,6 +154,7 @@ window.Point = ReactiveComponent
       position: 'absolute'
       height: 25
       width: 25
+      top: 0
     left_or_right = if @data().is_pro && !(@props.rendered_as in ['decision_board_point', 'under_review'])
                       'right' 
                     else 
@@ -180,6 +169,10 @@ window.Point = ReactiveComponent
       className: "point #{@props.rendered_as} #{if point.is_pro then 'pro' else 'con'}"
       onClick: @selectPoint
       onTouchEnd: @selectPoint
+      onKeyDown: (e) =>
+        if (is_selected && e.which == 27) || e.which == 13 || e.which == 32
+          @selectPoint(e)
+          e.preventDefault()
       style: point_style
 
       if @props.rendered_as == 'decision_board_point'
@@ -191,16 +184,12 @@ window.Point = ReactiveComponent
 
           if @data().is_pro then '•' else '•'
 
-      else 
-        DIV 
-          className:'includers'
-          onMouseEnter: if @props.rendered_as != 'under_review' then @highlightIncluders
-          onMouseLeave: if @props.rendered_as != 'under_review' then @unHighlightIncluders
-          style: includers_style
-            
-          renderIncluders(draw_all_includers)
-
-      DIV className:'point_content', style : point_content_style,
+      DIV 
+        className:'point_content'
+        style : point_content_style
+        tabIndex: 0
+        onBlur: (e) => @local.has_focus = false; save(@local)
+        onFocus: (e) => @local.has_focus = true; save(@local)
 
         if @props.rendered_as != 'decision_board_point'
 
@@ -210,7 +199,7 @@ window.Point = ReactiveComponent
             position: 'absolute'
 
           mouth_style[side] = -POINT_MOUTH_WIDTH + \
-            if is_selected || @props.rendered_as == 'under_review' then 3 else 1
+            if is_selected || @props.rendered_as == 'under_review' || @local.has_focus then 3 else 1
           
           if !point.is_pro || @props.rendered_as == 'under_review'
             mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
@@ -218,6 +207,7 @@ window.Point = ReactiveComponent
             mouth_style['transform'] = 'rotate(90deg)'
 
           DIV 
+            'role': 'presentation'
             key: 'community_point_mouth'
             style: css.crossbrowserify mouth_style
 
@@ -226,8 +216,8 @@ window.Point = ReactiveComponent
               width: POINT_MOUTH_WIDTH
               height: POINT_MOUTH_WIDTH
               fill: considerit_gray
-              stroke: if is_selected then focus_blue else 'transparent'
-              stroke_width: if is_selected then 20 else 0
+              stroke: if is_selected then focus_blue else if @local.has_focus then '#888' else 'transparent'
+              stroke_width: if is_selected || @local.has_focus then 20 else 0
               box_shadow:   
                 dx: '3'
                 dy: '0'
@@ -245,6 +235,12 @@ window.Point = ReactiveComponent
             splitParagraphs point.nutshell
 
           DIV 
+            id: "point-aria-interaction-#{point.id}"
+            className: 'hidden'
+            "By #{if point.hide_name then 'Anonymous' else fetch(point.user).name}, with #{@data().includers.length} importance #{if @data().includers.length != 1 then 'votes' else 'vote'} and #{point.comment_count} #{if point.comment_count != 1 then t('comments') else t('comment')}. Press ENTER or SPACE for details or discussion."
+
+          DIV 
+            'aria-hidden': true
             className: "point_details" + \
                        if is_selected || @props.rendered_as == 'under_review' 
                          ''
@@ -257,13 +253,8 @@ window.Point = ReactiveComponent
               fontSize: POINT_FONT_SIZE()
               fontWeight: if browser.high_density_display && !browser.is_mobile then 300 else 400
 
-            if point.text && point.text.length > 0
-              if is_selected || 
-                  !expand_to_see_details || 
-                  @props.rendered_as == 'under_review'
-                splitParagraphs(point.text)
-              else 
-                $("<span>#{point.text[0..210-point.nutshell.length]}</span>").text()
+            if @props.rendered_as == 'under_review'
+              splitParagraphs(point.text)
 
             if select_enticement && @props.rendered_as != 'under_review'
               DIV 
@@ -309,7 +300,20 @@ window.Point = ReactiveComponent
               
               t('delete')
 
-      if TWO_COL() && @props.rendered_as != 'under_review'
+      if @props.rendered_as != 'decision_board_point' 
+        DIV 
+          'aria-hidden': true
+          className:'includers'
+          onMouseEnter: if @props.rendered_as != 'under_review' then @highlightIncluders
+          onMouseLeave: if @props.rendered_as != 'under_review' then @unHighlightIncluders
+          style: includers_style
+            
+          renderIncluders(draw_all_includers)
+
+
+
+      if (TWO_COL() && @props.rendered_as != 'under_review') || \
+              (!TWO_COL() && @props.enable_dragging)
         your_opinion = fetch @proposal.your_opinion
         if your_opinion?.published
           can_opine = permit 'update opinion', @proposal, your_opinion
@@ -328,48 +332,91 @@ window.Point = ReactiveComponent
           else 
             @include()
 
-        DIV 
-          style: 
-            border: "1px solid #{ if included || @local.hover_important then focus_blue else '#414141'}"
-            borderTopColor: if included then focus_blue else 'transparent'
-            color: if included then 'white' else if @local.hover_important then focus_blue else "#414141"
-            position: 'relative'
-            top: -13
-            padding: '8px 5px'
-            textAlign: 'center'
-            borderRadius: '0 0 16px 16px'
-            cursor: 'pointer'
-            backgroundColor: if included then focus_blue else 'white'
-            fontSize: 18  
-            zIndex: 0
-            display: if can_opine < 0 then 'none'
+        if !TWO_COL() && @props.enable_dragging
+          right = (included && point.is_pro) || (!included && !point.is_pro)
+          if right 
+            sty = 
+              right: if !@local.focused_include then 20 else if included then -20 else -40
+          else 
+            sty = 
+              left: if !@local.focused_include then 20 else if included then -20 else -40
 
+          BUTTON
+            'aria-label': if included then 'Mark this point as unimportant and move to next point' else 'Mark this point as important and move to next point'
+            style: _.extend sty, 
+              position: 'absolute'
+              top: 20
+              opacity: if !@local.focused_include then 0
+              padding: 0
+              backgroundColor: 'transparent'
+              border: 'none'              
+              display: if get_selected_point() then 'none'
+            onFocus: (e) => @local.focused_include = true; save @local
+            onBlur: (e) => @local.focused_include = false; save @local
+            onTouchEnd: includePoint
+            onClick: includePoint
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32
 
-          onMouseEnter: => 
-            @local.hover_important = true
-            save @local
-          onMouseLeave: => 
-            @local.hover_important = false
-            save @local
+                next = $(e.target).closest('.point').next().find('.point_content')
+                includePoint(e)
+                valence = if @data().is_pro then 'pros' else 'cons'
 
-          onTouchEnd: includePoint
-          onClick: includePoint
+                next.focus()
+                e.preventDefault()
 
-            
+            I 
+              style: 
+                fontSize: if included then 25 else 40
+                color: focus_blue
+              className: "fa fa-long-arrow-#{if !right then 'left' else 'right'}"
 
-          I
-            className: 'fa fa-thumbs-o-up'
+        else
+          BUTTON 
             style: 
-              display: 'inline-block'
-              marginRight: 10
+              border: "1px solid #{ if included || @local.hover_important then focus_blue else '#414141'}"
+              borderTopColor: if included then focus_blue else 'transparent'
+              color: if included then 'white' else if @local.hover_important then focus_blue else "#414141"
+              position: 'relative'
+              top: -13
+              padding: '8px 5px'
+              textAlign: 'center'
+              borderRadius: '0 0 16px 16px'
+              cursor: 'pointer'
+              backgroundColor: if included then focus_blue else 'white'
+              fontSize: 18  
+              zIndex: 0
+              display: if can_opine < 0 then 'none'
+              width: '100%'
 
-          "Important point#{if included then '' else '?'}" 
+            onMouseEnter: => 
+              @local.hover_important = true
+              save @local
+            onMouseLeave: => 
+              @local.hover_important = false
+              save @local
+
+            onTouchEnd: includePoint
+            onClick: includePoint
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32
+                includePoint(e)
+                e.preventDefault()
+
+            I
+              className: 'fa fa-thumbs-o-up'
+              style: 
+                display: 'inline-block'
+                marginRight: 10
+
+            "Important point#{if included then '' else '?'}" 
 
 
       if is_selected
         Discussion
           key:"/comments/#{point.id}"
           point: point.key
+          rendered_as: @props.rendered_as
 
   componentDidMount : ->    
     @setDraggability()
@@ -389,11 +436,16 @@ window.Point = ReactiveComponent
     is_selected = get_selected_point() == @props.key
     if @local.is_selected != is_selected
       if is_selected
-
         if browser.is_mobile
           $(@getDOMNode()).moveToTop {scroll: false}
         else
           $(@getDOMNode()).ensureInView {scroll: false}
+        
+        i = setInterval ->
+              if $('#open_point').length > 0 
+                $('#open_point').focus()
+                clearInterval i
+            , 10
 
       @local.is_selected = is_selected
       save @local
@@ -455,20 +507,21 @@ window.Point = ReactiveComponent
     # android browser needs to respond to this via a touch event;
     # all other browsers via click event. iOS fails to select 
     # a point if both touch and click are handled...sigh...
-
     return unless ( browser.is_mobile && e.type != 'click' ) || \
-                  (!browser.is_mobile && e.type == 'click')
+                  (!browser.is_mobile && e.type == 'click') || \
+                  e.type == 'keydown'
 
 
     loc = fetch('location')
-
     if get_selected_point() == @props.key # deselect
       delete loc.query_params.selected
       what = 'deselected a point'
+
+      document.activeElement.blur()
     else
       what = 'selected a point'
       loc.query_params.selected = @props.key
-    
+
     save loc
 
     window.writeToLog
@@ -527,9 +580,6 @@ window.Point = ReactiveComponent
     if true #author_has_included 
       includers = _.without includers, point.user
       includers.push point.user
-
-    if @data().key == '/point/8627'
-      console.log 'INCLUDERS', includers
 
     _.uniq includers
         
@@ -655,7 +705,7 @@ window.Comment = ReactiveComponent
 # fact-checks, edit comments, comments...
 styles += """
 .comment_entry {
-  margin-bottom: 45px;
+  margin-bottom: 25px;
   min-height: 60px;
   position: relative; }
 
@@ -757,12 +807,14 @@ window.Discussion = ReactiveComponent
       padding: '20px 40px'
       borderRadius: 16
       backgroundColor: 'white'
+      outline: 'none' #'1px dotted #ccc'
+      boxShadow: if @local.has_focus then "0 0 7px #{focus_blue}"
 
     # Reconfigure discussion board position
     side = if is_pro then 'right' else 'left'
     if in_wings
-      discussion_style[side] = POINT_WIDTH() + 10
-      discussion_style['top'] = 44
+      discussion_style[side] = POINT_WIDTH() + 13
+      discussion_style['top'] = 20
     else
       discussion_style[side] = if is_pro then -23 else -30
       discussion_style['marginTop'] = 18
@@ -788,10 +840,26 @@ window.Discussion = ReactiveComponent
         top: -28
         transform: if !is_pro then 'scaleX(-1)'
 
-    DIV 
+    close_point = (e) ->
+      loc = fetch('location')
+      delete loc.query_params.selected
+      save loc
+      e.preventDefault()
+      e.stopPropagation()
+
+    HEADING = if @props.rendered_as != 'decision_board_point' then H4 else H5
+    SECTION 
+      id: 'open_point'
       style: discussion_style
+      tabIndex: 0
       onClick: (e) -> e.stopPropagation()
       onTouchEnd: (e) -> e.stopPropagation()
+      onKeyDown: (e) => 
+        if e.which == 27 # ESC
+          close_point e 
+      onBlur: (e) => @local.has_focus = false; save @local 
+      onFocus: (e) => @local.has_focus = true; save @local
+
       DIV 
         style: css.crossbrowserify mouth_style
 
@@ -803,29 +871,65 @@ window.Discussion = ReactiveComponent
           stroke: focus_blue, 
           stroke_width: 11
 
-      SubmitFactCheck()
+      BUTTON
+        'aria-label': 'close point' 
+        onClick: close_point
+        onKeyDown: (e) -> 
+          if e.which == 13 || e.which == 32 
+            close_point(e)
 
-      H1
-        style:
-          textAlign: 'left'
-          fontSize: 30
-          color: focus_blue
-          marginLeft: 60
-          marginBottom: 25
-          marginTop: 24
-          fontWeight: 600
-        t('Discuss this Point')
-      
+        style: 
+          position: 'absolute'
+          right: 8
+          top: 8
+          fontSize: 24
+          color: '#aaa'
+          backgroundColor: 'transparent'
+          border: 'none'
+        'x'
 
-      DIV className: 'comments',
-        for comment in comments
-          if comment.key.match /(comment)/
-            Comment key: comment.key
-          else 
-            FactCheck key: comment.key
+      if point.text?.length > 0 
+        SECTION 
+          style: 
+            marginBottom: 24
+            marginTop: 10
 
-      # Write a new comment
-      EditComment fresh: true, point: arest.key_id(@props.key)
+          HEADING
+            style:
+              textAlign: 'left'
+              fontSize: 24
+              color: focus_blue
+              fontWeight: 600
+              marginBottom: 10
+            #t('Author’s Explanation')
+            'Author’s Explanation'
+
+          DIV 
+            className: 'point_details'
+            splitParagraphs(point.text)
+          
+
+
+      SECTION null,
+        HEADING
+          style:
+            textAlign: 'left'
+            fontSize: 24
+            color: focus_blue
+            marginBottom: 25
+            marginTop: 10
+            fontWeight: 600
+          t('Discuss this Point')
+
+        DIV className: 'comments',
+          for comment in comments
+            if comment.key.match /(comment)/
+              Comment key: comment.key
+            else 
+              FactCheck key: comment.key
+
+        # Write a new comment
+        EditComment fresh: true, point: arest.key_id(@props.key)
 
   # HACK! Save the height of the open point, which will be added 
   # to the min height of the reasons region to accommodate the
@@ -845,191 +949,3 @@ window.Discussion = ReactiveComponent
     if s.open_point_height != open_point_height
       s.open_point_height = open_point_height
       save s
-
-window.SubmitFactCheck = ReactiveComponent
-  displayName: 'SubmitFactCheck'
-
-  # States
-  # - Blank
-  # - Clicked request
-  # - Contains request from you already
-  # - Contains a verdict
-
-  render: ->
-    return SPAN(null) if !@proposal.assessment_enabled
-
-    logged_in = fetch('/current_user').logged_in
-
-    request_a_fact_check = =>
-      [
-        DIV
-          style:
-            #fontSize: 18
-            fontStyle: 'italic'
-            cursor: 'pointer'
-          'Confused by a claim that this point makes? '
-          SPAN 
-            style: 
-              textDecoration: 'underline'
-              color: logo_red
-              fontWeight: 600
-            onClick: (=>
-              if @local.state == 'blank slate'
-                @local.state = 'clicked'
-              else if @local.state == 'clicked'
-                @local.state = 'blank slate'
-              save(@local))
-            'Request a Fact Check'
-          ' from The Seattle Public Library'
-        # DIV null,
-        #   'from The Seattle Public Library'
-
-      ]
-
-    a_librarian_will_respond = (width) =>
-      DIV style: {maxWidth: width},
-        'A '
-        A
-          style: {textDecoration: 'underline'}
-          target: '_blank'
-          href: '/about#fact_check'
-          'librarian will respond'
-        ' within 48 hours'
-
-    request_a_factcheck = =>
-      if permit('request factcheck', @proposal) > 0
-        [
-          DIV style: {marginTop: 12},
-            'What factual claim do you want researched?'
-          AutoGrowTextArea
-            className: 'new_request'
-            style:
-              width: '100%'
-              height: 60
-              lineHeight: 1.4
-              fontSize: 16
-              padding: '3px 8px'
-            placeholder: (logged_in and 'Your research question') or ''
-            disabled: not logged_in
-            onChange: (e) =>
-              @local.research_question = e.target.value
-              save(@local)
-
-          BUTTON
-            style: 
-              backgroundColor: focus_blue
-              borderRadius: 8
-              color: 'white'
-              padding: '3px 10px'
-              display: 'inline-block'
-              fontWeight: 600
-              textAlign: 'center'
-              cursor: 'pointer'
-              float: 'right'
-              fontSize: 18
-              border: 'none'
-            onClick: (e) =>
-              e.stopPropagation()
-              request =
-                key: '/new/request'
-                suggestion: @local.research_question
-                point: "/point/#{arest.key_id(@discussion.key)}"
-              save(request)
-              $(@getDOMNode()).find('.new_request').val('')
-              @local.state = 'requested'
-              save @local
-
-            'submit'
-
-          a_librarian_will_respond(300)
-        ]
-      else
-        DIV
-          onClick: (e) =>
-            e.stopPropagation()
-            reset_key 'auth', {form: 'login', goal: 'Request a Fact Check'}
-          style:
-            marginTop: 14
-            textDecoration: 'underline'
-            color: focus_blue
-            cursor: 'pointer'
-          'Log in to request a fact check'
-
-
-    top_message_style = {marginBottom: 0, fontStyle: 'italic'}
-    request_in_progress = =>
-      DIV null,
-        DIV style: top_message_style,
-          'You have requested a Fact Check from The Seattle Public Library'
-        a_librarian_will_respond()
-          
-    request_completed = =>
-      overall_verdict = fetch(@discussion.assessment.verdict)
-
-      [
-        DIV style: top_message_style,
-          'This point has been '
-          A 
-            style: 
-              textDecoration: 'underline'
-            target: '_blank'
-            href: '/about#fact_check'
-            'Fact-checked'       
-          ' by The Seattle Public Library. See the librarians\' research below.'
-
-        # DIV style: {marginBottom: 10},
-        #   switch overall_verdict.id
-        #     when 1
-        #       "They found some claims inconsistent with reliable sources."
-        #     when 2
-        #       "They found some sources that agreed with claims and some that didn't."
-        #     when 3
-        #       "They found the claims to be consistent with reliable sources."
-        #     when 4
-        #       '''Unfortunately, the claims made are outside the research scope of 
-        #       the fact-checking service.'''
-
-        DIV style: {marginBottom: 10},
-          A style: {textDecoration: 'underline'},
-            ''
-             
-      ]
-
-
-    # Determine our current state
-    @local.state = @local.state or 'blank slate'
-    your_requests = (r for r in @discussion.requests or [] \
-                     when r.user == fetch('/current_user').user)
-    fact_check_completed = @discussion.claims?.length > 0
-    if fact_check_completed
-      @local.state = 'verdict'
-    else if your_requests.length > 0
-      @local.state = 'requested'
-
-
-    # show_request = @local.state != 'blank slate'
-    
-    # Now let's draw
-    DIV style: {},
-
-      # Magnifying glass
-      # if show_request
-
-      # DIV className: 'magnifying_glass',
-      #   I
-      #     className: 'fa fa-search'
-
-      # Text to the right
-      DIV
-        style:
-          marginLeft: 0
-        switch @local.state
-          when 'blank slate'
-            request_a_fact_check()
-          when 'clicked'
-            [request_a_fact_check()
-            request_a_factcheck()]
-          when 'requested'
-            request_in_progress()
-          when 'verdict'
-            request_completed()

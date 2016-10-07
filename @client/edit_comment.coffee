@@ -7,7 +7,10 @@ window.EditComment = ReactiveComponent
     DIV 
       className: 'comment_entry'
 
-      
+      onKeyDown: (e) -> # prevents entire point from closing when SPACE or ENTER is pressed
+        if e.which == 32 || e.which == 13
+          e.stopPropagation() 
+
 
       # Comment author name
       DIV
@@ -87,6 +90,7 @@ window.EditComment = ReactiveComponent
 
         AutoGrowTextArea
           ref: 'comment_input'
+          name: 'new comment'
           'aria-label': if permitted > 0 then t('Write a comment') else ''
           placeholder: if permitted > 0 then t('Write a comment') else ''
           disabled: permitted < 0
@@ -99,6 +103,26 @@ window.EditComment = ReactiveComponent
             fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 30 else 16
             border: if permitted < 0 then 'dashed 1px'
 
+      if @local.errors?.length > 0
+        
+        DIV
+          role: 'alert'
+          style:
+            fontSize: 18
+            color: 'darkred'
+            backgroundColor: '#ffD8D8'
+            padding: 10
+            marginTop: 10
+            marginBottom: 10
+            marginLeft: 60 
+          for error in @local.errors
+            DIV null, 
+              I
+                className: 'fa fa-exclamation-circle'
+                style: {paddingRight: 9}
+
+              SPAN null, error
+
       if permitted > 0
 
         Button 
@@ -106,7 +130,6 @@ window.EditComment = ReactiveComponent
             marginLeft: 60
             padding: '8px 16px'
             fontSize: if browser.is_mobile then 24
-          
           'data-action': 'save-comment'
 
           t('Save comment')
@@ -124,8 +147,16 @@ window.EditComment = ReactiveComponent
               comment.body = @local.new_comment
               comment.editing = false
 
-            save comment, =>
-              @local.new_comment = null
+            if !comment.body || comment.body.length == 0 
+              @local.errors = ["Comment can't be empty"]
               save @local
-            $(@refs.comment_input.getDOMNode()).val('')            
+            else 
 
+              save comment, =>
+
+                if comment.errors?.length > 0
+                  @local.errors = comment.errors
+
+                $(@refs.comment_input.getDOMNode()).val('')            
+                @local.new_comment = null
+                save @local

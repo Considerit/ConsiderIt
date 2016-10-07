@@ -67,16 +67,15 @@ Auth = ReactiveComponent
 
     return SPAN null if !auth.form
 
-    DIV null,
-      DIV
-        style:
-          margin: "0 auto"
-          padding: if !@props.naked then '4em 0'
-          position: 'relative'
-          zIndex: 0
-          width: AUTH_WIDTH()
+    DIV
+      style:
+        margin: "0 auto"
+        padding: if !@props.naked then '4em 0'
+        position: 'relative'
+        zIndex: 0
+        width: AUTH_WIDTH()
 
-        @buildAuthForm()
+      @buildAuthForm()
 
   ####
   # buildAuthForm
@@ -103,11 +102,10 @@ Auth = ReactiveComponent
       # The LOGIN form, with easy switch to register
       when 'login'
         [ @headerAndBorder goal, t('Introduce Yourself'),
-            @body [["#{t('login_as')}:",
-                    [ @inputBox('email', 'email@address', 'email'),
-                      DIV(null),
-                      @inputBox('password', t("password"), 'password'),
-                      @resetPasswordLink() ], 'email + password']].concat @userQuestionInputs()
+            @body [
+                    ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')],
+                    ["My #{t("password")}:", [@inputBox('password', t("password"), 'password'), @resetPasswordLink()]]
+                  ].concat @userQuestionInputs()
           @footerForRegistrationAndLogin() ]
 
       # The REGISTER form, with easy switch to log in
@@ -120,21 +118,19 @@ Auth = ReactiveComponent
           avatar_field = ["#{t('pic_prompt')}:", avatar_field]
 
         if pledges = @pledgeInput()
-          pledges_field = ['I pledge to:', pledges]
+          pledges_field = ['My pledge:', pledges]
 
         if auth.form == 'create account'
-          email_field = @inputBox('email', 'email@address', 'email')
+          email_field = ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')]
           footer = @footerForRegistrationAndLogin()
         else
-          email_field = DIV
-            style: {color: auth_text_gray, padding: '4px 8px'},
-            current_user.email
+          email_field = ["#{t('login_as')}:", DIV style: {color: auth_text_gray, padding: '4px 8px'}, current_user.email]
           footer = @submitButton(t('Create new account'))
 
         [ @headerAndBorder goal, t('Introduce Yourself'),
-            @body [["#{t('login_as')}:",
-                      [ email_field,
-                        @inputBox('password', t("password"), 'password')], 'email + password'],
+            @body [
+                    email_field,
+                    ["My #{t("password")}:", @inputBox('password', t("password"), 'password')],
                     avatar_field,
                     [t('name_prompt'), @inputBox('name', t('full_name'))],
                     pledges_field].concat @userQuestionInputs()
@@ -150,14 +146,13 @@ Auth = ReactiveComponent
         [ @headerAndBorder null, t('Your Profile'),
             @body [
               # we don't want users on single sign on subdomains to change email/password
-              if not fetch('/subdomain').SSO_only        
-                ["#{t('login_as')}:",
-                  [ @inputBox('email', 'email@address', 'email'),
-                    @inputBox('password', t("password"), 'password')]
-                ]
-              ,
-              ["#{t('name_prompt')}:", @inputBox('name', t('full_name'))],
-              avatar_field].concat @userQuestionInputs()
+              if !fetch('/subdomain').SSO_only        
+                ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')]
+              if !fetch('/subdomain').SSO_only
+                ["My #{t("password")}:", @inputBox('password', t("password"), 'password')]
+              ["#{t('name_prompt')}:", @inputBox('name', t('full_name'))]
+              avatar_field
+            ].concat @userQuestionInputs()
           @submitButton(t('Update'))
           if @local.saved_successfully
             SPAN style: {color: 'green'}, t("Updated successfully")
@@ -287,7 +282,7 @@ Auth = ReactiveComponent
 
                 onClick: cancel_auth
                 onKeyDown: (e) => 
-                  if e.which == 13 # ENTER 
+                  if e.which == 13 || e.which == 32 # ENTER or SPACE
                     cancel_auth(e)
                     e.preventDefault()
 
@@ -381,13 +376,14 @@ Auth = ReactiveComponent
                   fontSize: if browser.is_mobile then 24
                 field[0]
 
-              if field.length > 2
-                LABEL 
-                  style: 
-                    display: 'block'
-                    color: auth_ghost_gray
-                    fontSize: 14
-                  field[2]
+                if field.length > 2
+                  DIV 
+                    style: 
+                      display: 'block'
+                      color: auth_ghost_gray
+                      fontSize: 14
+                      fontWeight: 400
+                    field[2]
             TD
               style:
                 verticalAlign: 'bottom'
@@ -410,6 +406,7 @@ Auth = ReactiveComponent
       if (current_user.errors or []).length > 0 or @local.errors.length > 0
         errors = current_user.errors.concat(@local.errors or [])
         DIV
+          role: 'alert'
           style:
             fontSize: 18
             color: 'darkred'
@@ -445,6 +442,9 @@ Auth = ReactiveComponent
       @local.errors = []
       save auth
       save @local
+      setTimeout =>
+        $('#user_email')[0].focus()
+      ,0
 
     DIV
       style:
@@ -479,7 +479,7 @@ Auth = ReactiveComponent
             border: 'none'
           onClick: toggle
           onKeyDown: (e) => 
-            if e.which == 13
+            if e.which == 13 || e.which == 32 # ENTER or SPACE
               toggle(e)
               e.preventDefault()
 
@@ -505,7 +505,7 @@ Auth = ReactiveComponent
       className:'primary_button' + (if @local.submitting then ' disabled' else '')
       onClick: @submitAuth
       onKeyDown: (e) => 
-        if e.which == 13
+        if e.which == 13 || e.which == 32 # ENTER or SPACE
           @submitAuth(e)
           e.preventDefault()
       
@@ -557,6 +557,7 @@ Auth = ReactiveComponent
       name: "user[#{name}]"
       key: "#{name}_inputBox"
       placeholder: placeholder
+      'aria-label': if name == 'password' then placeholder
       required: "required"
       type: type || 'text'
       onChange: onChange
@@ -594,7 +595,7 @@ Auth = ReactiveComponent
             marginRight: 18
 
           IMG 
-            rel: ''
+            alt: ''
             id: 'avatar_preview'
             style: {width: 60}
             src: if current_user.b64_thumbnail 
@@ -634,8 +635,8 @@ Auth = ReactiveComponent
     if !customization('auth_require_pledge')
       return null
     else
-      pledges = ['Use only one account', 
-                 'Not attack or mock others']
+      pledges = ['I will use only one account', 
+                 'I will not attack or mock others']
 
 
     UL style: {paddingTop: 6},
@@ -685,7 +686,7 @@ Auth = ReactiveComponent
     DIV 
       style: 
         textAlign: 'right'
-        width: 300
+        width: '100%'
 
       BUTTON
         style: 
@@ -698,7 +699,7 @@ Auth = ReactiveComponent
 
         onClick: reset
         onKeyDown: (e) =>
-          if e.which == 13 # ENTER
+          if e.which == 13 || e.which == 32 # ENTER or SPACE
             reset(e)  
             e.preventDefault()
 

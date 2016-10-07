@@ -21,15 +21,22 @@ window.Metrics = ReactiveComponent
       @local.log = 'linear'
       @local.time_frame = 'all time'
 
-    return loading_indicator if !m.daily_active_contributors
-
+    if !m.daily_active_contributors
+      return DIV 
+                style: 
+                  margin: '100px auto'
+                  fontSize: 36
+                  width: 400
+                  textAlign: 'center'
+                'Loading metrics, might be a minute' 
 
     if @local.time_frame == 'all time'
       metrics = m 
     else 
-      metrics = 
+      metrics = _.extend m,
         daily_active_contributors: (d for d in m.daily_active_contributors when d[0] < 365)
         daily_active_subdomains: (d for d in m.daily_active_subdomains when d[0] < 365)
+
 
     DIV 
       style: 
@@ -136,6 +143,77 @@ window.Metrics = ReactiveComponent
         data: smooth(metrics.daily_active_subdomains, 30)
         width: WINDOW_WIDTH() - 60 * 2
         log: @local.log
+
+
+      DIV 
+        style: 
+          fontSize: 24
+          marginTop: 40
+          textAlign: 'center'
+
+        "Total Usage (sum of Daily Unique Contributors)"
+
+        do => 
+
+          contributions = []
+          for subdomain, contributors of metrics.contributors_per_subdomain when contributors.lifetime > 1
+            contributions.push [subdomain, contributors]
+
+          if !@local.sort_contributions_by?
+            @local.sort_contributions_by = 'year'
+
+          contributions.sort (a,b) => b[1][@local.sort_contributions_by] - a[1][@local.sort_contributions_by]
+
+          sort_on_click = (e) =>
+            @local.sort_contributions_by = e.currentTarget.getAttribute('data-time')
+            save @local
+
+          td_style =
+            padding: '0 8px'
+          th_style =
+            padding: '2px 8px'
+            fontWeight: 'bold'
+            cursor: 'pointer'
+            borderBottom: '1px solid #999'
+
+          TABLE style: {margin: 'auto'}, TBODY null,
+            TR null,
+              TH 
+                style: _.extend {}, th_style, 
+                  textAlign: 'right'
+                  cursor: 'default'
+                'Name'
+              TH onClick: sort_on_click, 'data-time': 'active', style: th_style, 'Days active'
+              TH onClick: sort_on_click, 'data-time': 'lifetime', style: th_style, 'Lifetime'
+              TH onClick: sort_on_click, 'data-time': 'year', style: th_style, 'Past year'
+              TH onClick: sort_on_click, 'data-time': 'month', style: th_style, 'Past month'
+              TH onClick: sort_on_click, 'data-time': 'week', style: th_style, 'Past week'
+              TH onClick: sort_on_click, 'data-time': 'day', style: th_style, 'Past day'
+
+            for cont in contributions 
+              [subdomain, contributors] = cont
+              TR null, 
+                TD 
+                  style: _.extend {}, td_style, 
+                    textAlign: 'right'
+
+                  A 
+                    href: "https://#{fetch("/subdomain/#{subdomain}").name}.consider.it"
+                    title: fetch("/subdomain/#{subdomain}").name 
+                    style: 
+                      color: focus_blue
+                      textDecoration: 'underline'
+                      display: 'inline-block'
+                      maxWidth: 200
+                      overflow: 'hidden'
+                    fetch("/subdomain/#{subdomain}").name 
+
+                TD style: td_style, contributors.active
+                TD style: td_style, contributors.lifetime
+                TD style: td_style, contributors.year
+                TD style: td_style, contributors.month
+                TD style: td_style, contributors.week
+                TD style: td_style, contributors.day
 
 LineGraph = ReactiveComponent
   displayName: 'LineGraph'

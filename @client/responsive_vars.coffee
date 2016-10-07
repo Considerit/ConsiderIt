@@ -70,10 +70,7 @@ setResponsive = ->
                          else 
                            decision_board_width
 
-  point_font_size = if point_width > 250
-                      15
-                    else
-                      14
+  point_font_size = 14
 
   homepage_width = Math.min content_width, 900
   homepage_width = 60 * Math.floor(homepage_width / 60)
@@ -92,7 +89,7 @@ setResponsive = ->
     POINT_WIDTH: point_width
     REASONS_REGION_WIDTH: reasons_region_width
     POINT_FONT_SIZE: point_font_size
-    AUTH_WIDTH: if browser.is_mobile then content_width else Math.max decision_board_width, 544
+    AUTH_WIDTH: if browser.is_mobile then content_width else Math.max decision_board_width, 650
     TWO_COL: two_col
     SLIDER_HANDLE_SIZE: if two_col then 65 else 25
     CONTENT_WIDTH: content_width

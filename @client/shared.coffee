@@ -59,15 +59,18 @@ window.back_to_homepage_button = (style) ->
 
   hash = loc.url.split('/')[1].replace('-', '_')
 
-  A
-    key: 'back_to_homepage_button'
-    href: "/##{hash}"
-    style: _.defaults {}, style,
-      fontSize: 43
-      visibility: if homepage || !customization('has_homepage') then 'hidden' else 'visible'
-      color: 'black'
+  NAV 
+    role: 'navigation'
+    A
+      title: 'back to homepage'
+      key: 'back_to_homepage_button'
+      href: "/##{hash}"
+      style: _.defaults {}, style,
+        fontSize: 43
+        visibility: if homepage || !customization('has_homepage') then 'hidden' else 'visible'
+        color: 'black'
 
-    '<'
+      '<'
 
 
 ####
@@ -659,6 +662,26 @@ body, h1, h2, h3, h4, h5, h6 {
 
 body, input, button, textarea {
   font-family: 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; }
+
+.hidden {
+  position:absolute;
+  left:-10000px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;}
+
+a.skip:active, 
+a.skip:focus, 
+a.skip:hover {
+    position: fixed;
+    left: 0; 
+    top: 0;
+    width: auto; 
+    height: auto; 
+    overflow: visible; 
+}
+
 
 .content {
   position: relative;

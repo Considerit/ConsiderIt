@@ -20,7 +20,7 @@ window.Button = (props, text, callback) ->
   props.style = _.extend(style, (props.style or {}))
   props.onClick = callback
   props.onKeyDown = (e) -> 
-    if e.which == 13 # ENTER
+    if e.which == 13 || e.which == 32 # ENTER or SPACE
       callback(e)
       e.stopPropagation()
       e.preventDefault()
@@ -77,9 +77,15 @@ window.CharacterCountTextInput = ReactiveComponent
     DIV 
       style: 
         position: 'relative' 
+
       SPAN 
+        'aria-hidden': true
         style: count_style
         @props.maxLength - @local.count
+
+      SPAN 
+        className: 'hidden'
+        "#{@props.maxLength - @local.count} characters left"
 
       @transferPropsTo TEXTAREA 
         className: class_name
@@ -89,7 +95,7 @@ window.CharacterCountTextInput = ReactiveComponent
 
 
 
-Quill = require './vendor/quill.js'
+Quill = require './vendor/quill-1.0.js'
 
 window.WysiwygEditor = ReactiveComponent
   displayName: 'WysiwygEditor'
@@ -118,16 +124,18 @@ window.WysiwygEditor = ReactiveComponent
 
     toolbar_items = [
       {
-        className: "ql-bullet fa fa-list-ul", 
+        className: "ql-list fa fa-list-ul",
+        value: 'bullet',
         title: 'Bulleted list'
       },{
-        className: "ql-list fa fa-list-ol", 
+        className: "ql-list fa fa-list-ol",
+        value: 'ordered',
         title: 'Numbered list'
       },{
-        className: "ql-bold fa fa-bold", 
+        className: "ql-bold fa fa-bold",
         title: 'Bold selected text'
       },{
-        className: "ql-link fa fa-link", 
+        className: "ql-link fa fa-link",
         title: 'Hyperlink selected text'
       }, 
       # {
@@ -141,7 +149,6 @@ window.WysiwygEditor = ReactiveComponent
         className: 'fa fa-code'
         title: 'Directly edit HTML'
         onClick: => @local.edit_code = true; save @local
-
 
     DIV 
       id: @props.key
@@ -167,8 +174,6 @@ window.WysiwygEditor = ReactiveComponent
 
       else
 
-
-
         DIV null,
 
           Dock
@@ -178,7 +183,12 @@ window.WysiwygEditor = ReactiveComponent
               
             # Toolbar
             DIV 
+              ref: 'toolbar'
+              role: 'toolbar'
+              'title': 'Rich text markup'
+              'aria-orientation': 'vertical'
               id: 'toolbar'
+              tabIndex: 0
               style: 
                 position: 'absolute'
                 width: 30
@@ -187,28 +197,83 @@ window.WysiwygEditor = ReactiveComponent
                 display: 'block'
                 visibility: if wysiwyg_editor.showing != @props.key then 'hidden'
 
-              for button in toolbar_items
-                I 
-                  className: button.className
-                  style: 
-                    fontSize: 14
-                    width: 28
-                    textAlign: 'center'
-                    cursor: 'pointer'
-                    padding: 2
-                    border: '1px solid #aaa'
-                    borderRadius: 3
-                  title: button.title
-                  onClick: if button.onClick then button.onClick
+              onFocus: (e) => 
+                if !@local.focused_toolbar_item && !@local.just_unfocused
+
+                  if !@local.focused_toolbar_item?
+                    @local.focused_toolbar_item = 0 
+                    save @local
+
+                  @refs["toolbaritem-#{@local.focused_toolbar_item}"].getDOMNode().focus()
+
+              onKeyDown: (e) => 
+                if e.which in [37, 38, 39, 40]
+                  # focus prev...
+                  i = @local.focused_toolbar_item
+                  if e.which in [37, 38] # left or down
+                    i-- 
+                    if i < 0 
+                      i = toolbar_items.length - 1 
+                  else 
+                    i++ 
+                    if i > toolbar_items.length - 1 
+                      i = 0
+                  @local.focused_toolbar_item = i
+                  save @local 
+                  @refs["toolbaritem-#{i}"].getDOMNode().focus()
+                  e.preventDefault()
+
+              for button, idx in toolbar_items
+                do (idx) =>
+                  BUTTON
+                    ref: "toolbaritem-#{idx}"
+                    tabIndex: if @local.focused_toolbar_item == idx then 0 else -1
+                    className: button.className
+                    'aria-label': button.title
+                    style: 
+                      fontSize: 14
+                      width: 28
+                      textAlign: 'center'
+                      cursor: 'pointer'
+                      padding: 2
+                      border: '1px solid #aaa'
+                      borderRadius: 3
+                      backgroundColor: 'transparent'
+                    title: button.title
+                    value: if button.value then button.value 
+                    onClick: if button.onClick then button.onClick
+                    onFocus: (e) => 
+                      @local.focused_toolbar_item = idx; 
+                      save @local
+                      e.stopPropagation()
+
+                    onBlur: (e) => 
+                      e.stopPropagation()
+                      @local.focused_toolbar_item = null 
+                      @local.just_unfocused = true
+                      setTimeout =>
+                        @local.just_unfocused = false 
+                      , 0
+                      save @local 
+
+                      # if the focus isn't still on an element inside of this menu, 
+                      # then we should close the menu                
+                      setTimeout => 
+                        if $(document.activeElement).closest(@getDOMNode()).length == 0
+                          wysiwyg_editor = fetch 'wysiwyg_editor'
+                          wysiwyg_editor.showing = false
+                          save wysiwyg_editor
+                      , 0
 
           DIV 
             style: @props.container_style
+            className: 'proposal_details' # for formatting like proposals 
             
             DIV 
               id: 'editor'
               dangerouslySetInnerHTML:{__html: @props.html}
               'data-placeholder': if show_placeholder then @props.placeholder else ''
-              onFocus: => 
+              onFocus: (e) => 
                 # Show the toolbar on focus
                 # showing is global state for the toolbar to be 
                 # shown. It gets set to null when someone clicks outside the 
@@ -218,26 +283,40 @@ window.WysiwygEditor = ReactiveComponent
                 wysiwyg_editor = fetch 'wysiwyg_editor'
                 wysiwyg_editor.showing = @props.key
                 save wysiwyg_editor
-              # onBlur: => 
-              #   wysiwyg_editor = fetch 'wysiwyg_editor'
-              #   wysiwyg_editor.showing = false
-              #   save wysiwyg_editor
-              style: @props.style
+
+              onBlur: => 
+                # if the focus isn't still on an element inside of this menu, 
+                # then we should close the menu                
+                setTimeout => 
+                  if $(document.activeElement).closest(@getDOMNode()).length == 0
+                    wysiwyg_editor = fetch 'wysiwyg_editor'
+                    wysiwyg_editor.showing = false
+                    save wysiwyg_editor
+                , 0
+
+              style: _.extend @props.style, 
+                outline: if fetch('wysiwyg_editor').showing == @props.key then "2px solid #{focus_blue}"
+
         
 
   componentDidMount : -> 
+
+    getHTML = => 
+      @getDOMNode().querySelector(".ql-editor").innerHTML
+
     # Attach the Quill wysiwyg editor
     @editor = new Quill $(@getDOMNode()).find('#editor')[0],    
       modules: 
         toolbar: 
           container: $(@getDOMNode()).find('#toolbar')[0]
-        'link-tooltip': true
-        'image-tooltip': true
       styles: true #if/when we want to define all styles, set to false
+
+    keyboard = @editor.getModule('keyboard')
+    delete keyboard.bindings[9]    # 9 is the key code for tab; restore tabbing for accessibility
 
     @editor.on 'text-change', (delta, source) => 
       my_data = fetch @props.key
-      my_data.html = @editor.getHTML()
+      my_data.html = getHTML()
 
       if source == 'user' && my_data.html.indexOf(' style') > -1
         # strip out any style tags the user may have pasted into the html
@@ -250,7 +329,7 @@ window.WysiwygEditor = ReactiveComponent
 
         node = @editor.root
         removeStyles node
-        my_data.html = @editor.getHTML()
+        my_data.html = getHTML()
 
       save my_data
 
@@ -266,6 +345,10 @@ html .ql-container{
 }
 .ql-editor {
   min-height: 120px;
+  outline: none;
+}
+.ql-clipboard {
+  display: none;
 }
 .ql-container:after{
   content: attr(data-placeholder);

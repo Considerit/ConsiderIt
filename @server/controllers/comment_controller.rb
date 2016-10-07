@@ -40,41 +40,33 @@ class CommentController < ApplicationController
     comment['subdomain_id'] = current_subdomain.id
     comment['point'] = Point.find(key_id(params['point']))
 
-    # don't allow repeat comments
-    existing_comment = Comment.where(:point_id => comment['point_id']).find_by_body(comment['body'])
+    point = comment['point']
 
-    if existing_comment.nil?
-      point = comment['point']
+    comment = Comment.new comment
+    
+    authorize! 'create comment', comment
 
-      comment = Comment.new comment
+    if comment.save
+
+      Notifier.create_notification('new', comment)
+      comment.notify_moderator
+
+      original_id = key_id(params[:key])
+      result = comment.as_json
+      result['key'] = "/comment/#{comment.id}?original_id=#{original_id}"
+      dirty_key "/comments/#{point.id}"
+
+      # TODO: BUG: comment count won't accurate if this comment has to be 
+      #            moderated first...
+      point.comment_count = point.comments.count
+      point.save
+      dirty_key "/point/#{point.id}"  
+
+      current_user.update_subscription_key(point.proposal.key, 'watched', :force => false)
+      dirty_key "/current_user"
       
-      authorize! 'create comment', comment
-
-      if comment.save
-
-        Notifier.create_notification('new', comment)
-        comment.notify_moderator
-
-        original_id = key_id(params[:key])
-        result = comment.as_json
-        result['key'] = "/comment/#{comment.id}?original_id=#{original_id}"
-        dirty_key "/comments/#{point.id}"
-
-        # TODO: BUG: comment count won't accurate if this comment has to be 
-        #            moderated first...
-        point.comment_count = point.comments.count
-        point.save
-        dirty_key "/point/#{point.id}"  
-
-        current_user.update_subscription_key(point.proposal.key, 'watched', :force => false)
-        dirty_key "/current_user"
-        
-      else 
-        result = {errors: ['could not save comment']}
-      end
-
     else 
-      result = existing_comment
+      result = {key: params[:key], errors: ['Comment could not be saved']}
     end
 
     render :json => [result]     

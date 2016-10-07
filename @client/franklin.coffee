@@ -1704,6 +1704,8 @@ LocationTransition = ReactiveComponent
 
       if loc.url == '/edit_profile' && auth.form != 'edit profile'
         reset_key auth, {form: 'edit profile', ask_questions: true}
+      else if loc.url == '/edit_saml_profile' && auth.form != 'edit saml profile'
+        reset_key auth, {form: 'edit saml profile', ask_questions: true}
       else if auth.form
         reset_key auth
 

@@ -137,7 +137,7 @@ SubdomainRoles = ReactiveComponent
 
     DIV null, 
       DashHeader name: 'User Roles'
-      DIV style: {width: BODY_WIDTH(), margin: 'auto'},
+      DIV style: {width: HOMEPAGE_WIDTH(), margin: 'auto'},
         SpecifyRoles subdomain, roles
 
 
@@ -149,7 +149,7 @@ SpecifyRoles = (target, roles) ->
         style: 
           marginTop: 24
 
-        H1 style: {fontSize: 18, position: 'relative'}, 
+        H2 style: {fontSize: 18, position: 'relative'}, 
           I 
             className: "fa #{role.icon}"
             style: 
@@ -207,78 +207,175 @@ AddRolesAndInvite = ReactiveComponent
         save @local
 
 
+    trigger = (e, role) =>
+      @local.role = role
+      @local.roles_menu = false 
+      save @local
+      e.stopPropagation()
+      e.preventDefault()
+
+    set_focus = (idx) => 
+      idx = 0 if !idx?
+      @local.focus = idx 
+      @refs["menuitem-#{idx}"].getDOMNode().focus()
+      save @local 
+      
+
+    close_menu = => 
+      document.activeElement.blur()
+      @local.roles_menu = false
+      save @local
+
+    other_roles = (r for r in @props.roles when r.name != @local.role.name)
     DIV 
       style: 
         position: 'relative'
         backgroundColor: '#E7F2FF'
         padding: '18px 24px'
-      STYLE null, 
-        ".invite_menu_item:hover{background-color: #414141; color: white}"
+
+
 
       # Show (and optionally change) the role currently being modified 
       # by the invite component
       DIV 
+        ref: 'menu_wrap'
+        key: 'select_role_menu'
         style: 
           fontWeight: 500
           fontSize: 18
           marginBottom: 6
           display: 'inline-block'
-        DIV 
+
+        onTouchEnd: => 
+          @local.roles_menu = !@local.roles_menu
+          save(@local)
+
+        onMouseEnter: => @local.roles_menu = true; save(@local)
+        onMouseLeave: close_menu
+
+        onFocus: =>  
+          @local.roles_menu = true
+          save(@local)
+
+        onBlur: (e) => 
+          setTimeout => 
+            # if the focus isn't still on an element inside of this menu, 
+            # then we should close the menu
+            if $(document.activeElement).closest(@refs.menu_wrap.getDOMNode()).length == 0
+              @local.roles_menu = false; save @local
+          , 0
+
+        onKeyDown: (e) => 
+          if e.which == 13 || e.which == 27 # ENTER or ESC
+            close_menu()
+            e.preventDefault()
+          else if e.which == 38 || e.which == 40 # UP / DOWN ARROW
+            @local.focs = -1 if !@local.focus?
+            if e.which == 38
+              @local.focus--
+              if @local.focus < 0 
+                @local.focus = other_roles.length - 1
+            else 
+              @local.focus++
+              if @local.focus > other_roles.length - 1
+                @local.focus = 0 
+            set_focus(@local.focus)
+            e.preventDefault() # prevent window from scrolling too
+
+
+
+        BUTTON 
           id: 'select_new_role'
+          tabIndex: 0
+          'aria-haspopup': "true"
+          'aria-owns': "role_menu_popup"          
           style: 
             backgroundColor: 'rgba(100,100,150,.1)'
             padding: '8px 12px'
             borderRadius: 8
             cursor: 'pointer'
-          onClick: =>
-            $(document).on 'click.select_new_role', (e) =>
-              if e.target.id != 'select_new_role'
-                @local.select_new_role = false
-                save(@local)
-                $(document).off('click.select_new_role')
+            border: 'none'
 
-            @local.select_new_role = true
-            save @local 
           I 
             className: "fa #{@local.role.icon}"
             style: 
               displayName: 'inline-block'
               margin: '0 8px 0 0'
           "Add #{@local.role.label}"
+
           I style: {marginLeft: 8}, className: "fa fa-caret-down"
 
-        if @local.select_new_role
-          UL 
-            style: 
-              width: 500
-              position: 'absolute'
-              zIndex: 99
-              listStyle: 'none'
-              backgroundColor: '#fff'
-              border: '1px solid #eee'
 
-            for role,idx in @props.roles
-              if role.name != @local.role.name
-                LI 
-                  className: 'invite_menu_item'
-                  style: 
-                    padding: '2px 12px'
-                    fontSize: 18
-                    cursor: 'pointer'
-                    borderBottom: '1px solid #fafafa'
-                  key: idx
-                  onClick: do(role) => (e) => 
-                    @local.role = role
-                    #@local.added = []
-                    save @local
-                    e.stopPropagation()
+        UL 
+          id: 'role_menu_popup'
+          role: "menu"
+          'aria-hidden': !@local.roles_menu
+          hidden: !@local.roles_menu
 
-                  I 
-                    className: "fa #{role.icon}"
-                    style: 
-                      displayName: 'inline-block'
-                      margin: '0 8px 0 0'
-                  "Add #{role.label}"
+          style: 
+            width: 500
+            position: 'absolute'
+            left: if @local.roles_menu then 24 else -9999            
+            zIndex: 99
+            listStyle: 'none'
+            backgroundColor: '#fff'
+            border: '1px solid #eee'
+
+          for role,idx in other_roles
+            LI 
+              role: "menuitem"              
+              ref: "menuitem-#{idx}"              
+              className: 'invite_menu_item'
+              tabIndex: 0                
+              style: 
+                padding: '2px 12px'
+                fontSize: 18
+                cursor: 'pointer'
+                borderBottom: '1px solid #fafafa'
+                backgroundColor: if @local.focus == idx then '#414141'
+                color: if @local.focus == idx then 'white'
+              key: "menuitem-#{idx}"
+
+              onClick: do(idx, role) => (e) => 
+                if @local.focus != idx 
+                  set_focus idx 
+                trigger(e, role)
+
+              onTouchEnd: do(idx, role) => (e) =>
+                if @local.focus != idx 
+                  set_focus idx 
+                trigger(e, role)
+
+              onKeyDown: do(role) => (e) => 
+                trigger(e, role) if e.which == 13 #ENTER
+                  
+              onFocus: do(idx) => (e) => 
+                if @local.focus != idx 
+                  set_focus idx
+                e.stopPropagation()
+
+              onMouseEnter: do(idx) => => 
+                if @local.focus != idx 
+                  set_focus idx
+              
+              onBlur: do(idx) => (e) =>
+                @local.focus = null 
+                save @local  
+              
+              onMouseExit: do(idx) => => 
+                @local.focus = null 
+                save @local
+
+              I 
+                className: "fa #{role.icon}"
+                style: 
+                  displayName: 'inline-block'
+                  margin: '0 8px 0 0'
+              "Add #{role.label}"
+
+
+
+
 
       # Show everyone queued for being added/invited to a role
       if @local.added.length > 0
@@ -290,7 +387,13 @@ AddRolesAndInvite = ReactiveComponent
               save @local
 
       # Text input for adding new people to a role
-      DIV null,
+      DIV 
+        ref: 'autocomplete'
+        onKeyDown: (e) => 
+          if e.which == 27 && @local.selecting # ESC
+            @local.selecting = false 
+            save @local
+
         INPUT 
           id: 'filter'
           type: 'text'
@@ -305,6 +408,7 @@ AddRolesAndInvite = ReactiveComponent
             if e.which == 13
               e.preventDefault()
               processNewFolks()
+
           onFocus: (e) => 
             @local.selecting = true
             save(@local)
@@ -318,39 +422,49 @@ AddRolesAndInvite = ReactiveComponent
                 $(document).off('click.roles')
             return false
 
-      # Dropdown, autocomplete menu for adding existing users
-      if @local.selecting
-        available_users = _.filter users.users, (u) => 
-            target.roles[@local.role.name].indexOf(u.key) < 0 && 
-            @local.added.indexOf(u.key) < 0 &&
-             (!@local.filtered || 
-              "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1)
-        if available_users.length > 0
-          UL 
-            style: 
-              width: 500
-              position: 'absolute'
-              zIndex: 99
-              listStyle: 'none'
-              backgroundColor: '#fff'
-              border: '1px solid #eee'
+        # Dropdown, autocomplete menu for adding existing users
+        if @local.selecting
+          available_users = _.filter users.users, (u) => 
+              target.roles[@local.role.name].indexOf(u.key) < 0 && 
+              @local.added.indexOf(u.key) < 0 &&
+               (!@local.filtered || 
+                "#{u.name} <#{u.email}>".indexOf(@local.filtered) > -1)
+          if available_users.length > 0
+            UL 
+              style: 
+                width: 500
+                position: 'absolute'
+                zIndex: 99
+                listStyle: 'none'
+                backgroundColor: '#fff'
+                border: '1px solid #eee'
 
-            for user,idx in available_users
-              LI 
-                className: 'invite_menu_item'
-                style: 
-                  padding: '2px 12px'
-                  fontSize: 18
-                  cursor: 'pointer'
-                  borderBottom: '1px solid #fafafa'
-                key: idx
+              for user,idx in available_users
+                LI 
+                  className: 'invite_menu_item'
+                  style: 
+                    padding: '2px 12px'
+                    fontSize: 18
+                    cursor: 'pointer'
+                    borderBottom: '1px solid #fafafa'
+                  key: idx
 
-                onClick: do(user) => (e) => 
-                  @local.added.push user.key
-                  save @local
-                  e.stopPropagation()
+                  onClick: do(user) => (e) => 
+                    @local.added.push user.key
+                    save @local
+                    e.stopPropagation()
+                  onTouchEnd: do(user) => (e) => 
+                    @local.added.push user.key
+                    save @local
+                    e.stopPropagation()
+                  onKeyDown: do(user) => (e) => 
+                    if e.which == 13 # ENTER
+                      @local.added.push user.key
+                      save @local
+                      e.stopPropagation()
+                      e.preventDefault()
 
-                "#{user.name} <#{user.email}>"
+                  "#{user.name} <#{user.email}>"
 
       # Email invite area
       DIV style: {marginTop: 20},
@@ -373,7 +487,7 @@ AddRolesAndInvite = ReactiveComponent
               style: {width: '90%', fontSize: 18, padding: '8px 14px'}
 
       # Submit button
-      DIV
+      BUTTON
         style: 
           backgroundColor: focus_blue
           color: 'white'
@@ -383,6 +497,7 @@ AddRolesAndInvite = ReactiveComponent
           cursor: 'pointer'
           borderRadius: 8
           marginTop: 12
+          border: 'none'
 
         onClick: (e) => 
 
@@ -486,8 +601,9 @@ UserWithRole = (user_key, on_remove_from_role) ->
       else
         user_key
 
-    SPAN # remove user from role
-      style: {cursor: 'pointer', marginLeft: 8}
+    BUTTON # remove user from role
+      'aria-label': "Remove #{user?.name or user_key} from role"
+      style: {cursor: 'pointer', marginLeft: 8, border: 'none', 'backgroundColor': 'transparent'}
       onClick: -> on_remove_from_role(user_key) if on_remove_from_role
       'x'
 

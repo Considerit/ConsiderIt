@@ -49,7 +49,7 @@ DashHeader = ReactiveComponent
 
       DIV 
         style: 
-          width: BODY_WIDTH()
+          width: HOMEPAGE_WIDTH()
           margin: 'auto'
           position: 'relative'    
         H1 
@@ -77,7 +77,7 @@ ImportDataDash = ReactiveComponent
       
       DashHeader name: 'Export Data'
 
-      DIV style: {width: BODY_WIDTH(), margin: '15px auto'},
+      DIV style: {width: HOMEPAGE_WIDTH(), margin: '15px auto'},
 
       if subdomain.plan || current_user.is_super_admin
         DIV null, 
@@ -102,7 +102,7 @@ ImportDataDash = ReactiveComponent
 
       DashHeader name: 'Import Data'
 
-      DIV style: {width: BODY_WIDTH(), margin: '15px auto'},
+      DIV style: {width: HOMEPAGE_WIDTH(), margin: '15px auto'},
         P style: {marginBottom: 6}, 
           "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
 
@@ -167,7 +167,7 @@ ImportDataDash = ReactiveComponent
             TR null,
               TD null
               TD style: {padding: '20px 0 0 20px'}, 
-                A 
+                BUTTON
                   id: 'submit_import'
                   style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
                   onClick: => 
@@ -194,7 +194,6 @@ ImportDataDash = ReactiveComponent
                         @local.successes = null                      
                         @local.errors = ['Unknown error parsing the files. Email tkriplean@gmail.com.']
                         save @local
-                        
 
                   'Done. Upload!'
 
@@ -228,7 +227,7 @@ AppSettingsDash = ReactiveComponent
       STYLE dangerouslySetInnerHTML: __html: #dangerously set html is so that the type="text" doesn't get escaped
         """
         .app_settings_dash { font-size: 18px }
-        .app_settings_dash input[type="text"], .app_settings_dash textarea { border: 1px solid #aaa; outline: none; display: block; width: #{HOMEPAGE_WIDTH()}px; font-size: 18px; padding: 4px 8px; } 
+        .app_settings_dash input[type="text"], .app_settings_dash textarea { border: 1px solid #aaa; display: block; width: #{HOMEPAGE_WIDTH()}px; font-size: 18px; padding: 4px 8px; } 
         .app_settings_dash .input_group { margin-bottom: 12px; }
         """
 
@@ -878,8 +877,10 @@ ModerationDash = ReactiveComponent
                 'close'
 
           else 
-            A 
-              style: {textDecoration: 'underline'}
+            BUTTON 
+              style: 
+                padding: '4px 8px'
+
               onClick: => 
                 @local.edit_settings = true
                 save @local
@@ -1006,8 +1007,8 @@ ModerateItem = ReactiveComponent
 
             if !moderatable.hide_name && !@local.messaging
               [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
-              A
-                style: {textDecoration: 'underline'}
+              BUTTON
+                style: {textDecoration: 'underline', backgroundColor: 'transparent', border: 'none'}
                 onClick: (=> @local.messaging = moderatable; save(@local)),
                 'Message author']
             else if @local.messaging
@@ -1214,8 +1215,8 @@ FactcheckPoint = ReactiveComponent
 
             if !point.hide_name && @local.messaging != point
               [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
-              A
-                style: {textDecoration: 'underline'}
+              BUTTON
+                style: {textDecoration: 'underline', backgroundColor: 'transparent', border: 'none'}
                 onClick: (=> @local.messaging = point; save(@local)),
                 'Email author']
             else if @local.messaging == point
@@ -1391,23 +1392,25 @@ DirectMessage = ReactiveComponent
         LABEL null, 'To: ', fetch(@props.to).name
 
       DIV style: {marginBottom: 8},
-        LABEL null, 'Subject'
+        LABEL htmlFor: 'message_subject', 'Subject'
         AutoGrowTextArea
+          id: 'message_subject'
           className: 'message_subject'
           placeholder: 'Subject line'
           min_height: 25
           style: text_style
 
       DIV style: {marginBottom: 8},
-        LABEL null, 'Body'
+        LABEL htmlFor: 'message_body', 'Body'
         AutoGrowTextArea
+          id: 'message_body'
           className: 'message_body'
           placeholder: 'Email message'
           min_height: 75
           style: text_style
 
       Button {}, 'Send', @submitMessage
-      A style: {marginLeft: 8}, onClick: (=> @props.parent.messaging = null; save @props.parent), 'cancel'
+      BUTTON style: {marginLeft: 8, backgroundColor: 'transparent', border: 'none'}, onClick: (=> @props.parent.messaging = null; save @props.parent), 'cancel'
 
   submitMessage : -> 
     # TODO: convert to using arest create method; waiting on full dash porting

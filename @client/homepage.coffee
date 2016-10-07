@@ -106,59 +106,58 @@ window.TagHomepage = ReactiveComponent
 
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
 
-    DIV null,
 
-      DIV
-        className: 'simplehomepage'
+    DIV
+      id: 'simplehomepage'
+      role: if customization('homepage_tabs') then "tabpanel"
+      style: 
+        fontSize: 22
+        margin: '45px auto'
+        width: HOMEPAGE_WIDTH()
+        position: 'relative'
+
+      STYLE null,
+        '''a.proposal:hover {border-bottom: 1px solid grey}'''
+
+      ProposalFilter
         style: 
-          fontSize: 22
-          margin: '45px auto'
-          width: HOMEPAGE_WIDTH()
-          position: 'relative'
-
-        STYLE null,
-          '''a.proposal:hover {border-bottom: 1px solid grey}'''
-
-        ProposalFilter
-          style: 
-            width: first_column.width
-            marginBottom: 20
-            display: 'inline-block'
-            verticalAlign: 'top'
+          width: first_column.width
+          marginBottom: 20
+          display: 'inline-block'
+          verticalAlign: 'top'
 
 
-        DIV null, 
-          for proposal,idx in proposals
-            continue if idx > 20 && !show_all.show_all
-            cluster = proposal.cluster or 'Proposals'
-            DIV 
-              key: "collapsed#{proposal.key}"
+      UL null, 
+        for proposal,idx in proposals
+          continue if idx > 20 && !show_all.show_all
+          cluster = proposal.cluster or 'Proposals'
 
-              CollapsedProposal 
-                key: "collapsed#{proposal.key}"
-                proposal: proposal
-                show_category: true
-                category_color: hsv2rgb(colors[cluster], .7, .8)
+          CollapsedProposal 
+            key: "collapsed#{proposal.key}"
+            proposal: proposal
+            show_category: true
+            category_color: hsv2rgb(colors[cluster], .7, .8)
 
-        if !show_all.show_all && proposals.length > 20 
-          DIV
-            style:
-              backgroundColor: '#f9f9f9'
-              width: HOMEPAGE_WIDTH()
-              #position: 'absolute'
-              #bottom: 0
-              textDecoration: 'underline'
-              cursor: 'pointer'
-              paddingTop: 10
-              paddingBottom: 10
-              fontWeight: 600
-              textAlign: 'center'
-              marginTop: 40
+      if !show_all.show_all && proposals.length > 20 
+        BUTTON
+          style:
+            backgroundColor: '#f9f9f9'
+            width: HOMEPAGE_WIDTH()
+            #position: 'absolute'
+            #bottom: 0
+            textDecoration: 'underline'
+            cursor: 'pointer'
+            paddingTop: 10
+            paddingBottom: 10
+            fontWeight: 600
+            textAlign: 'center'
+            marginTop: 40
+            border: 'none'
 
-            onMouseDown: => 
-              show_all.show_all = true
-              save(show_all)
-            'Show all proposals'
+          onMouseDown: => 
+            show_all.show_all = true
+            save(show_all)
+          'Show all proposals'
 
 
 
@@ -190,74 +189,74 @@ window.SimpleHomepage = ReactiveComponent
       save collapsed
 
 
-    DIV null,
+    has_proposal_sort = customization('homepage_show_search_and_sort') && proposals.proposals.length > 10
 
-      DIV
-        className: 'simplehomepage'
-        style: 
-          fontSize: 22
-          margin: '45px auto'
-          width: HOMEPAGE_WIDTH()
-          position: 'relative'
+    DIV
+      id: 'simplehomepage'
+      role: if customization('homepage_tabs') then "tabpanel"
+      style: 
+        fontSize: 22
+        margin: '45px auto'
+        width: HOMEPAGE_WIDTH()
+        position: 'relative'
 
-        STYLE null,
-          '''a.proposal:hover {border-bottom: 1px solid grey}'''
+      STYLE null,
+        '''a.proposal:hover {border-bottom: 1px solid grey}'''
 
-        if customization('homepage_show_search_and_sort') && proposals.proposals.length > 15
-          [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-          ProposalFilter
-            style: 
-              width: first_column.width
-              marginBottom: 20
-              display: 'inline-block'
-              verticalAlign: 'top'
+      if has_proposal_sort
+        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+        ProposalFilter
+          style: 
+            width: first_column.width
+            marginBottom: 20
+            display: 'inline-block'
+            verticalAlign: 'top'
 
-        if customization('opinion_filters')
-          [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-          hala = subdomain.name in ['HALA', 'engageseattle']
+      if customization('opinion_filters')
+        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
 
-          OpinionFilter
-            style: 
-              width: if !hala then secnd_column.width
-              marginBottom: 20
-              marginLeft: if !hala then secnd_column.marginLeft
-              display: if !hala then 'inline-block'
-              verticalAlign: 'top'
-              textAlign: if !hala then 'center' else 'right'
+        OpinionFilter
+          style: 
+            width: if has_proposal_sort then secnd_column.width
+            marginBottom: 20
+            marginLeft: if has_proposal_sort then secnd_column.marginLeft else secnd_column.marginLeft + first_column.width
+            display: if has_proposal_sort then 'inline-block'
+            verticalAlign: 'top'
+            textAlign: 'center' 
 
-        # List all clusters
-        for cluster, index in clusters or []
-          cluster_key = "list/#{cluster.name}"
+      # List all clusters
+      for cluster, index in clusters or []
+        cluster_key = "list/#{cluster.name}"
 
-          fails_filter = homepage_tabs.filter? && (homepage_tabs.clusters != '*' && !(cluster.name in homepage_tabs.clusters) )
-          if fails_filter && ('*' in homepage_tabs.clusters)
-            in_others = []
-            for filter, clusters of customization('homepage_tabs')
-              in_others = in_others.concat clusters 
+        fails_filter = homepage_tabs.filter? && (homepage_tabs.clusters != '*' && !(cluster.name in homepage_tabs.clusters) )
+        if fails_filter && ('*' in homepage_tabs.clusters)
+          in_others = []
+          for filter, clusters of customization('homepage_tabs')
+            in_others = in_others.concat clusters 
 
-            fails_filter &&= cluster.name in in_others
-
-
-          if fails_filter
-            SPAN null 
-          else 
-
-            Cluster
-              key: cluster_key
-              cluster: cluster 
-              index: index
+          fails_filter &&= cluster.name in in_others
 
 
-        if permit('create proposal') > 0 && customization('homepage_show_new_proposal_button')
-          A 
-            style: 
-              color: logo_red
-              marginTop: 35
-              display: 'inline-block'
-              borderBottom: "1px solid #{logo_red}"
+        if fails_filter
+          SPAN null 
+        else 
 
-            href: '/proposal/new'
-            t('Create new proposal')
+          Cluster
+            key: cluster_key
+            cluster: cluster 
+            index: index
+
+
+      if permit('create proposal') > 0 && customization('homepage_show_new_proposal_button')
+        A 
+          style: 
+            color: logo_red
+            marginTop: 35
+            display: 'inline-block'
+            borderBottom: "1px solid #{logo_red}"
+
+          href: '/proposal/new'
+          t('Create new proposal')
 
   typeset : -> 
     subdomain = fetch('/subdomain')
@@ -267,58 +266,6 @@ window.SimpleHomepage = ReactiveComponent
   componentDidMount : -> @typeset()
   componentDidUpdate : -> @typeset()
 
-  drawWatchFilter: -> 
-    filter = fetch 'homepage_filter'
-
-    DIV 
-      id: 'watching_filter'
-      style: 
-        position: 'absolute'
-        left: -87  
-        top: 5
-        border: "1px solid #bbb"
-        opacity: if !filter.watched && !@local.hover_watch_filter then .3
-        padding: '3px 10px'
-        cursor: 'pointer'
-        display: 'inline-block'
-        backgroundColor: '#fafafa'
-        borderRadius: 8
-
-      onMouseEnter: => 
-        @local.hover_watch_filter = true
-
-        tooltip = fetch 'tooltip'
-        tooltip.coords = $(@getDOMNode()).find('#watching_filter').offset()
-        tooltip.tip = t('filter_to_watched')
-        save tooltip
-        save @local
-
-      onMouseLeave: => 
-        @local.hover_watch_filter = false
-        save @local
-        tooltip = fetch 'tooltip'
-        tooltip.coords = null
-        save tooltip
-
-      onClick: => 
-        filter.watched = !filter.watched
-        save filter
-
-      SPAN
-        style: 
-          fontSize: 16
-          verticalAlign: 'text-bottom'
-          color: '#666'
-        "only "
-
-      I 
-        className: "fa fa-star"
-        style: 
-          color: logo_red
-          verticalAlign: 'text-bottom'
-
-          # width: 30
-          # height: 30
 
 
 window.HomepageTabs = ReactiveComponent
@@ -337,9 +284,7 @@ window.HomepageTabs = ReactiveComponent
           break 
       save homepage_tabs
 
-
     subdomain = fetch('/subdomain')
-
 
     DIV 
       style: 
@@ -349,11 +294,13 @@ window.HomepageTabs = ReactiveComponent
         top: 2
         marginTop: 20
 
-      DIV 
+      UL 
+        role: 'tablist'
         style: 
           width: 900 #HOMEPAGE_WIDTH()
           margin: 'auto'
           textAlign: 'center'
+          listStyle: 'none'
 
         for [filter, clusters], idx in filters 
           do (filter, clusters) =>
@@ -390,8 +337,12 @@ window.HomepageTabs = ReactiveComponent
                 padding: '10px 20px 4px 20px'
                 backgroundColor: if current then 'rgba(255,255,255,.2)'
 
-            SPAN 
+            LI 
+              tabIndex: 0
+              role: 'tab'
               style: tab_style
+              'aria-controls': 'simplehomepage'
+              'aria-selected': current
 
               onMouseEnter: => 
                 if homepage_tabs.filter != filter 
@@ -400,6 +351,10 @@ window.HomepageTabs = ReactiveComponent
               onMouseLeave: => 
                 @local.hovering = null 
                 save @local
+              onKeyDown: (e) => 
+                if e.which == 13
+                  e.currentTarget.click() 
+                  e.preventDefault()
               onClick: => 
                 homepage_tabs.filter = filter 
                 homepage_tabs.clusters = clusters
@@ -441,24 +396,27 @@ Cluster = ReactiveComponent
       @drawClusterHeading cluster, is_collapsed
 
       if !is_collapsed
-        DIV null, 
+        UL null, 
           for proposal,idx in proposals
-            DIV 
+
+            CollapsedProposal 
               key: "collapsed#{proposal.key}"
-
-              CollapsedProposal 
-                key: "collapsed#{proposal.key}"
-                proposal: proposal
-
-              @drawThreshold(subdomain, cluster, idx)
+              proposal: proposal
 
           if customization('list_show_new_button', cluster_key) || current_user.is_admin
-            NewProposal 
-              cluster_name: cluster.name
-              local: @local.key
-              label_style: 
-                borderBottom: "1px solid #{logo_red}"
-                color: logo_red
+            LI 
+              key: "new#{cluster_key}"
+              style: 
+                margin: 0 
+                padding: 0
+                listStyle: 'none'
+
+              NewProposal 
+                cluster_name: cluster.name
+                local: @local.key
+                label_style: 
+                  borderBottom: "1px solid #{logo_red}"
+                  color: logo_red
 
 
 
@@ -531,38 +489,48 @@ Cluster = ReactiveComponent
       if ListHeader
         ListHeader()
       else 
+        HEADING = if label then H2 else H1
+        toggle_list = ->
+          if !list_uncollapseable
+            if collapsed.clusters[cluster_key]
+              delete collapsed.clusters[cluster_key]
+            else 
+              collapsed.clusters[cluster_key] = 1 
+            save collapsed
 
         DIV 
           style: 
             position: 'relative'
-          H1
+          HEADING
             style: _.extend {}, first_header, 
               position: 'relative'
               cursor: if !list_uncollapseable then 'pointer'
+            BUTTON 
+              style: 
+                padding: 0 
+                margin: 0 
+                border: 'none'
+                backgroundColor: 'transparent'
+                fontWeight: first_header.fontWeight
+              onKeyDown: (e) -> 
+                console.log 'KEY!', e.which
+                if e.which == 13 || e.which == 32
+                  toggle_list()
+                  e.preventDefault()
+              onClick: toggle_list
 
-            onClick: -> 
+              list_items_title || cluster.name || 'Proposals'
+
               if !list_uncollapseable
-                if collapsed.clusters[cluster_key]
-                  delete collapsed.clusters[cluster_key]
-                else 
-                  collapsed.clusters[cluster_key] = 1 
-                save collapsed
-
-
-            list_items_title || cluster.name || 'Proposals'
-
-            if !list_uncollapseable
-              SPAN 
-                style: cssTriangle (if is_collapsed then 'right' else 'bottom'), 'black', tw, th,
-                  position: 'absolute'
-                  left: -tw - 20
-                  bottom: 14
-                  width: tw
-                  height: th
-                  display: 'inline-block'
-
-            if subdomain.name == 'RANDOM2015'
-              " (#{cluster.proposals.length})"
+                SPAN 
+                  'aria-hidden': true
+                  style: cssTriangle (if is_collapsed then 'right' else 'bottom'), 'black', tw, th,
+                    position: 'absolute'
+                    left: -tw - 20
+                    bottom: 14
+                    width: tw
+                    height: th
+                    display: 'inline-block'
 
             if list_one_line_desc
               DIV 
@@ -586,38 +554,6 @@ Cluster = ReactiveComponent
                 histo_title
 
 
-
-  drawThreshold: (subdomain, cluster, idx) -> 
-
-    cutoff = 28 
-    if subdomain.name == 'ANUP2015'
-      cutoff = 7
-
-    if subdomain.name in ['ANUP2015', 'RANDOM2015'] && cluster.name == 'Under Review' && idx == cutoff
-      DIV 
-        style:
-          borderTop: "4px solid green"
-          borderBottom: "4px solid #{logo_red}"
-          padding: "4px 0"
-          textAlign: 'center'
-          
-          fontWeight: 600
-          margin: "16px 0 32px 0"
-
-        I
-          style: 
-            color: 'green'
-            display: 'block'
-          className: 'fa fa-thumbs-o-up'
-
-
-        "Acceptance threshold for #{cutoff} papers"
-
-        I
-          style: 
-            display: 'block'
-            color: logo_red
-          className: 'fa fa-thumbs-o-down'    
 
   storeSortOrder: -> 
     p = (p.key for p in sorted_proposals(@props.cluster.proposals))
@@ -662,9 +598,14 @@ window.NewProposal = ReactiveComponent
 
       if !adding 
 
-        SPAN 
-          style: _.extend @props.label_style,
+        BUTTON 
+          style: _.defaults @props.label_style,
             cursor: 'pointer'
+            backgroundColor: 'transparent'
+            border: 'none'
+            fontSize: 'inherit'
+            padding: 0
+            textDecoration: 'underline'
 
           onClick: (e) => 
             if permitted
@@ -711,6 +652,7 @@ window.NewProposal = ReactiveComponent
               id:"#{cluster_slug}-name"
               name:'name'
               pattern:'^.{3,}'
+              'aria-label': t('proposal_summary_instr')
               placeholder: t('proposal_summary_instr')
               required:'required'
               resize: 'none'
@@ -724,6 +666,7 @@ window.NewProposal = ReactiveComponent
             WysiwygEditor
               key:"description-new-proposal-#{cluster_slug}"
               placeholder: "Add #{t('details')} here"
+              'aria-label': "Add #{t('details')} here"
               container_style: 
                 padding: '6px 8px'
                 border: '1px solid #ccc'
@@ -756,7 +699,7 @@ window.NewProposal = ReactiveComponent
               style: 
                 marginTop: 8
 
-              SPAN 
+              BUTTON 
                 style: 
                   backgroundColor: focus_blue
                   color: 'white'
@@ -765,7 +708,8 @@ window.NewProposal = ReactiveComponent
                   padding: '4px 16px'
                   display: 'inline-block'
                   marginRight: 12
-
+                  border: 'none'
+                  fontSize: 'inherit'
 
                 onClick: => 
                   name = $(@getDOMNode()).find("##{cluster_slug}-name").val()
@@ -799,10 +743,14 @@ window.NewProposal = ReactiveComponent
 
                 t('Done')
 
-              SPAN 
+              BUTTON 
                 style: 
                   color: '#888'
                   cursor: 'pointer'
+                  backgroundColor: 'transparent'
+                  border: 'none'
+                  padding: 0
+                  fontSize: 'inherit'                  
                 onClick: => cluster_state.adding_new_proposal = null; save(cluster_state)
 
                 t('cancel')

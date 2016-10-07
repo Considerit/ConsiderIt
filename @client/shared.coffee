@@ -42,6 +42,15 @@ window.GoogleTranslate = ReactiveComponent
     , 20
 
 
+window.pad = (num, len) -> 
+  str = num
+  dec = str.split('.')
+  i = 0 
+  while i < len - dec[0].toString().length
+    dec[0] = "0" + dec[0]
+    i += 1
+
+  dec[0] + if dec.length > 0 then '.' + dec[1] else ''
 
 
 window.back_to_homepage_button = (style) -> 
@@ -530,7 +539,7 @@ window.slugify = (text) ->
 
 
 ## CSS reset
-
+focus_shadow = 'inset 0 0 2px rgba(0,0,0,.3), 0 0 2px rgba(0,0,0,.3)'
 window.styles += """
 /* RESET
  * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
@@ -602,11 +611,25 @@ b, strong { font-weight: bold; }
 
 a {
   color: inherit;
-  outline: none;
   cursor: pointer;
   text-decoration: none; }
+  a:focus {
+  }
+  a:active {
+  }  
   a img {
     border: none; }
+
+:focus {
+}
+.button, button, input[type='submit'] {
+  cursor: pointer;
+  text-align: center; 
+  font-size: inherit;
+} .button:focus, button:focus, input[type='submit']:focus {
+} .button:active:focus, button:active:focus, input[type='submit']:active:focus{
+}
+
 
 table {
   border-collapse: separate; }
@@ -643,14 +666,6 @@ body, input, button, textarea {
   color: black;
   min-height: 500px; }
 
-.button {
-  font-size: 16px; }
-
-.button, button, input[type='submit'] {
-  outline: none;
-  cursor: pointer;
-  text-align: center; }
-
 
 .flipped {
   -moz-transform: scaleX(-1);
@@ -682,12 +697,14 @@ body, input, button, textarea {
   border: none;
   cursor: wait; }
 
-a.primary_cancel_button {
+.primary_cancel_button {
   color: #888888;
   margin-top: 0.5em; }
 
-a.cancel_opinion_button {
+.cancel_opinion_button {
   float: right;
+  background: transparent;
+  border: none;
   margin-top: 0.5em; }
 
 button.primary_button, input[type='submit'] {

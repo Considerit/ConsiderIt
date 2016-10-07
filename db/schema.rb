@@ -344,6 +344,7 @@ ActiveRecord::Schema.define(version: 20160922021710) do
   add_index "users", ["avatar_file_name"], name: "index_users_on_avatar_file_name", using: :btree
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
   add_index "users", ["registered"], name: "index_users_on_registered", using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", length: {"reset_password_token"=>3}, using: :btree
 
   create_table "verdicts", force: :cascade do |t|
     t.string   "short_name",        limit: 255

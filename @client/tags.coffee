@@ -57,6 +57,7 @@ UserTags = ReactiveComponent
           type: 'text'
           style: {fontSize: 18, width: 350, padding: '3px 6px'}
           autoComplete: 'off'
+          'aria-label': "Name or email..."
           placeholder: "Name or email..."
           value: if current_user then current_user.name
           onChange: => 
@@ -145,7 +146,6 @@ UserTags = ReactiveComponent
                       marginRight: 18
                       display: 'inline-block'
                       border: "1px solid #{ if editing then '#bbb' else 'transparent'}"
-                      outline: 'none'
                       fontSize: 18
                       width: 400
 
@@ -157,7 +157,6 @@ UserTags = ReactiveComponent
                       padding: '5px 10px'
                       display: 'inline-block'
                       border: "1px solid #{ if editing then '#bbb' else 'transparent'}"
-                      outline: 'none'
                       fontSize: 18
                       width: 400
 
@@ -190,7 +189,6 @@ UserTags = ReactiveComponent
               style: 
                 backgroundColor: focus_blue
                 border: 'none'
-                outline: 'none'
                 color: 'white'
                 padding: '5px 10px'
                 borderRadius: 8

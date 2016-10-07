@@ -3,6 +3,11 @@ require File.expand_path('../application', __FILE__)
 
 # Define global helper functions
 
+def sanitize_helper(str)
+  str = "" if !str
+  Loofah.fragment(str).scrub!(:strip)
+end
+
 def stubify_field(hash, name)
   id = hash[name + '_id']
   hash[name] = (id && "/#{name}/#{id}")

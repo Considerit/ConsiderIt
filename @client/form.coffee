@@ -16,10 +16,16 @@ window.Button = (props, text, callback) ->
     fontWeight: 600
     textAlign: 'center'
     cursor: 'pointer'
+    border: 'none'
   props.style = _.extend(style, (props.style or {}))
   props.onClick = callback
+  props.onKeyDown = (e) -> 
+    if e.which == 13 # ENTER
+      callback(e)
+      e.stopPropagation()
+      e.preventDefault()
 
-  DIV props, text
+  BUTTON props, text
 
 
 window.AutoGrowTextArea = ReactiveComponent

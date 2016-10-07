@@ -35,6 +35,8 @@ window.Tooltip = ReactiveComponent
       left: coords.left - size.width / 2
 
     DIV
+      id: 'tooltip'
+      role: "tooltip"
       style: style
       dangerouslySetInnerHTML: {__html: tip}
 

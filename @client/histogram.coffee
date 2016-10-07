@@ -117,6 +117,14 @@ md5 = require './vendor/md5'
 #      to be settable from the physics simulation.
 #   mouse_x_of_last_resize
 #      Stores last mouse position when in selection area resize mode.
+#
+# Accessibility notes: 
+#   - histogram itself should be tabbable. Should summarize results. 
+#   - pressing enter should make avatars navigable via tabbing keys. state is @local.navigating_inside
+#   - pressing escape makes avatars unfocusable and returns focus to the histogram.
+#   - histogram should close navigation when it loses focus 
+#   - need to provide instructions, probably in tooltip or aria-describedby.
+
 
 require './vendor/d3.v3.min'
 require './shared'
@@ -167,8 +175,6 @@ window.Histogram = ReactiveComponent
 
     return SPAN null if dirtied
 
-
-
     if !@props.draw_base 
       @props.draw_base_labels = false 
     else if !@props.draw_base_labels?
@@ -193,7 +199,11 @@ window.Histogram = ReactiveComponent
                                 !@local.hoving_over_avatar))
 
     histogram_props = 
+      tabIndex: 0
       className: 'histogram'
+      'aria-labeledby': "##{proposal.id}-histo-label"
+      'aria-describedby': "##{proposal.id}-histo-description"
+
       style: css.crossbrowserify
         width: @props.width
         height: @props.height + @local.region_selection_vertical_padding
@@ -201,6 +211,48 @@ window.Histogram = ReactiveComponent
         borderBottom: if @props.draw_base then '1px solid #999'
         #visibility: if @props.opinions.length == 0 then 'hidden'
         userSelect: 'none'
+      onKeyDown: (e) =>
+        if e.which == 32 # SPACE toggles navigation
+          @local.navigating_inside = !@local.navigating_inside 
+          save @local 
+          e.preventDefault() # prevent scroll jumping
+          if @local.navigating_inside
+            @refs["avatar-0"]?.getDOMNode().focus()
+          else 
+            @getDOMNode().focus()
+        else if e.which == 13 && !@local.navigating_inside # ENTER 
+          @local.navigating_inside = true 
+          @refs["avatar-0"]?.getDOMNode().focus()
+          save @local 
+        else if e.which == 27 && @local.navigating_inside
+          @local.navigating_inside = false
+          @getDOMNode().focus() 
+          save @local 
+      onBlur: (e) => 
+        setTimeout => 
+          # if the focus isn't still on this histogram, 
+          # then we should reset its navigation
+          if @local.navigating_inside && $(document.activeElement).closest(@getDOMNode()).length == 0
+            @local.navigating_inside = false; save @local
+        , 0
+
+    score = 0
+    filter_out = fetch 'filtered'
+    opinions = (o for o in @props.opinions when !filter_out.users?[o.user])
+    for o in opinions 
+      score += o.stance
+    avg = score / opinions.length
+    negative = score < 0
+    score *= -1 if negative
+    score = pad score.toFixed(1),2
+
+    if avg < -.03
+      exp = "#{(-1 * avg * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", @props.proposal)}"
+    else if avg > .03
+      exp = "#{(avg * 100).toFixed(0)}% #{customization("slider_pole_labels.support", @props.proposal)}"
+    else 
+      exp = "neutral"
+
 
     if @props.enable_selection
       if !browser.is_mobile
@@ -239,6 +291,21 @@ window.Histogram = ReactiveComponent
           onTouchCancel: (ev) => ev.preventDefault(); @onMouseUp(ev)
 
     DIV histogram_props, 
+      DIV 
+        id: "##{proposal.id}-histo-label"
+        style: 
+          position: 'absolute'
+          left: -9999
+        "Histogram showing #{opinions.length} opinions"
+
+      DIV 
+        id: "##{proposal.id}-histo-description"
+        style: 
+          position: 'absolute'
+          left: -9999
+        """#{opinions.length} people's opinion, with an average of #{exp} on a spectrum from #{customization("slider_pole_labels.oppose", @props.proposal)} to #{customization("slider_pole_labels.support", @props.proposal)}. 
+           Press ENTER or SPACE to enable tab navigation of each person's opinion, and escape to exit the navigation.
+        """         
 
       if @props.draw_base_labels
         @drawHistogramBase()
@@ -376,7 +443,7 @@ window.Histogram = ReactiveComponent
         cursor: if !@props.backgrounded && 
                     @props.enable_selection then 'pointer'
 
-      for opinion in @props.opinions
+      for opinion, idx in @props.opinions
         user = opinion.user
 
         if filter_out.users?[user]
@@ -411,8 +478,19 @@ window.Histogram = ReactiveComponent
         #     top: pos?[1]
         #     # opacity: opacity
 
+        stance = opinion.stance 
+        if stance < -.03
+          exp = " is #{(-1 * stance * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", @props.proposal)}"
+        else if stance > .03
+          exp = " is #{(stance * 100).toFixed(0)}% #{customization("slider_pole_labels.support", @props.proposal)}"
+        else 
+          exp = " is neutral"
+
         avatar user,
+          ref: "avatar-#{idx}"
+          focusable: @local.navigating_inside && !@props.backgrounded
           hide_tooltip: @props.backgrounded
+          rel: "<user>#{exp}"
           style: _.extend {}, avatar_style, 
             left: pos?[0]
             top: pos?[1]

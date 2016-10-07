@@ -248,17 +248,30 @@ Auth = ReactiveComponent
               position: 'relative'
               marginBottom: 10
               fontWeight: 600
-              fontSize: 61
               whiteSpace: 'nowrap'
-              color: focus_blue
-            SPAN
+
+            H1
               style: 
+                display: 'inline-block'
                 position: 'relative'
+                fontWeight: 600
+                fontSize: 61
+                color: focus_blue
+
               task
 
             if auth.form not in ['edit profile', 'edit saml profile']
+              cancel_auth = (e) =>
 
-              SPAN
+                if auth.form == 'verify email' || location.pathname == '/proposal/new'
+                  loadPage '/'
+
+                if auth.form == 'verify email'
+                  setTimeout logout, 1
+
+                reset_key auth
+
+              BUTTON
                 style:
                   color: auth_ghost_gray
                   position: 'absolute'
@@ -267,17 +280,16 @@ Auth = ReactiveComponent
                   top: 70
                   padding: 10
                   fontSize: 24
+                  backgroundColor: 'transparent'
+                  border: 'none'
+
                 title: t('cancel')
 
-                onClick: =>
-
-                  if auth.form == 'verify email' || location.pathname == '/proposal/new'
-                    loadPage '/'
-
-                  if auth.form == 'verify email'
-                    setTimeout logout, 1
-
-                  reset_key auth
+                onClick: cancel_auth
+                onKeyDown: (e) => 
+                  if e.which == 13 # ENTER 
+                    cancel_auth(e)
+                    e.preventDefault()
 
                 I className: 'fa-close fa'
 
@@ -350,34 +362,40 @@ Auth = ReactiveComponent
           additional_instructions
 
       TABLE null, TBODY null,
-        for field in fields
-          if field
-            [TR null,
-              TD
+        for field in fields when field
+          field_id = field[1]?.props?.id or field[1]?[0]?.props?.id
+          if field_id 
+            field_id = field_id.replace('user_avatar_form', 'user_avatar')
+          [TR null,
+            TD
+              style:
+                paddingTop: 4
+                verticalAlign: 'top'
+                width: '30%'
+
+              LABEL
+                htmlFor: field_id
                 style:
-                  paddingTop: 4
-                  verticalAlign: 'top'
-                  width: '30%'
-                LABEL
-                  style:
-                    color: focus_blue
-                    fontWeight: 600
-                    fontSize: if browser.is_mobile then 24
-                  field[0]
-                if field.length > 2
-                  LABEL 
-                    style: 
-                      display: 'block'
-                      color: auth_ghost_gray
-                      fontSize: 14
-                    field[2]
-              TD
-                style:
-                  verticalAlign: 'bottom'
-                  width: '100%'
-                  paddingLeft: 18
-                field[1]
-             TR style: {height: 10}]
+                  color: focus_blue
+                  fontWeight: 600
+                  fontSize: if browser.is_mobile then 24
+                field[0]
+
+              if field.length > 2
+                LABEL 
+                  style: 
+                    display: 'block'
+                    color: auth_ghost_gray
+                    fontSize: 14
+                  field[2]
+            TD
+              style:
+                verticalAlign: 'bottom'
+                width: '100%'
+                paddingLeft: 18
+              field[1]
+
+           TR style: {height: 10}]
 
       if customization('auth_footer')
         auth = fetch('auth')
@@ -420,6 +438,14 @@ Auth = ReactiveComponent
       button = t('Log in')
       toggle_to = t('Create new account')
 
+    toggle = (e) =>
+      current_user = fetch('/current_user')
+      auth.form = if auth.form == 'create account' then 'login' else 'create account'
+      current_user.errors = []
+      @local.errors = []
+      save auth
+      save @local
+
     DIV
       style:
         position: 'relative'
@@ -441,20 +467,21 @@ Auth = ReactiveComponent
             paddingLeft: 18
             paddingRight: 7
           'or '
-        A
+
+        BUTTON
           style:
             display: 'inline-block'
             color: '#444'
             textDecoration: 'underline'
             fontWeight: 400
             fontSize: 24
-          onClick: =>
-            current_user = fetch('/current_user')
-            auth.form = if auth.form == 'create account' then 'login' else 'create account'
-            current_user.errors = []
-            @local.errors = []
-            save auth
-            save @local
+            backgroundColor: 'transparent'
+            border: 'none'
+          onClick: toggle
+          onKeyDown: (e) => 
+            if e.which == 13
+              toggle(e)
+              e.preventDefault()
 
           toggle_to
       
@@ -470,12 +497,17 @@ Auth = ReactiveComponent
   # inline: is the button inline-block?
   submitButton : (action, inline) ->
     # this is gross code
-    DIV
+    BUTTON
       style:
         fontSize: 24
         display: if inline then 'inline-block' else 'block'
+        width: if !inline then '100%'
       className:'primary_button' + (if @local.submitting then ' disabled' else '')
       onClick: @submitAuth
+      onKeyDown: (e) => 
+        if e.which == 13
+          @submitAuth(e)
+          e.preventDefault()
       
       action
         
@@ -562,6 +594,7 @@ Auth = ReactiveComponent
             marginRight: 18
 
           IMG 
+            rel: ''
             id: 'avatar_preview'
             style: {width: 60}
             src: if current_user.b64_thumbnail 
@@ -639,26 +672,36 @@ Auth = ReactiveComponent
   #
   # "I forgot my password!"
   resetPasswordLink : -> 
+    reset = (e) => 
+      # Tell the server to email us a token
+      current_user = fetch('/current_user')
+      current_user.trying_to = 'send_password_reset_token'
+      save current_user, =>
+        if current_user.errors?.length > 0
+          arest.updateCache(current_user)
+        else
+          # Switch to reset_password mode
+          reset_key 'auth', {form : 'reset password'}
     DIV 
       style: 
         textAlign: 'right'
-        fontSize: 18
         width: 300
 
-      A 
+      BUTTON
         style: 
           textDecoration: 'underline'
           color: auth_ghost_gray
-        onClick: => 
-          # Tell the server to email us a token
-          current_user = fetch('/current_user')
-          current_user.trying_to = 'send_password_reset_token'
-          save current_user, =>
-            if current_user.errors?.length > 0
-              arest.updateCache(current_user)
-            else
-              # Switch to reset_password mode
-              reset_key 'auth', {form : 'reset password'}
+          backgroundColor: 'transparent'
+          border: 'none'
+          fontSize: 18
+          padding: 0
+
+        onClick: reset
+        onKeyDown: (e) =>
+          if e.which == 13 # ENTER
+            reset(e)  
+            e.preventDefault()
+
 
         t('forgot_password') 
 
@@ -698,6 +741,7 @@ Auth = ReactiveComponent
               padding: '5px 10px'
               fontSize: 18            
             key: "#{question.tag}_inputBox"
+            id: "#{question.tag}_inputBox"
             type: 'text'
             value: @local.tags[question.tag]
 
@@ -712,6 +756,8 @@ Auth = ReactiveComponent
 
         when 'boolean'
           input = INPUT
+            id: "#{question.tag}_inputBox"
+            key: "#{question.tag}_inputBox"
             type:'checkbox'
             style: _.defaults question.input_style or {},  
               fontSize: 24
@@ -724,6 +770,8 @@ Auth = ReactiveComponent
 
         when 'dropdown'
           input = SELECT
+            id: "#{question.tag}_inputBox"
+            key: "#{question.tag}_inputBox"            
             style: _.defaults question.input_style or {},
               fontSize: 18
               marginTop: 4

@@ -44,29 +44,11 @@ window.CollapsedProposal = ReactiveComponent
 
     draw_slider = can_opine > 0 || your_opinion?.published
 
-    opinions = opinionsForProposal(proposal)
-    
-
-    show_proposal_scores = customization('show_proposal_scores', proposal)
     icons = customization('show_proposer_icon', proposal)
     slider_regions = customization('slider_regions', proposal)
+    show_proposal_scores = customization('show_proposal_scores', proposal)
 
-
-    if show_proposal_scores
-      score = 0
-      filter_out = fetch 'filtered'
-      opinions = (o for o in opinions when !filter_out.users?[o.user])
-
-      for o in opinions 
-        score += o.stance
-      avg = score / opinions.length
-      negative = score < 0
-      score *= -1 if negative
-
-      score = pad score.toFixed(1),2
-
-      score_w = widthWhenRendered "#{score}", {fontSize: 18, fontWeight: 600}
-
+    opinions = opinionsForProposal(proposal)
 
     if draw_slider
       slider = fetch "homepage_slider#{proposal.key}"
@@ -84,7 +66,7 @@ window.CollapsedProposal = ReactiveComponent
     # creation = new Date(proposal.created_at).getTime()
     # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
 
-    DIV
+    LI
       key: proposal.key
       id: 'p' + proposal.slug.replace('-', '_')  # Initial 'p' is because all ids must begin 
                                            # with letter. seeking to hash was failing 
@@ -92,7 +74,10 @@ window.CollapsedProposal = ReactiveComponent
       style:
         minHeight: 70
         position: 'relative'
-        marginBottom: if slider_regions then 15 else 15
+        margin: "0 0 15px 0"
+        padding: 0
+        listStyle: 'none'
+
       onMouseEnter: => 
         if draw_slider
           @local.hover_proposal = proposal.key; save @local
@@ -125,6 +110,8 @@ window.CollapsedProposal = ReactiveComponent
             if editor 
               A
                 href: proposal_url(proposal)
+                'aria-hidden': true
+                tabIndex: -1
                 Avatar
                   key: editor
                   user: editor
@@ -155,7 +142,7 @@ window.CollapsedProposal = ReactiveComponent
             className: 'proposal proposal_homepage_name'
             style: 
               fontWeight: 500
-              borderBottom: "1px solid #ddd"              
+              borderBottom: "1px solid #ccc"              
               
             href: proposal_url(proposal)
 
@@ -290,47 +277,54 @@ window.CollapsedProposal = ReactiveComponent
       
       # little score feedback
       if show_proposal_scores
+        score = 0
+        filter_out = fetch 'filtered'
+        opinions = (o for o in opinions when !filter_out.users?[o.user])
+
+        for o in opinions 
+          score += o.stance
+        avg = score / opinions.length
+        negative = score < 0
+        score *= -1 if negative
+
+        score = pad score.toFixed(1),2
+
+        score_w = widthWhenRendered "#{score}", {fontSize: 18, fontWeight: 600}
+
+        show_tooltip = => 
+          if opinions.length > 0
+            tooltip = fetch 'tooltip'
+            tooltip.coords = $(@refs.score.getDOMNode()).offset()
+            tooltip.tip = "#{opinions.length} opinions. Average of #{Math.round(avg * 100) / 100} on a -1 to 1 scale."
+            save tooltip
+        hide_tooltip = => 
+          tooltip = fetch 'tooltip'
+          tooltip.coords = null
+          save tooltip
+
         DIV 
+          'aria-hidden': true
           ref: 'score'
           style: 
             position: 'absolute'
             right: -50 - score_w
             top: 10
-          onMouseEnter: => 
-            if opinions.length > 0
-              tooltip = fetch 'tooltip'
-              tooltip.coords = $(@refs.score.getDOMNode()).offset()
-              tooltip.tip = "#{opinions.length} opinions. Average of #{Math.round(avg * 100) / 100} on a -1 to 1 scale."
-              save tooltip
 
-          onMouseLeave: => 
-            tooltip = fetch 'tooltip'
-            tooltip.coords = null
-            save tooltip
+          onFocus: show_tooltip
+          onMouseEnter: show_tooltip
+          onBlur: hide_tooltip
+          onMouseLeave: hide_tooltip
 
           SPAN 
             style: 
               color: '#999'
               fontSize: 18
               fontWeight: 600
-              cursor: 'pointer'
+              cursor: 'default'
 
             if negative
               '–'
             score
-
-          if @local.hover_score
-            DIV
-              style: 
-                position: 'absolute'
-                backgroundColor: 'white'
-                padding: "4px 10px"
-                zIndex: 10
-                boxShadow: '0 1px 2px rgba(0,0,0,.3)'
-                fontSize: 16
-                right: 0
-                bottom: 30
-                width: 200
 
   componentDidUpdate: -> 
     if @local.keep_in_view

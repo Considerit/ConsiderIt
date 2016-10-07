@@ -177,6 +177,8 @@ class ImportDataController < ApplicationController
               })
 
               proposal = Proposal.find_by_slug attrs['slug']
+              attrs['roles'] = "{\"editor\":[\"/user/#{user.id}\"], \"writer\":[\"*\"], \"commenter\":[\"*\"], \"opiner\":[\"*\"], \"observer\":[\"*\", \"*\"]}"
+
               if !proposal
                 attrs['subdomain_id'] = current_subdomain.id
                 proposal = Proposal.new attrs
@@ -188,6 +190,7 @@ class ImportDataController < ApplicationController
               end
 
               proposals.push proposal
+
 
 
 
@@ -381,7 +384,7 @@ class ImportDataController < ApplicationController
     end
 
     CSV.open("#{export_path}#{subdomain.name}-points.csv", "w") do |csv|
-      csv << ['proposal', 'type', 'created', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
+      csv << ['proposal', 'type', 'created', "username", "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
     end
 
     fields = {}
@@ -406,7 +409,7 @@ class ImportDataController < ApplicationController
 
 
     CSV.open("#{export_path}#{subdomain.name}-proposals.csv", "w") do |proposals_csv|
-      proposals_csv << ['slug', 'created', "author", 'name', 'description', '#points', '#opinions', 'total_score', 'avg_score']
+      proposals_csv << ['slug', 'created', "username", "author", 'name', 'description', '#points', '#opinions', 'total_score', 'avg_score']
 
       subdomain.proposals.each do |proposal|
 
@@ -415,9 +418,14 @@ class ImportDataController < ApplicationController
         opinions.each do |o|
           total_score += o.stance
         end
-        avg_score = total_score / opinions.count 
 
-        proposals_csv << [proposal.slug, proposal.created_at, proposal.user.email.gsub('.ghost', ''), proposal.name, proposal.description, proposal.points.published.count, opinions.count, total_score, avg_score]
+        begin 
+          avg_score = total_score / opinions.count
+        rescue
+          avg_score = 0 
+        end 
+
+        proposals_csv << [proposal.slug, proposal.created_at, proposal.user.name, proposal.user.email.gsub('.ghost', ''), proposal.name, proposal.description, proposal.points.published.count, opinions.count, total_score, avg_score]
 
         CSV.open("#{export_path}#{subdomain.name}-opinions.csv", "a") do |csv|
           proposal.opinions.published.each do |opinion|
@@ -430,11 +438,11 @@ class ImportDataController < ApplicationController
 
           proposal.points.published.each do |pnt|
             opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
-            csv << [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
+            csv << [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.name, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
 
             pnt.comments.each do |comment|
               opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
-              csv << [pnt.proposal.slug, 'COMMENT', comment.created_at, comment.user.email.gsub('.ghost', ''), "", comment.body, '', opinion ? opinion.stance : '-', '', '']
+              csv << [pnt.proposal.slug, 'COMMENT', comment.created_at, comment.user.name, comment.user.email.gsub('.ghost', ''), "", comment.body, '', opinion ? opinion.stance : '-', '', '']
             end
           end
         end

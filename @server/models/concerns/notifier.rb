@@ -171,17 +171,21 @@ module Notifier
   #
   # This is where you come to configure new events, digests, defaults, etc. 
 
-  def self.default_subscription 
-    '1_day'
+  def self.default_subscription(subdomain)
+    if subdomain.name == 'galacticfederation'
+      nil
+    else 
+      '1_day'
+    end
   end
 
-  def self.config
+  def self.config(subdomain)
 
     {
 
       'new_proposal' => {
         'ui_label' => 'If someone adds a new proposal',
-        'email_trigger_default' => true
+        'email_trigger_default' => subdomain.name != 'consider'
         
       },
 

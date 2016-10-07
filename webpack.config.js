@@ -90,7 +90,7 @@ config = {
     noParse: [
       /react\.js$/, 
       /jquery\.js$/,       
-      /quill\.js$/
+      /quill-1.0\.js$/
     ]
   },
 

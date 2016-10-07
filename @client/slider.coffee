@@ -123,6 +123,8 @@ window.Slider = ReactiveComponent
     DIV 
       className: 'slider'
       style : slider_style
+      onBlur: if @props.onBlur then @props.onBlur 
+      onFocus: if @props.onFocus then @props.onFocus
 
       @drawSliderBase()
       if @props.draw_handle
@@ -200,7 +202,42 @@ window.Slider = ReactiveComponent
     sliderHandle = @props.handle or slider_handle.flat
 
     DIV 
-      className: 'the_handle' 
+      className: 'the_handle'     
+      role: 'slider'
+      'aria-valuemin': if @props.polarized then -1 else 0
+      'aria-valuemax': 1
+      'aria-valuenow': slider.value
+      'aria-valuetext': @props.readable_text?(slider.value)
+      'aria-label': @props.label
+      tabIndex: 0
+
+      onKeyDown: (e) => 
+        if e.which in [37, 38, 39, 40, 33, 34, 35, 36]
+          amount =  if e.which in [37, 38, 39, 40]
+                      .05
+                    else if e.which in [33, 34] # PAGE UP / DOWN
+                      .25
+                    else if e.which in [35, 36] # HOME / END
+                      10000
+
+          direction = if e.which in [37, 40, 34, 36] #LEFT or DOWN or PAGE DOWN or HOME
+                        -1
+                      else 
+                        1
+
+          new_val = slider.value
+          new_val += direction * amount 
+          new_val = Math.max new_val, (if @props.polarized then -1 else 0)
+          new_val = Math.min new_val, 1
+          if new_val != slider.value
+            slider.value = new_val
+            save slider
+            @props.onMouseUpCallback?(e)
+          e.preventDefault()
+        else if e.which == 13 || e.which == 32 # ENTER or SPACE
+          @props.onMouseUpCallback(e) if @props.onMouseUpCallback
+          e.preventDefault()
+
       onMouseUp: @handleMouseUp
       onTouchEnd: @handleMouseUp
       onTouchCancel: @handleMouseUp
@@ -210,6 +247,9 @@ window.Slider = ReactiveComponent
 
       onTouchMove: @handleMouseMove
 
+      onBlur: => @local.has_focus = false; save @local
+      onFocus: => @local.has_focus = true; save @local
+
       style: css.crossbrowserify _.extend (@props.handle_style || {}), 
         width: handle_width
         height: handle_height
@@ -217,6 +257,7 @@ window.Slider = ReactiveComponent
         position: 'relative'
         marginLeft: -handle_width / 2
         zIndex: 10
+        outline: 'none'
         left: if @props.polarized
                 @props.width * (slider.value + 1) / 2
               else 
@@ -226,6 +267,7 @@ window.Slider = ReactiveComponent
         value: if @props.polarized then (slider.value + 1) / 2 else slider.value
         handle_height: handle_height
         handle_width: handle_width
+        has_focus: @local.has_focus
 
       if @props.draw_helpers
         for support in [true, false]
@@ -362,6 +404,7 @@ slider_handle.face = (props) ->
       pointerEvents: 'none'
       position: 'absolute'
       top: 0
+      filter: if props.has_focus then "drop-shadow(0 0 3px #{focus_blue_transparent(.5)})"
 
     DEFS null,
       svg.innerbevel
@@ -449,11 +492,13 @@ slider_handle.triangley = (props) ->
       position: 'absolute'
       top: 0
       zIndex: 10
+      filter: if props.has_focus then "drop-shadow(0 0 3px #{focus_blue_transparent(.5)})"
 
+  id = "triangley_filter-#{(Math.random() * 1000000).toFixed(0)}"
   SVG svg_props,
     DEFS null, 
       FILTER 
-        id: "triangley_filter"
+        id: id
         x: "-50%" 
         y: "-50%" 
         width: "200%" 
@@ -516,7 +561,7 @@ slider_handle.triangley = (props) ->
       PATH 
         d: "M1,6 L20,6 L20,16 L1,16 L1,6 Z M10.5,0 L20,6 L1,6 L10.5,0 Z"
         fill: focus_blue
-        filter: "url(#triangley_filter)" 
+        filter: "url(##{id})" 
 
 
 slider_handle.flat = (props) -> 
@@ -529,6 +574,7 @@ slider_handle.flat = (props) ->
       position: 'absolute'
       top: 0
       zIndex: 10
+      filter: if props.has_focus then "drop-shadow(0 0 3px #{focus_blue_transparent(.5)})"
 
   SVG svg_props,
 

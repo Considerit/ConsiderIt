@@ -135,13 +135,14 @@ class SubdomainController < ApplicationController
 
   def update_roles
     if params.has_key?('roles')
-      if params.has_key?(:invitations) && params[:invitations]
-        params['roles'] = process_and_send_invitations(params['roles'], params[:invitations], current_subdomain)
+      if params.has_key?('invitations') && params['invitations']
+        params['roles'] = process_and_send_invitations(params['roles'], params['invitations'], current_subdomain)
       end
       # rails replaces [] with nil in params for some reason...
       params['roles'].each do |k,v|
         params['roles'][k] = [] if !v
       end
+      current_subdomain.roles = JSON.dump params['roles']
     end
   end
 
@@ -163,6 +164,7 @@ class SubdomainController < ApplicationController
   def metrics
     contribs = {}
     subs = {}
+    total = {}
 
     fake_users = {}
 
@@ -171,7 +173,7 @@ class SubdomainController < ApplicationController
 
 
     # TODO: put this in database
-    demo_subs = ["MSNBC","washingtonpost","MsTimberlake","design","Relief-Demo","sosh","GS-Demo","impacthub-demo","librofm","bitcoin-demo","amberoon","SocialSecurityWorks","Airbdsm","event","lyftoff","Schools","ANUP2015","CARCD-demo","news","Committee-Meeting","Cattaca","AMA-RFS","economist","ITFeedback","kevin","program-committee-demo","ECAST-Demo"]
+    demo_subs = ["galacticfederation", "MSNBC","washingtonpost","MsTimberlake","design","Relief-Demo","sosh","GS-Demo","impacthub-demo","librofm","bitcoin-demo","amberoon","SocialSecurityWorks","Airbdsm","event","lyftoff","Schools","ANUP2015","CARCD-demo","news","Committee-Meeting","Cattaca","AMA-RFS","economist","ITFeedback","kevin","program-committee-demo","ECAST-Demo"]
     skip_subs = {}
     demo_subs.each {|s| skip_subs[s] = 1}
     bad_subs = {}
@@ -215,9 +217,17 @@ class SubdomainController < ApplicationController
           if !subs.has_key?(days_since)
             subs[days_since] = {}
           end 
+          if !total.has_key?(item.subdomain_id)
+            total[item.subdomain_id] = {}
+          end 
+          if !total[item.subdomain_id].has_key?(days_since)
+            total[item.subdomain_id][days_since] = {}
+          end
 
           contribs[days_since][item.user_id] = 1 
           subs[days_since][item.subdomain_id] = 1
+          
+          total[item.subdomain_id][days_since][item.user_id] = 1
 
           if !earliest || earliest < days_since
             earliest = days_since
@@ -251,10 +261,32 @@ class SubdomainController < ApplicationController
       end 
     end
 
+    contributors_per_subdomain = {}
+    total.each do |subdomain, contributors_per_day| 
+      c = {
+        :active => 0,
+        :lifetime => 0,
+        :year => 0,
+        :month => 0,
+        :week => 0,
+        :day => 0
+      }
+      contributors_per_day.each do |day, contributors|
+        c[:active] += 1
+        c[:lifetime] += contributors.keys().length
+        c[:year] += contributors.keys().length if day <= 365
+        c[:month] += contributors.keys().length if day <= 30
+        c[:week] += contributors.keys().length if day <= 7                
+        c[:day] += contributors.keys().length if day < 1
+      end 
+      contributors_per_subdomain[subdomain] = c
+    end 
+
     metrics = {
       :key => '/metrics',
       :daily_active_contributors => active_contributors.reverse(),
-      :daily_active_subdomains => active_subs.reverse()
+      :daily_active_subdomains => active_subs.reverse(),
+      :contributors_per_subdomain => contributors_per_subdomain
     }
 
 
@@ -268,6 +300,7 @@ end
 module Invitations
   def process_and_send_invitations(roles, invitations, target)
 
+    
     invitations.each do |invite|
       message = invite['message'] && invite['message'].length > 0 ? invite['message'] : nil
       users_with_role = roles[invite['role']]
@@ -295,13 +328,14 @@ module Invitations
               :complete_profile => true,
               :password => SecureRandom.base64(15).tr('+/=lIO0', 'pqrsxyz')[0,20] #temp password
             })
-            invitee.add_to_active_in
 
             # replace email address with the user's key in the roles object
-            users_with_role[users_with_role.index(user_or_email)] = "/user/#{invitee.id}"
 
+            users_with_role[users_with_role.index(user_or_email)] = "/user/#{invitee.id}" 
           end
+
         end
+        invitee.add_to_active_in        
         UserMailer.invitation(current_user, invitee, target, invite['role'], current_subdomain, message).deliver_later
 
       end

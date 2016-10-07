@@ -1,5 +1,5 @@
 # coding: utf-8
-
+require 'securerandom'
 
 def dirty_if_any_private_proposals(real_user)
   matters = false 
@@ -23,11 +23,14 @@ def dirty_if_any_private_proposals(real_user)
 end
 
 class CurrentUserController < ApplicationController
-  skip_before_action :verify_authenticity_token, :only => :update_user_avatar_hack
+  skip_before_action :verify_authenticity_token, :only => [:update_user_avatar_hack, :acs]
+
+  # minimum password length
+  MIN_PASS = 4
 
   # Gets the current user data
   def show
-    # puts("Current_user is #{current_user.id}")
+    #puts("Current_user is #{current_user.id}")
     dirty_key '/current_user'
     render :json => []
   end  
@@ -36,10 +39,11 @@ class CurrentUserController < ApplicationController
   def update
 
     errors = []
-    @min_pass = 4
+    @min_pass = MIN_PASS 
 
 
-    if !params.has_key?(:trying_to) || !params[:trying_to] || params[:trying_to] == 'update_avatar_hack'
+    if !params.has_key?(:trying_to) || !params[:trying_to] ||
+          params[:trying_to] == 'update_avatar_hack' || params[:trying_to] == 'edit saml profile' 
       trying_to = 'edit profile'    
     else
       trying_to = params[:trying_to]
@@ -131,6 +135,7 @@ class CurrentUserController < ApplicationController
 
             # puts("Now current is #{current_user && current_user.id}")
             log('sign in by email')
+
           end
         end
 
@@ -422,6 +427,211 @@ class CurrentUserController < ApplicationController
   def log (what)
     write_to_log({:what => what, :where => request.fullpath, :details => nil})
   end
+
+  def sso
+    settings = User.get_saml_settings(get_url_base)
+    if settings.nil?
+      raise "No IdP Settings!"
+    end
+    req = OneLogin::RubySaml::Authrequest.new
+    redirect_to(req.create(settings))
+
+  end
+
+  def acs
+    errors = []
+
+    settings = User.get_saml_settings(get_url_base)
+    response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings)
+
+    if response.is_valid?
+      session[:nameid] = response.nameid
+      session[:attributes] = response.attributes
+      @attrs = session[:attributes]
+      log("Sucessfully logged")
+      log("NAMEID: #{response.nameid}")
+
+      # log user. in TODO allow for incorrect login and new user with name field
+      email = response.nameid.downcase #TODO: error out gracefully if no email
+      user = User.find_by_email(email)
+
+      if !user || !user.registered
+        # Create a new user from SAML assertion if not already registered.
+        # A random password is created for the user as a placeholder.
+        random_password = SecureRandom.urlsafe_base64(60) 
+
+        # TODO when IdP Delft gives us assertion statement spec, add name field below if not already present
+        name = nil
+        if response.attributes.include?('Name')
+          name = response.attributes['name']
+        elsif response.attributes.include?('First Name')
+          name = response.attributes['First Name']
+          if response.attributes.include?('Last Name')
+            name += " #{response.attributes['Last Name']}"
+          end 
+        elsif email
+          name = email.split('@')[0]
+        end
+
+        attrs = HashWithIndifferentAccess.new({
+          :email => email,
+          :password => random_password,
+          :name => name
+        })
+        update_saml_user_attrs 'create account', errors, attrs
+        try_saml_update_password 'create account', errors, attrs 
+
+        # TODO when get IdP spec from Delft. See if we get name. If yes, uncomment has_name and add to conditional below 
+        has_name = current_user.name && current_user.name.length > 0
+        ok_email = current_user.email && current_user.email.length > 0
+        signed_pledge = true 
+        ok_password = true
+
+        if ok_email && signed_pledge && ok_password && has_name
+
+          current_user.registered = true
+          if !current_user.save
+            raise "Error registering this uesr"
+          end
+
+          current_user.add_to_active_in
+          dirty_if_any_private_proposals current_user
+
+          update_roles_and_permissions
+
+          # if this user was created via the invitation process, note that
+          # they've gone through the registration process
+          if current_user.complete_profile
+            current_user.complete_profile = false
+            current_user.save
+          end
+          log('registered account')
+
+          redirect_to '/edit_saml_profile' 
+
+        end
+      else
+        replace_user(current_user, user)
+        set_current_user(user)
+        current_user.add_to_active_in
+        update_roles_and_permissions
+        redirect_to '/' 
+      end
+
+    else
+      log("Response Invalid from IdP. Errors: #{response.errors}")
+      raise "Response Invalid from IdP. Errors: #{response.errors}"
+    end
+
+  end
+
+  def metadata
+    settings = User.get_saml_settings(get_url_base)
+    meta = OneLogin::RubySaml::Metadata.new
+    render :xml => meta.generate(settings, true)
+  end
+
+  def get_url_base
+    "#{request.protocol}#{request.host_with_port}"
+  end
+
+  def update_saml_user_attrs(trying_to, errors, attrs = {})
+    # TODO if possible merge with update_user_attrs
+    types = { 
+      :avatar => ActionDispatch::Http::UploadedFile, 
+      :bio => String, 
+      :name => String,
+      :hide_name => 'boolean',
+      :email => String
+    }
+
+
+    types.each do |field, type| 
+      value = attrs[field]
+      error = "Field #{field} is wrong type #{value.class}"
+      if type == 'boolean'
+        raise error if value && !(!!value == value)
+      else
+        raise error if value && value.class != type
+      end
+    end
+
+    fields = ['avatar', 'bio', 'name', 'hide_name', 'tags', 'subscriptions']
+    new_params = attrs.select{|k,v| fields.include? k}
+    new_params[:name] = '' if !new_params[:name] #TODO: Do we really want to allow blank names?...
+
+    if new_params.has_key? :tags
+      # strip out non-editable tags...
+      new_tags = new_params[:tags].reject {|k,v| !k.include?('.editable') } 
+
+      # make sure non-editable tags weren't removed entirely...
+      non_editable_old_tags = JSON.parse(current_user.tags || '{}').reject {|k,v| k.include?('.editable') } 
+      new_tags.update non_editable_old_tags
+
+      new_params[:tags] = JSON.dump new_tags
+
+      dirty_key '/proposals' # might have access to more proposals if user tags have been changed (LVG, zipcodes)
+    end
+
+    if new_params.has_key? :subscriptions
+      new_params[:subscriptions] = current_user.update_subscriptions(new_params[:subscriptions])
+    end
+
+    if current_user.update_attributes(new_params)
+      # puts("Updating params. #{new_params}")
+      if !current_user.save
+        raise 'Error saving basic current_user parameters!'
+      end
+      
+
+    else
+      raise 'Had trouble manipulating this user!'
+    end
+
+    # Update their email address.  First, check if they gave us a new address
+    email = attrs[:email]
+    user = User.find_by_email(email)
+    if !email || email.length == 0
+      if trying_to == 'create account'
+        errors.append 'No email address specified'
+      end
+    # And if it's not taken
+    elsif user && (user != current_user)
+      errors.append 'There is already an account with that email'
+    # And that it's valid
+    elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
+      errors.append 'Email address is not properly formatted'
+    elsif current_user.email != email
+      # puts("Updating email from #{current_user.email} to #{params[:email]}")
+      # Okay, here comes a new email address!
+      current_user.update_attributes({:email => email, :verified => false})
+      if !current_user.save
+        raise "Error saving this user's email"
+      end
+    end
+  end
+
+  def try_saml_update_password(trying_to, errors, attrs={})
+    # Update their password
+    # TODO merge with try_update_password if possible
+    if !attrs[:password] || attrs[:password].length == 0
+      if trying_to == 'create account' || trying_to == 'reset password'
+        errors.append 'No password specified'
+      end
+    elsif attrs[:password].length < MIN_PASS 
+      errors.append 'Password is too short'
+    else
+      #puts("Changing user's password.")
+      current_user.password = attrs[:password]
+      if !current_user.save
+        raise "Error saving this user's password"
+      end
+      puts current_user.password
+    end
+
+  end
+
+
 
 end
 

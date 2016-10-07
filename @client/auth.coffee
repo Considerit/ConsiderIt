@@ -8,6 +8,7 @@
 # - reset password
 # - verify email
 # - edit profile
+# - edit saml profile
 #
 # Each of these screens has some differences. We try to keep these differences
 # clearly documented in the render method so that the method doesn't get
@@ -29,7 +30,7 @@ window.logout = ->
 
   auth = fetch 'auth'
 
-  if auth.form && auth.form == 'edit profile'
+  if auth.form && auth.form in ['edit profile', 'edit saml profile']
     loadPage '/'
 
   reset_key auth
@@ -148,10 +149,30 @@ Auth = ReactiveComponent
 
         [ @headerAndBorder null, t('Your Profile'),
             @body [
-              ["#{t('login_as')}:",
-                [ @inputBox('email', 'email@address', 'email'),
-                  @inputBox('password', t("password"), 'password')]
-              ],
+              # we don't want users on single sign on subdomains to change email/password
+              if not fetch('/subdomain').SSO_only        
+                ["#{t('login_as')}:",
+                  [ @inputBox('email', 'email@address', 'email'),
+                    @inputBox('password', t("password"), 'password')]
+                ]
+              ,
+              ["#{t('name_prompt')}:", @inputBox('name', t('full_name'))],
+              avatar_field].concat @userQuestionInputs()
+          @submitButton(t('Update'))
+          if @local.saved_successfully
+            SPAN style: {color: 'green'}, t("Updated successfully")
+        ]
+
+      # The EDIT SAML PROFILE form
+      # SAML users are directed here after log in. 
+      # We don't render an enclosing header and border,
+      # and add feedback when the user is updated.
+      when 'edit saml profile'
+        if avatar_field = @avatarInput()
+          avatar_field = ["#{t('pic_prompt')}:", avatar_field]
+
+        [ @headerAndBorder null, t('Your Profile'),
+            @body [
               ["#{t('name_prompt')}:", @inputBox('name', t('full_name'))],
               avatar_field].concat @userQuestionInputs()
           @submitButton(t('Update'))
@@ -239,7 +260,7 @@ Auth = ReactiveComponent
 
               task
 
-            if auth.form != 'edit profile'
+            if auth.form not in ['edit profile', 'edit saml profile']
               cancel_auth = (e) =>
 
                 if auth.form == 'verify email' || location.pathname == '/proposal/new'
@@ -532,7 +553,7 @@ Auth = ReactiveComponent
         padding: '5px 10px'
         fontSize: if browser.is_mobile then 36 else 18
         display: 'inline-block'
-      value: if auth.form == 'edit profile' then @local[name] else null
+      value: if auth.form in ['edit profile','edit saml profile'] then @local[name] else null
       name: "user[#{name}]"
       key: "#{name}_inputBox"
       placeholder: placeholder
@@ -694,7 +715,7 @@ Auth = ReactiveComponent
     auth = fetch('auth')
 
     if auth.ask_questions && auth.form in \
-          ['edit profile', 'create account', 'create account via invitation']
+          ['edit profile', 'create account', 'create account via invitation', 'edit saml profile']
       questions = customization('auth_questions')
     else 
       questions = []
@@ -818,10 +839,10 @@ Auth = ReactiveComponent
       current_user.trying_to = auth.form
 
       save current_user, => 
-        if auth.form in ['create account', 'edit profile']
+        if auth.form in ['create account', 'edit profile', 'edit saml profile']
           ensureCurrentUserAvatar()
 
-        if auth.form == 'edit profile'
+        if auth.form in ['edit profile', 'edit saml profile']
           @local.saved_successfully = current_user.errors.length == 0 && (@local.errors or []).length == 0
 
         # Once the user logs in, we will stop showing the log-in screen

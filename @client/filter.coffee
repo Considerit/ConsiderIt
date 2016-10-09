@@ -284,7 +284,7 @@ SortProposalsMenu = ReactiveComponent
       style: 
         color: focus_blue
         fontSize: 20
-        fontWeight: 500
+        #fontWeight: 500
         marginTop: 12
 
       "sort proposals by "
@@ -335,16 +335,19 @@ SortProposalsMenu = ReactiveComponent
           'aria-owns': "proposal_sort_order_menu_popup"
 
           style: 
-            fontWeight: 700
+            #fontWeight: 700
             position: 'relative'
             cursor: 'pointer'
-            textDecoration: 'underline'
+            #textDecoration: 'underline'
             backgroundColor: 'transparent'
             border: 'none'
             padding: 0
             display: 'inline-block'
             fontSize: 'inherit'
             color: 'inherit'
+            border: "1px solid #ccc"
+            padding: "4px 8px"
+            borderRadius: 16
 
           onClick: => 
             @local.sort_menu = !@local.sort_menu
@@ -361,7 +364,7 @@ SortProposalsMenu = ReactiveComponent
 
           sort.name
 
-          SPAN style: _.extend cssTriangle 'bottom', focus_blue, 11, 7,
+          SPAN style: _.extend cssTriangle 'bottom', "#777", 11, 7,
             display: 'inline-block'
             marginLeft: 4
 

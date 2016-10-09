@@ -142,7 +142,8 @@ window.CollapsedProposal = ReactiveComponent
             className: 'proposal proposal_homepage_name'
             style: 
               fontWeight: 500
-              borderBottom: "1px solid #aaa"              
+              borderBottom: "1px solid #444"  
+              color: '#000'            
               
             href: proposal_url(proposal)
 
@@ -153,6 +154,7 @@ window.CollapsedProposal = ReactiveComponent
               fontSize: 16
               color: "#999"
               fontStyle: 'italic'
+              marginTop: 2
 
             if customization('show_proposal_meta_data')
               SPAN 

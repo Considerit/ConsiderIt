@@ -504,6 +504,7 @@ CustomizationsDash = ReactiveComponent
       return SPAN null
 
     @local.current_value ||= subdomain.customizations
+    @local.customization_filter ||= ''
 
     DIV 
       style: 
@@ -580,6 +581,17 @@ CustomizationsDash = ReactiveComponent
             verticalAlign: 'top'
             marginLeft: '2%'
 
+          INPUT 
+            style: 
+              width: '100%'
+            placeholder: 'Filter to subs with customization containing...'
+            ref: 'customization_filter'
+            type: 'text'
+            defaultValue: ''
+            onKeyUp: (e) => 
+              @local.customization_filter = @refs.customization_filter.getDOMNode().value
+              save @local
+
           DIV 
             style: 
               fontStyle: 'italic'
@@ -592,7 +604,7 @@ CustomizationsDash = ReactiveComponent
                 @local.compare_to = ev.target.value 
                 save @local
 
-              for sub, id of sub_ids 
+              for sub, id of sub_ids when @local.customization_filter.length == 0 || id.toLowerCase().indexOf(@local.customization_filter.toLowerCase()) > -1
                 OPTION 
                   value: sub
                   sub 

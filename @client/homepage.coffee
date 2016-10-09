@@ -219,9 +219,9 @@ window.SimpleHomepage = ReactiveComponent
 
         OpinionFilter
           style: 
-            width: if has_proposal_sort then secnd_column.width
+            width: if has_proposal_sort || true then secnd_column.width
             marginBottom: 20
-            marginLeft: if has_proposal_sort then secnd_column.marginLeft else 0
+            marginLeft: if has_proposal_sort then secnd_column.marginLeft else first_column.width + secnd_column.marginLeft
             display: if has_proposal_sort then 'inline-block'
             verticalAlign: 'top'
             textAlign: 'center' 
@@ -393,7 +393,7 @@ Cluster = ReactiveComponent
       key: cluster.name
       id: if cluster.name && cluster.name then cluster.name.toLowerCase()
       style: 
-        paddingBottom: if !is_collapsed then 45
+        marginBottom: if !is_collapsed then 28
         position: 'relative'
 
       @drawClusterHeading cluster, is_collapsed
@@ -413,6 +413,8 @@ Cluster = ReactiveComponent
                 margin: 0 
                 padding: 0
                 listStyle: 'none'
+                display: 'inline-block'
+                marginBottom: 20
 
               NewProposal 
                 cluster_name: cluster.name
@@ -436,32 +438,83 @@ Cluster = ReactiveComponent
     tw = if is_collapsed then 15 else 20
     th = if is_collapsed then 20 else 15
 
-    ListHeader = customization 'ListHeader', cluster_key
-    list_one_line_desc = customization 'list_one_line_desc', cluster_key
     list_uncollapseable = customization 'list_uncollapseable', cluster_key
-    list_items_title = customization 'list_items_title', cluster_key
+    list_items_title = customization('list_items_title', cluster_key) or cluster.name or 'Proposals'
 
-    label = customization 'list_label', cluster_key
-    description = customization 'list_description', cluster_key
-    label_style = customization 'list_label_style', cluster_key
+    heading_text = customization('list_label', cluster_key) or list_items_title
+    heading_style = _.defaults {}, customization('list_label_style', cluster_key),
+      fontSize: first_header.fontSize
+      fontWeight: first_header.fontWeight
+
+    description = customization('list_description', cluster_key) or customization('list_one_line_desc', cluster_key)
     description_style = customization 'list_description_style', cluster_key
 
+    DIVIDER = customization 'list_divider', cluster_key
 
-    DIV null,
-      if label || description
-        DIV 
-          style: 
-            width: HOMEPAGE_WIDTH()
-            marginBottom: 16
+    HEADING = H1
+    LABEL_ENCLOSE = if list_uncollapseable then DIV else BUTTON
+
+    toggle_list = ->
+      if !list_uncollapseable
+        if collapsed.clusters[cluster_key]
+          delete collapsed.clusters[cluster_key]
+        else 
+          collapsed.clusters[cluster_key] = 1 
+        save collapsed
+
+    DIV 
+      style: 
+        width: HOMEPAGE_WIDTH()
+        marginBottom: 24
+      DIVIDER?()
+
+      DIV 
+        style: 
+          position: 'relative'
+
+        H1
+          style: heading_style
+
+          LABEL_ENCLOSE 
+            tabIndex: if !list_uncollapseable then 0
+            'aria-label': "#{heading_text}. Expand or collapse list."
+            'aria-pressed': !collapsed.clusters[cluster_key]
+            style: 
+              padding: 0 
+              margin: 0 
+              border: 'none'
+              backgroundColor: 'transparent'
+              fontWeight: heading_style.fontWeight
+              cursor: if !list_uncollapseable then 'pointer'
+              textAlign: 'left'
+              color: heading_style.color
+              position: 'relative'
+                
+            onKeyDown: if !list_uncollapseable then (e) -> 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                toggle_list()
+                e.preventDefault()
+            onClick: if !list_uncollapseable then (e) -> 
+              toggle_list()
+              document.activeElement.blur()
+
+            heading_text 
+
+            if !list_uncollapseable
+              SPAN 
+                'aria-hidden': true
+                style: cssTriangle (if is_collapsed then 'right' else 'bottom'), (heading_style.color or 'black'), tw, th,
+                  position: 'absolute'
+                  left: -tw - 20
+                  top: 16
+                  width: tw
+                  height: th
+                  display: 'inline-block'
+                  outline: 'none'
+
+        if !is_collapsed
 
 
-          if label
-            H1
-              style: _.defaults {}, (label_style or {}),
-                fontSize: 42
-                fontWeight: 300
-                marginBottom: 5
-              label
 
           if description
 
@@ -485,83 +538,21 @@ Cluster = ReactiveComponent
                     style:
                       marginBottom: 10
                     dangerouslySetInnerHTML: {__html: para}
+          else if widthWhenRendered(heading_text, heading_style) <= first_column.width + secnd_header.marginLeft
 
 
-      # Header of cluster
 
-      if ListHeader
-        ListHeader()
-      else 
-        heading_text = list_items_title || cluster.name || 'Proposals'
-        HEADING = if label then H2 else H1
-        toggle_list = ->
-          if !list_uncollapseable
-            if collapsed.clusters[cluster_key]
-              delete collapsed.clusters[cluster_key]
-            else 
-              collapsed.clusters[cluster_key] = 1 
-            save collapsed
-
-        DIV 
-          style: 
-            position: 'relative'
-
-          HEADING
-            style: _.extend {}, first_header, 
-              position: 'relative'
-              
-            BUTTON 
-              tabIndex: if list_uncollapseable then -1 else 0
-              'aria-label': "#{heading_text}. Expand or collapse list."
-              'aria-pressed': !collapsed.clusters[cluster_key]
-              style: 
-                padding: 0 
-                margin: 0 
-                border: 'none'
-                backgroundColor: 'transparent'
-                fontWeight: first_header.fontWeight
-                cursor: if !list_uncollapseable then 'pointer'
-                textAlign: 'left'
-                  
-              onKeyDown: (e) -> 
-                if e.which == 13 || e.which == 32 # ENTER or SPACE
-                  toggle_list()
-                  e.preventDefault()
-              onClick: toggle_list
-
-              heading_text 
-
-              if !list_uncollapseable
-                SPAN 
-                  'aria-hidden': true
-                  style: cssTriangle (if is_collapsed then 'right' else 'bottom'), 'black', tw, th,
-                    position: 'absolute'
-                    left: -tw - 20
-                    bottom: 14
-                    width: tw
-                    height: th
-                    display: 'inline-block'
-
-            if list_one_line_desc
-              DIV 
-                style: 
-                  position: 'absolute'
-                  bottom: -14
-                  color: '#666'
-                  fontSize: 14
-                  fontWeight: 400
-                list_one_line_desc
-
-          if !is_collapsed
             histo_title = customization('list_opinions_title', cluster_key)
+              
             DIV
-              style: secnd_header
-              SPAN 
-                style: 
-                  position: 'relative'
-                  marginLeft: -(widthWhenRendered(histo_title, 
-                               {fontSize: 36, fontWeight: 600}) - secnd_column.width)/2
-                histo_title
+              style: _.extend {}, secnd_header, 
+                position: 'absolute'
+                top: 0
+                right: 0
+                textAlign: 'center'
+
+              histo_title
+
 
 
 

@@ -550,6 +550,9 @@ Cluster = ReactiveComponent
                 top: 0
                 right: 0
                 textAlign: 'center'
+                fontWeight: heading_style.fontWeight
+                color: heading_style.color
+                fontSize: heading_style.fontSize
 
               histo_title
 

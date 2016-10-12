@@ -276,19 +276,16 @@ Customers = ReactiveComponent
   displayName: 'Customers'
 
   render: -> 
-    customers = [{
-        img: 'nasa'
-        url: 'http://www.nasa.gov'
-      },{
-        img: 'spl'
-        url: 'http://spl.org'
-      }, {
-        img: 'ecast'
-        url: 'http://ecastnetwork.org'
-      }, {
+    customers = [ {
         img: 'seattle'
         url: 'http://2035.seattle.gov' 
         type: 'svg'     
+      }, {
+        img: 'nasa'
+        url: 'http://www.nasa.gov'
+      },{
+        img: 'ecast'
+        url: 'http://ecastnetwork.org'
       }, {
         img: 'dialoguepartners'
         url: 'http://dialoguepartners.ca/'      

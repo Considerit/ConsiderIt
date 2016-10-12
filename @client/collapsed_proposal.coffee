@@ -66,6 +66,8 @@ window.CollapsedProposal = ReactiveComponent
     # creation = new Date(proposal.created_at).getTime()
     # opacity = .05 + .95 * (creation - sub_creation) / (Date.now() - sub_creation)
 
+    can_edit = permit('update proposal', proposal) > 0
+
     LI
       key: proposal.key
       id: 'p' + proposal.slug.replace('-', '_')  # Initial 'p' is because all ids must begin 
@@ -74,7 +76,7 @@ window.CollapsedProposal = ReactiveComponent
       style:
         minHeight: 70
         position: 'relative'
-        margin: "0 0 15px 0"
+        margin: "0 0 #{if can_edit then '0' else '15px'} 0"
         padding: 0
         listStyle: 'none'
 
@@ -82,6 +84,12 @@ window.CollapsedProposal = ReactiveComponent
         if draw_slider
           @local.hover_proposal = proposal.key; save @local
       onMouseLeave: => 
+        if draw_slider && !slider.is_moving
+          @local.hover_proposal = null; save @local
+      onFocus: => 
+        if draw_slider
+          @local.hover_proposal = proposal.key; save @local
+      onBlur: => 
         if draw_slider && !slider.is_moving
           @local.hover_proposal = null; save @local
 
@@ -135,7 +143,7 @@ window.CollapsedProposal = ReactiveComponent
           style:
             display: 'inline-block'
             fontWeight: 400
-            paddingBottom: 20
+            paddingBottom: if !can_edit then 20 else 4
             width: first_column.width
 
           A
@@ -152,13 +160,14 @@ window.CollapsedProposal = ReactiveComponent
           DIV 
             style: 
               fontSize: 16
-              color: "#999"
+              color: "#444"
+              marginTop: 4
               fontStyle: 'italic'
-              marginTop: 2
 
             if customization('show_proposal_meta_data')
               SPAN 
-                style: {}
+                style: 
+                  paddingRight: 16
 
                 prettyDate(proposal.created_at)
 
@@ -167,10 +176,14 @@ window.CollapsedProposal = ReactiveComponent
                     style: {}
 
                     " by #{fetch(editor)?.name}"
+                    
 
-                SPAN 
-                  style: 
-                    paddingRight: 16
+            if !proposal.active
+              SPAN 
+                style: 
+                  paddingRight: 16
+
+                t('closed')
 
             if @props.show_category && proposal.cluster
               cluster = proposal.cluster 
@@ -186,15 +199,42 @@ window.CollapsedProposal = ReactiveComponent
                   fontStyle: 'normal'
                   fontSize: 12
 
-
                 cluster
 
+          if can_edit
+            DIV
+              style: 
+                visibility: if !@local.hover_proposal then 'hidden'
+                position: 'relative'
+                top: -4
 
-            if !proposal.active
-              SPAN 
-                style: {}
+              A 
+                href: "#{proposal.key}/edit"
+                style:
+                  marginRight: 10
+                  color: focus_blue
+                  backgroundColor: 'transparent'
+                  padding: 0
+                  fontSize: 14
+                t('edit')
 
-                t('closed')
+              if permit('delete proposal', proposal) > 0
+                BUTTON
+                  style:
+                    marginRight: 10
+                    color: focus_blue
+                    backgroundColor: 'transparent'
+                    border: 'none'
+                    padding: 0
+                    fontSize: 14
+
+                  onClick: => 
+                    if confirm('Delete this proposal forever?')
+                      destroy(proposal.key)
+                      loadPage('/')
+                  t('delete')
+
+
 
 
       # Histogram for Proposal

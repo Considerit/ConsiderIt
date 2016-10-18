@@ -5,7 +5,15 @@ class OembedController < ApplicationController
   
   def show
 
-    u = URI.parse(params[:url])
+    url = params[:url]
+    begin
+      u = URI.parse(url)
+    rescue URI::InvalidURIError  # happens when subdomain contains an underscore
+      host = url.match(".+\:\/\/([^\/]+)")[1]
+      u = URI.parse(url.sub(host, 'dummy-host'))
+      u.instance_variable_set('@host', host)
+    end
+
     slug = u.path.gsub /\//, '' 
     proposal = Proposal.find_by_slug slug
 

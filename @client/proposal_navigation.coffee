@@ -20,8 +20,12 @@ window.DefaultProposalNavigation = ReactiveComponent
     next_proposal = prev_proposal = null
     if all_proposals.proposals  # In case /proposals isn't loaded
 
-      all_proposals_flat = _.flatten (sorted_proposals(cluster.proposals) for cluster in clustered_proposals())
-
+      clusters = clustered_proposals_with_tabs()        
+      all_proposals_flat = _.flatten (sorted_proposals(cluster.proposals) for cluster in clusters)
+      if subdomain.name == 'HALA' && fetch('homepage_tabs').filter == 'Draft zoning changes'
+        hala = fetch('hala')
+        hala.name ||= capitalize(@proposal.slug.split('--')[0].replace(/_/g, ' '))
+        all_proposals_flat = (p for p in all_proposals_flat when p.name.toLowerCase().indexOf(hala.name) > -1)
       for proposal, idx in all_proposals_flat
         if proposal == @proposal
           break

@@ -10,6 +10,7 @@ require './vendor/jquery.ui'  # for the drag+drop
 require './vendor/jquery.XDomainRequest' #do we need this?
 require './vendor/jquery.form'
 require './vendor/jquery.touchpunch'
+require './vendor/pdfobject'
 
 require './vendor/modernizr' 
 require './activerest-m'
@@ -174,7 +175,7 @@ Proposal = ReactiveComponent
          (can_opine == Permission.DISABLED && your_opinion.published))
       updateProposalMode('results', 'permission not granted for crafting')
     
-    proposal_header = DefaultProposalNavigation()
+    proposal_header = customization('ProposalNavigation')?() or DefaultProposalNavigation()
 
     draw_handle = (can_opine not in [Permission.DISABLED, \
                           Permission.INSUFFICIENT_PRIVILEGES]) || \
@@ -480,7 +481,11 @@ ProposalDescription = ReactiveComponent
                 save(@local)
 
             'Expand full text'
-        DIV dangerouslySetInnerHTML:{__html: @proposal.description}
+
+        if customization('proposal_description')?[@proposal.cluster]
+          customization('proposal_description')?[@proposal.cluster]({proposal: @proposal})
+        else 
+          DIV dangerouslySetInnerHTML:{__html: @proposal.description}
 
 
       if @local.description_fields

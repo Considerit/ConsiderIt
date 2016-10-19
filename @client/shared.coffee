@@ -196,6 +196,27 @@ window.clustered_proposals = ->
   ordered_clusters.sort (a,b) -> a.sort_order - b.sort_order
   ordered_clusters 
 
+window.clustered_proposals_with_tabs = -> 
+  all_clusters = clustered_proposals()
+  homepage_tabs = fetch 'homepage_tabs'
+  if homepage_tabs.filter?
+    to_remove = []
+    for cluster, index in all_clusters or []
+      cluster_key = "list/#{cluster.name}"
+
+      fails_filter = homepage_tabs.filter? && (homepage_tabs.clusters != '*' && !(cluster.name in homepage_tabs.clusters) )
+      if fails_filter && ('*' in homepage_tabs.clusters)
+        in_others = []
+        for filter, clusters of customization('homepage_tabs')
+          in_others = in_others.concat clusters 
+
+        fails_filter &&= cluster.name in in_others
+      if fails_filter
+        to_remove.push cluster 
+
+    all_clusters = _.difference all_clusters, to_remove
+  all_clusters
+
 
 ######
 # Expands a key like 'slider' to one that is namespaced to a parent object, 
@@ -302,16 +323,6 @@ window.inRange = (val, min, max) ->
 window.capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
 
 window.L = window.LOADING_INDICATOR = DIV null, 'Loading...'
-
-
-window.slugify = (text) -> 
-  text.toString().toLowerCase()
-    .replace(/\s+/g, '-')           # Replace spaces with -
-    .replace(/[^\w\-]+/g, '')       # Remove all non-word chars
-    .replace(/\-\-+/g, '-')         # Replace multiple - with single -
-    .replace(/^-+/, '')             # Trim - from start of text
-    .replace(/-+$/, '')             # Trim - from end of text
-    .substring(0, 30)
 
 
 window.shared_local_key = (key_or_object) -> 
@@ -732,5 +743,16 @@ a.skip:hover {
 
 button.primary_button, input[type='submit'] {
   display: inline-block; }
+
+select.unstyled:not([multiple]){
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    background-position:right 50%;
+    background-repeat:no-repeat;
+    background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAMCAYAAABSgIzaAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDZFNDEwNjlGNzFEMTFFMkJEQ0VDRTM1N0RCMzMyMkIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDZFNDEwNkFGNzFEMTFFMkJEQ0VDRTM1N0RCMzMyMkIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0NkU0MTA2N0Y3MUQxMUUyQkRDRUNFMzU3REIzMzIyQiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0NkU0MTA2OEY3MUQxMUUyQkRDRUNFMzU3REIzMzIyQiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PuGsgwQAAAA5SURBVHjaYvz//z8DOYCJgUxAf42MQIzTk0D/M+KzkRGPoQSdykiKJrBGpOhgJFYTWNEIiEeAAAMAzNENEOH+do8AAAAASUVORK5CYII=);
+    padding: .5em;
+    padding-right:1.5em;
+    border-radius: 16px;
+}
 
 """

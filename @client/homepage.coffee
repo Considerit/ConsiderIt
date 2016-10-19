@@ -79,10 +79,6 @@ window.cluster_styles = ->
   [first_column, secnd_column, first_header, secnd_header]
 
 
-
-
-
-
 window.TagHomepage = ReactiveComponent
   displayName: 'TagHomepage'
 
@@ -102,7 +98,7 @@ window.TagHomepage = ReactiveComponent
     hues = getNiceRandomHues clusters.length
     colors = {}
     for cluster, idx in clusters
-      colors[cluster.name] = hues[idx]
+      colors[cluster] = hues[idx]
 
     proposals = sorted_proposals(proposals)
 
@@ -110,7 +106,7 @@ window.TagHomepage = ReactiveComponent
 
 
     DIV
-      id: 'simplehomepage'
+      id: 'homepagetab'
       role: if customization('homepage_tabs') then "tabpanel"
       style: 
         fontSize: 22
@@ -171,8 +167,9 @@ window.SimpleHomepage = ReactiveComponent
     subdomain = fetch('/subdomain')
 
     homepage_tabs = fetch 'homepage_tabs'
-    if subdomain.name == 'dao' && homepage_tabs.clusters == '*'
-      return TagHomepage()
+
+    if customization('homepage_tab_views')?[homepage_tabs.filter]
+      return customization('homepage_tab_views')[homepage_tabs.filter]()
 
     proposals = fetch('/proposals')
     current_user = fetch('/current_user')
@@ -180,7 +177,7 @@ window.SimpleHomepage = ReactiveComponent
     if !proposals.proposals 
       return ProposalsLoading()   
 
-    clusters = clustered_proposals()
+    clusters = clustered_proposals_with_tabs()
 
     # collapse by default archived clusters
     collapsed = fetch 'collapsed'
@@ -190,11 +187,12 @@ window.SimpleHomepage = ReactiveComponent
         collapsed.clusters[cluster.key] = 1
       save collapsed
 
+    console.log clusters
 
     has_proposal_sort = customization('homepage_show_search_and_sort') && proposals.proposals.length > 10
 
     DIV
-      id: 'simplehomepage'
+      id: 'homepagetab'
       role: if customization('homepage_tabs') then "tabpanel"
       style: 
         fontSize: 22
@@ -228,25 +226,10 @@ window.SimpleHomepage = ReactiveComponent
 
       # List all clusters
       for cluster, index in clusters or []
-        cluster_key = "list/#{cluster.name}"
-
-        fails_filter = homepage_tabs.filter? && (homepage_tabs.clusters != '*' && !(cluster.name in homepage_tabs.clusters) )
-        if fails_filter && ('*' in homepage_tabs.clusters)
-          in_others = []
-          for filter, clusters of customization('homepage_tabs')
-            in_others = in_others.concat clusters 
-
-          fails_filter &&= cluster.name in in_others
-
-
-        if fails_filter
-          SPAN null 
-        else 
-
-          Cluster
-            key: cluster_key
-            cluster: cluster 
-            index: index
+        Cluster
+          key: "list/#{cluster.name}"
+          cluster: cluster 
+          index: index
 
 
       if permit('create proposal') > 0 && customization('homepage_show_new_proposal_button')
@@ -275,7 +258,9 @@ window.HomepageTabs = ReactiveComponent
 
   render: -> 
     filters = ([k,v] for k,v of customization('homepage_tabs'))
-    filters.unshift ["Show all", '*']
+
+    if !customization('homepage_tabs_no_show_all')
+      filters.unshift ["Show all", '*']
 
     homepage_tabs = fetch 'homepage_tabs'
     if !homepage_tabs.filter?
@@ -301,7 +286,7 @@ window.HomepageTabs = ReactiveComponent
         style: 
           width: 900 #HOMEPAGE_WIDTH()
           margin: 'auto'
-          textAlign: 'center'
+          textAlign: if subdomain.name == 'HALA' then 'left' else 'center'
           listStyle: 'none'
 
         for [filter, clusters], idx in filters 
@@ -328,6 +313,15 @@ window.HomepageTabs = ReactiveComponent
                 borderLeft: if current then "2px solid #F8E71C"
                 borderTop: if current then "2px solid #F8E71C"
                 borderRight: if current then "2px solid #F8E71C"
+            else if subdomain.name == 'HALA'
+              _.extend tab_style, 
+                padding: '10px 30px 0px 30px'
+                color: if current then 'black' else if hovering then '#000' else 'white'
+                backgroundColor: if current then 'white'
+                borderLeft: if current then "1px solid #000"
+                borderTop: if current then "1px solid #000"
+                borderRight: if current then "1px solid #000"
+
             else if subdomain.name == 'bradywalkinshaw'
               _.extend tab_style, 
                 padding: '10px 20px 4px 20px'
@@ -343,7 +337,7 @@ window.HomepageTabs = ReactiveComponent
               tabIndex: 0
               role: 'tab'
               style: tab_style
-              'aria-controls': 'simplehomepage'
+              'aria-controls': 'homepagetab'
               'aria-selected': current
 
               onMouseEnter: => 
@@ -367,7 +361,7 @@ window.HomepageTabs = ReactiveComponent
 
 
 
-Cluster = ReactiveComponent
+window.Cluster = ReactiveComponent
   displayName: 'Cluster'
 
 
@@ -518,19 +512,18 @@ Cluster = ReactiveComponent
 
           if description
 
-            if _.isFunction(description)                
-              description()
-            else 
-              desc = description
-              if typeof desc == 'string'
-                desc = [description]
+            DIV                
+              style: _.defaults {}, (description_style or {}),
+                fontSize: 18
+                fontWeight: 400 
+                color: '#444'
 
-              DIV                
-                style: _.defaults {}, (description_style or {}),
-                  fontSize: 18
-                  fontWeight: 400 
-                  color: '#444'
-                
+              if _.isFunction(description)                
+                description()
+              else 
+                desc = description
+                if typeof desc == 'string'
+                  desc = [description]
 
                 for para, idx in desc
                   DIV 
@@ -538,6 +531,7 @@ Cluster = ReactiveComponent
                     style:
                       marginBottom: 10
                     dangerouslySetInnerHTML: {__html: para}
+
           else if widthWhenRendered(heading_text, heading_style) <= first_column.width + secnd_header.marginLeft
 
 

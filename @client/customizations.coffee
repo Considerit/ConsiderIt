@@ -447,7 +447,7 @@ customizations['hala'] =
           "The comment period is now closed on the below questions. Thanks for your input!"
           " We've taken away these "
           A 
-            href: 'http://www.seattle.gov/Documents/Departments/HALA/FocusGroups/Principles_MHA_Implementation_2pager.pdf'
+            href: 'https://www.seattle.gov/Documents/Departments/HALA/FocusGroups/Principles_MHA_Implementation_2pager.pdf'
             target: '_blank'
             style: 
               textDecoration: 'underline'
@@ -726,7 +726,7 @@ customizations['hala'] =
           @local.embedded = true 
 
         if !@local.principles_embedded
-          PDFObject.embed? 'http://www.seattle.gov/Documents/Departments/HALA/FocusGroups/Principles_MHA_Implementation_2pager.pdf', '#hala_mha_principles_embed'
+          PDFObject.embed? 'https://www.seattle.gov/Documents/Departments/HALA/FocusGroups/Principles_MHA_Implementation_2pager.pdf', '#hala_mha_principles_embed'
           @local.principles_embedded = true
 
       render: ->
@@ -916,7 +916,7 @@ customizations['hala'] =
           PDFObject.embed? fetch('hala').map, '#hala_map_embed'
           @local.embedded = fetch('hala').map 
         if !@local.principles_embedded
-          PDFObject.embed? 'http://www.seattle.gov/Documents/Departments/HALA/FocusGroups/Principles_MHA_Implementation_2pager.pdf', '#hala_mha_principles_embed'
+          PDFObject.embed? 'https://www.seattle.gov/Documents/Departments/HALA/FocusGroups/Principles_MHA_Implementation_2pager.pdf', '#hala_mha_principles_embed'
           @local.principles_embedded = true
 
       render: -> 

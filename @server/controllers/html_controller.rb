@@ -14,7 +14,7 @@ class HtmlController < ApplicationController
       return
     end
 
-    if current_subdomain.SSO_only and not current_user.registered
+    if current_subdomain.SSO_domain && !current_user.registered
       get_url_base = "#{request.protocol}#{request.host_with_port}"
       settings = User.get_saml_settings(get_url_base)
       if settings.nil?

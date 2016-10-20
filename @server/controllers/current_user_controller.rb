@@ -429,7 +429,11 @@ class CurrentUserController < ApplicationController
   end
 
   def sso
-    initiate_saml_auth
+    if !current_user.registered
+      initiate_saml_auth
+    else 
+      redirect_to '/'
+    end
   end
 
   def acs

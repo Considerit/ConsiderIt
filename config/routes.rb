@@ -29,6 +29,8 @@ ConsiderIt::Application.routes.draw do
 
   get "/dashboard/export(.:format)" => 'import_data#export'
 
+  get "/create_subdomain" => 'subdomain#create'
+
   # SAML for Development
   get 'saml/sso' => 'current_user#sso' 
   post 'saml/acs' => 'current_user#acs'

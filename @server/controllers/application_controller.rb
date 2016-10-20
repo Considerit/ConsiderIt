@@ -67,6 +67,7 @@ class ApplicationController < ActionController::Base
       raise "No IdP Settings!"
     end
     req = OneLogin::RubySaml::Authrequest.new
+    session[:redirect_after_auth] = request.url
     redirect_to(req.create(settings))
   end
 

@@ -19,6 +19,12 @@ class HtmlController < ApplicationController
       return
     end
 
+    if session[:redirect_after_auth]
+      redirect_to session[:redirect_after_auth]
+      session[:redirect_after_auth] = nil 
+      return
+    end 
+
     if Rails.env.development? || request.host.end_with?('chlk.it')
       if params[:domain]
         session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
@@ -26,6 +32,8 @@ class HtmlController < ApplicationController
         return
       end
     end
+
+
 
     if !session.has_key?(:search_bot)
       session[:search_bot] = !!request.fullpath.match('_escaped_fragment_')  \

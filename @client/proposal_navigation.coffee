@@ -25,7 +25,7 @@ window.DefaultProposalNavigation = ReactiveComponent
       if subdomain.name == 'HALA' && fetch('homepage_tabs').filter == 'Draft zoning changes'
         hala = fetch('hala')
         hala.name ||= capitalize(@proposal.slug.split('--')[0].replace(/_/g, ' '))
-        all_proposals_flat = (p for p in all_proposals_flat when p.name.toLowerCase().indexOf(hala.name) > -1)
+        all_proposals_flat = (p for p in all_proposals_flat when p.name.toLowerCase().indexOf(hala.name.toLowerCase()) > -1)
       for proposal, idx in all_proposals_flat
         if proposal == @proposal
           break

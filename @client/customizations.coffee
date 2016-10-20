@@ -308,4 +308,3 @@ for sub in masthead_only
 
 
 
-

@@ -21,7 +21,8 @@ class SubdomainController < ApplicationController
     permitted = permit('create subdomain')
     if permitted < 0
       if params[:sso_domain]
-        pp 'redirect to IdP for authentication'
+        # redirect to IdP for authentication
+        initiate_saml_auth(params[:sso_domain])
       else 
         raise PermissionDenied.new permitted
       end

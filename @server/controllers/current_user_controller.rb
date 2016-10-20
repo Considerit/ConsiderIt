@@ -429,19 +429,13 @@ class CurrentUserController < ApplicationController
   end
 
   def sso
-    settings = User.get_saml_settings(get_url_base)
-    if settings.nil?
-      raise "No IdP Settings!"
-    end
-    req = OneLogin::RubySaml::Authrequest.new
-    redirect_to(req.create(settings))
-
+    initiate_saml_auth
   end
 
   def acs
     errors = []
 
-    settings = User.get_saml_settings(get_url_base)
+    settings = User.get_saml_settings(get_url_base, current_subdomain.SSO_domain)
     response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings)
 
     if response.is_valid?
@@ -526,7 +520,7 @@ class CurrentUserController < ApplicationController
   end
 
   def metadata
-    settings = User.get_saml_settings(get_url_base)
+    settings = User.get_saml_settings(get_url_base, current_subdomain.SSO_domain)
     meta = OneLogin::RubySaml::Metadata.new
     render :xml => meta.generate(settings, true)
   end

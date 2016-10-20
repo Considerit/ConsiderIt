@@ -84,6 +84,14 @@ class SubdomainController < ApplicationController
   def show
     if params[:id]
       dirty_key "/subdomain/#{params[:id] or current_subdomain.id}"
+    elsif params[:name]
+      begin 
+        subdomain = Subdomain.find_by_name(params[:name])
+        dirty_key "/subdomain/#{subdomain.id}"
+      rescue 
+        render :json => [{errors: ["That site doesn't exist."]}]
+        return
+      end
     else 
       dirty_key '/subdomain'
     end

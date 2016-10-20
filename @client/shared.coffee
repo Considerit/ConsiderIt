@@ -321,6 +321,7 @@ window.inRange = (val, min, max) ->
   return val <= max && val >= min
 
 window.capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
+window.capitalize_each_word = (str) -> str.replace /\b\w/g, (l) -> l.toUpperCase()
 
 window.L = window.LOADING_INDICATOR = DIV null, 'Loading...'
 

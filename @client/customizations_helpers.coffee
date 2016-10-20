@@ -28,6 +28,15 @@ window.cluster_link = (href, anchor) ->
 # PRO/CON LABELS
 
 window.point_labels = 
+  question_ideas: 
+    pro: 'idea'
+    pros: 'ideas' 
+    con: 'question'
+    cons: 'questions'
+    your_header: "Give your --valences--" 
+    other_header: "Others' --valences--" 
+    top_header: "Top --valences--" 
+
   pro_con: 
     pro: 'pro'
     pros: 'pros' 
@@ -668,7 +677,7 @@ window.seattle_vars =
   teal: "#0FB09A"
   turquoise: '#67B5B5'
   brown: '#A77C53'
-  gray: "#444"
+  gray: "#000"
   pink: '#F06668'
   dark: '#5C1517'
   magenta: '#d51c5c'

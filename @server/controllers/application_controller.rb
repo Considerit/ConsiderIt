@@ -88,20 +88,28 @@ protected
       candidate_subdomain = Subdomain.find_by_name('homepage')
     else
       default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
+
       if rq.subdomain.nil? || rq.subdomain.length == 0
-        begin
-          candidate_subdomain = Subdomain.find(default_subdomain)
-        rescue ActiveRecord::RecordNotFound
-          # create a subdomain if one doesn't yet exist
-          if Subdomain.count == 0
-            new_subdomain = Subdomain.new name: "test", app_title: "test"
-            new_subdomain.save
+        candidate_subdomain = nil 
+
+        if Rails.env.development? && rq.host.split('.').length > 1
+          candidate_subdomain = Subdomain.find_by_name(rq.host.split('.')[0])
+        else 
+          begin
+            candidate_subdomain = Subdomain.find(default_subdomain)
+          rescue ActiveRecord::RecordNotFound
+            # create a subdomain if one doesn't yet exist
+            if Subdomain.count == 0
+              new_subdomain = Subdomain.new name: "test", app_title: "test"
+              new_subdomain.save
+            end
+            candidate_subdomain = Subdomain.first
           end
-          candidate_subdomain = Subdomain.first
         end
-      else 
+      elsif !candidate_subdomain
         candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
       end
+
     end
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain

@@ -436,7 +436,7 @@ customizations['hala'] =
         DIV 
           style: _.extend {}, seattle_vars.section_description, 
             marginTop: 20
-            backgroundColor: seattle_vars.teal
+            backgroundColor: seattle_vars.brown
             color: 'white'
             display: 'inline-block'
             padding: 20
@@ -445,7 +445,7 @@ customizations['hala'] =
             marginBottom: 20
 
           "The comment period is now closed on the below questions. Thanks for your input!"
-          " We've taken away these "
+          " Here are the final "
           A 
             href: 'https://www.seattle.gov/Documents/Departments/HALA/FocusGroups/Principles_MHA_Implementation_2pager.pdf'
             target: '_blank'
@@ -633,10 +633,10 @@ customizations['hala'] =
       ]
 
   "list/Multi-family Residential Areas" : 
-    list_description: """Draft zoning for multi-family areas is in brown on the map."""
+    list_description: """Draft zoning for multi-family areas (housing that shares walls, not a single family house) is in brown on the map."""
 
   "list/Commercial Areas" : 
-    list_description: """Draft zoning for commercial areas is in red and pink."""
+    list_description: """Draft zoning for commercial areas (buildings that house jobs and services) is in red and pink."""
 
 
 
@@ -712,7 +712,7 @@ customizations['hala'] =
 
   homepage_tabs: 
     'Feedback on key principles': ['*']
-    'Draft zoning changes': ['Alignment with Mandatory Housing Affordability principles', 'Commercial areas', 'Multi-family Residential Areas',  'Single Family Rezone Areas', 'Urban Village Expansions']
+    'Draft zoning changes': ['Alignment with Mandatory Housing Affordability principles', 'Commercial Areas', 'Multi-family Residential Areas',  'Single Family Rezone Areas', 'Urban Village Expansions']
 
   proposal_description: (->
 
@@ -734,7 +734,7 @@ customizations['hala'] =
         DIV null, 
 
           if proposal.cluster == 'Multi-family Residential Areas'
-            DIV style: marginBottom: 20, "Draft zoning for multi-family areas is in brown on the map."
+            DIV style: marginBottom: 20, "Draft zoning for multi-family areas (housing that shares walls, not a single family house) is in brown on the map."
           else if proposal.cluster == "Single Family Rezone Areas"
             DIV style: marginBottom: 20, 
               """Existing Single Family (SF) zones within the """
@@ -750,8 +750,9 @@ customizations['hala'] =
               However, some of the areas could have Lowrise (LR) Multi-Family zoning. And only a few 
               of these areas are shown having a mixed use commercial zone (NC) on the draft map."""
           else if proposal.cluster == "Multi-family Residential Areas"
-            DIV style: marginBottom: 20, "Draft zoning for multi-family areas is in brown on the map."
-
+            DIV style: marginBottom: 20, "Draft zoning for multi-family areas (housing that shares walls, not a single family house) is in brown on the map."
+          else if proposal.cluster == 'Commercial Areas'
+            DIV style: marginBottom: 20, "Draft zoning for commercial areas (buildings that house jobs and services) is in red and pink."
 
 
           DIV 
@@ -897,7 +898,7 @@ customizations['hala'] =
 
     {  
       'Alignment with Mandatory Housing Affordability principles': desc
-      'Commercial areas': desc
+      'Commercial Areas': desc
       'Multi-family Residential Areas': desc
       'Single Family Rezone Areas': desc
       'Urban Village Expansions': desc
@@ -923,6 +924,9 @@ customizations['hala'] =
         subdomain = fetch('/subdomain')
         proposals = fetch('/proposals')
         current_user = fetch('/current_user')
+
+
+        return DIV style: margin: 50, textAlign: 'center', fontSize: 24, 'Coming soon!'
 
         if !proposals.proposals 
           return ProposalsLoading()   
@@ -1021,6 +1025,20 @@ customizations['hala'] =
               """ from recent months and past planning. Your feedback will help us propose final MHA 
               implementation maps to the City Council in spring 2017."""
 
+            P 
+              style:
+                marginBottom: 18 
+
+              'If you need an accessible map, email us at '
+
+              A 
+                href: 'mailto:halainfo@seattle.gov?subject="I need help with accessibility"'
+                style: 
+                  textDecoration: 'underline'
+                  color: focus_blue
+                'halainfo@seattle.gov'
+              '.'
+
 
           DIV 
             style: 
@@ -1061,7 +1079,7 @@ customizations['hala'] =
             DIV 
               id: 'hala_map_embed'
               style: 
-                height: if !@local.show_full_map then '450px' else window.innerHeight
+                height: if !@local.show_full_map then '300px' else window.innerHeight
 
             BUTTON
               onClick: => @local.show_full_map = !@local.show_full_map; save @local; document.activeElement.blur() 

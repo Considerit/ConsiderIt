@@ -18,7 +18,6 @@ class ApplicationController < ActionController::Base
     render :json => result
   end
 
-
   def application
     dirty_key '/application'
     render :json => []
@@ -57,6 +56,18 @@ class ApplicationController < ActionController::Base
     if permitted < 0
       raise PermissionDenied.new permitted, key
     end
+  end
+
+  def initiate_saml_auth(sso_domain = nil)
+    sso_domain ||= current_subdomain.SSO_domain
+
+    get_url_base = "#{request.protocol}#{request.host_with_port}"
+    settings = User.get_saml_settings(get_url_base, sso_domain)
+    if settings.nil?
+      raise "No IdP Settings!"
+    end
+    req = OneLogin::RubySaml::Authrequest.new
+    redirect_to(req.create(settings))
   end
 
 protected

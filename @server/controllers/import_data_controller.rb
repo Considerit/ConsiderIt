@@ -430,20 +430,26 @@ class ImportDataController < ApplicationController
         CSV.open("#{export_path}#{subdomain.name}-opinions.csv", "a") do |csv|
           proposal.opinions.published.each do |opinion|
             user = opinion.user
-            csv << [proposal.slug, opinion.created_at, user.name, user.email.gsub('.ghost', ''), opinion.stance, user.points.where(:proposal_id => proposal.id).count]
+            begin 
+              csv << [proposal.slug, opinion.created_at, user.name, user.email.gsub('.ghost', ''), opinion.stance, user.points.where(:proposal_id => proposal.id).count]
+            rescue 
+            end 
           end
         end
 
         CSV.open("#{export_path}#{subdomain.name}-points.csv", "a") do |csv|
 
           proposal.points.published.each do |pnt|
-            opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
-            csv << [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.name, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
+            begin 
+              opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
+              csv << [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.name, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
 
-            pnt.comments.each do |comment|
-              opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
-              csv << [pnt.proposal.slug, 'COMMENT', comment.created_at, comment.user.name, comment.user.email.gsub('.ghost', ''), "", comment.body, '', opinion ? opinion.stance : '-', '', '']
-            end
+              pnt.comments.each do |comment|
+                opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
+                csv << [pnt.proposal.slug, 'COMMENT', comment.created_at, comment.user.name, comment.user.email.gsub('.ghost', ''), "", comment.body, '', opinion ? opinion.stance : '-', '', '']
+              end
+            rescue 
+            end 
           end
         end
       end

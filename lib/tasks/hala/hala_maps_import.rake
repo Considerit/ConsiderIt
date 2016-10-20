@@ -53,17 +53,21 @@ task :hala_maps, [:sub] => :environment do |t, args|
     csv << fields
 
     neighborhoods.each do |n|
-      
-      clusters.each do |cluster, questions|
-        if cluster != 'Urban Village Expansions' || n[:include_expansion_question]
 
-          questions.each do |question|
-            url = n[:name].downcase.gsub(/ /, '_') + '--' + question.gsub(/\{NEIGHBORHOOD\}/, n[:name])
-            url = url[0..60].gsub(/[ \(\)\.\,]+/, '-')
-            csv << [cluster, question.gsub(/\{NEIGHBORHOOD\}/, n[:name]), url, n[:url], 'jesseca.brand@seattle.gov.ghost']
+      if n[:name] == 'NE 130th St'
+        next 
+      else         
+        clusters.each do |cluster, questions|
+          if cluster != 'Urban Village Expansions' || n[:include_expansion_question]
+
+            questions.each do |question|
+              url = n[:name].downcase.gsub(/ /, '_') + '--' + question.gsub(/\{NEIGHBORHOOD\}/, n[:name])[0..90]
+              url = url.gsub(/[ \(\)\.\,]+/, '-')
+              csv << [cluster, question.gsub(/\{NEIGHBORHOOD\}/, n[:name]), url, n[:url], 'jesseca.brand@seattle.gov']
+            end 
           end 
         end 
-      end 
+      end
     end
   end
 end

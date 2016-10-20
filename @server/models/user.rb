@@ -423,7 +423,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  def self.get_saml_settings(url_base)
+  def self.get_saml_settings(url_base, sso_domain)
     # should retrieve SAML-settings based on subdomain, IP-address, NameID or similar
     settings = OneLogin::RubySaml::Settings.new
 
@@ -439,7 +439,10 @@ class User < ActiveRecord::Base
 
     # Example settings data, replace this values with Delft settings!
     # TODO replace example.com settings with Delft IDP settings
-    if current_subdomain.host_with_port == 'test.example.com:80'
+    if sso_domain == 'DTU'
+      raise 'Need to put DTU info here'
+
+    elsif current_subdomain.host_with_port == 'test.example.com:80'
       # IdP section
       settings.idp_entity_id                  = ""
       settings.idp_sso_target_url             = ""
@@ -461,7 +464,7 @@ class User < ActiveRecord::Base
       settings.security[:digest_method] = XMLSecurity::Document::SHA1
       settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
 
-    elsif Rails.env.development? 
+    elsif Rails.env.development? || sso_domain == 'standardminds'
       # IdP section for Onelogin IDP used in development
       settings.idp_entity_id                  = "https://app.onelogin.com/saml/metadata/585764"
       settings.idp_sso_target_url             = "https://standardminds-dev.onelogin.com/trust/saml2/http-post/sso/585764"

@@ -96,7 +96,7 @@ protected
       if rq.subdomain.nil? || rq.subdomain.length == 0
         candidate_subdomain = nil 
 
-        if Rails.env.development? && rq.host.split('.').length > 1
+        if Rails.env.development? && rq.host.split('.').length == 2
           candidate_subdomain = Subdomain.find_by_name(rq.host.split('.')[0])
         else 
           begin

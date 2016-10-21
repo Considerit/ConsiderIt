@@ -332,7 +332,7 @@ protected
       if !target_user
         token_valid = false
       else
-        encrypted = ApplicationController.MD5_hexdigest("#{target_email}#{target_user.unique_token}#{current_subdomain.name}")    
+        encrypted = target_user.auth_token(current_subdomain)
         token_valid = encrypted == auth_token
       end
 
@@ -344,6 +344,7 @@ protected
           replace_user(current_user, target_user)
           set_current_user(target_user)
           current_user.add_token() # Logging in via email token is dangerous, so we'll only allow it once per token          
+          # CurrentUserController.update_roles_and_permissions()
         end
 
         if !params.has_key?('nvn')

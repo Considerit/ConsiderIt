@@ -40,7 +40,7 @@ class UserMailer < Mailer
 
   def verification(user, subdomain)
     @user = user
-    @token = ApplicationController.MD5_hexdigest("#{user.email}#{user.unique_token}#{subdomain.name}")
+    @token = user.auth_token(subdomain)
     @subdomain = subdomain
     subject = "please verify your email address"
 

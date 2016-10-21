@@ -137,8 +137,6 @@ Auth = ReactiveComponent
           footer ]
 
       # The EDIT PROFILE form
-      # We don't render an enclosing header and border,
-      # and add feedback when the user is updated.
       when 'edit profile'
         if avatar_field = @avatarInput()
           avatar_field = ["#{t('pic_prompt')}:", avatar_field]
@@ -159,9 +157,6 @@ Auth = ReactiveComponent
         ]
 
       # The EDIT SAML PROFILE form
-      # SAML users are directed here after log in. 
-      # We don't render an enclosing header and border,
-      # and add feedback when the user is updated.
       when 'edit saml profile'
         if avatar_field = @avatarInput()
           avatar_field = ["#{t('pic_prompt')}:", avatar_field]

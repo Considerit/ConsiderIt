@@ -1850,6 +1850,7 @@ AuthTransition = ReactiveComponent
   displayName: 'Computer'
   render : ->
     current_user = fetch('/current_user')
+
     if current_user.csrf
       arest.csrf(current_user.csrf)
 
@@ -1881,9 +1882,11 @@ AuthTransition = ReactiveComponent
     # users following an email invitation need to complete 
     # registration (name + password)
     if current_user.needs_to_complete_profile
+      subdomain = fetch('/subdomain')
+
       reset_key 'auth',
         key: 'auth'
-        form: 'create account via invitation'
+        form: if subdomain.SSO_domain then 'edit saml profile' else 'create account via invitation'
         goal: 'Complete registration'
         ask_questions: true
     else if current_user.needs_to_verify && !window.send_verification_token

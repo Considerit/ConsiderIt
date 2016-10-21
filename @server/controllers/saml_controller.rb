@@ -2,7 +2,7 @@
 require 'securerandom'
 require 'uri'
 
-class SAMLController < ApplicationController
+class SamlController < ApplicationController
 
   def sso
     session[:redirect_subdomain] = params[:subdomain]

@@ -323,6 +323,24 @@ class User < ActiveRecord::Base
     end
   end
 
+  # Check to see if this user has been referenced by email in any 
+  # roles or permissions settings. If so, replace the email with the
+  # user's key. 
+  def update_roles_and_permissions
+    ActsAsTenant.without_tenant do 
+      for cls in [Subdomain, Proposal]
+        objs_with_user_in_role = cls.where("roles like '%\"#{self.email}\"%'") 
+                                         # this is case insensitive
+
+        for obj in objs_with_user_in_role
+          pp "UPDATING ROLES, replacing #{self.email} with #{self.id} for #{obj.name}"
+          obj.roles = obj.roles.gsub /\"#{self.email}\"/i, "\"/user/#{self.id}\""
+          obj.save
+        end
+      end
+    end
+  end
+
 
   def absorb (user)
     return if not (self and user)

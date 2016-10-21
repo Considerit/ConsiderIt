@@ -104,9 +104,9 @@ class SubdomainController < ApplicationController
       UserMailer.welcome_new_customer(current_user, new_subdomain, params[:plan]).deliver_later
 
       if request.xhr?
-        render :json => [{key: 'new_subdomain', name: new_subdomain.name, t: ApplicationController.MD5_hexdigest("#{current_user.email}#{current_user.unique_token}#{new_subdomain.name}")}]
+        render :json => [{key: 'new_subdomain', name: new_subdomain.name, t: current_user.auth_token(new_subdomain)}]
       else 
-        token = ApplicationController.MD5_hexdigest("#{current_user.email}#{current_user.unique_token}#{new_subdomain.name}")
+        token = current_user.auth_token(new_subdomain)
         redirect_to "#{request.protocol}#{new_subdomain.host_with_port}?u=#{current_user.email}&t=#{token}"
       end
     end

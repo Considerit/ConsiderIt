@@ -299,6 +299,11 @@ class User < ActiveRecord::Base
   end
 
 
+  def auth_token(subdomain = nil)
+    subdomain ||= current_subdomain
+    ApplicationController.MD5_hexdigest("#{self.email}#{self.unique_token}#{subdomain.name}")
+  end
+
   def add_token
     self.unique_token = SecureRandom.hex(10)
     self.save

@@ -60,15 +60,7 @@ class ApplicationController < ActionController::Base
 
   def initiate_saml_auth(sso_domain = nil)
     sso_domain ||= current_subdomain.SSO_domain
-
-    get_url_base = "#{request.protocol}#{request.host_with_port}"
-    settings = User.get_saml_settings(get_url_base, sso_domain)
-    if settings.nil?
-      raise "No IdP Settings!"
-    end
-    req = OneLogin::RubySaml::Authrequest.new
-    session[:redirect_after_auth] = request.url
-    redirect_to(req.create(settings))
+    redirect_to "#{request.protocol}saml_auth.#{request.domain()}/saml/sso/#{sso_domain}/#{current_subdomain.name}"
   end
 
 protected
@@ -345,6 +337,7 @@ protected
           set_current_user(target_user)
           current_user.add_token() # Logging in via email token is dangerous, so we'll only allow it once per token          
           current_user.update_roles_and_permissions
+          dirty_if_any_private_proposals(current_user)
         end
 
         if !params.has_key?('nvn')
@@ -362,6 +355,26 @@ protected
     end
   end
 
+  def dirty_if_any_private_proposals(real_user)
+    matters = false 
+
+    proposals = Proposal.all_proposals_for_subdomain
+
+    dummy = User.new
+
+    proposals.each do |proposal|
+      if permit('read proposal', proposal, real_user) != permit('read proposal', proposal, dummy)
+        matters = true 
+        break 
+      end
+    end 
+
+    if matters 
+      dirty_key '/proposals'
+    end 
+
+    matters
+  end
 
   
   def allow_iframe_requests

@@ -77,7 +77,7 @@ class CurrentUserController < ApplicationController
             current_user.add_to_active_in
             dirty_if_any_private_proposals current_user
 
-            update_roles_and_permissions
+            current_user.update_roles_and_permissions
 
             # if this user was created via the invitation process, note that
             # they've gone through the registration process
@@ -124,7 +124,7 @@ class CurrentUserController < ApplicationController
             replace_user(current_user, user)
             set_current_user(user)
             current_user.add_to_active_in
-            update_roles_and_permissions
+            current_user.update_roles_and_permissions
 
             dirty_if_any_private_proposals current_user
 
@@ -164,7 +164,7 @@ class CurrentUserController < ApplicationController
             set_current_user(user)
             try_update_password 'reset password', errors
             current_user.add_to_active_in
-            update_roles_and_permissions
+            current_user.update_roles_and_permissions
             
             if !current_user.verified 
               current_user.verified = true
@@ -401,27 +401,6 @@ class CurrentUserController < ApplicationController
         raise "Error saving this user's password"
       end
     end
-
-  end
-
-  # Check to see if this user has been referenced by email in any 
-  # roles or permissions settings. If so, replace the email with the
-  # user's key. 
-  def update_roles_and_permissions
-    ActsAsTenant.without_tenant do 
-      for cls in [Subdomain, Proposal]
-        objs_with_user_in_role = cls.where("roles like '%\"#{current_user.email}\"%'") 
-                                         # this is case insensitive
-
-        for obj in objs_with_user_in_role
-          pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{obj.name}"
-          obj.roles = obj.roles.gsub /\"#{current_user.email}\"/i, "\"/user/#{current_user.id}\""
-          obj.save
-        end
-
-      end
-    end
-
   end
 
   def log (what)
@@ -495,8 +474,6 @@ class CurrentUserController < ApplicationController
           current_user.add_to_active_in
           dirty_if_any_private_proposals current_user
 
-          update_roles_and_permissions
-
           # if this user was created via the invitation process, note that
           # they've gone through the registration process
           if current_user.complete_profile
@@ -512,7 +489,6 @@ class CurrentUserController < ApplicationController
         replace_user(current_user, user)
         set_current_user(user)
         current_user.add_to_active_in
-        update_roles_and_permissions
         redirect_to '/' 
       end
 
@@ -628,8 +604,6 @@ class CurrentUserController < ApplicationController
     end
 
   end
-
-
 
 end
 

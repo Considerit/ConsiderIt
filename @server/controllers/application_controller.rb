@@ -344,7 +344,7 @@ protected
           replace_user(current_user, target_user)
           set_current_user(target_user)
           current_user.add_token() # Logging in via email token is dangerous, so we'll only allow it once per token          
-          # CurrentUserController.update_roles_and_permissions()
+          current_user.update_roles_and_permissions
         end
 
         if !params.has_key?('nvn')

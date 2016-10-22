@@ -94,4 +94,8 @@ class SamlController < ApplicationController
   def get_url_base
     "#{request.protocol}#{request.host_with_port}"
   end
+
+  def log (what)
+    write_to_log({:what => what, :where => request.fullpath, :details => nil})
+  end
 end

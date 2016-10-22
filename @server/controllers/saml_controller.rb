@@ -3,6 +3,7 @@ require 'securerandom'
 require 'uri'
 
 class SamlController < ApplicationController
+  skip_before_action :verify_authenticity_token, :only => [:acs]
 
   def sso
     session[:redirect_subdomain] = params[:subdomain]
@@ -26,7 +27,6 @@ class SamlController < ApplicationController
 
     settings = User.get_saml_settings(get_url_base, session[:sso_domain])
     response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings)
-
     if response.is_valid?
       session[:nameid] = response.nameid
       session[:attributes] = response.attributes

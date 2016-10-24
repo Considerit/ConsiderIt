@@ -76,10 +76,10 @@ class SamlController < ApplicationController
         uri = URI(session[:redirect_back_to])
       else
         # TODO REMOVE!!!!! For Nathan testing
-        uri = URI('/')
+        uri = URI('/?q=testing')
       end
 
-      uri.query = {:u => user.email, :t => token}.to_query
+      uri.query = {:u => user.email, :t => token}.to_query + '&' + uri.query.to_s
       redirect_to uri.to_s
     else
       log("Response Invalid from IdP. Errors: #{response.errors}")

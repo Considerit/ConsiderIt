@@ -7,14 +7,14 @@ class SamlController < ApplicationController
 
   def sso
     session[:redirect_subdomain] = params[:subdomain]
-    session[:sso_domain] = sso_domain = params[:domain]
-    if !sso_domain
-      raise 'No SSO domain specified'
+    session[:sso_idp] = sso_idp = params[:sso_idp]
+    if !sso_idp
+      raise 'No SSO IdP specified'
     end
 
     session[:redirect_back_to] = request.referer
     
-    settings = User.get_saml_settings(get_url_base, sso_domain)
+    settings = User.get_saml_settings(get_url_base, sso_idp)
     if settings.nil?
       raise "No IdP Settings!"
     end
@@ -25,7 +25,7 @@ class SamlController < ApplicationController
   def acs
     errors = []
 
-    settings = User.get_saml_settings(get_url_base, session[:sso_domain])
+    settings = User.get_saml_settings(get_url_base, session[:sso_idp])
     response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings)
     if response.is_valid?
       session[:nameid] = response.nameid
@@ -86,7 +86,7 @@ class SamlController < ApplicationController
   def metadata
     # TODO: when is this method called?
     #       The below assumes that #sso was called in this session
-    settings = User.get_saml_settings(get_url_base, session[:sso_domain])
+    settings = User.get_saml_settings(get_url_base, session[:sso_idp])
     meta = OneLogin::RubySaml::Metadata.new
     render :xml => meta.generate(settings, true)
   end

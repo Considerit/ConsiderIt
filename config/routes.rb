@@ -38,7 +38,7 @@ ConsiderIt::Application.routes.draw do
   get "/create_subdomain" => 'subdomain#create'
 
   # SAML for Development
-  get 'saml/sso/:domain/:subdomain' => 'saml#sso', :constraints => IsSAMLRoute.new 
+  get 'saml/sso/:sso_idp/:subdomain' => 'saml#sso', :constraints => IsSAMLRoute.new 
   post 'saml/acs' => 'saml#acs', :constraints => IsSAMLRoute.new 
   get 'saml/metadata' => 'saml#metadata', :constraints => IsSAMLRoute.new 
 

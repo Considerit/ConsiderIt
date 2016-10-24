@@ -2012,7 +2012,7 @@ Root = ReactiveComponent
       # state transition components
       AuthTransition()
       LocationTransition()
-
+      HomepageTabTransition()
       BrowserLocation()
 
       if !subdomain.name

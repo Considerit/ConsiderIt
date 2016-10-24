@@ -79,6 +79,9 @@ window.cluster_styles = ->
   [first_column, secnd_column, first_header, secnd_header]
 
 
+window.HomepageTabUrlReflector = ReactiveComponent
+  displayName: "HomepageTabUrlReflector"
+
 window.TagHomepage = ReactiveComponent
   displayName: 'TagHomepage'
 
@@ -187,8 +190,6 @@ window.SimpleHomepage = ReactiveComponent
         collapsed.clusters[cluster.key] = 1
       save collapsed
 
-    console.log clusters
-
     has_proposal_sort = customization('homepage_show_search_and_sort') && proposals.proposals.length > 10
 
     DIV
@@ -253,23 +254,51 @@ window.SimpleHomepage = ReactiveComponent
 
 
 
+window.HomepageTabTransition = ReactiveComponent
+  displayName: "HomepageTabTransition"
+
+  render: -> 
+    if customization('homepage_tabs')
+      loc = fetch 'location'
+      homepage_tab = fetch('homepage_tabs')
+      filters = ([k,v] for k,v of customization('homepage_tabs'))
+
+      if !customization('homepage_tabs_no_show_all')
+        filters.unshift ["Show all", '*']
+
+      homepage_tabs = fetch 'homepage_tabs'
+      if !homepage_tabs.filter?
+        if loc.query_params.tab
+          homepage_tab.filter = decodeURI loc.query_params.tab
+        else 
+          homepage_tabs.filter = customization('homepage_default_tab') or 'Show all'
+        for [filter, clusters] in filters 
+          if filter == homepage_tabs.filter
+            homepage_tabs.clusters = clusters
+            break 
+        save homepage_tabs
+
+      if loc.url != '/' && loc.query_params.tab
+        delete loc.query_params.tab
+        save loc
+      else if loc.url == '/' && loc.query_params.tab != homepage_tab.filter 
+        loc.query_params.tab = homepage_tab.filter
+        save loc
+
+
+
+    SPAN null
+
+
 window.HomepageTabs = ReactiveComponent
   displayName: 'HomepageTabs'
 
   render: -> 
-    filters = ([k,v] for k,v of customization('homepage_tabs'))
-
-    if !customization('homepage_tabs_no_show_all')
-      filters.unshift ["Show all", '*']
 
     homepage_tabs = fetch 'homepage_tabs'
-    if !homepage_tabs.filter?
-      homepage_tabs.filter = customization('homepage_default_tab') or 'Show all'
-      for [filter, clusters] in filters 
-        if filter == homepage_tabs.filter
-          homepage_tabs.clusters = clusters
-          break 
-      save homepage_tabs
+    filters = ([k,v] for k,v of customization('homepage_tabs'))
+    if !customization('homepage_tabs_no_show_all')
+      filters.unshift ["Show all", '*']
 
     subdomain = fetch('/subdomain')
 

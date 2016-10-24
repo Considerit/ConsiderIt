@@ -72,9 +72,14 @@ class SamlController < ApplicationController
       end 
 
       token = user.auth_token Subdomain.find_by_name(session[:redirect_subdomain])
-      uri = URI(session[:redirect_back_to])
-      uri.query ||= '?'
-      uri.query += [user.email, token].join('&')
+      if session[:redirect_back_to]
+        uri = URI(session[:redirect_back_to])
+      else
+        # TODO REMOVE!!!!! For Nathan testing
+        uri = URI('/')
+      end
+
+      uri.query = {:u => user.email, :t => token}.to_query
       redirect_to uri.to_s
     else
       log("Response Invalid from IdP. Errors: #{response.errors}")

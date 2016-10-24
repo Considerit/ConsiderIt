@@ -96,9 +96,11 @@ protected
       if rq.subdomain.nil? || rq.subdomain.length == 0
         candidate_subdomain = nil 
 
-        if Rails.env.development? && rq.host.split('.').length == 2
+        if Rails.env.development? && rq.host.split('.').length > 1
           candidate_subdomain = Subdomain.find_by_name(rq.host.split('.')[0])
-        else 
+        end 
+
+        if !candidate_subdomain 
           begin
             candidate_subdomain = Subdomain.find(default_subdomain)
           rescue ActiveRecord::RecordNotFound
@@ -110,7 +112,7 @@ protected
             candidate_subdomain = Subdomain.first
           end
         end
-      elsif !candidate_subdomain
+      else
         candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
       end
 

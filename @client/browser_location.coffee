@@ -27,21 +27,18 @@ window.loadPage = (url, query_params) ->
   loc = fetch('location')
   loc.query_params = query_params or {}
 
-  # if the url has query parameters, parse and merge them into params
-  if url.indexOf('?') > -1
-    [url, query_params] = url.split('?')
+  url_parts = parseURL "#{location.origin}#{url}" 
 
-    for query_param in query_params.split('&')
-      query_param = query_param.split('=')
-      if query_param.length == 2
-        loc.query_params[query_param[0]] = query_param[1]
+  # if the url has query parameters, parse and merge them into params
+  for k,v of url_parts.searchObject when k.length > 0
+    loc.query_params[k] = v
+
+  loc.query_params = url_parts.searchObject
 
   # ...and parse anchors
-  hash = ''
-  if url.indexOf('#') > -1
-    [url, hash] = url.split('#')
-    url = '/' if url == ''
-
+  hash = url_parts.hash
+  if hash && hash.length > 0 
+    hash = hash.substring(1)
     # When loading a page with a hash, we need to scroll the page
     # to proper element represented by that id. This is hard to 
     # represent in Statebus, as it is more of an event than state.
@@ -49,7 +46,7 @@ window.loadPage = (url, query_params) ->
     # after it is processed. 
     loc.seek_to_hash = hash
 
-  loc.url = url
+  loc.url = url_parts.pathname
   loc.hash = hash
 
   save loc

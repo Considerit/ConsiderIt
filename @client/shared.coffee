@@ -456,6 +456,30 @@ window.closest = (node, check) ->
     check(node) || closest(node.parentNode, check)
 
 
+window.parseURL = (url) ->
+  parser = document.createElement('a')
+  searchObject = {}
+
+  parser.href = url
+  queries = parser.search.replace(/^\?/, '').split('&')
+  i = 0
+  while i < queries.length
+    if queries[i].length > 0
+      split = queries[i].split('=')
+      searchObject[split[0]] = split[1]
+    i++
+  {
+    protocol: parser.protocol
+    host: parser.host
+    hostname: parser.hostname
+    port: parser.port
+    pathname: parser.pathname
+    search: parser.search
+    searchObject: searchObject
+    hash: parser.hash
+  }
+
+
 
 ##############################
 ## Styles

@@ -151,7 +151,7 @@ window.EditProposal = ReactiveComponent
         #       style: 
         #         fontSize: 20
         #         color: '#aaa'
-        #       "#{location.origin}/"
+        #       "#{location_origin()}/"
         #     INPUT 
         #       id:'slug'
         #       name:'slug'

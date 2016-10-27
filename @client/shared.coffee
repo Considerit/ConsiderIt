@@ -456,11 +456,20 @@ window.closest = (node, check) ->
     check(node) || closest(node.parentNode, check)
 
 
+window.location_origin = ->
+  if !window.location.origin
+    "#{window.location.protocol}//#{window.location.hostname}#{if window.location.port then ':' + window.location.port else ''}"
+  else 
+    window.location.origin
+
 window.parseURL = (url) ->
   parser = document.createElement('a')
-  searchObject = {}
-
   parser.href = url
+
+  pathname = parser.pathname or '/'
+  if pathname[0] != '/'
+    pathname = "/#{pathname}"
+  searchObject = {}
   queries = parser.search.replace(/^\?/, '').split('&')
   i = 0
   while i < queries.length
@@ -468,12 +477,13 @@ window.parseURL = (url) ->
       split = queries[i].split('=')
       searchObject[split[0]] = split[1]
     i++
+
   {
     protocol: parser.protocol
     host: parser.host
     hostname: parser.hostname
     port: parser.port
-    pathname: parser.pathname
+    pathname: pathname
     search: parser.search
     searchObject: searchObject
     hash: parser.hash

@@ -27,9 +27,9 @@ window.loadPage = (url, query_params) ->
   loc = fetch('location')
   loc.query_params = query_params or {}
 
-  url_parts = parseURL "#{location.origin}#{url}" 
-
+  url_parts = parseURL "#{location_origin()}#{url}" 
   # if the url has query parameters, parse and merge them into params
+
   for k,v of url_parts.searchObject when k.length > 0
     loc.query_params[k] = v
 

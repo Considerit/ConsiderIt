@@ -333,23 +333,24 @@ window.HomepageTabs = ReactiveComponent
               color: 'white'
               opacity: if hovering || current then 1 else .8
 
-            if subdomain.name == 'dao'
+            if subdomain.name in ['dao', 'BITNATION']
               _.extend tab_style, 
                 padding: '10px 30px 4px 30px'
                 color: if current then 'black' else if hovering then '#F8E71C' else 'white'
                 backgroundColor: if current then 'white'
                 borderRadius: '16px 16px 0 0'
-                borderLeft: if current then "2px solid #F8E71C"
-                borderTop: if current then "2px solid #F8E71C"
-                borderRight: if current then "2px solid #F8E71C"
+                border: '2px solid'
+                borderBottom: 'none'
+                borderColor: if current then '#F8E71C' else 'transparent'
+
             else if subdomain.name == 'HALA'
               _.extend tab_style, 
                 padding: '10px 30px 0px 30px'
                 color: if current then 'black' else if hovering then '#000' else 'white'
                 backgroundColor: if current then 'white'
-                borderLeft: if current then "1px solid #000"
-                borderTop: if current then "1px solid #000"
-                borderRight: if current then "1px solid #000"
+                border: '1px solid'
+                borderBottom: 'none'
+                borderColor: if current then '#000' else 'transparent'
 
             else if subdomain.name == 'bradywalkinshaw'
               _.extend tab_style, 

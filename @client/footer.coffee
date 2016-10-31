@@ -83,7 +83,7 @@ window.DefaultFooter = ReactiveComponent
               href: "mailto:admin@consider.it"
 
               'Talk to us'
-              ' at admin@consider.it'
+              ' at hello@consider.it'
 
           separator
 
@@ -114,7 +114,7 @@ window.DefaultFooter = ReactiveComponent
                 color: logo_red
               href: "https://consider.it"
 
-              'Create your own consider.it project'
+              'Create your own consider.it forum'
 
 
 

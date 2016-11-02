@@ -162,7 +162,11 @@ window.Metrics = ReactiveComponent
           if !@local.sort_contributions_by?
             @local.sort_contributions_by = 'year'
 
-          contributions.sort (a,b) => b[1][@local.sort_contributions_by] - a[1][@local.sort_contributions_by]
+          contributions.sort (a,b) => 
+            if @local.sort_contributions_by in ['opinions_per_subdomain', 'opinions_and_inclusions_per_subdomain']
+              metrics[@local.sort_contributions_by][b[0]] - metrics[@local.sort_contributions_by][a[0]]
+            else 
+              b[1][@local.sort_contributions_by] - a[1][@local.sort_contributions_by]
 
           sort_on_click = (e) =>
             @local.sort_contributions_by = e.currentTarget.getAttribute('data-time')
@@ -183,6 +187,8 @@ window.Metrics = ReactiveComponent
                   textAlign: 'right'
                   cursor: 'default'
                 'Name'
+              TH onClick: sort_on_click, 'data-time': 'opinions_per_subdomain', style: th_style, 'Opinions'
+              TH onClick: sort_on_click, 'data-time': 'opinions_and_inclusions_per_subdomain', style: th_style, '+inclusions'              
               TH onClick: sort_on_click, 'data-time': 'active', style: th_style, 'Days active'
               TH onClick: sort_on_click, 'data-time': 'lifetime', style: th_style, 'Lifetime'
               TH onClick: sort_on_click, 'data-time': 'year', style: th_style, 'Past year'
@@ -208,6 +214,8 @@ window.Metrics = ReactiveComponent
                       overflow: 'hidden'
                     fetch("/subdomain/#{subdomain}").name 
 
+                TD style: td_style, metrics.opinions_per_subdomain[subdomain]
+                TD style: td_style, metrics.opinions_and_inclusions_per_subdomain[subdomain]
                 TD style: td_style, contributors.active
                 TD style: td_style, contributors.lifetime
                 TD style: td_style, contributors.year

@@ -173,7 +173,7 @@ class SubdomainController < ApplicationController
 
 
     # TODO: put this in database
-    demo_subs = ["galacticfederation", "MSNBC","washingtonpost","MsTimberlake","design","Relief-Demo","sosh","GS-Demo","impacthub-demo","librofm","bitcoin-demo","amberoon","SocialSecurityWorks","Airbdsm","event","lyftoff","Schools","ANUP2015","CARCD-demo","news","Committee-Meeting","Cattaca","AMA-RFS","economist","ITFeedback","kevin","program-committee-demo","ECAST-Demo"]
+    demo_subs = ["swotconsultants", "galacticfederation", "MSNBC","washingtonpost","MsTimberlake","design","Relief-Demo","sosh","GS-Demo","impacthub-demo","librofm","bitcoin-demo","amberoon","SocialSecurityWorks","Airbdsm","event","lyftoff","Schools","ANUP2015","CARCD-demo","news","Committee-Meeting","Cattaca","AMA-RFS","economist","ITFeedback","kevin","program-committee-demo","ECAST-Demo"]
     skip_subs = {}
     demo_subs.each {|s| skip_subs[s] = 1}
     bad_subs = {}

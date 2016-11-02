@@ -178,6 +178,9 @@ class SubdomainController < ApplicationController
     demo_subs.each {|s| skip_subs[s] = 1}
     bad_subs = {}
 
+    opinions_per_subdomain = {}
+    opinions_and_inclusions_per_subdomain = {}
+
     ActsAsTenant.without_tenant do 
       fake_users = {}
       fake = User.where("name like 'Fake User%' OR (active_in like '%2034%' AND (name like 'Public %' OR name like 'Community Member %' OR name like 'Stakeholder Working Group %' or name like 'Technical Advisory Committee Member %'))")
@@ -187,13 +190,37 @@ class SubdomainController < ApplicationController
 
       contribution_tables = [Proposal, Comment, Point, Opinion]
       contribution_tables.each do |table|
-        qry = table.select(:created_at, :user_id, :subdomain_id)
+        if table == Opinion 
+          qry = table.select(:created_at, :user_id, :subdomain_id, :point_inclusions)
+        else 
+          qry = table.select(:created_at, :user_id, :subdomain_id)
+        end
         if [Point,Opinion,Proposal].include? table 
           qry = qry.where(:published => true)
         end 
 
         qry.each do |item|
           next if fake_users.has_key?(item.user_id) || !item.subdomain || skip_subs.has_key?(item.subdomain.name)
+
+          if item.class == Opinion 
+            if !opinions_per_subdomain.has_key?(item.subdomain_id)
+              opinions_per_subdomain[item.subdomain_id] = 0 
+            end
+
+            if !opinions_and_inclusions_per_subdomain.has_key?(item.subdomain_id)
+              opinions_and_inclusions_per_subdomain[item.subdomain_id] = 0 
+            end
+            opinions_per_subdomain[item.subdomain_id] += 1
+            opinions_and_inclusions_per_subdomain[item.subdomain_id] += 1
+            
+            begin 
+              inclusions = item.point_inclusions
+              inc = JSON.parse((item.point_inclusions || '[]'))
+              opinions_and_inclusions_per_subdomain[item.subdomain_id] += inc.length
+            rescue 
+              puts 'rescued' #, item.class, item
+            end 
+          end
 
           days_since = (now - item.created_at.to_datetime).to_i
 
@@ -286,7 +313,9 @@ class SubdomainController < ApplicationController
       :key => '/metrics',
       :daily_active_contributors => active_contributors.reverse(),
       :daily_active_subdomains => active_subs.reverse(),
-      :contributors_per_subdomain => contributors_per_subdomain
+      :contributors_per_subdomain => contributors_per_subdomain, 
+      :opinions_per_subdomain => opinions_per_subdomain,
+      :opinions_and_inclusions_per_subdomain => opinions_and_inclusions_per_subdomain
     }
 
 

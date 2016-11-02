@@ -6,8 +6,8 @@ class SamlController < ApplicationController
   skip_before_action :verify_authenticity_token, :only => [:acs]
 
   def sso
-    session[:redirect_subdomain] = params[:subdomain]
-    session[:sso_idp] = sso_idp = params[:sso_idp]
+    session[:redirect_subdomain] = params[:subdomain].downcase
+    session[:sso_idp] = sso_idp = params[:sso_idp].downcase
     if !sso_idp
       raise 'No SSO IdP specified'
     end
@@ -15,19 +15,33 @@ class SamlController < ApplicationController
     session[:redirect_back_to] = request.referer
     
     settings = User.get_saml_settings(get_url_base, sso_idp)
+
     if settings.nil?
       raise "No IdP Settings!"
     end
     req = OneLogin::RubySaml::Authrequest.new
-    redirect_to(req.create(settings))
+    if session[:sso_idp] == 'dtu'
+      # link for ADSF for DTU. Some versions of ADFS allow SSO initiated login and some do not. 
+      # Self generating the link for IdP initiated login here to sidestep issue
+      dtu_adsf = "https://sts.ait.dtu.dk/adfs/ls/idpinitiatedsignon.aspx?loginToRp=https://saml_auth.consider.it/saml/dtu"
+      redirect_to(dtu_adsf)
+    else
+      redirect_to(req.create(settings))
+    end
   end
 
   def acs
     errors = []
 
+    # TODO NATHAN REMOVE, FOR TESTING DTU LOCALLY
+    #session[:sso_idp] = 'dtu'
+    #puts session[:sso_idp]
+
     settings = User.get_saml_settings(get_url_base, session[:sso_idp])
+
     response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings)
     if response.is_valid?
+
       session[:nameid] = response.nameid
       session[:attributes] = response.attributes
       @attrs = session[:attributes]

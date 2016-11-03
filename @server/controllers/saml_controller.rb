@@ -12,8 +12,12 @@ class SamlController < ApplicationController
       raise 'No SSO IdP specified'
     end
 
-    session[:redirect_back_to] = request.referer
-    
+    if params.has_key?('redirect')  
+      session[:redirect_back_to] = params['redirect'] 
+    else 
+      session[:redirect_back_to] = request.referer
+    end
+
     settings = User.get_saml_settings(get_url_base, sso_idp)
 
     if settings.nil?

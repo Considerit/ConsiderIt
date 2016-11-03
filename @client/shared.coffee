@@ -348,7 +348,7 @@ window.reset_key = (obj_or_key, updates) ->
   save obj_or_key
 
 
-window.splitParagraphs = (user_content) ->
+window.splitParagraphs = (user_content, append) ->
   if !user_content
     return SPAN null
     
@@ -368,7 +368,7 @@ window.splitParagraphs = (user_content) ->
   user_content = user_content.replace(hyperlink_pattern, "$1(*-&)link:$2(*-&)")
   paragraphs = user_content.split(/(?:\r?\n)/g)
 
-  for para,idx in paragraphs
+  for para,pidx in paragraphs
     P key: "para-#{idx}", 
       # now split around all links
       for text,idx in para.split '(*-&)'
@@ -377,6 +377,9 @@ window.splitParagraphs = (user_content) ->
             text.substring(5, text.length)
         else  
           SPAN key: idx, text
+
+      if append && pidx == paragraphs.length - 1
+        append
 
 # Computes the width of some text given some styles empirically
 width_cache = {}

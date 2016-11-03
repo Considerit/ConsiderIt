@@ -105,7 +105,7 @@ window.Point = ReactiveComponent
 
 
     if expand_to_see_details
-      select_enticement.push DIV key: 1,
+      select_enticement.push SPAN key: 1,
         if is_selected
           "read less"
         else
@@ -117,7 +117,7 @@ window.Point = ReactiveComponent
           ]
 
     if point.comment_count > 0 || !expand_to_see_details
-      select_enticement.push DIV key: 2, style: {whiteSpace: 'nowrap'},
+      select_enticement.push SPAN key: 2, style: {whiteSpace: 'nowrap'},
         A 
           className: 'select_point'
           point.comment_count 
@@ -125,7 +125,7 @@ window.Point = ReactiveComponent
           if point.comment_count != 1 then t('comments') else t('comment')
 
     if point.assessment
-      select_enticement.push DIV key: 3,
+      select_enticement.push SPAN key: 3,
         I
           className: 'fa fa-search'
           title: 'Click to read a fact-check of this point'
@@ -255,13 +255,20 @@ window.Point = ReactiveComponent
 
             if @props.rendered_as == 'under_review'
               splitParagraphs(point.text)
+              
+              
 
-            if select_enticement && @props.rendered_as != 'under_review'
+            if @props.rendered_as != 'under_review'
               DIV 
                 style: 
                   fontSize: 12
 
-                select_enticement
+                prettyDate(point.created_at)
+
+                if select_enticement
+                  [', ', select_enticement]
+
+
 
         DIV null,
           if permit('update point', point) > 0 && 

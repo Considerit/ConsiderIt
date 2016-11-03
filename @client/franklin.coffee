@@ -1829,8 +1829,6 @@ LocationTransition = ReactiveComponent
 
       if loc.url == '/edit_profile' && auth.form != 'edit profile'
         reset_key auth, {form: 'edit profile', ask_questions: true}
-      else if loc.url == '/edit_saml_profile' && auth.form != 'edit saml profile'
-        reset_key auth, {form: 'edit saml profile', ask_questions: true}
       else if auth.form
         reset_key auth
 
@@ -1886,9 +1884,13 @@ AuthTransition = ReactiveComponent
 
       reset_key 'auth',
         key: 'auth'
-        form: if subdomain.SSO_domain then 'edit saml profile' else 'create account via invitation'
+        form: if subdomain.SSO_domain then 'edit profile' else 'create account via invitation'
         goal: 'Complete registration'
         ask_questions: true
+
+      if subdomain.SSO_domain
+        loadPage '/edit_profile'
+        
     else if current_user.needs_to_verify && !window.send_verification_token
       current_user.trying_to = 'send_verification_token'
       save current_user

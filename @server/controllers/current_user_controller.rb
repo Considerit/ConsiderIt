@@ -23,7 +23,7 @@ class CurrentUserController < ApplicationController
 
 
     if !params.has_key?(:trying_to) || !params[:trying_to] ||
-          params[:trying_to] == 'update_avatar_hack' || params[:trying_to] == 'edit saml profile' 
+          params[:trying_to] == 'update_avatar_hack' 
       trying_to = 'edit profile'    
     else
       trying_to = params[:trying_to]
@@ -226,11 +226,11 @@ class CurrentUserController < ApplicationController
           errors.append 'You lack permission to switch users'
         end
 
-      when 'edit profile', 'edit saml profile'
+      when 'edit profile'
         update_user_attrs 'edit profile', errors
         try_update_password 'edit profile', errors
         log('updating info')
-        
+
         # if this user was created via SAML, note that
         # they've gone through the registration process
         if current_user.complete_profile

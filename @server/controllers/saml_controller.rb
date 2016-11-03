@@ -39,7 +39,7 @@ class SamlController < ApplicationController
 
     settings = User.get_saml_settings(get_url_base, session[:sso_idp])
 
-    response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings)
+    response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings, :allowed_clock_drift => 60.second)
     if response.is_valid?
 
       session[:nameid] = response.nameid

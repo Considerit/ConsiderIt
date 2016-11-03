@@ -226,10 +226,18 @@ class CurrentUserController < ApplicationController
           errors.append 'You lack permission to switch users'
         end
 
-      when 'edit profile'
+      when 'edit profile', 'edit saml profile'
         update_user_attrs 'edit profile', errors
         try_update_password 'edit profile', errors
         log('updating info')
+        
+        # if this user was created via SAML, note that
+        # they've gone through the registration process
+        if current_user.complete_profile
+          current_user.complete_profile = false
+          current_user.save
+        end
+
 
       when 'user questions'
         update_user_attrs 'user questions', errors

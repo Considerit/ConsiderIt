@@ -38,8 +38,6 @@ class SamlController < ApplicationController
     errors = []
 
     # TODO NATHAN REMOVE, FOR TESTING DTU LOCALLY
-    #session[:sso_idp] = 'dtu'
-    #puts session[:sso_idp]
 
     settings = User.get_saml_settings(get_url_base, session[:sso_idp])
 

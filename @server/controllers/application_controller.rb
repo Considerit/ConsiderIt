@@ -60,9 +60,9 @@ class ApplicationController < ActionController::Base
 
   def initiate_saml_auth(sso_domain = nil)
     sso_domain ||= current_subdomain.SSO_domain
-
-    redirect = URI.encode("#{request.protocol}#{request.host_with_port}#{request.fullpath}")
-    redirect_to "#{request.protocol}saml_auth.#{request.domain()}/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
+    redirect = CGI::escape("#{request.protocol}#{request.host_with_port}#{request.fullpath}")
+    #redirect_to "#{request.protocol}saml_auth.#{request.domain()}/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
+    redirect_to "#{request.protocol}saml_auth.consider.it/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
   end
 
 protected

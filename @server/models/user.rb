@@ -588,7 +588,7 @@ plfUJ9UwDhWH+xPo
       settings.security[:digest_method] = XMLSecurity::Document::SHA1
       settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
 
-    elsif Rails.env.development? || sso_idp == 'standardminds'
+    elsif sso_idp == 'standardminds'
       # IdP section for Onelogin IDP used in development
       settings.idp_entity_id                  = "https://app.onelogin.com/saml/metadata/585764"
       settings.idp_sso_target_url             = "https://standardminds-dev.onelogin.com/trust/saml2/http-post/sso/585764"

@@ -103,19 +103,6 @@ window.Point = ReactiveComponent
 
     select_enticement = []
 
-
-    if expand_to_see_details
-      select_enticement.push SPAN key: 1,
-        if is_selected
-          "read less"
-        else
-          [SPAN key: 1, dangerouslySetInnerHTML: {__html: '&hellip;'}
-          #' ('
-          A key: 2, className: 'select_point',
-            t("read_more")
-          #')'
-          ]
-
     if point.comment_count > 0 || !expand_to_see_details
       select_enticement.push SPAN key: 2, style: {whiteSpace: 'nowrap'},
         A 
@@ -163,6 +150,17 @@ window.Point = ReactiveComponent
     includers_style[left_or_right] = ioffset
 
     draw_all_includers = @props.rendered_as == 'community_point' || (@props.rendered_as != 'under_review' && TWO_COL())
+
+    if expand_to_see_details && !is_selected
+      append = SPAN 
+        key: 1
+        style:
+          fontSize: 10
+          color: '#888'
+        " (#{t("read_more")})"
+    else 
+      append = null
+
     LI
       key: "point-#{point.id}"
       'data-id': @props.key
@@ -232,7 +230,9 @@ window.Point = ReactiveComponent
           DIV 
             className: 'point_nutshell'
 
-            splitParagraphs point.nutshell
+            splitParagraphs point.nutshell, append
+
+
 
           DIV 
             id: "point-aria-interaction-#{point.id}"
@@ -265,7 +265,7 @@ window.Point = ReactiveComponent
 
                 prettyDate(point.created_at)
 
-                if select_enticement
+                if select_enticement.length > 0
                   [', ', select_enticement]
 
 

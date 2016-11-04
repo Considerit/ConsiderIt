@@ -458,10 +458,10 @@ class User < ActiveRecord::Base
 
     if sso_idp =='dtu'
       # Hack for DTU b/c they use a case sensitive ADSF based on application name
-      dtu_url_base = "https://saml_auth.Consider.it"
+      dtu_url_base = "https://saml-auth.Consider.it"
       settings.issuer                         = dtu_url_base + "/saml/dtu"
       # assertion_consumer_service_url should stay lower case
-      settings.assertion_consumer_service_url                  = "https://saml_auth.consider.it/saml/acs"
+      settings.assertion_consumer_service_url                  = "https://saml-auth.consider.it/saml/acs"
       settings.assertion_consumer_logout_service_url = dtu_url_base + "/saml/logout"
     else
       settings.issuer                         = url_base + "/saml/metadata"

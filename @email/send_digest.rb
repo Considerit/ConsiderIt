@@ -4,7 +4,7 @@ BUFFER = 5 * 60
 def send_digest(subdomain, user, notifications, subscription_settings, deliver = true, since = nil)
   
   send_emails = subscription_settings['send_emails']
-  return if !send_emails || !due_for_notification(user, subdomain)
+  return if !send_emails || !due_for_notification(user, subdomain) || subdomain.name == 'galacticfederation'
 
   ####
   # Check notifications to determine if a valid triggering event occurred

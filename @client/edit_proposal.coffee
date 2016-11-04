@@ -142,26 +142,26 @@ window.EditProposal = ReactiveComponent
               t('error_free')
             '.'
 
-        if fetch('/current_user').is_admin
-          DIV style: block_style,
-            LABEL htmlFor:'slug', style: label_style, 'URL:'
+        # if fetch('/current_user').is_admin
+        #   DIV style: block_style,
+        #     LABEL htmlFor:'slug', style: label_style, 'URL:'
 
-            BR null
-            SPAN
-              style: 
-                fontSize: 20
-                color: '#aaa'
-              "#{location.origin}/"
-            INPUT 
-              id:'slug'
-              name:'slug'
-              pattern:'^.{3,}'
-              placeholder: t('url_instr')
-              required:'required'
-              defaultValue: if @props.fresh then null else proposal.slug
-              style: _.extend {}, input_style,
-                width: 400
-                display: 'inline-block'
+        #     BR null
+        #     SPAN
+        #       style: 
+        #         fontSize: 20
+        #         color: '#aaa'
+        #       "#{location_origin()}/"
+        #     INPUT 
+        #       id:'slug'
+        #       name:'slug'
+        #       pattern:'^.{3,}'
+        #       placeholder: t('url_instr')
+        #       required:'required'
+        #       defaultValue: if @props.fresh then null else proposal.slug
+        #       style: _.extend {}, input_style,
+        #         width: 400
+        #         display: 'inline-block'
 
         DIV style: block_style,
           LABEL htmlFor:'name', style: label_style, t('Summary') + ':'
@@ -423,7 +423,7 @@ window.EditProposal = ReactiveComponent
     name = $el.find('#name').val()
     description = fetch("description-#{@data().key}").html
 
-    slug = $el.find('#slug').val() or slugify(name)
+    slug = slugify(name)
 
     cluster = $el.find('#cluster').val()
     cluster = null if cluster == ""

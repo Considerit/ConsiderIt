@@ -35,7 +35,7 @@ window.namespaced_key = (base_key, base_object) ->
   "#{namespace_key}_#{base_key}"
 
 proposal_link = (proposal, results) -> 
-  "#{location.origin}/#{proposal.slug}#{if results then '?results=true' else ''}"
+  "#{location_origin()}/#{proposal.slug}#{if results then '?results=true' else ''}"
 
 
 window.opinionsForProposal = (proposal) ->       

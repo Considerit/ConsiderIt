@@ -48,7 +48,7 @@ class Subdomain < ActiveRecord::Base
     end
 
     if self.customizations 
-      str = self.customizations.gsub '"', '\\"'
+      str = self.customizations.gsub('"', '\\"').gsub('$', '\\$')
       if current_user.super_admin
         json['customizations'] = self.customizations
       end 

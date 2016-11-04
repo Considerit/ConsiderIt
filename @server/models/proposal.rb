@@ -30,14 +30,16 @@ class Proposal < ActiveRecord::Base
       self.description_fields = self.description_fields || '[]' 
     end
 
-    # Sanitize description
-    self.description = sanitize_helper(self.description)
-    # Sanitize description_fields[i].html
-    self.description_fields =
-      JSON.dump(JSON.parse(self.description_fields || '{}').map { |field|
-                  field['html'] = sanitize_helper(field['html'])
-                  field
-                })    
+    if current_user && !current_user.is_admin?
+      # Sanitize description
+      self.description = sanitize_helper(self.description)
+      # Sanitize description_fields[i].html
+      self.description_fields =
+        JSON.dump(JSON.parse(self.description_fields || '{}').map { |field|
+                    field['html'] = sanitize_helper(field['html'])
+                    field
+                  })    
+    end
   end
 
   

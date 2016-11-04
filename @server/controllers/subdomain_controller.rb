@@ -213,10 +213,13 @@ class SubdomainController < ApplicationController
 
 
     # TODO: put this in database
-    demo_subs = ["galacticfederation", "MSNBC","washingtonpost","MsTimberlake","design","Relief-Demo","sosh","GS-Demo","impacthub-demo","librofm","bitcoin-demo","amberoon","SocialSecurityWorks","Airbdsm","event","lyftoff","Schools","ANUP2015","CARCD-demo","news","Committee-Meeting","Cattaca","AMA-RFS","economist","ITFeedback","kevin","program-committee-demo","ECAST-Demo"]
+    demo_subs = ["swotconsultants", "galacticfederation", "MSNBC","washingtonpost","MsTimberlake","design","Relief-Demo","sosh","GS-Demo","impacthub-demo","librofm","bitcoin-demo","amberoon","SocialSecurityWorks","Airbdsm","event","lyftoff","Schools","ANUP2015","CARCD-demo","news","Committee-Meeting","Cattaca","AMA-RFS","economist","ITFeedback","kevin","program-committee-demo","ECAST-Demo"]
     skip_subs = {}
     demo_subs.each {|s| skip_subs[s] = 1}
     bad_subs = {}
+
+    opinions_per_subdomain = {}
+    opinions_and_inclusions_per_subdomain = {}
 
     ActsAsTenant.without_tenant do 
       fake_users = {}
@@ -227,13 +230,36 @@ class SubdomainController < ApplicationController
 
       contribution_tables = [Proposal, Comment, Point, Opinion]
       contribution_tables.each do |table|
-        qry = table.select(:created_at, :user_id, :subdomain_id)
+        if table == Opinion 
+          qry = table.select(:created_at, :user_id, :subdomain_id, :point_inclusions)
+        else 
+          qry = table.select(:created_at, :user_id, :subdomain_id)
+        end
         if [Point,Opinion,Proposal].include? table 
           qry = qry.where(:published => true)
         end 
 
         qry.each do |item|
           next if fake_users.has_key?(item.user_id) || !item.subdomain || skip_subs.has_key?(item.subdomain.name)
+
+          if item.class == Opinion 
+            if !opinions_per_subdomain.has_key?(item.subdomain_id)
+              opinions_per_subdomain[item.subdomain_id] = 0 
+            end
+
+            if !opinions_and_inclusions_per_subdomain.has_key?(item.subdomain_id)
+              opinions_and_inclusions_per_subdomain[item.subdomain_id] = 0 
+            end
+            opinions_per_subdomain[item.subdomain_id] += 1
+            opinions_and_inclusions_per_subdomain[item.subdomain_id] += 1
+            
+            begin 
+              inc = JSON.parse((item.point_inclusions || '[]'))
+              opinions_and_inclusions_per_subdomain[item.subdomain_id] += inc.length
+            rescue 
+              puts 'rescued' #, item.class, item
+            end 
+          end
 
           days_since = (now - item.created_at.to_datetime).to_i
 
@@ -326,7 +352,9 @@ class SubdomainController < ApplicationController
       :key => '/metrics',
       :daily_active_contributors => active_contributors.reverse(),
       :daily_active_subdomains => active_subs.reverse(),
-      :contributors_per_subdomain => contributors_per_subdomain
+      :contributors_per_subdomain => contributors_per_subdomain, 
+      :opinions_per_subdomain => opinions_per_subdomain,
+      :opinions_and_inclusions_per_subdomain => opinions_and_inclusions_per_subdomain
     }
 
 

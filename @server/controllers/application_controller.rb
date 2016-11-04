@@ -82,31 +82,55 @@ protected
   def get_current_subdomain
     rq = request
 
+    def get_subdomain(str)
+
+      # IE doesn't do _ in subdomain, so we migrated away from them. This 
+      # code is migration code for some of former subdomains
+      if str.index '_'
+        redirect_to request.url.sub(str, str.gsub('_', '-'))
+        str = str.gsub('_', '-')
+      end 
+
+      candidate_subdomain = Subdomain.find_by_name(str)
+      candidate_subdomain
+    end 
+
     # when to display a considerit homepage
     can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || session[:app] == 'product_page'
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
       candidate_subdomain = Subdomain.find_by_name('homepage')
     else
       default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
+
       if rq.subdomain.nil? || rq.subdomain.length == 0
-        begin
-          candidate_subdomain = Subdomain.find(default_subdomain)
-        rescue ActiveRecord::RecordNotFound
-          # create a subdomain if one doesn't yet exist
-          if Subdomain.count == 0
-            new_subdomain = Subdomain.new name: "test", app_title: "test"
-            new_subdomain.save
+        candidate_subdomain = nil 
+
+        if Rails.env.development? && rq.host.split('.').length > 1
+          candidate_subdomain = get_subdomain(rq.host.split('.')[0])
+        end 
+
+        if !candidate_subdomain 
+          begin
+            candidate_subdomain = Subdomain.find(default_subdomain)
+          rescue ActiveRecord::RecordNotFound
+            # create a subdomain if one doesn't yet exist
+            if Subdomain.count == 0
+              new_subdomain = Subdomain.new name: "test", app_title: "test"
+              new_subdomain.save
+            end
+            candidate_subdomain = Subdomain.first
           end
-          candidate_subdomain = Subdomain.first
         end
-      else 
-        candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
+      else
+        candidate_subdomain = get_subdomain(rq.subdomain)
       end
+
     end
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain
     current_subdomain
   end
+
 
   def init_thread_globals
     # Make things to remember changes

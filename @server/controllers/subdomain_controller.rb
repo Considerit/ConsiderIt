@@ -214,7 +214,6 @@ class SubdomainController < ApplicationController
             opinions_and_inclusions_per_subdomain[item.subdomain_id] += 1
             
             begin 
-              inclusions = item.point_inclusions
               inc = JSON.parse((item.point_inclusions || '[]'))
               opinions_and_inclusions_per_subdomain[item.subdomain_id] += inc.length
             rescue 

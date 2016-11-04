@@ -106,6 +106,8 @@ window.WysiwygEditor = ReactiveComponent
     subdomain = fetch '/subdomain'
     wysiwyg_editor = fetch 'wysiwyg_editor'
 
+    @supports_Quill = Quill && new Quill()
+
     if !@local.initialized
       # We store the current value of the HTML at
       # this component's key. This allows the  
@@ -161,7 +163,7 @@ window.WysiwygEditor = ReactiveComponent
         # show_wysiwyg_toolbar state
         ev.stopPropagation()
 
-      if @local.edit_code
+      if @local.edit_code || !@supports_Quill
         AutoGrowTextArea
           style: 
             width: '100%'
@@ -268,7 +270,9 @@ window.WysiwygEditor = ReactiveComponent
           DIV 
             style: @props.container_style
             className: 'proposal_details' # for formatting like proposals 
-            
+          
+          
+
             DIV 
               id: 'editor'
               dangerouslySetInnerHTML:{__html: @props.html}
@@ -300,6 +304,7 @@ window.WysiwygEditor = ReactiveComponent
         
 
   componentDidMount : -> 
+    return if !@supports_Quill
 
     getHTML = => 
       @getDOMNode().querySelector(".ql-editor").innerHTML

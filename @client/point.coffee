@@ -103,21 +103,8 @@ window.Point = ReactiveComponent
 
     select_enticement = []
 
-
-    if expand_to_see_details
-      select_enticement.push DIV key: 1,
-        if is_selected
-          "read less"
-        else
-          [SPAN key: 1, dangerouslySetInnerHTML: {__html: '&hellip;'}
-          #' ('
-          A key: 2, className: 'select_point',
-            t("read_more")
-          #')'
-          ]
-
     if point.comment_count > 0 || !expand_to_see_details
-      select_enticement.push DIV key: 2, style: {whiteSpace: 'nowrap'},
+      select_enticement.push SPAN key: 2, style: {whiteSpace: 'nowrap'},
         A 
           className: 'select_point'
           point.comment_count 
@@ -125,7 +112,7 @@ window.Point = ReactiveComponent
           if point.comment_count != 1 then t('comments') else t('comment')
 
     if point.assessment
-      select_enticement.push DIV key: 3,
+      select_enticement.push SPAN key: 3,
         I
           className: 'fa fa-search'
           title: 'Click to read a fact-check of this point'
@@ -163,6 +150,17 @@ window.Point = ReactiveComponent
     includers_style[left_or_right] = ioffset
 
     draw_all_includers = @props.rendered_as == 'community_point' || (@props.rendered_as != 'under_review' && TWO_COL())
+
+    if expand_to_see_details && !is_selected
+      append = SPAN 
+        key: 1
+        style:
+          fontSize: 10
+          color: '#888'
+        " (#{t("read_more")})"
+    else 
+      append = null
+
     LI
       key: "point-#{point.id}"
       'data-id': @props.key
@@ -232,7 +230,9 @@ window.Point = ReactiveComponent
           DIV 
             className: 'point_nutshell'
 
-            splitParagraphs point.nutshell
+            splitParagraphs point.nutshell, append
+
+
 
           DIV 
             id: "point-aria-interaction-#{point.id}"
@@ -255,13 +255,20 @@ window.Point = ReactiveComponent
 
             if @props.rendered_as == 'under_review'
               splitParagraphs(point.text)
+              
+              
 
-            if select_enticement && @props.rendered_as != 'under_review'
+            if @props.rendered_as != 'under_review'
               DIV 
                 style: 
                   fontSize: 12
 
-                select_enticement
+                prettyDate(point.created_at)
+
+                if select_enticement.length > 0
+                  [', ', select_enticement]
+
+
 
         DIV null,
           if permit('update point', point) > 0 && 

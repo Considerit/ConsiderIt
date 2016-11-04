@@ -127,11 +127,11 @@ class ProposalController < ApplicationController
         
       if errors.length == 0
 
-        if updated_fields.has_key?('description')
+        if updated_fields.has_key?('description') && !current_user.is_admin?
           # Sanitize description
           updated_fields['description'] = sanitize_helper(updated_fields['description'])
         end 
-        if updated_fields.has_key?('description_fields')
+        if updated_fields.has_key?('description_fields') && !current_user.is_admin?
           # Sanitize description_fields[i].html
           updated_fields['description_fields'] =
             JSON.dump(JSON.parse(updated_fields['description_fields']).map { |field|

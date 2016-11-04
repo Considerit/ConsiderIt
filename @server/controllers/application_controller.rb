@@ -88,6 +88,19 @@ protected
   def get_current_subdomain
     rq = request
 
+    def get_subdomain(str)
+
+      # IE doesn't do _ in subdomain, so we migrated away from them. This 
+      # code is migration code for some of former subdomains
+      if str.index '_'
+        redirect_to request.url.sub(str, str.gsub('_', '-'))
+        str = str.gsub('_', '-')
+      end 
+
+      candidate_subdomain = Subdomain.find_by_name(str)
+      candidate_subdomain
+    end 
+
     # when to display a considerit homepage
     can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || session[:app] == 'product_page'
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
@@ -99,7 +112,7 @@ protected
         candidate_subdomain = nil 
 
         if Rails.env.development? && rq.host.split('.').length > 1
-          candidate_subdomain = Subdomain.find_by_name(rq.host.split('.')[0])
+          candidate_subdomain = get_subdomain(rq.host.split('.')[0])
         end 
 
         if !candidate_subdomain 
@@ -115,7 +128,7 @@ protected
           end
         end
       else
-        candidate_subdomain = Subdomain.find_by_name(rq.subdomain)
+        candidate_subdomain = get_subdomain(rq.subdomain)
       end
 
     end
@@ -123,6 +136,7 @@ protected
     set_current_tenant(candidate_subdomain) if candidate_subdomain
     current_subdomain
   end
+
 
   def init_thread_globals
     # Make things to remember changes

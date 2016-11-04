@@ -172,7 +172,7 @@ window.CustomerSignup = ReactiveComponent
 
         onClick: => 
           subdomain_name = $(@refs.subdomain_name.getDOMNode()).val()
-          name = subdomain_name.replace(/ /g, '_').replace(/\W/g, '')
+          name = subdomain_name.replace(/ /g, '-').replace(/\W/g, '')
 
           $.ajax '/subdomain', 
             data: 

@@ -10,7 +10,7 @@ end
 
 class IsSAMLRoute
   def matches?(request)
-    request.subdomain.downcase == 'saml_auth'
+    request.subdomain.downcase == 'saml-auth'
   end 
 end
 

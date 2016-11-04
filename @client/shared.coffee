@@ -348,7 +348,7 @@ window.reset_key = (obj_or_key, updates) ->
   save obj_or_key
 
 
-window.splitParagraphs = (user_content) ->
+window.splitParagraphs = (user_content, append) ->
   if !user_content
     return SPAN null
     
@@ -368,7 +368,7 @@ window.splitParagraphs = (user_content) ->
   user_content = user_content.replace(hyperlink_pattern, "$1(*-&)link:$2(*-&)")
   paragraphs = user_content.split(/(?:\r?\n)/g)
 
-  for para,idx in paragraphs
+  for para,pidx in paragraphs
     P key: "para-#{idx}", 
       # now split around all links
       for text,idx in para.split '(*-&)'
@@ -377,6 +377,9 @@ window.splitParagraphs = (user_content) ->
             text.substring(5, text.length)
         else  
           SPAN key: idx, text
+
+      if append && pidx == paragraphs.length - 1
+        append
 
 # Computes the width of some text given some styles empirically
 width_cache = {}
@@ -454,6 +457,40 @@ window.closest = (node, check) ->
     false
   else 
     check(node) || closest(node.parentNode, check)
+
+
+window.location_origin = ->
+  if !window.location.origin
+    "#{window.location.protocol}//#{window.location.hostname}#{if window.location.port then ':' + window.location.port else ''}"
+  else 
+    window.location.origin
+
+window.parseURL = (url) ->
+  parser = document.createElement('a')
+  parser.href = url
+
+  pathname = parser.pathname or '/'
+  if pathname[0] != '/'
+    pathname = "/#{pathname}"
+  searchObject = {}
+  queries = parser.search.replace(/^\?/, '').split('&')
+  i = 0
+  while i < queries.length
+    if queries[i].length > 0
+      split = queries[i].split('=')
+      searchObject[split[0]] = split[1]
+    i++
+
+  {
+    protocol: parser.protocol
+    host: parser.host
+    hostname: parser.hostname
+    port: parser.port
+    pathname: pathname
+    search: parser.search
+    searchObject: searchObject
+    hash: parser.hash
+  }
 
 
 

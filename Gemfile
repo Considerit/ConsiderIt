@@ -45,6 +45,7 @@ group :development, :test do
   gem 'oj'
   gem 'oj_mimic_json' # we need this for Rails 4.1.x
 
+  gem 'google-api-client'
 end
 
 group :production do

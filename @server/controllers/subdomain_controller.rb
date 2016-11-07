@@ -6,6 +6,8 @@ class SubdomainController < ApplicationController
   skip_before_action :verify_authenticity_token, :only => :update_images_hack
   include Invitations
 
+  before_action :verify_user, only: [:create]
+
   def index 
     ActsAsTenant.without_tenant do 
       subdomains = Subdomain.where('name != "homepage"').map {|s| {:id => s.id, :name => s.name, :customizations => s.customizations, :activity => s.proposals.count > 1 || s.opinions.published.count > 1 || s.points.published.count > 0}}

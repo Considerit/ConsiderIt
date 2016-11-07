@@ -356,6 +356,7 @@ protected
           current_user.add_token() # Logging in via email token is dangerous, so we'll only allow it once per token          
           current_user.update_roles_and_permissions
           dirty_if_any_private_proposals(current_user)
+          current_user.add_to_active_in
         end
 
         if !params.has_key?('nvn')

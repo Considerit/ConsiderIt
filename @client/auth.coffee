@@ -88,6 +88,7 @@ Auth = ReactiveComponent
 
     auth = fetch('auth')
     current_user = fetch('/current_user')
+    subdomain = fetch '/subdomain'
     
     goal = null
     if auth.goal 
@@ -140,7 +141,7 @@ Auth = ReactiveComponent
         if avatar_field = @avatarInput()
           avatar_field = ["#{t('pic_prompt')}:", avatar_field]
 
-        [ @headerAndBorder null, t('Your Profile'),
+        [ @headerAndBorder goal, t('Your Profile'),
             @body [
               # we don't want users on single sign on subdomains to change email/password
               if !fetch('/subdomain').SSO_domain       
@@ -152,6 +153,8 @@ Auth = ReactiveComponent
             ].concat @userQuestionInputs()
           @submitButton(t('Update'))
           if @local.saved_successfully
+            if subdomain.SSO_domain
+              loadPage '/'
             SPAN style: {color: 'green'}, t("Updated successfully")
         ]
 

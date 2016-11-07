@@ -37,8 +37,6 @@ end
 
 
 
-
-
 plans = {}
 plans['engaged_stakeholder_base10'] =     lambda { |stats| stakeholders(stats, 150, [ {range: [0, 10], per: 0}, {range: [10, 100], per: 10}, {range: [100, 1000], per: 7}, {range: [1000, 10000], per: 5}, {range: [10000,Float::INFINITY], per: 3}])}
 plans['engaged_stakeholder_no_base']  =   lambda { |stats| stakeholders(stats,   0, [ {range: [0, 10], per: 0}, {range: [10, 100], per: 10}, {range: [100, 1000], per: 7}, {range: [1000, 10000], per: 5}, {range: [10000,Float::INFINITY], per: 3}])}
@@ -165,6 +163,8 @@ def push_to_spreadsheet(revenue, earliest_month)
           }
         }
       })
+      response = service.batch_update_spreadsheet(spreadsheet_id, {requests: requests}, {})
+      requests = []
     end 
 
     sheet_id = sheets[plan]

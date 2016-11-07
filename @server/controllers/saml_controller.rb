@@ -27,7 +27,7 @@ class SamlController < ApplicationController
     if session[:sso_idp] == 'dtu'
       # link for ADSF for DTU. Some versions of ADFS allow SSO initiated login and some do not. 
       # Self generating the link for IdP initiated login here to sidestep issue
-      dtu_adsf = "https://sts.ait.dtu.dk/adfs/ls/idpinitiatedsignon.aspx?loginToRp=https://saml_auth.consider.it/saml/dtu"
+      dtu_adsf = "https://sts.ait.dtu.dk/adfs/ls/idpinitiatedsignon.aspx?loginToRp=https://saml-auth.consider.it/saml/dtu"
       redirect_to(dtu_adsf)
     else
       redirect_to(req.create(settings))

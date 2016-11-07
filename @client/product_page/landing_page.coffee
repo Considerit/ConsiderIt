@@ -1,3 +1,256 @@
+window.LandingPage = ReactiveComponent
+  displayName: 'LandingPage'
+
+  render: -> 
+
+    DIV null, 
+      Heading()
+      Video()
+      tech()
+      Customers()      
+      Uses()
+      Collaborate()
+
+
+
+Heading = -> 
+  DIV 
+    style:
+      width: SAAS_PAGE_WIDTH
+      margin: "80px auto 0 auto"
+      position: 'relative'
+      textAlign: 'center'
+
+    DIV
+      style: 
+        fontSize: 66
+        marginBottom: 10
+        color: logo_red
+      'Think Better Together.'
+
+    DIV
+      style:
+        marginBottom: 50
+        fontSize: 24
+        width: TEXT_WIDTH
+        margin: 'auto'
+
+      """
+      Consider.it can help you collect feedback, engage stakeholders, make group decisions, 
+      teach critical thinking, and more.
+      """
+
+
+
+bullet = (props) ->
+  DIV
+    style:
+      paddingLeft: 30
+      position: "relative"
+      margin: "30px auto"
+      width: TEXT_WIDTH
+
+    DIV
+      style:
+        position: "absolute"
+        left: -15
+        top: 6
+
+      switch props.point_style
+        when "bullet"
+          "•"
+        when "pro"
+          "+"
+        when "con"
+          "–"
+
+    P style: base_text,
+      SPAN
+        style: 
+          fontWeight: 500
+        props.strong
+      SPAN 
+        style: light_base_text
+        props.body
+
+tech = ->
+  DIV
+    id: 'tech'
+    style:
+      marginTop: 50
+
+    H1 style: h1,
+      'The first forum that works better'
+      BR null,
+      'when more people participate'
+
+    bullet
+      point_style: 'bullet'
+      strong: "Think together about specific ideas."
+      body: """
+             Collect opinions on proposals, plans, hypotheticals, 
+            job candidates, products, designs, and more.
+            """
+    bullet
+      point_style: 'bullet'
+      strong: "Maintain focus."
+      body: """
+             The design helps participants focus on the topic, rather 
+            than each other. Long tangents are contained and don't 
+            hijack the conversation.
+            """
+            # . The design orients people to consider the topic, 
+            # rather than responding directly to each other. 
+            # Opportunities for personal attacks on others are limited, 
+            # unlike online commenting and email threads.
+
+
+    bullet
+      point_style: 'bullet'
+      strong: "Identify patterns of thought across the whole group."
+      body: """
+             A visual, interactive summary of opinions helps everyone 
+            analyze and understand what the 
+            group thinks. Perhaps 80% of those with reservations
+            share two con points that can be addressed!
+            """
+
+
+
+
+Collaborate = ReactiveComponent
+  displayName: 'Collaborate'
+
+  render: -> 
+
+    DIV 
+      id: 'collaborate'
+      style:
+        marginTop: 1
+        backgroundColor: considerit_gray
+        #color: 'white'
+        padding: '30px 0'
+        paddingBottom: 80
+        position: 'relative'
+
+      DIV 
+        style: cssTriangle 'bottom', 'white', 133, 30,
+          position: 'absolute'
+          left: '50%'
+          marginLeft: - 133 / 2
+          top: 0
+
+      DIV 
+        style: 
+          width: SAAS_PAGE_WIDTH
+          margin: 'auto'
+          textAlign: 'center'           
+
+        DIV 
+          style: 
+            position: 'relative'
+            left: 9
+            top: -4
+
+          collaborationSVG
+            height: 100
+            fill_color: '#414141'
+
+
+        DIV
+          style: 
+            textAlign: 'center'
+            width: 570
+            margin: 'auto'
+            fontSize: 24
+            marginTop: 10
+            color: '#414141'
+
+          "Have a different use in mind? Want to collaborate on a larger project? We'd love to "
+          A
+            href: '/contact'
+            style: 
+              textDecoration: "underline"
+            'hear from you'
+          "."
+
+      DIV 
+        style: cssTriangle 'bottom', considerit_gray, 133, 30,
+          position: 'absolute'
+          left: '50%'
+          marginLeft: - 133 / 2
+          bottom: -30      
+
+Customers = ReactiveComponent
+  displayName: 'Customers'
+
+  render: -> 
+    customers = [ {
+        img: 'seattle'
+        url: 'http://2035.seattle.gov' 
+        type: 'svg'     
+      }, {
+        img: 'nasa'
+        url: 'http://www.nasa.gov'
+      },{
+        img: 'ecast'
+        url: 'http://ecastnetwork.org'
+      }, {
+        img: 'dialoguepartners'
+        url: 'http://dialoguepartners.ca/'      
+      }, {
+        img: 'mos'
+        url: 'http://www.mos.org/'      
+      }, {
+        img: 'cityclub'
+        url: 'http://seattlecityclub.org'      
+      },
+      # , {
+      #   img: 'tigard'
+      #   url: 'http://www.tigard-or.gov/'      
+      # }
+    ]
+
+    DIV 
+      style: 
+        width: SAAS_PAGE_WIDTH
+        margin: '60px auto'
+        textAlign: 'center'
+
+      H1
+        style: _.extend {}, h2, 
+          marginBottom: 20
+
+        "Used by:"
+
+
+      for c in customers
+        do (c) => 
+          style = 
+            cursor: 'pointer'
+            padding: "10px 15px"
+
+          if @local.hovered != c.img
+            style = css.grayscale style
+            style.opacity = .7
+          A 
+            key: c.url
+            style: style
+            href: c.url
+            target: '_blank'
+            onMouseEnter: => 
+              @local.hovered = c.img
+              save @local
+            onMouseLeave: => 
+              @local.hovered = null
+              save @local
+
+            IMG
+              src: asset("product_page/#{c.img}.#{c.type || 'png'}")
+              style: 
+                height: 90
+
+
 use_style = 
   color: 'white'
   width: TEXT_WIDTH
@@ -424,3 +677,4 @@ use = (props) ->
 
     if !props.even
       icon
+

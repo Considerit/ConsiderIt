@@ -7,7 +7,7 @@ window.Contact = ReactiveComponent
       id: 'contact'
       style:
         marginTop: 80
-        backgroundColor: logo_red
+        backgroundColor: 'white'
         color: 'white'
         padding: '80px 0'
         position: 'relative'

@@ -19,10 +19,11 @@ window.Pricing = ReactiveComponent
       id: 'price'
       style:
         marginTop: 60
+        backgroundColor: 'white'
 
       DIV 
         style: _.extend {}, h1,
-          marginBottom: 30
+          paddingBottom: 30
 
 
         'Start using Consider.it'

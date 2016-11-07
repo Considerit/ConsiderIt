@@ -618,6 +618,9 @@ time, mark, audio, video {
   vertical-align: baseline;
   line-height: 1.4; }
 
+button {
+  line-height: 1.4;
+}
 hr {
   display: block;
   height: 1px;

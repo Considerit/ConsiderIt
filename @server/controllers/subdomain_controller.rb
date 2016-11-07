@@ -46,6 +46,7 @@ class SubdomainController < ApplicationController
 
     # TODO: sanitize / make sure has url-able characters
     subdomain = params[:subdomain]
+    subdomain = subdomain.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
 
     if !subdomain
       errors.push "You must specify a subdomain name"

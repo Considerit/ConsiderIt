@@ -122,10 +122,10 @@ Auth = ReactiveComponent
 
         if auth.form == 'create account'
           email_field = ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')]
-          footer = @footerForRegistrationAndLogin()
+          footer = [@footerForRegistrationAndLogin(), @privacyAndTerms()]
         else
           email_field = ["#{t('login_as')}:", DIV style: {color: auth_text_gray, padding: '4px 8px'}, current_user.email]
-          footer = @submitButton(t('Create new account'))
+          footer = [@submitButton(t('Create new account')), @privacyAndTerms()]
 
         [ @headerAndBorder goal, t('Introduce Yourself'),
             @body [
@@ -180,6 +180,30 @@ Auth = ReactiveComponent
 
       else
         throw "Unrecognized authentication form #{auth.form}"
+
+  privacyAndTerms: -> 
+    DIV 
+      style: 
+        color: '#999'
+        marginTop: 20
+        fontSize: 14
+        textAlign: 'center'
+
+      "By creating an account, you agree to our "
+      A
+        href: '/terms_of_service'
+        target: '_blank'
+        style: 
+          textDecoration: 'underline'
+        'Terms'
+      ' and that you have read our '
+      A
+        href: '/privacy_policy'
+        target: '_blank'        
+        style: 
+          textDecoration: 'underline'
+        'Privacy Policy'
+      '.'
 
   #####
   # headerAndBorder

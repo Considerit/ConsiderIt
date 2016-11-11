@@ -13,7 +13,7 @@ require '../bubblemouth'
 require '../translations'
 require '../customizations'
 require '../homepage'
-
+require '../legal'
 
 window.SAAS_PAGE_WIDTH = 1120
 window.TEXT_WIDTH = 730
@@ -250,6 +250,11 @@ Page = ReactiveComponent
           ]
         when '/create_forum'
           CustomerSignup()
+
+        when '/privacy_policy'
+          PrivacyPolicy()
+        when '/terms_of_service'
+          TermsOfService()
 
 
       Footer()

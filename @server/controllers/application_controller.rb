@@ -102,7 +102,7 @@ protected
     end 
 
     # when to display a considerit homepage
-    can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || session[:app] == 'product_page'
+    can_display_homepage = Rails.env.production? || session[:app] == 'product_page'
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
       candidate_subdomain = Subdomain.find_by_name('homepage')
     else

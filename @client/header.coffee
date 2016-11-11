@@ -35,6 +35,14 @@ window.Header = ReactiveComponent
 
         ProfileMenu()
 
+        if customization('google_translate_style') && fetch('location').url == '/'
+          DIV 
+            style: 
+              marginLeft: 40
+              display: 'inline-block'            
+            GoogleTranslate()
+
+
         if fetch('location').url == '/' && customization('HomepageHeader')
           customization('HomepageHeader').apply(@)
         else 

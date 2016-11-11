@@ -43,6 +43,7 @@ require './edit_comment'
 require './point'
 require './translations'
 require './proposal_navigation'
+require './legal'
 
 
 ## ########################
@@ -1938,6 +1939,10 @@ Page = ReactiveComponent
             Homepage key: 'homepage'
           when '/about'
             About()
+          when '/privacy_policy'
+            PrivacyPolicy()
+          when '/terms_of_service'
+            TermsOfService()
           when '/proposal/new'
             EditProposal key: "new_proposal", fresh: true      
           when '/accessibility_support'
@@ -2035,8 +2040,6 @@ Root = ReactiveComponent
           Page key: "/page#{loc.url}"
 
           Footer(key: 'page_footer')
-
-          GoogleTranslate()
 
 
       Tooltip()

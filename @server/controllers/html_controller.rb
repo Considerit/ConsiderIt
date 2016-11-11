@@ -113,10 +113,10 @@ class HtmlController < ApplicationController
       image = view_context.asset_path 'cityoftigard/logo.png'
       description = "Dialogue about City of Tigard"
     when 'homepage'
-      title = 'Consider.it | Think Better Together'
+      title = 'Consider.it'
       image = view_context.asset_path 'product_page/logo.png'
-      description = "Consider.it is the first forum that works better when more people participate. Use it in your community, organization or classroom. "
-      keywords = "discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,public engagement,impact assessment,strategic planning,process improvement,standards,stakeholder committee,Common Core,listening"
+      description = "A web forum that elevates your community's opinions. Civil and organized discussion even when hundreds of stakeholders participate. "
+      keywords = "opinion visualization,community engagement,public engagement,public involvement,discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,impact assessment,strategic planning,process improvement,stakeholder committee,listening"
       google_verification = "gd89L8El1xxxBpOUk9czjE9zZF4nh8Dc9izzbxIRmuY"
     else
       title = current_subdomain.branding_info['masthead_header_text']

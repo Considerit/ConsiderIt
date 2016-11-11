@@ -5,115 +5,252 @@ window.LandingPage = ReactiveComponent
 
     DIV null, 
       Heading()
-      Video()
-      tech()
-      Customers()      
-      Uses()
-      Collaborate()
+      UseCases()
+
+      # Video()
+      # tech()
+      # Customers()      
+      # Uses()
+      # Collaborate()
 
 
 
 Heading = -> 
   DIV 
-    style:
-      width: SAAS_PAGE_WIDTH
-      margin: "80px auto 0 auto"
-      position: 'relative'
-      textAlign: 'center'
+    style: 
+      minHeight: window.innerHeight
 
-    DIV
+    DIV 
       style: 
-        fontSize: 66
-        marginBottom: 10
-        color: logo_red
-      'Think Better Together.'
-
-    DIV
-      style:
-        marginBottom: 50
-        fontSize: 24
-        width: TEXT_WIDTH
-        margin: 'auto'
-
-      """
-      Consider.it can help you collect feedback, engage stakeholders, make group decisions, 
-      teach critical thinking, and more.
-      """
+        color: 'white'
+        width: SAAS_PAGE_WIDTH
+        margin: "auto"
+        position: 'relative'
 
 
+      H1
+        style: _.extend {}, h1, 
+          lineHeight: '46px'
+          marginTop: 40
 
-bullet = (props) ->
-  DIV
-    style:
-      paddingLeft: 30
-      position: "relative"
-      margin: "30px auto"
-      width: TEXT_WIDTH
+        dangerouslySetInnerHTML: {__html: "A web forum<br/>that elevates your<br/>community's opinions."}
 
-    DIV
-      style:
-        position: "absolute"
-        left: -15
-        top: 6
-
-      switch props.point_style
-        when "bullet"
-          "•"
-        when "pro"
-          "+"
-        when "con"
-          "–"
-
-    P style: base_text,
-      SPAN
-        style: 
+      DIV
+        style:
+          marginTop: 14
+          marginBottom: 60
+          fontSize: 20
+          width: 390
           fontWeight: 500
-        props.strong
-      SPAN 
-        style: light_base_text
-        props.body
 
-tech = ->
-  DIV
-    id: 'tech'
-    style:
-      marginTop: 50
+        """
+        Civil and organized discussion even when 
+        hundreds of stakeholders participate
+        """
 
-    H1 style: h1,
-      'The first forum that works better'
-      BR null,
-      'when more people participate'
+    DIV 
+      style: 
+        color: 'black'
+        backgroundColor: 'white'
+        height: '100%'
 
-    bullet
-      point_style: 'bullet'
-      strong: "Think together about specific ideas."
-      body: """
-             Collect opinions on proposals, plans, hypotheticals, 
-            job candidates, products, designs, and more.
-            """
-    bullet
-      point_style: 'bullet'
-      strong: "Maintain focus."
-      body: """
-             The design helps participants focus on the topic, rather 
-            than each other. Long tangents are contained and don't 
-            hijack the conversation.
-            """
-            # . The design orients people to consider the topic, 
-            # rather than responding directly to each other. 
-            # Opportunities for personal attacks on others are limited, 
-            # unlike online commenting and email threads.
+      DIV 
+        style: 
+          width: SAAS_PAGE_WIDTH
+          margin: "auto"
+          position: 'relative'
+          height: 200
+          paddingTop: 60
+
+        A 
+          href: '/create_forum'
+          target: '_blank'
+          style: _.extend {}, big_button(), 
+            fontSize: 18
+            padding: '6px 30px'
+            fontWeight: 600
+
+          'Start a Free Forum'
+
+        SPAN 
+          style: 
+            fontSize: 18
+            padding: '0 16px'
+          'or'
+        A 
+          href: ''
+          style: 
+            textDecoration: 'underline'
+            fontSize: 18
+          'request a demo'
+
+        IMG 
+          src: asset('product_page/landing_page_techshot.png')
+          style: 
+            height: 429
+            width: 556
+            position: 'absolute'
+            top: -220
+            left: 500
 
 
-    bullet
-      point_style: 'bullet'
-      strong: "Identify patterns of thought across the whole group."
-      body: """
-             A visual, interactive summary of opinions helps everyone 
-            analyze and understand what the 
-            group thinks. Perhaps 80% of those with reservations
-            share two con points that can be addressed!
-            """
+UseCases = ReactiveComponent
+  displayName: 'UseCases'
+
+  render: -> 
+
+    uses = [
+      {
+        title: 'To engage the public'
+        subtitle: 'in giving focused feedback on plans and policy'
+        example_text: 'City of Seattle'
+        img: 'seattle_logo.png'
+        example: 'https://hala.consider.it'
+        img_dim: {height: 97, width: 98}
+        link: null,
+        color: '#007BC6'
+      },
+      {
+        title: 'To align behind a new strategic plan'
+        subtitle: 'by engaging staff, board, and other stakeholders'
+        example_text: 'WSSFN'
+        img: 'wsffn_logo.png'
+        example: 'https://wsffn.consider.it'   
+        img_dim: {height: 72, width: 90}     
+        link: null
+        color: '#6C7C00'
+      },
+      {
+        title: 'To organize community ideas'
+        subtitle: 'for taking collective action'
+        example_text: 'The DAO'
+        img: 'dao_logo.png'
+        example: 'https://dao.consider.it'
+        img_dim: {height: 72, width: 72}
+        link: null
+        color: '#D1170B'
+      },
+      {
+        title: 'To do something else '
+        subtitle: 'that we weren’t expecting!'
+        example_text: ''
+        img: 'rupaul_logo.png'
+        example: 'https://rupaul.consider.it'
+        img_dim: {height: 93, width: 220}        
+        link: null
+        color: '#D600B1'
+      },
+
+    ]
+
+
+    DIV 
+      style: 
+        backgroundColor: 'white'
+
+      DIV 
+        style: 
+          width: SAAS_PAGE_WIDTH
+          margin: 'auto'
+
+        H2
+          style: 
+            fontSize: 42
+            fontWeight: 200
+            textAlign: 'center'
+            paddingTop: 50
+            marginBottom: 40
+
+          'What is your main goal for dialogue?'
+
+        TABLE 
+          style: 
+            width: '100%'
+            borderCollapse: 'collapse'
+
+          TBODY null,
+            for use, idx in uses
+              TR 
+                style: 
+                  height: 140
+                  borderTop: '1px solid #CBC8C8'
+                  borderBottom: if idx == uses.length - 1 then '1px solid #CBC8C8'
+
+                TD 
+                  style: 
+                    verticalAlign: 'middle'
+
+                  DIV 
+                    style: 
+                      fontSize: 24
+                      fontWeight: 700
+                    use.title 
+
+                  DIV   
+                    style: 
+                      fontSize: 18
+                    use.subtitle
+                TD 
+                  style: 
+                    fontStyle: 'italic'
+                    textAlign: 'center'
+                    fontSize: 18
+                    verticalAlign: 'middle'
+                    padding: '0 80px'
+                  'like'
+
+                TD
+                  style: 
+                    verticalAlign: 'middle'
+
+
+                  A 
+                    href: use.example
+                    target: '_blank'
+                    style: 
+                      fontSize: 18
+                      fontWeight: 700
+                      color: use.color 
+
+                    SPAN 
+                      style: 
+                        display: 'inline-block'
+                        width: 100
+                        textAlign: 'center'                      
+
+                      IMG 
+                        src: asset("product_page/#{use.img}")
+                        style: 
+                          width: use.img_dim.width
+                          height: use.img_dim.height 
+                          verticalAlign: 'middle'
+
+                    SPAN 
+                      style: 
+                        fontSize: 24
+                        fontWeight: 500
+                        paddingLeft: 20
+                        verticalAlign: 'middle'
+                      use.example_text
+
+                TD 
+                  style: 
+                    verticalAlign: 'middle'  
+
+                  A 
+                    href: use.example
+                    style: 
+                      fontSize: 18
+                      fontWeight: 700
+                      textDecoration: 'underline'
+                      color: use.color 
+                    target: '_blank'
+
+                    'visit example'
+
+
+
+
 
 
 
@@ -181,74 +318,7 @@ Collaborate = ReactiveComponent
           marginLeft: - 133 / 2
           bottom: -30      
 
-Customers = ReactiveComponent
-  displayName: 'Customers'
 
-  render: -> 
-    customers = [ {
-        img: 'seattle'
-        url: 'http://2035.seattle.gov' 
-        type: 'svg'     
-      }, {
-        img: 'nasa'
-        url: 'http://www.nasa.gov'
-      },{
-        img: 'ecast'
-        url: 'http://ecastnetwork.org'
-      }, {
-        img: 'dialoguepartners'
-        url: 'http://dialoguepartners.ca/'      
-      }, {
-        img: 'mos'
-        url: 'http://www.mos.org/'      
-      }, {
-        img: 'cityclub'
-        url: 'http://seattlecityclub.org'      
-      },
-      # , {
-      #   img: 'tigard'
-      #   url: 'http://www.tigard-or.gov/'      
-      # }
-    ]
-
-    DIV 
-      style: 
-        width: SAAS_PAGE_WIDTH
-        margin: '60px auto'
-        textAlign: 'center'
-
-      H1
-        style: _.extend {}, h2, 
-          marginBottom: 20
-
-        "Used by:"
-
-
-      for c in customers
-        do (c) => 
-          style = 
-            cursor: 'pointer'
-            padding: "10px 15px"
-
-          if @local.hovered != c.img
-            style = css.grayscale style
-            style.opacity = .7
-          A 
-            key: c.url
-            style: style
-            href: c.url
-            target: '_blank'
-            onMouseEnter: => 
-              @local.hovered = c.img
-              save @local
-            onMouseLeave: => 
-              @local.hovered = null
-              save @local
-
-            IMG
-              src: asset("product_page/#{c.img}.#{c.type || 'png'}")
-              style: 
-                height: 90
 
 
 use_style = 
@@ -256,35 +326,6 @@ use_style =
   width: TEXT_WIDTH
   margin: 'auto'
 
-testimonial = (name, org, img, text) -> 
-
-  DIV 
-    style:
-      position: 'relative'
-      marginTop: 40
-
-    IMG 
-      src: asset(img)
-      style: 
-        width: 50
-        borderRadius: '50%'
-        position: 'absolute'
-        left: -70
-        top: 20
-
-
-    DIV 
-      style: 
-        marginBottom: 10
-        textDecoration: 'italics'
-      "#{name}, #{org}"
-
-    DIV
-      style:
-        backgroundColor: 'rgba(255,255,255,.2)'
-        borderRadius: 16
-        padding: '10px 20px'
-      text
 
 
 

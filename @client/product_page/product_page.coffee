@@ -15,7 +15,7 @@ require '../customizations'
 require '../homepage'
 
 
-window.SAAS_PAGE_WIDTH = 1000
+window.SAAS_PAGE_WIDTH = 1120
 window.TEXT_WIDTH = 730
 
 window.base_text =
@@ -32,14 +32,12 @@ window.small_text = _.extend {}, base_text,
 
 window.h1 = _.extend {}, base_text,
   fontSize: 42
-  fontWeight: 700
-  textAlign: 'center'
-  margin: 'auto'
+  fontWeight: 800
+  color: 'white'
 
 window.h2 = _.extend {}, base_text,
   fontSize: 36
   fontWeight: 300
-  textAlign: 'center'
 
 window.strong = _.extend {}, base_text,
   fontWeight: 600
@@ -61,7 +59,7 @@ window.big_button = ->
   display: 'inline-block'
   fontSize: 24
   border: 'none'
-  borderRadius: 8
+  borderRadius: 12
 
 
 window.BIG_BUTTON = (text, opts) -> 
@@ -85,6 +83,7 @@ require './demo'
 require './landing_page'
 require './contact'
 require './pricing'
+require './customer_signup'
 require './metrics'
 require './tour'
 require './header'
@@ -249,6 +248,9 @@ Page = ReactiveComponent
             Contact()
             Story()
           ]
+        when '/create_forum'
+          CustomerSignup()
+
 
       Footer()
 
@@ -260,7 +262,7 @@ Computer = ReactiveComponent
     app = fetch '/application'
     doc = fetch 'document'
 
-    title = 'Consider.it | Think better together'
+    title = 'Consider.it'
     if doc.title != title
       doc.title = title
       save doc
@@ -285,6 +287,8 @@ Colors = ReactiveComponent
         colors.primary_color = '#6F3AB0'
       when '/contact'
         colors.primary_color = '#B03A88'
+      when '/create_forum'
+        colors.primary_color = '#3A45B0'
 
     save colors 
     SPAN null

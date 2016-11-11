@@ -5,18 +5,20 @@ window.Header = ReactiveComponent
   render: ->
     current_user = fetch("/current_user")
 
-    nav_links = ['Tour', 'Pricing', 'Contact']
+    nav_links = ['Tour', 'Pricing', 'Contact', 'Create Forum']
     
 
     dot_x = switch fetch('location').url
       when '/'
-        289
+        288.2
       when '/tour'
-        806
+        580 + 120 
       when '/pricing'
-        877
+        674 + 120
       when '/contact'
-        965
+        781 + 120
+      when '/create_forum'
+        925 + 120
 
     dot_size = 10
 
@@ -70,9 +72,6 @@ window.Header = ReactiveComponent
               borderRadius: '50%'
 
 
-
-                  
-
         # nav menu
         DIV 
           style: 
@@ -80,6 +79,7 @@ window.Header = ReactiveComponent
             margin: 'auto'
             position: 'relative'
             top: -37
+            right: -8
 
           DIV 
             style: 
@@ -95,8 +95,12 @@ window.Header = ReactiveComponent
                   color: 'white'
                   marginLeft: 25
                   cursor: 'pointer'
+                  border: '1px solid transparent'
+                  borderColor: if idx == nav_links.length - 1 then 'white'
+                  borderRadius: '8px 8px 8px 0'
+                  padding: if idx == nav_links.length - 1 then '14px 20px' else '14px 10px'
                   
 
-                href: "/#{nav.toLowerCase()}"
+                href: "/#{nav.toLowerCase().replace(' ', '_')}"
                 nav
 

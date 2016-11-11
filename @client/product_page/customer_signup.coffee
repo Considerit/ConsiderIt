@@ -13,11 +13,9 @@ window.CustomerSignup = ReactiveComponent
 
     DIV 
       style: 
-        backgroundColor: if @local.successful then logo_red else considerit_gray
-        borderRadius: 16
-        boxShadow: "0 1px 2px rgba(0,0,0,.2)"
         padding: "20px 40px"
         marginTop: 60
+        color: 'white'
 
 
       if !@local.successful
@@ -25,10 +23,7 @@ window.CustomerSignup = ReactiveComponent
         H2
           style: _.extend {}, h2
 
-          if @props.plan == 'Basic'
-            "Let's get you setup with the Basic Plan"
-          else 
-            "Let's get you setup with the Professional Plan"
+          "Let's get you setup with the Basic Plan"
 
       if !@local.successful
         DIV

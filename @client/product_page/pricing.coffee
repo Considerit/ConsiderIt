@@ -3,7 +3,6 @@ require './svgs/price_tag'
 require './svgs/design'
 require './svgs/features'
 require './svgs/server'
-require './customer_signup'
 
 
 plan_header = _.extend {}, h2, 
@@ -34,11 +33,6 @@ window.Pricing = ReactiveComponent
           margin: 'auto'
 
         @drawPlans()
-
-        if @local.sign_up_for
-          CustomerSignup
-            plan: @local.sign_up_for
-
 
   drawPlans : -> 
     plans = [

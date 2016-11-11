@@ -39,12 +39,13 @@ window.Tour = ReactiveComponent
 
           DIV 
             style: 
-              maxWidth: 755 
+              maxWidth: 765 
               margin: 'auto'
 
             H1 
               style: _.extend {}, h1,
-                color: '#303030'                
+                color: '#303030'  
+                textAlign: 'center'              
 
               "The only forum to visually summarize what your community thinks and why"
 

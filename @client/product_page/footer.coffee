@@ -93,112 +93,125 @@ window.Footer = ->
 
   FOOTER
     id: 'footer'
-    style:
-      paddingTop: 80
-      backgroundColor: "#F4F4F4"
-      borderTop: "1px solid ##{737373}"
-      
-      padding: '45px 0 15px 0'
-      position: 'relative'
-      zIndex: 3
 
 
     DIV 
       style: 
-        width: SAAS_PAGE_WIDTH
-        margin: 'auto'
+        paddingTop: 140
+        backgroundColor: 'white'
 
-      # buttons 
+
+    DIV 
+      style:
+        paddingTop: 80
+        backgroundColor: "#F4F4F4"
+        borderTop: "1px solid ##{737373}"
+        
+        padding: '45px 0 15px 0'
+        position: 'relative'
+        zIndex: 3
 
       DIV 
         style: 
-          position: 'relative'
+          width: SAAS_PAGE_WIDTH
           margin: 'auto'
-          textAlign: 'center'
-          top: -70
 
-        A 
-          href: 'https://galacticfederation.consider.it'
-          target: '_blank'
-          style: big_button()
-          'Try Consider.it'
+        # buttons 
 
-        BIG_BUTTON 'Start a Free Forum', 
+        DIV 
           style: 
-            backgroundColor: '#717171'
-            marginLeft: 40
-
-
-      # nav sections
-      DIV null,
-        TABLE 
-          style:
+            position: 'relative'
             margin: 'auto'
-            borderSpacing: '80px 0px'
-            borderCollapse: 'separate'
-          
-
-          TR 
-            style: {}
-
-            for section in nav
-              TD 
-                style: 
-                  textAlign: 'right'
-
-                H3 
-                  style: 
-                    fontSize: 16
-                    fontWeight: 500
-                    color: '#000'
-                    marginBottom: 10
-                  section.label 
-
-                UL 
-                  style: 
-                    listStyle: 'none'
-
-                  for link in section.links
-                    LI 
-                      style:
-                        marginBottom: 10
-                        
-
-                      A 
-                        href: link.link
-                        style: 
-                          color: primary_color()
-                          textDecoration: 'underline'
-                          fontSize: 14
-
-                        link.label
-
-      # more info
-
-      DIV 
-        style: 
-          color: '#303030'
-          fontSize: 11
-          textAlign: 'center'
-          marginTop: 65
-
-        SPAN null, 
-
-          DIV 
-            style: 
-              display: 'inline-block'
-            '© 2016 Consider.it. All rights reserved.' #Privacy and Terms.
+            textAlign: 'center'
+            top: -70
 
           A 
-            href: 'mailto:hello@consider.it'
-            style: 
-              marginLeft: 40
-              textDecoration: 'underline'
-              display: 'inline-block'
-            'hello@consider.it'
+            href: 'https://galacticfederation.consider.it'
+            target: '_blank'
+            style: big_button()
+            'Try Consider.it'
 
-          DIV 
-            style: 
+          A 
+            href: '/create_forum'
+            target: '_blank'
+            style: _.extend {}, big_button(), 
+              backgroundColor: '#717171'
               marginLeft: 40
-              display: 'inline-block'            
-            '2420 NE Sandy Blvd, Suite 126 Portland, OR 97232'
+
+            'Start a Free Forum'
+
+
+
+        # nav sections
+        DIV null,
+          TABLE 
+            style:
+              margin: 'auto'
+              borderSpacing: '80px 0px'
+              borderCollapse: 'separate'
+            
+
+            TR 
+              style: {}
+
+              for section in nav
+                TD 
+                  style: 
+                    textAlign: 'right'
+
+                  H3 
+                    style: 
+                      fontSize: 16
+                      fontWeight: 500
+                      color: '#000'
+                      marginBottom: 10
+                    section.label 
+
+                  UL 
+                    style: 
+                      listStyle: 'none'
+
+                    for link in section.links
+                      LI 
+                        style:
+                          marginBottom: 10
+                          
+
+                        A 
+                          href: link.link
+                          style: 
+                            color: primary_color()
+                            textDecoration: 'underline'
+                            fontSize: 14
+
+                          link.label
+
+        # more info
+
+        DIV 
+          style: 
+            color: '#303030'
+            fontSize: 11
+            textAlign: 'center'
+            marginTop: 65
+
+          SPAN null, 
+
+            DIV 
+              style: 
+                display: 'inline-block'
+              '© 2016 Consider.it. All rights reserved.' #Privacy and Terms.
+
+            A 
+              href: 'mailto:hello@consider.it'
+              style: 
+                marginLeft: 40
+                textDecoration: 'underline'
+                display: 'inline-block'
+              'hello@consider.it'
+
+            DIV 
+              style: 
+                marginLeft: 40
+                display: 'inline-block'            
+              '2420 NE Sandy Blvd, Suite 126 Portland, OR 97232'

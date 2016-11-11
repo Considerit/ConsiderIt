@@ -13,7 +13,7 @@ require '../bubblemouth'
 require '../translations'
 require '../customizations'
 require '../homepage'
-
+require '../legal'
 
 window.SAAS_PAGE_WIDTH = 1000
 window.TEXT_WIDTH = 730
@@ -769,13 +769,19 @@ Root = ReactiveComponent
           backgroundColor: "white"
         BrowserHacks()
 
+        switch loc.url 
+          when '/proposals'
+            Proposals()
 
-        if loc.url == '/proposals'
-          Proposals()
-        else if loc.url == '/metrics'
-          Metrics()
-        else 
-          Page()
+          when '/privacy_policy'
+            PrivacyPolicy()
+          when '/terms_of_service'
+            TermsOfService()
+
+          when '/metrics'
+            Metrics()
+          else 
+            Page()
 
       Tooltip()
 

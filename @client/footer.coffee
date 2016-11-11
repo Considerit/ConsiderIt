@@ -11,6 +11,19 @@ window.Footer = ReactiveComponent
       customization('SiteFooter')()
 
 
+
+big_button = -> 
+  backgroundColor: logo_red
+  boxShadow: "0 4px 0 0 black"
+  fontWeight: 700
+  color: 'white'
+  padding: '6px 60px'
+  display: 'inline-block'
+  fontSize: 24
+  border: 'none'
+  borderRadius: 12
+
+
 window.DefaultFooter = ReactiveComponent
   displayName: 'Footer'
   render: ->
@@ -23,98 +36,116 @@ window.DefaultFooter = ReactiveComponent
       #dangerouslySetInnerHTML: { __html: "&bull;"}
       '|'
 
-
-    DIV
-      style: 
-        position: 'relative'
-        padding: '2.5em 0 .5em 0'
-        textAlign: 'center'
-        zIndex: 0
-        width: CONTENT_WIDTH()
-        margin: 'auto'
-
-      # A href: "#{subdomain.external_project_url}", target: '_blank', style: {display: 'inline-block', margin: 'auto'},
-      #   if subdomain.branding.logo
-      #     IMG src: "#{subdomain.branding.logo}", style: {width: 300}
-
-
+    DIV null,
 
       DIV 
         style: 
-          marginTop: 30
+          paddingTop: 140
+          backgroundColor: 'white'
 
-        BUTTON 
-          style: 
-            color: logo_red
-            cursor: 'pointer'
-            borderRadius: '50%'
-            display: 'inline-block'
-            padding: 10
-            textAlign: 'center'
-            fontSize: 18
-            backgroundColor: 'transparent'
-            border: 'none'
-            
-          onClick: -> scrollTo 0, 0
 
-          'Back to top'
-          I className: 'fa fa-angle-up', style: paddingLeft: 5
-
-        BR null
-        TechnologyByConsiderit
-          size: 26
-
+      DIV 
+        style:
+          paddingTop: 80
+          backgroundColor: "#F4F4F4"
+          borderTop: "1px solid ##{737373}"
+          
+          padding: '45px 0 15px 0'
+          position: 'relative'
+          zIndex: 3
 
         DIV 
           style: 
-            marginTop: 7
-            maxHeight: if browser.is_mobile then 30
-            color: '999'
+            width: CONTENT_WIDTH()
+            margin: 'auto'
 
-          SPAN 
+          # buttons 
+
+          DIV 
             style: 
-              display: 'inline-block'
-              marginBottom: 10
+              position: 'relative'
+              margin: 'auto'
+              textAlign: 'center'
+              top: -70
 
-            A 
-              style: 
-                textDecoration: 'underline'
-                color: logo_red              
-              href: "mailto:admin@consider.it"
+            BUTTON 
+              onClick: -> scrollTo 0, 0
+              onKeyPress: (e) -> 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  e.preventDefault()
+                  scrollTo 0, 0
 
-              'Talk to us'
-              ' at hello@consider.it'
+              style: _.extend {}, big_button(), 
+                backgroundColor: '#717171'
 
-          separator
+              'Back to top'
 
-          SPAN 
+
+          DIV 
             style: 
-              display: 'inline-block'
-              marginBottom: 10
+              textAlign: 'center'
 
+            TechnologyByConsiderit
+              size: 26
+            BR null
             A 
+              href: 'https://consider.it'
               style: 
+                display: 'inline-block'
                 textDecoration: 'underline'
-                color: logo_red
+                fontSize: 14
+                marginTop: 10
+              'Create your own Consider.it forum'
 
-              href: "https://consider.consider.it"
 
-              'Report bugs or share ideas'
 
-          separator
+          # more info
 
-          SPAN 
+          DIV 
             style: 
-              display: 'inline-block'
-              marginBottom: 10
+              color: '#303030'
+              fontSize: 11
+              textAlign: 'center'
+              marginTop: 20
 
-            A 
-              style: 
-                textDecoration: 'underline'
-                color: logo_red
-              href: "https://consider.it"
+            SPAN null, 
 
-              'Create your own consider.it forum'
+              DIV 
+                style: 
+                  display: 'inline-block'
+                '© 2016 Consider.it. All rights reserved. '
+                A
+                  href: '/privacy_policy'
+                  style: 
+                    textDecoration: 'underline'
+                  'Privacy'
+                ' and '
+                A
+                  href: '/terms_of_service'
+                  style: 
+                    textDecoration: 'underline'
+                  'Terms'
+                '.'
+
+              SPAN 
+                style: 
+                    marginLeft: 40
+                    display: 'inline-block'
+
+                  'Report bugs to '
+  
+                A 
+                  style: 
+                    textDecoration: 'underline'                    
+                  href: 'mailto:hello@consider.it'
+                  'help@consider.it'
+
+              if !customization('google_translate_style') || fetch('location').url != '/'
+                DIV 
+                  style: 
+                    marginLeft: 40
+                    display: 'inline-block'            
+                  GoogleTranslate()
 
 
 

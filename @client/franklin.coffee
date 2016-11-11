@@ -2041,8 +2041,6 @@ Root = ReactiveComponent
 
           Footer(key: 'page_footer')
 
-          GoogleTranslate()
-
 
       Tooltip()
 

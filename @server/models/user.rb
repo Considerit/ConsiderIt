@@ -469,11 +469,8 @@ class User < ActiveRecord::Base
       settings.assertion_consumer_logout_service_url = url_base + "/saml/logout"
     end
 
-    # Example settings data, replace this values with Delft settings!
-    # TODO replace example.com settings with Delft IDP settings
     if sso_idp == 'dtu' 
 
-      # IdP section for Onelogin IDP used in development
       settings.idp_entity_id                  = "http://sts.ait.dtu.dk/adfs/services/trust"
       settings.idp_sso_target_url             = "https://sts.ait.dtu.dk/adfs/ls/"
       settings.idp_slo_target_url             = "https://sts.ait.dtu.dk/adfs/ls/"

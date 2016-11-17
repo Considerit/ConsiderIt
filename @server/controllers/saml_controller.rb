@@ -36,9 +36,6 @@ class SamlController < ApplicationController
 
   def acs
     errors = []
-
-    # TODO NATHAN REMOVE, FOR TESTING DTU LOCALLY
-
     settings = User.get_saml_settings(get_url_base, session[:sso_idp])
 
     response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings, :allowed_clock_drift => 60.second)
@@ -88,13 +85,7 @@ class SamlController < ApplicationController
       end 
 
       token = user.auth_token Subdomain.find_by_name(session[:redirect_subdomain])
-      if session[:redirect_back_to]
-        uri = URI(session[:redirect_back_to])
-      else
-        # TODO REMOVE!!!!! For Nathan testing
-        uri = URI('/?q=testing')
-      end
-
+      uri = URI(session[:redirect_back_to])
       uri.query = {:u => user.email, :t => token}.to_query + '&' + uri.query.to_s
       redirect_to uri.to_s
     else

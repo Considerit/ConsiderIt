@@ -67,7 +67,7 @@ end
 #   extend interface to allow for passing user and subdomain so that
 #   permit interface can be used for offline processing, such as 
 #   the notifications subsystem.
-def permit(action, object, user = nil)
+def permit(action, object = nil, user = nil)
 
   user ||= current_user
   return Permission::PERMITTED if user.super_admin

@@ -1,3 +1,7 @@
+# See Google API docs at: 
+#   - https://developers.google.com/sheets/quickstart/ruby
+#   - https://developers.google.com/sheets/guides/batchupdate
+
 
 # tiers are pricing tiers: 
 #    [ {from: 0, to:10, per: 0}, {from: 10, to: 100, per: 10}, ...]

@@ -18,7 +18,16 @@ window.CustomerSignup = ReactiveComponent
 
     compact = SAAS_PAGE_WIDTH() < 800
 
-    DIV null,
+    loc = fetch('location')
+    if loc.query_params.error 
+      @local.errors = [decodeURIComponent(loc.query_params.error)]
+      save @local 
+      delete loc.query_params.error 
+      save loc 
+
+    FORM 
+      action: '/subdomain'
+      method: 'POST'
 
 
       DIV 
@@ -41,6 +50,8 @@ window.CustomerSignup = ReactiveComponent
             style: domain_hint
             'https://'
           INPUT
+            type: 'text'
+            name: 'subdomain'
             ref: 'subdomain_name'
             style: 
               border: "1px solid #{auth_ghost_gray}"
@@ -65,7 +76,18 @@ window.CustomerSignup = ReactiveComponent
           backgroundColor: 'white'
           textAlign: 'center'
           borderTop: "1px solid rgb(101, 136, 64)"
-        BUTTON 
+        
+        INPUT 
+          type: 'hidden'
+          name: 'authenticity_token' 
+          value: current_user.csrf
+
+        INPUT 
+          type: 'hidden'
+          name: 'plan' 
+          plan: 0
+
+        INPUT 
           type: 'submit'
           disabled: if !current_user.logged_in then true 
           style: _.extend {}, big_button(),
@@ -75,31 +97,15 @@ window.CustomerSignup = ReactiveComponent
             position: 'relative'
             top: -26
 
-          onClick: => 
-            subdomain_name = $(@refs.subdomain_name.getDOMNode()).val()
-            name = subdomain_name.replace(/ /g, '-').replace(/\W/g, '')
-
-            $.ajax '/subdomain', 
-              data: 
-                subdomain: name
-                app_title: subdomain_name
-                authenticity_token: current_user.csrf
-                plan: @props.plan
-              type: 'POST'
-              success: (data) => 
-                if data[0].errors
-                  @local.errors = data[0].errors
-                  save @local
-
-          'Create my forum'
+          value: 'Create my forum'
 
         if @local.errors && @local.errors.length > 0
           DIV 
             style: 
-              borderRadius: 8
-              margin: 20
-              padding: 20
+              padding: 40
               backgroundColor: '#FFE2E2'
+              maxWidth: 500
+              margin: 'auto'
 
             H1 style: {fontSize: 18}, 'Ooops!'
 

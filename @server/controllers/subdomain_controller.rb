@@ -30,7 +30,7 @@ class SubdomainController < ApplicationController
       errors.push "That site already exists. Please choose a different name."
       render :json => [{errors: errors}]
     else
-      new_subdomain = Subdomain.new name: subdomain, app_title: params[:app_title]
+      new_subdomain = Subdomain.new name: subdomain #, app_title: params[:app_title]
       roles = new_subdomain.user_roles
       roles['admin'].push "/user/#{current_user.id}"
       roles['visitor'].push "*"
@@ -75,7 +75,8 @@ class SubdomainController < ApplicationController
       # Send welcome email to subdomain creator
       UserMailer.welcome_new_customer(current_user, new_subdomain, params[:plan]).deliver_later
 
-      render :json => [{key: 'new_subdomain', name: new_subdomain.name, t: ApplicationController.MD5_hexdigest("#{current_user.email}#{current_user.unique_token}#{new_subdomain.name}")}]
+      token = ApplicationController.MD5_hexdigest("#{current_user.email}#{current_user.unique_token}#{new_subdomain.name}")
+      redirect_to "#{request.protocol}#{new_subdomain.host_with_port}?t=#{token}&u=#{current_user.email}"
 
     end
 

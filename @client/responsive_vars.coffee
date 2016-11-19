@@ -74,6 +74,8 @@ setResponsive = ->
 
   homepage_width = Math.min content_width, 900
   homepage_width = 60 * Math.floor(homepage_width / 60)
+
+  full_width = Math.max 550, Math.min(1120, w - 2 * 40)
     
   if browser.is_mobile && portrait
     point_font_size += 4
@@ -96,6 +98,7 @@ setResponsive = ->
     PORTRAIT_MOBILE: portrait && browser.is_mobile
     LANDSCAPE_MOBILE: !portrait && browser.is_mobile
     HOMEPAGE_WIDTH: homepage_width
+    SAAS_PAGE_WIDTH: full_width
 
   # only update if we have a change
   # (something like this should go into statebus)

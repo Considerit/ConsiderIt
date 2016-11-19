@@ -457,6 +457,7 @@ ProposalDescription = ReactiveComponent
           overflow: if @local.description_collapsed then 'hidden'
         if @local.description_collapsed
           BUTTON
+            id: 'expand_full_text'
             style:
               backgroundColor: '#f9f9f9'
               width: HOMEPAGE_WIDTH()

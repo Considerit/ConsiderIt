@@ -62,26 +62,34 @@ plugin "safari"
 launch "Safari", at(x - window_padding, y - y_offset, width + window_padding * 2, height + y_offset + window_padding) 
 
 while_saying "loading page" do
-  url "http://localhost:3000/Death_Star?domain=fun"
+  url "http://localhost:3000/Death_Star?domain=galacticfederation"
   wait_for_element('.proposal_header')
   pause 1
 end
 
 perform "Let's make sure we're logged in" do
   wait_for_element('#user_nav')
-  move to_element('.profile_anchor.login'), {:speed => 0.1} rescue skip
+  wait_for_element('.profile_anchor.login')
+  pause 1
+  move to_element('.profile_anchor.login'), {:speed => 1} rescue skip
   pause 1
   click
   wait_for_element('#user_email')
-  move to_element('#user_email'), {:speed => 0.1}
+  pause 1
+  move to_element('#user_email'), {:speed => 1}
+  pause 2
   click
-  type "test@test.dev.ghost", {:speed => 10}
-  move to_element('#user_password'), {:speed => 0.1}
+  pause 1
+  type "test@test.dev.ghost", {:speed => 100}
+  pause 1  
+  move to_element('#user_password'), {:speed => 1}
+  pause 10
   click
+  pause 1
+  type "testtest", {:speed => 100}
 
-  type "testtest", {:speed => 10}
-
-  move to_element('.primary_button'), {:speed => 0.1}
+  move to_element('.primary_button'), {:speed => 1}
+  pause 1
   click
   wait_for_element('.proposal_header')
 end

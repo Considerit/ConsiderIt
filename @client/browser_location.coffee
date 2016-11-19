@@ -34,6 +34,8 @@ window.loadPage = (url, query_params) ->
     loc.query_params[k] = v
 
   loc.query_params = url_parts.searchObject
+  delete loc.query_params.u if loc.query_params.u
+  delete loc.query_params.t if loc.query_params.t
 
   # ...and parse anchors
   hash = url_parts.hash

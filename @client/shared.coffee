@@ -120,7 +120,8 @@ window.getCoords = (el) ->
   _.extend offset,
     cx: offset.left + rect.width / 2
     cy: offset.top + rect.height / 2
-
+    right: offset.left + rect.width
+    bottom: offset.top + rect.height
 
 
 #### browser
@@ -242,7 +243,6 @@ window.proposal_url = (proposal) =>
   if subdomain.name == 'homepage'
     subdomain = fetch("/subdomain/#{proposal.subdomain_id}")
     result = "https://#{subdomain.host_with_port}" + result
-    console.log result
 
   if TWO_COL() || (!customization('show_crafting_page_first', proposal) || !proposal.active ) \
      || (!customization('discussion_enabled', proposal))

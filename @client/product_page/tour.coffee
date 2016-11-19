@@ -122,30 +122,36 @@ window.Tour = ReactiveComponent
         DIV 
           style: 
             margin: 'auto'
-            maxWidth: 780
+            maxWidth: 1000
             marginTop: 40
             padding: '0px 40px'
+            display: 'flex'
+
 
           DIV 
             style: 
-              fontWeight: 200
-              fontSize: if SAAS_PAGE_WIDTH() < 800 then 22 else 28
-              color: '#303030'
-              fontStyle: 'italic'
-            "We had a nearly 50/50 deadlocked split in our housing community. After we started using Consider.it, people could clearly express the reasons behind their opinions, and see other’s reasons. We were able to work out a compromise. That's the first time where I felt like democracy was actually working for us."
-          
-          DIV
+              display: 'inline-block'
+              width: '45%'
+              margin: '0 20px'
+              verticalAlign: 'top'
+              flex: '1 1 auto'
+
+            Testimonial 
+              testimonial: testimonials.pierre 
+              left: true 
+
+          DIV 
             style: 
-              fontSize: 18
-              color: '#303030'
-              textAlign: 'right'
-            'Pierre-Elouan Réthoré'
-            
-            DIV 
-              style: 
-                color: '#303030'
-                fontSize: 14
-              'Wind Energy Researcher'          
+              display: 'inline-block'
+              width: '45%'
+              margin: '0 20px'
+              flex: '1 1 auto'
+
+            Testimonial
+              testimonial: testimonials.auryn
+              left: false 
+              verticalAlign: 'top'
+        
 
         Features()
         Research()   
@@ -169,11 +175,14 @@ window.Tour = ReactiveComponent
       f.active = null
       save f 
     else if active 
-      label = active.getAttribute('data-label') 
+      id = active.getAttribute('data-id') 
 
-      if label != f.active 
-        f.active = label 
+      if id != f.active 
+        f.active = id 
+        loc = fetch 'location'
+        loc.hash = id
         save f 
+        save loc
 
   componentDidMount: -> 
     scrolled = false
@@ -193,6 +202,7 @@ window.Tour = ReactiveComponent
 Features = -> 
   feature_sections = [
     {
+      label: "Explore Consider.it's features"
       features: basic_features
       footer: -> 
         DIV 
@@ -236,14 +246,20 @@ Features = ->
 
     }
   ]
+  
+  compact = SAAS_PAGE_WIDTH() < 800
 
   DIV 
+    id: 'features_tour'
     style: 
       paddingTop: 60
 
     A name: 'features'
 
-    for section in feature_sections
+
+
+
+    for section, idx in feature_sections
       DIV 
         style: 
           paddingBottom: 80
@@ -252,26 +268,73 @@ Features = ->
         if section.label 
           H2
             style: 
+              color: primary_color()
               fontSize: 42
-              fontWeight: 700
-              marginTop: 8
-              marginBottom: 40
+              margin: '20px 0 20px 0'
               textAlign: 'center'
+              fontWeight: 400
             section.label 
+
+        # feature menu
+        if !compact && idx == 0
+
+          FeatureMenu {feature_sections}
 
         UL 
           style: 
             listStyle: 'none'
 
-          for feature in section.features
+          for feature, idx in section.features
             
 
             Feature 
               key: feature.label
               feature: feature 
+              sections: feature_sections
+              is_last: idx == section.features.length - 1
 
         section.footer?()
 
+
+FeatureMenu = ReactiveComponent
+  displayName: 'FeatureMenu'
+
+  render: -> 
+    feature_sections = @props.feature_sections
+    active_feature = fetch('active_feature').active
+
+    DIV 
+      style: 
+        position: 'fixed'
+        left: 10
+        top: 150
+        zIndex: 3
+        display: if !active_feature then 'none'
+
+      for section, idx in feature_sections
+
+        UL 
+          style: 
+            listStyle: 'none'
+
+          for f in section.features
+            is_active = active_feature == f.id
+            LI null,
+              A 
+                'data-nojax': true
+                href: "##{f.id}"                
+                style: 
+                  color: if is_active then primary_color() else '#000'
+                  fontSize: 14
+                  fontWeight: 500
+                  opacity: if !is_active then .3
+                capitalize f.id.replace(/_/g, ' ')
+                if idx == 1
+                  SPAN 
+                    style: 
+                      color: '#7ED321'
+                      paddingLeft: 4
+                    '$'
 
 
 
@@ -281,22 +344,20 @@ Feature = ReactiveComponent
   render: -> 
     feature = @props.feature
 
-    active = fetch('active_feature').active == feature.label
+    active = fetch('active_feature').active == feature.id
 
     has_media = !!feature.img || !!feature.video || !!feature.testimonial
-
-    compact = true #SAAS_PAGE_WIDTH() < 900
 
     LI 
       style: 
         padding: 40
         position: 'relative'
-        backgroundColor: if active then '#f6f7f9' else 'white'
-        #borderBottom: '1px solid'
-        #borderColor: '#ddd' #if active then '#ddd' else 'white'
-        transition: 'background-color 300ms'
+        backgroundColor: if active then '#f9f9f9' else 'white'
+        transition: 'background-color 300ms, border-color 300ms'
+        zIndex: if active then 2 else 1
 
       A name: feature.id
+
 
       DIV 
         style: 
@@ -306,20 +367,18 @@ Feature = ReactiveComponent
 
         DIV 
           style: 
-            width: if !compact then '48%' else '80%'
-            paddingRight: if has_media && !compact then 64
-            display: if !compact then 'inline-block'
+            width: '80%'
             verticalAlign: 'top'
-            margin: if compact then 'auto'
+            margin: 'auto'
 
           if feature.label 
             H3
               className: 'feature_label'
-              'data-label': feature.label
+              'data-id': feature.id
               style: 
                 fontSize: 32
                 fontWeight: 700
-                marginBottom: 12
+                marginBottom: 16
                 textAlign: 'center'
                 #color: if active then primary_color()
               feature.label
@@ -335,8 +394,7 @@ Feature = ReactiveComponent
                         null
           DIV 
             style:
-              width: if !compact then '50%' else '80%'
-              display: if !compact then 'inline-block'
+              width: '80%'
               verticalAlign: 'top'
               lineHeight: 0
               margin: '0px auto 20px auto'
@@ -346,13 +404,13 @@ Feature = ReactiveComponent
               sty = 
                 width: '100%'
                 backgroundColor: 'white'
-                opacity: if !active && is_gif then .2
+                #opacity: if !active && is_gif then .2
                 transition: if is_gif then 'opacity 300ms'
                 boxShadow: boxShadow
                 transition: 'box-shadow 300ms'
 
-              if is_gif && !active
-                sty = css.grayscale sty 
+              # if is_gif && !active
+              #   sty = css.grayscale sty 
 
               IMG 
                 src: feature.img 
@@ -406,11 +464,9 @@ Feature = ReactiveComponent
 
         DIV 
           style: 
-            width: if !compact then '48%' else '80%'
-            paddingRight: if has_media && !compact then 64
-            display: if !compact then 'inline-block'
+            width: '80%'
             verticalAlign: 'top'
-            margin: if compact then 'auto'
+            margin: 'auto'
 
           if feature.html 
             DIV 
@@ -450,7 +506,7 @@ basic_features = [
  {
   id: 'proposals'    
   label: 'Each proposal can be developed in detail'
-  html: 'Add as much detail to proposals as you wish, including embedding images or video.'
+  html: 'Add as much detail to proposals as you wish, including embedding images or video. You control whether your community can post their own proposals.'
   video: 'proposal_development'
  }
  {
@@ -466,13 +522,13 @@ basic_features = [
   video: 'pro_con'
  }
  {
-  id: 'explore'    
-  label: 'Explore patterns of thought for deeper understanding'
+  id: 'explore_opinions'    
+  label: 'Gain deeper understanding by exploring patterns of thought'
   html: 'Consider.it provides a dynamically updating, interactive summary of what your community thinks and why. You can drill deeper into the underlying reasons for different groups. For example, learn the reservations of those who are opposing a proposal — perhaps 80% of those with reservations share two Con points that can be addressed!'
   video: 'explore'
  }
  {
-  id: 'drilldown'    
+  id: 'encourage_civility'    
   label: 'Set focus and encourage civility'
   html: 'Consider.it helps participants focus on the pro/con tradeoffs, rather than each other. Personal attacks don’t make sense in the format. Individuals can engage in long discussions about single points, but they’re contained and don’t hijack the overall conversation.'
   video: 'drilldown'
@@ -488,7 +544,7 @@ basic_features = [
  }
 
  {
-  id: 'access_control'    
+  id: 'private_forums'    
   label: 'Private Forums'
   html: 'By default, anyone with a link can access a Consider.it forum. With Private Forums, you can lock down your forum to only those you invite via email. You can also make specific proposals private even if the rest of the forum is public.'
  }
@@ -499,7 +555,7 @@ basic_features = [
 
 paid_features = [
  {
-  id: 'customized'
+  id: 'customization'
   label: 'Customized Look, Feel, and Functionality'
   html: 'We can work with you to design and implement a forum with the look and feel that you want for your brand. Moreover, we have a number of homepage templates that we can enable that can add additional organization to your community’s issues.'
   img: asset('product_page/customize_homepage.gif')

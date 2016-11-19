@@ -83,6 +83,7 @@ require './pricing'
 require './customer_signup'
 require './metrics'
 require './tour'
+require './testimonials'
 require './header'
 require './footer'
 

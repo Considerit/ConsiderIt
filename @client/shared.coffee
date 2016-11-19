@@ -62,6 +62,7 @@ window.back_to_homepage_button = (style) ->
   NAV 
     role: 'navigation'
     A
+      className: 'back_to_homepage'
       title: 'back to homepage'
       key: 'back_to_homepage_button'
       href: "/##{hash}"

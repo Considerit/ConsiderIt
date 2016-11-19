@@ -18,30 +18,67 @@ class SubdomainController < ApplicationController
 
 
   def create
-    authorize! 'create subdomain'
+    permitted = permit('create subdomain')
+    if permitted < 0
+      if params[:sso_domain]
+        # redirect to IdP for authentication
+        initiate_saml_auth(params[:sso_domain])
+        return
+      else 
+        raise PermissionDenied.new permitted
+      end
+    end
 
     errors = []
 
+    # force it to come from consider.it
+    if current_subdomain.name != 'homepage'
+      errors.push 'You can only create subdomains from https://consider.it'
+    end
+
+    # make sure this user hasn't been spam-creating subdomains...
+    subs_for_user = Subdomain.where("roles like '%\"/user/#{current_user.id}\"%'").where("created_at < :week", {:week => 1.week.ago})
+    if subs_for_user.count > 25
+      errors.push "You have created too many subdomains in the past week."
+    end
+
     # TODO: sanitize / make sure has url-able characters
     subdomain = params[:subdomain]
+    subdomain = subdomain.downcase.strip.gsub(' ', '-').gsub(/[^\w-]/, '')
+
+    if !subdomain
+      errors.push "You must specify a subdomain name"
+    end 
 
     existing = Subdomain.find_by_name(subdomain)
     if existing
       errors.push "That site already exists. Please choose a different name."
-      render :json => [{errors: errors}]
-    else
-      new_subdomain = Subdomain.new name: subdomain #, app_title: params[:app_title]
+    end 
+
+    if errors.length > 0
+      if request.request_method == 'POST' && !request.xhr?
+        redirect_to "/create_forum?error=#{errors[0]}"
+      else 
+        render :json => [{errors: errors}]
+      end
+
+
+    else      
+      new_subdomain = Subdomain.new name: subdomain, app_title: params[:app_title]
       roles = new_subdomain.user_roles
       roles['admin'].push "/user/#{current_user.id}"
       roles['visitor'].push "*"
       new_subdomain.roles = JSON.dump roles
+
       new_subdomain.host = "#{new_subdomain.name}.#{request.host}"
       new_subdomain.host_with_port = "#{new_subdomain.name}.#{request.host_with_port}"
+
+      if params[:sso_domain]
+        new_subdomain.SSO_domain = params[:sso_domain]
+      end
       new_subdomain.save
 
-
       set_current_tenant(new_subdomain)
-
 
       # Seed a new proposal
       proposal = Proposal.new({
@@ -71,16 +108,19 @@ class SubdomainController < ApplicationController
 
       set_current_tenant(Subdomain.find_by_name('homepage'))
 
-
       # Send welcome email to subdomain creator
       UserMailer.welcome_new_customer(current_user, new_subdomain, params[:plan]).deliver_later
 
-      token = ApplicationController.MD5_hexdigest("#{current_user.email}#{current_user.unique_token}#{new_subdomain.name}")
-      redirect_to "#{request.protocol}#{new_subdomain.host_with_port}?t=#{token}&u=#{current_user.email}"
-
+      if request.xhr?
+        render :json => [{key: 'new_subdomain', name: new_subdomain.name, t: current_user.auth_token(new_subdomain)}]
+      else 
+        token = current_user.auth_token(new_subdomain)
+        redirect_to "#{request.protocol}#{new_subdomain.host_with_port}?u=#{current_user.email}&t=#{token}"
+      end
     end
-
   end
+
+
 
   def show
     if params[:id]

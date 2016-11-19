@@ -38,8 +38,8 @@ window.Header = ReactiveComponent
         if customization('google_translate_style') && fetch('location').url == '/'
           DIV 
             style: 
-              marginLeft: 40
-              display: 'inline-block'            
+              position: 'absolute'
+              left: 40
             GoogleTranslate()
 
 

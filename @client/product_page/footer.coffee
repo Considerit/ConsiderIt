@@ -1,49 +1,50 @@
 window.Footer = -> 
 
   nav = [
-    {
-      label: 'I want a forum for…'
-      links: [
-        {
-          label: 'Public Involvement'
-          link: ''
-        }, 
-        {
-          label: 'Strategic Planning'
-          link: ''
-        }, 
-        {
-          label: 'Decentralized Organizing'
-          link: ''
-        }, 
-        {
-          label: 'Something Else'
-          link: ''
-        }
-      ]
-    }, 
+    # {
+    #   label: 'I want a forum for…'
+    #   links: [
+    #     {
+    #       label: 'Public Involvement'
+    #       link: ''
+    #     }, 
+    #     {
+    #       label: 'Strategic Planning'
+    #       link: ''
+    #     }, 
+    #     {
+    #       label: 'Decentralized Organizing'
+    #       link: ''
+    #     }, 
+    #     {
+    #       label: 'Something Else'
+    #       link: ''
+    #     }
+    #   ]
+    # }, 
     {
       label: 'What is Consider.it?'
       links: [
-        {
-          label: 'Video Demo'
-          link: '/tour'
-        }, 
         {
           label: 'Feature Tour'
           link: '/tour#features'
         }, 
         {
-          label: 'Compare to other tools'
-          link: '/tour#compare'
+          label: 'Video Demo'
+          link: '/tour?play_demo=true'
         }, 
+
+        # {
+        #   label: 'Compare to Other Tools'
+        #   link: '/tour#compare'
+        # }, 
         {
-          label: 'Research findings'
+          label: 'Research Findings'
           link: '/tour#research'
         },
         {
-          label: 'Common questions'
-          link: '/tour#faq'
+          label: 'Tech Questions'
+          link: '/pricing#faq'
         }
       ]
     }, 
@@ -60,10 +61,10 @@ window.Footer = ->
         }, 
         {
           label: 'Testimonials'
-          link: '/pricing#consulting'
+          link: '/pricing#testimonials'
         }, 
         {
-          label: 'Common questions'
+          label: 'Pricing Questions'
           link: '/pricing#faq'
         }
       ]
@@ -72,17 +73,22 @@ window.Footer = ->
       label: 'Hello, friend!'
       links: [
         {
-          label: 'Contact us'
+          label: 'Contact Us'
           link: '/contact'
         }, 
         {
-          label: 'Our history'
-          link: '/contact#history'
+          label: 'Consultant Partnership'
+          link: '/pricing#partnership'
         }, 
-        {
-          label: 'Our team'
-          link: '/contact#team'
-        }
+
+        # {
+        #   label: 'Our History'
+        #   link: '/contact#history'
+        # }, 
+        # {
+        #   label: 'Our Team'
+        #   link: '/contact#team'
+        # }
       ]
     }
 
@@ -90,6 +96,40 @@ window.Footer = ->
 
 
   ]
+
+  loc = fetch 'location'
+
+  w = SAAS_PAGE_WIDTH()
+  mobile = w < 700
+
+  section_div = (section) -> 
+    DIV null,
+      H3 
+        style: 
+          fontSize: 16
+          fontWeight: 500
+          color: '#000'
+          marginBottom: 10
+        section.label 
+
+      UL 
+        style: 
+          listStyle: 'none'
+
+        for link in section.links
+          LI 
+            style:
+              marginBottom: 10
+              
+
+            A 
+              href: link.link
+              style: 
+                color: primary_color()
+                textDecoration: 'underline'
+                fontSize: 14
+
+              link.label
 
   FOOTER
     id: 'footer'
@@ -113,7 +153,7 @@ window.Footer = ->
 
       DIV 
         style: 
-          width: SAAS_PAGE_WIDTH
+          width: w
           margin: 'auto'
 
         # buttons 
@@ -124,67 +164,56 @@ window.Footer = ->
             margin: 'auto'
             textAlign: 'center'
             top: -70
+          
+          if loc.url != '/create_forum' && !mobile         
+            A 
+              href: 'https://galacticfederation.consider.it'
+              target: '_blank'
+              style: big_button()
+              'Try Consider.it'
 
-          A 
-            href: 'https://galacticfederation.consider.it'
-            target: '_blank'
-            style: big_button()
-            'Try Consider.it'
+          if loc.url != '/create_forum'
+            A 
+              href: '/create_forum'
+              style: _.extend {}, big_button(), 
+                backgroundColor: '#717171'
+                marginLeft: 40
 
-          A 
-            href: '/create_forum'
-            target: '_blank'
-            style: _.extend {}, big_button(), 
-              backgroundColor: '#717171'
-              marginLeft: 40
-
-            'Start a Free Forum'
+              'Start a Free Forum'
 
 
 
         # nav sections
         DIV null,
-          TABLE 
-            style:
-              margin: 'auto'
-              borderSpacing: '80px 0px'
-              borderCollapse: 'separate'
-            
 
-            TR 
-              style: {}
-
+          if mobile 
               for section in nav
-                TD 
+                DIV 
                   style: 
-                    textAlign: 'right'
+                    textAlign: 'center'
+                    paddingBottom: 20                
 
-                  H3 
+                  section_div section
+
+          else 
+
+            TABLE 
+              style:
+                margin: 'auto'
+                borderSpacing: '80px 0px'
+                borderCollapse: 'separate'
+              
+
+              TR 
+                style: {}
+
+                for section in nav
+                  TD 
                     style: 
-                      fontSize: 16
-                      fontWeight: 500
-                      color: '#000'
-                      marginBottom: 10
-                    section.label 
+                      textAlign: 'right'
 
-                  UL 
-                    style: 
-                      listStyle: 'none'
+                    section_div section
 
-                    for link in section.links
-                      LI 
-                        style:
-                          marginBottom: 10
-                          
-
-                        A 
-                          href: link.link
-                          style: 
-                            color: primary_color()
-                            textDecoration: 'underline'
-                            fontSize: 14
-
-                          link.label
 
         # more info
 
@@ -195,23 +224,51 @@ window.Footer = ->
             textAlign: 'center'
             marginTop: 65
 
-          SPAN null, 
+          if mobile 
+            [helloemail()
+            DIV style: paddingBottom: 10
+            address()
+            DIV style: paddingBottom: 10
+            copyright()]
+          else 
+            [copyright()
+            helloemail()
+            address()]
+            
 
-            DIV 
-              style: 
-                display: 'inline-block'
-              '© 2016 Consider.it. All rights reserved.' #Privacy and Terms.
 
-            A 
-              href: 'mailto:hello@consider.it'
-              style: 
-                marginLeft: 40
-                textDecoration: 'underline'
-                display: 'inline-block'
-              'hello@consider.it'
 
-            DIV 
-              style: 
-                marginLeft: 40
-                display: 'inline-block'            
-              '2420 NE Sandy Blvd, Suite 126 Portland, OR 97232'
+copyright = -> 
+  SPAN null, 
+    DIV 
+      style: 
+        display: 'inline-block'
+      '© 2016 Consider.it. All rights reserved. ' 
+    A
+      href: '/privacy_policy'
+      style: 
+        textDecoration: 'underline'
+      'Privacy'
+    ' and '
+    A
+      href: '/terms_of_service'
+      style: 
+        textDecoration: 'underline'
+      'Terms'
+    '.'
+
+helloemail = -> 
+  A 
+    href: 'mailto:hello@consider.it'
+    style: 
+      margin: '0px 40px'
+      textDecoration: 'underline'
+      display: 'inline-block'
+    'hello@consider.it'
+
+
+address = -> 
+  DIV 
+    style: 
+      display: 'inline-block'            
+    '2420 NE Sandy Blvd, Suite 126 Portland, OR 97232'

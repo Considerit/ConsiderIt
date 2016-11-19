@@ -52,6 +52,9 @@
 
       - if current_subdomain.name == 'RANDOM2015'
         %script{type: "text/javascript", src:"//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"}
+
+      - if @app == 'product_page'
+        %script{:src => "/embedding/proposal.js", :type => 'text/javascript'}
         
     %body
       .hidden 
@@ -90,8 +93,6 @@
         %script{:src => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.min.js', :type => 'text/javascript'}
         %script{:src => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/mode/coffeescript/coffeescript.js', :type => 'text/javascript'}
         %link{:rel => 'stylesheet', :href => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.min.css'}
-
-
 
       - if @app == 'product_page' && Rails.env.production?
         :javascript

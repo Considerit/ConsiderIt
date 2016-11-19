@@ -104,12 +104,14 @@ window.A = React.createClass
       loadPage href
       @_onclick event
 
-      # When we navigate to another internal page, we typically want the 
-      # page to be scrolled to the top of the new page. The programmer can
-      # set "data-no-scroll" on the link if they wish to prevent this 
-      # behavior.
+      # setTimeout =>
+        # When we navigate to another internal page, we typically want the 
+        # page to be scrolled to the top of the new page. The programmer can
+        # set "data-no-scroll" on the link if they wish to prevent this 
+        # behavior.
       if !@getDOMNode().getAttribute('data-no-scroll')
         window.scrollTo(0, 0)
+      # , 100
                       
       return false
     else
@@ -170,8 +172,7 @@ window.BrowserLocation = ReactiveComponent
         catch e 
           noop = 1
 
-        if !el 
-          el = document.querySelector("#p#{loc.hash}")
+        el ||= document.querySelector("[name=\"#{loc.hash}\"]") || document.querySelector("#p#{loc.hash}")
 
         if el
           # If there are docked elements, we want to scroll a bit 

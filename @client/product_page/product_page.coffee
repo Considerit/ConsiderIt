@@ -15,8 +15,7 @@ require '../customizations'
 require '../homepage'
 require '../legal'
 
-window.SAAS_PAGE_WIDTH = 1120
-window.TEXT_WIDTH = 730
+window.
 
 window.base_text =
   fontSize: 24
@@ -55,11 +54,11 @@ window.big_button = ->
   boxShadow: "0 4px 0 0 black"
   fontWeight: 700
   color: 'white'
-  padding: '6px 60px'
+  padding: '8px 60px'
   display: 'inline-block'
   fontSize: 24
   border: 'none'
-  borderRadius: 12
+  borderRadius: 8
 
 
 window.BIG_BUTTON = (text, opts) -> 
@@ -77,8 +76,6 @@ window.BIG_BUTTON = (text, opts) ->
     text 
 
 
-require './story'
-require './faq'
 require './demo'
 require './landing_page'
 require './contact'
@@ -103,118 +100,6 @@ Proposals = ReactiveComponent
 
 
 
-# props is:
-#    tabs: [{icon, label, description}]
-#    stroke_color
-#    text_color
-window.VisualTab = ReactiveComponent
-  displayName: 'VisualTab'
-
-  render : ->
-    svg_padding = @props.svg_padding or '10px 20px'
-
-    if !@local.selected
-      @local.selected = @props.tabs[0].icon
-      save @local
-
-    bg_color = @props.bg_color or 'white'
-    stroke_width = @props.stroke_width or 1
-
-    select_tab = (tab) => 
-      @local.selected = tab.icon
-      save @local
-    hover_tab = (tab) => 
-      @local.hovering = tab.icon
-      save @local
-
-    DIV 
-      style: @props.style
-      UL 
-        style: 
-          listStyle: 'none'
-          textAlign: 'center'
-
-        for tab, idx in @props.tabs
-          do (tab, idx) => 
-            selected = @local.selected == tab.icon
-            hovering = @local.hovering == tab.icon
-            LI 
-              key: idx
-              style: 
-                padding: svg_padding
-                display: 'table-cell'
-                opacity: if selected then 1.0 else if hovering then .6 else .25
-                verticalAlign: 'top'
-                cursor: 'pointer'
-                position: 'relative'
-
-              onMouseEnter : => hover_tab(tab)
-              onMouseLeave : => @local.hovering = null; save @local
-              onClick : => select_tab(tab)
-              onTouchStart: => select_tab(tab)
-
-              DIV 
-                style: 
-                  paddingBottom: 10
-                  textAlign: 'center'
-
-                window["#{tab.icon}SVG"]
-                  height: @props.icon_height
-                  fill_color: if selected || hovering then @props.stroke_color else 'black'
-
-                if tab.label
-                  DIV 
-                    style: 
-                      textAlign: 'center'
-                      fontSize: 30
-                      maxWidth: 180
-                    tab.label
-
-              if selected
-                SVG 
-                  height: 8
-                  width: 30
-
-                  style:
-                    position: 'absolute'
-                    left: '50%'
-                    marginLeft: - 30 / 2
-                    bottom: -stroke_width
-                    zIndex: 1
-
-                  POLYGON
-                    points: "0,8 15,0 30,8" 
-                    fill: @props.stroke_color
-
-                  POLYGON
-                    points: "0,#{8 + stroke_width} 15,#{stroke_width} 30,#{8 + stroke_width}" 
-                    fill: bg_color
-
-
-
-
-
-
-      DIV 
-        style: _.extend {}, base_text, 
-          minHeight: if @props.description_height then @props.description_height
-          margin: '0px auto 40px auto'   
-          paddingTop: 25
-          borderTop: "#{stroke_width}px solid #{@props.stroke_color}"
-          position: 'relative'
-
-
-        for tab, idx in @props.tabs
-          if @local.selected == tab.icon
-            DIV 
-              key: idx
-              if _.isFunction(tab.description)
-                tab.description()
-              else 
-                tab.description
-
-
-
 
 Page = ReactiveComponent
 
@@ -223,14 +108,19 @@ Page = ReactiveComponent
 
   render: ->
     loc = fetch 'location'    
+    
 
-    DIV 
+    DIV   
       style: 
         backgroundColor: primary_color()        
         transition: 'background-color 500ms linear'
-        margin: 'auto'
+        minHeight: window.innerHeight
 
-      Header()
+      if loc.query_params.play_demo
+        Video
+          playing: true 
+      else 
+        Header()
 
       switch loc.url 
         when '/proposals'
@@ -244,13 +134,9 @@ Page = ReactiveComponent
         when '/pricing'
           Pricing()            
         when '/contact'
-          [
-            Contact()
-            Story()
-          ]
+          Contact()
         when '/create_forum'
           CustomerSignup()
-
         when '/privacy_policy'
           PrivacyPolicy()
         when '/terms_of_service'
@@ -283,19 +169,24 @@ Colors = ReactiveComponent
     loc = fetch 'location'
     colors = fetch 'colors'
 
-    switch loc.url 
+    color = switch loc.url 
       when '/'
-        colors.primary_color = logo_red
+        logo_red #'#d65931' #'#B03F3A'
       when '/tour'
-        colors.primary_color = '#EC3684'
+        '#EC3684'
       when '/pricing'
-        colors.primary_color = '#6F3AB0'
+        '#6F3AB0'
       when '/contact'
-        colors.primary_color = '#B03A88'
+        '#B03A88'
       when '/create_forum'
-        colors.primary_color = '#3A45B0'
+        '#77b03a'
+        #'#414141'
+      else 
+        '#ddd'
 
-    save colors 
+    if colors.primary_color != color 
+      colors.primary_color = color
+      save colors 
     SPAN null
 
 

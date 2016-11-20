@@ -8,7 +8,7 @@ window.Testimonial = ReactiveComponent
     quote_bubble =  
       padding: '36px 50px'
       position: 'relative'
-      backgroundColor: considerit_gray
+      backgroundColor: @props.bubble_color or considerit_gray
       boxShadow: '#b5b5b5 0 1px 1px 0px'
       borderRadius: 64
       marginBottom: 20
@@ -17,7 +17,7 @@ window.Testimonial = ReactiveComponent
     long_quote_bubble = _.extend {}, quote_bubble,
       padding: '36px 50px'
       position: 'absolute'
-      backgroundColor: considerit_gray
+      backgroundColor: @props.bubble_color or considerit_gray
       boxShadow: '#b5b5b5 0 1px 1px 0px'
       borderRadius: 64
       marginBottom: 20
@@ -33,7 +33,7 @@ window.Testimonial = ReactiveComponent
       apex_xfrac: 0
       width: 30
       height: 30
-      fill: considerit_gray
+      fill: @props.bubble_color or considerit_gray
       stroke: 'transparent'
       stroke_width: 0
       box_shadow:   
@@ -113,7 +113,7 @@ window.Testimonial = ReactiveComponent
           float: if !@props.left then 'right' 
 
 
-        if @props.left 
+        if @props.left && t.avatar 
           IMG
             src: t.avatar
             style: quote_img
@@ -138,7 +138,7 @@ window.Testimonial = ReactiveComponent
               BR null if t.role && t.organization
               t.organization if t.organization
 
-        if !@props.left 
+        if !@props.left && t.avatar 
           IMG
             src: t.avatar
             style: quote_img
@@ -278,4 +278,11 @@ window.testimonials =
         <p>Luckily, Consider.it beats the hell out of simple polls! It is a fantastic tool for gauging the opinion of a large number of users, while not losing sight of the individuals.</p>
         <p>If effectively gauging the opinion/sentiment of your community is something that is important or necessary for your business/product/community, then the team at Consider.it would be an invaluable partner. Their product and advice is second to none. Seriously, these guys are flat out awesome. Incredibly responsive and receptive to suggestions, and, as is evident by the nuance of their platform, they really have a fantastic grasp on the needs of web based and decentralised communities.</p>
         """
+
+  sheri: 
+    name: 'Sheri'
+    role: 'Seattle resident'
+    organization: 'Captain of her blind softball team'
+    short_quote: 'I am blind and use assistive technology to read information on a computer screen. Consider.it works well with my screen reading software and allows me the opportunity to fully participate in my city’s decision making process in the same way all others can. I appreciate Consider.it’s willingness to work hard to make their website fully accessible to me and all other blind computer users!'
+
 

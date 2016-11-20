@@ -29,7 +29,7 @@ window.Header = ReactiveComponent
     w = SAAS_PAGE_WIDTH()
     h = 80
 
-    mobile = w < 830
+    compact = browser.is_mobile || w < 830
 
 
     @local.dot_x ?= 0
@@ -88,15 +88,14 @@ window.Header = ReactiveComponent
           style: 
             position: 'relative'
             bottom: -39
-            right: 0
             display: 'inline-block'
             float: 'right'
-
+            #marginRight: -6
             #right: -8
             #float: 'right'
 
 
-          if mobile
+          if compact
             HamburgerMenu {nav_links}
 
           else 
@@ -112,7 +111,8 @@ window.Header = ReactiveComponent
                   cursor: 'pointer'
                   border: '1px solid transparent'
                   borderColor: if idx == nav_links.length - 1 then 'white'
-                  borderRadius: '8px 8px 8px 0'
+                  borderRadius: '8px 8px 0px 0'
+                  borderBottom: 'none'
                   padding: if idx == nav_links.length - 1 then '14px 20px' else '14px 10px'
                   
 
@@ -124,7 +124,6 @@ window.Header = ReactiveComponent
         
     link = @refs[url]?.getDOMNode()
 
-    console.log link, link?.getBoundingClientRect()
     if link
       rect = link.getBoundingClientRect()
       dot_x = rect.left + (rect.right - rect.left) / 2
@@ -161,7 +160,7 @@ HamburgerMenu = ReactiveComponent
 
 
     DIV
-      key: 'profile_menu'
+      key: 'hamburger'
       ref: 'menu_wrap'
       style:
         position: 'relative'
@@ -201,14 +200,15 @@ HamburgerMenu = ReactiveComponent
       BUTTON 
         tabIndex: 0
         'aria-haspopup': "true"
-        'aria-owns': "profile_menu_popup"
+        'aria-owns': "hamburger_popup"
 
         style: 
           border: '1px solid white'
-          borderRadius: '8px 8px 8px 0'
+          borderBottom: 'none'
+          borderRadius: '8px 8px 0px 0'
           padding: '0px 6px'
           position: 'relative'
-          top: -2
+          top: -13
           backgroundColor: 'transparent'
 
         onKeyDown: (e) => 
@@ -221,9 +221,9 @@ HamburgerMenu = ReactiveComponent
             e.stopPropagation()
 
         SVG 
-          height: 32 
+          height: 44 
           viewBox: "0 0 32 24" 
-          width: 32
+          width: 44
 
           PATH 
             fill: 'white'
@@ -231,7 +231,7 @@ HamburgerMenu = ReactiveComponent
 
 
       UL 
-        id: 'profile_menu_popup'
+        id: 'hamburger_popup'
         role: "menu"
         'aria-hidden': !@local.menu
         hidden: !@local.menu
@@ -263,10 +263,10 @@ HamburgerMenu = ReactiveComponent
                 outline: 'none'
                 position: 'relative'
                 bottom: 8
-                padding: '4px 0 4px 27px'
+                padding: '10px 0 10px 27px'
                 display: 'block'
                 whiteSpace: 'nowrap'
-                fontSize: 24
+                fontSize: 30
                 borderBottom: if idx != menu_options.length - 1 then '1px solid #eaeaea'
 
               onKeyDown: (e) => 

@@ -221,9 +221,15 @@ window.Video = ReactiveComponent
     controls.playing = true
     controls.value = 0
 
-    video = @refs.video.getDOMNode()
-    video.currentTime = 0      
-    video.play()
+    try 
+      video = @refs.video.getDOMNode()
+      video.currentTime = 0      
+      video.play()
+    catch e 
+      console.error e
+      setTimeout => 
+        @startVideo()
+      , 500
 
     @local.ready = true
     @local.playing = true

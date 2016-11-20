@@ -20,7 +20,7 @@ window.
 window.base_text =
   fontSize: 24
   fontWeight: 400
-  fontFamily: "'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+  #fontFamily: "arial, 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
 
 window.light_base_text = _.extend {}, base_text, 
   fontWeight: 300
@@ -110,12 +110,14 @@ Page = ReactiveComponent
   render: ->
     loc = fetch 'location'    
     
+    footer_height = fetch('footer').height
 
     DIV   
       style: 
         backgroundColor: primary_color()        
         transition: 'background-color 500ms linear'
-        minHeight: window.innerHeight
+        minHeight: '100%'
+        margin: if footer_height then "0 auto -#{fetch('footer').height}px"
 
       if loc.query_params.play_demo
         Video
@@ -143,8 +145,8 @@ Page = ReactiveComponent
         when '/terms_of_service'
           TermsOfService()
 
-
       Footer()
+
 
 
 Computer = ReactiveComponent

@@ -66,15 +66,15 @@ window.Pricing = ReactiveComponent
         'Try for as long as you want for free. Pay only when we help you engage your stakeholders.'
 
   plans: -> 
-    mobile = SAAS_PAGE_WIDTH() < 1000
+    compact = browser.is_mobile || SAAS_PAGE_WIDTH() < 1000
 
-    plan_style = 
+    plan_style = css.crossbrowserify
       padding: '32px 36px'
       backgroundColor: 'white' 
-      width: if mobile then '80%'
-      maxWidth: if !mobile then 340
-      display: if mobile then 'block' else 'inline-block'
-      margin: "#{if mobile then 20 else 0}px #{if mobile then 'auto' else '10px'}" 
+      width: if compact then '80%'
+      maxWidth: if !compact then 340 else 500
+      display: if compact then 'block' else 'inline-block'
+      margin: "#{if compact then 20 else 0}px #{if compact then 'auto' else '10px'}" 
       verticalAlign: 'top'
       flex: '1 1 auto'
 
@@ -127,12 +127,13 @@ window.Pricing = ReactiveComponent
 
 
     UL
-      style: 
+      style: css.crossbrowserify
+        textAlign: 'center'
         listStyle: 'none'
-        display: 'flex'
-        justifyContent: 'center'
         paddingTop: 60
-        flexDirection: if mobile then 'column'
+        display: 'flex'
+        flexDirection: if compact then 'column'
+        justifyContent: 'center'
 
       # FREE
       LI 
@@ -150,7 +151,7 @@ window.Pricing = ReactiveComponent
 
         DIV 
           style: _.extend {}, payment_container_style, 
-            paddingBottom: 60
+            display: if compact then 'none'
             
 
           SPAN 
@@ -164,6 +165,7 @@ window.Pricing = ReactiveComponent
 
         DIV 
           style: 
+            paddingTop: 60
             paddingBottom: 60
 
           A 
@@ -476,7 +478,41 @@ window.Pricing = ReactiveComponent
         SPAN
           style: 
             color: '#EF3084'
-          "💖"
+        # SVG 
+        #   viewBox: "0 0 64 64" 
+        #   width: 20
+        #   height: 20
+        #   style: 
+        #     verticalAlign: 'bottom'
+        #   PATH 
+        #     d: "m61.1 18.2c-6.4-17-27.2-9.4-29.1-.9-2.6-9-22.9-15.7-29.1.9-6.9 18.5 26.7 35.1 29.1 37.8 2.4-2.2 36-19.6 29.1-37.8"
+        #     fill: primary_color()
+
+        # SVG 
+        #   viewBox: "0 0 64 64" 
+        #   width: 20
+        #   height: 20
+        #   style: 
+        #     verticalAlign: 'bottom'
+        #   PATH 
+        #     d: "m32 2c-16.6 0-30 13.4-30 30s13.4 30 30 30 30-13.4 30-30-13.4-30-30-30m0 48c-1.4-1.8-20.5-12.9-16.6-25.2 3.5-11.1 15.1-6.6 16.6-.6 1.1-5.6 12.9-10.7 16.6.6 3.9 12.1-15.2 23.8-16.6 25.2"
+        #     fill: "#ff5a79"
+
+        SVG 
+          viewBox: "0 0 64 64" 
+          width: 30
+          height: 30
+          style: 
+            verticalAlign: 'bottom'
+
+          G 
+            fill: "#ff5a79"
+            PATH
+              d: "m28.3 32.2c1.3-7.9-11.5-20.7-22.3-10.3-12 11.7 7.2 37.1 8 40.1 2.6-.8 34.4-1.6 36-18.2 1.3-15.4-17.2-17.4-21.7-11.6"
+            PATH 
+              d: "m59.2 3.6c-6.8-5.1-13.1 3.1-11.7 7-3.3-2.9-13-.5-11.3 7.7 1.9 9.1 19.3 7.3 20.9 7.7.4-1.5 9.3-16.9 2.1-22.4"
+
+
         """ consultants. We offer special pricing and support for 
         consultants looking to use Consider.it with their clients. Please """
         A 
@@ -515,7 +551,7 @@ FAQ = ReactiveComponent
   displayName: 'FAQ'
   render: -> 
 
-    mobile = SAAS_PAGE_WIDTH() < 900
+    compact = browser.is_mobile || SAAS_PAGE_WIDTH() < 900
     DIV 
       style: 
         backgroundColor: 'white'
@@ -532,8 +568,8 @@ FAQ = ReactiveComponent
 
           DIV 
             style: 
-              display: if mobile then 'block' else 'inline-block'
-              width: if mobile then '100%' else '48%'
+              display: if compact then 'block' else 'inline-block'
+              width: if compact then '100%' else '48%'
               padding: '0 20px'
               verticalAlign: 'top'
 

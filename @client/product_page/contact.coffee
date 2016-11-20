@@ -203,7 +203,7 @@ window.Contact = ReactiveComponent
     height = 390 * SAAS_PAGE_WIDTH() / 1160
     width = 1160 * SAAS_PAGE_WIDTH() / 1160
 
-    full = SAAS_PAGE_WIDTH() > 960 
+    full = SAAS_PAGE_WIDTH() > 960 && !browser.is_mobile 
 
     DIV 
       style: 
@@ -228,6 +228,7 @@ window.Contact = ReactiveComponent
             top: 30
             fontSize: 24
             fontWeight: 600
+            color: if !full then primary_color()
 
           'Shy about filling out a form? '
           if full 
@@ -235,67 +236,60 @@ window.Contact = ReactiveComponent
           'Mail us a nice letter instead!'
 
         DIV 
-          style: 
+          style: css.crossbrowserify
             position: if full then 'absolute'
             left: '25%'
             top: '40%'
             paddingTop: if !full then 50
             fontSize: 24
             fontWeight: 600
+            display: 'flex'
+            flexDirection: if !full then 'column'
 
-          TABLE 
-            style: 
-              width: if !full then '90%'
-              margin: if !full then 'auto'
+          DIV 
+            style: css.crossbrowserify
+              flex: '1 1 auto'
 
-            TBODY null, TR null, 
-              TD 
-                style: 
-                  verticalAlign: 'top'
+            DIV 
+              style: {}
+              'Deliver Electronically'
 
-                DIV 
-                  style: 
-                    fontWeight: 700
-                  'Deliver Electronically'
+            A 
+              href: 'mailto:hello@consider.it'
+              style: 
+                textDecoration: 'underline'
+                fontWeight: 400
+                fontSize: if full then 22 else 16
+              'hello@consider.it'
 
-                A 
-                  href: 'mailto:hello@consider.it'
-                  style: 
-                    textDecoration: 'underline'
-                    fontWeight: 400
-                    fontSize: if full then 22 else 16
-                  'hello@consider.it'
+          DIV 
+            style: css.crossbrowserify
+              flex: '1 1 auto'
+              padding: 20
+              fontWeight: 400
+            'or'
 
-              TD 
-                style: 
-                  padding: '0 20px'
-                  verticalAlign: 'top'
-                  fontWeight: 400
-                'or'
+          DIV 
+            style: css.crossbrowserify
+              flex: '1 1 auto'
+              padding: '0px 20px'
 
-              TD 
-                style:
-                  verticalAlign: 'top'   
-                  textAlign: 'left'  
+            DIV 
+              style: {}
+              'via Postal Service'
 
-                DIV 
-                  style: 
-                    fontWeight: 700
-                  'via Postal Service'
+            DIV 
+              style: 
+                fontWeight: 400
+                fontSize: if full then 22 else 16
 
-                DIV 
-                  style: 
-                    fontWeight: 400
-                    fontSize: if full then 22 else 16
-                    
-
-                  'Consider.it' 
-                  BR null
-                  '2420 NE Sandy Blvd'
-                  BR null
-                  'Suite 126' 
-                  BR null
-                  'Portland, OR 97232'
+              'Consider.it' 
+              BR null
+              '2420 NE Sandy Blvd'
+              BR null
+              'Suite 126' 
+              BR null
+              'Portland, OR 97232'
 
         if full 
           DIV 

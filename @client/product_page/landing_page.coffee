@@ -9,7 +9,7 @@ window.LandingPage = ReactiveComponent
 
 
 Heading = -> 
-  compact = true # SAAS_PAGE_WIDTH() < 1000
+  compact = browser.is_mobile || true # SAAS_PAGE_WIDTH() < 1000
 
   DIV 
     style: 

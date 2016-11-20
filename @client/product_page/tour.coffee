@@ -1,4 +1,4 @@
-
+require './testimonials'
 
 
 window.Demo = (props) -> 
@@ -81,6 +81,7 @@ window.Tour = ReactiveComponent
 
   render: -> 
 
+    compact = browser.is_mobile || SAAS_PAGE_WIDTH() < 700
 
     DIV null,
 
@@ -106,7 +107,7 @@ window.Tour = ReactiveComponent
 
         DIV 
           style: 
-            maxWidth: 765 + 80 
+            maxWidth: 765 + 90 
             margin: 'auto'
             padding: '0px 40px'
 
@@ -125,13 +126,13 @@ window.Tour = ReactiveComponent
             maxWidth: 1000
             marginTop: 40
             padding: '0px 40px'
-            display: 'flex'
+            display: css.crossbrowserify 'flex'
 
 
           DIV 
-            style: 
+            style: css.crossbrowserify
               display: 'inline-block'
-              width: '45%'
+              width: if !compact then '45%'
               margin: '0 20px'
               verticalAlign: 'top'
               flex: '1 1 auto'
@@ -140,17 +141,18 @@ window.Tour = ReactiveComponent
               testimonial: testimonials.pierre 
               left: true 
 
-          DIV 
-            style: 
-              display: 'inline-block'
-              width: '45%'
-              margin: '0 20px'
-              flex: '1 1 auto'
+          if !compact 
+            DIV 
+              style: css.crossbrowserify
+                display: 'inline-block'
+                width: '45%'
+                margin: '0 20px'
+                flex: '1 1 auto'
 
-            Testimonial
-              testimonial: testimonials.auryn
-              left: false 
-              verticalAlign: 'top'
+              Testimonial
+                testimonial: testimonials.auryn
+                left: false 
+                verticalAlign: 'top'
         
 
         Features()
@@ -159,16 +161,36 @@ window.Tour = ReactiveComponent
   reevaluateActiveFeature: -> 
     f = fetch 'active_feature'
 
-    features = $('.feature_label')
+    features = $('.feature')
     yoff = window.pageYOffset
+
     active = null
-    top_most = 99999999999
+    top_most = Infinity
+    found_perfect = false 
+    most_in_view = 0 
+
     for feature in features 
       coords = getCoords(feature)
+
+      viewport_top = document.documentElement.scrollTop or document.body.scrollTop
+      viewport_bottom = viewport_top + (document.documentElement.clientHeight or window.innerHeight)
       
-      if coords.top > yoff && coords.top < top_most && coords.top + feature.offsetHeight < window.pageYOffset + window.innerHeight
-        active = feature
-        top_most = coords.top
+      above_viewport = coords.top + 60 < viewport_top
+      below_viewport = coords.bottom > viewport_bottom
+
+      # prioritize any feature that is entirely visible
+      # ...but fall back to the feature with the greatest # of pixels visible
+
+      is_perfect = !above_viewport && !below_viewport
+      if is_perfect
+        if !found_perfect || top_most > coords.top 
+          found_perfect = true 
+          active = feature
+          top_most = coords.top 
+      else if !found_perfect
+        amount_in_viewport = Math.min(coords.bottom, viewport_bottom) - Math.max(coords.top, viewport_top)
+        if amount_in_viewport > most_in_view && amount_in_viewport > 125
+          active = feature 
 
 
     if !active && f.active 
@@ -247,7 +269,7 @@ Features = ->
     }
   ]
   
-  compact = SAAS_PAGE_WIDTH() < 800
+  compact = browser.is_mobile || SAAS_PAGE_WIDTH() < 800
 
   DIV 
     id: 'features_tour'
@@ -276,7 +298,7 @@ Features = ->
             section.label 
 
         # feature menu
-        if !compact && idx == 0
+        if false && !compact && idx == 0
 
           FeatureMenu {feature_sections}
 
@@ -327,7 +349,7 @@ FeatureMenu = ReactiveComponent
                   color: if is_active then primary_color() else '#000'
                   fontSize: 14
                   fontWeight: 500
-                  opacity: if !is_active then .3
+                  opacity: if !is_active then .5
                 capitalize f.id.replace(/_/g, ' ')
                 if idx == 1
                   SPAN 
@@ -349,6 +371,8 @@ Feature = ReactiveComponent
     has_media = !!feature.img || !!feature.video || !!feature.testimonial
 
     LI 
+      className: 'feature'
+      'data-id': feature.id    
       style: 
         padding: 40
         position: 'relative'
@@ -373,8 +397,6 @@ Feature = ReactiveComponent
 
           if feature.label 
             H3
-              className: 'feature_label'
-              'data-id': feature.id
               style: 
                 fontSize: 32
                 fontWeight: 700
@@ -446,21 +468,25 @@ Feature = ReactiveComponent
                 style: 
                   marginTop: 0
 
-                DIV 
-                  style: 
-                    fontWeight: 200
-                    fontSize: 20
-                    fontStyle: 'italic'
-                  feature.testimonial.text 
+                Testimonial
+                  testimonial: feature.testimonial
+                  bubble_color: "#eee"
 
-                DIV 
-                  style: 
-                    textAlign: 'right'
-                    color: '#303030'
-                    fontSize: 18
-                    marginTop: 16
+                # DIV 
+                #   style: 
+                #     fontWeight: 200
+                #     fontSize: 20
+                #     fontStyle: 'italic'
+                #   feature.testimonial.text 
 
-                  feature.testimonial.author
+                # DIV 
+                #   style: 
+                #     textAlign: 'right'
+                #     color: '#303030'
+                #     fontSize: 18
+                #     marginTop: 16
+
+                #   feature.testimonial.author
 
         DIV 
           style: 
@@ -477,15 +503,20 @@ Feature = ReactiveComponent
 
 
   updateVideoPlayStatus: -> 
-
     if @refs.video 
-      active = fetch('active_feature').active == @props.feature.label
-      if active
-        #@refs.video.getDOMNode().load()
-        @refs.video.getDOMNode().currentTime = 0
-        @refs.video.getDOMNode().play()
-      else 
-        @refs.video.getDOMNode().pause()
+      active = fetch('active_feature').active == @props.feature.id
+      el = @refs.video?.getDOMNode()
+      if el 
+        try 
+          if active
+            #@refs.video.getDOMNode().load()
+            el.currentTime = 0
+            el.play?()
+          else 
+            el.pause?()
+        catch e 
+          console.error e
+
 
   componentDidMount: -> 
     @updateVideoPlayStatus()
@@ -538,9 +569,7 @@ basic_features = [
   id: 'accessibility'  
   label: 'Accessible for the disabled'
   html: 'Consider.it is <a href="https://www.w3.org/WAI/intro/wcag.php" target="_blank" style="text-decoration: underline;">WCAG</a> Level A compliant. Consider.it also provides a mechanism for users of screenreaders to ask for help. We help each of these folks individually to understand the proposals being discussed and input their opinions.'
-  testimonial: 
-    author: 'Sheri, Seattle resident, captain of her blind softball team'
-    text: 'I am blind and use assistive technology to read information on a computer screen. Consider.it works well with my screen reading software and allows me the opportunity to fully participate in my city’s decision making process in the same way all others can. I appreciate Consider.it’s willingness to work hard to make their website fully accessible to me and all other blind computer users!'
+  testimonial: testimonials.sheri 
  }
 
  {

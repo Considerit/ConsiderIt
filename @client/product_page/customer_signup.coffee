@@ -16,7 +16,7 @@ window.CustomerSignup = ReactiveComponent
       fontSize: 28
       padding: '0 2px'
 
-    compact = SAAS_PAGE_WIDTH() < 800
+    compact = browser.is_mobile || SAAS_PAGE_WIDTH() < 800
 
     loc = fetch('location')
     if loc.query_params.error 

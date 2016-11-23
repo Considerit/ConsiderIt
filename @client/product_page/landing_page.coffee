@@ -311,13 +311,13 @@ Example = ReactiveComponent
           border: 'none'
           width: '100%'
           padding: 20
-          textDecoration: 'underline'
-          fontSize: 24
+          #textDecoration: 'underline'
+          fontSize: 42
           marginTop: 24
           display: 'block'
           textAlign: 'center'
           color: 'white'
-          fontWeight: 500
+          fontWeight: 700
 
 
         onClick: click
@@ -380,7 +380,7 @@ cases.seattle =
 
   ]
 
-  more_callout: 'about Seattle Consider.it forums'
+  more_callout: 'about Seattle cases'
 
   extra_heading: 'Organized, civil public dialogue on contentious issues.'
   story: """<p>Seattle is booming. Affordable housing is vanishing.</p>
@@ -395,7 +395,7 @@ cases.seattle =
 cases.wsffn = 
   id: 'wsffn'
   background: 'linear-gradient(143deg, #9BA43D 0%, #7D8928 100%)'
-  heading: 'A statewide farming non-profit made a strategic plan for ~15% of the cost of a traditional process'
+  heading: 'Statewide farming non-profit made strategic plan for ~15% the cost of a traditional process'
   example_text: 'Strategic Planning example:'
   browser_loc: 'https://wsffn.consider.it'
 
@@ -446,7 +446,7 @@ cases.wsffn =
 cases.dao = 
   id: 'dao'
   background: 'linear-gradient(141deg, #348AC7 0%, #7474BF 100%)'
-  heading: 'A worldwide decentralized organization deliberated how to spend $150m'
+  heading: 'Worldwide decentralized organization deliberated how to spend $150m'
   example_text: 'Distributed Community example:'
 
   browser_loc: 'https://dao.consider.it/temporary-moratorium-on-the-dao-security-issues'

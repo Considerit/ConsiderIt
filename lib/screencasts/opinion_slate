@@ -1,0 +1,156 @@
+#!/usr/bin/env ~/Documents/code/castanaut/bin/castanaut
+
+#####
+# Uses castanaut to automate a screencast in safari. The robot voice sections, 
+# as created via while_saying, help to space out the video for timing
+# purposes. 
+#
+#
+# Installation:
+#   - must be installed on a mac
+#   - Castanaut should be installed from https://github.com/tkriplean/castanaut
+#
+# Execution:
+#   - must be run on a mac
+#   - /path/to/castanaut/bin/castanaut /path/to/this/file
+#   - can be invoked from bin/screencast, but the path to in bin/screencast is
+#     hardcoded for Travis...talk to him if you can't get it to run.  
+
+# TODO: 
+#  - refactor into general methods so we can create other screencasts or tests
+#    more easily
+#  - find a way to automatically destroy any opinions created here. 
+
+
+#####
+# Prep for this screencast: 
+# 
+# > rake prep_deathstar
+
+#####
+# config
+
+# By default, this script will only launch and control a safari instance. 
+# Setting 'record_video' will also cause a screen recording to be created. 
+record_video = true
+
+export_to = File.absolute_path(File.join(File.dirname(screenplay), 'exports', File.basename(screenplay)))
+
+
+# height of safari window bar + toolbar + apple menu
+y_offset = 63
+
+# shaves off rounded window corners
+window_padding = 15 
+
+# controls the size and location of the screencast main area
+x, y, width, height = [window_padding, y_offset, 1280, 720] 
+
+
+#####
+# Screencast guts
+
+if record_video
+  plugin "quicktime"
+  start_recording(x, y, width, height)
+  pause 2
+end
+
+plugin "safari"
+
+launch "Safari", at(x - window_padding, y - y_offset, width + window_padding * 2, height + y_offset + window_padding) 
+
+while_saying "loading page" do
+  url "http://localhost:3000/?domain=wsffn"
+  wait_for_element('#questions')
+  pause 1
+end
+
+perform "Let's make sure we're logged in" do
+  wait_for_element('#user_nav')
+  move to_element('.profile_anchor.login'), {:speed => 1} rescue skip
+  click
+  wait_for_element('#user_email')
+  move to_element('#user_email'), {:speed => 1}
+  click
+  type "test@test.dev.ghost", {:speed => 1}
+  move to_element('#user_password'), {:speed => 1}
+  click
+  type "testtest", {:speed => 1}
+
+  move to_element('.primary_button'), {:speed => 1}
+  click
+  wait_for_element('#questions')
+end
+
+
+# scroll_to_pos 360, 0, 0
+# pause 3
+
+# scroll_to "main", 2000, 0
+
+scroll_to "#homepagetab", 0, 0
+pause 3
+
+
+scroll_to "#questions", 10000, 0
+move to_element('#questions'), {:speed => 1}
+pause 3
+
+scroll_to "#questions .add_new_proposal", 2000, 0
+move to_element('#questions .add_new_proposal'), {:speed => 1}
+
+click
+pause 1
+
+type "Organize a WSFFN summit to accelerate our coalition building", {
+  :speed => 50
+}
+restore_mouse(2)
+
+move to_element('.submit_new_proposal', {:area => ['bottom', 'center']})
+click
+pause 2
+
+
+
+
+
+
+# move to_element('footer button'), {:speed => 1}
+# pause 1
+
+
+
+
+
+
+
+########
+# cleanup
+
+# while_saying "cleanup comments, points, inclusions" do
+
+#   perform "clean up added comments" do 
+#     scroll_to '[data-id="/point/5502"]', 0, 50
+#     move to_element('[data-id="/point/5502"]'), {:speed => 0.1}
+#     click
+#     pause 1
+#     while true
+#       move to_element('[data-action="delete-comment"]'), {:speed => 0.1} rescue skip
+#       click
+#       pause 1
+#       hit Enter
+#     end
+#     move to_element('[data-id="/point/5502"]')
+#     click
+#   end
+
+# end
+
+at_end_of_movie do
+  if record_video
+    puts "Exporting to #{export_to}"
+    stop_recording(export_to)
+  end
+end

@@ -62,6 +62,7 @@ window.back_to_homepage_button = (style) ->
   NAV 
     role: 'navigation'
     A
+      className: 'back_to_homepage'
       title: 'back to homepage'
       key: 'back_to_homepage_button'
       href: "/##{hash}"
@@ -119,7 +120,8 @@ window.getCoords = (el) ->
   _.extend offset,
     cx: offset.left + rect.width / 2
     cy: offset.top + rect.height / 2
-
+    right: offset.left + rect.width
+    bottom: offset.top + rect.height
 
 
 #### browser
@@ -241,7 +243,6 @@ window.proposal_url = (proposal) =>
   if subdomain.name == 'homepage'
     subdomain = fetch("/subdomain/#{proposal.subdomain_id}")
     result = "https://#{subdomain.host_with_port}" + result
-    console.log result
 
   if TWO_COL() || (!customization('show_crafting_page_first', proposal) || !proposal.active ) \
      || (!customization('discussion_enabled', proposal))
@@ -509,9 +510,27 @@ css_as_str = (attrs) -> _.keys(attrs).map( (p) -> "#{p}: #{attrs[p]}").join(';')
 css.crossbrowserify = (props, as_str = false) -> 
 
   prefixes = ['-webkit-', '-ms-', '-mox-', '-o-']
+
+
   if props.transform
     for prefix in prefixes
       props["#{prefix}transform"] = props.transform
+
+  if props.flex 
+    for prefix in prefixes
+      props["#{prefix}flex"] = props.flex
+
+  if props.flexDirection
+    for prefix in prefixes
+      props["#{prefix}flex-direction"] = props.flexDirection
+
+  if props.justifyContent
+    for prefix in prefixes
+      props["#{prefix}justify-content"] = props.justifyContent
+
+
+  if props.display == 'flex'
+    props.display = 'display: table-cell; -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex'
 
   if props.transition
     for prefix in prefixes
@@ -522,6 +541,7 @@ css.crossbrowserify = (props, as_str = false) ->
       MozUserSelect: props.userSelect
       WebkitUserSelect: props.userSelect
       msUserSelect: props.userSelect
+
 
   if as_str then css_as_str(props) else props
 
@@ -618,6 +638,12 @@ time, mark, audio, video {
   vertical-align: baseline;
   line-height: 1.4; }
 
+body, html {
+  height: 100%;
+}
+button {
+  line-height: 1.4;
+}
 hr {
   display: block;
   height: 1px;
@@ -736,7 +762,7 @@ a.skip:hover {
   position: relative;
   font-size: 16px;
   color: black;
-  min-height: 500px; }
+  min-height: 100%; }
 
 
 .flipped {

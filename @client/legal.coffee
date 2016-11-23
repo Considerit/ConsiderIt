@@ -19,10 +19,11 @@ LegalDoc = (html) ->
   DIV 
     style: 
       width: '80%'
-      margin: 'auto'
-      maxWidth: 800
-      paddingTop: 100
-      paddingBottom: 50
+      margin: '40px auto'
+      maxWidth: 1000
+      padding: '25px 60px'
+      backgroundColor: 'white'
+      boxShadow: '0 1px 2px rgba(0,0,0,.2)'
 
     STYLE dangerouslySetInnerHTML: __html: #dangerously set html is so that the type="text" doesn't get escaped
         """

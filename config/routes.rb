@@ -29,6 +29,7 @@ ConsiderIt::Application.routes.draw do
 
   get "/dashboard/export(.:format)" => 'import_data#export'
 
+  post '/subdomain' => 'subdomain#create'
 
   # All user-visible URLs go to the html controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
@@ -59,9 +60,11 @@ ConsiderIt::Application.routes.draw do
   get '/subdomain' => 'subdomain#show'
   get '/subdomain/:id' => 'subdomain#show'
 
-  post '/subdomain' => 'subdomain#create'
+  
   match '/subdomain' => 'subdomain#update', :via => [:put]
   get '/subdomains' => 'subdomain#index'
+
+  post "/contact_us" => 'contact#create'
 
   match '/notification/:notification_id' => 'notification#update', :via => [:put]
   get '/notifications/:proposal_id' => 'notification#index'

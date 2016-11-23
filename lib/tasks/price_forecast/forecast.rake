@@ -1,3 +1,7 @@
+# See Google API docs at: 
+#   - https://developers.google.com/sheets/quickstart/ruby
+#   - https://developers.google.com/sheets/guides/batchupdate
+
 
 # tiers are pricing tiers: 
 #    [ {from: 0, to:10, per: 0}, {from: 10, to: 100, per: 10}, ...]
@@ -34,8 +38,6 @@ def opinions(stats, base, tiers)
 
   base + cost
 end
-
-
 
 
 
@@ -165,6 +167,8 @@ def push_to_spreadsheet(revenue, earliest_month)
           }
         }
       })
+      response = service.batch_update_spreadsheet(spreadsheet_id, {requests: requests}, {})
+      requests = []
     end 
 
     sheet_id = sheets[plan]

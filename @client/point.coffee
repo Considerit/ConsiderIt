@@ -217,9 +217,9 @@ window.Point = ReactiveComponent
               stroke: if is_selected then focus_blue else if @local.has_focus then '#888' else 'transparent'
               stroke_width: if is_selected || @local.has_focus then 20 else 0
               box_shadow:   
-                dx: '3'
-                dy: '0'
-                stdDeviation: "2"
+                dx: 3
+                dy: 0
+                stdDeviation: 2
                 opacity: .5
 
         DIV 

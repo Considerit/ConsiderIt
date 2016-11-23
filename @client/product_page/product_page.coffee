@@ -15,7 +15,6 @@ require '../customizations'
 require '../homepage'
 require '../legal'
 
-window.
 
 window.base_text =
   fontSize: 24
@@ -41,36 +40,40 @@ window.h2 = _.extend {}, base_text,
 window.strong = _.extend {}, base_text,
   fontWeight: 600
 
+window.primary_color = -> c = fetch('colors'); c.primary_color
 
 window.seattle_salmon = '#ee6061' #'#E16161'
 
-window.primary_color = -> c = fetch('colors'); c.primary_color
 
-window.big_button = -> 
-  backgroundColor: primary_color()
-  boxShadow: "0 4px 0 0 black"
-  fontWeight: 700
-  color: 'white'
-  padding: '8px 60px'
-  display: 'inline-block'
-  fontSize: 24
-  border: 'none'
-  borderRadius: 8
+Colors = ReactiveComponent
+  displayName: 'Colors'
+  render: -> 
+    loc = fetch 'location'
+    colors = fetch 'colors'
 
+    color = switch loc.url 
+      when '/'
+        # logo_red #'#d65931' #'#B03F3A'
+        '#fff'
+      when '/tour'
+        #'#EC3684'
+        seattle_salmon
+      when '/pricing'
+        '#6F3AB0'
+        #'#734EA0'
+      when '/contact'
+        '#B03A88'
+      when '/create_forum'
+        '#348ac7'
+        #'#4DBE4D'
+        #'#414141'
+      else 
+        '#ddd'
 
-window.BIG_BUTTON = (text, opts) -> 
-  opts.style ||= {}
-  _.defaults opts.style, big_button()
-
-  BUTTON 
-    style: opts.style 
-    onClick: opts.onClick
-    onKeyPress: (e) -> 
-      if e.which == 13 || e.which == 32 # ENTER or SPACE
-        e.preventDefault()
-        opts.onClick(e)
-
-    text 
+    if colors.primary_color != color 
+      colors.primary_color = color
+      save colors 
+    SPAN null
 
 
 require './demo'
@@ -163,33 +166,34 @@ Computer = ReactiveComponent
     else
       SPAN null
 
-Colors = ReactiveComponent
-  displayName: 'Colors'
-  render: -> 
-    loc = fetch 'location'
-    colors = fetch 'colors'
 
-    color = switch loc.url 
-      when '/'
-        # logo_red #'#d65931' #'#B03F3A'
-        '#fff'
-      when '/tour'
-        #'#EC3684'
-        seattle_salmon
-      when '/pricing'
-        '#6F3AB0'
-      when '/contact'
-        '#B03A88'
-      when '/create_forum'
-        '#77b03a'
-        #'#414141'
-      else 
-        '#ddd'
 
-    if colors.primary_color != color 
-      colors.primary_color = color
-      save colors 
-    SPAN null
+window.big_button = -> 
+  backgroundColor: primary_color()
+  boxShadow: "0 4px 0 0 black"
+  fontWeight: 700
+  color: 'white'
+  padding: '8px 60px'
+  display: 'inline-block'
+  fontSize: 24
+  border: 'none'
+  borderRadius: 8
+
+
+window.BIG_BUTTON = (text, opts) -> 
+  opts.style ||= {}
+  _.defaults opts.style, big_button()
+
+  BUTTON 
+    style: opts.style 
+    onClick: opts.onClick
+    onKeyPress: (e) -> 
+      if e.which == 13 || e.which == 32 # ENTER or SPACE
+        e.preventDefault()
+        opts.onClick(e)
+
+    text 
+
 
 
 Root = ReactiveComponent

@@ -61,28 +61,29 @@ window.Footer = ReactiveComponent
           width: '100%'
 
 
-        DIV 
-          style: 
-            textAlign: 'center'
-            position: 'absolute'
-            top: 0
-            width: '100%'
-
-          BUTTON 
-            onClick: -> scrollTo 0, 0
-            onKeyPress: (e) -> 
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
-                e.preventDefault()
-                scrollTo 0, 0
-
+        if loc.url != '/create_forum'
+          DIV 
             style: 
-              backgroundColor: '#eee'
-              borderRadius: 16
-              padding: '8px 24px'
-              border: 'none'
-              color: 'black'
+              textAlign: 'center'
+              position: 'absolute'
+              top: 0
+              width: '100%'
 
-            'back to top'
+            BUTTON 
+              onClick: -> scrollTo 0, 0
+              onKeyPress: (e) -> 
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  e.preventDefault()
+                  scrollTo 0, 0
+
+              style: 
+                backgroundColor: '#eee'
+                borderRadius: 16
+                padding: '8px 24px'
+                border: 'none'
+                color: 'black'
+
+              'back to top'
 
 
         DIV 

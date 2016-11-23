@@ -54,7 +54,7 @@ window.CustomerSignup = ReactiveComponent
             name: 'subdomain'
             ref: 'subdomain_name'
             style: 
-              border: "1px solid #{auth_ghost_gray}"
+              border: "1px solid #2a70a2"
               padding: '8px 16px'
               fontSize: 20
           SPAN
@@ -92,7 +92,7 @@ window.CustomerSignup = ReactiveComponent
           disabled: if !current_user.logged_in then true 
           style: _.extend {}, big_button(),
             opacity: if !current_user.logged_in then 0
-            backgroundColor: 'rgb(101, 136, 64)'
+            backgroundColor: '#2a70a2'
             cursor: if !current_user.logged_in then 'auto' else 'pointer'
             position: 'relative'
             top: -26

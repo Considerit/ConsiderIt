@@ -172,8 +172,6 @@ window.Footer = ReactiveComponent
                   'Play Around With It'
 
 
-
-
             # nav sections
             DIV null,
 
@@ -226,10 +224,15 @@ window.Footer = ReactiveComponent
                 helloemail()
                 address()]
               
-  componentDidMount: -> 
+  sizeFooter: -> 
     f = fetch 'footer' 
-    f.height = @refs.footer.getDOMNode().offsetHeight
-    save f 
+    height = @refs.footer.getDOMNode().offsetHeight
+    if height != f.height
+      f.height = height 
+      save f 
+
+  componentDidMount: -> @sizeFooter()
+  componentDidUpdate: -> @sizeFooter()
 
 
 

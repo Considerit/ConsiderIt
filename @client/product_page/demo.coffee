@@ -30,7 +30,7 @@ chapters = [
 
 DEMO_AUTOPLAY_DELAY = 5000
 
-video_width = Math.min(SAAS_PAGE_WIDTH(), window.innerWidth - 320)
+
 
 hover_caption_color = primary_color()
 caption_color =  "black" #primary_color() focus_blue
@@ -47,6 +47,12 @@ exit_demo = ->
 window.Video = ReactiveComponent
   displayName: "Video"
   render: ->
+    @compact = browser.is_mobile || SAAS_PAGE_WIDTH() < 1000
+
+    @video_width = if @compact 
+                      Math.min(SAAS_PAGE_WIDTH(), window.innerWidth)
+                   else 
+                      Math.min(SAAS_PAGE_WIDTH(), window.innerWidth - 320)
 
     DIV 
       id: 'demo'
@@ -56,14 +62,18 @@ window.Video = ReactiveComponent
         minHeight: window.innerHeight
         paddingTop: 20
 
+      
       @drawCaptions()
+
 
       DIV 
         style: 
           paddingTop: 10
 
-        @drawVideo()      
-        @drawChapterMenu()
+        @drawVideo()  
+
+        if !@compact      
+          @drawChapterMenu()
 
 
 
@@ -83,6 +93,8 @@ window.Video = ReactiveComponent
             exit_demo()
 
         SVG 
+          style: 
+            cursor: 'pointer'
           viewBox: "0 0 64 64" 
           width: 24
           height: 24
@@ -105,10 +117,10 @@ window.Video = ReactiveComponent
       controls: @props.playing
       style: 
         position: 'relative'
-        width: video_width
+        width: @video_width
         margin: 'auto'
-        left: 160
-        height: video_width * 1080/1920
+        left: if !@compact then 160 else 10
+        height: @video_width * 1080/1920
 
 
       for format in ['mp4', 'webm']
@@ -129,9 +141,10 @@ window.Video = ReactiveComponent
         paddingBottom: 5
         position: 'relative'
         zIndex: 1
-        width: video_width - 1
+        width: @video_width - 1
         textAlign: 'center'
-        left: 140
+        left: if @compact then 10 else 140
+        fontSize: if !@compact then h1.fontSize else 24
 
       DIV 
         style: 

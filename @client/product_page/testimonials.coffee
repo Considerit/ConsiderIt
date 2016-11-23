@@ -3,21 +3,31 @@ window.TestimonialGrid = ReactiveComponent
 
   render: -> 
 
-    w = @props.maxWidth or 1100
+    w = Math.min WINDOW_WIDTH(), @props.maxWidth or 1100
     expanded = @local.expanded 
     if !@props.top?
       top = true 
     else 
       top = @props.top 
 
-    odd = @props.testimonials.length % 2 == 1
+    the_testimonials = @props.testimonials
+
+    min_pixels_per = 350
+
+    max_testimonials = w / min_pixels_per
+
+    if max_testimonials < the_testimonials.length 
+      the_testimonials = the_testimonials[0..max_testimonials - 1]
+      console.log 'CHOOPING', the_testimonials
+
+    odd = the_testimonials.length % 2 == 1
 
     user_row = =>
       DIV 
         style: css.crossbrowserify
           display: 'flex'
 
-        for t, idx in @props.testimonials
+        for t, idx in the_testimonials
 
           DIV 
             style: css.crossbrowserify
@@ -27,17 +37,17 @@ window.TestimonialGrid = ReactiveComponent
 
             @user_credentials 
               testimonial: t
-              left: odd || idx < @props.testimonials.length / 2
+              left: odd || idx < the_testimonials.length / 2
               top: top
               bg_color: @props.bubble_color or considerit_gray
-              right_side: idx > @props.testimonials.length / 2
+              right_side: idx > the_testimonials.length / 2
 
     quote_row = => 
       DIV 
         style: css.crossbrowserify
           display: 'flex'
 
-        for t,idx in @props.testimonials
+        for t,idx in the_testimonials
           continue if expanded && expanded != t
 
           @quote_bubble 
@@ -121,7 +131,7 @@ window.TestimonialGrid = ReactiveComponent
         top: 20
         padding: '12px 20px'
         float: if !left then 'right' 
-
+        whiteSpace: 'nowrap'
 
       if left && t.avatar 
         avatar_and_mouth()
@@ -229,35 +239,6 @@ window.TestimonialGrid = ReactiveComponent
 
 
 
-window.Testimonial = ReactiveComponent 
-  displayName: 'Testimonial'
-
-  render: -> 
-
-    t = @props.testimonial 
-
-    DIV 
-      style: 
-        paddingTop: 28
-        position: 'relative'
-        left: 0
-
-      quote_bubble 
-        key: @local.key
-        testimonial: t
-        left: true
-        top: false
-        bg_color: @props.bubble_color or considerit_gray
-
-      user_credentials
-        testimonial: t
-        left: true
-
-
-
-
-
-
 
 
 window.testimonials = 
@@ -359,10 +340,10 @@ window.testimonials =
         """
 
   sheri: 
-    name: 'Sheri'
-    role: 'Seattle resident'
-    organization: 'Captain of her blind softball team'
-    short_quote: 'I am blind and use assistive technology to read information on a computer screen. Consider.it works well with my screen reading software and allows me the opportunity to fully participate in my city’s decision making process in the same way all others can. I appreciate Consider.it’s willingness to work hard to make their website fully accessible to me and all other blind computer users!'
+    name: 'Sheri Richardson'
+    role: 'President'
+    organization: 'Guide Dog Users of WA State'
+    short_quote: 'I am blind and use assistive technology to read information on a computer screen. Consider.it works well with my screen reading software and allows me the opportunity to fully participate in my city’s decision making process in the same way all others can! I appreciate Consider.it’s hard work making their website fully accessible to me and other blind computer users.'
 
 
 testimonials.susie_pricing = _.extend {}, testimonials.susie, 

@@ -159,40 +159,6 @@ window.Tour = ReactiveComponent
             top: false 
             italic: true
 
-        # DIV 
-        #   style: 
-        #     margin: 'auto'
-        #     maxWidth: 1000
-        #     marginTop: 40
-        #     padding: '0px 40px'
-        #     display: css.crossbrowserify 'flex'
-
-
-        #   DIV 
-        #     style: css.crossbrowserify
-        #       display: 'inline-block'
-        #       width: if !compact then '45%'
-        #       margin: '0 20px'
-        #       verticalAlign: 'top'
-        #       flex: '1 1 auto'
-
-        #     Testimonial 
-        #       testimonial: testimonials.pierre 
-        #       left: true 
-
-        #   if !compact 
-        #     DIV 
-        #       style: css.crossbrowserify
-        #         display: 'inline-block'
-        #         width: '45%'
-        #         margin: '0 20px'
-        #         flex: '1 1 auto'
-
-        #       Testimonial
-        #         testimonial: testimonials.auryn
-        #         left: false 
-        #         verticalAlign: 'top'
-        
 
         Features()
         Research()   
@@ -507,25 +473,35 @@ Feature = ReactiveComponent
                 style: 
                   marginTop: 0
 
-                # Testimonial
-                #   testimonial: feature.testimonial
-                #   bubble_color: "#eee"
+                DIV 
+                  style: 
+                    fontWeight: 200
+                    fontSize: 20
+                    fontStyle: 'italic'
+                  feature.testimonial.short_quote
 
-                # DIV 
-                #   style: 
-                #     fontWeight: 200
-                #     fontSize: 20
-                #     fontStyle: 'italic'
-                #   feature.testimonial.text 
+                DIV 
+                  style:
+                    padding: '0 16px'
+                    verticalAlign: 'middle'  
+                    textAlign: 'right'
 
-                # DIV 
-                #   style: 
-                #     textAlign: 'right'
-                #     color: '#303030'
-                #     fontSize: 18
-                #     marginTop: 16
+                  DIV 
+                    style: 
+                      fontSize: 20
+                      whiteSpace: 'nowrap'
 
-                #   feature.testimonial.author
+                    feature.testimonial.name
+
+                  DIV 
+                    style: 
+                      fontSize: 14
+                      whiteSpace: 'nowrap'
+
+                    feature.testimonial.role
+                    ', '
+                    feature.testimonial.organization
+
 
         DIV 
           style: 
@@ -535,6 +511,7 @@ Feature = ReactiveComponent
 
           if feature.html 
             DIV 
+              className: 'embedded'
               style: 
                 fontSize: 18
                 color: '#303030'
@@ -607,7 +584,7 @@ basic_features = [
  {
   id: 'accessibility'  
   label: 'Accessible for the disabled'
-  html: 'Consider.it is <a href="https://www.w3.org/WAI/intro/wcag.php" target="_blank" style="text-decoration: underline;">WCAG</a> Level A compliant. Consider.it also provides a mechanism for users of screenreaders to ask for help. We help each of these folks individually to understand the proposals being discussed and input their opinions.'
+  html: 'Consider.it is <a href="https://www.w3.org/WAI/intro/wcag.php" target="_blank" style="text-decoration: underline;">WCAG</a> Level A compliant. Consider.it also provides a mechanism for users of screenreaders to ask for help. We help each of these folks individually to understand the proposals being discussed and input their opinions. Read our <a target="_blank" href="https://docs.google.com/document/d/e/2PACX-1vS5-8UQlzGYY5Su38VDUXDbiAy2S72ZARfU8-Xmi-Nxo5vvXN9HkV_W6zXYF6o-2UM5cHuR4FvTdR1N/pub">Accessibility Compliance Statement</a> for more information.'
   testimonial: testimonials.sheri 
  }
 

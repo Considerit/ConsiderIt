@@ -86,18 +86,9 @@ Example = ReactiveComponent
       style: 
         position: 'relative'
         marginBottom: 80
+        background: ex.background
 
       A name: ex.id 
-
-      DIV 
-        style: 
-          background: ex.background 
-          position: 'absolute'
-          left: 0
-          top: 0
-          height: 625
-          width: '100%'
-          zIndex: 0
 
       DIV 
         style: 
@@ -181,8 +172,6 @@ Example = ReactiveComponent
                 ex.screen SAAS_PAGE_WIDTH() - (if compact then 0 else 60 + 120)
 
 
-            if !@local.expanded 
-              @additional_options()
 
         DIV 
           style: 
@@ -190,7 +179,10 @@ Example = ReactiveComponent
 
           if @local.expanded
             DIV 
-              style: {}
+              style: 
+                backgroundColor: 'white'
+                boxShadow: '0 1px 2px rgba(0,0,0,.2)'
+                padding: '20px 40px'
 
               H3
                 style: 
@@ -299,33 +291,38 @@ Example = ReactiveComponent
 
 
 
-          if @local.expanded 
-            @additional_options()
+      @additional_options()
 
   additional_options: -> 
     ex = @props.case
 
-    DIV null, 
+    click = => 
+      @local.expanded = !@local.expanded; save @local
+      document.activeElement.blur()
+
+    DIV 
+      width: '100%'
 
       BUTTON 
         style: 
-          backgroundColor: '#eaeaea' 
+          backgroundColor: 'rgba(0,0,0,.1)' 
           border: 'none'
           width: '100%'
-          padding: "12px"
+          padding: 20
           textDecoration: 'underline'
           fontSize: 24
           marginTop: 24
           display: 'block'
           textAlign: 'center'
+          color: 'white'
+          fontWeight: 500
 
 
-        onClick: => @local.expanded = !@local.expanded; save @local
+        onClick: click
         onKeyPress: (e) -> 
           if e.which == 13 || e.which == 32 # ENTER or SPACE
             e.preventDefault()
-            @local.expanded = !@local.expanded
-            save @local
+            click()
         
 
         "Learn #{if @local.expanded then 'less' else 'more'}#{if ex.more_callout then ' ' + ex.more_callout else ''}"

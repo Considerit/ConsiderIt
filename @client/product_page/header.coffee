@@ -15,7 +15,7 @@ menu_options = nav_links = [
   }
   {
     href: '/create_forum'
-    label: 'Create Forum'
+    label: 'Create a Forum'
   }
 ]
 
@@ -167,7 +167,7 @@ HamburgerMenu = ReactiveComponent
 
     homepage = fetch('location').url == '/'
     main_color = if homepage then seattle_salmon else 'white'
-
+    link_color = if homepage then seattle_salmon else primary_color()
 
     DIV
       key: 'hamburger'
@@ -250,7 +250,7 @@ HamburgerMenu = ReactiveComponent
           position: 'absolute'
           left: 'auto'
           right: if !@local.menu then -9999 else 8
-          margin: '-2px 0 0 -8px'
+          margin: '-10px 0 0 -8px'
           padding: "16px 14px 8px 8px"
           backgroundColor: 'white'
           textAlign: 'right'
@@ -269,7 +269,7 @@ HamburgerMenu = ReactiveComponent
               href: option.href
               key: option.href
               style: 
-                color: if @local.focus == idx then main_color else '#303030'
+                color: if @local.focus == idx then link_color else '#303030'
                 outline: 'none'
                 position: 'relative'
                 bottom: 8

@@ -15,6 +15,13 @@ window.Demo = (props) ->
       width: props.width
       height: props.height
       margin: 'auto'
+      cursor: 'pointer'
+
+    onClick: watch_demo
+    onKeyPress: (e) -> 
+      if e.which == 13 || e.which == 32 # ENTER or SPACE
+        e.preventDefault()
+        watch_demo()
 
     BUTTON 
       style: _.extend {}, big_button(), 
@@ -24,11 +31,6 @@ window.Demo = (props) ->
         padding: '0px 30px 5px 50px'
         fontSize: 14
         display: if loc.query_params.play_demo then 'none'
-      onClick: watch_demo
-      onKeyPress: (e) -> 
-        if e.which == 13 || e.which == 32 # ENTER or SPACE
-          e.preventDefault()
-          watch_demo()
 
       SPAN 
         style: 
@@ -67,13 +69,35 @@ window.Demo = (props) ->
           fill: "#ffffff" 
 
     
-    IMG 
-      src: asset('product_page/tour_demo_death_star.png')
-      style: 
-        width: props.width
-        height: props.height
-        borderRadius: '4px 4px 0 0'
-        backgroundColor: 'white'
+    Webframe 
+      browser_loc: 'https://galacticfederation.consider.it/Death_Star'
+      width: props.width
+
+      DIV 
+        style: 
+          width: '90%'
+          margin: 'auto'
+        DIV 
+          style: 
+            fontSize: 36
+            fontWeight: 500
+            margin: '30px 0 0px 0'
+            textAlign: 'center'
+
+          'Admit the Death Star into the Republic?'
+
+        IMG 
+          src: asset 'product_page/death_star_example.png'
+          style:
+            width: '80%'
+
+    # IMG 
+    #   src: asset('product_page/tour_demo_death_star.png')
+    #   style: 
+    #     width: props.width
+    #     height: props.height
+    #     borderRadius: '4px 4px 0 0'
+    #     backgroundColor: 'white'
 
 
 window.Tour = ReactiveComponent
@@ -116,6 +140,12 @@ window.Tour = ReactiveComponent
               color: '#303030'  
               textAlign: 'center'  
               fontSize: if SAAS_PAGE_WIDTH() < 800 then 34 else 42            
+
+              # fontSize: if compact then 36 else 50
+              # fontWeight: 800
+              # color: 'white'
+              # paddingBottom: 40
+              # textShadow: '0px 2px 4px rgba(0,0,0,.2)'
 
             "The only forum to visually summarize what your community thinks and why"
 

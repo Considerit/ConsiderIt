@@ -12,7 +12,7 @@ window.CustomerSignup = ReactiveComponent
       save auth
 
     domain_hint = 
-      color: 'rgba(255,255,255,.8)'
+      color: 'white' #'rgba(255,255,255,.8)'
       fontSize: 28
       padding: '0 2px'
 
@@ -39,6 +39,8 @@ window.CustomerSignup = ReactiveComponent
           fontSize: if compact then 34 else 50
           color: 'white'
           textAlign: 'center'
+          fontWeight: 700
+          textShadow: '0px 2px 4px rgba(0,0,0,.2)'
 
         'Give your Free Forum a name'
 
@@ -67,6 +69,8 @@ window.CustomerSignup = ReactiveComponent
             fontSize: 14
             color: 'rgba(255,255,255,.6)'
             marginTop: 8
+            textShadow: 'none'
+            fontWeight: 400
 
           'You can upgrade later if you want an Unlimited Forum.'
 
@@ -75,7 +79,7 @@ window.CustomerSignup = ReactiveComponent
         style: 
           backgroundColor: 'white'
           textAlign: 'center'
-          borderTop: "1px solid rgb(101, 136, 64)"
+          borderTop: "1px solid #2a70a2"
         
         INPUT 
           type: 'hidden'

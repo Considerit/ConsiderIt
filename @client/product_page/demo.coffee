@@ -65,30 +65,33 @@ window.Video = ReactiveComponent
         @drawVideo()      
         @drawChapterMenu()
 
+
+
       BUTTON 
         style:
           position: 'absolute'
-          color: 'white'
-          fontSize: 22
-          fontWeight: 600
-          padding: 5
           cursor: 'pointer'
-          right: 10
-          top: 10
-          borderRadius: '50%'
-          backgroundColor: '#888'
+          right: 40
+          top: 40
+          backgroundColor: 'transparent'
           border: 'none' 
-          display: 'inline-block'
-          width: 40
-          height: 40       
-          lineHeight: 0  
+
         onClick: exit_demo
         onKeyPress: (e) -> 
           if e.which == 13 || e.which == 32 # ENTER or SPACE
             e.preventDefault()
             exit_demo()
 
-        'X'
+        SVG 
+          viewBox: "0 0 64 64" 
+          width: 24
+          height: 24
+          PATH 
+            d: "M62,52c0,5.5-4.5,10-10,10H12C6.5,62,2,57.5,2,52V12C2,6.5,6.5,2,12,2h40c5.5,0,10,4.5,10,10V52z" 
+            fill: seattle_salmon
+          PATH 
+            fill: "#fff" 
+            d: "M50 21.2 42.8 14 32 24.8 21.2 14 14 21.2 24.8 32 14 42.8 21.2 50 32 39.2 42.8 50 50 42.8 39.2 32z"
 
 
 

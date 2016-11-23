@@ -206,7 +206,9 @@ Example = ReactiveComponent
                     dangerouslySetInnerHTML: {__html: ex.story}
 
                   DIV 
-                    style: {}
+                    style: 
+                      marginTop: 20
+                      marginBottom: 60
 
                     "Explore at"
 
@@ -265,7 +267,7 @@ Example = ReactiveComponent
                       'Start your own Forum'
 
                     A 
-                      href: '/contact_us?form=request_demo'
+                      href: '/contact?form=request_demo'
                       style: _.extend {}, big_button(), 
                         backgroundColor: '#eee'
                         color: '#303030'
@@ -431,9 +433,10 @@ cases.wsffn =
   more_callout: 'about this case'
 
   extra_heading: 'Lightweight strategic planning on a tight budget.'
-  story: """<p>Total cost: $1.2k for a Consider.it <a href="/pricing">Unlimited Forum</a>, plus $5k for <a href="/pricing#consulting">additional consulting</a>.</p>
+  story: """
         <p>Russ Lehman had a problem. He had just been hired as the new executive director of the Washington Sustainable Food and Farming Network. Let’s be honest, the organization needs a new name. But before changing the name, he needed a new strategic plan…and to engage his members across the state.</p>
         <p>Russ worked with Consider.it to set up a Consider.it forum. He gathered feedback on the core points of the new plan. Then he set up a private Consider.it forum for the board to discuss the plan. The board refined the plan and voted to adopt it. Now they are using Consider.it to identify a new organization name.</p>
+        <p><b>Total cost</b>: $1.2k for a Consider.it <a href="/pricing">Unlimited Forum</a>, plus $5k for <a href="/pricing#consulting">additional consulting</a>.</p>
         """
   links: ['https://wsffn.consider.it']
   testimonial: testimonials.russ
@@ -492,13 +495,13 @@ cases.dao =
 
   extra_heading: 'Visible opinions help your community find common ground for action.'
   story: """<p>The DAO was a prominent attempt to create a decentralized cooperative organization existing entirely on the internet, setting records in raising $150m of crowd-funding from thousands of individuals.</p> 
-        <p>The DAO, as an unprecedented social experiment, had many challenges to overcome. The community adopted Consider.it to help address one of these problems: aggregating and gauging community support about (1) what to invest in and (2) how to self-govern. Ultimately, a different challenge undermined The DAO and the experiment came to an end.</p>
+        <p>The DAO had many challenges to overcome as an unprecedented social experiment. The community adopted Consider.it to help address one of these problems: aggregating and gauging community support about (1) what to invest in and (2) how to self-govern. Ultimately, a different challenge undermined The DAO and the experiment came to an end.</p>
         """
   links: ['https://dao.consider.it']
   testimonial: testimonials.auryn
 
 
-Webframe = ReactiveComponent
+window.Webframe = ReactiveComponent
   displayName: 'Webframe'
 
   render: -> 

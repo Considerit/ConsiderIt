@@ -24,8 +24,9 @@ window.Contact = ReactiveComponent
       H1
         style: 
           fontSize: 50
-          fontWeight: 400
+          fontWeight: 700
           color: 'white'
+          textShadow: '0px 2px 4px rgba(0,0,0,.2)'
 
         "Hi friend, how can we help?"
 

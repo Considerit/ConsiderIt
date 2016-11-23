@@ -68,7 +68,7 @@ Colors = ReactiveComponent
         #'#4DBE4D'
         #'#414141'
       else 
-        '#ddd'
+        seattle_salmon
 
     if colors.primary_color != color 
       colors.primary_color = color

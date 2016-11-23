@@ -69,21 +69,66 @@ window.Footer = ReactiveComponent
               top: 0
               width: '100%'
 
+
+
             BUTTON 
               onClick: -> scrollTo 0, 0
               onKeyPress: (e) -> 
                 if e.which == 13 || e.which == 32 # ENTER or SPACE
                   e.preventDefault()
                   scrollTo 0, 0
-
               style: 
-                backgroundColor: '#eee'
-                borderRadius: 16
-                padding: '8px 24px'
+                backgroundColor: 'transparent'
                 border: 'none'
-                color: 'black'
+                opacity: .7
+                position: 'relative'
+              SVG 
+                viewBox: "0 0 64 16" 
+                width: 64
+                height: 16
 
-              'back to top'
+                G 
+                  fill: "#4d5357"
+
+                  PATH 
+                    d: "m32 2l-16 16h10v15h12v-15h10z"
+
+              SVG 
+                viewBox: "0 0 64 16" 
+                width: 64
+                height: 16
+                style: 
+                  position: 'absolute'
+                  top: 7
+                  left: 6
+
+
+                G
+                  fill: "#ffffff"
+
+                  PATH 
+                    d: "m32 2l-16 16h10v15h12v-15h10z"
+
+              DIV 
+                style: 
+                  textAlign: 'center'
+                'to top'
+
+                  # PATH 
+                  #   d: "m32 62c-3.3 0-6-2.8-6-6.3v-9.3c0-3.5 2.7-6.3 6-6.3s6 2.8 6 6.3v9.3c0 3.5-2.7 6.3-6 6.3m0-18.6c-1.7 0-3 1.3-3 3v9.3c0 1.6 1.3 3 3 3s3-1.3 3-3v-9.3c0-1.7-1.3-3-3-3"
+                  # PATH 
+                  #   d: "m22 40h-12v3h4.5v19h3v-19h4.5z"
+                  # # PATH 
+                  # #   d: "m48 40h-6v22h3v-9.3h3c3.3 0 6-2.8 6-6.3 0-3.6-2.7-6.4-6-6.4m0 9.3h-3v-5.9h3c1.7 0 3 1.3 3 3s-1.3 2.9-3 2.9"
+
+              # style: 
+              #   backgroundColor: '#eee'
+              #   borderRadius: 16
+              #   padding: '8px 24px'
+              #   border: 'none'
+              #   color: 'black'
+
+              # 'back to top'
 
 
         DIV 
@@ -190,6 +235,27 @@ window.Footer = ReactiveComponent
 
 nav = [
   {
+    label: 'I want a forum for…'
+    links: [
+      {
+        label: 'Public Involvement'
+        link: '#seattle'
+      }, 
+      {
+        label: 'Strategic Planning'
+        link: '#wsffn'
+      }, 
+      {
+        label: 'Decentralized Organizing'
+        link: '#dao'
+      }, 
+      # {
+      #   label: 'Something Else'
+      #   link: ''
+      # }
+    ]
+  },   
+  {
     label: 'What is Consider.it?'
     links: [
       {
@@ -215,27 +281,7 @@ nav = [
       }
     ]
   }, 
-  {
-    label: 'I want a forum for…'
-    links: [
-      {
-        label: 'Public Involvement'
-        link: '#seattle'
-      }, 
-      {
-        label: 'Strategic Planning'
-        link: '#wsffn'
-      }, 
-      {
-        label: 'Decentralized Organizing'
-        link: '#dao'
-      }, 
-      # {
-      #   label: 'Something Else'
-      #   link: ''
-      # }
-    ]
-  }, 
+
 
   {
     label: 'What will it cost?'

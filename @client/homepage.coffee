@@ -599,7 +599,6 @@ window.Cluster = ReactiveComponent
 window.NewProposal = ReactiveComponent
   displayName: 'NewProposal'
 
-
   render : -> 
     cluster_name = @props.cluster_name 
     cluster_key = "list/#{cluster_name}"
@@ -632,6 +631,7 @@ window.NewProposal = ReactiveComponent
       if !adding
 
         BUTTON 
+          className: 'add_new_proposal'
           style: _.defaults @props.label_style,
             cursor: 'pointer'
             backgroundColor: 'transparent'
@@ -740,6 +740,7 @@ window.NewProposal = ReactiveComponent
                 marginTop: 8
 
               BUTTON 
+                className: 'submit_new_proposal'
                 style: 
                   backgroundColor: focus_blue
                   color: 'white'

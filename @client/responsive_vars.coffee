@@ -81,6 +81,7 @@ setResponsive = ->
     point_font_size += 4
 
   new_vals = 
+    
     DOCUMENT_WIDTH: document_width
     WINDOW_WIDTH: w
     GUTTER: gutter

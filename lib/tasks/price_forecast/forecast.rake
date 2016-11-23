@@ -53,6 +53,9 @@ plans['opinions_dropoff'] =               lambda { |stats| opinions(stats, 100, 
 plans['opinions_short'] =                 lambda { |stats| opinions(stats, 100, [ {range: [0, 250], per: 1.75}, {range: [250, 1000], per: 1.4}, {range: [1000, 2000], per: 1}, {range: [2000,Float::INFINITY], per: 0.75}])}
 plans['opinions_short_zero'] =            lambda { |stats| opinions(stats,  0, [ {range: [0, 250], per: 1.75}, {range: [250, 1000], per: 1.4}, {range: [1000, 2000], per: 1}, {range: [2000,Float::INFINITY], per: 0.6}])}
 
+plans['mockup_plan'] =                    lambda { |stats| opinions(stats,  10, [ {range: [0, 9999999999999], per: 1.25}])}
+
+
 
 task :pricing_forecasts => :environment do
 

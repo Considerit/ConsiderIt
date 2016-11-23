@@ -122,37 +122,46 @@ window.Tour = ReactiveComponent
 
         DIV 
           style: 
-            margin: 'auto'
-            maxWidth: 1000
-            marginTop: 40
-            padding: '0px 40px'
-            display: css.crossbrowserify 'flex'
+            marginTop: 20
+          TestimonialGrid 
+            testimonials: [testimonials.pierre, testimonials.auryn]
+            maxWidth: 900
+            top: false 
+            italic: true
+
+        # DIV 
+        #   style: 
+        #     margin: 'auto'
+        #     maxWidth: 1000
+        #     marginTop: 40
+        #     padding: '0px 40px'
+        #     display: css.crossbrowserify 'flex'
 
 
-          DIV 
-            style: css.crossbrowserify
-              display: 'inline-block'
-              width: if !compact then '45%'
-              margin: '0 20px'
-              verticalAlign: 'top'
-              flex: '1 1 auto'
+        #   DIV 
+        #     style: css.crossbrowserify
+        #       display: 'inline-block'
+        #       width: if !compact then '45%'
+        #       margin: '0 20px'
+        #       verticalAlign: 'top'
+        #       flex: '1 1 auto'
 
-            Testimonial 
-              testimonial: testimonials.pierre 
-              left: true 
+        #     Testimonial 
+        #       testimonial: testimonials.pierre 
+        #       left: true 
 
-          if !compact 
-            DIV 
-              style: css.crossbrowserify
-                display: 'inline-block'
-                width: '45%'
-                margin: '0 20px'
-                flex: '1 1 auto'
+        #   if !compact 
+        #     DIV 
+        #       style: css.crossbrowserify
+        #         display: 'inline-block'
+        #         width: '45%'
+        #         margin: '0 20px'
+        #         flex: '1 1 auto'
 
-              Testimonial
-                testimonial: testimonials.auryn
-                left: false 
-                verticalAlign: 'top'
+        #       Testimonial
+        #         testimonial: testimonials.auryn
+        #         left: false 
+        #         verticalAlign: 'top'
         
 
         Features()
@@ -377,7 +386,7 @@ Feature = ReactiveComponent
         padding: 40
         position: 'relative'
         backgroundColor: if active then '#f9f9f9' else 'white'
-        transition: 'background-color 300ms, border-color 300ms'
+        transition: 'background-color 500ms, border-color 500ms'
         zIndex: if active then 2 else 1
 
       A name: feature.id
@@ -427,9 +436,9 @@ Feature = ReactiveComponent
                 width: '100%'
                 backgroundColor: 'white'
                 #opacity: if !active && is_gif then .2
-                transition: if is_gif then 'opacity 300ms'
+                transition: if is_gif then 'opacity 500ms'
                 boxShadow: boxShadow
-                transition: 'box-shadow 300ms'
+                transition: 'box-shadow 500ms'
 
               # if is_gif && !active
               #   sty = css.grayscale sty 
@@ -451,7 +460,7 @@ Feature = ReactiveComponent
                   width: Math.min(SAAS_PAGE_WIDTH() - 80, 800, @local.video_height * 1920/1080)
                   height: Math.min(1080/1920 * (SAAS_PAGE_WIDTH() - 80), 800 * 1080/1920, @local.video_height or 0)
                   boxShadow: boxShadow
-                  transition: 'box-shadow 300ms'
+                  transition: 'box-shadow 500ms'
 
 
                 for format in ['mp4', 'webm']
@@ -468,9 +477,9 @@ Feature = ReactiveComponent
                 style: 
                   marginTop: 0
 
-                Testimonial
-                  testimonial: feature.testimonial
-                  bubble_color: "#eee"
+                # Testimonial
+                #   testimonial: feature.testimonial
+                #   bubble_color: "#eee"
 
                 # DIV 
                 #   style: 
@@ -779,9 +788,9 @@ Research = ->
               stroke: 'transparent'
               stroke_width: 0
               box_shadow:   
-                dx: '3'
-                dy: '0'
-                stdDeviation: "2"
+                dx: 3
+                dy: 0
+                stdDeviation: 2
                 opacity: .5
 
 

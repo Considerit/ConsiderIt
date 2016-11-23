@@ -41,11 +41,8 @@ window.h2 = _.extend {}, base_text,
 window.strong = _.extend {}, base_text,
   fontWeight: 600
 
-window.a = _.extend {}, base_text,
-  color: logo_red
-  cursor: 'pointer'
-  #textDecoration: 'underline'
-  borderBottom: "1px solid #{logo_red}"
+
+window.seattle_salmon = '#ee6061' #'#E16161'
 
 window.primary_color = -> c = fetch('colors'); c.primary_color
 
@@ -115,7 +112,7 @@ Page = ReactiveComponent
     DIV   
       style: 
         backgroundColor: primary_color()        
-        transition: 'background-color 500ms linear'
+        transition: 'background-color 500ms ease'
         minHeight: '100%'
         margin: if footer_height then "0 auto -#{fetch('footer').height}px"
 
@@ -174,9 +171,11 @@ Colors = ReactiveComponent
 
     color = switch loc.url 
       when '/'
-        logo_red #'#d65931' #'#B03F3A'
+        # logo_red #'#d65931' #'#B03F3A'
+        '#fff'
       when '/tour'
-        '#EC3684'
+        #'#EC3684'
+        seattle_salmon
       when '/pricing'
         '#6F3AB0'
       when '/contact'

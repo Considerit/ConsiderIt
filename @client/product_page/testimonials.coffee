@@ -1,3 +1,234 @@
+window.TestimonialGrid = ReactiveComponent
+  displayName: 'TestimonialGrid'
+
+  render: -> 
+
+    w = @props.maxWidth or 1100
+    expanded = @local.expanded 
+    if !@props.top?
+      top = true 
+    else 
+      top = @props.top 
+
+    odd = @props.testimonials.length % 2 == 1
+
+    user_row = =>
+      DIV 
+        style: css.crossbrowserify
+          display: 'flex'
+
+        for t, idx in @props.testimonials
+
+          DIV 
+            style: css.crossbrowserify
+              flex: 1
+              padding: '0px 16px'
+              opacity: if expanded && expanded != t then .1
+
+            @user_credentials 
+              testimonial: t
+              left: odd || idx < @props.testimonials.length / 2
+              top: top
+              bg_color: @props.bubble_color or considerit_gray
+              right_side: idx > @props.testimonials.length / 2
+
+    quote_row = => 
+      DIV 
+        style: css.crossbrowserify
+          display: 'flex'
+
+        for t,idx in @props.testimonials
+          continue if expanded && expanded != t
+
+          @quote_bubble 
+            key: @local.key
+            testimonial: t
+            top: top
+            bg_color: @props.bubble_color or considerit_gray
+            italic: @props.italic
+
+
+    DIV 
+      style: 
+        margin: 'auto'
+        maxWidth: w
+
+
+      if top 
+        [user_row(), quote_row()]
+      else 
+        [quote_row(), user_row()]
+
+
+
+  user_credentials: (opts) ->
+    t = opts.testimonial
+    expanded = @local.expanded == t
+    
+    left = opts.left 
+    mouth_dir_left = left && !(expanded && opts.right_side)
+    top = opts.top 
+    
+
+    quote_img =
+    
+    avatar_and_mouth = => 
+      size = 75
+      DIV 
+        style: 
+          display: 'inline-block'
+
+        IMG
+          ref: "avatar-#{t.name.replace(' ', '-')}"
+          src: t.avatar
+          style: 
+            height: size
+            width: size
+            verticalAlign: 'middle'   
+
+        DIV
+          style: css.crossbrowserify
+            transform:  if !top 
+                          "rotate(180deg) #{if mouth_dir_left then 'scaleX(-1)' else ''}"
+                        else 
+                          "#{if !mouth_dir_left then 'scaleX(-1)' else ''}"
+                          # "scale(#{if left then -1 else 1},-1) #{if left then 'scaleX(-1)' else ''}"
+
+            position: 'absolute'
+            left: if left then size / 2 + (if mouth_dir_left then 20 else 0)
+            right: if !left then size / 2 + 20
+            bottom: if top then -30
+            top: if !top then -30
+            zIndex: 2
+
+          Bubblemouth 
+            apex_xfrac: 0
+            width: 30
+            height: 30
+            fill: opts.bg_color
+            stroke: 'transparent'
+            stroke_width: 0
+            box_shadow:   
+              dx: if top then -3 else 3 
+              dy: 0
+              stdDeviation: if top then 1 else 2
+              opacity: if top then .15 else .4
+
+
+    DIV 
+      style: 
+        position: 'relative'
+        top: 20
+        padding: '12px 20px'
+        float: if !left then 'right' 
+
+
+      if left && t.avatar 
+        avatar_and_mouth()
+
+      DIV 
+        style:
+          display: 'inline-block'
+          padding: '0 16px'
+          verticalAlign: 'middle'  
+          textAlign: if !left then 'right'
+
+        DIV 
+          style: 
+            fontSize: 20
+          t.name
+
+        if t.organization
+          DIV 
+            style: 
+              fontSize: 18        
+            t.organization
+
+        if t.role
+          DIV 
+            style: 
+              fontSize: 12
+            t.role
+
+
+      if !left && t.avatar 
+        avatar_and_mouth()
+
+
+
+  quote_bubble: (opts) ->
+    t = opts.testimonial
+    
+
+    expanded = @local.expanded == t
+
+    quote = if expanded then (opts.long_quote or t.long_quote) else (opts.short_quote or t.short_quote)
+
+    DIV
+      style: css.crossbrowserify
+        padding: '36px 50px'
+        position: 'relative'
+        backgroundColor: opts.bg_color
+        boxShadow: '#b5b5b5 0 1px 1px 0px'
+        borderRadius: 64
+        marginTop: if top then 20 + 24
+        marginBottom: if !top then 20 else 4
+        flex: 1 #'1 auto' # '1 1 auto'
+        marginRight: 16
+        marginLeft: 16
+   
+      DIV
+        className: 'embedded'
+        style: 
+          fontSize: if expanded then 18 else 16
+          fontStyle: if !expanded && opts.italic then 'italic'
+
+        DIV dangerouslySetInnerHTML: {__html: quote}
+
+      if t.long_quote && !@props.hide_full
+        @readmore
+          testimonial: t
+
+
+
+
+  readmore: (opts) -> 
+    t = opts.testimonial
+    
+    onclick = => 
+      if @local.expanded == t
+        @local.expanded = null 
+      else 
+        @local.expanded = t 
+      save @local 
+
+
+    BUTTON 
+      style: 
+        backgroundColor: 'transparent'
+        border: 'none'
+        color: 'black' # primary_color()
+        textDecoration: 'underline'
+        paddingTop: 12
+        paddingLeft: 0
+      onClick: onclick
+      onKeyPress: (e) => 
+        if e.which == 16 || e.which == 32
+          e.preventDefault()
+          onclick()
+
+      if @local.expanded == t
+        'hide full testimonial'
+      else 
+        'show full testimonial'
+
+  componentDidMount: -> 
+    # trigger rerender so quote bubble is rendered with positions intact
+    @local.dummy = true 
+    save @local 
+
+
+
 window.Testimonial = ReactiveComponent 
   displayName: 'Testimonial'
 
@@ -5,176 +236,26 @@ window.Testimonial = ReactiveComponent
 
     t = @props.testimonial 
 
-    quote_bubble =  
-      padding: '36px 50px'
-      position: 'relative'
-      backgroundColor: @props.bubble_color or considerit_gray
-      boxShadow: '#b5b5b5 0 1px 1px 0px'
-      borderRadius: 64
-      marginBottom: 20
-      #maxWidth: 350
-
-    long_quote_bubble = _.extend {}, quote_bubble,
-      padding: '36px 50px'
-      position: 'absolute'
-      backgroundColor: @props.bubble_color or considerit_gray
-      boxShadow: '#b5b5b5 0 1px 1px 0px'
-      borderRadius: 64
-      marginBottom: 20
-      #width: 650
-      maxWidth: 650
-      top: 75
-      zIndex: 1
-      left: if @props.left then 0 else null
-      right: if !@props.left then 0 else null      
-
-
-    quote_mouth = 
-      apex_xfrac: 0
-      width: 30
-      height: 30
-      fill: @props.bubble_color or considerit_gray
-      stroke: 'transparent'
-      stroke_width: 0
-      box_shadow:   
-        dx: '3'
-        dy: '0'
-        stdDeviation: "2"
-        opacity: .5      
-
-    quote_img =
-      height: 75
-      width: 75
-      verticalAlign: 'middle'   
-
-    readmore = => 
-      onclick = => 
-        @local.show_long = !@local.show_long
-        save @local
-
-      BUTTON 
-        style: 
-          backgroundColor: 'transparent'
-          border: 'none'
-          color: primary_color()
-          textDecoration: 'underline'
-          paddingTop: 12
-          paddingLeft: 0
-        onClick: onclick
-        onKeyPress: (e) => 
-          if e.which == 16 || e.which == 32
-            e.preventDefault()
-            onclick()
-
-        if @local.show_long
-          'read less'
-        else 
-          'read more'
-
     DIV 
       style: 
         paddingTop: 28
         position: 'relative'
         left: 0
-        minHeight: if @local.show_long then 1200
 
-      
+      quote_bubble 
+        key: @local.key
+        testimonial: t
+        left: true
+        top: false
+        bg_color: @props.bubble_color or considerit_gray
 
-      DIV
-        style: quote_bubble
-          
-        DIV
-          style: 
-            fontSize: 16
-            fontStyle: 'italic'
-
-
-          t.short_quote
-
-        if t.long_quote
-          readmore()
-
-        DIV
-          style: css.crossbrowserify
-            transform: "rotate(180deg) #{if @props.left then 'scaleX(-1)' else ''}"
-            position: 'absolute'
-            left: if @props.left then 60 else null 
-            right: if !@props.left then 60 else null 
-
-            bottom: -30
-
-          Bubblemouth quote_mouth
-
-      DIV 
-        style: 
-          position: 'relative'
-          top: 20
-          padding: '12px 20px'
-          float: if !@props.left then 'right' 
+      user_credentials
+        testimonial: t
+        left: true
 
 
-        if @props.left && t.avatar 
-          IMG
-            src: t.avatar
-            style: quote_img
-
-        DIV 
-          style:
-            display: 'inline-block'
-            padding: '0 16px'
-            verticalAlign: 'middle'  
-            textAlign: if !@props.left then 'right'
-
-          DIV 
-            style: 
-              fontSize: 16
-            t.name
-
-            DIV 
-              style: 
-                fontSize: 12
-
-              t.role if t.role
-              BR null if t.role && t.organization
-              t.organization if t.organization
-
-        if !@props.left && t.avatar 
-          IMG
-            src: t.avatar
-            style: quote_img
 
 
-      if @local.show_long
-        DIV 
-          style: 
-            position: 'relative'
-
-          DIV
-            style: long_quote_bubble
-              
-            DIV
-              className: 'embedded'
-              style: 
-                fontSize: 16               
-
-              DIV dangerouslySetInnerHTML: {__html: t.long_quote}
-
-            readmore()
-
-            DIV
-              style: css.crossbrowserify
-                transform: "rotate(180deg) scale(#{if @props.left then -1 else 1}, -1)"
-                position: 'absolute'
-                left: if @props.left then 60
-                right: if !@props.left then 60
-                top: -30
-
-              Bubblemouth _.extend {}, quote_mouth, 
-                box_shadow:   
-                  dx: '-1'
-                  dy: '-1'
-                  stdDeviation: "2"
-                  opacity: .2      
 
 
 
@@ -187,13 +268,11 @@ window.testimonials =
     avatar: asset('product_page/susie.png')
 
 
-    short_quote: """The Consider.it team has been a great partner for directly engaging residents 
-                    online--and it is working. Residents are acknowledging the information we are 
-                    providing them, learning from it, and even thanking us. We’ve created a great 
-                    feedback loop via Consider.it!"""
+    short_quote: """Working with the Consider.it team on <a href='https://hala.consider.it'>Seattle’s dialogue about Housing Affordability</a> has been a fantastic experience! We’ve created a great feedback loop with residents via Consider.it. Residents 
+                    are acknowledging the information we are providing them, learning from it, and even thanking us! If you’re looking to create quality online dialogues, Consider.it is an excellent great choice."""
 
     long_quote: """
-        <p>Working with the Consider.it team on <a href='https://hala.consider.it'>Seattle’s dialogue about Housing Affordability</a> has been a great experience! They bring far more to the table than technical skills – they think deeply about how the tool is going to be received and help us build a better dialogue using that knowledge. Furthermore, the Consider.it team is very responsive - the back and forth communication has been very easy.</p> 
+        <p>Working with the Consider.it team on <a href='https://hala.consider.it'>Seattle’s dialogue about Housing Affordability</a> has been a fantastic experience! They bring far more to the table than technical skills – they think deeply about how the tool is going to be received and help us build a better dialogue using that knowledge. Furthermore, the Consider.it team is very responsive - the back and forth communication has been very easy.</p> 
 
         <p>Some of the ways the Consider.it team helped our team include:</p>
 
@@ -202,18 +281,18 @@ window.testimonials =
 
         <li><strong>Translating our needs into a good digital experience</strong>. Being new to online dialogue, the consider.it team helped us focus our goals for information gathering. We wanted to collect demographic information so we could assess outreach effectiveness. We collaborated to identify the minimal information to collect from residents to answer critical questions.</li>
 
-        <li><strong>Outreach and recruitment</strong>. The consider.it team provided what populations were providing feedback. I was then able to focus our online advertising on recruiting people from underrepresented neighborhoods and groups.</li>
+        <li><strong>Outreach and recruitment</strong>. The consider.it team helps us understand which populations are providing feedback. I can then focus our online advertising on recruiting people from underrepresented neighborhoods and groups.</li>
 
         <li><strong>How to engage with residents</strong>. The team encouraged direct engagement with residents online by responding to questions and concerns online. This support made me more proactive in answering questions. When I don’t know the answer, I reach out to the technical experts and ask them to respond that day so we can keep the conversation going. Residents are acknowledging the information we are providing them, learning from it, and even thanking us.</li>
 
         </ul>
-        <p>If you’re looking to create quality online dialogues, Consider.it is a great choice.</p>
+        <p>If you’re looking to create quality online dialogues, Consider.it is an excellent choice.</p>
         """
 
   russ: 
     name: 'Russ Lehman' 
     role: "Executive Director"
-    organization: "WA Sustainable Food and Farming Network"
+    organization: "WSFFN"
     avatar: asset('product_page/Russ.png')
 
     # short_quote: """I was nervous about getting our board members and wider network on the same page about a 
@@ -223,7 +302,7 @@ window.testimonials =
     short_quote: """When we embarked on rebranding, I was daunted with the task of engaging
                     constituents across the state. As a small non-profit, we didn’t have the funds to
                     reach everyone in-person. With Consider.it, we could engage far more people for a
-                    cost we could afford. Beyond being a great tool, the Consider.it team was incredibly
+                    cost we could afford. Beyond the great tool, the Consider.it team was incredibly
                     knowledgeable, creative, thoughtful, and available in helping craft an engagement strategy.
                  """
     long_quote: """
@@ -247,8 +326,8 @@ window.testimonials =
 
   pierre: 
     name: 'Pierre-Elouan Réthoré' 
-    role: 'Wind Energy Researcher'
-    #organization: "DAOhub.org"
+    role: 'Senior Wind Energy Researcher'
+    organization: "Danish Technical University"
     avatar: asset('product_page/pierre.png')
 
     short_quote: """
@@ -259,16 +338,16 @@ window.testimonials =
 
   auryn: 
     name: 'Auryn Macmillan' 
-    role: 'Cofounder of DAOhub.org'
-    #organization: "DAOhub.org"
+    role: 'Cofounder'
+    organization: "DAOhub"
     avatar: asset('product_page/auryn.png')
 
     short_quote: """
-                 Consider.it’s careful design choices were instrumental for us not only in 
-                 terms of aggregating community opinions, but also in understanding the 
-                 rationale. This ability to get a feel for both the gestalt and the 
+                 Consider.it’s careful design choices were critical for not only aggregating 
+                 community opinions, but also in understanding the 
+                 rationale. The ability to get a feel for both the gestalt and the 
                  granular details of an issue within the one view is an incredible 
-                 achievement and was a vital part in our community’s decision making 
+                 achievement and was a vital part of our community’s decision making 
                  process.
                  """
 
@@ -286,3 +365,11 @@ window.testimonials =
     short_quote: 'I am blind and use assistive technology to read information on a computer screen. Consider.it works well with my screen reading software and allows me the opportunity to fully participate in my city’s decision making process in the same way all others can. I appreciate Consider.it’s willingness to work hard to make their website fully accessible to me and all other blind computer users!'
 
 
+testimonials.susie_pricing = _.extend {}, testimonials.susie, 
+  short_quote: """Their team thinks deeply about how Consider.it is going to be received and helped us build a better public dialogue using that knowledge, such as by:<ul><li>framing content for a general audience</li><li>teaching best practices for engaging residents</li><li>creating new features to support our use case</li></ul>"""
+
+testimonials.auryn_pricing = _.extend {}, testimonials.auryn, 
+  short_quote: """Consider.it is incredibly responsive and receptive to suggestions, and, as is evident by the nuance of their platform, they really have a fantastic grasp on the needs of web based and decentralised communities. They:<ul><li>helped restructure our organizational processes</li><li>designed a custom forum homepage</li><li>created a rich custom embed of consider.it</li></ul>"""
+
+testimonials.russ_pricing = _.extend {}, testimonials.russ, 
+  short_quote: """Beyond the great tool, the Consider.it team was extremely knowledgeable and available in helping craft an engagement strategy. They helped us:<ul><li>create clear, valuable questions</li><li>design a multi-phase engagement process</li><li>improve interactions with our network</li><li>interpret responses</li></ul>"""

@@ -24,7 +24,7 @@ window.Header = ReactiveComponent
   displayName: "Header"
   render: ->
     current_user = fetch("/current_user")
-    fetch('location')
+    loc = fetch('location')
 
     w = SAAS_PAGE_WIDTH()
     h = 80
@@ -35,6 +35,10 @@ window.Header = ReactiveComponent
     @local.dot_x ?= 0
     dot_size = 10
 
+    homepage = loc.url == '/'
+
+    main_color = if homepage then seattle_salmon else 'white'
+
     HEADER
       style:
         position: "relative"
@@ -44,8 +48,8 @@ window.Header = ReactiveComponent
         style:
           width: w
           margin: 'auto'
-          borderBottom: '1px solid white'
-
+          borderBottom: "1px solid #{main_color}"
+          transition: 'border 500ms'
 
 
         # logo
@@ -57,7 +61,7 @@ window.Header = ReactiveComponent
             position: "relative"
             top: 12
 
-          drawLogo h - 10, 'white', 'transparent'
+          drawLogo h - 10, main_color, 'transparent'
 
 
         SVG 
@@ -76,7 +80,9 @@ window.Header = ReactiveComponent
           G null,
 
             CIRCLE 
-              fill: 'white'
+              style: 
+                transition: 'fill 500ms'
+              fill: main_color
               cx: dot_size / 2
               cy: dot_size / 2
               r: dot_size / 2
@@ -106,15 +112,15 @@ window.Header = ReactiveComponent
                 style: _.extend {}, base_text,
                   fontWeight: 600
                   fontSize: 18
-                  color: 'white'
+                  color: main_color
                   marginLeft: 25
                   cursor: 'pointer'
                   border: '1px solid transparent'
-                  borderColor: if idx == nav_links.length - 1 then 'white'
+                  borderColor: if idx == nav_links.length - 1 then main_color
                   borderRadius: '8px 8px 0px 0'
                   borderBottom: 'none'
                   padding: if idx == nav_links.length - 1 then '14px 20px' else '14px 10px'
-                  
+                  transition: 'border 500ms, color 500ms'
 
                 href: nav.href
                 nav.label
@@ -157,6 +163,10 @@ HamburgerMenu = ReactiveComponent
       document.activeElement.blur()
       @local.menu = false
       save @local
+
+
+    homepage = fetch('location').url == '/'
+    main_color = if homepage then seattle_salmon else 'white'
 
 
     DIV
@@ -203,7 +213,7 @@ HamburgerMenu = ReactiveComponent
         'aria-owns': "hamburger_popup"
 
         style: 
-          border: '1px solid white'
+          border: "1px solid #{main_color}"
           borderBottom: 'none'
           borderRadius: '8px 8px 0px 0'
           padding: '0px 6px'
@@ -226,7 +236,7 @@ HamburgerMenu = ReactiveComponent
           width: 44
 
           PATH 
-            fill: 'white'
+            fill: main_color
             d: "M4,10h24c1.104,0,2-0.896,2-2s-0.896-2-2-2H4C2.896,6,2,6.896,2,8S2.896,10,4,10z M28,14H4c-1.104,0-2,0.896-2,2  s0.896,2,2,2h24c1.104,0,2-0.896,2-2S29.104,14,28,14z M28,22H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h24c1.104,0,2-0.896,2-2  S29.104,22,28,22z"
 
 
@@ -259,7 +269,7 @@ HamburgerMenu = ReactiveComponent
               href: option.href
               key: option.href
               style: 
-                color: if @local.focus == idx then primary_color() else '#303030'
+                color: if @local.focus == idx then main_color else '#303030'
                 outline: 'none'
                 position: 'relative'
                 bottom: 8

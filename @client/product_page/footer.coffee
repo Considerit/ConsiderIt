@@ -7,11 +7,12 @@ window.Footer = ReactiveComponent
     w = SAAS_PAGE_WIDTH()
     mobile = w < 700
 
+
     section_div = (section) -> 
       DIV null,
         H3 
           style: 
-            fontSize: 16
+            fontSize: 18
             fontWeight: 500
             color: '#000'
             marginBottom: 10
@@ -30,9 +31,10 @@ window.Footer = ReactiveComponent
               A 
                 href: link.link
                 style: 
-                  color: primary_color()
+                  color: if loc.url == '/' then seattle_salmon else primary_color()
                   textDecoration: 'underline'
-                  fontSize: 14
+                  fontSize: 16
+                  fontWeight: 500
 
                 link.label
 
@@ -43,7 +45,7 @@ window.Footer = ReactiveComponent
 
       DIV 
         style: 
-          height: (f_height or 350) - 2
+          height: (f_height or 350) - 2 + 70
           backgroundColor: 'white'
 
       FOOTER
@@ -52,11 +54,35 @@ window.Footer = ReactiveComponent
         style: 
           paddingTop: 140
           backgroundColor: 'white'
-          position: if f_height then 'absolute'
+          position: if f_height then 'absolute' else 'relative'
           bottom: 0
           left: 0
           zIndex: 1
           width: '100%'
+
+
+        DIV 
+          style: 
+            textAlign: 'center'
+            position: 'absolute'
+            top: 0
+            width: '100%'
+
+          BUTTON 
+            onClick: -> scrollTo 0, 0
+            onKeyPress: (e) -> 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                e.preventDefault()
+                scrollTo 0, 0
+
+            style: 
+              backgroundColor: '#eee'
+              borderRadius: 16
+              padding: '8px 24px'
+              border: 'none'
+              color: 'black'
+
+            'back to top'
 
 
         DIV 
@@ -83,21 +109,22 @@ window.Footer = ReactiveComponent
                 textAlign: 'center'
                 top: -70
               
-              if loc.url != '/create_forum' && !mobile         
-                A 
-                  href: 'https://galacticfederation.consider.it'
-                  target: '_blank'
-                  style: big_button()
-                  'Try Consider.it'
-
               if loc.url != '/create_forum'
                 A 
                   href: '/create_forum'
                   style: _.extend {}, big_button(), 
+                    backgroundColor: if loc.url == '/' then seattle_salmon else primary_color()
+                  'Start a Free Forum'
+
+              if loc.url != '/create_forum' && !mobile         
+                A 
+                  href: 'https://galacticfederation.consider.it'
+                  target: '_blank'
+                  style: _.extend {}, big_button(), 
                     backgroundColor: '#717171'
                     marginLeft: 40
+                  'Play Around With It'
 
-                  'Start a Free Forum'
 
 
 
@@ -161,27 +188,6 @@ window.Footer = ReactiveComponent
 
 
 nav = [
-  # {
-  #   label: 'I want a forum for…'
-  #   links: [
-  #     {
-  #       label: 'Public Involvement'
-  #       link: ''
-  #     }, 
-  #     {
-  #       label: 'Strategic Planning'
-  #       link: ''
-  #     }, 
-  #     {
-  #       label: 'Decentralized Organizing'
-  #       link: ''
-  #     }, 
-  #     {
-  #       label: 'Something Else'
-  #       link: ''
-  #     }
-  #   ]
-  # }, 
   {
     label: 'What is Consider.it?'
     links: [
@@ -208,6 +214,28 @@ nav = [
       }
     ]
   }, 
+  {
+    label: 'I want a forum for…'
+    links: [
+      {
+        label: 'Public Involvement'
+        link: '#seattle'
+      }, 
+      {
+        label: 'Strategic Planning'
+        link: '#wsffn'
+      }, 
+      {
+        label: 'Decentralized Organizing'
+        link: '#dao'
+      }, 
+      # {
+      #   label: 'Something Else'
+      #   link: ''
+      # }
+    ]
+  }, 
+
   {
     label: 'What will it cost?'
     links: [
@@ -239,6 +267,10 @@ nav = [
       {
         label: 'Consultant Partnership'
         link: '/pricing#partnership'
+      }, 
+      {
+        label: 'Request a demo'
+        link: '/contact#request_demo'
       }, 
 
       # {

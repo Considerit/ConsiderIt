@@ -127,7 +127,7 @@ window.Contact = ReactiveComponent
                 paddingBottom: 24
               LABEL 
                 style: 
-                  fontSize: 16
+                  fontSize: 22
                   display: 'block'
                   paddingBottom: 2
                 htmlFor: slugify field.label
@@ -143,7 +143,7 @@ window.Contact = ReactiveComponent
                   required: if !field.optional then true
                   style: 
                     width: '100%'
-                    fontSize: 16
+                    fontSize: 22
                     padding: '4px 8px'
                     border: '1px solid #ddd'
                     height: if field.tag == TEXTAREA then 100
@@ -324,7 +324,7 @@ forms = [
       }
       {
         label: 'What can we help you with?'
-        tag: TEXTAREA
+        tag: AutoGrowTextArea
       }
 
     ]
@@ -347,11 +347,11 @@ forms = [
       }
       {
         label: 'A basic description of your goal for a dialogue'
-        tag: TEXTAREA
+        tag: AutoGrowTextArea
       }
       {
         label: 'How did you learn about Consider.it?'
-        tag: TEXTAREA
+        tag: AutoGrowTextArea
         optional: true            
       }
     ]
@@ -374,7 +374,7 @@ forms = [
       }
       {
         label: 'Describe your project'
-        tag: TEXTAREA
+        tag: AutoGrowTextArea
       }
       {
         label: 'Approximate budget'
@@ -383,7 +383,7 @@ forms = [
       }
       {
         label: 'How did you learn about Consider.it?'
-        tag: TEXTAREA
+        tag: AutoGrowTextArea
         optional: true
       }
     ]
@@ -406,12 +406,12 @@ forms = [
       }
       {
         label: 'Describe your practice'
-        tag: TEXTAREA
+        tag: AutoGrowTextArea
         optional: true
       }
       {
         label: 'How did you learn about Consider.it?'
-        tag: TEXTAREA
+        tag: AutoGrowTextArea
         optional: true
       }
     ]
@@ -492,7 +492,7 @@ forms = [
       }
       {
         label: 'Describe your project, including its public benefit'
-        tag: TEXTAREA
+        tag: AutoGrowTextArea
       }
       {
         label: 'Approximate budget'
@@ -500,141 +500,16 @@ forms = [
       }
       {
         label: 'What do you need that the Free Forum does not provide?'
-        tag: TEXTAREA
+        tag: AutoGrowTextArea
       }
       {
         label: 'How did you learn about Consider.it?'
-        tag: TEXTAREA
+        tag: AutoGrowTextArea
         optional: true
       }
     ]
   }
 ]
-
-
-
-#     DIV 
-#       id: 'contact'
-#       style:
-#         marginTop: 80
-#         backgroundColor: 'white'
-#         color: 'white'
-#         padding: '80px 0'
-#         position: 'relative'
-
-#       DIV 
-#         style: cssTriangle 'bottom', 'white', 133, 30,
-#           position: 'absolute'
-#           left: '50%'
-#           marginLeft: - 133 / 2
-#           top: 0
-
-#       H1
-#         style: _.extend {}, h1, 
-#           marginBottom: 30
-#           color: 'white'
-
-#         # "Get in touch with us,"
-#         # BR null
-#         "Contact us"
-
-
-#       team()
-
-#       DIV 
-#         style: _.extend {}, base_text,
-#           margin: '20px auto'
-#           width: 675 #TEXT_WIDTH 
-#           #textAlign: 'center'
-#         "Hi, we’re the Consider.it team and we’d love to hear from you. "
-
-#         "Write us a nice electronic letter at "
-#         A
-#           href: "mailto:admin@consider.it"
-#           style: _.extend {}, a, 
-#             color: 'white'
-#             borderBottomColor: 'white'
-
-#           "admin@consider.it"
-#         "."
-
-#         @mailchimpForm "we can write to you", "write to me"
-
-
-#       DIV 
-#         style: cssTriangle 'bottom', logo_red, 133, 30,
-#           position: 'absolute'
-#           left: '50%'
-#           marginLeft: - 133 / 2
-#           bottom: -30      
-
-#   mailchimpForm: (prompt, label) -> 
-
-#     DIV 
-#       style: {}
-
-
-#       " Or "
-
-#       A  
-#         style:
-#           color: 'white'
-#           border: 'none'
-#           borderBottom: '1px solid white'
-#           fontSize: 24
-#         onClick: => @local.click_contactme = !@local.click_contactme; save @local
-
-#         prompt
-
-#       if @local.click_contactme 
-#         ':' 
-#       else 
-#         '.'
-
-#       if @local.click_contactme
-#         FORM    
-#           action: "//Consider.us7.list-manage.com/subscribe/post?u=9cc354a37a52e695df7b580bd&amp;id=d4b6766b00"
-#           id: "mc-embedded-subscribe-form"
-#           method: "post"
-#           name: "mc-embedded-subscribe-form"
-#           novalidate: "true"
-#           target: "_blank"
-#           style:
-#             margin: "10px 0 20px 0"
-#             # textAlign: 'center'
-#             display: 'inline-block'
-
-#           INPUT
-#             id: "mce-EMAIL"
-#             name: "EMAIL"
-#             placeholder: "email address"
-#             type: "email"
-#             defaultValue: ""
-#             style:
-#               fontSize: 24
-#               padding: "8px 12px"
-#               width: 380
-#               border: '1px solid white'
-#               backgroundColor: logo_red
-#               color: 'white'
-
-#           BUTTON
-#             name: "subscribe"
-#             type: "submit"
-#             style:
-#               fontSize: 24
-#               marginLeft: 8
-#               display: "inline-block"
-#               backgroundColor: if @local.hover_contactme then 'white' else logo_red
-#               color: if @local.hover_contactme then logo_red else 'white'
-#               fontWeight: 500
-#               border: "1px solid #{if @local.hover_contactme then 'transparent' else 'white'}"
-#               borderRadius: 16
-#               padding: '8px 18px'
-#             onMouseEnter: => @local.hover_contactme = true; save @local
-#             onMouseLeave: => @local.hover_contactme = false; save @local
-
-#             label
 
 
 # team = -> 
@@ -709,31 +584,3 @@ forms = [
 #               top: -7
 
 #             t.email
-
-
-
-
-
-# styles += """
-
-# #contact ::-webkit-input-placeholder{
-#   color: white;
-#   opacity: .7;
-# } 
-# #contact  :-moz-placeholder{
-#   color: white;
-#   opacity: .7;
-# } 
-# #contact ::-moz-placeholder {
-#   color: white;
-#   opacity: .7;
-# } 
-# #contact ::-ms-input-placeholder {
-#   color: white;
-#   opacity: .7;
-# }
-# #contact input[type=email]:focus {
-#   border-color: white;
-#   outline: none;
-# }
-# """

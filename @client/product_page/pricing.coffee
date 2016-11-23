@@ -238,7 +238,7 @@ window.Pricing = ReactiveComponent
 
           DIV 
             style: 
-              fontSize: 10
+              fontSize: 12
               textAlign: 'center'
               paddingTop: 12
 
@@ -381,7 +381,8 @@ window.Pricing = ReactiveComponent
       DIV 
         style: 
           maxWidth: SAAS_PAGE_WIDTH()
-          margin: 'auto'
+          margin: '0 auto 40px auto'
+
 
         H2 
           style: _.extend {}, h1, 
@@ -394,54 +395,65 @@ window.Pricing = ReactiveComponent
 
           'Hire us if you need extra help creating the conversation you need.'
 
-      TABLE 
+        DIV 
+          style: 
+            textAlign: 'center'
+          A 
+            href: '/contact?form=consulting_inquiry'
+            target: '_blank'
+            style: plan_button_style
+            'Inquire about our consulting services' 
+
+
+      DIV 
         style: 
-          margin: 'auto'
+          marginTop: 20
+        TestimonialGrid
+          testimonials: [testimonials.susie_pricing, testimonials.russ_pricing, testimonials.auryn_pricing]
 
-        TBODY null, 
 
-          TR null, 
+      # TABLE 
+      #   style: 
+      #     margin: 'auto'
 
-            TD null, 
-              Testimonial 
-                left: true 
-                testimonial: testimonials.susie         
+      #   TBODY null, 
 
-            TD null,
+      #     TR null, 
 
-              DIV 
-                style: 
-                  width: 400
-                  margin: 'auto'
-                  padding: '0px 40px'
+      #       TD null, 
+      #         Testimonial 
+      #           left: true 
+      #           testimonial: testimonials.susie         
 
-                UL 
-                  style: 
-                    listStyle: 'outside'
-                    paddingLeft: 18
-                    marginBottom: 28
+      #       TD null,
+
+      #         DIV 
+      #           style: 
+      #             width: 400
+      #             margin: 'auto'
+      #             padding: '0px 40px'
+
+      #           UL 
+      #             style: 
+      #               listStyle: 'outside'
+      #               paddingLeft: 18
+      #               marginBottom: 28
                   
-                  for service in [
-                                    'Process advice about your dialogue'
-                                    'Help creating clear and concise proposals'
-                                    'Training in Consider.it best practices'
-                                    'Creating new functionality for your forum' 
-                                  ]
-                    LI 
-                      style: small_para_style
-                      service
-
-                A 
-                  href: '/contact?form=consulting_inquiry'
-                  target: '_blank'
-                  style: plan_button_style
-                  'Get a quote for your project' 
+      #             for service in [
+      #                               'Process advice about your dialogue'
+      #                               'Help creating clear and concise proposals'
+      #                               'Training in Consider.it best practices'
+      #                               'Creating new functionality for your forum' 
+      #                             ]
+      #               LI 
+      #                 style: small_para_style
+      #                 service
 
 
-            TD null, 
-              Testimonial 
-                left: false 
-                testimonial: testimonials.russ
+      #       TD null, 
+      #         Testimonial 
+      #           left: false 
+      #           testimonial: testimonials.russ
 
 
 
@@ -541,7 +553,7 @@ styles += """
     text-decoration: underline;
   }
 
-  .embedded ul { list-style: outside;}
+  .embedded ul { padding-top: 20px; padding-left: 18px; list-style: outside;}
 
   .embedded li { padding-bottom: 12px; }
 

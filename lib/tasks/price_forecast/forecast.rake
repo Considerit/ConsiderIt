@@ -1,3 +1,7 @@
+# See Google API docs at: 
+#   - https://developers.google.com/sheets/quickstart/ruby
+#   - https://developers.google.com/sheets/guides/batchupdate
+
 
 # tiers are pricing tiers: 
 #    [ {from: 0, to:10, per: 0}, {from: 10, to: 100, per: 10}, ...]
@@ -37,8 +41,6 @@ end
 
 
 
-
-
 plans = {}
 plans['engaged_stakeholder_base10'] =     lambda { |stats| stakeholders(stats, 150, [ {range: [0, 10], per: 0}, {range: [10, 100], per: 10}, {range: [100, 1000], per: 7}, {range: [1000, 10000], per: 5}, {range: [10000,Float::INFINITY], per: 3}])}
 plans['engaged_stakeholder_no_base']  =   lambda { |stats| stakeholders(stats,   0, [ {range: [0, 10], per: 0}, {range: [10, 100], per: 10}, {range: [100, 1000], per: 7}, {range: [1000, 10000], per: 5}, {range: [10000,Float::INFINITY], per: 3}])}
@@ -50,6 +52,9 @@ plans['opinions_base10_mock'] =           lambda { |stats| opinions(stats, 100, 
 plans['opinions_dropoff'] =               lambda { |stats| opinions(stats, 100, [ {range: [0, 100], per: 0}, {range: [100, 500], per: 3}, {range: [500, 1000], per: 2}, {range: [1000, 2000], per: 1}, {range: [1600,Float::INFINITY], per: 0.75}])}
 plans['opinions_short'] =                 lambda { |stats| opinions(stats, 100, [ {range: [0, 250], per: 1.75}, {range: [250, 1000], per: 1.4}, {range: [1000, 2000], per: 1}, {range: [2000,Float::INFINITY], per: 0.75}])}
 plans['opinions_short_zero'] =            lambda { |stats| opinions(stats,  0, [ {range: [0, 250], per: 1.75}, {range: [250, 1000], per: 1.4}, {range: [1000, 2000], per: 1}, {range: [2000,Float::INFINITY], per: 0.6}])}
+
+plans['mockup_plan'] =                    lambda { |stats| opinions(stats,  10, [ {range: [0, 9999999999999], per: 1.25}])}
+
 
 
 task :pricing_forecasts => :environment do
@@ -165,6 +170,8 @@ def push_to_spreadsheet(revenue, earliest_month)
           }
         }
       })
+      response = service.batch_update_spreadsheet(spreadsheet_id, {requests: requests}, {})
+      requests = []
     end 
 
     sheet_id = sheets[plan]

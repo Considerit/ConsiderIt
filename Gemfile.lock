@@ -102,6 +102,8 @@ GEM
       activerecord (>= 3.1.0, < 5.2.0)
     delayed_paperclip (2.9.1)
       paperclip (>= 3.3)
+    domain_name (0.5.20161021)
+      unf (>= 0.0.5, < 1.0.0)
     erubis (2.7.0)
     eventmachine (1.2.0.1)
     exception_notification (4.2.1)
@@ -132,6 +134,8 @@ GEM
       signet (~> 0.7)
     haml (4.0.7)
       tilt
+    http-cookie (1.0.3)
+      domain_name (~> 0.5)
     httpclient (2.8.2.4)
     hurley (0.2)
     i18n (0.7.0)
@@ -145,6 +149,8 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.6.4)
       mime-types (>= 1.16, < 4)
+    mailgun-ruby (1.1.2)
+      rest-client (~> 2.0)
     memoist (0.15.0)
     mime-types (3.1)
       mime-types-data (~> 3.2015)
@@ -155,6 +161,7 @@ GEM
     multi_json (1.12.1)
     multipart-post (2.0.0)
     mysql2 (0.4.4)
+    netrc (0.11.0)
     nokogiri (1.6.8)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
@@ -209,6 +216,10 @@ GEM
     request_store (1.3.1)
     responders (2.2.0)
       railties (>= 4.2.0, < 5.1)
+    rest-client (2.0.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     retriable (2.1.0)
     ruby-prof (0.15.9)
     ruby-saml (1.3.1)
@@ -238,6 +249,9 @@ GEM
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     uber (0.0.15)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.2)
     whenever (0.9.7)
       chronic (>= 0.6.3)
     xml-simple (1.1.5)
@@ -263,6 +277,7 @@ DEPENDENCIES
   font-awesome-rails
   google-api-client
   haml
+  mailgun-ruby
   mysql2
   oj
   oj_mimic_json

@@ -516,6 +516,10 @@ css.crossbrowserify = (props, as_str = false) ->
     for prefix in prefixes
       props["#{prefix}transform"] = props.transform
 
+  if props.transformOrigin
+    for prefix in prefixes
+      props["#{prefix}transform-origin"] = props.transform
+
   if props.flex 
     for prefix in prefixes
       props["#{prefix}flex"] = props.flex

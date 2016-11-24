@@ -36,6 +36,7 @@ ConsiderIt::Application.routes.draw do
   get "/dashboard/export(.:format)" => 'import_data#export'
 
   get "/create_subdomain" => 'subdomain#create'
+  post '/subdomain' => 'subdomain#create'
 
   # SAML for Development
   get 'saml/sso/:sso_idp/:subdomain' => 'saml#sso', :constraints => IsSAMLRoute.new 
@@ -71,9 +72,11 @@ ConsiderIt::Application.routes.draw do
   get '/subdomain' => 'subdomain#show'
   get '/subdomain/:id' => 'subdomain#show'
 
-  post '/subdomain' => 'subdomain#create'
+  
   match '/subdomain' => 'subdomain#update', :via => [:put]
   get '/subdomains' => 'subdomain#index'
+
+  post "/contact_us" => 'contact#create'
 
   match '/notification/:notification_id' => 'notification#update', :via => [:put]
   get '/notifications/:proposal_id' => 'notification#index'

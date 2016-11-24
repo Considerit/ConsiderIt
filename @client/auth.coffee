@@ -221,6 +221,8 @@ Auth = ReactiveComponent
     if @props.naked
       return body
 
+    primary_color = @props.primary_color or focus_blue
+
     DIV null,
 
       # The auth form's header
@@ -241,7 +243,7 @@ Auth = ReactiveComponent
               style:
                 fontWeight: 600
                 fontSize: 18
-                color: focus_blue
+                color: primary_color
                 transform: 'translateY(6px)'
               goal
 
@@ -258,7 +260,7 @@ Auth = ReactiveComponent
                 position: 'relative'
                 fontWeight: 600
                 fontSize: 61
-                color: focus_blue
+                color: primary_color
 
               task
 
@@ -273,29 +275,30 @@ Auth = ReactiveComponent
 
                 reset_key auth
 
-              BUTTON
-                style:
-                  color: auth_ghost_gray
-                  position: 'absolute'
-                  cursor: 'pointer'
-                  right: 0
-                  top: 70
-                  padding: 10
-                  fontSize: 24
-                  backgroundColor: 'transparent'
-                  border: 'none'
+              if !@props.disable_cancel
+                BUTTON
+                  style:
+                    color: auth_ghost_gray
+                    position: 'absolute'
+                    cursor: 'pointer'
+                    right: 0
+                    top: 70
+                    padding: 10
+                    fontSize: 24
+                    backgroundColor: 'transparent'
+                    border: 'none'
 
-                title: t('cancel')
+                  title: t('cancel')
 
-                onClick: cancel_auth
-                onKeyDown: (e) => 
-                  if e.which == 13 || e.which == 32 # ENTER or SPACE
-                    cancel_auth(e)
-                    e.preventDefault()
+                  onClick: cancel_auth
+                  onKeyDown: (e) => 
+                    if e.which == 13 || e.which == 32 # ENTER or SPACE
+                      cancel_auth(e)
+                      e.preventDefault()
 
-                I className: 'fa-close fa'
+                  I className: 'fa-close fa'
 
-                ' ' + t('cancel')
+                  ' ' + t('cancel')
 
         DIV
           style:
@@ -305,9 +308,9 @@ Auth = ReactiveComponent
             top: 0
             borderRadius: '50%'
             marginLeft: -50 / 2
-            backgroundColor: focus_blue
+            backgroundColor: primary_color
             position: 'relative'
-            boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{focus_blue}"
+            boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{primary_color}"
 
 
         DIV 
@@ -322,7 +325,7 @@ Auth = ReactiveComponent
             width: 34
             height: 28
             fill: 'white', 
-            stroke: focus_blue, 
+            stroke: primary_color, 
             stroke_width: 11
             dash_array: "25 10"
 
@@ -337,7 +340,7 @@ Auth = ReactiveComponent
           borderRadius: 16
           borderStyle: 'dashed'
           borderWidth: 3
-          borderColor: focus_blue
+          borderColor: primary_color
 
         body
 
@@ -354,6 +357,7 @@ Auth = ReactiveComponent
   #                          the fields
   body : (fields, additional_instructions) ->
     current_user = fetch '/current_user'
+    primary_color = @props.primary_color or focus_blue
 
     DIV null,
       if additional_instructions
@@ -378,7 +382,7 @@ Auth = ReactiveComponent
               LABEL
                 htmlFor: field_id
                 style:
-                  color: focus_blue
+                  color: primary_color
                   fontWeight: 600
                   fontSize: if browser.is_mobile then 24
                 field[0]
@@ -455,9 +459,10 @@ Auth = ReactiveComponent
 
     DIV
       style:
-        position: 'relative'
-        left: '50%'
-        marginLeft: -(widthWhenRendered(button, {fontSize: 24}) + 36*2) / 2
+        textAlign: 'center'
+        #position: 'relative'
+        #left: '50%'
+        #marginLeft: -(widthWhenRendered(button, {fontSize: 24}) + 36*2) / 2
 
       @submitButton button, true
 
@@ -470,18 +475,19 @@ Auth = ReactiveComponent
         SPAN
           style:
             color: '#444'
-            fontSize: 24
+            fontSize: 18
             paddingLeft: 18
             paddingRight: 7
           'or '
 
         BUTTON
+          className: 'toggle_auth'
           style:
             display: 'inline-block'
             color: '#444'
             textDecoration: 'underline'
             fontWeight: 400
-            fontSize: 24
+            fontSize: 20
             backgroundColor: 'transparent'
             border: 'none'
           onClick: toggle
@@ -504,11 +510,16 @@ Auth = ReactiveComponent
   # inline: is the button inline-block?
   submitButton : (action, inline) ->
     # this is gross code
+    primary_color = @props.primary_color or focus_blue
+
     BUTTON
       style:
-        fontSize: 24
+        fontSize: 28
         display: if inline then 'inline-block' else 'block'
         width: if !inline then '100%'
+        fontWeight: 700
+        backgroundColor: primary_color
+        
       className:'primary_button' + (if @local.submitting then ' disabled' else '')
       onClick: @submitAuth
       onKeyDown: (e) => 
@@ -749,7 +760,7 @@ Auth = ReactiveComponent
               padding: '5px 10px'
               fontSize: 18            
             key: "#{question.tag}_inputBox"
-            id: "#{question.tag}_inputBox"
+            id: slugify("#{question.tag}inputBox")
             type: 'text'
             value: @local.tags[question.tag]
 
@@ -764,7 +775,7 @@ Auth = ReactiveComponent
 
         when 'boolean'
           input = INPUT
-            id: "#{question.tag}_inputBox"
+            id: slugify("#{question.tag}inputBox")
             key: "#{question.tag}_inputBox"
             type:'checkbox'
             style: _.defaults question.input_style or {},  
@@ -778,7 +789,7 @@ Auth = ReactiveComponent
 
         when 'dropdown'
           input = SELECT
-            id: "#{question.tag}_inputBox"
+            id: slugify("#{question.tag}inputBox")
             key: "#{question.tag}_inputBox"            
             style: _.defaults question.input_style or {},
               fontSize: 18

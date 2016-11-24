@@ -11,128 +11,159 @@ window.CustomerSignup = ReactiveComponent
       auth.form = 'create account'
       save auth
 
-    DIV 
-      style: 
-        backgroundColor: if @local.successful then logo_red else considerit_gray
-        borderRadius: 16
-        boxShadow: "0 1px 2px rgba(0,0,0,.2)"
-        padding: "20px 40px"
-        marginTop: 60
+    domain_hint = 
+      color: 'white' #'rgba(255,255,255,.8)'
+      fontSize: 28
+      padding: '0 2px'
+
+    compact = browser.is_mobile || SAAS_PAGE_WIDTH() < 800
+
+    loc = fetch('location')
+    if loc.query_params.error 
+      @local.errors = [decodeURIComponent(loc.query_params.error)]
+      save @local 
+      delete loc.query_params.error 
+      save loc 
+
+    FORM 
+      action: '/subdomain'
+      method: 'POST'
 
 
-      if !@local.successful
+      DIV 
+        style: 
+          paddingTop: 40
+          paddingBottom: 60
+          width: SAAS_PAGE_WIDTH()
+          margin: 'auto'
+          fontSize: if compact then 34 else 50
+          color: 'white'
+          textAlign: 'center'
+          fontWeight: 700
+          textShadow: '0px 2px 4px rgba(0,0,0,.2)'
 
-        H2
-          style: _.extend {}, h2
+        'Give your Free Forum a name'
 
-          if @props.plan == 'Basic'
-            "Let's get you setup with the Basic Plan"
-          else 
-            "Let's get you setup with the Professional Plan"
-
-      if !@local.successful
-        DIV
-          style: _.extend {}, small_text,
-            textAlign: 'center'
-            
-
-          SPAN 
-            style:
-              textDecoration: if current_user.logged_in then 'line-through'
-              display: 'inline-block'
-              marginRight: 40
-              fontWeight: if !current_user.logged_in then 600
-
-            'Step 1: Create your account'
-
-          SPAN 
-            style: 
-              textDecoration: if @local.successful then 'line-through'            
-              fontWeight: if current_user.logged_in && !@local.successful then 600 else 300
-
-            'Step 2: Create your site'
-
-
-      if !current_user.logged_in 
-        @drawAuth()
-      else if @local.successful
-        @drawGotoSubdomain()
-      else
-        @drawCreateSubdomain()
-
-      if current_user.logged_in && current_user.is_super_admin && !@local.successful
-        A
+        DIV 
           style: 
-            display: 'block'
-            opacity: .1
-            marginTop: 40
-          onClick: logout
-          'Logout'
+            paddingBottom: 10
+
+          SPAN
+            style: domain_hint
+            'https://'
+          INPUT
+            type: 'text'
+            name: 'subdomain'
+            ref: 'subdomain_name'
+            style: 
+              border: "1px solid #2a70a2"
+              padding: '8px 16px'
+              fontSize: 20
+          SPAN
+            style: domain_hint
+            '.consider.it'           
+
+
+        DIV 
+          style: 
+            fontSize: 14
+            color: 'rgba(255,255,255,.6)'
+            marginTop: 8
+            textShadow: 'none'
+            fontWeight: 400
+
+          'You can upgrade later if you want an Unlimited Forum.'
+
+
+      DIV 
+        style: 
+          backgroundColor: 'white'
+          textAlign: 'center'
+          borderTop: "1px solid #2a70a2"
+        
+        INPUT 
+          type: 'hidden'
+          name: 'authenticity_token' 
+          value: current_user.csrf
+
+        INPUT 
+          type: 'hidden'
+          name: 'plan' 
+          plan: 0
+
+        INPUT 
+          type: 'submit'
+          disabled: if !current_user.logged_in then true 
+          style: _.extend {}, big_button(),
+            opacity: if !current_user.logged_in then 0
+            backgroundColor: '#2a70a2'
+            cursor: if !current_user.logged_in then 'auto' else 'pointer'
+            position: 'relative'
+            top: -26
+
+          value: 'Create my forum'
+
+        if @local.errors && @local.errors.length > 0
+          DIV 
+            style: 
+              padding: 40
+              backgroundColor: '#FFE2E2'
+              maxWidth: 500
+              margin: 'auto'
+
+            H1 style: {fontSize: 18}, 'Ooops!'
+
+            for error in @local.errors
+              DIV 
+                style: 
+                  marginTop: 10
+                error
+
+
+
+      DIV 
+        style: 
+          backgroundColor: 'white'
+          padding: '0px 10px'
+
+        if !current_user.logged_in 
+
+          DIV null,
+            H2 
+              style: 
+                fontSize: 36
+                fontWeight: 400
+                paddingBottom: 40
+                textAlign: 'center'
+
+              'Please introduce yourself first'
+
+
+            @drawAuth()
+
+
+        if current_user.logged_in && current_user.is_super_admin
+          A
+            style: 
+              opacity: .1
+              marginTop: 40
+            onClick: logout
+            'Logout'
+
+  componentDidMount: -> 
+    @refs.subdomain_name.getDOMNode().focus()
 
   drawAuth: -> 
     DIV 
       style:
-        margin: '30px auto'
+        margin: '0px auto'
         width: DECISION_BOARD_WIDTH()
 
       Auth
         naked: true
+        disable_cancel: true
+        primary_color: primary_color()
 
-  drawGotoSubdomain: -> 
-
-    new_sub = fetch('new_subdomain')
-    current_user = fetch('/current_user')
-    
-    DIV
-      style:
-        margin: '40px auto'
-        textAlign: 'center'
-        color: 'white'
-
-      DIV 
-        style:           
-          borderRadius: 8
-          backgroundColor: logo_red
-          fontSize: 24
-
-        "Success! Visit your shiny new Consider.it site:"
-
-      A 
-        style: 
-          display: 'inline-block'
-          marginTop: 30
-          backgroundColor: logo_red
-          fontSize: 48
-          borderBottom: '2px solid white'
-
-        href: "#{location.protocol}//#{@local.successful}.#{location.hostname}?u=#{current_user.email}&t=#{new_sub.t}&nvn=1"
-
-        "#{location.protocol}//#{@local.successful}.#{location.hostname}"
-
-
-      DIV 
-        style: 
-          marginTop: 30
-
-        IMG
-          src: asset("product_page/kevin1.jpg")
-          style:
-            borderRadius: "50%"
-            display: "inline-block"
-            width: 75
-            height: 75
-            textAlign: "center"  
-            boxShadow: "0px 2px 2px rgba(0,0,0,.1)"
-
-        SPAN
-          style: 
-            display: 'inline-block'
-            marginLeft: 30
-            fontSize: 24
-            position: 'relative'
-            top: -27
-
-          "Kevin will reach out soon to help you get situated."
 
 
 
@@ -140,70 +171,14 @@ window.CustomerSignup = ReactiveComponent
   drawCreateSubdomain: ->     
     current_user = fetch '/current_user'
 
+    domain_hint = 
+      color: '#aaa'
+      fontSize: 20
+
     DIV 
       style:
         margin: '30px auto'
         width: DECISION_BOARD_WIDTH()
 
-      DIV 
-        style: 
-          margin: '20px 0'
-
-        "#{current_user.name.split(' ')[0]}, please name your Consider.it site:"
 
 
-      INPUT
-        ref: 'subdomain_name'
-        style: 
-          display: 'block'
-          border: "1px solid #{auth_ghost_gray}"
-          padding: '8px 16px'
-          fontSize: 20
-          width: DECISION_BOARD_WIDTH()
-         
-        placeholder: 'Name your Consider.it site'
-
-
-      BUTTON 
-        className: 'primary_button'
-        type: 'submit'
-        style: 
-          fontSize: 24
-
-        onClick: => 
-          subdomain_name = $(@refs.subdomain_name.getDOMNode()).val()
-          name = subdomain_name.replace(/ /g, '-').replace(/\W/g, '')
-
-          $.ajax '/subdomain', 
-            data: 
-              subdomain: name
-              app_title: subdomain_name
-              authenticity_token: current_user.csrf
-              plan: @props.plan
-            type: 'POST'
-            success: (data) => 
-              if data[0].errors
-                @local.errors = data[0].errors
-              else
-                @local.successful = data[0].name
-                save data[0]
-              save @local
-
-
-        'Create my site'
-
-      if @local.errors && @local.errors.length > 0
-        DIV 
-          style: 
-            borderRadius: 8
-            margin: 20
-            padding: 20
-            backgroundColor: '#FFE2E2'
-
-          H1 style: {fontSize: 18}, 'Ooops!'
-
-          for error in @local.errors
-            DIV 
-              style: 
-                marginTop: 10
-              error

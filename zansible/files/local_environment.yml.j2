@@ -7,6 +7,8 @@ default:
 
   indexability: {{ config.indexability }}
 
+  mailgun_api_key: {{ config.mailgun_api_key }}
+  
 {% if config.aws.enabled %}
   aws:
     access_key_id: '{{ config.aws.access_key_id }}'
@@ -14,4 +16,4 @@ default:
     s3_bucket: '{{ config.aws.s3_bucket }}'
     cloudfront: '{{ config.aws.cloudfront }}'
 {% endif %}
-  
+

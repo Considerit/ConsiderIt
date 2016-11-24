@@ -41,7 +41,7 @@ window.Metrics = ReactiveComponent
     DIV 
       style: 
         margin: 60
-
+        minHeight: window.innerHeight
       STYLE null,
         """
           .axis path,

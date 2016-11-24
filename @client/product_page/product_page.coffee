@@ -50,7 +50,7 @@ Colors = ReactiveComponent
   render: -> 
     loc = fetch 'location'
     colors = fetch 'colors'
-
+    console.log loc.url
     color = switch loc.url 
       when '/'
         # logo_red #'#d65931' #'#B03F3A'
@@ -67,6 +67,9 @@ Colors = ReactiveComponent
         '#348ac7'
         #'#4DBE4D'
         #'#414141'
+
+      when '/metrics', '/proposals'
+        'white'
       else 
         seattle_salmon
 
@@ -97,7 +100,10 @@ Proposals = ReactiveComponent
 
     return SPAN null if !subdomain.name
 
-    TagHomepage()
+    DIV 
+      style: 
+        minHeight: window.innerHeight
+      TagHomepage()
 
 
 

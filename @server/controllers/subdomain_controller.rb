@@ -58,7 +58,11 @@ class SubdomainController < ApplicationController
     end 
 
     if errors.length > 0
-      render :json => [{errors: errors}]
+      if request.request_method == 'POST' && !request.xhr?
+        redirect_to "/create_forum?error=#{errors[0]}"
+      else 
+        render :json => [{errors: errors}]
+      end
     else      
       new_subdomain = Subdomain.new name: subdomain, app_title: params[:app_title]
       roles = new_subdomain.user_roles
@@ -114,8 +118,9 @@ class SubdomainController < ApplicationController
         redirect_to "#{request.protocol}#{new_subdomain.host_with_port}?u=#{current_user.email}&t=#{token}"
       end
     end
-
   end
+
+
 
   def show
     if params[:id]

@@ -487,6 +487,7 @@ OpinionFilter = ReactiveComponent
 
     DIV 
       style: (@props.style or {})
+      className: 'filter_opinions_to'
 
       DIV 
         style: 

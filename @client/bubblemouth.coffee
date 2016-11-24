@@ -73,12 +73,16 @@ window.Bubblemouth = (props) ->
 
   id = "x#{md5(JSON.stringify(props))}-#{(Math.random() * 100000).toFixed(0)}"
 
+  x_pad = 0 
+  if props.box_shadow
+    x_pad = (props.box_shadow.dx or 0) + (props.box_shadow.stdDeviation or 0)
+
   SVG 
     version: "1.1" 
     xmlns: "http://www.w3.org/2000/svg"
     width: props.width
     height: props.height
-    viewBox: "0 0 #{full_width} #{svg_h}"
+    viewBox: "#{x_pad} 0 #{full_width} #{svg_h}"
     preserveAspectRatio: "none"
     style: if props.style then props.style
 

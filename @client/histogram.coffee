@@ -173,7 +173,7 @@ window.Histogram = ReactiveComponent
 
     @local.dirty == dirtied
 
-    return SPAN null if dirtied
+    #return SPAN null if dirtied
 
     if !@props.draw_base 
       @props.draw_base_labels = false 
@@ -319,19 +319,24 @@ window.Histogram = ReactiveComponent
 
 
 
-      HistoAvatars
-        highlighted_users: hist.highlighted_users
-        selected_opinion: hist.selected_opinion 
-        selected_opinions: hist.selected_opinions
-        avatar_size: @local.avatar_size 
-        enable_selection: @props.enable_selection
-        proposal: @props.proposal
-        height: @props.height 
-        backgrounded: @props.backgrounded
-        opinions: @props.opinions 
-        histocache: @local.histocache
-        histocache_key: @histocache_key()
-        navigating_inside: @local.navigating_inside
+      DIV 
+        style: 
+          height: @props.height
+
+        HistoAvatars
+          dirtied: dirtied
+          highlighted_users: hist.highlighted_users
+          selected_opinion: hist.selected_opinion 
+          selected_opinions: hist.selected_opinions
+          avatar_size: @local.avatar_size 
+          enable_selection: @props.enable_selection
+          proposal: @props.proposal
+          height: @props.height 
+          backgrounded: @props.backgrounded
+          opinions: @props.opinions 
+          histocache: @local.histocache
+          histocache_key: @histocache_key()
+          navigating_inside: @local.navigating_inside
 
 
 

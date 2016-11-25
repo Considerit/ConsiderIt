@@ -267,6 +267,20 @@ customizations.lang_default =
     list_opinions_title: "Opiniões"
 
 
+  cs: 
+    point_labels:
+      pro: 'pro'
+      pros: 'pro' 
+      con: 'proti'
+      cons: 'proti'
+      your_header: "Dejte --valences--" 
+      other_header: "Jiný' --valences--" 
+      top_header: "Top --valences--" 
+    slider_pole_labels: 
+      support: 'Souhlas'
+      oppose: 'Nesouhlas'
+
+
 
 
 ##########################

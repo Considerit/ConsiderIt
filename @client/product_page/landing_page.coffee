@@ -295,11 +295,23 @@ Example = ReactiveComponent
 
       @additional_options()
 
+  componentDidMount: -> 
+    loc = fetch 'location'
+    if loc.hash == @props.case.id && !@local.expanded 
+      @local.expanded = true 
+      save @local 
+
   additional_options: -> 
     ex = @props.case
+    loc = fetch 'location'
 
     click = => 
       @local.expanded = !@local.expanded; save @local
+
+      if @local.expanded && !loc.hash != @props.case.id 
+        loc.hash = @props.case.id 
+        save loc
+
       document.activeElement.blur()
 
     DIV 

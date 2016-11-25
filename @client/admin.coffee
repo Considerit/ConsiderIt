@@ -283,9 +283,15 @@ AppSettingsDash = ReactiveComponent
                 value: 'pt'
                 'Portuguese'
 
+              OPTION 
+                value: 'cs'
+                "Czech"
+
               OPTION
                 value: 'aeb'
                 'Tunisian arabic'
+
+
 
             DIV 
               style: 

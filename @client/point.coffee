@@ -270,42 +270,43 @@ window.Point = ReactiveComponent
 
 
 
-        DIV null,
-          if permit('update point', point) > 0 && 
-              (@props.rendered_as == 'decision_board_point' || TWO_COL())
-            BUTTON
-              style:
-                fontSize: if browser.is_mobile then 24 else 14
-                color: focus_blue
-                padding: '3px 12px 3px 0'
-                backgroundColor: 'transparent'
-                border: 'none'
+        if current_user.user == point.user
+          DIV null,
+            if permit('update point', point) > 0 && 
+                (@props.rendered_as == 'decision_board_point' || TWO_COL())
+              BUTTON
+                style:
+                  fontSize: if browser.is_mobile then 24 else 14
+                  color: focus_blue
+                  padding: '3px 12px 3px 0'
+                  backgroundColor: 'transparent'
+                  border: 'none'
 
-              onTouchEnd: (e) -> e.stopPropagation()
-              onClick: ((e) =>
-                e.stopPropagation()
-                points = fetch(@props.your_points_key)
-                points.editing_points.push(@props.key)
-                save(points))
-              t('edit')
+                onTouchEnd: (e) -> e.stopPropagation()
+                onClick: ((e) =>
+                  e.stopPropagation()
+                  points = fetch(@props.your_points_key)
+                  points.editing_points.push(@props.key)
+                  save(points))
+                t('edit')
 
-          if permit('delete point', point) > 0 && 
-              (@props.rendered_as == 'decision_board_point' || TWO_COL())
-            BUTTON
-              'data-action': 'delete-point'
-              style:
-                fontSize: if browser.is_mobile then 24 else 14
-                color: focus_blue
-                padding: '3px 8px'
-                backgroundColor: 'transparent'
-                border: 'none'
-              onTouchEnd: (e) -> e.stopPropagation()       
-              onClick: (e) =>
-                e.stopPropagation()
-                if confirm('Delete this point forever?')
-                  destroy @props.key
-              
-              t('delete')
+            if permit('delete point', point) > 0 && 
+                (@props.rendered_as == 'decision_board_point' || TWO_COL())
+              BUTTON
+                'data-action': 'delete-point'
+                style:
+                  fontSize: if browser.is_mobile then 24 else 14
+                  color: focus_blue
+                  padding: '3px 8px'
+                  backgroundColor: 'transparent'
+                  border: 'none'
+                onTouchEnd: (e) -> e.stopPropagation()       
+                onClick: (e) =>
+                  e.stopPropagation()
+                  if confirm('Delete this point forever?')
+                    destroy @props.key
+                
+                t('delete')
 
       if @props.rendered_as != 'decision_board_point' 
         DIV 
@@ -656,6 +657,7 @@ window.Comment = ReactiveComponent
 
   render: -> 
     comment = @data()
+    current_user = fetch '/current_user'
 
     if comment.editing
       # Sharing keys, with some non-persisted client data getting saved...
@@ -683,31 +685,32 @@ window.Comment = ReactiveComponent
           splitParagraphs(comment.body)
 
         # Delete/edit button
-        if permit('update comment', comment) > 0 && !@props.under_review
-          comment_action_style = 
-            color: '#444'
-            textDecoration: 'underline'
-            cursor: 'pointer',
-            padding: '0 10px 0 0'
-            backgroundColor: 'transparent'
-            border: 'none'
-          DIV style: { marginLeft: 60}, 
-            BUTTON
-              'data-action' : 'delete-comment'
-              style: comment_action_style
-              onClick: do (key = comment.key) => (e) =>
-                e.stopPropagation()
-                if confirm('Delete this comment forever?')
-                  destroy(key)
-              t('delete')
+        if current_user.user == comment.user
+          if permit('update comment', comment) > 0 && !@props.under_review
+            comment_action_style = 
+              color: '#444'
+              textDecoration: 'underline'
+              cursor: 'pointer',
+              padding: '0 10px 0 0'
+              backgroundColor: 'transparent'
+              border: 'none'
+            DIV style: { marginLeft: 60}, 
+              BUTTON
+                'data-action' : 'delete-comment'
+                style: comment_action_style
+                onClick: do (key = comment.key) => (e) =>
+                  e.stopPropagation()
+                  if confirm('Delete this comment forever?')
+                    destroy(key)
+                t('delete')
 
-            BUTTON
-              style: comment_action_style
-              onClick: do (key = comment.key) => (e) =>
-                e.stopPropagation()
-                comment.editing = true
-                save comment
-              t('edit')
+              BUTTON
+                style: comment_action_style
+                onClick: do (key = comment.key) => (e) =>
+                  e.stopPropagation()
+                  comment.editing = true
+                  save comment
+                t('edit')
 
 # fact-checks, edit comments, comments...
 styles += """

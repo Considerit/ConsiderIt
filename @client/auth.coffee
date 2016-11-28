@@ -729,7 +729,7 @@ Auth = ReactiveComponent
     auth = fetch('auth')
 
     if auth.ask_questions && auth.form in \
-          ['edit profile', 'create account', 'create account via invitation']
+          ['edit profile', 'create account', 'create account via invitation', 'user questions']
       questions = customization('auth_questions')
     else 
       questions = []
@@ -830,7 +830,7 @@ Auth = ReactiveComponent
     # Client side validation of user questions
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
-    if auth.ask_questions
+    if auth.ask_questions && auth.form in ['create account', 'create account via invitation']
       questions = customization('auth_questions')
       @local.errors = []
       for question in questions

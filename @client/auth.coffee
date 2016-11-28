@@ -372,7 +372,7 @@ Auth = ReactiveComponent
               style:
                 paddingTop: 4
                 verticalAlign: 'top'
-                width: '30%'
+                width: '36%'
 
               LABEL
                 htmlFor: field_id

@@ -346,11 +346,14 @@ window.HomepageTabs = ReactiveComponent
             else if subdomain.name == 'HALA'
               _.extend tab_style, 
                 padding: '10px 30px 0px 30px'
-                color: if current then 'black' else if hovering then '#000' else 'white'
+                color: seattle_vars.teal
                 backgroundColor: if current then 'white'
                 border: '1px solid'
                 borderBottom: 'none'
-                borderColor: if current then '#000' else 'transparent'
+                borderColor: if current then seattle_vars.teal else 'transparent'
+                fontSize: 18
+                fontWeight: 700
+                opacity: if !current && !hovering then 0.3
 
             else if subdomain.name == 'bradywalkinshaw'
               _.extend tab_style, 

@@ -675,6 +675,7 @@ window.NewProposal = ReactiveComponent
             Avatar
               key: editor
               user: editor
+              img_size: 'large'
               style:
                 position: 'absolute'
                 left: -18 - 50

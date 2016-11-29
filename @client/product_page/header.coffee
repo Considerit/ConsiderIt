@@ -3,7 +3,7 @@
 menu_options = nav_links = [
   {
     href: '/tour'
-    label: 'Tour'
+    label: 'Features'
   }
   { 
     href: '/pricing'
@@ -29,7 +29,7 @@ window.Header = ReactiveComponent
     w = SAAS_PAGE_WIDTH()
     h = 80
 
-    compact = browser.is_mobile || w < 830
+    compact = browser.is_mobile || w < 860
 
 
     @local.dot_x ?= 0

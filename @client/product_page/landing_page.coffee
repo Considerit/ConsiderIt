@@ -323,7 +323,7 @@ Example = ReactiveComponent
           border: 'none'
           width: '100%'
           padding: 20
-          #textDecoration: 'underline'
+          textDecoration: 'underline'
           fontSize: 42
           marginTop: 24
           display: 'block'

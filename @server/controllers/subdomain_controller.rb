@@ -37,7 +37,7 @@ class SubdomainController < ApplicationController
     end
 
     # make sure this user hasn't been spam-creating subdomains...
-    subs_for_user = Subdomain.where("roles like '%\"/user/#{current_user.id}\"%'").where("created_at < :week", {:week => 1.week.ago})
+    subs_for_user = Subdomain.where("roles like '%\"/user/#{current_user.id}\"%'").where("created_at >= :week", {:week => 1.week.ago})
     if subs_for_user.count > 25
       errors.push "You have created too many subdomains in the past week."
     end

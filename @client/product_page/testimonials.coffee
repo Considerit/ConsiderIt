@@ -250,7 +250,7 @@ window.testimonials =
 
 
     short_quote: """Working with the Consider.it team on <a href='https://hala.consider.it'>Seattle’s dialogue about Housing Affordability</a> has been a fantastic experience! We’ve created a great feedback loop with residents via Consider.it. Residents 
-                    are acknowledging the information we are providing them, learning from it, and even thanking us. If you’re looking to create quality online dialogues, Consider.it is an excellent great choice."""
+                    are acknowledging the information we are providing them, learning from it, and even thanking us. If you’re looking to create quality online dialogues, Consider.it is an excellent choice."""
 
     long_quote: """
         <p>Working with the Consider.it team on <a href='https://hala.consider.it'>Seattle’s dialogue about Housing Affordability</a> has been a fantastic experience. They bring far more to the table than technical skills – they think deeply about how the tool is going to be received and help us build a better dialogue using that knowledge. Furthermore, the Consider.it team is very responsive - the back and forth communication has been very easy.</p> 

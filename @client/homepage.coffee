@@ -285,8 +285,6 @@ window.HomepageTabTransition = ReactiveComponent
         loc.query_params.tab = homepage_tab.filter
         save loc
 
-
-
     SPAN null
 
 

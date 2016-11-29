@@ -185,7 +185,7 @@ window.Pricing = ReactiveComponent
           style: _.extend {}, details_paragraph, 
             fontStyle: 'italic'
 
-          """Limitation: only the most recent 25 questions are visible on your forum’s homepage."""
+          """Limitation: only the 25 most recent questions are visible on your forum’s homepage."""
 
       # UNLIMITED
       LI 
@@ -280,7 +280,7 @@ window.Pricing = ReactiveComponent
           className: 'embedded'
           style: details_paragraph
 
-          dangerouslySetInnerHTML: {__html: """You only <a href='#pay_per_opinion'>pay for the opinions you collect</a>. We can arrange a monthly budget to cap your costs."""}
+          dangerouslySetInnerHTML: {__html: """After setup, you only <a href='#pay_per_opinion'>pay for the opinions you collect</a>. We can arrange a monthly budget to cap your costs."""}
 
 
           
@@ -630,26 +630,26 @@ tech_qs = [
   {
     l: 'civility'
     q: """Can we moderate the forum and maintain civil discourse?"""
-    a: """Yes. As a forum administrator, you have a number of options for hiding in-civil and/or offtopic user posts. We’ve found an even more powerful mechanism though: a customizable user pledge that you can ask all participants in your forum to agree to when creating an account. It is amazing what setting expectations can do. Overall, we have found the structure of our forums lend themselves to more civil discourse. We have hosted city dialogues on very contentious issues without having to moderate a single comment. We also provide consulting services to help set best practices for facilitating civil, online discourse. """
+    a: """Yes. As a forum administrator, you have a number of options for hiding incivil and/or off-topic user posts. We’ve found an even more powerful mechanism though: a customizable user pledge that you can ask all participants in your forum to agree to when creating an account. It is amazing what setting expectations can do. Overall, we have found the structure of our forums lend themselves to more civil discourse. We have hosted city dialogues on very contentious issues without having to moderate a single comment. We also provide consulting services to help set best practices for facilitating civil, online discourse. """
   }
   {
     l: 'access_control'
-    q: """Can I make my Forum invite-only so only certain people can access it?"""
+    q: """Can I make my forum invite-only so only certain people can access it?"""
     a: """Yes. Once you create your forum you will be able to set the forum as private. Then only people who you invite can participate in the forum. You can set user roles to give people view-only access or the ability to respond. Furthermore, you can make specific questions invite-only."""
   }
   {
     l: 'profile_questions'
-    q: """I want to know more about participants in my Forum so I can analyze the opinions. Can I ask about their age? If they’re a homeowner? If they’re a board member?"""
-    a: """Yes, with an Unlimited forum. We can configure your forum to ask any number of specific questions when a participant creates a new account. This information can then be used to cross-tabulate the results to explore the opinions of segments of your stakeholders. More info <a href='/tour#profile_questions'>here</a>."""
+    q: """I want to know more about participants in my forum so I can analyze the opinions. Can I ask about their age? If they’re a homeowner? If they’re a board member?"""
+    a: """Yes, with an Unlimited forum. We can configure your forum to ask any number of specific questions when a participant creates a new account. This information can then be used to cross tabulate the results to explore the opinions of segments of your stakeholders. More info <a href='/tour#profile_questions'>here</a>."""
   }
   {
     l: 'translation'
     q: """Will my forum work in languages other than English?"""
-    a: """Yes. First, Google Translate is enabled in the footer for all forums. This allows your participants to view your forum in any language that Google supports. It even supports multi-lingual forums. If you upgrade to Unlimited, we can make the Google Translate functionality more prominent. Second, we also have interface translations for a number of languages. This can provide for higher-quality experience for forums targeted whose prefered primary language isn’t English. The biggest language limitation is that our email notifications are currently not translated. """
+    a: """Yes. First, Google Translate is enabled in the footer for all forums. This allows your participants to view your forum in any language that Google supports. It even supports multi-lingual forums. If you upgrade to Unlimited, we can make the Google Translate functionality more prominent. Second, we can translate the interface into a number of languages. This can provide a higher quality experience for communities whose members’ primary language isn’t English. The biggest language limitation is that our email notifications are currently not translated. """
   }
   {
     l: 'traffic'
-    q: """How can I know what kind of traffic my Forum is receiving?"""
+    q: """How can I know what kind of traffic my forum is receiving?"""
     a: """At this time, we support integration with Google Analytics in our Unlimited Plan. All you do is set your Google Analytics tracking code. If you use a different analytics system, contact us and we can figure out if we can integrate with that system as well."""
   }
   {
@@ -660,7 +660,7 @@ tech_qs = [
   {
     l: 'vanity_url'    
     q: """Can I use a custom URL? Can I host the forum on my own server?"""
-    a: """We can setup your forum to use a custom URL, but it will incur a monthly fee. At this time, we do not support self-hosting on your own server. """
+    a: """We can set up your forum to use a custom URL, but it will incur a monthly fee. At this time, we do not support self-hosting on your own server. """
   }
   {
     l: 'saml'    
@@ -684,12 +684,12 @@ pricing_qs = [
   {
     l: 'pay_per_opinion'    
     q: """Can you explain how the Free Forum works?"""
-    a: """You can <a href='/create_forum'>create a free forum</a> and use it for as long as you want. This forum is public by default, but you can make it invite-only. The forum comes with most of the standard features. The main limitation is that only the most recent 25 questions will be listed on the forum homepage. <a href='/contact?form=upgrade_to_unlimited'>Upgrade to the Unlimited Forum</a> if you want access to all the questions posted in your forum (or any of the other additional features with Unlimited, like a branded homepage)."""
+    a: """You can <a href='/create_forum'>create a free forum</a> and use it for as long as you want. This forum is public by default, but you can make it invite-only. The forum comes with most of the standard features. The main limitation is that only the 25 most recent questions will be listed on the forum homepage. <a href='/contact?form=upgrade_to_unlimited'>Upgrade to the Unlimited Forum</a> if you want access to all the questions posted in your forum (or any of the other additional features with Unlimited, like a branded homepage)."""
   }
   {
     l: 'opinions'    
     q: """What counts as an opinion? Why do you charge "per opinion" in the paid plans?"""
-    a: """An opinion is collected when someone slides and saves their position on a question in your forum. We charge per opinion collected because it is fair to you (you only pay for the service when you’re getting value from it) and fair to us (we get compensated for some fraction of the value we provide you). This allows small communities to pay less; larger communities, who are getting more value, pay more. It also accommodates forums whose use ebbs and flows."""
+    a: """An opinion is collected when someone slides and saves their position on a question in your forum. We charge per opinion collected because it is fair to you (you only pay for the service when you’re getting value from it) and fair to us (we get compensated for some fraction of the value we provide you). This allows small communities to pay less; larger communities, who are getting more value, to pay more. It also accommodates forums whose use ebbs and flows."""
   }
   {
     l: 'budget'

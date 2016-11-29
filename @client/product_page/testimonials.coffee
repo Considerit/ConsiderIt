@@ -228,9 +228,9 @@ window.TestimonialGrid = ReactiveComponent
           onclick()
 
       if @local.expanded == t
-        'hide full testimonial'
+        "read less from #{t.name.split(' ')[0]}"
       else 
-        'show full testimonial'
+        "read more from #{t.name.split(' ')[0]}"
 
   componentDidMount: -> 
     # trigger rerender so quote bubble is rendered with positions intact
@@ -264,7 +264,7 @@ window.testimonials =
 
         <li><strong>Outreach and recruitment</strong>. The consider.it team helps us understand which populations are providing feedback. I can then focus our online advertising on recruiting people from underrepresented neighborhoods and groups.</li>
 
-        <li><strong>How to engage with residents</strong>. The team encouraged direct engagement with residents online by responding to questions and concerns online. This support made me more proactive in answering questions. When I don’t know the answer, I reach out to the technical experts and ask them to respond that day so we can keep the conversation going. Residents are acknowledging the information we are providing them, learning from it, and even thanking us.</li>
+        <li><strong>How to engage with residents</strong>. The team encouraged us to engage directly with residents by responding to questions and concerns online. This support made me more proactive in answering questions. When I don’t know the answer, I reach out to the technical experts and ask them to respond that day so we can keep the conversation going. Residents are acknowledging the information we are providing them, learning from it, and even thanking us.</li>
 
         </ul>
         <p>If you’re looking to create quality online dialogues, Consider.it is an excellent choice.</p>
@@ -334,7 +334,7 @@ window.testimonials =
 
     long_quote: """
 
-        <p>At DAOhub a group of volunteers came together to create a home for the communities of a radical new form of human interaction, Decentralised Autonomous Organisations (or DAOs for short). We set up a <a href='http://discourse.org' target="_blank">Discourse</a> forum to act as our base means of communication. However one of the major challenges we faced was effectively aggregating community sentiment on issues and proposals. This was vital for the DAO to function properly. The simple polls that ship with Discourse were somewhat limited and did not quite fulfill the need.</p>
+        <p>At DAOhub, a group of volunteers came together to create a home for the communities of a radical new form of human interaction, Decentralised Autonomous Organisations (or DAOs for short). We set up a <a href='http://discourse.org' target="_blank">Discourse</a> forum to act as our base means of communication. However one of the major challenges we faced was effectively aggregating community sentiment on issues and proposals. This was vital for the DAO to function properly. The simple polls that ship with Discourse were somewhat limited and did not quite fulfill the need.</p>
         <p>Luckily, Consider.it beats the hell out of simple polls! It is a fantastic tool for gauging the opinion of a large number of users, while not losing sight of the individuals.</p>
         <p>If effectively gauging the opinion/sentiment of your community is something that is important or necessary for your business/product/community, then the team at Consider.it would be an invaluable partner. Their product and advice is second to none. Seriously, these guys are flat out awesome. Incredibly responsive and receptive to suggestions, and, as is evident by the nuance of their platform, they really have a fantastic grasp on the needs of web based and decentralised communities.</p>
         """
@@ -350,7 +350,7 @@ testimonials.susie_pricing = _.extend {}, testimonials.susie,
   short_quote: """Their team thinks deeply about how Consider.it is going to be received and helped us build a better public dialogue using that knowledge, such as by:<ul><li>framing content for a general audience</li><li>teaching best practices for engaging residents</li><li>creating new features to support our use case</li></ul>"""
 
 testimonials.auryn_pricing = _.extend {}, testimonials.auryn, 
-  short_quote: """Consider.it is incredibly responsive and receptive to suggestions, and, as is evident by the nuance of their platform, they really have a fantastic grasp on the needs of web based and decentralised communities. They:<ul><li>helped restructure our organizational processes</li><li>designed a custom forum homepage</li><li>created a rich custom embed of consider.it</li></ul>"""
+  short_quote: """The Consider.it team is incredibly receptive to suggestions, and, as is evident by the nuance of their platform, they really have a fantastic grasp on the needs of web based and decentralised communities. They:<ul><li>helped restructure our organizational processes</li><li>designed a custom forum homepage</li><li>created a rich custom embed of consider.it</li></ul>"""
 
 testimonials.russ_pricing = _.extend {}, testimonials.russ, 
   short_quote: """Beyond the great tool, the Consider.it team was extremely knowledgeable and available in helping craft an engagement strategy. They helped us:<ul><li>create clear, valuable questions</li><li>design a multi-phase engagement process</li><li>improve interactions with our network</li><li>interpret responses</li></ul>"""

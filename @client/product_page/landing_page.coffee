@@ -57,11 +57,11 @@ Heading = ->
 
 
       A 
-        href: '/create_forum'
+        href: '/contact?form=request_demo'
         style: _.extend {}, big_button(), 
           backgroundColor: seattle_salmon
 
-        'Start your own Forum'
+        'Request a demo'
 
     if !compact 
       IMG 

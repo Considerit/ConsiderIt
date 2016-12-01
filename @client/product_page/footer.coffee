@@ -320,7 +320,7 @@ nav = [
       }, 
       {
         label: 'Request a demo'
-        link: '/contact#request_demo'
+        link: '/contact?form=request_demo'
       }, 
 
       # {

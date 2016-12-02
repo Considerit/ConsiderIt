@@ -177,7 +177,7 @@ protected
     Thread.current[:current_user_id] = user.id
     Thread.current[:current_user]    = user
 
-    if user.registered 
+    if user.registered && current_subdomain.name != 'homepage'
       dirty_key '/proposals' # your_opinion
     end 
   end
@@ -375,6 +375,8 @@ protected
   end
 
   def dirty_if_any_private_proposals(real_user)
+    return if current_subdomain.name == 'homepage'
+
     matters = false 
 
     proposals = Proposal.all_proposals_for_subdomain

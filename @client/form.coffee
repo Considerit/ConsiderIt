@@ -122,7 +122,7 @@ window.WysiwygEditor = ReactiveComponent
       @local.initialized = true
       save @local; save my_data
 
-    show_placeholder = (!my_data.html || (@editor?.getText().trim().length == 0)) && !!@props.placeholder
+    @show_placeholder = (!my_data.html || (@editor?.getText().trim().length == 0)) && !!@props.placeholder
 
     toolbar_items = [
       {
@@ -276,7 +276,6 @@ window.WysiwygEditor = ReactiveComponent
             DIV 
               id: 'editor'
               dangerouslySetInnerHTML:{__html: @props.html}
-              'data-placeholder': if show_placeholder then @props.placeholder else ''
               onFocus: (e) => 
                 # Show the toolbar on focus
                 # showing is global state for the toolbar to be 
@@ -315,6 +314,7 @@ window.WysiwygEditor = ReactiveComponent
         toolbar: 
           container: $(@getDOMNode()).find('#toolbar')[0]
       styles: true #if/when we want to define all styles, set to false
+      placeholder: if @show_placeholder then @props.placeholder else ''
 
     keyboard = @editor.getModule('keyboard')
     delete keyboard.bindings[9]    # 9 is the key code for tab; restore tabbing for accessibility
@@ -355,14 +355,13 @@ html .ql-container{
 .ql-clipboard {
   display: none;
 }
-.ql-container:after{
+.ql-editor.ql-blank::before{
   content: attr(data-placeholder);
-  left: 0;
-  top: 0;
-  position: absolute;
-  color: #aaa;
   pointer-events: none;
-  z-index: 1;
+  position: absolute;
+  color: rgba(0,0,0,.4);
+  font-weight: 500;
+
 }
 """
 

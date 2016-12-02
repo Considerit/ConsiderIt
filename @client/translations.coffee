@@ -73,11 +73,23 @@ dict.en =
   closed: 'closed'
   add_new: 'add new'
 
+dict.cs = 
+  or: 'nebo'
+  and: 'a'
+
+  done: 'Hotovo'
+  cancel: 'Smazat'
+  edit: 'Upravit'
+  share: 'Sdílet'
+  delete: 'Smazat'
+  close: 'Zavřít'
+  update: 'Doplnit'
+  publish: 'Uveřejnit'
+  closed: 'Uzavřeno'
+  add_new: 'Přidat nový'
 
 dict.es = 
   or: 'ó'
-
-  # Alejandro, please translate:
   and: 'y'
   done: 'Hecho'
   cancel: 'cancelar'
@@ -180,6 +192,45 @@ _.extend dict.en,
 
   filter_to_watched: "Filter proposals to those you're watching"
 
+_.extend dict.cs, 
+  give_your_opinion: 'Přidat názor'
+  update_your_opinion: 'Doplnit názor'
+  comment: 'Komentář'
+  comments: 'Komentáře'
+  read_more: 'Číst více'
+  select_these_opinions: 'Vybrat tyto možnosti'
+  prev: 'předchozí'
+  next: 'další'
+  drag_from_left: (args) ->
+    "Posunout zleva"
+  drag_from_right: (args) -> 
+    "Posunout zprava"
+  write_a_new_point: (args) -> 
+    "Napsat nový"    
+
+  slide_your_overall_opinion: 'Posunout celkový názor'
+  your_opinion: "Váš názor"
+  save_your_opinion: 'Uložit názor'
+  return_to_results: 'Vrátit se na výsledky'
+  skip_to_results: 'přeskočit na výsledky'
+  login_to_comment: 'Přihlásit se a napsat komentář'
+  login_to_add_new: 'Přihlásit se a přidat nový'
+  login_to_save_opinion: 'Přihlásit se a uložit názor'
+  discuss_this_point: 'Diskutovat o názoru'
+  save_comment: 'Uložit komentář'
+  write_a_comment: 'Napsat komentář'
+  write_a_point: 'Napsat názor'
+  summary_placeholder: 'Stručné shrnutí názoru'
+  description_placeholder: 'Přidat detaily nebo důkazy'
+  sign_name: 'Napsat jméno'
+
+  tip_single: (args) -> 
+    "Vložte jeden komentář. Přidejte i více komentářů, pokud máte. "
+  tip_direct: "Buďte struční. Shrnutí je váš hlavní cíl."
+  tip_review: "Raději znovu zkontrolujte, co jste napsali."
+  tip_attacks: "Žádné osobní útoky."
+
+  filter_to_watched: "Filtrovat návrhy jen na ty, které sledujete"
 
 
 _.extend dict.es, 
@@ -369,7 +420,25 @@ _.extend dict.en,
   open_for_discussion: 'Open for discussion?'
   permissions_and_invites: 'Permissions and invitations'
 
-# Alejandro, please translate:
+_.extend dict.cs, 
+  create_new_proposal: 'Vytvořit nový návrh'
+  error_free: "bez gramatických chyb"
+  unambiguous: 'jednoznačný'
+  make_it: 'Provést'
+  url_instr: "Jen písmena, číslice, podtržítka, pomlčky."
+  summary: 'Shrnutí'
+  proposal_summary_instr: 'Cílit na 3-8 slov, podstatných jmen a sloves.'
+  details: 'Detaily'
+  label: 'Štítek'
+  expandable_body_instr: 'Text, který se zobrazí po rozšíření'
+  add_expandable: "Přidat rozšířený popis"
+  category: 'Kategorie'
+  optional: 'Volitelné'
+  show_on_homepage: 'Seznam na homepage?'
+  open_for_discussion: 'Otevřeno pro diskusi?'
+  permissions_and_invites: 'Povolení a pozvánky'
+
+
 _.extend dict.es, 
   create_new_proposal: 'Crear nueva propuesta'
   error_free: "libre de errores ortográficos"
@@ -478,6 +547,33 @@ _.extend dict.en,
   verify_your_email: 'Verify Your Email'
   more_info: 'Please give some info'
   forgot_password: 'I forgot my password!'
+
+_.extend dict.cs, 
+  log_in: 'Přihlásit se'
+  create_new_account: 'Vytvořit nový účet'
+  log_out: 'Odhlásit se'
+  edit_profile: 'Upravit profil'
+  email_settings: 'Nastavení e-mailu'
+  introduce_yourself: 'Představte se'
+
+  complete_registration: 'Dokončit registraci'
+  login_as: 'Ahoj, přihlašuji se jako'
+  password: 'Heslo'
+  name_prompt: 'Jmenuji se'
+  full_name: 'uživatelské jméno'
+  pic_prompt: 'Vypadám jako'
+  your_profile: 'Váš profil'
+  updated_successfully: "úspěšně upraven"
+  reset_your_password: "Obnovit heslo"
+  code: 'Kód'
+  new_password: 'Nové heslo'
+  verification_sent: 'Poslali jsme vám ověřovací kód na e-mail. Zkopírujte jej níže.'
+  verify: 'Ověřit'
+  choose_password: "Zvolit nové heslo"
+  code_from_email: 'ověřovací kód z e-mailu'
+  verify_your_email: 'Ověřit e-mail'
+  more_info: 'Prosím doplňte více informací'
+  forgot_password: 'Zapomněl jsem heslo!'
 
 
 _.extend dict.es, 
@@ -622,8 +718,27 @@ _.extend dict.en,
   added_new_point: 'added a new point'
   added_opinion: 'added their opinion'
 
+_.extend dict.cs, 
+  send_email: 'Posílejte mě novinky na e-mail'
+  email_digest_purpose: (args) ->
+    "Novinky shrnují poslední aktivity"
+  digest_timing: "Posílat shrnutí"
+  daily: 'denně'
+  hourly: 'každou hodinu'
+  weekly: 'týdně'
+  monthly: 'měsíčně'
+  notable_events: "E-maily jsou rozesílány, pokud došlo k něčemu zajímavému. Co je pro vás zajímavé?"
+  watched_proposals: 'Návrhy, které sledujete:'
+  unwatch: "Přestat sledovat tento návrh"
+  hide_notifications: 'Skrýt oznámení'
+  show_notifications: 'Ukázat oznámení'
+  commented_on: "Vložen komentář na"
+  your_point: 'váš názor'
+  edited_proposal: 'upravený návrh'
+  added_new_point: 'přidán nový názor'
+  added_opinion: 'přidán jejich názor'
 
-# Alejandro, please translate:
+
 _.extend dict.es, 
   send_email: 'Envíame resúmenes por correo electrónico'
   email_digest_purpose: (args) ->

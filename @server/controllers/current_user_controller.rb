@@ -1,33 +1,16 @@
 # coding: utf-8
+require 'securerandom'
 
-
-def dirty_if_any_private_proposals(real_user)
-  matters = false 
-
-  proposals = Proposal.all_proposals_for_subdomain
-
-  dummy = User.new
-
-  proposals.each do |proposal|
-    if permit('read proposal', proposal, real_user) != permit('read proposal', proposal, dummy)
-      matters = true 
-      break 
-    end
-  end 
-
-  if matters 
-    dirty_key '/proposals'
-  end 
-
-  matters
-end
 
 class CurrentUserController < ApplicationController
-  skip_before_action :verify_authenticity_token, :only => :update_user_avatar_hack
+  skip_before_action :verify_authenticity_token, :only => [:update_user_avatar_hack, :acs]
+
+  # minimum password length
+  MIN_PASS = 4
 
   # Gets the current user data
   def show
-    # puts("Current_user is #{current_user.id}")
+    #puts("Current_user is #{current_user.id}")
     dirty_key '/current_user'
     render :json => []
   end  
@@ -36,10 +19,11 @@ class CurrentUserController < ApplicationController
   def update
 
     errors = []
-    @min_pass = 4
+    @min_pass = MIN_PASS 
 
 
-    if !params.has_key?(:trying_to) || !params[:trying_to] || params[:trying_to] == 'update_avatar_hack'
+    if !params.has_key?(:trying_to) || !params[:trying_to] ||
+          params[:trying_to] == 'update_avatar_hack' 
       trying_to = 'edit profile'    
     else
       trying_to = params[:trying_to]
@@ -73,7 +57,7 @@ class CurrentUserController < ApplicationController
             current_user.add_to_active_in
             dirty_if_any_private_proposals current_user
 
-            update_roles_and_permissions
+            current_user.update_roles_and_permissions
 
             # if this user was created via the invitation process, note that
             # they've gone through the registration process
@@ -120,7 +104,7 @@ class CurrentUserController < ApplicationController
             replace_user(current_user, user)
             set_current_user(user)
             current_user.add_to_active_in
-            update_roles_and_permissions
+            current_user.update_roles_and_permissions
 
             dirty_if_any_private_proposals current_user
 
@@ -131,6 +115,7 @@ class CurrentUserController < ApplicationController
 
             # puts("Now current is #{current_user && current_user.id}")
             log('sign in by email')
+
           end
         end
 
@@ -159,7 +144,7 @@ class CurrentUserController < ApplicationController
             set_current_user(user)
             try_update_password 'reset password', errors
             current_user.add_to_active_in
-            update_roles_and_permissions
+            current_user.update_roles_and_permissions
             
             if !current_user.verified 
               current_user.verified = true
@@ -246,6 +231,14 @@ class CurrentUserController < ApplicationController
         try_update_password 'edit profile', errors
         log('updating info')
 
+        # if this user was created via SAML, note that
+        # they've gone through the registration process
+        if current_user.complete_profile
+          current_user.complete_profile = false
+          current_user.save
+        end
+
+
       when 'user questions'
         update_user_attrs 'user questions', errors
         log('answering user questions')
@@ -309,7 +302,6 @@ class CurrentUserController < ApplicationController
       :avatar => ActionDispatch::Http::UploadedFile, 
       :bio => String, 
       :name => String,
-      :hide_name => 'boolean',
       :email => String
     }
 
@@ -324,7 +316,7 @@ class CurrentUserController < ApplicationController
       end
     end
 
-    fields = ['avatar', 'bio', 'name', 'hide_name', 'tags', 'subscriptions']
+    fields = ['avatar', 'bio', 'name', 'tags', 'subscriptions']
     new_params = params.select{|k,v| fields.include? k}
     new_params[:name] = '' if !new_params[:name] #TODO: Do we really want to allow blank names?...
 
@@ -396,32 +388,12 @@ class CurrentUserController < ApplicationController
         raise "Error saving this user's password"
       end
     end
-
-  end
-
-  # Check to see if this user has been referenced by email in any 
-  # roles or permissions settings. If so, replace the email with the
-  # user's key. 
-  def update_roles_and_permissions
-    ActsAsTenant.without_tenant do 
-      for cls in [Subdomain, Proposal]
-        objs_with_user_in_role = cls.where("roles like '%\"#{current_user.email}\"%'") 
-                                         # this is case insensitive
-
-        for obj in objs_with_user_in_role
-          pp "UPDATING ROLES, replacing #{current_user.email} with #{current_user.id} for #{obj.name}"
-          obj.roles = obj.roles.gsub /\"#{current_user.email}\"/i, "\"/user/#{current_user.id}\""
-          obj.save
-        end
-
-      end
-    end
-
   end
 
   def log (what)
     write_to_log({:what => what, :where => request.fullpath, :details => nil})
   end
+
 
 end
 

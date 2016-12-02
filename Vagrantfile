@@ -32,6 +32,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # parallels box...
     config.vm.box_url = "https://atlas.hashicorp.com/parallels/boxes/ubuntu-14.04"
     config.vm.box = "parallels/ubuntu-14.04"
+    #config.vm.network :private_network, ip: "192.168.33.10"
     config.vm.provider "parallels" do |v|
       v.memory = 8192
       v.cpus = 4

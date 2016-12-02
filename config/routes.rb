@@ -8,6 +8,12 @@ class NotJSON
   end
 end
 
+class IsSAMLRoute
+  def matches?(request)
+    request.subdomain.downcase == 'saml-auth'
+  end 
+end
+
 ConsiderIt::Application.routes.draw do
 
   if Rails.env.development?  
@@ -29,7 +35,13 @@ ConsiderIt::Application.routes.draw do
 
   get "/dashboard/export(.:format)" => 'import_data#export'
 
+  get "/create_subdomain" => 'subdomain#create'
   post '/subdomain' => 'subdomain#create'
+
+  # SAML for Development
+  get 'saml/sso/:sso_idp/:subdomain' => 'saml#sso', :constraints => IsSAMLRoute.new 
+  post 'saml/acs' => 'saml#acs', :constraints => IsSAMLRoute.new 
+  get 'saml/metadata' => 'saml#metadata', :constraints => IsSAMLRoute.new 
 
   # All user-visible URLs go to the html controller, which serves an
   # html page, and then the required data will be fetched afterward in JSON
@@ -95,5 +107,7 @@ ConsiderIt::Application.routes.draw do
   match 'update_user_avatar_hack' => 'current_user#update_user_avatar_hack', :via => [:put]
 
   post "/dashboard/import_data" => 'import_data#create'
+
+
 
 end

@@ -18,7 +18,6 @@ class ApplicationController < ActionController::Base
     render :json => result
   end
 
-
   def application
     dirty_key '/application'
     render :json => []
@@ -59,6 +58,13 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def initiate_saml_auth(sso_domain = nil)
+    sso_domain ||= current_subdomain.SSO_domain
+    redirect = CGI::escape("#{request.protocol}#{request.host_with_port}#{request.fullpath}")
+    #redirect_to "#{request.protocol}saml-auth.#{request.domain()}/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
+    redirect_to "#{request.protocol}saml-auth.consider.it/saml/sso/#{sso_domain}/#{current_subdomain.name}?redirect=#{redirect}"
+  end
+
 protected
   def csrf_skippable?
     request.format.json? && request.content_type != "text/plain" && (!!request.xml_http_request?)
@@ -96,7 +102,7 @@ protected
     end 
 
     # when to display a considerit homepage
-    can_display_homepage = (Rails.env.production? && rq.host.include?('consider.it')) || session[:app] == 'product_page'
+    can_display_homepage = Rails.env.production? || session[:app] == 'product_page'
     if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
       candidate_subdomain = Subdomain.find_by_name('homepage')
     else
@@ -336,7 +342,7 @@ protected
       if !target_user
         token_valid = false
       else
-        encrypted = ApplicationController.MD5_hexdigest("#{target_email}#{target_user.unique_token}#{current_subdomain.name}")    
+        encrypted = target_user.auth_token(current_subdomain)
         token_valid = encrypted == auth_token
       end
 
@@ -348,6 +354,9 @@ protected
           replace_user(current_user, target_user)
           set_current_user(target_user)
           current_user.add_token() # Logging in via email token is dangerous, so we'll only allow it once per token          
+          current_user.update_roles_and_permissions
+          dirty_if_any_private_proposals(current_user)
+          current_user.add_to_active_in
         end
 
         if !params.has_key?('nvn')
@@ -365,6 +374,26 @@ protected
     end
   end
 
+  def dirty_if_any_private_proposals(real_user)
+    matters = false 
+
+    proposals = Proposal.all_proposals_for_subdomain
+
+    dummy = User.new
+
+    proposals.each do |proposal|
+      if permit('read proposal', proposal, real_user) != permit('read proposal', proposal, dummy)
+        matters = true 
+        break 
+      end
+    end 
+
+    if matters 
+      dirty_key '/proposals'
+    end 
+
+    matters
+  end
 
   
   def allow_iframe_requests

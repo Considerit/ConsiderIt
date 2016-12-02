@@ -396,7 +396,7 @@ Feature = ReactiveComponent
 
         DIV 
           style: 
-            width: '80%'
+            width: '100%'
             verticalAlign: 'top'
             margin: 'auto'
 
@@ -547,7 +547,7 @@ basic_features = [
  {
   id: 'opinion_slate'    
   label: 'An Opinion Slate for your community'
-  html: 'Consider.it organizes the issues confronting your community. Request feedback on proposals, plans, policies, programs and designs. Or go a step further and empower individuals to contribute their own ideas. Consider.it makes everyone’s opinion on each proposal visible so it is easier to get on the same page.'
+  html: 'Consider.it makes each stakeholder\'s opinion about whatever you\'re gathering feedback about visible. You\'ll get everyone on the same page quicker as a result.'
   video: 'opinion_slate'  
  }
  {
@@ -558,26 +558,26 @@ basic_features = [
  }
  {
   id: 'slide_opinions'    
-  label: 'See your opinion in relation to others'
+  label: 'Express less partisan opinions with a sliding scale' #'See your opinion in relation to others'
   html: 'Individuals slide their overall opinion about a proposal, integrating their opinion with others. The slider endpoints are configurable. You can set them to Agree/Disagree, High Priority/Low Priority or whatever your community is evaluating about a proposal.'
   video: 'slide_it'   
  }
  {
   id: 'pro_con_dialogue'    
-  label: 'Dialogue to surface the pros and cons'
-  html: 'Individuals express what they see as the most important tradeoffs, pro and con. While doing so, individuals have access to the pros and cons others have already contributed. Your community members learn from each other as they use Consider.it, and from you.'
+  label: 'Nuanced dialogue focuses on surfacing pros and cons'
+  html: 'Consider.it encourages stakeholders to think critically about the merits and disadvantages of an idea. In the margins, each participant can see the points of their peers, learn from them, and even include them in their own list of important points. Now your users are finding common ground with their peers!'
   video: 'pro_con'
  }
  {
   id: 'explore_opinions'    
-  label: 'Gain deeper understanding by exploring patterns of thought'
-  html: 'Consider.it provides a dynamically updating, interactive summary of what your community thinks and why. You can drill deeper into the underlying reasons for different groups. For example, learn the reservations of those who are opposing a proposal — perhaps 80% of those with reservations share two Con points that can be addressed!'
+  label: 'Explore patterns of thought for deeper understanding'
+  html: 'Consider.it provides a dynamically updating, interactive summary of what your community thinks and why. You can drill deeper into the underlying reasons for different groups. For example, learn the reservations of those who oppose a proposal. Perhaps 80% of those with reservations share two con points that can be resolved, helping build consensus!'
   video: 'explore'
  }
  {
   id: 'encourage_civility'    
   label: 'Set focus and encourage civility'
-  html: 'Consider.it helps participants focus on the pro/con tradeoffs, rather than each other. Personal attacks don’t make sense in the format. Individuals can engage in long discussions about single points, but they’re contained and don’t hijack the overall conversation.'
+  html: 'Consider.it helps participants focus on the tradeoffs, rather than each other. Personal attacks don’t make sense in the Pro/Con format. Individuals can have extended discussions about single points, but they’re contained and don’t hijack the overall conversation.'
   video: 'drilldown'
  } 
 
@@ -602,21 +602,21 @@ paid_features = [
  {
   id: 'customization'
   label: 'Customized Look, Feel, and Functionality'
-  html: 'We can work with you to design and implement a forum with the look and feel that you want for your brand. Moreover, we have a number of homepage templates that we can enable that can add additional organization to your community’s issues.'
+  html: 'We can work with you to design and implement a forum with the look and feel that you want for your brand. Moreover, we have a number of homepage templates that can organize your community’s ideas to best meet your needs.'
   img: asset('product_page/customize_homepage.gif')
  }
 
  {
   id: 'profile_questions'  
   label: 'Ask demographic and profile questions'
-  html: 'Optionally ask for additional information when someone creates an account on your forum. For example, you can ask if they are a Donating Member of your organization. Or you can ask if they are a homeowner. Or you can ask demographic questions like age and race. This information is available in data exports. It can also be used in our opinion analytics described below.'
+  html: 'You can ask for additional information from stakeholders when they create an account on your forum. For example, you can ask if they are a Donating Member of your organization. Or you can ask if they are a homeowner. Or you can ask demographic questions like age and race. This information is available in data exports. It can also be used in our opinion analytics described below.'
   video: 'profile_questions'
  }
 
  {
   id: 'opinion_analytics'    
   label: 'Opinion Analytics for survey-like cross-tabs'
-  html: 'You may wish to filter opinions based upon user characteristics or some other differentiator. For example, you might want to learn what Board Members think of a proposal. Or perhaps you want to learn what renters think of a planning proposal, filtering out homeowners. We can help you surface the information you need.'
+  html: 'You may wish to filter opinions based upon user characteristics or some other differentiator. For example, you might want to learn what Board Members think of a proposal. Or perhaps you want to learn what renters think of a planning proposal, filtering out homeowners. We can help you understand the patterns of thoughts based on whatever segment you\'re interested in examining.'
   video: 'analytics'
  }
 

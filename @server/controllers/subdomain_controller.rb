@@ -2,9 +2,11 @@ module Invitations
 end
 
 class SubdomainController < ApplicationController
-  respond_to :json
+  # respond_to :json
   skip_before_action :verify_authenticity_token, :only => :update_images_hack
   include Invitations
+
+  before_action :verify_user, only: [:create]
 
   def index 
     ActsAsTenant.without_tenant do 
@@ -63,8 +65,6 @@ class SubdomainController < ApplicationController
       else 
         render :json => [{errors: errors}]
       end
-
-
     else      
       new_subdomain = Subdomain.new name: subdomain, app_title: params[:app_title]
       roles = new_subdomain.user_roles
@@ -127,6 +127,14 @@ class SubdomainController < ApplicationController
   def show
     if params[:id]
       dirty_key "/subdomain/#{params[:id] or current_subdomain.id}"
+    elsif params[:subdomain]
+      begin 
+        subdomain = Subdomain.find_by_name(params[:subdomain])
+        dirty_key "/subdomain/#{subdomain.id}"
+      rescue 
+        render :json => [{errors: ["That site doesn't exist."]}]
+        return
+      end
     else 
       dirty_key '/subdomain'
     end

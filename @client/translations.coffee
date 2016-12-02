@@ -535,7 +535,7 @@ _.extend dict.en,
     else
       'first and last name or pseudonym'
   pic_prompt: 'I look like'
-  your_profile: 'Your Profile'
+  your_profile: 'Update Your Profile'
   updated_successfully: "Updated successfully"
   reset_your_password: "Reset Your Password"
   code: 'Code'

@@ -370,7 +370,7 @@ window.splitParagraphs = (user_content, append) ->
   paragraphs = user_content.split(/(?:\r?\n)/g)
 
   for para,pidx in paragraphs
-    P key: "para-#{idx}", 
+    P key: "para-#{pidx}", 
       # now split around all links
       for text,idx in para.split '(*-&)'
         if text.substring(0,5) == 'link:'
@@ -515,6 +515,10 @@ css.crossbrowserify = (props, as_str = false) ->
   if props.transform
     for prefix in prefixes
       props["#{prefix}transform"] = props.transform
+
+  if props.transformOrigin
+    for prefix in prefixes
+      props["#{prefix}transform-origin"] = props.transform
 
   if props.flex 
     for prefix in prefixes

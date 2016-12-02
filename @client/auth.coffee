@@ -29,7 +29,7 @@ window.logout = ->
 
   auth = fetch 'auth'
 
-  if auth.form && auth.form == 'edit profile'
+  if auth.form && auth.form in ['edit profile']
     loadPage '/'
 
   reset_key auth
@@ -88,6 +88,7 @@ Auth = ReactiveComponent
 
     auth = fetch('auth')
     current_user = fetch('/current_user')
+    subdomain = fetch '/subdomain'
     
     goal = null
     if auth.goal 
@@ -136,20 +137,24 @@ Auth = ReactiveComponent
           footer ]
 
       # The EDIT PROFILE form
-      # We don't render an enclosing header and border,
-      # and add feedback when the user is updated.
       when 'edit profile'
         if avatar_field = @avatarInput()
           avatar_field = ["#{t('pic_prompt')}:", avatar_field]
 
-        [ @headerAndBorder null, t('Your Profile'),
+        [ @headerAndBorder goal, t('Your Profile'),
             @body [
-              ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')],
-              ["My #{t("password")}:", @inputBox('password', t("password"), 'password')]
-              ["#{t('name_prompt')}:", @inputBox('name', t('full_name'))],
-              avatar_field].concat @userQuestionInputs()
+              # we don't want users on single sign on subdomains to change email/password
+              if !fetch('/subdomain').SSO_domain       
+                ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')]
+              if !fetch('/subdomain').SSO_domain
+                ["My #{t("password")}:", @inputBox('password', t("password"), 'password')]
+              ["#{t('name_prompt')}:", @inputBox('name', t('full_name'))]
+              avatar_field
+            ].concat @userQuestionInputs()
           @submitButton(t('Update'))
           if @local.saved_successfully
+            if subdomain.SSO_domain
+              loadPage '/'
             SPAN style: {color: 'green'}, t("Updated successfully")
         ]
 
@@ -259,7 +264,7 @@ Auth = ReactiveComponent
 
               task
 
-            if auth.form != 'edit profile'
+            if auth.form not in ['edit profile']
               cancel_auth = (e) =>
 
                 if auth.form == 'verify email' || location.pathname == '/proposal/new'
@@ -566,7 +571,7 @@ Auth = ReactiveComponent
         padding: '5px 10px'
         fontSize: if browser.is_mobile then 36 else 18
         display: 'inline-block'
-      value: if auth.form == 'edit profile' then @local[name] else null
+      value: if auth.form in ['edit profile'] then @local[name] else null
       name: "user[#{name}]"
       key: "#{name}_inputBox"
       placeholder: placeholder
@@ -856,7 +861,7 @@ Auth = ReactiveComponent
         if auth.form in ['create account', 'edit profile']
           ensureCurrentUserAvatar()
 
-        if auth.form == 'edit profile'
+        if auth.form in ['edit profile']
           @local.saved_successfully = current_user.errors.length == 0 && (@local.errors or []).length == 0
 
         # Once the user logs in, we will stop showing the log-in screen

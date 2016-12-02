@@ -254,7 +254,7 @@ module MailerHelper
 
     query_params.update({
       u: user.email,
-      t: ApplicationController.MD5_hexdigest("#{user.email}#{user.unique_token}#{subdomain.name}")
+      t: user.auth_token(subdomain)
     })
 
     query_params = query_params.map{|k,v| "#{k}=#{v}"}.join('&')

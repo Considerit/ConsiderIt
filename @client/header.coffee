@@ -10,7 +10,7 @@ window.Header = ReactiveComponent
     subdomain = fetch('/subdomain')
 
     auth = fetch('auth')
-    return SPAN null if auth.form && auth.form != 'edit profile'
+    return SPAN null if auth.form && auth.form not in ['edit profile']
 
 
     HEADER null, 

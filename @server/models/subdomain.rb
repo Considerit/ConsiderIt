@@ -111,7 +111,7 @@ class Subdomain < ActiveRecord::Base
       result[role] = default_role if !result.has_key?(role) || !result[role]
 
       # Filter role if the client isn't supposed to see it
-      if filter && role != 'proposer'
+      if filter # && role != 'proposer'
         # Remove all specific email address for privacy. Leave wildcards.
         # Is used by client permissions system to determining whether 
         # to show action buttons for unauthenticated users. 

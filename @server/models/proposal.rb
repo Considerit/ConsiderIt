@@ -288,9 +288,9 @@ class Proposal < ActiveRecord::Base
 
       # Initialize empty role
       if !result[role]
-        if role == 'observer'
+        if role == 'observer' && current_subdomain
           # default to subdomain setting
-          result[role] = subdomain.user_roles['visitor']
+          result[role] = current_subdomain.user_roles['visitor']
         else
           result[role] = [] 
         end

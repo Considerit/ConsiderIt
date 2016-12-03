@@ -87,16 +87,14 @@ def permit(action, object = nil, user = nil)
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
-  when 'read proposal'
-    proposal = object
-
-    if !Permitted::matchSomeRole(proposal.user_roles, ['editor', 'writer', 'commenter', 'opiner', 'observer'], user)
+  when 'read proposal', 'access forum'
+    if !user.is_admin? && !Permitted::matchEmail(current_subdomain.user_roles['visitor'], user)
       if !user.registered
         return Permission::NOT_LOGGED_IN 
       else
         return Permission::INSUFFICIENT_PRIVILEGES 
       end
-    elsif !proposal.user_roles['observer'].index('*')
+    elsif !current_subdomain.user_roles['visitor'].index('*')
       if !user.registered
         return Permission::NOT_LOGGED_IN 
       elsif !user.verified

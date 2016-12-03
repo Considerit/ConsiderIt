@@ -5,6 +5,9 @@ class PageController < ApplicationController
     page = params[:id] ? params[:id] : 'homepage'
     
     if page == 'homepage'
+
+      authorize!("access forum", current_subdomain, "/page/")
+
       dirty_key '/page/'
       dirty_key '/users'
 

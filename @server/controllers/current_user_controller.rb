@@ -245,6 +245,7 @@ class CurrentUserController < ApplicationController
 
       when 'verify email'
         verify_user(current_user.email, params[:verification_code])
+        dirty_if_any_private_proposals current_user
         log('verifying email')
 
       when 'send_verification_token'

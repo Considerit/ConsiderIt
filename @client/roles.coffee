@@ -17,9 +17,11 @@ all_roles = ->
                    'write, comment, and opine.', 
       icon: 'fa-edit', 
       wildcard: 
-        label: 'Any registered user who can observe can edit'
+        label: 'Any registered user can edit'
         default: false
-    },{
+    },
+    {
+      hide: true,
       name: 'writer', 
       label: 'Writers', 
       description: "Can write #{pro_label} and #{con_label} points that are " + \
@@ -29,6 +31,7 @@ all_roles = ->
         label: 'Any registered user who can observe can write'
         default: true
     },{
+      hide: true,
       name: 'commenter', 
       label: 'Commenters', 
       description: "Can comment on #{pro_label} and #{con_label} points.", 
@@ -37,6 +40,7 @@ all_roles = ->
         label: 'Any registered user who can observe can comment'
         default: true
     },{
+      hide: true,
       name: 'opiner', 
       label: 'Opiners', 
       description: 'Can drag the slider and build a list of other people\'s Pros/Cons, but can\'t write new Pros, Cons or Comments.'
@@ -45,6 +49,7 @@ all_roles = ->
         label: 'Any registered user who can observe can opine'
         default: true
     },{
+      hide: true,
       name: 'observer', 
       label: 'Observers', 
       description: 'Can access this proposal. But that\'s it.', 
@@ -102,32 +107,28 @@ SubdomainRoles = ReactiveComponent
       {
         name: 'admin', 
         label: 'Administrators', 
-        description: 'Can configure everything related to this site, including all of the below.', 
-        icon: 'fa-wrench'
+        description: 'Can configure everything related to this forum.', 
+        #icon: 'fa-wrench'
       }, 
       {
+        hide: true,
         name: 'moderator', 
         label: 'Moderators', 
         description: 'Can moderate user content. Will receive emails for content needing moderation.', 
         icon: 'fa-fire-extinguisher'
-      },
-      if subdomain.assessment_enabled then {
-        name: 'evaluator', 
-        label: 'Fact checkers', 
-        description: 'Can validate claims. Will receive emails when a fact-check is requested.', 
-        icon: 'fa-flag-checkered'} else null,
-      {
+      },{
+        hide: false,
         name: 'proposer', 
         label: 'Proposers', 
         description: 'Can add new proposals.', 
-        icon: 'fa-lightbulb-o', 
-        wildcard: {label: 'Any registered visitor can post new proposals', default: true}},
+        #icon: 'fa-lightbulb-o', 
+        wildcard: {label: 'Any registered user can post new proposals', default: true}},
       {
         name: 'visitor', 
-        label: 'Visitors', 
-        description: 'Default users who can view proposals.', 
-        icon: 'fa-android', 
-        wildcard: {label: 'Proposals are public by default.', default: true}} 
+        label: 'Users who can access forum', 
+        description: 'If set to private forum, invite specific people to join below.', 
+        #icon: 'fa-android', 
+        wildcard: {label: 'Public forum. Anyone with a link can see all proposals.', default: true}} 
     ]
 
     roles = _.compact roles
@@ -143,7 +144,7 @@ SubdomainRoles = ReactiveComponent
 
 SpecifyRoles = (target, roles) ->  
   DIV null,
-    for role,idx in roles
+    for role in roles when !role.hide
       DIV 
         key: role.name
         style: 
@@ -284,26 +285,45 @@ AddRolesAndInvite = ReactiveComponent
 
 
 
-        BUTTON 
-          id: 'select_new_role'
-          tabIndex: 0
-          'aria-haspopup': "true"
-          'aria-owns': "role_menu_popup"          
-          style: 
-            backgroundColor: 'rgba(100,100,150,.1)'
-            padding: '8px 12px'
-            borderRadius: 8
-            cursor: 'pointer'
-            border: 'none'
 
-          I 
-            className: "fa #{@local.role.icon}"
+        if (r for r in other_roles when !r.hide).length > 0 
+          BUTTON 
+            id: 'select_new_role'
+            tabIndex: 0
+            'aria-haspopup': "true"
+            'aria-owns': "role_menu_popup"          
             style: 
-              displayName: 'inline-block'
-              margin: '0 8px 0 0'
-          "Add #{@local.role.label}"
+              backgroundColor: 'rgba(100,100,150,.1)'
+              padding: '8px 12px'
+              borderRadius: 8
+              cursor: 'pointer'
+              border: 'none'
 
-          I style: {marginLeft: 8}, className: "fa fa-caret-down"
+            I 
+              className: "fa #{@local.role.icon}"
+              style: 
+                displayName: 'inline-block'
+                margin: '0 8px 0 0'
+            "Add #{@local.role.label}"
+
+            
+            I style: {marginLeft: 8}, className: "fa fa-caret-down"
+        else 
+          DIV  
+            id: 'select_new_role'
+            style: 
+              backgroundColor: 'rgba(100,100,150,.1)'
+              padding: '8px 12px'
+              borderRadius: 8
+              border: 'none'
+
+            I 
+              className: "fa #{@local.role.icon}"
+              style: 
+                displayName: 'inline-block'
+                margin: '0 8px 0 0'
+            "Add #{@local.role.label}"
+
 
 
         UL 
@@ -321,7 +341,7 @@ AddRolesAndInvite = ReactiveComponent
             backgroundColor: '#fff'
             border: '1px solid #eee'
 
-          for role,idx in other_roles
+          for role,idx in other_roles when !role.hide
             LI 
               role: "menuitem"              
               ref: "menuitem-#{idx}"              

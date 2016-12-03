@@ -521,17 +521,17 @@ ProposalDescription = ReactiveComponent
               padding: 0
             t('edit')
 
-          BUTTON 
-            style: 
-              marginRight: 10
-              color: '#999'              
-              backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'
-              border: 'none'
-              padding: 0
-            onClick: => 
-              @local.edit_roles = !@local.edit_roles
-              save @local
-            t('share')
+          # BUTTON 
+          #   style: 
+          #     marginRight: 10
+          #     color: '#999'              
+          #     backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'
+          #     border: 'none'
+          #     padding: 0
+          #   onClick: => 
+          #     @local.edit_roles = !@local.edit_roles
+          #     save @local
+          #   t('share')
 
           if permit('delete proposal', @proposal) > 0
             BUTTON

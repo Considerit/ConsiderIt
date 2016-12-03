@@ -418,7 +418,7 @@ _.extend dict.en,
   optional: 'optional'
   show_on_homepage: 'List on homepage?'
   open_for_discussion: 'Open for discussion?'
-  permissions_and_invites: 'Permissions and invitations'
+  permissions_and_invites: 'Permissions'
 
 _.extend dict.cs, 
   create_new_proposal: 'Vytvořit nový návrh'
@@ -436,7 +436,7 @@ _.extend dict.cs,
   optional: 'Volitelné'
   show_on_homepage: 'Seznam na homepage?'
   open_for_discussion: 'Otevřeno pro diskusi?'
-  permissions_and_invites: 'Povolení a pozvánky'
+  permissions_and_invites: 'Povolení'
 
 
 _.extend dict.es, 
@@ -455,7 +455,7 @@ _.extend dict.es,
   optional: 'opcional'
   show_on_homepage: '¿Mostrar en portada?'
   open_for_discussion: '¿Abierta a debate?'
-  permissions_and_invites: 'Permisos e invitaciones'
+  permissions_and_invites: 'Permisos'
 
 _.extend dict.pt, 
   create_new_proposal: 'Criar nova proposta'
@@ -473,7 +473,7 @@ _.extend dict.pt,
   optional: 'opcional'
   show_on_homepage: 'Exibir na página inicial?'
   open_for_discussion: 'Abrir para discussão?'
-  permissions_and_invites: 'Permissões e convites'
+  permissions_and_invites: 'Permissões'
 
 _.extend dict.aeb,
   create_new_proposal: 'إحدث مقترح جديد'
@@ -510,7 +510,7 @@ _.extend dict.fr,
   optional: 'Optionnel' 
   show_on_homepage: 'Afficher en page principale?' 
   open_for_discussion: 'Ouvert a a discussion?'
-  permissions_and_invites: 'Permissions et invitations' 
+  permissions_and_invites: 'Permissions' 
 
 
 ########

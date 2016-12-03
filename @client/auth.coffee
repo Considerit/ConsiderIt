@@ -275,7 +275,7 @@ Auth = ReactiveComponent
 
                 reset_key auth
 
-              if !@props.disable_cancel
+              if !@props.disable_cancel && ( location.pathname != '/' || auth.goal != "access this private forum")
                 BUTTON
                   style:
                     color: auth_ghost_gray

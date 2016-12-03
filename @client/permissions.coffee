@@ -153,7 +153,10 @@ matchSomeRole = (roles, accepted_roles) ->
   return false
 
 window.recourse = (permission, goal) ->
-  goal = goal || 'access this page'
+  loc = fetch 'location'
+
+
+  goal = goal || "access this #{if loc.url == '/' then 'private forum' else 'page'}"
   
   switch permission
 

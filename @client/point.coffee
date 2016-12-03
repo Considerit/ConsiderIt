@@ -98,8 +98,7 @@ window.Point = ReactiveComponent
       _.extend point_content_style, {width: 500}
 
 
-    expand_to_see_details = point.text && 
-                             (point.nutshell.length + point.text.length) > 210
+    expand_to_see_details = !!point.text
 
     select_enticement = []
 

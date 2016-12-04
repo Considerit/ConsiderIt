@@ -41,6 +41,9 @@ window.GoogleTranslate = ReactiveComponent
         clearInterval @int 
     , 20
 
+  componentWillUnmount: ->
+    clearInterval @int
+
 
 window.pad = (num, len) -> 
   str = num

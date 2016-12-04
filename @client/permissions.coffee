@@ -154,24 +154,26 @@ matchSomeRole = (roles, accepted_roles) ->
 
 window.recourse = (permission, goal) ->
   loc = fetch 'location'
-
+  auth = fetch 'auth'
 
   goal = goal || "access this #{if loc.url == '/' then 'private forum' else 'page'}"
   
   switch permission
 
     when Permission.INSUFFICIENT_PRIVILEGES
-      loadPage '/'
+      loadPage '/' if loc.url != '/'
 
     when Permission.NOT_LOGGED_IN
-      reset_key 'auth', {form: 'login', goal: goal, ask_questions: true}
+      if !auth.form
+        reset_key 'auth', {form: 'login', goal: goal, ask_questions: true}
 
     when Permission.UNVERIFIED_EMAIL
-      reset_key 'auth', {form: 'verify email', goal: goal}
+      if auth.form != 'verify email'
+        reset_key 'auth', {form: 'verify email', goal: goal}
 
-      current_user = fetch '/current_user'
-      current_user.trying_to = 'send_verification_token'
-      save current_user
+        current_user = fetch '/current_user'
+        current_user.trying_to = 'send_verification_token'
+        save current_user
 
 
 ####
@@ -244,6 +246,53 @@ AccessControlled =
         return true
     return false
 
+AccessDenied = -> 
+  user = fetch '/current_user'
+
+  DIV 
+    style: 
+      position: 'relative'
+      padding: 50
+
+    ProfileMenu()  
+
+    DIV 
+      style: 
+        width: HOMEPAGE_WIDTH()
+        margin: 'auto'
+        padding: '50px 100px'
+        backgroundColor: focus_blue
+        color: 'white'
+        fontSize: 22
+
+
+      H1 
+        style: 
+          fontSize: 36
+          color: 'white'
+          paddingBottom: 40
+        "We're sorry, but #{user.email} doesn't have access to this private forum."
+
+      DIV null,        
+        """If you think you should have access, please contact the person who invited you. 
+           Sometimes they will have granted access to a different email address. You will 
+           either have to create an account using that other email address, or the forum 
+           administrator will have to grant this email address access."""
+
+      DIV 
+        style: 
+          marginTop: 40
+
+        "Contact us at "
+
+        A 
+          href: 'mailto:support@consider.it?subject=I am having trouble accessing a private forum'
+          style:
+            textDecoration: 'underline'
+          'support@consider.it'
+        " if you need help."
+
+
 
 #######################
 ## Exports
@@ -251,7 +300,7 @@ AccessControlled =
 window.AccessControlled = AccessControlled
 window.permit = permit
 window.Permission = Permission
-
+window.AccessDenied = AccessDenied
 
 
 

@@ -1922,76 +1922,83 @@ Page = ReactiveComponent
     loc = fetch('location')
     auth = fetch('auth')
 
-    MAIN 
-      role: 'main'
-      style: 
-        position: 'relative'
-        zIndex: 1
-        minHeight: if subdomain.name != 'livingvotersguide' then 200
-        margin: 'auto'
+    access_granted = @accessGranted()
 
-      if auth.form
-        Auth()
+    DIV null,
+      Header(key: 'page_header') if access_granted
 
-      else if !@accessGranted()
-        SPAN null 
+      MAIN 
+        role: 'main'
+        style: 
+          position: 'relative'
+          zIndex: 1
+          margin: 'auto'
 
-      else if loc.url.match(/(.+)\/edit/)
-        EditProposal 
-          key: loc.url.match(/(.+)\/edit/)[1]
-          fresh: false
-          
-      else
-        switch loc.url
-          when '/'
-            Homepage key: 'homepage'
-          when '/about'
-            About()
-          when '/privacy_policy'
-            PrivacyPolicy()
-          when '/terms_of_service'
-            TermsOfService()
-          when '/proposal/new'
-            EditProposal key: "new_proposal", fresh: true      
-          when '/accessibility_support'
-            AccessibilitySupport()        
-          when '/dashboard/email_notifications'
-            Notifications 
-              key: '/page/dashboard/email_notifications'
-          when '/dashboard/assessment'
-            FactcheckDash key: "/page/dashboard/assessment"
-          when '/dashboard/import_data'
-            ImportDataDash key: "/page/dashboard/import_data"
-          when '/dashboard/moderate'
-            ModerationDash key: "/page/dashboard/moderate"
-          when '/dashboard/application'
-            AppSettingsDash key: "/page/dashboard/application"
-          when '/dashboard/customizations'
-            CustomizationsDash key: "/page/dashboard/customizations"
-          when '/dashboard/roles'
-            SubdomainRoles key: "/page/dashboard/roles"
-          when '/dashboard/tags'
-            UserTags key: "/page/dashboard/tags"
-          else
-            if @page?.proposal?
-              Proposal key: @page.proposal
-            else if @page.result == 'Not found'
-              DIV 
-                style: 
-                  textAlign: 'center'
-                  fontSize: 32
-                  marginTop: 50
+        if auth.form
+          Auth()
 
-                "There doesn't seem to be a proposal here"
+        else if !access_granted
+          AccessDenied()
 
+        else if loc.url.match(/(.+)\/edit/)
+          EditProposal 
+            key: loc.url.match(/(.+)\/edit/)[1]
+            fresh: false
+            
+        else
+          switch loc.url
+            when '/'
+              Homepage key: 'homepage'
+            when '/about'
+              About()
+            when '/privacy_policy'
+              PrivacyPolicy()
+            when '/terms_of_service'
+              TermsOfService()
+            when '/proposal/new'
+              EditProposal key: "new_proposal", fresh: true      
+            when '/accessibility_support'
+              AccessibilitySupport()        
+            when '/dashboard/email_notifications'
+              Notifications 
+                key: '/page/dashboard/email_notifications'
+            when '/dashboard/assessment'
+              FactcheckDash key: "/page/dashboard/assessment"
+            when '/dashboard/import_data'
+              ImportDataDash key: "/page/dashboard/import_data"
+            when '/dashboard/moderate'
+              ModerationDash key: "/page/dashboard/moderate"
+            when '/dashboard/application'
+              AppSettingsDash key: "/page/dashboard/application"
+            when '/dashboard/customizations'
+              CustomizationsDash key: "/page/dashboard/customizations"
+            when '/dashboard/roles'
+              SubdomainRoles key: "/page/dashboard/roles"
+            when '/dashboard/tags'
+              UserTags key: "/page/dashboard/tags"
+            else
+              if @page?.proposal?
+                Proposal key: @page.proposal
+              else if @page.result == 'Not found'
                 DIV 
                   style: 
-                    color: '#555'
-                    fontSize: 16
-                  "Check if the url is correct. The author may also have deleted it. Good luck!"
+                    textAlign: 'center'
+                    fontSize: 32
+                    marginTop: 50
 
-            else 
-              LOADING_INDICATOR
+                  "There doesn't seem to be a proposal here"
+
+                  DIV 
+                    style: 
+                      color: '#555'
+                      fontSize: 16
+                    "Check if the url is correct. The author may also have deleted it. Good luck!"
+
+              else 
+                LOADING_INDICATOR
+
+      Footer(key: 'page_footer') if access_granted
+    
 
 Root = ReactiveComponent
   displayName: 'Root'
@@ -2043,12 +2050,7 @@ Root = ReactiveComponent
           
           BrowserHacks()
 
-          Header(key: 'page_header')       
-
           Page key: "/page#{loc.url}"
-
-          Footer(key: 'page_footer')
-
 
       Tooltip()
 

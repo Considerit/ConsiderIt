@@ -161,8 +161,12 @@ Auth = ReactiveComponent
       # The RESET PASSWORD form
       when 'reset password'
         [ @headerAndBorder null, t('Reset Your Password'),
-            @body [["#{t('Code')}:", @inputBox('verification_code', t('code_from_email'))],
-                   ["#{t('New password')}:", @inputBox('password', t("choose_password"), 'password')]
+            @body [
+                   ['', INPUT({name: 'user[verification_code]', disabled: true, style: {display: 'none'}} )] # prevent autofill of code with email address
+                   ['', INPUT({type: 'password', name: 'user[password]', disabled: true, style: {display: 'none'}} )] # prevent autofill of code with password
+                   ["#{t('Code')}:", @inputBox('verification_code', t('code_from_email'))],
+                   ["#{t('New password')}:", @inputBox('password', t("choose_password"), 'password')], 
+
                   ], t('verification_sent')
           @submitButton(t('Log in')) ]
 
@@ -584,6 +588,7 @@ Auth = ReactiveComponent
         if event.which == 13
           @submitAuth(event)
       pattern: pattern
+      autoComplete: if name == 'verification_code' then 'off'
 
   ####
   # avatarInput

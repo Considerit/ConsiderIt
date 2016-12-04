@@ -358,7 +358,7 @@ class CurrentUserController < ApplicationController
       end
     # And if it's not taken
     elsif user && (user != current_user)
-      errors.append 'There is already an account with that email'
+      errors.append 'There is already an account with that email. Click "log in" below instead.'
     # And that it's valid
     elsif !/\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i.match(email)
       errors.append 'Email address is not properly formatted'

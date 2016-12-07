@@ -430,10 +430,15 @@ window.sizeWhenRendered = (str, style) ->
   if key not of size_cache
     style.display ||= 'inline-block'
 
-    test = document.createElement("span")
-    test.innerHTML = "<span>#{str}</span>"
+    test = document.createElement("div")
+    test.innerHTML = "<div>#{str}</div>"
     for k,v of style
-      test.style[k] = v
+
+      key = k.replace(/([A-Z])/g, '-$1').toLowerCase()
+      if key in ['font-size', 'max-width', 'max-height']
+        test.style[key] = "#{v}px"
+      else 
+        test.style[key] = v
 
     main.appendChild test 
     h = test.offsetHeight

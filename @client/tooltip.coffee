@@ -25,14 +25,22 @@ window.Tooltip = ReactiveComponent
       position: 'absolute'      
       boxShadow: '0 1px 1px rgba(0,0,0,.2)'
       borderBottom: '1px solid #eee'
-      #maxWidth: 200
 
     size = sizeWhenRendered(tip, style)
 
-    # place the tooltip above the element
-    _.extend style, 
-      top: coords.top - size.height - 9
-      left: coords.left - size.width / 2
+
+    if tooltip.top || !tooltip.top?
+      # place the tooltip above the element
+      _.extend style, 
+        top: coords.top - size.height - 9
+        left: coords.left - size.width / 2
+    else 
+      # place the tooltip above the element
+      _.extend style, 
+        top: coords.top + 9 + 20
+        left: coords.left - size.width / 2
+
+
 
     DIV
       id: 'tooltip'

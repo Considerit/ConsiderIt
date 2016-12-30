@@ -2,15 +2,6 @@
 
 %table{border: "0", cellpadding: "0", cellspacing: "16", width: "100%", style: "border-collapse: separate; border-spacing: 16px; width: 100%"}
 
-  - if @subdomain_notifications && @subdomain_notifications.key?('content_to_moderate')
-      
-    = section('For moderation')
-
-    = paragraph("There is new content #{styled_link('dashboard/moderate', 'waiting to be moderated', :text_preceding => 'waiting to be moderated at ')}.")
-
-    = end_section()
-
-
   - if @new_stuff && @new_stuff.key?(:your_proposals) && @new_stuff[:your_proposals].length > 0 
     
     = section('Your proposals')

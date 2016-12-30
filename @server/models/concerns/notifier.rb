@@ -309,7 +309,7 @@ module Notifier
 
     # Who is watching this object?
     if event_type == 'content_to_moderate'
-      watchers = User.where("id in (?)", subdomain.user_roles['moderator'].map {|key| key_id(key)})
+      watchers = User.where("id in (?)", subdomain.user_roles['admin'].map {|key| key_id(key)})
     elsif event_object_type == 'Proposal' && event_type == 'new'
       watchers = subdomain.users.where(registered: true)
     else

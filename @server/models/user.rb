@@ -211,8 +211,21 @@ class User < ActiveRecord::Base
     my_subs
   end
 
+  def subscribe_to_all(subdomain=nil)
+    subdomain ||= current_subdomain
+    subdomain.proposals.each do |p|
+      self.update_subscription_key(p.key,'watched',false)
+    end  
+  end 
+
   def update_subscription_key(key, value, hash={})
-    sub_settings = subscription_settings(current_subdomain)
+    if hash.has_key?(:subdomain)
+      subdomain = hash[:subdomain]
+    else 
+      subdomain = current_subdomain
+    end
+
+    sub_settings = subscription_settings(subdomain)
     return if !hash[:force] && sub_settings.key?(key)
 
     sub_settings[key] = value

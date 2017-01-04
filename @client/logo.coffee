@@ -1,11 +1,16 @@
-window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_color, i_dot_x, transition) -> 
-  main_text_color = main_text_color or 'white'
-  o_text_color = o_text_color or logo_red
-  line_color = line_color or 'white'
-  i_dot_x = i_dot_x or 252.25
+window.drawLogo = (opts) -> 
 
-  height = height or 60
-  width = width or height * 284 / 60
+  opts = _.defaults opts,
+    main_text_color: 'white'
+    o_text_color: logo_red
+    line_color: 'white'
+    i_dot_x: 252.25
+    height: 60
+
+  opts.width ||= opts.height * 284 / 60
+
+  height = opts.height 
+  width = opts.width
 
   SVG 
     id: 'considerit_logo'
@@ -29,25 +34,54 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
           width: 284
           height: 45
 
-    G null,
+      FILTER 
+        id: "logo_shadow"
+        x: "-50%" 
+        y: "-50%" 
+        width: "200%" 
+        height: "200%" 
+        filterUnits: "objectBoundingBox" 
+        FEOFFSET 
+          dx: "0" 
+          dy: "1" 
+          in: "SourceAlpha" 
+          result: "shadowOffsetOuter1"
+        FEGAUSSIANBLUR
+          stdDeviation: "1" 
+          in: "shadowOffsetOuter1" 
+          result: "shadowBlurOuter1"
+        FECOLORMATRIX
+          values: "0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.25 0" 
+          type: "matrix" 
+          in: "shadowBlurOuter1" 
+          result: "shadowMatrixOuter1"
 
-      if draw_line
+        FEMERGE null,
+          FEMERGENODE
+            in: "shadowMatrixOuter1"
+          FEMERGENODE 
+            in: "SourceGraphic"
+
+    G 
+      filter: if opts.box_shadow then 'url(#logo_shadow)'
+
+      if opts.draw_line
         LINE
           id: 'underline'
           x1: 8
           y1: 55
           x2: 284
           y2: 55
-          stroke: line_color
+          stroke: opts.line_color
           strokeWidth: 1
 
       # C
       PATH
-        fill: main_text_color
+        fill: opts.main_text_color
         style: 
           transition: 'fill 500ms'
 
-        clipPath: if clip then "url(#logo_clip)"
+        clipPath: if opts.clip then "url(#logo_clip)"
         d: """
           M18.2811874,48.356 
           C24.1163223,48.3559999 28.0501221,47.5510218 32.5084274,43.599315 
@@ -69,11 +103,11 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
 
       # O
       PATH
-        fill: main_text_color
+        fill: opts.main_text_color
         style: 
           transition: 'fill 500ms'
 
-        clipPath: if clip then "url(#logo_clip)"
+        clipPath: if opts.clip then "url(#logo_clip)"
         d: """
           M38.1601385,33.164 
           C38.1601385,41.444 44.7841385,48.356 52.9201385,48.356 
@@ -93,11 +127,11 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
 
       # N
       PATH
-        fill: main_text_color
+        fill: opts.main_text_color
         style: 
           transition: 'fill 500ms'
 
-        clipPath: if clip then "url(#logo_clip)"
+        clipPath: if opts.clip then "url(#logo_clip)"
         d: """
           M74.0881385,46.268 
           C74.0881385,46.988 74.7361385,47.636 75.4561385,47.636 
@@ -124,11 +158,11 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
 
       # S
       PATH
-        fill: main_text_color
+        fill: opts.main_text_color
         style: 
           transition: 'fill 500ms'
 
-        clipPath: if clip then "url(#logo_clip)"
+        clipPath: if opts.clip then "url(#logo_clip)"
         d: """         
           M110.304139,45.692 
           C111.816139,46.844 115.128139,48.356 119.880139,48.356 
@@ -155,11 +189,11 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
 
       # I
       PATH
-        fill: main_text_color
+        fill: opts.main_text_color
         style: 
           transition: 'fill 500ms'
 
-        clipPath: if clip then "url(#logo_clip)"
+        clipPath: if opts.clip then "url(#logo_clip)"
         d: """
           M137.664139,46.268 
           C137.664139,46.988 138.312139,47.636 139.032139,47.636 
@@ -176,11 +210,11 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
 
       # D
       PATH
-        fill: main_text_color
+        fill: opts.main_text_color
         style: 
           transition: 'fill 500ms'
 
-        clipPath: if clip then "url(#logo_clip)"
+        clipPath: if opts.clip then "url(#logo_clip)"
         d: """
           M166.680139,48.356 
           C172.728139,48.356 176.112139,44.036 176.112139,44.036 
@@ -209,11 +243,11 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
 
       # E
       PATH
-        fill: main_text_color
+        fill: opts.main_text_color
         style: 
           transition: 'fill 500ms'
 
-        clipPath: if clip then "url(#logo_clip)"
+        clipPath: if opts.clip then "url(#logo_clip)"
         d: """
           M188.856139,33.236 
           C188.856139,41.516 194.976139,48.356 203.616139,48.356 
@@ -240,11 +274,11 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
 
       # R
       PATH
-        fill: main_text_color
+        fill: opts.main_text_color
         style: 
           transition: 'fill 500ms'
 
-        clipPath: if clip then "url(#logo_clip)"
+        clipPath: if opts.clip then "url(#logo_clip)"
         d: """
           M223.056139,46.268 
           C223.056139,46.988 223.704139,47.636 224.424139,47.636 
@@ -268,11 +302,11 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
 
       # I
       PATH
-        fill: main_text_color
+        fill: opts.main_text_color
         style: 
           transition: 'fill 500ms'
 
-        clipPath: if clip then "url(#logo_clip)"
+        clipPath: if opts.clip then "url(#logo_clip)"
         d: """
           M247.608139,46.268 
           C247.608139,46.988 248.256139,47.636 248.976139,47.636 
@@ -289,11 +323,11 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
 
       # T
       PATH
-        fill: main_text_color
+        fill: opts.main_text_color
         style: 
           transition: 'fill 500ms'
 
-        clipPath: if clip then "url(#logo_clip)"
+        clipPath: if opts.clip then "url(#logo_clip)"
         d: """
           M266.472139,39.068 
           C266.472139,44.9 268.920139,48.356 274.464139,48.356 
@@ -328,10 +362,10 @@ window.drawLogo = (height, main_text_color, o_text_color, clip, draw_line, line_
         style: 
           transition: 'fill 500ms'
         
-        fill: o_text_color
-        cx: i_dot_x
+        fill: opts.o_text_color
+        cx: opts.i_dot_x
         cy: "55"
         r: "4.25"
-        style: if transition then css.crossbrowserify({transition: 'cx 1000ms'}) 
+        style: if opts.transition then css.crossbrowserify({transition: 'cx 1000ms'}) 
           
 

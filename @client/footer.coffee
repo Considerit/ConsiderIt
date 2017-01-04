@@ -176,7 +176,15 @@ window.TechnologyByConsiderit = ReactiveComponent
           top: 6
           left: 3
         
-        drawLogo @props.size + 5, logo_red, logo_red, false, true, logo_red, (if @local.hover then 142 else null), true
+        drawLogo 
+          height: @props.size + 5
+          main_text_color: logo_red
+          o_text_color: logo_red
+          clip: false
+          draw_line: true 
+          line_color: logo_red
+          i_dot_x: if @local.hover then 142 else null
+          transition: true
 
 
 

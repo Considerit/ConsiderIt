@@ -245,11 +245,12 @@ customizations['consider'] =
             top: 4
             left: if window.innerWidth > 1055 then -23.5 else 0
 
-          drawLogo HEADER_HEIGHT + 5, 
-                  'white', 
-                  (if @local.in_red then 'transparent' else logo_red), 
-                  !@local.in_red,
-                  false
+          drawLogo 
+            height: HEADER_HEIGHT + 5
+            main_text_color: 'white'
+            o_text_color: if @local.in_red then 'transparent' else logo_red
+            clip: !@local.in_red
+            draw_line: false
 
         SPAN 
           style: 

@@ -558,10 +558,10 @@ _.extend dict.cs,
 
   complete_registration: 'Dokončit registraci'
   login_as: 'Ahoj, přihlašuji se jako'
-  password: 'Heslo'
+  password: 'Moje heslo'
   name_prompt: 'Jmenuji se'
-  full_name: 'uživatelské jméno'
-  pic_prompt: 'Vypadám jako'
+  full_name: 'Moje jméno'
+  pic_prompt: 'Moje fotka'
   your_profile: 'Váš profil'
   updated_successfully: "úspěšně upraven"
   reset_your_password: "Obnovit heslo"

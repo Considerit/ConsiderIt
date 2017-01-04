@@ -273,7 +273,7 @@ customizations.lang_default =
       pros: 'pro' 
       con: 'proti'
       cons: 'proti'
-      your_header: "Dejte --valences--" 
+      your_header: "Názor --valences--" 
       other_header: "Jiný' --valences--" 
       top_header: "Top --valences--" 
     slider_pole_labels: 

@@ -91,7 +91,8 @@ window.TagHomepage = ReactiveComponent
     show_all = fetch('show_all_proposals')
 
     users = fetch '/users'
-    proposals = fetch('/proposals').proposals
+    proposals = fetch '/proposals'
+    proposals = proposals.proposals
 
     if !proposals || !users.users
       return ProposalsLoading()   
@@ -174,7 +175,7 @@ window.SimpleHomepage = ReactiveComponent
     if customization('homepage_tab_views')?[homepage_tabs.filter]
       return customization('homepage_tab_views')[homepage_tabs.filter]()
 
-    proposals = fetch('/proposals')
+    proposals = fetch '/proposals'
     current_user = fetch('/current_user')
 
     if !proposals.proposals 
@@ -190,7 +191,7 @@ window.SimpleHomepage = ReactiveComponent
         collapsed.clusters[cluster.key] = 1
       save collapsed
 
-    has_proposal_sort = customization('homepage_show_search_and_sort') && proposals.proposals.length > 10
+    has_proposal_sort = customization('homepage_show_search_and_sort') && proposals.proposals.length > 8
 
     DIV
       id: 'homepagetab'
@@ -601,7 +602,7 @@ window.NewProposal = ReactiveComponent
   displayName: 'NewProposal'
 
   render : -> 
-    cluster_name = @props.cluster_name 
+    cluster_name = @props.cluster_name or 'Proposals'
     cluster_key = "list/#{cluster_name}"
 
     cluster_state = fetch(@props.local)
@@ -609,7 +610,6 @@ window.NewProposal = ReactiveComponent
 
     return SPAN null if cluster_name == 'Blocksize Survey'
 
-    cluster_name = cluster_name or 'Proposals'
     current_user = fetch '/current_user'
 
     if cluster_state.adding_new_proposal != cluster_name && \
@@ -935,7 +935,15 @@ ProposalsLoading = ReactiveComponent
           top: 6
           left: 3
         
-        drawLogo 50, logo_red, logo_red, false, true, logo_red, (if negative then 284 - @local.cnt % 284 else @local.cnt % 284), false
+        drawLogo 
+          height: 50
+          main_text_color: logo_red
+          o_text_color: logo_red
+          clip: false
+          draw_line: true 
+          line_color: logo_red
+          i_dot_x: if negative then 284 - @local.cnt % 284 else @local.cnt % 284
+          transition: false
 
 
       "Loading proposals...there is much to consider!"

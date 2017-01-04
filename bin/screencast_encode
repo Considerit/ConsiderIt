@@ -17,7 +17,11 @@ while getopts ":a:w:h:i:" option; do
 done
 
 # Produce the webm
-ffmpeg -an -i lib/screencasts/exports/$FILE.mov -threads 16  -keyint_min 0 -g 250 -skip_threshold 0 -qmin 1 -qmax 51 -vcodec libvpx -b:v 1024000 -s $WIDTH\x$HEIGHT -aspect $ASPECT -y -strict -2 lib/screencasts/exports/$FILE.webm
+ffmpeg -i lib/screencasts/exports/$FILE.mov -threads 16 -an -keyint_min 0 -g 250 -skip_threshold 0 -qmin 1 -qmax 51 -vcodec libvpx -b:v 1024000 -s $WIDTH\x$HEIGHT -aspect $ASPECT -y -strict -2 lib/screencasts/exports/$FILE.webm
 
 # Produce the mp4
 HandBrakeCLI -a none --optimize --preset 'High Profile' --height $HEIGHT --two-pass --input lib/screencasts/exports/$FILE.mov --output lib/screencasts/exports/$FILE.mp4 --encoder-preset placebo --cfr
+
+
+#stripping out audio track
+# ffmpeg -i lib/screencasts/exports/trimmed-overall.webm -threads 16 -an -strict -2 copy lib/screencasts/exports/trimmed-overall.webm

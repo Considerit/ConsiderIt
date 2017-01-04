@@ -1,0 +1,150 @@
+#!/usr/bin/env ~/Documents/code/castanaut/bin/castanaut
+
+
+# By default, this script will only launch and control a safari instance. 
+# Setting 'record_video' will also cause a screen recording to be created. 
+record_video = true
+
+export_to = File.absolute_path(File.join(File.dirname(screenplay), 'exports', File.basename(screenplay)))
+
+
+# height of safari window bar + toolbar + apple menu
+y_offset = 63
+
+# shaves off rounded window corners
+window_padding = 15 
+
+# controls the size and location of the screencast main area
+x, y, width, height = [window_padding, y_offset, 1280, 1280 * 9 / 21] 
+
+
+#####
+# Screencast guts
+
+if record_video
+  plugin "quicktime"
+  start_recording(x, y, width, height)
+  pause 2
+end
+
+plugin "safari"
+
+launch "Safari", at(x - window_padding, y - y_offset, width + window_padding * 2, height + y_offset + window_padding) 
+
+url "http://localhost:3000/set_app/product_page"
+url "http://localhost:3000/create_forum"
+
+
+# pretend to create forum
+wait_for_element('input[name="subdomain"]')
+pause 4
+type "washington-policy-coalition", {:speed => 100}
+restore_mouse(2)
+
+move to_element('input[type="submit"]')
+pause 3
+
+url "http://localhost:3000/set_app/franklin"
+pause 1
+url "http://localhost:3000?domain=cris"
+
+pause 2
+wait_for_element('a[href="/proposal/new"]')
+move to_element('a[href="/proposal/new"]')
+pause 1
+click
+
+wait_for_element('input[name="name"]')
+scroll_to 'h2', 0, 0
+pause 1
+move to_element('input[name="name"]')
+pause 1
+click
+
+type "Development of publicly-funded charter schools", {:speed => 60}
+
+pause 1
+hit Tab
+
+type "The WPC could advocate for the creation of a public charter school system", {:speed => 60}
+
+pause 1
+hit Tab
+
+type "Policies to Advocate", {:speed => 60}
+pause 1
+hit Tab
+hit Enter
+
+pause 2
+wait_for_element('a.back_to_homepage')
+move to_element('a.back_to_homepage')
+click
+
+pause 1
+scroll_to "header", 0, 0
+
+pause 1
+wait_for_element('button.add_new_proposal')
+move to_element('button.add_new_proposal')
+click
+pause 1
+type "Same-sex marriage", {:speed => 60}
+hit Tab
+hit Tab
+hit Enter
+
+pause 1
+wait_for_element('button.add_new_proposal')
+move to_element('button.add_new_proposal')
+click
+pause 1
+type "Criminal justice reform", {:speed => 60}
+hit Tab
+hit Tab
+hit Enter
+
+pause 1
+wait_for_element('button.add_new_proposal')
+move to_element('button.add_new_proposal')
+click
+pause 1
+type "Genetically-engineered food labels", {:speed => 60}
+hit Tab
+hit Tab
+hit Enter
+
+
+# pause 1
+# wait_for_element('button.add_new_proposal')
+# move to_element('button.add_new_proposal')
+# click
+# pause 1
+# type "Increase background checks on gun purchases", {:speed => 60}
+# hit Tab
+# hit Tab
+# hit Enter
+
+pause 3
+url "http://localhost:3000?domain=washington-policy-coalition"
+
+wait_for_element('article')
+
+execute_javascript("""
+  [].forEach.call(document.querySelectorAll('.histogram .avatar'), function (el) {
+  el.style.visibility = 'hidden';
+});
+""")
+pause 2
+
+wait_for_element('footer')
+pause 6
+scroll_to 'button.add_new_proposal', 6000, 500
+scroll_to "header", 4000, 0
+
+at_end_of_movie do
+  if record_video
+    puts "Exporting to #{export_to}"
+    stop_recording(export_to)
+  end
+end

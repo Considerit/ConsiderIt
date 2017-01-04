@@ -205,7 +205,7 @@ class Proposal < ActiveRecord::Base
 
     o = ActiveRecord::Base.connection.execute """\
       SELECT created_at, id, point_inclusions, proposal_id, 
-      stance, user_id, updated_at, subdomain_id
+      stance, user_id, created_at,updated_at, subdomain_id
           FROM opinions 
           WHERE subdomain_id=#{self.subdomain_id} AND
                 proposal_id=#{self.id} AND 

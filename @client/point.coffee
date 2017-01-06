@@ -100,28 +100,6 @@ window.Point = ReactiveComponent
 
     expand_to_see_details = !!point.text
 
-    select_enticement = []
-
-    if point.comment_count > 0 || !expand_to_see_details
-      select_enticement.push SPAN key: 2, style: {whiteSpace: 'nowrap'},
-        A 
-          className: 'select_point'
-          point.comment_count 
-          " "
-          if point.comment_count != 1 then t('comments') else t('comment')
-
-    if point.assessment
-      select_enticement.push SPAN key: 3,
-        I
-          className: 'fa fa-search'
-          title: 'Click to read a fact-check of this point'
-          style: 
-            color: '#5E6B9E'
-            fontSize: 14
-            cursor: 'help'
-            paddingLeft: 4
-
-
     point_style = 
       position: 'relative'
       listStyle: 'none outside none'
@@ -263,9 +241,16 @@ window.Point = ReactiveComponent
                   fontSize: 12
 
                 prettyDate(point.created_at)
+                ', '                
+                SPAN 
+                  key: 2 
+                  style: {whiteSpace: 'nowrap'}
 
-                if select_enticement.length > 0
-                  [', ', select_enticement]
+                  A 
+                    className: 'select_point'
+                    point.comment_count 
+                    " "
+                    if point.comment_count != 1 then t('comments') else t('comment')
 
 
 

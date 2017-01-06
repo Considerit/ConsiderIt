@@ -31,7 +31,11 @@ show_tooltip = (e) ->
 
 
     name = e.target.getAttribute('data-tooltip')
-
+    if name.indexOf(', ') > -1 
+      updated = ''
+      for part in name.split(', ')
+        updated += "<p>#{part}</p>"
+      name = updated
     if !anonymous && filters = customization 'opinion_filters'
       for filter in filters 
         if filter.pass(user) && filter.icon
@@ -39,7 +43,7 @@ show_tooltip = (e) ->
             icon = filter.icon(user)
           else
             icon = filter.icon 
-          name += '<span style="padding: 0 0 0 12px">' + icon + "</span>"
+          name += '<div style="font-style: italic; padding: 4px 0 0 0px">' + icon + "</div>"
 
     tooltip = fetch 'tooltip'
     tooltip.coords = $(e.target).offset()

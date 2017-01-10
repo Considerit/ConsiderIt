@@ -497,7 +497,7 @@ Auth = ReactiveComponent
             fontSize: 18
             paddingLeft: 18
             paddingRight: 7
-          'or '
+          t('or') + ' '
 
         BUTTON
           className: 'toggle_auth'

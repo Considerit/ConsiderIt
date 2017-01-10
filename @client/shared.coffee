@@ -295,11 +295,14 @@ window.writeToLog = (entry) ->
 # long ago the date represents.
 # from: http://stackoverflow.com/questions/7641791
 window.prettyDate = (time) ->
+  subdomain = fetch('/subdomain')
+
   date = new Date(time) #new Date((time || "").replace(/-/g, "/").replace(/[TZ]/g, " "))
   diff = (((new Date()).getTime() - date.getTime()) / 1000)
   day_diff = Math.floor(diff / 86400)
 
   return if isNaN(day_diff) || day_diff < 0
+  return "#{date.getMonth() + 1}/#{date.getDay() + 1}/#{date.getFullYear()}" if subdomain.lang != 'en'
 
   # TODO: pluralize properly (e.g. 1 days ago, 1 weeks ago...)
   r = day_diff == 0 && (

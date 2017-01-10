@@ -168,7 +168,22 @@ Auth = ReactiveComponent
                    ["#{t('New password')}:", @inputBox('password', t("choose_password"), 'password')], 
 
                   ], t('verification_sent')
-          @submitButton(t('Log in')) ]
+          @submitButton(t('Log in')) 
+          DIV 
+            style: 
+              marginTop: 20
+            'Having trouble resetting your password? Watch this brief '
+
+            A 
+              target: '_blank'
+              href: 'https://vimeo.com/198802322'
+              style: 
+                textDecoration: 'underline'
+                fontWeight: 600
+              'video tutorial'
+            '.'
+
+        ]
 
       # The email VERIFICATION form
       when 'verify email'

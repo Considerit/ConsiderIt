@@ -90,7 +90,7 @@ window.EditPoint = ReactiveComponent
           name:'fulltext'
           'aria-label': t('description_placeholder') 
           placeholder: t('description_placeholder') 
-          min_height: if PORTRAIT_MOBILE() then 150 else 100
+          min_height: if PORTRAIT_MOBILE() then 150 else 80
           defaultValue: if @props.fresh then null else @data().text
           style: textarea_style
           onHeightChange: => 

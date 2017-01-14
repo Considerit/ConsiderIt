@@ -72,7 +72,7 @@ class CurrentUserController < ApplicationController
             errors.append("Password needs to be at least #{@min_pass} letters") if !ok_password
             errors.append('Name is blank') if !has_name
             errors.append('Community pledge required') if !signed_pledge
-            if !params[:email] || params[:email].length == 0
+            if (!params[:email] || params[:email].length == 0) && errors.length == 0
               errors.append('Email address can\'t be blank') 
             end
           end
@@ -331,7 +331,7 @@ class CurrentUserController < ApplicationController
 
       new_params[:tags] = JSON.dump new_tags
 
-      dirty_key '/proposals' # might have access to more proposals if user tags have been changed (LVG, zipcodes)
+      dirty_key '/proposals' # might have access to more proposals if user tags have been changed (only for LVG / zipcodes)
     end
 
     if new_params.has_key? :subscriptions

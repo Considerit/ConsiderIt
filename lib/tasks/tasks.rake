@@ -14,44 +14,62 @@ task :clear_null_inclusions => :environment do
   Inclusion.where(:point_id => nil).destroy_all
 end
 
-task :dao_org => :environment do 
 
-  subdomain = Subdomain.find_by_name 'dao'
+task :migrate_roles => :environment do 
+  Subdomain.all.each do |sub|
+    subroles = sub.user_roles
+    next if subroles['moderator'].length == 0 && subroles['proposer'].length == 0 
 
-  category_map = {
-    'Incomplete' => 'Proposals',
-    'Needs more description' => 'Proposals',
-    'Incubator' => 'Proposals',
-    'investment' => 'Proposals',
-    'Mature' => 'Under development',
-    'Under review' => 'Under development',
+    pp sub.name, subroles['moderator'], subroles['proposer']
+  end
+end
 
-  }
 
-  category_map.each do |k,v|
-    subdomain.proposals.where(:cluster => k).update_all(:cluster => v)
-    puts "Mapped #{k} to #{v}"
+
+task :migrate_proposal_roles => :environment do 
+  subs = {}
+  Proposal.all.each do |p|
+    next if !p.subdomain
+    v = p.user_roles
+    next if v['observer'].include?('*')
+
+    if !subs.include?(p.subdomain_id)
+      subs[p.subdomain_id] = {}
+    end 
+
+    ['observer', 'opiner', 'commenter', 'writer', 'editor'].each do |role|
+      #next if role == 'editor' && v[role].length == 1
+      v[role].each do |u|
+        if !subs[p.subdomain_id].include?(u)
+          subs[p.subdomain_id][u] = 0
+        end 
+        subs[p.subdomain_id][u] += 1
+      end
+    end
+     
   end
 
-
-  slugs = {
-    'Meta' => ['extending-proposal-vote-deadlines', 'expansion-upon-daoconsiderit-to-where-suggestionsideasproposals-graduate-to-higher-levels-process-of-collective-consideration'],
-    'Proposals' => ['adding-a-decentralized-cloud-brother-of-ethereum-blockchain-to-make-it-the-futur-1st-world-web-hosting-cie', 'found-or-buy-law-firms-in-major-economic-countries', 'invest-in-real-estate', 'by_klm', 'daollery-we-are-open-an-art-gallery-and-collectively-choose-pieces-of-artwork-to-display-for-each-show'],
-    'Needs more description' => ['smart-contracts-for-world-trade-per-incoterms'],
-    'DAO v2.0 Wishlist' => ['create-an-upgrade-protocol-for-thedao-code-and-funds-into-thedao-v20-and-beyond-in-order-to-adapt-to-urgent-attacks-known-weaknesses-or-new-features'],
-    'Under development' => ['slockit-dao-security-proposal', 'otonomosDAT']
-  }
-
-  slugs.each do |category, proposals|
-    puts "Mapping to #{category}:"
-    proposals.each do |slug|
-      prop = subdomain.proposals.find_by_slug slug 
-      prop.cluster = category 
-      prop.save
-
-      puts "\t#{slug}"
-      
+  subs.each do |sub, v|
+    next if v.keys.length == 0 || (v.has_key?('*') && v.keys.length == 1)
+    s = Subdomain.find(sub)
+    subroles = s.user_roles
+    given_access = {}
+    ['admin', 'moderator', 'proposer', 'visitor'].each do |role|
+      subroles[role].each do |u|
+        given_access[u] = true
+      end      
     end
-  end 
 
+    pp ''
+    pp '----------'
+    pp "#{s.name} (#{subroles['visitor'].include?('*') ? 'PUBLIC' : 'PRIVATE'})"
+    v.each do |user, cnt|
+      next if user == '*'
+      if given_access[user]
+        pp "    MENTIONED: #{user} #{cnt}"
+      else 
+        pp "  * EXCLUDED: #{user} #{cnt}"
+      end
+    end
+  end
 end

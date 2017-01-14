@@ -205,7 +205,7 @@ class Proposal < ActiveRecord::Base
 
     o = ActiveRecord::Base.connection.execute """\
       SELECT created_at, id, point_inclusions, proposal_id, 
-      stance, user_id, created_at,updated_at, subdomain_id
+      stance, user_id, updated_at, explanation
           FROM opinions 
           WHERE subdomain_id=#{self.subdomain_id} AND
                 proposal_id=#{self.id} AND 
@@ -221,7 +221,11 @@ class Proposal < ActiveRecord::Base
         user: "/user/#{op[5]}",
         # published: true,
         stance: op[4].to_f
+
       }
+      if op[7]
+        r['explanation'] = op[7]
+      end
 
       if op[2] && op[2] != '[]'
         r[:point_inclusions] = Oj.load(op[2]).map! {|p| "/point/#{p}"}

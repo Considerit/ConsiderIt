@@ -5,23 +5,23 @@ require './customizations'
 
 
 
-get_all_tags = -> 
-  proposals = fetch '/proposals'
-  all_tags = {}
-  for proposal in proposals.proposals 
-    text = "#{proposal.name} #{proposal.description}"
+# get_all_tags = -> 
+#   proposals = fetch '/proposals'
+#   all_tags = {}
+#   for proposal in proposals.proposals 
+#     text = "#{proposal.name} #{proposal.description}"
 
-    if text.indexOf("#") > -1 && tags = text.match(/#(\w+)/g)
-      for tag in tags
-        tag = tag.toLowerCase()
+#     if text.indexOf("#") > -1 && tags = text.match(/#(\w+)/g)
+#       for tag in tags
+#         tag = tag.toLowerCase()
 
-        all_tags[tag] ||= 0
-        all_tags[tag] += 1
+#         all_tags[tag] ||= 0
+#         all_tags[tag] += 1
 
-  # ordered_tags = ({tag: k, count: v} for k,v of all_tags when v > 1)
-  # ordered_tags.sort (a,b) -> b.count - a.count
+#   # ordered_tags = ({tag: k, count: v} for k,v of all_tags when v > 1)
+#   # ordered_tags.sort (a,b) -> b.count - a.count
 
-  all_tags 
+#   all_tags 
 
 
 regexes = {}
@@ -189,7 +189,7 @@ ProposalFilter = ReactiveComponent
 
   render : -> 
 
-    proposals = fetch '/proposals'
+    proposals = fetch '/proposals' # registering dependency so that we get re-rendered...ApplyFilters is actually dependent
     filter_out = fetch 'filtered'
     filters = fetch 'filters'
 
@@ -444,6 +444,49 @@ SortProposalsMenu = ReactiveComponent
                   sort_option.description
 
 
+
+window.opinion_trickle = -> 
+  filter_out = fetch 'filtered'
+  
+  proposals = fetch '/proposals'
+
+  users = {}
+  for prop in proposals.proposals
+    for o in prop.opinions
+      users[o.user] = o.created_at or o.updated_at
+
+  users = ([k,v] for k,v of users)
+  users.sort (a,b) -> 
+    i = new Date(a[1])
+    j = new Date(b[1])
+    i.getTime() - j.getTime()
+
+  users = (u[0] for u in users)
+  cnt = users.length
+
+  steps = 1
+  tick = (interval) => 
+    if cnt >= 0
+      setTimeout => 
+        filter_out.users = {}
+        for user, idx in users
+          filter_out.users[user] = 1
+          break if idx > cnt 
+
+        cnt--
+        #cnt -= Math.ceil(steps / 2)
+        #tick(interval * .9)
+        tick(interval * .9)
+        steps++
+        dirty = true
+        setTimeout -> 
+          if dirty
+            save filter_out
+            dirty = false
+        , 2000
+      , interval
+
+  tick 1000
 
 OpinionFilter = ReactiveComponent
   displayName: 'OpinionFilter'

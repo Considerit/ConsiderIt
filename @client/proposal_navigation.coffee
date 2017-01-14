@@ -12,7 +12,7 @@ window.DefaultProposalNavigation = ReactiveComponent
   render : ->
     subdomain = fetch('/subdomain')
 
-    all_proposals = fetch('/proposals') 
+    all_proposals = fetch '/proposals' 
 
     mod = (n, m) -> ((n % m) + m) % m
 

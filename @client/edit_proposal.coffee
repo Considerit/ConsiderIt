@@ -108,39 +108,32 @@ window.EditProposal = ReactiveComponent
             fontSize: 28
             marginBottom: 20
 
-          DIV
+          H2
             style: 
               fontSize: 30
               fontWeight: 700
 
-            if @props.fresh 
-              if subdomain.name == 'dao' && cluster == 'Proposals'
-                'Add a new inspiring idea'
-              else if subdomain.name == 'dao' && cluster == 'Meta'
-                'Add a new meta proposal'
-              else if subdomain.name == 'dao' && cluster == 'New'
-                'Create a new proposal. Please include:'
 
-              else
-                t('create_new_proposal') 
+            if @props.fresh 
+              t('create_new_proposal') 
             else 
               "#{capitalize(t('edit'))} '#{proposal.name}'"
 
-          DIV 
-            style: 
-              fontSize: 18
+          # DIV 
+          #   style: 
+          #     fontSize: 18
 
-            t('make_it') + ' ' 
-            SPAN 
-              style: 
-                fontWeight: 600
-              t("unambiguous")
-            ' ' + t('and') + ' '
-            SPAN 
-              style: 
-                fontWeight: 600
-              t('error_free')
-            '.'
+          #   t('make_it') + ' ' 
+          #   SPAN 
+          #     style: 
+          #       fontWeight: 600
+          #     t("unambiguous")
+          #   ' ' + t('and') + ' '
+          #   SPAN 
+          #     style: 
+          #       fontWeight: 600
+          #     t('error_free')
+          #   '.'
 
         # if fetch('/current_user').is_admin
         #   DIV style: block_style,
@@ -179,7 +172,8 @@ window.EditProposal = ReactiveComponent
           
           WysiwygEditor
             key:"description-#{proposal.key}"
-            style: input_style
+            style: _.extend {}, input_style,
+              minHeight: 20
             html: if @props.fresh then null else proposal.description
 
           # Expandable description fields

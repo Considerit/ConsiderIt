@@ -74,7 +74,7 @@ window.CollapsedProposal = ReactiveComponent
                                            # with letter. seeking to hash was failing 
                                            # on proposals whose name began with number.
       style:
-        minHeight: 70
+        minHeight: 80
         position: 'relative'
         margin: "0 0 #{if can_edit then '0' else '15px'} 0"
         padding: 0
@@ -100,7 +100,7 @@ window.CollapsedProposal = ReactiveComponent
             position: 'absolute'
             left: if icons then -50 - 18
 
-          if current_user?.logged_in
+          if false && current_user?.logged_in
             # ability to watch proposal
             
             WatchStar

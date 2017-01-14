@@ -177,6 +177,7 @@ protected
     Thread.current[:current_user_id] = user.id
     Thread.current[:current_user]    = user
 
+    # I think the following is redundant with dirty_if_any_private_proposals
     if user.registered && current_subdomain.name != 'homepage'
       dirty_key '/proposals' # your_opinion
     end 

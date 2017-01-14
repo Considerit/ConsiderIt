@@ -22,6 +22,10 @@ class Opinion < ActiveRecord::Base
     stubify_field(result, 'proposal')
     result['point_inclusions'] = JSON.parse (result['point_inclusions'] || '[]')
     result['point_inclusions'].map! {|p| "/point/#{p}"}
+
+    if self.explanation
+      result['explanation'] = self.explanation 
+    end
     result
   end
 

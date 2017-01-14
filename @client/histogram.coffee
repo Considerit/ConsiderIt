@@ -735,17 +735,26 @@ HistoAvatars = ReactiveComponent
 
         stance = opinion.stance 
         if stance < -.03
-          exp = " is #{(-1 * stance * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", @props.proposal)}"
+          alt = "is #{(-1 * stance * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", @props.proposal)}"
         else if stance > .03
-          exp = " is #{(stance * 100).toFixed(0)}% #{customization("slider_pole_labels.support", @props.proposal)}"
+          alt = "is #{(stance * 100).toFixed(0)}% #{customization("slider_pole_labels.support", @props.proposal)}"
         else 
-          exp = " is neutral"
+          alt = "is neutral"
+
+        if opinion.explanation
+          paragraphs = safe_string(opinion.explanation).split(/(?:\r?\n)/g)
+          alt += "<div style='margin-top: 12px; max-width:400px'>Their explanation:<div style='padding:4px 12px'>"
+
+          for paragraph in paragraphs
+            alt += "<p style='font-style:italic'>#{paragraph}</p>"
+          alt += '</div></div>'
+          console.log opinion.explanation
 
         avatar user,
           ref: "avatar-#{idx}"
           focusable: @props.navigating_inside && !@props.backgrounded 
           hide_tooltip: @props.backgrounded
-          alt: "<user>#{exp}"
+          alt: "<user> #{alt}"
           style: _.extend {}, avatar_style, 
             left: pos?[0]
             top: pos?[1]

@@ -31,11 +31,12 @@ show_tooltip = (e) ->
 
 
     name = e.target.getAttribute('data-tooltip')
-    if name.indexOf(', ') > -1 
-      updated = ''
-      for part in name.split(', ')
-        updated += "<p>#{part}</p>"
-      name = updated
+    # if name.indexOf(', ') > -1 
+    #   updated = ''
+    #   for part in name.split(', ')
+    #     updated += "<p>#{part}</p>"
+    #   name = updated
+      
     if !anonymous && filters = customization 'opinion_filters'
       for filter in filters 
         if filter.pass(user) && filter.icon

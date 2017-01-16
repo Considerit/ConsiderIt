@@ -799,7 +799,7 @@ Auth = ReactiveComponent
             key: "#{question.tag}_inputBox"
             type:'checkbox'
             style: _.defaults question.input_style or {},  
-              fontSize: 24
+              fontSize: 32
               marginTop: 10
             checked: @local.tags[question.tag]
             onChange: do(question) => (event) =>

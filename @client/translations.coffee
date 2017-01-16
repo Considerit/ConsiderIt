@@ -23,7 +23,10 @@ window.t = (label, args) ->
   label = label.replace(/\ /g, '_').toLowerCase()
 
   if !dictionary[label]?
-    throw "Can't translate #{label} for language #{lang}"
+    if dict.en[label]
+      label = dict.en[label]
+    else 
+      throw "Can't translate #{label} for language #{lang}"
 
   if typeof(dictionary[label]) == 'function'
     dictionary[label](args)
@@ -518,6 +521,7 @@ _.extend dict.fr,
 
 _.extend dict.en, 
   log_in: 'Log in'
+  create_an_account: 'Create an account'  
   create_new_account: 'Create new account'
   log_out: 'Log out'
   edit_profile: 'Edit Profile'

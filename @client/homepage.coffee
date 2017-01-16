@@ -6,6 +6,80 @@ require './browser_location' # for loadPage
 require './filter'
 require './browser_location'
 require './collapsed_proposal'
+require './questionaire'
+
+
+
+AuthCallout = ReactiveComponent
+  displayName: 'AuthCallout'
+
+  render: ->
+    current_user = fetch '/current_user'
+
+    return SPAN null if current_user.logged_in
+
+    DIV 
+      style: 
+        width: '100%'
+        backgroundColor: '#545454'
+        padding: '32px 20px'
+        color: 'white'
+
+      DIV 
+        style: 
+          width: HOMEPAGE_WIDTH()
+          margin: 'auto'
+        DIV 
+          style: 
+            fontSize: 24
+            fontWeight: 600
+
+          'Please '
+
+          BUTTON
+            'data-action': 'create'
+            onClick: (e) =>
+              reset_key 'auth',
+                form: 'create account'
+                ask_questions: true
+            style: 
+              backgroundColor: 'transparent'
+              border: 'none'
+              fontWeight: 800
+              textDecoration: 'underline'
+              color: 'white'
+              textTransform: 'lowercase'
+              padding: 0
+            t('create an account')
+
+          ' before participating below!'
+
+        DIV 
+          style: 
+            fontSize: 18
+            fontWeight: 500
+            marginTop: 20
+            color: 'white'
+
+          '(if you already have a Consider.it account, you can '
+
+          BUTTON
+            'data-action': 'login'
+            onClick: (e) =>
+              reset_key 'auth',
+                form: 'login'
+                ask_questions: true
+            style: 
+              backgroundColor: 'transparent'
+              border: 'none'
+              fontWeight: 800
+              textDecoration: 'underline'
+              padding: 0
+              color: 'white'
+              textTransform: 'lowercase'
+            t('log_in')
+
+          ' instead)'
 
 
 window.Homepage = ReactiveComponent
@@ -24,6 +98,9 @@ window.Homepage = ReactiveComponent
 
     DIV 
       key: "homepage_#{subdomain.name}"
+
+      if subdomain.name in ['cprs-network', 'engage-cprs']
+        AuthCallout()
       
 
       SimpleHomepage()
@@ -66,7 +143,7 @@ window.cluster_styles = ->
   first_header =
     fontSize: 36
     marginBottom: 30
-    fontWeight: 600
+    fontWeight: 700
   _.extend(first_header, first_column)
 
   secnd_header =
@@ -401,6 +478,7 @@ window.Cluster = ReactiveComponent
   render: -> 
     cluster = @props.cluster
 
+
     current_user = fetch '/current_user'
     subdomain = fetch '/subdomain'
 
@@ -414,6 +492,7 @@ window.Cluster = ReactiveComponent
     return SPAN null if !proposals || (proposals.length == 0 && !(cluster.name in customization('homepage_lists_to_always_show')))
 
     cluster_key = "list/#{cluster.name}"
+    return SPAN null if customization('belongs_to', cluster_key)
 
     ARTICLE
       key: cluster.name
@@ -424,7 +503,11 @@ window.Cluster = ReactiveComponent
 
       @drawClusterHeading cluster, is_collapsed
 
-      if !is_collapsed
+      if customization('questionaire', cluster_key) && !is_collapsed
+        Questionaire 
+          cluster_key: cluster_key
+
+      else if !is_collapsed
         UL null, 
           for proposal,idx in proposals
 
@@ -549,6 +632,7 @@ window.Cluster = ReactiveComponent
                 fontSize: 18
                 fontWeight: 400 
                 color: '#444'
+                marginTop: 2
 
               if _.isFunction(description)                
                 description()
@@ -946,7 +1030,7 @@ ProposalsLoading = ReactiveComponent
           transition: false
 
 
-      "Loading proposals...there is much to consider!"
+      "Loading...there is much to consider!"
 
   componentWillMount: -> 
     @int = setInterval => 

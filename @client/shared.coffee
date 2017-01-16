@@ -158,7 +158,7 @@ window.get_all_clusters = ->
 
 newest_in_cluster_on_load = {}
 
-window.clustered_proposals = -> 
+window.clustered_proposals = (keep_as_map) -> 
   proposals = fetch '/proposals'
   homepage_list_order = customization 'homepage_list_order'
 
@@ -195,6 +195,9 @@ window.clustered_proposals = ->
   for proposal in proposals.proposals 
     cluster = (proposal.cluster or 'Proposals').trim()
     clusters[cluster].proposals.push proposal
+
+  if keep_as_map
+    return clusters 
 
   # order
   ordered_clusters = _.values clusters 
@@ -355,10 +358,7 @@ window.reset_key = (obj_or_key, updates) ->
   save obj_or_key
 
 
-window.splitParagraphs = (user_content, append) ->
-  if !user_content
-    return SPAN null
-    
+window.safe_string = (user_content) -> 
   user_content = user_content.replace(/(<li>|<br\s?\/?>|<p>)/g, '\n') #add newlines
   user_content = user_content.replace(/(<([^>]+)>)/ig, "") #strips all tags
 
@@ -373,6 +373,15 @@ window.splitParagraphs = (user_content, append) ->
     )
   ///gi
   user_content = user_content.replace(hyperlink_pattern, "$1(*-&)link:$2(*-&)")
+
+  user_content 
+
+window.splitParagraphs = (user_content, append) ->
+  if !user_content
+    return SPAN null
+  
+  user_content = safe_string user_content
+
   paragraphs = user_content.split(/(?:\r?\n)/g)
 
   for para,pidx in paragraphs

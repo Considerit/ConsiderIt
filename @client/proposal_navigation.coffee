@@ -26,6 +26,8 @@ window.DefaultProposalNavigation = ReactiveComponent
         hala = fetch('hala')
         hala.name ||= capitalize(@proposal.slug.split('--')[0].replace(/_/g, ' '))
         all_proposals_flat = (p for p in all_proposals_flat when p.name.toLowerCase().indexOf(hala.name.toLowerCase()) > -1)
+      else if subdomain.name in ['cprs-network', 'engage-cprs']
+        all_proposals_flat = []
       for proposal, idx in all_proposals_flat
         if proposal == @proposal
           break

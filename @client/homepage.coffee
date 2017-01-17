@@ -532,6 +532,9 @@ window.Cluster = ReactiveComponent
                   borderBottom: "1px solid #{logo_red}"
                   color: logo_red
 
+      if customization('footer', cluster_key) && !is_collapsed
+        customization('footer', cluster_key)()
+
 
 
   drawClusterHeading : (cluster, is_collapsed) -> 

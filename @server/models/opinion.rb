@@ -79,7 +79,7 @@ class Opinion < ActiveRecord::Base
       inc.point.recache
     end
 
-    if !previously_published
+    if !previously_published && (current_subdomain.name != 'engage-cprs' || proposal.cluster == 'Vision')
       Notifier.create_notification 'new', self
     end
 

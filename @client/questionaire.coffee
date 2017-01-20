@@ -225,7 +225,7 @@ window.Questionaire = ReactiveComponent
                     marginBottom: 4
                     fontStyle: 'italic'
 
-                  'How would this tool be most useful to you? What would it include? Please be as specific as possible.'
+                  'How would this tool be most useful to you? What would it include? What outcome would you like to achieve from using this tool? Please be as specific as possible.'
 
                 AutoGrowTextArea
                   defaultValue: response.your_opinion.explanation

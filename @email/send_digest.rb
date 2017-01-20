@@ -103,7 +103,11 @@ def get_new_activity(subdomain, user, since)
   end 
 
   new_points = subdomain.points.published.named.where("created_at > '#{since}' AND user_id != #{user.id} AND last_inclusion != -1")
+
   new_opinions = subdomain.opinions.published.where("created_at > '#{since}' AND user_id != #{user.id}")
+  if subdomain.name == 'engage-cprs'
+    new_opinions = new_opinions.where('proposal_id=7382')
+  end
   new_comments = subdomain.comments.where("created_at > '#{since}' AND user_id != #{user.id}")
 
   your_proposals = {}

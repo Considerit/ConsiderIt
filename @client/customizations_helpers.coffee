@@ -11,7 +11,7 @@ window.passes_tags = (user, tags) ->
 
 window.passes_tag_filter = (user, tag, regex) -> 
   user = fetch(user)
-  passes = true 
+  passes = false 
   for tag, value of user.tags   
     passes ||= tag.match(regex) && !(value.toLowerCase() in ['no', 'false'])
   passes

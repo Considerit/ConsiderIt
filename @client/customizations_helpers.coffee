@@ -11,7 +11,7 @@ window.passes_tags = (user, tags) ->
 
 window.passes_tag_filter = (user, tag, regex) -> 
   user = fetch(user)
-  user.tags[tag]?.match(regex) 
+  user?.tags?[tag]?.match(regex) 
   
 
 window.cluster_link = (href, anchor) ->

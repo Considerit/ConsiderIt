@@ -470,14 +470,26 @@ window.Point = ReactiveComponent
     your_opinion.point_inclusions.indexOf(@props.key) > -1
 
   remove: -> 
-    your_opinion = fetch(@proposal.your_opinion)
-    your_opinion.point_inclusions = _.without your_opinion.point_inclusions, \
-                                              @props.key
-    save(your_opinion)
-    window.writeToLog
-      what: 'removed point'
-      details: 
-        point: @props.key
+
+    pnt = fetch @props.key 
+
+    validate_first = pnt.user == fetch('/current_user').user && pnt.includers.length < 2
+
+
+    if !validate_first || confirm('Are you sure you want to remove your point? It will be gone forever.')
+
+      your_opinion = fetch(@proposal.your_opinion)
+      your_opinion.point_inclusions = _.without your_opinion.point_inclusions, \
+                                                @props.key
+      save(your_opinion)
+      window.writeToLog
+        what: 'removed point'
+        details: 
+          point: @props.key
+    else 
+      $point_content = $(@getDOMNode()).find('.point_content')
+      $point_content.css 'left', '-11px'
+      $point_content.css 'top', '-11px'
 
   include: -> 
     your_opinion = fetch(@proposal.your_opinion)

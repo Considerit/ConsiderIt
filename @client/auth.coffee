@@ -567,7 +567,11 @@ Auth = ReactiveComponent
 
     if !onChange
       onChange = (event) =>
-        @local[name] = current_user[name] = event.target.value
+        if type == 'email'
+          @local[name] = current_user[name] = (event.target.value).trim()
+        else 
+          @local[name] = current_user[name] = event.target.value
+
         save @local
 
     if @local[name] != current_user[name]

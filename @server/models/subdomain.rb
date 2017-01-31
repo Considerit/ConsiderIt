@@ -62,6 +62,17 @@ class Subdomain < ActiveRecord::Base
     host_with_port.split('.')[-2, 2].join('.')
   end
 
+  def rename(new_name)
+    existing = Subdomain.where(:name => new_name)
+    if existing
+      raise "Sorry, #{new_name}.consider.it is already taken"
+    end
+    
+    self.host = self.host.gsub(self.name, new_name)
+    self.host_with_port = self.host_with_port.gsub(self.name, new_name)
+    self.name = new_name
+  end
+
   # Subdomain-specific info
   # Assembled from a couple image fields and a serialized "branding" field.
   # 

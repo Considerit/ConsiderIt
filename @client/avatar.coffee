@@ -29,7 +29,7 @@ show_tooltip = (e) ->
     user = fetch(e.target.getAttribute('data-user'))
     anonymous = e.target.getAttribute('data-anonymous') == 'true'
 
-
+    current_user = fetch('/current_user')
     name = e.target.getAttribute('data-tooltip')
     # if name.indexOf(', ') > -1 
     #   updated = ''
@@ -37,7 +37,7 @@ show_tooltip = (e) ->
     #     updated += "<p>#{part}</p>"
     #   name = updated
       
-    if !anonymous && filters = customization 'opinion_filters'
+    if !anonymous && (filters = customization('opinion_filters')) && (!customization('opinion_filters_admin_only') || current_user.is_admin)
       for filter in filters 
         if filter.pass(user) && filter.icon
           if typeof(filter.icon) != 'string'

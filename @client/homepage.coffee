@@ -240,7 +240,7 @@ window.TagHomepage = ReactiveComponent
 
 
 
-filter_sort_options = -> 
+window.filter_sort_options = -> 
   proposals = fetch '/proposals'
 
   has_proposal_sort = customization('homepage_show_search_and_sort') && proposals.proposals.length > 8
@@ -499,7 +499,7 @@ window.Cluster = ReactiveComponent
 
     cluster_key = "list/#{cluster.name}"
 
-    return SPAN null if customization('belongs_to', cluster_key) && !current_user.is_admin
+    return SPAN null if customization('belongs_to', cluster_key)
 
     ARTICLE
       key: cluster.name
@@ -508,7 +508,7 @@ window.Cluster = ReactiveComponent
         marginBottom: if !is_collapsed then 28
         position: 'relative'
 
-      if !is_collapsed && !customization('questionaire', cluster_key)
+      if !customization('questionaire', cluster_key) && !is_collapsed
         filter_sort_options()
 
       @drawClusterHeading cluster, is_collapsed

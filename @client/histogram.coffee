@@ -748,7 +748,6 @@ HistoAvatars = ReactiveComponent
           for paragraph in paragraphs
             alt += "<p style='font-style:italic'>#{paragraph}</p>"
           alt += '</div></div>'
-          console.log opinion.explanation
 
         avatar user,
           ref: "avatar-#{idx}"

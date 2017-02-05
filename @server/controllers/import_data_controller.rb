@@ -380,7 +380,7 @@ class ImportDataController < ApplicationController
     export_path = "lib/tasks/client_data/export/"
 
     CSV.open("#{export_path}#{subdomain.name}-opinions.csv", "w") do |csv|
-      csv << ["proposal", 'created', "username", "email", "opinion", "#points"]
+      csv << ["proposal_slug","proposal_name", 'created', "username", "email", "opinion", "#points"]
     end
 
     CSV.open("#{export_path}#{subdomain.name}-points.csv", "w") do |csv|
@@ -431,7 +431,7 @@ class ImportDataController < ApplicationController
           proposal.opinions.published.each do |opinion|
             user = opinion.user
             begin 
-              csv << [proposal.slug, opinion.created_at, user.name, user.email.gsub('.ghost', ''), opinion.stance, user.points.where(:proposal_id => proposal.id).count]
+              csv << [proposal.slug, proposal.name, opinion.created_at, user.name, user.email.gsub('.ghost', ''), opinion.stance, user.points.where(:proposal_id => proposal.id).count]
             rescue 
             end 
           end

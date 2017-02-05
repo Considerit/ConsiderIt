@@ -203,53 +203,96 @@ ProposalFilter = ReactiveComponent
 
       ApplyFilters()
 
-      FORM 
-        onSubmit: (e) => 
-          n = @refs.new_filter.getDOMNode()
-          filters.for_proposals ||= []
-          filters.for_proposals.push n.value
-          save filters
-          n.value = null
 
-          e.stopPropagation(); e.preventDefault()
+      DIV
+        style: 
+          display: 'inline-block'
+          verticalAlign: 'top'
+          paddingTop: 16
+          paddingRight: 12
 
+        SortProposalsMenu() 
 
-        INPUT
-          ref: 'new_filter' 
-          type: 'text'
-          'aria-label': 'search proposals'
-          placeholder: 'search proposals'
+      DIV
+        style: 
+          display: 'inline-block'
+          verticalAlign: 'top'
+          paddingTop: 8
+
+        FORM 
+          style: 
+            position: 'relative'
+
+          onSubmit: (e) => 
+            n = @refs.new_filter.getDOMNode()
+            filters.for_proposals ||= []
+            filters.for_proposals.push n.value
+            save filters
+            n.value = null
+
+            e.stopPropagation(); e.preventDefault()
+
+          SVG
+            width: 20
+            height: 20
+            style: 
+              pointerEvents: 'none'
+              position: 'absolute'
+              right: 5
+              top: 9
+              zIndex: 1
+            fill: '#888'
+
+            viewBox: "0 0 100 125"
+            G null,
+              PATH
+                d: "M69.054,59.058l27.471,23.811c2.494,2.162,2.766,5.971,0.604,8.465l-0.981,1.132c-2.162,2.494-5.971,2.766-8.465,0.604   L60.418,69.438"
+              PATH 
+                d: "M2.358,41.458c0-19.744,16.005-35.749,35.751-35.749c19.744,0,35.749,16.005,35.749,35.749  c0,19.746-16.005,35.751-35.749,35.751C18.363,77.208,2.358,61.203,2.358,41.458z M38.563,67.583  c14.428,0,26.124-11.696,26.124-26.126c0-14.428-11.696-26.124-26.124-26.124c-14.43,0-26.126,11.696-26.126,26.124  C12.438,55.887,24.134,67.583,38.563,67.583z"
+
+          INPUT
+            ref: 'new_filter' 
+            type: 'text'
+            'aria-label': 'search proposals'
+
+            style:
+              fontSize: 14
+              padding: '2px 8px'
+              width: 150
+              border: '1px solid #aaa'
+
+        DIV 
           style:
-            fontSize: 16
-            padding: '4px 8px'
-            width: 300
+            paddingTop: 5
 
-      DIV 
-        style:
-          paddingTop: 5
+          for filter in (filters.for_proposals or [])
+            do (filter) => 
+              BUTTON 
+                style: 
+                  backgroundColor: '#eee'
+                  color: '#666'
+                  padding: '4px 8px'
+                  borderRadius: 16
+                  fontSize: 16
+                  cursor: 'pointer'
+                  boxShadow: '0 1px 1px rgba(0,0,0,.2)'
+                  marginRight: 10
+                  border: 'none'
 
-        for filter in (filters.for_proposals or [])
-          do (filter) => 
-            BUTTON 
-              style: 
-                backgroundColor: '#eee'
-                color: '#666'
-                padding: '4px 8px'
-                borderRadius: 16
-                fontSize: 16
-                cursor: 'pointer'
-                boxShadow: '0 1px 1px rgba(0,0,0,.2)'
-                marginRight: 10
-                border: 'none'
+                onClick: -> 
+                  idx = filters.for_proposals.indexOf(filter)
+                  filters.for_proposals.splice idx, 1
+                  save filters
 
-              onClick: -> 
-                idx = filters.for_proposals.indexOf(filter)
-                filters.for_proposals.splice idx, 1
-                save filters
+                filter
+                SPAN 
+                  style: 
+                    color: '#aaa'
+                    fontSize: 10
+                    paddingLeft: 10
+                  'x'
 
-              filter
 
-      SortProposalsMenu() 
 
 SortProposalsMenu = ReactiveComponent
   displayName: 'SortProposalsMenu'
@@ -282,12 +325,10 @@ SortProposalsMenu = ReactiveComponent
 
     DIV
       style: 
-        color: focus_blue
-        fontSize: 20
-        #fontWeight: 500
-        marginTop: 12
+        color: '#666'
+        fontSize: 14
 
-      "sort proposals by "
+      "sort by "
 
 
       DIV 
@@ -345,8 +386,9 @@ SortProposalsMenu = ReactiveComponent
             display: 'inline-block'
             fontSize: 'inherit'
             color: 'inherit'
-            border: "1px solid #ccc"
-            padding: "4px 8px"
+            #border: "1px solid #ccc"
+            #padding: "4px 8px"
+            
             borderRadius: 16
 
           onClick: => 
@@ -382,7 +424,7 @@ SortProposalsMenu = ReactiveComponent
             width: HOMEPAGE_WIDTH()
             backgroundColor: '#eee'
             border: "1px solid #{focus_blue}"
-            top: 24
+            top: 18
             borderRadius: 8
             fontWeight: 400
             overflow: 'hidden'
@@ -497,9 +539,10 @@ OpinionFilter = ReactiveComponent
     users = fetch '/users'
     filter_out = fetch 'filtered'
     bitcoin = fetch('/subdomain').name in ['bitcoin', 'bitcoinclassic']
-    hala = fetch('/subdomain').name in ['HALA', 'engageseattle']
+    
+    filters_for_admin = customization('opinion_filters_admin_only') 
 
-    return SPAN null if hala && !fetch('/current_user').is_admin
+    return SPAN null if filters_for_admin && !fetch('/current_user').is_admin
 
     toggle_filter = (filter) -> 
       filter_out.users = {}
@@ -535,12 +578,13 @@ OpinionFilter = ReactiveComponent
       DIV 
         style: 
           color: focus_blue
-          fontSize: 20
+          fontSize: 14
           fontWeight: 600
 
-        'Filter opinions to' 
+        'filter to' 
         if bitcoin 
           ' verified'
+        ':'
 
       if bitcoin
         VerificationProcessExplanation()

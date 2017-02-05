@@ -240,6 +240,32 @@ window.TagHomepage = ReactiveComponent
 
 
 
+filter_sort_options = -> 
+  proposals = fetch '/proposals'
+
+  has_proposal_sort = customization('homepage_show_search_and_sort') && proposals.proposals.length > 8
+  
+  DIV null,
+    if has_proposal_sort
+      [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+      ProposalFilter
+        style: 
+          width: first_column.width
+          marginBottom: 12
+          display: 'inline-block'
+          verticalAlign: 'top'
+
+    if customization('opinion_filters')
+      [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+
+      OpinionFilter
+        style: 
+          width: if has_proposal_sort || true then secnd_column.width
+          marginBottom: 12
+          marginLeft: if has_proposal_sort then secnd_column.marginLeft else first_column.width + secnd_column.marginLeft
+          display: if has_proposal_sort then 'inline-block'
+          verticalAlign: 'top'
+          textAlign: 'right' 
 
 window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'
@@ -268,8 +294,6 @@ window.SimpleHomepage = ReactiveComponent
         collapsed.clusters[cluster.key] = 1
       save collapsed
 
-    has_proposal_sort = customization('homepage_show_search_and_sort') && proposals.proposals.length > 8
-
     DIV
       id: 'homepagetab'
       role: if customization('homepage_tabs') then "tabpanel"
@@ -282,26 +306,8 @@ window.SimpleHomepage = ReactiveComponent
       STYLE null,
         '''a.proposal:hover {border-bottom: 1px solid grey}'''
 
-      if has_proposal_sort
-        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-        ProposalFilter
-          style: 
-            width: first_column.width
-            marginBottom: 20
-            display: 'inline-block'
-            verticalAlign: 'top'
 
-      if customization('opinion_filters')
-        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-
-        OpinionFilter
-          style: 
-            width: if has_proposal_sort || true then secnd_column.width
-            marginBottom: 20
-            marginLeft: if has_proposal_sort then secnd_column.marginLeft else first_column.width + secnd_column.marginLeft
-            display: if has_proposal_sort then 'inline-block'
-            verticalAlign: 'top'
-            textAlign: 'center' 
+      #filter_sort_options()
 
       # List all clusters
       for cluster, index in clusters or []
@@ -492,7 +498,8 @@ window.Cluster = ReactiveComponent
     return SPAN null if !proposals || (proposals.length == 0 && !(cluster.name in customization('homepage_lists_to_always_show')))
 
     cluster_key = "list/#{cluster.name}"
-    return SPAN null if customization('belongs_to', cluster_key)
+
+    return SPAN null if customization('belongs_to', cluster_key) && !current_user.is_admin
 
     ARTICLE
       key: cluster.name
@@ -500,6 +507,9 @@ window.Cluster = ReactiveComponent
       style: 
         marginBottom: if !is_collapsed then 28
         position: 'relative'
+
+      if !is_collapsed && !customization('questionaire', cluster_key)
+        filter_sort_options()
 
       @drawClusterHeading cluster, is_collapsed
 

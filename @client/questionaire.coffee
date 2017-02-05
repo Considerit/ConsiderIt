@@ -34,8 +34,6 @@ window.Questionaire = ReactiveComponent
     DIV 
       style: {}
 
-
-
       if !current_user.logged_in
         DIV 
           style: 
@@ -281,3 +279,27 @@ window.Questionaire = ReactiveComponent
                   marginTop: 4
                 @local.flash
 
+
+      if current_user.is_admin
+        all_proposals = []
+        for group in groups
+          list_name = group.split('/')[1]
+          all_proposals = all_proposals.concat (clusters[list_name]?.proposals or [])
+        
+        DIV 
+          style: 
+            marginTop: 20
+          filter_sort_options()
+          H1 
+            style: _.extend {}, customization('list_label_style'),
+              fontSize: 32
+              fontWeight: 600
+            'Results'
+
+          UL null, 
+            
+            for proposal,idx in sorted_proposals(all_proposals)
+
+              CollapsedProposal 
+                key: "collapsed#{proposal.key}"
+                proposal: proposal

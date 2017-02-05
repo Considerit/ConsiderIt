@@ -77,3 +77,40 @@ task :export, [:sub] => :environment do |t, args|
   end
 
 end
+
+
+
+# has special questionaire format
+task :export_cprs, [:sub] => :environment do |t, args|
+  sub = args[:sub] || 'engage-cprs'
+
+  subdomain = Subdomain.find_by_name(sub)
+
+  CSV.open("lib/tasks/client_data/export/#{subdomain.name}-tools.csv", "w") do |csv|
+    csv << ["category", "tool", "overall first priority", "overall top 5 priority"]
+  end
+
+  CSV.open("lib/tasks/client_data/export/#{subdomain.name}-explanations.csv", "w") do |csv|
+    csv << ["category", "tool", "name", "email", "top priority explanation"]
+  end
+
+  subdomain.proposals.where('id < 7382').each do |proposal|
+    first_priority = proposal.opinions.published.where(:stance => 1.0).count 
+    top5_priority = first_priority + proposal.opinions.published.where(:stance => 0.25).count 
+
+    CSV.open("lib/tasks/client_data/export/#{subdomain.name}-tools.csv", "a") do |csv|
+      csv << [proposal.cluster, proposal.name, first_priority, top5_priority]
+    end
+
+    CSV.open("lib/tasks/client_data/export/#{subdomain.name}-explanations.csv", "a") do |csv|
+      explanations = []
+      proposal.opinions.published.where(:stance => 1.0).where('explanation is not null').each do |opinion|
+        user = opinion.user
+        csv << [proposal.cluster, proposal.name, user.name, user.email.gsub('.ghost',''), opinion.explanation]
+      end
+    end
+
+  end
+
+end
+

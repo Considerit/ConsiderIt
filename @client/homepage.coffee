@@ -265,7 +265,7 @@ filter_sort_options = ->
           marginLeft: if has_proposal_sort then secnd_column.marginLeft else first_column.width + secnd_column.marginLeft
           display: if has_proposal_sort then 'inline-block'
           verticalAlign: 'top'
-          textAlign: 'right' 
+          textAlign: 'center' 
 
 window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'

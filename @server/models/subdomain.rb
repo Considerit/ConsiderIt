@@ -4,6 +4,7 @@ class Subdomain < ActiveRecord::Base
   has_many :opinions, :dependent => :destroy
   has_many :comments, :dependent => :destroy
   has_many :assessments, :dependent => :destroy
+  has_many :logs
 
   has_attached_file :logo, :processors => [:thumbnail, :compression]
   has_attached_file :masthead, :processors => [:thumbnail, :compression]

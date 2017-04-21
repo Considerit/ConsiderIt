@@ -88,6 +88,10 @@ protected
   def get_current_subdomain
     rq = request
 
+    if params[:domain]
+      session[:default_subdomain] = Subdomain.find_by_name(params[:domain]).id
+    end 
+
     def get_subdomain(str)
 
       # IE doesn't do _ in subdomain, so we migrated away from them. This 
@@ -110,6 +114,7 @@ protected
 
       if rq.subdomain.nil? || rq.subdomain.length == 0
         candidate_subdomain = nil 
+
 
         if Rails.env.development? && rq.host.split('.').length > 1
           candidate_subdomain = get_subdomain(rq.host.split('.')[0])

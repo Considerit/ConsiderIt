@@ -2,7 +2,7 @@ require 'csv'
 require 'pp'
 
 task :export, [:sub] => :environment do |t, args|
-  sub = args[:sub] || 'hala'
+  sub = args[:sub] || 'mo825'
 
   subdomain = Subdomain.find_by_name(sub)
 
@@ -11,10 +11,25 @@ task :export, [:sub] => :environment do |t, args|
   end
 
   CSV.open("lib/tasks/client_data/export/#{subdomain.name}-points.csv", "w") do |csv|
-    csv << ['proposal', 'type', 'created', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
+    csv << ['id', 'proposal', 'type', 'created', "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
   end
 
+  CSV.open("lib/tasks/client_data/export/#{subdomain.name}-inclusions.csv", "w") do |csv|
+    csv << ['proposal', 'point', 'user id', 'user email']
+  end
+
+
+  CSV.open("lib/tasks/client_data/export/#{subdomain.name}-stance-changes.csv", "w") do |csv|
+    csv << ['proposal', 'user', 'user email', 'stance']
+
+    subdomain.logs.where("what='move slider'").where('who is not NULL').each do |log| 
+      csv << [log.where.split('/')[1], log.who, User.find(log.who).email, log.details.split(':')[1].split('}')[0]]
+    end
+  end
+
+
   fields = "zip", "gender", "age", "ethnicity", "education", "race", "home", "hispanic", "hala_focus_group"
+  fields = []
   CSV.open("lib/tasks/client_data/export/#{subdomain.name}-users.csv", "w") do |csv|
     row = ['email', 'name', 'date joined'] 
     for field in fields 
@@ -36,14 +51,26 @@ task :export, [:sub] => :environment do |t, args|
 
       proposal.points.published.each do |pnt|
         opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
-        csv << [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
+        csv << [pnt.id, pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
 
         pnt.comments.each do |comment|
           opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
-          csv << [pnt.proposal.slug, 'COMMENT', comment.created_at, comment.user.email.gsub('.ghost', ''), "", comment.body, '', opinion ? opinion.stance : '-', '', '']
+          csv << [comment.id, pnt.proposal.slug, 'COMMENT', comment.created_at, comment.user.email.gsub('.ghost', ''), "", comment.body, '', opinion ? opinion.stance : '-', '', '']
         end
       end
     end
+
+    CSV.open("lib/tasks/client_data/export/#{subdomain.name}-inclusions.csv", "a") do |csv|
+
+      proposal.inclusions.each do |inc|
+        next if !inc.point.published
+        point = inc.point 
+        user = inc.user
+        csv << [point.proposal.slug, point.id, user.id, user.email] 
+      end
+    end
+
+
   end
 
   subdomain.users.each do |user|

@@ -21,9 +21,9 @@ AuthCallout = ReactiveComponent
     DIV 
       style: 
         width: '100%'
-        backgroundColor: '#545454'
+        #backgroundColor: '#545454'
         padding: '32px 20px'
-        color: 'white'
+        #color: 'white'
         marginTop: 12
 
       DIV 
@@ -48,39 +48,39 @@ AuthCallout = ReactiveComponent
               border: 'none'
               fontWeight: 800
               textDecoration: 'underline'
-              color: 'white'
+              #color: 'white'
               textTransform: 'lowercase'
               padding: 0
             t('create an account')
 
           ' before participating!'
 
-        DIV 
-          style: 
-            fontSize: 18
-            fontWeight: 500
-            marginTop: 20
-            color: 'white'
+        # DIV 
+        #   style: 
+        #     fontSize: 18
+        #     fontWeight: 500
+        #     marginTop: 20
+        #     color: 'white'
 
-          '(if you already have a Consider.it account, you can '
+        #   '(if you already have a Consider.it account, you can '
 
-          BUTTON
-            'data-action': 'login'
-            onClick: (e) =>
-              reset_key 'auth',
-                form: 'login'
-                ask_questions: true
-            style: 
-              backgroundColor: 'transparent'
-              border: 'none'
-              fontWeight: 800
-              textDecoration: 'underline'
-              padding: 0
-              color: 'white'
-              textTransform: 'lowercase'
-            t('log_in')
+        #   BUTTON
+        #     'data-action': 'login'
+        #     onClick: (e) =>
+        #       reset_key 'auth',
+        #         form: 'login'
+        #         ask_questions: true
+        #     style: 
+        #       backgroundColor: 'transparent'
+        #       border: 'none'
+        #       fontWeight: 800
+        #       textDecoration: 'underline'
+        #       padding: 0
+        #       color: 'white'
+        #       textTransform: 'lowercase'
+        #     t('log_in')
 
-          ' instead)'
+        #   ' instead)'
 
 
 window.Homepage = ReactiveComponent

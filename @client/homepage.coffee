@@ -24,6 +24,7 @@ AuthCallout = ReactiveComponent
         backgroundColor: '#545454'
         padding: '32px 20px'
         color: 'white'
+        marginTop: 12
 
       DIV 
         style: 
@@ -52,7 +53,7 @@ AuthCallout = ReactiveComponent
               padding: 0
             t('create an account')
 
-          ' before participating below!'
+          ' before participating!'
 
         DIV 
           style: 
@@ -99,7 +100,7 @@ window.Homepage = ReactiveComponent
     DIV 
       key: "homepage_#{subdomain.name}"
 
-      if subdomain.name in ['cprs-network', 'engage-cprs']
+      if customization('auth_callout')
         AuthCallout()
       
 

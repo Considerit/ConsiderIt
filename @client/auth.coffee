@@ -119,6 +119,8 @@ Auth = ReactiveComponent
 
         if pledges = @pledgeInput()
           pledges_field = ['My pledge:', pledges]
+        else 
+          pledges_field = []
 
         if auth.form == 'create account'
           email_field = ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')]
@@ -132,8 +134,8 @@ Auth = ReactiveComponent
                     email_field,
                     ["My #{t("password")}:", @inputBox('password', t("password"), 'password')],
                     avatar_field,
-                    [t('name_prompt'), @inputBox('name', t('full_name'))],
-                    pledges_field].concat @userQuestionInputs()
+                    [t('name_prompt'), @inputBox('name', t('full_name'))]
+                    ].concat(@userQuestionInputs()).concat([pledges_field])
           footer ]
 
       # The EDIT PROFILE form
@@ -676,7 +678,9 @@ Auth = ReactiveComponent
 
     if !customization('auth_require_pledge')
       return null
-    else
+    else if customization('pledge')
+      pledges = customization('pledge')
+    else 
       pledges = ['I will use only one account', 
                  'I will not attack or mock others']
 
@@ -684,31 +688,34 @@ Auth = ReactiveComponent
     UL style: {paddingTop: 6},
 
       for pledge, idx in pledges
-        LI 
+        DIV 
           style: 
-            listStyle: 'none'
-            position: 'relative'
-            paddingLeft: 30
-            paddingBottom: 3
-            color: auth_text_gray
-
-          INPUT
-            className:"pledge-input"
-            type:'checkbox'
-            id:"pledge-#{idx}"
-            name:"pledge-#{idx}"
-            style: 
-              fontSize: 24
-              position: 'absolute'
-              left: 0
-              top: 5
-              margin: 0
+            marginBottom: 10
+            marginLeft: -18
 
           LABEL 
             htmlFor: "pledge-#{idx}"
             style: 
               fontSize: 18
-            pledge
+              marginLeft: 18
+              float: 'left'
+
+            INPUT
+              className:"pledge-input"
+              type:'checkbox'
+              id:"pledge-#{idx}"
+              name:"pledge-#{idx}"
+              style: 
+                fontSize: 24
+                margin: 0
+                marginLeft: -22
+
+            SPAN 
+              style: 
+                paddingLeft: 8
+              pledge
+
+          DIV style: clear: 'both'
 
   ####
   # resetPasswordLink
@@ -798,18 +805,42 @@ Auth = ReactiveComponent
                 @submitAuth(event)
 
         when 'boolean'
-          input = INPUT
-            id: slugify("#{question.tag}inputBox")
-            key: "#{question.tag}_inputBox"
-            type:'checkbox'
-            style: _.defaults question.input_style or {},  
-              fontSize: 32
-              marginTop: 10
-            checked: @local.tags[question.tag]
-            onChange: do(question) => (event) =>
-              @local.tags = @local.tags or {}
-              @local.tags[question.tag] = current_user.tags[question.tag] = event.target.checked
-              save @local
+          input = 
+
+            DIV 
+              style: 
+                marginBottom: 10
+                marginLeft: -18
+
+              LABEL 
+                htmlFor: slugify("#{question.tag}inputBox")
+                style: 
+                  fontSize: 18
+                  marginLeft: 18
+                  float: 'left'
+
+                INPUT
+                  id: slugify("#{question.tag}inputBox")
+                  key: "#{question.tag}_inputBox"
+                  type:'checkbox'
+                  style: 
+                    fontSize: 24
+                    margin: 0
+                    marginLeft: -22
+                  checked: @local.tags[question.tag]
+                  onChange: do(question) => (event) =>
+                    @local.tags = @local.tags or {}
+                    @local.tags[question.tag] = current_user.tags[question.tag] = event.target.checked
+                    save @local
+
+                SPAN 
+                  style: 
+                    paddingLeft: 8
+                  question.question
+
+              DIV style: clear: 'both'
+
+          label = ''
 
         when 'dropdown'
           input = SELECT
@@ -837,6 +868,20 @@ Auth = ReactiveComponent
 
         else
           throw "Unsupported question type: #{question.input} for #{question.tag}"
+
+      if !question.required && question.input != 'boolean' 
+        label = \
+          DIV 
+            style: {}
+
+            label
+
+            DIV 
+              style: 
+                color: '#888'
+                fontSize: 10
+              '(optional)'
+
 
       inputs.push [label,input]
     inputs

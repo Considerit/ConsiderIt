@@ -82,8 +82,8 @@ class HtmlController < ApplicationController
       customization_obj = "{}"
     end
 
-    # customization_code = File.read("@client/customizations_helpers.coffee")
-    # @customization_code = %x(echo "#{customization_code.gsub '"', '\\"'}\nwindow.customization_obj=#{customization_obj}" | coffee -scb)
+    customization_code = File.read("@client/customizations_helpers.coffee")
+    @customization_code = %x(echo "#{customization_code.gsub '"', '\\"'}\nwindow.customization_obj=#{customization_obj}" | coffee -scb)
 
     dirty_key '/asset_manifest'
     response.headers["Strict Transport Security"] = 'max-age=0'

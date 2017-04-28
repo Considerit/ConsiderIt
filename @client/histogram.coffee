@@ -561,7 +561,7 @@ window.Histogram = ReactiveComponent
 
     key = JSON.stringify _.map(opinions, (o) => 
             Math.round(fetch(o.key).stance * 100) / 100 )
-    key += " (#{@props.width}, #{@props.height}, #{@props.width})"
+    key += " (#{@props.width}, #{@props.height})"
     md5 key
 
   try_histocache : -> 

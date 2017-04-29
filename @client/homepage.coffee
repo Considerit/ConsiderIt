@@ -196,9 +196,6 @@ window.TagHomepage = ReactiveComponent
         width: HOMEPAGE_WIDTH()
         position: 'relative'
 
-      STYLE null,
-        '''a.proposal:hover {border-bottom: 1px solid grey}'''
-
       ProposalFilter
         style: 
           width: first_column.width
@@ -303,10 +300,6 @@ window.SimpleHomepage = ReactiveComponent
         margin: '45px auto'
         width: HOMEPAGE_WIDTH()
         position: 'relative'
-
-      STYLE null,
-        '''a.proposal:hover {border-bottom: 1px solid grey}'''
-
 
       #filter_sort_options()
 

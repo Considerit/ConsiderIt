@@ -149,8 +149,9 @@ window.CollapsedProposal = ReactiveComponent
           A
             className: 'proposal proposal_homepage_name'
             style: 
-              fontWeight: 500
-              borderBottom: "1px solid #444"  
+              fontWeight: 600
+              textDecoration: 'underline'
+              #borderBottom: "1px solid #444"  
               color: '#000'            
               
             href: proposal_url(proposal)
@@ -159,10 +160,10 @@ window.CollapsedProposal = ReactiveComponent
 
           DIV 
             style: 
-              fontSize: 16
-              color: "#444"
+              fontSize: 14
+              color: "#777"
               marginTop: 4
-              fontStyle: 'italic'
+              #fontStyle: 'italic'
 
             if customization('show_proposal_meta_data')
               SPAN 
@@ -176,7 +177,21 @@ window.CollapsedProposal = ReactiveComponent
                     style: {}
 
                     " by #{fetch(editor)?.name}"
-                    
+
+
+                if customization('discussion_enabled',proposal)
+                  A 
+                    href: proposal_url(proposal)
+                    style: 
+                      fontWeight: 500
+                      cursor: 'pointer'
+                      marginLeft: 8
+
+                    if proposal.point_count == 1
+                      "#{proposal.point_count} #{customization('point_labels.pro', proposal)} or #{customization('point_labels.con', proposal)}"
+                    else 
+
+                      "#{proposal.point_count} #{customization('point_labels.pros', proposal)} and #{customization('point_labels.cons', proposal)}"
 
             if !proposal.active
               SPAN 

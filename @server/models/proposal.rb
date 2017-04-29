@@ -53,10 +53,11 @@ class Proposal < ActiveRecord::Base
     always_shown = [] 
 
     if subdomain.moderate_proposals_mode == 1
-      moderation_status_check = 'moderation_status=1'
+      moderation_status_check = "(moderation_status=1 OR user_id=#{current_user.id})"
     else 
-      moderation_status_check = '(moderation_status IS NULL OR moderation_status=1)'
+      moderation_status_check = "(moderation_status IS NULL OR moderation_status=1 OR user_id=#{current_user.id})"
     end
+
 
     if subdomain.name == 'livingvotersguide'
       local_jurisdictions = []   

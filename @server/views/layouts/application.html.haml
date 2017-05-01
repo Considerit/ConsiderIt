@@ -84,10 +84,6 @@
 
       %script{:src => @js, :type => 'text/javascript'}
 
-      / %script{:type => 'text/javascript'}
-      /   - pp @customization_code.gsub(/\n/,' pppppppp\\\n')
-      /   = "load_customization('#{current_subdomain.name}', \"#{@customization_code.gsub(/"/,"\\\"").gsub(/\n/,' \\ \n')}\")".html_safe
-
 
       - if current_user.super_admin
         %script{:src => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.min.js', :type => 'text/javascript'}

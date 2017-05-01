@@ -183,7 +183,7 @@ window.CollapsedProposal = ReactiveComponent
                   A 
                     href: proposal_url(proposal)
                     style: 
-                      fontWeight: 500
+                      #fontWeight: 500
                       cursor: 'pointer'
                       marginLeft: 8
 

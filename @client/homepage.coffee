@@ -341,7 +341,7 @@ window.HomepageTabTransition = ReactiveComponent
       homepage_tab = fetch('homepage_tabs')
       filters = ([k,v] for k,v of customization('homepage_tabs'))
 
-      if !customization('homepage_tabs_no_show_all')
+      if !customization('homepage_tabs_no_show_all') && !customization('homepage_tabs')['Show all']
         filters.unshift ["Show all", '*']
 
       homepage_tabs = fetch 'homepage_tabs'
@@ -370,26 +370,25 @@ window.HomepageTabs = ReactiveComponent
   displayName: 'HomepageTabs'
 
   render: -> 
-
     homepage_tabs = fetch 'homepage_tabs'
     filters = ([k,v] for k,v of customization('homepage_tabs'))
-    if !customization('homepage_tabs_no_show_all')
+    if !customization('homepage_tabs_no_show_all') && !customization('homepage_tabs')['Show all']
       filters.unshift ["Show all", '*']
 
     subdomain = fetch('/subdomain')
 
     DIV 
-      style: 
+      style: _.defaults {}, (@props.wrapper_style or {}),
         width: '100%'
         zIndex: 2
         position: 'relative'
-        top: 2
+        #top: 2
         marginTop: 20
 
       UL 
         role: 'tablist'
         style: 
-          width: 900 #HOMEPAGE_WIDTH()
+          width: @props.width or 900 #HOMEPAGE_WIDTH()
           margin: 'auto'
           textAlign: if subdomain.name == 'HALA' then 'left' else 'center'
           listStyle: 'none'
@@ -441,6 +440,14 @@ window.HomepageTabs = ReactiveComponent
               _.extend tab_style, 
                 padding: '10px 20px 4px 20px'
                 backgroundColor: if current then 'rgba(255,255,255,.2)'
+
+            if current && @props.active_style
+              _.extend tab_style,
+                @props.active_style
+
+            if hovering && (@props.hover_style or @props.active_style)
+              _.extend tab_style,
+                (@props.hover_style or @props.active_style)
 
             LI 
               tabIndex: 0

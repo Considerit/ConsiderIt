@@ -2009,6 +2009,7 @@ Root = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch('/current_user')
 
+    fonts = customization('font') or "'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
     DIV 
 
       # Track whether the user is currently swipping. Used to determine whether
@@ -2023,6 +2024,7 @@ Root = ReactiveComponent
 
       style: 
         width: DOCUMENT_WIDTH()
+
       
       onClick: @resetSelection
 
@@ -2034,6 +2036,12 @@ Root = ReactiveComponent
       LocationTransition()
       HomepageTabTransition()
       BrowserLocation()
+
+      STYLE 
+        dangerouslySetInnerHTML: __html: """
+          #content, #content input, #content button, #content textarea {
+            font-family: #{fonts}; }
+        """
 
       if !subdomain.name
         LOADING_INDICATOR

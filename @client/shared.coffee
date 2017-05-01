@@ -762,8 +762,6 @@ body, h1, h2, h3, h4, h5, h6 {
 html[lang='cs'] body, html[lang='cs'] input, html[lang='cs'] button, html[lang='cs'] textarea {
   font-family: Helvetica, Verdana, Arial, 'Lucida Grande', 'Lucida Sans Unicode', sans-serif; }
 
-body, input, button, textarea {
-  font-family: 'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif; }
 
 .hidden {
   position:absolute;

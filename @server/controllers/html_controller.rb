@@ -86,7 +86,7 @@ class HtmlController < ApplicationController
     @customization_code = %x(echo "#{customization_code.gsub '"', '\\"'}\nwindow.customization_obj=#{customization_obj}" | coffee -scb)
 
     dirty_key '/asset_manifest'
-    response.headers["Strict Transport Security"] = 'max-age=0'
+    #response.headers["Strict Transport Security"] = 'max-age=0'
 
     render "layouts/application", :layout => false
   end

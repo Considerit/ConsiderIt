@@ -13,7 +13,7 @@
 
 # Use the database for sessions instead of the cookie-based default
 # (create the session table with "rails generate active_record:session_migration")
-ConsiderIt::Application.config.session_store :active_record_store
+ConsiderIt::Application.config.session_store :active_record_store, secure: Rails.env.production?
 
 
 # REMOVE THIS once active_record_store v.11 is released.  Should be soon!

@@ -82,11 +82,16 @@ class HtmlController < ApplicationController
       customization_obj = "{}"
     end
 
-    customization_code = File.read("@client/customizations_helpers.coffee")
-    @customization_code = %x(echo "#{customization_code.gsub '"', '\\"'}\nwindow.customization_obj=#{customization_obj}" | coffee -scb)
+    # customization_code = File.read("@client/customizations_helpers.coffee")
+    # @customization_code = %x(echo "#{customization_code.gsub '"', '\\"'}\nwindow.customization_obj=#{customization_obj}" | coffee -scb)
 
     dirty_key '/asset_manifest'
     #response.headers["Strict Transport Security"] = 'max-age=0'
+
+
+    if current_subdomain.name == 'internethealthreport'
+      response.headers["Content Security Policy"] = "default-src 'none'; connect-src 'self'; font-src https://fonts.gstatic.com; img-src https://d2rtgkroh5y135.cloudfront.net https://translate.googleapis.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com; script-src https://d2rtgkroh5y135.cloudfront.net/build/franklin.2ee8404e50c4c33fa0b9.js https://translate.google.com/translate_a/element.js https://translate.googleapis.com/element/TE_20170424_00/e/js/element/element_main.js https://translate.googleapis.com/translate_a/l https://translate.googleapis.com/translate_static/js/element/main.js https://www.google-analytics.com/analytics.js; style-src https://9emgn48uxpd4f1lyd2788l9q-wpengine.netdna-ssl.com/wp-content/themes/theinternethealthreport/css/ https://fast.fonts.net/cssapi/ https://fast.fonts.net/t/ https://fonts.googleapis.com/ https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/ https://translate.googleapis.com/translate_static/css/"
+    end
 
     render "layouts/application", :layout => false
   end

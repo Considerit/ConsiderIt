@@ -537,9 +537,9 @@
     window.destroy = destroy
 
     // Make the private methods accessible under "window.arest"
-    vars = 'cache fetch save server_fetch serverFetch server_save serverSave update_cache updateCache csrf keys_4_component components_4_key components execution_context One_To_Many clone dirty_components affected_keys clear_matching_objects deep_map key_id'.split(' ')
+    vars = [['cache', cache], ['fetch',fetch], ['save',save], ['server_fetch', server_fetch], ['serverFetch', serverFetch], ['server_save', server_save], ['serverSave',serverSave], ['update_cache',update_cache], ['updateCache',updateCache], ['csrf',csrf], ['keys_4_component',keys_4_component], ['components_4_key', components_4_key], ['components',components], ['execution_context',execution_context], ['One_To_Many',One_To_Many], ['clone',clone], ['dirty_components', dirty_components], ['affected_keys',affected_keys], ['clear_matching_objects',clear_matching_objects], ['deep_map', deep_map], ['key_id', key_id]]
     window.arest = {}
     for (var i=0; i<vars.length; i++)
-        window.arest[vars[i]] = eval(vars[i])
+        window.arest[vars[i][0]] = vars[i][1]
 
 })()

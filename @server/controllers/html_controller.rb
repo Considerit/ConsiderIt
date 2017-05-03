@@ -89,7 +89,7 @@ class HtmlController < ApplicationController
     #response.headers["Strict Transport Security"] = 'max-age=0'
 
 
-    response.headers["Content-Security-Policy-Report-Only"] = "default-src 'self'; connect-src 'self'; font-src https://fonts.gstatic.com https://fast.fonts.net https://maxcdn.bootstrapcdn.com; media-src: *; object-src 'self' *; frame-src *; img-src 'self' data * https://d2rtgkroh5y135.cloudfront.net https://translate.googleapis.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com/ https://d2rtgkroh5y135.cloudfront.net/ https://translate.google.com/ https://translate.googleapis.com/ https://www.google-analytics.com/; style-src 'self' 'unsafe-inline' https://fast.fonts.net/ https://fonts.googleapis.com/ https://maxcdn.bootstrapcdn.com/ https://translate.googleapis.com/"
+    response.headers["Content-Security-Policy-Report-Only"] = "default-src 'self'; connect-src 'self'; font-src https://fonts.gstatic.com https://fast.fonts.net https://maxcdn.bootstrapcdn.com; media-src *; object-src 'self' *; frame-src *; img-src 'self' data * https://d2rtgkroh5y135.cloudfront.net https://translate.googleapis.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com/ https://d2rtgkroh5y135.cloudfront.net/ https://translate.google.com/ https://translate.googleapis.com/ https://www.google-analytics.com/; style-src 'self' 'unsafe-inline' * https://fast.fonts.net/ https://fonts.googleapis.com/ https://maxcdn.bootstrapcdn.com/ https://translate.googleapis.com/"
 
 
     render "layouts/application", :layout => false

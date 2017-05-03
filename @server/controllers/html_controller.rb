@@ -89,7 +89,7 @@ class HtmlController < ApplicationController
     #response.headers["Strict Transport Security"] = 'max-age=0'
 
 
-    response.masthead_header_texts["Content-Security-Policy-Report-Only"] = """
+    response.headers["Content-Security-Policy-Report-Only"] = """
       default-src 'self'; 
       connect-src 'self'; 
       font-src https://fonts.gstatic.com https://fast.fonts.net https://maxcdn.bootstrapcdn.com; 

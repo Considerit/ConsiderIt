@@ -82,15 +82,16 @@ class HtmlController < ApplicationController
       customization_obj = "{}"
     end
 
-    # customization_code = File.read("@client/customizations_helpers.coffee")
-    # @customization_code = %x(echo "#{customization_code.gsub '"', '\\"'}\nwindow.customization_obj=#{customization_obj}" | coffee -scb)
-
     dirty_key '/asset_manifest'
     #response.headers["Strict Transport Security"] = 'max-age=0'
 
+    csp = "default-src 'self'; connect-src 'self'; font-src https://fonts.gstatic.com https://fast.fonts.net https://maxcdn.bootstrapcdn.com; media-src *; object-src 'self' *; frame-src *; img-src 'self' data: * https://d2rtgkroh5y135.cloudfront.net https://translate.googleapis.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com/ https://d2rtgkroh5y135.cloudfront.net/ https://translate.google.com/ https://translate.googleapis.com/ https://www.google-analytics.com/; style-src 'self' 'unsafe-inline' * https://fast.fonts.net/ https://fonts.googleapis.com/ https://maxcdn.bootstrapcdn.com/ https://translate.googleapis.com/""default-src 'self'; connect-src 'self'; font-src https://fonts.gstatic.com https://fast.fonts.net https://maxcdn.bootstrapcdn.com; media-src *; object-src 'self' *; frame-src *; img-src 'self' data: * https://d2rtgkroh5y135.cloudfront.net https://translate.googleapis.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com/ https://d2rtgkroh5y135.cloudfront.net/ https://translate.google.com/ https://translate.googleapis.com/ https://www.google-analytics.com/; style-src 'self' 'unsafe-inline' * https://fast.fonts.net/ https://fonts.googleapis.com/ https://maxcdn.bootstrapcdn.com/ https://translate.googleapis.com/"
 
-    response.headers["Content-Security-Policy-Report-Only"] = "default-src 'self'; connect-src 'self'; font-src https://fonts.gstatic.com https://fast.fonts.net https://maxcdn.bootstrapcdn.com; media-src *; object-src 'self' *; frame-src *; img-src 'self' data: * https://d2rtgkroh5y135.cloudfront.net https://translate.googleapis.com https://www.google-analytics.com https://www.google.com https://www.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com/ https://d2rtgkroh5y135.cloudfront.net/ https://translate.google.com/ https://translate.googleapis.com/ https://www.google-analytics.com/; style-src 'self' 'unsafe-inline' * https://fast.fonts.net/ https://fonts.googleapis.com/ https://maxcdn.bootstrapcdn.com/ https://translate.googleapis.com/"
-
+    if current_subdomain.name == 'internethealthreport'
+      response.headers["Content-Security-Policy"] = csp 
+    else       
+      response.headers["Content-Security-Policy-Report-Only"] = csp 
+    end
 
     render "layouts/application", :layout => false
   end

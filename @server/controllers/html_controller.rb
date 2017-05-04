@@ -136,7 +136,7 @@ class HtmlController < ApplicationController
         title = current_subdomain['app_title'] or "#{current_subdomain.name}"
       end
       image = current_subdomain.branding_info['logo']
-      if image 
+      if image && image[0] != '/' && !image.index('http')
         image = "//#{Rails.application.config.action_controller.asset_host or 'localhost:3000'}#{image}"
       end 
       cnt = Proposal.active.count
@@ -189,8 +189,8 @@ class HtmlController < ApplicationController
 
     if image 
       meta.append({ :property => 'http://ogp.me/ns#image', :content => image })
-      meta.append({ :property => 'og:image', :content => 'http:' + image })
-      meta.append({ :property => 'og:image:secure_url', :content => 'https:' + image })
+      meta.append({ :property => 'og:image', :content => image })
+      meta.append({ :property => 'og:image:secure_url', :content => image })
       meta.append({ :name => 'twitter:image', :content => image })
 
     end 

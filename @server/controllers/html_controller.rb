@@ -189,7 +189,10 @@ class HtmlController < ApplicationController
 
     if image 
       meta.append({ :property => 'http://ogp.me/ns#image', :content => image })
+      meta.append({ :property => 'og:image', :content => 'http:' + image })
+      meta.append({ :property => 'og:image:secure_url', :content => 'https:' + image })
       meta.append({ :name => 'twitter:image', :content => image })
+
     end 
 
     if google_verification

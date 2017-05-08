@@ -38,11 +38,12 @@ window.DefaultFooter = ReactiveComponent
 
     DIV null,
 
+      customization('footer_bonus')?()
+
       DIV 
         style: 
           paddingTop: 140
           backgroundColor: 'white'
-
 
       DIV 
         style:

@@ -382,12 +382,12 @@ window.HomepageTabs = ReactiveComponent
         width: '100%'
         zIndex: 2
         position: 'relative'
-        #top: 2
+        top: 2
         marginTop: 20
 
       UL 
         role: 'tablist'
-        style: 
+        style: _.defaults {}, (@props.list_style or {}),
           width: @props.width or 900 #HOMEPAGE_WIDTH()
           margin: 'auto'
           textAlign: if subdomain.name == 'HALA' then 'left' else 'center'
@@ -509,7 +509,7 @@ window.Cluster = ReactiveComponent
         marginBottom: if !is_collapsed then 28
         position: 'relative'
 
-      if !customization('questionaire', cluster_key) && !is_collapsed
+      if !customization('questionaire', cluster_key) && !is_collapsed && !customization('list_no_filters', cluster_key)
         filter_sort_options()
 
       @drawClusterHeading cluster, is_collapsed
@@ -648,7 +648,7 @@ window.Cluster = ReactiveComponent
                 color: '#444'
                 marginTop: 2
 
-              if _.isFunction(description)                
+              if _.isFunction(description)  
                 description()
               else 
                 desc = description

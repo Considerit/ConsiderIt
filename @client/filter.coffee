@@ -592,6 +592,7 @@ OpinionFilter = ReactiveComponent
       DIV 
         style: 
           marginTop: 0
+          lineHeight: 1
 
         for filter,idx in filters 
           do (filter, idx) => 
@@ -625,7 +626,7 @@ OpinionFilter = ReactiveComponent
                 padding: '0 3px 0 3px'  
                 color: if is_enabled then 'white' else if @local.focus == idx then 'black' else '#777'
                 cursor: 'pointer'
-                fontSize: 16
+                fontSize: 14
                 backgroundColor: if is_enabled then focus_blue else if @local.focus == idx then '#eee' else 'transparent'
                 border: 'none'
                 outline: 'none'

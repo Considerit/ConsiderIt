@@ -130,6 +130,13 @@ class HtmlController < ApplicationController
       description = "A web forum that elevates your community's opinions. Civil and organized discussion even when hundreds of stakeholders participate. "
       keywords = "opinion visualization,community engagement,public engagement,public involvement,discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,impact assessment,strategic planning,process improvement,stakeholder committee,listening"
       google_verification = "gd89L8El1xxxBpOUk9czjE9zZF4nh8Dc9izzbxIRmuY"
+
+    when 'newblueplan'
+      title = 'New Blue Plan for Retaking Washington'
+      image = view_context.asset_path 'wa-dems/screenshot.png'
+      description = "Your party, your plan. How can we work together to win in every race across Washington? Share your ideas!"
+      keywords = "washington democrats, washington democratic party, democratic party, washington, Manka Dhingra, Michelle Rylands, Karen Hardy, planning, election, campaigning, 2017, 2018, resistance"
+
     else
       title = current_subdomain.branding_info['masthead_header_text']
       if !title or title.length == 0 
@@ -183,8 +190,11 @@ class HtmlController < ApplicationController
       { :name => 'twitter:title', :content => title },
       { :name => 'twitter:description', :content => description },
 
+      { :property => 'og:title', :content => title },
+      { :property => 'og:description', :content => description },
+      { :property => 'og:url', :content => request.original_url() },
+      { :property => 'og:type', :content => "website" },
 
-      { :property => 'https://www.facebook.com/2008/fbml#app_id', :content => fb_app_id }
     ]
 
     if image 

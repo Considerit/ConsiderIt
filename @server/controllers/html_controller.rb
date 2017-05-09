@@ -126,14 +126,14 @@ class HtmlController < ApplicationController
       description = "Dialogue about City of Tigard"
     when 'homepage'
       title = 'Consider.it'
-      image = "#{request.protocol}#{view_context.asset_path('images/product_page/logo.png')}"
+      image = "#{request.protocol}#{view_context.asset_path('images/product_page/logo.png').gsub(/\/\//,'')}"
       description = "A web forum that elevates your community's opinions. Civil and organized discussion even when hundreds of stakeholders participate. "
       keywords = "opinion visualization,community engagement,public engagement,public involvement,discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,impact assessment,strategic planning,process improvement,stakeholder committee,listening"
       google_verification = "gd89L8El1xxxBpOUk9czjE9zZF4nh8Dc9izzbxIRmuY"
 
     when 'newblueplan'
       title = 'New Blue Plan for Retaking Washington'
-      image = "#{request.protocol}#{view_context.asset_path('images/wa-dems/screenshot.png')}"
+      image = "#{request.protocol}#{view_context.asset_path('images/wa-dems/screenshot.png').gsub(/\/\//,'')}"
       description = "Your party, your plan. How can we work together to win in every race across Washington? Share your ideas!"
       keywords = "washington democrats, washington democratic party, democratic party, washington, Manka Dhingra, Michelle Rylands, Karen Hardy, planning, election, campaigning, 2017, 2018, resistance"
 

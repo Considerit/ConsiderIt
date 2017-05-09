@@ -110,6 +110,45 @@ setInterval ->
 window.POINT_MOUTH_WIDTH = 17
 
 
+window.FB_SHARE = ReactiveComponent
+  displayName: 'FB_SHARE'
+
+  render: -> 
+    IFRAME 
+      src: "https://www.facebook.com/plugins/share_button.php?href=#{encodeURI(@props.href)}&layout=button&size=large&mobile_iframe=false&appId=#{@props.appId}&width=73&height=28" 
+      width: @props.width or "73" 
+      height: @props.height or "28" 
+      style: 
+        border: 'none'
+        overflow: 'hidden'
+      scrolling: "no" 
+      frameborder: "0" 
+      allowTransparency: "true"
+
+
+
+window.TWEET = ReactiveComponent
+  displayName: 'Tweet'
+
+  render: ->
+    url = """https://platform.twitter.com/widgets/tweet_button.html?size=l&count=none&id=twitter-widget-0&lang=en"""
+    for url_param in ['hashtags', 'original_referer', 'related', 'text', 'url']
+      if @props[url_param]
+        if url_param == 'url'
+          @props[url_param] = encodeURI(@props[url_param])
+        url += "&#{url_param}=#{@props[url_param]}"
+
+
+    IFRAME 
+      src: url
+      scrolling: "no"
+      frameBorder: "0"
+      allowTransparency: "true"
+      className: "twitter-share-button twitter-tweet-button twitter-share-button twitter-count-none"
+      style: 
+        width: 80
+        height: 28
+
 
 #### Layout
 

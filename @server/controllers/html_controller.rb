@@ -126,14 +126,14 @@ class HtmlController < ApplicationController
       description = "Dialogue about City of Tigard"
     when 'homepage'
       title = 'Consider.it'
-      image = view_context.asset_path 'images/product_page/logo.png'
+      image = request.protocol + view_context.asset_path 'images/product_page/logo.png'
       description = "A web forum that elevates your community's opinions. Civil and organized discussion even when hundreds of stakeholders participate. "
       keywords = "opinion visualization,community engagement,public engagement,public involvement,discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,impact assessment,strategic planning,process improvement,stakeholder committee,listening"
       google_verification = "gd89L8El1xxxBpOUk9czjE9zZF4nh8Dc9izzbxIRmuY"
 
     when 'newblueplan'
       title = 'New Blue Plan for Retaking Washington'
-      image = view_context.asset_path 'images/wa-dems/screenshot.png'
+      image = request.protocol + view_context.asset_path 'images/wa-dems/screenshot.png'
       description = "Your party, your plan. How can we work together to win in every race across Washington? Share your ideas!"
       keywords = "washington democrats, washington democratic party, democratic party, washington, Manka Dhingra, Michelle Rylands, Karen Hardy, planning, election, campaigning, 2017, 2018, resistance"
 
@@ -144,7 +144,7 @@ class HtmlController < ApplicationController
       end
       image = current_subdomain.branding_info['logo']
       if image && image[0] != '/' && !image.index('http')
-        image = "//#{Rails.application.config.action_controller.asset_host or 'localhost:3000'}#{image}"
+        image = "#{request.protocol}#{Rails.application.config.action_controller.asset_host or 'localhost:3000'}#{image}"
       end 
       cnt = Proposal.active.count
       if cnt == 1
@@ -184,7 +184,7 @@ class HtmlController < ApplicationController
       { :property => 'http://ogp.me/ns#description', :content => description },
       { :property => 'http://ogp.me/ns#url', :content => request.original_url() },
       { :property => 'http://ogp.me/ns#type', :content => 'website' },
-      { :property => 'http://ogp.me/ns#site_name', :content => (current_subdomain.app_title or "#{current_subdomain.name} discussion") },
+      { :property => 'http://ogp.me/ns#site_name', :content => (title or "#{current_subdomain.name} discussion") },
 
       { :name => 'twitter:card', :content => 'summary' },
       { :name => 'twitter:title', :content => title },

@@ -182,7 +182,7 @@ class HtmlController < ApplicationController
 
       { :property => 'http://ogp.me/ns#title', :content => title },
       { :property => 'http://ogp.me/ns#description', :content => description },
-      { :property => 'http://ogp.me/ns#url', :content => request.original_url() },
+      { :property => 'http://ogp.me/ns#url', :content => request.original_url().split('?')[0] },
       { :property => 'http://ogp.me/ns#type', :content => 'website' },
       { :property => 'http://ogp.me/ns#site_name', :content => (title or "#{current_subdomain.name} discussion") },
 
@@ -190,18 +190,12 @@ class HtmlController < ApplicationController
       { :name => 'twitter:title', :content => title },
       { :name => 'twitter:description', :content => description },
 
-      { :property => 'og:title', :content => title },
-      { :property => 'og:description', :content => description },
-      { :property => 'og:url', :content => request.original_url() },
-      { :property => 'og:type', :content => "website" },
-
       { :property => 'fb:app_id', :content => "206466936144360" },
     ]
 
     if image 
       meta.append({ :property => 'http://ogp.me/ns#image', :content => image })
-      meta.append({ :property => 'og:image', :content => image })
-      meta.append({ :property => 'og:image:secure_url', :content => image })
+      meta.append({ :property => 'http://ogp.me/ns#secure_url', :content => image })
       meta.append({ :name => 'twitter:image', :content => image })
 
     end 

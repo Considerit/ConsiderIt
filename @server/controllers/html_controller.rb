@@ -195,6 +195,7 @@ class HtmlController < ApplicationController
       { :property => 'og:url', :content => request.original_url() },
       { :property => 'og:type', :content => "website" },
 
+      { :property => 'fb:app_id', :content => "206466936144360" },
     ]
 
     if image 

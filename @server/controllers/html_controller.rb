@@ -180,11 +180,11 @@ class HtmlController < ApplicationController
       { :name => 'description', :content => description },
       { :name => 'keywords', :content => keywords },
 
-      { :property => 'http://ogp.me/ns#title', :content => title },
-      { :property => 'http://ogp.me/ns#description', :content => description },
-      { :property => 'http://ogp.me/ns#url', :content => request.original_url().split('?')[0] },
-      { :property => 'http://ogp.me/ns#type', :content => 'website' },
-      { :property => 'http://ogp.me/ns#site_name', :content => (title or "#{current_subdomain.name} discussion") },
+      { :property => 'og:title', :content => title },
+      { :property => 'og:description', :content => description },
+      { :property => 'og:url', :content => request.original_url().split('?')[0] },
+      { :property => 'og:type', :content => 'website' },
+      { :property => 'og:site_name', :content => (title or "#{current_subdomain.name} discussion") },
 
       { :name => 'twitter:card', :content => 'summary' },
       { :name => 'twitter:title', :content => title },
@@ -194,8 +194,8 @@ class HtmlController < ApplicationController
     ]
 
     if image 
-      meta.append({ :property => 'http://ogp.me/ns#image', :content => image })
-      meta.append({ :property => 'http://ogp.me/ns#secure_url', :content => image })
+      meta.append({ :property => 'og:image', :content => image })
+      meta.append({ :property => 'og:image:secure_url', :content => image })
       meta.append({ :name => 'twitter:image', :content => image })
 
     end 

@@ -17,6 +17,10 @@ class ModerationController < ApplicationController
     moderatable.moderation_status = moderation.status
     moderatable.save
 
+    if moderation.moderatable_type.downcase == 'proposal'
+      dirty_key '/proposals'
+    end
+
     dirty_key "/#{moderation.moderatable_type.downcase}/#{moderatable.id}"
     dirty_key "/moderation/#{moderation.id}"
 

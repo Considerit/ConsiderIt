@@ -239,7 +239,6 @@ class Proposal < ActiveRecord::Base
     # The JSON.parse is expensive...
     json['histocache'] = Oj.load(json['histocache'] || '{}')
 
-
     make_key(json, 'proposal')
     stubify_field(json, 'user')
 
@@ -253,6 +252,10 @@ class Proposal < ActiveRecord::Base
     else
       json['roles'] = self.user_roles(filter = true)
     end
+
+    if self.subdomain.moderate_points_mode == 0 && self.moderation_status == nil 
+      json['under_review'] = true
+    end 
 
     #json['description_fields'] = JSON.parse(json['description_fields'] || '[]')
 

@@ -420,6 +420,15 @@ ProposalDescription = ReactiveComponent
             fontSize: 45
           @proposal.name
 
+        if @proposal.under_review 
+          SPAN 
+            style: 
+              color: 'white'
+              backgroundColor: 'orange'
+              fontSize: 14
+              padding: 2
+            'Under review (like all new proposals)'
+
         if customization('show_proposal_meta_data')
           DIV 
             style: 
@@ -500,11 +509,6 @@ ProposalDescription = ReactiveComponent
               @renderDescriptionFieldGroup item
             else
               @renderDescriptionField item
-
-      DIV 
-        style:
-          marginTop: 15
-          color: '#666'
 
       if permit('update proposal', @proposal) > 0
         DIV

@@ -253,7 +253,7 @@ class Proposal < ActiveRecord::Base
       json['roles'] = self.user_roles(filter = true)
     end
 
-    if self.subdomain.moderate_points_mode == 0 && self.moderation_status == nil 
+    if self.subdomain.moderate_proposals_mode == 1 && self.moderation_status == nil 
       json['under_review'] = true
     end 
 

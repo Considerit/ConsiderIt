@@ -2014,6 +2014,7 @@ Root = ReactiveComponent
     current_user = fetch('/current_user')
 
     fonts = customization('font') or "'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+    header_fonts = customization('header_font') or fonts
     DIV 
 
       # Track whether the user is currently swipping. Used to determine whether
@@ -2044,7 +2045,11 @@ Root = ReactiveComponent
       STYLE 
         dangerouslySetInnerHTML: __html: """
           #content, #content input, #content button, #content textarea {
-            font-family: #{fonts}; }
+            font-family: #{fonts}; 
+          }
+          #content h1, #content h2, #content h3, #content h4 {
+            font-family: #{header_fonts};
+          }
         """
 
       if !subdomain.name

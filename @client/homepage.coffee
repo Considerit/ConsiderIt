@@ -402,7 +402,6 @@ window.HomepageTabs = ReactiveComponent
             tab_style = _.defaults {}, (@props.tab_style or {}),
               cursor: 'pointer'
               position: 'relative'
-              display: 'inline-block'
               fontSize: 16
               fontWeight: 600        
               color: 'white'
@@ -437,7 +436,7 @@ window.HomepageTabs = ReactiveComponent
                 color: if current then 'black' else if hovering then '#F8E71C' else 'white'
                 borderRadius: '16px 16px 0 0'
             else 
-              _.extend tab_style, 
+              _.defaults tab_style, 
                 padding: '10px 20px 4px 20px'
                 backgroundColor: if current then 'rgba(255,255,255,.2)'
 
@@ -452,7 +451,9 @@ window.HomepageTabs = ReactiveComponent
             LI 
               tabIndex: 0
               role: 'tab'
-              style: tab_style
+              #style: tab_style
+              style: 
+                display: 'inline-block'
               'aria-controls': 'homepagetab'
               'aria-selected': current
 
@@ -473,7 +474,9 @@ window.HomepageTabs = ReactiveComponent
                 save homepage_tabs
                 document.activeElement.blur()
 
-              filter
+              H4 
+                style: tab_style
+                filter
 
 
 

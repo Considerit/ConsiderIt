@@ -22,7 +22,7 @@ AuthCallout = ReactiveComponent
       style: 
         width: '100%'
         #backgroundColor: '#545454'
-        padding: '32px 20px'
+        padding: '32px 0'
         #color: 'white'
         marginTop: 12
 
@@ -98,11 +98,7 @@ window.Homepage = ReactiveComponent
       save doc
 
     DIV 
-      key: "homepage_#{subdomain.name}"
-
-      if customization('auth_callout')
-        AuthCallout()
-      
+      key: "homepage_#{subdomain.name}"      
 
       SimpleHomepage()
 
@@ -186,6 +182,7 @@ window.TagHomepage = ReactiveComponent
 
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
 
+    homepage_tabs = fetch 'homepage_tabs'
 
     DIV
       id: 'homepagetab'
@@ -195,6 +192,13 @@ window.TagHomepage = ReactiveComponent
         margin: '45px auto'
         width: HOMEPAGE_WIDTH()
         position: 'relative'
+
+
+      if customization('homepage_tabs') && customization('homepage_tab_headers')?[homepage_tabs.filter]
+        customization('homepage_tab_headers')[homepage_tabs.filter]()
+
+      if customization('auth_callout')
+        AuthCallout()
 
       ProposalFilter
         style: 
@@ -302,6 +306,12 @@ window.SimpleHomepage = ReactiveComponent
         position: 'relative'
 
       #filter_sort_options()
+
+      if customization('homepage_tabs') && customization('homepage_tab_headers')?[homepage_tabs.filter]
+        customization('homepage_tab_headers')[homepage_tabs.filter]()
+
+      if customization('auth_callout') && homepage_tabs.filter != 'About'
+        AuthCallout()
 
       # List all clusters
       for cluster, index in clusters or []
@@ -615,6 +625,7 @@ window.Cluster = ReactiveComponent
               textAlign: 'left'
               color: heading_style.color
               position: 'relative'
+              fontFamily: heading_style.fontFamily
                 
             onKeyDown: if !list_uncollapseable then (e) -> 
               if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -649,7 +660,7 @@ window.Cluster = ReactiveComponent
                 fontSize: 18
                 fontWeight: 400 
                 color: '#444'
-                marginTop: 2
+                marginTop: 6
 
               if _.isFunction(description)  
                 description()

@@ -68,7 +68,7 @@ Auth = ReactiveComponent
 
     DIV 
       style: 
-        background: if auth.form != 'edit profile' && !@props.naked then customization('background') or focus_blue
+        background: if auth.form != 'edit profile' && !@props.naked then (customization('background') or focus_blue)
 
       if auth.form != 'edit profile' && !@props.naked
         A 
@@ -231,21 +231,23 @@ Auth = ReactiveComponent
         fontSize: 12
         textAlign: 'center'
 
-      "By creating an account, you agree to Consider.it's "
-      A
-        href: '/terms_of_service'
-        target: '_blank'
-        style: 
-          textDecoration: 'underline'
-        'Terms'
-      ' and '
-      A
-        href: '/privacy_policy'
-        target: '_blank'        
-        style: 
-          textDecoration: 'underline'
-        'Privacy Policy'
-      '.'
+
+      customization('terms')?() or DIV null,
+        "By creating an account, you agree to Consider.it's "
+        A
+          href: '/terms_of_service'
+          target: '_blank'
+          style: 
+            textDecoration: 'underline'
+          'Terms'
+        ' and '
+        A
+          href: '/privacy_policy'
+          target: '_blank'        
+          style: 
+            textDecoration: 'underline'
+          'Privacy Policy'
+        '.'
 
   #####
   # headerAndBorder

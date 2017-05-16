@@ -522,35 +522,35 @@ _.extend dict.fr,
 _.extend dict.en, 
   log_in: 'Log in'
   create_an_account: 'Create an account'  
-  create_new_account: 'Create new account'
+  create_new_account: 'Create account'
   log_out: 'Log out'
   edit_profile: 'Edit Profile'
   email_settings: 'Email Settings'
-  introduce_yourself: 'Introduce Yourself'
+  introduce_yourself: 'Please introduce yourself'
 
   complete_registration: 'Complete registration'
-  login_as: 'Hi, my email is'
-  password: 'password'
-  name_prompt: 'My name is'
+  login_as: 'Your email'
+  password: 'Password'
+  name_prompt: 'Your name'
   full_name: (args) -> 
     subdomain = fetch '/subdomain'
     if subdomain.name in ['bitcoin', 'bitcoinclassic']
       'user name or company name'
     else
       'first and last name or pseudonym'
-  pic_prompt: 'I look like'
+  pic_prompt: 'Your picture'
   your_profile: 'Update Your Profile'
   updated_successfully: "Updated successfully"
   reset_your_password: "Reset Your Password"
   code: 'Code'
   new_password: 'New password'
-  verification_sent: 'We sent you a verification code via email. Copy / paste it below.'
+  verification_sent: 'We just emailed you a verification code. Copy / paste it below.'
   verify: 'Verify'
   choose_password: "choose a new password"
   code_from_email: 'verification code from email'
   verify_your_email: 'Verify Your Email'
   more_info: 'Please give some info'
-  forgot_password: 'I forgot my password!'
+  forgot_password: 'Help! I forgot my password'
 
 _.extend dict.cs, 
   log_in: 'Přihlásit se'

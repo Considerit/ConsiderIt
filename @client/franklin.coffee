@@ -2001,7 +2001,7 @@ Page = ReactiveComponent
               else 
                 LOADING_INDICATOR
 
-      Footer(key: 'page_footer') if access_granted
+      Footer(key: 'page_footer') if access_granted && !auth.form
     
 
 Root = ReactiveComponent

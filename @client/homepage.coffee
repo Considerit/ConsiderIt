@@ -310,7 +310,7 @@ window.SimpleHomepage = ReactiveComponent
       if customization('homepage_tabs') && customization('homepage_tab_headers')?[homepage_tabs.filter]
         customization('homepage_tab_headers')[homepage_tabs.filter]()
 
-      if customization('auth_callout') && homepage_tabs.filter != 'About'
+      if customization('auth_callout') && homepage_tabs.filter not in ['About', 'FAQ']
         AuthCallout()
 
       # List all clusters

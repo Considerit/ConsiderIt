@@ -140,11 +140,9 @@ class HtmlController < ApplicationController
       keywords = "washington democrats, washington democratic party, democratic party, washington, Manka Dhingra, Michelle Rylands, Karen Hardy, planning, election, campaigning, 2017, 2018, resistance"
 
     when 'internethealthreport'
-      # title = 'New Blue Plan for Retaking Washington'
-      # image = "#{request.protocol}#{view_context.asset_path('images/wa-dems/activity.png').gsub(/\/\//,'')}"
-      # description = "Your party, your plan. How can we work together to win in every race across Washington? Share your ideas!"
-      # keywords = "washington democrats, washington democratic party, democratic party, washington, Manka Dhingra, Michelle Rylands, Karen Hardy, planning, election, campaigning, 2017, 2018, resistance"
-
+      title = 'How would you measure the health of the Internet?'
+      description = "Tell us how you think Mozilla’s Internet Health Report should document and explain the Internet from year to year."
+      keywords = "Internet health, Internet, Mozilla, Internet research, privacy, decentralization, digital inclusion, Web literacy, digital divide, digital rights"
       @favicon = '/images/internethealthreport/favicon.png'
 
     else

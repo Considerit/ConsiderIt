@@ -404,7 +404,7 @@ slider_handle.face = (props) ->
       pointerEvents: 'none'
       position: 'absolute'
       top: 0
-      filter: if props.has_focus then "drop-shadow(0 0 3px #{focus_blue_transparent(.5)})"
+      filter: if props.has_focus then "drop-shadow(0 0 3px rgba(0,0,0,.5))"
 
     DEFS null,
       svg.innerbevel
@@ -492,7 +492,7 @@ slider_handle.triangley = (props) ->
       position: 'absolute'
       top: 0
       zIndex: 10
-      filter: if props.has_focus then "drop-shadow(0 0 3px #{focus_blue_transparent(.5)})"
+      filter: if props.has_focus then "drop-shadow(0 0 3px rgba(0,0,0,.5))"
 
   id = "triangley_filter-#{(Math.random() * 1000000).toFixed(0)}"
   SVG svg_props,
@@ -574,7 +574,7 @@ slider_handle.flat = (props) ->
       position: 'absolute'
       top: 0
       zIndex: 10
-      filter: if props.has_focus then "drop-shadow(0 0 3px #{focus_blue_transparent(.5)})"
+      filter: if props.has_focus then "drop-shadow(0 0 3px rgba(0,0,0,.5))"
 
   SVG svg_props,
 

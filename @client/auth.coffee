@@ -66,15 +66,39 @@ Auth = ReactiveComponent
 
     return SPAN null if !auth.form
 
-    DIV
-      style:
-        margin: "0 auto"
-        padding: if !@props.naked then '4em 0'
-        position: 'relative'
-        zIndex: 0
-        width: AUTH_WIDTH()
+    DIV 
+      style: 
+        background: if auth.form != 'edit profile' && !@props.naked then customization('background') or focus_blue
 
-      @buildAuthForm()
+      if auth.form != 'edit profile' && !@props.naked
+        A 
+          href: 'https://consider.it'
+          target: '_blank' 
+          style: 
+            position: 'absolute'
+            left: 10
+            top: 10
+
+          drawLogo 
+            height: 35
+            main_text_color: 'white'
+            o_text_color: 'white'
+            clip: false
+            draw_line: true 
+            line_color: 'white'
+            transition: true
+
+
+      DIV
+        style:
+          margin: "0 auto"
+          padding: if !@props.naked then '4em 0'
+          position: 'relative'
+          zIndex: 0
+          width: AUTH_WIDTH()
+          
+
+        @buildAuthForm()
 
   ####
   # buildAuthForm
@@ -103,10 +127,10 @@ Auth = ReactiveComponent
       when 'login'
         [ @headerAndBorder goal, t('Introduce Yourself'),
             @body [
-                    ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')],
-                    ["My #{t("password")}:", [@inputBox('password', t("password"), 'password'), @resetPasswordLink()]]
+                    ["#{t('login_as')}", @inputBox('email', 'email@address', 'email')],
+                    ["#{t("password")}", [@inputBox('password', t("password"), 'password'), @resetPasswordLink()]]
                   ].concat @userQuestionInputs()
-          @footerForRegistrationAndLogin() ]
+        ]
 
       # The REGISTER form, with easy switch to log in
       #   ...or a slight variation for completing registration
@@ -115,28 +139,25 @@ Auth = ReactiveComponent
       when 'create account', 'create account via invitation'
         
         if avatar_field = @avatarInput()
-          avatar_field = ["#{t('pic_prompt')}:", avatar_field]
+          avatar_field = ["#{t('pic_prompt')}", avatar_field]
 
         if pledges = @pledgeInput()
-          pledges_field = ['My pledge:', pledges]
+          pledges_field = [DIV(style: paddingTop: 12, 'Community Pledge'), pledges]
         else 
           pledges_field = []
 
         if auth.form == 'create account'
-          email_field = ["#{t('login_as')}:", @inputBox('email', 'email@address', 'email')]
-          footer = [@footerForRegistrationAndLogin(), @privacyAndTerms()]
+          email_field = ["#{t('login_as')}", @inputBox('email', 'email@address', 'email')]
         else
-          email_field = ["#{t('login_as')}:", DIV style: {color: auth_text_gray, padding: '4px 8px'}, current_user.email]
-          footer = [@submitButton(t('Create new account')), @privacyAndTerms()]
+          email_field = ["#{t('login_as')}", DIV style: {color: auth_text_gray, padding: '4px 8px'}, current_user.email]
 
-        [ @headerAndBorder goal, t('Introduce Yourself'),
+        [ @headerAndBorder goal, t('create an account'),
             @body [
                     email_field,
-                    ["My #{t("password")}:", @inputBox('password', t("password"), 'password')],
-                    avatar_field,
-                    [t('name_prompt'), @inputBox('name', t('full_name'))]
+                    ["#{t("password")}", @inputBox('password', t("password"), 'password')],
+                    [t('name_prompt'), @inputBox('name', t('full_name'))], avatar_field
                     ].concat(@userQuestionInputs()).concat([pledges_field])
-          footer ]
+        ]
 
       # The EDIT PROFILE form
       when 'edit profile'
@@ -153,11 +174,11 @@ Auth = ReactiveComponent
               ["#{t('name_prompt')}:", @inputBox('name', t('full_name'))]
               avatar_field
             ].concat @userQuestionInputs()
-          @submitButton(t('Update'))
+          
           if @local.saved_successfully
             if subdomain.SSO_domain
               loadPage '/'
-            SPAN style: {color: 'green'}, t("Updated successfully")
+            SPAN style: {color: 'white'}, t("Updated successfully")
         ]
 
       # The RESET PASSWORD form
@@ -170,10 +191,12 @@ Auth = ReactiveComponent
                    ["#{t('New password')}:", @inputBox('password', t("choose_password"), 'password')], 
 
                   ], t('verification_sent')
-          @submitButton(t('Log in')) 
+
           DIV 
             style: 
               marginTop: 20
+              color: 'white'
+              textAlign: 'center'
             'Having trouble resetting your password? Watch this brief '
 
             A 
@@ -191,13 +214,11 @@ Auth = ReactiveComponent
       when 'verify email'
         [ @headerAndBorder goal, t('Verify Your Email'),
             @body [["#{t('Code')}:", @inputBox('verification_code', t('code_from_email'))]],
-                  t('verification_sent')
-          @submitButton(t('Verify')) ]
+                  t('verification_sent')]
 
       when 'user questions'
         [ @headerAndBorder goal, t('more_info'),
-            @body @userQuestionInputs()
-          @submitButton("#{t('Done')}!") ]
+            @body @userQuestionInputs()]
 
       else
         throw "Unrecognized authentication form #{auth.form}"
@@ -207,17 +228,17 @@ Auth = ReactiveComponent
       style: 
         color: '#999'
         marginTop: 20
-        fontSize: 14
+        fontSize: 12
         textAlign: 'center'
 
-      "By creating an account, you agree to our "
+      "By creating an account, you agree to Consider.it's "
       A
         href: '/terms_of_service'
         target: '_blank'
         style: 
           textDecoration: 'underline'
         'Terms'
-      ' and that you have read our '
+      ' and '
       A
         href: '/privacy_policy'
         target: '_blank'        
@@ -239,10 +260,14 @@ Auth = ReactiveComponent
   headerAndBorder : (goal, task, body) ->
     auth = fetch('auth')
 
-    if @props.naked
-      return body
+    # if @props.naked
+    #   return body
 
-    primary_color = @props.primary_color or focus_blue
+    if auth.form == 'login'      
+      button = t('Log in')
+    else 
+      button = t 'Done'
+
 
     DIV null,
 
@@ -253,117 +278,59 @@ Auth = ReactiveComponent
           position: 'relative'
           margin: 'auto'
           top: 5 # to overlap bubblemouth with enclosure
+          
 
         DIV
           style:
             textAlign: 'center'
             position: 'relative'
+            display: if @props.naked then 'none'
 
           if goal
             DIV
               style:
                 fontWeight: 600
                 fontSize: 18
-                color: primary_color
                 transform: 'translateY(6px)'
+                color: 'white'
               goal
-
-          DIV
-            style:
+              
+          H1
+            style: 
+              display: 'inline-block'
               position: 'relative'
-              marginBottom: 10
-              fontWeight: 600
+              fontWeight: 'bold'
+              fontSize: 48
               whiteSpace: 'nowrap'
+              color: if auth.form != 'edit profile' then 'white'
+              marginBottom: 10
 
-            H1
-              style: 
-                display: 'inline-block'
-                position: 'relative'
-                fontWeight: 600
-                fontSize: 61
-                color: primary_color
-
-              task
-
-            if auth.form not in ['edit profile']
-              cancel_auth = (e) =>
-
-                if auth.form == 'verify email' || location.pathname == '/proposal/new'
-                  loadPage '/'
-
-                if auth.form == 'verify email'
-                  setTimeout logout, 1
-
-                reset_key auth
-
-              if !@props.disable_cancel && ( location.pathname != '/' || auth.goal != "access this private forum")
-                BUTTON
-                  style:
-                    color: auth_ghost_gray
-                    position: 'absolute'
-                    cursor: 'pointer'
-                    right: 0
-                    top: 70
-                    padding: 10
-                    fontSize: 24
-                    backgroundColor: 'transparent'
-                    border: 'none'
-
-                  title: t('cancel')
-
-                  onClick: cancel_auth
-                  onKeyDown: (e) => 
-                    if e.which == 13 || e.which == 32 # ENTER or SPACE
-                      cancel_auth(e)
-                      e.preventDefault()
-
-                  I className: 'fa-close fa'
-
-                  ' ' + t('cancel')
-
-        DIV
-          style:
-            left: AUTH_WIDTH() / 2
-            height: 50
-            width: 50
-            top: 0
-            borderRadius: '50%'
-            marginLeft: -50 / 2
-            backgroundColor: primary_color
-            position: 'relative'
-            boxShadow: "0px 1px 0px black, inset 0 1px 2px rgba(255,255,255, .4), 0px 0px 0px 1px #{primary_color}"
+            task
 
 
-        DIV 
-          key: 'auth_bubblemouth'
-          style: css.crossbrowserify
-            left: AUTH_WIDTH() / 2 - 34/2
-            top: 10 + 3 + 1 # +10 is because of the decision board translating down 10, 3 is for its border
-            position: 'relative'
 
-          Bubblemouth 
-            apex_xfrac: .5
-            width: 34
-            height: 28
-            fill: 'white', 
-            stroke: primary_color, 
-            stroke_width: 11
-            dash_array: "25 10"
-
-
-      # Dashed enclosure in which auth form is rendered
       DIV
         className: if @local.submitting then ' waiting' else ''
         style:
-          padding: '2.5em 46px 1.5em 46px'
+          padding: '2.5em 80px 1.5em 80px'
           fontSize: 18
-          marginTop: 10
-          borderRadius: 16
-          borderStyle: 'dashed'
-          borderWidth: 3
-          borderColor: primary_color
+          boxShadow: if auth.form != 'edit profile' then '0 2px 4px rgba(0,0,0,.4)'
+          backgroundColor: 'white'
+          position: 'relative'
 
         body
+
+        @submitButton button, true
+
+        if auth.form in ['create account', 'create account via invitation']
+          @privacyAndTerms()
+
+      @form_footer()
+
+
+
+
+
 
 
   ######
@@ -376,7 +343,7 @@ Auth = ReactiveComponent
   #         be rendered in a table.
   # additional_instructions: text rendered before
   #                          the fields
-  body : (fields, additional_instructions) ->
+  body: (fields, additional_instructions) ->
     current_user = fetch '/current_user'
     primary_color = @props.primary_color or focus_blue
 
@@ -388,42 +355,28 @@ Auth = ReactiveComponent
             marginBottom: 18
           additional_instructions
 
-      TABLE null, TBODY null,
-        for field in fields when field
-          field_id = field[1]?.props?.id or field[1]?[0]?.props?.id
-          if field_id 
-            field_id = field_id.replace('user_avatar_form', 'user_avatar')
-          [TR null,
-            TD
-              style:
-                paddingTop: 4
-                verticalAlign: 'top'
-                width: '36%'
 
-              LABEL
-                htmlFor: field_id
-                style:
-                  color: primary_color
-                  fontWeight: 600
-                  fontSize: if browser.is_mobile then 24
-                field[0]
+      for field in fields when field
+        field_id = field[1]?.props?.id or field[1]?[0]?.props?.id
+        if field_id 
+          field_id = field_id.replace('user_avatar_form', 'user_avatar')
 
-                if field.length > 2
-                  DIV 
-                    style: 
-                      display: 'block'
-                      color: auth_ghost_gray
-                      fontSize: 14
-                      fontWeight: 400
-                    field[2]
-            TD
-              style:
-                verticalAlign: 'bottom'
-                width: '100%'
-                paddingLeft: 18
-              field[1]
+        DIV 
+          style: 
+            marginBottom: 8
 
-           TR style: {height: 10}]
+          LABEL
+            htmlFor: field_id
+            style:
+              color: '#888'
+              fontSize: 24
+              display: 'block'
+              fontWeight: 700
+              fontStyle: 'oblique'
+            field[0]
+
+          field[1]
+
 
       if customization('auth_footer')
         auth = fetch('auth')
@@ -453,19 +406,18 @@ Auth = ReactiveComponent
 
               SPAN null, error
 
+
+
+
+
+
   #####
-  # footerForRegistrationAndLogin
-  #
-  # The footer for switching between create new account and login
-  #
-  footerForRegistrationAndLogin : ->
+  form_footer: ->
     auth = fetch 'auth'
     if auth.form == 'create account'
       toggle_to = t('Log in')
-      button = t('Create new account')
     else
-      button = t('Log in')
-      toggle_to = t('Create new account')
+      toggle_to = t('Create an account')
 
     toggle = (e) =>
       current_user = fetch('/current_user')
@@ -481,45 +433,77 @@ Auth = ReactiveComponent
     DIV
       style:
         textAlign: 'center'
-        #position: 'relative'
-        #left: '50%'
-        #marginLeft: -(widthWhenRendered(button, {fontSize: 24}) + 36*2) / 2
 
-      @submitButton button, true
 
-      SPAN
-        style: 
-          marginTop: 23
-          textAlign: 'left'
-          width: '100%'
+      if auth.form in ['create account', 'login']
+        DIV
+          style: 
+            marginTop: 23
+            width: '100%'
 
-        SPAN
-          style:
-            color: '#444'
-            fontSize: 18
-            paddingLeft: 18
-            paddingRight: 7
-          t('or') + ' '
+          SPAN 
+            style: 
+              color: 'white'
+              fontWeight: 300
+              fontSize: 24
+
+            if auth.form == 'create account'
+              'Already have an account? '
+            else 
+              'Not registered? '
+          
+          BUTTON
+            className: 'toggle_auth'
+            style:
+              display: 'inline-block'
+              color: 'white'
+              textDecoration: 'underline'
+              fontWeight: 600
+              fontSize: 24
+              backgroundColor: 'transparent'
+              border: 'none'
+              padding: 0
+            onClick: toggle
+            onKeyDown: (e) => 
+              if e.which == 13 || e.which == 32 # ENTER or SPACE
+                toggle(e)
+                e.preventDefault()
+
+            toggle_to
+      
+      if auth.form not in ['edit profile'] && !@props.disable_cancel && ( location.pathname != '/' || auth.goal != "access this private forum")
+        cancel_auth = (e) =>
+
+          if auth.form == 'verify email' || location.pathname == '/proposal/new'
+            loadPage '/'
+
+          if auth.form == 'verify email'
+            setTimeout logout, 1
+
+          reset_key auth
 
         BUTTON
-          className: 'toggle_auth'
           style:
-            display: 'inline-block'
-            color: '#444'
-            textDecoration: 'underline'
-            fontWeight: 400
-            fontSize: 20
+            color: 'white'
+            position: 'absolute'
+            cursor: 'pointer'
+            right: -100
+            top: 40
+            padding: 10
+            fontSize: 24
             backgroundColor: 'transparent'
             border: 'none'
-          onClick: toggle
+            opacity: .7
+
+          title: t('cancel')
+
+          onClick: cancel_auth
           onKeyDown: (e) => 
             if e.which == 13 || e.which == 32 # ENTER or SPACE
-              toggle(e)
+              cancel_auth(e)
               e.preventDefault()
 
-          toggle_to
-      
-
+          t('cancel')
 
 
   ####
@@ -528,18 +512,21 @@ Auth = ReactiveComponent
   # Renders the blue button for auth form submission.
   #
   # action: the text for the button
-  # inline: is the button inline-block?
-  submitButton : (action, inline) ->
+  submitButton: (action) ->
     # this is gross code
-    primary_color = @props.primary_color or focus_blue
+    primary_color = @props.primary_color or '#676767'
 
     BUTTON
       style:
-        fontSize: 28
-        display: if inline then 'inline-block' else 'block'
-        width: if !inline then '100%'
+        fontSize: 36
+        display: 'block'
+        width: '100%'
         fontWeight: 700
         backgroundColor: primary_color
+        textAlign: 'center'
+        borderRadius: 8
+        boxShadow: '0 2px 4px rgba(0,0,0,.2)'
+        marginTop: 20
         
       className:'primary_button' + (if @local.submitting then ' disabled' else '')
       onClick: @submitAuth
@@ -550,7 +537,6 @@ Auth = ReactiveComponent
       
       action
         
-
 
   ####
   # inputBox
@@ -591,15 +577,16 @@ Auth = ReactiveComponent
       className: 'auth_text_input'
       style:
         marginBottom: 6
-        width: Math.max 300, AUTH_WIDTH() * .55
-        border: "1px solid #{auth_ghost_gray}"
-        padding: '5px 10px'
-        fontSize: if browser.is_mobile then 36 else 18
+        width: '100%'
+        border: "1px solid #ccc"
+        padding: '10px 14px'
+        fontSize: if browser.is_mobile then 36 else 20
         display: 'inline-block'
+        backgroundColor: '#f2f2f2'
       value: if auth.form in ['edit profile'] then @local[name] else null
       name: "user[#{name}]"
       key: "#{name}_inputBox"
-      placeholder: placeholder
+      #placeholder: placeholder
       'aria-label': if name == 'password' then placeholder
       required: "required"
       type: type || 'text'
@@ -637,17 +624,34 @@ Auth = ReactiveComponent
             overflow: 'hidden'
             display: 'inline-block'
             marginRight: 18
+            marginTop: 3
 
           IMG 
             alt: ''
             id: 'avatar_preview'
-            style: {width: 60}
+            style: 
+              width: 60
+              display: if !@local.preview then 'none'
             src: if current_user.b64_thumbnail 
                     current_user.b64_thumbnail 
-                 else if current_user.avatar_remote_url 
+                 else if current_user.avatar_remote_url
                     current_user.avatar_remote_url 
                  else 
                     null
+
+          if !@local.preview  
+            SVG 
+              width: 60
+              viewBox: "0 0 100 100" 
+              style:
+                position: 'relative'
+                top: 8
+
+              PATH 
+                fill: "#ccc" 
+                d: "M64.134,50.642c-0.938-0.75-1.93-1.43-2.977-2.023c8.734-6.078,10.867-18.086,4.797-26.805  c-6.086-8.727-18.086-10.875-26.82-4.797c-8.719,6.086-10.867,18.086-4.781,26.812c1.297,1.867,2.922,3.484,4.781,4.789  c-1.039,0.594-2.039,1.273-2.977,2.023c-6.242,5.031-11.352,11.312-15.023,18.438c-0.906,1.75-1.75,3.539-2.555,5.344  c17.883,16.328,45.266,16.328,63.133,0c-0.789-1.805-1.641-3.594-2.547-5.344C75.509,61.954,70.384,55.673,64.134,50.642z"
+
+
 
         INPUT 
           id: 'user_avatar'
@@ -659,9 +663,12 @@ Auth = ReactiveComponent
             input = $('#user_avatar')[0]
             if input.files && input.files[0]
               reader = new FileReader()
-              reader.onload = (e) ->
+              reader.onload = (e) =>
+                @local.preview = true 
+                save @local
                 $("#avatar_preview").attr 'src', e.target.result
               reader.readAsDataURL input.files[0]
+
               #current_user.avatar = input.files[0]
             else
               $("#avatar_preview").attr('src', asset('no_image_preview.png'))
@@ -691,7 +698,7 @@ Auth = ReactiveComponent
         DIV 
           style: 
             marginBottom: 10
-            marginLeft: -18
+            marginLeft: -18 
 
           LABEL 
             htmlFor: "pledge-#{idx}"
@@ -708,11 +715,11 @@ Auth = ReactiveComponent
               style: 
                 fontSize: 24
                 margin: 0
-                marginLeft: -22
+                marginLeft: -34
 
             SPAN 
               style: 
-                paddingLeft: 8
+                paddingLeft: 20
               pledge
 
           DIV style: clear: 'both'
@@ -740,11 +747,14 @@ Auth = ReactiveComponent
       BUTTON
         style: 
           textDecoration: 'underline'
-          color: auth_ghost_gray
+          color: '#737373'
           backgroundColor: 'transparent'
           border: 'none'
-          fontSize: 18
+          fontSize: 12
           padding: 0
+          fontWeight: 300
+          position: 'relative'
+          top: -8
 
         onClick: reset
         onKeyDown: (e) =>
@@ -778,7 +788,7 @@ Auth = ReactiveComponent
 
     inputs = []
     for question in questions
-      label = "#{question.question}:"      
+      label = "#{question.question}"      
 
       switch question.input
 
@@ -826,7 +836,7 @@ Auth = ReactiveComponent
                   style: 
                     fontSize: 24
                     margin: 0
-                    marginLeft: -22
+                    marginLeft: -34
                   checked: @local.tags[question.tag]
                   onChange: do(question) => (event) =>
                     @local.tags = @local.tags or {}
@@ -835,7 +845,7 @@ Auth = ReactiveComponent
 
                 SPAN 
                   style: 
-                    paddingLeft: 8
+                    paddingLeft: 20
                   question.question
 
               DIV style: clear: 'both'
@@ -870,17 +880,12 @@ Auth = ReactiveComponent
           throw "Unsupported question type: #{question.input} for #{question.tag}"
 
       if !question.required && question.input != 'boolean' 
-        label = \
-          DIV 
-            style: {}
-
-            label
-
-            DIV 
-              style: 
-                color: '#888'
-                fontSize: 10
-              '(optional)'
+        label = [label, SPAN 
+                          style: 
+                            color: '#888'
+                            fontSize: 12
+                            paddingLeft: 10
+                          'optional' ]
 
 
       inputs.push [label,input]

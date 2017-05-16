@@ -112,6 +112,8 @@ class HtmlController < ApplicationController
     keywords = title = nil
     google_verification = nil
 
+    @favicon = "/favicon.ico"
+
     # subdomain defaults
     case current_subdomain.name
     when 'livingvotersguide'
@@ -136,6 +138,14 @@ class HtmlController < ApplicationController
       image = "#{request.protocol}#{view_context.asset_path('images/wa-dems/activity.png').gsub(/\/\//,'')}"
       description = "Your party, your plan. How can we work together to win in every race across Washington? Share your ideas!"
       keywords = "washington democrats, washington democratic party, democratic party, washington, Manka Dhingra, Michelle Rylands, Karen Hardy, planning, election, campaigning, 2017, 2018, resistance"
+
+    when 'internethealthreport'
+      # title = 'New Blue Plan for Retaking Washington'
+      # image = "#{request.protocol}#{view_context.asset_path('images/wa-dems/activity.png').gsub(/\/\//,'')}"
+      # description = "Your party, your plan. How can we work together to win in every race across Washington? Share your ideas!"
+      # keywords = "washington democrats, washington democratic party, democratic party, washington, Manka Dhingra, Michelle Rylands, Karen Hardy, planning, election, campaigning, 2017, 2018, resistance"
+
+      @favicon = '/images/internethealthreport/favicon.png'
 
     else
       title = current_subdomain.branding_info['masthead_header_text']

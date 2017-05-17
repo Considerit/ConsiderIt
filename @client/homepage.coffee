@@ -522,8 +522,6 @@ window.Cluster = ReactiveComponent
         marginBottom: if !is_collapsed then 28
         position: 'relative'
 
-      if !customization('questionaire', cluster_key) && !is_collapsed && !customization('list_no_filters', cluster_key)
-        filter_sort_options()
 
       @drawClusterHeading cluster, is_collapsed
 
@@ -581,6 +579,7 @@ window.Cluster = ReactiveComponent
     heading_style = _.defaults {}, customization('list_label_style', cluster_key),
       fontSize: first_header.fontSize
       fontWeight: first_header.fontWeight
+      fontStyle: 'oblique'
 
     description = customization('list_description', cluster_key) or customization('list_one_line_desc', cluster_key)
     description_style = customization 'list_description_style', cluster_key
@@ -615,6 +614,8 @@ window.Cluster = ReactiveComponent
             tabIndex: if !list_uncollapseable then 0
             'aria-label': "#{heading_text}. Expand or collapse list."
             'aria-pressed': !collapsed.clusters[cluster_key]
+            onMouseEnter: => @local.hover_label = true; save @local 
+            onMouseLeave: => @local.hover_label = false; save @local
             style: 
               padding: 0 
               margin: 0 
@@ -626,6 +627,7 @@ window.Cluster = ReactiveComponent
               color: heading_style.color
               position: 'relative'
               fontFamily: heading_style.fontFamily
+              fontStyle: heading_style.fontStyle
                 
             onKeyDown: if !list_uncollapseable then (e) -> 
               if e.which == 13 || e.which == 32 # ENTER or SPACE
@@ -646,7 +648,7 @@ window.Cluster = ReactiveComponent
                   top: 16
                   width: tw
                   height: th
-                  display: 'inline-block'
+                  display: if @local.hover_label or is_collapsed then 'inline-block' else 'none'
                   outline: 'none'
 
         if !is_collapsed
@@ -691,9 +693,12 @@ window.Cluster = ReactiveComponent
                 fontWeight: heading_style.fontWeight
                 color: heading_style.color
                 fontSize: heading_style.fontSize
+                fontStyle: 'oblique'
 
               histo_title
 
+      if !customization('questionaire', cluster_key) && !is_collapsed && !customization('list_no_filters', cluster_key)
+        filter_sort_options()
 
 
 

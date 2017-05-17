@@ -213,9 +213,9 @@ Proposal = ReactiveComponent
           href: proposal_link(@proposal) 
           target: '_blank'          
           style: 
-            color: focus_blue
+            color: focus_color()
             padding: '6px 12px'
-            backgroundColor: focus_blue
+            backgroundColor: focus_color()
             borderRadius: 16
             color: 'white'
             position: 'relative'
@@ -235,8 +235,8 @@ Proposal = ReactiveComponent
               apex_xfrac: .2
               width: w
               height: h
-              fill: focus_blue
-              stroke: focus_blue
+              fill: focus_color()
+              stroke: focus_color()
               stroke_width: 0
               dash_array: "none"
 

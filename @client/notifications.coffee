@@ -96,7 +96,7 @@ window.Notifications = ReactiveComponent
 
             SPAN 
               style: 
-                color: focus_blue
+                color: focus_color()
                 fontWeight: 600
 
               t('send_email')

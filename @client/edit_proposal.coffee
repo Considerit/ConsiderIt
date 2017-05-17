@@ -46,7 +46,7 @@ window.EditProposal = ReactiveComponent
       fontWeight: 600
       width: 240
       display: 'inline-block'
-      color: focus_blue
+      color: focus_color()
       marginBottom: 3
 
     operation_style = 
@@ -389,6 +389,7 @@ window.EditProposal = ReactiveComponent
             style: 
               width: 400
               marginTop: 35
+              backgroundColor: focus_color()              
             onClick: @saveProposal
 
             if @props.fresh then t('Publish') else t('Update')

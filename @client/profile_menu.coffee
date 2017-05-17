@@ -167,7 +167,7 @@ window.ProfileMenu = ReactiveComponent
                     href: option.href
                     key: option.href
                     style: 
-                      color: if @local.focus == idx then 'black'
+                      color: if @local.focus == idx then 'black' else focus_color()
                       outline: 'none'
 
                     onKeyDown: (e) => 
@@ -204,7 +204,7 @@ window.ProfileMenu = ReactiveComponent
                   'data-action': 'logout'
                   className: 'menu_link'
                   style: 
-                    color: if @local.focus == idx then 'black'
+                    color: if @local.focus == idx then 'black' else focus_color()
                     outline: 'none'
                     
                   onClick: logout
@@ -259,7 +259,7 @@ window.ProfileMenu = ReactiveComponent
 
       DIV 
         style: 
-          backgroundColor: focus_blue
+          backgroundColor: focus_color()
           color: 'white'
           fontWeight: 600
           padding: '4px 12px'
@@ -270,7 +270,7 @@ window.ProfileMenu = ReactiveComponent
 
 
         SPAN 
-          style: cssTriangle 'right', focus_blue, 10, 12,
+          style: cssTriangle 'right', focus_color(), 10, 12,
             position: 'absolute'
             right: -10
             top: 12
@@ -350,7 +350,6 @@ styles += """
   bottom: 8px;
   padding-left: 27px;
   display: block;
-  color: #{focus_blue};
   white-space: nowrap; }
 
 .profile_menu_wrap:hover .profile_anchor{ color: inherit; }

@@ -84,9 +84,11 @@ ImportDataDash = ReactiveComponent
           "Export data from Considerit. A download will begin in a couple seconds after hitting export. The zip file contains four spreadsheets: opinions, points, proposals, and users."
           DIV style: marginTop: 20, display: 'block'
           A 
-            style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
+            style: 
+              backgroundColor: focus_color()
             href: "/dashboard/export"
             "data-nojax": true
+            className: 'primary_button'
 
             'Export'
       else 
@@ -138,7 +140,7 @@ ImportDataDash = ReactiveComponent
                     id: "#{table}-file"
                     name: "#{table.toLowerCase()}-file"
                     type:'file'
-                    style: {backgroundColor: focus_blue, color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
+                    style: {backgroundColor: focus_color(), color: 'white', fontWeight: 700, borderRadius: 8, padding: 6}
             
 
             if current_user.is_super_admin
@@ -169,7 +171,9 @@ ImportDataDash = ReactiveComponent
               TD style: {padding: '20px 0 0 20px'}, 
                 BUTTON
                   id: 'submit_import'
-                  style: {backgroundColor: '#7ED321', color: 'white', border: 'none', borderRadius: 8, fontSize: 24, fontWeight: 700, padding: '10px 20px'}
+                  className: 'primary_button'
+                  style: 
+                    backgroundColor: focus_color()
                   onClick: (e) => 
                     e.preventDefault()
                     $('html, #submit_import').css('cursor', 'wait')
@@ -416,6 +420,8 @@ AppSettingsDash = ReactiveComponent
             className: 'input_group'
             BUTTON 
               className: 'primary_button button'
+              style: 
+                backgroundColor: focus_color()
               onClick: @submit
 
               'Save'
@@ -557,7 +563,8 @@ CustomizationsDash = ReactiveComponent
             BUTTON 
               className: 'primary_button button'
               onClick: @submit
-
+              style: 
+                backgroundColor: focus_color()
               'Save'
 
           if @local.save_complete
@@ -669,7 +676,7 @@ CustomizationsDash = ReactiveComponent
               style: 
                 display: 'block'
                 textDecoration: 'underline'
-                color: focus_blue
+                color: focus_color()
                 marginBottom: 5
               "Load documentation in own tab"
             "."
@@ -1214,7 +1221,7 @@ FactcheckPoint = ReactiveComponent
           else 
             ['Responsible: '
             BUTTON 
-              style: {backgroundColor: focus_blue, color: 'white', fontSize: 14, border: 'none', borderRadius: 8, fontWeight: 600 }
+              style: {backgroundColor: focus_color(), color: 'white', fontSize: 14, border: 'none', borderRadius: 8, fontWeight: 600 }
               onClick: @toggleResponsibility, "I'll do it"]
 
       DIV style: {padding: '10px 30px'},

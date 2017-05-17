@@ -187,7 +187,7 @@ UserTags = ReactiveComponent
             INPUT 
               type: 'submit'
               style: 
-                backgroundColor: focus_blue
+                backgroundColor: focus_color()
                 border: 'none'
                 color: 'white'
                 padding: '5px 10px'

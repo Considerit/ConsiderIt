@@ -277,7 +277,7 @@ window.Slider = ReactiveComponent
               left: if !support then -15
               position: 'absolute'
               top: 4
-              color: focus_blue
+              color: focus_color()
               fontSize: 12
               pointerEvents: 'none'
             if support then '>' else '<'   
@@ -474,7 +474,7 @@ slider_handle.face = (props) ->
 
             PATH
               stroke: 'white'
-              fill: focus_blue
+              fill: focus_color()
               strokeWidth: 3 
               d: """
                 M #{x1} #{y1}
@@ -555,12 +555,12 @@ slider_handle.triangley = (props) ->
     G 
       stroke: "none" 
       strokeWidth: "0" 
-      fill: focus_blue 
+      fill: focus_color() 
       fillRule: "evenodd"
 
       PATH 
         d: "M1,6 L20,6 L20,16 L1,16 L1,6 Z M10.5,0 L20,6 L1,6 L10.5,0 Z"
-        fill: focus_blue
+        fill: focus_color()
         filter: "url(##{id})" 
 
 

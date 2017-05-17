@@ -101,6 +101,10 @@ window.updateProposalMode = (proposal_mode, triggered_by) ->
       triggered_by: triggered_by 
   
 
+window.focus_color = -> 
+  customization('focus_color') or focus_blue
+
+
 
 #####################
 # These are some of the major components and their relationships 
@@ -755,7 +759,7 @@ DecisionBoard = ReactiveComponent
       borderRadius: 16
       borderStyle: 'dashed'
       borderWidth: 3
-      borderColor: focus_blue
+      borderColor: focus_color()
       transition: if @last_proposal_mode != get_proposal_mode() || @transitioning  
                     "transform #{TRANSITION_SPEED}ms, " + \
                     "width #{TRANSITION_SPEED}ms, " + \
@@ -781,7 +785,7 @@ DecisionBoard = ReactiveComponent
 
       _.extend decision_board_style,
         borderStyle: 'solid'
-        backgroundColor: focus_blue
+        backgroundColor: focus_color()
         borderBottom: '1px solid rgba(0,0,0,.6)'
         cursor: 'pointer'
         transform: "translate(#{opinion_region_x}px, -18px)"
@@ -793,10 +797,11 @@ DecisionBoard = ReactiveComponent
         transform: "translate(0, 10px)"
         minHeight: if are_points_in_wings then 275 else 170
         width: DECISION_BOARD_WIDTH()
-        borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_blue}"
+        borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_color()}"
 
     if get_proposal_mode() == 'results'
       give_opinion_style = 
+        backgroundColor: focus_color()
         display: 'block'
         color: 'white'
         padding: '.25em 18px'
@@ -885,7 +890,7 @@ DecisionBoard = ReactiveComponent
           className:'save_opinion_button primary_button'
           style:
             display: 'none'
-            backgroundColor: focus_blue
+            backgroundColor: focus_color()
             width: '100%'
           onClick: => saveOpinion(@proposal)
           onKeyDown: (e) => 
@@ -1094,7 +1099,7 @@ SliderBubblemouth = ReactiveComponent
         dash = "25, 10"
     else 
       transform = "translate(0, -25px) scale(.5) "
-      fill = focus_blue
+      fill = focus_color()
       dash = "none"
 
     DIV 
@@ -1114,7 +1119,7 @@ SliderBubblemouth = ReactiveComponent
         width: w
         height: h
         fill: fill
-        stroke: focus_blue
+        stroke: focus_color()
         stroke_width: if get_proposal_mode() == 'crafting' then stroke_width else 0
         dash_array: dash
 
@@ -1137,7 +1142,7 @@ GroupSelectionRegion = ReactiveComponent
     DIV 
       style: 
         width: BODY_WIDTH() + 160
-        border: "3px solid #{if get_selected_point() then '#eee' else focus_blue }"
+        border: "3px solid #{if get_selected_point() then '#eee' else focus_color() }"
         height: '100%'
         position: 'absolute'
         borderRadius: 16
@@ -1152,7 +1157,7 @@ GroupSelectionRegion = ReactiveComponent
 
         DIV 
           style: cssTriangle 'top', \
-                             (if get_selected_point() then '#eee' else focus_blue), \
+                             (if get_selected_point() then '#eee' else focus_color()), \
                              w, h,               
                                 position: 'relative'
                                 top: -32
@@ -1209,12 +1214,12 @@ GroupSelectionRegion = ReactiveComponent
                 top: -avatar_size * .75
                 left: -avatar_size/4
                 zIndex: 99 
-                border: "3px solid #{focus_blue}"
+                border: "3px solid #{focus_color()}"
 
             DIV 
               style: _.extend name_style,
                 position: 'absolute'
-                backgroundColor: focus_blue
+                backgroundColor: focus_color()
                 paddingTop: 8
                 paddingBottom: 8
                 color: 'white'
@@ -1324,7 +1329,7 @@ PointsList = ReactiveComponent
       header_style = 
         width: POINT_WIDTH()
         fontWeight: 700
-        color: focus_blue
+        color: focus_color()
         fontSize: 30
       wrapper = @drawYourPoints
 
@@ -1542,7 +1547,7 @@ PointsList = ReactiveComponent
         is_left: @props.valence == 'cons'
         style: {}
         text_style:
-          #color: focus_blue
+          #color: focus_color()
           textDecoration: 'underline'
           fontSize: if browser.is_mobile then 24
 
@@ -1581,7 +1586,7 @@ PointsList = ReactiveComponent
         className: "write_#{@props.valence}"
         style:
           textDecoration: 'underline'
-          color: focus_blue
+          color: focus_color()
           padding: 0
           backgroundColor: 'transparent'
           border: 'none'
@@ -1688,7 +1693,7 @@ PointsList = ReactiveComponent
                   y1: y1
                   x2: x2 
                   y2: y2 
-                  stroke: focus_blue
+                  stroke: focus_color()
                   strokeWidth: 1
                   strokeOpacity: .2
 
@@ -1700,7 +1705,7 @@ PointsList = ReactiveComponent
           rx: 16
           ry: 16
           fill: "url(#drop-stripes-#{is_left}-#{width})"
-          stroke: focus_blue
+          stroke: focus_color()
           strokeWidth: stroke_width
           strokeDasharray: '4, 3'
 
@@ -1724,8 +1729,8 @@ PointsList = ReactiveComponent
         apex_xfrac: 0
         width: POINT_MOUTH_WIDTH
         height: POINT_MOUTH_WIDTH
-        fill: '#F9FBFD'  #TODO: somehow make this focus_blue color mixed with white @ .2 opacity
-        stroke: focus_blue
+        fill: '#F9FBFD'  #TODO: somehow make this focus_color() color mixed with white @ .2 opacity
+        stroke: focus_color()
         stroke_width: 6
         dash_array: '24, 18'
         style: css.crossbrowserify mouth_style

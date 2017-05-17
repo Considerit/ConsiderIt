@@ -136,6 +136,7 @@ window.EditPoint = ReactiveComponent
               fontSize: if PORTRAIT_MOBILE() then 50 else if LANDSCAPE_MOBILE() then 36 else 24
               padding: '4px 25px'
               float: 'left'
+              backgroundColor: focus_color()              
             t('Done')
 
         BUTTON
@@ -222,7 +223,7 @@ window.EditPoint = ReactiveComponent
         position: if mobile then 'relative' else 'absolute'
         left: if !mobile then (if @props.valence == 'pros' then -guidelines_w - 25 else POINT_WIDTH() + 15)
         width: guidelines_w
-        color: focus_blue
+        color: focus_color()
         zIndex: 1
         marginBottom: if mobile then 20
         backgroundColor: if mobile then 'rgba(255,255,255,.85)'
@@ -247,7 +248,7 @@ window.EditPoint = ReactiveComponent
               opacity: .5
 
           PATH
-            stroke: focus_blue #'#ccc'
+            stroke: focus_color() #'#ccc'
             strokeWidth: 1
             fill: "#FFF"
             filter: 'url(#guidelines-shadow)'

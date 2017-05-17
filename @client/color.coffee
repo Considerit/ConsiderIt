@@ -1,14 +1,16 @@
 ##################
 # Colors
 #
-# Colors are primarily stored in the database (to allow customers & Kev to self-brand).
 # See @server/models/subdomain#branding_info for hardcoding color values
 # when doing development. 
+
+
 
 window.focus_blue = '#2478CC'
 window.logo_red = "#B03A44"
 window.default_avatar_in_histogram_color = '#999'
 window.considerit_gray = '#f6f7f9'
+
 
 window.parseCssRgb = (css_color_str) ->
   test = document.createElement('div')

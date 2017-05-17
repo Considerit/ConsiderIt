@@ -67,7 +67,7 @@ window.EditComment = ReactiveComponent
               BUTTON 
                 style: 
                   textDecoration: 'underline'
-                  color: focus_blue
+                  color: focus_color()
                   fontSize: if browser.is_mobile then 18
                   backgroundColor: 'transparent'
                   padding: 0
@@ -80,7 +80,7 @@ window.EditComment = ReactiveComponent
           else if permitted == Permission.UNVERIFIED_EMAIL
             DIV null,
               SPAN
-                style: { textDecoration: 'underline', color: focus_blue }
+                style: { textDecoration: 'underline', color: focus_color() }
                'Verify your account'
               SPAN null, "to #{t('write a comment')}"
 

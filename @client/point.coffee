@@ -70,7 +70,7 @@ window.Point = ReactiveComponent
 
     if is_selected
       _.extend point_content_style,
-        borderColor: focus_blue
+        borderColor: focus_color()
         backgroundColor: 'white'
 
     else if @local.has_focus
@@ -191,7 +191,7 @@ window.Point = ReactiveComponent
               width: POINT_MOUTH_WIDTH
               height: POINT_MOUTH_WIDTH
               fill: considerit_gray
-              stroke: if is_selected then focus_blue else if @local.has_focus then '#888' else 'transparent'
+              stroke: if is_selected then focus_color() else if @local.has_focus then '#888' else 'transparent'
               stroke_width: if is_selected || @local.has_focus then 20 else 0
               box_shadow:   
                 dx: 3
@@ -261,7 +261,7 @@ window.Point = ReactiveComponent
               BUTTON
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
-                  color: focus_blue
+                  color: focus_color()
                   padding: '3px 12px 3px 0'
                   backgroundColor: 'transparent'
                   border: 'none'
@@ -280,7 +280,7 @@ window.Point = ReactiveComponent
                 'data-action': 'delete-point'
                 style:
                   fontSize: if browser.is_mobile then 24 else 14
-                  color: focus_blue
+                  color: focus_color()
                   padding: '3px 8px'
                   backgroundColor: 'transparent'
                   border: 'none'
@@ -360,22 +360,22 @@ window.Point = ReactiveComponent
             I 
               style: 
                 fontSize: if included then 25 else 40
-                color: focus_blue
+                color: focus_color()
               className: "fa fa-long-arrow-#{if !right then 'left' else 'right'}"
 
         else
           BUTTON 
             style: 
-              border: "1px solid #{ if included || @local.hover_important then focus_blue else '#414141'}"
-              borderTopColor: if included then focus_blue else 'transparent'
-              color: if included then 'white' else if @local.hover_important then focus_blue else "#414141"
+              border: "1px solid #{ if included || @local.hover_important then focus_color() else '#414141'}"
+              borderTopColor: if included then focus_color() else 'transparent'
+              color: if included then 'white' else if @local.hover_important then focus_color() else "#414141"
               position: 'relative'
               top: -13
               padding: '8px 5px'
               textAlign: 'center'
               borderRadius: '0 0 16px 16px'
               cursor: 'pointer'
-              backgroundColor: if included then focus_blue else 'white'
+              backgroundColor: if included then focus_color() else 'white'
               fontSize: 18  
               zIndex: 0
               display: if can_opine < 0 then 'none'
@@ -807,14 +807,14 @@ window.Discussion = ReactiveComponent
 
     discussion_style =
       width: DECISION_BOARD_WIDTH() #+ POINT_WIDTH() / 2
-      border: "3px solid #{focus_blue}"
+      border: "3px solid #{focus_color()}"
       position: 'absolute'
       zIndex: 100
       padding: '20px 40px'
       borderRadius: 16
       backgroundColor: 'white'
       outline: 'none' #'1px dotted #ccc'
-      boxShadow: if @local.has_focus then "0 0 7px #{focus_blue}"
+      boxShadow: if @local.has_focus then "0 0 7px #{focus_color()}"
 
     # Reconfigure discussion board position
     side = if is_pro then 'right' else 'left'
@@ -874,7 +874,7 @@ window.Discussion = ReactiveComponent
           width: 36
           height: 28
           fill: 'white', 
-          stroke: focus_blue, 
+          stroke: focus_color(), 
           stroke_width: 11
 
       BUTTON
@@ -904,7 +904,7 @@ window.Discussion = ReactiveComponent
             style:
               textAlign: 'left'
               fontSize: 24
-              color: focus_blue
+              color: focus_color()
               fontWeight: 600
               marginBottom: 10
             #t('Author’s Explanation')
@@ -921,7 +921,7 @@ window.Discussion = ReactiveComponent
           style:
             textAlign: 'left'
             fontSize: 24
-            color: focus_blue
+            color: focus_color()
             marginBottom: 25
             marginTop: 10
             fontWeight: 600

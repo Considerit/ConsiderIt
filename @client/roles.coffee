@@ -231,7 +231,7 @@ AddRolesAndInvite = ReactiveComponent
     DIV 
       style: 
         position: 'relative'
-        backgroundColor: '#E7F2FF'
+        backgroundColor: '#f2f2f2'
         padding: '18px 24px'
 
 
@@ -293,11 +293,12 @@ AddRolesAndInvite = ReactiveComponent
             'aria-haspopup': "true"
             'aria-owns': "role_menu_popup"          
             style: 
-              backgroundColor: 'rgba(100,100,150,.1)'
+              backgroundColor: '#ddd'
               padding: '8px 12px'
               borderRadius: 8
               cursor: 'pointer'
               border: 'none'
+              border: '1px solid #aaa'
 
             I 
               className: "fa #{@local.role.icon}"
@@ -509,7 +510,7 @@ AddRolesAndInvite = ReactiveComponent
       # Submit button
       BUTTON
         style: 
-          backgroundColor: focus_blue
+          backgroundColor: focus_color()
           color: 'white'
           padding: '8px 14px'
           fontSize: 16
@@ -597,7 +598,7 @@ UserWithRole = (user_key, on_remove_from_role) ->
       display: 'inline-block'
       padding: '6px 12px'
       fontSize: 13
-      backgroundColor: 'rgb(217, 227, 244)'
+      backgroundColor: '#ddd' #'rgb(217, 227, 244)'
       color: 'black'
       borderRadius: 8
       margin: 4

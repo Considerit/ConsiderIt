@@ -8,7 +8,7 @@ require './dock'
 
 window.Button = (props, text, callback) ->
   style =
-    backgroundColor: focus_blue
+    backgroundColor: focus_color()
     borderRadius: 8
     color: 'white'
     padding: '3px 10px'
@@ -298,7 +298,7 @@ window.WysiwygEditor = ReactiveComponent
                 , 0
 
               style: _.extend @props.style, 
-                outline: if fetch('wysiwyg_editor').showing == @props.key then "2px solid #{focus_blue}"
+                outline: if fetch('wysiwyg_editor').showing == @props.key then "2px solid #{focus_color()}"
 
         
 

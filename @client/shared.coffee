@@ -844,7 +844,6 @@ a.skip:hover {
   cursor: pointer; }
 
 .primary_button {
-  background-color: #{focus_blue};
   color: white;
   font-size: 29px;
   margin-top: 14px;

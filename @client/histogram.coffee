@@ -376,7 +376,7 @@ window.Histogram = ReactiveComponent
         DIV 
           className: 'selection_region_resizer'
           style: 
-            borderBottom: "3px solid #{focus_blue}"
+            borderBottom: "3px solid #{focus_color()}"
             height: 15
             width: selection_width
             position: 'absolute'
@@ -674,7 +674,7 @@ HistoAvatars = ReactiveComponent
     # 2) The style of a selected avatar
     selected_avatar_style = _.extend {}, regular_avatar_style, 
       zIndex: 9
-      backgroundColor: focus_blue
+      backgroundColor: focus_color()
     css.crossbrowserify selected_avatar_style
     # 3) The style of an unselected avatar when some other avatar(s) is selected
     unselected_avatar_style = _.extend {}, regular_avatar_style,  

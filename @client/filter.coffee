@@ -423,7 +423,7 @@ SortProposalsMenu = ReactiveComponent
             zIndex: 999
             width: HOMEPAGE_WIDTH()
             backgroundColor: '#eee'
-            border: "1px solid #{focus_blue}"
+            border: "1px solid #{focus_color()}"
             top: 18
             borderRadius: 8
             fontWeight: 400
@@ -441,7 +441,7 @@ SortProposalsMenu = ReactiveComponent
                   padding: '6px 12px'
                   borderBottom: "1px solid #ddd"
                   color: if @local.focus == idx then 'white'
-                  backgroundColor: if @local.focus == idx then focus_blue
+                  backgroundColor: if @local.focus == idx then focus_color()
                   fontWeight: 600
                   cursor: 'pointer'
                   display: 'block'
@@ -577,7 +577,7 @@ OpinionFilter = ReactiveComponent
 
       DIV 
         style: 
-          color: focus_blue
+          color: focus_color()
           fontSize: 14
           fontWeight: 600
 
@@ -627,7 +627,7 @@ OpinionFilter = ReactiveComponent
                 color: if is_enabled then 'white' else if @local.focus == idx then 'black' else '#777'
                 cursor: 'pointer'
                 fontSize: 14
-                backgroundColor: if is_enabled then focus_blue else if @local.focus == idx then '#eee' else 'transparent'
+                backgroundColor: if is_enabled then focus_color() else if @local.focus == idx then '#eee' else 'transparent'
                 border: 'none'
                 outline: 'none'
 

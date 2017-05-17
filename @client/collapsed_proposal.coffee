@@ -227,7 +227,7 @@ window.CollapsedProposal = ReactiveComponent
                 href: "#{proposal.key}/edit"
                 style:
                   marginRight: 10
-                  color: focus_blue
+                  color: focus_color()
                   backgroundColor: 'transparent'
                   padding: 0
                   fontSize: 14
@@ -237,7 +237,7 @@ window.CollapsedProposal = ReactiveComponent
                 BUTTON
                   style:
                     marginRight: 10
-                    color: focus_blue
+                    color: focus_color()
                     backgroundColor: 'transparent'
                     border: 'none'
                     padding: 0

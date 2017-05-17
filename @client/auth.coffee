@@ -68,7 +68,7 @@ Auth = ReactiveComponent
 
     DIV 
       style: 
-        background: if auth.form != 'edit profile' && !@props.naked then (customization('background') or focus_blue)
+        background: if auth.form != 'edit profile' && !@props.naked then (customization('background') or focus_color())
 
       if auth.form != 'edit profile' && !@props.naked
         A 
@@ -347,7 +347,7 @@ Auth = ReactiveComponent
   #                          the fields
   body: (fields, additional_instructions) ->
     current_user = fetch '/current_user'
-    primary_color = @props.primary_color or focus_blue
+    primary_color = @props.primary_color or focus_color()
 
     DIV null,
       if additional_instructions

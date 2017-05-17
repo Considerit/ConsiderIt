@@ -856,7 +856,7 @@ window.NewProposal = ReactiveComponent
               BUTTON 
                 className: 'submit_new_proposal'
                 style: 
-                  backgroundColor: focus_blue
+                  backgroundColor: focus_color()
                   color: 'white'
                   cursor: 'pointer'
                   borderRadius: 16
@@ -947,7 +947,7 @@ window.NewProposal = ReactiveComponent
         position: if mobile then 'relative' else 'absolute'
         left: 512
         width: guidelines_w
-        color: focus_blue
+        color: focus_color()
         zIndex: 1
         marginBottom: if mobile then 20
         backgroundColor: if mobile then 'rgba(255,255,255,.85)'
@@ -973,7 +973,7 @@ window.NewProposal = ReactiveComponent
               opacity: .5
 
           PATH
-            stroke: focus_blue #'#ccc'
+            stroke: focus_color() #'#ccc'
             strokeWidth: 1
             fill: "#FFF"
             filter: 'url(#guidelines-shadow)'

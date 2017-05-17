@@ -262,6 +262,8 @@ window.Questionaire = ReactiveComponent
             BUTTON 
               className: 'primary_button'
               onClick: complete 
+              style: 
+                backgroundColor: focus_color()
               onKeyPress: (e) => 
                 if e.which == 32 || e.which == 13
                   complete()

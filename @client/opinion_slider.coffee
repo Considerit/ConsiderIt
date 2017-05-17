@@ -73,7 +73,7 @@ window.OpinionSlider = ReactiveComponent
                 else 
                   customization('slider_handle', @proposal)
         handle_props: 
-          color: if @props.backgrounded then '#ccc' else focus_blue
+          color: if @props.backgrounded then '#ccc' else focus_color()
           detail: @props.focused
         handle_style: 
           transition: "transform #{TRANSITION_SPEED}ms"
@@ -117,7 +117,7 @@ window.OpinionSlider = ReactiveComponent
       fontWeight: 700
       textDecoration: 'underline'
       cursor: 'pointer'
-      color: focus_blue
+      color: focus_color()
 
     notice = if current_user.logged_in
                t('save_your_opinion')
@@ -212,7 +212,7 @@ window.OpinionSlider = ReactiveComponent
       pointerEvents: 'none' 
       fontSize: if TWO_COL() then 22 else 30
       fontWeight: if !TWO_COL() then 700
-      color: if @props.backgrounded then '#eee' else focus_blue
+      color: if @props.backgrounded then '#eee' else focus_color()
       #visibility: if @props.backgrounded then 'hidden'
 
     # Keep feedback centered over handle, but keep within the bounds of 

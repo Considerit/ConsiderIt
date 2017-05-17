@@ -36,7 +36,7 @@ window.Bubblemouth = (props) ->
     skew_y: 80
     apex_xfrac: .5
     fill: 'white', 
-    stroke: focus_blue, 
+    stroke: focus_color(), 
     stroke_width: 10
     dash_array: "none"   
     box_shadow: null

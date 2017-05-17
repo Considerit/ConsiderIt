@@ -701,6 +701,11 @@ time, mark, audio, video {
   vertical-align: baseline;
   line-height: 1.4; }
 
+
+#content .fa {
+  font-family: FontAwesome;  
+}
+
 body, html {
   height: 100%;
 }

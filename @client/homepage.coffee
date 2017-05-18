@@ -228,6 +228,23 @@ window.TagHomepage = ReactiveComponent
             show_category: true
             category_color: hsv2rgb(colors[cluster], .7, .8)
 
+        if (show_all.show_all || proposals.length <= 20) && (customization('list_show_new_button', "list/#{dummy_cluster}")  || current_user.is_admin)
+          LI 
+            key: "newlist/#{dummy_cluster}"
+            style: 
+              margin: 0 
+              padding: 0
+              listStyle: 'none'
+              display: 'inline-block'
+              marginBottom: 20
+              marginTop: 6
+              
+
+            NewProposal 
+              cluster_name: dummy_cluster
+              local: @local.key
+              label_style: {}
+
       if !show_all.show_all && proposals.length > 20 
         BUTTON
           style:
@@ -248,6 +265,9 @@ window.TagHomepage = ReactiveComponent
             show_all.show_all = true
             save(show_all)
           'Show all proposals'
+
+
+
 
 
 
@@ -302,8 +322,6 @@ window.SimpleHomepage = ReactiveComponent
       if !collapsed[cluster.key]?
         collapsed[cluster.key] = customization('list_is_archived', cluster.key)
         save collapsed
-
-
 
 
     DIV

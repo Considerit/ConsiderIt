@@ -137,6 +137,17 @@ window.CollapsedProposal = ReactiveComponent
                   display: 'inline-block'
                   verticalAlign: 'top'
                   border: "2px dashed #ddd"
+          else 
+            SVG 
+              style: 
+                position: 'relative'
+                left: -22
+                top: -2
+              width: 8
+              viewBox: '0 0 200 200' 
+              CIRCLE cx: 100, cy: 100, r: 100, fill: '#000000'
+
+
 
         # Name of Proposal
         DIV

@@ -241,6 +241,8 @@ window.WysiwygEditor = ReactiveComponent
                       border: '1px solid #aaa'
                       borderRadius: 3
                       backgroundColor: 'transparent'
+                      display: 'block'
+                      marginBottom: 4
                     title: button.title
                     value: if button.value then button.value 
                     onClick: if button.onClick then button.onClick
@@ -268,7 +270,8 @@ window.WysiwygEditor = ReactiveComponent
                       , 0
 
           DIV 
-            style: @props.container_style
+            style: _.extend {}, @props.container_style, 
+              outline: if fetch('wysiwyg_editor').showing == @props.key then "2px solid #{focus_color()}"
             className: 'proposal_details' # for formatting like proposals 
           
           
@@ -297,8 +300,7 @@ window.WysiwygEditor = ReactiveComponent
                     save wysiwyg_editor
                 , 0
 
-              style: _.extend @props.style, 
-                outline: if fetch('wysiwyg_editor').showing == @props.key then "2px solid #{focus_color()}"
+              style: @props.style
 
         
 

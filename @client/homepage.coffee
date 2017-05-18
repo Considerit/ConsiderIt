@@ -7,6 +7,7 @@ require './filter'
 require './browser_location'
 require './collapsed_proposal'
 require './questionaire'
+require './new_proposal'
 
 
 
@@ -22,9 +23,9 @@ AuthCallout = ReactiveComponent
       style: 
         width: '100%'
         #backgroundColor: '#545454'
-        padding: '32px 0'
+        paddingBottom: 16
         #color: 'white'
-        marginTop: 12
+        #marginTop: 12
 
       DIV 
         style: 
@@ -546,13 +547,13 @@ window.Cluster = ReactiveComponent
                 listStyle: 'none'
                 display: 'inline-block'
                 marginBottom: 20
+                marginTop: 6
+                
 
               NewProposal 
                 cluster_name: cluster.name
                 local: @local.key
-                label_style: 
-                  borderBottom: "1px solid #{logo_red}"
-                  color: logo_red
+                label_style: {}
 
       if customization('footer', cluster_key) && !is_collapsed
         customization('footer', cluster_key)()
@@ -561,7 +562,6 @@ window.Cluster = ReactiveComponent
 
   drawClusterHeading : (cluster, is_collapsed) -> 
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-
 
     cluster_key = "list/#{cluster.name}"
 
@@ -600,7 +600,8 @@ window.Cluster = ReactiveComponent
     DIV 
       style: 
         width: HOMEPAGE_WIDTH()
-        marginBottom: 24
+        marginBottom: 4 #24
+
       DIVIDER?()
 
       DIV 
@@ -713,314 +714,6 @@ window.Cluster = ReactiveComponent
   componentDidMount: -> @storeSortOrder()
   componentDidUpdate: -> @storeSortOrder()
 
-
-
-window.NewProposal = ReactiveComponent
-  displayName: 'NewProposal'
-
-  render : -> 
-    cluster_name = @props.cluster_name or 'Proposals'
-    cluster_key = "list/#{cluster_name}"
-
-    cluster_state = fetch(@props.local)
-    loc = fetch 'location'
-
-    return SPAN null if cluster_name == 'Blocksize Survey'
-
-    current_user = fetch '/current_user'
-
-    if cluster_state.adding_new_proposal != cluster_name && \
-       loc.query_params.new_proposal == encodeURIComponent(cluster_name)
-      cluster_state.adding_new_proposal = cluster_name
-      save cluster_state
-
-    adding = cluster_state.adding_new_proposal == cluster_name 
-    cluster_slug = slugify(cluster_name)
-
-    permitted = permit('create proposal')
-    needs_to_login = permitted == Permission.NOT_LOGGED_IN
-    permitted = permitted > 0
-
-    return SPAN null if !permitted && !needs_to_login
-
-    DIV null,
-
-
-      if !adding
-
-        BUTTON 
-          className: 'add_new_proposal'
-          style: _.defaults @props.label_style,
-            cursor: 'pointer'
-            backgroundColor: 'transparent'
-            border: 'none'
-            fontSize: 'inherit'
-            padding: 0
-            textDecoration: 'underline'
-
-          onClick: (e) => 
-            loc.query_params.new_proposal = encodeURIComponent cluster_name
-            save loc
-
-            if permitted
-              cluster_state.adding_new_proposal = cluster_name; save(cluster_state)
-              setTimeout =>
-                $("##{cluster_slug}-name").focus()
-              , 0
-            else 
-              e.stopPropagation()
-              reset_key 'auth', {form: 'login', goal: 'add a new proposal', ask_questions: true}
-          
-          if permitted
-            t("add new")
-          else 
-            t("login_to_add_new")
-
-      else 
-        [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-        w = first_column.width
-        
-        DIV 
-          style:
-            position: 'relative'
-
-          if customization('new_proposal_tips', cluster_key)
-            @drawTips customization('new_proposal_tips', cluster_key)
-
-          if customization('show_proposer_icon', cluster_key) 
-            editor = current_user.user
-            # Person's icon
-            Avatar
-              key: editor
-              user: editor
-              img_size: 'large'
-              style:
-                position: 'absolute'
-                left: -18 - 50
-                height: 50
-                width: 50
-                borderRadius: 0
-                backgroundColor: '#ddd'
-
-
-          DIV 
-            style: 
-              display: 'inline-block'
-            TEXTAREA 
-              id:"#{cluster_slug}-name"
-              name:'name'
-              pattern:'^.{3,}'
-              'aria-label': t('proposal_summary_instr')
-              placeholder: t('proposal_summary_instr')
-              required:'required'
-              resize: 'none'
-              style: 
-                fontSize: 22
-                width: w
-                border: "1px solid #ccc"
-                outline: 'none'
-                padding: '6px 8px'
-
-            WysiwygEditor
-              key:"description-new-proposal-#{cluster_slug}"
-              placeholder: "Add #{t('details')} here"
-              'aria-label': "Add #{t('details')} here"
-              container_style: 
-                padding: '6px 8px'
-                border: '1px solid #ccc'
-
-              style: 
-                fontSize: 16
-                width: w - 8 * 2
-                marginBottom: 8
-                minHeight: 120
-
-
-            if @local.errors?.length > 0
-              
-              DIV
-                role: 'alert'
-                style:
-                  fontSize: 18
-                  color: 'darkred'
-                  backgroundColor: '#ffD8D8'
-                  padding: 10
-                  marginTop: 10
-                for error in @local.errors
-                  DIV null, 
-                    I
-                      className: 'fa fa-exclamation-circle'
-                      style: {paddingRight: 9}
-
-                    SPAN null, error
-
-            DIV 
-              style: 
-                marginTop: 8
-
-              BUTTON 
-                className: 'submit_new_proposal'
-                style: 
-                  backgroundColor: focus_color()
-                  color: 'white'
-                  cursor: 'pointer'
-                  borderRadius: 16
-                  padding: '4px 16px'
-                  display: 'inline-block'
-                  marginRight: 12
-                  border: 'none'
-                  fontSize: 'inherit'
-
-                onClick: => 
-                  name = $(@getDOMNode()).find("##{cluster_slug}-name").val()
-                  description = fetch("description-new-proposal-#{cluster_slug}").html
-                  slug = slugify(name)
-                  active = true 
-                  hide_on_homepage = false
-
-                  proposal =
-                    key : '/new/proposal'
-                    name : name
-                    description : description
-                    cluster : cluster_name
-                    slug : slug
-                    active: active
-                    hide_on_homepage: hide_on_homepage
-
-                  InitializeProposalRoles(proposal)
-                  
-                  proposal.errors = []
-                  @local.errors = []
-                  save @local
-
-                  save proposal, => 
-                    if proposal.errors?.length == 0
-                      cluster_state.adding_new_proposal = null 
-                      save cluster_state
-                      delete loc.query_params.new_proposal
-                      save loc                      
-                    else
-                      @local.errors = proposal.errors
-                      save @local
-
-                t('Done')
-
-              BUTTON 
-                style: 
-                  color: '#888'
-                  cursor: 'pointer'
-                  backgroundColor: 'transparent'
-                  border: 'none'
-                  padding: 0
-                  fontSize: 'inherit'                  
-                onClick: => 
-                  cluster_state.adding_new_proposal = null; 
-                  save(cluster_state)
-                  delete loc.query_params.new_proposal
-                  save loc
-
-                t('cancel')
-
-  componentDidMount : ->    
-    @ensureIsInViewPort()
-
-  componentDidUpdate : -> 
-    @ensureIsInViewPort()
-
-  ensureIsInViewPort : -> 
-    loc = fetch 'location'
-    local = fetch @props.local
-
-    is_selected = loc.query_params.new_proposal == encodeURIComponent((@props.cluster_name or 'Proposals'))
-
-    if is_selected
-      if browser.is_mobile
-        $(@getDOMNode()).moveToTop {scroll: false}
-      else
-        $(@getDOMNode()).ensureInView {scroll: false}
-
-
-  drawTips : (tips) -> 
-    # guidelines/tips for good points
-    mobile = browser.is_mobile
-
-    guidelines_w = if mobile then 'auto' else 330
-    guidelines_h = 300
-
-    DIV 
-      style:
-        position: if mobile then 'relative' else 'absolute'
-        left: 512
-        width: guidelines_w
-        color: focus_color()
-        zIndex: 1
-        marginBottom: if mobile then 20
-        backgroundColor: if mobile then 'rgba(255,255,255,.85)'
-        fontSize: 14
-
-
-      if !mobile
-        SVG
-          width: guidelines_w + 28
-          height: guidelines_h
-          viewBox: "-4 0 #{guidelines_w+20 + 9} #{guidelines_h}"
-          style: css.crossbrowserify
-            position: 'absolute'
-            transform: 'scaleX(-1)'
-            left: -20
-
-          DEFS null,
-            svg.dropShadow 
-              id: "guidelines-shadow"
-              dx: '0'
-              dy: '2'
-              stdDeviation: "3"
-              opacity: .5
-
-          PATH
-            stroke: focus_color() #'#ccc'
-            strokeWidth: 1
-            fill: "#FFF"
-            filter: 'url(#guidelines-shadow)'
-
-            d: """
-                M#{guidelines_w},33
-                L#{guidelines_w},0
-                L1,0
-                L1,#{guidelines_h} 
-                L#{guidelines_w},#{guidelines_h} 
-                L#{guidelines_w},58
-                L#{guidelines_w + 20},48
-                L#{guidelines_w},33 
-                Z
-               """
-      DIV 
-        style: 
-          padding: if !mobile then '14px 18px'
-          position: 'relative'
-          marginLeft: 5
-
-        SPAN 
-          style: 
-            fontWeight: 600
-            fontSize: if PORTRAIT_MOBILE() then 70 else if LANDSCAPE_MOBILE() then 36
-          "Add new"
-
-        UL 
-          style: 
-            listStylePosition: 'outside'
-            marginLeft: 16
-            marginTop: 5
-
-          do ->
-            tips = customization('new_proposal_tips')
-
-            for tip in tips
-              LI 
-                style: 
-                  paddingBottom: 3
-                  fontSize: if PORTRAIT_MOBILE() then 24 else if LANDSCAPE_MOBILE() then 14
-                tip  
 
 
 

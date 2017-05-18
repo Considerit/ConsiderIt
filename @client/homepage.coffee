@@ -203,6 +203,8 @@ window.TagHomepage = ReactiveComponent
         width: HOMEPAGE_WIDTH()
         position: 'relative'
 
+      if customization('auth_callout')
+        AuthCallout()
 
       ClusterHeading 
         cluster: 
@@ -213,8 +215,6 @@ window.TagHomepage = ReactiveComponent
         is_collapsed: false 
 
 
-      if customization('auth_callout')
-        AuthCallout()
 
 
       UL null, 

@@ -106,7 +106,7 @@ window.WysiwygEditor = ReactiveComponent
     subdomain = fetch '/subdomain'
     wysiwyg_editor = fetch 'wysiwyg_editor'
 
-    @supports_Quill = Quill && new Quill()
+    @supports_Quill = !!Quill #&& new Quill()
 
     if !@local.initialized
       # We store the current value of the HTML at

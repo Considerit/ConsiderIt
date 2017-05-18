@@ -622,6 +622,9 @@ ClusterHeading = ReactiveComponent
     list_items_title = customization('list_items_title', cluster_key) or cluster.name or 'Proposals'
 
     heading_text = customization('list_label', cluster_key) or list_items_title
+
+    if heading_text == 'Show all'
+      heading_text = "All Proposals"
     heading_style = _.defaults {}, customization('list_label_style', cluster_key),
       fontSize: first_header.fontSize
       fontWeight: first_header.fontWeight
@@ -695,17 +698,26 @@ ClusterHeading = ReactiveComponent
                   display: if @local.hover_label or is_collapsed then 'inline-block' else 'none'
                   outline: 'none'
 
-            if customization('list_show_new_button', cluster_key)
-              A
-                style: 
-                  textDecoration: 'underline'
-                  fontSize: 12
-                  color: focus_color()
-                  fontFamily: customization('font')
-                  fontStyle: 'normal'
-                  marginLeft: 14
-                href: "#new_#{cluster.name}"
-                t('add_new')
+            if customization('list_show_new_button', cluster_key) && !is_collapsed
+              permitted = permit('create proposal')
+              if permitted > 0 || permitted == Permission.NOT_LOGGED_IN              
+                A
+                  style: 
+                    textDecoration: 'underline'
+                    fontSize: 12
+                    color: focus_color()
+                    fontFamily: customization('font')
+                    fontStyle: 'normal'
+                    marginLeft: 14
+                  onClick: => 
+                    show_all = fetch('show_all_proposals')
+                    show_all.show_all = true 
+                    save show_all
+
+                    setTimeout =>
+                      $("[name='add_new_#{cluster.name}']").ensureInView()
+                    , 1
+                  t('add_new')
 
         if !is_collapsed
 

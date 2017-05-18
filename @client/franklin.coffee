@@ -2018,7 +2018,7 @@ Root = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch('/current_user')
 
-    fonts = customization('font') or "'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
+    fonts = customization('font')
     header_fonts = customization('header_font') or fonts
     DIV 
 

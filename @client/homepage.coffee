@@ -185,6 +185,15 @@ window.TagHomepage = ReactiveComponent
 
     homepage_tabs = fetch 'homepage_tabs'
 
+    dummy_cluster = homepage_tabs.filter
+
+    collapsed = fetch 'collapsed_clusters'      
+    if !collapsed["list/#{dummy_cluster}"]?
+      collapsed["list/#{dummy_cluster}"] = customization('list_is_archived', "list/#{dummy_cluster}")
+      save collapsed
+
+
+
     DIV
       id: 'homepagetab'
       role: if customization('homepage_tabs') then "tabpanel"
@@ -195,18 +204,17 @@ window.TagHomepage = ReactiveComponent
         position: 'relative'
 
 
-      if customization('homepage_tabs') && customization('homepage_tab_headers')?[homepage_tabs.filter]
-        customization('homepage_tab_headers')[homepage_tabs.filter]()
+      ClusterHeading 
+        cluster: 
+          key: "list/#{dummy_cluster}"
+          name: dummy_cluster
+          proposals: []
+          list_is_archived: customization('list_is_archived', "list/#{dummy_cluster}")
+        is_collapsed: false 
+
 
       if customization('auth_callout')
         AuthCallout()
-
-      ProposalFilter
-        style: 
-          width: first_column.width
-          marginBottom: 20
-          display: 'inline-block'
-          verticalAlign: 'top'
 
 
       UL null, 
@@ -289,13 +297,14 @@ window.SimpleHomepage = ReactiveComponent
 
     clusters = clustered_proposals_with_tabs()
 
-    # collapse by default archived clusters
-    collapsed = fetch 'collapsed'
-    if !collapsed.clusters?
-      collapsed.clusters = {}
-      for cluster in clusters when cluster.list_is_archived 
-        collapsed.clusters[cluster.key] = 1
-      save collapsed
+    collapsed = fetch 'collapsed_clusters'
+    for cluster in clusters
+      if !collapsed[cluster.key]?
+        collapsed[cluster.key] = customization('list_is_archived', cluster.key)
+        save collapsed
+
+
+
 
     DIV
       id: 'homepagetab'
@@ -506,8 +515,8 @@ window.Cluster = ReactiveComponent
     # subscribe to a key that will alert us to when sort order has changed
     fetch('homepage_you_updated_proposal')
 
-    collapsed = fetch 'collapsed'
-    is_collapsed = collapsed.clusters[@props.key]
+    collapsed = fetch 'collapsed_clusters'
+    is_collapsed = !!collapsed[@props.key]
 
     proposals = sorted_proposals(cluster.proposals)
     return SPAN null if !proposals || (proposals.length == 0 && !(cluster.name in customization('homepage_lists_to_always_show')))
@@ -524,7 +533,7 @@ window.Cluster = ReactiveComponent
         position: 'relative'
 
 
-      @drawClusterHeading cluster, is_collapsed
+      ClusterHeading {cluster}
 
       if customization('questionaire', cluster_key) && !is_collapsed
         Questionaire 
@@ -560,12 +569,30 @@ window.Cluster = ReactiveComponent
 
 
 
-  drawClusterHeading : (cluster, is_collapsed) -> 
+
+  storeSortOrder: -> 
+    p = (p.key for p in sorted_proposals(@props.cluster.proposals))
+    c = fetch("cluster-#{slugify(@props.cluster.name)}/sort_order")
+    order = JSON.stringify(p)
+    if order != c.sort_order
+      c.sort_order = order 
+      save c
+
+  componentDidMount: -> @storeSortOrder()
+  componentDidUpdate: -> @storeSortOrder()
+
+ClusterHeading = ReactiveComponent
+  displayName: 'ClusterHeading'
+
+  render: -> 
+    cluster = @props.cluster 
+
+    cluster_key = "list/#{cluster.name}"    
+    collapsed = fetch 'collapsed_clusters'    
+    is_collapsed = !!collapsed[cluster_key]
+
     [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
 
-    cluster_key = "list/#{cluster.name}"
-
-    collapsed = fetch 'collapsed'
 
     subdomain = fetch '/subdomain'
 
@@ -591,10 +618,7 @@ window.Cluster = ReactiveComponent
 
     toggle_list = ->
       if !list_uncollapseable
-        if collapsed.clusters[cluster_key]
-          delete collapsed.clusters[cluster_key]
-        else 
-          collapsed.clusters[cluster_key] = 1 
+        collapsed[cluster_key] = !collapsed[cluster_key] 
         save collapsed
 
     DIV 
@@ -614,7 +638,7 @@ window.Cluster = ReactiveComponent
           LABEL_ENCLOSE 
             tabIndex: if !list_uncollapseable then 0
             'aria-label': "#{heading_text}. Expand or collapse list."
-            'aria-pressed': !collapsed.clusters[cluster_key]
+            'aria-pressed': !collapsed[cluster_key]
             onMouseEnter: => @local.hover_label = true; save @local 
             onMouseLeave: => @local.hover_label = false; save @local
             style: 
@@ -700,19 +724,6 @@ window.Cluster = ReactiveComponent
 
       if !customization('questionaire', cluster_key) && !is_collapsed && !customization('list_no_filters', cluster_key)
         filter_sort_options()
-
-
-
-  storeSortOrder: -> 
-    p = (p.key for p in sorted_proposals(@props.cluster.proposals))
-    c = fetch("cluster-#{slugify(@props.cluster.name)}/sort_order")
-    order = JSON.stringify(p)
-    if order != c.sort_order
-      c.sort_order = order 
-      save c
-
-  componentDidMount: -> @storeSortOrder()
-  componentDidUpdate: -> @storeSortOrder()
 
 
 

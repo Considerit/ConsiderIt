@@ -412,7 +412,7 @@ _.extend dict.en,
   make_it: 'Make it'
   url_instr: "Just letters, numbers, underscores, dashes."
   summary: 'Summary'
-  proposal_summary_instr: 'Aim for 3-8 words with a verb and noun.'
+  proposal_summary_instr: 'Clear and concise summary'
   details: 'Details'
   label: 'Label'
   expandable_body_instr: 'Text that is shown when expanded'

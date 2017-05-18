@@ -208,7 +208,7 @@ ProposalFilter = ReactiveComponent
         style: 
           display: 'inline-block'
           verticalAlign: 'top'
-          paddingTop: 4 #16
+          #paddingTop: 4 #16
           paddingRight: 12
 
         SortProposalsMenu() 

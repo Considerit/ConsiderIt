@@ -224,30 +224,12 @@ Auth = ReactiveComponent
         throw "Unrecognized authentication form #{auth.form}"
 
   privacyAndTerms: -> 
-    DIV 
-      style: 
-        color: '#999'
-        marginTop: 20
-        fontSize: 12
-        textAlign: 'center'
 
-
-      customization('terms')?() or DIV null,
-        "By creating an account, you agree to Consider.it's "
-        A
-          href: '/terms_of_service'
-          target: '_blank'
-          style: 
-            textDecoration: 'underline'
-          'Terms'
-        ' and '
-        A
-          href: '/privacy_policy'
-          target: '_blank'        
-          style: 
-            textDecoration: 'underline'
-          'Privacy Policy'
-        '.'
+    customization('terms') or """
+      I agree to Consider.it's 
+      <a href='/terms_of_service' target='_blank' style='text-decoration: underline'>Terms</a>
+       and 
+      <a href='/privacy_policy' target='_blank' style='text-decoration: underline'>Privacy Policy</a>."""
 
   #####
   # headerAndBorder
@@ -323,9 +305,6 @@ Auth = ReactiveComponent
         body
 
         @submitButton button, true
-
-        if auth.form in ['create account', 'create account via invitation']
-          @privacyAndTerms()
 
       @form_footer()
 
@@ -778,9 +757,17 @@ Auth = ReactiveComponent
 
     if auth.ask_questions && auth.form in \
           ['edit profile', 'create account', 'create account via invitation', 'user questions']
-      questions = customization('auth_questions')
+      questions = customization('auth_questions').slice()
     else 
       questions = []
+
+    if auth.form in ['create account', 'craete account via invitation']
+      questions.push
+          tag: 'considerit_terms.editable'
+          question: @privacyAndTerms()
+          input: 'boolean'
+          required: true
+          require_checked: true
 
 
     if @local.tags != current_user.tags
@@ -848,7 +835,7 @@ Auth = ReactiveComponent
                 SPAN 
                   style: 
                     paddingLeft: 20
-                  question.question
+                  dangerouslySetInnerHTML: __html: question.question
 
               DIV style: clear: 'both'
 
@@ -908,23 +895,35 @@ Auth = ReactiveComponent
 
     current_user = fetch('/current_user')
 
+
+
     # Client side validation of user questions
     # Note that we don't have server side validation because
     # the questions are all defined on the client. 
+    @local.errors = []    
     if auth.ask_questions && auth.form in ['create account', 'create account via invitation']
       questions = customization('auth_questions')
-      @local.errors = []
       for question in questions
         if question.required
           has_response = !!current_user.tags[question.tag]
-          @local.errors.push "#{question.question} required!" if !has_response
+
+          if !has_response || (question.require_checked && !current_user.tags[question.tag])
+            @local.errors.push "#{question.question} required!" 
 
           is_valid_input = true
           if question.validation
             is_valid_input = question.validation(current_user.tags[question.tag])
-          @local.errors.push "#{current_user.tags[question.tag]} isn't a valid answer to #{question.question}!" if !is_valid_input && has_response
+          if !is_valid_input && has_response
+            @local.errors.push "#{current_user.tags[question.tag]} isn't a valid answer to #{question.question}!" 
 
       save @local
+
+    if auth.form in ['create account', 'create account via invitation']
+      console.log current_user.tags
+      if !current_user.tags['considerit_terms.editable']
+        @local.errors.push "To proceed, you must agree to the terms" 
+
+
 
     if @local.errors.length == 0
       @local.submitting = true

@@ -1,5 +1,3 @@
-require './color'
-require './logo'
 
 #######################
 # Customizations.coffee
@@ -136,7 +134,8 @@ customization_value = (field, config) ->
   val
 
 
-
+require './color'
+require './logo'
 require './browser_location' # for loadPage
 require './shared'
 require './footer'
@@ -193,6 +192,12 @@ customizations.default =
 
   SiteHeader : ShortHeader()
   SiteFooter : DefaultFooter
+
+  new_proposal_fields: -> 
+   name: t('summary')
+   description: "#{t('details')} (#{t('optional')})" 
+   additional_fields: []
+   create_description: (fields) -> fields.description
 
 
 customizations.lang_default = 
@@ -311,11 +316,6 @@ for sub in text_and_masthead
 for sub in masthead_only
   customizations[sub.toLowerCase()] = 
     HomepageHeader: LegacyImageHeader()
-
-
-
-
-
 
 
 

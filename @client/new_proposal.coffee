@@ -29,6 +29,8 @@ window.NewProposal = ReactiveComponent
 
     return SPAN null if !permitted && !needs_to_login
 
+    proposal_fields = customization('new_proposal_fields', cluster_name)()
+
     label_style = 
       fontWeight: 400
       fontSize: 14
@@ -136,7 +138,7 @@ window.NewProposal = ReactiveComponent
               top: -18
             htmlFor: "#{cluster_slug}-name"
 
-            t('summary')
+            proposal_fields.name
 
           AutoGrowTextArea 
             id:"#{cluster_slug}-name"
@@ -172,7 +174,7 @@ window.NewProposal = ReactiveComponent
 
               htmlFor: "#{cluster_slug}-details"
 
-              "#{t('details')} (#{t('optional')})" 
+              proposal_fields.description
 
             WysiwygEditor
               id: "#{cluster_slug}-details"
@@ -188,6 +190,33 @@ window.NewProposal = ReactiveComponent
                 width: w - 8 * 2
                 marginBottom: 8
                 minHeight: 120
+
+          for additional_field in proposal_fields.additional_fields 
+            # details 
+            DIV null,
+
+              LABEL 
+                style: _.extend {}, label_style,
+                  marginLeft: 8
+
+                htmlFor: "#{cluster_slug}-#{additional_field}"
+
+                proposal_fields[additional_field]
+
+              WysiwygEditor
+                id: "#{cluster_slug}-#{additional_field}"
+                key:"#{additional_field}-new-proposal-#{cluster_slug}"
+                'aria-label': proposal_fields[additional_field]
+                container_style: 
+                  padding: '6px 8px'
+                  border: '1px solid #ccc'
+
+                style: 
+                  fontSize: 16
+                  width: w - 8 * 2
+                  marginBottom: 8
+                  minHeight: 120
+
 
           # Category
           DIV 
@@ -289,13 +318,20 @@ window.NewProposal = ReactiveComponent
 
               onClick: => 
                 name = $(@getDOMNode()).find("##{cluster_slug}-name").val()
-                description = fetch("description-new-proposal-#{cluster_slug}").html
+
+                fields = 
+                  description: fetch("description-new-proposal-#{cluster_slug}").html
+
+                for field in proposal_fields.additional_fields
+                  fields[field] = fetch("#{field}-new-proposal-#{cluster_slug}").html
+
+                description = proposal_fields.create_description(fields)
                 slug = slugify(name)
                 active = true 
                 hide_on_homepage = false
                 category = @refs.category.getDOMNode().value
-                if current_user.is_admin && (@refs.new_category.getDOMNode().value or '').length > 0 
-                  category = @refs.new_category.getDOMNode().value
+                if current_user.is_admin && @local.category == 'new category'
+                  category = @refs.new_category.getDOMNode().value or cluster_name
 
                 proposal =
                   key : '/new/proposal'

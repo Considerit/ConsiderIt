@@ -78,7 +78,8 @@ window.NewProposal = ReactiveComponent
 
 
     if !adding 
-      BUTTON 
+      BUTTON  
+        name: "add_new_#{cluster_name}"
         className: 'add_new_proposal'
         style: _.defaults (@props.label_style or {}),
           cursor: 'pointer'
@@ -123,7 +124,7 @@ window.NewProposal = ReactiveComponent
           marginLeft: if customization('show_proposer_icon', cluster_key) then -76 else -36
 
         A name: "new_#{cluster_name}"
-        
+
         if customization('new_proposal_tips', cluster_key)
           @drawTips customization('new_proposal_tips', cluster_key)
 

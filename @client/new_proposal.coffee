@@ -104,6 +104,7 @@ window.NewProposal = ReactiveComponent
             e.stopPropagation()
             reset_key 'auth', {form: 'login', goal: 'add a new proposal', ask_questions: true}
         
+        A name: "new_#{cluster_name}"
         bullet 
 
         if permitted
@@ -121,6 +122,8 @@ window.NewProposal = ReactiveComponent
           padding: '6px 8px'
           marginLeft: if customization('show_proposer_icon', cluster_key) then -76 else -36
 
+        A name: "new_#{cluster_name}"
+        
         if customization('new_proposal_tips', cluster_key)
           @drawTips customization('new_proposal_tips', cluster_key)
 
@@ -393,6 +396,8 @@ window.NewProposal = ReactiveComponent
         $(@getDOMNode()).moveToTop {scroll: false}
       else
         $(@getDOMNode()).ensureInView {scroll: false}
+
+
 
 
   drawTips : (tips) -> 

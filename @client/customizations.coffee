@@ -187,6 +187,7 @@ customizations.default =
   homepage_list_order: []
   homepage_lists_to_always_show: []
 
+  font: "'Avenir Next W01', 'Avenir Next', 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Helvetica, Verdana, sans-serif"
 
   auth_questions: []
 

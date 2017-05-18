@@ -218,6 +218,7 @@ window.TagHomepage = ReactiveComponent
 
 
       UL null, 
+
         for proposal,idx in proposals
           continue if idx > 20 && !show_all.show_all
           cluster = proposal.cluster or 'Proposals'
@@ -693,6 +694,18 @@ ClusterHeading = ReactiveComponent
                   height: th
                   display: if @local.hover_label or is_collapsed then 'inline-block' else 'none'
                   outline: 'none'
+
+            if customization('list_show_new_button', cluster_key)
+              A
+                style: 
+                  textDecoration: 'underline'
+                  fontSize: 12
+                  color: focus_color()
+                  fontFamily: customization('font')
+                  fontStyle: 'normal'
+                  marginLeft: 14
+                href: "#new_#{cluster.name}"
+                t('add_new')
 
         if !is_collapsed
 

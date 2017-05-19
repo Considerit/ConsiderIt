@@ -198,19 +198,6 @@ module Notifier
         },
 
 
-      # 'new_request' => {
-      #   'ui_label' => 'New factcheck request',
-      #   'email_trigger_default' => lambda {|digest_relation| 
-      #                               case digest_relation
-      #                               when 'admin', 'evaluator' 
-      #                                 true
-      #                               else 
-      #                                 nil
-      #                               end
-      #                             },
-      # },
-
-
       # for this event, define all of the different relationships that
       # the notified user might have with event object
       'new_comment:point_authored' => {
@@ -246,25 +233,6 @@ module Notifier
         'email_trigger_default' => true
       },
 
-      # TODO: This should only be available for subdomains with 
-      #       fact-checking enabled
-      # 'new_assessment' => {
-      #   'point_authored' => {
-      #     # a description of this relation for UIs
-      #     'ui_label' => 'Factcheck of a Pro or Con point you wrote',
-
-      #     # Whether this event qualifies for triggering an email by default.
-      #     'email_trigger_default' => lambda {|digest_relation| true }
-      #   },
-      #   'point_engaged' => {
-      #     'ui_label' => 'Factcheck of a Pro or Con point you\'ve engaged',
-      #     'email_trigger_default' => lambda {|digest_relation| true }
-      #   },
-      #   'watched' => {
-      #     'ui_label' => 'Factcheck on other points',
-      #     'email_trigger_default' => lambda {|digest_relation| false }
-      #   }
-      # },
     }
 
   end
@@ -272,7 +240,7 @@ module Notifier
   # ... And how is a user related to a specific event?
   def self.event_relationship_mapper(event_object, user)
 
-    if ['Comment', 'Assessment'].include?(event_object.class.name)
+    if event_object.class.name == 'Comment'
       point = event_object.point
       if point.user_id == user.id
         'point_authored'
@@ -376,10 +344,6 @@ module Notifier
       else
         event_object.subdomain
       end
-    when 'assessment'
-      event_object.point.proposal
-    when 'request'
-      event_object.assessment.point.subdomain
     else
       raise "Could not infer digest object of type #{event_obj_type}"
     end

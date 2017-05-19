@@ -15,9 +15,6 @@ class PageController < ApplicationController
 
       case page
 
-      when 'dashboard/assessment'
-        authorize_action = "factcheck content"
-
       when 'dashboard/moderate'
         authorize_action = "moderate content"
 

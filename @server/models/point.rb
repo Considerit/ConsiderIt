@@ -1,7 +1,7 @@
 # coding: utf-8
 class Point < ActiveRecord::Base
   
-  include Moderatable, Assessable, Notifier
+  include Moderatable, Notifier
     
   belongs_to :user
   belongs_to :proposal
@@ -58,11 +58,6 @@ class Point < ActiveRecord::Base
     make_key(result, 'point')
     stubify_field(result, 'proposal')
     stubify_field(result, 'user')
-
-    if current_subdomain.assessment_enabled
-      assessment = proposal.assessments.completed.where(:assessable_type => 'Point', :assessable_id => id).first
-      result['assessment'] = assessment ? "assessment/#{assessment.id}" : nil
-    end
 
     result
   end

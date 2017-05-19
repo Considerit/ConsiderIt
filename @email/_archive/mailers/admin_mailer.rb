@@ -16,18 +16,5 @@ class AdminMailer < Mailer
 
   end
 
-  def content_to_assess(assessment, user, subdomain)
-    @user = user
-    @assessment = assessment
-    @subdomain = subdomain
-
-    subject = "A new fact check request"
-
-    to = format_email user.email, user.name    
-    from = format_email(default_sender(subdomain), (subdomain.title))
-
-    mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
-
-  end
 
 end

@@ -270,9 +270,6 @@ protected
       elsif key == '/page/dashboard/moderate'
         response.append Moderation.all_for_subdomain
 
-      elsif key == '/page/dashboard/assessment'
-        response.append Assessment.all_for_subdomain
-
       elsif key.match "/page/dashboard"
         noop = 1
 
@@ -284,12 +281,6 @@ protected
         clean = proposal.full_data
 
         response.append clean
-      elsif key.match '/assessment/'
-        assessment = Assessment.find(key[12..key.length])
-        response.append assessment.as_json
-      elsif key.match '/claim/'
-        claim = Assessable::Claim.find(key[7..key.length])
-        response.append claim.as_json
 
       elsif key == '/asset_manifest'
         manifest = JSON.parse(File.open("public/assets/rev-manifest.json", "rb") {|io| io.read})

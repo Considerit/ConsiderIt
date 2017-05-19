@@ -4,10 +4,6 @@ class Proposal < ActiveRecord::Base
   has_many :opinions, :dependent => :destroy
   has_many :inclusions, :dependent => :destroy
 
-  has_many :assessments, :through => :points, :dependent => :destroy
-  has_many :claims, :through => :assessments, :dependent => :destroy
-  has_many :requests, :through => :assessments, :dependent => :destroy
-
   belongs_to :user
 
   acts_as_tenant :subdomain
@@ -176,14 +172,6 @@ class Proposal < ActiveRecord::Base
       # opinions: ops
     }
 
-    if self.subdomain.assessment_enabled
-      data.update({
-        :assessments => self.assessments.completed,
-        :claims => self.assessments.completed.map {|a| a.claims}.compact.flatten,
-        :verdicts => Assessable::Verdict.all
-      })
-    end
-
     data
 
   end
@@ -241,10 +229,6 @@ class Proposal < ActiveRecord::Base
 
     make_key(json, 'proposal')
     stubify_field(json, 'user')
-
-    if fact_check_request_enabled?
-      json['assessment_enabled'] = true
-    end
 
     if permit('update proposal', self) > 0
       json['roles'] = self.user_roles
@@ -331,18 +315,6 @@ class Proposal < ActiveRecord::Base
     result
   end
 
-
-  def fact_check_request_enabled?
-    #return false # nothing can be requested to be fact-checked currently
-
-    enabled = current_subdomain.assessment_enabled
-    if current_subdomain.name == 'livingvotersguide'
-      # only some issues in LVG are fact-checkable
-      enabled = ['i_1366_state_taxes_and_fees', 'i_1401_trafficking_of_animal_species'].include? slug
-      #['I-1351_Modify_K-12_funding', 'I-591_Match_state_gun_regulation_to_national_standards', 'I-594_Increase_background_checks_on_gun_purchases'].include? slug
-    end
-    enabled && active
-  end
   
   def title(max_len = 140)
     if name && name.length > 0

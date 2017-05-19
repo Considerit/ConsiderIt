@@ -7,7 +7,6 @@ window.ProfileMenu = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch('/subdomain')
 
-    is_evaluator = subdomain.assessment_enabled && current_user.is_evaluator
     is_admin = current_user.is_admin
     is_moderator = current_user.is_moderator
     is_super = current_user.is_super_admin
@@ -20,7 +19,6 @@ window.ProfileMenu = ReactiveComponent
       if is_admin then {href: '/dashboard/roles', label: 'User Roles'} else null,
       if is_admin then {href: '/dashboard/tags', label: 'User Tags'} else null,      
       if is_moderator then {href: '/dashboard/moderate', label: 'Moderate'} else null,
-      if is_evaluator then {href: '/dashboard/assessment', label: 'Fact-check'} else null 
     ]
 
     menu_options = _.compact menu_options

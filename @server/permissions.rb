@@ -195,17 +195,6 @@ def permit(action, object = nil, user = nil)
       return Permission::INSUFFICIENT_PRIVILEGES 
     end
 
-
-  when 'request factcheck'
-    proposal = object
-    return Permission::DISABLED if !proposal.assessment_enabled || !proposal.active
-    return Permission::NOT_LOGGED_IN if !user.registered 
-
-  when 'factcheck content'
-    return Permission::NOT_LOGGED_IN if !user.registered
-    return Permission::INSUFFICIENT_PRIVILEGES if !user.has_any_role?([:admin, :superadmin, :evaluator])
-    return Permission::UNVERIFIED_EMAIL if !user.verified  
-
   when 'moderate content'
     return Permission::NOT_LOGGED_IN if !user.registered
     return Permission::INSUFFICIENT_PRIVILEGES if !user.has_any_role?([:admin, :superadmin, :moderator])

@@ -126,11 +126,6 @@ permit = (action) ->
       if !current_user.is_admin && comment.user != fetch('/current_user').user
         return Permission.INSUFFICIENT_PRIVILEGES
 
-    when 'request factcheck'
-      proposal = fetch arguments[1]
-      return Permission.DISABLED if !proposal.assessment_enabled || !proposal.active
-      return Permission.NOT_LOGGED_IN if !current_user.logged_in 
-
     else
       console.error "Unrecognized action to permit: #{action}"
 

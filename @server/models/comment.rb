@@ -30,8 +30,6 @@ class Comment < ActiveRecord::Base
   end
 
   # Fetches all comments associated with this Point. 
-  # Because we generally render fact-checks in the comment stream, we also return
-  # fact-checks for this point  
   def self.comments_for_point(point)
     if current_subdomain.moderate_comments_mode == 1
       moderation_status_check = 'moderation_status=1'
@@ -44,14 +42,6 @@ class Comment < ActiveRecord::Base
       :key => "/comments/#{point.id}"
     }
 
-    if current_subdomain.assessment_enabled
-      comments.update({
-        :assessment => point.assessment && point.assessment.complete ? point.assessment : nil,
-        :verdicts => Assessable::Verdict.all,
-        :claims => point.assessment && point.assessment.complete ? point.assessment.claims : nil,
-        :requests => point.assessment ? point.assessment.requests : nil
-      })
-    end
 
     comments
 

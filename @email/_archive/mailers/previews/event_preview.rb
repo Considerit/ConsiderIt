@@ -5,12 +5,6 @@ class EventPreview < ActionMailer::Preview
     EventMailer.new_point(User.where('registered').last, point, subdomain, 'opinion submitter')
   end
 
-  def new_assessment
-    assessment = Assessment.completed.last
-
-    EventMailer.new_assessment(assessment.point.user, assessment.point, assessment, assessment.subdomain, 'your point')
-  end
-
   def new_comment
     subdomain = Subdomain.first
     comment = subdomain.comments.last

@@ -708,7 +708,7 @@ window.Comment = ReactiveComponent
                   save comment
                 t('edit')
 
-# fact-checks, edit comments, comments...
+# edit comments, comments...
 styles += """
 .comment_entry {
   margin-bottom: 25px;
@@ -731,58 +731,7 @@ styles += """
     margin-bottom: 1em; }
 """
 
-window.FactCheck = ReactiveComponent
-  displayName: 'FactCheck'
 
-  render : -> 
-    assessment = @data()
-    DIV className: 'comment_entry',
-
-      # Comment author name
-      DIV className: 'comment_entry_name',
-        'Fact check by Seattle Public Library:'
-
-      # Comment author icon
-      DIV className: 'magnifying_glass',
-        I className: 'fa fa-search'
-
-      # Comment body
-      DIV className: 'comment_entry_body',
-        # DIV style: {margin: '10px 0 20px 0'},
-        #   "A citizen requested research into the claims made by this point. "
-
-
-        for claim in assessment.claims
-          claim = fetch(claim.key)
-          verdict = fetch(claim.verdict)
-
-          [DIV style: {margin: '10px 0'}, 
-            IMG 
-              style: {position: 'absolute', width: 25, left: -40}, 
-              src: verdict.icon
-            'Claim: '
-            SPAN style: {fontWeight: 600}, claim.claim_restatement
-          DIV null, 
-            SPAN 
-              style: 
-                cursor: 'help'
-              title: verdict.desc
-              'Rating: '
-              SPAN style: {fontStyle: 'italic'}, verdict.name
-
-          DIV 
-            style: {margin: '10px 0'}
-            dangerouslySetInnerHTML:{__html: claim.result}]
-
-styles += """
-.magnifying_glass {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  font-size: 50px;
-  margin-top: -9px;
-  color: #5e6b9e; }
-"""
 
 
 window.Discussion = ReactiveComponent
@@ -799,9 +748,6 @@ window.Discussion = ReactiveComponent
     in_wings = get_proposal_mode() == 'crafting' && !point_included
 
     comments = @discussion.comments
-    if @discussion.assessment
-      comments = comments.slice()
-      comments.push @discussion.assessment
     
     comments.sort (a,b) -> a.created_at > b.created_at
 
@@ -929,10 +875,7 @@ window.Discussion = ReactiveComponent
 
         DIV className: 'comments',
           for comment in comments
-            if comment.key.match /(comment)/
-              Comment key: comment.key
-            else 
-              FactCheck key: comment.key
+            Comment key: comment.key
 
         # Write a new comment
         EditComment fresh: true, point: arest.key_id(@props.key)

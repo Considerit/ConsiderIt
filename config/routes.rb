@@ -96,9 +96,6 @@ ConsiderIt::Application.routes.draw do
   match 'opinion/:id/:proposal_id' => 'opinion#show', :via => [:get, :put]
 
   # New admin functionality
-  resources :assessment, :only => [:show, :update]
-  resources :claim, :only => [:show, :create, :update, :destroy]
-  resources :request, :only => [:create], :controller => "assessment"
 
   match "/moderation/:id" => 'moderation#update', :via => :put
   post '/dashboard/message' => 'direct_message#create', :as => 'message'

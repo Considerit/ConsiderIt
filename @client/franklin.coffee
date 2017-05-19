@@ -1971,8 +1971,6 @@ Page = ReactiveComponent
             when '/dashboard/email_notifications'
               Notifications 
                 key: '/page/dashboard/email_notifications'
-            when '/dashboard/assessment'
-              FactcheckDash key: "/page/dashboard/assessment"
             when '/dashboard/import_data'
               ImportDataDash key: "/page/dashboard/import_data"
             when '/dashboard/moderate'

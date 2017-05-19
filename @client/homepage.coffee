@@ -212,7 +212,7 @@ window.TagHomepage = ReactiveComponent
           name: dummy_cluster
           proposals: []
           list_is_archived: customization('list_is_archived', "list/#{dummy_cluster}")
-        is_collapsed: false 
+        proposals_count: proposals.length 
 
 
 
@@ -552,7 +552,9 @@ window.Cluster = ReactiveComponent
         position: 'relative'
 
 
-      ClusterHeading {cluster}
+      ClusterHeading 
+        cluster: cluster 
+        proposals_count: proposals.length
 
       if customization('questionaire', cluster_key) && !is_collapsed
         Questionaire 
@@ -765,7 +767,7 @@ ClusterHeading = ReactiveComponent
 
               histo_title
 
-      if !customization('questionaire', cluster_key) && !is_collapsed && !customization('list_no_filters', cluster_key)
+      if @props.proposals_count > 0 && !customization('questionaire', cluster_key) && !is_collapsed && !customization('list_no_filters', cluster_key)
         filter_sort_options()
 
 

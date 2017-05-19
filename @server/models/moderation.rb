@@ -9,14 +9,14 @@ class Moderation < ActiveRecord::Base
   acts_as_tenant :subdomain
 
   class_attribute :my_public_fields
-  self.my_public_fields = [:user_id, :id, :status, :moderatable_id, :moderatable_type, :updated_at, :updated_since_last_evaluation]
+  self.my_public_fields = [:user_id, :id, :status, :moderatable_id, :moderatable_type, :created_at, :updated_at, :updated_since_last_evaluation]
 
   def self.all_for_subdomain
 
-    moderations = []
+    moderations = {}
 
     current_subdomain.classes_to_moderate.each do |moderation_class|
-
+      moderations[moderation_class.name] = []
       if moderation_class == Comment
         # select all comments of points of active proposals
         qry = "SELECT c.id, c.user_id, prop.id as proposal_id FROM comments c, points pnt, proposals prop WHERE prop.subdomain_id=#{current_subdomain.id} AND prop.active=1 AND prop.id=pnt.proposal_id AND c.point_id=pnt.id"
@@ -53,7 +53,7 @@ class Moderation < ActiveRecord::Base
             moderation = Moderation.create! :moderatable_type => moderation_class.name, :moderatable_id => obj['id'], :subdomain_id => current_subdomain.id
           end
 
-          moderations.push moderation
+          moderations[moderation_class.name].push moderation
         end
       end
 

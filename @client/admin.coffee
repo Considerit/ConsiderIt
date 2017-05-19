@@ -859,58 +859,8 @@ ModerationDash = ReactiveComponent
       DashHeader name: 'Moderate user contributions'
 
       DIV style: {width: CONTENT_WIDTH(), margin: '15px auto'}, 
-        DIV className: 'moderation_settings',
-          if subdomain.moderated_classes.length == 0 || @local.edit_settings
-            DIV null,             
-              for model in ['points', 'comments', 'proposals'] #, 'proposals']
-                # The order of the options is important for the database records
-                moderation_options = [
-                  "Do not moderate #{model}", 
-                  "Do not publicly post #{model} until moderation", 
-                  "Post #{model} immediately, but withhold email notifications until moderation", 
-                  "Post #{model} immediately, catch bad ones afterwards"]
 
-                FIELDSET style: {marginBottom: 12},
-                  LEGEND style: {fontSize: 24},
-                    capitalize model
-
-                  for field, idx in moderation_options
-                    DIV 
-                      style: {marginLeft: 18, fontSize: 18, cursor: 'pointer'}
-                      onClick: do (idx, model) => => 
-                        subdomain["moderate_#{model}_mode"] = idx
-                        save subdomain, -> 
-                          #saving the subdomain shouldn't always dirty moderations 
-                          #(which is expensive), so just doing it manually here
-                          arest.serverFetch('/page/dashboard/moderate')  
-
-                      INPUT 
-                        style: {cursor: 'pointer'}
-                        type: 'radio'
-                        name: "moderate_#{model}_mode"
-                        id: "moderate_#{model}_mode_#{idx}"
-                        defaultChecked: subdomain["moderate_#{model}_mode"] == idx
-
-                      LABEL 
-                        style: {cursor: 'pointer', paddingLeft: 8 } 
-                        htmlFor: "moderate_#{model}_mode_#{idx}"
-                        field
-
-              BUTTON 
-                onClick: => 
-                  @local.edit_settings = false
-                  save @local
-                'close'
-
-          else 
-            BUTTON 
-              style: 
-                padding: '4px 8px'
-
-              onClick: => 
-                @local.edit_settings = true
-                save @local
-              'Edit moderation settings'
+        ModerationOptions()
 
         AdminTaskList 
           key: 'moderation_dash'
@@ -933,13 +883,12 @@ ModerationDash = ReactiveComponent
               DIV style: {fontSize: 14, fontWeight: 600}, "Moderate #{class_name} #{item.moderatable_id}"
               DIV style: {fontSize: 12, fontStyle: 'italic'}, tease      
               DIV style: {fontSize: 12, paddingLeft: 12}, "- #{fetch(moderatable.user).name}"
-              #DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
-              #DIV style: {fontSize: 12}, "Added on #{new Date(moderatable.created_at).toDateString()}"
               if item.updated_since_last_evaluation
                 DIV style: {fontSize: 12}, "* revised"
 
           renderTask: (item) => 
             ModerateItem key: item.key
+
 
 
 
@@ -1109,6 +1058,66 @@ ModerateItem = ReactiveComponent
 
             LABEL htmlFor: 'fail', 'Fail'
 
+ModerationOptions = ReactiveComponent
+  displayName: 'ModerationOptions'
+
+
+  render: -> 
+    subdomain = fetch '/subdomain'
+
+    DIV className: 'moderation_settings',
+      if subdomain.moderated_classes.length == 0 || @local.edit_settings
+        DIV null,             
+          for model in ['points', 'comments', 'proposals']
+            # The order of the options is important for the database records
+            moderation_options = [
+              "Do not moderate #{model}", 
+              "Do not publicly post #{model} until moderation", 
+              "Post #{model} immediately, but withhold email notifications until moderation", 
+              "Post #{model} immediately, catch bad ones afterwards"]
+
+            FIELDSET style: {marginBottom: 12},
+              LEGEND style: {fontSize: 24},
+                capitalize model
+
+              for field, idx in moderation_options
+                DIV 
+                  style: {marginLeft: 18, fontSize: 18, cursor: 'pointer'}
+                  onClick: do (idx, model) => => 
+                    subdomain["moderate_#{model}_mode"] = idx
+                    save subdomain, -> 
+                      #saving the subdomain shouldn't always dirty moderations 
+                      #(which is expensive), so just doing it manually here
+                      arest.serverFetch('/page/dashboard/moderate')  
+
+                  INPUT 
+                    style: {cursor: 'pointer'}
+                    type: 'radio'
+                    name: "moderate_#{model}_mode"
+                    id: "moderate_#{model}_mode_#{idx}"
+                    defaultChecked: subdomain["moderate_#{model}_mode"] == idx
+
+                  LABEL 
+                    style: {cursor: 'pointer', paddingLeft: 8 } 
+                    htmlFor: "moderate_#{model}_mode_#{idx}"
+                    field
+
+          BUTTON 
+            onClick: => 
+              @local.edit_settings = false
+              save @local
+            'close'
+
+      else 
+        BUTTON 
+          style: 
+            padding: '4px 8px'
+
+          onClick: => 
+            @local.edit_settings = true
+            save @local
+          'Edit moderation settings'    
+
 # TODO: Refactor the below and make sure that the styles applied to the 
 #       user generated fields are in sync with the styling in the 
 #       wysiwyg editor. 
@@ -1138,270 +1147,6 @@ styles += """
 .moderatable_item table {
   padding: 20px 0px; }
 """
-
-FactcheckDash = ReactiveComponent
-  displayName: 'FactcheckDash'
-
-  render : ->
-
-    assessments = @data().assessments.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
-
-    # Separate assessments by status
-    completed = []
-    reviewable = []
-    todo = []
-    for a in assessments
-      # register a data dependency, else resort doesn't happen when an item changes
-      fetch a.key
-
-      if a.complete 
-        completed.push a
-      else if a.reviewable
-        reviewable.push a
-      else
-        todo.push a
-
-    items = [['Pending review', reviewable], ['Incomplete', todo], ['Complete', completed]]
-
-    DIV null,
-      DashHeader name: 'Fact check user contributions'
-
-      DIV style: {width: CONTENT_WIDTH(), margin: '15px auto'}, 
-        AdminTaskList 
-          items: items
-          key: 'factcheck_dash'
-
-          renderTab : (item) =>
-            point = fetch(item.point)
-            proposal = fetch(point.proposal)
-
-            DIV className: 'tab',
-              DIV style: {fontSize: 14, fontWeight: 600}, "Fact check point #{point.id}"
-              DIV style: {fontSize: 12}, "Requested on #{new Date(item.requests[0].created_at).toDateString()}"
-              DIV style: {fontSize: 12}, "Issue: #{proposal.name}"
-          
-          renderTask : (item) => 
-            FactcheckPoint key: item.key
-
-
-FactcheckPoint = ReactiveComponent
-  displayName: 'FactcheckPoint'
-
-  render : ->
-    assessment = @data()
-    point = fetch(assessment.point)
-    proposal = fetch(point.proposal)
-    current_user = fetch('/current_user')
-
-    all_claims_answered = assessment.claims.length > 0
-    all_claims_approved = assessment.claims.length > 0
-    for claim in assessment.claims
-      if !claim.verdict || !claim.result
-        all_claims_answered = all_claims_approved = false 
-      if !claim.approver
-        all_claims_approved = false
-
-    DIV style: adminStyles().task_area_style,
-      STYLE null, '.claim_result a{text-decoration: underline;}'
-      
-      # status area
-      DIV style: adminStyles().task_area_bar,
-        if assessment.complete
-          SPAN style: {}, "Published #{new Date(assessment.published_at).toDateString()}"
-        else if assessment.reviewable
-          SPAN style: {}, "Awaiting approval"
-        else
-          SPAN style: {}, "Fact check this point"
-
-        SPAN style: {float: 'right', fontSize: 18, verticalAlign: 'bottom'},
-          if assessment.user 
-            ["Responsible: #{fetch(assessment.user).name}"
-            if assessment.user == current_user.user && !assessment.reviewable && !assessment.complete
-              BUTTON style: {marginLeft: 8, fontSize: 14}, onClick: @toggleResponsibility, "I won't do it"]
-          else 
-            ['Responsible: '
-            BUTTON 
-              style: {backgroundColor: focus_color(), color: 'white', fontSize: 14, border: 'none', borderRadius: 8, fontWeight: 600 }
-              onClick: @toggleResponsibility, "I'll do it"]
-
-      DIV style: {padding: '10px 30px'},
-        # point area
-        DIV style: adminStyles().task_area_section_style, 
-          UL style: {marginLeft: 73}, 
-            Point key: point, rendered_as: 'under_review', enable_dragging: false
-
-          DIV style:{fontSize: 12, marginLeft: 73}, 
-            "by #{fetch(point.user).name}"
-            SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
-            A 
-              target: '_blank'
-              href: "/#{proposal.slug}?selected=#{point.key}"
-              style: {textDecoration: 'underline'}
-              'Read point in context'
-
-            if !point.hide_name && @local.messaging != point
-              [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
-              BUTTON
-                style: {textDecoration: 'underline', backgroundColor: 'transparent', border: 'none'}
-                onClick: (=> @local.messaging = point; save(@local)),
-                'Email author']
-            else if @local.messaging == point
-              DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Fact-checker'
-
-
-        # requests area
-        DIV style: adminStyles().task_area_section_style, 
-          H1 style: adminStyles().task_area_header_style, 'Fact check requests'
-          DIV style: {}, 
-            for request in assessment.requests
-              DIV className: 'comment_entry', key: request.key,
-
-                Avatar
-                  className: 'comment_entry_avatar'
-                  tag: DIV
-                  key: request.user
-                  hide_tooltip: true
-                  style: 
-                    width: 50
-                    height: 50
-
-                DIV 
-                  style: 
-                    display: 'inline-block'
-                    width: '80%'
-
-                  DIV style: {marginLeft: 20},
-                    splitParagraphs(request.suggestion)
-
-                  DIV style:{fontSize: 12, marginLeft: 20}, 
-                    "by #{fetch(request.user).name || 'anonymous'}"
-                    if @local.messaging != request
-                      [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
-                      A
-                        style: {textDecoration: 'underline'}
-                        onClick: (=> @local.messaging = request; save(@local)),
-                        'Email requester']
-                    else if @local.messaging == request
-                      DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Fact-checker'
-
-        # claims area
-        DIV style: adminStyles().task_area_section_style, 
-          H1 style: adminStyles().task_area_header_style, 'Claims under review'
-
-
-          DIV style: {}, 
-            for claim in assessment.claims
-              claim = fetch(claim)
-              if @local.editing == claim.key
-                EditClaim fresh: false, key: claim.key, parent: @local, assessment: @data()
-              else 
-
-                verdict = fetch(claim.verdict)
-                DIV key: claim.key, style: {marginLeft: 60, marginBottom: 18, position: 'relative'}, 
-                  IMG style: {position: 'absolute', width: 50, left: -60}, src: verdict.icon
-
-                  DIV style: {fontSize: 18}, claim.claim_restatement
-                  DIV style: {fontSize: 12}, verdict.name
-                  
-                  DIV 
-                    className: 'claim_result'
-                    style: {marginTop: 10, fontSize: 14}
-                    dangerouslySetInnerHTML: {__html: claim.result }
-                  
-                  DIV style: {marginTop: 10, position: 'relative'},
-
-                    DIV style: {fontSize: 12, marginTop: 10}, 
-                      DIV null, "Created by #{fetch(claim.creator).name}"
-                      if claim.approver
-                        DIV null, "Approved by #{fetch(claim.approver).name}"
-
-                    do => 
-                      button_style = 
-                        marginRight: 5
-                        fontSize: 14
-
-                      DIV 
-                        style: 
-                          marginTop: 10
-                          
-                        if claim.result && claim.verdict && !claim.approver #&& current_user.id != claim.creator
-                          BUTTON style: button_style, onClick: (do (claim) => => @toggleClaimApproval(claim)), 'Approve'
-                        else if claim.approver
-                          BUTTON style: button_style, onClick: (do (claim) => => @toggleClaimApproval(claim)), 'Unapprove'
-
-                        BUTTON style: button_style, onClick: (do (claim) => => @local.editing = claim.key; save(@local)), 'Edit'
-                        BUTTON style: button_style, onClick: (do (claim) => => @deleteClaim(claim)), 'Delete'
-
-            if @local.editing == 'new'
-              EditClaim fresh: true, key: '/new/claim', parent: @local, assessment: @data()
-            else if !@local.editing
-              Button {style: {marginLeft: 0, marginTop: 15}}, '+ Add new claim', => @local.editing = 'new'; save(@local)
-
-        DIV style: adminStyles().task_area_section_style,
-          H1 style: adminStyles().task_area_header_style, 'Private notes'
-          AutoGrowTextArea
-            className: 'assessment_notes'
-            placeholder: 'Private notes about this fact check'
-            defaultValue: assessment.notes
-            min_height: 60
-            style: 
-              width: 500
-              fontSize: 16
-              display: 'block'
-              padding: '4px 8px'
-
-
-          BUTTON style: {fontSize: 14}, onClick: @saveNotes, 'Save notes'
-
-          DIV style: adminStyles().task_area_header_style,
-            if assessment.complete
-              'Congrats, this one is finished.'
-            else if all_claims_answered && !assessment.reviewable
-              Button({}, 'Request approval', @requestApproval)
-            else if assessment.reviewable
-              if all_claims_approved && current_user.user != assessment.user
-                Button({}, 'Publish fact check', @publish)
-              else if all_claims_answered
-                'This fact-check is awaiting publication'
-
-
-
-  deleteClaim : (claim) -> destroy claim.key
-
-  toggleClaimApproval : (claim) -> 
-    if claim.approver
-      claim.approver = null
-    else
-      claim.approver = fetch('/current_user').user
-    save(claim)
-
-  saveNotes: -> 
-    assessment = @data()
-    assessment.notes = $('.assessment_notes').val()
-    save(assessment)
-
-  publish : -> 
-    assessment = @data()
-    assessment.complete = true
-    save(assessment)
-
-  requestApproval : -> 
-    assessment = @data()
-    assessment.reviewable = true
-    if !assessment.user
-      assessment.user = fetch("/current_user").user
-    save(assessment)
-
-  toggleResponsibility : ->
-    assessment = @data()
-    current_user = fetch('/current_user')
-
-    if assessment.user == current_user.user
-      assessment.user = null
-    else if !assessment.user
-      assessment.user = current_user.user
-
-    save assessment
 
 DirectMessage = ReactiveComponent
   displayName: 'DirectMessage'
@@ -1452,68 +1197,8 @@ DirectMessage = ReactiveComponent
       @props.parent.messaging = null
       save @props.parent
 
-EditClaim = ReactiveComponent
-  displayName: 'EditClaim'
-
-  render : -> 
-    text_style = 
-      width: 550
-      fontSize: 16
-      display: 'block'
-      padding: '4px 8px'
-
-    DIV style: {padding: '8px 12px', backgroundColor: "rgba(0,0,0,.1)", marginLeft: 0, marginBottom: 18 },
-      DIV style: {marginBottom: 8},
-        LABEL null, 'Restate the claim'
-        AutoGrowTextArea
-          className: 'claim_restatement'
-          placeholder: 'The claim'
-          defaultValue: if @props.fresh then null else @data().claim_restatement
-          min_height: 30
-          style: text_style
-
-      DIV style: {marginBottom: 8},
-        LABEL style: {marginRight: 8}, 'Evaluate the claim'
-        SELECT
-          defaultValue: if @props.fresh then null else @data().verdict
-          className: 'claim_verdict'
-          for verdict in fetch('/page/dashboard/assessment').verdicts
-            OPTION key: verdict.key, value: verdict.key, verdict.name
-
-
-      DIV style: {marginBottom: 8},
-        LABEL null, 'Review the claim'
-        AutoGrowTextArea
-          className: 'claim_result'
-          placeholder: 'Prose review of this claim'
-          defaultValue: if @props.fresh then null else @data().result
-          min_height: 80
-          style: text_style
-
-      Button {}, 'Save claim', @saveClaim
-      A style: {marginLeft: 12}, onClick: (=> @props.parent.editing = null; save(@props.parent)), 'cancel'
-
-
-
-  saveClaim : -> 
-    $el = $(@getDOMNode())
-
-    claim = if @props.fresh then {key: '/new/claim'} else @data()
-
-    claim.claim_restatement = $el.find('.claim_restatement').val()
-    claim.result = $el.find('.claim_result').val()
-    claim.assessment = @props.assessment.key
-    claim.verdict = $el.find('.claim_verdict').val()
-
-    save(claim)
-
-    # This is ugly, what is activeRESTy way of doing this? 
-    @props.parent.editing = null
-    save @props.parent
-
 
 ## Export...
-window.FactcheckDash = FactcheckDash
 window.ModerationDash = ModerationDash
 window.AppSettingsDash = AppSettingsDash
 window.ImportDataDash = ImportDataDash

@@ -1,4 +1,4 @@
-# Admin components, like moderation and factchecking backend
+# Admin components, like moderation
 
 
 require './vendor/jquery.form'
@@ -7,30 +7,6 @@ require './shared'
 
 
 adminStyles = -> 
-  {
-    task_area_header_style:
-      fontSize: 24
-      fontWeight: 400
-      margin: '10px 0'
-    task_area_bar: 
-      padding: '4px 30px'
-      fontSize: 24
-      borderRadius: '8px 8px 0 0'
-      height: 35
-      backgroundColor: 'rgba(0,0,55,.1)'
-    task_area_section_style: 
-      margin: '10px 0px 20px 0px'
-      position: 'relative'
-    task_area_style: 
-      cursor: 'auto'
-      width: CONTENT_WIDTH() * .75
-      minWidth: 700
-      backgroundColor: '#F4F0E9'
-      position: 'absolute'
-      left: CONTENT_WIDTH()/4
-      top: -35
-      borderRadius: 8
-  }
 
 DashHeader = ReactiveComponent
   displayName: 'DashHeader'
@@ -748,23 +724,62 @@ CodeMirrorTextArea = ReactiveComponent
 
 
 
-
-AdminTaskList = ReactiveComponent
-  displayName: 'AdminTaskList'
+        
+ModerationDash = ReactiveComponent
+  displayName: 'ModerationDash'
 
   render : -> 
+    moderations = @data().moderations
+    subdomain = fetch '/subdomain'
+
+    # todo: choose default more intelligently
+    @local.model ||= 'Proposal'
+
 
     dash = @data()
+
+    all_items = {}
+
+    for model in ['Point', 'Comment', 'Proposal']
+      
+      # Separate moderations by status
+      passed = []
+      reviewable = []
+      quarantined = []
+      failed = []
+
+      moderations[model].sort (a,b) -> 
+        new Date(fetch(b.moderatable).created_at) - new Date(fetch(a.moderatable).created_at)
+
+
+      for i in moderations[model]
+        # register a data dependency, else resort doesn't happen when an item changes
+        fetch i.key
+
+        if !i.status? || i.updated_since_last_evaluation
+          reviewable.push i
+        else if i.status == 1
+          passed.push i
+        else if i.status == 0
+          failed.push i
+        else if i.status == 2
+          quarantined.push i
+
+      all_items[model] = [['Pending', reviewable, true], ['Quarantined', quarantined, true], ['Failed', failed, true], ['Passed', passed, false]]
+    
+    items = all_items[@local.model]
+    @items = items 
+
 
     # We assume an ordering of the task categories where the earlier
     # categories are more urgent & shown higher up in the list than later categories.
 
-    if !dash.selected_task && @props.items.length > 0
+    if !dash.selected_task && items.length > 0
       # Prefer to select a higher urgency task by default
 
-      for [category, items] in @props.items
-        if items.length > 0
-          dash.selected_task = items[0].key
+      for [category, itms] in items
+        if itms.length > 0
+          dash.selected_task = itms[0].key
           save dash
           break
 
@@ -774,29 +789,122 @@ AdminTaskList = ReactiveComponent
     if dash.transition
       @selectNext()
 
-    DIV null, 
-      STYLE null, '.task_tab:hover{background-color: #f1f1f1 }'
+    DIV null,
+      DIV null, 
 
-      for [category, items] in @props.items
-        if items.length > 0
-          DIV style: {marginTop: 20}, key: category,
-            H1 style: {fontSize: 22}, category
-            UL style: {},
-              for item in items
-                background_color = if item.key == dash.selected_task then '#F4F0E9' else ''
-                LI key: item.key, style: {position: 'relative', listStyle: 'none', width: CONTENT_WIDTH() / 4},
+        ModerationOptions()
 
-                  DIV 
-                    className: 'task_tab',
-                    style: {zIndex: 1, cursor: 'pointer', padding: '10px', margin: '5px 0', borderRadius: '8px 0 0 8px', backgroundColor: background_color},
-                    onClick: do (item) => => 
-                      dash.selected_task = item.key
-                      save dash
+        UL 
+          style: 
+            listStyle: 'none'
+            margin: '20px auto'
+            textAlign: 'center'
 
-                    @props.renderTab item
+          for model in ['Point', 'Comment', 'Proposal']
+            select_class = (model) => @local.model = model; save @local
 
-                  if dash.selected_task == item.key
-                    @props.renderTask item
+            do (model) => 
+              LI 
+                style: 
+                  display: 'inline-block'
+
+                BUTTON 
+                  style: 
+                    backgroundColor: if @local.model == model then '#444' else 'transparent'
+                    color: if @local.model == model then 'white' else '#aaa'
+                    fontSize: 36
+                    marginRight: 32
+                    border: 'none'
+                    borderRadius: 4
+                    fontWeight: 600
+                    fontStyle: 'oblique'
+
+                  onClick: => select_class(model)
+                  onKeyPress: (e) => 
+                    if e.which in [13, 32]
+                      select_class(model); e.preventDefault()
+                  "Review #{model}s"
+
+                  " (#{all_items[model][0][1].length})"
+
+
+
+        DIV null, 
+
+          for [category, itms, default_show] in items
+
+            if itms.length > 0
+              show_category = (if @local["show_#{category}"]? then @local["show_#{category}"] else default_show)
+              toggle_show = do (category, show_category) => =>
+                @local["show_#{category}"] = !show_category
+                save @local 
+
+              DIV 
+                style: 
+                  marginTop: 20
+                  key: category
+
+
+
+                H1 
+                  style: 
+                    fontSize: 24
+                    fontStyle: 'oblique'
+                    fontWeight: 600
+                    textAlign: 'center'
+                    backgroundColor: '#e0e0e0'
+                    margin: '20px 0'
+                    cursor: 'pointer'
+                  onClick: toggle_show
+
+                  category
+
+                  " (#{itms.length})"
+
+
+                  A 
+                    style: 
+                      #float: 'right'
+                      color: '#aaa'
+                      fontWeight: 400
+                      fontStyle: 'oblique'
+                      verticalAlign: 'middle'
+                      paddingRight: 10
+                      paddingLeft: 40
+                      textDecoration: 'underline'
+                      
+                    
+
+                    if show_category
+                      'Hide'
+
+                    else 
+                      'Show'
+
+
+                if show_category
+                  UL 
+                    style: {}
+                    for item in itms
+                      LI 
+                        'data-id': item.key
+                        key: item.key
+                        style: 
+                          position: 'relative'
+                          listStyle: 'none'
+
+                        onClick: do (item) => => 
+                          dash.selected_task = item.key
+                          save dash
+                          setTimeout => 
+                            $("[data-id='#{item.key}'").ensureInView()
+                          , 1
+
+
+                        ModerateItem 
+                          key: item.key
+                          selected: dash.selected_task == item.key
+
 
 
   # select a different task in the list relative to data.selected_task
@@ -805,7 +913,7 @@ AdminTaskList = ReactiveComponent
   _select: (reverse) -> 
     data = @data()
     get_next = false
-    all_items = if !reverse then @props.items else @props.items.slice().reverse()
+    all_items = if !reverse then @items else @items.slice().reverse()
 
     for [category, items] in all_items
       tasks = if !reverse then items else items.slice().reverse()
@@ -814,6 +922,9 @@ AdminTaskList = ReactiveComponent
           data.selected_task = item.key
           data.transition = null
           save data
+          setTimeout => 
+            $("[data-id='#{item.key}'").ensureInView()
+          , 1
           return
         else if item.key == data.selected_task
           get_next = true
@@ -825,80 +936,16 @@ AdminTaskList = ReactiveComponent
   componentWillUnmount: ->
     $(document).off 'keyup.dash'
 
-        
-ModerationDash = ReactiveComponent
-  displayName: 'ModerationDash'
-
-  render : -> 
-    moderations = @data().moderations.sort (a,b) -> new Date(b.created_at) - new Date(a.created_at)
-    subdomain = fetch '/subdomain'
-
-    # Separate moderations by status
-    passed = []
-    reviewable = []
-    quarantined = []
-    failed = []
-
-    for i in moderations
-      # register a data dependency, else resort doesn't happen when an item changes
-      fetch i.key
-
-      if !i.status? || i.updated_since_last_evaluation
-        reviewable.push i
-      else if i.status == 1
-        passed.push i
-      else if i.status == 0
-        failed.push i
-      else if i.status == 2
-        quarantined.push i
-
-    items = [['Pending review', reviewable], ['Quarantined', quarantined], ['Failed', failed], ['Passed', passed]]
-
-
-    DIV null,
-      DashHeader name: 'Moderate user contributions'
-
-      DIV style: {width: CONTENT_WIDTH(), margin: '15px auto'}, 
-
-        ModerationOptions()
-
-        AdminTaskList 
-          key: 'moderation_dash'
-          items: items
-          renderTab : (item) =>
-            class_name = item.moderatable_type
-            moderatable = fetch(item.moderatable)
-            if class_name == 'Point'
-              proposal = fetch(moderatable.proposal)
-              tease = "#{moderatable.nutshell.substring(0, 30)}..."
-            else if class_name == 'Comment'
-              point = fetch(moderatable.point)
-              proposal = fetch(point.proposal)
-              tease = "#{moderatable.body.substring(0, 30)}..."
-            else if class_name == 'Proposal'
-              proposal = moderatable
-              tease = "#{proposal.name.substring(0, 30)}..."
-
-            DIV className: 'tab',
-              DIV style: {fontSize: 14, fontWeight: 600}, "Moderate #{class_name} #{item.moderatable_id}"
-              DIV style: {fontSize: 12, fontStyle: 'italic'}, tease      
-              DIV style: {fontSize: 12, paddingLeft: 12}, "- #{fetch(moderatable.user).name}"
-              if item.updated_since_last_evaluation
-                DIV style: {fontSize: 12}, "* revised"
-
-          renderTask: (item) => 
-            ModerateItem key: item.key
 
 
 
 
-# TODO: respect point.hide_name
+
 ModerateItem = ReactiveComponent
   displayName: 'ModerateItem'
 
   render : ->
     item = @data()
-
 
     class_name = item.moderatable_type
     moderatable = fetch(item.moderatable)
@@ -906,103 +953,125 @@ ModerateItem = ReactiveComponent
     if class_name == 'Point'
       point = moderatable
       proposal = fetch(moderatable.proposal)
+      tease = "#{moderatable.nutshell.substring(0, 120)}..."
+      header = moderatable.nutshell
+      details = moderatable.text 
     else if class_name == 'Comment'
       point = fetch(moderatable.point)
       proposal = fetch(point.proposal)
       comments = fetch("/comments/#{point.id}")
+      tease = "#{moderatable.body.substring(0, 120)}..."
+      header = moderatable.body
+      details = ''
     else if class_name == 'Proposal'
       proposal = moderatable
+      tease = "#{proposal.name.substring(0, 120)}..."
+      header = proposal.name
+      details = moderatable.description
+
 
     current_user = fetch('/current_user')
     
-    DIV style: adminStyles().task_area_style,
-      
-      # status area
-      DIV style: adminStyles().task_area_bar,
-        if item.updated_since_last_evaluation
-          SPAN style: {}, "Updated since last moderation"
-        else if item.status == 1
-          SPAN style: {}, "Passed by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
-        else if item.status == 2
-          SPAN style: {}, "Quarantined by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
-        else if item.status == 0
-          SPAN style: {}, "Failed by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
-        else 
-          SPAN style: {}, "Is this #{class_name} ok?"
+    selected = @props.selected 
 
-      DIV style: {padding: '10px 30px'},
-        # content area
-        DIV 
-          style: adminStyles().task_area_section_style, 
+    item_header = 
+      fontWeight: 700
+      fontSize: 22
 
-          if class_name == 'Point'
-            UL style: {marginLeft: 73}, 
-              Point key: point, rendered_as: 'under_review', enable_dragging: false
-          else if class_name == 'Proposal'
-            DIV null,
-              DIV 
-                style: 
-                  fontSize: 20
-                  fontWeight: 600
-                moderatable.name
-              DIV 
-                className: 'moderatable_item'
-
-                dangerouslySetInnerHTML: 
-                  __html: moderatable.description
-
-          else if class_name == 'Comment'
-            if !@local.show_conversation
-              DIV null,
-                A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = true; save(@local)),
-                  'Show full conversation'
-                Comment 
-                  key: moderatable
-                  under_review: true
-
-            else
-              DIV null,
-                A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = false; save(@local)),
-                  'Hide full conversation'
-
-                UL style: {opacity: .5, marginLeft: 73}, 
-                  Point key: point, rendered_as: 'under_review', enable_dragging: false
-                for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key))
-
-                  if comment != moderatable.key
-                    DIV style: {opacity: .5},
-                      Comment key: comment
-                  else 
-                    Comment key: moderatable
+    DIV 
+      style: 
+        cursor: if selected then 'auto' else 'pointer'
+        margin: 'auto'
+        borderLeft:  "4px solid #{if selected then focus_color() else 'transparent'}"
+        padding: '8px 14px'
+        maxWidth: 700
+        marginBottom: if selected then 40 else 12
 
 
 
-          DIV style:{fontSize: 12, marginLeft: 73}, 
+      DIV 
+        style: 
+          marginLeft: 70
+          position: 'relative'
+
+        DIV null, 
+
+          if class_name == 'Comment' && selected #@local.show_conversation && selected
+            DIV 
+              style: 
+                opacity: .5
+              STATEMENT 
+                title: point.nutshell 
+                anon: point.hide_name
+                user: point.user
+                body: point.text
+
+
+              for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key)) when comment != moderatable.key
+                STATEMENT 
+                  title: fetch(comment).body
+                  user: fetch(comment).user
+
+          STATEMENT
+            title: if selected then header else tease
+            body: if selected then moderatable.description else ''
+            anon: !!moderatable.hide_name
+            user: moderatable.user
+
+          DIV null,
             "by #{author.name}"
 
-            if !moderatable.hide_name && !@local.messaging
-              [SPAN style: {fontSize: 8, padding: '0 4px'}, " • "
+            if selected && !moderatable.hide_name && !@local.messaging
               BUTTON
-                style: {textDecoration: 'underline', backgroundColor: 'transparent', border: 'none'}
-                onClick: (=> @local.messaging = moderatable; save(@local)),
-                'Message author']
-            else if @local.messaging
-              DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Moderator'
+                style: 
+                  marginLeft: 8
+                  textDecoration: 'underline'
+                  backgroundColor: 'transparent'
+                  border: 'none'
+                onClick: => @local.messaging = moderatable; save(@local)
+                'Message author'
 
 
+          # if selected 
+          #   DIV 
+          #     className: 'moderatable_item'
+          #     style: 
+          #       marginTop: 20
+          #     dangerouslySetInnerHTML: 
+          #       __html: moderatable.description
 
+
+        # if class_name == 'Comment' && selected 
+        #   if !@local.show_conversation
+        #     A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = true; save(@local)),
+        #       'Show full conversation'
+
+        #   else
+        #     A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = false; save(@local)),
+        #       'Hide full conversation'
+
+
+        if selected && @local.messaging
+          DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Moderator'
+
+
+      if selected 
         # moderation area
-        DIV style: adminStyles().task_area_section_style, 
+        DIV 
+          style:       
+            margin: '10px 0px 20px 63px'
+            position: 'relative'
+
           STYLE null, 
             """
-            .moderation { padding: 6px 8px; display: inline-block; }
-            .moderation:hover { background-color: rgba(255,255,255, .5); cursor: pointer; border-radius: 8px; }                         
-            .moderation label, .moderation input { font-size: 24px; }
-            .moderation label:hover, .moderation input:hover { font-size: 24px; cursor: pointer; }
+            .moderation { font-weight: 600; border-radius: 8px; padding: 6px 12px; display: inline-block; margin-right: 10px; box-shadow: 0px 1px 2px rgba(0,0,0,.4)}
+            .moderation label, .moderation input { font-size: 22px; cursor: pointer }
             """
 
           DIV 
             className: 'moderation',
+            style: 
+              backgroundColor: '#81c765'
             onClick: ->
               # this has to happen first otherwise the dash won't 
               # know what the next item is when it transitions
@@ -1021,7 +1090,10 @@ ModerateItem = ReactiveComponent
 
             LABEL htmlFor: 'pass', 'Pass'
           DIV 
-            className: 'moderation',
+            className: 'moderation'
+            style: 
+              backgroundColor: '#ffc92a'
+
             onClick: ->
               # this has to happen first otherwise the dash won't 
               # know what the next item is when it transitions
@@ -1039,7 +1111,10 @@ ModerateItem = ReactiveComponent
               defaultChecked: item.status == 2
             LABEL htmlFor: 'quar', 'Quarantine'
           DIV 
-            className: 'moderation',
+            className: 'moderation'
+            style: 
+              backgroundColor: '#f94747'
+
             onClick: ->
               # this has to happen first otherwise the dash won't 
               # know what the next item is when it transitions
@@ -1058,15 +1133,159 @@ ModerateItem = ReactiveComponent
 
             LABEL htmlFor: 'fail', 'Fail'
 
+      if selected 
+
+        # status area
+        DIV 
+          style: 
+            marginLeft: 63
+            fontStyle: 'italic'
+
+
+          if item.updated_since_last_evaluation
+            SPAN style: {}, "Updated since last moderation"
+          else if item.status == 1
+            SPAN style: {}, "Passed by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
+          else if item.status == 2
+            SPAN style: {}, "Quarantined by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
+          else if item.status == 0
+            SPAN style: {}, "Failed by #{fetch(item.user).name} on #{new Date(item.updated_at).toDateString()}"
+
+
+
+STATEMENT = ReactiveComponent
+  displayName: 'Statement'
+
+  render : ->
+    point = @data()
+
+    title = @props.title 
+    body = @props.body
+    user = @props.user
+
+    left_or_right = 'right' 
+    ioffset = -10
+
+    rendered_as = 'under_review'
+
+    mouth_style = 
+      top: 8
+      position: 'absolute'
+      left: -POINT_MOUTH_WIDTH
+      transform: 'rotate(270deg) scaleX(-1)'
+
+    DIV
+      style: 
+        position: 'relative'
+        listStyle: 'none outside none'
+        marginBottom: '0.5em'
+
+      Avatar
+        key: user
+        style: 
+          position: 'absolute'
+          top: 0
+          width: 50
+          height: 50
+          left: -64
+          boxShadow: '-1px 2px 0 0 #eeeeee;'
+        hide_tooltip: false 
+        anonymous: @props.anon
+
+      DIV 
+        style : 
+          width: POINT_WIDTH()
+          borderWidth: 3
+          borderStyle: 'solid'
+          borderColor: 'transparent'
+          position: 'relative'
+          zIndex: 1
+          outline: 'none'
+          padding: 8
+          borderRadius: 16
+          width: 500
+          backgroundColor: considerit_gray
+          boxShadow: '#b5b5b5 0 1px 1px 0px'
+
+
+        DIV 
+          style: css.crossbrowserify mouth_style
+
+          Bubblemouth 
+            apex_xfrac: 0
+            width: POINT_MOUTH_WIDTH
+            height: POINT_MOUTH_WIDTH
+            fill: considerit_gray
+            stroke: 'none'
+            box_shadow:   
+              dx: 3
+              dy: 0
+              stdDeviation: 2
+              opacity: .5
+
+        DIV 
+          style: 
+            wordWrap: 'break-word'
+            fontSize: POINT_FONT_SIZE()
+
+          DIV 
+            className: 'statement'
+
+            splitParagraphs title
+
+          if body 
+
+            DIV 
+              className: "statement"
+
+              style: 
+                wordWrap: 'break-word'
+                marginTop: '0.5em'
+                fontSize: POINT_FONT_SIZE()
+                fontWeight: 300
+
+              splitParagraphs body
+
+styles += """
+
+.statement a {
+  text-decoration: underline;
+  word-break: break-all; }
+
+.statement p {
+  margin-bottom: 1em; }
+"""
+
+
 ModerationOptions = ReactiveComponent
   displayName: 'ModerationOptions'
 
 
   render: -> 
     subdomain = fetch '/subdomain'
+    expanded = subdomain.moderated_classes.length == 0 || @local.edit_settings
 
-    DIV className: 'moderation_settings',
-      if subdomain.moderated_classes.length == 0 || @local.edit_settings
+    DIV 
+      style: 
+        textAlign: if !expanded then 'right'
+        paddingRight: if !expanded then 30
+
+
+      if !expanded 
+        BUTTON 
+          style: 
+            backgroundColor: 'transparent'
+            fontSize: 24
+            border: 'none'
+            textDecoration: 'underline'
+            color: '#aaa'
+            fontStyle: 'oblique'
+          onClick: => 
+            @local.edit_settings = true
+            save @local
+          'Edit moderation settings'    
+
+      else
         DIV null,             
           for model in ['points', 'comments', 'proposals']
             # The order of the options is important for the database records
@@ -1108,15 +1327,6 @@ ModerationOptions = ReactiveComponent
               save @local
             'close'
 
-      else 
-        BUTTON 
-          style: 
-            padding: '4px 8px'
-
-          onClick: => 
-            @local.edit_settings = true
-            save @local
-          'Edit moderation settings'    
 
 # TODO: Refactor the below and make sure that the styles applied to the 
 #       user generated fields are in sync with the styling in the 
@@ -1158,7 +1368,7 @@ DirectMessage = ReactiveComponent
       display: 'block'
       padding: '4px 8px'
 
-    DIV style: {marginTop: 18, padding: '15px 20px', backgroundColor: 'white', width: 550, border: '#999', boxShadow: "0 1px 2px rgba(0,0,0,.2)"}, 
+    DIV style: {margin: '18px 0', padding: '15px 20px', backgroundColor: 'white', width: 550, backgroundColor: considerit_gray, boxShadow: "0 2px 4px rgba(0,0,0,.4)"}, 
       DIV style: {marginBottom: 8},
         LABEL null, 'To: ', fetch(@props.to).name
 

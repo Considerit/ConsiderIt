@@ -41,7 +41,7 @@ window.Point = ReactiveComponent
             curr_column = Math.floor(i / s.rows)
             side_offset = curr_column * s.col_gap + i * s.dx
             top_offset = (i % s.rows) * s.dy 
-            left_right = if @data().is_pro && @props.rendered_as != 'under_review' then 'left' else 'right'
+            left_right = if @data().is_pro then 'left' else 'right'
             style = 
               top: top_offset
               position: 'absolute'
@@ -53,7 +53,6 @@ window.Point = ReactiveComponent
               key: includer
               className: "point_includer_avatar"
               style: style
-              hide_tooltip: @props.rendered_as == 'under_review' 
               anonymous: point.user == includer && point.hide_name
 
 
@@ -94,9 +93,6 @@ window.Point = ReactiveComponent
         #left: point_content_style.left - 8
         #width: point_content_style.width + 16
 
-    else if @props.rendered_as == 'under_review'
-      _.extend point_content_style, {width: 500}
-
 
     expand_to_see_details = !!point.text
 
@@ -109,7 +105,7 @@ window.Point = ReactiveComponent
       _.extend point_style, 
         marginLeft: 9
         padding: '0 18px 0 18px'
-    else if @props.rendered_as in ['community_point', 'under_review']
+    else if @props.rendered_as == 'community_point'
       point_style.marginBottom = '0.5em'
 
 
@@ -119,14 +115,14 @@ window.Point = ReactiveComponent
       height: 25
       width: 25
       top: 0
-    left_or_right = if @data().is_pro && !(@props.rendered_as in ['decision_board_point', 'under_review'])
+    left_or_right = if @data().is_pro && @props.rendered_as != 'decision_board_point'
                       'right' 
                     else 
                       'left'
-    ioffset = if @props.rendered_as in ['under_review'] then -10 else -50
+    ioffset = -50
     includers_style[left_or_right] = ioffset
 
-    draw_all_includers = @props.rendered_as == 'community_point' || (@props.rendered_as != 'under_review' && TWO_COL())
+    draw_all_includers = @props.rendered_as == 'community_point' || TWO_COL()
 
     if expand_to_see_details && !is_selected
       append = SPAN 
@@ -168,15 +164,15 @@ window.Point = ReactiveComponent
 
         if @props.rendered_as != 'decision_board_point'
 
-          side = if point.is_pro && @props.rendered_as != 'under_review' then 'right' else 'left'
+          side = if point.is_pro then 'right' else 'left'
           mouth_style = 
             top: 8
             position: 'absolute'
 
           mouth_style[side] = -POINT_MOUTH_WIDTH + \
-            if is_selected || @props.rendered_as == 'under_review' || @local.has_focus then 3 else 1
+            if is_selected || @local.has_focus then 3 else 1
           
-          if !point.is_pro || @props.rendered_as == 'under_review'
+          if !point.is_pro
             mouth_style['transform'] = 'rotate(270deg) scaleX(-1)'
           else 
             mouth_style['transform'] = 'rotate(90deg)'
@@ -219,7 +215,7 @@ window.Point = ReactiveComponent
           DIV 
             'aria-hidden': true
             className: "point_details" + \
-                       if is_selected || @props.rendered_as == 'under_review' 
+                       if is_selected
                          ''
                        else 
                          '_tease'
@@ -228,29 +224,24 @@ window.Point = ReactiveComponent
               wordWrap: 'break-word'
               marginTop: '0.5em'
               fontSize: POINT_FONT_SIZE()
-              fontWeight: if browser.high_density_display && !browser.is_mobile then 300 else 400
-
-            if @props.rendered_as == 'under_review'
-              splitParagraphs(point.text)
-              
+              fontWeight: if browser.high_density_display && !browser.is_mobile then 300 else 400              
               
 
-            if @props.rendered_as != 'under_review'
-              DIV 
-                style: 
-                  fontSize: 12
+            DIV 
+              style: 
+                fontSize: 12
 
-                prettyDate(point.created_at)
-                ', '                
-                SPAN 
-                  key: 2 
-                  style: {whiteSpace: 'nowrap'}
+              prettyDate(point.created_at)
+              ', '                
+              SPAN 
+                key: 2 
+                style: {whiteSpace: 'nowrap'}
 
-                  A 
-                    className: 'select_point'
-                    point.comment_count 
-                    " "
-                    if point.comment_count != 1 then t('comments') else t('comment')
+                A 
+                  className: 'select_point'
+                  point.comment_count 
+                  " "
+                  if point.comment_count != 1 then t('comments') else t('comment')
 
 
 
@@ -296,16 +287,15 @@ window.Point = ReactiveComponent
         DIV 
           'aria-hidden': true
           className:'includers'
-          onMouseEnter: if @props.rendered_as != 'under_review' then @highlightIncluders
-          onMouseLeave: if @props.rendered_as != 'under_review' then @unHighlightIncluders
+          onMouseEnter: @highlightIncluders
+          onMouseLeave: @unHighlightIncluders
           style: includers_style
             
           renderIncluders(draw_all_includers)
 
 
 
-      if (TWO_COL() && @props.rendered_as != 'under_review') || \
-              (!TWO_COL() && @props.enable_dragging)
+      if TWO_COL() || (!TWO_COL() && @props.enable_dragging)
         your_opinion = fetch @proposal.your_opinion
         if your_opinion?.published
           can_opine = permit 'update opinion', @proposal, your_opinion
@@ -447,8 +437,6 @@ window.Point = ReactiveComponent
     # or drag remove for point on decision board
     # also: disable for results page
 
-    return if @props.rendered_as == 'under_review'
-
     $point_content = $(@getDOMNode()).find('.point_content')
     revert = 
       if @props.rendered_as == 'community_point' 
@@ -504,8 +492,6 @@ window.Point = ReactiveComponent
 
 
   selectPoint: (e) ->
-    return if @props.rendered_as == 'under_review'
-
     e.stopPropagation()
 
     # android browser needs to respond to this via a touch event;
@@ -596,7 +582,7 @@ styles += """
 
 #{css.grab_cursor('.point_content.ui-draggable')}
 
-.community_point .point_content, .under_review .point_content {
+.community_point .point_content {
   border-radius: 16px;
   padding: 0.5em 9px;
   background-color: #{considerit_gray};
@@ -624,13 +610,6 @@ styles += """
 
 .point_details p:last-child {
   margin-bottom: 0; }
-
-.under_review .point_includer_avatar {
-  top: 0px;
-  width: 50px;
-  height: 50px;
-  left: -64px;
-  box-shadow: -1px 2px 0 0 #eeeeee; }
 
 .point_includer_avatar {
   width: 22px;
@@ -682,7 +661,7 @@ window.Comment = ReactiveComponent
 
         # Delete/edit button
         if current_user.user == comment.user
-          if permit('update comment', comment) > 0 && !@props.under_review
+          if permit('update comment', comment) > 0
             comment_action_style = 
               color: '#444'
               textDecoration: 'underline'

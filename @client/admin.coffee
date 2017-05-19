@@ -1166,8 +1166,6 @@ STATEMENT = ReactiveComponent
     left_or_right = 'right' 
     ioffset = -10
 
-    rendered_as = 'under_review'
-
     mouth_style = 
       top: 8
       position: 'absolute'

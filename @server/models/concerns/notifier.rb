@@ -245,8 +245,7 @@ module Notifier
       if point.user_id == user.id
         'point_authored'
       elsif  (point.inclusions.select(:user_id).map {|x| x.user_id } \
-            + point.comments.select(:user_id).map {|x| x.user_id } \
-            + point.requests.select(:user_id).map {|x| x.user_id }).include?(user.id)
+            + point.comments.select(:user_id).map {|x| x.user_id }).include?(user.id)
         'point_engaged'
       else 
         'watched'

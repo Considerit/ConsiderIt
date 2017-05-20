@@ -97,6 +97,8 @@ ConsiderIt::Application.routes.draw do
 
   # New admin functionality
 
+  get '/moderation/:id' => 'moderation#show'
+
   match "/moderation/:id" => 'moderation#update', :via => :put
   post '/dashboard/message' => 'direct_message#create', :as => 'message'
 

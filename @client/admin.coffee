@@ -735,8 +735,7 @@ ModerationDash = ReactiveComponent
     # todo: choose default more intelligently
     @local.model ||= 'Proposal'
 
-
-    dash = @data()
+    dash = fetch 'moderation_dash'
 
     all_items = {}
 
@@ -897,7 +896,7 @@ ModerationDash = ReactiveComponent
                           dash.selected_task = item.key
                           save dash
                           setTimeout => 
-                            $("[data-id='#{item.key}'").ensureInView()
+                            $("[data-id='#{item.key}']").ensureInView()
                           , 1
 
 
@@ -911,22 +910,25 @@ ModerationDash = ReactiveComponent
   selectNext: -> @_select(false)
   selectPrev: -> @_select(true)
   _select: (reverse) -> 
-    data = @data()
+    dash = fetch 'moderation_dash'
     get_next = false
     all_items = if !reverse then @items else @items.slice().reverse()
 
-    for [category, items] in all_items
+    for [category, items, default_show] in all_items
       tasks = if !reverse then items else items.slice().reverse()
+      show_category = (if @local["show_#{category}"]? then @local["show_#{category}"] else default_show)
+      continue if !show_category
+
       for item in tasks
         if get_next
-          data.selected_task = item.key
-          data.transition = null
-          save data
+          dash.selected_task = item.key
+          dash.transition = null
+          save dash
           setTimeout => 
-            $("[data-id='#{item.key}'").ensureInView()
+            $("[data-id='#{item.key}']").ensureInView()
           , 1
           return
-        else if item.key == data.selected_task
+        else if item.key == dash.selected_task
           get_next = true
 
   componentDidMount: ->
@@ -956,6 +958,7 @@ ModerateItem = ReactiveComponent
       tease = "#{moderatable.nutshell.substring(0, 120)}..."
       header = moderatable.nutshell
       details = moderatable.text 
+      href = "/#{proposal.slug}?results=true&selected=#{point.key}"
     else if class_name == 'Comment'
       point = fetch(moderatable.point)
       proposal = fetch(point.proposal)
@@ -963,11 +966,13 @@ ModerateItem = ReactiveComponent
       tease = "#{moderatable.body.substring(0, 120)}..."
       header = moderatable.body
       details = ''
+      href = "/#{proposal.slug}?results=true&selected=#{point.key}"      
     else if class_name == 'Proposal'
       proposal = moderatable
       tease = "#{proposal.name.substring(0, 120)}..."
       header = proposal.name
       details = moderatable.description
+      href = "/#{proposal.slug}"
 
 
     current_user = fetch('/current_user')
@@ -1021,6 +1026,19 @@ ModerateItem = ReactiveComponent
           DIV null,
             "by #{author.name}"
 
+
+            if selected 
+              A 
+                style: 
+                  textDecoration: 'underline'
+                  padding: '0 8px'
+                target: '_blank'
+                href: href
+                'data-nojax': true
+
+
+                "View #{class_name}"
+
             if selected && !moderatable.hide_name && !@local.messaging
               BUTTON
                 style: 
@@ -1032,30 +1050,25 @@ ModerateItem = ReactiveComponent
                 'Message author'
 
 
-          # if selected 
-          #   DIV 
-          #     className: 'moderatable_item'
-          #     style: 
-          #       marginTop: 20
-          #     dangerouslySetInnerHTML: 
-          #       __html: moderatable.description
-
-
-        # if class_name == 'Comment' && selected 
-        #   if !@local.show_conversation
-        #     A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = true; save(@local)),
-        #       'Show full conversation'
-
-        #   else
-        #     A style: {textDecoration: 'underline', paddingBottom: 10, display: 'block'}, onClick: (=> @local.show_conversation = false; save(@local)),
-        #       'Hide full conversation'
-
 
         if selected && @local.messaging
           DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Moderator'
 
 
       if selected 
+
+        judge = (judgement) => 
+          # this has to happen first otherwise the dash won't 
+          # know what the next item is when it transitions
+          dash = fetch 'moderation_dash'
+          dash.transition = item.key #need state transitions 
+          save dash
+
+          setTimeout => 
+            item.status = judgement
+            save item
+          , 1
+
         # moderation area
         DIV 
           style:       
@@ -1072,15 +1085,7 @@ ModerateItem = ReactiveComponent
             className: 'moderation',
             style: 
               backgroundColor: '#81c765'
-            onClick: ->
-              # this has to happen first otherwise the dash won't 
-              # know what the next item is when it transitions
-              dash = fetch 'moderation_dash'
-              dash.transition = item.key #need state transitions 
-              save dash
-
-              item.status = 1
-              save item
+            onClick: -> judge(1)
 
             INPUT 
               name: 'moderation'
@@ -1089,20 +1094,13 @@ ModerateItem = ReactiveComponent
               defaultChecked: item.status == 1
 
             LABEL htmlFor: 'pass', 'Pass'
+
           DIV 
             className: 'moderation'
             style: 
               backgroundColor: '#ffc92a'
 
-            onClick: ->
-              # this has to happen first otherwise the dash won't 
-              # know what the next item is when it transitions
-              dash = fetch 'moderation_dash'
-              dash.transition = item.key #need state transitions 
-              save dash
-
-              item.status = 2
-              save item
+            onClick: -> judge(2)
 
             INPUT 
               name: 'moderation'
@@ -1115,15 +1113,7 @@ ModerateItem = ReactiveComponent
             style: 
               backgroundColor: '#f94747'
 
-            onClick: ->
-              # this has to happen first otherwise the dash won't 
-              # know what the next item is when it transitions
-              dash = fetch 'moderation_dash'
-              dash.transition = item.key #need state transitions 
-              save dash
-
-              item.status = 0
-              save item
+            onClick: -> judge(0)
 
             INPUT 
               name: 'moderation'

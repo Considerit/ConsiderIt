@@ -1,5 +1,11 @@
 class ModerationController < ApplicationController
 
+  def show 
+    authorize! 'moderate content'
+    dirty_key "/moderation/#{params[:id]}"
+    render :json => []
+  end
+
   def update
     authorize! 'moderate content'
 

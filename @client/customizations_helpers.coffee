@@ -404,7 +404,7 @@ window.HawaiiHeader = (opts) -> ->
   opts ||= {}
   _.defaults opts, 
     background_color: background_color
-    background_image_url: subdomain.branding.masthead
+    background_image_url: opts.background_image_url or subdomain.branding.masthead
     logo: subdomain.branding.logo
     logo_width: 200
     title: '<title is required>'

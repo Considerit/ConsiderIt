@@ -798,7 +798,8 @@ DecisionBoard = ReactiveComponent
         minHeight: if are_points_in_wings then 275 else 170
         width: DECISION_BOARD_WIDTH()
         borderBottom: "#{decision_board_style.borderWidth}px dashed #{focus_color()}"
-
+        backgroundColor: 'white'
+        
     if get_proposal_mode() == 'results'
       give_opinion_style = 
         backgroundColor: focus_color()

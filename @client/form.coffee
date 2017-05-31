@@ -101,7 +101,6 @@ window.WysiwygEditor = ReactiveComponent
   displayName: 'WysiwygEditor'
 
   render : ->
-
     my_data = fetch @props.key
     subdomain = fetch '/subdomain'
     wysiwyg_editor = fetch 'wysiwyg_editor'
@@ -209,6 +208,7 @@ window.WysiwygEditor = ReactiveComponent
                   @refs["toolbaritem-#{@local.focused_toolbar_item}"].getDOMNode().focus()
 
               onKeyDown: (e) => 
+
                 if e.which in [37, 38, 39, 40]
                   # focus prev...
                   i = @local.focused_toolbar_item
@@ -307,6 +307,7 @@ window.WysiwygEditor = ReactiveComponent
   componentDidMount : -> 
     return if !@supports_Quill
 
+
     getHTML = => 
       @getDOMNode().querySelector(".ql-editor").innerHTML
 
@@ -321,7 +322,7 @@ window.WysiwygEditor = ReactiveComponent
     keyboard = @editor.getModule('keyboard')
     delete keyboard.bindings[9]    # 9 is the key code for tab; restore tabbing for accessibility
 
-    @editor.on 'text-change', (delta, source) => 
+    @editor.on 'text-change', (delta, old_contents, source) => 
       my_data = fetch @props.key
       my_data.html = getHTML()
 
@@ -353,6 +354,7 @@ html .ql-container{
 .ql-editor {
   min-height: 120px;
   outline: none;
+  white-space: pre;
 }
 .ql-clipboard {
   display: none;

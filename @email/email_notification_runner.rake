@@ -8,7 +8,11 @@ task :send_email_notifications => :environment do
   # make sure that an email notification task isn't already running   
   f = Rails.root.join('tmp', 'email_notification_runner')
   if File.exist?(f)
-    pp 'aborting: send_email_notifications already running'
+    begin
+      raise 'aborting: send_email_notifications already running'
+    rescue => err
+      ExceptionNotifier.notify_exception err, :env => request.env
+    end
   else 
     open_f = File.new(f, "w+")
 

@@ -41,7 +41,7 @@ Time permitting, Travis would like collaborate with you! Well, as long as you ar
 
 Note that there are still lots of todos to lower the barrier to making contributions, such as identifying good first-time projects. In the meantime, please be patient! And if you want to be a brave, early helper, please reach out to [travis@consider.it](travis@consider.it).
 
-Note that if you want your pull requests to be merged, you'll first have to read and sign our [Contributor License Agreement](). 
+Note that if you want your pull requests to be merged, you'll first have to read and sign our [Contributor License Agreement](). This retains our ability to dual license Consider.it, while at the same time retaining your rights to your contribution.  
 
 Built on
 --------

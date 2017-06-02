@@ -103,6 +103,6 @@ u.save
 ```
 
 
-### Other development environments
+### Development enviroments used
 
-I run considerit in an Ubuntu VM on my Mac, managed by Vagrant and provisioned by Ansible. Shoot me an email at travis@consider.it if you want to do the same. Otherwise you're on your own...I haven't been able to compile all the gems on my Mac :-/
+I've run considerit in an Ubuntu VM on my Mac, managed by Vagrant and provisioned by Ansible. I also have run it on my Mac.

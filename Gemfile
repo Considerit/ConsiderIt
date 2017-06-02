@@ -32,9 +32,15 @@ gem 'whenever' # https://github.com/javan/whenever
 gem 'delayed_job', :git => 'git://github.com/collectiveidea/delayed_job.git' 
 gem 'delayed_job_active_record', :git => 'git://github.com/collectiveidea/delayed_job_active_record.git'
 gem "daemons"
-gem 'backup' #https://github.com/meskyanichi/backup
 gem 'rubyzip'
 gem 'mailgun-ruby'
+
+############
+# PURE PERFORMANCE
+# Rails JSON encoding is super slow, oj makes it faster
+gem 'oj'
+gem 'oj_mimic_json' # we need this for Rails 4.1.x
+
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
@@ -43,20 +49,11 @@ group :development, :test do
   gem 'thin'
   gem 'ruby-prof'
   # gem 'rack-mini-profiler'
-
-  gem 'oj'
-  gem 'oj_mimic_json' # we need this for Rails 4.1.x
-
   gem 'google-api-client'
 end
 
 group :production do
-  ############
-  # PURE PERFORMANCE
-  # Rails JSON encoding is super slow, oj makes it faster
-  gem 'oj'
-  gem 'oj_mimic_json' # we need this for Rails 4.1.x
-
+  # gem 'backup' #https://github.com/meskyanichi/backup
   gem 'exception_notification'
   gem "aws-ses", "~> 0.6.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
   gem 'aws-sdk', "~> 1.60"

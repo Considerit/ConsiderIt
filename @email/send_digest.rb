@@ -4,12 +4,54 @@ BUFFER = 5 * 60
 def send_digest(subdomain, user, notifications, subscription_settings, deliver = true, since = nil)
   
   send_emails = subscription_settings['send_emails']
-  return if !send_emails || !due_for_notification(user, subdomain) || subdomain.name == 'galacticfederation'
 
-  ####
-  # Check notifications to determine if a valid triggering event occurred
-  do_send = false
+  return if !send_emails || \
+            !due_for_notification(user, subdomain) || \
+            !valid_triggering_event(notifications, subscription_settings) || \
+            subdomain.name == 'galacticfederation'
 
+  # Hack!! this notification system is terrible, so I'm going to add even more entropy.
+  # I'm going to get all the data across the subdomain since the last time a digest 
+  # was sent, and not rely on the notification objects. Sorry future Travis!
+
+  last_digest_sent_at = last_sent_at(user, subdomain)
+  if !since 
+    if last_digest_sent_at
+      since = last_digest_sent_at
+    else 
+      since = user.created_at
+    end
+  end 
+
+  send_key = "/subdomain/#{subdomain.id}"
+  user.sent_email_about(send_key)
+
+  mail = DigestMailer.digest(subdomain, user, notifications, get_new_activity(subdomain, user, since), last_digest_sent_at, send_emails)
+
+  # record that we've sent these notifications
+  Notification.transaction do 
+    for v in notifications.values
+      for vv in v.values
+        for vvv in vv.values
+          for n in vvv      
+            n.sent_email = true
+            n.save
+          end
+        end
+      end
+    end
+  end
+
+  mail.deliver_now if deliver
+
+  mail 
+
+end
+
+####
+# Check notifications to determine if a valid triggering event occurred
+
+def valid_triggering_event(notifications, subscription_settings)
   for digest_type, digest_types in notifications
     for digest_id, digest_ids in digest_types
       for event, ns in digest_ids
@@ -33,64 +75,14 @@ def send_digest(subdomain, user, notifications, subscription_settings, deliver =
 
             do_send = !notification.read_at && \
                       Time.now() - notification.created_at > BUFFER
-            break if do_send
+            return true if do_send
           end
 
         end
       end
     end
   end
-
-
-  mail = nil
-
-  if do_send
-
-    # Hack!! this notification system is terrible, so I'm going to add even more entropy.
-    # I'm going to get all the data across the subdomain since the last time a digest 
-    # was sent, and not rely on the notification objects. Sorry future Travis!
-
-    last_digest_sent_at = last_sent_at(user, subdomain)
-    if !since 
-      if last_digest_sent_at
-        since = last_digest_sent_at
-      else 
-        since = user.created_at
-      end
-    end 
-
-    # let's double check to make sure that we haven't sent an email already because of some race condition
-    if !due_for_notification(user, subdomain)
-      return
-    end
-
-    # pp "DELIVERING TO #{user.email}\n"
-
-    send_key = "/subdomain/#{subdomain.id}"
-    user.sent_email_about(send_key)
-
-    mail = DigestMailer.digest(subdomain, user, notifications, get_new_activity(subdomain, user, since), last_digest_sent_at, send_emails)
-
-    # record that we've sent these notifications
-    Notification.transaction do 
-      for v in notifications.values
-        for vv in v.values
-          for vvv in vv.values
-            for n in vvv      
-              n.sent_email = true
-              n.save
-            end
-          end
-        end
-      end
-    end
-
-    mail.deliver_now if deliver
-
-  end
-
-  mail 
-
+  false
 end
 
 def get_new_activity(subdomain, user, since)

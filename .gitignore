@@ -61,3 +61,5 @@ zansible/hosts/chalkboardit
 zansible/hosts/chlkit
 zansible/hosts/considerit
 client_secret.json
+
+.ruby-version

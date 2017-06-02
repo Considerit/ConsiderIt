@@ -56,7 +56,7 @@ group :production do
   # gem 'backup' #https://github.com/meskyanichi/backup
   gem 'exception_notification'
   gem "aws-ses", "~> 0.6.0", :require => 'aws/ses', :git => 'git://github.com/drewblas/aws-ses.git'
-  gem 'aws-sdk', "~> 1.60"
+  gem 'aws-sdk' #, "~> 1.60"
   gem 'dalli' # memcaching: https://github.com/mperham/dalli/
 
   ##############

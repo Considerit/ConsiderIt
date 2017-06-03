@@ -21,7 +21,7 @@ gem 'activerecord-import' # bulk imports for performance
 #############
 # VIEWS / FORMS / CLIENT
 gem "haml"
-gem 'paperclip' # https://github.com/thoughtbot/paperclip
+gem 'paperclip', '~>5.0.0' # https://github.com/thoughtbot/paperclip
 gem 'paperclip-compression'
 gem 'delayed_paperclip'
 gem 'font-awesome-rails'

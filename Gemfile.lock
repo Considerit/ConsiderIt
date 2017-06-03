@@ -166,7 +166,7 @@ GEM
     oj (3.0.11)
     oj_mimic_json (1.0.1)
     os (0.9.6)
-    paperclip (5.1.0)
+    paperclip (5.0.0)
       activemodel (>= 4.2.0)
       activesupport (>= 4.2.0)
       cocaine (~> 0.5.5)
@@ -280,7 +280,7 @@ DEPENDENCIES
   mysql2
   oj
   oj_mimic_json
-  paperclip
+  paperclip (~> 5.0.0)
   paperclip-compression
   prerender_rails
   rails (~> 4)

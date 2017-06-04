@@ -63,8 +63,6 @@ def prepare_production_database(sql_url)
   end
   tar_extract.close
 
-  return 1
-
   puts "...downloaded and extracted production database backup"
 
   # Drop existing database

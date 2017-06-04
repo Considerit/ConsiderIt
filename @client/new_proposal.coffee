@@ -144,24 +144,35 @@ window.NewProposal = ReactiveComponent
 
             proposal_fields.name
 
-          AutoGrowTextArea 
-            id:"#{cluster_slug}-name"
+
+
+          CharacterCountTextInput 
+            id: "#{cluster_slug}-name"
+            maxLength: 180
             name:'name'
-            pattern:'^.{3,}'
+            pattern: '^.{3,}'
             'aria-label': t('proposal_summary_instr')
             placeholder: t('proposal_summary_instr')
-            required:'required'
+            required: 'required'
+
+            count_style: 
+              position: 'absolute'
+              right: 0
+              top: -18 
+              fontSize: 14  
+
             style: 
               fontSize: 22
               width: w
               border: "1px solid #ccc"
               outline: 'none'
               padding: '6px 8px'
-              resize: 'none'
               fontWeight: 600
               #textDecoration: 'underline'
               #borderBottom: "1px solid #444"  
-              color: '#000'            
+              color: '#000'
+              minHeight: 75        
+              resize: 'vertical'    
 
         DIV 
           style: 

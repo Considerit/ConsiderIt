@@ -1,8 +1,5 @@
 # require './element_viewport_positioning'
 
-# require './vendor/jquery.touchpunch'
-
-# require './vendor/modernizr' 
 require './vendor/iframe-resizer-inner.min'
 require './activerest-m'
 require './avatar'

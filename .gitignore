@@ -1,5 +1,7 @@
 .bundle
-db/*.sqlite3
+.ruby-version
+.vagrant
+
 log/*.log
 tmp/*
 *~
@@ -9,31 +11,25 @@ public/images/old
 *.DS_STORE
 .sass-cache/
 *.bk
-.vagrant
 restart.txt
 /Backup
 *.crt
 *.sql
 
-mysql_statebus.coffee
-
-config/newrelic.yml
 config/database.yml
 config/local_environment.yml
 config/application.rb
 
 db/schema.rb
 
+public/build
 public/system/mastheads
 public/system/avatars*
 public/system/homepage_pics
 public/system/logos
 public/system/icons
-public/system/cache/*.css
 public/system/default_avatar
 public/system/paperclip_attachments.yml
-public/assets/
-public/build/
 public/sitemaps/*
 public/test/results/*
 
@@ -62,4 +58,3 @@ zansible/hosts/chlkit
 zansible/hosts/considerit
 client_secret.json
 
-.ruby-version

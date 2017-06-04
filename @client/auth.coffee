@@ -14,7 +14,6 @@
 # too complicated to understand and modify.
 
 #require './vendor/jquery.form'
-require './admin' # for DashHeader
 require './browser_location' # for loadPage
 require './bubblemouth'
 require './customizations'

@@ -355,9 +355,6 @@ html .ql-container{
   min-height: 120px;
   outline: none;
 }
-.ql-clipboard {
-  display: none;
-}
 .ql-editor.ql-blank::before{
   content: attr(data-placeholder);
   pointer-events: none;

@@ -40,28 +40,30 @@ def prepare_production_database(sql_url)
   puts "Downloading database dump..."
 
   # Download and extract target production database backup
-  # if sql_url
-  #   open('tmp/production_db.tar', 'wb') do |file|
-  #     file << open(URI.parse(sql_url)).read
-  #   end
-  # else 
-  #   # download latest stored at AWS
-  #   latest = download_latest_from_s3
-  # end
+  if sql_url
+    open('tmp/production_db.tar', 'wb') do |file|
+      file << open(URI.parse(sql_url)).read
+    end
+  else 
+    # download latest stored at AWS
+    latest = download_latest_from_s3
+  end
 
-  #puts "Preparing local database based on production database #{sql_url or latest}..."
+  puts "Preparing local database based on production database #{sql_url or latest}..."
 
   # Backup's tarball is a directory xenogear/databases/MySQL.sql.gz
-  # tar_extract = Gem::Package::TarReader.new(open('tmp/production_db.tar'))
-  # tar_extract.rewind # The extract has to be rewinded after every iteration
-  # tar_extract.each do |entry|
-  #   if entry.full_name.end_with?('.sql.gz')
-  #     open('tmp/production_db.sql', 'wb') do |gz|
-  #       gz << Zlib::GzipReader.new(entry).read
-  #     end
-  #   end
-  # end
-  # tar_extract.close
+  tar_extract = Gem::Package::TarReader.new(open('tmp/production_db.tar'))
+  tar_extract.rewind # The extract has to be rewinded after every iteration
+  tar_extract.each do |entry|
+    if entry.full_name.end_with?('.sql.gz')
+      open('tmp/production_db.sql', 'wb') do |gz|
+        gz << Zlib::GzipReader.new(entry).read
+      end
+    end
+  end
+  tar_extract.close
+
+  return 1
 
   puts "...downloaded and extracted production database backup"
 

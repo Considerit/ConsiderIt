@@ -25,8 +25,9 @@ UserTags = ReactiveComponent
     for user in users.users
       if user.tags? && Object.keys(user.tags).length > 0
         for tag,val of user.tags 
+          console.log user.tags
           all_tags[tag] ||= {yes: [], no: []}
-          if val && val.toLowerCase() not in ["no", 'false']
+          if val && ( (typeof val != 'string' && !(val instanceof String)) || val.toLowerCase() not in ["no", 'false'])
             all_tags[tag].yes.push user 
           else 
             all_tags[tag].no.push user 
@@ -34,7 +35,8 @@ UserTags = ReactiveComponent
         all_tags['no tags'] ||= {yes: [], no: []}
         all_tags['no tags'].yes.push user
 
-    all_tags
+    if all_tags['considerit_terms.editable']
+      delete all_tags['considerit_terms.editable']
 
     DIV 
       style: 

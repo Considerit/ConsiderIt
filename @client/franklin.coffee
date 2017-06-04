@@ -7,7 +7,6 @@
 require './element_viewport_positioning'
 
 require './vendor/jquery.ui'  # for the drag+drop
-require './vendor/jquery.XDomainRequest' #do we need this?
 require './vendor/jquery.form'
 require './vendor/jquery.touchpunch'
 require './vendor/pdfobject'
@@ -33,7 +32,6 @@ require './homepage'
 require './shared'
 require './opinion_slider'
 require './state_dash'
-require './state_graph'
 require './tooltip'
 require './development'
 require './god'
@@ -2038,8 +2036,7 @@ Root = ReactiveComponent
       onClick: @resetSelection
 
       StateDash()
-      StateGraph()
-
+      
       # state transition components
       AuthTransition()
       LocationTransition()

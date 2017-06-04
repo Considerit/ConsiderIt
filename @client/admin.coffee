@@ -6,8 +6,6 @@ require './form'
 require './shared'
 
 
-adminStyles = -> 
-
 DashHeader = ReactiveComponent
   displayName: 'DashHeader'
 
@@ -1054,6 +1052,26 @@ ModerateItem = ReactiveComponent
         if selected && @local.messaging
           DirectMessage to: @local.messaging.user, parent: @local, sender_mask: 'Moderator'
 
+      if selected && class_name == 'Proposal'
+        # Category
+        DIV 
+          style: 
+            marginTop: 8
+            marginLeft: 63
+                  
+          SELECT
+            style: 
+              fontSize: 18
+            value: proposal.cluster
+            ref: 'category'
+            onChange: (e) =>
+              proposal.cluster = e.target.value
+              save proposal
+
+            for clust in get_all_clusters()
+              OPTION  
+                value: clust
+                clust
 
       if selected 
 

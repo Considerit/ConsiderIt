@@ -95,7 +95,7 @@ window.CharacterCountTextInput = ReactiveComponent
 
 
 
-Quill = require './vendor/quill-1.0.js'
+# Quill = require './vendor/quill-1.0.js'
 
 window.WysiwygEditor = ReactiveComponent
   displayName: 'WysiwygEditor'
@@ -388,7 +388,6 @@ html .ql-container{
   height: 100%;
   outline: none;
   overflow-y: auto;
-  padding: 12px 15px;
   tab-size: 4;
   -moz-tab-size: 4;
   text-align: left;

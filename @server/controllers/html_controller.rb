@@ -70,10 +70,13 @@ class HtmlController < ApplicationController
 
     
     @js = "/#{manifest[@app]}"
+    @vendor = ''
 
     if Rails.application.config.action_controller.asset_host
       @js = "#{Rails.application.config.action_controller.asset_host}#{@js}"
+      @vendor = Rails.application.config.action_controller.asset_host
     end
+
 
     if current_subdomain.customizations
       customization_obj = current_subdomain.customizations.gsub '"', '\\"'

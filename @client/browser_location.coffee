@@ -10,7 +10,7 @@
 # Assumes html5 pushstate history interface available. Make sure to use a 
 # polyfill to support non-pushstate compatible browsers, such as 
 # https://github.com/devote/HTML5-History-API 
-require './vendor/html5-history-polyfill'
+#require './vendor/html5-history-polyfill'
 require './shared'
 require './browser_hacks'
 

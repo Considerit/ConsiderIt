@@ -1,7 +1,7 @@
 # Admin components, like moderation
 
 
-require './vendor/jquery.form'
+# require './vendor/jquery.form'
 require './form'
 require './shared'
 

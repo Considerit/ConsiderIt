@@ -13,7 +13,7 @@
 # clearly documented in the render method so that the method doesn't get
 # too complicated to understand and modify.
 
-require './vendor/jquery.form'
+#require './vendor/jquery.form'
 require './admin' # for DashHeader
 require './browser_location' # for loadPage
 require './bubblemouth'

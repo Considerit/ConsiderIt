@@ -33,16 +33,6 @@ var fs = require('fs')
 
 
 /////
-// Global variables
-// These variables will be made global on Window for use in all js files
-global_variables = {
-  '_': "vendor/underscore",
-  $: "vendor/jquery",
-  jQuery: "vendor/jquery",
-  React: "vendor/react"
-}
-
-/////
 // Entry points
 // These are the different entry points to the application that will be 
 // compiled. All required files starting from the entry point will be compiled
@@ -84,14 +74,6 @@ config = {
       { test: /\.coffee$/, loader: 'coffee-loader', include: path.resolve(__dirname, "@client") },
     ],
 
-    // Files that have already been compiled with webpack
-    // or something like browserify can be skipped. If they're
-    // not, they can sometimes cause Webpack problems...
-    noParse: [
-      /react\.js$/, 
-      /jquery\.js$/,       
-      /quill-1.0\.js$/
-    ]
   },
 
   resolve: {
@@ -112,12 +94,6 @@ config = {
       __DEV__: is_dev,
       __PRODUCTION__: !is_dev
     }),
-
-    ///////////////
-    // ProvidePlugin
-    //
-    // Makes these variables global across all javascript files  
-    new webpack.ProvidePlugin(global_variables),
 
     ////////////
     // Creates a public/build/manifest.json file that maps from
@@ -234,6 +210,10 @@ if(!is_dev){
 
         // sync embedding
         uploadDir( 'public/embedding', 'embedding')
+
+        // sync embedding
+        uploadDir( 'public/vendor', 'vendor')
+
 
       })
     }    

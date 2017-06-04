@@ -1,5 +1,5 @@
 require './browser_hacks'
-md5 = require './vendor/md5' 
+# md5 = require './vendor/md5' 
 
 ##
 # Histogram
@@ -126,7 +126,7 @@ md5 = require './vendor/md5'
 #   - need to provide instructions, probably in tooltip or aria-describedby.
 
 
-require './vendor/d3.v3.min'
+# require './vendor/d3.v3.min'
 require './shared'
 
 window.Histogram = ReactiveComponent

@@ -24,7 +24,7 @@
 
 require './shared'
 require './svg'
-md5 = require './vendor/md5' 
+# md5 = require './vendor/md5' 
 
 window.Bubblemouth = (props) -> 
 

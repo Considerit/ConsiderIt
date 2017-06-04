@@ -53,6 +53,30 @@
       - if current_subdomain.name == 'RANDOM2015'
         %script{type: "text/javascript", src:"//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"}
 
+
+      %script{:type => 'text/javascript'}
+        window.asset_host = '#{Rails.application.config.action_controller.asset_host}'
+
+
+      %script{:src => "#{@vendor}/vendor/react.min.js", :type => 'text/javascript'}
+      %script{:src => "#{@vendor}/vendor/underscore.js", :type => 'text/javascript'}
+      %script{:src => "#{@vendor}/vendor/jquery.js", :type => 'text/javascript'}
+      %script{:src => "#{@vendor}/vendor/jquery.touchpunch.js", :type => 'text/javascript'}
+      %script{:src => "#{@vendor}/vendor/md5.js", :type => 'text/javascript'}
+
+      - if @app == 'franklin'
+        %script{:src => "#{@vendor}/vendor/quill-1.0.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/jquery.ui.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/jquery.form.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/cassowary.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/pdfobject.js", :type => 'text/javascript'}
+        %script{:src => "#{@vendor}/vendor/modernizr.js", :type => 'text/javascript'}
+
+      - if (current_user.super_admin && @app == 'product_page') || @app == 'franklin'
+        %script{:src => "#{@vendor}/vendor/d3.v3.min.js", :type => 'text/javascript'}
+      
+
+
         
     %body
       .hidden 
@@ -77,13 +101,10 @@
           }
         }
 
-      %script{:type => 'text/javascript'}
-        window.asset_host = '#{Rails.application.config.action_controller.asset_host}'
-
       %script{:src => @js, :type => 'text/javascript'}
 
 
-      - if current_user.super_admin
+      - if current_user.super_admin && @app == 'franklin'
         %script{:src => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.min.js', :type => 'text/javascript'}
         %script{:src => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/mode/coffeescript/coffeescript.js', :type => 'text/javascript'}
         %link{:rel => 'stylesheet', :href => 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.min.css'}

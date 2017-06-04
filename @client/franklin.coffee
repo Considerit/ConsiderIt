@@ -6,12 +6,12 @@
 
 require './element_viewport_positioning'
 
-require './vendor/jquery.ui'  # for the drag+drop
-require './vendor/jquery.form'
-require './vendor/jquery.touchpunch'
-require './vendor/pdfobject'
+# require './vendor/jquery.ui'  # for the drag+drop
+# require './vendor/jquery.form'
+# require './vendor/jquery.touchpunch'
+# require './vendor/pdfobject'
+# require './vendor/modernizr' 
 
-require './vendor/modernizr' 
 require './activerest-m'
 require './dock'
 require './admin' # for dashes

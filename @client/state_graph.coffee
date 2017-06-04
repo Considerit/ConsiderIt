@@ -11,8 +11,8 @@
 #   - consider a directed graph
 #   - stable color assignments
 
-require './vendor/d3.v3.min'
-require './vendor/d3.tip.js'
+# require './vendor/d3.v3.min'
+# require './vendor/d3.tip.js'
 
 ##########
 # Initialize

@@ -76,7 +76,7 @@
 require './browser_hacks' # for access to browser object
 require './shared'
 
-cassowary = require './vendor/cassowary'
+# cassowary = require './vendor/cassowary'
 
 window.Dock = ReactiveComponent
   displayName: 'Dock'

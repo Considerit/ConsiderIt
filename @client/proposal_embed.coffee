@@ -1,6 +1,6 @@
 # require './element_viewport_positioning'
 
-require './vendor/iframe-resizer-inner.min'
+# require './vendor/iframe-resizer-inner.min'
 require './activerest-m'
 require './avatar'
 require './browser_hacks'

@@ -482,11 +482,14 @@ window.HawaiiHeader = (opts) -> ->
         opts.title 
 
       if homepage && opts.subtitle
-
+        subtitle_is_html = opts.subtitle.indexOf('<') > -1 && opts.subtitle.indexOf('>') > -1
         DIV
           style: opts.subtitle_style
           
-          opts.subtitle         
+          dangerouslySetInnerHTML: if subtitle_is_html then {__html: opts.subtitle}
+
+          if !subtitle_is_html
+            opts.subtitle       
 
       if homepage && customization('homepage_tabs')
         DIV 

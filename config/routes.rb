@@ -23,13 +23,11 @@ ConsiderIt::Application.routes.draw do
 
   ######
   ## Development dashboard
-  #  switch between subdomains
   get '/change_subdomain/:id' => 'developer#change_subdomain'
-  #  switch between considerit app & the saas landing page
   get '/set_app/:app' => 'developer#set_app'
 
-  get '/proposal/:id/copy_to/:subdomain_id' => 'proposal#copy_to_subdomain'
 
+  get '/proposal/:id/copy_to/:subdomain_id' => 'proposal#copy_to_subdomain'
   get '/oembed(.:format)' => 'oembed#show'
   get '/embed/proposal/:slug' => 'oembed#proposal_embed', :constraints => NotJSON.new
 

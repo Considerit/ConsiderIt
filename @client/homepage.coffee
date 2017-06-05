@@ -700,7 +700,7 @@ ClusterHeading = ReactiveComponent
                   display: if @local.hover_label or is_collapsed then 'inline-block' else 'none'
                   outline: 'none'
 
-            if customization('list_show_new_button', cluster_key) && !is_collapsed
+            if customization('list_show_new_button', cluster_key) && !is_collapsed && @props.proposals_count > 4
               permitted = permit('create proposal')
               if permitted > 0 || permitted == Permission.NOT_LOGGED_IN              
                 A
@@ -711,10 +711,11 @@ ClusterHeading = ReactiveComponent
                     fontFamily: customization('font')
                     fontStyle: 'normal'
                     marginLeft: 14
-                  onClick: => 
+                  onClick: (e) => 
                     show_all = fetch('show_all_proposals')
                     show_all.show_all = true 
                     save show_all
+                    e.stopPropagation()
 
                     setTimeout =>
                       $("[name='add_new_#{cluster.name}']").ensureInView()

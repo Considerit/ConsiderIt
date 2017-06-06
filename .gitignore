@@ -46,15 +46,6 @@ test/data/test.sql
 
 node_modules
 
-zansible/files/ssl/*
-zansible/files/ssh/github
-
-zansible/hosts/group_vars/chalkboardit
-zansible/hosts/group_vars/considerit
-zansible/hosts/group_vars/chlkit
-
-zansible/hosts/chalkboardit
-zansible/hosts/chlkit
-zansible/hosts/considerit
 client_secret.json
 
+Vagrantfile

@@ -41,10 +41,7 @@ ImportDataDash = ReactiveComponent
     subdomain = fetch '/subdomain'
     current_user = fetch '/current_user'
 
-    if subdomain.name == 'livingvotersguide'
-      tables = ['Measures', 'Candidates', 'Jurisdictions']
-    else 
-      tables = ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
+    tables = ['Users', 'Proposals', 'Opinions', 'Points', 'Comments']
 
     DIV null, 
 
@@ -82,17 +79,16 @@ ImportDataDash = ReactiveComponent
         P style: {marginBottom: 6}, 
           "Import data into Considerit. The spreadsheet should be in comma separated value format (.csv)."
 
-        if subdomain.name != 'livingvotersguide'
 
-          DIV null,
-            P style: {marginBottom: 6}, 
-              "To refer to a User, use their email address. For example, if you’re uploading points, in the user column, refer to the author via their email address. "
-            P style: {marginBottom: 6}, 
-              "To refer to a Proposal, refer to its url. "
-            P style: {marginBottom: 6}, 
-              "To refer to a Point, make up an id for it and use that."
-            P style: {marginBottom: 6}, 
-              "You do not have to upload every file, just what you need to. Importing the same spreadsheet multiple times is ok."
+        DIV null,
+          P style: {marginBottom: 6}, 
+            "To refer to a User, use their email address. For example, if you’re uploading points, in the user column, refer to the author via their email address. "
+          P style: {marginBottom: 6}, 
+            "To refer to a Proposal, refer to its url. "
+          P style: {marginBottom: 6}, 
+            "To refer to a Point, make up an id for it and use that."
+          P style: {marginBottom: 6}, 
+            "You do not have to upload every file, just what you need to. Importing the same spreadsheet multiple times is ok."
 
         FORM action: '/dashboard/import_data',
           TABLE null, TBODY null,

@@ -52,24 +52,10 @@ class HtmlController < ApplicationController
       })
     end
 
-    if !session.has_key? :app
-      session[:app] = 'franklin'
-    elsif session[:app] == 'saas_landing_page'
-      # migration. This can be eliminated Junish
-      session[:app] = 'product_page'
-    end
-
-    @app = if current_subdomain.name == 'homepage' || session[:app] == 'product_page'
-              'product_page'
-           else
-              'franklin'
-           end
-
-
     manifest = JSON.parse(File.open("public/build/manifest.json", "rb") {|io| io.read})
 
     
-    @js = "/#{manifest[@app]}"
+    @js = "/#{manifest['franklin']}"
     @vendor = ''
 
     if Rails.application.config.action_controller.asset_host
@@ -120,23 +106,6 @@ class HtmlController < ApplicationController
 
     # subdomain defaults
     case current_subdomain.name
-    when 'livingvotersguide'
-      title = 'Washington Voters Guide for the 2015 Election'
-      image = view_context.asset_path 'images/livingvotersguide/logo.png'
-      description = "Washington's Citizen-powered Voters Guide: learn about your ballot, decide how you’ll vote, and share your opinion. Currently focused on the 2015 Seattle City Council primary election."
-      keywords = "voting,voters guide,online voters guide,2015,ballot,washington,primary election, primaries, general election, washington state,election,pamphlet,voters pamphlet,ballot measures,citizen,initiatives,propositions,2015 elections,online voter pamphlet,voting facts,voters information,voting ballot 2015,voting information 2015,information about voting,election dates,electoral ballot,wa,seattle,tacoma,spokane,yakima,vancouver"
-      fb_app_id = '159147864098005'
-    when 'cityoftigard'
-      title = "City of Tigard Dialogue"
-      image = view_context.asset_path 'images/cityoftigard/logo.png'
-      description = "Dialogue about City of Tigard"
-    when 'homepage'
-      title = 'Consider.it'
-      image = "#{request.protocol}#{view_context.asset_path('images/product_page/logo.png').gsub(/\/\//,'')}"
-      description = "A web forum that elevates your community's opinions. Civil and organized discussion even when hundreds of stakeholders participate. "
-      keywords = "opinion visualization,community engagement,public engagement,public involvement,discussion,forum,feedback,decision making,governance,feedback,collect feedback,deliberation,impact assessment,strategic planning,process improvement,stakeholder committee,listening"
-      google_verification = "gd89L8El1xxxBpOUk9czjE9zZF4nh8Dc9izzbxIRmuY"
-
     when 'newblueplan'
       title = 'New Blue Plan for Retaking Washington'
       image = "#{request.protocol}#{view_context.asset_path('images/wa-dems/activity.png').gsub(/\/\//,'')}"

@@ -1,3 +1,0 @@
-#!/bin/sh
-
-castanaut lib/screencasts/$1

@@ -20,14 +20,7 @@ Development = ReactiveComponent
     subdomains = fetch('/subdomains').subs
     subdomains = (s for s in subdomains when (!@local.only_with_activity || s.activity) && (!@local.highlight_customized || s.customizations))
 
-    apps = fetch '/apps'
-    app = fetch '/application'
-
-    hues = getNiceRandomHues Math.max(subdomains?.length, apps.apps?.length)
-    submenus = if app.app == 'franklin' 
-                ['change subdomain', 'change application']
-               else if app.app == 'product_page'
-                ['change application']
+    hues = getNiceRandomHues subdomains.length
     
     subdomains.sort((a,b) -> if a.name.toLowerCase() > b.name.toLowerCase() then 1 else -1)
 
@@ -69,23 +62,6 @@ Development = ReactiveComponent
               listStyle: 'none'
               display: 'inline-block'
 
-            for submenu in submenus
-              LI
-                style:
-                  display: 'inline-block'
-                  padding: '0px 18px'
-                  backgroundColor: 'black'
-                  color: 'white'
-                  fontWeight: 600
-                onTouchEnd: do(submenu) => (e) => 
-                  @local.hover_second = submenu
-                  save @local
-                onMouseEnter: do(submenu) => (e) => 
-                  @local.hover_second = submenu
-                  save @local
-
-                submenu  
-
             LI 
               style: 
                 paddingLeft: 20
@@ -99,43 +75,24 @@ Development = ReactiveComponent
             style: 
               width: '100%'  
 
-            if @local.hover_second == 'change subdomain'                
-              UL null,
-                for sub, idx in subdomains
-                  LI
+            UL null,
+              for sub, idx in subdomains
+                LI
+                  style: 
+                    display: 'inline-block'
+                    listStyle: 'none'
+                  A
+                    href: "/change_subdomain/#{sub.id}"
+                    'data-nojax': false
                     style: 
+                      padding: "4px 8px"
+                      fontSize: 18
+                      backgroundColor: hsv2rgb(hues[idx], .7, .5)
+                      color: 'white'
                       display: 'inline-block'
-                      listStyle: 'none'
-                    A
-                      href: "/change_subdomain/#{sub.id}"
-                      'data-nojax': false
-                      style: 
-                        padding: "4px 8px"
-                        fontSize: 18
-                        backgroundColor: hsv2rgb(hues[idx], .7, .5)
-                        color: 'white'
-                        display: 'inline-block'
-                        opacity: if @local.search.length > 0 && sub.name.toLowerCase().indexOf(@local.search.toLowerCase()) == -1 then .3   
-                      sub.name
+                      opacity: if @local.search.length > 0 && sub.name.toLowerCase().indexOf(@local.search.toLowerCase()) == -1 then .3   
+                    sub.name
 
-            else if @local.hover_second == 'change application'
-              UL null,
-
-                for app, idx in apps.apps
-                  LI
-                    style: 
-                      display: 'inline-block'
-                      listStyle: 'none'
-                    A
-                      href: "/set_app/#{app}"
-                      'data-nojax': false
-                      style: 
-                        padding: "4px 8px"
-                        fontSize: 18
-                        backgroundColor: hsv2rgb(hues[idx], .7, .5)
-                        color: 'white'
-                        display: 'inline-block'            
-                      app
 
   componentDidMount : ->
 
@@ -144,22 +101,20 @@ Development = ReactiveComponent
       key = (e and e.keyCode) or e.keyCode
 
       if key==14 # cntrl-N        
-        app = fetch '/application'
 
-        if app.app == 'franklin'
-          subdomains = fetch '/subdomains'
-          subdomain = fetch '/subdomain'
+        subdomains = fetch '/subdomains'
+        subdomain = fetch '/subdomain'
 
-          cur_idx = -1
-          for sub, idx in subdomains.subs
-            if sub.id == subdomain.id
-              cur_idx = idx
+        cur_idx = -1
+        for sub, idx in subdomains.subs
+          if sub.id == subdomain.id
+            cur_idx = idx
 
-          next_idx = cur_idx + 1 
-          if next_idx >= subdomains.subs.length
-            next_idx = 0
+        next_idx = cur_idx + 1 
+        if next_idx >= subdomains.subs.length
+          next_idx = 0
 
-          window.location = "/change_subdomain/#{subdomains.subs[next_idx].id}"
+        window.location = "/change_subdomain/#{subdomains.subs[next_idx].id}"
 
 
 

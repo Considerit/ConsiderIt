@@ -54,34 +54,7 @@ class Proposal < ActiveRecord::Base
       moderation_status_check = "(moderation_status IS NULL OR moderation_status=1 OR user_id=#{current_user.id})"
     end
 
-
-    if subdomain.name == 'livingvotersguide'
-      local_jurisdictions = []   
-      
-      user_tags = current_user.tags ? JSON.load(current_user.tags) : nil
-      if user_tags && user_tags['zip.editable']
-        # If the user has a zipcode, we'll want to include all the jurisdictions 
-        # associated with that zipcode. We'll also want to insert them between the statewide
-        # measures and the advisory votes, since we hate the advisory votes. 
-        local_jurisdictions = ActiveRecord::Base.connection.exec_query( 
-          "SELECT distinct(cluster) FROM proposals WHERE subdomain_id=#{subdomain.id} AND hide_on_homepage=1 AND zips like '%#{user_tags['zip.editable']}%'")
-          .map {|r| r['cluster']}
-      end
-      manual_clusters = ['Statewide measures', local_jurisdictions, 'Advisory votes'].flatten
-      proposals = subdomain.proposals.where('cluster IN (?)', manual_clusters)
-
-    elsif subdomain.name == 'homepage'        
-      ActsAsTenant.without_tenant do 
-        proposals = Proposal
-                      .where(:hide_on_homepage => false)
-                      .where('name != "Consider.it can help me"')
-                      .where(:published => true)
-      end 
-    else 
-      proposals = subdomain.proposals.where(:hide_on_homepage => false)
-    end
-
-    proposals = proposals.where(moderation_status_check)
+    proposals = subdomain.proposals.where(:hide_on_homepage => false).where(moderation_status_check)
     proposals
 
   end 
@@ -97,32 +70,31 @@ class Proposal < ActiveRecord::Base
     # make sure that there is an opinion created for current
     # user for all proposals
     your_opinions = {}
-    if subdomain.name != 'homepage'
-      Opinion.where(:user => current_user).order('id DESC').each do |opinion|
+
+    Opinion.where(:user => current_user).order('id DESC').each do |opinion|
+      your_opinions[opinion.proposal_id] = opinion
+    end 
+
+    if your_opinions.keys().length < proposals.length
+      missing_opinions = []
+      proposals.each do |proposal|
+        if !your_opinions.has_key?(proposal.id)
+          missing_opinions << Opinion.new({
+            :proposal_id => proposal.id,
+            :user => current_user ? current_user : nil,
+            :subdomain_id => current_subdomain.id,
+            :stance => 0,
+            :point_inclusions => '[]',
+          })
+        end 
+      end 
+
+      Opinion.import missing_opinions
+
+      Opinion.where(:user => current_user).each do |opinion|
         your_opinions[opinion.proposal_id] = opinion
       end 
-
-      if your_opinions.keys().length < proposals.length
-        missing_opinions = []
-        proposals.each do |proposal|
-          if !your_opinions.has_key?(proposal.id)
-            missing_opinions << Opinion.new({
-              :proposal_id => proposal.id,
-              :user => current_user ? current_user : nil,
-              :subdomain_id => current_subdomain.id,
-              :stance => 0,
-              :point_inclusions => '[]',
-            })
-          end 
-        end 
-
-        Opinion.import missing_opinions
-
-        Opinion.where(:user => current_user).each do |opinion|
-          your_opinions[opinion.proposal_id] = opinion
-        end 
-      end 
-    end
+    end 
 
     proposals_obj = {
       key: '/proposals',
@@ -181,13 +153,11 @@ class Proposal < ActiveRecord::Base
     json = super(options)
 
     # Find an existing opinion for this user
-    if current_subdomain.name != 'homepage'
-      if !your_opinion
-        your_opinion = Opinion.get_or_make(self)
-      end 
+    if !your_opinion
+      your_opinion = Opinion.get_or_make(self)
+    end 
 
-      json['your_opinion'] = your_opinion #if your_opinion
-    end
+    json['your_opinion'] = your_opinion #if your_opinion
 
     # published_opinions = self.opinions.published
     # ops = published_opinions.public_fields.map {|x| x.as_json}

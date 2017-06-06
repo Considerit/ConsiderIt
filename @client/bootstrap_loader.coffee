@@ -6,14 +6,13 @@
 # These are the available applications at this time: 
 #
 #     franklin: The main considerit application
-#     product_page: The considerit homepage for marketing considerit
 #     proposal_embed: an embedable, read-only representation of a proposal
 
 ( ->
 
   # The server indicates which application should be run based on a 
   # meta tag it outputs to the base layout. 
-  app = null
+  app = 'franklin'
   metas = document.getElementsByTagName('meta')
   app_meta = null
   for meta in metas
@@ -42,9 +41,6 @@
         React.initializeTouchEvents(true)
 
       React.renderComponent Franklin({key: 'root'}), document.getElementById('content')
-
-    when 'product_page'
-      React.renderComponent Saas({key: 'saas_root'}), document.getElementById('content')
 
     when 'proposal_embed'
       React.renderComponent ProposalEmbed({key: app_meta.getAttribute('proposal')}), document.getElementById('content')

@@ -24,7 +24,6 @@ ConsiderIt::Application.routes.draw do
   ######
   ## Development dashboard
   get '/change_subdomain/:id' => 'developer#change_subdomain'
-  get '/set_app/:app' => 'developer#set_app'
 
 
   get '/proposal/:id/copy_to/:subdomain_id' => 'proposal#copy_to_subdomain'
@@ -65,7 +64,6 @@ ConsiderIt::Application.routes.draw do
   get '/comments/:point_id' => 'comment#index'
 
   get '/application' => 'application#application'
-  get '/apps' => 'application#app_index'
 
   get '/subdomain' => 'subdomain#show'
   get '/subdomain/:id' => 'subdomain#show'

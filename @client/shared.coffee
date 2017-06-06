@@ -172,7 +172,7 @@ window.getCoords = (el) ->
 window.asset = (name) -> 
   app = fetch('/application')
 
-  if app.app?
+  if app.asset_host?
     a = "#{app.asset_host or ''}/images/#{name}"
   else 
     a = "#{window.asset_host or ''}/images/#{name}"
@@ -284,10 +284,6 @@ window.proposal_url = (proposal) =>
   proposal = fetch proposal
   result = '/' + proposal.slug
   subdomain = fetch('/subdomain') 
-
-  if subdomain.name == 'homepage'
-    subdomain = fetch("/subdomain/#{proposal.subdomain_id}")
-    result = "https://#{subdomain.host_with_port}" + result
 
   if TWO_COL() || (!customization('show_crafting_page_first', proposal) || !proposal.active ) \
      || (!customization('discussion_enabled', proposal))

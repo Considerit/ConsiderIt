@@ -10,11 +10,4 @@ class DeveloperController < ApplicationController
     redirect_to '/'
   end
 
-  def set_app
-    if Rails.env.development? || request.host.end_with?('chlk.it')
-      session[:app] = params['app']
-    end
-
-    redirect_to '/'
-  end
 end

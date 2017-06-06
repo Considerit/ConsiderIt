@@ -1,3 +1,0 @@
-#!/bin/sh
-
-backup perform --trigger xenogear --config-file ~/considerit/Backup/config.rb

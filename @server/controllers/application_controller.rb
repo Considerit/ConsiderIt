@@ -23,17 +23,9 @@ class ApplicationController < ActionController::Base
     render :json => []
   end
 
-  def app_index
-    render :json => [{
-      :key => '/apps',
-      :apps => ['franklin', 'product_page']
-    }]
-  end
 
   def render(*args)
     unless @oembed_request 
-      # dirty_key '/application'
-
       # if there are dirtied keys, we'll append the corresponding data to the response
       if current_subdomain && Thread.current[:dirtied_keys].keys.length > 0
         for arg in args
@@ -105,38 +97,32 @@ protected
       candidate_subdomain
     end 
 
-    # when to display a considerit homepage
-    can_display_homepage = Rails.env.production? || session[:app] == 'product_page'
-    if (rq.subdomain.nil? || rq.subdomain.length == 0) && can_display_homepage 
-      candidate_subdomain = Subdomain.find_by_name('homepage')
-    else
-      default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
+    default_subdomain = session.has_key?(:default_subdomain) ? session[:default_subdomain] : 1
 
-      if rq.subdomain.nil? || rq.subdomain.length == 0
-        candidate_subdomain = nil 
+    if rq.subdomain.nil? || rq.subdomain.length == 0
+      candidate_subdomain = nil 
 
 
-        if Rails.env.development? && rq.host.split('.').length > 1
-          candidate_subdomain = get_subdomain(rq.host.split('.')[0])
-        end 
+      if Rails.env.development? && rq.host.split('.').length > 1
+        candidate_subdomain = get_subdomain(rq.host.split('.')[0])
+      end 
 
-        if !candidate_subdomain 
-          begin
-            candidate_subdomain = Subdomain.find(default_subdomain)
-          rescue ActiveRecord::RecordNotFound
-            # create a subdomain if one doesn't yet exist
-            if Subdomain.count == 0
-              new_subdomain = Subdomain.new name: "test", app_title: "test"
-              new_subdomain.save
-            end
-            candidate_subdomain = Subdomain.first
+      if !candidate_subdomain 
+        begin
+          candidate_subdomain = Subdomain.find(default_subdomain)
+        rescue ActiveRecord::RecordNotFound
+          # create a subdomain if one doesn't yet exist
+          if Subdomain.count == 0
+            new_subdomain = Subdomain.new name: "test", app_title: "test"
+            new_subdomain.save
           end
+          candidate_subdomain = Subdomain.first
         end
-      else
-        candidate_subdomain = get_subdomain(rq.subdomain)
       end
-
+    else
+      candidate_subdomain = get_subdomain(rq.subdomain)
     end
+
 
     set_current_tenant(candidate_subdomain) if candidate_subdomain
     current_subdomain
@@ -183,7 +169,7 @@ protected
     Thread.current[:current_user]    = user
 
     # I think the following is redundant with dirty_if_any_private_proposals
-    if user.registered && current_subdomain.name != 'homepage'
+    if user.registered
       dirty_key '/proposals' # your_opinion
     end 
   end
@@ -237,7 +223,6 @@ protected
       elsif key == '/application'
         response.append({
           key: '/application',
-          app: session[:app],
           dev: (Rails.env.development? || request.host.end_with?('chlk.it')),
           asset_host: "#{Rails.application.config.action_controller.asset_host}",
           godmode: session[:godmode]
@@ -372,8 +357,6 @@ protected
   end
 
   def dirty_if_any_private_proposals(real_user)
-    return if current_subdomain.name == 'homepage'
-
     matters = false 
 
     proposals = Proposal.all_proposals_for_subdomain

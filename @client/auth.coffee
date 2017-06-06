@@ -17,7 +17,6 @@
 require './browser_location' # for loadPage
 require './bubblemouth'
 require './customizations'
-require './form'
 require './shared'
 
 

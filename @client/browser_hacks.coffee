@@ -3,6 +3,7 @@ rxaosp = window.navigator.userAgent.match /Android.*AppleWebKit\/([\d.]+)/
 
 is_android_browser = !!(rxaosp && rxaosp[1]<537)
 window.browser = 
+  key: 'browser'
   is_android_browser : is_android_browser  # stock android browser (not chrome)
   is_opera_mini : !!navigator.userAgent.match /Opera Mini/
   is_ie9 : !!(document.documentMode && document.documentMode == 9)
@@ -29,6 +30,8 @@ window.browser =
                 navigator.userAgent.match(/BlackBerry/i) ||
                 navigator.userAgent.match(/Windows Phone/i)
 
+
+save browser
 
 # Displays warnings for some browsers
 # Stores state about the current device. 

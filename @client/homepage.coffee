@@ -198,7 +198,6 @@ window.TagHomepage = ReactiveComponent
       id: 'homepagetab'
       role: if customization('homepage_tabs') then "tabpanel"
       style: 
-        fontSize: 22
         margin: '45px auto'
         width: HOMEPAGE_WIDTH()
         position: 'relative'
@@ -261,6 +260,7 @@ window.TagHomepage = ReactiveComponent
             textAlign: 'center'
             marginTop: 40
             border: 'none'
+            fontSize: 22
 
           onMouseDown: => 
             show_all.show_all = true
@@ -329,7 +329,6 @@ window.SimpleHomepage = ReactiveComponent
       id: 'homepagetab'
       role: if customization('homepage_tabs') then "tabpanel"
       style: 
-        fontSize: 22
         margin: '45px auto'
         width: HOMEPAGE_WIDTH()
         position: 'relative'
@@ -648,13 +647,14 @@ ClusterHeading = ReactiveComponent
     DIV 
       style: 
         width: HOMEPAGE_WIDTH()
-        marginBottom: 4 #24
+        marginBottom: 8 #24
 
       DIVIDER?()
 
       DIV 
         style: 
           position: 'relative'
+
 
         H1
           style: heading_style
@@ -706,7 +706,7 @@ ClusterHeading = ReactiveComponent
                 A
                   style: 
                     textDecoration: 'underline'
-                    fontSize: 12
+                    fontSize: 14
                     color: focus_color()
                     fontFamily: customization('font')
                     fontStyle: 'normal'

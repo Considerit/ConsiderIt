@@ -345,19 +345,19 @@ window.Histogram = ReactiveComponent
       style:
         position: 'absolute'
         left: 0
-        bottom: -21
-        fontSize: 14
+        bottom: -19
+        fontSize: 12
         fontWeight: 400
-        color: '#666'
+        color: '#999'
       customization("slider_pole_labels.oppose", @props.proposal)
     SPAN
       style:
         position: 'absolute'
         right: 0
-        bottom: -21
-        fontSize: 14
+        bottom: -19
+        fontSize: 12
         fontWeight: 400
-        color: '#666'
+        color: '#999'
       customization("slider_pole_labels.support", @props.proposal)
     ]
 

@@ -68,13 +68,21 @@ window.CollapsedProposal = ReactiveComponent
 
     can_edit = permit('update proposal', proposal) > 0
 
+
+    slider_interpretation = (value) => 
+      if value > .03
+        "#{(value * 100).toFixed(0)}% #{customization("slider_pole_labels.support", proposal)}"
+      else if value < -.03 
+        "#{-1 * (value * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", proposal)}"
+      else 
+        "Neutral"
     LI
       key: proposal.key
       id: 'p' + proposal.slug.replace('-', '_')  # Initial 'p' is because all ids must begin 
                                            # with letter. seeking to hash was failing 
                                            # on proposals whose name began with number.
       style:
-        minHeight: 80
+        minHeight: 64
         position: 'relative'
         margin: "0 0 #{if can_edit then '0' else '15px'} 0"
         padding: 0
@@ -98,18 +106,8 @@ window.CollapsedProposal = ReactiveComponent
         DIV 
           style: 
             position: 'absolute'
-            left: if icons then -50 - 18
-
-          if false && current_user?.logged_in
-            # ability to watch proposal
-            
-            WatchStar
-              proposal: proposal
-              size: 30
-              style: 
-                position: 'absolute'
-                left: -40
-                top: 5
+            left: if icons then -40 - 18
+            top: if icons then 4
 
 
           if icons
@@ -124,8 +122,8 @@ window.CollapsedProposal = ReactiveComponent
                   key: editor
                   user: editor
                   style:
-                    height: 50
-                    width: 50
+                    height: 40
+                    width: 40
                     borderRadius: 0
                     backgroundColor: '#ddd'
                     # opacity: opacity
@@ -164,6 +162,7 @@ window.CollapsedProposal = ReactiveComponent
               textDecoration: 'underline'
               #borderBottom: "1px solid #444"  
               color: '#000'            
+              fontSize: 20
               
             href: proposal_url(proposal)
 
@@ -171,8 +170,8 @@ window.CollapsedProposal = ReactiveComponent
 
           DIV 
             style: 
-              fontSize: 14
-              color: "#777"
+              fontSize: 12
+              color: 'black'
               marginTop: 4
               #fontStyle: 'italic'
 
@@ -183,11 +182,27 @@ window.CollapsedProposal = ReactiveComponent
 
                 prettyDate(proposal.created_at)
 
-                if !icons && (editor = proposal_editor(proposal)) && editor == proposal.user
-                  SPAN 
-                    style: {}
 
-                    " by #{fetch(editor)?.name}"
+                SPAN 
+                  style: 
+                    padding: '0 8px'
+                    color: 'black'
+                  '|'
+
+                if !icons && (editor = proposal_editor(proposal)) && editor == proposal.user
+                  [ 
+                    SPAN 
+                      style: {}
+
+                      " by #{fetch(editor)?.name}"
+
+                    SPAN 
+                      style: 
+                        padding: '0 8px'
+                        color: 'black'
+                      '|'
+                  ]
+
 
 
                 if customization('discussion_enabled',proposal)
@@ -196,7 +211,6 @@ window.CollapsedProposal = ReactiveComponent
                     style: 
                       #fontWeight: 500
                       cursor: 'pointer'
-                      marginLeft: 8
 
                     if proposal.point_count == 1
                       "#{proposal.point_count} #{customization('point_labels.pro', proposal)} or #{customization('point_labels.con', proposal)}"
@@ -219,11 +233,11 @@ window.CollapsedProposal = ReactiveComponent
               SPAN 
                 style: 
                   #border: "1px solid #{@props.category_color}"
-                  backgroundColor: @props.category_color
+                  #backgroundColor: @props.category_color
                   padding: '1px 2px'
-                  color: 'white' #@props.category_color
-                  fontStyle: 'normal'
-                  fontSize: 12
+                  #color: 'white' #@props.category_color
+                  fontStyle: 'italic'
+                  #fontSize: 12
 
                 cluster
 
@@ -232,7 +246,7 @@ window.CollapsedProposal = ReactiveComponent
               style: 
                 visibility: if !@local.hover_proposal then 'hidden'
                 position: 'relative'
-                top: -4
+                top: -2
 
               A 
                 href: "#{proposal.key}/edit"
@@ -241,7 +255,7 @@ window.CollapsedProposal = ReactiveComponent
                   color: focus_color()
                   backgroundColor: 'transparent'
                   padding: 0
-                  fontSize: 14
+                  fontSize: 12
                 t('edit')
 
               if permit('delete proposal', proposal) > 0
@@ -252,7 +266,7 @@ window.CollapsedProposal = ReactiveComponent
                     backgroundColor: 'transparent'
                     border: 'none'
                     padding: 0
-                    fontSize: 14
+                    fontSize: 12
 
                   onClick: => 
                     if confirm('Delete this proposal forever?')
@@ -268,6 +282,7 @@ window.CollapsedProposal = ReactiveComponent
         style: 
           display: 'inline-block' 
           position: 'relative'
+          top: 4
         # A
         #   href: proposal_url(proposal)
 
@@ -280,7 +295,7 @@ window.CollapsedProposal = ReactiveComponent
             proposal: proposal
             opinions: opinions
             width: secnd_column.width
-            height: 50
+            height: 40
             enable_selection: false
             draw_base: true
             draw_base_labels: !slider_regions
@@ -306,13 +321,7 @@ window.CollapsedProposal = ReactiveComponent
             onBlur: (e) => @local.slider_has_focus = false; save @local
             onFocus: (e) => @local.slider_has_focus = true; save @local 
 
-            readable_text: (value) => 
-              if value > .03
-                "#{(value * 100).toFixed(0)}% #{customization("slider_pole_labels.support", proposal)}"
-              else if value < -.03 
-                "#{-1 * (value * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", proposal)}"
-              else 
-                "Neutral"
+            readable_text: slider_interpretation
             onMouseUpCallback: (e) =>
               # We save the slider's position to the server only on mouse-up.
               # This way you can drag it with good performance.
@@ -368,13 +377,15 @@ window.CollapsedProposal = ReactiveComponent
 
         score = pad score.toFixed(1),2
 
-        score_w = widthWhenRendered "#{score}", {fontSize: 18, fontWeight: 600}
+        val = "#{opinions.length} opinion#{if opinions.length != 1 then 's' else ''}"
+        score_w = widthWhenRendered val, {fontSize: 12}
 
         show_tooltip = => 
           if opinions.length > 0
             tooltip = fetch 'tooltip'
             tooltip.coords = $(@refs.score.getDOMNode()).offset()
-            tooltip.tip = "#{opinions.length} opinions. Average of #{Math.round(avg * 100) / 100} on a -1 to 1 scale."
+            #tooltip.tip = "Average rating is #{Math.round(avg * 100) / 100} on a -1 to 1 scale."
+            tooltip.tip = "Average rating is #{slider_interpretation(avg)}"
             save tooltip
         hide_tooltip = => 
           tooltip = fetch 'tooltip'
@@ -386,8 +397,8 @@ window.CollapsedProposal = ReactiveComponent
           ref: 'score'
           style: 
             position: 'absolute'
-            right: -50 - score_w
-            top: 10
+            right: -10 - score_w
+            top: 40 - 12
 
           onFocus: show_tooltip
           onMouseEnter: show_tooltip
@@ -397,13 +408,10 @@ window.CollapsedProposal = ReactiveComponent
           SPAN 
             style: 
               color: '#999'
-              fontSize: 18
-              fontWeight: 600
+              fontSize: 12
               cursor: 'default'
 
-            if negative
-              '–'
-            score
+            val
 
   componentDidUpdate: -> 
     if @local.keep_in_view

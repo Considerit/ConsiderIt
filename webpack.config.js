@@ -55,7 +55,7 @@ config = {
   debug : is_dev,
   displayErrorDetails : true,
   outputPathinfo : true,
-  devtool : is_dev ? 'cheap-eval-source-map' : 'source-map',
+  devtool : 'source-map', //is_dev ? 'cheap-eval-source-map' : 'source-map',
 
   entry: entry_points,
 

@@ -171,7 +171,7 @@ window.CollapsedProposal = ReactiveComponent
           DIV 
             style: 
               fontSize: 12
-              color: 'black'
+              color: 'black' #'#999'
               marginTop: 4
               #fontStyle: 'italic'
 
@@ -186,7 +186,6 @@ window.CollapsedProposal = ReactiveComponent
                 SPAN 
                   style: 
                     padding: '0 8px'
-                    color: 'black'
                   '|'
 
                 if !icons && (editor = proposal_editor(proposal)) && editor == proposal.user
@@ -199,7 +198,6 @@ window.CollapsedProposal = ReactiveComponent
                     SPAN 
                       style: 
                         padding: '0 8px'
-                        color: 'black'
                       '|'
                   ]
 
@@ -377,8 +375,8 @@ window.CollapsedProposal = ReactiveComponent
 
         score = pad score.toFixed(1),2
 
-        val = "#{opinions.length} opinion#{if opinions.length != 1 then 's' else ''}"
-        score_w = widthWhenRendered val, {fontSize: 12}
+        val = "0000 opinion#{if opinions.length != 1 then 's' else ''}"
+        score_w = widthWhenRendered(' opinion' + (if opinions.length != 1 then 's' else ''), {fontSize: 12}) + widthWhenRendered("0000", {fontSize: 24})
 
         show_tooltip = => 
           if opinions.length > 0
@@ -397,8 +395,9 @@ window.CollapsedProposal = ReactiveComponent
           ref: 'score'
           style: 
             position: 'absolute'
-            right: -10 - score_w
-            top: 40 - 12
+            right: -18 - score_w
+            top: 23 #40 - 12
+            textAlign: 'left'
 
           onFocus: show_tooltip
           onMouseEnter: show_tooltip
@@ -408,10 +407,20 @@ window.CollapsedProposal = ReactiveComponent
           SPAN 
             style: 
               color: '#999'
-              fontSize: 12
+              fontSize: 20
+              #fontWeight: 600
               cursor: 'default'
+              lineHeight: 1
+            opinions.length
 
-            val
+            SPAN 
+              style: 
+                color: '#999'
+                fontSize: 12
+                cursor: 'default'
+                verticalAlign: 'baseline'
+
+              ' opinion' + (if opinions.length != 1 then 's' else '')
 
   componentDidUpdate: -> 
     if @local.keep_in_view

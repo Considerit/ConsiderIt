@@ -52,7 +52,7 @@ window.point_labels =
     cons: 'weaknesses'
     your_header: "--valences--" 
     other_header: "--valences-- observed" 
-    top_header: "Foremost --valences--" 
+    top_header: "Top --valences--" 
 
   strengths_limitations:
     pro: 'strength'
@@ -61,7 +61,7 @@ window.point_labels =
     cons: 'limitations'
     your_header: "--valences-- you observed" 
     other_header: "--valences-- observed" 
-    top_header: "Foremost --valences--" 
+    top_header: "Top --valences--" 
 
 
   challenge_justify:

@@ -114,8 +114,7 @@ window.NewProposal = ReactiveComponent
           t("login_to_add_new")
     else 
 
-      [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-      w = first_column.width
+      w = column_sizes().first
       
       DIV 
         style:

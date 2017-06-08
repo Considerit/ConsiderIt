@@ -294,7 +294,7 @@ Proposal = ReactiveComponent
             minHeight: if show_all_points then minheight     
             position: 'relative'
             paddingBottom: '4em' #padding instead of margin for docking
-            margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 4em auto"
+            margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
             display: if !customization('discussion_enabled', @proposal) then 'none'
 
 
@@ -391,6 +391,16 @@ Proposal = ReactiveComponent
               'Show all'
 
 
+      if mode == 'results'
+        w = 568
+        DIV   
+          style: 
+            margin: '24px auto'
+            width: w
+
+          NextProposals
+            width: w
+
 
       if edit_mode && browser.is_mobile
         # full screen edit point mode for mobile
@@ -405,6 +415,66 @@ Proposal = ReactiveComponent
           fresh: pc.adding_new_point
           valence: valence
           your_points_key: edit_mode
+
+
+
+NextProposals = ReactiveComponent
+  displayName: 'NextProposals'
+
+  render: -> 
+    [dummy, next] = get_next_proposals
+                      relative_to: @proposal 
+
+    count = @props.count or 5
+
+    to_show = []
+    for proposal in next when !proposal.your_opinion.published
+      to_show.push proposal 
+      break if to_show.length >= count 
+
+    return SPAN null if to_show.length < 2
+
+    heading_style = _.defaults {}, customization('list_label_style'),
+      fontSize: 36
+      fontWeight: 700
+      fontStyle: 'oblique'
+      textAlign: 'center'
+      marginBottom: 12
+
+
+    DIV 
+      style: {}
+
+      H2
+        style: heading_style
+
+        'Explore more topics'
+
+
+
+      UL null, 
+
+        for proposal in to_show
+          cluster = proposal.cluster or 'Proposals'
+
+          CollapsedProposal 
+            key: "collapsed#{proposal.key or proposal}"
+            proposal: proposal
+            show_category: true
+            width: @props.width
+
+      DIV 
+        style: 
+          textAlign: 'right'
+          fontSize: 22
+        "…or go "
+        A 
+          href: '/'
+          style: 
+            textDecoration: 'underline'
+            fontWeight: 600
+          'back to the homepage'
+
 
 
 ##
@@ -497,8 +567,6 @@ ProposalDescription = ReactiveComponent
           I className: 'fa fa-info-circle', style: {paddingRight: 7}
           'Closed to new contributions at this time.'
 
-      # TODO: now that we're accepting user contributed proposals, we need 
-      # to SANITIZE the description
       DIV
         className: 'proposal_details'
         style:
@@ -506,6 +574,7 @@ ProposalDescription = ReactiveComponent
           position: 'relative'
           maxHeight: if @local.description_collapsed then @max_description_height
           overflow: if @local.description_collapsed then 'hidden'
+
         if @local.description_collapsed
           BUTTON
             id: 'expand_full_text'
@@ -567,18 +636,6 @@ ProposalDescription = ReactiveComponent
               padding: 0
             t('edit')
 
-          # BUTTON 
-          #   style: 
-          #     marginRight: 10
-          #     color: '#999'              
-          #     backgroundColor: if @local.edit_roles then '#fafafa' else 'transparent'
-          #     border: 'none'
-          #     padding: 0
-          #   onClick: => 
-          #     @local.edit_roles = !@local.edit_roles
-          #     save @local
-          #   t('share')
-
           if permit('delete proposal', @proposal) > 0
             BUTTON
               style:
@@ -593,41 +650,6 @@ ProposalDescription = ReactiveComponent
                   destroy(@proposal.key)
                   loadPage('/')
               t('delete')
-
-          # if current_user.is_super_admin
-          #   SPAN 
-          #     style:
-          #       marginRight: 10
-          #       color: '#999'
-
-          #     onClick: => 
-          #       @local.copy_to_subdomain = !@local.copy_to_subdomain
-          #       save @local
-
-          #     A null,
-          #       'Copy to subdomain'
-
-          #     if @local.copy_to_subdomain
-          #       subdomains = fetch('/subdomains').subs
-          #       hues = getNiceRandomHues subdomains?.length
-                
-          #       UL 
-          #         style: {}
-          #         for sub, idx in subdomains
-          #           LI
-          #             style: 
-          #               display: 'inline-block'
-          #               listStyle: 'none'
-          #             A
-          #               href: "/proposal/#{@proposal.id}/copy_to/#{sub.id}"
-          #               'data-nojax': false
-          #               style: 
-          #                 padding: "4px 8px"
-          #                 fontSize: 18
-          #                 backgroundColor: hsv2rgb(hues[idx], .7, .5)
-          #                 color: 'white'
-          #                 display: 'inline-block'            
-          #               sub.name        
 
       if @local.edit_roles
         DIV 

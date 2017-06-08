@@ -124,34 +124,15 @@ window.proposal_editor = (proposal) ->
   return editor != '-' and editor
 
 
-window.cluster_styles = ->
+window.column_sizes = (args) ->
+  args ||= {}
+  width = args.width or HOMEPAGE_WIDTH()
 
-  first_column =
-    width: HOMEPAGE_WIDTH() * .6 - 50
-    display: 'inline-block'
-    verticalAlign: 'top'
-    position: 'relative'
-
-  secnd_column =
-    width: HOMEPAGE_WIDTH() * .4
-    display: 'inline-block'
-    verticalAlign: 'top'
-    marginLeft: 50
-
-  first_header =
-    fontSize: 36
-    marginBottom: 30
-    fontWeight: 700
-  _.extend(first_header, first_column)
-
-  secnd_header =
-    fontSize: 36
-    fontWeight: 600
-    position: 'relative'
-    whiteSpace: 'nowrap'
-  _.extend(secnd_header, secnd_column)
-
-  [first_column, secnd_column, first_header, secnd_header]
+  return {
+    first: width * .6 - 50
+    second: width * .4
+    gutter: 50
+  }
 
 
 window.HomepageTabUrlReflector = ReactiveComponent
@@ -180,8 +161,6 @@ window.TagHomepage = ReactiveComponent
       colors[cluster] = hues[idx]
 
     proposals = sorted_proposals(proposals)
-
-    [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
 
     homepage_tabs = fetch 'homepage_tabs'
 
@@ -578,8 +557,6 @@ ClusterHeading = ReactiveComponent
     collapsed = fetch 'collapsed_clusters'    
     is_collapsed = !!collapsed[cluster_key]
 
-    [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-
 
     subdomain = fetch '/subdomain'
 
@@ -594,8 +571,8 @@ ClusterHeading = ReactiveComponent
     if heading_text == 'Show all'
       heading_text = "All Proposals"
     heading_style = _.defaults {}, customization('list_label_style', cluster_key),
-      fontSize: first_header.fontSize
-      fontWeight: first_header.fontWeight
+      fontSize: 36
+      fontWeight: 700
       fontStyle: 'oblique'
 
     description = customization('list_description', cluster_key) or customization('list_one_line_desc', cluster_key)
@@ -695,14 +672,19 @@ ClusterHeading = ReactiveComponent
                       marginBottom: 10
                     dangerouslySetInnerHTML: {__html: para}
 
-          else if widthWhenRendered(heading_text, heading_style) <= first_column.width + secnd_header.marginLeft
+          else if widthWhenRendered(heading_text, heading_style) <= column_sizes().first + column_sizes().gutter
 
 
 
             histo_title = customization('list_opinions_title', cluster_key)
               
             DIV
-              style: _.extend {}, secnd_header, 
+              style: 
+                width: column_sizes().second
+                display: 'inline-block'
+                verticalAlign: 'top'
+                marginLeft: column_sizes().margin
+                whiteSpace: 'nowrap'
                 position: 'absolute'
                 top: 0
                 right: 0
@@ -727,14 +709,13 @@ ClusterHeading = ReactiveComponent
 
 
 window.list_actions = (props) -> 
-  [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
 
   SPAN null,
 
     if props.can_sort || props.add_new
       DIV 
         style: 
-          width: first_column.width
+          width: column_sizes().first
           marginBottom: 12
           display: 'inline-block'
           verticalAlign: 'top'
@@ -775,9 +756,9 @@ window.list_actions = (props) ->
     if customization('opinion_filters')
       OpinionFilter
         style: 
-          width: if props.can_sort || true then secnd_column.width
+          width: if props.can_sort || true then column_sizes().second
           marginBottom: 12
-          marginLeft: if props.can_sort then secnd_column.marginLeft else first_column.width + secnd_column.marginLeft
+          marginLeft: column_sizes().gutter + (if props.can_sort then 0 else column_sizes().first)
           display: if props.can_sort then 'inline-block'
           verticalAlign: 'top'
           textAlign: 'center' 

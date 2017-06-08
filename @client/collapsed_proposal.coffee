@@ -24,6 +24,9 @@ window.CollapsedProposal = ReactiveComponent
     proposal = fetch @props.proposal
     options = @props.options
 
+    col_sizes = column_sizes
+                  width: @props.width
+
     # we want to update if the sort order changes so that we can 
     # resolve @local.keep_in_view
     fetch("cluster-#{slugify(proposal.cluster or 'Proposals')}/sort_order")
@@ -33,8 +36,6 @@ window.CollapsedProposal = ReactiveComponent
     watching = current_user.subscriptions[proposal.key] == 'watched'
 
     return if !watching && fetch('homepage_filter').watched
-
-    [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
 
     your_opinion = fetch proposal.your_opinion
     if your_opinion?.published
@@ -101,7 +102,12 @@ window.CollapsedProposal = ReactiveComponent
         if draw_slider && !slider.is_moving
           @local.hover_proposal = null; save @local
 
-      DIV style: first_column,
+      DIV 
+        style: 
+          width: col_sizes.first 
+          display: 'inline-block'
+          verticalAlign: 'top'
+          position: 'relative'
 
         DIV 
           style: 
@@ -153,7 +159,7 @@ window.CollapsedProposal = ReactiveComponent
             display: 'inline-block'
             fontWeight: 400
             paddingBottom: if !can_edit then 20 else 4
-            width: first_column.width
+            width: col_sizes.first
 
           A
             className: 'proposal proposal_homepage_name'
@@ -281,86 +287,84 @@ window.CollapsedProposal = ReactiveComponent
           display: 'inline-block' 
           position: 'relative'
           top: 4
-        # A
-        #   href: proposal_url(proposal)
-
-        DIV
-          style: secnd_column
+          verticalAlign: 'top'
+          width: col_sizes.second
+          marginLeft: col_sizes.gutter
                 
 
-          Histogram
-            key: "histogram-#{proposal.slug}"
-            proposal: proposal
-            opinions: opinions
-            width: secnd_column.width
-            height: 40
-            enable_selection: false
-            draw_base: true
-            draw_base_labels: !slider_regions
+        Histogram
+          key: "histogram-#{proposal.slug}"
+          proposal: proposal
+          opinions: opinions
+          width: col_sizes.second
+          height: 40
+          enable_selection: false
+          draw_base: true
+          draw_base_labels: !slider_regions
 
-          Slider 
-            base_height: 0
-            draw_handle: !!draw_slider
-            key: "homepage_slider#{proposal.key}"
-            width: secnd_column.width
-            polarized: true
-            regions: slider_regions
-            respond_to_click: false
-            base_color: 'transparent'
-            handle: slider_handle.triangley
-            handle_height: 18
-            handle_width: 21
-            handle_style: 
-              opacity: if !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
-            offset: true
-            handle_props:
-              use_face: false
-            label: "Express your opinion on a slider from #{customization("slider_pole_labels.oppose", proposal)} to #{customization("slider_pole_labels.support", proposal)}"
-            onBlur: (e) => @local.slider_has_focus = false; save @local
-            onFocus: (e) => @local.slider_has_focus = true; save @local 
+        Slider 
+          base_height: 0
+          draw_handle: !!draw_slider
+          key: "homepage_slider#{proposal.key}"
+          width: col_sizes.second
+          polarized: true
+          regions: slider_regions
+          respond_to_click: false
+          base_color: 'transparent'
+          handle: slider_handle.triangley
+          handle_height: 18
+          handle_width: 21
+          handle_style: 
+            opacity: if !browser.is_mobile && @local.hover_proposal != proposal.key && !@local.slider_has_focus then 0 else 1             
+          offset: true
+          handle_props:
+            use_face: false
+          label: "Express your opinion on a slider from #{customization("slider_pole_labels.oppose", proposal)} to #{customization("slider_pole_labels.support", proposal)}"
+          onBlur: (e) => @local.slider_has_focus = false; save @local
+          onFocus: (e) => @local.slider_has_focus = true; save @local 
 
-            readable_text: slider_interpretation
-            onMouseUpCallback: (e) =>
-              # We save the slider's position to the server only on mouse-up.
-              # This way you can drag it with good performance.
-              if your_opinion.stance != slider.value
+          readable_text: slider_interpretation
+          onMouseUpCallback: (e) =>
+            # We save the slider's position to the server only on mouse-up.
+            # This way you can drag it with good performance.
+            if your_opinion.stance != slider.value
 
-                # save distance from top that the proposal is at, so we can 
-                # maintain that position after the save potentially triggers 
-                # a re-sort. 
-                prev_offset = @getDOMNode().offsetTop
-                prev_scroll = window.scrollY
+              # save distance from top that the proposal is at, so we can 
+              # maintain that position after the save potentially triggers 
+              # a re-sort. 
+              prev_offset = @getDOMNode().offsetTop
+              prev_scroll = window.scrollY
 
-                your_opinion.stance = slider.value
-                your_opinion.published = true
-                save your_opinion
-                window.writeToLog 
-                  what: 'move slider'
-                  details: {proposal: proposal.key, stance: slider.value}
-                @local.slid = 1000
+              your_opinion.stance = slider.value
+              your_opinion.published = true
+              save your_opinion
+              window.writeToLog 
+                what: 'move slider'
+                details: {proposal: proposal.key, stance: slider.value}
+              @local.slid = 1000
 
-                update = fetch('homepage_you_updated_proposal')
-                update.dummy = !update.dummy
-                save update
+              update = fetch('homepage_you_updated_proposal')
+              update.dummy = !update.dummy
+              save update
 
-                @local.keep_in_view = 
-                  offset: prev_offset
-                  scroll: prev_scroll
+              @local.keep_in_view = 
+                offset: prev_offset
+                scroll: prev_scroll
 
-                scroll_handle = => 
-                  @local.keep_in_view = null 
-                  window.removeEventListener 'scroll', scroll_handle
+              scroll_handle = => 
+                @local.keep_in_view = null 
+                window.removeEventListener 'scroll', scroll_handle
 
-                window.addEventListener 'scroll', scroll_handle
+              window.addEventListener 'scroll', scroll_handle
 
 
-              mouse_over_element = closest e.target, (node) => 
-                node == @getDOMNode()
+            mouse_over_element = closest e.target, (node) => 
+              node == @getDOMNode()
 
-              if @local.hover_proposal == proposal.key && !mouse_over_element
-                @local.hover_proposal = null 
-                save @local
-      
+            if @local.hover_proposal == proposal.key && !mouse_over_element
+              @local.hover_proposal = null 
+              save @local
+    
       # little score feedback
       if show_proposal_scores
         score = 0

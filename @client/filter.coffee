@@ -106,47 +106,44 @@ basic_proposal_scoring = (proposal, opinion_value) ->
 
 
 sort_options = [
-
   { 
-    func: basic_proposal_scoring
-    name: 'total score'
-    opinion_value: (o) -> o.stance
-    description: "Each proposal is scored by the sum of opinions, where opinions are on [-1, 1]."
-  }, {
-    func: (proposal) -> new Date(proposal.created_at).getTime()
-    name: 'newest'
-    description: "The proposals submitted most recently are shown first."
-  }, {
-    func: basic_proposal_scoring
-    name: 'most activity'
-    opinion_value: (o) -> 1 + (o.point_inclusions or []).length
-    description: "Each proposal is scored by the raw number of opinions and recognized pros/cons."
-  }, { 
     func: (proposal, opinion_value) -> 
       sum = basic_proposal_scoring(proposal, opinion_value)
       sum / fetch(proposal).opinions.length
-    name: 'average score'
+    name: 'Average Score'
     opinion_value: (o) -> o.stance
     description: "Each proposal is scored by the average opinion score, where opinions are on [-1, 1]."
-  }, {
-    func: (proposal) -> 
-      if fetch(proposal.your_opinion).published then proposal.your_opinion.stance else -1
-    name: 'your score'
-    description: "Proposals are ordered by your own opinion on them."
+  }, { 
+    func: basic_proposal_scoring
+    name: 'Total Score'
+    opinion_value: (o) -> o.stance
+    description: "Each proposal is scored by the sum of opinions, where opinions are on [-1, 1]."
   }, {
     func: (proposal, opinion_value) -> 
       sum = basic_proposal_scoring(proposal, opinion_value)
       n = Date.now()
       pt = new Date(proposal.created_at).getTime()
       sum / (1 + (n - pt) / 10000000000)  # decrease this constant to favor newer proposals
-
-
-    name: 'trending'
+    name: 'Trending'
     opinion_value: (o) -> 
       ot = new Date(o.updated_at).getTime()
       n = Date.now()
       o.stance / (1 + Math.pow((n - ot) / 100000, 2))
-    description: "Like 'total score', except that newer opinions are weighed more heavily, and older proposals are penalized."
+    description: "'Total Score', except that newer opinions and topics are weighed more heavily."
+  }, {
+    func: (proposal) -> new Date(proposal.created_at).getTime()
+    name: 'Newest'
+    description: "The proposals submitted most recently are shown first."
+  }, {
+    func: basic_proposal_scoring
+    name: 'Most Activity'
+    opinion_value: (o) -> 1 + (o.point_inclusions or []).length
+    description: "Ranked by number of opinions and discussion."
+  },  {
+    func: (proposal) -> 
+      if fetch(proposal.your_opinion).published then proposal.your_opinion.stance else -1
+    name: 'Your Score'
+    description: "Proposals are ordered by your own opinion on them."
   }
 
 
@@ -162,7 +159,7 @@ set_sort = ->
     if loc.query_params?.sort_by
       for s in sort_options
         if s.name == loc.query_params.sort_by.replace('_', ' ')
-          _.extend sort, s or sort_options[0]
+          _.extend sort, s or sort_options[2]
           found = true 
           break
 
@@ -173,10 +170,10 @@ set_sort = ->
           if s.name == def_sort
             def = s
             break 
-        _.extend sort, def or sort_options[0]
+        _.extend sort, def or sort_options[2]
 
       else 
-        _.extend sort, sort_options[0]
+        _.extend sort, sort_options[2]
 
     save sort 
 
@@ -184,8 +181,8 @@ set_sort = ->
 
 
 
-ProposalFilter = ReactiveComponent
-  displayName: 'ProposalFilter'
+ProposalSort = ReactiveComponent
+  displayName: 'ProposalSort'
 
   render : -> 
 
@@ -198,7 +195,7 @@ ProposalFilter = ReactiveComponent
     return SPAN null if !subdomain.name
 
 
-    DIV 
+    SPAN 
       style: _.defaults (@props.style or {})
 
       ApplyFilters()
@@ -207,7 +204,7 @@ ProposalFilter = ReactiveComponent
       DIV
         style: 
           display: 'inline-block'
-          verticalAlign: 'top'
+          #verticalAlign: 'top'
           #paddingTop: 4 #16
           paddingRight: 12
 
@@ -323,7 +320,7 @@ SortProposalsMenu = ReactiveComponent
       save @local
 
 
-    DIV
+    SPAN
       style: 
         color: 'black'
         fontSize: 14
@@ -388,6 +385,7 @@ SortProposalsMenu = ReactiveComponent
             color: focus_color() #'inherit'
             #border: "1px solid #ccc"
             #padding: "4px 8px"
+            textTransform: 'lowercase'
             
             borderRadius: 16
 
@@ -440,9 +438,8 @@ SortProposalsMenu = ReactiveComponent
                 style:
                   padding: '6px 12px'
                   borderBottom: "1px solid #ddd"
-                  color: if @local.focus == idx then 'white'
+                  color: if @local.focus == idx then 'white'                  
                   backgroundColor: if @local.focus == idx then focus_color()
-                  fontWeight: 600
                   cursor: 'pointer'
                   display: 'block'
                   outline: 'none'
@@ -475,13 +472,20 @@ SortProposalsMenu = ReactiveComponent
                   @local.focus = null 
                   save @local
 
-                sort_option.name
-
-                DIV 
+                SPAN 
                   style: 
-                    fontSize: 16
-                    color: if @local.focus == idx then '#eee' else '#888'
-                    fontWeight: 400
+                    fontWeight: 600
+                    fontSize: 20
+
+                  sort_option.name
+
+                SPAN 
+                  style: 
+                    fontSize: 12
+                    color: if @local.focus == idx then 'white' else 'black'
+                    marginLeft: 16
+                    verticalAlign: 'baseline'
+                    #opacity: .8
 
                   sort_option.description
 
@@ -807,5 +811,6 @@ VerificationProcessExplanation = ReactiveComponent
 
 
 
-window.ProposalFilter = ProposalFilter
+window.ProposalSort = ProposalSort
+window.SortProposalsMenu = SortProposalsMenu
 window.OpinionFilter = OpinionFilter

@@ -291,7 +291,10 @@ window.Questionaire = ReactiveComponent
         DIV 
           style: 
             marginTop: 20
-          filter_sort_options()
+            
+          list_actions
+            add_new: false 
+
           H1 
             style: _.extend {}, customization('list_label_style'),
               fontSize: 32

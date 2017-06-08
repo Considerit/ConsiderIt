@@ -268,37 +268,6 @@ window.TagHomepage = ReactiveComponent
           'Show all proposals'
 
 
-
-
-
-
-window.filter_sort_options = -> 
-  proposals = fetch '/proposals'
-
-  has_proposal_sort = customization('homepage_show_search_and_sort') && proposals.proposals.length > 8
-  
-  DIV null,
-    if has_proposal_sort
-      [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-      ProposalFilter
-        style: 
-          width: first_column.width
-          marginBottom: 12
-          display: 'inline-block'
-          verticalAlign: 'top'
-
-    if customization('opinion_filters')
-      [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
-
-      OpinionFilter
-        style: 
-          width: if has_proposal_sort || true then secnd_column.width
-          marginBottom: 12
-          marginLeft: if has_proposal_sort then secnd_column.marginLeft else first_column.width + secnd_column.marginLeft
-          display: if has_proposal_sort then 'inline-block'
-          verticalAlign: 'top'
-          textAlign: 'center' 
-
 window.SimpleHomepage = ReactiveComponent
   displayName: 'SimpleHomepage'
 
@@ -332,8 +301,6 @@ window.SimpleHomepage = ReactiveComponent
         margin: '45px auto'
         width: HOMEPAGE_WIDTH()
         position: 'relative'
-
-      #filter_sort_options()
 
       if customization('homepage_tabs') && customization('homepage_tab_headers')?[homepage_tabs.filter]
         customization('homepage_tab_headers')[homepage_tabs.filter]()
@@ -700,27 +667,6 @@ ClusterHeading = ReactiveComponent
                   display: if @local.hover_label or is_collapsed then 'inline-block' else 'none'
                   outline: 'none'
 
-            if customization('list_show_new_button', cluster_key) && !is_collapsed && @props.proposals_count > 4
-              permitted = permit('create proposal')
-              if permitted > 0 || permitted == Permission.NOT_LOGGED_IN              
-                A
-                  style: 
-                    textDecoration: 'underline'
-                    fontSize: 14
-                    color: focus_color()
-                    fontFamily: customization('font')
-                    fontStyle: 'normal'
-                    marginLeft: 14
-                  onClick: (e) => 
-                    show_all = fetch('show_all_proposals')
-                    show_all.show_all = true 
-                    save show_all
-                    e.stopPropagation()
-
-                    setTimeout =>
-                      $("[name='add_new_#{cluster.name}']").ensureInView()
-                    , 1
-                  t('add_new')
 
         if !is_collapsed
 
@@ -768,11 +714,73 @@ ClusterHeading = ReactiveComponent
 
               histo_title
 
+
       if @props.proposals_count > 0 && !customization('questionaire', cluster_key) && !is_collapsed && !customization('list_no_filters', cluster_key)
-        filter_sort_options()
+        list_actions
+          cluster: cluster
+          add_new: customization('list_show_new_button', cluster_key) && !is_collapsed && @props.proposals_count > 4
+          can_sort: customization('homepage_show_search_and_sort') && @props.proposals_count > 8 
 
 
 
+
+
+
+window.list_actions = (props) -> 
+  [first_column, secnd_column, first_header, secnd_header] = cluster_styles()
+
+  SPAN null,
+
+    if props.can_sort || props.add_new
+      DIV 
+        style: 
+          width: first_column.width
+          marginBottom: 12
+          display: 'inline-block'
+          verticalAlign: 'top'
+
+        if props.can_sort
+          SortProposalsMenu()
+
+        if props.add_new
+          permitted = permit('create proposal')
+          if permitted > 0 || permitted == Permission.NOT_LOGGED_IN
+
+            SPAN null, 
+              if props.can_sort
+                SPAN 
+                  style: 
+                    padding: '0 12px'
+                    fontSize: 14
+                  '|'
+              A
+                style: 
+                  textDecoration: 'underline'
+                  fontSize: 14
+                  color: focus_color()
+                  fontFamily: customization('font')
+                  fontStyle: 'normal'
+                  fontWeight: 600
+                onClick: (e) => 
+                  show_all = fetch('show_all_proposals')
+                  show_all.show_all = true 
+                  save show_all
+                  e.stopPropagation()
+
+                  setTimeout =>
+                    $("[name='add_new_#{props.cluster.name}']").ensureInView()
+                  , 1
+                t('add_new')
+
+    if customization('opinion_filters')
+      OpinionFilter
+        style: 
+          width: if props.can_sort || true then secnd_column.width
+          marginBottom: 12
+          marginLeft: if props.can_sort then secnd_column.marginLeft else first_column.width + secnd_column.marginLeft
+          display: if props.can_sort then 'inline-block'
+          verticalAlign: 'top'
+          textAlign: 'center' 
 
 
 

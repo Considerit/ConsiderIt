@@ -140,10 +140,10 @@ window.CollapsedProposal = ReactiveComponent
               style: 
                 position: 'relative'
                 left: -22
-                top: -2
+                top: 3
               width: 8
               viewBox: '0 0 200 200' 
-              CIRCLE cx: 100, cy: 100, r: 100, fill: '#000000'
+              CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
 
 
 

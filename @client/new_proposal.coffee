@@ -74,7 +74,7 @@ window.NewProposal = ReactiveComponent
                     marginLeft: 6
                     verticalAlign: 'top'
                     paddingTop: 13
-                  CIRCLE cx: 100, cy: 100, r: 100, fill: '#000000'
+                  CIRCLE cx: 100, cy: 100, r: 80, fill: '#000000'
 
 
     if !adding 
@@ -85,7 +85,7 @@ window.NewProposal = ReactiveComponent
           cursor: 'pointer'
           backgroundColor: '#e7e7e7'
           border: 'none'
-          fontSize: 22
+          fontSize: 20
           fontWeight: 600
           padding: '6px 36px 6px 16px'
           textDecoration: 'underline'
@@ -162,7 +162,7 @@ window.NewProposal = ReactiveComponent
               fontSize: 14  
 
             style: 
-              fontSize: 22
+              fontSize: 20
               width: w
               border: "1px solid #ccc"
               outline: 'none'

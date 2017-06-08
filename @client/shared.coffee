@@ -246,7 +246,7 @@ window.clustered_proposals = (keep_as_map) ->
 window.clustered_proposals_with_tabs = -> 
   all_clusters = clustered_proposals()
   homepage_tabs = fetch 'homepage_tabs'
-  if homepage_tabs.filter?
+  if homepage_tabs.filter? && homepage_tabs.filter != 'Show all'
     to_remove = []
     for cluster, index in all_clusters or []
       cluster_key = "list/#{cluster.name}"

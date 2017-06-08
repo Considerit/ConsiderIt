@@ -376,7 +376,7 @@ window.CollapsedProposal = ReactiveComponent
         score = pad score.toFixed(1),2
 
         val = "0000 opinion#{if opinions.length != 1 then 's' else ''}"
-        score_w = widthWhenRendered(' opinion' + (if opinions.length != 1 then 's' else ''), {fontSize: 12}) + widthWhenRendered("0000", {fontSize: 24})
+        score_w = widthWhenRendered(' opinion' + (if opinions.length != 1 then 's' else ''), {fontSize: 12}) + widthWhenRendered("0000", {fontSize: 20})
 
         show_tooltip = => 
           if opinions.length > 0

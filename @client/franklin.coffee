@@ -204,6 +204,15 @@ Proposal = ReactiveComponent
     has_community_points = community_points.length > 0 
 
 
+    if get_selected_point()
+      @local.show_all_points = true 
+      save @local
+    
+
+    hist = fetch namespaced_key('histogram', @proposal)
+
+    show_all_points = @local.show_all_points || mode == 'crafting' || community_points.length < 8 || hist.selected_opinion || hist.selected_opinions
+
     ARTICLE 
       id: "proposal-#{@proposal.id}"
       key: @props.slug
@@ -282,11 +291,13 @@ Proposal = ReactiveComponent
           className:'reasons_region'
           style : 
             width: REASONS_REGION_WIDTH()    
-            minHeight: minheight        
+            minHeight: if show_all_points then minheight     
             position: 'relative'
             paddingBottom: '4em' #padding instead of margin for docking
-            margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
+            margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 4em auto"
             display: if !customization('discussion_enabled', @proposal) then 'none'
+
+
 
           H2
             className: 'hidden'
@@ -321,34 +332,63 @@ Proposal = ReactiveComponent
               DecisionBoard
                 key: 'decisionboard'
 
-          PointsList 
-            key: 'community_cons'
-            rendered_as: 'community_point'
-            points_editable: TWO_COL()
-            valence: 'cons'
-            points_draggable: mode == 'crafting'
-            drop_target: false
-            points: buildPointsList \
-              @proposal, 'cons', \
-              (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-              mode == 'crafting' && !TWO_COL()
+          DIV 
             style: 
-              visibility: if !TWO_COL() && !has_community_points then 'hidden'
+              height: if !show_all_points then 500
+              overflowY: if !show_all_points then 'hidden'   
 
-          #community pros
-          PointsList 
-            key: 'community_pros'
-            rendered_as: 'community_point'
-            points_editable: TWO_COL()
-            valence: 'pros'
-            points_draggable: mode == 'crafting'
-            drop_target: false
-            points: buildPointsList \
-              @proposal, 'pros', \
-              (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-              mode == 'crafting' && !TWO_COL()
-            style: 
-              visibility: if !TWO_COL() && !has_community_points then 'hidden'
+
+            PointsList 
+              key: 'community_cons'
+              rendered_as: 'community_point'
+              points_editable: TWO_COL()
+              valence: 'cons'
+              points_draggable: mode == 'crafting'
+              drop_target: false
+              points: buildPointsList \
+                @proposal, 'cons', \
+                (if mode == 'results' then 'score' else 'last_inclusion'), \ 
+                mode == 'crafting' && !TWO_COL()
+              style: 
+                visibility: if !TWO_COL() && !has_community_points then 'hidden'
+
+            #community pros
+            PointsList 
+              key: 'community_pros'
+              rendered_as: 'community_point'
+              points_editable: TWO_COL()
+              valence: 'pros'
+              points_draggable: mode == 'crafting'
+              drop_target: false
+              points: buildPointsList \
+                @proposal, 'pros', \
+                (if mode == 'results' then 'score' else 'last_inclusion'), \ 
+                mode == 'crafting' && !TWO_COL()
+              style: 
+                visibility: if !TWO_COL() && !has_community_points then 'hidden'
+
+          if !show_all_points
+            BUTTON 
+              style: 
+                backgroundColor: '#eee'
+                padding: '12px 0'
+                fontSize: 32
+                textAlign: 'center'
+                textDecoration: 'underline'
+                border: 'none'
+                cursor: 'pointer'
+                display: 'block'
+                width: REASONS_REGION_WIDTH()
+
+              onClick: => 
+                @local.show_all_points = true 
+                save @local
+              onKeyPress: (e) => 
+                if e.which in [13,32]
+                  @local.show_all_points = true 
+                  save @local
+
+              'Show all'
 
 
 

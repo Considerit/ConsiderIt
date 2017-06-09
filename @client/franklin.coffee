@@ -143,18 +143,6 @@ Proposal = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
-    if !page.proposal or @is_waiting()
-      return    ARTICLE 
-                  id: "proposal-#{@proposal.id}"
-                  key: @props.slug
-
-                  DIV null,
-
-                    ProposalDescription()
-
-                  LOADING_INDICATOR()
-
-
 
     point_cols = ['your_con_points', 'your_pro_points', 'community_cons', 'community_pros']
     edit_mode = false
@@ -226,8 +214,7 @@ Proposal = ReactiveComponent
 
     show_all_points = @local.show_all_points || mode == 'crafting' || community_points.length < 8 || hist.selected_opinion || hist.selected_opinions
 
-
-
+    is_loading = !page.proposal || @is_waiting()
 
 
     ARTICLE 
@@ -263,179 +250,185 @@ Proposal = ReactiveComponent
               style: 
                 textAlign: 'center'
 
+        if is_loading
+          LOADING_INDICATOR
 
-        # feelings
-        SECTION
-          style:
-            width: PROPOSAL_HISTO_WIDTH()
-            margin: '0 auto'
-            position: 'relative'
-            zIndex: 1
+        if !is_loading
 
-          H2
-            className: 'hidden'
-            "Evaluations on spectrum from #{customization("slider_pole_labels.oppose", @proposal)} to #{customization("slider_pole_labels.support", @proposal)} of the proposal '#{@proposal.name}'"
-
-
-          Histogram
-            key: namespaced_key('histogram', @proposal)
-            proposal: @proposal
-            opinions: opinionsForProposal(@proposal)
-            width: PROPOSAL_HISTO_WIDTH()
-            height: if fetch('histogram-dock').docked then 50 else 170
-            enable_selection: true
-            draw_base: if fetch('histogram-dock').docked then true else false
-            backgrounded: mode == 'crafting'
-            draw_base: true
-            draw_base_labels: true
-            base_style: "2px solid #{if mode == 'crafting' then focus_color() else '#414141'}"
-            label_style: 
-              fontSize: 14
-              fontWeight: 400
-              color: 'black'
-              fontStyle: 'oblique'
-              bottom: -28
-
-            on_click_when_backgrounded: ->
-              updateProposalMode('results', 'click_histogram')
-
-          Dock
-            key: 'slider-dock'
-            docked_key: namespaced_key('slider', @proposal)          
-            dock_on_zoomed_screens: true
-            constraints : ['decisionboard-dock', 'histogram-dock']
-            skip_jut: mode == 'results'
-            dockable : => 
-              mode == 'crafting'
-            dummy: get_proposal_mode() == 'crafting'
-            dummy2: PROPOSAL_HISTO_WIDTH()
-            do =>   
-              OpinionSlider
-                key: namespaced_key('slider', @proposal)
-                width: PROPOSAL_HISTO_WIDTH() - 10
-                your_opinion: @proposal.your_opinion
-                focused: mode == 'crafting'
-                backgrounded: false
-                permitted: draw_handle
-                pole_labels: [ \
-                  [customization("slider_pole_labels.oppose", @proposal),
-                   customization("slider_pole_labels.oppose_sub", @proposal) or ''], \
-                  [customization("slider_pole_labels.support", @proposal),
-                   customization("slider_pole_labels.support_sub", @proposal) or '']]
-
-
-        DIV 
-          style: 
-            position: 'relative'
-            top: -8
-            overflowY: if !show_all_points then 'hidden'  
-            overflowX: if !show_all_points then 'auto' 
-
-          #reasons
-          SECTION 
-            className:'reasons_region'
-            style : 
-              width: REASONS_REGION_WIDTH()    
-              minHeight: if show_all_points then minheight     
+          # feelings
+          SECTION
+            style:
+              width: PROPOSAL_HISTO_WIDTH()
+              margin: '0 auto'
               position: 'relative'
-              paddingBottom: '4em' #padding instead of margin for docking
-              margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
-              display: if !customization('discussion_enabled', @proposal) then 'none'
-
-
+              zIndex: 1
 
             H2
               className: 'hidden'
-              'Why people think what they do about the proposal'
+              "Evaluations on spectrum from #{customization("slider_pole_labels.oppose", @proposal)} to #{customization("slider_pole_labels.support", @proposal)} of the proposal '#{@proposal.name}'"
 
-            # Border + bubblemouth that is shown when there is a histogram selection
-            GroupSelectionRegion()
 
-            if !TWO_COL() && customization('discussion_enabled', @proposal)
-              Dock
-                key: 'decisionboard-dock'
-                docked_key: 'decisionboard'            
-                constraints : ['slider-dock']
-                dock_on_zoomed_screens: true
-                dockable : => 
-                  mode == 'crafting'
+            Histogram
+              key: namespaced_key('histogram', @proposal)
+              proposal: @proposal
+              opinions: opinionsForProposal(@proposal)
+              width: PROPOSAL_HISTO_WIDTH()
+              height: if fetch('histogram-dock').docked then 50 else 170
+              enable_selection: true
+              draw_base: if fetch('histogram-dock').docked then true else false
+              backgrounded: mode == 'crafting'
+              draw_base: true
+              draw_base_labels: true
+              base_style: "2px solid #{if mode == 'crafting' then focus_color() else '#414141'}"
+              label_style: 
+                fontSize: 14
+                fontWeight: 400
+                color: 'black'
+                fontStyle: 'oblique'
+                bottom: -28
 
-                start: -24
+              on_click_when_backgrounded: ->
+                updateProposalMode('results', 'click_histogram')
 
-                stop : -> 
-                  $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
+            Dock
+              key: 'slider-dock'
+              docked_key: namespaced_key('slider', @proposal)          
+              dock_on_zoomed_screens: true
+              constraints : ['decisionboard-dock', 'histogram-dock']
+              skip_jut: mode == 'results'
+              dockable : => 
+                mode == 'crafting'
+              dummy: get_proposal_mode() == 'crafting'
+              dummy2: PROPOSAL_HISTO_WIDTH()
+              do =>   
+                OpinionSlider
+                  key: namespaced_key('slider', @proposal)
+                  width: PROPOSAL_HISTO_WIDTH() - 10
+                  your_opinion: @proposal.your_opinion
+                  focused: mode == 'crafting'
+                  backgrounded: false
+                  permitted: draw_handle
+                  pole_labels: [ \
+                    [customization("slider_pole_labels.oppose", @proposal),
+                     customization("slider_pole_labels.oppose_sub", @proposal) or ''], \
+                    [customization("slider_pole_labels.support", @proposal),
+                     customization("slider_pole_labels.support_sub", @proposal) or '']]
+        
+        if !is_loading
 
-                style: 
-                  position: 'absolute'
-                  width: DECISION_BOARD_WIDTH()
-                  zIndex: 0 #so that points being dragged are above opinion region
-                  display: 'inline-block'
-                  verticalAlign: 'top'
-                  left: '50%'
-                  marginLeft: -DECISION_BOARD_WIDTH() / 2
 
-                DecisionBoard
-                  key: 'decisionboard'
+          DIV 
+            style: 
+              position: 'relative'
+              top: -8
+              overflowY: if !show_all_points then 'hidden'  
+              overflowX: if !show_all_points then 'auto' 
 
-            DIV 
-              style: 
-                height: if !show_all_points then 500
-
-              PointsList 
-                key: 'community_cons'
-                rendered_as: 'community_point'
-                points_editable: TWO_COL()
-                valence: 'cons'
-                points_draggable: mode == 'crafting'
-                drop_target: false
-                points: buildPointsList \
-                  @proposal, 'cons', \
-                  (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-                  mode == 'crafting' && !TWO_COL()
-                style: 
-                  visibility: if !TWO_COL() && !has_community_points then 'hidden'
-
-              #community pros
-              PointsList 
-                key: 'community_pros'
-                rendered_as: 'community_point'
-                points_editable: TWO_COL()
-                valence: 'pros'
-                points_draggable: mode == 'crafting'
-                drop_target: false
-                points: buildPointsList \
-                  @proposal, 'pros', \
-                  (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-                  mode == 'crafting' && !TWO_COL()
-                style: 
-                  visibility: if !TWO_COL() && !has_community_points then 'hidden'
-
-          if !show_all_points
-            BUTTON 
-              style: 
-                backgroundColor: 'white' #considerit_gray
-                padding: '12px 0'
-                fontSize: 24
-                textAlign: 'center'
-                textDecoration: 'underline'
-                border: 'none'
-                #border: '1px solid rgba(0,0,0,.5)'                
-                cursor: 'pointer'
-                display: 'block'
-                width: POINT_WIDTH() * 2 + 18 * 2 + 100 * 2
-                margin: 'auto'
+            #reasons
+            SECTION 
+              className:'reasons_region'
+              style : 
+                width: REASONS_REGION_WIDTH()    
+                minHeight: if show_all_points then minheight     
                 position: 'relative'
-                zIndex: 1
+                paddingBottom: '4em' #padding instead of margin for docking
+                margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
+                display: if !customization('discussion_enabled', @proposal) then 'none'
 
-              onClick: => 
-                @local.show_all_points = true 
-                save @local
-              onKeyPress: (e) => 
-                if e.which in [13,32]
+
+
+              H2
+                className: 'hidden'
+                'Why people think what they do about the proposal'
+
+              # Border + bubblemouth that is shown when there is a histogram selection
+              GroupSelectionRegion()
+
+              if !TWO_COL() && customization('discussion_enabled', @proposal)
+                Dock
+                  key: 'decisionboard-dock'
+                  docked_key: 'decisionboard'            
+                  constraints : ['slider-dock']
+                  dock_on_zoomed_screens: true
+                  dockable : => 
+                    mode == 'crafting'
+
+                  start: -24
+
+                  stop : -> 
+                    $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
+
+                  style: 
+                    position: 'absolute'
+                    width: DECISION_BOARD_WIDTH()
+                    zIndex: 0 #so that points being dragged are above opinion region
+                    display: 'inline-block'
+                    verticalAlign: 'top'
+                    left: '50%'
+                    marginLeft: -DECISION_BOARD_WIDTH() / 2
+
+                  DecisionBoard
+                    key: 'decisionboard'
+
+              DIV 
+                style: 
+                  height: if !show_all_points then 500
+
+                PointsList 
+                  key: 'community_cons'
+                  rendered_as: 'community_point'
+                  points_editable: TWO_COL()
+                  valence: 'cons'
+                  points_draggable: mode == 'crafting'
+                  drop_target: false
+                  points: buildPointsList \
+                    @proposal, 'cons', \
+                    (if mode == 'results' then 'score' else 'last_inclusion'), \ 
+                    mode == 'crafting' && !TWO_COL()
+                  style: 
+                    visibility: if !TWO_COL() && !has_community_points then 'hidden'
+
+                #community pros
+                PointsList 
+                  key: 'community_pros'
+                  rendered_as: 'community_point'
+                  points_editable: TWO_COL()
+                  valence: 'pros'
+                  points_draggable: mode == 'crafting'
+                  drop_target: false
+                  points: buildPointsList \
+                    @proposal, 'pros', \
+                    (if mode == 'results' then 'score' else 'last_inclusion'), \ 
+                    mode == 'crafting' && !TWO_COL()
+                  style: 
+                    visibility: if !TWO_COL() && !has_community_points then 'hidden'
+
+            if !show_all_points
+              BUTTON 
+                style: 
+                  backgroundColor: 'white' #considerit_gray
+                  padding: '12px 0'
+                  fontSize: 24
+                  textAlign: 'center'
+                  textDecoration: 'underline'
+                  border: 'none'
+                  #border: '1px solid rgba(0,0,0,.5)'                
+                  cursor: 'pointer'
+                  display: 'block'
+                  width: POINT_WIDTH() * 2 + 18 * 2 + 100 * 2
+                  margin: 'auto'
+                  position: 'relative'
+                  zIndex: 1
+
+                onClick: => 
                   @local.show_all_points = true 
                   save @local
+                onKeyPress: (e) => 
+                  if e.which in [13,32]
+                    @local.show_all_points = true 
+                    save @local
 
-              "Show all #{customization('point_labels.pros', @proposal)} and #{customization('point_labels.cons', @proposal)}"
+                "Show all #{customization('point_labels.pros', @proposal)} and #{customization('point_labels.cons', @proposal)}"
 
 
       if mode == 'results'
@@ -507,6 +500,7 @@ NextProposals = ReactiveComponent
   displayName: 'NextProposals'
 
   render: -> 
+
     [dummy, next] = get_next_proposals
                       relative_to: @proposal 
 
@@ -517,7 +511,7 @@ NextProposals = ReactiveComponent
       to_show.push proposal 
       break if to_show.length >= count 
 
-    return SPAN null if to_show.length < 2
+    return SPAN null if to_show.length < 2 && arest.cache['/proposals']?.proposals?
 
     heading_style = _.defaults {}, customization('list_label_style'),
       fontSize: 36
@@ -525,7 +519,6 @@ NextProposals = ReactiveComponent
       fontStyle: 'oblique'
       textAlign: 'center'
       marginBottom: 18
-
 
     DIV 
       style: {}
@@ -535,20 +528,22 @@ NextProposals = ReactiveComponent
 
         'Explore a related topic'
 
+      if !to_show || to_show.length == 0
+        LOADING_INDICATOR
 
+      else 
+        UL null, 
 
-      UL null, 
+          for proposal in to_show
+            cluster = proposal.cluster or 'Proposals'
 
-        for proposal in to_show
-          cluster = proposal.cluster or 'Proposals'
-
-          CollapsedProposal 
-            key: "collapsed#{proposal.key or proposal}"
-            proposal: proposal
-            show_category: true
-            width: @props.width
-            hide_scores: true
-            show_category: false
+            CollapsedProposal 
+              key: "collapsed#{proposal.key or proposal}"
+              proposal: proposal
+              show_category: true
+              width: @props.width
+              hide_scores: true
+              show_category: false
 
       DIV 
         style: 
@@ -2205,7 +2200,7 @@ Page = ReactiveComponent
                       result = Proposal key: "/proposal/#{proposal.id}"
                       break 
 
-                result or LOADING_INDICATOR()
+                result or LOADING_INDICATOR
                 
 
       Footer(key: 'page_footer') if access_granted && !auth.form
@@ -2259,7 +2254,7 @@ Root = ReactiveComponent
         """
 
       if !subdomain.name
-        LOADING_INDICATOR()
+        LOADING_INDICATOR
 
       else 
         

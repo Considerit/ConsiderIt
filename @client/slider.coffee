@@ -404,7 +404,7 @@ slider_handle.face = (props) ->
       pointerEvents: 'none'
       position: 'absolute'
       top: 0
-      filter: if props.has_focus then "drop-shadow(0 0 3px rgba(0,0,0,.5))"
+      filter: if props.has_focus then "drop-shadow(0 0 1px rgba(0,0,0,.5))"
 
     DEFS null,
       svg.innerbevel

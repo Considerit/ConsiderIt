@@ -9,7 +9,7 @@ class PageController < ApplicationController
       authorize!("access forum", current_subdomain, "/page/")
 
       dirty_key '/page/'
-      dirty_key '/users'
+      # dirty_key '/users'
 
     elsif page.match 'dashboard/'
 

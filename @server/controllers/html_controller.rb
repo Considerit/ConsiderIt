@@ -161,6 +161,8 @@ class HtmlController < ApplicationController
       { :name => 'description', :content => description },
       { :name => 'keywords', :content => keywords },
 
+      { :name => 'forum', :content => current_subdomain.id },
+
       { :property => 'og:title', :content => title },
       { :property => 'og:description', :content => description },
       { :property => 'og:url', :content => request.original_url().split('?')[0] },

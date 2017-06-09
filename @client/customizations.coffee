@@ -41,7 +41,8 @@ window.customization = (field, object_or_key) ->
   if !!object_or_key && !object_or_key.key?
     object_or_key = fetch object_or_key
 
-  if object_or_key && object_or_key.subdomain_id
+
+  if object_or_key && object_or_key.subdomain_id && "#{object_or_key.subdomain_id}" != document.querySelector("meta[name='forum']").getAttribute("content")
     subdomain = fetch "/subdomain/#{object_or_key.subdomain_id}" 
   else 
     subdomain = fetch('/subdomain')

@@ -132,6 +132,9 @@ Proposal = ReactiveComponent
 
   render : ->
     doc = fetch('document')
+    proposal = fetch @proposal
+    page = fetch @page
+
     if doc.title != @proposal.name
       doc.title = @proposal.name
       save doc
@@ -140,7 +143,6 @@ Proposal = ReactiveComponent
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
 
-    page = fetch(@page)
     if !page.proposal or @is_waiting()
       return    ARTICLE 
                   id: "proposal-#{@proposal.id}"
@@ -149,6 +151,8 @@ Proposal = ReactiveComponent
                   DIV null,
 
                     ProposalDescription()
+
+                  LOADING_INDICATOR()
 
 
 

@@ -2211,7 +2211,6 @@ Root = ReactiveComponent
 
   render : -> 
     loc = fetch('location')
-    app = fetch('/application')
     subdomain = fetch '/subdomain'
     current_user = fetch('/current_user')
 
@@ -2272,11 +2271,14 @@ Root = ReactiveComponent
 
       Tooltip()
 
-      if app.dev
-        Development()
 
-      if current_user.is_super_admin || app.godmode
-        GodMode()
+      do -> 
+        app = fetch('/application')      
+        if app.dev
+          Development()
+
+        if current_user.is_super_admin || app.godmode
+          GodMode()
 
   resetSelection: (e) ->
     # TODO: This is ugly. Perhaps it would be better to have components 

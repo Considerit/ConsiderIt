@@ -324,12 +324,22 @@ window.on_client_error = (e) ->
     column_number: e.columnNumber
     )
 
-window.writeToLog = (entry) ->
-  _.extend entry, 
-    key: '/new/log'
-    where: fetch('location').url
 
-  save entry
+logs_to_write = []
+log_writer = null 
+
+window.writeToLog = (entry) ->
+  entry.where = fetch('location').url
+  logs_to_write.push entry 
+  if !log_writer 
+    setTimeout -> 
+      log_writer = setInterval -> 
+        for log in logs_to_write
+          log.key = '/new/log'
+          save log 
+        logs_to_write = []
+      , 100
+    , 2000
 
 
 

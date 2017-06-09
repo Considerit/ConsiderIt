@@ -157,7 +157,7 @@ Proposal = ReactiveComponent
 
     users = fetch '/users'
 
-    return LOADING_INDICATOR if !@proposal.name
+    return LOADING_INDICATOR() if !@proposal.name
 
     width = @getDOMNode().offsetWidth
     histo_width = width - 100

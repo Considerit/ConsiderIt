@@ -47,7 +47,7 @@ window.CollapsedProposal = ReactiveComponent
 
     icons = customization('show_proposer_icon', proposal)
     slider_regions = customization('slider_regions', proposal)
-    show_proposal_scores = customization('show_proposal_scores', proposal)
+    show_proposal_scores = !@props.hide_scores && customization('show_proposal_scores', proposal)
 
     opinions = opinionsForProposal(proposal)
 

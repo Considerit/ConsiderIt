@@ -20,6 +20,8 @@ class ApplicationController < ActionController::Base
 
   def application
     dirty_key '/application'
+    dirty_key '/subdomain' # just to eliminate a couple renders
+    dirty_key '/current_user' # just to eliminate a couple renders
     render :json => []
   end
 

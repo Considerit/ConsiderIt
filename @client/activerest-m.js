@@ -307,8 +307,10 @@
                     var result = original_method && original_method.apply(this, arguments)
                 } catch (e) {
                     execution_context = []
-                    if (this.is_waiting())
+                    if (this.is_waiting()){
+                        // console.log('waiting for', this.name, 'missing', this.is_waiting())
                         return loading_indicator
+                    }
                     else {
                         // Then let's re-cause the error, but without catching it
                         original_method.apply(this, arguments)
@@ -404,7 +406,7 @@
             var dependent_keys = keys_4_component.get(this.local_key)
             for (var i=0; i<dependent_keys.length; i++)
                 if (outstanding_fetches[dependent_keys[i]])
-                    return true
+                    return dependent_keys[i]
             return false
         }
 

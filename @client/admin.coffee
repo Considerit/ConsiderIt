@@ -999,23 +999,26 @@ ModerateItem = ReactiveComponent
             DIV 
               style: 
                 opacity: .5
-              STATEMENT 
+              BUBBLE_WRAP 
                 title: point.nutshell 
                 anon: point.hide_name
                 user: point.user
                 body: point.text
+                width: '100%'
 
 
               for comment in _.uniq( _.map(comments.comments, (c) -> c.key).concat(moderatable.key)) when comment != moderatable.key
-                STATEMENT 
+                BUBBLE_WRAP 
                   title: fetch(comment).body
                   user: fetch(comment).user
+                  width: '100%'
 
-          STATEMENT
+          BUBBLE_WRAP
             title: if selected then header else tease
             body: if selected then moderatable.description else ''
             anon: !!moderatable.hide_name
             user: moderatable.user
+            width: '100%'
 
           DIV null,
             "by #{author.name}"
@@ -1157,106 +1160,6 @@ ModerateItem = ReactiveComponent
 
 
 
-STATEMENT = ReactiveComponent
-  displayName: 'Statement'
-
-  render : ->
-    point = @data()
-
-    title = @props.title 
-    body = @props.body
-    user = @props.user
-
-    left_or_right = 'right' 
-    ioffset = -10
-
-    mouth_style = 
-      top: 8
-      position: 'absolute'
-      left: -POINT_MOUTH_WIDTH
-      transform: 'rotate(270deg) scaleX(-1)'
-
-    DIV
-      style: 
-        position: 'relative'
-        listStyle: 'none outside none'
-        marginBottom: '0.5em'
-
-      Avatar
-        key: user
-        style: 
-          position: 'absolute'
-          top: 0
-          width: 50
-          height: 50
-          left: -64
-          boxShadow: '-1px 2px 0 0 #eeeeee;'
-        hide_tooltip: false 
-        anonymous: @props.anon
-
-      DIV 
-        style : 
-          width: POINT_WIDTH()
-          borderWidth: 3
-          borderStyle: 'solid'
-          borderColor: 'transparent'
-          position: 'relative'
-          zIndex: 1
-          outline: 'none'
-          padding: 8
-          borderRadius: 16
-          width: 500
-          backgroundColor: considerit_gray
-          boxShadow: '#b5b5b5 0 1px 1px 0px'
-
-
-        DIV 
-          style: css.crossbrowserify mouth_style
-
-          Bubblemouth 
-            apex_xfrac: 0
-            width: POINT_MOUTH_WIDTH
-            height: POINT_MOUTH_WIDTH
-            fill: considerit_gray
-            stroke: 'none'
-            box_shadow:   
-              dx: 3
-              dy: 0
-              stdDeviation: 2
-              opacity: .5
-
-        DIV 
-          style: 
-            wordWrap: 'break-word'
-            fontSize: POINT_FONT_SIZE()
-
-          DIV 
-            className: 'statement'
-
-            splitParagraphs title
-
-          if body 
-
-            DIV 
-              className: "statement"
-
-              style: 
-                wordWrap: 'break-word'
-                marginTop: '0.5em'
-                fontSize: POINT_FONT_SIZE()
-                fontWeight: 300
-
-              splitParagraphs body
-
-styles += """
-
-.statement a {
-  text-decoration: underline;
-  word-break: break-all; }
-
-.statement p {
-  margin-bottom: 1em; }
-"""
 
 
 ModerationOptions = ReactiveComponent

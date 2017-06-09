@@ -18,11 +18,14 @@ Development = ReactiveComponent
       @local.only_with_activity = true 
 
     subdomains = fetch('/subdomains').subs
+    return SPAN null if @is_waiting()
+
     subdomains = (s for s in subdomains when (!@local.only_with_activity || s.activity) && (!@local.highlight_customized || s.customizations))
 
     hues = getNiceRandomHues subdomains.length
     
     subdomains.sort((a,b) -> if a.name.toLowerCase() > b.name.toLowerCase() then 1 else -1)
+
 
     DIV 
       style: 

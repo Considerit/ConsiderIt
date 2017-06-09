@@ -3,43 +3,6 @@ require './shared'
 
 
 
-window.get_next_proposals = (args) -> 
-  relative_to = args.relative_to
-  all_proposals = fetch '/proposals' 
-  subdomain = fetch('/subdomain')
-  mod = (n, m) -> ((n % m) + m) % m
-
-  # Determine the next proposal
-  if all_proposals.proposals?.length > 0  # In case /proposals isn't loaded
-    next_proposals = []; prev_proposals = []
-    clusters = clustered_proposals_with_tabs()        
-    all_proposals_flat = _.flatten (sorted_proposals(cluster.proposals) for cluster in clusters)
-    if subdomain.name == 'HALA' && fetch('homepage_tabs').filter == 'Draft zoning changes'
-      hala = fetch('hala')
-      hala.name ||= capitalize(relative_to.slug.split('--')[0].replace(/_/g, ' '))
-      all_proposals_flat = (p for p in all_proposals_flat when p.name.toLowerCase().indexOf(hala.name.toLowerCase()) > -1)
-    else if subdomain.name in ['cprs-network', 'engage-cprs']
-      all_proposals_flat = []
-    for proposal, idx in all_proposals_flat
-      if proposal == relative_to
-        break
-
-    next_idx = mod(idx + 1, all_proposals_flat.length)
-    prev_idx = mod(idx - 1, all_proposals_flat.length)
-
-    for idx in [0..(args.count or all_proposals.proposals.length) - 1]
-      break if !all_proposals_flat[ next_idx + idx ]
-      next_proposals.push all_proposals_flat[ next_idx + idx ]
-
-    for idx in [0..(args.count or all_proposals.proposals.length) - 1]
-      break if prev_idx - idx < 0
-      prev_proposals.push all_proposals_flat[ prev_idx - idx ]
-
-
-
-    [prev_proposals, next_proposals]
-  else 
-    [[], []]
 
 
 ##

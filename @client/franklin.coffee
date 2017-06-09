@@ -18,7 +18,6 @@ require './admin' # for dashes
 require './auth'
 require './avatar'
 require './browser_hacks'
-require './react_component_overrides'
 require './browser_location'
 require './bubblemouth'
 require './edit_proposal'
@@ -42,6 +41,7 @@ require './point'
 require './translations'
 require './proposal_navigation'
 require './legal'
+require './statement'
 
 
 ## ########################
@@ -131,7 +131,6 @@ Proposal = ReactiveComponent
   displayName: 'Proposal'
 
   render : ->
-
     doc = fetch('document')
     if doc.title != @proposal.name
       doc.title = @proposal.name
@@ -140,6 +139,18 @@ Proposal = ReactiveComponent
     your_opinion = fetch @proposal.your_opinion
     current_user = fetch('/current_user')
     subdomain = fetch '/subdomain'
+
+    page = fetch(@page)
+    if !page.proposal or @is_waiting()
+      return    ARTICLE 
+                  id: "proposal-#{@proposal.id}"
+                  key: @props.slug
+
+                  DIV null,
+
+                    ProposalDescription()
+
+
 
     point_cols = ['your_con_points', 'your_pro_points', 'community_cons', 'community_pros']
     edit_mode = false
@@ -178,8 +189,6 @@ Proposal = ReactiveComponent
          (can_opine == Permission.DISABLED && your_opinion.published))
       updateProposalMode('results', 'permission not granted for crafting')
     
-    proposal_header = customization('ProposalNavigation')?() or DefaultProposalNavigation()
-
     draw_handle = (can_opine not in [Permission.DISABLED, \
                           Permission.INSUFFICIENT_PRIVILEGES]) || \
                           your_opinion.published
@@ -213,6 +222,10 @@ Proposal = ReactiveComponent
 
     show_all_points = @local.show_all_points || mode == 'crafting' || community_points.length < 8 || hist.selected_opinion || hist.selected_opinions
 
+
+
+
+
     ARTICLE 
       id: "proposal-#{@proposal.id}"
       key: @props.slug
@@ -220,21 +233,31 @@ Proposal = ReactiveComponent
         paddingBottom: if browser.is_mobile && has_focus == 'edit point' then 200
           # make room for add new point button
 
-      HEADER 
-        className: 'proposal_header'
-
-        proposal_header
-
       DIV null,
 
         ProposalDescription()
 
+        H1
+          style: _.defaults {}, customization('list_label_style'),
+            fontSize: 36
+            fontWeight: 700
+            fontStyle: 'oblique'
+            textAlign: 'center'
+            marginBottom: 8
+            marginTop: 48
+
+          'What do you think?'
+
+
         if customization('opinion_filters')
-          OpinionFilter
+          DIV 
             style: 
+              position: 'relative'
               width: BODY_WIDTH()
-              margin: '40px auto 20px auto'
-              textAlign: 'center'
+              margin: '8px auto 20px auto'
+            OpinionFilter
+              style: 
+                textAlign: 'center'
 
 
         # feelings
@@ -245,9 +268,10 @@ Proposal = ReactiveComponent
             position: 'relative'
             zIndex: 1
 
-          H2 
+          H2
             className: 'hidden'
             "Evaluations on spectrum from #{customization("slider_pole_labels.oppose", @proposal)} to #{customization("slider_pole_labels.support", @proposal)} of the proposal '#{@proposal.name}'"
+
 
           Histogram
             key: namespaced_key('histogram', @proposal)
@@ -258,6 +282,16 @@ Proposal = ReactiveComponent
             enable_selection: true
             draw_base: if fetch('histogram-dock').docked then true else false
             backgrounded: mode == 'crafting'
+            draw_base: true
+            draw_base_labels: true
+            base_style: "2px solid #{if mode == 'crafting' then focus_color() else '#414141'}"
+            label_style: 
+              fontSize: 14
+              fontWeight: 400
+              color: 'black'
+              fontStyle: 'oblique'
+              bottom: -28
+
             on_click_when_backgrounded: ->
               updateProposalMode('results', 'click_histogram')
 
@@ -286,99 +320,108 @@ Proposal = ReactiveComponent
                    customization("slider_pole_labels.support_sub", @proposal) or '']]
 
 
-        #reasons
-        SECTION 
-          className:'reasons_region'
-          style : 
-            width: REASONS_REGION_WIDTH()    
-            minHeight: if show_all_points then minheight     
+        DIV 
+          style: 
             position: 'relative'
-            paddingBottom: '4em' #padding instead of margin for docking
-            margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
-            display: if !customization('discussion_enabled', @proposal) then 'none'
+            top: -8
+            overflowY: if !show_all_points then 'hidden'  
+            overflowX: if !show_all_points then 'auto' 
+
+          #reasons
+          SECTION 
+            className:'reasons_region'
+            style : 
+              width: REASONS_REGION_WIDTH()    
+              minHeight: if show_all_points then minheight     
+              position: 'relative'
+              paddingBottom: '4em' #padding instead of margin for docking
+              margin: "#{if draw_handle && !TWO_COL() then '24px' else '0'} auto 0 auto"
+              display: if !customization('discussion_enabled', @proposal) then 'none'
 
 
 
-          H2
-            className: 'hidden'
-            'Why people think what they do about the proposal'
+            H2
+              className: 'hidden'
+              'Why people think what they do about the proposal'
 
-          # Border + bubblemouth that is shown when there is a histogram selection
-          GroupSelectionRegion()
+            # Border + bubblemouth that is shown when there is a histogram selection
+            GroupSelectionRegion()
 
-          if !TWO_COL() && customization('discussion_enabled', @proposal)
-            Dock
-              key: 'decisionboard-dock'
-              docked_key: 'decisionboard'            
-              constraints : ['slider-dock']
-              dock_on_zoomed_screens: true
-              dockable : => 
-                mode == 'crafting'
+            if !TWO_COL() && customization('discussion_enabled', @proposal)
+              Dock
+                key: 'decisionboard-dock'
+                docked_key: 'decisionboard'            
+                constraints : ['slider-dock']
+                dock_on_zoomed_screens: true
+                dockable : => 
+                  mode == 'crafting'
 
-              start: -24
+                start: -24
 
-              stop : -> 
-                $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
+                stop : -> 
+                  $('.reasons_region').offset().top + $('.reasons_region').outerHeight() - 20
 
+                style: 
+                  position: 'absolute'
+                  width: DECISION_BOARD_WIDTH()
+                  zIndex: 0 #so that points being dragged are above opinion region
+                  display: 'inline-block'
+                  verticalAlign: 'top'
+                  left: '50%'
+                  marginLeft: -DECISION_BOARD_WIDTH() / 2
+
+                DecisionBoard
+                  key: 'decisionboard'
+
+            DIV 
               style: 
-                position: 'absolute'
-                width: DECISION_BOARD_WIDTH()
-                zIndex: 0 #so that points being dragged are above opinion region
-                display: 'inline-block'
-                verticalAlign: 'top'
-                left: '50%'
-                marginLeft: -DECISION_BOARD_WIDTH() / 2
+                height: if !show_all_points then 500
 
-              DecisionBoard
-                key: 'decisionboard'
+              PointsList 
+                key: 'community_cons'
+                rendered_as: 'community_point'
+                points_editable: TWO_COL()
+                valence: 'cons'
+                points_draggable: mode == 'crafting'
+                drop_target: false
+                points: buildPointsList \
+                  @proposal, 'cons', \
+                  (if mode == 'results' then 'score' else 'last_inclusion'), \ 
+                  mode == 'crafting' && !TWO_COL()
+                style: 
+                  visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
-          DIV 
-            style: 
-              height: if !show_all_points then 500
-              overflowY: if !show_all_points then 'hidden'   
-
-
-            PointsList 
-              key: 'community_cons'
-              rendered_as: 'community_point'
-              points_editable: TWO_COL()
-              valence: 'cons'
-              points_draggable: mode == 'crafting'
-              drop_target: false
-              points: buildPointsList \
-                @proposal, 'cons', \
-                (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-                mode == 'crafting' && !TWO_COL()
-              style: 
-                visibility: if !TWO_COL() && !has_community_points then 'hidden'
-
-            #community pros
-            PointsList 
-              key: 'community_pros'
-              rendered_as: 'community_point'
-              points_editable: TWO_COL()
-              valence: 'pros'
-              points_draggable: mode == 'crafting'
-              drop_target: false
-              points: buildPointsList \
-                @proposal, 'pros', \
-                (if mode == 'results' then 'score' else 'last_inclusion'), \ 
-                mode == 'crafting' && !TWO_COL()
-              style: 
-                visibility: if !TWO_COL() && !has_community_points then 'hidden'
+              #community pros
+              PointsList 
+                key: 'community_pros'
+                rendered_as: 'community_point'
+                points_editable: TWO_COL()
+                valence: 'pros'
+                points_draggable: mode == 'crafting'
+                drop_target: false
+                points: buildPointsList \
+                  @proposal, 'pros', \
+                  (if mode == 'results' then 'score' else 'last_inclusion'), \ 
+                  mode == 'crafting' && !TWO_COL()
+                style: 
+                  visibility: if !TWO_COL() && !has_community_points then 'hidden'
 
           if !show_all_points
             BUTTON 
               style: 
-                backgroundColor: '#eee'
+                backgroundColor: 'white' #considerit_gray
                 padding: '12px 0'
-                fontSize: 32
+                fontSize: 24
                 textAlign: 'center'
                 textDecoration: 'underline'
                 border: 'none'
+                #border: '1px solid rgba(0,0,0,.5)'                
                 cursor: 'pointer'
                 display: 'block'
-                width: REASONS_REGION_WIDTH()
+                width: POINT_WIDTH() * 2 + 18 * 2 + 100 * 2
+                margin: 'auto'
+                position: 'relative'
+                zIndex: 1
 
               onClick: => 
                 @local.show_all_points = true 
@@ -388,14 +431,14 @@ Proposal = ReactiveComponent
                   @local.show_all_points = true 
                   save @local
 
-              'Show all'
+              "Show all #{customization('point_labels.pros', @proposal)} and #{customization('point_labels.cons', @proposal)}"
 
 
       if mode == 'results'
-        w = 568
+        w = 600
         DIV   
           style: 
-            margin: '24px auto'
+            margin: '70px auto 48px auto'
             width: w
 
           NextProposals
@@ -418,6 +461,44 @@ Proposal = ReactiveComponent
 
 
 
+window.get_next_proposals = (args) -> 
+  relative_to = args.relative_to
+  all_proposals = fetch '/proposals' 
+  subdomain = fetch('/subdomain')
+  mod = (n, m) -> ((n % m) + m) % m
+
+  # Determine the next proposal
+  if all_proposals.proposals?.length > 0  # In case /proposals isn't loaded
+    next_proposals = []; prev_proposals = []
+    clusters = clustered_proposals_with_tabs()        
+    all_proposals_flat = _.flatten (sorted_proposals(cluster.proposals) for cluster in clusters)
+    if subdomain.name == 'HALA' && fetch('homepage_tabs').filter == 'Draft zoning changes'
+      hala = fetch('hala')
+      hala.name ||= capitalize(relative_to.slug.split('--')[0].replace(/_/g, ' '))
+      all_proposals_flat = (p for p in all_proposals_flat when p.name.toLowerCase().indexOf(hala.name.toLowerCase()) > -1)
+    else if subdomain.name in ['cprs-network', 'engage-cprs']
+      all_proposals_flat = []
+    for proposal, idx in all_proposals_flat
+      if proposal == relative_to
+        break
+
+    next_idx = mod(idx + 1, all_proposals_flat.length)
+    prev_idx = mod(idx - 1, all_proposals_flat.length)
+
+    for idx in [0..(args.count or all_proposals.proposals.length) - 1]
+      break if !all_proposals_flat[ next_idx + idx ]
+      next_proposals.push all_proposals_flat[ next_idx + idx ]
+
+    for idx in [0..(args.count or all_proposals.proposals.length) - 1]
+      break if prev_idx - idx < 0
+      prev_proposals.push all_proposals_flat[ prev_idx - idx ]
+
+
+
+    [prev_proposals, next_proposals]
+  else 
+    [[], []]
+
 NextProposals = ReactiveComponent
   displayName: 'NextProposals'
 
@@ -439,7 +520,7 @@ NextProposals = ReactiveComponent
       fontWeight: 700
       fontStyle: 'oblique'
       textAlign: 'center'
-      marginBottom: 12
+      marginBottom: 18
 
 
     DIV 
@@ -448,7 +529,7 @@ NextProposals = ReactiveComponent
       H2
         style: heading_style
 
-        'Explore more topics'
+        'Explore a related topic'
 
 
 
@@ -462,6 +543,8 @@ NextProposals = ReactiveComponent
             proposal: proposal
             show_category: true
             width: @props.width
+            hide_scores: true
+            show_category: false
 
       DIV 
         style: 
@@ -510,52 +593,32 @@ ProposalDescription = ReactiveComponent
 
     @max_description_height = customization('collapse_proposal_description_at', @proposal)
 
+    editor = proposal_editor(@proposal)
+
+
+    title = @proposal.name 
+    body = @proposal.description 
+    title_style = _.defaults {}, customization('list_label_style'),
+      fontSize: 36
+      fontWeight: 700
+      fontStyle: 'oblique'
+    body_style = 
+      paddingTop: '1em'
+      position: 'relative'
+      maxHeight: if @local.description_collapsed then @max_description_height
+      overflow: if @local.description_collapsed then 'hidden'
+      fontSize: 18
+
     DIV           
       style: 
         width: HOMEPAGE_WIDTH()
         position: 'relative'
-        margin: 'auto'
+        margin: '36px auto 12px auto'
         fontSize: 18
-        marginBottom: 18
+        marginBottom: 18      
 
 
-      # Proposal name
-      DIV
-        id: 'proposal_name'
-        style:
-          lineHeight: 1.2
-          paddingBottom: 15
 
-        H1
-          style: 
-            fontWeight: 700
-            fontSize: 45
-          @proposal.name
-
-        if @proposal.under_review 
-          SPAN 
-            style: 
-              color: 'white'
-              backgroundColor: 'orange'
-              fontSize: 14
-              padding: 2
-            'Under review (like all new proposals)'
-
-        if customization('show_proposal_meta_data')
-          DIV 
-            style: 
-              fontSize: 16
-              color: "#888"
-              fontStyle: 'italic'
-              paddingTop: 18
-
-            prettyDate(@proposal.created_at)
-
-            if (editor = proposal_editor(@proposal)) && editor == @proposal.user
-              SPAN 
-                style: {}
-
-                " by #{fetch(editor)?.name}"
 
       if !@proposal.active
         SPAN 
@@ -567,59 +630,137 @@ ProposalDescription = ReactiveComponent
           I className: 'fa fa-info-circle', style: {paddingRight: 7}
           'Closed to new contributions at this time.'
 
-      DIV
-        className: 'proposal_details'
-        style:
-          paddingTop: '1em'
-          position: 'relative'
-          maxHeight: if @local.description_collapsed then @max_description_height
-          overflow: if @local.description_collapsed then 'hidden'
+      BUBBLE_WRAP 
+        user: editor
+        width: HOMEPAGE_WIDTH()
+        mouth_style: 
+          width: 24
+          display: if !customization('show_proposer_icon', "list/#{@proposal.cluster}") then 'none'
+          bottom: 28
+          top: 'auto'
+          transform: 'rotate(-90deg)'
+        bubble_style: 
+          padding: '12px 24px'
+          borderRadius: 42
+        avatar_style: 
+          display: if !customization('show_proposer_icon', "list/#{@proposal.cluster}") then 'none'
+          width: 124
+          height: 124
+          left: -28 - 124
+          bottom: -30 
+          top: 'auto'
+        mouth_shadow:
+          dx: -3
 
-        if @local.description_collapsed
-          BUTTON
-            id: 'expand_full_text'
+
+        
+        DIV 
+          style: 
+            wordWrap: 'break-word'
+
+          DIV 
+            style: _.defaults {}, (title_style or {}),
+              fontSize: POINT_FONT_SIZE()
+              lineHeight: 1.2
+
+            className: 'statement'
+
+            title
+
+
+          
+          DIV 
+            style: 
+              marginTop: 4
+              fontSize: 14
+              color: "black"
+
+            "##{@proposal.cluster or 'proposals'}"
+
+            if customization('show_proposal_meta_data')
+              SPAN 
+                style: 
+                  padding: '0 8px'
+                '|'
+            if customization('show_proposal_meta_data')
+              [
+                'submitted '
+                prettyDate(@proposal.created_at)
+                " by #{fetch(editor)?.name}"
+              ]
+
+          if @proposal.under_review 
+            SPAN 
+              style: 
+                color: 'white'
+                backgroundColor: 'orange'
+                fontSize: 14
+                padding: 2
+              'Under review (like all new proposals)'
+
+
+          DIV 
+            className: 'proposal_details'
             style:
-              backgroundColor: '#f9f9f9'
-              width: HOMEPAGE_WIDTH()
-              position: 'absolute'
-              bottom: 0
-              textDecoration: 'underline'
-              cursor: 'pointer'
-              paddingTop: 10
-              paddingBottom: 10
-              fontWeight: 600
-              textAlign: 'center'
-              border: 'none'
+              maxHeight: if @local.description_collapsed then @max_description_height
+              overflowY: if @local.description_collapsed then 'hidden'
 
-            onMouseDown: => 
-              @local.description_collapsed = false
-              save(@local)
+            if body 
 
-            onKeyDown: (e) =>
-              if e.which == 13 || e.which == 32 # ENTER or SPACE
+              DIV 
+                className: "statement"
+
+                style: _.defaults {}, (body_style or {}),
+                  wordWrap: 'break-word'
+                  marginTop: '0.5em'
+                  fontSize: POINT_FONT_SIZE()
+                  #fontWeight: 300
+
+                if customization('proposal_description')?[@proposal.cluster]
+                  customization('proposal_description')?[@proposal.cluster]({proposal: @proposal})
+                else 
+                  DIV dangerouslySetInnerHTML:{__html: body}
+
+            if @local.description_fields
+              DIV 
+                id: 'description_fields'
+                style: 
+                  marginTop: '1em'
+                for item in @local.description_fields
+                  if item.group
+                    @renderDescriptionFieldGroup item
+                  else
+                    @renderDescriptionField item
+
+
+          if @local.description_collapsed
+            BUTTON
+              id: 'expand_full_text'
+              style:
+                textDecoration: 'underline'
+                cursor: 'pointer'
+                padding: '24px 0 10px 0'
+                fontWeight: 600
+                textAlign: 'left'
+                border: 'none'
+                width: '100%'
+                backgroundColor: 'transparent'
+
+              onMouseDown: => 
                 @local.description_collapsed = false
-                e.preventDefault()
-                document.activeElement.blur()
                 save(@local)
 
-            'Expand full text'
+              onKeyDown: (e) =>
+                if e.which == 13 || e.which == 32 # ENTER or SPACE
+                  @local.description_collapsed = false
+                  e.preventDefault()
+                  document.activeElement.blur()
+                  save(@local)
 
-        if customization('proposal_description')?[@proposal.cluster]
-          customization('proposal_description')?[@proposal.cluster]({proposal: @proposal})
-        else 
-          DIV dangerouslySetInnerHTML:{__html: @proposal.description}
+              'Expand full text'
 
 
-      if @local.description_fields
-        DIV 
-          id: 'description_fields'
-          style: 
-            marginTop: '1em'
-          for item in @local.description_fields
-            if item.group
-              @renderDescriptionFieldGroup item
-            else
-              @renderDescriptionField item
+
 
       if permit('update proposal', @proposal) > 0
         DIV
@@ -650,18 +791,6 @@ ProposalDescription = ReactiveComponent
                   destroy(@proposal.key)
                   loadPage('/')
               t('delete')
-
-      if @local.edit_roles
-        DIV 
-          style:
-            width: HOMEPAGE_WIDTH()
-            margin: 'auto'
-            backgroundColor: '#fafafa'
-            padding: '10px 60px'
-
-          ProposalRoles 
-            key: @proposal.key
-
 
 
 
@@ -848,7 +977,7 @@ DecisionBoard = ReactiveComponent
         backgroundColor: focus_color()
         borderBottom: '1px solid rgba(0,0,0,.6)'
         cursor: 'pointer'
-        transform: "translate(#{opinion_region_x}px, -18px)"
+        transform: "translate(#{opinion_region_x}px, -10px)"
         minHeight: 32
         width: give_opinion_button_width
 
@@ -1152,14 +1281,14 @@ SliderBubblemouth = ReactiveComponent
     stroke_width = 11
 
     if get_proposal_mode() == 'crafting'
-      transform = ""
+      transform = "translate(0, -4px) scale(1,.7)"
       fill = 'white'
       if db.user_hovering_on_drop_target
         dash = "none"
       else
         dash = "25, 10"
     else 
-      transform = "translate(0, -25px) scale(.5) "
+      transform = "translate(0, -25px) scale(.5,.5) "
       fill = focus_color()
       dash = "none"
 
@@ -1167,7 +1296,7 @@ SliderBubblemouth = ReactiveComponent
       key: 'slider_bubblemouth'
       style: css.crossbrowserify
         left: 10 + translateStanceToPixelX slider.value, DECISION_BOARD_WIDTH() - w - 20
-        top: -h + 10 + 3 # +10 is because of the decision board translating down 10, 3 is for its border
+        top: -h + 18 + 3 # +10 is because of the decision board translating down 18, 3 is for its border
         position: 'absolute'
         width: w
         height: h 
@@ -1483,7 +1612,7 @@ PointsList = ReactiveComponent
         display: 'inline-block'
         verticalAlign: 'top'
         width: POINT_WIDTH()
-        minHeight: (if @page.points.length > 4 then jQuery(window).height() else 400)
+        minHeight: (if @page.points.length > 4 then jQuery(window).height() else 100)
         zIndex: if @columnStandsOut() then 6 else 1
         margin: '38px 18px 0 18px'
         position: 'relative'
@@ -2045,9 +2174,7 @@ Page = ReactiveComponent
             when '/dashboard/tags'
               UserTags key: "/page/dashboard/tags"
             else
-              if @page?.proposal?
-                Proposal key: @page.proposal
-              else if @page.result == 'Not found'
+              if @page?.result == 'Not found'
                 DIV 
                   style: 
                     textAlign: 'center'
@@ -2063,7 +2190,19 @@ Page = ReactiveComponent
                     "Check if the url is correct. The author may also have deleted it. Good luck!"
 
               else 
-                LOADING_INDICATOR
+                result = null
+
+                if @page.proposal 
+                  result = Proposal key: @page.proposal
+                else if !@page.proposal? && arest.cache['/proposals']?.proposals?
+                  # search to see if we already have this proposal loaded
+                  for proposal in arest.cache['/proposals'].proposals
+                    if '/' + proposal.slug == loc.url
+                      result = Proposal key: "/proposal/#{proposal.id}"
+                      break 
+
+                result or LOADING_INDICATOR()
+                
 
       Footer(key: 'page_footer') if access_granted && !auth.form
     
@@ -2116,7 +2255,7 @@ Root = ReactiveComponent
         """
 
       if !subdomain.name
-        LOADING_INDICATOR
+        LOADING_INDICATOR()
 
       else 
         

@@ -56,7 +56,7 @@ window.pad = (num, len) ->
   dec[0] + if dec.length > 0 then '.' + dec[1] else ''
 
 
-window.back_to_homepage_button = (style) -> 
+window.back_to_homepage_button = (style, text) -> 
   loc = fetch('location')
   homepage = loc.url == '/'
 
@@ -75,6 +75,13 @@ window.back_to_homepage_button = (style) ->
         color: 'black'
 
       '<'
+
+      if text 
+        SPAN 
+          style: 
+            textDecoration: 'underline'
+            paddingLeft: 4
+          text 
 
 
 ####
@@ -368,7 +375,71 @@ window.inRange = (val, min, max) ->
 window.capitalize = (string) -> string.charAt(0).toUpperCase() + string.substring(1)
 window.capitalize_each_word = (str) -> str.replace /\b\w/g, (l) -> l.toUpperCase()
 
-window.L = window.LOADING_INDICATOR = DIV null, 'Loading...'
+window.loading_indicator = DIV
+                            className: 'loading sk-wave'
+                            dangerouslySetInnerHTML: __html: """
+                              <div class="sk-rect sk-rect1"></div>
+                              <div class="sk-rect sk-rect2"></div>
+                              <div class="sk-rect sk-rect3"></div>
+                              <div class="sk-rect sk-rect4"></div>
+                              <div class="sk-rect sk-rect5"></div>
+                            """
+
+
+
+window.LOADING_INDICATOR = window.loading_indicator
+
+
+# loading indicator styles below are 
+# Copyright (c) 2015 Tobias Ahlin, The MIT License (MIT)
+# https://github.com/tobiasahlin/SpinKit
+styles += """
+.sk-wave {
+  margin: 40px auto;
+  width: 50px;
+  height: 40px;
+  text-align: center;
+  font-size: 10px; }
+  .sk-wave .sk-rect {
+    background-color: rgba(223, 98, 100, .5);
+    height: 100%;
+    width: 6px;
+    display: inline-block;
+    -webkit-animation: sk-waveStretchDelay 1.2s infinite ease-in-out;
+            animation: sk-waveStretchDelay 1.2s infinite ease-in-out; }
+  .sk-wave .sk-rect1 {
+    -webkit-animation-delay: -1.2s;
+            animation-delay: -1.2s; }
+  .sk-wave .sk-rect2 {
+    -webkit-animation-delay: -1.1s;
+            animation-delay: -1.1s; }
+  .sk-wave .sk-rect3 {
+    -webkit-animation-delay: -1s;
+            animation-delay: -1s; }
+  .sk-wave .sk-rect4 {
+    -webkit-animation-delay: -0.9s;
+            animation-delay: -0.9s; }
+  .sk-wave .sk-rect5 {
+    -webkit-animation-delay: -0.8s;
+            animation-delay: -0.8s; }
+
+@-webkit-keyframes sk-waveStretchDelay {
+  0%, 40%, 100% {
+    -webkit-transform: scaleY(0.4);
+            transform: scaleY(0.4); }
+  20% {
+    -webkit-transform: scaleY(1);
+            transform: scaleY(1); } }
+
+@keyframes sk-waveStretchDelay {
+  0%, 40%, 100% {
+    -webkit-transform: scaleY(0.4);
+            transform: scaleY(0.4); }
+  20% {
+    -webkit-transform: scaleY(1);
+            transform: scaleY(1); } }
+"""
+
 
 
 window.shared_local_key = (key_or_object) -> 

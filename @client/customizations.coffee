@@ -157,7 +157,7 @@ customizations.default =
   # Proposal options
   discussion_enabled: true
 
-  homepage_show_search_and_sort: false
+  homepage_show_search_and_sort: true
 
   list_show_new_button: true
   homepage_show_new_proposal_button: true
@@ -173,8 +173,8 @@ customizations.default =
 
   show_proposal_scores: true
 
-  show_proposer_icon: false
-  collapse_proposal_description_at: false
+  show_proposer_icon: true
+  collapse_proposal_description_at: 300
 
   # default cluster options
   list_is_archived: false

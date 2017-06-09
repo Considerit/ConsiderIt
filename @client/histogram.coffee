@@ -175,9 +175,7 @@ window.Histogram = ReactiveComponent
 
     #return SPAN null if dirtied
 
-    if !@props.draw_base 
-      @props.draw_base_labels = false 
-    else if !@props.draw_base_labels?
+    if !@props.draw_base_labels?
       @props.draw_base_labels = true
 
     @props.enable_selection &&= @props.opinions.length > 0
@@ -210,7 +208,7 @@ window.Histogram = ReactiveComponent
         width: @props.width
         height: @props.height + @local.region_selection_vertical_padding
         position: 'relative'
-        borderBottom: if @props.draw_base then '1px solid #999'
+        borderBottom: if @props.draw_base then @props.base_style or "1px solid #999"
         #visibility: if @props.opinions.length == 0 then 'hidden'
         userSelect: 'none'
       onKeyDown: (e) =>
@@ -306,7 +304,7 @@ window.Histogram = ReactiveComponent
         """         
 
       if @props.draw_base_labels
-        @drawHistogramBase()
+        @drawHistogramLabels()
 
       if @props.enable_selection
         # A little padding at the top to give some space for selecting
@@ -340,24 +338,25 @@ window.Histogram = ReactiveComponent
 
 
 
-  drawHistogramBase: -> 
+  drawHistogramLabels: -> 
+    label_style = @props.label_style or {
+      fontSize: 12
+      fontWeight: 400
+      color: '#999'
+      bottom: -19
+    }
+
     [SPAN
-      style:
+      style: _.extend {}, label_style,
         position: 'absolute'
         left: 0
-        bottom: -19
-        fontSize: 12
-        fontWeight: 400
-        color: '#999'
+
       customization("slider_pole_labels.oppose", @props.proposal)
     SPAN
-      style:
+      style: _.extend {}, label_style,
         position: 'absolute'
         right: 0
-        bottom: -19
-        fontSize: 12
-        fontWeight: 400
-        color: '#999'
+
       customization("slider_pole_labels.support", @props.proposal)
     ]
 
@@ -392,7 +391,7 @@ window.Histogram = ReactiveComponent
           backgroundColor: "rgb(246, 247, 249)"
           cursor: 'pointer'
           left: selection_left
-          top: 0
+          top: -2
 
         if !hist.selected_opinions
           DIV
@@ -400,7 +399,7 @@ window.Histogram = ReactiveComponent
               fontSize: 12
               textAlign: 'center'
               whiteSpace: 'nowrap'
-              marginTop: -18
+              marginTop: -9
               userSelect: 'none'
               pointerEvents: 'none'
 

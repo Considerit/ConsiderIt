@@ -48,7 +48,7 @@ window.OpinionSlider = ReactiveComponent
       style : slider_style
 
       # Draw the pole labels of the slider
-      @drawPoleLabels()
+      #@drawPoleLabels()
 
       if (@props.focused || TWO_COL()) && @props.permitted && !hist_selection
         @drawFeedback() 
@@ -60,10 +60,11 @@ window.OpinionSlider = ReactiveComponent
         width: @props.width
         handle_height: SLIDER_HANDLE_SIZE()
         base_height: 6
-        base_color: if @props.focused 
-                      'rgb(175, 215, 255)' 
-                    else 
-                      'rgb(200, 200, 200)'
+        base_color: 'transparent'
+        # base_color: if @props.focused 
+        #               'rgb(175, 215, 255)' 
+        #             else 
+        #               'rgb(200, 200, 200)'
         base_endpoint: if slider.docked then 'square' else 'sharp'
         regions: customization('slider_regions', @proposal)
         polarized: true
@@ -144,55 +145,55 @@ window.OpinionSlider = ReactiveComponent
         
 
 
-  drawPoleLabels: ->
-    slider = fetch @props.key
+  # drawPoleLabels: ->
+  #   slider = fetch @props.key
 
-    if !slider.docked
-      for pole_label, idx in @props.pole_labels
-        [main_text, sub_text] = pole_label
+  #   if !slider.docked
+  #     for pole_label, idx in @props.pole_labels
+  #       [main_text, sub_text] = pole_label
 
 
-        available_x = WHITESPACE() + GUTTER() - 55
+  #       available_x = WHITESPACE() + GUTTER() - 55
 
-        w = Math.max( widthWhenRendered(main_text, {fontSize: 30, maxWidth: available_x}), \
-                      widthWhenRendered(sub_text, {fontSize: 14, maxWidth: available_x}))
+  #       w = Math.max( widthWhenRendered(main_text, {fontSize: 30, maxWidth: available_x}), \
+  #                     widthWhenRendered(sub_text, {fontSize: 14, maxWidth: available_x}))
 
-        DIV 
-          'aria-hidden': true
-          key: main_text
-          style: 
-            position: 'absolute'
-            fontSize: 30
-            top: -20
-            pointerEvents: 'none'
-            left: if idx == 0 then -(w + 55)
-            right: if idx == 1 then -(w + 55)
-            width: w
+  #       DIV 
+  #         'aria-hidden': true
+  #         key: main_text
+  #         style: 
+  #           position: 'absolute'
+  #           fontSize: 30
+  #           top: -20
+  #           pointerEvents: 'none'
+  #           left: if idx == 0 then -(w + 55)
+  #           right: if idx == 1 then -(w + 55)
+  #           width: w
 
-          main_text
+  #         main_text
 
-          DIV 
-            key: "pole_#{sub_text}_sub"
-            style: 
-              fontSize: 14
-              textAlign: 'center'
+  #         DIV 
+  #           key: "pole_#{sub_text}_sub"
+  #           style: 
+  #             fontSize: 14
+  #             textAlign: 'center'
 
-            sub_text
+  #           sub_text
 
-    else
-      for pole_label, idx in @props.pole_labels
-        DIV 
-          'aria-hidden': true
-          key: "small-#{pole_label[0]}"
-          style: 
-            position: 'absolute'
-            fontSize: 20
-            top: -12
-            pointerEvents: 'none'
-            left: if idx == 0 then -15
-            right: if idx == 1 then -20
+  #   else
+  #     for pole_label, idx in @props.pole_labels
+  #       DIV 
+  #         'aria-hidden': true
+  #         key: "small-#{pole_label[0]}"
+  #         style: 
+  #           position: 'absolute'
+  #           fontSize: 20
+  #           top: -12
+  #           pointerEvents: 'none'
+  #           left: if idx == 0 then -15
+  #           right: if idx == 1 then -20
 
-          if idx == 0 then '–' else '+'
+  #         if idx == 0 then '–' else '+'
 
   drawFeedback: -> 
     slider = fetch @props.key

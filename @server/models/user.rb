@@ -78,7 +78,7 @@ class User < ActiveRecord::Base
       is_moderator: permit('moderate content', nil) > 0,
       trying_to: nil,
       subscriptions: subscription_settings(current_subdomain),
-      notifications: notifications.order('created_at desc'),
+      #notifications: notifications.order('created_at desc'),
       verified: verified,
       needs_to_complete_profile: self.registered && (self.complete_profile || !self.name),
                                 #happens for users that were created via email invitation

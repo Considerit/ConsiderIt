@@ -56,33 +56,6 @@ AuthCallout = ReactiveComponent
 
           ' before participating!'
 
-        # DIV 
-        #   style: 
-        #     fontSize: 18
-        #     fontWeight: 500
-        #     marginTop: 20
-        #     color: 'white'
-
-        #   '(if you already have a Consider.it account, you can '
-
-        #   BUTTON
-        #     'data-action': 'login'
-        #     onClick: (e) =>
-        #       reset_key 'auth',
-        #         form: 'login'
-        #         ask_questions: true
-        #     style: 
-        #       backgroundColor: 'transparent'
-        #       border: 'none'
-        #       fontWeight: 800
-        #       textDecoration: 'underline'
-        #       padding: 0
-        #       color: 'white'
-        #       textTransform: 'lowercase'
-        #     t('log_in')
-
-        #   ' instead)'
-
 
 window.Homepage = ReactiveComponent
   displayName: 'Homepage'

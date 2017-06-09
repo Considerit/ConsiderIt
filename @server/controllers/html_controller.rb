@@ -72,16 +72,16 @@ class HtmlController < ApplicationController
     end
 
     dirty_key '/asset_manifest'
-    #response.headers["Strict Transport Security"] = 'max-age=0'
 
-    protocol = request.protocol == 'https:' ? 'https' : 'http:' 
-    csp = "default-src 'self'; connect-src 'self' #{protocol}//translate.googleapis.com; font-src 'self' #{protocol}//d2rtgkroh5y135.cloudfront.net #{protocol}//fonts.gstatic.com #{protocol}//fast.fonts.net #{protocol}//maxcdn.bootstrapcdn.com; media-src *; object-src 'self' *; frame-src *; img-src 'self' data: * #{protocol}//d2rtgkroh5y135.cloudfront.net #{protocol}//translate.googleapis.com #{protocol}//www.google-analytics.com #{protocol}//www.google.com #{protocol}//www.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' #{protocol}//cdnjs.cloudflare.com/ #{protocol}//d2rtgkroh5y135.cloudfront.net/ #{protocol}//translate.google.com/ #{protocol}//translate.googleapis.com/ #{protocol}//www.google-analytics.com/; style-src 'self' 'unsafe-inline' * #{protocol}//fast.fonts.net/ #{protocol}//fonts.googleapis.com/ #{protocol}//maxcdn.bootstrapcdn.com/ #{protocol}//translate.googleapis.com/"
+    # CSP policy if we ever want to implement in future
+    # protocol = request.protocol == 'https:' ? 'https' : 'http:' 
+    # csp = "default-src 'self'; connect-src 'self' #{protocol}//translate.googleapis.com; font-src 'self' #{protocol}//d2rtgkroh5y135.cloudfront.net #{protocol}//fonts.gstatic.com #{protocol}//fast.fonts.net #{protocol}//maxcdn.bootstrapcdn.com; media-src *; object-src 'self' *; frame-src *; img-src 'self' data: * #{protocol}//d2rtgkroh5y135.cloudfront.net #{protocol}//translate.googleapis.com #{protocol}//www.google-analytics.com #{protocol}//www.google.com #{protocol}//www.gstatic.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' #{protocol}//cdnjs.cloudflare.com/ #{protocol}//d2rtgkroh5y135.cloudfront.net/ #{protocol}//translate.google.com/ #{protocol}//translate.googleapis.com/ #{protocol}//www.google-analytics.com/; style-src 'self' 'unsafe-inline' * #{protocol}//fast.fonts.net/ #{protocol}//fonts.googleapis.com/ #{protocol}//maxcdn.bootstrapcdn.com/ #{protocol}//translate.googleapis.com/"
 
-    if false && current_subdomain.name == 'internethealthreport'
-      response.headers["Content-Security-Policy"] = csp 
-    else       
-      response.headers["Content-Security-Policy-Report-Only"] = csp 
-    end
+    # if false && current_subdomain.name == 'internethealthreport'
+    #   response.headers["Content-Security-Policy"] = csp 
+    # else       
+    #   response.headers["Content-Security-Policy-Report-Only"] = csp 
+    # end
 
     render "layouts/application", :layout => false
   end

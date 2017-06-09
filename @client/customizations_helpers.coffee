@@ -262,77 +262,87 @@ window.ShortHeader = (opts) -> ->
   homepage = loc.url == '/'
 
   opts ||= {}
-  _.defaults opts, 
-    background_color: subdomain.branding.primary_color
-    text: if !subdomain.branding.logo then subdomain.branding.masthead_header_text or subdomain.app_title
+  _.defaults opts, (customization('forum_header') or {}),
+    background: customization('background') or subdomain.branding.primary_color
+    text: customization('prompt') or subdomain.branding.masthead_header_text or subdomain.app_title
     external_link: subdomain.external_project_url
     logo_src: subdomain.branding.logo
-    logo_height: 56
-    min_height: 60
+    logo_height: 50
+    min_height: 70
 
-  hsl = parseCssHsl(opts.background_color)
+  hsl = parseCssHsl(opts.background)
   is_light = hsl.l > .75
 
 
   DIV 
     style:
-      backgroundColor: opts.background_color
+      background: opts.background
 
     DIV
       style: 
-        width: HOMEPAGE_WIDTH() # + 130
-        margin: 'auto'
-        
         position: 'relative'
         padding: '8px 0'
-        # display: 'flex'
-        # flexDirection: 'column'
-        # justifyContent: 'center'
+        minHeight: opts.min_height
+        display: 'flex'
+        flexDirection: 'row'
+        justifyContent: 'flex-start'
+        alignItems: 'center'
+        width: if homepage then HOMEPAGE_WIDTH()
+        margin: if homepage then 'auto'
 
-      TABLE 
+      DIV 
         style: 
-          position: 'relative'
-          left: if !homepage then -65 + 18
-          minHeight: opts.min_height
-        TR null,
-          if !homepage
-            TD 
+          paddingLeft: if !homepage then 20 else 0
+          paddingRight: 20
+          height: if opts.logo_height then opts.logo_height
+          display: 'flex'
+          alignItems: 'center'
+
+        if opts.logo_src
+          A 
+            href: if !homepage then '/' else opts.external_link
+            style: 
+              fontSize: 0
+              cursor: if !homepage && !opts.external_link then 'default'
+              verticalAlign: 'middle'
+              display: 'block'
+
+          
+            IMG 
+              src: opts.logo_src
+              alt: "#{subdomain.name} logo"
               style: 
-                paddingRight: 18
-                verticalAlign: 'middle'
-              back_to_homepage_button
-                color: if !is_light then 'white'
-                
+                height: opts.logo_height
 
-          if opts.logo_src
-            TD 
-              style: 
-                paddingRight: 20
-                verticalAlign: 'middle'
-              A 
-                href: if !homepage then '/' else opts.external_link
-                style: 
-                  fontSize: 0
-                  cursor: if !homepage && !opts.external_link then 'default'
+        if !homepage
 
-                IMG 
-                  src: opts.logo_src
-                  alt: "#{subdomain.name} logo"
-                  style: 
-                    height: opts.logo_height
+          DIV 
+            style: 
+              paddingRight: 18
+              position: if opts.logo_src then 'absolute'
+              bottom: if opts.logo_src then -30
+              left: if opts.logo_src then 7
+              
 
-          if opts.text
-            TD 
-              style: 
-                color: if !is_light then 'white'
-                marginLeft: if opts.logo_src then 35
-                fontSize: 32
-                fontWeight: 400
-                # display: 'inline-block'
-                verticalAlign: 'middle'
-                marginTop: 5
+            back_to_homepage_button
+              color: if !is_light && !opts.logo_src then 'white'
+              fontSize: 18
+              fontWeight: 600
+              display: 'inline'
 
-              opts.text
+            , 'homepage'
+
+
+      if opts.text
+        DIV 
+          style: 
+            color: if !is_light then 'white'
+            marginLeft: if opts.logo_src then 35
+            paddingRight: 90
+            fontSize: 32
+            fontWeight: 400
+
+          opts.text
 
 
 # The old image banner + optional text description below

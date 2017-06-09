@@ -36,10 +36,11 @@
       %link{ :href => @favicon, :rel => "icon", :type => "image/vnd.microsoft.icon" }
 
       //ios
-      %link{ :rel => "apple-touch-icon", :href => "/apple-touch-icon.png"} 
+      %link{ :rel => "apple-touch-icon", :href => "#{Rails.application.config.action_controller.asset_host}/images/apple-touch-icon.png"} 
 
       //android
-      %link{ :rel => "icon", :sizes => "196x196", :href => "/apple-touch-icon.png"} 
+      %link{ :rel => "icon", :sizes => "196x196", :href => "#{Rails.application.config.action_controller.asset_host}/images/apple-touch-icon.png"} 
+      
 
       %link{:href => "//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css", :rel => "stylesheet"}
 

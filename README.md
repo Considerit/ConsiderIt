@@ -38,15 +38,6 @@ Roughly, the roadmap is:
 
 There are other developments I'm interested in (Slack integration, analytics dashboard, verified accounts, Blockchain backed data, etc) but I believe the above are more important for the platform.  
 
-Contributing
-------------
-
-Time permitting, Travis would like collaborate with you! Well, as long as you are a [considerate human being](docs/code-of-conduct.md). 
-
-Note that there are still lots of todos to lower the barrier to making contributions, such as identifying good first-time projects. In the meantime, please be patient! And if you want to be a brave, early helper, please reach out to [travis@consider.it](travis@consider.it).
-
-Note that if you want your pull requests to be merged, you'll first have to read and sign our [Contributor License Agreement](). This retains our ability to dual license Consider.it, while at the same time retaining your rights to your contribution.  
-
 Built on
 --------
 
@@ -65,3 +56,12 @@ Deployment guide
 ----------------
 
 Missing! If you're trying to deploy, reach out to [travis@consider.it](travis@consider.it) for support, and we'll work together to create a guide. 
+
+Contributing
+------------
+
+Time permitting, Travis would like collaborate with you! Well, as long as you are a [considerate human being](docs/code-of-conduct.md). 
+
+Note that there are still lots of todos to lower the barrier to making contributions, such as identifying good first-time projects. In the meantime, please be patient! And if you want to be a brave, early helper, please reach out to [travis@consider.it](travis@consider.it).
+
+Note that if you want your pull requests to be merged, you'll first have to read and sign our [Contributor License Agreement](). This retains our ability to dual license Consider.it, while at the same time retaining your rights to your contribution.  

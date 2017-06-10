@@ -33,7 +33,7 @@ I'm also working on next generation prototypes that will build on what we've lea
 
 Roughly, the roadmap is:
 1. Refactor to a more generalized and recursive point/opinion data model, subsuming "proposals", "points", and "comments"
-2. Eliminate "crafting view" for creating a position
+2. Eliminate "crafting view" for creating a position and make it lists of points+sliders through and through
 3. Design & develop user contributions <---> profile/reputation <---> notifications value loop
 
 There are other developments I'm interested in (Slack integration, analytics dashboard, verified accounts, Blockchain backed data, etc) but I believe the above are more important for the platform.  

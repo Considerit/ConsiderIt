@@ -214,8 +214,7 @@ Proposal = ReactiveComponent
 
     show_all_points = @local.show_all_points || mode == 'crafting' || community_points.length < 8 || hist.selected_opinion || hist.selected_opinions
 
-    is_loading = !page.proposal || @is_waiting()
-
+    is_loading = !page.proposal || !@proposal.name?
 
     ARTICLE 
       id: "proposal-#{@proposal.id}"

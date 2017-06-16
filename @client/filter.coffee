@@ -92,7 +92,7 @@ basic_proposal_scoring = (proposal, opinion_value) ->
 
   opinions = fetch(proposal).opinions    
   if !opinions || opinions.length == 0
-    return null
+    return {sum: 0, avg: 0, std_dev: 0, opinions: []}
 
   filtered_out = fetch('filtered')
   if filtered_out.users
@@ -102,25 +102,30 @@ basic_proposal_scoring = (proposal, opinion_value) ->
   for opinion in opinions
     sum += opinion_value(opinion)
 
-  sum
+  avg = sum / opinions.length
+
+  differences = 0
+  for o in opinions 
+    differences += (o.stance - avg) * (o.stance - avg)
+
+  std_dev = Math.sqrt(differences / opinions.length)
+  {sum, avg, std_dev, opinions}
 
 
 sort_options = [
   { 
-    func: (proposal, opinion_value) -> 
-      sum = basic_proposal_scoring(proposal, opinion_value)
-      sum / fetch(proposal).opinions.length
+    func: (proposal, opinion_value) -> basic_proposal_scoring(proposal, opinion_value).avg
     name: 'Average Score'
     opinion_value: (o) -> o.stance
     description: "Each proposal is scored by the average opinion score, where opinions are on [-1, 1]."
   }, { 
-    func: basic_proposal_scoring
+    func: (proposal, opinion_value) -> basic_proposal_scoring(proposal, opinion_value).sum
     name: 'Total Score'
     opinion_value: (o) -> o.stance
     description: "Each proposal is scored by the sum of opinions, where opinions are on [-1, 1]."
   }, {
     func: (proposal, opinion_value) -> 
-      sum = basic_proposal_scoring(proposal, opinion_value)
+      sum = basic_proposal_scoring(proposal, opinion_value).sum
       n = Date.now()
       pt = new Date(proposal.created_at).getTime()
       sum / (1 + (n - pt) / 10000000000)  # decrease this constant to favor newer proposals
@@ -134,16 +139,34 @@ sort_options = [
     func: (proposal) -> new Date(proposal.created_at).getTime()
     name: 'Newest'
     description: "The proposals submitted most recently are shown first."
+  }, { 
+    func: (proposal, opinion_value) -> 
+      stats = basic_proposal_scoring(proposal, opinion_value)
+      if stats.opinions.length > 1
+        9999999999 - stats.std_dev
+      else 
+        20
+
+    name: 'Unity'
+    opinion_value: (o) -> o.stance
+    description: "Proposals where the community is most united for or against is shown highest"
+  }, { 
+    func: (proposal, opinion_value) -> 
+      stats = basic_proposal_scoring(proposal, opinion_value)
+      if stats.opinions.length > 1
+        stats.std_dev
+      else if stats.opinions.length == 1
+        -20
+      else 
+        -9999999999
+    name: 'Difference'
+    opinion_value: (o) -> o.stance
+    description: "Proposals where the community is most split is shown highest"
   }, {
-    func: basic_proposal_scoring
+    func: (proposal, opinion_value) -> basic_proposal_scoring
     name: 'Most Activity'
     opinion_value: (o) -> 1 + (o.point_inclusions or []).length
     description: "Ranked by number of opinions and discussion."
-  },  {
-    func: (proposal) -> 
-      if fetch(proposal.your_opinion).published then proposal.your_opinion.stance else -1
-    name: 'Your Score'
-    description: "Proposals are ordered by your own opinion on them."
   }
 
 

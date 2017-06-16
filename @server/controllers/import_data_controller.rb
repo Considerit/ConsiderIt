@@ -386,7 +386,7 @@ class ImportDataController < ApplicationController
     fields = {}
     subdomain.users.each do |user|
       if !user.super_admin
-        for k,v in JSON.parse(user.tags) or {}
+        for k,v in JSON.parse( user.tags || '{}' )
           fields[k.split('.')[0]] = 1
         end
       end
@@ -454,7 +454,7 @@ class ImportDataController < ApplicationController
     subdomain.users.each do |user|
       CSV.open("#{export_path}#{subdomain.name}-users.csv", "a") do |csv|
         tags = {}
-        for k,v in JSON.parse(user.tags) or {}
+        for k,v in JSON.parse( user.tags || '{}' )
           if k == 'age.editable' && ['hala','engageseattle'].include?(subdomain.name)
             if v.to_i > 0          
               v = v.to_i

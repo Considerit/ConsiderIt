@@ -1,6 +1,10 @@
 require 'csv'
 require 'zip'
 
+require 'data_exports'
+include Exports
+
+EXPORT_PATH = "lib/tasks/client_data/export/"
 
 # Imports data from CSVs
 # Limitations:
@@ -373,128 +377,21 @@ class ImportDataController < ApplicationController
   def export
     subdomain = current_subdomain
 
-    export_path = "lib/tasks/client_data/export/"
+    exports = [
+      {fname: "#{subdomain.name}-opinions.csv",  rows: Exports.opinions(subdomain)},
+      {fname: "#{subdomain.name}-points.csv",    rows: Exports.points(subdomain)},
+      {fname: "#{subdomain.name}-users.csv",     rows: Exports.users(subdomain)},
+      {fname: "#{subdomain.name}-proposals.csv", rows: Exports.proposals(subdomain)},
+    ]
 
-    CSV.open("#{export_path}#{subdomain.name}-opinions.csv", "w") do |csv|
-      csv << ["proposal_slug","proposal_name", 'created', "username", "email", "opinion", "#points"]
-    end
-
-    CSV.open("#{export_path}#{subdomain.name}-points.csv", "w") do |csv|
-      csv << ['proposal', 'type', 'created', "username", "author", "valence", "summary", "details", 'author_opinion', '#inclusions', '#comments']
-    end
-
-    fields = {}
-    subdomain.users.each do |user|
-      if !user.super_admin
-        for k,v in JSON.parse( user.tags || '{}' )
-          fields[k.split('.')[0]] = 1
-        end
-      end
-    end 
-    fields = fields.keys()
-
-    #fields = "zip", "gender", "age", "ethnicity", "education", "race", "home", "hispanic", "hala_focus_group"
-    CSV.open("#{export_path}#{subdomain.name}-users.csv", "w") do |csv|
-
-      row = ['email', 'name', 'date joined'] 
-      for field in fields 
-        row.append field 
-      end 
-      csv << row
-    end
-
-
-    CSV.open("#{export_path}#{subdomain.name}-proposals.csv", "w") do |proposals_csv|
-      proposals_csv << ['slug', 'created', "username", "author", 'name', 'description', '#points', '#opinions', 'total_score', 'avg_score']
-
-      subdomain.proposals.each do |proposal|
-
-        opinions = proposal.opinions.published
-        total_score = 0
-        opinions.each do |o|
-          total_score += o.stance
-        end
-
-        begin 
-          avg_score = total_score / opinions.count
-        rescue
-          avg_score = 0 
-        end 
-
-        proposals_csv << [proposal.slug, proposal.created_at, proposal.user.name, proposal.user.email.gsub('.ghost', ''), proposal.name, proposal.description, proposal.points.published.count, opinions.count, total_score, avg_score]
-
-        CSV.open("#{export_path}#{subdomain.name}-opinions.csv", "a") do |csv|
-          proposal.opinions.published.each do |opinion|
-            user = opinion.user
-            begin 
-              csv << [proposal.slug, proposal.name, opinion.created_at, user.name, user.email.gsub('.ghost', ''), opinion.stance, user.points.where(:proposal_id => proposal.id).count]
-            rescue 
-            end 
-          end
-        end
-
-        CSV.open("#{export_path}#{subdomain.name}-points.csv", "a") do |csv|
-
-          proposal.points.published.each do |pnt|
-            begin 
-              opinion = pnt.user.opinions.find_by_proposal_id(pnt.proposal.id)
-              csv << [pnt.proposal.slug, 'POINT', pnt.created_at, pnt.hide_name ? 'ANONYMOUS' : pnt.user.name, pnt.hide_name ? 'ANONYMOUS' : pnt.user.email.gsub('.ghost', ''), pnt.is_pro ? 'Pro' : 'Con', pnt.nutshell, pnt.text, opinion ? opinion.stance : '-', pnt.inclusions.count, pnt.comments.count]
-
-              pnt.comments.each do |comment|
-                opinion = comment.user.opinions.find_by_proposal_id(pnt.proposal.id)
-                csv << [pnt.proposal.slug, 'COMMENT', comment.created_at, comment.user.name, comment.user.email.gsub('.ghost', ''), "", comment.body, '', opinion ? opinion.stance : '-', '', '']
-              end
-            rescue 
-            end 
-          end
-        end
-      end
-    end
-
-    subdomain.users.each do |user|
-      CSV.open("#{export_path}#{subdomain.name}-users.csv", "a") do |csv|
-        tags = {}
-        for k,v in JSON.parse( user.tags || '{}' )
-          if k == 'age.editable' && ['hala','engageseattle'].include?(subdomain.name)
-            if v.to_i > 0          
-              v = v.to_i
-
-              if v < 20
-                v = '0-20'
-              elsif v > 70
-                v = '70+'
-              else 
-                v = "#{10 * ((v / 10).floor)}-#{10 * ((v / 10).floor + 1)}"
-              end 
-            else 
-              next 
-            end
-          end 
-          tags[k.split('.')[0]] = v
-        end
-
-        row = [user.email, user.name, user.created_at]
-        for field in fields
-
-          row.append tags.has_key?(field) ? tags[field] : ""
-        end
-        csv << row
-      end
-    end
-
-    zip_path = "#{export_path}#{subdomain.name}.zip"
+    zip_path = "#{EXPORT_PATH}#{subdomain.name}.zip"
     Zip::File.open(zip_path, Zip::File::CREATE) do |z|
 
-      files = [
-        "#{subdomain.name}-opinions.csv",
-        "#{subdomain.name}-points.csv",
-        "#{subdomain.name}-users.csv",
-        "#{subdomain.name}-proposals.csv"
-      ]
+      exports.each do |ex|
+        write_csv(ex[:fname], ex[:rows])
 
-      files.each do |fname|
-        f = CSV.open(export_path + fname, 'a')
-        z.add(fname, f.path)
+        f = CSV.open(EXPORT_PATH + ex[:fname], 'a')
+        z.add(ex[:fname], f.path)
       end
 
     end 
@@ -505,5 +402,15 @@ class ImportDataController < ApplicationController
 
   end
 
+end 
+
+
+def write_csv(fname, rows)
+
+  CSV.open("#{EXPORT_PATH}#{fname}", "w") do |csv|
+    rows.each do |row|
+      csv << row 
+    end
+  end 
 
 end

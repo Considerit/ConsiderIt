@@ -140,28 +140,25 @@ sort_options = [
     name: 'Newest'
     description: "The proposals submitted most recently are shown first."
   }, { 
-    func: (proposal, opinion_value) -> 
-      stats = basic_proposal_scoring(proposal, opinion_value)
-      if stats.opinions.length > 1
-        9999999999 - stats.std_dev
-      else 
-        20
-
     name: 'Unity'
-    opinion_value: (o) -> o.stance
-    description: "Proposals where the community is most united for or against is shown highest"
-  }, { 
     func: (proposal, opinion_value) -> 
       stats = basic_proposal_scoring(proposal, opinion_value)
       if stats.opinions.length > 1
-        stats.std_dev
-      else if stats.opinions.length == 1
-        -20
+        Math.log(stats.opinions.length + 1) / stats.std_dev / (1 - Math.abs(stats.avg) + 1)
       else 
-        -9999999999
-    name: 'Difference'
+        -1
     opinion_value: (o) -> o.stance
-    description: "Proposals where the community is most split is shown highest"
+    description: "Proposals where the community is most united for or against is shown highest."
+  }, { 
+    name: 'Difference'
+    func: (proposal, opinion_value) -> 
+      stats = basic_proposal_scoring(proposal, opinion_value)
+      if stats.opinions.length > 1
+        stats.std_dev * Math.log(stats.opinions.length + 1) 
+      else
+        -1
+    opinion_value: (o) -> o.stance
+    description: "Proposals where the community is most split is shown highest."
   }, {
     func: (proposal, opinion_value) -> basic_proposal_scoring
     name: 'Most Activity'

@@ -4,7 +4,6 @@ class OembedController < ApplicationController
   respond_to :html
   
   def show
-
     url = params[:url]
     begin
       u = URI.parse(url)
@@ -61,6 +60,7 @@ class OembedController < ApplicationController
       attributes.append "#{k}='#{v}'"
     end
 
+
     resp = {
       :version => '1.0',
       :title => proposal.name,
@@ -86,8 +86,6 @@ class OembedController < ApplicationController
 
     @oembed_request = true
 
-    Rails.logger.info resp.to_json
-    
     ActiveSupport.escape_html_entities_in_json = false
 
     respond_to do |format|
@@ -121,7 +119,7 @@ class OembedController < ApplicationController
     end
 
     dirty_key '/asset_manifest'
-    response.headers["Strict Transport Security"] = 'max-age=0'
+    #response.headers["Strict Transport Security"] = 'max-age=0'
 
     render "layouts/proposal_embed", :layout => false
   end

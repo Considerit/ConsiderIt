@@ -1,24 +1,21 @@
 def stats(vals)
-  total_score = 0 
-  vals.each do |v|
-    total_score += v
-  end
 
-  begin 
+  total_score = 0
+  avg_score = 0 
+  std_dev = 0
+
+  if vals.length > 0
+    total_score = vals.sum
     avg_score = total_score / vals.length
-  rescue
-    avg_score = 0 
-  end 
-
-  differences = 0
-  vals.each do |v|
-    differences += (v - avg_score)**2
+    differences = vals.sum {|v| (v - avg_score)**2}
+    std_dev = vals.length > 0 ? (differences/vals.length)**0.5 : 0
   end
 
   {
     total: total_score,
     avg: avg_score,
-    std_dev: vals.length > 0 ? (differences/vals.length)**0.5 : 0
+    std_dev: std_dev,
+    count: vals.length
   }
 
 end
@@ -72,8 +69,15 @@ module Exports
 
   def proposals(subdomain)
     fname = "#{subdomain.name}-proposals"
-    heading = ['slug', 'url', 'created', "username", "author", 'name', 'category', 'description', '#points', '#opinions', 'total_score', 'avg_score', 'std_deviation']
     rows = []
+    heading = ['slug', 'url', 'created', "username", "author", 'name', 'category', 'description', '#points', '#opinions', 'total score', 'avg score', 'std deviation']
+
+    if SPECIAL_GROUPS.has_key?(subdomain.name.downcase)
+      SPECIAL_GROUPS[subdomain.name.downcase].each do |group|
+        heading.append("#{group[:label] || group[:tag]} opinions")
+        heading.append("difference")
+      end 
+    end
     rows.append heading 
 
     subdomain.proposals.each do |proposal|
@@ -81,7 +85,13 @@ module Exports
 
       s = stats opinions.map{|o| o.stance}
 
-      rows.append [proposal.slug, "https://#{subdomain.host_with_port}/#{proposal.slug}", proposal.created_at, proposal.user.name, proposal.user.email.gsub('.ghost', ''), proposal.name, (proposal.category || 'Proposals'), proposal.description, proposal.points.published.count, opinions.count, s[:total], s[:avg], s[:std_dev]]
+      row = [proposal.slug, "https://#{subdomain.host_with_port}/#{proposal.slug}", proposal.created_at, proposal.user.name, proposal.user.email.gsub('.ghost', ''), proposal.name, (proposal.cluster || 'Proposals'), proposal.description, proposal.points.published.count, opinions.count, s[:total].round(2), s[:avg].round(2), s[:std_dev].round(2)]
+      group_diffs = group_differences proposal 
+      group_diffs.each do |diff|
+        row.append diff[:ingroup][:count]
+        row.append diff[:diff].round(2)
+      end
+      rows.append row
     end
 
     rows
@@ -141,3 +151,77 @@ module Exports
   end
 
 end
+
+
+def group_differences(proposal)
+
+  subdomain = proposal.subdomain
+  return [] if !SPECIAL_GROUPS.has_key?(subdomain.name.downcase)
+
+  groups = SPECIAL_GROUPS[subdomain.name.downcase]
+  differences = []
+  groups.each do |group|
+    in_group = []
+    out_group = []
+
+    proposal.opinions.published.each do |o|
+      if passes_tag(o.user, group[:tag])
+        in_group.append(o.stance) 
+      else 
+        out_group.append(o.stance)
+      end
+    end
+
+    sin = stats in_group
+    sout = stats out_group
+
+    differences.append({
+      group: group,
+      ingroup: sin, 
+      outgroup: sout,
+      diff: sin[:count] > 0 ? sin[:avg] - sout[:avg] : 0
+    })
+
+  end
+
+  differences
+end
+
+USER_TAGS = {}
+def passes_tag(user, tag)
+  if !USER_TAGS.has_key?(user.id)
+    USER_TAGS[user.id] = Oj.load(user.tags || '{}')
+  end
+
+  tags = USER_TAGS[user.id]
+  tags.has_key?(tag) && !['no', 'false'].include?("#{tags[tag]}".downcase)
+end
+
+SPECIAL_GROUPS = {
+  'newblueplan' => [{
+      label: 'Elected Dem. Leader',
+      tag: 'elected_wa-dems.editable'
+    }, {
+      label: 'Precinct Committee Officer',
+      tag: 'pco_wa-dems.editable'
+    }, {
+      label: 'Dem. Volunteer',
+      tag: 'volunteer_wa-dems.editable'
+    }, {
+      label: 'Dem. Donor',
+      tag: 'donor_wa-dems.editable'
+    }, {
+      label: 'Civic Org. Leader',
+      tag: 'ledcivic_wa-dems.editable'
+    }, {
+      label: 'Civic Org. Volunteer',
+      tag: 'volcivic_wa-dems.editable'
+    }, {
+      label: 'Civic Org. Staff',
+      tag: 'civic_staff_wa-dems.editable'
+    }, {
+      label: 'Dem. Party Staff',
+      tag: 'staff_wa-dems.editable'
+    }]
+
+}

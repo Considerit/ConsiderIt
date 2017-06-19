@@ -94,6 +94,8 @@ class OembedController < ApplicationController
       format.xml  { render :xml => resp.to_xml(:root => "oembed") }
     end 
 
+    Rails.logger.info resp.to_json
+    
     ActiveSupport.escape_html_entities_in_json = true
   
   end

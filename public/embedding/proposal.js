@@ -1,6 +1,6 @@
 // insert iframeResizer into DOM
 var resizer = document.createElement("script")
-resizer.src = 'https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.3/iframeResizer.min.js'
+resizer.src = 'https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.14/iframeResizer.min.js'
 resizer.id = 'iframeresizer'
 var fjs = document.getElementsByTagName('script')[0]
 fjs.parentNode.insertBefore(resizer, fjs)
@@ -20,6 +20,7 @@ window.considerit_check_embeds = function(){
     iframe.className = 'considerit-embed'
     iframe.src = parts.join('/') + '/embed/proposal/' + slug
     iframe.style = "overflow:hidden"
+
     iframe.frameBorder = '0'
     iframe.width = '700'
 

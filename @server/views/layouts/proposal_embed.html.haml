@@ -22,7 +22,9 @@
     %script{:src => "#{@vendor}/vendor/jquery.js", :type => 'text/javascript'}
     %script{:src => "#{@vendor}/vendor/jquery.touchpunch.js", :type => 'text/javascript'}
     %script{:src => "#{@vendor}/vendor/md5.js", :type => 'text/javascript'}
-      
+    %script{:src => "#{@vendor}/vendor/d3.v3.min.js", :type => 'text/javascript'}
+    %script{:src => "#{@vendor}/vendor/iframe-resizer-inner.min.js", :type => 'text/javascript'}
+
   %body
     - if @not_found || !@proposal
       #nope{style: "padding: 20px; color: #555"}

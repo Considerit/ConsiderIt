@@ -13,6 +13,10 @@ require './translations'
 # require './opinion_slider'
 
 
+window.focus_color = -> 
+  customization('focus_color') or focus_blue
+
+
 # The containing window calls this to let us know that the containing window is allowing 
 # for javascript to be run. In particular, that means the iframe can be resized, which 
 # opens up more interactive possibilities. 
@@ -157,7 +161,7 @@ Proposal = ReactiveComponent
 
     users = fetch '/users'
 
-    return LOADING_INDICATOR if !@proposal.name
+    return DIV(null, LOADING_INDICATOR) if !@proposal.name
 
     width = @getDOMNode().offsetWidth
     histo_width = width - 100

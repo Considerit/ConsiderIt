@@ -38,8 +38,9 @@ window.considerit_check_embeds = function(){
     if (typeof iFrameResize != 'undefined' && loaded_iframes == iframes.length){
       for (var i=0; i < iframes.length; i++){
         iframe = iframes[i]
-        iFrameResize({log:false, checkOrigin: false}, iframe)
+        iFrameResize({log:true, checkOrigin: false, heightCalculationMethod: 'max'}, iframe)
         iframe.iFrameResizer.sendMessage('Houston, we have contact!')
+      
       }
       clearInterval(considerit_iframe_int)
     }

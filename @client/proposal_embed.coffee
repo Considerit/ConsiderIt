@@ -210,39 +210,40 @@ Proposal = ReactiveComponent
           marginBottom: 20
           position: 'relative'
 
-        A 
-          href: proposal_link(@proposal) 
-          target: '_blank'          
-          style: 
-            color: focus_color()
-            padding: '6px 12px'
-            backgroundColor: focus_color()
-            borderRadius: 16
-            color: 'white'
-            position: 'relative'
+        if @proposal.active 
+          A 
+            href: proposal_link(@proposal) 
+            target: '_blank'          
+            style: 
+              color: focus_color()
+              padding: '6px 12px'
+              backgroundColor: focus_color()
+              borderRadius: 16
+              color: 'white'
+              position: 'relative'
 
-          SPAN 
-            key: 'slider_bubblemouth'
-            style: css.crossbrowserify
-              left: 35 - w / 2
-              top: 8
-              position: 'absolute'
-              width: w
-              height: h 
-              zIndex: 10
-              transform: "translate(0, -25px) scale(.5) "
+            SPAN 
+              key: 'slider_bubblemouth'
+              style: css.crossbrowserify
+                left: 35 - w / 2
+                top: 8
+                position: 'absolute'
+                width: w
+                height: h 
+                zIndex: 10
+                transform: "translate(0, -25px) scale(.5) "
 
-            Bubblemouth 
-              apex_xfrac: .2
-              width: w
-              height: h
-              fill: focus_color()
-              stroke: focus_color()
-              stroke_width: 0
-              dash_array: "none"
+              Bubblemouth 
+                apex_xfrac: .2
+                width: w
+                height: h
+                fill: focus_color()
+                stroke: focus_color()
+                stroke_width: 0
+                dash_array: "none"
 
 
-          "Add your opinion" 
+            "Add your opinion" 
 
 
       DIV 

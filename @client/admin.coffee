@@ -1193,7 +1193,10 @@ ModerationOptions = ReactiveComponent
           'Edit moderation settings'    
 
       else
-        DIV null,             
+        DIV 
+          style: 
+            padding: 50
+                       
           for model in ['points', 'comments', 'proposals']
             # The order of the options is important for the database records
             moderation_options = [

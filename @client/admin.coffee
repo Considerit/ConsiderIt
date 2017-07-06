@@ -741,6 +741,8 @@ ModerationDash = ReactiveComponent
       quarantined = []
       failed = []
 
+      moderations[model] ||= []
+
       moderations[model].sort (a,b) -> 
         new Date(fetch(b.moderatable).created_at) - new Date(fetch(a.moderatable).created_at)
 

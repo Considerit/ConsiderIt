@@ -364,6 +364,7 @@ window.HomepageTabs = ReactiveComponent
               color: 'white'
               opacity: if hovering || current then 1 else .8
 
+            # TODO: move this to customizations
             if subdomain.name in ['dao', 'BITNATION']
               _.extend tab_style, 
                 padding: '10px 30px 4px 30px'
@@ -408,7 +409,6 @@ window.HomepageTabs = ReactiveComponent
             LI 
               tabIndex: 0
               role: 'tab'
-              #style: tab_style
               style: 
                 display: 'inline-block'
               'aria-controls': 'homepagetab'
@@ -433,7 +433,8 @@ window.HomepageTabs = ReactiveComponent
 
               H4 
                 style: tab_style
-                filter
+
+                customization('homepage_tab_render')?[filter]?() or filter
 
 
 

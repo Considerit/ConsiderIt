@@ -11,7 +11,7 @@ require './new_proposal'
 
 
 
-AuthCallout = ReactiveComponent
+window.AuthCallout = ReactiveComponent
   displayName: 'AuthCallout'
 
   render: ->

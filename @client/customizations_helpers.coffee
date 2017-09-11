@@ -662,7 +662,8 @@ window.SeattleHeader = (opts) -> ->
                   margin: 0
                 dangerouslySetInnerHTML: { __html: opts.salutation.after }
                 
-
+        if opts.login_callout
+          AuthCallout()
 
         if opts.closed 
           DIV 

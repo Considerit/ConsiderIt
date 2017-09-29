@@ -20,7 +20,7 @@ To learn more, [visit Consider.it][1].
 License
 -------
 
-Consider.it is an open source product released under the GNU Affero General Public License v3. This is a copyleft license that considers hosting code on a server a form of distribution. See the [LICENSE file](LICENSE.txt) or [read background about the AGPL](https://www.gnu.org/licenses/why-affero-gpl.en.html). 
+Consider.it is an open source product released under the GNU Affero General Public License v3. This is a copyleft license that considers hosting code on a server a form of distribution. See the [COPYING file](COPYING) or [read background about the AGPL](https://www.gnu.org/licenses/why-affero-gpl.en.html). 
 
 Because Consider.it LLC retains permission to relicense the Consider.it source code, we can [dual license](https://en.wikipedia.org/wiki/Multi-licensing) the source code to you under a license other than AGPL. Reach out to [travis@consider.it](travis@consider.it) to discuss. Interested in integrating Consider.it into the bowels of other products, as well as supporting other Consider.it businesses explore different markets, both of which will almost certainly require a different license. 
 

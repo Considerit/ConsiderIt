@@ -64,4 +64,4 @@ Time permitting, Travis would like collaborate with you! Well, as long as you ar
 
 Note that there are still lots of todos to lower the barrier to making contributions, such as identifying good first-time projects. In the meantime, please be patient! And if you want to be a brave, early helper, please reach out to [travis@consider.it](travis@consider.it).
 
-Note that if you want your pull requests to be merged, you'll first have to agree to our [Contributor License Agreement](CLA). This retains our ability to dual license Consider.it, while at the same time retaining your rights to your contribution. Basically, you give Consider.it LLC permission to redistribute your contributions. 
+Note that if you want your pull requests to be merged, you'll first have to agree to our [Contributor License Agreement](https://www.clahub.com/agreements/Considerit/ConsiderIt). This gives me the ability to dual license Consider.it, while you retain your rights to your contribution.

@@ -13,7 +13,7 @@ Consider.it has been used in a variety of contexts, including:
 - academics peer reviewing articles before publication
 - debating tv shows
 
-The creator and maintainer is [Travis Kriplean](https://github.com/tkriplean/). Consider.it is how Travis makes his living. Travis invented Consider.it in the course of his PhD work on supporting reflective public dialogue at the University of Washington, after which he went indie and bootstrapped his continued efforts to create technology that helps people listen to each other. 
+The creator and maintainer is [Travis Kriplean](https://github.com/tkriplean/). Travis invented Consider.it in the course of his PhD work on supporting reflective public dialogue at the University of Washington, after which he went indie and bootstrapped his continued efforts to create technology that helps people listen to each other. 
 
 To learn more, [visit Consider.it][1].
 
@@ -22,16 +22,16 @@ License
 
 Consider.it is an open source product released under the GNU Affero General Public License v3. This is a copyleft license that considers hosting code on a server a form of distribution. See the [LICENSE file](LICENSE.txt) or [read background about the AGPL](https://www.gnu.org/licenses/why-affero-gpl.en.html). 
 
-Because Consider.it LLC retains permission to relicense the Consider.it source code, we can [dual license](https://en.wikipedia.org/wiki/Multi-licensing) the source code to you under a license other than AGPL. Reach out to [travis@consider.it](travis@consider.it) to discuss. Very interested in integrating Consider.it into the bowels of other products, as well as supporting other Consider.it businesses explore different markets, both of which will almost certainly require a different license. 
+Because Consider.it LLC retains permission to relicense the Consider.it source code, we can [dual license](https://en.wikipedia.org/wiki/Multi-licensing) the source code to you under a license other than AGPL. Reach out to [travis@consider.it](travis@consider.it) to discuss. Interested in integrating Consider.it into the bowels of other products, as well as supporting other Consider.it businesses explore different markets, both of which will almost certainly require a different license. 
 
 On the state of Consider.it
 ---------------------------
 
-Consider.it was open sourced after 5 years of being closed source. And it is mostly just my code. Unfortunate consequences include: inconsistant styling, some hardcoding to production environment, substandard documentation, obscure commit messages, hardcoded references to specific customers, leaky abstractions, lack of releases and versioning, and a lack of tests. Sorry!
+Consider.it was open sourced after several years of being closed source. And it is mostly just my code. Unfortunate consequences include: inconsistant styling, some hardcoding to production environment, substandard documentation, obscure commit messages, hardcoded references to specific customers, leaky abstractions, lack of releases and versioning, and a lack of tests. Sorry!
 
-I'm also working on next generation prototypes that will build on what we've learned over the past five years applying Consider.it, and eventually be merged back here. Roughly speaking, the next Considerit will be more general (right now, it forces a structure of lists of proposals, with each proposal having pros/cons and each pro or con having comments), and the structure will be modifiable as a conversation progresses so that facilitators can use the best structure for the situation. The "Slidergram" widget will also be factored out and generalized. 
+I'm also working on next generation prototypes that build on what we've learned over the past five years applying Consider.it, and eventually be merged back here. The next Considerit will be more general (right now, it forces a structure of lists of proposals, with each proposal having pros/cons and each pro or con having comments), and the structure will be modifiable as a conversation progresses so that facilitators can use the best structure for the situation. The "Slidergram" widget will also be factored out and generalized. 
 
-Roughly, the roadmap is:
+The roadmap is:
 1. Refactor to a more generalized and recursive point/opinion data model, subsuming "proposals", "points", and "comments"
 2. Eliminate "crafting view" for creating a position and make it lists of points+sliders through and through
 3. Design & develop user contributions <---> profile/reputation <---> notifications value loop

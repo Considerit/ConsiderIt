@@ -50,3 +50,4 @@ client_secret.json
 
 Vagrantfile
 public/images
+export.rake

@@ -38,10 +38,6 @@ ConsiderIt::Application.configure do
   # Defaults to Rails.root.join("public/assets")
   # config.assets.manifest = YOUR_PATH
    
-  # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
-  
-  config.assets.precompile += %w( javascripts/franklin-main.js franklin-main.js javascripts/load_everything.js load_everything.js *.svg *.eot *.woff *.ttf *.jpg *.png *.jpeg *.gif)
-
   # Specifies the header that your server uses for sending files
   # config.action_dispatch.x_sendfile_header = "X-Sendfile"
 

@@ -16,7 +16,7 @@ window.passes_tag_filter = (user, tag, regex) ->
 
 window.cluster_link = (href, anchor) ->
   anchor ||= href 
-  "<a href='#{href}' target='_blank' style='text-decoration:underline'>#{anchor}</a>"
+  "<a href='#{href}' target='_blank' style='font-weight: 600; text-decoration:underline'>#{anchor}</a>"
 
 
 

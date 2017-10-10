@@ -470,6 +470,8 @@ window.Cluster = ReactiveComponent
         marginBottom: if !is_collapsed then 28
         position: 'relative'
 
+      A name: if cluster.name && cluster.name then cluster.name.toLowerCase().replace(/ /g, '_')
+
 
       ClusterHeading 
         cluster: cluster 

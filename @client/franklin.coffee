@@ -542,7 +542,6 @@ NextProposals = ReactiveComponent
               show_category: true
               width: @props.width
               hide_scores: true
-              show_category: false
 
       DIV 
         style: 

@@ -457,7 +457,7 @@ class User < ActiveRecord::Base
 
   def self.get_saml_settings(url_base, sso_idp)
     # should retrieve SAML-settings based on subdomain, IP-address, NameID or similar
-    settings = OneLogin::RubySaml::Settings.new
+    settings = OneLogin::RubySaml::Settings.new(APP_CONFIG[:SSO_domains][sso_idp.to_sym])
 
     url_base ||= "http://localhost:3000"
 
@@ -468,32 +468,31 @@ class User < ActiveRecord::Base
     settings.assertion_consumer_service_url = url_base + "/saml/acs"
     settings.assertion_consumer_logout_service_url = url_base + "/saml/logout"
 
-    if current_subdomain.host_with_port == 'test.example.com:80'
-      # IdP section
-      settings.idp_entity_id                  = ""
-      settings.idp_sso_target_url             = ""
-      settings.idp_slo_target_url             = ""
-
-    settings.idp_cert                       = "-----BEGIN CERTIFICATE-----
------END CERTIFICATE-----"
-
-      # or settings.idp_cert_fingerprint           = "3B:05:BE:0A:EC:84:CC:D4:75:97:B3:A2:22:AC:56:21:44:EF:59:E6"
-      #    settings.idp_cert_fingerprint_algorithm = XMLSecurity::Document::SHA1
-
-      settings.name_identifier_format         = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
-
-      # Security section
-      settings.security[:authn_requests_signed] = false
-      settings.security[:logout_requests_signed] = false
-      settings.security[:logout_responses_signed] = false
-      settings.security[:metadata_signed] = false
-
-    else 
-      settings = APP_CONFIG[:SSO_domains][sso_idp] 
-    end
-
     settings.security[:digest_method] = XMLSecurity::Document::SHA1
     settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
+
+#     if current_subdomain.host_with_port == 'test.example.com:80'
+#       # IdP section
+#       settings.idp_entity_id                  = ""
+#       settings.idp_sso_target_url             = ""
+#       settings.idp_slo_target_url             = ""
+
+#     settings.idp_cert                       = "-----BEGIN CERTIFICATE-----
+# -----END CERTIFICATE-----"
+
+#       # or settings.idp_cert_fingerprint           = "3B:05:BE:0A:EC:84:CC:D4:75:97:B3:A2:22:AC:56:21:44:EF:59:E6"
+#       #    settings.idp_cert_fingerprint_algorithm = XMLSecurity::Document::SHA1
+
+#       settings.name_identifier_format         = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+
+#       # Security section
+#       settings.security[:authn_requests_signed] = false
+#       settings.security[:logout_requests_signed] = false
+#       settings.security[:logout_responses_signed] = false
+#       settings.security[:metadata_signed] = false
+
+#     end
+
 
     settings
   end

@@ -86,7 +86,7 @@ class CurrentUserController < ApplicationController
         elsif !params[:password] || params[:password].length == 0
           errors.append 'Missing password'
         elsif current_user.registered
-          puts("Trying to log in a user who is already in!")
+          #puts("Trying to log in a user who is already in!")
           errors.append 'You are already logged in'
         else
 
@@ -183,7 +183,7 @@ class CurrentUserController < ApplicationController
             break raw_token unless User.where(reset_password_token: raw_token).first
           end
 
-          puts("\nYO YO the raw token to login is #{raw_token}\n")
+          # puts("\nYO YO the raw token to login is #{raw_token}\n")
 
           # Now we'll store an encoded version of the token on the user table
           encoded_token = OpenSSL::HMAC.hexdigest('SHA256', 'reset_password_token', raw_token)
@@ -198,7 +198,7 @@ class CurrentUserController < ApplicationController
 
       when 'logout'
         if current_user && current_user.logged_in?
-          puts("Logging out.")
+          #puts("Logging out.")
           dirty_key '/page/'
           dirty_if_any_private_proposals current_user
           new_current_user()

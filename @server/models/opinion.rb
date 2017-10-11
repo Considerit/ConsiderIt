@@ -106,7 +106,7 @@ class Opinion < ActiveRecord::Base
     points_to_exclude = points_already_included.select {|point_id| not points_to_include.include? point_id}
     points_to_add    = points_to_include.select {|p_id| not points_already_included.include? p_id }
 
-    puts("Excluding points #{points_to_exclude}, including points #{points_to_add}")
+    # puts("Excluding points #{points_to_exclude}, including points #{points_to_add}")
 
     # Delete goners
     points_to_exclude.each do |point_id|
@@ -178,7 +178,7 @@ class Opinion < ActiveRecord::Base
 
     # If we're absorbing the Opinion's user as well
     if absorb_user
-      puts("Changing user for Opinion #{id} to #{opinion.user_id}")
+      # puts("Changing user for Opinion #{id} to #{opinion.user_id}")
 
       # We only have to update inclusions if the user is changing because
       # inclusions are identified by (proposal_id, user_id), not by Opinion.
@@ -206,7 +206,7 @@ class Opinion < ActiveRecord::Base
       end
     end
 
-    puts("Absorbing opinion #{opinion.id} into #{self.id}")
+    # puts("Absorbing opinion #{opinion.id} into #{self.id}")
 
     # Copy the stance of the opinion if the opinion is older
     # (Picking the older one because of a bug where if you

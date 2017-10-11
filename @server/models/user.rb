@@ -357,7 +357,7 @@ class User < ActiveRecord::Base
     older_user = self.id #user that will do the absorbing
     newer_user = user.id #user that will be absorbed
 
-    puts("Merging!  Kill User #{newer_user}, put into User #{older_user}")
+    # puts("Merging!  Kill User #{newer_user}, put into User #{older_user}")
 
     return if older_user == newer_user
     
@@ -381,7 +381,7 @@ class User < ActiveRecord::Base
     #          which gets absorbed into the other?
     new_ops = Opinion.where(:user_id => newer_user)
     old_ops = Opinion.where(:user_id => older_user)
-    puts("Merging opinions from #{old_ops.map{|o| o.id}} to #{new_ops.map{|o| o.id}}")
+    # puts("Merging opinions from #{old_ops.map{|o| o.id}} to #{new_ops.map{|o| o.id}}")
 
     for new_op in new_ops
 
@@ -394,12 +394,12 @@ class User < ActiveRecord::Base
         next 
       end
 
-      puts("Looking for opinion to absorb into #{new_op.id}...")
+      # puts("Looking for opinion to absorb into #{new_op.id}...")
       old_op = Opinion.where(:user_id => older_user,
                              :proposal_id => new_op.proposal.id).first
 
       if old_op
-        puts("Found opinion to absorb into #{new_op.id}: #{old_op.id}")
+        # puts("Found opinion to absorb into #{new_op.id}: #{old_op.id}")
         # Merge the two opinions. We'll absorb the old opinion into the new one!
         # Update new_ops' user_id to the old user. 
         new_op.absorb(old_op, true)

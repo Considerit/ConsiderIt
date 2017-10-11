@@ -144,7 +144,7 @@ protected
     if !current_user()
       # If not, let's make a new one, which will replace the old
       # values in the session and thread
-      puts("That current_user '#{session[:current_user_id]}' is bad. Making a new one.")
+      #puts("That current_user '#{session[:current_user_id]}' is bad. Making a new one.")
       new_current_user
     end
   end
@@ -152,9 +152,9 @@ protected
   def new_current_user
     user = User.new
     if user.save
-      puts("Signing into the stubby.  Curr=#{current_user}")
+      #puts("Signing into the stubby.  Curr=#{current_user}")
       set_current_user(user)
-      puts("Signed into stubby.  Curr=#{current_user} #{current_user.id} #{session[:current_user_id]}")
+      #puts("Signed into stubby.  Curr=#{current_user} #{current_user.id} #{session[:current_user_id]}")
     else
       raise 'Error making stub account. Yikes!'
     end
@@ -165,7 +165,7 @@ protected
     ## TODO: delete the existing current user if there's nothing
     ##       important in it
 
-    puts("Setting current user to #{user.id}")
+    #puts("Setting current user to #{user.id}")
     session[:current_user_id] = user.id
     Thread.current[:current_user_id] = user.id
     Thread.current[:current_user]    = user

@@ -464,115 +464,11 @@ class User < ActiveRecord::Base
     # When disabled, saml validation errors will raise an exception.
     settings.soft = true
 
+    settings.issuer                         = url_base + "/saml/metadata"
+    settings.assertion_consumer_service_url = url_base + "/saml/acs"
+    settings.assertion_consumer_logout_service_url = url_base + "/saml/logout"
 
-    if sso_idp =='dtu'
-      # Hack for DTU b/c they use a case sensitive ADSF based on application name
-      dtu_url_base = "https://saml-auth.Consider.it"
-      settings.issuer                         = dtu_url_base + "/saml/dtu"
-      # assertion_consumer_service_url should stay lower case
-      settings.assertion_consumer_service_url                  = "https://saml-auth.consider.it/saml/acs"
-      settings.assertion_consumer_logout_service_url = dtu_url_base + "/saml/logout"
-    else
-      settings.issuer                         = url_base + "/saml/metadata"
-      settings.assertion_consumer_service_url = url_base + "/saml/acs"
-      settings.assertion_consumer_logout_service_url = url_base + "/saml/logout"
-    end
-
-    if sso_idp == 'dtu' 
-
-      settings.idp_entity_id                  = "http://sts.ait.dtu.dk/adfs/services/trust"
-      settings.idp_sso_target_url             = "https://sts.ait.dtu.dk/adfs/ls/"
-      settings.idp_slo_target_url             = "https://sts.ait.dtu.dk/adfs/ls/"
-
-      settings.idp_cert                       = "-----BEGIN CERTIFICATE-----
-MIIFUzCCBDugAwIBAgIQCXIDJ75zmABJOlKt52MUzTANBgkqhkiG9w0BAQsFADBk
-MQswCQYDVQQGEwJOTDEWMBQGA1UECBMNTm9vcmQtSG9sbGFuZDESMBAGA1UEBxMJ
-QW1zdGVyZGFtMQ8wDQYDVQQKEwZURVJFTkExGDAWBgNVBAMTD1RFUkVOQSBTU0wg
-Q0EgMzAeFw0xNjA5MjEwMDAwMDBaFw0xOTA5MjYxMjAwMDBaMIGSMQswCQYDVQQG
-EwJESzEQMA4GA1UECBMHRGVubWFyazEXMBUGA1UEBxMOS29uZ2VucyBMeW5nZXkx
-KDAmBgNVBAoTH1RlY2huaWNhbCBVbml2ZXJzaXR5IG9mIERlbm1hcmsxDDAKBgNV
-BAsTA0FJVDEgMB4GA1UEAxMXdG9rZW5zaWduaW5nLmFpdC5kdHUuZGswggEiMA0G
-CSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC9qeLkARtUlXLxGzbRL6kh9XfYlb33
-A16yBWVQc3hu6kXM5pYp+lrR5U9jg2Y+r8KUYJPj6KRQP7x+uDvs9KJv8J+yjgDl
-QwIBqzr/xN4y5YJh7VDegLsex9lGBus2jFPMhdkcvY+UA41L7J1kSBa3OG9lQuGK
-3FXuYnUcPq6p40siais/KzFsxr7OEkLiYtnSQOuZY/30HEKZXSjbNdUawIBY56WI
-jsDFWlYPq2Cw+1xf9a0zEvKW7KSwnX8ZI1TTNYGzRFoRDOxfd23tFNBWz8AQyQhM
-5x2iPMAQTL9XmvEUtQP1U+t5PqRL440CKqrQKTZ/RhnTeyzy+IR4QzlxAgMBAAGj
-ggHQMIIBzDAfBgNVHSMEGDAWgBRn/YggFCeYxwnSJRm76VERY3VQYjAdBgNVHQ4E
-FgQUZa1e2q8n+dH5tBV7Pr9aQZ1dL+YwIgYDVR0RBBswGYIXdG9rZW5zaWduaW5n
-LmFpdC5kdHUuZGswDgYDVR0PAQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMB
-BggrBgEFBQcDAjBrBgNVHR8EZDBiMC+gLaArhilodHRwOi8vY3JsMy5kaWdpY2Vy
-dC5jb20vVEVSRU5BU1NMQ0EzLmNybDAvoC2gK4YpaHR0cDovL2NybDQuZGlnaWNl
-cnQuY29tL1RFUkVOQVNTTENBMy5jcmwwTAYDVR0gBEUwQzA3BglghkgBhv1sAQEw
-KjAoBggrBgEFBQcCARYcaHR0cHM6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzAIBgZn
-gQwBAgIwbgYIKwYBBQUHAQEEYjBgMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5k
-aWdpY2VydC5jb20wOAYIKwYBBQUHMAKGLGh0dHA6Ly9jYWNlcnRzLmRpZ2ljZXJ0
-LmNvbS9URVJFTkFTU0xDQTMuY3J0MAwGA1UdEwEB/wQCMAAwDQYJKoZIhvcNAQEL
-BQADggEBAAFMSeFpnuVqh74FUi4IAUr7HmXO0nXoe6QvSDDUGmufdLX9wLt+w+r8
-bjJ82X648z1WYqf5rQzwWtqUXijVX0XdTdSTcOQa98mmgSxmlIvNfJ6mzu0VWRNt
-99uj6xzX2ignSZrMlE/PSbDYou5Bo3dXAhqn/UecbT99kpsnOTWjnwSsULPCG4Fj
-AutRZorKDmnSzIAMFj/KqGcYmh83cvIvP0Bylad5C11gwcb/UUjxNBuqjuyQpU48
-he8kj0/4x2nej8/Xph+S+JREsQQLZWISmCToQX1EWZCt2MDbPYhl4p+Oy9dPIoO9
-54jbX2F6embwMrKWjsQegQIFGSvCum8=
------END CERTIFICATE-----"
-
-
-      # or settings.idp_cert_fingerprint           = "3B:05:BE:0A:EC:84:CC:D4:75:97:B3:A2:22:AC:56:21:44:EF:59:E6"
-      #    settings.idp_cert_fingerprint_algorithm = XMLSecurity::Document::SHA1
-
-      settings.name_identifier_format         = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
-
-      # Security section
-      settings.security[:authn_requests_signed] = true 
-      settings.security[:logout_requests_signed] = true
-      settings.security[:logout_responses_signed] = true 
-      settings.security[:metadata_signed] = true 
-      settings.security[:digest_method] = XMLSecurity::Document::SHA1
-      settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
-
-      # adding some test parameters
-      settings.authn_context = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"
-      settings.security[:embed_sign] = false 
-
-      settings.certificate = "-----BEGIN CERTIFICATE-----
-MIIDGjCCAoOgAwIBAgIBADANBgkqhkiG9w0BAQ0FADCBqTELMAkGA1UEBhMCdXMx
-FjAUBgNVBAgMDU1BU1NBQ0hVU0VUVFMxFDASBgNVBAoMC0NvbnNpZGVyLml0MR4w
-HAYDVQQDDBVzYW1sX2F1dGguY29uc2lkZXIuaXQxEzARBgNVBAcMClNvbWVydmls
-bGUxEzARBgNVBAsMClNvbWVydmlsbGUxIjAgBgkqhkiG9w0BCQEWE25hdGhhbi5t
-c0BnbWFpbC5jb20wHhcNMTYxMDI1MjEwMDE5WhcNMTcxMDExMjEwMDE5WjCBqTEL
-MAkGA1UEBhMCdXMxFjAUBgNVBAgMDU1BU1NBQ0hVU0VUVFMxFDASBgNVBAoMC0Nv
-bnNpZGVyLml0MR4wHAYDVQQDDBVzYW1sX2F1dGguY29uc2lkZXIuaXQxEzARBgNV
-BAcMClNvbWVydmlsbGUxEzARBgNVBAsMClNvbWVydmlsbGUxIjAgBgkqhkiG9w0B
-CQEWE25hdGhhbi5tc0BnbWFpbC5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJ
-AoGBAK8D5voI8gArtI3E539bqIi3erH0cCJiBxBua3aQV6JHeLGnpsUNLDp+NSL2
-xmbuUoueZSKukmNwnl7P6IxW+oOq+yDXpQgkP5tBEA9RYIx8YAMud4VNL6Loagry
-MV+XMkhr2E6XEH1MwAPmTWVLtv6y6R1XX6aq5th/MEYrvG5dAgMBAAGjUDBOMB0G
-A1UdDgQWBBTnBSlmyjkPVGNQ6rXBJoYDDJAKSDAfBgNVHSMEGDAWgBTnBSlmyjkP
-VGNQ6rXBJoYDDJAKSDAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBDQUAA4GBAKsL
-s8BuNTDDQ3fR9hs1yoHnmUarRACTvT21U7f8oWL6FosAoS31P5cmQyci8cNgFmjL
-s0xe0+m9H9wvuPz7st+wagwzsDPBsXadEnLh/2pv+6L75DiYpGEvie9iPPlqwWde
-DEQNIpGcHW/8vNq9GWt/Sz/B3JCYSdJeQtUZZUaR
------END CERTIFICATE-----"
-      settings.private_key = "-----BEGIN PRIVATE KEY-----
-MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAK8D5voI8gArtI3E
-539bqIi3erH0cCJiBxBua3aQV6JHeLGnpsUNLDp+NSL2xmbuUoueZSKukmNwnl7P
-6IxW+oOq+yDXpQgkP5tBEA9RYIx8YAMud4VNL6LoagryMV+XMkhr2E6XEH1MwAPm
-TWVLtv6y6R1XX6aq5th/MEYrvG5dAgMBAAECgYEAl7vnXjGxNiquMBddqVJbLKT+
-cBh/u5+HhlxlOPbts1kJr+StNrwz80aGZRjUbFsFH90ky8vUSPhTpdnVQQ8LwvrH
-vjmIC0GJGPwAx8TCqG+5GQtGltH94XcTbgDOof0D/sQJl8UBxj3ORblskEd9v4Ty
-po7wQZiLjsH1UCgmgVUCQQDVjZr40iKckZejysPwA57IOtdifI/gelDLiWkIPzFy
-4DTCtXw4FCWt8yEj2q88DTgSXYP35E3uloVP7UgW883bAkEA0c1XlXRYKo2haB/b
-5uVoyMBIwI94Pqdv6HlcWhFhylhbxrDS1j/Q6B3ZDS9CmPuWXFb6CDXflSj0RxdV
-VnnWJwJATaTSt60PUIXO8IqEevuV+48JSJGpbiCKx7YKLilrvSyvgiuiInGQ0ZIY
-doTIOblErci6dqLXguvPRKQtFctHCQJBAKqoKm8itTjf/gQRrjFSOHrblhI0Ya4t
-SqVCWrHU48PRPc4QNWAbhtXYuZ6066o/M96mzTlygQz2xEUzoLH35w8CQQCGRG5f
-ERqJ0qeWl/EcDLOcNFxEQY/w+20uIA6VeRVkhBLkSlNrbaKnB9jhmHObGi5AVt8z
-plfUJ9UwDhWH+xPo
------END PRIVATE KEY-----"
-
-
-
-    elsif current_subdomain.host_with_port == 'test.example.com:80'
+    if current_subdomain.host_with_port == 'test.example.com:80'
       # IdP section
       settings.idp_entity_id                  = ""
       settings.idp_sso_target_url             = ""
@@ -591,98 +487,13 @@ plfUJ9UwDhWH+xPo
       settings.security[:logout_requests_signed] = false
       settings.security[:logout_responses_signed] = false
       settings.security[:metadata_signed] = false
-      settings.security[:digest_method] = XMLSecurity::Document::SHA1
-      settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
 
-    elsif sso_idp == 'standardminds'
-      # IdP section for Onelogin IDP used in development
-      settings.idp_entity_id                  = "https://app.onelogin.com/saml/metadata/585764"
-      settings.idp_sso_target_url             = "https://standardminds-dev.onelogin.com/trust/saml2/http-post/sso/585764"
-      settings.idp_slo_target_url             = "https://standardminds-dev.onelogin.com/trust/saml2/http-redirect/slo/585764"
-
-      settings.idp_cert                       = "-----BEGIN CERTIFICATE-----
-MIIEHTCCAwWgAwIBAgIUahG83qLFXCyf8o3d5J5I5mdfSbkwDQYJKoZIhvcNAQEF
-BQAwWjELMAkGA1UEBhMCVVMxEzARBgNVBAoMCkNvbnNpZGVyaXQxFTATBgNVBAsM
-DE9uZUxvZ2luIElkUDEfMB0GA1UEAwwWT25lTG9naW4gQWNjb3VudCA5MTU2NDAe
-Fw0xNjA5MDkwMzQzMzZaFw0yMTA5MTAwMzQzMzZaMFoxCzAJBgNVBAYTAlVTMRMw
-EQYDVQQKDApDb25zaWRlcml0MRUwEwYDVQQLDAxPbmVMb2dpbiBJZFAxHzAdBgNV
-BAMMFk9uZUxvZ2luIEFjY291bnQgOTE1NjQwggEiMA0GCSqGSIb3DQEBAQUAA4IB
-DwAwggEKAoIBAQC6P1KSXOUJ99lFoaGZHMokRropHQfiRVubCtWEbezWDxGwdsnr
-/raowJJXKQIalcVFJHIao5I9cbXrcgpvmElgxaMTWm+rInsY1f2y5yUM321BC/3+
-4q8N8xvCBhNEUD0O9xkcHcsMAXGu33vg0YSFYUd99aYoTeUwG6urpz6/b4JldMw3
-7ygOCssa9m6Ux9k4rbId9eYXiWgwrmrtEktUggYKfzIqhD/2KoFgzCIdVFMdYyja
-l2mPEbf+oav/5y6HO/gtK/DnZYW1LDs0c3Nwtab1bvmP0J+8mbmLDTRA2hyTBtQz
-GeBiUz9g8S1A68ezvulYccMmgDR6qdb7vQOZAgMBAAGjgdowgdcwDAYDVR0TAQH/
-BAIwADAdBgNVHQ4EFgQUpppEHxiKI9BJJeJB4GAjaLBuZlYwgZcGA1UdIwSBjzCB
-jIAUpppEHxiKI9BJJeJB4GAjaLBuZlahXqRcMFoxCzAJBgNVBAYTAlVTMRMwEQYD
-VQQKDApDb25zaWRlcml0MRUwEwYDVQQLDAxPbmVMb2dpbiBJZFAxHzAdBgNVBAMM
-Fk9uZUxvZ2luIEFjY291bnQgOTE1NjSCFGoRvN6ixVwsn/KN3eSeSOZnX0m5MA4G
-A1UdDwEB/wQEAwIHgDANBgkqhkiG9w0BAQUFAAOCAQEANmz1PRfgM8UEaWU2dUQ6
-p9LKzrTPlNmGY/pNFaGj42j/G8Q1qNPUnrhbitj8pdlr0vAHLQQkMvcICtmeS8UN
-bxaJ1YbN8s3o0twOXguzC19a0hkSyNdDCO+GgqazNnMzYmL+KbvdgVKCUs1kzI5Q
-8M8rH09auNVKPJ+QtaXbBln8DJJ2L9/Db6ujQlKR0ol2gotpMuoxCRtUMj9UmMM6
-euAP3Pt3b49r0igIPIwW9P73FOCmwFRURvFXMaj/M8MpJOxJ8a7CIvqaQXhW1voh
-BORjb2jFjB5kon9QH6kPg2KnYCThSe4OE5f5bv6gNhcfATYAtEWMKbVLhTDWXMfL
-xA==
------END CERTIFICATE-----"
-
-      # or settings.idp_cert_fingerprint           = "3B:05:BE:0A:EC:84:CC:D4:75:97:B3:A2:22:AC:56:21:44:EF:59:E6"
-      #    settings.idp_cert_fingerprint_algorithm = XMLSecurity::Document::SHA1
-
-      settings.name_identifier_format         = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
-
-      # Security section
-      settings.security[:authn_requests_signed] = true 
-      settings.security[:logout_requests_signed] = false
-      settings.security[:logout_responses_signed] = false
-      settings.security[:metadata_signed] = true 
-      settings.security[:digest_method] = XMLSecurity::Document::SHA1
-      settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
-
-      settings.certificate = "-----BEGIN CERTIFICATE-----
-MIIDGjCCAoOgAwIBAgIBADANBgkqhkiG9w0BAQ0FADCBqTELMAkGA1UEBhMCdXMx
-FjAUBgNVBAgMDU1BU1NBQ0hVU0VUVFMxFDASBgNVBAoMC0NvbnNpZGVyLml0MR4w
-HAYDVQQDDBVzYW1sX2F1dGguY29uc2lkZXIuaXQxEzARBgNVBAcMClNvbWVydmls
-bGUxEzARBgNVBAsMClNvbWVydmlsbGUxIjAgBgkqhkiG9w0BCQEWE25hdGhhbi5t
-c0BnbWFpbC5jb20wHhcNMTYxMDI1MjEwMDE5WhcNMTcxMDExMjEwMDE5WjCBqTEL
-MAkGA1UEBhMCdXMxFjAUBgNVBAgMDU1BU1NBQ0hVU0VUVFMxFDASBgNVBAoMC0Nv
-bnNpZGVyLml0MR4wHAYDVQQDDBVzYW1sX2F1dGguY29uc2lkZXIuaXQxEzARBgNV
-BAcMClNvbWVydmlsbGUxEzARBgNVBAsMClNvbWVydmlsbGUxIjAgBgkqhkiG9w0B
-CQEWE25hdGhhbi5tc0BnbWFpbC5jb20wgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJ
-AoGBAK8D5voI8gArtI3E539bqIi3erH0cCJiBxBua3aQV6JHeLGnpsUNLDp+NSL2
-xmbuUoueZSKukmNwnl7P6IxW+oOq+yDXpQgkP5tBEA9RYIx8YAMud4VNL6Loagry
-MV+XMkhr2E6XEH1MwAPmTWVLtv6y6R1XX6aq5th/MEYrvG5dAgMBAAGjUDBOMB0G
-A1UdDgQWBBTnBSlmyjkPVGNQ6rXBJoYDDJAKSDAfBgNVHSMEGDAWgBTnBSlmyjkP
-VGNQ6rXBJoYDDJAKSDAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBDQUAA4GBAKsL
-s8BuNTDDQ3fR9hs1yoHnmUarRACTvT21U7f8oWL6FosAoS31P5cmQyci8cNgFmjL
-s0xe0+m9H9wvuPz7st+wagwzsDPBsXadEnLh/2pv+6L75DiYpGEvie9iPPlqwWde
-DEQNIpGcHW/8vNq9GWt/Sz/B3JCYSdJeQtUZZUaR
------END CERTIFICATE-----"
-      settings.private_key = "-----BEGIN PRIVATE KEY-----
-MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAK8D5voI8gArtI3E
-539bqIi3erH0cCJiBxBua3aQV6JHeLGnpsUNLDp+NSL2xmbuUoueZSKukmNwnl7P
-6IxW+oOq+yDXpQgkP5tBEA9RYIx8YAMud4VNL6LoagryMV+XMkhr2E6XEH1MwAPm
-TWVLtv6y6R1XX6aq5th/MEYrvG5dAgMBAAECgYEAl7vnXjGxNiquMBddqVJbLKT+
-cBh/u5+HhlxlOPbts1kJr+StNrwz80aGZRjUbFsFH90ky8vUSPhTpdnVQQ8LwvrH
-vjmIC0GJGPwAx8TCqG+5GQtGltH94XcTbgDOof0D/sQJl8UBxj3ORblskEd9v4Ty
-po7wQZiLjsH1UCgmgVUCQQDVjZr40iKckZejysPwA57IOtdifI/gelDLiWkIPzFy
-4DTCtXw4FCWt8yEj2q88DTgSXYP35E3uloVP7UgW883bAkEA0c1XlXRYKo2haB/b
-5uVoyMBIwI94Pqdv6HlcWhFhylhbxrDS1j/Q6B3ZDS9CmPuWXFb6CDXflSj0RxdV
-VnnWJwJATaTSt60PUIXO8IqEevuV+48JSJGpbiCKx7YKLilrvSyvgiuiInGQ0ZIY
-doTIOblErci6dqLXguvPRKQtFctHCQJBAKqoKm8itTjf/gQRrjFSOHrblhI0Ya4t
-SqVCWrHU48PRPc4QNWAbhtXYuZ6066o/M96mzTlygQz2xEUzoLH35w8CQQCGRG5f
-ERqJ0qeWl/EcDLOcNFxEQY/w+20uIA6VeRVkhBLkSlNrbaKnB9jhmHObGi5AVt8z
-plfUJ9UwDhWH+xPo
------END PRIVATE KEY-----"
-
-
-    # NATHAN adding some test parameters
-    settings.authn_context = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"
-    settings.security[:embed_sign] = false 
-
-    else
-      raise "IdP settings not found for this subdomain!"
+    else 
+      settings = APP_CONFIG[:SSO_domains][sso_idp] 
     end
+
+    settings.security[:digest_method] = XMLSecurity::Document::SHA1
+    settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
 
     settings
   end

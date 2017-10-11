@@ -11,50 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161020202829) do
-
-  create_table "assessments", force: :cascade do |t|
-    t.integer  "user_id",         limit: 4
-    t.integer  "subdomain_id",    limit: 4
-    t.integer  "assessable_id",   limit: 4
-    t.string   "assessable_type", limit: 255
-    t.integer  "verdict_id",      limit: 4
-    t.boolean  "complete",                      default: false
-    t.datetime "created_at",                                    null: false
-    t.datetime "updated_at",                                    null: false
-    t.boolean  "reviewable",                    default: false
-    t.datetime "published_at"
-    t.text     "notes",           limit: 65535
-  end
-
-  create_table "claims", force: :cascade do |t|
-    t.integer  "assessment_id",     limit: 4
-    t.integer  "subdomain_id",      limit: 4
-    t.text     "result",            limit: 65535
-    t.text     "claim_restatement", limit: 65535
-    t.integer  "verdict_id",        limit: 4
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.integer  "creator",           limit: 4
-    t.integer  "approver",          limit: 4
-  end
-
-  create_table "client_errors", force: :cascade do |t|
-    t.text     "trace",      limit: 65535
-    t.string   "error_type", limit: 255
-    t.string   "line",       limit: 255
-    t.string   "message",    limit: 255
-    t.integer  "user_id",    limit: 4
-    t.string   "session_id", limit: 255
-    t.string   "user_agent", limit: 255
-    t.string   "browser",    limit: 255
-    t.string   "version",    limit: 255
-    t.string   "platform",   limit: 255
-    t.string   "location",   limit: 255
-    t.string   "ip",         limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+ActiveRecord::Schema.define(version: 20171011200704) do
 
   create_table "comments", force: :cascade do |t|
     t.integer  "commentable_id",    limit: 4,     default: 0
@@ -89,19 +46,6 @@ ActiveRecord::Schema.define(version: 20161020202829) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
-
-  create_table "emails", force: :cascade do |t|
-    t.string   "from_address",     limit: 255
-    t.string   "reply_to_address", limit: 255
-    t.string   "subject",          limit: 255
-    t.text     "to_address",       limit: 65535
-    t.text     "cc_address",       limit: 65535
-    t.text     "bcc_address",      limit: 65535
-    t.text     "content",          limit: 65535
-    t.datetime "sent_at"
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
-  end
 
   create_table "inclusions", force: :cascade do |t|
     t.integer  "proposal_id",  limit: 4
@@ -250,17 +194,6 @@ ActiveRecord::Schema.define(version: 20161020202829) do
   add_index "proposals", ["subdomain_id", "slug"], name: "select_proposal_by_long_id", using: :btree
   add_index "proposals", ["subdomain_id"], name: "index_proposals_on_subdomain_id", using: :btree
 
-  create_table "requests", force: :cascade do |t|
-    t.integer  "user_id",         limit: 4
-    t.integer  "assessment_id",   limit: 4
-    t.integer  "subdomain_id",    limit: 4
-    t.text     "suggestion",      limit: 65535
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
-    t.integer  "assessable_id",   limit: 4
-    t.string   "assessable_type", limit: 255
-  end
-
   create_table "sessions", force: :cascade do |t|
     t.string   "session_id", limit: 255,   null: false
     t.text     "data",       limit: 65535
@@ -303,6 +236,7 @@ ActiveRecord::Schema.define(version: 20161020202829) do
     t.text     "customizations",             limit: 16777215
     t.string   "lang",                       limit: 255,      default: "en"
     t.string   "SSO_domain",                 limit: 255
+    t.text     "SSO_settings",               limit: 16777215
   end
 
   add_index "subdomains", ["name"], name: "by_identifier", length: {"name"=>10}, using: :btree
@@ -345,18 +279,5 @@ ActiveRecord::Schema.define(version: 20161020202829) do
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
   add_index "users", ["registered"], name: "index_users_on_registered", using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", length: {"reset_password_token"=>3}, using: :btree
-
-  create_table "verdicts", force: :cascade do |t|
-    t.string   "short_name",        limit: 255
-    t.string   "name",              limit: 255
-    t.text     "desc",              limit: 65535
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.string   "icon_file_name",    limit: 255
-    t.string   "icon_content_type", limit: 255
-    t.integer  "icon_file_size",    limit: 4
-    t.datetime "icon_updated_at"
-    t.integer  "subdomain_id",      limit: 4
-  end
 
 end

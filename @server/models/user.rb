@@ -457,19 +457,22 @@ class User < ActiveRecord::Base
 
   def self.get_saml_settings(url_base, sso_idp)
     # should retrieve SAML-settings based on subdomain, IP-address, NameID or similar
-    settings = OneLogin::RubySaml::Settings.new(APP_CONFIG[:SSO_domains][sso_idp.to_sym])
+
+    conf = APP_CONFIG[:SSO_domains][sso_idp.to_sym]
+
+    conf.soft = true
+    conf.issuer                         ||= url_base + "/saml/metadata"
+    conf.assertion_consumer_service_url ||= url_base + "/saml/acs"
+    conf.assertion_consumer_logout_service_url ||= url_base + "/saml/logout"
+
+    conf.security[:digest_method] ||= XMLSecurity::Document::SHA1
+    conf.security[:signature_method] ||= XMLSecurity::Document::RSA_SHA1
+
+    settings = OneLogin::RubySaml::Settings.new(conf)
 
     url_base ||= "http://localhost:3000"
 
     # When disabled, saml validation errors will raise an exception.
-    settings.soft = true
-
-    settings.issuer                         = url_base + "/saml/metadata"
-    settings.assertion_consumer_service_url = url_base + "/saml/acs"
-    settings.assertion_consumer_logout_service_url = url_base + "/saml/logout"
-
-    settings.security[:digest_method] = XMLSecurity::Document::SHA1
-    settings.security[:signature_method] = XMLSecurity::Document::RSA_SHA1
 
 #     if current_subdomain.host_with_port == 'test.example.com:80'
 #       # IdP section

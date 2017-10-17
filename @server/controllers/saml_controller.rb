@@ -50,7 +50,7 @@ class SamlController < ApplicationController
       log("NAMEID: #{response.nameid}")
       puts(response)
       puts(response.nameid)
-      puts(response.attributes)
+      puts(response.attributes.all)
 
       # log user. in TODO allow for incorrect login and new user with name field
       email = response.nameid.downcase #TODO: error out gracefully if no email

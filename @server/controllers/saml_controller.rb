@@ -55,6 +55,7 @@ class SamlController < ApplicationController
       puts(response.attributes[:emailaddress])
       puts(response.attributes[:nickname])
       puts(response.attributes[:name])
+      puts(response.attributes.keys)
 
       # log user. in TODO allow for incorrect login and new user with name field
 

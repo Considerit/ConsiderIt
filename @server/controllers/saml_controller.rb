@@ -39,6 +39,8 @@ class SamlController < ApplicationController
     settings = User.get_saml_settings(get_url_base, session[:sso_idp])
 
     response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings, :allowed_clock_drift => 60.second)
+    
+
     if response.is_valid?
 
       session[:nameid] = response.nameid
@@ -46,6 +48,7 @@ class SamlController < ApplicationController
       @attrs = session[:attributes]
       log("Sucessfully logged")
       log("NAMEID: #{response.nameid}")
+      puts(response)
 
       # log user. in TODO allow for incorrect login and new user with name field
       email = response.nameid.downcase #TODO: error out gracefully if no email

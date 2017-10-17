@@ -51,6 +51,10 @@ class SamlController < ApplicationController
       puts(response)
       puts(response.nameid)
       puts(response.attributes.all)
+      puts(response.attributes[:email])
+      puts(response.attributes[:emailaddress])
+      puts(response.attributes[:nickname])
+      puts(response.attributes[:name])
 
       # log user. in TODO allow for incorrect login and new user with name field
 
@@ -75,7 +79,10 @@ class SamlController < ApplicationController
 
         # TODO when IdP Delft gives us assertion statement spec, add name field below if not already present
         name = nil
-        if response.attributes.include?('Name')
+
+        if response.attributes.include?('nickname')
+          name = response.attributes['nickname']
+        elsif response.attributes.include?('Name')
           name = response.attributes['name']
         elsif response.attributes.include?('First Name')
           name = response.attributes['First Name']

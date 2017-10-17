@@ -53,7 +53,18 @@ class SamlController < ApplicationController
       puts(response.attributes.all)
 
       # log user. in TODO allow for incorrect login and new user with name field
-      email = response.nameid.downcase #TODO: error out gracefully if no email
+
+      #TODO: error out gracefully if no email
+      if response.attributes.has_key?(:email)
+        email = response.attributes[:email]
+      else 
+        email = response.nameid 
+      end 
+
+      email = email.downcase
+
+      
+
       user = User.find_by_email(email)
 
       if !user || !user.registered

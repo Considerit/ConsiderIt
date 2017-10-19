@@ -18,7 +18,7 @@ class SamlController < ApplicationController
       session[:redirect_back_to] = request.referer
     end
 
-    settings = User.get_saml_settings(get_url_base, sso_idp)
+    settings = get_saml_settings(get_url_base, sso_idp)
 
     if settings.nil?
       raise "No IdP Settings!"
@@ -36,7 +36,7 @@ class SamlController < ApplicationController
 
   def acs
     errors = []
-    settings = User.get_saml_settings(get_url_base, session[:sso_idp])
+    settings = get_saml_settings(get_url_base, session[:sso_idp])
 
     response = OneLogin::RubySaml::Response.new(params[:SAMLResponse], :settings => settings, :allowed_clock_drift => 60.second)
     
@@ -126,7 +126,7 @@ class SamlController < ApplicationController
   def metadata
     # TODO: when is this method called?
     #       The below assumes that #sso was called in this session
-    settings = User.get_saml_settings(get_url_base, session[:sso_idp])
+    settings = get_saml_settings(get_url_base, session[:sso_idp])
     meta = OneLogin::RubySaml::Metadata.new
     render :xml => meta.generate(settings, true)
   end
@@ -138,4 +138,51 @@ class SamlController < ApplicationController
   def log (what)
     write_to_log({:what => what, :where => request.fullpath, :details => nil})
   end
+end
+
+def get_saml_settings(url_base, sso_idp)
+  # should retrieve SAML-settings based on subdomain, IP-address, NameID or similar
+
+  conf = APP_CONFIG[:SSO_domains][sso_idp.to_sym]
+
+  settings = OneLogin::RubySaml::Settings.new(conf)
+
+  url_base ||= "http://localhost:3000"
+
+  settings.soft = true
+  settings.issuer                         ||= url_base + "/saml/metadata"
+  settings.assertion_consumer_service_url ||= url_base + "/saml/acs"
+  settings.assertion_consumer_logout_service_url ||= url_base + "/saml/logout"
+  
+  settings.security[:digest_method] ||= XMLSecurity::Document::SHA1
+  settings.security[:signature_method] ||= XMLSecurity::Document::RSA_SHA1
+
+
+  # When disabled, saml validation errors will raise an exception.
+
+#     if current_subdomain.host_with_port == 'test.example.com:80'
+#       # IdP section
+#       settings.idp_entity_id                  = ""
+#       settings.idp_sso_target_url             = ""
+#       settings.idp_slo_target_url             = ""
+
+#     settings.idp_cert                       = "-----BEGIN CERTIFICATE-----
+# -----END CERTIFICATE-----"
+
+#       # or settings.idp_cert_fingerprint           = "3B:05:BE:0A:EC:84:CC:D4:75:97:B3:A2:22:AC:56:21:44:EF:59:E6"
+#       #    settings.idp_cert_fingerprint_algorithm = XMLSecurity::Document::SHA1
+
+#       settings.name_identifier_format         = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+
+#       # Security section
+#       settings.security[:authn_requests_signed] = false
+#       settings.security[:logout_requests_signed] = false
+#       settings.security[:logout_responses_signed] = false
+#       settings.security[:metadata_signed] = false
+
+#     end
+
+
+  settings
+
 end

@@ -147,7 +147,7 @@ def get_saml_settings(url_base, sso_idp)
 
   
 
-  if conf[:metadata]
+  if true || conf[:metadata]
     idp_metadata_parser = OneLogin::RubySaml::IdpMetadataParser.new
     settings = idp_metadata_parser.parse_remote(conf[:metadata])
   else 

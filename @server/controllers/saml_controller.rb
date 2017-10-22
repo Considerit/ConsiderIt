@@ -48,13 +48,10 @@ class SamlController < ApplicationController
       @attrs = session[:attributes]
       log("Sucessfully logged")
       log("NAMEID: #{response.nameid}")
-      puts(response)
-      puts(response.nameid)
-      puts(response.attributes.all)
 
+      puts(response.nameid)
       response.attributes.each do |k,v| 
-        puts k 
-        puts v
+        puts "#{k}: #{v}" 
       end
 
 
@@ -147,7 +144,7 @@ def get_saml_settings(url_base, sso_idp)
 
   
 
-  if true || conf[:metadata]
+  if conf[:metadata]
     idp_metadata_parser = OneLogin::RubySaml::IdpMetadataParser.new
     settings = idp_metadata_parser.parse_remote(conf[:metadata])
   else 
@@ -159,7 +156,7 @@ def get_saml_settings(url_base, sso_idp)
 
 
 
-
+  settings.name_identifier_format = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
   settings.soft = true
   settings.issuer                         ||= url_base + "/saml/metadata"
   settings.assertion_consumer_service_url ||= url_base + "/saml/acs"
@@ -167,6 +164,14 @@ def get_saml_settings(url_base, sso_idp)
   
   settings.security[:digest_method] ||= XMLSecurity::Document::SHA1
   settings.security[:signature_method] ||= XMLSecurity::Document::RSA_SHA1
+
+  # settings.request_attributes ||= [
+  #   { :name => 'email', :name_format => 'urn:oasis:names:tc:SAML:2.0:attrname-format:basic', :friendly_name => 'Email address' },
+  #   { :name => 'name', :name_format => 'urn:oasis:names:tc:SAML:2.0:attrname-format:basic', :friendly_name => 'Full name' },
+  #   { :name => 'first_name', :name_format => 'urn:oasis:names:tc:SAML:2.0:attrname-format:basic', :friendly_name => 'Given name' },
+  #   { :name => 'last_name', :name_format => 'urn:oasis:names:tc:SAML:2.0:attrname-format:basic', :friendly_name => 'Family name' }
+  # ]
+
 
   settings
 

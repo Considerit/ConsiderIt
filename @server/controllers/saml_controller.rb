@@ -61,7 +61,7 @@ class SamlController < ApplicationController
       # log user. in TODO allow for incorrect login and new user with name field
 
       #TODO: error out gracefully if no email
-      if response.attributes.has_key?(:email)
+      if response.attributes.include?(:email)
         email = response.attributes[:email]
       else 
         email = response.nameid 

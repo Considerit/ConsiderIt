@@ -55,9 +55,6 @@ class SamlController < ApplicationController
       end
 
 
-
-      puts(response.attributes.attributes.keys)
-
       # log user. in TODO allow for incorrect login and new user with name field
 
       #TODO: error out gracefully if no email
@@ -106,6 +103,11 @@ class SamlController < ApplicationController
           :verified => true,
           :complete_profile => true 
         })
+
+        if response.attributes.include?('picture')
+          user.avatar_url = response.attributes['picture']
+          user.save
+        end
 
       end 
 

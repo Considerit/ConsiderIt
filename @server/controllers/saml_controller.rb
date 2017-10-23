@@ -104,12 +104,14 @@ class SamlController < ApplicationController
           :complete_profile => true 
         })
 
-        if response.attributes.include?('picture')
-          user.avatar_url = response.attributes['picture']
-          user.save
-        end
-
       end 
+
+
+      if response.attributes.include?('picture') && !user.avatar
+        user.avatar_url = user.avatar_remote_url = response.attributes['picture']
+        user.save
+      end
+
 
       token = user.auth_token Subdomain.find_by_name(session[:redirect_subdomain])
       uri = URI(session[:redirect_back_to])

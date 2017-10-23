@@ -49,10 +49,9 @@ class SamlController < ApplicationController
       log("Sucessfully logged")
       log("NAMEID: #{response.nameid}")
 
-      puts(response.nameid)
-      response.attributes.each do |k,v| 
-        puts "#{k}: #{v}" 
-      end
+      # response.attributes.each do |k,v| 
+      #   puts "#{k}: #{v}" 
+      # end
 
 
       # log user. in TODO allow for incorrect login and new user with name field

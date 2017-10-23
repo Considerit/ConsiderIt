@@ -598,6 +598,10 @@ Auth = ReactiveComponent
         id: 'user_avatar_form'
         action: '/update_user_avatar_hack', 
 
+        HEARTBEAT
+          public_key: 'preview_refresher' # sometimes we request an image before it is uploaded to AWS
+                                          # so we'll just refresh to be safe
+
         DIV 
           style: 
             height: 60
@@ -610,12 +614,15 @@ Auth = ReactiveComponent
             marginTop: 3
 
           IMG 
+            key: fetch('preview_refresher').beat
             alt: ''
             id: 'avatar_preview'
             style: 
               width: 60
               display: if !@local.preview then 'none'
-            src: if user.avatar_file_name
+            src: if @local.newly_uploaded
+                    @local.newly_uploaded
+                 else if user.avatar_file_name
                     avatarUrl user, 'large'
                  else if current_user.b64_thumbnail 
                     current_user.b64_thumbnail 
@@ -650,6 +657,7 @@ Auth = ReactiveComponent
               reader = new FileReader()
               reader.onload = (e) =>
                 @local.preview = true 
+                @local.newly_uploaded = e.target.result
                 save @local
                 $("#avatar_preview").attr 'src', e.target.result
               reader.readAsDataURL input.files[0]

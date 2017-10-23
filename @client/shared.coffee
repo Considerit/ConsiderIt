@@ -118,6 +118,23 @@ setInterval ->
 window.POINT_MOUTH_WIDTH = 17
 
 
+# HEARTBEAT
+# Any component that renders a HEARTBEAT will get rerendered on an interval.
+# props: 
+#   public_key: the key to store the heartbeat at
+#   interval: length between pulses, in ms (default=1000)
+dom.HEARTBEAT = ->   
+  beat = fetch(@props.public_key or 'pulse')
+  if !beat.beat?
+    setInterval ->   
+      beat.beat = (beat.beat or 0) + 1
+      save(beat)
+    , (@props.interval or 1000)
+
+  SPAN null
+
+
+
 window.FB_SHARE = ReactiveComponent
   displayName: 'FB_SHARE'
 

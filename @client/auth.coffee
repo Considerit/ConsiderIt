@@ -591,7 +591,7 @@ Auth = ReactiveComponent
 
 
       current_user = fetch '/current_user'
-      @local.preview ?= current_user.b64_thumbnail || current_user.avatar_remote_url
+      @local.preview ?= current_user.avatar_file_name || current_user.b64_thumbnail || current_user.avatar_remote_url
 
       FORM 
         id: 'user_avatar_form'
@@ -614,7 +614,9 @@ Auth = ReactiveComponent
             style: 
               width: 60
               display: if !@local.preview then 'none'
-            src: if current_user.b64_thumbnail 
+            src: if current_user.avatar_file_name
+                    avatarUrl current_user.user, 'large'
+                 else if current_user.b64_thumbnail 
                     current_user.b64_thumbnail 
                  else if current_user.avatar_remote_url
                     current_user.avatar_remote_url 

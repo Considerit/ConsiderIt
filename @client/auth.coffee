@@ -589,7 +589,10 @@ Auth = ReactiveComponent
       # hack for submitting file data in ActiveREST for now
       # we'll just submit the file form after user is signed in
 
+
       current_user = fetch '/current_user'
+      @local.preview ?= current_user.b64_thumbnail || current_user.avatar_remote_url
+
       FORM 
         id: 'user_avatar_form'
         action: '/update_user_avatar_hack', 

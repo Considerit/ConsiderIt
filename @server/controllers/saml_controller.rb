@@ -107,8 +107,9 @@ class SamlController < ApplicationController
       end 
 
 
-      if response.attributes.include?('picture') && !user.avatar_file_name
-        user.avatar_url = user.avatar_remote_url = response.attributes['picture']
+      if response.attributes.include?('picture') && !user.avatar
+        user.avatar = URI.parse response.attributes['picture']
+        user.avatar_remote_url = response.attributes['picture']        
         user.save
       end
 

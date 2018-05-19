@@ -3,7 +3,7 @@
     "chunk-manifest-webpack-plugin": "0.0.1",
     "coffee-loader": "^0.7.2",
     "coffee-script": "^1.12.7",
-    "compression-webpack-plugin": "0.1.2",
+    "compression-webpack-plugin": "0.2.0",
     "s3": "git+https://github.com/andrewrk/node-s3-client.git",
     "webpack": "1.11.0",
     "yamljs": "^0.2.1"

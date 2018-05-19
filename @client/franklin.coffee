@@ -890,7 +890,7 @@ styles += """
   padding: 0 3px; }
 .proposal_details li, .description_field li {
   list-style: outside; }
-.proposal_details ol li, .proposal_details ol li {
+.proposal_details ol li {
   list-style-type: decimal; }  
 .proposal_details ul, .description_field ul,
 .proposal_details ol, .description_field ol {
@@ -910,6 +910,8 @@ styles += """
 .proposal_details .ql-editor ul, .description_field .ql-editor ol{
   margin-left: 0;
 }
+.proposal_details .ql-editor ol li {
+  list-style-type: none; }  
 """
 
 

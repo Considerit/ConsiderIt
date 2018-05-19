@@ -902,7 +902,14 @@ styles += """
   opacity: 0.7;
   padding: 10px 20px; }
 .proposal_details table, .description_field table {
-  padding: 20px 0px; font-size: 11px; }
+  padding: 20px 0px; font-size: 11px; 
+}
+.proposal_details .ql-editor li, .description_field .ql-editor li {
+  list-style: inside;
+}
+.proposal_details .ql-editor ul, .description_field .ql-editor ol{
+  margin-left: 0;
+}
 """
 
 

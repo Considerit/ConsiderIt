@@ -11,7 +11,7 @@ class Proposal < ActiveRecord::Base
   include Moderatable, Notifier
   
   class_attribute :my_public_fields
-  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :description_fields, :active, :hide_on_homepage, :published, :histocache, :subdomain_id]
+  self.my_public_fields = [:id, :slug, :cluster, :user_id, :created_at, :updated_at, :name, :description, :description_fields, :active, :hide_on_homepage, :published, :histocache, :subdomain_id, :json]
 
   scope :active, -> {where( :active => true, :published => true )}
 
@@ -196,6 +196,9 @@ class Proposal < ActiveRecord::Base
 
     # The JSON.parse is expensive...
     json['histocache'] = Oj.load(json['histocache'] || '{}')
+
+
+    json['json'] = Oj.load(json['json'] || '{}')
 
     make_key(json, 'proposal')
     stubify_field(json, 'user')

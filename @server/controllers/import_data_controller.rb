@@ -30,7 +30,7 @@ class ImportDataController < ApplicationController
       },
       'proposals' => {
         required_fields: ['url', 'topic', 'user'],
-        directly_extractable: ['description', 'cluster', 'seo_title', 'seo_description', 'seo_keywords', 'description_fields']
+        directly_extractable: ['description', 'cluster', 'seo_title', 'seo_description', 'seo_keywords', 'description_fields', 'json']
       },
       'opinions' => {
         required_fields: ['user', 'proposal', 'stance'],

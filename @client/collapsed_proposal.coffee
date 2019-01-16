@@ -181,7 +181,10 @@ window.CollapsedProposal = ReactiveComponent
               marginTop: 4
               #fontStyle: 'italic'
 
-            if customization('show_proposal_meta_data')
+            if customization('proposal_meta_data')
+              customization('proposal_meta_data')(proposal)
+
+            else if customization('show_proposal_meta_data')
               SPAN 
                 style: 
                   paddingRight: 16

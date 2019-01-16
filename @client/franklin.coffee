@@ -595,6 +595,7 @@ ProposalDescription = ReactiveComponent
 
     title = @proposal.name 
     body = @proposal.description 
+
     title_style = _.defaults {}, customization('list_label_style'),
       fontSize: 36
       fontWeight: 700
@@ -713,8 +714,9 @@ ProposalDescription = ReactiveComponent
                   fontSize: POINT_FONT_SIZE()
                   #fontWeight: 300
 
-                if customization('proposal_description')?[@proposal.cluster]
-                  customization('proposal_description')?[@proposal.cluster]({proposal: @proposal})
+                if customization('proposal_description')?[@proposal.cluster] or customization('proposal_description')
+                  
+                  (customization('proposal_description')?[@proposal.cluster] or customization('proposal_description'))({proposal: @proposal})
                 else 
                   DIV dangerouslySetInnerHTML:{__html: body}
 

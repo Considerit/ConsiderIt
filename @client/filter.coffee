@@ -67,10 +67,16 @@ window.sorted_proposals = (proposals) ->
   sort = fetch 'sort_proposals'
   set_sort() if !sort.func? 
 
-  proposal_rank = sort.func
 
-  proposals = proposals.slice().sort (a,b) ->
-    return proposal_rank(b, sort.opinion_value) - proposal_rank(a, sort.opinion_value)
+  if sort.comp
+    comp = sort.comp
+    proposals = proposals.slice().sort (a,b) ->
+      return comp(a,b) 
+
+  else 
+    proposal_rank = sort.func
+    proposals = proposals.slice().sort (a,b) ->
+      return proposal_rank(b, sort.opinion_value) - proposal_rank(a, sort.opinion_value)
 
   # filter out filtered proposals
   filter_out = fetch 'filtered'
@@ -113,6 +119,11 @@ basic_proposal_scoring = (proposal, opinion_value) ->
 
 
 sort_options = [
+  { 
+    name: 'Alphabetically'
+    comp: (a, b) -> a.name.localeCompare b.name
+    description: "Sort alphabetically by the proposal's title"
+  },
   { 
     func: (proposal, opinion_value) -> basic_proposal_scoring(proposal, opinion_value).avg
     name: 'Average Score'

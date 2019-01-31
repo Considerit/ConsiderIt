@@ -65,18 +65,11 @@ ApplyFilters = ReactiveComponent
 window.sorted_proposals = (proposals) ->
 
   sort = fetch 'sort_proposals'
-  set_sort() if !sort.func? 
 
+  set_sort() if !sort.name? 
 
-  if sort.comp
-    comp = sort.comp
-    proposals = proposals.slice().sort (a,b) ->
-      return comp(a,b) 
-
-  else 
-    proposal_rank = sort.func
-    proposals = proposals.slice().sort (a,b) ->
-      return proposal_rank(b, sort.opinion_value) - proposal_rank(a, sort.opinion_value)
+  comp = sort.comp
+  proposals = proposals.slice().sort comp
 
   # filter out filtered proposals
   filter_out = fetch 'filtered'
@@ -119,72 +112,83 @@ basic_proposal_scoring = (proposal, opinion_value) ->
 
 
 sort_options = [
+
+  { 
+    comp: (a, b) -> basic_proposal_scoring(b, ((o) -> o.stance)).avg - basic_proposal_scoring(a, ((o) -> o.stance)).avg
+    name: 'Average Score'
+    description: "Each proposal is scored by the average opinion score, where opinions are on [-1, 1]."
+  }, { 
+    comp: (a, b) -> basic_proposal_scoring(b, ((o) -> o.stance)).sum - basic_proposal_scoring(a, ((o) -> o.stance)).sum
+    name: 'Total Score'
+    description: "Each proposal is scored by the sum of opinions, where opinions are on [-1, 1]."
+  }, {
+    name: 'Trending'
+    description: "'Total Score', except that newer opinions and topics are weighed more heavily."
+
+    comp: (a, b) ->
+      ov = (o) -> 
+        ot = new Date(o.updated_at).getTime()
+        n = Date.now()
+        o.stance / (1 + Math.pow((n - ot) / 100000, 2))
+
+      val = (proposal) -> 
+        sum = basic_proposal_scoring(proposal, ov).sum
+        n = Date.now()
+        pt = new Date(proposal.created_at).getTime()
+        sum / (1 + (n - pt) / 10000000000)  # decrease this constant to favor newer proposals
+
+      val(b) - val(a)
+  },
   { 
     name: 'Alphabetically'
     comp: (a, b) -> a.name.localeCompare b.name
     description: "Sort alphabetically by the proposal's title"
-  },
-  { 
-    func: (proposal, opinion_value) -> basic_proposal_scoring(proposal, opinion_value).avg
-    name: 'Average Score'
-    opinion_value: (o) -> o.stance
-    description: "Each proposal is scored by the average opinion score, where opinions are on [-1, 1]."
-  }, { 
-    func: (proposal, opinion_value) -> basic_proposal_scoring(proposal, opinion_value).sum
-    name: 'Total Score'
-    opinion_value: (o) -> o.stance
-    description: "Each proposal is scored by the sum of opinions, where opinions are on [-1, 1]."
   }, {
-    func: (proposal, opinion_value) -> 
-      sum = basic_proposal_scoring(proposal, opinion_value).sum
-      n = Date.now()
-      pt = new Date(proposal.created_at).getTime()
-      sum / (1 + (n - pt) / 10000000000)  # decrease this constant to favor newer proposals
-    name: 'Trending'
-    opinion_value: (o) -> 
-      ot = new Date(o.updated_at).getTime()
-      n = Date.now()
-      o.stance / (1 + Math.pow((n - ot) / 100000, 2))
-    description: "'Total Score', except that newer opinions and topics are weighed more heavily."
-  }, {
-    func: (proposal) -> new Date(proposal.created_at).getTime()
+    comp: (a,b) -> new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     name: 'Newest'
     description: "The proposals submitted most recently are shown first."
   }, { 
     name: 'Unity'
-    func: (proposal, opinion_value) -> 
-      stats = basic_proposal_scoring(proposal, opinion_value)
-      if stats.opinions.length > 1
-        Math.log(stats.opinions.length + 1) / stats.std_dev / (1 - Math.abs(stats.avg) + 1)
-      else 
-        -1
-    opinion_value: (o) -> o.stance
     description: "Proposals where the community is most united for or against is shown highest."
+    comp: (a,b) -> 
+      ov = (o) -> o.stance
+      val = (proposal) ->
+        stats = basic_proposal_scoring(proposal, ov)
+        if stats.opinions.length > 1
+          Math.log(stats.opinions.length + 1) / stats.std_dev / (1 - Math.abs(stats.avg) + 1)
+        else 
+          -1
+      val(b) - val(a)
+
   }, { 
     name: 'Difference'
-    func: (proposal, opinion_value) -> 
-      stats = basic_proposal_scoring(proposal, opinion_value)
-      if stats.opinions.length > 1
-        stats.std_dev * Math.log(stats.opinions.length + 1) 
-      else
-        -1
-    opinion_value: (o) -> o.stance
     description: "Proposals where the community is most split is shown highest."
+    comp: (a,b) -> 
+      ov = (o) -> o.stance
+      val = (proposal) ->
+        stats = basic_proposal_scoring(proposal, ov)
+        if stats.opinions.length > 1
+          stats.std_dev * Math.log(stats.opinions.length + 1) 
+        else
+          -1
+      val(b) - val(a)
+
   }, {
-    func: (proposal, opinion_value) -> basic_proposal_scoring
     name: 'Most Activity'
-    opinion_value: (o) -> 1 + (o.point_inclusions or []).length
     description: "Ranked by number of opinions and discussion."
+
+    comp: (a,b) ->
+      ov = (o) -> 1 + (o.point_inclusions or []).length
+      basic_proposal_scoring(b, ov).sum - basic_proposal_scoring(a, ov).sum
+
   }
 
 
 ]
 
-
 set_sort = -> 
   sort = fetch 'sort_proposals'
-
-  if !sort.func?
+  if !sort.name?
     found = false 
     loc = fetch('location')
     if loc.query_params?.sort_by
@@ -327,10 +331,10 @@ SortProposalsMenu = ReactiveComponent
   render: -> 
 
     sort = fetch 'sort_proposals'
-    set_sort() if !sort.func? 
+    set_sort() if !sort.name? 
 
     trigger = (e) =>
-      _.extend sort, sort_options[@local.focus]                      
+      _.extend sort, sort_options[@local.focus]   
       save sort 
       @local.sort_menu = false
       save @local
@@ -350,14 +354,12 @@ SortProposalsMenu = ReactiveComponent
       @local.sort_menu = false
       save @local
 
-
     SPAN
       style: 
         color: 'black'
         fontSize: 14
 
       "sort by "
-
 
       DIV 
         ref: 'menu_wrap'

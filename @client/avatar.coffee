@@ -151,7 +151,7 @@ window.avatar = (user, props) ->
   # will reveal content behind it that is undesirable to show.  
   style.backgroundColor = 'white' if show_avatar
 
-  add_initials = !user.avatar_file_name && style.width > 8
+  add_initials = false && !user.avatar_file_name && style.width > 8
   
   if add_initials
     style.textAlign = 'center'

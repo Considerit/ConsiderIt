@@ -1,4 +1,6 @@
 # config/initializers/aws.rb
 # this is to accommodate Paperclip's lack of updating to new AWS
-Aws::VERSION =  Gem.loaded_specs["aws-sdk"].version
 
+if Rails.env.production?
+  Aws::VERSION =  Gem.loaded_specs["aws-sdk"].version
+end

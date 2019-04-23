@@ -59,8 +59,8 @@ class HtmlController < ApplicationController
     @vendor = ''
 
     if Rails.application.config.action_controller.asset_host
-      @js = "#{Rails.application.config.action_controller.asset_host}#{@js}"
-      @vendor = Rails.application.config.action_controller.asset_host
+      @js = "https:#{Rails.application.config.action_controller.asset_host}#{@js}"
+      @vendor = 'https:' + Rails.application.config.action_controller.asset_host
     end
 
 

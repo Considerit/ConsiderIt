@@ -227,16 +227,20 @@ Proposal = ReactiveComponent
 
         ProposalDescription()
 
-        H1
-          style: _.defaults {}, customization('list_label_style'),
-            fontSize: 36
-            fontWeight: 700
-            fontStyle: 'oblique'
-            textAlign: 'center'
-            marginBottom: 8
-            marginTop: 48
 
-          'What do you think?'
+        if customization('opinion_callout')
+          customization('opinion_callout')()
+        else 
+          H1
+            style: _.defaults {}, customization('list_label_style'),
+              fontSize: 36
+              fontWeight: 700
+              fontStyle: 'oblique'
+              textAlign: 'center'
+              marginBottom: 8
+              marginTop: 48
+
+            'What do you think?'
 
 
         if customization('opinion_filters')

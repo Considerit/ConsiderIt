@@ -367,6 +367,17 @@ Auth = ReactiveComponent
               padding: '16px 0'
             dangerouslySetInnerHTML: {__html: customization('auth_footer')}
 
+      if customization('login_footer')
+        auth = fetch('auth')
+        if auth.form == 'login'
+          DIV 
+            style:
+              fontSize: 13
+              color: auth_text_gray
+              padding: '16px 0'
+            dangerouslySetInnerHTML: {__html: customization('login_footer')}
+
+
       if (current_user.errors or []).length > 0 or @local.errors.length > 0
         errors = current_user.errors.concat(@local.errors or [])
         DIV

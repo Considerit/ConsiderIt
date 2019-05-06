@@ -279,8 +279,8 @@ window.clustered_proposals_with_tabs = ->
     for cluster, index in all_clusters or []
       cluster_key = "list/#{cluster.name}"
 
-      fails_filter = homepage_tabs.filter? && (homepage_tabs.clusters != '*' && !(cluster.name in homepage_tabs.clusters) )
-      if fails_filter && ('*' in homepage_tabs.clusters)
+      fails_filter = homepage_tabs.filter? && (homepage_tabs.clusters != '*' && !(cluster.name in (homepage_tabs.clusters or [])) )
+      if fails_filter && ('*' in (homepage_tabs.clusters or []))
         in_others = []
         for filter, clusters of customization('homepage_tabs')
           in_others = in_others.concat clusters 

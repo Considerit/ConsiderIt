@@ -724,7 +724,7 @@ Auth = ReactiveComponent
             SPAN 
               style: 
                 paddingLeft: 20
-              pledge
+              dangerouslySetInnerHTML: __html: pledge
 
           DIV style: clear: 'both'
 

@@ -225,12 +225,6 @@ window.CollapsedProposal = ReactiveComponent
 
                       "#{proposal.point_count} #{customization('point_labels.pros', proposal)} and #{customization('point_labels.cons', proposal)}"
 
-            if !proposal.active
-              SPAN 
-                style: 
-                  paddingRight: 16
-
-                t('closed')
 
             if @props.show_category && proposal.cluster
               cluster = proposal.cluster 
@@ -247,6 +241,14 @@ window.CollapsedProposal = ReactiveComponent
                   #fontSize: 12
 
                 cluster
+
+            if !proposal.active
+              SPAN 
+                style: 
+                  padding: '0 16px'
+
+                t('closed')
+
 
           if can_edit
             DIV

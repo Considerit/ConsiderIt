@@ -905,7 +905,7 @@ styles += """
 .proposal_details td, .description_field td {
   padding: 0 3px; }
 .proposal_details li, .description_field li {
-  list-style: outside; }
+  list-style: outside; padding-bottom: 8px;}
 .proposal_details ol li {
   list-style-type: decimal; }  
 .proposal_details ul, .description_field ul,

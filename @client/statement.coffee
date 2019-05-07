@@ -110,7 +110,8 @@ styles += """
 
 .statement a {
   text-decoration: underline;
-  word-break: break-all; }
+  // word-break: break-all; 
+}
 
 .statement p {
   margin-bottom: 12px; }

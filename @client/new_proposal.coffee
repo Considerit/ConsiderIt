@@ -233,63 +233,76 @@ window.NewProposal = ReactiveComponent
 
 
           # Category
-          DIV 
-            style: 
-              marginTop: 8
-          
-            LABEL               
-              style: _.extend {}, label_style,
-                marginLeft: 8
+
+          do =>
+            available_clusters = (clust for clust in get_all_clusters() when current_user.is_admin || customization('list_show_new_button', "list/#{clust}"))
+
+            if !current_user.is_admin && available_clusters.length <= 1
+              INPUT
+                type: 'hidden'
+                value: cluster_name
+                ref: 'category'
+
+            else 
+              DIV null,
+                DIV 
+                  style: 
+                    marginTop: 8
+
+                                  
+                  LABEL               
+                    style: _.extend {}, label_style,
+                      marginLeft: 8
 
 
-              htmlFor: "#{cluster_slug}-category"
+                    htmlFor: "#{cluster_slug}-category"
 
-              t('category')
-            
-            SELECT
-              id: "#{cluster_slug}-category"
-              style: 
-                fontSize: 18
-                width: w
-              value: @local.category
-              ref: 'category'
-              onChange: (e) =>
-                @local.category = e.target.value
-                save @local
+                    t('category')
+                  
+                  SELECT
+                    id: "#{cluster_slug}-category"
+                    style: 
+                      fontSize: 18
+                      width: w
+                    value: @local.category
+                    ref: 'category'
+                    onChange: (e) =>
+                      @local.category = e.target.value
+                      save @local
 
-              [
-                if current_user.is_admin
+                    [
+                      if current_user.is_admin
 
-                  [
-                    OPTION 
-                      style: 
-                        fontStyle: 'italic'
-                      value: 'new category'
-                      'Create new category'
+                        [
+                          OPTION 
+                            style: 
+                              fontStyle: 'italic'
+                            value: 'new category'
+                            'Create new category'
 
-                    OPTION 
-                      disabled: "disabled"
-                      '--------'
-                  ]
+                          OPTION 
+                            disabled: "disabled"
+                            '--------'
+                        ]
 
-                for clust in get_all_clusters() when current_user.is_admin || customization('list_show_new_button', "list/#{clust}")
-                  OPTION  
-                    value: clust
-                    clust
+                      for clust in available_clusters
+                        OPTION  
+                          value: clust
+                          clust
 
-              ]
+                    ]
 
-            if current_user.is_admin && @local.category == 'new category'
-              INPUT 
-                type: 'text'
-                ref: 'new_category'
-                placeholder: 'category name'
-                style: 
-                  fontSize: 16
-                  padding: '4px 6px'
-                  #marginLeft: 4
-                  marginTop: 4
-                  display: 'block'
+                if current_user.is_admin && @local.category == 'new category'
+                  INPUT 
+                    type: 'text'
+                    ref: 'new_category'
+                    placeholder: 'category name'
+                    style: 
+                      fontSize: 16
+                      padding: '4px 6px'
+                      #marginLeft: 4
+                      marginTop: 4
+                      display: 'block'
 
 
 

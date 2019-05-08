@@ -728,7 +728,7 @@ ProposalDescription = ReactiveComponent
                   fontSize: POINT_FONT_SIZE()
                   #fontWeight: 300
 
-                if customization('proposal_description')?[@proposal.cluster] or customization('proposal_description')
+                if customization('proposal_description')?[@proposal.cluster] or (customization('proposal_description') && _.isFunction(customization('proposal_description')))
                   
                   (customization('proposal_description')?[@proposal.cluster] or customization('proposal_description'))({proposal: @proposal})
                 else 

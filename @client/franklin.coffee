@@ -227,9 +227,8 @@ Proposal = ReactiveComponent
 
         ProposalDescription()
 
-
-        if customization('opinion_callout')
-          customization('opinion_callout')()
+        if (customization('opinion_callout')?[@proposal.cluster] or (customization('opinion_callout') && _.isFunction(customization('opinion_callout'))))
+          (customization('opinion_callout')?[@proposal.cluster] or customization('opinion_callout'))()
         else 
           H1
             style: _.defaults {}, customization('list_label_style'),
@@ -728,8 +727,7 @@ ProposalDescription = ReactiveComponent
                   fontSize: POINT_FONT_SIZE()
                   #fontWeight: 300
 
-                if customization('proposal_description')?[@proposal.cluster] or (customization('proposal_description') && _.isFunction(customization('proposal_description')))
-                  
+                if (customization('proposal_description')?[@proposal.cluster] or (customization('proposal_description') && _.isFunction(customization('proposal_description'))))
                   (customization('proposal_description')?[@proposal.cluster] or customization('proposal_description'))({proposal: @proposal})
                 else 
                   DIV dangerouslySetInnerHTML:{__html: body}

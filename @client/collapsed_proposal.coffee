@@ -391,8 +391,7 @@ window.CollapsedProposal = ReactiveComponent
           if opinions.length > 0
             tooltip = fetch 'tooltip'
             tooltip.coords = $(@refs.score.getDOMNode()).offset()
-            #tooltip.tip = "Average rating is #{Math.round(avg * 100) / 100} on a -1 to 1 scale."
-            tooltip.tip = "Average rating is #{slider_interpretation(avg)}"
+            tooltip.tip = "Average rating is #{Math.round(avg * 100)}%"
             save tooltip
         hide_tooltip = => 
           tooltip = fetch 'tooltip'

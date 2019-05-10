@@ -147,7 +147,7 @@ window.NewProposal = ReactiveComponent
 
           CharacterCountTextInput 
             id: "#{cluster_slug}-name"
-            maxLength: 360
+            maxLength: 240
             name:'name'
             pattern: '^.{3,}'
             'aria-label': t('proposal_summary_instr')

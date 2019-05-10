@@ -733,10 +733,8 @@ HistoAvatars = ReactiveComponent
         #     # opacity: opacity
 
         stance = opinion.stance 
-        if stance < -.03
-          alt = "is #{(-1 * stance * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", @props.proposal)}"
-        else if stance > .03
-          alt = "is #{(stance * 100).toFixed(0)}% #{customization("slider_pole_labels.support", @props.proposal)}"
+        if Math.abs(stance) > .01
+          alt = "#{(stance * 100).toFixed(0)}%"
         else 
           alt = "is neutral"
 
@@ -752,7 +750,7 @@ HistoAvatars = ReactiveComponent
           ref: "avatar-#{idx}"
           focusable: @props.navigating_inside && !@props.backgrounded 
           hide_tooltip: @props.backgrounded
-          alt: "<user> #{alt}"
+          alt: "<user>: #{alt}"
           style: _.extend {}, avatar_style, 
             left: pos?[0]
             top: pos?[1]

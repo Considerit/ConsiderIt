@@ -197,12 +197,30 @@ window.OpinionSlider = ReactiveComponent
 
   drawFeedback: -> 
     slider = fetch @props.key
+    default_feedback = (value, proposal) -> 
+      if Math.abs(value) < 0.01
+        "You are neutral"
+      else 
+        degree = Math.abs value
+        strength_of_opinion = if degree > .999
+                                "Fully "
+                              else if degree > .5
+                                "Firmly "
+                              else
+                                "Slightly " 
+
+        valence = customization "slider_pole_labels." + \
+                                (if value > 0 then 'support' else 'oppose'), \
+                                proposal
+
+        "#{Math.round(value * 100)}%"
+
 
     labels = customization 'slider_pole_labels', @proposal
     slider_feedback = 
       if !slider.has_moved 
         t('Slide Your Overall Opinion')
-      else if func = labels.slider_feedback
+      else if func = labels.slider_feedback or default_feedback
         func slider.value, @proposal
       else
         if TWO_COL() then t("Your opinion") else ''       
@@ -214,6 +232,7 @@ window.OpinionSlider = ReactiveComponent
       fontSize: if TWO_COL() then 22 else 30
       fontWeight: if !TWO_COL() then 700
       color: if @props.backgrounded then '#eee' else focus_color()
+      textAlign: 'center'
       #visibility: if @props.backgrounded then 'hidden'
 
     # Keep feedback centered over handle, but keep within the bounds of 

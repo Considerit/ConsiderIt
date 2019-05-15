@@ -26,7 +26,7 @@ class ImportDataController < ApplicationController
     configuration = {
       'users' => {
         required_fields: ['name', 'email'],
-        directly_extractable: ['name', 'email']
+        directly_extractable: ['name', 'email', 'tags']
       },
       'proposals' => {
         required_fields: ['url', 'topic', 'user'],

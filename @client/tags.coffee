@@ -31,6 +31,10 @@ UserTags = ReactiveComponent
             all_tags[tag].yes.push user 
           else 
             all_tags[tag].no.push user 
+
+        if Object.keys(user.tags).length == 1 && Object.keys(user.tags)[0] == 'considerit_terms.editable'
+          all_tags['no tags'] ||= {yes: [], no: []}
+          all_tags['no tags'].yes.push user          
       else 
         all_tags['no tags'] ||= {yes: [], no: []}
         all_tags['no tags'].yes.push user

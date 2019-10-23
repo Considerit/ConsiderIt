@@ -176,7 +176,13 @@ window.avatar = (user, props) ->
     tabIndex: if props.focusable then 0 else -1
 
   if tag == IMG
-    attrs.alt = if props.hide_tooltip then '' else tooltip 
+    # attrs.alt = if props.hide_tooltip then '' else tooltip 
+    # the above fails too much on broken images, and 
+    # screenreaders would probably be overwhelmed with saying all these stances.
+    # If in future it turns out we want alt text for accessibility, we can address
+    # the broken text ugliness by using img { text-indent: -10000px } to 
+    # hide the alt text / broken image
+    attrs.alt = ""
   
   tag attrs,
     if add_initials
@@ -233,6 +239,18 @@ styles += """
   -ms-user-select: none;}
   .avatar.avatar_anonymous {
     cursor: default; 
+}
+/* for styling icon of broken images */
+img.avatar:after { 
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #f7954c; 
+  border-radius: 50%;
+  content: "";
 }
 
 """

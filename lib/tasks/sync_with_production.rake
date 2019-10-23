@@ -19,6 +19,7 @@ require 'zlib'
 # ...and that you have: 
 #    1) installed awscli locally http://docs.aws.amazon.com/cli/latest/userguide/installing.html
 #    2) registered your AWS credentials with awscli
+#    3) make sure to set your region in ~/.aws/config
 
 BACKUP_PATH = 's3://considerit-backups/xenogear-considerit/xenogear/'
 

@@ -224,6 +224,7 @@ window.Avatar = ReactiveComponent
 
 styles += """
 .avatar {
+  position: relative;
   vertical-align: top;
   background-color: transparent;
   border: none;

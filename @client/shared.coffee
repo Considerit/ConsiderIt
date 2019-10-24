@@ -761,12 +761,17 @@ window.cssTriangle = (direction, color, width, height, style) ->
 
 # from https://gist.github.com/mathewbyrne/1280286
 window.slugify = (text) -> 
-  text.toString().toLowerCase()
+  slug = text.toString().toLowerCase()
     .replace(/\s+/g, '-')           # Replace spaces with -
     .replace(/[^\w\-]+/g, '')       # Remove all non-word chars
     .replace(/\-\-+/g, '-')         # Replace multiple - with single -
     .replace(/^-+/, '')             # Trim - from start of text
     .replace(/-+$/, '')             # Trim - from end of text
+
+  if text?.length > 0 && slug?.length == 0 
+    slug = md5 slug 
+
+  slug
 
 
 

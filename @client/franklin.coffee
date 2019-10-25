@@ -1814,6 +1814,8 @@ PointsList = ReactiveComponent
 
     drop_target_text = t("drag_from_#{left_or_right}", {noun})
 
+    drop_target_text = T("opining/drop_point_target", "Drag a {{POINT}} from the {{DIRECTION}}", {point: noun, direction: left_or_right})
+
     dt_w = POINT_WIDTH() - 24
     local_proposal = fetch shared_local_key(@proposal)
 

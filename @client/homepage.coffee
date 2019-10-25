@@ -727,7 +727,7 @@ window.list_actions = (props) ->
                   setTimeout =>
                     $("[name='add_new_#{props.cluster.name}']").ensureInView()
                   , 1
-                t('add_new')
+                T("lists/add new button", 'add new')
 
     if customization('opinion_filters')
       OpinionFilter

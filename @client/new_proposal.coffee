@@ -109,7 +109,7 @@ window.NewProposal = ReactiveComponent
         bullet 
 
         if permitted
-          t("add new")
+          T("lists/add new button", 'add new')
         else 
           t("login_to_add_new")
     else 

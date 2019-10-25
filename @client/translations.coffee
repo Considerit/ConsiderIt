@@ -34,6 +34,57 @@ window.t = (label, args) ->
     dictionary[label]
 
 
+
+
+window.T = window.t = (name, native_text, args, subdomain_specific, rtn_lang_used) -> 
+
+  # TODO: remove after we convert all the legacy t() calls
+  if !native_text || (typeof native_text == 'object')
+    return "*****#{name}*****"
+
+
+  subdomain = fetch '/subdomain'
+  user = fetch '/current_user'
+
+  if subdomain_specific
+    translations = fetch "/translations/#{subdomain.name}"
+  else 
+    translations = fetch '/translations'
+
+  # ensure this translation is in the database for the development language
+  if translations && translations.lang[translations.development_language][name]?.txt != native_text
+    translations.lang[translations.development_language][name] = {txt: native_text}
+    save translations
+
+  # which language should we use? ordered by preference. 
+  langs = [user.lang, subdomain.lang, translations.development_language, 'en'].filter((l) -> l?) 
+
+  # find the best language translation we have
+  lang_used = null 
+  translation = null 
+  for lang in langs
+    translations.lang[lang] ||= {}
+    if translations.lang[lang][name]
+      # if there isn't an accepted translation but there is a proposed one, use that
+      translation = translations.lang[lang][name].txt or translations.lang[lang][name].proposed?[0]
+      if translation
+        lang_used = lang 
+        break 
+
+  # substitute in any args
+  for k,v of args 
+    translation = translation.replace "{{#{k}}}", v 
+    translation = translation.replace "{{#{k.toUpperCase()}}}", v 
+
+  if rtn_lang_used # useful for a T wrapper that enables in situ translations
+    {translation, lang_used, target_lang: langs[0]}
+  else 
+    translation
+
+
+
+
+
 ##### 
 # Dict will hold all the different translations for each language, 
 #  i.e. dict.en, dict.spa, dict.ptbr, etc

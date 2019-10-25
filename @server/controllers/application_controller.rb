@@ -22,6 +22,8 @@ class ApplicationController < ActionController::Base
     dirty_key '/application'
     dirty_key '/subdomain' # just to eliminate a couple renders
     dirty_key '/current_user' # just to eliminate a couple renders
+    dirty_key '/translations'
+    dirty_key "/translations/#{current_subdomain.name}"
     render :json => []
   end
 
@@ -274,7 +276,30 @@ protected
         manifest.key = '/asset_manifest'
         response.append manifest
 
+      elsif key.match "/translations"
+        translations = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{key}'").to_a()[0]
+        if translations
+          translations = Oj.load(translations[0] || '{}')
+        else 
+          translations = {
+            key: key,
+            development_language: 'en',
+            lang: {
+              en: {},
+              es: {},
+              fr: {},
+              pt: {},
+              cs: {},
+              aeb: {}
+            }
+          }
+          ActiveRecord::Base.connection.execute("INSERT into datastore(k,v) VALUES ('#{key}', '#{JSON.dump(translations)}')")
+        end
+
+        response.append translations
       end
+
+
     end
 
     return response

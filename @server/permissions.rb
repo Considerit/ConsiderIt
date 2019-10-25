@@ -199,9 +199,14 @@ def permit(action, object = nil, user = nil)
     return Permission::NOT_LOGGED_IN if !user.registered
     return Permission::INSUFFICIENT_PRIVILEGES if !user.has_any_role?([:admin, :superadmin, :moderator])
     return Permission::UNVERIFIED_EMAIL if !user.verified  
+
+  when 'update all translations'
+    return Permission::INSUFFICIENT_PRIVILEGES if !user.super_admin
   else
     raise "Undefined Permission: #{action}"
   end
+
+
 
   # puts "#{user.name} is permitted to #{action}"
 

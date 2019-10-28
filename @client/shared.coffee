@@ -769,7 +769,7 @@ window.slugify = (text) ->
     .replace(/-+$/, '')             # Trim - from end of text
 
   if text?.length > 0 && slug?.length == 0 
-    slug = md5 slug 
+    slug = md5 text 
 
   slug
 

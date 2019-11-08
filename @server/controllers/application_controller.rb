@@ -22,8 +22,10 @@ class ApplicationController < ActionController::Base
     dirty_key '/application'
     dirty_key '/subdomain' # just to eliminate a couple renders
     dirty_key '/current_user' # just to eliminate a couple renders
-    dirty_key '/translations'
-    dirty_key "/translations/#{current_subdomain.name}"
+    for lang in [ (current_user[:lang] || "en"), (current_subdomain[:lang] || "en"), "en"].uniq
+      dirty_key "/translations/#{lang}"
+      dirty_key "/translations/#{current_subdomain.name}/#{lang}"
+    end 
     render :json => []
   end
 
@@ -280,19 +282,22 @@ protected
         translations = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{key}'").to_a()[0]
         if translations
           translations = Oj.load(translations[0] || '{}')
-        else 
-          translations = {
-            key: key,
-            development_language: 'en',
-            lang: {
-              en: {},
-              es: {},
-              fr: {},
-              pt: {},
-              cs: {},
-              aeb: {}
+        else
+          if key == '/translations'
+            translations = {
+              key: key,
+              available_languages: {
+                en: 'English',
+                es: 'Spanish',
+                fr: 'French',
+                pt: 'Portuguese',
+                cs: 'Czech',
+                aeb: 'Tunisian arabic'              
+              }
             }
-          }
+          else 
+            translations = {key: key}
+          end
           ActiveRecord::Base.connection.execute("INSERT into datastore(k,v) VALUES ('#{key}', '#{JSON.dump(translations)}')")
         end
 

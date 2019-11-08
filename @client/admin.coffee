@@ -6,7 +6,7 @@ require './form'
 require './shared'
 
 
-DashHeader = ReactiveComponent
+window.DashHeader = ReactiveComponent
   displayName: 'DashHeader'
 
   render : ->    
@@ -31,7 +31,9 @@ DashHeader = ReactiveComponent
             fontSize: 28
             padding: '20px 0'
             fontWeight: 400
-          @props.name   
+          TRANSLATE 
+            id: "admin.dash_header.#{@props.name}"
+            @props.name   
 
 ImportDataDash = ReactiveComponent
   displayName: 'ImportDataDash'
@@ -230,7 +232,7 @@ AppSettingsDash = ReactiveComponent
               placeholder: 'A link to the main project\'s homepage, if any.'
 
           DIV className: 'input_group',
-            LABEL htmlFor: 'lang', 'Interface Language'
+            LABEL htmlFor: 'lang', 'Primary Language'
             SELECT 
               id: 'lang'
               type: 'text'
@@ -241,37 +243,36 @@ AppSettingsDash = ReactiveComponent
                 marginLeft: 12
                 display: 'inline-block'
 
-              OPTION
-                value: 'en'
-                'English'
+              for abbrev, label of (fetch('/translations').available_languages or {})
 
-              OPTION
-                value: 'es'
-                'Spanish'
+                OPTION
+                  value: abbrev
+                  label 
 
-              OPTION
-                value: 'fr'
-                'French'
+            if subdomain.lang? && subdomain.lang != 'en'
+              DIV 
+                style: 
+                  fontSize: 12
 
-              OPTION
-                value: 'pt'
-                'Portuguese'
-
-              OPTION 
-                value: 'cs'
-                "Czech"
-
-              OPTION
-                value: 'aeb'
-                'Tunisian arabic'
-
+                TRANSLATE
+                  id: "i18n.translations_link"
+                  percent_complete: Math.round(translation_progress(subdomain.lang) * 100)
+                  language: (fetch('/translations').available_languages or {})[subdomain.lang]
+                  link: 
+                    component: A 
+                    args: 
+                      href: "/dashboard/translations"
+                      style:
+                        textDecoration: 'underline'
+                        color: focus_color()
+                        fontWeight: 700
+                  "Translations for {language} are {percent_complete}% completed. Help improve the translations <link>here</link>."
 
 
             DIV 
               style: 
-                fontStyle: 'italic'
                 fontSize: 12
-              "Your language not available? Email us at hello@consider.it to help us create a translation."
+              "Is your preferred language not available? Email us at hello@consider.it to help us create a translation."
 
 
 

@@ -13,8 +13,8 @@ window.translation_progress = (lang, key_prefix) ->
 
 
 
-regexp_tsplit = /<(\w+)>[^<]+<\/\w+>/g
-regexp_tmatch = /<(\w+)>([^<]+)<\/\w+>/g
+regexp_tsplit = /<(\w+)>[^<]+<\/[\w|\s]+>/g
+regexp_tmatch = /<(\w+)>([^<]+)<\/[\w|\s]+>/g
 window.TRANSLATE = (args, native_text) -> 
 
   if typeof args == "string"
@@ -31,6 +31,7 @@ window.TRANSLATE = (args, native_text) ->
   if message.indexOf('<') > -1
     parts = message.split(regexp_tsplit)
     matches = {}
+
 
     while match = regexp_tmatch.exec(message)
       matches[match[1]] = match[2]
@@ -50,17 +51,13 @@ window.TRANSLATE = (args, native_text) ->
   if !tr.in_situ_translations
     translation 
   else 
-    IN_SITU_TRANSLATION_WRAPPER _.extend({lang_used, target_lang, message, native_text}, args), translation
+    IN_SITU_TRANSLATOR _.extend({lang_used, target_lang, message, native_text}, args), translation
 
-IN_SITU_TRANSLATION_WRAPPER = ReactiveComponent
-  displayName: 'InSituTranslationWrapper'
+IN_SITU_TRANSLATOR = ReactiveComponent
+  displayName: 'InSituTranslator'
   render: ->
     key = @props.key or '/translations'
     target_lang = @props.target_lang
-
-    langs = Array.from(new Set([target_lang, @props.lang_used, 'en']))
-    for lang in langs when lang
-      fetch "#{key}/#{lang}"
 
     translated = @props.lang_used == target_lang
     id = @props.id or @props.native_text
@@ -171,8 +168,14 @@ window.T = window.t = (args, native_text) ->
   for lang in langs
     translations = fetch "#{translations_key_prefix}/#{lang}"
     if translations[id]?
-      # if there isn't an accepted translation but there is a proposed one, use that
-      message = translations[id].txt or translations[id].proposed?[0]
+      message = translations[id].txt
+      # if this user has proposed one, use that
+      if translations[id].proposals?.length > 0
+        u = fetch('/current_user').user
+        for proposal in translations[id].proposals
+          if proposal.u == u 
+            console.log u, proposal.u
+            message = proposal.txt 
       if message
         lang_used = lang 
         break 

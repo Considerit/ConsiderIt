@@ -41,7 +41,6 @@ class TranslationsController < ApplicationController
         # Check if this message is present; if not, allow it to be added. 
         # If it is en, add it as default text, otherwise add it as a proposal.
         if !old.has_key?(id)
-
           if !key.end_with?('/en')
             if message[:txt]
               message = {
@@ -89,8 +88,8 @@ class TranslationsController < ApplicationController
         end
       end
 
+      ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{JSON.dump(old)}' WHERE k='#{key}'")
       if translations_made
-        ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{JSON.dump(old)}' WHERE k='#{key}'")
         # TODO: test this email function
         EventMailer.translations_proposed(current_subdomain).deliver_later
       end

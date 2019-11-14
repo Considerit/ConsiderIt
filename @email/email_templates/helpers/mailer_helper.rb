@@ -2,12 +2,12 @@ module MailerHelper
 
   def section(name)
     if @part == 'text'
-      "\r\n=============\r\n#{name.capitalize}\r\n=============\r\n\r\n"
+      "\r\n=============\r\n#{translator(name.capitalize)}\r\n=============\r\n\r\n"
     else 
       """
       <tr>
       <td style='background-color: #ffffff; padding: 18px 24px 24px 24px; text-align: left; box-shadow:0px 1px 2px rgba(0,0,0,.3)'>
-      <h2 style='color:#434343; text-align: left; font-size:24px; margin: 0; padding: 0; font-weight: 400'>#{name}</h2>
+      <h2 style='color:#434343; text-align: left; font-size:24px; margin: 0; padding: 0; font-weight: 400'>#{translator(name.capitalize)}</h2>
       <div style='color: #434343; text-align: left'>
       """.html_safe
     end
@@ -271,26 +271,6 @@ module MailerHelper
       "\r\n\r\n"
     else 
       "<div style='height: 10px'> </div>".html_safe
-    end
-  end
-
-  def paragraph(text)
-
-    if @part == 'text'
-      "\r\n#{text}\r\n"
-    else
-      "<p style='padding: 0px 20px;' >#{text}</p>".html_safe
-    end
-
-  end
-
-
-  def styled_link(href, anchor, options = {})
-    anchor ||= href
-    if @part == 'text'
-      "#{options[:text_preceding]}#{options[:text_instead] ? anchor : full_link(href, options[:search_params])}"
-    else
-      "<a href=#{full_link(href, options[:search_params])} style='font-weight: 700; color:#439fe0;'>#{anchor}</a>".html_safe
     end
   end
 

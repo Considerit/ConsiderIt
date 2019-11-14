@@ -1,3 +1,5 @@
+require Rails.root.join('@server', 'translations')
+
 class Mailer < ActionMailer::Base
   layout 'email'
   add_template_helper MailerHelper

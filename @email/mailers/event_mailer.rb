@@ -3,6 +3,8 @@ require 'mail'
 class EventMailer < Mailer
 
   def send_message(message, current_user, subdomain)
+    set_translation_context(user, subdomain)
+
     message['recipient'] = User.find key_id(message['recipient'])
     message['sender'] = current_user
 
@@ -16,10 +18,13 @@ class EventMailer < Mailer
     reply_to = format_email current_user.email, message['sender_mask']
 
     mail(:from => from, :to => to, :subject => subject_line(@message['subject'], subdomain), :bcc => from, :reply_to => reply_to)
+    clear_translation_context()
   end
 
   # HARDCODING ALERT BELOW!!!
   def translations_proposed(subdomain)
+    set_translation_context(user, subdomain)
+
     message['recipient'] = "translations@consider.it"
     message['sender'] = current_user
 
@@ -32,7 +37,7 @@ class EventMailer < Mailer
     from = format_email default_sender(subdomain), "Considerit Translator subsystem"
 
     mail(:from => from, :to => to, :subject => subject_line("[considerit] translations awaiting approval", subdomain))
-
+    clear_translation_context()
 
   end
 

@@ -3,6 +3,8 @@ require 'mail'
 class UserMailer < Mailer
 
   def welcome_new_customer(user, subdomain, plan)
+    set_translation_context(user, subdomain)
+
     @user = user
     subject = "Welcome to Consider.it!"
     @subdomain = subdomain
@@ -23,11 +25,13 @@ class UserMailer < Mailer
       @part = 'html'
       format.html
     end
-
+    clear_translation_context()
   end
 
 
   def reset_password_instructions(user, token, subdomain)
+    set_translation_context(user, subdomain)
+
     @user = user
     @token = token 
     subject = "password reset instructions"
@@ -36,9 +40,12 @@ class UserMailer < Mailer
     to = format_email @user.email, @user.name
     from = format_email(default_sender(subdomain), (subdomain.title))
     mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
+    clear_translation_context()
   end
 
   def verification(user, subdomain)
+    set_translation_context(user, subdomain)
+
     @user = user
     @token = user.auth_token(subdomain)
     @subdomain = subdomain
@@ -48,9 +55,12 @@ class UserMailer < Mailer
     to = format_email @user.email, @user.name
     from = format_email(default_sender(subdomain), (subdomain.title))
     mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
+    clear_translation_context()
   end
 
   def invitation(inviter, invitee, invitation_obj, role, subdomain, message = nil)
+    set_translation_context(user, subdomain)
+
     @user = invitee
     @inviter = inviter
     @subdomain = subdomain
@@ -100,7 +110,7 @@ class UserMailer < Mailer
     end
 
     mail(:from => from, :to => to, :subject => subject, :reply_to => reply_to)
-
+    clear_translation_context()
   end
 
 end

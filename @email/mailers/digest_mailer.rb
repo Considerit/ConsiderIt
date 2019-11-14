@@ -4,6 +4,7 @@ class DigestMailer < Mailer
   layout 'digest'
 
   def digest(subdomain, user, notifications, new_stuff, last_sent_at, send_limit)
+    set_translation_context(user, subdomain)
 
     @send_limit = send_limit
     @last_sent_at = last_sent_at
@@ -19,6 +20,7 @@ class DigestMailer < Mailer
     subject = subject_line subject, @subdomain
 
     send_mail from: from_field(@subdomain), to: to_field(user), subject: subject
+    clear_translation_context()
 
   end
 

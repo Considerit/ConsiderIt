@@ -2,8 +2,10 @@
 require 'digest/md5'
 require 'exception_notifier'
 require Rails.root.join('@server', 'permissions')
+require Rails.root.join('@server', 'translations')
 
 class ApplicationController < ActionController::Base
+
   protect_from_forgery with: :exception
   skip_before_action :verify_authenticity_token, if: :csrf_skippable?
 

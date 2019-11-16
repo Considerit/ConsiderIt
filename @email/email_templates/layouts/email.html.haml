@@ -33,8 +33,19 @@
           = yield :footer
 
           %div{style: "color:white; margin-top: 15px; font-size: 18px"}
-            Technology by 
-            %a{href: 'https://consider.it', target: '_blank', style: "font-weight: 700; color: #ffffff; text-decoration: none"}
-              Consider.it
+            :ruby
+              tech_by_txt = translator_html({
+                id: "email.considerit_link",
+                link: {
+                  tag: 'a',
+                  attrs: {
+                    href: "https://consider.it",                  
+                    style: "font-weight: 700; color: #000000; text-decoration: none",
+                    target: '_blank'
+                  }
+                }
+              }, "Technology by <link>Consider.it</link>")
+            #{tech_by_txt.html_safe}
+
 
 

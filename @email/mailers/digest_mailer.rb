@@ -15,7 +15,8 @@ class DigestMailer < Mailer
     @subdomain = subdomain
     @user = user
 
-    subject = "New activity at #{subdomain.title}"
+    subject = translator( {id: "email.digest.subject_line", forum_name: subdomain.title},    
+                  "New activity at {forum_name}")
 
     subject = subject_line subject, @subdomain
 

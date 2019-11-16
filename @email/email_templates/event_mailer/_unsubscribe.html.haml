@@ -1,5 +1,20 @@
-%a{href: full_link('dashboard/email_notifications'), style: "color: #444; text-decoration:underline;"} 
-  your email preferences
-or
-%a{href: full_link('dashboard/email_notifications', {:unsubscribe => true}), style: "color: #444; text-decoration:underline;"} 
-  unsubscribe
+:ruby 
+  txt = translator_html({
+    id: "email.unsubscribe.html",
+    link1: {
+      tag: 'a',
+      attrs: {
+        href: full_link('dashboard/email_notifications'),
+        style: "color: #444; text-decoration:underline;"
+      }
+    },
+    link2: {
+      tag: 'a',
+      attrs: {
+        href: full_link('dashboard/email_notifications', {:unsubscribe => true}),
+        style: "color: #444; text-decoration:underline;"
+      }
+    }
+  }, "<link1>Update your email preferences</link1> or <link2>unsubscribe</link2>")
+
+#{txt.html_safe}

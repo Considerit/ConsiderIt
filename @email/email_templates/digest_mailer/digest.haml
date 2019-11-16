@@ -1,56 +1,67 @@
+- if @part == 'text'
+
+  ***********************
+  *** #{translator({id: "email.digest.text_header"}, "Recent activity")} ***
+  ***********************
+
+- if @new_stuff && @new_stuff.key?(:your_proposals) && @new_stuff[:your_proposals].length > 0 
   
+  = section('Your proposals')
 
-%table{border: "0", cellpadding: "0", cellspacing: "16", width: "100%", style: "border-collapse: separate; border-spacing: 16px; width: 100%"}
+  - @new_stuff[:your_proposals].each do |proposal|
+    = proposal_with_events(proposal)
 
-  - if @new_stuff && @new_stuff.key?(:your_proposals) && @new_stuff[:your_proposals].length > 0 
-    
-    = section('Your proposals')
-
-    - @new_stuff[:your_proposals].each do |proposal|
-      = proposal_with_events(proposal)
-
-    = end_section()
+  = end_section()
 
 
-  - if @new_stuff && @new_stuff.key?(:new_proposals) && @new_stuff[:new_proposals].length > 0 
-    
-    = section('New proposals')
+- if @new_stuff && @new_stuff.key?(:new_proposals) && @new_stuff[:new_proposals].length > 0 
+  
+  = section('New proposals')
 
-    - num = @new_stuff[:new_proposals].length
+  - num = @new_stuff[:new_proposals].length
 
-    - if num > 5
-      - new_proposals = @new_stuff[:new_proposals][0..2]
+  - if num > 5
+    - new_proposals = @new_stuff[:new_proposals][0..2]
+  - else 
+    - new_proposals = @new_stuff[:new_proposals]
+
+  - new_proposals.each do |proposal|
+    = proposal_without_events(proposal)
+
+  - if num > 5
+    - if @part == 'text'
+      :ruby 
+        view_more = translator({id: "email.digest.view_more_proposals.text", link: full_link('', {:sort_by => 'newest'}), more_than_5_proposals_count: num - 3}, 
+          "View the other {more_than_5_proposals_count} new proposals at {link})")
+      #{view_more}
+      
     - else 
-      - new_proposals = @new_stuff[:new_proposals]
+      :ruby 
+        view_more = translator({id: "email.digest.view_more_proposals.html", more_than_5_proposals_count: num - 3}, 
+          "View {more_than_5_proposals_count} more new proposals")
+      
 
-    - new_proposals.each do |proposal|
-      = proposal_without_events(proposal)
+      %a{:href => full_link('', {:sort_by => 'newest'}), :style=>"text-align:center; color:black;padding-top:20px;display:block;"}
+        #{view_more}
 
-    - if num > 5
-      - if @part == 'text'
-        \r\nView the other #{num - 3} new proposals at #{full_link('', {:sort_by => 'newest'})}
-      - else 
-        %a{:href => full_link('', {:sort_by => 'newest'}), :style=>"text-align:center; color:black;padding-top:20px;display:block;"}
-          View #{num - 3} more new proposals
+        
 
 
-    = end_section()
+  = end_section()
 
 
-  - if @new_stuff && @new_stuff.key?(:active_proposals) && @new_stuff[:active_proposals].length > 0 
-    
-    = section('Proposals with recent activity')
+- if @new_stuff && @new_stuff.key?(:active_proposals) && @new_stuff[:active_proposals].length > 0 
+  
+  = section('Proposals with recent activity')
 
-    - @new_stuff[:active_proposals].each do |proposal|
-      = proposal_with_events(proposal)
+  - @new_stuff[:active_proposals].each do |proposal|
+    = proposal_with_events(proposal)
 
-    = end_section()
+  = end_section()
 
 
 - if @part == 'text'
-  "\r\n\r\n------------------------------------"
   = render :partial => 'event_mailer/unsubscribe'
 
-= content_for :footer do
-  Update 
+= content_for :footer do 
   = render :partial => 'event_mailer/unsubscribe'

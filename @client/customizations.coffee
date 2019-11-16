@@ -88,7 +88,11 @@ window.customization = (field, object_or_key) ->
     chain_of_configs.push subdomain_config
 
   # language defaults 
-  chain_of_configs.push customizations.lang_default[(subdomain.lang or 'en')]
+  lang_default = customizations.lang_default[(subdomain.lang or 'en')]
+  if lang_default
+    chain_of_configs.push lang_default
+  else 
+    chain_of_configs.push customizations.lang_default.en
   
   # global default config
   chain_of_configs.push customizations['default']

@@ -1,6 +1,9 @@
 
+require Rails.root.join('@server', 'translations')
+
 class TranslationsController < ApplicationController
   respond_to :json
+  include PSEUDOLOCALIZATION
 
 
   def show 
@@ -96,9 +99,19 @@ class TranslationsController < ApplicationController
  
     end
 
+    if key.end_with?('/en')
+      PSEUDOLOCALIZATION::synchronize(key)
+    end
+
     dirty_key key
     render :json => {:success => true}
   end
 
+end 
 
-end
+
+
+
+
+
+

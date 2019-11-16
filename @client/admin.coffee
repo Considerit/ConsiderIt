@@ -243,11 +243,17 @@ AppSettingsDash = ReactiveComponent
                 marginLeft: 12
                 display: 'inline-block'
 
-              for abbrev, label of (fetch('/translations').available_languages or {})
 
-                OPTION
-                  value: abbrev
-                  label 
+              do => 
+                available_languages = Object.assign({}, fetch('/translations').available_languages or {})
+                if current_user.is_super_admin
+                  available_languages['pseudo-en'] = "Pseudo English (for testing)"
+                  
+                for abbrev, label of available_languages
+
+                  OPTION
+                    value: abbrev
+                    label 
 
             if subdomain.lang? && subdomain.lang != 'en'
               DIV 

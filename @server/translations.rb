@@ -1,6 +1,7 @@
 DEVELOPMENT_LANGUAGE = 'en'
 require 'message_format'
 
+
 ###########################
 # Translations for server. 
 # Mirror of translations.coffee for the client.
@@ -20,6 +21,13 @@ require 'message_format'
 def set_translation_context(user, subdomain)
   @translator_user = user 
   @translator_subdomain = subdomain
+
+  user = @translator_user || current_user
+  subdomain = @translator_subdomain || current_subdomain
+  langs = [user[:lang], subdomain[:lang], DEVELOPMENT_LANGUAGE].compact.uniq
+
+  @translation_lang = langs[0]
+
 end
 
 def clear_translation_context
@@ -30,9 +38,15 @@ end
 
 def translator(args, native_text = nil)
   if args.is_a? String
-    native_text = args
-    args = {}
+    if !native_text 
+      native_text = args
+      args = {}
+    else
+      id = args
+      args = {id: id}
+    end 
   end 
+
   id = args[:id] || native_text
 
   user = args[:user] || @translator_user || current_user
@@ -50,6 +64,7 @@ def translator(args, native_text = nil)
     translations_native[id] ||= {}
     translations_native[id]["txt"] = native_text
     ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{JSON.dump(translations_native)}' WHERE k='#{native_key}'")
+    PSEUDOLOCALIZATION::synchronize(native_key)
   end 
 
   # which language should we use? ordered by preference. 
@@ -87,7 +102,12 @@ end
 
 # made for translating emails where there might be snippets of html
 
-def translator_html(native_text, args = nil)
+def translator_html(args, native_text)
+  if args.is_a? String
+    native_text = args
+    args = {}
+  end 
+
   message = translator args, native_text
 
   # convert any <link> references
@@ -118,5 +138,136 @@ def translator_html(native_text, args = nil)
   end 
 
   message
+
+end
+
+
+module PSEUDOLOCALIZATION
+
+  def self.synchronize(key)
+    # make sure that pseudolocalization version of each default string is present
+    prefix = key.split('/en')[0]
+    ps_key = prefix + '/pseudo-en'
+    en = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{prefix}/en'").to_a()[0]
+    en = Oj.load(en[0] || '{}')
+    ps = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{ps_key}'").to_a()[0]
+    ps = Oj.load(ps[0] || "{key: #{ps_key}}")
+    if !ps 
+      ps = {key: ps_key}
+      ActiveRecord::Base.connection.execute("INSERT into datastore(k,v) VALUES ('#{ps_key}', '#{JSON.dump(ps)}')")
+    end
+
+    dirty = false
+    en.each do |k,v|
+      next if k == 'key'
+      next if !v["txt"]
+
+      trans = translate_string(v["txt"])
+
+      ps[k] ||= {txt: ''}
+      if ps[k][:txt] != trans 
+        ps[k][:txt] = trans
+        dirty = true
+      end
+    end
+    if dirty 
+      ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{JSON.dump(ps)}' WHERE k='#{ps_key}'")
+    end
+
+  end
+
+
+  ##########################
+  # The below is modified from 
+  # https://github.com/Shopify/pseudolocalization/blob/master/lib/pseudolocalization/pseudolocalizer.rb
+
+
+
+  def self.translate_string(string)
+    return "*!#{string}!*" if string.match('plural')
+
+    string.split(ESCAPED_REGEX).map do |part|
+      if part =~ ESCAPED_REGEX
+        part
+      else
+        part.chars.map do |char|
+          if LETTERS.key?(char)
+            value = LETTERS[char]
+            value = value * 2 if VOWELS.include?(char)
+            value
+          else
+            char
+          end
+        end.join
+      end
+    end.join
+  end
+
+  ESCAPED_REGEX = Regexp.new("(#{
+    [
+      "<.*?>",
+      "{.*?}",
+      "https?:\/\/\\S+",
+      "&\\S*?;"
+    ].join('|')
+  })")
+
+  VOWELS = %w(a e i o u y A E I O U Y)
+
+  LETTERS = {
+    'a' => 'α',
+    'b' => 'ḅ',
+    'c' => 'ͼ',
+    'd' => 'ḍ',
+    'e' => 'ḛ',
+    'f' => 'ϝ',
+    'g' => 'ḡ',
+    'h' => 'ḥ',
+    'i' => 'ḭ',
+    'j' => 'ĵ',
+    'k' => 'ḳ',
+    'l' => 'ḽ',
+    'm' => 'ṃ',
+    'n' => 'ṇ',
+    'o' => 'ṓ',
+    'p' => 'ṗ',
+    'q' => 'ʠ',
+    'r' => 'ṛ',
+    's' => 'ṡ',
+    't' => 'ṭ',
+    'u' => 'ṵ',
+    'v' => 'ṽ',
+    'w' => 'ẁ',
+    'x' => 'ẋ',
+    'y' => 'ẏ',
+    'z' => 'ẓ',
+    'A' => 'Ḁ',
+    'B' => 'Ḃ',
+    'C' => 'Ḉ',
+    'D' => 'Ḍ',
+    'E' => 'Ḛ',
+    'F' => 'Ḟ',
+    'G' => 'Ḡ',
+    'H' => 'Ḥ',
+    'I' => 'Ḭ',
+    'J' => 'Ĵ',
+    'K' => 'Ḱ',
+    'L' => 'Ḻ',
+    'M' => 'Ṁ',
+    'N' => 'Ṅ',
+    'O' => 'Ṏ',
+    'P' => 'Ṕ',
+    'Q' => 'Ǫ',
+    'R' => 'Ṛ',
+    'S' => 'Ṣ',
+    'T' => 'Ṫ',
+    'U' => 'Ṳ',
+    'V' => 'Ṿ',
+    'W' => 'Ŵ',
+    'X' => 'Ẋ',
+    'Y' => 'Ŷ',
+    'Z' => 'Ż',
+  }.freeze
+
 
 end

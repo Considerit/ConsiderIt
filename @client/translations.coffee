@@ -44,7 +44,6 @@ window.TRANSLATE = (args, native_text) ->
       else 
         translation.push part 
 
-    translation
   else 
     translation = message
 
@@ -203,6 +202,8 @@ TranslationsDash = ReactiveComponent
     local = fetch 'translations'
 
     all_langs = ( [k,v] for k,v of translations.available_languages when k != DEVELOPMENT_LANGUAGE)
+    if current_user.is_super_admin
+      all_langs.push ['pseudo-en', "Pseudo English (for testing)"]
 
     if !local.translating_lang
       if subdomain.lang && subdomain.lang != 'en'
@@ -348,15 +349,17 @@ TranslationsForLang = ReactiveComponent
     updated_translations = get_temporary_translations(lang, @props.key)
 
 
-    sections = {}
-    for name in to_translate
-      sp = name.split('.')
-      if sp.length > 1
-        sections[sp[0]] ||= []
-        sections[sp[0]].push name
-      else 
-        sections.misc ||= []
-        sections.misc.push name
+    sections = {"all": to_translate}
+    # sections = {}
+    # for name in to_translate
+    #   sp = name.split('.')
+    #   if sp.length > 1
+    #     sections[sp[0]] ||= []
+    #     sections[sp[0]].push name
+    #   else 
+    #     sections.misc ||= []
+    #     sections.misc.push name
+
 
     current_user = fetch '/current_user'
 
@@ -393,7 +396,7 @@ TranslationsForLang = ReactiveComponent
 
 
         for section, names of sections
-
+          names.sort()
           for name in names
             do (name) => 
               no_id = name == native_messages[name].txt

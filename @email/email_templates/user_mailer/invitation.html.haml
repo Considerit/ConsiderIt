@@ -1,9 +1,9 @@
 - if @user.first_name
   %p
-    Hi #{@user.first_name}, 
-
+    #{translator({id: "email.salutation", name: @user.first_name}, "Hi {name},")}  
 %p
-  #{@inviter.name} invites you to #{@action} 
+  #{translator({id: "email.invitation", action: @action, name: @inviter.name}, "{name} invites you to {action}")}
+
   = succeed '.' do
     - if @invitation_obj.class.to_s == "Proposal"
       %a{href: full_link(@invitation_obj.slug), style: 'font-weight: 700; color: #468EE5;'} #{@invitation_obj.name}
@@ -12,11 +12,11 @@
 
 - if @message
   %p 
-    #{@inviter.first_name} says: 
+    #{translator({id: "email.message_from", sender: @inviter.first_name}, "{sender} says:")}
 
   %p
     %i{style: 'padding-left: 20px; display: block; border-left: 1px solid #eaeaea'}
       = @message
 
 %p
-  If you feel that you’re receiving this email in error, please contact admin@consider.it.
+  #{translator("email.received_in_error", "If you feel that you’re receiving this email in error, please contact admin@consider.it.")}

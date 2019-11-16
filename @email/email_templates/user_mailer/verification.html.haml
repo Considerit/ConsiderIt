@@ -1,14 +1,11 @@
 %p
-  Hi #{@user.first_name},
+  #{translator({id: "email.salutation", name: @user.first_name}, "Hi {name},")}  
 
 %p
-  You've accessed a part of the forum that requires verification of your email. Please copy and paste this verification code into your browser to prove that you own this email.
+  #{translator("email.user.verification_instructions", "You have accessed a part of the forum that requires verification of your email. Please copy and paste this verification code into your browser to prove that you control this email address. Thanks!")}
 
 %p{style: "padding-left: 20px; font-size: 18px; font-weight: 600"}
   = @token
-
-%p
-  Thanks!
   
 %p
-  If you feel that you’re receiving this email in error, please contact admin@consider.it.
+  #{translator("email.received_in_error", "If you feel that you’re receiving this email in error, please contact admin@consider.it.")}

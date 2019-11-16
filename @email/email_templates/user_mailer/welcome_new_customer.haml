@@ -1,4 +1,4 @@
-Hi #{@user.first_name}, 
+#{translator({id: "email.salutation", name: @user.first_name}, "Hi {name},")}  
 = linebreak
 Welcome to Consider.it! Your forum is 
 = succeed '.' do

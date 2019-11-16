@@ -6,7 +6,7 @@ class UserMailer < Mailer
     set_translation_context(user, subdomain)
 
     @user = user
-    subject = "Welcome to Consider.it!"
+    subject = translator("email.welcome.subject_line", "Welcome to Consider.it!")
     @subdomain = subdomain
     @plan = plan
 
@@ -16,7 +16,7 @@ class UserMailer < Mailer
     params = {
       :from => from, 
       :to => to, 
-      :bcc => ['travis@consider.it', 'kevin@consider.it', 'toomim@consider.it'], 
+      :bcc => ['hello@consider.it'], 
       :subject => subject_line(subject, subdomain)
     }
     mail params do |format|
@@ -34,7 +34,7 @@ class UserMailer < Mailer
 
     @user = user
     @token = token 
-    subject = "password reset instructions"
+    subject = translator("email.password_reset.subject_line", "password reset instructions")
     @subdomain = subdomain
 
     to = format_email @user.email, @user.name
@@ -49,9 +49,9 @@ class UserMailer < Mailer
     @user = user
     @token = user.auth_token(subdomain)
     @subdomain = subdomain
-    subject = "please verify your email address"
+    subject = translator("email.email_verification.subject_line", "please verify your email address")
 
-    puts "And the token is ", @token
+    # puts "And the token is ", @token
     to = format_email @user.email, @user.name
     from = format_email(default_sender(subdomain), (subdomain.title))
     mail(:from => from, :to => to, :subject => subject_line(subject, subdomain))
@@ -59,7 +59,7 @@ class UserMailer < Mailer
   end
 
   def invitation(inviter, invitee, invitation_obj, role, subdomain, message = nil)
-    set_translation_context(user, subdomain)
+    set_translation_context(invitee, subdomain)
 
     @user = invitee
     @inviter = inviter
@@ -78,8 +78,6 @@ class UserMailer < Mailer
       @action = 'add new proposals at'
     when 'admin'
       @action = 'administer'
-    when 'evaluator'
-      @action = 'fact check'
     when 'editor'
       @action = 'edit'
     when 'visitor'
@@ -102,9 +100,12 @@ class UserMailer < Mailer
     case invitation_obj.class.to_s
 
     when 'Subdomain'
-      subject = "#{inviter.name} invites you to #{@action} #{invitation_obj.app_title}"
+      subject = translator({id: "email.invitation.#{role}", name: inviter.name, place: invitation_obj.app_title}, 
+                           "{name} invites you to #{@action} {place}")
     when 'Proposal'
-      subject = "#{inviter.name} invites you to #{@action} '#{invitation_obj.name}'"
+      subject = translator({id: "email.invitation.#{role}", name: inviter.name, place: invitation_obj.name}, 
+                           "{name} invites you to #{@action} {place}")
+
     else
       raise "Why are you trying to send an invitation to a #{invitation_obj.class.to_s}?"
     end

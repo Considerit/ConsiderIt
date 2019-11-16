@@ -23,15 +23,15 @@ class ProposalController < ApplicationController
   def validate_input(attrs, proposal)
     errors = []
     if !attrs['slug'] || attrs['slug'].length == 0
-      errors.append 'Url field is missing'
+      errors.append translator('errors.proposal.url_missing', 'Url field is missing')
     end
 
     if (!proposal || (proposal && proposal.slug != attrs['slug'])) && Proposal.find_by_slug(attrs['slug'])
-      errors.append 'That Url is already taken'
+      errors.append translator('errors.proposal.url_taken', 'That Url is already taken')
     end
 
     if !attrs['name'] || attrs['name'].length == 0
-      errors.append 'A summary is required'
+      errors.append translator('errors.summary_required', 'A summary is required')
     end
 
     return errors

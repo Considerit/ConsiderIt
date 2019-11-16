@@ -55,7 +55,7 @@ class SubdomainController < ApplicationController
 
     existing = Subdomain.find_by_name(subdomain)
     if existing
-      errors.push "That site already exists. Please choose a different name."
+      errors.push "That forum already exists. Please choose a different name."
     end 
 
     if errors.length > 0

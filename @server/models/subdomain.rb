@@ -116,7 +116,7 @@ class Subdomain < ActiveRecord::Base
   # TODO: consolidate with proposal.user_roles
   def user_roles(filter = false)
     result = Oj.load(roles || "{}")
-    ['admin', 'moderator', 'evaluator', 'proposer', 'visitor'].each do |role|
+    ['admin', 'moderator', 'proposer', 'visitor'].each do |role|
 
       # default roles if they haven't been set
       default_role = ['visitor', 'proposer'].include?(role) ? ['*'] : []

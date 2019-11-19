@@ -39,11 +39,11 @@ window.load_customization = (subdomain_name, obj) ->
 window.customization = (field, object_or_key) -> 
   
   if !!object_or_key && !object_or_key.key?
-    object_or_key = fetch object_or_key
+    obj = fetch object_or_key
 
 
-  if object_or_key && object_or_key.subdomain_id && "#{object_or_key.subdomain_id}" != document.querySelector("meta[name='forum']")?.getAttribute("content")
-    subdomain = fetch "/subdomain/#{object_or_key.subdomain_id}" 
+  if obj && obj.subdomain_id && "#{obj.subdomain_id}" != document.querySelector("meta[name='forum']")?.getAttribute("content")
+    subdomain = fetch "/subdomain/#{obj.subdomain_id}" 
   else 
     subdomain = fetch('/subdomain')
 
@@ -53,8 +53,8 @@ window.customization = (field, object_or_key) ->
     load_customization subdomain_name, subdomain.customization_obj
 
 
-  key = if object_or_key 
-          if object_or_key.key then object_or_key.key else object_or_key
+  key = if obj 
+          if obj.key then obj.key else obj
         else 
           null
 
@@ -79,20 +79,13 @@ window.customization = (field, object_or_key) ->
 
       # cluster-level config for proposals
       if key.match(/\/proposal\//)
-        proposal = object_or_key
+        proposal = obj
         cluster_key = "list/#{proposal.cluster}"
         if subdomain_config[cluster_key]?
           chain_of_configs.push subdomain_config[cluster_key]
 
     # subdomain config
     chain_of_configs.push subdomain_config
-
-  # language defaults 
-  lang_default = customizations.lang_default[(subdomain.lang or 'en')]
-  if lang_default
-    chain_of_configs.push lang_default
-  else 
-    chain_of_configs.push customizations.lang_default.en
   
   # global default config
   chain_of_configs.push customizations['default']
@@ -159,6 +152,10 @@ require './customizations_helpers'
 
 customizations.default = 
 
+  point_labels : point_labels.pro_con
+  slider_pole_labels : slider_labels.agree_disagree
+  list_opinions_title: 'Opinions'
+
   # Proposal options
   discussion_enabled: true
 
@@ -206,90 +203,6 @@ customizations.default =
    create_description: (fields) -> fields.description
 
 
-customizations.lang_default = 
-  en: 
-    homepage_show_search_and_sort: true
-    point_labels : point_labels.pro_con
-    slider_pole_labels : slider_labels.agree_disagree
-    list_opinions_title: 'Opinions'
-
-  es: 
-    point_labels : 
-      pro: 'pro'
-      pros: 'pros' 
-      con: 'contra'
-      cons: 'contras'
-      your_header: "Ingresa tus --valences--" 
-      other_header: "Otros --valences--" 
-      top_header: "Top --valences--" 
-
-    slider_pole_labels : 
-      support: 'Acuerdo'
-      oppose: 'Desacuerdo'
-
-    list_opinions_title: "Opiniones"
-
-  fr: 
-    point_labels : 
-      pro: 'pour' 
-      pros: 'pour' 
-      con: 'contre' 
-      cons: 'contre'
-      your_header: "Donner votre --valences--" 
-      other_header: "Les --valences-- des autres" 
-      top_header: "Meilleures --valences--" 
-
-    slider_pole_labels : 
-      support: 'd’accord' 
-      oppose: 'pas d’accord' 
-
-    list_opinions_title: "Des avis"
-
-  aeb: 
-    show_proposal_meta_data: false
-    slider_pole_labels: 
-      support: 'أوافق'
-      oppose: 'أخالف'
-
-    list_opinions_title: 'الآراء'
-    point_labels:  
-      pro: 'نقطة إجابية'
-      pros: 'نقاط إجابية' 
-      con: 'نقطة سلبية'
-      cons: 'نقاط سلبية'
-      your_header: "--valences-- أبد" 
-      other_header: "--valences--  أخرى" 
-      top_header: "--valences--  الرئيسية" 
-
-  pt: 
-    point_labels : 
-      pro: 'A Favor'
-      pros: 'A Favor' 
-      con: 'Contra'
-      cons: 'Contra'
-      your_header: "Teus pontos --valences--" 
-      other_header: "Outros --valences--" 
-      top_header: "Top --valences--" 
-
-    slider_pole_labels : 
-      support: 'Concordo'
-      oppose: 'Discordo'
-
-    list_opinions_title: "Opiniões"
-
-
-  cs: 
-    point_labels:
-      pro: 'pro'
-      pros: 'pro' 
-      con: 'proti'
-      cons: 'proti'
-      your_header: "Názor --valences--" 
-      other_header: "Jiný' --valences--" 
-      top_header: "Top --valences--" 
-    slider_pole_labels: 
-      support: 'Souhlas'
-      oppose: 'Nesouhlas'
 
 
 

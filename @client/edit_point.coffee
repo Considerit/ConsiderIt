@@ -210,11 +210,17 @@ window.EditPoint = ReactiveComponent
                   customization('point_labels.pro', @proposal)
                 else 
                   customization('point_labels.con', @proposal)
+    singular = translator
+                 id: "point_labels.#{singular}"
+                 singular 
 
     plural =  if @props.valence == 'pros' 
                 customization('point_labels.pros', @proposal)
               else 
                 customization('point_labels.cons', @proposal)
+    plural = translator
+                id: "point_labels.#{plural}"
+                plural 
 
 
     DIV 

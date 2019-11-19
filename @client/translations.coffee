@@ -132,7 +132,7 @@ IN_SITU_TRANSLATOR = ReactiveComponent
 
 DEVELOPMENT_LANGUAGE = 'en'
 
-window.T = window.t = (args, native_text) -> 
+window.T = window.t = window.translator = (args, native_text) -> 
   # user = fetch '/current_user'
   subdomain = fetch '/subdomain'
 
@@ -372,7 +372,7 @@ TranslationsForLang = ReactiveComponent
           fontSize: 22
 
         T 
-          id: "i18n.language_header"
+          id: "translations.language_header"
           percent_complete: Math.round(translation_progress(lang, @props.key) * 100)
           language: available_languages[lang]
           "Translations for {language} ({percent_complete}% completed)"
@@ -564,6 +564,94 @@ window.TranslationsDash = TranslationsDash
 dict = {}
 
 
+
+lang_default = 
+  en: 
+    point_labels : point_labels.pro_con
+    slider_pole_labels : slider_labels.agree_disagree
+    list_opinions_title: 'Opinions'
+
+  es: 
+    point_labels : 
+      pro: 'pro'
+      pros: 'pros' 
+      con: 'contra'
+      cons: 'contras'
+      your_header: "Ingresa tus --valences--" 
+      other_header: "Otros --valences--" 
+      top_header: "Top --valences--" 
+
+    slider_pole_labels : 
+      support: 'Acuerdo'
+      oppose: 'Desacuerdo'
+
+    list_opinions_title: "Opiniones"
+
+  fr: 
+    point_labels : 
+      pro: 'pour' 
+      pros: 'pour' 
+      con: 'contre' 
+      cons: 'contre'
+      your_header: "Donner votre --valences--" 
+      other_header: "Les --valences-- des autres" 
+      top_header: "Meilleures --valences--" 
+
+    slider_pole_labels : 
+      support: 'd’accord' 
+      oppose: 'pas d’accord' 
+
+    list_opinions_title: "Des avis"
+
+  aeb: 
+    show_proposal_meta_data: false
+    slider_pole_labels: 
+      support: 'أوافق'
+      oppose: 'أخالف'
+
+    list_opinions_title: 'الآراء'
+    point_labels:  
+      pro: 'نقطة إجابية'
+      pros: 'نقاط إجابية' 
+      con: 'نقطة سلبية'
+      cons: 'نقاط سلبية'
+      your_header: "--valences-- أبد" 
+      other_header: "--valences--  أخرى" 
+      top_header: "--valences--  الرئيسية" 
+
+  pt: 
+    point_labels : 
+      pro: 'A Favor'
+      pros: 'A Favor' 
+      con: 'Contra'
+      cons: 'Contra'
+      your_header: "Teus pontos --valences--" 
+      other_header: "Outros --valences--" 
+      top_header: "Top --valences--" 
+
+    slider_pole_labels : 
+      support: 'Concordo'
+      oppose: 'Discordo'
+
+    list_opinions_title: "Opiniões"
+
+
+  cs: 
+    point_labels:
+      pro: 'pro'
+      pros: 'pro' 
+      con: 'proti'
+      cons: 'proti'
+      your_header: "Názor --valences--" 
+      other_header: "Jiný' --valences--" 
+      top_header: "Top --valences--" 
+    slider_pole_labels: 
+      support: 'Souhlas'
+      oppose: 'Nesouhlas'
+
+
+
+# 
 #########
 # General
 dict.en = 
@@ -693,7 +781,7 @@ _.extend dict.en,
   sign_name: 'Sign your name'
 
   tip_single: (args) -> 
-    "Make one single point. Add multiple #{args.noun} if you have more."
+    "Make only one point. Add multiple #{args.noun} if you have more."
   tip_direct: "Be direct. The summary is your main point."
   tip_review: "Review your language. Don’t be careless."
   tip_attacks: "No personal attacks."

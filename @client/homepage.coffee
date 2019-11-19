@@ -10,16 +10,14 @@ require './questionaire'
 require './new_proposal'
 
 
-
 window.AuthCallout = ReactiveComponent
   displayName: 'AuthCallout'
 
   render: ->
     current_user = fetch '/current_user'
-
     return SPAN null if current_user.logged_in
 
-    DIV 
+    DIV  
       style: 
         width: '100%'
         #backgroundColor: '#545454'
@@ -36,25 +34,26 @@ window.AuthCallout = ReactiveComponent
             fontSize: 24
             fontWeight: 600
 
-          'Please '
+          TRANSLATE
+            id: 'create_account.call_out'
+            BUTTON1: 
+              component: BUTTON 
+              args: 
+                'data-action': 'create'
+                onClick: (e) =>
+                  reset_key 'auth',
+                    form: 'create account'
+                    ask_questions: true
+                style: 
+                  backgroundColor: 'transparent'
+                  border: 'none'
+                  fontWeight: 800
+                  textDecoration: 'underline'
+                  #color: 'white'
+                  textTransform: 'lowercase'
+                  padding: 0
 
-          BUTTON
-            'data-action': 'create'
-            onClick: (e) =>
-              reset_key 'auth',
-                form: 'create account'
-                ask_questions: true
-            style: 
-              backgroundColor: 'transparent'
-              border: 'none'
-              fontWeight: 800
-              textDecoration: 'underline'
-              #color: 'white'
-              textTransform: 'lowercase'
-              padding: 0
-            t('create an account')
-
-          ' before participating!'
+            "Please <BUTTON1>create an account</BUTTON1> before participating"
 
 
 window.Homepage = ReactiveComponent
@@ -514,7 +513,7 @@ window.Cluster = ReactiveComponent
 
   storeSortOrder: -> 
     p = (p.key for p in sorted_proposals(@props.cluster.proposals))
-    c = fetch("cluster-#{slugify(@props.cluster.name)}/sort_order")
+    c = fetch("cluster-#{slugify(@props.cluster.name)}-sort_order")
     order = JSON.stringify(p)
     if order != c.sort_order
       c.sort_order = order 
@@ -650,10 +649,8 @@ ClusterHeading = ReactiveComponent
 
           else if widthWhenRendered(heading_text, heading_style) <= column_sizes().first + column_sizes().gutter
 
-
-
             histo_title = customization('list_opinions_title', cluster_key)
-              
+
             DIV
               style: 
                 width: column_sizes().second
@@ -670,7 +667,9 @@ ClusterHeading = ReactiveComponent
                 fontSize: heading_style.fontSize
                 fontStyle: 'oblique'
 
-              histo_title
+              TRANSLATE
+                id: "engage.header.#{histo_title}"
+                histo_title
 
 
       if @props.proposals_count > 0 && !customization('questionaire', cluster_key) && !is_collapsed && !customization('list_no_filters', cluster_key)
@@ -727,7 +726,7 @@ window.list_actions = (props) ->
                   setTimeout =>
                     $("[name='add_new_#{props.cluster.name}']").ensureInView()
                   , 1
-                T("lists/add new button", 'add new')
+                T('add new')
 
     if customization('opinion_filters')
       OpinionFilter

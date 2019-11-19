@@ -29,7 +29,7 @@ window.CollapsedProposal = ReactiveComponent
 
     # we want to update if the sort order changes so that we can 
     # resolve @local.keep_in_view
-    fetch("cluster-#{slugify(proposal.cluster or 'Proposals')}/sort_order")
+    fetch("cluster-#{slugify(proposal.cluster or 'Proposals')}-sort_order")
 
     current_user = fetch '/current_user'
 
@@ -72,9 +72,9 @@ window.CollapsedProposal = ReactiveComponent
 
     slider_interpretation = (value) => 
       if value > .03
-        "#{(value * 100).toFixed(0)}% #{customization("slider_pole_labels.support", proposal)}"
+        "#{(value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", proposal)}"
       else if value < -.03 
-        "#{-1 * (value * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", proposal)}"
+        "#{-1 * (value * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", proposal)}"
       else 
         "Neutral"
     LI
@@ -219,11 +219,11 @@ window.CollapsedProposal = ReactiveComponent
                       #fontWeight: 500
                       cursor: 'pointer'
 
-                    if proposal.point_count == 1
-                      "#{proposal.point_count} #{customization('point_labels.pro', proposal)} or #{customization('point_labels.con', proposal)}"
-                    else 
+                    TRANSLATE
+                      id: "engage.point_count"
+                      cnt: proposal.point_count
 
-                      "#{proposal.point_count} #{customization('point_labels.pros', proposal)} and #{customization('point_labels.cons', proposal)}"
+                      "{cnt, plural, =0 {} one {# thought} other {# thoughts}}"
 
 
             if @props.show_category && proposal.cluster
@@ -324,7 +324,11 @@ window.CollapsedProposal = ReactiveComponent
           offset: true
           handle_props:
             use_face: false
-          label: "Express your opinion on a slider from #{customization("slider_pole_labels.oppose", proposal)} to #{customization("slider_pole_labels.support", proposal)}"
+          label: translator
+                    id: "engage.slider.instructions"
+                    negative_pole: get_slider_label("slider_pole_labels.oppose", proposal)
+                    positive_pole: get_slider_label("slider_pole_labels.support", proposal)
+                    "Express your opinion on a slider from {negative_pole} to {positive_pole}"
           onBlur: (e) => @local.slider_has_focus = false; save @local
           onFocus: (e) => @local.slider_has_focus = true; save @local 
 

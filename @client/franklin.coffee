@@ -267,7 +267,7 @@ Proposal = ReactiveComponent
 
             H2
               className: 'hidden'
-              "Evaluations on spectrum from #{customization("slider_pole_labels.oppose", @proposal)} to #{customization("slider_pole_labels.support", @proposal)} of the proposal '#{@proposal.name}'"
+              "Evaluations on spectrum from #{get_slider_label("slider_pole_labels.oppose", @proposal)} to #{get_slider_label("slider_pole_labels.support", @proposal)} of the proposal '#{@proposal.name}'"
 
 
             Histogram
@@ -311,10 +311,8 @@ Proposal = ReactiveComponent
                   backgrounded: false
                   permitted: draw_handle
                   pole_labels: [ \
-                    [customization("slider_pole_labels.oppose", @proposal),
-                     customization("slider_pole_labels.oppose_sub", @proposal) or ''], \
-                    [customization("slider_pole_labels.support", @proposal),
-                     customization("slider_pole_labels.support_sub", @proposal) or '']]
+                    get_slider_label("slider_pole_labels.oppose", @proposal),
+                    get_slider_label("slider_pole_labels.support", @proposal)]
         
         if !is_loading
 
@@ -408,7 +406,7 @@ Proposal = ReactiveComponent
             if !show_all_points
               BUTTON 
                 style: 
-                  backgroundColor: 'white' #considerit_gray
+                  # backgroundColor: "#eee"
                   padding: '12px 0'
                   fontSize: 24
                   textAlign: 'center'
@@ -430,7 +428,9 @@ Proposal = ReactiveComponent
                     @local.show_all_points = true 
                     save @local
 
-                "Show all #{customization('point_labels.pros', @proposal)} and #{customization('point_labels.cons', @proposal)}"
+                TRANSLATE
+                  id: "engage.show_all_thoughts"
+                  "Show All Thoughts"
 
 
       if mode == 'results'
@@ -1545,12 +1545,20 @@ PointsList = ReactiveComponent
 
 
     get_heading = (valence) => 
-      heading = customization "point_labels.#{header_prefix}_#{valence}_header", @proposal
-      if !heading
-        heading = customization "point_labels.#{header_prefix}_header", @proposal
-          .replace('--valences--', capitalize(customization("point_labels.#{valence}", @proposal)))
-          .replace('--valence--', capitalize(customization("point_labels.#{valence.substring(0, 3)}", @proposal)))
-      heading
+      heading = customization("point_labels.#{header_prefix}_header", @proposal)
+      singular_point = customization("point_labels.#{valence}", @proposal)
+      plural_point = customization("point_labels.#{valence.substring(0, 3)}", @proposal)
+
+      plural_point_t = translator
+                        id: "point_labels.#{plural_point}"
+                        plural_point 
+
+      heading_t = translator
+                    id: "engage.header_#{header_prefix}.#{heading}"
+                    arguments: capitalize(plural_point_t)
+                    heading
+
+      heading_t
 
     heading = get_heading(@props.valence)
     other_heading = get_heading(if @props.valence == 'pros' then 'cons' else 'pros')
@@ -1679,12 +1687,6 @@ PointsList = ReactiveComponent
     hist = fetch namespaced_key('histogram', @proposal)
     hist_selection = hist.selected_opinions || hist.selected_opinion
 
-    noun = \
-        capitalize \
-          if @props.valence == 'pros' 
-            customization('point_labels.pro', @proposal)
-          else 
-            customization('point_labels.con', @proposal)    
 
     if can_add_new_point != Permission.INSUFFICIENT_PRIVILEGES && !hist_selection
       if !your_points.adding_new_point
@@ -1720,6 +1722,16 @@ PointsList = ReactiveComponent
               @drawAddNewPointInCommunityCol()
 
           if @props.rendered_as == 'decision_board_point'
+
+            if @props.valence == 'pros' 
+              noun = customization('point_labels.pro', @proposal)
+            else 
+              noun = customization('point_labels.con', @proposal) 
+            noun = translator
+                     id: "point_labels.#{noun}"
+                     noun 
+            noun = capitalize noun   
+
             A
               className: 'hidden'
               href: "##{@props.valence}_by_community"
@@ -1739,6 +1751,19 @@ PointsList = ReactiveComponent
           your_points_key: @props.key
 
   drawAddNewPointInCommunityCol: ->
+    if @props.valence == 'pros' 
+      point_label = customization('point_labels.pro', @proposal)
+    else 
+      point_label = customization('point_labels.con', @proposal) 
+    point_label = translator
+                   id: "point_labels.#{point_label}"
+                   point_label 
+
+    button_text = translator 
+                    id: "engage.add_a_point"
+                    point_label: point_label 
+                    "Add a new {point_label}"
+
     DIV 
       id: "add-point-#{@props.valence}"
       style: 
@@ -1748,12 +1773,7 @@ PointsList = ReactiveComponent
 
       @drawGhostedPoint
         width: POINT_WIDTH()
-        text: "Write a new #{capitalize \
-                    if @props.valence == 'pros' 
-                      customization('point_labels.pro', @proposal)
-                    else 
-                      customization('point_labels.con', @proposal)}"
-
+        text: button_text
         is_left: @props.valence == 'cons'
         style: {}
         text_style:
@@ -1765,12 +1785,15 @@ PointsList = ReactiveComponent
 
   drawAddNewPointInDecisionBoard: -> 
     your_points = @data()
-    noun = \
-        capitalize \
-          if @props.valence == 'pros' 
-            customization('point_labels.pro', @proposal)
-          else 
-            customization('point_labels.con', @proposal)    
+
+    if @props.valence == 'pros' 
+      point_label = customization('point_labels.pro', @proposal)
+    else 
+      point_label = customization('point_labels.con', @proposal) 
+    point_label = translator
+                   id: "point_labels.#{point_label}"
+                   point_label 
+
 
     DIV 
       style: 
@@ -1801,20 +1824,29 @@ PointsList = ReactiveComponent
           backgroundColor: 'transparent'
           border: 'none'
 
-        t('write_a_new_point', {noun}) 
+        TRANSLATE 
+          id: "engage.add_a_point"
+          point_label: point_label 
+          "Add a new {point_label}" 
 
   drawDropTarget: -> 
     left_or_right = if @props.valence == 'pros' then 'right' else 'left'
 
-    noun = capitalize \
-        if @props.valence == 'pros' 
-          customization('point_labels.pro', @proposal)
-        else 
-          customization('point_labels.con', @proposal)
+    if @props.valence == 'pros' 
+      point_label = customization('point_labels.pro', @proposal)
+    else 
+      point_label = customization('point_labels.con', @proposal) 
+    point_label = translator
+                   id: "point_labels.#{point_label}"
+                   point_label 
 
-    drop_target_text = t("drag_from_#{left_or_right}", {noun})
+    
+    drop_target_text = TRANSLATE 
+                         id: "engage.drag_point"
+                         pro_or_con: point_label 
+                         left_or_right: left_or_right
+                         "Drag a {pro_or_con} from the #{left_or_right}"
 
-    drop_target_text = T("opining/drop_point_target", "Drag a {{POINT}} from the {{DIRECTION}}", {point: noun, direction: left_or_right})
 
     dt_w = POINT_WIDTH() - 24
     local_proposal = fetch shared_local_key(@proposal)
@@ -2195,6 +2227,9 @@ Page = ReactiveComponent
               SubdomainRoles key: "/page/dashboard/roles"
             when '/dashboard/tags'
               UserTags key: "/page/dashboard/tags"
+            when '/dashboard/translations'
+              TranslationsDash key: "/page/dashboard/translations"
+
             else
               if @page?.result == 'Not found'
                 DIV 

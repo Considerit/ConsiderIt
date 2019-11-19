@@ -247,9 +247,9 @@ window.Histogram = ReactiveComponent
     score = pad score.toFixed(1),2
 
     if avg < -.03
-      exp = "#{(-1 * avg * 100).toFixed(0)}% #{customization("slider_pole_labels.oppose", @props.proposal)}"
+      exp = "#{(-1 * avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.oppose", @props.proposal)}"
     else if avg > .03
-      exp = "#{(avg * 100).toFixed(0)}% #{customization("slider_pole_labels.support", @props.proposal)}"
+      exp = "#{(avg * 100).toFixed(0)}% #{get_slider_label("slider_pole_labels.support", @props.proposal)}"
     else 
       exp = "neutral"
 
@@ -299,7 +299,7 @@ window.Histogram = ReactiveComponent
       DIV 
         id: "##{proposal.id}-histo-description"
         className: 'hidden'
-        """#{opinions.length} people's opinion, with an average of #{exp} on a spectrum from #{customization("slider_pole_labels.oppose", @props.proposal)} to #{customization("slider_pole_labels.support", @props.proposal)}. 
+        """#{opinions.length} people's opinion, with an average of #{exp} on a spectrum from #{get_slider_label("slider_pole_labels.oppose", @props.proposal)} to #{get_slider_label("slider_pole_labels.support", @props.proposal)}. 
            Press ENTER or SPACE to enable tab navigation of each person's opinion, and ESCAPE to exit the navigation.
         """         
 
@@ -351,13 +351,13 @@ window.Histogram = ReactiveComponent
         position: 'absolute'
         left: 0
 
-      customization("slider_pole_labels.oppose", @props.proposal)
+      get_slider_label("slider_pole_labels.oppose", @props.proposal)
     SPAN
       style: _.extend {}, label_style,
         position: 'absolute'
         right: 0
 
-      customization("slider_pole_labels.support", @props.proposal)
+      get_slider_label("slider_pole_labels.support", @props.proposal)
     ]
 
   drawSelectionArea: -> 

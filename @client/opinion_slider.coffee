@@ -84,12 +84,12 @@ window.OpinionSlider = ReactiveComponent
         onMouseUpCallback: @handleMouseUp
         respond_to_click: false
 
-        label: "Express your opinion on a slider from #{@props.pole_labels[0][0]} to #{@props.pole_labels[1][0]} about #{@proposal.name}"
+        label: "Express your opinion on a slider from #{@props.pole_labels[0]} to #{@props.pole_labels[1]} about #{@proposal.name}"
         readable_text: (value) => 
           if value > .03
-            "#{(value * 100).toFixed(0)}% #{@props.pole_labels[1][0]}"
+            "#{(value * 100).toFixed(0)}% #{@props.pole_labels[1]}"
           else if value < -.03 
-            "#{-1 * (value * 100).toFixed(0)}% #{@props.pole_labels[0][0]}"
+            "#{-1 * (value * 100).toFixed(0)}% #{@props.pole_labels[0]}"
           else 
             "Neutral"
 
@@ -142,77 +142,15 @@ window.OpinionSlider = ReactiveComponent
 
         notice 
 
-        
-
-
-  # drawPoleLabels: ->
-  #   slider = fetch @props.key
-
-  #   if !slider.docked
-  #     for pole_label, idx in @props.pole_labels
-  #       [main_text, sub_text] = pole_label
-
-
-  #       available_x = WHITESPACE() + GUTTER() - 55
-
-  #       w = Math.max( widthWhenRendered(main_text, {fontSize: 30, maxWidth: available_x}), \
-  #                     widthWhenRendered(sub_text, {fontSize: 14, maxWidth: available_x}))
-
-  #       DIV 
-  #         'aria-hidden': true
-  #         key: main_text
-  #         style: 
-  #           position: 'absolute'
-  #           fontSize: 30
-  #           top: -20
-  #           pointerEvents: 'none'
-  #           left: if idx == 0 then -(w + 55)
-  #           right: if idx == 1 then -(w + 55)
-  #           width: w
-
-  #         main_text
-
-  #         DIV 
-  #           key: "pole_#{sub_text}_sub"
-  #           style: 
-  #             fontSize: 14
-  #             textAlign: 'center'
-
-  #           sub_text
-
-  #   else
-  #     for pole_label, idx in @props.pole_labels
-  #       DIV 
-  #         'aria-hidden': true
-  #         key: "small-#{pole_label[0]}"
-  #         style: 
-  #           position: 'absolute'
-  #           fontSize: 20
-  #           top: -12
-  #           pointerEvents: 'none'
-  #           left: if idx == 0 then -15
-  #           right: if idx == 1 then -20
-
-  #         if idx == 0 then '–' else '+'
-
   drawFeedback: -> 
     slider = fetch @props.key
     default_feedback = (value, proposal) -> 
       if Math.abs(value) < 0.01
-        "You are neutral"
+        translator
+          id: "engage.slider_feedback.default.neutral"
+          "You are neutral"
+        
       else 
-        degree = Math.abs value
-        strength_of_opinion = if degree > .999
-                                "Fully "
-                              else if degree > .5
-                                "Firmly "
-                              else
-                                "Slightly " 
-
-        valence = customization "slider_pole_labels." + \
-                                (if value > 0 then 'support' else 'oppose'), \
-                                proposal
-
         "#{Math.round(value * 100)}%"
 
 

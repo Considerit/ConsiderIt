@@ -24,7 +24,7 @@ class TranslationsController < ApplicationController
     updated = params.select{|k,v| !exclude.has_key?(k)}
 
     if permit('update all translations') > 0
-      ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{JSON.dump(updated)}' WHERE k='#{key}'")
+      update_translations(key, updated)
     else 
 
       translations_made = false
@@ -33,8 +33,7 @@ class TranslationsController < ApplicationController
       #    - create a translatable message if that message is not yet populating the datastore
       #    - propose new translations to existing translatable messages (only one per user per message)
 
-      old = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{key}'").to_a()[0]
-      old = Oj.load(old[0] || '{}')
+      old = get_translations(key)
 
       updated.each do |id, message|
         if id == 'key'
@@ -91,7 +90,8 @@ class TranslationsController < ApplicationController
         end
       end
 
-      ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{JSON.dump(old)}' WHERE k='#{key}'")
+      update_translations(key, old)
+
       if translations_made
         # TODO: test this email function
         EventMailer.translations_proposed(current_subdomain).deliver_later

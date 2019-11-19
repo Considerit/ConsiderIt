@@ -36,6 +36,26 @@ def clear_translation_context
 end    
 
 
+def get_translations(k)
+  trans = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{k}'").to_a()[0]
+  if !trans 
+    insert_to_translations(k, {key: k})
+    trans = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{k}'").to_a()[0]
+  end
+  trans = trans[0].gsub("''", "'")
+  Oj.load(trans)
+end 
+
+def update_translations(k,v)
+  escaped = JSON.dump(v).gsub("'", "''")  
+  ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{escaped}' WHERE k='#{k}'")
+end
+
+def insert_to_translations(k,v)
+  escaped = JSON.dump(v).gsub("'", "''")
+  ActiveRecord::Base.connection.execute("INSERT into datastore(k,v) VALUES ('#{k}', '#{escaped}')")
+end
+
 def translator(args, native_text = nil)
   if args.is_a? String
     if !native_text 
@@ -56,14 +76,13 @@ def translator(args, native_text = nil)
 
   native_key = "#{translations_key_prefix}/#{DEVELOPMENT_LANGUAGE}"
 
-  translations_native = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{native_key}'").to_a()[0]
-  translations_native = Oj.load(translations_native[0] || "{key: #{native_key}}")
+  translations_native = get_translations(native_key)
 
   # make sure default message is in database
   if !translations_native[id] || translations_native[id]["txt"] != native_text
     translations_native[id] ||= {}
     translations_native[id]["txt"] = native_text
-    ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{JSON.dump(translations_native)}' WHERE k='#{native_key}'")
+    update_translations(native_key, translations_native)
     PSEUDOLOCALIZATION::synchronize(native_key)
   end 
 
@@ -77,8 +96,7 @@ def translator(args, native_text = nil)
     next if !lang 
 
     lang_key = "#{translations_key_prefix}/#{lang}"
-    lang_trans = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{lang_key}'").to_a()[0]
-    lang_trans = Oj.load(lang_trans[0] || "{key: #{lang_key}}")
+    lang_trans = get_translations(lang_key)
 
     if lang_trans[id] && lang_trans[id]["txt"]
       message = lang_trans[id]["txt"]
@@ -148,13 +166,11 @@ module PSEUDOLOCALIZATION
     # make sure that pseudolocalization version of each default string is present
     prefix = key.split('/en')[0]
     ps_key = prefix + '/pseudo-en'
-    en = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{prefix}/en'").to_a()[0]
-    en = Oj.load(en[0] || '{}')
-    ps = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{ps_key}'").to_a()[0]
-    ps = Oj.load(ps[0] || "{key: #{ps_key}}")
+    en = get_translations("#{prefix}/en")
+    ps = get_translations(ps_key)
     if !ps 
       ps = {key: ps_key}
-      ActiveRecord::Base.connection.execute("INSERT into datastore(k,v) VALUES ('#{ps_key}', '#{JSON.dump(ps)}')")
+      insert_to_translations(ps_key, ps)
     end
 
     dirty = false
@@ -171,7 +187,7 @@ module PSEUDOLOCALIZATION
       end
     end
     if dirty 
-      ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{JSON.dump(ps)}' WHERE k='#{ps_key}'")
+      update_translations(ps_key, ps)
     end
 
   end

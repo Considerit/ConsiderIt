@@ -239,7 +239,9 @@ Proposal = ReactiveComponent
               marginBottom: 8
               marginTop: 48
 
-            'What do you think?'
+            TRANSLATE
+              id: "engage.opinion_header"
+              'What do you think?'
 
 
         if customization('opinion_filters')
@@ -267,7 +269,13 @@ Proposal = ReactiveComponent
 
             H2
               className: 'hidden'
-              "Evaluations on spectrum from #{get_slider_label("slider_pole_labels.oppose", @proposal)} to #{get_slider_label("slider_pole_labels.support", @proposal)} of the proposal '#{@proposal.name}'"
+
+              translator
+                id: "engage.opinion_spectrum_explanation"
+                negative_pole: get_slider_label("slider_pole_labels.oppose", @proposal)
+                positive_pole: get_slider_label("slider_pole_labels.support", @proposal)
+                proposal_name: @proposal.name
+                "Evaluations on spectrum from {negative_pole} to {positive_pole} of the proposal {proposal_name}"
 
 
             Histogram
@@ -339,7 +347,10 @@ Proposal = ReactiveComponent
 
               H2
                 className: 'hidden'
-                'Why people think what they do about the proposal'
+
+                translator
+                  id: "engage.reasons_section_explanation"
+                  'Why people think what they do about the proposal'
 
               # Border + bubblemouth that is shown when there is a histogram selection
               GroupSelectionRegion()
@@ -538,7 +549,9 @@ NextProposals = ReactiveComponent
       H2
         style: heading_style
 
-        'Explore a related topic'
+        TRANSLATE
+          id: "engage.related_proposals" 
+          'Explore a related idea'
 
       if !to_show || to_show.length == 0
         LOADING_INDICATOR
@@ -560,13 +573,17 @@ NextProposals = ReactiveComponent
         style: 
           textAlign: 'right'
           fontSize: 22
-        "…or go "
-        A 
-          href: '/'
-          style: 
-            textDecoration: 'underline'
-            fontWeight: 600
-          'back to the homepage'
+
+        TRANSLATE
+          id: 'engage.back_to_homepage_option'
+          link: 
+            component: A 
+            args: 
+              href: '/'
+              style: 
+                textDecoration: 'underline'
+                fontWeight: 600
+          "…or go <link>back to the homepage</link>"
 
 
 
@@ -628,9 +645,6 @@ ProposalDescription = ReactiveComponent
         fontSize: 18
         marginBottom: 18      
 
-
-
-
       if !@proposal.active
         SPAN 
           style: 
@@ -639,7 +653,10 @@ ProposalDescription = ReactiveComponent
             padding: '4px 0px'
             marginTop: 10
           I className: 'fa fa-info-circle', style: {paddingRight: 7}
-          'Closed to new contributions at this time.'
+
+          TRANSLATE
+            id: 'engage.proposal_closed'
+            'Closed to new contributions at this time.'
 
       BUBBLE_WRAP 
         user: editor
@@ -686,19 +703,21 @@ ProposalDescription = ReactiveComponent
               fontSize: 14
               color: "black"
 
-            "##{@proposal.cluster or 'proposals'}"
+            if @proposal.cluster 
+              SPAN null, 
+                "##{@proposal.cluster or 'proposals'}"
 
+                if customization('show_proposal_meta_data')
+                  SPAN 
+                    style: 
+                      padding: '0 8px'
+                    '|'
             if customization('show_proposal_meta_data')
-              SPAN 
-                style: 
-                  padding: '0 8px'
-                '|'
-            if customization('show_proposal_meta_data')
-              [
-                'submitted '
-                prettyDate(@proposal.created_at)
-                " by #{fetch(editor)?.name}"
-              ]
+              TRANSLATE 
+                id: "engage.proposal_meta_data"
+                timestamp: prettyDate(@proposal.created_at)
+                author: fetch(editor)?.name
+                "submitted {timestamp} by {author}"
 
           if @proposal.under_review 
             SPAN 
@@ -707,7 +726,10 @@ ProposalDescription = ReactiveComponent
                 backgroundColor: 'orange'
                 fontSize: 14
                 padding: 2
-              'Under review (like all new proposals)'
+
+              TRANSLATE 
+                id: 'engage.proposal_in_moderation_notice'
+                'Under review (like all new proposals)'
 
 
           DIV 
@@ -768,7 +790,9 @@ ProposalDescription = ReactiveComponent
                   document.activeElement.blur()
                   save(@local)
 
-              'Expand full text'
+              TRANSLATE 
+                id: 'engage.show_full_proposal_description'
+                'Expand full text'
 
 
 
@@ -786,7 +810,9 @@ ProposalDescription = ReactiveComponent
               backgroundColor: 'transparent'
               border: 'none'
               padding: 0
-            t('edit')
+            TRANSLATE 
+              id: 'engage.edit_button'
+              'edit'
 
           if permit('delete proposal', @proposal) > 0
             BUTTON
@@ -801,7 +827,9 @@ ProposalDescription = ReactiveComponent
                 if confirm('Delete this proposal forever?')
                   destroy(@proposal.key)
                   loadPage('/')
-              t('delete')
+              TRANSLATE 
+                id: 'engage.delete_button'
+                t('delete')
 
 
 
@@ -1032,7 +1060,11 @@ DecisionBoard = ReactiveComponent
         className: 'hidden'
         style: 
           display: if !TWO_COL() && get_proposal_mode() == 'results' then 'none'
-        "Craft your opinion using pros and cons about '#{@proposal.name}'"
+
+        translator 
+          id: "engage.opinion_crafting_explanation" 
+          proposal_name: @proposal.name
+          "Craft your opinion using pros and cons about {proposal_name}"
 
       SliderBubblemouth()
 
@@ -1085,9 +1117,13 @@ DecisionBoard = ReactiveComponent
             style: give_opinion_style
 
             if your_opinion.published 
-              t('Update your Opinion')
+              translator 
+                id: "engage.update_your_opinion_button"
+                'Update your Opinion'
             else 
-              t('Give your Opinion')
+              translator 
+                id: "engage.give_your_opinion_button"
+                'Give your Opinion'
 
 
       DIV 
@@ -1113,9 +1149,14 @@ DecisionBoard = ReactiveComponent
                           "#{t('log_in')} and #{t('Save your opinion')}"
 
           if your_opinion.published 
-            t('Return to results')
+            translator 
+              id: 'engage.update_opinion_button'
+              'Return to results'
+
           else 
-            t('Save your opinion')
+            translator 
+              id: 'engage.save_opinion_button'
+              'Save your opinion'
 
         if !your_opinion.published
 
@@ -1132,7 +1173,9 @@ DecisionBoard = ReactiveComponent
                   updateProposalMode('results', 'cancel_button')
                   e.preventDefault()
 
-              t('skip_to_results') 
+              translator
+                id: 'engage.see_results_first_button'
+                'or just skip to the results'
 
         else 
 
@@ -1842,7 +1885,7 @@ PointsList = ReactiveComponent
 
     
     drop_target_text = TRANSLATE 
-                         id: "engage.drag_point"
+                         id: "engage.drag_point.#{left_or_right}"
                          pro_or_con: point_label 
                          left_or_right: left_or_right
                          "Drag a {pro_or_con} from the #{left_or_right}"
@@ -1997,22 +2040,30 @@ AccessibilitySupport = ReactiveComponent
           marginTop: 30
           marginBottom: 10
 
-        'Accessibility Support'
+
+        TRANSLATE
+          id: 'accessibility.heading'
+          'Accessibility Support'
 
       P 
         style: 
           paddingBottom: 18
           fontSize: 24
 
-        "If you are having difficulty using Considerit to give feedback, contact us at "
+        TRANSLATE 
+          id: "accessibility.feedback_or_help"
+          link: 
+            component: A 
+            args: 
+              href: "mailto:accessibility@consider.it?subject=Accessibility support"
+              style: 
+                textDecoration: 'underline'
 
-        A 
-          href: "mailto:accessibility@consider.it?subject=Accessibility support"
-          style: 
-            textDecoration: 'underline'
-          'accessibility@consider.it'
-        ". We will help you personally."
+          "If you are having difficulty using Considerit to give feedback, contact us at <link>accessibility@consider.it</link>. We will help you personally."
 
+
+
+# I don't think this component is used anymore
 About = ReactiveComponent
   displayName: 'About'
 

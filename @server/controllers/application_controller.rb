@@ -281,28 +281,7 @@ protected
         response.append manifest
 
       elsif key.match "/translations"
-        translations = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{key}'").to_a()[0]
-        if translations
-          translations = Oj.load(translations[0] || '{}')
-        else
-          if key == '/translations'
-            translations = {
-              key: key,
-              available_languages: {
-                en: 'English',
-                es: 'Spanish',
-                fr: 'French',
-                pt: 'Portuguese',
-                cs: 'Czech',
-                aeb: 'Tunisian arabic'              
-              }
-            }
-          else 
-            translations = {key: key}
-          end
-          ActiveRecord::Base.connection.execute("INSERT into datastore(k,v) VALUES ('#{key}', '#{JSON.dump(translations)}')")
-        end
-
+        translations = get_translations(key)
         response.append translations
       end
 

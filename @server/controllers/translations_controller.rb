@@ -44,9 +44,9 @@ class TranslationsController < ApplicationController
         # If it is en, add it as default text, otherwise add it as a proposal.
         if !old.has_key?(id)
           if !key.end_with?('/en')
-            if message[:txt]
+            if message[:txt] || message["txt"]
               message = {
-                proposals: [{txt: message.txt, u: "/user/#{current_user.id}"}]
+                proposals: [{"txt": message.txt, u: "/user/#{current_user.id}"}]
               }
             elsif message[:proposals]
               message[:proposals] = [message[:proposals][0]] # only one proposal per user per message

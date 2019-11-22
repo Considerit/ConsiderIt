@@ -39,21 +39,60 @@ end
 def get_translations(k)
   trans = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{k}'").to_a()[0]
   if !trans 
-    insert_to_translations(k, {key: k})
+    if k == '/translations'
+      init = {
+        key: k,
+        available_languages: {
+          en: 'English',
+          es: 'Spanish',
+          fr: 'French',
+          pt: 'Portuguese',
+          cs: 'Czech',
+          aeb: 'Tunisian arabic'              
+        }
+      }
+    else 
+      init = {key: k}
+    end 
+    insert_to_translations(k, init)
     trans = ActiveRecord::Base.connection.execute("SELECT v FROM datastore WHERE k='#{k}'").to_a()[0]
+
   end
   trans = trans[0].gsub("''", "'")
   Oj.load(trans)
 end 
 
 def update_translations(k,v)
-  escaped = JSON.dump(v).gsub("'", "''")  
-  ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{escaped}' WHERE k='#{k}'")
+  v = escape_json(v)
+  ActiveRecord::Base.connection.execute("UPDATE datastore SET v='#{JSON.dump(v)}' WHERE k='#{k}'")
 end
 
 def insert_to_translations(k,v)
-  escaped = JSON.dump(v).gsub("'", "''")
-  ActiveRecord::Base.connection.execute("INSERT into datastore(k,v) VALUES ('#{k}', '#{escaped}')")
+  v = escape_json(v) 
+  ActiveRecord::Base.connection.execute("INSERT into datastore(k,v) VALUES ('#{k}', '#{JSON.dump(v)}')")
+end
+
+def escape_json(json)
+  return json if (json[:key] || json["key"]) == '/translations'
+  escaped = {}
+
+  for k,v in json 
+    if k == :key || k == "key"
+      escaped[k] = v  
+      next 
+    end 
+    new_k = k.gsub('"', '\"').gsub("'", "''").gsub("\n", " ")
+    if v["txt"]
+      v["txt"] = v["txt"].gsub('"', '\"').gsub("'", "''").gsub("\n", " ")
+    end 
+    if v["proposals"]
+      for proposal in v["proposals"]
+        proposal["txt"] = proposal["txt"].gsub('"', '\"').gsub("'", "''").gsub("\n", " ")
+      end
+    end
+    escaped[new_k] = v
+  end
+  escaped
 end
 
 def translator(args, native_text = nil)
@@ -168,10 +207,6 @@ module PSEUDOLOCALIZATION
     ps_key = prefix + '/pseudo-en'
     en = get_translations("#{prefix}/en")
     ps = get_translations(ps_key)
-    if !ps 
-      ps = {key: ps_key}
-      insert_to_translations(ps_key, ps)
-    end
 
     dirty = false
     en.each do |k,v|
@@ -180,9 +215,10 @@ module PSEUDOLOCALIZATION
 
       trans = translate_string(v["txt"])
 
-      ps[k] ||= {txt: ''}
-      if ps[k][:txt] != trans 
-        ps[k][:txt] = trans
+      ps[k] ||= {}
+
+      if ps[k]["txt"] != trans 
+        ps[k]["txt"] = trans
         dirty = true
       end
     end
